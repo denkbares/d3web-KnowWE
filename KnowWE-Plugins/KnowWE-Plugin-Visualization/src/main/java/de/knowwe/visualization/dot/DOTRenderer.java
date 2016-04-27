@@ -130,32 +130,33 @@ public class DOTRenderer {
 		String dotSource = "digraph {\n";
 
 		// printing title of graph top left of visualization
-		if(config.getTitle() != null) {
-			dotSource += "graph [label = \""+config.getTitle()+" ("+new Date()+")\", labelloc = \"t\", labeljust = \"left\", fontsize = 24];\n";
+		if (config.getTitle() != null) {
+			dotSource += "graph [label = \"" + config.getTitle() + " (" + new Date() + ")\", labelloc = \"t\", labeljust = \"left\", fontsize = 24];\n";
 		}
 
 		//only useful for neato, ignored for dot
 		dotSource += "sep=\"+25,25\";\n";
 		dotSource += "splines = true;\n";
-		if(!Strings.isBlank(config.getOverlap())) {
-			dotSource += "overlap="+config.getOverlap()+";\n";
-		} else {
+		if (!Strings.isBlank(config.getOverlap())) {
+			dotSource += "overlap=" + config.getOverlap() + ";\n";
+		}
+		else {
 			dotSource += "overlap=false;\n";
 		}
 
 		// using rankSame constraints for custom layouting
 		String rankSameValue = config.getRankSame();
-		if(!Strings.isBlank(rankSameValue)) {
+		if (!Strings.isBlank(rankSameValue)) {
 			String valueResult = rankSameValue;
-			if(rankSameValue.contains(",")) {
-				String [] values = rankSameValue.split(",");
+			if (rankSameValue.contains(",")) {
+				String[] values = rankSameValue.split(",");
 				valueResult = "";
 				for (String value : values) {
-					valueResult +=  "\""+value.trim()+"\" ";
+					valueResult += "\"" + value.trim() + "\" ";
 				}
 			}
 			//{rank=same; q4 q3}
-			dotSource += "{rank=same; "+valueResult+"}\n";
+			dotSource += "{rank=same; " + valueResult + "}\n";
 		}
 
 		// set graph size and rankDir
@@ -462,9 +463,10 @@ public class DOTRenderer {
 	protected static String[] getSVGCommand(Config config, File dot, File svg) {
 		String dotApp = config.getDotApp();
 		String layout = config.getLayout();
-		if(layout != null) {
-			return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath(), "-K"+layout.toLowerCase() };
-		} else {
+		if (layout != null) {
+			return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath(), "-K" + layout.toLowerCase() };
+		}
+		else {
 			return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath() };
 		}
 	}

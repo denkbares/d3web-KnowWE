@@ -24,7 +24,6 @@ import java.util.Map;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class DumpHandler extends AbstractHTMLTagHandler {
 
@@ -36,7 +35,7 @@ public class DumpHandler extends AbstractHTMLTagHandler {
 	public void renderHTML(String web, String topic,
 			UserContext user, Map<String, String> values, RenderResult result) {
 
-		Rdf2GoCore.getInstance().dumpModel();
+//		Rdf2GoCore.getInstance().dumpModel();
 
 	}
 

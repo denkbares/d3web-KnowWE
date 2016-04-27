@@ -104,7 +104,7 @@ public class Config {
 	}
 
 	public enum Layout {
-		DOT, NEATO, FDP, CIRCO , TWOPI
+		DOT, NEATO, FDP, CIRCO, TWOPI
 	}
 
 	public enum Overlap {

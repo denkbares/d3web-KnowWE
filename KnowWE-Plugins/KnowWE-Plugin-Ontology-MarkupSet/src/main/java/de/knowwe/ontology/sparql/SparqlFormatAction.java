@@ -2,6 +2,7 @@ package de.knowwe.ontology.sparql;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,7 +27,8 @@ public class SparqlFormatAction extends AbstractAction {
 			try {
 				response.put("wikiText", formattedWikiText.toString());
 				response.write(context.getWriter());
-			} catch (JSONException e) {
+			}
+			catch (JSONException e) {
 				throw new IOException(e);
 			}
 		}
@@ -57,7 +59,8 @@ public class SparqlFormatAction extends AbstractAction {
 					tmpWikiText = addWhitespace(tmpWikiText, i);
 					i++;
 					quoted = true;
-				} else {
+				}
+				else {
 					tmpWikiText = addWhitespace(tmpWikiText, i + 1);
 					quoted = false;
 				}
@@ -83,7 +86,8 @@ public class SparqlFormatAction extends AbstractAction {
 						startSecelt = i;
 						tmpWikiText = checkIfKeywordIsWrongIndented(tmpWikiText, i);
 						i = i + 3;
-					} else {
+					}
+					else {
 						int bracketCounter = 1;
 						boolean run = true;
 						int h = i + 2;
@@ -181,7 +185,6 @@ public class SparqlFormatAction extends AbstractAction {
 		return tmpWikiText;
 	}
 
-
 	private StringBuilder addWhitespaceBeforePoints(StringBuilder tmpWikiText) {
 
 		for (int i = 0; i < tmpWikiText.length(); i++) {
@@ -235,7 +238,6 @@ public class SparqlFormatAction extends AbstractAction {
 		}
 		return tmpWikiText;
 	}
-
 
 	/* Adds new lines before and after brackets if they aren't already there.*/
 	private StringBuilder addnewLinesBeforeAndAfterBrackets(StringBuilder tmpWikiText, int i) {
@@ -298,7 +300,6 @@ public class SparqlFormatAction extends AbstractAction {
 		int point = -1;
 		boolean masked = false;
 
-
 		while (run) {
 			char currentChar = tmpWikiText.charAt(loopCounter);
 			if (currentChar == '<') {
@@ -331,7 +332,8 @@ public class SparqlFormatAction extends AbstractAction {
 				while (hasNextNewline && !checkLastChar(tmpWikiText, i + 1)) {
 					if (tmpWikiText.charAt(i + 1) == '\n' && tmpWikiText.charAt(i + 2) == '\n') {
 						tmpWikiText.deleteCharAt(i + 1);
-					} else {
+					}
+					else {
 						hasNextNewline = false;
 					}
 				}
@@ -363,7 +365,8 @@ public class SparqlFormatAction extends AbstractAction {
 
 					if (tmpWikiText.charAt(i + 1) == '\t' || tmpWikiText.charAt(i + 1) == ' ') {
 						tmpWikiText.deleteCharAt(i + 1);
-					} else {
+					}
+					else {
 						hasNextWhiteSpace = false;
 					}
 				}
@@ -390,7 +393,6 @@ public class SparqlFormatAction extends AbstractAction {
 		return inputString;
 	}
 
-
 	/* Finds and deletes all unnecessary whitespaces */
 	private StringBuilder removeDoubleSpaces(StringBuilder tmpWikiText) {
 		int counter = 0;
@@ -411,6 +413,5 @@ public class SparqlFormatAction extends AbstractAction {
 	private boolean checkLastChar(StringBuilder inputText, int position) {
 		return inputText.length() - 1 <= position;
 	}
-
 
 }

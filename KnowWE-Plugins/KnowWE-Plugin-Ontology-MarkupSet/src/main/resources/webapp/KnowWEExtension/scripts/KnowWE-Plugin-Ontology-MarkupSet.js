@@ -77,12 +77,12 @@ KNOWWE.plugin.sparql.editTool.format = function (id) {
     var wikiText = textarea.val();
 
     var ajax = jq$.ajax("action/SparqlFormatAction", {
-        data: {
-            sectionID: id,
-            wikiText: wikiText
+        data : {
+            sectionID : id,
+            wikiText : wikiText
         },
-        cache: false,
-        success: function (json) {
+        cache : false,
+        success : function(json) {
             textarea.val(json.wikiText);
         }
     });

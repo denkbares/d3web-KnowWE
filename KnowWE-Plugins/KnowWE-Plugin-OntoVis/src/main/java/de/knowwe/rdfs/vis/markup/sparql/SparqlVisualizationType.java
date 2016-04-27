@@ -104,7 +104,7 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotation(Config.RANK_SAME, false);
 		markup.addAnnotationRenderer(Config.RANK_SAME, NothingRenderer.getInstance());
 
-		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.values()  );
+		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.values());
 		markup.addAnnotationRenderer(Config.OVERLAP, NothingRenderer.getInstance());
 
 		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.values());
