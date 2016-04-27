@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -127,7 +128,37 @@ public class DOTRenderer {
 	 */
 	public static String createDotSources(SubGraphData data, Config config) {
 		String dotSource = "digraph {\n";
-		dotSource = insertPraefixed(dotSource, config);
+
+		// printing title of graph top left of visualization
+		if(config.getTitle() != null) {
+			dotSource += "graph [label = \""+config.getTitle()+" ("+new Date()+")\", labelloc = \"t\", labeljust = \"left\", fontsize = 24];\n";
+		}
+
+		//only useful for neato, ignored for dot
+		dotSource += "sep=\"+25,25\";\n";
+		dotSource += "splines = true;\n";
+		if(!Strings.isBlank(config.getOverlap())) {
+			dotSource += "overlap="+config.getOverlap()+";\n";
+		} else {
+			dotSource += "overlap=false;\n";
+		}
+
+		// using rankSame constraints for custom layouting
+		String rankSameValue = config.getRankSame();
+		if(!Strings.isBlank(rankSameValue)) {
+			String valueResult = rankSameValue;
+			if(rankSameValue.contains(",")) {
+				String [] values = rankSameValue.split(",");
+				valueResult = "";
+				for (String value : values) {
+					valueResult +=  "\""+value.trim()+"\" ";
+				}
+			}
+			//{rank=same; q4 q3}
+			dotSource += "{rank=same; "+valueResult+"}\n";
+		}
+
+		// set graph size and rankDir
 		dotSource += DOTRenderer.setSizeAndRankDir(config.getRankDir(),
 				config.getWidth(), config.getHeight(),
 				config.getSize(), data.getConceptDeclarations().size());
@@ -315,7 +346,7 @@ public class DOTRenderer {
 				+ "\" style=\"" + style + "\" ];\n";
 	}
 
-	private static String insertPraefixed(String dotSource, Config config) {
+	private static String insertPrefixed(String dotSource, Config config) {
 		String added = config.getDotAddLine();
 		if (added != null) dotSource += added;
 
@@ -416,7 +447,7 @@ public class DOTRenderer {
 		// create svg
 
 		try {
-			convertDot(svgFile, dotFile, getSVGCommand(config.getDotApp(), dotFile, svgFile));
+			convertDot(svgFile, dotFile, getSVGCommand(config, dotFile, svgFile));
 
 			// convertDot(png, dot, createPngCommand(dotApp, dot, png));
 
@@ -428,8 +459,14 @@ public class DOTRenderer {
 		return new File[] { dotFile, svgFile };
 	}
 
-	protected static String[] getSVGCommand(String dotApp, File dot, File svg) {
-		return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath() };
+	protected static String[] getSVGCommand(Config config, File dot, File svg) {
+		String dotApp = config.getDotApp();
+		String layout = config.getLayout();
+		if(layout != null) {
+			return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath(), "-K"+layout.toLowerCase() };
+		} else {
+			return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath() };
+		}
 	}
 
 	private static String createDotConceptLabel(RenderingStyle style, String targetURL, String targetLabel, boolean prepareLabel) {

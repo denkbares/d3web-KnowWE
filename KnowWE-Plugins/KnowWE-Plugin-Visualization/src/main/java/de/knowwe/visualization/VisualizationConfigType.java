@@ -20,6 +20,7 @@
 package de.knowwe.visualization;
 
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -69,6 +70,9 @@ public class VisualizationConfigType extends DefaultMarkupType {
 		markup.addAnnotation(Config.RANK_DIR, false, Config.RankDir.values());
 		markup.addAnnotation(Config.SHOW_LABELS, false, "true", "false");
 		markup.addAnnotation(Config.DESIGN, false);
+		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.values() );
+		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.values());
+		markup.addAnnotation(Config.RANK_SAME, false);
 		return markup;
 	}
 }

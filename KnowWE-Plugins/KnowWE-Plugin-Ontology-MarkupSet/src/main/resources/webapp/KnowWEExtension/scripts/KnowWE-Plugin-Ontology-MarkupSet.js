@@ -67,127 +67,26 @@ KNOWWE.plugin.sparql.editTool.generateButtons = function (id) {
         "Format</a>"]);
 };
 
-// todo move to Java and use methods of Strings.java
+
 /*
- *   Formats Sparql markups
- *   current:
- *   * deletes unnecessary Whitespaces (e.g. 2+ empty lines --> 1 empty line, spaces at the beginning of a line),
- *   * adds a \n after "%%Sparql" if its missing,
- *   * adds tabs at the beginning of a line if the depth is 1 or higher // todo one tab less before a "}"
- *   * adds new lines after "{" and "." // todo add no new line if "}" is in the same line
+ *   Sends sparql's to the server and receives formatted sparqls.
  */
 KNOWWE.plugin.sparql.editTool.format = function (id) {
-    var unnecessaryWhitespaces = new RegExp("(\\n(\\s)*){3,}", "g");
-    var replaceUnnecessaryWhitspacesWith = "\n\n";
-    var missingWhitespaces = new RegExp("(%%Sparql)(?=[^\\n])", "g");
-    var replaceMissingWhitespacesWith = "$&\n";
 
     var textarea = jq$("#defaultEdit" + id);
     var wikiText = textarea.val();
 
-    for (var h = 0; h < 5; h++) {
-
-        wikiText = wikiText.replace(missingWhitespaces, replaceMissingWhitespacesWith);
-        wikiText = wikiText.replace(unnecessaryWhitespaces, replaceUnnecessaryWhitspacesWith);
-
-        var quoted = false; // "
-        var comment = false; // #
-        var atLineStart = true; // \n
-        var startNewLine = false;
-        var spacesAtLineStart = false;
-        var defaultdepth = 0;
-        var depth = defaultdepth;
-        var numberOfTabs = depth;
-        var operationAtIndex = [];
-
-        for (var i = 0; i < wikiText.length; i++) {
-            if (wikiText[i] == "\n") {
-                atLineStart = true;
-                comment = false;
-                startNewLine = false;
-                continue;
-            }
-            if (!comment && wikiText[i] == "\"") {
-                quoted = !quoted;
-            }
-            if (wikiText[i] == "#") {
-                comment = true;
-            }
-            if (atLineStart) {
-                numberOfTabs = depth;
-                atLineStart = false;
-                if (wikiText[i] == " " || wikiText[i] == "\t") {
-                    spacesAtLineStart = true;
-                }
-            }
-            if (numberOfTabs > 0 && wikiText[i] != "\t") {
-                operationAtIndex.push({index: i, action: "addTab"});
-                numberOfTabs--;
-            }
-            if (numberOfTabs > 0 && wikiText[i] == "\t") {
-                numberOfTabs--;
-            }
-            if (!comment && !quoted) {
-                if (startNewLine && wikiText[i] != "\n") {
-                    operationAtIndex.push({index: i, action: "addNewLine"});
-                    startNewLine = false;
-                }
-                if (wikiText[i] == "{") {
-                    depth++;
-                    startNewLine = true;
-                }
-                if (wikiText[i] == "}") {
-                    depth--;
-
-                }
-                if (wikiText[i] == ".") {
-                    startNewLine = true;
-                }
-            }
-            if (spacesAtLineStart) {
-                if (wikiText[i] == " ") {
-                    operationAtIndex.push({index: i, action: "removeWhitespace"});
-                } else if (wikiText[i] != "\t") {
-                    spacesAtLineStart = false;
-                }
-            }
+    var ajax = jq$.ajax("action/SparqlFormatAction", {
+        data: {
+            sectionID: id,
+            wikiText: wikiText
+        },
+        cache: false,
+        success: function (json) {
+            textarea.val(json.wikiText);
         }
+    });
 
-        if (operationAtIndex.length == 0) {
-            break;
-        }
-
-        for (var i = operationAtIndex.length - 1; i >= 0; i--) {
-            if (operationAtIndex[i].action == "addNewLine") {
-                wikiText = wikiText.splice(operationAtIndex[i].index, 0, "\n");
-            } else if (operationAtIndex[i].action == "addTab") {
-                wikiText = wikiText.splice(operationAtIndex[i].index, 0, "\t");
-            } else if (operationAtIndex[i].action == "removeWhitespace") {
-                wikiText = wikiText.slice(0, operationAtIndex[i].index) + wikiText[operationAtIndex[i].index].replace(/ /, "") + wikiText.slice(operationAtIndex[i].index + 1);
-            }
-            console.log(wikiText);
-        }
-    }
-
-    textarea.val(wikiText);
-
+    return;
 
 }
-
-String.prototype.splice = function (idx, rem, s) {
-    return (this.slice(0, idx) + s + this.slice(idx + Math.abs(rem)));
-};
-
-jq$(document)
-    .ready(
-    function () {
-        // Prepare for instant table editor with custom
-        // auto-complete
-        KNOWWE.plugin.ontology.tableEditTool = KNOWWE.plugin.tableEditTool
-            .create(function (callback, prefix, spreadsheet, row, col) {
-                AutoComplete.sendCompletionAction(function (byAjax) {
-                    AutoComplete.unquoteTermIdentifiers(byAjax);
-                    callback(byAjax);
-                }, prefix, "OntologyTableMarkup");
-            });
-    });

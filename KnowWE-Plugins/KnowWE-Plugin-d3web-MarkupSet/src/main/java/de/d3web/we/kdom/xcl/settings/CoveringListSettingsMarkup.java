@@ -32,9 +32,7 @@ import de.d3web.plugin.PluginManager;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
-import de.d3web.xcl.DefaultScoreAlgorithm;
 import de.d3web.xcl.ScoreAlgorithm;
-import de.d3web.xcl.SprintGroupScoreAlgorithm;
 import de.d3web.xcl.inference.PSMethodXCL;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -106,50 +104,23 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 			Collection<Message> m = new LinkedList<Message>();
 
 			// Default established threshold
-			Double establishedTreshold = getValueFromAnnotation(s,
+			Double establishedThreshold = getValueFromAnnotation(s,
 					CoveringListSettingsMarkup.ESTABLISHED_THRESHOLD, m);
-			if (!establishedTreshold.equals(Double.NaN)) {
-				if (algorithm instanceof SprintGroupScoreAlgorithm) {
-					((SprintGroupScoreAlgorithm) algorithm).setDefaultEstablishedThreshold(establishedTreshold);
-				}
-				else if (algorithm instanceof DefaultScoreAlgorithm) {
-					((DefaultScoreAlgorithm) algorithm).setDefaultEstablishedThreshold(establishedTreshold);
-				}
-				else {
-					return Messages.asList(Messages.error(
-							"Settings can't be applied to " + algorithm.getClass().getSimpleName()));
-				}
+			if (!establishedThreshold.equals(Double.NaN)) {
+				algorithm.setDefaultEstablishedThreshold(establishedThreshold);
 			}
 
 			// Default suggested threshold
-			Double suggestedTreshold = getValueFromAnnotation(s,
+			Double suggestedThreshold = getValueFromAnnotation(s,
 					CoveringListSettingsMarkup.SUGGESTED_THRESHOLD, m);
-			if (!suggestedTreshold.equals(Double.NaN)) {
-				if (algorithm instanceof SprintGroupScoreAlgorithm) {
-					((SprintGroupScoreAlgorithm) algorithm).setDefaultSuggestedThreshold(suggestedTreshold);
-				}
-				else if (algorithm instanceof DefaultScoreAlgorithm) {
-					((DefaultScoreAlgorithm) algorithm).setDefaultSuggestedThreshold(suggestedTreshold);
-				}
-				else {
-					return Messages.asList(Messages.error(
-							"Settings can't be applied to " + algorithm.getClass().getSimpleName()));
-				}
+			if (!suggestedThreshold.equals(Double.NaN)) {
+				algorithm.setDefaultSuggestedThreshold(suggestedThreshold);
 			}
 
 			// Minimum support
 			Double minSupport = getValueFromAnnotation(s, CoveringListSettingsMarkup.MIN_SUPPORT, m);
 			if (!minSupport.equals(Double.NaN)) {
-				if (algorithm instanceof SprintGroupScoreAlgorithm) {
-					((SprintGroupScoreAlgorithm) algorithm).setDefaultMinSupport(minSupport);
-				}
-				else if (algorithm instanceof DefaultScoreAlgorithm) {
-					((DefaultScoreAlgorithm) algorithm).setDefaultMinSupport(minSupport);
-				}
-				else {
-					return Messages.asList(Messages.error(
-							"Settings can't be applied to " + algorithm.getClass().getSimpleName()));
-				}
+				algorithm.setDefaultMinSupport(minSupport);
 			}
 
 			return m;

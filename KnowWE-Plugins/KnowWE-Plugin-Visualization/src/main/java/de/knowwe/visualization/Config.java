@@ -60,12 +60,16 @@ public class Config {
 	public static final String LANGUAGE = "language";
 	public static final String LINK_MODE = "linkMode";
 	public static final String RANK_DIR = "rankDir";
+	public static final String RANK_SAME = "rankSame";
 	public static final String DOT_APP = "dotApp";
 	public static final String ADD_TO_DOT = "dotAddLine";
 	public static final String RENDERER = "renderer";
 	public static final String VISUALIZATION = "visualization";
 	public static final String DESIGN = "design";
 	public static final String PRERENDER = "prerender";
+	public static final String TITLE = "title";
+	public static final String LAYOUT = "layout";
+	public static final String OVERLAP = "overlap";
 
 	public Config() {
 	}
@@ -97,6 +101,14 @@ public class Config {
 
 	public enum RankDir {
 		LR, RL, TB, BT
+	}
+
+	public enum Layout {
+		DOT, NEATO, FDP, CIRCO , TWOPI
+	}
+
+	public enum Overlap {
+		TRUE, FALSE, SCALEXY, SCALE, COMPRESS, VPSC, VORONOI, ORTHO, ORTHOXY, ORTHOYX, PORTHO, PORTHOXY, PORTHOYX
 	}
 
 	public String getCacheDirectoryPath() {
@@ -135,6 +147,7 @@ public class Config {
 	private String language = null;
 	private LinkMode linkMode = LinkMode.JUMP;
 	private RankDir rankDir = RankDir.LR;
+	private String rankSame = null;
 	private String dotApp = "dot";
 	private String dotAddLine = null;
 	private Renderer renderer = Renderer.DOT;
@@ -146,6 +159,8 @@ public class Config {
 	private String cacheFileID = null;
 	private String sectionId = null;
 	private String title = null;
+	private String layout = null;
+	private String overlap = null;
 	private String cacheDirectoryPath = null;
 
 	public void readFromSection(Section<? extends DefaultMarkupType> section) {
@@ -191,20 +206,22 @@ public class Config {
 		setDesign(DefaultMarkupType.getAnnotation(section, DESIGN));
 		setPrerender(DefaultMarkupType.getAnnotation(section, PRERENDER));
 		setSectionId(section.getID());
-		setTitle(section.getTitle());
+		setTitle(DefaultMarkupType.getAnnotation(section, TITLE));
+		setRankSame(DefaultMarkupType.getAnnotation(section, RANK_SAME));
+		parseAndSetEnum(section, OVERLAP, Overlap.class, this::setOverlap);
+		parseAndSetEnum(section, LAYOUT, Layout.class, this::setLayout);
 	}
 
 	private <E extends Enum<E>> void parseAndSetEnum(Section<? extends DefaultMarkupType> section, String annotationName, Class<E> enumType, Consumer<E> setter) {
-		Enum.valueOf(Renderer.class, "DOT");
 		String annotation = DefaultMarkupType.getAnnotation(section, annotationName);
 		if (annotation != null) {
 			try {
-				E renderer = Enum.valueOf(enumType, annotation.toUpperCase());
-				setter.accept(renderer);
+				E value = Enum.valueOf(enumType, annotation.toUpperCase());
+				setter.accept(value);
 			}
 			catch (IllegalArgumentException e) {
-				Log.warning("Annotation '" + annotationName + "' expects on of the following renderer names: "
-						+ Strings.concat(", ", Renderer.values()) + ". '" + annotation + "' is not one of them.");
+				Log.warning("Annotation '" + annotationName + "' expects on of the following values: "
+						+ enumType.toString() + ". '" + annotation + "' is not one of them.");
 			}
 		}
 	}
@@ -215,6 +232,31 @@ public class Config {
 			setter.accept(annotation.equalsIgnoreCase("true"));
 		}
 	}
+
+	public String getRankSame() {
+		return rankSame;
+	}
+
+	public void setRankSame(String rankSame) {
+		this.rankSame = rankSame;
+	}
+
+	public String getOverlap() {
+		return overlap;
+	}
+
+	public void setOverlap(Overlap overlap) {
+		this.overlap = overlap.toString();
+	}
+
+	public String getLayout() {
+		return layout;
+	}
+
+	public void setLayout(Layout layout) {
+		this.layout = layout.toString();
+	}
+
 
 	private void parseAndSetInt(Section<? extends DefaultMarkupType> section, String annotationName, Consumer<Integer> setter) {
 		String annotation = DefaultMarkupType.getAnnotation(section, annotationName);

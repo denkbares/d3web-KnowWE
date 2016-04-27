@@ -19,7 +19,7 @@
 
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
         "http://jpf.sourceforge.net/plugin_1_0.dtd">
-<plugin id="KnowWE-Plugin-Ontology-MarkupSet" version="1.0">
+<plugin id="KnowWE-Plugin-Ontology-MarkupSet" version="0.0.1">
 
     <requires>
         <import plugin-id="KnowWEExtensionPoints"/>
@@ -221,10 +221,6 @@
         <parameter id="version" value="1.0"/>
         <parameter id="priority" value="50"/>
         <parameter id="scope" value="ResourceReference"/>
-        <parameter id="scope" value="TSMElementName"/>
-        <parameter id="scope" value="TSMElementId"/>
-        <parameter id="scope" value="TSMElementLocation"/>
-        <parameter id="scope" value="TSMElementType"/>
     </extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ClassType">
@@ -369,6 +365,14 @@
         <parameter id="priority" value="5"/>
     </extension>
 
+    <extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SparqlFormatAction">
+        <parameter id="class" value="de.knowwe.ontology.sparql.SparqlFormatAction"/>
+        <parameter id="name" value="SparqlFormatAction"/>
+        <parameter id="description" value="Pretty prints SPARQLs"/>
+        <parameter id="version" value="1.0"/>
+        <parameter id="priority" value="5"/>
+    </extension>
+
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AddStatementsAction">
         <parameter id="class" value="de.knowwe.ontology.action.AddStatementsAction"/>
         <parameter id="name" value="AddStatementsAction"/>
@@ -466,7 +470,6 @@
 
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="SparqlAskTest">
 		<parameter id="class" value="de.knowwe.ontology.ci.SparqlAskTest"/>
-		<parameter id="name" value="SparqlAsk"/>
 		<parameter id="description" value="CITest SparqlAskTest"/>
 		<parameter id="version" value="1.0"/>
 		<parameter id="priority" value="4"/>
