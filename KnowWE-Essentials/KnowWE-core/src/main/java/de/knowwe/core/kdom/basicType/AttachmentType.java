@@ -59,35 +59,10 @@ public class AttachmentType extends AbstractType {
 			@Override
 			public void compile(DefaultGlobalCompiler compiler, Section<AttachmentType> section) {
 
-				// check attachment validity
-				String path = getPath(section);
-				if (path.isEmpty()) {
-					Messages.storeMessage(section, getClass(),
-							Messages.syntaxError("No file specified."));
-					return;
-				}
-
-				WikiAttachment attachment;
-				try {
-					attachment = getAttachment(section);
-				}
-				catch (IOException e) {
-					Messages.storeMessage(section, getClass(),
-							Messages.internalError("Could not access attachment '"
-									+ path + "'.", e));
-					return;
-				}
-
-				if (attachment == null) {
-					Messages.storeMessage(section, getClass(),
-							Messages.noSuchObjectError("Attachment", path));
-					return;
-				}
-
-				// attach listener
 				section.storeObject(compiler, LISTENER_KEY, new AttachmentChangedListener(section));
 
-				Messages.clearMessages(section, getClass());
+				handleMessages(section);
+
 			}
 
 			@Override
@@ -99,6 +74,35 @@ public class AttachmentType extends AbstractType {
 			}
 
 		});
+	}
+
+	private static void handleMessages(Section<AttachmentType> section) {
+		// check attachment validity
+		String path = getPath(section);
+		if (path.isEmpty()) {
+			Messages.storeMessage(section, AttachmentType.class,
+					Messages.syntaxError("No file specified."));
+			return;
+		}
+
+		WikiAttachment attachment;
+		try {
+			attachment = getAttachment(section);
+		}
+		catch (IOException e) {
+			Messages.storeMessage(section,  AttachmentType.class,
+					Messages.internalError("Could not access attachment '"
+							+ path + "'.", e));
+			return;
+		}
+
+		if (attachment == null) {
+			Messages.storeMessage(section,  AttachmentType.class,
+					Messages.noSuchObjectError("Attachment", path));
+			return;
+		}
+
+		Messages.clearMessages(section,  AttachmentType.class);
 	}
 
 	public static WikiAttachment getAttachment(Section<AttachmentType> section) throws IOException {
@@ -119,7 +123,7 @@ public class AttachmentType extends AbstractType {
 
 		private Section<AttachmentType> section;
 
-		public AttachmentChangedListener(Section<AttachmentType> section) {
+		private AttachmentChangedListener(Section<AttachmentType> section) {
 			this.section = section;
 			EventManager.getInstance().registerListener(this);
 		}

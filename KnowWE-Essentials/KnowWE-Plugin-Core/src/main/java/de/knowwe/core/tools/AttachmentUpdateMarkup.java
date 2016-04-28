@@ -80,10 +80,11 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final String EXECUTOR_KEY = "executor_key";
 	private static final String LOCK_KEY = "lock_key";
 
-	public static final String START_PATTERN = "[EEEE ]H:mm";
+	private static final String START_PATTERN = "[EEEE ]H:mm";
 	private static final DateTimeFormatter START_FORMATTER = DateTimeFormatter.ofPattern(START_PATTERN, Locale.ENGLISH);
 
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
+	private static final String PATH_SEPARATOR = "/";
 
 	static {
 		MARKUP.addAnnotation(ATTACHMENT_ANNOTATION, true);
@@ -190,7 +191,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
-	public static void performUpdate(Section<AttachmentUpdateMarkup> section) {
+	static void performUpdate(Section<AttachmentUpdateMarkup> section) {
 		Section<AttachmentType> attachmentSection = Sections.successor(section, AttachmentType.class);
 		Section<URLType> urlSection = Sections.successor(section, URLType.class);
 
@@ -206,23 +207,18 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			return;
 		}
 		try {
-			WikiAttachment attachment;
-			try {
-				attachment = AttachmentType.getAttachment(attachmentSection);
-			}
-			catch (IOException e) {
-				// we already get error messages from AttachmentType
-				return;
-			}
+			String path = AttachmentType.getPath(attachmentSection);
+			String parentName = path.substring(0, path.indexOf(PATH_SEPARATOR));
+			String fileName = path.substring(path.indexOf("/") + 1);
 
-			if (attachment.getPath().split("/").length > 2) {
+			if (path.split("/").length > 2) {
 				Messages.storeMessage(section, AttachmentUpdateMarkup.class, Messages.error("Unable to update entries in zipped attachments!"));
 				return;
 			}
 
 			try {
-				if (!needsUpdate(attachment, url)) {
-					Log.info("Resource at URL " + url.toString() + " has not changed, attachment '" + attachment.getPath() + "' not updated");
+				if (!needsUpdate(attachmentSection, url)) {
+					Log.info("Resource at URL " + url.toString() + " has not changed, attachment '" + path + "' not updated");
 					return;
 				}
 
@@ -257,17 +253,18 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 					if ("false".equalsIgnoreCase(DefaultMarkupType.getAnnotation(section, VERSIONING_ANNOTATION))) {
 						Environment.getInstance()
 								.getWikiConnector()
-								.deleteAttachment(attachment.getParentName(), attachment.getFileName(), "SYSTEM");
+								.deleteAttachment(parentName, fileName, "SYSTEM");
 					}
 					Environment.getInstance()
 							.getWikiConnector()
-							.storeAttachment(attachment.getParentName(), attachment.getFileName(), "SYSTEM", attachmentStream);
+							.storeAttachment(parentName, fileName, "SYSTEM", attachmentStream);
 				}
 				finally {
 					articleManager.commit();
 				}
 
-				Log.info("Updated attachment '" + attachment.getPath() + "' with resource from URL " + url.toString());
+				Log.info("Updated attachment '" + path + "' with resource from URL " + url.toString());
+				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
 				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
 			}
 			catch (Throwable e) { // NOSONAR
@@ -293,7 +290,12 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
-	protected static boolean needsUpdate(WikiAttachment attachment, URL url) throws IOException {
+	private static boolean needsUpdate(Section<AttachmentType> attachmentSection, URL url) throws IOException {
+
+		WikiAttachment attachment = AttachmentType.getAttachment(attachmentSection);
+
+		if (attachment == null) return true;
+
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 		if (url.getUserInfo() != null) {
