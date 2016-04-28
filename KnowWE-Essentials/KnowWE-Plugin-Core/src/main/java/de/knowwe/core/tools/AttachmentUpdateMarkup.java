@@ -20,6 +20,7 @@
 package de.knowwe.core.tools;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -37,9 +38,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
@@ -69,6 +74,8 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final String URL_ANNOTATION = "url";
 	private static final String INTERVAL_ANNOTATION = "interval";
 	private static final String START_ANNOTATION = "start";
+	private static final String VERSIONING_ANNOTATION = "versioning";
+	private static final String ZIP_ENTRY_ANNOTATION = "zipEntry";
 
 	private static final String EXECUTOR_KEY = "executor_key";
 	private static final String LOCK_KEY = "lock_key";
@@ -86,6 +93,8 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, true);
 		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, new TimeStampType());
 		MARKUP.addAnnotation(START_ANNOTATION);
+		MARKUP.addAnnotation(VERSIONING_ANNOTATION, false, "true", "false");
+		MARKUP.addAnnotation(ZIP_ENTRY_ANNOTATION);
 
 	}
 
@@ -224,9 +233,40 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 					connection.setRequestProperty("Authorization", basicAuth);
 				}
 
-				Environment.getInstance()
-						.getWikiConnector()
-						.storeAttachment(attachment.getParentName(), attachment.getFileName(), "SYSTEM", connection.getInputStream());
+				InputStream attachmentStream = null;
+				String zipEntryName = DefaultMarkupType.getAnnotation(section, ZIP_ENTRY_ANNOTATION);
+				if (zipEntryName != null) {
+					ZipInputStream zipStream = new ZipInputStream(connection.getInputStream());
+					for (ZipEntry zipEntry; (zipEntry = zipStream.getNextEntry()) != null; ) {
+						if (zipEntry.getName().equals(zipEntryName)) {
+							attachmentStream = zipStream;
+							break;
+						}
+					}
+					if (attachmentStream == null) {
+						throw new ZipException(zipEntryName + " not found at linked resource.");
+					}
+				}
+				else {
+					attachmentStream = connection.getInputStream();
+				}
+
+				ArticleManager articleManager = section.getArticleManager();
+				articleManager.open();
+				try {
+					if ("false".equalsIgnoreCase(DefaultMarkupType.getAnnotation(section, VERSIONING_ANNOTATION))) {
+						Environment.getInstance()
+								.getWikiConnector()
+								.deleteAttachment(attachment.getParentName(), attachment.getFileName(), "SYSTEM");
+					}
+					Environment.getInstance()
+							.getWikiConnector()
+							.storeAttachment(attachment.getParentName(), attachment.getFileName(), "SYSTEM", attachmentStream);
+				}
+				finally {
+					articleManager.commit();
+				}
+
 				Log.info("Updated attachment '" + attachment.getPath() + "' with resource from URL " + url.toString());
 				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
 			}
