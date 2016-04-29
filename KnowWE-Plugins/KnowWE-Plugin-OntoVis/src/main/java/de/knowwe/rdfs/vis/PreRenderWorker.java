@@ -22,6 +22,7 @@ package de.knowwe.rdfs.vis;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -102,6 +103,24 @@ public class PreRenderWorker implements EventListener {
 			Log.severe("Exception while generating and caching graphs", e);
 		}
 
+	}
+
+	public void clearCache(Section<?> section) {
+		synchronized (mutex) {
+			Iterator<Map.Entry<String, Triple<Future, PreRenderer, Section<?>>>> entryIterator = cache.entrySet().iterator();
+			String keyToRemove = null;
+			while(entryIterator.hasNext()) {
+				// find entry in cache
+				Map.Entry<String, Triple<Future, PreRenderer, Section<?>>> entry = entryIterator.next();
+				if(entry.getValue().getC().equals(section)) {
+					keyToRemove = entry.getKey();
+				}
+			}
+			if(keyToRemove != null) {
+				// remove entry from cache
+				cache.remove(keyToRemove);
+			}
+		}
 	}
 
 	public void clearCache() {
