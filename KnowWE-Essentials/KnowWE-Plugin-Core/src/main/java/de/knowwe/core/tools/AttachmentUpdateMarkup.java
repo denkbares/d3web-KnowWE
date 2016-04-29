@@ -34,8 +34,8 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Base64;
 import java.util.Locale;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.zip.ZipEntry;
@@ -77,7 +77,6 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final String VERSIONING_ANNOTATION = "versioning";
 	private static final String ZIP_ENTRY_ANNOTATION = "zipEntry";
 
-	private static final String EXECUTOR_KEY = "executor_key";
 	private static final String LOCK_KEY = "lock_key";
 
 	private static final String START_PATTERN = "[EEEE ]H:mm";
@@ -85,6 +84,8 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	private static final String PATH_SEPARATOR = "/";
+
+	private static final Timer UPDATE_TIMER = new Timer();
 
 	static {
 		MARKUP.addAnnotation(ATTACHMENT_ANNOTATION, true);
@@ -101,10 +102,32 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	public AttachmentUpdateMarkup() {
 		super(MARKUP);
-		addCompileScript(new UpdateScript());
+		addCompileScript(new UpdateTaskRegistrationScript());
 	}
 
-	private static class UpdateScript extends DefaultGlobalScript<AttachmentUpdateMarkup> {
+	private static class UpdateTask extends TimerTask {
+
+		private Section<AttachmentUpdateMarkup> section;
+
+		private UpdateTask(Section<AttachmentUpdateMarkup> section) {
+			this.section = section;
+		}
+
+		@Override
+		public void run() {
+			// clean up this task, if its section no longer exists..
+			if (!Sections.isLive(section)) {
+				this.cancel();
+				return;
+			}
+
+			performUpdate(section);
+		}
+	}
+
+	private static class UpdateTaskRegistrationScript extends DefaultGlobalScript<AttachmentUpdateMarkup> {
+
+		private static final String UPDATE_TASK_KEY = "updateTaskKey";
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
@@ -112,23 +135,27 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			if (section.hasErrorInSubtree()) return;
 
 			long interval = getInterval(section);
-			ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-			section.storeObject(compiler, EXECUTOR_KEY, scheduledExecutorService);
 
+			UpdateTask updateTask = new UpdateTask(section);
+			section.storeObject(compiler, UPDATE_TASK_KEY, updateTask);
 			if (interval < TimeUnit.HOURS.toMillis(1)) {
 				// if we have an interval smaller than one hour, we see it as a
 				// delay between executions and start at once
-				scheduledExecutorService.scheduleWithFixedDelay(
-						() -> performUpdate(section),
-						0, interval, TimeUnit.MILLISECONDS);
+				UPDATE_TIMER.scheduleAtFixedRate(updateTask, 0, interval);
 			}
 			else {
 				// otherwise, we see it as a rate and start a the given start delay
-				scheduledExecutorService.scheduleAtFixedRate(
-						() -> performUpdate(section),
-						getInitialDelay(section), interval, TimeUnit.MILLISECONDS);
+				UPDATE_TIMER.scheduleAtFixedRate(updateTask, getInitialDelay(section), interval);
 			}
 
+		}
+
+		@Override
+		public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
+			UpdateTask updateTask = (UpdateTask) section.removeObject(compiler, UPDATE_TASK_KEY);
+			if (updateTask != null) {
+				updateTask.cancel();
+			}
 		}
 
 		private long getInitialDelay(Section<AttachmentUpdateMarkup> section) {
@@ -182,13 +209,6 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			return timeInMillis;
 		}
 
-		@Override
-		public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
-			ScheduledExecutorService scheduledExecutorService = (ScheduledExecutorService) section.getObject(compiler, EXECUTOR_KEY);
-			if (scheduledExecutorService != null) {
-				scheduledExecutorService.shutdownNow();
-			}
-		}
 	}
 
 	static void performUpdate(Section<AttachmentUpdateMarkup> section) {
