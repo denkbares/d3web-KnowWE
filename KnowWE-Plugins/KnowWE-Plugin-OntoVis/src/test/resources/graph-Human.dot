@@ -1,4 +1,7 @@
 digraph {
+sep="+25,25";
+splines = true;
+overlap=false;
 graph [ rankdir="LR" ]
 "si:gender"[  shape="hexagon" label="si:gender" ];
 "si:GenderType"[  shape="box"  style="bold" label="Gender" ];

@@ -83,7 +83,7 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotation(Config.RANK_DIR, false, Config.RankDir.values());
 		markup.addAnnotationRenderer(Config.RANK_DIR, NothingRenderer.getInstance());
 
-		markup.addAnnotation(Config.SHOW_LABELS, false, "true", "false");
+		markup.addAnnotation(Config.SHOW_LABELS, false);
 		markup.addAnnotationRenderer(Config.SHOW_LABELS, NothingRenderer.getInstance());
 
 		//markup.addAnnotation(OntoVisType.Config.SHOWINVERSE, false, "true", "false");

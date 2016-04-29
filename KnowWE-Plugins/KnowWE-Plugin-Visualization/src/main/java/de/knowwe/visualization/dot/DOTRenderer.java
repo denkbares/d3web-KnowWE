@@ -108,11 +108,10 @@ public class DOTRenderer {
 	 *
 	 * @created 06.09.2012
 	 */
-	private static String innerRelation(String label, String relationColorCodes) {
+	private static String innerRelation(String label, String color) {
 		// Basic Relation Attributes
 		String arrowtail = "normal";
 
-		String color = Utils.getColorCode(label, relationColorCodes);
 		if (color == null) {
 			// black is default
 			color = "black";
@@ -196,7 +195,7 @@ public class DOTRenderer {
 				//nodeLabel = "<<B>"+nodeLabel+"</B>>";
 
 				if ((!node.getType().equals(NODE_TYPE.LITERAL)) &&
-						!config.isShowLabels()) {
+						"false".equals(config.getShowLabels())) {
 					// use of labels suppressed by the user -> show concept name, i.e. uri
 					nodeLabel = createHTMLTable(node, data, style.getFontstyle());
 				}
@@ -312,7 +311,7 @@ public class DOTRenderer {
 
 	private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key) {
 		String label = DOTRenderer.innerRelation(key.getPredicate(),
-				config.getRelationColors());
+				config.getRelationColors().get(key.getPredicate()));
 		if (key.isOuter()) {
 			boolean arrowHead = key.getSubject().isOuter();
 			label = DOTRenderer.getOuterEdgeLabel(key.getPredicate(), arrowHead);
