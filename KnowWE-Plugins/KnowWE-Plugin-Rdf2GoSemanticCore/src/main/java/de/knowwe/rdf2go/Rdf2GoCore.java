@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.lang.ref.WeakReference;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,12 +39,13 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 
@@ -62,7 +62,6 @@ import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryInterruptedException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -104,14 +103,6 @@ public class Rdf2GoCore {
 
 	public static final String LNS_ABBREVIATION = "lns";
 
-	public enum Rdf2GoModel {
-		JENA, BIGOWLIM, SESAME, SWIFTOWLIM
-	}
-
-	public enum Rdf2GoReasoning {
-		RDF, RDFS, OWL
-	}
-
 	private enum SparqlType {
 		SELECT, CONSTRUCT, ASK
 	}
@@ -127,6 +118,9 @@ public class Rdf2GoCore {
 
 	private static final ThreadPoolExecutor shutDownThreadPool = createThreadPool(
 			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-SemanticCore-Shutdown-Thread");
+
+	private static final ThreadPoolExecutor sparqlReaperPool = createThreadPool(
+			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon");
 
 	private Timer sparqlTimer = new Timer("SparqlTimoutTimer", true);
 
@@ -582,10 +576,6 @@ public class Rdf2GoCore {
 		}
 	}
 
-	public URI createBasensURI(String value) {
-		return createURI(bns, value);
-	}
-
 	public BNode createBlankNode() {
 		return getValueFactory().createBNode();
 	}
@@ -729,10 +719,6 @@ public class Rdf2GoCore {
 		return this.lns;
 	}
 
-	public Rdf2GoModel getModelType() {
-		return Rdf2GoModel.SWIFTOWLIM;
-	}
-
 	/**
 	 * Returns a map of all namespaces mapped by their abbreviation.<br>
 	 * <b>Example:</b> rdf -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
@@ -775,9 +761,12 @@ public class Rdf2GoCore {
 	 */
 	public Map<String, String> getNamespacePrefixes() {
 		Map<String, String> namespacePrefixes = this.namespacePrefixes;
+		// check before synchronizing...
 		if (namespacePrefixes == null) {
 			synchronized (nsPrefixMutex) {
-				if (this.namespacePrefixes == null) {
+				// inspection is wrong here, could no longer be null due to another thread initializing the prefixes
+				//noinspection ConstantConditions
+				if (namespacePrefixes == null) {
 					namespacePrefixes = new HashMap<>();
 					Map<String, String> namespaces = getSemanticCoreNameSpaces();
 					for (Entry<String, String> entry : namespaces.entrySet()) {
@@ -1080,24 +1069,23 @@ public class Rdf2GoCore {
 			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, timeOutMillis, false));
 			sparqlThreadPool.execute(sparqlTask);
 		}
-		String timeOutMessage = "Query took more than " + Strings.getDurationVerbalization(timeOutMillis, true)
-				+ " and was therefore canceled.";
+		String timeOutMessage = "SPARQL query timed out after " + Strings.getDurationVerbalization(timeOutMillis, true) + ".";
 		try {
 			return sparqlTask.get();
 		}
-		catch (CancellationException | InterruptedException c) {
-			throw new RuntimeException(timeOutMessage);
+		catch (CancellationException | InterruptedException e) {
+			throw new RuntimeException(timeOutMessage, e);
 		}
 		catch (Exception e) {
 			Throwable cause = e.getCause();
 			if (cause instanceof ThreadDeath) {
-				throw new RuntimeException(timeOutMessage);
+				throw new RuntimeException(timeOutMessage, cause);
 			}
 			else if (cause instanceof RuntimeException) {
 				throw (RuntimeException) cause;
 			}
 			else {
-				throw new RuntimeException(e.getCause());
+				throw new RuntimeException(cause);
 			}
 		}
 	}
@@ -1107,13 +1095,18 @@ public class Rdf2GoCore {
 	 */
 	private class SparqlTask extends FutureTask<Object> {
 
+		private long startTime = Long.MIN_VALUE;
 		private SparqlCallable callable;
+		private Thread thread = null;
 		private int size = 1;
-		private TimerTask timerTask;
 
 		public SparqlTask(SparqlCallable callable) {
 			super(callable);
 			this.callable = callable;
+		}
+
+		public long getTimeOutMillis() {
+			return callable.timeOutMillis;
 		}
 
 		public synchronized void setSize(int size) {
@@ -1124,21 +1117,43 @@ public class Rdf2GoCore {
 			return size;
 		}
 
+		public synchronized long getRunDuration() {
+			return hasStarted() ? System.currentTimeMillis() - startTime : 0;
+		}
+
+		public synchronized boolean hasStarted() {
+			return startTime != Long.MIN_VALUE;
+		}
+
+		public synchronized boolean isAlive() {
+			return !hasStarted() || (thread != null && thread.isAlive());
+		}
+
+		public synchronized void stop() {
+			if (thread != null) {
+				//noinspection deprecation
+				this.thread.stop();
+				this.thread = null;
+			}
+		}
+
 		@Override
 		public void run() {
-			Stopwatch stopwatch = new Stopwatch();
-			startTimeout();
+			synchronized (this) {
+				this.thread = Thread.currentThread();
+				startTime = System.currentTimeMillis();
+			}
 			try {
+				sparqlReaperPool.execute(new SparqlTaskReaper(this));
 				super.run();
 			}
 			finally {
-				cancelTimeout();
+				synchronized (this) {
+					thread = null;
+				}
 			}
 			if (callable.cached) {
 				handleCacheSize(this);
-			}
-			if (stopwatch.getTime() > 1000 && !isCancelled()) {
-				Log.warning("SPARQL query finished after " + stopwatch.getDisplay() + ": " + getReadableQuery(callable.query, callable.type));
 			}
 		}
 
@@ -1149,49 +1164,61 @@ public class Rdf2GoCore {
 				setSize(getResultSize(o));
 			}
 		}
+	}
 
-		/**
-		 * We normally use the build-in sesame timeout to terminate queries that are too slow. In some cases though,
-		 * these timeouts do not work as desired (probably not well implemented by underlying repos) so we use this
-		 * kill switch to make sure the query is terminated after 150% of the intended timeout.
-		 */
-		private TimerTask startTimeout() {
-			if (callable.timeOutMillis <= 0) return null;
-			WeakReference<Thread> threadRef = new WeakReference<>(Thread.currentThread());
-			long stopTimeout = callable.timeOutMillis * 2;
-			timerTask = new TimerTask() {
-				@Override
-				public void run() {
-					if (isDone()) return;
+	/**
+	 * Observes the SPARQL task end cancels/stops it, if it takes to long.
+	 * We normally use the build-in sesame timeout to terminate queries that are too slow. In some cases though,
+	 * these timeouts do not work as desired (probably not well implemented by underlying repos) so we use this
+	 * kill switch to make sure the query is terminated after 150% of the intended timeout.
+	 */
+	private class SparqlTaskReaper implements Runnable {
 
-					// we cancel the task
-					SparqlTask.this.cancel(true);
+		private SparqlTask task;
 
-					// if it has not died after the sleep, we kill it
-					// (not all repositories will react to cancel)
-					try {
-						Thread.sleep(Math.max(callable.timeOutMillis, 1000));
-					}
-					catch (InterruptedException ie) {
-						return;
-					}
-
-					Thread thread = threadRef.get();
-					if (thread != null && thread.isAlive()) {
-						//noinspection deprecation
-						thread.stop();
-						Log.warning("SPARQL query took more than " + Strings.getDurationVerbalization(callable.timeOutMillis)
-								+ " and was therefore canceled: " + getReadableQuery(callable.query, callable.type));
-					}
-				}
-			};
-			sparqlTimer.schedule(timerTask, stopTimeout);
-			return timerTask;
+		public SparqlTaskReaper(SparqlTask task) {
+			this.task = task;
 		}
 
-		private void cancelTimeout() {
-			if (timerTask != null) {
-				timerTask.cancel();
+		@SuppressWarnings("ConstantConditions")
+		@Override
+		public void run() {
+			try {
+				task.get(task.getTimeOutMillis() * 2, TimeUnit.MILLISECONDS);
+			}
+			catch (TimeoutException e) {
+
+				// we cancel the task
+				boolean mayInterruptIfRunning = true;
+				if (task.cancel(mayInterruptIfRunning)) {
+					Log.warning("SPARQL query didn't not time out as expected after "
+							+ Strings.getDurationVerbalization(task.getTimeOutMillis())
+							+ " and was therefore canceled after "
+							+ Strings.getDurationVerbalization(task.getRunDuration())
+							+ ": " + getReadableQuery(task.callable.query, task.callable.type) + "...");
+				}
+
+				// if it has not died after the sleep, we kill it
+				// (not all repositories will react to cancel)
+				if (mayInterruptIfRunning) sleep(task.getTimeOutMillis() / 2);
+				if (task.isAlive()) {
+					task.stop();
+					Log.warning("SPARQL query could not be canceled and was therefore stopped after "
+							+ Strings.getDurationVerbalization(task.getRunDuration())
+							+ ": " + getReadableQuery(task.callable.query, task.callable.type) + "...");
+				}
+			}
+			catch (Exception ignore) {
+				// nothing to do
+			}
+		}
+
+		private void sleep(long timeout) {
+			try {
+				Thread.sleep(Math.max(timeout, 1000));
+			}
+			catch (InterruptedException ie) {
+				Log.warning(Thread.currentThread().getName() + " was interrupted", ie);
 			}
 		}
 	}
@@ -1210,7 +1237,8 @@ public class Rdf2GoCore {
 			this.query = query;
 			this.type = type;
 			this.cached = cached;
-			this.timeOutMillis = timeOutMillis;
+			// timeouts shorter than 1 seconds are not possible with sesame
+			this.timeOutMillis = Math.max(1000, timeOutMillis);
 		}
 
 		@Override
@@ -1233,13 +1261,7 @@ public class Rdf2GoCore {
 						result = queryResult;
 					}
 				}
-				catch (QueryInterruptedException e) {
-					Log.warning("SPARQL query took more than " + Strings.getDurationVerbalization(timeOutMillis)
-							+ " and was therefore canceled: " + getReadableQuery(query, type));
-					throw new RuntimeException(e);
-				}
 				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
-					Log.severe("Exception while executing SPARQL query: " + getReadableQuery(query, type));
 					throw new RuntimeException(e);
 				}
 
