@@ -1,5 +1,6 @@
 package de.knowwe.rdfs.vis.markup;
 
+import com.denkbares.semanticcore.Reasoning;
 import de.d3web.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
@@ -55,7 +56,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 		Config config = new Config();
 		config.setCacheFileID(getCacheFileID(section));
 
-		if (core != null && core.getModelType().equals(Rdf2GoCore.Rdf2GoModel.SWIFTOWLIM)) {
+		if (core != null && !core.getRuleSet().equals(Reasoning.RDF)) {
 			config.addExcludeRelations("onto:_checkChain2", "onto:_checkChain1", "onto:_checkChain3");
 		}
 
