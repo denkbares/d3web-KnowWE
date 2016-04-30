@@ -1100,12 +1100,12 @@ public class Rdf2GoCore {
 		private Thread thread = null;
 		private int size = 1;
 
-		public SparqlTask(SparqlCallable callable) {
+		SparqlTask(SparqlCallable callable) {
 			super(callable);
 			this.callable = callable;
 		}
 
-		public long getTimeOutMillis() {
+		long getTimeOutMillis() {
 			return callable.timeOutMillis;
 		}
 
@@ -1117,15 +1117,15 @@ public class Rdf2GoCore {
 			return size;
 		}
 
-		public synchronized long getRunDuration() {
+		synchronized long getRunDuration() {
 			return hasStarted() ? System.currentTimeMillis() - startTime : 0;
 		}
 
-		public synchronized boolean hasStarted() {
+		synchronized boolean hasStarted() {
 			return startTime != Long.MIN_VALUE;
 		}
 
-		public synchronized boolean isAlive() {
+		synchronized boolean isAlive() {
 			return !hasStarted() || (thread != null && thread.isAlive());
 		}
 
@@ -1176,7 +1176,7 @@ public class Rdf2GoCore {
 
 		private SparqlTask task;
 
-		public SparqlTaskReaper(SparqlTask task) {
+		SparqlTaskReaper(SparqlTask task) {
 			this.task = task;
 		}
 
@@ -1184,7 +1184,7 @@ public class Rdf2GoCore {
 		@Override
 		public void run() {
 			try {
-				task.get(task.getTimeOutMillis() * 2, TimeUnit.MILLISECONDS);
+				task.get((long) (task.getTimeOutMillis() * 1.5), TimeUnit.MILLISECONDS);
 			}
 			catch (TimeoutException e) {
 
