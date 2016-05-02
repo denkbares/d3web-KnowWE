@@ -124,7 +124,6 @@ public class SparqlResultRenderer {
 				+ message + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
 				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
 				+ " class='tooltipster'>Try again...</a></span>");
-		Log.warning("Exception while executing SPARQL", e);
 	}
 
 	/**

@@ -41,12 +41,14 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 import java.util.logging.Level;
 
 import info.aduna.iteration.Iterations;
@@ -62,6 +64,7 @@ import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
+import org.openrdf.query.QueryInterruptedException;
 import org.openrdf.query.QueryLanguage;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.RepositoryResult;
@@ -1046,7 +1049,12 @@ public class Rdf2GoCore {
 		// if the compile thread is calling here, we continue without all the timeout, cache, and lock
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
-			return new SparqlCallable(completeQuery, type, 0, true).call();
+			try {
+				return new SparqlCallable(completeQuery, type, 0, true).call();
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		// normal query, e.g.  from a renderer... do all the cache and timeout stuff
@@ -1071,20 +1079,28 @@ public class Rdf2GoCore {
 		}
 		String timeOutMessage = "SPARQL query timed out after " + Strings.getDurationVerbalization(timeOutMillis, true) + ".";
 		try {
-			return sparqlTask.get();
+			// We set a generous time out to be sure to not be blocked indefinitely, even if stuff goes wrong with
+			// stopping the thread cold. Using maxEvaluation timeout and the SparqlTaskReaper, we should return
+			// way sooner in normal cases.
+			return sparqlTask.get(timeOutMillis * 2, TimeUnit.MILLISECONDS);
 		}
 		catch (CancellationException | InterruptedException e) {
+//			Log.warning("SPARQL query failed due to an exception", e);
 			throw new RuntimeException(timeOutMessage, e);
 		}
 		catch (Exception e) {
 			Throwable cause = e.getCause();
-			if (cause instanceof ThreadDeath) {
+			if (cause instanceof ThreadDeath || cause instanceof QueryInterruptedException) {
 				throw new RuntimeException(timeOutMessage, cause);
 			}
 			else if (cause instanceof RuntimeException) {
+				if (!(cause.getCause() instanceof QueryInterruptedException)) {
+					Log.warning("SPARQL query failed due to an exception", cause);
+				}
 				throw (RuntimeException) cause;
 			}
 			else {
+				Log.warning("SPARQL query failed due to an exception", cause);
 				throw new RuntimeException(cause);
 			}
 		}
@@ -1129,12 +1145,33 @@ public class Rdf2GoCore {
 			return !hasStarted() || (thread != null && thread.isAlive());
 		}
 
+		@Override
+		public boolean cancel(boolean mayInterruptIfRunning) {
+			boolean canceled = super.cancel(mayInterruptIfRunning);
+			if (canceled) {
+				Log.warning("SPARQL query was canceled after "
+						+ Strings.getDurationVerbalization(getRunDuration())
+						+ ": " + getReadableQuery(callable.query, callable.type) + "...");
+			}
+			return canceled;
+		}
+
 		public synchronized void stop() {
 			if (thread != null) {
 				//noinspection deprecation
 				this.thread.stop();
+				LockSupport.unpark(this.thread);
 				this.thread = null;
+				Log.warning("SPARQL query was stopped after "
+						+ Strings.getDurationVerbalization(getRunDuration())
+						+ ": " + getReadableQuery(callable.query, callable.type) + "...");
 			}
+		}
+
+		@Override
+		public Object get() throws InterruptedException, ExecutionException {
+			System.out.println(isCancelled());
+			return super.get();
 		}
 
 		@Override
@@ -1163,6 +1200,11 @@ public class Rdf2GoCore {
 			if (callable.cached) {
 				setSize(getResultSize(o));
 			}
+			if (getRunDuration() > 1000) {
+				Log.info("SPARQL query finished after "
+						+ Strings.getDurationVerbalization(getRunDuration())
+						+ ": " + getReadableQuery(callable.query, callable.type) + "...");
+			}
 		}
 	}
 
@@ -1189,23 +1231,14 @@ public class Rdf2GoCore {
 			catch (TimeoutException e) {
 
 				// we cancel the task
-				boolean mayInterruptIfRunning = true;
-				if (task.cancel(mayInterruptIfRunning)) {
-					Log.warning("SPARQL query didn't not time out as expected after "
-							+ Strings.getDurationVerbalization(task.getTimeOutMillis())
-							+ " and was therefore canceled after "
-							+ Strings.getDurationVerbalization(task.getRunDuration())
-							+ ": " + getReadableQuery(task.callable.query, task.callable.type) + "...");
-				}
+				task.cancel(true);
+
+				sleep(task.getTimeOutMillis());
 
 				// if it has not died after the sleep, we kill it
 				// (not all repositories will react to cancel)
-				if (mayInterruptIfRunning) sleep(task.getTimeOutMillis() / 2);
 				if (task.isAlive()) {
 					task.stop();
-					Log.warning("SPARQL query could not be canceled and was therefore stopped after "
-							+ Strings.getDurationVerbalization(task.getRunDuration())
-							+ ": " + getReadableQuery(task.callable.query, task.callable.type) + "...");
 				}
 			}
 			catch (Exception ignore) {
@@ -1242,7 +1275,7 @@ public class Rdf2GoCore {
 		}
 
 		@Override
-		public Object call() {
+		public Object call() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
 			Object result;
 			if (type == SparqlType.CONSTRUCT) {
 				result = null; // TODO?
@@ -1253,17 +1286,24 @@ public class Rdf2GoCore {
 				try (RepositoryConnection connection = semanticCore.getConnection()) {
 					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, this.query);
 					tupleQuery.setMaxExecutionTime(timeOutSeconds);
+					long start = System.currentTimeMillis();
 					TupleQueryResult queryResult = tupleQuery.evaluate();
 					if (cached) {
+						long evaluationTime = System.currentTimeMillis() - start;
+						if (evaluationTime > 1000) {
+							Log.info("SPARQL query evaluation finished after "
+									+ Strings.getDurationVerbalization(evaluationTime)
+									+ ", retrieving results...: " + getReadableQuery(query, type) + "...");
+						}
 						result = queryResult.cachedAndClosed();
 					}
 					else {
 						result = queryResult;
 					}
 				}
-				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
-					throw new RuntimeException(e);
-				}
+//				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
+//					throw new RuntimeException(e);
+//				}
 
 			}
 			else {
