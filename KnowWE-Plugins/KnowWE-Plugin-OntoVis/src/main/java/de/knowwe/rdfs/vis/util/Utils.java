@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import org.ontoware.rdf2go.model.QueryResultTable;
