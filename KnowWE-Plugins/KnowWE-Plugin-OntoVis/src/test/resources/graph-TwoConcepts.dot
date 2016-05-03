@@ -1,4 +1,7 @@
 digraph {
+sep="+25,25";
+splines = true;
+overlap=false;
 graph [ rankdir="LR" ]
 "si:yuma"[  shape="box"  style="rounded" label="Yuma Hickman" ];
 "si:abraham"[  shape="box"  style="rounded,bold" label=<<U>Abraham<BR ALIGN="CENTER"/>Simpson<BR ALIGN="CENTER"/></U>> ];

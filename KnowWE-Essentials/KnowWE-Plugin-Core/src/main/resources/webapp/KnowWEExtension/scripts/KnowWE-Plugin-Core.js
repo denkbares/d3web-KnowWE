@@ -587,6 +587,9 @@ KNOWWE.core.plugin.attachment = function() {
 
 			var options = {
 				url : KNOWWE.core.util.getURL(params),
+				fn : function() {
+					window.location.reload();
+				}
 			};
 			new _KA(options).send();
 		}
@@ -666,7 +669,7 @@ KNOWWE.core.plugin.pagination = function() {
 				function(event) {
 					KNOWWE.core.plugin.pagination
 						.sort(this,
-						sectionId);
+							sectionId);
 				}
 			);
 		}

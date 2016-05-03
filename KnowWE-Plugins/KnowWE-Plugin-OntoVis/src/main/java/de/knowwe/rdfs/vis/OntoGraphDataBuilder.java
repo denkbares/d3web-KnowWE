@@ -278,17 +278,16 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		}
 		while (result != null && result.hasNext()) {
 			QueryRow row = result.next();
-			Node yURI = row.getValue("pred");
-			Node zURI = row.getValue("literal");
-			addConcept(fringeNode, zURI, yURI);
+			Node predURI = row.getValue("pred");
+			Node objectLiteral = row.getValue("literal");
+			addConcept(fringeNode, objectLiteral, predURI);
 		}
 	}
 
 	private void insertMainConcept(Node conceptURI) {
 		String concept = getConceptName(conceptURI);
 
-		String conceptLabel = Utils.getRDFSLabel(conceptURI.asURI(), rdf2GoCore,
-				config.getLanguage());
+		String conceptLabel = Utils.fetchLabel(config, conceptURI.asURI(), rdf2GoCore);
 		if (conceptLabel == null) {
 			conceptLabel = concept;
 		}
@@ -900,16 +899,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		if (fromNode != null) fromNode.setOuter(false);
 
 		// look for label for the property
-		String relationLabel = null;
-
-		if (!config.isShowLabels()) {
-			relationLabel = Utils.getRDFSLabel(relationURI.asURI(), rdf2GoCore, config.getLanguage());
-			if (relationLabel != null && relationLabel.charAt(relationLabel.length() - 3) == '@') {
-				// do not show language tag of relation labels
-				relationLabel = relationLabel.substring(0, relationLabel.length() - 3);
-			}
-		}
-
+		String relationLabel = Utils.fetchLabel(config, relationURI, rdf2GoCore);
 		if (relationLabel != null) {
 			relation = relationLabel;
 		}

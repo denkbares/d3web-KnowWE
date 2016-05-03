@@ -21,7 +21,9 @@ package de.knowwe.visualization;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import de.d3web.strings.Strings;
@@ -40,8 +42,6 @@ public class Config {
 
 	public static final String CONFIG = "config";
 	public static final String COLORS = "colors";
-	public static final String RELATION_COLORS = "relationColors";
-	public static final String CLASS_COLORS = "classColors";
 	public static final String SUCCESSORS = "successors";
 	public static final String PREDECESSORS = "predecessors";
 	public static final String EXCLUDE_NODES = "excludeNodes";
@@ -127,8 +127,8 @@ public class Config {
 	}
 
 	private String colors = null;
-	private String relationColors = null;
-	private String classColors = null;
+	private Map<String, String> relationColors = new HashMap<String, String>();
+	private Map<String, String> classColors = new HashMap<String, String>();
 	private int successors = 1;
 	private int predecessors = 1;
 	private Collection<String> excludeNodes = new HashSet<>();
@@ -139,7 +139,7 @@ public class Config {
 	private boolean showProperties = true;
 	private boolean showInverse = false;
 	private boolean showOutgoingEdges = false;
-	private boolean showLabels = false;
+	private String showLabels = null;
 	private String size = null;
 	private String width = null;
 	private String height = null;
@@ -179,8 +179,6 @@ public class Config {
 		}
 
 		setColors(DefaultMarkupType.getAnnotation(section, COLORS));
-		setRelationColors(DefaultMarkupType.getAnnotation(section, RELATION_COLORS));
-		setClassColors(DefaultMarkupType.getAnnotation(section, CLASS_COLORS));
 		parseAndSetInt(section, SUCCESSORS, this::setSuccessors);
 		parseAndSetInt(section, PREDECESSORS, this::setPredecessors);
 		parseAndSetCSV(section, EXCLUDE_NODES, this::addExcludeNodes);
@@ -190,7 +188,7 @@ public class Config {
 		parseAndSetBoolean(section, SHOW_PROPERTIES, this::setShowProperties);
 		parseAndSetBoolean(section, SHOW_OUTGOING_EDGES, this::setShowOutgoingEdges);
 		parseAndSetBoolean(section, SHOW_INVERSE, this::setShowInverse);
-		parseAndSetBoolean(section, SHOW_LABELS, this::setShowLabels);
+		setShowLabels(DefaultMarkupType.getAnnotation(section, SHOW_LABELS));
 		parseAndSetCSV(section, CONCEPT, this::addConcept);
 		setSize(DefaultMarkupType.getAnnotation(section, SIZE));
 		setWidth(DefaultMarkupType.getAnnotation(section, WIDTH));
@@ -284,12 +282,14 @@ public class Config {
 		this.colors = colors;
 	}
 
-	public void setRelationColors(String relationColors) {
+	public void setRelationColors(Map<String, String> relationColors) {
+		// TODO: refactor this to be a map of color assignments
 		if (relationColors == null) return;
 		this.relationColors = relationColors;
 	}
 
-	public void setClassColors(String classColors) {
+	public void setClassColors(Map<String, String> classColors) {
+		// TODO: refactor this to be a map of color assignments
 		if (classColors == null) return;
 		this.classColors = classColors;
 	}
@@ -403,7 +403,7 @@ public class Config {
 		this.design = design;
 	}
 
-	public void setShowLabels(boolean showLabels) {
+	public void setShowLabels(String showLabels) {
 		this.showLabels = showLabels;
 	}
 
@@ -430,11 +430,11 @@ public class Config {
 		return config;
 	}
 
-	public String getRelationColors() {
+	public Map<String, String> getRelationColors() {
 		return relationColors;
 	}
 
-	public String getClassColors() {
+	public Map<String, String> getClassColors() {
 		return classColors;
 	}
 
@@ -474,7 +474,7 @@ public class Config {
 		return showInverse;
 	}
 
-	public boolean isShowLabels() {
+	public String getShowLabels() {
 		return showLabels;
 	}
 

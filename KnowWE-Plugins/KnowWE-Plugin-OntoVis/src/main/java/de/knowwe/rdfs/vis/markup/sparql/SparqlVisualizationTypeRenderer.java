@@ -1,6 +1,7 @@
 package de.knowwe.rdfs.vis.markup.sparql;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.ontoware.rdf2go.model.QueryResultTable;
@@ -17,6 +18,7 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.core.utils.PackageCompileLinkToTermDefinitionProvider;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdfs.vis.PreRenderWorker;
@@ -34,6 +36,11 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 	@Override
 	public void render(Section<?> content, UserContext user, RenderResult string) {
+		if(user.getParameter("concept") != null) {
+			// we have received a concept via url parameter to be visualized
+			// hence we need to clear the cached visualization
+			PreRenderWorker.getInstance().clearCache(content);
+		}
 		PreRenderWorker.getInstance().handlePreRendering(content, user, this);
 		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) content.getObject(getKey());
 		if (graphRenderer != null) string.appendHtml(graphRenderer.getHTMLIncludeSnipplet());
@@ -98,8 +105,27 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 		LinkToTermDefinitionProvider uriProvider = new PackageCompileLinkToTermDefinitionProvider();
 
+		String sparqlContentRaw = content.getText();
+
+		if(!Strings.isBlank(DefaultMarkupType.getAnnotation(section, SparqlVisualizationType.VIS_TEMPLATE_CLASS)))  {
+			// this is a sparql visualization template
+			Collection<String> concepts = config.getConcepts();
+			if(concepts.size() > 0 ) {
+				// we have a concept set via url parameter to fill template
+				String conceptShortURI = concepts.iterator().next();
+				sparqlContentRaw = fillSparqlTemplate(sparqlContentRaw, conceptShortURI);
+			} else {
+				String exampleConcept = DefaultMarkupType.getAnnotation(section, SparqlVisualizationType.VIS_TEMPLATE_EXAMPLE);
+				if(Strings.isBlank(exampleConcept)) {
+					// we have an incomplete/inconsistent markup definition
+				} else {
+					sparqlContentRaw = fillSparqlTemplate(sparqlContentRaw, exampleConcept);
+				}
+			}
+		}
+
 		// evaluate sparql query and create graph data
-		String sparqlString = Rdf2GoUtils.createSparqlString(core, content.getText());
+		String sparqlString = Rdf2GoUtils.createSparqlString(core, sparqlContentRaw);
 
 		QueryResultTable resultSet = core.sparqlSelect(sparqlString);
 		SubGraphData data = convertToGraph(resultSet, config, core, uriProvider, section, messages);
@@ -125,6 +151,10 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			content.storeObject(getKey(), graphRenderer);
 		}
 
+	}
+
+	private String fillSparqlTemplate(String sparqlContentRaw, String conceptShortURI) {
+		return sparqlContentRaw.replace("%1$", conceptShortURI);
 	}
 
 	@Override

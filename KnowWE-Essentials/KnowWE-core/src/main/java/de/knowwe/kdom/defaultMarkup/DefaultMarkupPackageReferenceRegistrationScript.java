@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * Registers a {@link DefaultMarkupType} section compiling with
  * {@link PackageCompileType} section as a reference to the packages it belongs
  * to.
- * 
+ *
  * @author Stefan Plehn, Albrecht Striffler (denkbares GmbH)
  * @created 12.07.2013
  */
@@ -54,6 +54,7 @@ public class DefaultMarkupPackageReferenceRegistrationScript extends PackageRegi
 	public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) {
 		String[] packageNames = (String[]) section.getObject(compiler,
 				PACKAGE_REFERENCES_KEY);
+		if (packageNames == null) return;
 		for (String annotationString : packageNames) {
 			compiler.getTerminologyManager().unregisterTermReference(compiler, section,
 					Package.class, new Identifier(annotationString));
