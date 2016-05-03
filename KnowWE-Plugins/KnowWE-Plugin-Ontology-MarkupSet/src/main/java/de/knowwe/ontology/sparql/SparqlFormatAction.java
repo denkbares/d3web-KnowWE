@@ -330,11 +330,9 @@ public class SparqlFormatAction extends AbstractAction {
 
 	/* Removes all empty lines but only if there are two or more in a row. A single line keeps standing. */
 	private StringBuilder removeEmptyLines(StringBuilder tmpWikiText) {
-
 		for (int i = 0; i < tmpWikiText.length(); i++) {
 			if (tmpWikiText.charAt(i) == '\n') {
 				boolean hasNextNewline = true;
-				// TODO: for-loop
 				while (hasNextNewline && !checkLastChar(tmpWikiText, i + 1)) {
 					if (tmpWikiText.charAt(i + 1) == '\n' && tmpWikiText.charAt(i + 2) == '\n') {
 						tmpWikiText.deleteCharAt(i + 1);
@@ -350,7 +348,6 @@ public class SparqlFormatAction extends AbstractAction {
 
 	/* Indent the current line with tabs in number of 'depth' */
 	private StringBuilder indent(StringBuilder tmpWikiText, int index, int depth) {
-
 		if (tmpWikiText.charAt(index + 1) == '}') {
 			depth--;
 		}
@@ -365,7 +362,6 @@ public class SparqlFormatAction extends AbstractAction {
 
 	/* Finds an removes all Whitespaces at the beginning of the line.*/
 	private StringBuilder removeFirstWhitepaceInLine(StringBuilder tmpWikiText) {
-
 		for (int i = 0; i < tmpWikiText.length(); i++) {
 			if ((int) tmpWikiText.charAt(i) == '\n' || (i == 0 && (tmpWikiText.charAt(i) == '\t' || tmpWikiText.charAt(i) == ' '))) {
 				boolean hasNextWhiteSpace = true;
@@ -418,5 +414,4 @@ public class SparqlFormatAction extends AbstractAction {
 	private boolean checkLastChar(StringBuilder inputText, int position) {
 		return inputText.length() - 1 <= position;
 	}
-
 }
