@@ -39,7 +39,6 @@ public class SparqlFormatAction extends AbstractAction {
 				throw new IOException(e);
 			}
 		}
-
 	}
 
 	public StringBuilder formatSparql(StringBuilder wikiText, int depth) {
