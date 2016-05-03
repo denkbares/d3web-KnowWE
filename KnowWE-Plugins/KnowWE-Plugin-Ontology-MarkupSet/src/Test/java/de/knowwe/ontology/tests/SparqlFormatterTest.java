@@ -692,4 +692,42 @@ public class SparqlFormatterTest {
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
 	}
+
+//	@Test
+	public void testQuotesInLiteral() {
+		String testSparql = "  SELECT ?Substance ?CAS ?EC ?Name\n" +
+				"  \n" +
+				"  WHERE {\n" +
+				"  \n" +
+				"    ?Substance rdf:type lns:Substance .\n" +
+				"    OPTIONAL { ?Substance <lns:hasFirstCAS+Number> ?CAS }\n" +
+				"    OPTIONAL { ?Substance <lns:hasFirstEC+Number> ?EC }\n" +
+				"    OPTIONAL { ?Substance <lns:hasFirstSubstance+Name> ?Name }\n" +
+				"    OPTIONAL { ?Substance <lns:hasFirstGroup+Name> ?Name }\n" +
+				"    \n" +
+				"    ?Substance lns:hasEstablished ?URI .\n" +
+				"    ?URI rdfs:label \"Hallo Max, \\\\\\\"wie\\\" gehts\" .\n" +
+				"    }\n" +
+				"    ORDER BY ?Name ?CAS ?EC";
+
+		String expectedSparql = "  SELECT ?Substance ?CAS ?EC ?Name\n" +
+				"  \n" +
+				"  WHERE {\n" +
+				"  \n" +
+				"    ?Substance rdf:type lns:Substance .\n" +
+				"    OPTIONAL { ?Substance <lns:hasFirstCAS+Number> ?CAS }\n" +
+				"    OPTIONAL { ?Substance <lns:hasFirstEC+Number> ?EC }\n" +
+				"    OPTIONAL { ?Substance <lns:hasFirstSubstance+Name> ?Name }\n" +
+				"    OPTIONAL { ?Substance <lns:hasFirstGroup+Name> ?Name }\n" +
+				"    \n" +
+				"    ?Substance lns:hasEstablished ?URI .\n" +
+				"    ?URI rdfs:label \"Hallo Max, \\\\\\\"wie\\\" gehts\" .\n" +
+				"    }\n" +
+				"    ORDER BY ?Name ?CAS ?EC";
+
+		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
+		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
+
+		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+	}
 }
