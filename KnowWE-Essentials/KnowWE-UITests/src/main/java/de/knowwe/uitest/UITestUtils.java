@@ -25,6 +25,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -38,6 +39,30 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @created 03.07.15
  */
 public class UITestUtils {
+
+	/**
+	 * Loads the given article and waits for it to be loaded. If an alert pops up, it will be accepted.
+	 *
+	 * @param url         the url of the running wiki instance
+	 * @param articleName name of the article to be loaded
+	 * @param driver      the web driver
+	 */
+	public static void goToArticle(String url, String articleName, WebDriver driver) {
+		driver.get(url + "/Wiki.jsp?page=" + articleName);
+		try {
+			driver.switchTo().alert().accept();
+		}
+		catch (NoAlertPresentException ignore) {
+		}
+	}
+
+	public static void recompileCurrentArticle(WebDriver driver) {
+		String currentUrl = driver.getCurrentUrl();
+		if (!currentUrl.contains("&parse=full")) {
+			currentUrl += "&parse=full";
+		}
+		driver.get(currentUrl);
+	}
 
 	public enum UseCase {
 		LOGIN_PAGE, NORMAL_PAGE
@@ -127,13 +152,15 @@ public class UITestUtils {
 		List<WebElement> elements = null;
 		if (use == UseCase.LOGIN_PAGE) {
 			elements = driver.findElements(By.id("logincontent"));
-		} else if (use == UseCase.NORMAL_PAGE) {
+		}
+		else if (use == UseCase.NORMAL_PAGE) {
 			elements = driver.findElements(By.cssSelector("a.action.login"));
 		}
 
 		if (elements == null) {
 			throw new NullPointerException("No Login Interface found.");
-		} else if (elements.isEmpty()) {
+		}
+		else if (elements.isEmpty()) {
 			return; // already logged in
 		}
 
