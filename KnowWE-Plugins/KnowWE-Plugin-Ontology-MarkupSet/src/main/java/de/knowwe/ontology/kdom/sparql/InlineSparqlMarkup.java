@@ -148,7 +148,9 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					long timeout = SparqlContentType.getTimeout(referencedSection);
 					Rdf2GoCore core = compiler.getRdf2GoCore();
 					query = Rdf2GoUtils.createSparqlString(core, query);
-					result.appendHtmlTag("span");
+
+					// we add addtional info for testability
+					result.appendHtmlTag("span", "class", "inline-sparql", "name", reference.get(SparqlNameReference::getTermName));
 
 					TupleQueryResult resultTable = core.sparqlSelect(query, true, timeout);
 
