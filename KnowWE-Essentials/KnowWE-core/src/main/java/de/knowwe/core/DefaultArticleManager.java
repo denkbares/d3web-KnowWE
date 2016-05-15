@@ -177,12 +177,6 @@ public class DefaultArticleManager implements ArticleManager {
 			throw new IllegalStateException("Cannot register articles during compilation");
 		}
 		mainLock.lock();
-		// Since we only start the compilation during the lock and compilation then happens asynchronously,
-		// it is possible that a threads runs to this point while compilation is still ongoing from the last lock.
-		// Since the next compilation process has to wait for the last one to finish anyway and adding new articles to
-		// the manager during compilation might cause problems for some compilers, we just wait for the compilation
-		// to finish.
-		Compilers.awaitTermination(compilerManager);
 	}
 
 	/**
