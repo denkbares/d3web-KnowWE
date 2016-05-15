@@ -505,24 +505,32 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		else if (event instanceof WikiAttachmentEvent) {
 			DefaultArticleManager articleManager = getDefaultArticleManager();
 			WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
-			// we open a commit frame to bundle eventual article compilations
-			// that are likely to happen with attachment events
-			articleManager.open();
-			try {
-				if (event.getType() == WikiAttachmentEvent.STORED) {
-					EventManager.getInstance()
-							.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), attachmentEvent
-									.getParentName(), attachmentEvent.getFileName()));
+			// we fire the KnowWE events and commit asynchronously to avoid dead locks, because we cannot
+			// guarantee at this point, that the thread accessing the attachment has not locked resources
+			// that are required during compilation
+			new Thread() {
+				@Override
+				public void run() {
+					// we open a commit frame to bundle eventual article compilations
+					// that are likely to happen with attachment events
+					articleManager.open();
+					try {
+						if (event.getType() == WikiAttachmentEvent.STORED) {
+							EventManager.getInstance()
+									.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), attachmentEvent
+											.getParentName(), attachmentEvent.getFileName()));
+						}
+						else if (event.getType() == WikiAttachmentEvent.DELETED) {
+							EventManager.getInstance()
+									.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), attachmentEvent
+											.getParentName(), attachmentEvent.getFileName()));
+						}
+					}
+					finally {
+						articleManager.commit();
+					}
 				}
-				else if (event.getType() == WikiAttachmentEvent.DELETED) {
-					EventManager.getInstance()
-							.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), attachmentEvent
-									.getParentName(), attachmentEvent.getFileName()));
-				}
-			}
-			finally {
-				articleManager.commit();
-			}
+			}.start();
 		}
 		else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {
