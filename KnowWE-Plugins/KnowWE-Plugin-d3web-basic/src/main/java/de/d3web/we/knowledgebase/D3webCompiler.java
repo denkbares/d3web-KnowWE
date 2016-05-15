@@ -23,6 +23,7 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.core.session.SessionFactory;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -123,6 +124,10 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		}
 
 		scriptCompiler.compile();
+
+		// we create one session to make sure knowledge created together with the session is available
+		// (avoids concurrent modification in multithreaded scenarios)
+		SessionFactory.createSession(knowledgeBase);
 
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 	}
