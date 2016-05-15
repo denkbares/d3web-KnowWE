@@ -133,7 +133,7 @@ public class CompilerManager {
 	 * @return if the compilation has been started
 	 * @created 30.10.2013
 	 */
-	public boolean startCompile(final Collection<Section<?>> added, final Collection<Section<?>> removed) {
+	private boolean startCompile(final Collection<Section<?>> added, final Collection<Section<?>> removed) {
 		synchronized (lock) {
 			if (isCompiling()) return false;
 			running = compilers.groupIterator();
@@ -377,8 +377,7 @@ public class CompilerManager {
 				awaitTermination();
 			}
 			catch (InterruptedException e) {
-				Log.warning("Caught InterrupedException while waiting to compile.",
-						e);
+				Log.warning("Caught InterruptedException while waiting to compile.", e);
 			}
 		}
 	}
