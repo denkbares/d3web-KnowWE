@@ -69,7 +69,7 @@
 		<parameter id="description" value="The annotation configures the DiaFlux problem solver.
 			If 'suggest' is specified, the DiaFlux problem solver will suggest all remaining
 			potential solutions of the processed flowcharts, until it is known if the solutions
-			will be established or not. If 'suggest' is specified the potential solution will also
+			will be established or not. If 'precise' is specified the potential solution will also
 			be suggested, but a more precise (and slower) algorithm is used to detect these
 			solutions. If 'ignore' is specified, the DiaFlux problem solver will not rate any
 			solution until a node is reached that explicitly rates the particular solution.
