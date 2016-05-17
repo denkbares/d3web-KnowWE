@@ -73,7 +73,7 @@ import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
-import com.denkbares.semanticcore.Reasoning;
+import com.denkbares.semanticcore.ReasoningEnum;
 import com.denkbares.semanticcore.RepositoryConnection;
 import com.denkbares.semanticcore.SemanticCore;
 import com.denkbares.semanticcore.SesameEndpoint;
@@ -198,7 +198,7 @@ public class Rdf2GoCore {
 
 	private final String lns;
 
-	private Reasoning ruleSet;
+	private ReasoningEnum ruleSet;
 
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<>(
@@ -241,7 +241,7 @@ public class Rdf2GoCore {
 	 *
 	 * @param ruleSet specifies the reasoning profile.
 	 */
-	public Rdf2GoCore(Reasoning ruleSet) {
+	public Rdf2GoCore(ReasoningEnum ruleSet) {
 		this(Environment.getInstance().getWikiConnector().getBaseUrl()
 						+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
 				ruleSet
@@ -257,7 +257,7 @@ public class Rdf2GoCore {
 	 * @param bns       the uri used as base namespace
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
-	public Rdf2GoCore(String lns, String bns, Reasoning reasoning) {
+	public Rdf2GoCore(String lns, String bns, ReasoningEnum reasoning) {
 		Objects.requireNonNull(reasoning);
 		this.bns = bns;
 		this.lns = lns;
@@ -1476,7 +1476,7 @@ public class Rdf2GoCore {
 
 	}
 
-	public Reasoning getRuleSet() {
+	public ReasoningEnum getRuleSet() {
 		return ruleSet;
 	}
 

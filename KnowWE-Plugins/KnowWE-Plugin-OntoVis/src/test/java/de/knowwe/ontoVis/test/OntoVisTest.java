@@ -33,7 +33,7 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFParseException;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
-import com.denkbares.semanticcore.Reasoning;
+import com.denkbares.semanticcore.ReasoningEnum;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -64,7 +64,7 @@ public class OntoVisTest {
 		InitPluginManager.init();
 
 		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
-				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", Reasoning.OWL2_RL_OPTIMIZED);
+				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", ReasoningEnum.OWL2_RL_OPTIMIZED);
 		// rdfRepository.addNamespace("ns", bns);
 		// rdfRepository.addNamespace(LNS_ABBREVIATION, lns);
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");

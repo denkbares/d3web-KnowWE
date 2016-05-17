@@ -20,7 +20,7 @@ package de.knowwe.ontology.compile;
 
 import java.util.List;
 
-import com.denkbares.semanticcore.Reasoning;
+import com.denkbares.semanticcore.ReasoningEnum;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.PackageCompiler;
@@ -85,7 +85,7 @@ public class OntologyType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
 
-		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, Reasoning.values());
+		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, ReasoningEnum.values());
 		MARKUP.addAnnotationIcon(ANNOTATION_RULE_SET, Icon.COG.addTitle("Rule Set"));
 
 		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.values());
@@ -132,7 +132,7 @@ public class OntologyType extends DefaultMarkupType {
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) throws CompilerMessage {
 			Section<DefaultMarkupType> ontologyType = Sections.ancestor(section, DefaultMarkupType.class);
 			String ruleSetValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_RULE_SET);
-			Reasoning ruleSet = getRuleSet(ruleSetValue);
+			ReasoningEnum ruleSet = getRuleSet(ruleSetValue);
 			String multiDefModeValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_MULTI_DEF_MODE);
 			MultiDefinitionMode multiDefMode = getMultiDefinitionMode(multiDefModeValue);
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
@@ -151,8 +151,8 @@ public class OntologyType extends DefaultMarkupType {
 			return parseEnum(MultiDefinitionMode.class, multiDefModeValue, "multi-definition-mode", MultiDefinitionMode.ignore);
 		}
 
-		private Reasoning getRuleSet(String ruleSetValue) {
-			return parseEnum(Reasoning.class, ruleSetValue, "rule set", Reasoning.OWL_HORST_OPTIMIZED);
+		private ReasoningEnum getRuleSet(String ruleSetValue) {
+			return parseEnum(ReasoningEnum.class, ruleSetValue, "rule set", ReasoningEnum.OWL_HORST_OPTIMIZED);
 		}
 
 		private <T extends Enum<T>> T parseEnum(Class<T> enumClass, String value, String enumName, T defaultValue) {
