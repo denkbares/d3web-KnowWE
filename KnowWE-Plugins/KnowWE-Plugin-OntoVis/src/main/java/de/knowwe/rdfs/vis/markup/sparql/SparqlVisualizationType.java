@@ -69,7 +69,7 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotationRenderer(Config.ADD_TO_DOT, NothingRenderer.getInstance());
 
 		//markup.addAnnotation(Config.RENDERER, false, GraphDataBuilder.Renderer.values());
-		//markup.addAnnotationRenderer(Config.RENDERER, NothingRenderer.getInstance());
+		//markup.addAnnotationRenderer(Config.RENDERER, NothingRenderer.get());
 
 		markup.addAnnotation(Config.VISUALIZATION, false, Config.Visualization.values());
 		markup.addAnnotationRenderer(Config.VISUALIZATION, NothingRenderer.getInstance());
@@ -87,7 +87,7 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotationRenderer(Config.SHOW_LABELS, NothingRenderer.getInstance());
 
 		//markup.addAnnotation(OntoVisType.Config.SHOWINVERSE, false, "true", "false");
-		//markup.addAnnotationRenderer(OntoVisType.Config.SHOWINVERSE,NothingRenderer.getInstance());
+		//markup.addAnnotationRenderer(OntoVisType.Config.SHOWINVERSE,NothingRenderer.get());
 
 		markup.addAnnotation(Config.COLORS, false);
 		markup.addAnnotationRenderer(Config.COLORS, NothingRenderer.getInstance());

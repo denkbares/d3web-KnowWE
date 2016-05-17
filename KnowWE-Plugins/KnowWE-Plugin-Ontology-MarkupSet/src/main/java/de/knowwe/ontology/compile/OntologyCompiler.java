@@ -23,7 +23,9 @@ import java.util.Collections;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.denkbares.semanticcore.ReasoningEnum;
+import com.denkbares.semanticcore.reasoning.RdfConfig;
+import com.denkbares.semanticcore.reasoning.ReasoningConfig;
+import com.denkbares.semanticcore.reasoning.ReasoningConfigs;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
@@ -59,14 +61,14 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private boolean firstCompilation = true;
 	private ParallelScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ParallelScriptCompiler<OntologyCompiler> destroyScriptCompiler;
-	private final ReasoningEnum ruleSet;
+	private final ReasoningConfig ruleSet;
 	private final String compilingArticle;
 	private MultiDefinitionMode multiDefinitionMode;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
 							Class<? extends Type> compilingType,
-							ReasoningEnum ruleSet, MultiDefinitionMode multiDefMode) {
+							ReasoningConfig ruleSet, MultiDefinitionMode multiDefMode) {
 		super(manager, compileSection, compilingType);
 		EventManager.getInstance().registerListener(this);
 		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
@@ -95,7 +97,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	public Rdf2GoCore getRdf2GoCore() {
 		if (rdf2GoCore == null) {
 			// in case the compiler doesn't have anything to compile...
-			return new Rdf2GoCore(ReasoningEnum.RDF);
+			return new Rdf2GoCore(ReasoningConfigs.get(RdfConfig.class));
 		}
 		return rdf2GoCore;
 	}
@@ -241,7 +243,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		scriptCompiler.addSubtree(section, scriptFilter);
 	}
 
-	public ReasoningEnum getReasoning() {
+	public ReasoningConfig getReasoning() {
 		return ruleSet;
 	}
 
