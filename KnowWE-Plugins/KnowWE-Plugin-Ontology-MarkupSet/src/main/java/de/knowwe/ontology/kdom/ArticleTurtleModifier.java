@@ -35,6 +35,7 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.turtle.TurtleWriter;
 
 import de.d3web.strings.Strings;
@@ -125,7 +126,7 @@ public class ArticleTurtleModifier {
 	 * article.
 	 *
 	 * @param compiler the compiler to be used to compile the modified turtle contents
-	 * @param article the wiki article to be modified
+	 * @param article  the wiki article to be modified
 	 */
 	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article) {
 		this(compiler, article, true);
@@ -135,11 +136,11 @@ public class ArticleTurtleModifier {
 	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the specified wiki
 	 * article.
 	 *
-	 * @param compiler the compiler to be used to compile the modified turtle contents
-	 * @param article the wiki article to be modified
+	 * @param compiler    the compiler to be used to compile the modified turtle contents
+	 * @param article     the wiki article to be modified
 	 * @param compactMode if the turtle markup should be created compact (prefer single-line-mode)
-	 * or verbose (prefer readability with line-breaks for each property and value, using
-	 * indenting).
+	 *                    or verbose (prefer readability with line-breaks for each property and value, using
+	 *                    indenting).
 	 */
 	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article, boolean compactMode) {
 		this(compiler, article, compactMode, "  ");
@@ -150,13 +151,13 @@ public class ArticleTurtleModifier {
 	 * article. You can specify if the output shall be compact or expressive/verbose and how to
 	 * indent the particular turtle sentences if newly created.
 	 *
-	 * @param compiler the compiler to be used to compile the modified turtle contents
-	 * @param article the wiki article to be modified
-	 * @param compactMode if the turtle markup should be created compact (prefer single-line-mode)
-	 * or verbose (prefer readability with line-breaks for each property and value, using
-	 * indenting).
+	 * @param compiler        the compiler to be used to compile the modified turtle contents
+	 * @param article         the wiki article to be modified
+	 * @param compactMode     if the turtle markup should be created compact (prefer single-line-mode)
+	 *                        or verbose (prefer readability with line-breaks for each property and value, using
+	 *                        indenting).
 	 * @param preferredIndent the preferred indent to be used, should consist of spaces and tab
-	 * characters only
+	 *                        characters only
 	 */
 	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article, boolean compactMode, String preferredIndent) {
 		this.compiler = compiler;
@@ -246,12 +247,14 @@ public class ArticleTurtleModifier {
 		if (article == null) return preferredIndent;
 		String text = article.getText();
 		// search start of line
-		while (index > 0 && "\r\n".indexOf(text.charAt(index - 1)) == -1)
+		while (index > 0 && "\r\n".indexOf(text.charAt(index - 1)) == -1) {
 			index--;
+		}
 		// proceed while having white-spaces
 		int indent = 0;
-		while (index + indent < text.length() && Strings.isBlank(text.charAt(index + indent)))
+		while (index + indent < text.length() && Strings.isBlank(text.charAt(index + indent))) {
 			indent++;
+		}
 		return text.substring(index, index + indent);
 	}
 
@@ -263,17 +266,23 @@ public class ArticleTurtleModifier {
 	 * Depending on 'compactMode' the objects will be separated by a line-break or not.
 	 *
 	 * @param statements the statements to be inserted, sharing the same subject and predicate
-	 * @param indent the indent to be used if not in compact mode
-	 * @param turtle the buffer to append the created turtle text
+	 * @param indent     the indent to be used if not in compact mode
+	 * @param turtle     the buffer to append the created turtle text
 	 * @created 26.11.2013
 	 */
 	private void createObjectTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		boolean first = true;
 		for (Statement statement : statements) {
 			// add object separator
-			if (first) first = false;
-			else if (compactMode) turtle.append(", ");
-			else turtle.append(",\n").append(indent);
+			if (first) {
+				first = false;
+			}
+			else if (compactMode) {
+				turtle.append(", ");
+			}
+			else {
+				turtle.append(",\n").append(indent);
+			}
 			// add object itself
 			turtle.append(toTurtle(statement.getObject()));
 		}
@@ -288,8 +297,8 @@ public class ArticleTurtleModifier {
 	 * not.
 	 *
 	 * @param statements the statements to be inserted, sharing the same subject and predicate
-	 * @param indent the indent to be used if not in compact mode
-	 * @param turtle the buffer to append the created turtle text
+	 * @param indent     the indent to be used if not in compact mode
+	 * @param turtle     the buffer to append the created turtle text
 	 * @created 26.11.2013
 	 */
 	private void createPredicateTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
@@ -298,8 +307,12 @@ public class ArticleTurtleModifier {
 		// append predicate and spacing to objects
 		URI predicate = statements.get(0).getPredicate();
 		turtle.append(toTurtle(predicate));
-		if (compactMode) turtle.append(" ");
-		else turtle.append("\n").append(objectIndent);
+		if (compactMode) {
+			turtle.append(" ");
+		}
+		else {
+			turtle.append("\n").append(objectIndent);
+		}
 
 		// append the list of objects
 		createObjectTurtle(statements, objectIndent, turtle);
@@ -321,8 +334,8 @@ public class ArticleTurtleModifier {
 	 * line-break or not.
 	 *
 	 * @param statements the statements to be inserted, sharing the same subject
-	 * @param indent the indent to be used for turtle sentences
-	 * @param turtle the buffer to append the created turtle text
+	 * @param indent     the indent to be used for turtle sentences
+	 * @param turtle     the buffer to append the created turtle text
 	 * @created 26.11.2013
 	 */
 	private void createSubjectTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
@@ -331,15 +344,25 @@ public class ArticleTurtleModifier {
 		// append subject and separator to first predicate
 		Resource subject = statements.get(0).getSubject();
 		turtle.append(toTurtle(subject));
-		if (compactMode) turtle.append(" ");
-		else turtle.append("\n").append(predicateIndent);
+		if (compactMode) {
+			turtle.append(" ");
+		}
+		else {
+			turtle.append("\n").append(predicateIndent);
+		}
 
 		boolean first = true;
 		for (List<Statement> group : groupByPredicate(statements)) {
 			// add object separator
-			if (first) first = false;
-			else if (compactMode) turtle.append(";\n").append(predicateIndent);
-			else turtle.append(";\n\n").append(predicateIndent);
+			if (first) {
+				first = false;
+			}
+			else if (compactMode) {
+				turtle.append(";\n").append(predicateIndent);
+			}
+			else {
+				turtle.append(";\n\n").append(predicateIndent);
+			}
 			// render each predicate
 			createPredicateTurtle(group, predicateIndent, turtle);
 		}
@@ -356,16 +379,22 @@ public class ArticleTurtleModifier {
 	 * influences the spacing between the individual lines.
 	 *
 	 * @param statements the statements to be inserted
-	 * @param indent the indent to be used for the turtle sentences
-	 * @param turtle the buffer to append the created turtle text
+	 * @param indent     the indent to be used for the turtle sentences
+	 * @param turtle     the buffer to append the created turtle text
 	 * @created 26.11.2013
 	 */
 	private void createTurtle(List<Statement> statements, String indent, StringBuilder turtle) {
 		boolean first = true;
 		for (List<Statement> group : groupBySubject(statements)) {
-			if (first) first = false;
-			else if (compactMode) turtle.append(".\n").append(indent);
-			else turtle.append(".\n\n").append(indent);
+			if (first) {
+				first = false;
+			}
+			else if (compactMode) {
+				turtle.append(".\n").append(indent);
+			}
+			else {
+				turtle.append(".\n\n").append(indent);
+			}
 			createSubjectTurtle(group, indent, turtle);
 		}
 	}
@@ -435,8 +464,18 @@ public class ArticleTurtleModifier {
 			if (text.startsWith("lns:")) text = text.substring(3);
 			return text;
 		}
+		// TODO handle literal with quotes!
 		if (node instanceof Literal) {
-			return node.stringValue();
+			Literal literal = (Literal) node;
+			if (literal.getDatatype() != null && !literal.getDatatype().equals(XMLSchema.STRING)) {
+				URI datatype = compiler.getRdf2GoCore().toShortURI(literal.getDatatype());
+				return Strings.quote(literal.getLabel()) + "^^" + datatype;
+			}
+			String language = literal.getLanguage();
+			if (language != null) {
+				return Strings.quote(literal.getLabel()) + "@" + language;
+			}
+			return Strings.quote(literal.getLabel());
 		}
 		throw new IllegalArgumentException(
 				"non-implemented conversion method for " + node.getClass());
