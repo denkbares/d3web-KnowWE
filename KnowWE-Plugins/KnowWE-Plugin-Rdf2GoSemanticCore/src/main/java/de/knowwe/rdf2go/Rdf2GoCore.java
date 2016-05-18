@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.Callable;
@@ -78,7 +77,9 @@ import com.denkbares.semanticcore.SemanticCore;
 import com.denkbares.semanticcore.SesameEndpoint;
 import com.denkbares.semanticcore.TupleQuery;
 import com.denkbares.semanticcore.TupleQueryResult;
+import com.denkbares.semanticcore.reasoning.RdfConfig;
 import com.denkbares.semanticcore.reasoning.ReasoningConfig;
+import com.denkbares.semanticcore.reasoning.ReasoningConfigs;
 import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
 import de.d3web.collections.MultiMap;
 import de.d3web.collections.MultiMaps;
@@ -258,7 +259,9 @@ public class Rdf2GoCore {
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
 	public Rdf2GoCore(String lns, String bns, ReasoningConfig reasoning) {
-		Objects.requireNonNull(reasoning);
+		if (reasoning == null) {
+			reasoning = ReasoningConfigs.get(RdfConfig.class);
+		}
 		this.bns = bns;
 		this.lns = lns;
 		try {
