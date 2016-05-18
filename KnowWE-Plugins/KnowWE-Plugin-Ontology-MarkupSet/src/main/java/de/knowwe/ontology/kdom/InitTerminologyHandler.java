@@ -37,7 +37,6 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
 
-import com.denkbares.semanticcore.reasoning.RdfConfig;
 import com.denkbares.semanticcore.reasoning.ReasoningConfigs;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
@@ -188,7 +187,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		Future<?> mainReadFuture = executorService.submit(() -> readFrom(compiler, section, core, attachment, syntax));
 		if (!silent) {
 			// we need rdfs reasoning for the SPARQLs to work
-			Rdf2GoCore dummy = new Rdf2GoCore(ReasoningConfigs.get(RdfConfig.class));
+			Rdf2GoCore dummy = new Rdf2GoCore(ReasoningConfigs.get("RDFS"));
 			readFrom(compiler, section, dummy, attachment, syntax);
 			// register the terminology imported in the empty dummy repository
 			registerTerminology(compiler, dummy, importSection);
