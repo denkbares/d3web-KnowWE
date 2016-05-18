@@ -75,8 +75,8 @@ public final class Messages {
 	 * Removes all {@link Message}s from the given source stored for this Section and article.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section the {@link Section} the {@link Message}s are stored for
-	 * @param source the source the {@link Message}s are stored for
+	 * @param section  the {@link Section} the {@link Message}s are stored for
+	 * @param source   the source the {@link Message}s are stored for
 	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Compiler compiler, Section<? extends Type> section, Class<?> source) {
@@ -88,7 +88,7 @@ public final class Messages {
 	 * independently.
 	 *
 	 * @param section is the Section the {@link Message}s are stored for
-	 * @param source is the source the {@link Message}s are stored for
+	 * @param source  is the source the {@link Message}s are stored for
 	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Section<? extends Type> section, Class<?> source) {
@@ -99,7 +99,7 @@ public final class Messages {
 	 * Removes all {@link Message}s from all sources for stored for this Section and article.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the {@link Section} the {@link Message}s are stored for
+	 * @param section  is the {@link Section} the {@link Message}s are stored for
 	 * @created 01.12.2011
 	 */
 	public static void clearMessages(Compiler compiler, Section<?> section) {
@@ -117,12 +117,10 @@ public final class Messages {
 	 * @param compiler the compiler for which the messages should be removed
 	 */
 	public static void clearMessages(Compiler compiler) {
-		synchronized (sectionsWithMessages) {
-			for (Message.Type type : Message.Type.values()) {
-				// would be better if we also hash by compiler... not sure if worth the effort though...
-				for (Section<?> section : new ArrayList<>(sectionsWithMessages.getValues(type))) {
-					clearMessages(compiler, section);
-				}
+		for (Message.Type type : Message.Type.values()) {
+			// would be better if we also hash by compiler... not sure if worth the effort though...
+			for (Section<?> section : new ArrayList<>(sectionsWithMessages.getValues(type))) {
+				clearMessages(compiler, section);
 			}
 		}
 	}
@@ -131,7 +129,7 @@ public final class Messages {
 	 * Clears all {@link Message}s for the given article and subtree.
 	 *
 	 * @param compiler is the article you want to clear the message for
-	 * @param sec is the root of the subtree you want to clear the message for
+	 * @param sec      is the root of the subtree you want to clear the message for
 	 */
 	public static void clearMessagesRecursively(Compiler compiler, Section<?> sec) {
 		clearMessages(compiler, sec);
@@ -186,8 +184,8 @@ public final class Messages {
 	 * contain this {@link Collection} with <tt>null</tt> as the <tt>key</tt>.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
-	 * (set to <tt>null</tt> if you want all)
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 *                (set to <tt>null</tt> if you want all)
 	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMap(Section<? extends Type> section, Message.Type... types) {
@@ -214,7 +212,7 @@ public final class Messages {
 	 * any compiler and/or independent of any compiler.
 	 *
 	 * @param section the root section of the sub-tree to be checked
-	 * @param types the error messages considered
+	 * @param types   the error messages considered
 	 * @return if there are any such messages
 	 * @created 06.02.2014
 	 */
@@ -231,7 +229,7 @@ public final class Messages {
 	 * of any compiler.
 	 *
 	 * @param section the root section of the subtree to be checked
-	 * @param types the error messages considered
+	 * @param types   the error messages considered
 	 * @return if there are any such messages
 	 * @created 06.02.2014
 	 */
@@ -247,9 +245,9 @@ public final class Messages {
 	 * de.knowwe.core.report.Message.Type}s stored for this article and Section.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
-	 * (set to <tt>null</tt> if you want all)
+	 * @param section  is the {@link Section} the {@link Message}s are stored for
+	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 *                 (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Message.Type... types) {
@@ -269,8 +267,8 @@ public final class Messages {
 	 * de.knowwe.core.report.Message.Type}s stored for this article and Section.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
-	 * (set to <tt>null</tt> if you want all)
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 *                (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Section<?> section, Message.Type... types) {
@@ -282,10 +280,10 @@ public final class Messages {
 	 * de.knowwe.core.report.Message.Type}s stored for this article, section, and source.
 	 *
 	 * @param compiler is the article the {@link Message}s are stored for
-	 * @param section is the Section the {@link Message}s are stored for
-	 * @param source is the source the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
-	 * (set to <tt>null</tt> if you want all)
+	 * @param section  is the Section the {@link Message}s are stored for
+	 * @param source   is the source the {@link Message}s are stored for
+	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 *                 (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Class<?> source, Message.Type... types) {
@@ -305,9 +303,9 @@ public final class Messages {
 	 * {@link Compiler}
 	 *
 	 * @param section is the Section the {@link Message}s are stored for
-	 * @param source is the source the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
-	 * (set to <tt>null</tt> if you want all)
+	 * @param source  is the source the {@link Message}s are stored for
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 *                (set to <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Section<?> section, Class<?> source, Message.Type... types) {
@@ -323,8 +321,8 @@ public final class Messages {
 	 * <tt>key</tt>.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
-	 * (set to <tt>null</tt> if you want all)
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 *                (set to <tt>null</tt> if you want all)
 	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMapFromSubtree(Section<?> section, Message.Type... types) {
@@ -353,9 +351,9 @@ public final class Messages {
 	 * de.knowwe.core.report.Message.Type}s of the KDOM subtree with the given Section as root.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the root of the KDOM subtree you want the messages from
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
-	 * (set to <tt>null</tt> if you want all)
+	 * @param section  is the root of the KDOM subtree you want the messages from
+	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 *                 (set to <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Compiler compiler,
 															 Section<?> section, Message.Type... types) {
@@ -378,8 +376,8 @@ public final class Messages {
 	 * independently of any compiler.
 	 *
 	 * @param section is the root of the KDOM subtree you want the messages from
-	 * @param types is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
-	 * (set to <tt>null</tt> if you want all)
+	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want
+	 *                (set to <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
 
@@ -520,9 +518,9 @@ public final class Messages {
 	 * the first Message gets overwritten!</b>
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param source is the Class the message originate from
-	 * @param msg is the message you want so store
+	 * @param section  is the {@link Section} the {@link Message}s are stored for
+	 * @param source   is the Class the message originate from
+	 * @param msg      is the message you want so store
 	 */
 	public static void storeMessage(Compiler compiler, Section<?> section, Class<?> source, Message msg) {
 		Collection<Message> messages = Collections.emptyList();
@@ -541,8 +539,8 @@ public final class Messages {
 	 * the first Message gets overwritten!</b>
 	 *
 	 * @param section is the section you want to store the message for
-	 * @param source is the Class the message originate from
-	 * @param msg is the message you want so store
+	 * @param source  is the Class the message originate from
+	 * @param msg     is the message you want so store
 	 */
 	public static void storeMessage(Section<?> section, Class<?> source, Message msg) {
 		storeMessage(null, section, source, msg);
@@ -557,8 +555,8 @@ public final class Messages {
 	 * overwritten!</b>
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section is the is the {@link Section} the {@link Message}s are stored for
-	 * @param source is the Class the messages originate from
+	 * @param section  is the is the {@link Section} the {@link Message}s are stored for
+	 * @param source   is the Class the messages originate from
 	 * @param messages is the Collection of messages you want so store
 	 */
 	public static void storeMessages(Compiler compiler, Section<?> section, Class<?> source, Collection<Message> messages) {
@@ -636,8 +634,8 @@ public final class Messages {
 	 * you use this Method a second time with the same parameters, the first Collection gets
 	 * overwritten!</b>
 	 *
-	 * @param section is the section you want to store the messages for
-	 * @param source is the Class the messages originate from
+	 * @param section  is the section you want to store the messages for
+	 * @param source   is the Class the messages originate from
 	 * @param messages is the Collection of messages you want so store
 	 */
 	public static void storeMessages(Section<?> section, Class<?> source, Collection<Message> messages) {
@@ -660,7 +658,7 @@ public final class Messages {
 	 * error based on an exception. The error will also be logged as a warning.
 	 *
 	 * @param message the message of the error
-	 * @param e the exception occurred
+	 * @param e       the exception occurred
 	 * @created 18.08.2010
 	 */
 	public static Message internalError(String message, Throwable e) {
