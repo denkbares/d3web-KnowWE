@@ -337,7 +337,7 @@ public class Environment {
 		for (File file : files) {
 			if (file.getName().contains("KnowWE-Plugin-")
 					|| file.getName().contains("d3web-Plugin-")
-					|| file.getName().matches("denkbares-(.+-)?Plugin-.+")) {
+					|| file.getName().matches("^denkbares-(.+-)?Plugin-.+")) {
 				pluginFiles.add(file);
 			}
 		}
