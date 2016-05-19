@@ -66,7 +66,7 @@ public class OntoVisTest {
 		InitPluginManager.init();
 
 		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
-				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", ReasoningConfigs.get("RDF"));
+				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", ReasoningConfigs.get("OWL2_RL_OPTIMIZED"));
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		rdfRepository.addNamespace("owl", "http://www.w3.org/2002/07/owl#");
 		rdfRepository.addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
