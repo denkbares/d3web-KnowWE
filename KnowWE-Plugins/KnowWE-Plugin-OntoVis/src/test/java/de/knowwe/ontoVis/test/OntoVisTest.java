@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -65,9 +67,7 @@ public class OntoVisTest {
 		InitPluginManager.init();
 
 		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
-				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", ReasoningConfigs.get(RdfConfig.class));
-		// rdfRepository.addNamespace("ns", bns);
-		// rdfRepository.addNamespace(LNS_ABBREVIATION, lns);
+				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", model, RuleSet.OWL2_RL_REDUCED_OPTIMIZED);
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		rdfRepository.addNamespace("owl", "http://www.w3.org/2002/07/owl#");
 		rdfRepository.addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
@@ -87,15 +87,14 @@ public class OntoVisTest {
 		config.setSize("750");
 		config.setRankDir(Config.RankDir.TB);
 		config.setShowOutgoingEdges(true);
-		config.setShowLabels(true);
+		config.setShowLabels("true");
 		config.setCacheFileID("instances");
 		config.setCacheDirectoryPath("target");
 
-		String colorCodes = "";
-		colorCodes += "si:sibling: #511F7A;";
-		colorCodes += "si:child: #398743;";
-
-		config.setRelationColors(colorCodes);
+		Map<String, String> colorMap = new HashMap<>();
+		colorMap.put("si:sibling", "#511F7A");
+		colorMap.put("si:child", "#398743");
+		config.setRelationColors(colorMap);
 
 		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
 				config,
@@ -135,12 +134,13 @@ public class OntoVisTest {
 		config.addExcludeNodes("owl:Nothing");
 		config.addExcludeRelations("rdf:first", "owl:equivalentClass", "rdf:type", "owl:assertionProperty", "owl:sameAs");
 		config.setShowOutgoingEdges(false);
-		config.setShowLabels(true);
+		config.setShowLabels("true");
 		config.setLanguage("en");
 		config.setCacheFileID("classes");
-		String colorCodes = "";
-		colorCodes += "rdfs:subClassOf: #19F193;";
-		config.setRelationColors(colorCodes);
+
+		Map<String, String> colorMap = new HashMap<>();
+		colorMap.put("rdfs:subClassOf", "#19F193");
+		config.setRelationColors(colorMap);
 		config.setPredecessors(3);
 		config.setCacheDirectoryPath("target");
 
@@ -180,15 +180,14 @@ public class OntoVisTest {
 		config.setFormat("svg");
 		config.addExcludeRelations("rdf:type");
 		config.setShowOutgoingEdges(false);
-		config.setShowLabels(true);
+		config.setShowLabels("true");
 		config.setCacheFileID("properties");
 
-		String colorCodes = "";
-		colorCodes += "si:child: #398743;";
-		colorCodes += "si:parent si:color #123A56;";
-		colorCodes += "si:relatedWith si:color #987F65;";
-
-		config.setRelationColors(colorCodes);
+		Map<String, String> colorMap = new HashMap<>();
+		colorMap.put("si:child", "#398743");
+		colorMap.put("si:parent", "#123A56");
+		colorMap.put("si:relatedWith", "#987F65");
+		config.setRelationColors(colorMap);
 		config.setPredecessors(3);
 		config.setCacheDirectoryPath("target");
 
@@ -228,7 +227,7 @@ public class OntoVisTest {
 		config.setConcept("si:lisa");
 		config.addFilterRelations("si:age", "rdfs:label", "si:child");
 		config.setShowOutgoingEdges(false);
-		config.setShowLabels(false);
+		config.setShowLabels("false");
 		config.setCacheFileID("table");
 		config.setCacheDirectoryPath("target");
 
@@ -270,7 +269,7 @@ public class OntoVisTest {
 		config.setShowInverse(false);
 		config.addFilterRelations("si:child");
 		config.setShowOutgoingEdges(true);
-		config.setShowLabels(true);
+		config.setShowLabels("true");
 		config.setSuccessors(0);
 		config.setCacheFileID("twoconcepts");
 		config.setCacheDirectoryPath("target");
@@ -309,7 +308,7 @@ public class OntoVisTest {
 		Config config = new Config();
 		config.setCacheDirectoryPath("target");
 		config.setCacheFileID("sparql");
-		config.setShowLabels(false);
+		config.setShowLabels("false");
 
 		String sparql = "SELECT ?x ?y ?z\nWHERE {\n?x ?y ?z . ?x rdf:type si:Human .\n}";
 
@@ -388,7 +387,7 @@ public class OntoVisTest {
 		config.addExcludeRelations("rdf:type", "onto:_checkChain3", "owl:sameAs", "si:father", "si:mother", "si:gender", "si:livesIn");
 		config.addExcludeNodes("owl:Thing", "owl:Nothing");
 		config.setShowOutgoingEdges(false);
-		config.setShowLabels(true);
+		config.setShowLabels("true");
 		config.setShowInverse(false);
 		config.setCacheFileID("testInverse");
 		config.setCacheDirectoryPath("target");

@@ -21,6 +21,8 @@ package de.knowwe.rdfs.vis.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.openrdf.model.BNode;
@@ -58,43 +60,73 @@ import de.knowwe.visualization.dot.RenderingStyle;
  */
 public class Utils {
 
-	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, String languageTag) {
+//	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, String languageTag) {
+	public static String getRDFSLabel(Node concept, Rdf2GoCore repo, String languageTag) {
+		return getLabel(concept, repo, languageTag, new String [] {"<http://www.w3.org/2004/02/skos/core#prefLabel>", "rdfs:label"});
+	}
+
+	public static String getLabel(Node concept,  Rdf2GoCore repo, String languageTag, String...properties) {
+		if(properties.length == 0) {
+			throw new IllegalArgumentException("Property definition requred here!");
+		}
 
 		// try to find language specific label
-		String label = getLanguageSpecificLabel(concept, repo, languageTag);
+		String label = getLanguageSpecificLabel(concept, repo, languageTag, properties);
 
-		// otherwise use standard label
+		// otherwise use non-language specific label according to priority
 		if (label == null) {
+//
+//			String query = "SELECT ?x WHERE { <" + concept.toString() + "> rdfs:label ?x.}";
+//			TupleQueryResult resultTable = repo.sparqlSelect(query);
+//			for (BindingSet BindingSet : resultTable) {
+//				Value value = BindingSet.getValue("x");
+//				label = value.stringValue();
+//				break; // we assume there is only one label
 
-			String query = "SELECT ?x WHERE { <" + concept.toString() + "> rdfs:label ?x.}";
-			TupleQueryResult resultTable = repo.sparqlSelect(query);
-			for (BindingSet BindingSet : resultTable) {
-				Value value = BindingSet.getValue("x");
-				label = value.stringValue();
-				break; // we assume there is only one label
-
+			for (String property : properties) {
+				String query = "SELECT ?x WHERE { <" + concept.toString() + "> "+property.trim()+" ?x.}";
+				QueryResultTable resultTable = repo.sparqlSelect(query);
+				for (QueryRow queryRow : resultTable) {
+					Node node = queryRow.getValue("x");
+					return node.asLiteral().toString();
+				}
 			}
+
 		}
 		return label;
 	}
 
-	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, String languageTag) {
+//	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, String languageTag) {
+	private static String getLanguageSpecificLabel(Node concept, Rdf2GoCore repo, String languageTag, String...properties) {
 		if (languageTag == null) return null;
-		String label = null;
 
-		String query = "SELECT ?x WHERE { <" + concept.toString()
-				+ "> rdfs:label ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
-		TupleQueryResult resultTable = repo.sparqlSelect(query);
-		for (BindingSet BindingSet : resultTable) {
-			Value Value = BindingSet.getValue("x");
-			label = Value.stringValue();
-			if (label.charAt(label.length() - 3) == '@') {
-				label = label.substring(0, label.length() - 3);
+//		String query = "SELECT ?x WHERE { <" + concept.toString()
+//				+ "> rdfs:label ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
+//		TupleQueryResult resultTable = repo.sparqlSelect(query);
+//		for (BindingSet BindingSet : resultTable) {
+//			Value Value = BindingSet.getValue("x");
+//			label = Value.stringValue();
+//			if (label.charAt(label.length() - 3) == '@') {
+//				label = label.substring(0, label.length() - 3);
+//			}
+//			break; // we assume there is only one label
+//
+//		}
+//		return label;
+		for (String property : properties) {
+			String query = "SELECT ?x WHERE { <" + concept.toString()
+					+ "> " + property.trim() + " ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
+			QueryResultTable resultTable = repo.sparqlSelect(query);
+			for (QueryRow queryRow : resultTable) {
+				Node node = queryRow.getValue("x");
+				String label = node.asLiteral().toString();
+				if (label.charAt(label.length() - 3) == '@') {
+					label = label.substring(0, label.length() - 3);
+				}
+				return label;
 			}
-			break; // we assume there is only one label
-
 		}
-		return label;
+		return null;
 	}
 
 	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue) {
@@ -190,11 +222,8 @@ public class Utils {
 				if (Rdf2GoUtils.isProperty(rdfRepository, uri)) {
 					type = GraphDataBuilder.NODE_TYPE.PROPERTY;
 				}
-				if (config.isShowLabels()) {
-					label = Utils.getRDFSLabel(
-							toURI, rdfRepository,
-							config.getLanguage());
-				}
+				label = fetchLabel(config, toURI, rdfRepository);
+
 				if (label == null) {
 					label = identifier;
 				}
@@ -229,6 +258,24 @@ public class Utils {
 		return null;
 	}
 
+	@Nullable
+	public static String fetchLabel(Config config, Node toURI, Rdf2GoCore rdf2GoCore) {
+		String showLabels = config.getShowLabels();
+		String label = null;
+		if (! Strings.isBlank(showLabels) && !"false".equals(showLabels.toLowerCase())) {
+			if("true".equals(showLabels.toLowerCase())) {
+				label = Utils.getRDFSLabel(toURI, rdf2GoCore, config.getLanguage());
+			} else {
+				label = Utils.getLabel(toURI, rdf2GoCore, config.getLanguage(), showLabels.split(","));
+			}
+			if (label != null && label.charAt(label.length() - 3) == '@') {
+				// do not show language tag of relation labels
+				label = label.substring(0, label.length() - 3);
+			}
+		}
+		return label;
+	}
+
 	private static String getIdentifierLiteral(Literal toLiteral) {
 		return toLiteral.toString().replace("\"", "") + "ONTOVIS-LITERAL";
 	}
@@ -237,34 +284,49 @@ public class Utils {
 		return bValue.toString();
 	}
 
-	private static RenderingStyle setClassColorCoding(Value value, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
-		String classColorScheme = config.getClassColors();
-		if (classColorScheme != null && !Strings.isBlank(classColorScheme)) {
-			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, value.stringValue());
-			if (Rdf2GoUtils.isClass(rdfRepository, (URI) value)) {
-				String color = findColor(shortURI, classColorScheme);
+//	private static RenderingStyle setClassColorCoding(Value value, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
+//		String classColorScheme = config.getClassColors();
+//		if (classColorScheme != null && !Strings.isBlank(classColorScheme)) {
+//			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, value.stringValue());
+//			if (Rdf2GoUtils.isClass(rdfRepository, (URI) value)) {
+//				String color = findColor(shortURI, classColorScheme);
+	private static RenderingStyle setClassColorCoding(Node node, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
+		Map<String, String> classColorScheme = config.getClassColors();
+		if (classColorScheme != null && !classColorScheme.isEmpty()) {
+			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.asURI().toString());
+			if (Rdf2GoUtils.isClass(rdfRepository, node.asURI())) {
+				String color = classColorScheme.get(shortURI);
 				if (color != null) {
 					style.setFillcolor(color);
 				}
 			}
 			else {
-				Collection<URI> classURIs = Rdf2GoUtils.getClasses(rdfRepository, (URI) value);
-				for (URI classURI : classURIs) {
-					String shortURIClass = Rdf2GoUtils.reduceNamespace(rdfRepository, classURI.stringValue());
-					String color = findColor(shortURIClass, classColorScheme);
-					if (color != null) {
-						style.setFillcolor(color);
-						break;
+//				Collection<URI> classURIs = Rdf2GoUtils.getClasses(rdfRepository, (URI) value);
+//				for (URI classURI : classURIs) {
+//					String shortURIClass = Rdf2GoUtils.reduceNamespace(rdfRepository, classURI.stringValue());
+//					String color = findColor(shortURIClass, classColorScheme);
+//					if (color != null) {
+//						style.setFillcolor(color);
+//						break;
+//					}
+				// We fetch the class hierarchy of this concept
+				PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, node.asURI());
+				// we then remove from this hierarchy all classes that do not have a color assignment
+				List<URI> allClasses = classHierarchy.getNodesDFSOrder();
+				for (URI clazz : allClasses){
+					if(!classColorScheme.containsKey(Rdf2GoUtils.reduceNamespace(rdfRepository, clazz.toString()))) {
+						classHierarchy.remove(clazz);
 					}
+				}
+				URI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
+				String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored.toString()));
+				if(color != null) {
+					style.setFillcolor(color);
 				}
 			}
 
 		}
 		return style;
-	}
-
-	private static String findColor(String shortURIClass, String classColorScheme) {
-		return de.knowwe.visualization.util.Utils.getColorCode(shortURIClass, classColorScheme);
 	}
 
 	public static String createConceptURL(String to, Config config, Section<?> section, LinkToTermDefinitionProvider uriProvider, String uri) {
@@ -383,20 +445,24 @@ public class Utils {
 		return null;
 	}
 
-	public static String createColorCodings(String relationName, Rdf2GoCore core, String entityName) {
-		StringBuilder result = new StringBuilder();
+	public static Map<String, String> createColorCodings(String relationName, Rdf2GoCore core, String entityName) {
 		String query = "SELECT ?entity ?color WHERE {" +
 				"?entity <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + entityName + " ." +
 				"?entity " + relationName + " ?color" +
 				"}";
-		TupleQueryResult resultTable = core.sparqlSelect(query);
-		for (BindingSet row : resultTable) {
-			Value entity = row.getValue("entity");
-			String color = row.getValue("color").stringValue();
+//		TupleQueryResult resultTable = core.sparqlSelect(query);
+//		for (BindingSet row : resultTable) {
+//			Value entity = row.getValue("entity");
+//			String color = row.getValue("color").stringValue();
+//		Map<String, String> colorCodings = new HashMap<>();
+		QueryResultTable resultTable = core.sparqlSelect(query);
+		for (QueryRow row : resultTable) {
+			Node entity = row.getValue("entity");
+			String color = row.getLiteralValue("color");
 			String shortURI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
-			result.append(shortURI).append(" ").append(color).append(";");
+			colorCodings.put(shortURI, color);
 		}
-		return result.toString().trim();
+		return colorCodings;
 	}
 
 	public static RenderingStyle getStyle(GraphDataBuilder.NODE_TYPE type) {
@@ -438,8 +504,10 @@ public class Utils {
 		}
 	}
 
-	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String relation) {
-		// is the Value a literal ?
+//	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String relation) {
+//		// is the Value a literal ?
+	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Node relationURI, String relation) {
+		// is the node a literal ? edit: can a predicate node ever be a literal ??
 		Literal toLiteral = null;
 		try {
 			toLiteral = (Literal) relationURI;
@@ -457,9 +525,11 @@ public class Utils {
 		}
 		else {
 			// if it is no literal look for label for the URI
-			String relationLabel = Utils.getRDFSLabel(
-					relationURI, rdfRepository,
-					config.getLanguage());
+//			String relationLabel = Utils.getRDFSLabel(
+//					relationURI, rdfRepository,
+//					config.getLanguage());
+			String relationLabel = Utils.fetchLabel(config,
+					relationURI.asURI(), rdfRepository);
 			if (relationLabel != null) {
 				relationName = relationLabel;
 			}

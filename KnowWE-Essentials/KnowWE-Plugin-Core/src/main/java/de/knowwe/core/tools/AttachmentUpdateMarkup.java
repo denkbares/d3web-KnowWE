@@ -20,6 +20,7 @@
 package de.knowwe.core.tools;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.DayOfWeek;
@@ -33,13 +34,17 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Base64;
 import java.util.Locale;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
@@ -69,14 +74,18 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final String URL_ANNOTATION = "url";
 	private static final String INTERVAL_ANNOTATION = "interval";
 	private static final String START_ANNOTATION = "start";
+	private static final String VERSIONING_ANNOTATION = "versioning";
+	private static final String ZIP_ENTRY_ANNOTATION = "zipEntry";
 
-	private static final String EXECUTOR_KEY = "executor_key";
 	private static final String LOCK_KEY = "lock_key";
 
-	public static final String START_PATTERN = "[EEEE ]H:mm";
+	private static final String START_PATTERN = "[EEEE ]H:mm";
 	private static final DateTimeFormatter START_FORMATTER = DateTimeFormatter.ofPattern(START_PATTERN, Locale.ENGLISH);
 
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
+	private static final String PATH_SEPARATOR = "/";
+
+	private static final Timer UPDATE_TIMER = new Timer();
 
 	static {
 		MARKUP.addAnnotation(ATTACHMENT_ANNOTATION, true);
@@ -86,15 +95,39 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, true);
 		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, new TimeStampType());
 		MARKUP.addAnnotation(START_ANNOTATION);
+		MARKUP.addAnnotation(VERSIONING_ANNOTATION, false, "true", "false");
+		MARKUP.addAnnotation(ZIP_ENTRY_ANNOTATION);
 
 	}
 
 	public AttachmentUpdateMarkup() {
 		super(MARKUP);
-		addCompileScript(new UpdateScript());
+		addCompileScript(new UpdateTaskRegistrationScript());
 	}
 
-	private static class UpdateScript extends DefaultGlobalScript<AttachmentUpdateMarkup> {
+	private static class UpdateTask extends TimerTask {
+
+		private Section<AttachmentUpdateMarkup> section;
+
+		private UpdateTask(Section<AttachmentUpdateMarkup> section) {
+			this.section = section;
+		}
+
+		@Override
+		public void run() {
+			// clean up this task, if its section no longer exists..
+			if (!Sections.isLive(section)) {
+				this.cancel();
+				return;
+			}
+
+			performUpdate(section);
+		}
+	}
+
+	private static class UpdateTaskRegistrationScript extends DefaultGlobalScript<AttachmentUpdateMarkup> {
+
+		private static final String UPDATE_TASK_KEY = "updateTaskKey";
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
@@ -102,23 +135,27 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			if (section.hasErrorInSubtree()) return;
 
 			long interval = getInterval(section);
-			ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-			section.storeObject(compiler, EXECUTOR_KEY, scheduledExecutorService);
 
+			UpdateTask updateTask = new UpdateTask(section);
+			section.storeObject(compiler, UPDATE_TASK_KEY, updateTask);
 			if (interval < TimeUnit.HOURS.toMillis(1)) {
 				// if we have an interval smaller than one hour, we see it as a
 				// delay between executions and start at once
-				scheduledExecutorService.scheduleWithFixedDelay(
-						() -> performUpdate(section),
-						0, interval, TimeUnit.MILLISECONDS);
+				UPDATE_TIMER.scheduleAtFixedRate(updateTask, 0, interval);
 			}
 			else {
 				// otherwise, we see it as a rate and start a the given start delay
-				scheduledExecutorService.scheduleAtFixedRate(
-						() -> performUpdate(section),
-						getInitialDelay(section), interval, TimeUnit.MILLISECONDS);
+				UPDATE_TIMER.scheduleAtFixedRate(updateTask, getInitialDelay(section), interval);
 			}
 
+		}
+
+		@Override
+		public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
+			UpdateTask updateTask = (UpdateTask) section.removeObject(compiler, UPDATE_TASK_KEY);
+			if (updateTask != null) {
+				updateTask.cancel();
+			}
 		}
 
 		private long getInitialDelay(Section<AttachmentUpdateMarkup> section) {
@@ -172,16 +209,9 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			return timeInMillis;
 		}
 
-		@Override
-		public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
-			ScheduledExecutorService scheduledExecutorService = (ScheduledExecutorService) section.getObject(compiler, EXECUTOR_KEY);
-			if (scheduledExecutorService != null) {
-				scheduledExecutorService.shutdownNow();
-			}
-		}
 	}
 
-	public static void performUpdate(Section<AttachmentUpdateMarkup> section) {
+	static void performUpdate(Section<AttachmentUpdateMarkup> section) {
 		Section<AttachmentType> attachmentSection = Sections.successor(section, AttachmentType.class);
 		Section<URLType> urlSection = Sections.successor(section, URLType.class);
 
@@ -197,23 +227,18 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			return;
 		}
 		try {
-			WikiAttachment attachment;
-			try {
-				attachment = AttachmentType.getAttachment(attachmentSection);
-			}
-			catch (IOException e) {
-				// we already get error messages from AttachmentType
-				return;
-			}
+			String path = AttachmentType.getPath(attachmentSection);
+			String parentName = path.substring(0, path.indexOf(PATH_SEPARATOR));
+			String fileName = path.substring(path.indexOf("/") + 1);
 
-			if (attachment.getPath().split("/").length > 2) {
+			if (path.split("/").length > 2) {
 				Messages.storeMessage(section, AttachmentUpdateMarkup.class, Messages.error("Unable to update entries in zipped attachments!"));
 				return;
 			}
 
 			try {
-				if (!needsUpdate(attachment, url)) {
-					Log.info("Resource at URL " + url.toString() + " has not changed, attachment '" + attachment.getPath() + "' not updated");
+				if (!needsUpdate(attachmentSection, url)) {
+					Log.info("Resource at URL " + url.toString() + " has not changed, attachment '" + path + "' not updated");
 					return;
 				}
 
@@ -224,10 +249,42 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 					connection.setRequestProperty("Authorization", basicAuth);
 				}
 
-				Environment.getInstance()
-						.getWikiConnector()
-						.storeAttachment(attachment.getParentName(), attachment.getFileName(), "SYSTEM", connection.getInputStream());
-				Log.info("Updated attachment '" + attachment.getPath() + "' with resource from URL " + url.toString());
+				InputStream attachmentStream = null;
+				String zipEntryName = DefaultMarkupType.getAnnotation(section, ZIP_ENTRY_ANNOTATION);
+				if (zipEntryName != null) {
+					ZipInputStream zipStream = new ZipInputStream(connection.getInputStream());
+					for (ZipEntry zipEntry; (zipEntry = zipStream.getNextEntry()) != null; ) {
+						if (zipEntry.getName().equals(zipEntryName)) {
+							attachmentStream = zipStream;
+							break;
+						}
+					}
+					if (attachmentStream == null) {
+						throw new ZipException(zipEntryName + " not found at linked resource.");
+					}
+				}
+				else {
+					attachmentStream = connection.getInputStream();
+				}
+
+				ArticleManager articleManager = section.getArticleManager();
+				articleManager.open();
+				try {
+					if ("false".equalsIgnoreCase(DefaultMarkupType.getAnnotation(section, VERSIONING_ANNOTATION))) {
+						Environment.getInstance()
+								.getWikiConnector()
+								.deleteAttachment(parentName, fileName, "SYSTEM");
+					}
+					Environment.getInstance()
+							.getWikiConnector()
+							.storeAttachment(parentName, fileName, "SYSTEM", attachmentStream);
+				}
+				finally {
+					articleManager.commit();
+				}
+
+				Log.info("Updated attachment '" + path + "' with resource from URL " + url.toString());
+				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
 				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
 			}
 			catch (Throwable e) { // NOSONAR
@@ -253,7 +310,12 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
-	protected static boolean needsUpdate(WikiAttachment attachment, URL url) throws IOException {
+	private static boolean needsUpdate(Section<AttachmentType> attachmentSection, URL url) throws IOException {
+
+		WikiAttachment attachment = AttachmentType.getAttachment(attachmentSection);
+
+		if (attachment == null) return true;
+
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 		if (url.getUserInfo() != null) {

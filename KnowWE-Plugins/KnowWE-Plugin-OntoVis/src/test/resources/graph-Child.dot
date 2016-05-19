@@ -1,4 +1,7 @@
 digraph {
+sep="+25,25";
+splines = true;
+overlap=false;
 graph [ rankdir="LR" ]
 "si:child"[  shape="hexagon"  style="bold" label=<<U>si:child</U>> ];
 "si:relatedWith"[  shape="hexagon" label="si:relatedWith" ];

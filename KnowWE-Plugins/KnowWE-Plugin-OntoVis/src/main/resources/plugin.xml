@@ -214,4 +214,14 @@
 		<parameter id="priority" value="4" />
 	</extension>
 
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="SparqlVisTemplateToolProvider">
+		<parameter id="class" value="de.knowwe.rdfs.vis.markup.sparql.SparqlVisTemplateToolProvider"/>
+		<parameter id="name" value="SparqlVisTemplateToolProvider"/>
+		<parameter id="description" value="Shows a visualization of this resource via template if such template exists"/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="50"/>
+		<parameter id="scope" value="ResourceReference"/>
+	</extension>
+
 </plugin>

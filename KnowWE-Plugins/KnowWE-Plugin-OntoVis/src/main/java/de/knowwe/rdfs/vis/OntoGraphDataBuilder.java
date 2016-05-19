@@ -263,18 +263,23 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		String query = "SELECT ?literal ?pred WHERE { <" + fringeValue.stringValue() + "> ?pred ?literal . FILTER isLiteral(?literal) }";
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 		while (result != null && result.hasNext()) {
-			BindingSet row = result.next();
-			Value yURI = row.getValue("pred");
-			Value zURI = row.getValue("literal");
-			addConcept(fringeValue, zURI, yURI);
+//			BindingSet row = result.next();
+//			Value yURI = row.getValue("pred");
+//			Value zURI = row.getValue("literal");
+//			addConcept(fringeValue, zURI, yURI);
+			QueryRow row = result.next();
+			Node predURI = row.getValue("pred");
+			Node objectLiteral = row.getValue("literal");
+			addConcept(fringeNode, objectLiteral, predURI);
 		}
 	}
 
 	private void insertMainConcept(Value conceptURI) {
 		String concept = getConceptName(conceptURI);
 
-		String conceptLabel = Utils.getRDFSLabel(conceptURI, rdf2GoCore,
-				config.getLanguage());
+//		String conceptLabel = Utils.getRDFSLabel(conceptURI, rdf2GoCore,
+//				config.getLanguage());
+		String conceptLabel = Utils.fetchLabel(config, conceptURI.asURI(), rdf2GoCore);
 		if (conceptLabel == null) {
 			conceptLabel = concept;
 		}
@@ -881,16 +886,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		if (fromValue != null) fromValue.setOuter(false);
 
 		// look for label for the property
-		String relationLabel = null;
-
-		if (!config.isShowLabels()) {
-			relationLabel = Utils.getRDFSLabel(relationURI, rdf2GoCore, config.getLanguage());
-			if (relationLabel != null && relationLabel.charAt(relationLabel.length() - 3) == '@') {
-				// do not show language tag of relation labels
-				relationLabel = relationLabel.substring(0, relationLabel.length() - 3);
-			}
-		}
-
+		String relationLabel = Utils.fetchLabel(config, relationURI, rdf2GoCore);
 		if (relationLabel != null) {
 			relation = relationLabel;
 		}
