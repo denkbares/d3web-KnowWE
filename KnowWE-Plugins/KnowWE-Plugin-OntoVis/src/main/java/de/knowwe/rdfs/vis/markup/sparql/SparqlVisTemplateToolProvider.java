@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.ontoware.rdf2go.model.node.URI;
+import org.openrdf.model.URI;
 
 import de.d3web.collections.PartialHierarchyTree;
 import de.d3web.strings.Identifier;

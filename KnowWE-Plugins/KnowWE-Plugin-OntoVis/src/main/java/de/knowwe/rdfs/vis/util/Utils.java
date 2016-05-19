@@ -67,7 +67,7 @@ public class Utils {
 	}
 
 	public static String getLabel(Value concept, Rdf2GoCore repo, String languageTag, String... properties) {
-		if(properties.length == 0) {
+		if (properties.length == 0) {
 			throw new IllegalArgumentException("Property definition requred here!");
 		}
 
@@ -78,7 +78,7 @@ public class Utils {
 		if (label == null) {
 
 			for (String property : properties) {
-				String query = "SELECT ?x WHERE { <" + concept.toString() + "> "+property.trim()+" ?x.}";
+				String query = "SELECT ?x WHERE { <" + concept.toString() + "> " + property.trim() + " ?x.}";
 				TupleQueryResult resultTable = repo.sparqlSelect(query);
 				for (BindingSet queryRow : resultTable) {
 					Value node = queryRow.getValue("x");
@@ -132,15 +132,15 @@ public class Utils {
 			label = toLiteral.toString();
 			if (label.contains("@")) {
 				String lang = label.substring(label.indexOf('@') + 1);
-				label = "\"" + label.substring(0, label.indexOf('@')) + "\"" + " (" + lang + ")";
+				label = label.substring(0, label.indexOf('@')) + " (" + lang + ")";
 			}
 			else if (label.contains("^^")) {
 				if (label.contains("#")) {
-					String dataType = label.substring(label.lastIndexOf('#') + 1);
-					label = "\"" + label.substring(0, label.indexOf("^^")) + "\"" + " (" + dataType + ")";
+					String dataType = label.substring(label.lastIndexOf('#') + 1, label.length() - 1);
+					label = label.substring(0, label.indexOf("^^")) + ("string".equals(dataType) ? "" : " (" + dataType + ")");
 				}
 				else {
-					label = "\"" + label.substring(0, label.indexOf("^^")) + "\"";
+					label = label.substring(0, label.indexOf("^^"));
 				}
 			}
 			else {
@@ -242,10 +242,11 @@ public class Utils {
 	public static String fetchLabel(Config config, Value toURI, Rdf2GoCore rdf2GoCore) {
 		String showLabels = config.getShowLabels();
 		String label = null;
-		if (! Strings.isBlank(showLabels) && !"false".equals(showLabels.toLowerCase())) {
-			if("true".equals(showLabels.toLowerCase())) {
+		if (!Strings.isBlank(showLabels) && !"false".equals(showLabels.toLowerCase())) {
+			if ("true".equals(showLabels.toLowerCase())) {
 				label = Utils.getRDFSLabel(toURI, rdf2GoCore, config.getLanguage());
-			} else {
+			}
+			else {
 				label = Utils.getLabel(toURI, rdf2GoCore, config.getLanguage(), showLabels.split(","));
 			}
 			if (label != null && label.charAt(label.length() - 3) == '@') {
@@ -257,7 +258,7 @@ public class Utils {
 	}
 
 	private static String getIdentifierLiteral(Literal toLiteral) {
-		return toLiteral.toString().replace("\"", "") + "ONTOVIS-LITERAL";
+		return toLiteral.stringValue().replace("\"", "") + "ONTOVIS-LITERAL";
 	}
 
 	private static String getIdentifierBValue(BNode bValue) {
@@ -287,14 +288,14 @@ public class Utils {
 				PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, (URI) node);
 				// we then remove from this hierarchy all classes that do not have a color assignment
 				List<URI> allClasses = classHierarchy.getNodesDFSOrder();
-				for (URI clazz : allClasses){
-					if(!classColorScheme.containsKey(Rdf2GoUtils.reduceNamespace(rdfRepository, clazz.toString()))) {
+				for (URI clazz : allClasses) {
+					if (!classColorScheme.containsKey(Rdf2GoUtils.reduceNamespace(rdfRepository, clazz.toString()))) {
 						classHierarchy.remove(clazz);
 					}
 				}
 				URI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
 				String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored.toString()));
-				if(color != null) {
+				if (color != null) {
 					style.setFillcolor(color);
 				}
 			}
@@ -366,7 +367,7 @@ public class Utils {
 
 	public static String getConceptName(Value uri, Rdf2GoCore repo) {
 		/*
-        handle string/literal
+		handle string/literal
 		 */
 		if (isLiteral(uri)) {
 			return getIdentifierLiteral((Literal) uri);

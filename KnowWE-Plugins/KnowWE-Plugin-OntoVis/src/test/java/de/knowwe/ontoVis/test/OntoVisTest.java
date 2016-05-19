@@ -35,7 +35,6 @@ import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFParseException;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
-import com.denkbares.semanticcore.reasoning.RdfConfig;
 import com.denkbares.semanticcore.reasoning.ReasoningConfigs;
 import de.d3web.plugin.test.InitPluginManager;
 import de.d3web.strings.Strings;
@@ -67,12 +66,13 @@ public class OntoVisTest {
 		InitPluginManager.init();
 
 		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
-				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", model, RuleSet.OWL2_RL_REDUCED_OPTIMIZED);
+				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", ReasoningConfigs.get("RDF"));
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		rdfRepository.addNamespace("owl", "http://www.w3.org/2002/07/owl#");
 		rdfRepository.addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 		rdfRepository.addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
 		rdfRepository.addNamespace("si", "http://www.example.org/ontology#");
+
 
 		File ontologyFile = new File("src/test/resources/simpsons-ontology.xml");
 		rdfRepository.readFrom(ontologyFile);
@@ -131,7 +131,7 @@ public class OntoVisTest {
 		Config config = new Config();
 		config.setConcept("si:Human");
 		config.setFormat("png");
-		config.addExcludeNodes("owl:Nothing");
+		config.addExcludeNodes("owl:Nothing", "owl:Thing");
 		config.addExcludeRelations("rdf:first", "owl:equivalentClass", "rdf:type", "owl:assertionProperty", "owl:sameAs");
 		config.setShowOutgoingEdges(false);
 		config.setShowLabels("true");

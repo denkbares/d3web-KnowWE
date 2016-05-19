@@ -109,8 +109,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		// find all inverse Relations
 		String query = "SELECT ?x ?z WHERE { ?x owl:inverseOf ?z }";
 		Iterator<BindingSet> result =
-				rdf2GoCore.sparqlSelectIt(
-						query);
+				rdf2GoCore.sparqlSelectIt(query);
 		while (result.hasNext()) {
 			BindingSet row = result.next();
 			Value xURI = row.getValue("x");
@@ -259,17 +258,13 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		}
 	}
 
-	private void addLiterals(Value fringeValue) {
-		String query = "SELECT ?literal ?pred WHERE { <" + fringeValue.stringValue() + "> ?pred ?literal . FILTER isLiteral(?literal) }";
+	private void addLiterals(Value fringeNode) {
+		String query = "SELECT ?literal ?pred WHERE { <" + fringeNode.stringValue() + "> ?pred ?literal . FILTER isLiteral(?literal) }";
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 		while (result != null && result.hasNext()) {
-//			BindingSet row = result.next();
-//			Value yURI = row.getValue("pred");
-//			Value zURI = row.getValue("literal");
-//			addConcept(fringeValue, zURI, yURI);
-			QueryRow row = result.next();
-			Node predURI = row.getValue("pred");
-			Node objectLiteral = row.getValue("literal");
+			BindingSet row = result.next();
+			Value predURI = row.getValue("pred");
+			Value objectLiteral = row.getValue("literal");
 			addConcept(fringeNode, objectLiteral, predURI);
 		}
 	}
@@ -277,9 +272,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	private void insertMainConcept(Value conceptURI) {
 		String concept = getConceptName(conceptURI);
 
-//		String conceptLabel = Utils.getRDFSLabel(conceptURI, rdf2GoCore,
-//				config.getLanguage());
-		String conceptLabel = Utils.fetchLabel(config, conceptURI.asURI(), rdf2GoCore);
+		String conceptLabel = Utils.fetchLabel(config, conceptURI, rdf2GoCore);
 		if (conceptLabel == null) {
 			conceptLabel = concept;
 		}
