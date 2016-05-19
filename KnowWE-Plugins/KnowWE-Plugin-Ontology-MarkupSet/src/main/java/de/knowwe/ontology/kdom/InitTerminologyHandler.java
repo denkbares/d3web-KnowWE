@@ -215,7 +215,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	private void handleException(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, WikiAttachment attachment, Exception e) {
-		Log.severe("Exception while importing ontology", e);
+		Log.severe("Exception while importing ontology " + attachment.getPath(), e);
 		Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while importing ontology from '"
 				+ attachment.getPath() + "': " + e.getMessage()));
 	}
