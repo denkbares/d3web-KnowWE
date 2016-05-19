@@ -84,17 +84,17 @@ public class Rdf2GoUtils {
 	}
 
 	public static boolean isClass(Rdf2GoCore core, URI resource) {
-		String query = "ASK { " + resource.stringValue() + " rdf:type rdfs:Class .}";
+		String query = "ASK { <" + resource.stringValue() + "> rdf:type rdfs:Class .}";
 		return core.sparqlAsk(query);
 	}
 
 	public static boolean isProperty(Rdf2GoCore core, URI resource) {
-		String query = "ASK { " + resource.stringValue() + " rdf:type rdf:Property .}";
+		String query = "ASK { <" + resource.stringValue() + "> rdf:type rdf:Property .}";
 		return core.sparqlAsk(query);
 	}
 
 	public static Collection<URI> getClasses(Rdf2GoCore core, URI instance) {
-		String query = "SELECT ?class WHERE { " + instance.stringValue() + " rdf:type ?class .}";
+		String query = "SELECT ?class WHERE { <" + instance.stringValue() + "> rdf:type ?class .}";
 		List<URI> resultCollection = new ArrayList<>();
 		TupleQueryResult result = core.sparqlSelect(query);
 		Iterator<BindingSet> iterator = result.iterator();
@@ -434,7 +434,7 @@ public class Rdf2GoUtils {
         /*
 		build up tree of classes
          */
-		String classQuery = "SELECT ?c WHERE { " + concept.stringValue() + " " + typeRelation + " ?c }";
+		String classQuery = "SELECT ?c WHERE { <" + concept.stringValue() + "> " + typeRelation + " ?c }";
 		final TupleQueryResult queryResultTable = core.sparqlSelect(classQuery);
 		for (BindingSet queryRow : queryResultTable.getBindingSets()) {
 			Value c = queryRow.getValue("c");
@@ -456,7 +456,7 @@ public class Rdf2GoUtils {
 
 		@Override
 		public boolean isSuccessorOf(URI node1, URI node2) {
-			return core.sparqlAsk("ASK {" + node1.stringValue() + " " + subClassRelation + " " + node2.stringValue() + "}");
+			return core.sparqlAsk("ASK { <" + node1.stringValue() + "> " + subClassRelation + " <" + node2.stringValue() + "> }");
 		}
 	}
 
