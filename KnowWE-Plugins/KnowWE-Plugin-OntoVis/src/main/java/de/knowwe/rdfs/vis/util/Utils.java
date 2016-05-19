@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
@@ -32,6 +33,7 @@ import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
+import de.d3web.collections.PartialHierarchyTree;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
@@ -60,12 +62,11 @@ import de.knowwe.visualization.dot.RenderingStyle;
  */
 public class Utils {
 
-//	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, String languageTag) {
-	public static String getRDFSLabel(Node concept, Rdf2GoCore repo, String languageTag) {
-		return getLabel(concept, repo, languageTag, new String [] {"<http://www.w3.org/2004/02/skos/core#prefLabel>", "rdfs:label"});
+	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, String languageTag) {
+		return getLabel(concept, repo, languageTag, "<http://www.w3.org/2004/02/skos/core#prefLabel>", "rdfs:label");
 	}
 
-	public static String getLabel(Node concept,  Rdf2GoCore repo, String languageTag, String...properties) {
+	public static String getLabel(Value concept, Rdf2GoCore repo, String languageTag, String... properties) {
 		if(properties.length == 0) {
 			throw new IllegalArgumentException("Property definition requred here!");
 		}
@@ -75,20 +76,13 @@ public class Utils {
 
 		// otherwise use non-language specific label according to priority
 		if (label == null) {
-//
-//			String query = "SELECT ?x WHERE { <" + concept.toString() + "> rdfs:label ?x.}";
-//			TupleQueryResult resultTable = repo.sparqlSelect(query);
-//			for (BindingSet BindingSet : resultTable) {
-//				Value value = BindingSet.getValue("x");
-//				label = value.stringValue();
-//				break; // we assume there is only one label
 
 			for (String property : properties) {
 				String query = "SELECT ?x WHERE { <" + concept.toString() + "> "+property.trim()+" ?x.}";
-				QueryResultTable resultTable = repo.sparqlSelect(query);
-				for (QueryRow queryRow : resultTable) {
-					Node node = queryRow.getValue("x");
-					return node.asLiteral().toString();
+				TupleQueryResult resultTable = repo.sparqlSelect(query);
+				for (BindingSet queryRow : resultTable) {
+					Value node = queryRow.getValue("x");
+					return node.stringValue();
 				}
 			}
 
@@ -96,30 +90,16 @@ public class Utils {
 		return label;
 	}
 
-//	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, String languageTag) {
-	private static String getLanguageSpecificLabel(Node concept, Rdf2GoCore repo, String languageTag, String...properties) {
+	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, String languageTag, String... properties) {
 		if (languageTag == null) return null;
 
-//		String query = "SELECT ?x WHERE { <" + concept.toString()
-//				+ "> rdfs:label ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
-//		TupleQueryResult resultTable = repo.sparqlSelect(query);
-//		for (BindingSet BindingSet : resultTable) {
-//			Value Value = BindingSet.getValue("x");
-//			label = Value.stringValue();
-//			if (label.charAt(label.length() - 3) == '@') {
-//				label = label.substring(0, label.length() - 3);
-//			}
-//			break; // we assume there is only one label
-//
-//		}
-//		return label;
 		for (String property : properties) {
 			String query = "SELECT ?x WHERE { <" + concept.toString()
 					+ "> " + property.trim() + " ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
-			QueryResultTable resultTable = repo.sparqlSelect(query);
-			for (QueryRow queryRow : resultTable) {
-				Node node = queryRow.getValue("x");
-				String label = node.asLiteral().toString();
+			TupleQueryResult resultTable = repo.sparqlSelect(query);
+			for (BindingSet queryRow : resultTable) {
+				Value node = queryRow.getValue("x");
+				String label = node.stringValue();
 				if (label.charAt(label.length() - 3) == '@') {
 					label = label.substring(0, label.length() - 3);
 				}
@@ -259,7 +239,7 @@ public class Utils {
 	}
 
 	@Nullable
-	public static String fetchLabel(Config config, Node toURI, Rdf2GoCore rdf2GoCore) {
+	public static String fetchLabel(Config config, Value toURI, Rdf2GoCore rdf2GoCore) {
 		String showLabels = config.getShowLabels();
 		String label = null;
 		if (! Strings.isBlank(showLabels) && !"false".equals(showLabels.toLowerCase())) {
@@ -284,17 +264,11 @@ public class Utils {
 		return bValue.toString();
 	}
 
-//	private static RenderingStyle setClassColorCoding(Value value, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
-//		String classColorScheme = config.getClassColors();
-//		if (classColorScheme != null && !Strings.isBlank(classColorScheme)) {
-//			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, value.stringValue());
-//			if (Rdf2GoUtils.isClass(rdfRepository, (URI) value)) {
-//				String color = findColor(shortURI, classColorScheme);
-	private static RenderingStyle setClassColorCoding(Node node, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
+	private static RenderingStyle setClassColorCoding(Value node, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
 		Map<String, String> classColorScheme = config.getClassColors();
 		if (classColorScheme != null && !classColorScheme.isEmpty()) {
-			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.asURI().toString());
-			if (Rdf2GoUtils.isClass(rdfRepository, node.asURI())) {
+			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.stringValue());
+			if (Rdf2GoUtils.isClass(rdfRepository, (URI) node)) {
 				String color = classColorScheme.get(shortURI);
 				if (color != null) {
 					style.setFillcolor(color);
@@ -310,7 +284,7 @@ public class Utils {
 //						break;
 //					}
 				// We fetch the class hierarchy of this concept
-				PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, node.asURI());
+				PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, (URI) node);
 				// we then remove from this hierarchy all classes that do not have a color assignment
 				List<URI> allClasses = classHierarchy.getNodesDFSOrder();
 				for (URI clazz : allClasses){
@@ -454,11 +428,11 @@ public class Utils {
 //		for (BindingSet row : resultTable) {
 //			Value entity = row.getValue("entity");
 //			String color = row.getValue("color").stringValue();
-//		Map<String, String> colorCodings = new HashMap<>();
-		QueryResultTable resultTable = core.sparqlSelect(query);
-		for (QueryRow row : resultTable) {
-			Node entity = row.getValue("entity");
-			String color = row.getLiteralValue("color");
+		Map<String, String> colorCodings = new HashMap<>();
+		TupleQueryResult resultTable = core.sparqlSelect(query);
+		for (BindingSet row : resultTable) {
+			Value entity = row.getValue("entity");
+			String color = row.getValue("color").stringValue();
 			String shortURI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
 			colorCodings.put(shortURI, color);
 		}
@@ -504,9 +478,7 @@ public class Utils {
 		}
 	}
 
-//	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String relation) {
-//		// is the Value a literal ?
-	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Node relationURI, String relation) {
+	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String relation) {
 		// is the node a literal ? edit: can a predicate node ever be a literal ??
 		Literal toLiteral = null;
 		try {
@@ -525,11 +497,8 @@ public class Utils {
 		}
 		else {
 			// if it is no literal look for label for the URI
-//			String relationLabel = Utils.getRDFSLabel(
-//					relationURI, rdfRepository,
-//					config.getLanguage());
 			String relationLabel = Utils.fetchLabel(config,
-					relationURI.asURI(), rdfRepository);
+					relationURI, rdfRepository);
 			if (relationLabel != null) {
 				relationName = relationLabel;
 			}
