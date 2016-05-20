@@ -20,8 +20,8 @@ package de.knowwe.ontology.compile;
 
 import java.util.List;
 
-import com.denkbares.semanticcore.reasoning.ReasoningConfig;
-import com.denkbares.semanticcore.reasoning.ReasoningConfigs;
+import com.denkbares.semanticcore.config.RepositoryConfig;
+import com.denkbares.semanticcore.config.RepositoryConfigs;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.PackageCompiler;
@@ -88,9 +88,9 @@ public class OntologyType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
 
-		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, ReasoningConfigs.values()
+		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, RepositoryConfigs.values()
 				.stream()
-				.map(ReasoningConfig::getName)
+				.map(RepositoryConfig::getName)
 				.collect(toList())
 				.toArray(new String[] {}));
 		MARKUP.addAnnotationIcon(ANNOTATION_RULE_SET, Icon.COG.addTitle("Rule Set"));
@@ -141,7 +141,7 @@ public class OntologyType extends DefaultMarkupType {
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) throws CompilerMessage {
 			Section<DefaultMarkupType> ontologyType = Sections.ancestor(section, DefaultMarkupType.class);
 			String ruleSetValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_RULE_SET);
-			ReasoningConfig ruleSet = getRuleSet(ruleSetValue);
+			RepositoryConfig ruleSet = getRuleSet(ruleSetValue);
 			String multiDefModeValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_MULTI_DEF_MODE);
 			MultiDefinitionMode multiDefMode = getMultiDefinitionMode(multiDefModeValue);
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
@@ -160,8 +160,8 @@ public class OntologyType extends DefaultMarkupType {
 			return parseEnum(MultiDefinitionMode.class, multiDefModeValue, "multi-definition-mode", MultiDefinitionMode.ignore);
 		}
 
-		private ReasoningConfig getRuleSet(String ruleSetValue) {
-			return ReasoningConfigs.get(ruleSetValue);
+		private RepositoryConfig getRuleSet(String ruleSetValue) {
+			return RepositoryConfigs.get(ruleSetValue);
 		}
 
 		private <T extends Enum<T>> T parseEnum(Class<T> enumClass, String value, String enumName, T defaultValue) {

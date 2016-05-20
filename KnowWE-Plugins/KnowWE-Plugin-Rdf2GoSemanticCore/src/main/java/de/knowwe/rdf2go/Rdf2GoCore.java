@@ -77,9 +77,9 @@ import com.denkbares.semanticcore.SemanticCore;
 import com.denkbares.semanticcore.SesameEndpoint;
 import com.denkbares.semanticcore.TupleQuery;
 import com.denkbares.semanticcore.TupleQueryResult;
-import com.denkbares.semanticcore.reasoning.RdfConfig;
-import com.denkbares.semanticcore.reasoning.ReasoningConfig;
-import com.denkbares.semanticcore.reasoning.ReasoningConfigs;
+import com.denkbares.semanticcore.config.RdfConfig;
+import com.denkbares.semanticcore.config.RepositoryConfig;
+import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
 import de.d3web.collections.MultiMap;
 import de.d3web.collections.MultiMaps;
@@ -199,12 +199,12 @@ public class Rdf2GoCore {
 
 	private final String lns;
 
-	private ReasoningConfig ruleSet;
+	private RepositoryConfig ruleSet;
 
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<>(
-					MultiMaps.<StatementSource>hashMinimizedFactory(),
-					MultiMaps.<Statement>hashMinimizedFactory());
+					MultiMaps.hashMinimizedFactory(),
+					MultiMaps.hashMinimizedFactory());
 
 	/**
 	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value
@@ -242,7 +242,7 @@ public class Rdf2GoCore {
 	 *
 	 * @param ruleSet specifies the reasoning profile.
 	 */
-	public Rdf2GoCore(ReasoningConfig ruleSet) {
+	public Rdf2GoCore(RepositoryConfig ruleSet) {
 		this(Environment.getInstance().getWikiConnector().getBaseUrl()
 						+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
 				ruleSet
@@ -258,9 +258,9 @@ public class Rdf2GoCore {
 	 * @param bns       the uri used as base namespace
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
-	public Rdf2GoCore(String lns, String bns, ReasoningConfig reasoning) {
+	public Rdf2GoCore(String lns, String bns, RepositoryConfig reasoning) {
 		if (reasoning == null) {
-			reasoning = ReasoningConfigs.get(RdfConfig.class);
+			reasoning = RepositoryConfigs.get(RdfConfig.class);
 		}
 		this.bns = bns;
 		this.lns = lns;
@@ -1479,7 +1479,7 @@ public class Rdf2GoCore {
 
 	}
 
-	public ReasoningConfig getRuleSet() {
+	public RepositoryConfig getRuleSet() {
 		return ruleSet;
 	}
 

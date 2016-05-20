@@ -23,9 +23,9 @@ import java.util.Collections;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.denkbares.semanticcore.reasoning.RdfConfig;
-import com.denkbares.semanticcore.reasoning.ReasoningConfig;
-import com.denkbares.semanticcore.reasoning.ReasoningConfigs;
+import com.denkbares.semanticcore.config.RdfConfig;
+import com.denkbares.semanticcore.config.RepositoryConfig;
+import com.denkbares.semanticcore.config.RepositoryConfigs;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
@@ -61,14 +61,14 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private boolean firstCompilation = true;
 	private ParallelScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ParallelScriptCompiler<OntologyCompiler> destroyScriptCompiler;
-	private final ReasoningConfig ruleSet;
+	private final RepositoryConfig ruleSet;
 	private final String compilingArticle;
 	private MultiDefinitionMode multiDefinitionMode;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
 							Class<? extends Type> compilingType,
-							ReasoningConfig ruleSet, MultiDefinitionMode multiDefMode) {
+							RepositoryConfig ruleSet, MultiDefinitionMode multiDefMode) {
 		super(manager, compileSection, compilingType);
 		EventManager.getInstance().registerListener(this);
 		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
@@ -97,7 +97,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	public Rdf2GoCore getRdf2GoCore() {
 		if (rdf2GoCore == null) {
 			// in case the compiler doesn't have anything to compile...
-			return new Rdf2GoCore(ReasoningConfigs.get(RdfConfig.class));
+			return new Rdf2GoCore(RepositoryConfigs.get(RdfConfig.class));
 		}
 		return rdf2GoCore;
 	}
@@ -243,7 +243,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		scriptCompiler.addSubtree(section, scriptFilter);
 	}
 
-	public ReasoningConfig getReasoning() {
+	public RepositoryConfig getReasoning() {
 		return ruleSet;
 	}
 
