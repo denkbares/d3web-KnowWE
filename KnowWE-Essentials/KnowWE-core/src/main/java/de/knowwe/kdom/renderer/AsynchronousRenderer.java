@@ -7,6 +7,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.util.Icon;
 
 /**
  * Renderer that wraps an other renderer to enable asynchron rendering of the
@@ -45,8 +46,14 @@ public class AsynchronousRenderer implements Renderer {
 			String id = section.getID();
 			String size = inline ? "asynchronSmall" : "asynchronNormal";
 			result.appendHtml("<span class='asynchronRenderer " + size + "'")
-					.appendHtml(" id='").append(id).appendHtml("'")
-					.appendHtml(" rel=\"{id:'").append(id).appendHtml("'}\"></span>");
+					.appendHtml(" id='")
+					.append(id)
+					.appendHtml("'")
+					.appendHtml(" rel=\"{id:'")
+					.append(id)
+					.appendHtml("'}\">")
+					.appendHtml(inline ? Icon.LOADING.toHtml() : "")
+					.appendHtml("</span>");
 		}
 	}
 
