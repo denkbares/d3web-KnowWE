@@ -13,8 +13,6 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
 	 */
 	var KNOWWE = {};
 }
-;
-
 /**
  * Class: KNOWWE.notification functions and variables for the notification
  * mechanism.
@@ -168,8 +166,8 @@ KNOWWE.notification = function() {
 
 			jq$('#KnowWENotificationQuit')
 				.html(
-				'<span><a onclick="KNOWWE.notification.removeNotification(\''
-				+ message.id + '\')' + '">X</a></span>');
+					'<span><a onclick="KNOWWE.notification.removeNotification(\''
+					+ message.id + '\')' + '">X</a></span>');
 
 			// show notification bar
 			jq$('#KnowWENotificationDom').show();
@@ -182,7 +180,7 @@ KNOWWE.notification = function() {
 			var messages = KNOWWE.notification.messages;
 			var index = -1;
 			for (var i = 0; i < messages.length; i++) {
-				if (messages[i].id === id) {
+				if (messages[i].id == id) {
 					index = i;
 					break;
 				}
@@ -250,7 +248,7 @@ KNOWWE.notification = function() {
 						}
 					}
 				}
-			}
+			};
 			new _KA(options).send();
 		}
 	}
