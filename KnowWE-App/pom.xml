@@ -191,21 +191,21 @@
 
 		<!-- ======= WIKI PLUGINS ======= -->
 
-        <profile>
-            <id>lexicon</id>
-            <activation>
-                <property>
-                    <name>lexicon</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>de.uniwue.d3web</groupId>
-                    <artifactId>KnowWE-Plugin-LexiconInterface</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
+		<profile>
+			<id>lexicon</id>
+			<activation>
+				<property>
+					<name>lexicon</name>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-LexiconInterface</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
 
 		<profile>
 			<id>ontologydebugger</id>
@@ -352,6 +352,12 @@
 					<artifactId>KnowWE-Plugin-RightPanel</artifactId>
 					<version>${project.version}</version>
 				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>graphdb</id>
+			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>denkbares-SemanticCore-Plugin-GraphDB</artifactId>
