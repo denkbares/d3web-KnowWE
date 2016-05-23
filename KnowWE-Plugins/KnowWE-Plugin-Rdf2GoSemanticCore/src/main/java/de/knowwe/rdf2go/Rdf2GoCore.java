@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Timer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -125,8 +124,6 @@ public class Rdf2GoCore {
 
 	private static final ThreadPoolExecutor sparqlReaperPool = createThreadPool(
 			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon");
-
-	private Timer sparqlTimer = new Timer("SparqlTimoutTimer", true);
 
 	public static final int DEFAULT_TIMEOUT = 15000;
 
@@ -226,7 +223,7 @@ public class Rdf2GoCore {
 	private Set<Statement> removeCache;
 	private long lastModified = System.currentTimeMillis();
 
-	SemanticCore semanticCore;
+	private SemanticCore semanticCore;
 
 	/**
 	 * Initializes the Rdf2GoCore with the default settings specified
