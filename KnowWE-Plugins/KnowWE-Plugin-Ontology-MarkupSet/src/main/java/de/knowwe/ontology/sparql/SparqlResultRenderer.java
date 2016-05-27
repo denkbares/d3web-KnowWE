@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import org.openrdf.model.Value;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import de.d3web.collections.PartialHierarchy;
+import de.d3web.collections.PartialHierarchyException;
 import de.d3web.collections.PartialHierarchyTree;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
@@ -146,6 +148,8 @@ public class SparqlResultRenderer {
 
 	private SparqlRenderResult renderQueryResultLocked(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
+
+
 		RenderResult renderResult = new RenderResult(user);
 		if (!qrt.iterator().hasNext()) {
 			renderResult.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
@@ -216,7 +220,7 @@ public class SparqlResultRenderer {
 			}
 		}
 		else if (isTree) {
-			table = createMagicallySortedTable(table);
+			table = createMagicallySortedTable(table, renderResult);
 			iterator = table.iterator();
 		}
 		else {
@@ -291,16 +295,24 @@ public class SparqlResultRenderer {
 		return RenderMode.HTML;
 	}
 
-	private ResultTableModel createMagicallySortedTable(ResultTableModel table) {
+	private ResultTableModel createMagicallySortedTable(ResultTableModel table, RenderResult renderResult) {
 		// creating hierarchy order using PartialHierarchyTree
+		ResultTableHierarchy resultTableHierarchy = new ResultTableHierarchy(table);
 		PartialHierarchyTree<TableRow> tree = new
 				PartialHierarchyTree<>(
-				new ResultTableHierarchy(table));
+				resultTableHierarchy);
 
 		// add all nodes to create the tree
 		Iterator<TableRow> iterator = table.iterator();
 		while (iterator.hasNext()) {
-			tree.insertNode(iterator.next());
+			TableRow next = iterator.next();
+			try {
+				tree.insert(next);
+			}
+			catch (PartialHierarchyException e) {
+				renderResult.appendException(e.getMessage(), e);
+				e.printStackTrace();
+			}
 		}
 
 		// DFS traversion will create the desired order
@@ -370,12 +382,13 @@ public class SparqlResultRenderer {
 		}
 
 		@Override
-		public boolean isSuccessorOf(TableRow row1, TableRow row2) {
-			return checkSuccessorshipRecursively(row1, row2);
+		public boolean isSuccessorOf(TableRow row1, TableRow row2) throws PartialHierarchyException {
+			LinkedHashSet<TableRow> path = new LinkedHashSet<>();
+			return checkSuccessorshipRecursively(row1, row2, path);
 		}
 
 		@SuppressWarnings("SimplifiableIfStatement")
-		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor) {
+		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor, Set<TableRow> path)  throws PartialHierarchyException{
 
 			Value ascendorNode = ascendor.getValue(data.getVariables().get(0));
 			Value potentialAncestorNode = ancestor.getValue(data.getVariables().get(0));
@@ -390,8 +403,16 @@ public class SparqlResultRenderer {
 			Collection<TableRow> parentRows = data.findRowFor(ascendorParent);
 			if (parentRows == null || parentRows.size() == 0) return false;
 
-			return checkSuccessorshipRecursively(parentRows.iterator().next(), ancestor);
+			// we remember the path to detect cycles
+			path.add(ascendor);
+
+			TableRow parent = parentRows.iterator().next();
+			if(path.contains(parent)) {
+				throw new PartialHierarchyException(parent, path);
+			}
+			return checkSuccessorshipRecursively(parent, ancestor, path);
 		}
+
 	}
 
 	private String valueToID(String variable, TableRow row) {
