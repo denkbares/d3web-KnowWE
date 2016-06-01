@@ -31,7 +31,14 @@ public interface LongOperation {
 	 * Cancels the current operation indicated by this progress. The
 	 * operation itself is responsible to interrupt its operation on this flag.
 	 */
-	public void cancel();
+	void cancel();
+
+	/**
+	 * Indicates whether this operation is canceled or not
+	 *
+	 * @return true, if this operation was canceled
+	 */
+	boolean isCanceled();
 
 	/**
 	 * This method will be run after the method
@@ -66,5 +73,5 @@ public interface LongOperation {
 	/**
 	 * Provides a unique id for this LongOperation instance.
 	 */
-	public String getId();
+	String getId();
 }
