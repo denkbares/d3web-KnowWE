@@ -367,6 +367,17 @@
 		</profile>
 
 		<profile>
+			<id>jena</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>denkbares-SemanticCore-Plugin-Jena</artifactId>
+					<version>1.0-SNAPSHOT</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>denkbares-free2use</id>
 			<dependencies>
 				<dependency>
