@@ -8,6 +8,7 @@ import java.util.Map;
 
 import de.d3web.plugin.Extension;
 import de.d3web.strings.Strings;
+import de.d3web.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.ScopeExtensions;
@@ -34,9 +35,15 @@ public class ToolUtils {
 		List<Tool> result = new LinkedList<>();
 		for (Extension match : extensions.getMatches(section)) {
 			ToolProvider provider = (ToolProvider) match.getSingleton();
-			Tool[] tools = provider.getTools(section, userContext);
-			if (tools != null) {
-				Collections.addAll(result, tools);
+			try {
+				Tool[] tools = provider.getTools(section, userContext);
+				if (tools != null) {
+					Collections.addAll(result, tools);
+				}
+			}
+			catch (Exception e) {
+				Log.warning("Exception while getting tools from " + provider.getClass()
+						.getSimpleName() + " ignoring this provider.", e);
 			}
 		}
 		return result;
@@ -45,7 +52,13 @@ public class ToolUtils {
 	public static boolean hasToolInstances(Section<?> section, UserContext userContext) {
 		for (Extension match : extensions.getMatches(section)) {
 			ToolProvider provider = (ToolProvider) match.getSingleton();
-			if (provider.hasTools(section, userContext)) return true;
+			try {
+				if (provider.hasTools(section, userContext)) return true;
+			}
+			catch (Exception e) {
+				Log.warning("Exception while checking tools from " + provider.getClass()
+						.getSimpleName() + " ignoring this provider.", e);
+			}
 		}
 		return false;
 	}
