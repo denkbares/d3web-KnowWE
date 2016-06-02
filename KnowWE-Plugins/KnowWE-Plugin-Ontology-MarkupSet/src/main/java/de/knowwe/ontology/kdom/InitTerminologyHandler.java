@@ -32,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.jetbrains.annotations.NotNull;
 import org.openrdf.query.BindingSet;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFFormat;
@@ -137,12 +138,12 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 				List<String> locations = connection.getHeaderFields().get("Content-Location");
 				if (locations != null && !locations.isEmpty()) {
 					String location = locations.iterator().next();
-					extension = location.substring(Math.max(0, location.lastIndexOf(".")));
+					extension = getExtension(location);
 				}
 				// if content-location is not defined, we probably access a file directly...
 				else {
 					String fileName = new File(importString).getName();
-					extension = fileName.substring(fileName.lastIndexOf("."));
+					extension = getExtension(fileName);
 				}
 				attachmentName = attachmentName + extension;
 				connection.disconnect();
@@ -155,6 +156,11 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 			}
 		}
 		return attachmentName;
+	}
+
+	@NotNull
+	private String getExtension(String fileName) {
+		return fileName.substring(Math.max(0, fileName.lastIndexOf(".")));
 	}
 
 	private void importAttachment(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, String attachmentFile, boolean silent) {
