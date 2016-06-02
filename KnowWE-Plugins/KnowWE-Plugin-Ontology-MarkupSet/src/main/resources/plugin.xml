@@ -311,37 +311,6 @@
         <parameter id="scope" value="TurtleMarkup"/>
     </extension>
 
-    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyMarkupObjectInfoPageToolProvider">
-        <parameter id="class" value="de.knowwe.core.tools.TermInfoToolProvider"/>
-        <parameter id="name" value="OntologyMarkupObjectInfoPageToolProvider"/>
-        <parameter id="description"
-                   value="Offer a button to navigate to the object information page of an selected object."/>
-        <parameter id="version" value="1.0"/>
-        <parameter id="priority" value="3"/>
-        <parameter id="scope" value="ResourceDefinition"/>
-        <parameter id="scope" value="ResourceReference"/>
-        <parameter id="scope" value="NamespaceDefinition"/>
-        <parameter id="scope" value="NamespaceReference"/>
-        <parameter id="scope" value="AbbreviationDefinition"/>
-        <parameter id="scope" value="AbbreviationReference"/>
-        <parameter id="scope" value="LazyURIReference"/>
-    </extension>
-
-    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyCompositeEditToolProvider">
-        <parameter id="class" value="de.knowwe.core.tools.CompositeEditToolProvider"/>
-        <parameter id="name" value="CompositeEditToolProvider"/>
-        <parameter id="description" value="Offers Renaming, Show Info etc. for terms"/>
-        <parameter id="version" value="1.0"/>
-        <parameter id="priority" value="10"/>
-        <parameter id="scope" value="ResourceDefinition"/>
-        <parameter id="scope" value="ResourceReference"/>
-        <parameter id="scope" value="NamespaceDefinition"/>
-        <parameter id="scope" value="NamespaceReference"/>
-        <parameter id="scope" value="AbbreviationDefinition"/>
-        <parameter id="scope" value="AbbreviationReference"/>
-        <parameter id="scope" value="LazyURIReference"/>
-    </extension>
-
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyMarkupRenamingToolProvider">
         <parameter id="class" value="de.knowwe.core.tools.RenamingToolProvider"/>
         <parameter id="name" value="RenamingToolProvider"/>
