@@ -327,7 +327,7 @@
         <parameter id="scope" value="LazyURIReference"/>
     </extension>
 
-    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CompositeEditToolProvider">
+    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyCompositeEditToolProvider">
         <parameter id="class" value="de.knowwe.core.tools.CompositeEditToolProvider"/>
         <parameter id="name" value="CompositeEditToolProvider"/>
         <parameter id="description" value="Offers Renaming, Show Info etc. for terms"/>
