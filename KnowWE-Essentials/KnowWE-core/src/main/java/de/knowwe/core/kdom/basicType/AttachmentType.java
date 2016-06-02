@@ -128,6 +128,22 @@ public class AttachmentType extends AbstractType {
 			EventManager.getInstance().registerListener(this);
 		}
 
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			AttachmentChangedListener that = (AttachmentChangedListener) o;
+
+			return section.getID().equals(that.section.getID());
+
+		}
+
+		@Override
+		public int hashCode() {
+			return section.getID().hashCode();
+		}
+
 		public void destroy() {
 			EventManager.getInstance().unregister(this);
 		}
