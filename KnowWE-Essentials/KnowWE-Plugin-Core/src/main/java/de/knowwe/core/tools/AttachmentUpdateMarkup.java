@@ -33,7 +33,10 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +47,7 @@ import java.util.zip.ZipInputStream;
 
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
+import de.d3web.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -53,7 +57,10 @@ import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.basicType.URLType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -87,13 +94,28 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	private static final Timer UPDATE_TIMER = new Timer();
 
+	private static final Map<String, Long> LAST_RUNS = new HashMap<>();
+
 	static {
 		MARKUP.addAnnotation(ATTACHMENT_ANNOTATION, true);
 		MARKUP.addAnnotationContentType(ATTACHMENT_ANNOTATION, new AttachmentType());
 		MARKUP.addAnnotation(URL_ANNOTATION, true);
 		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, true);
-		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, new TimeStampType());
+		TimeStampType timeStampType = new TimeStampType();
+		timeStampType.setRenderer(new Renderer() {
+			@Override
+			public void render(Section<?> section, UserContext user, RenderResult result) {
+				result.append(section.getText());
+				long sinceLastRun = timeSinceLastRun(Sections.ancestor(section, AttachmentUpdateMarkup.class));
+				if (sinceLastRun < Long.MAX_VALUE) {
+					result.appendHtmlElement("span",
+							" (last update was " + Stopwatch.getDisplay(sinceLastRun) + " ago)",
+							"style", "color: grey");
+				}
+			}
+		});
+		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, timeStampType);
 		MARKUP.addAnnotation(START_ANNOTATION);
 		MARKUP.addAnnotation(VERSIONING_ANNOTATION, false, "true", "false");
 		MARKUP.addAnnotation(ZIP_ENTRY_ANNOTATION);
@@ -123,6 +145,26 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 			performUpdate(section);
 		}
+
+	}
+
+	private static void logLastRun(Section<?> section) {
+		LAST_RUNS.put(section.getID(), System.currentTimeMillis());
+	}
+
+	private static void cleanUpLastRuns() {
+		for (Iterator<Map.Entry<String, Long>> iterator = LAST_RUNS.entrySet()
+				.iterator(); iterator.hasNext(); ) {
+			Map.Entry<String, Long> entry = iterator.next();
+			if (Sections.get(entry.getKey()) == null) {
+				iterator.remove();
+			}
+		}
+	}
+
+	private static long timeSinceLastRun(Section<?> section) {
+		Long lastRun = LAST_RUNS.get(section.getID());
+		return lastRun == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastRun;
 	}
 
 	private static class UpdateTaskRegistrationScript extends DefaultGlobalScript<AttachmentUpdateMarkup> {
@@ -137,16 +179,10 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			long interval = getInterval(section);
 
 			UpdateTask updateTask = new UpdateTask(section);
+
 			section.storeObject(compiler, UPDATE_TASK_KEY, updateTask);
-			if (interval < TimeUnit.HOURS.toMillis(1)) {
-				// if we have an interval smaller than one hour, we see it as a
-				// delay between executions and start at once
-				UPDATE_TIMER.scheduleAtFixedRate(updateTask, 0, interval);
-			}
-			else {
-				// otherwise, we see it as a rate and start a the given start delay
-				UPDATE_TIMER.scheduleAtFixedRate(updateTask, getInitialDelay(section), interval);
-			}
+
+			UPDATE_TIMER.scheduleAtFixedRate(updateTask, getInitialDelay(section, interval), interval);
 
 		}
 
@@ -158,7 +194,31 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			}
 		}
 
-		private long getInitialDelay(Section<AttachmentUpdateMarkup> section) {
+		private long getInitialDelay(Section<AttachmentUpdateMarkup> section, long interval) {
+
+			long timeSinceLastRun = timeSinceLastRun(section);
+			if (interval < TimeUnit.HOURS.toMillis(1)) {
+				// If we have an interval smaller than one hour, we see it as a
+				// delay between executions and start at once. If the updater has run before
+				// and was only removed and added again because of a full compilation of the
+				// article without change to the updater itself, we continue with
+				// desired interval.
+				return Math.max(0, interval - timeSinceLastRun);
+			}
+			else {
+				// Otherwise, we see it as a rate and start a the given start delay, taking
+				// again into account, if the equal updater has run before.
+				return timeSinceLastRun == Long.MAX_VALUE ?
+						// updater did not run before, just use the given delay
+						getStartDelayFromAnnotation(section) :
+						// it did run before, delay for the rest of the interval
+						Math.max(0, interval - timeSinceLastRun);
+
+			}
+
+		}
+
+		private long getStartDelayFromAnnotation(Section<AttachmentUpdateMarkup> section) {
 			LocalDateTime start = LocalDateTime.now();
 
 			Section<? extends AnnotationContentType> annotationContentSection = DefaultMarkupType.getAnnotationContentSection(section, START_ANNOTATION);
@@ -212,6 +272,10 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	static void performUpdate(Section<AttachmentUpdateMarkup> section) {
+
+		logLastRun(section);
+		cleanUpLastRuns();
+
 		Section<AttachmentType> attachmentSection = Sections.successor(section, AttachmentType.class);
 		Section<URLType> urlSection = Sections.successor(section, URLType.class);
 
@@ -226,8 +290,8 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 					.toString() + ", update already running");
 			return;
 		}
+		String path = AttachmentType.getPath(attachmentSection);
 		try {
-			String path = AttachmentType.getPath(attachmentSection);
 			String parentName = path.substring(0, path.indexOf(PATH_SEPARATOR));
 			String fileName = path.substring(path.indexOf("/") + 1);
 
@@ -288,7 +352,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
 			}
 			catch (Throwable e) { // NOSONAR
-				String message = "Exception while downloading attachment";
+				String message = "Exception while downloading attachment " + path;
 				Messages.storeMessage(section, AttachmentUpdateMarkup.class, Messages.error(message + ": " + e.getMessage()));
 				Log.severe(message, e);
 			}
