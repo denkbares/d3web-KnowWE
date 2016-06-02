@@ -35,29 +35,30 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Section<SparqlVisualizationType> templateSection = findApplicableTemplate(section);
+		if (templateSection == null) return new Tool[] {};
 		String templateClass = DefaultMarkupType.getAnnotation(templateSection, SparqlVisualizationType.VIS_TEMPLATE_CLASS);
-		if(templateClass == null) return new Tool[]{};
+		if (templateClass == null) return new Tool[] {};
 
 		URI uri = getURI(section);
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
-		if(compiler == null || uri == null) return new Tool[]{};
+		if (compiler == null || uri == null) return new Tool[] {};
 
 		String reducedConceptURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri.toString());
 		String link = KnowWEUtils.getURLLink(templateSection.getTitle());
 
 		try {
-			String conceptParameterAppendix = "&concept="+ URLEncoder.encode(reducedConceptURI, "UTF-8");
+			String conceptParameterAppendix = "&concept=" + URLEncoder.encode(reducedConceptURI, "UTF-8");
 			link += conceptParameterAppendix;
 		}
 		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 
-		return new Tool[]{	new DefaultTool(
+		return new Tool[] { new DefaultTool(
 				Icon.SHOWTRACE,
-				"Visualize with template '" + templateClass + "'", "Open sparql visualization template for class "+templateClass,
-				link, Tool.ActionType.HREF, Tool.CATEGORY_INFO)};
+				"Visualize with template '" + templateClass + "'", "Open sparql visualization template for class " + templateClass,
+				link, Tool.ActionType.HREF, Tool.CATEGORY_INFO) };
 	}
 
 	@Override
@@ -68,8 +69,8 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 	private URI getURI(Section<?> section) {
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
-		if(compiler == null) return null;
-		if(section.get() instanceof Term) {
+		if (compiler == null) return null;
+		if (section.get() instanceof Term) {
 			Identifier termIdentifier = ((Term) section.get()).getTermIdentifier((Section<? extends Term>) section);
 			Rdf2GoCore core = compiler.getRdf2GoCore();
 			return core.createURI(Rdf2GoUtils.expandNamespace(core, termIdentifier.getPathElementAt(0)), termIdentifier.getPathElementAt(1));
@@ -82,15 +83,15 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
 		URI uri = getURI(section);
-		if(uri == null || compiler == null) return null;
-				PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
-				for (URI clazzURI : classHierarchy.getNodesDFSOrder()) {
-					Section<SparqlVisualizationType> sparqlVisualizationTypeSection = templates.get(Rdf2GoUtils.reduceNamespace(compiler
-							.getRdf2GoCore(), clazzURI.toString()));
-					if(sparqlVisualizationTypeSection != null) {
-						// found applicable template
-						return sparqlVisualizationTypeSection;
-					}
+		if (uri == null || compiler == null) return null;
+		PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
+		for (URI clazzURI : classHierarchy.getNodesDFSOrder()) {
+			Section<SparqlVisualizationType> sparqlVisualizationTypeSection = templates.get(Rdf2GoUtils.reduceNamespace(compiler
+					.getRdf2GoCore(), clazzURI.toString()));
+			if (sparqlVisualizationTypeSection != null) {
+				// found applicable template
+				return sparqlVisualizationTypeSection;
+			}
 		}
 		return null;
 	}
@@ -99,10 +100,10 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 		Map<String, Section<SparqlVisualizationType>> visTemplatesForClasses = new HashMap<>();
 		Collection<Section<SparqlVisualizationType>> allSparqlVisMarkups = Sections.successors(section.getArticleManager(), SparqlVisualizationType.class);
 		Iterator<Section<SparqlVisualizationType>> iterator = allSparqlVisMarkups.iterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			Section<SparqlVisualizationType> sparqlVisualizationTypeSection = iterator.next();
 			String templateClass = DefaultMarkupType.getAnnotation(sparqlVisualizationTypeSection, SparqlVisualizationType.VIS_TEMPLATE_CLASS);
-			if(templateClass != null) {
+			if (templateClass != null) {
 				visTemplatesForClasses.put(templateClass, sparqlVisualizationTypeSection);
 			}
 		}
