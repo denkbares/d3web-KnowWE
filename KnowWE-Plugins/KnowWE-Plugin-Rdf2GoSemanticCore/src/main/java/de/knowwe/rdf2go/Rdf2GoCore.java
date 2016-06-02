@@ -263,6 +263,7 @@ public class Rdf2GoCore {
 		this.lns = lns;
 		try {
 			semanticCore = SemanticCore.getOrCreateInstance(String.valueOf(coreId.incrementAndGet()), reasoning);
+			semanticCore.allocate(); // make sure the core does not shut down on its own...
 			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
 		}
 		catch (IOException e) {
