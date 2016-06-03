@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -137,8 +136,7 @@ public class Rdf2GoUtils {
 		// otherwise use standard label
 		if (label == null) {
 
-			Formatter formatter1 = new Formatter();
-			String labelQuery = formatter1.format(SPARQL_LABEL, concept.stringValue()).out().toString();
+			String labelQuery = String.format(SPARQL_LABEL, concept.stringValue());
 
 			String query = "SELECT ?label WHERE { "
 					+ labelQuery
@@ -161,10 +159,9 @@ public class Rdf2GoUtils {
 		return label;
 	}
 
-	private static final String SPARQL_LABEL = "" +
-			"%1$s rdfs:label ?rdfsLabel .\n" +
-			"OPTIONAL { %1$s <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel . }\n" +
-			"OPTIONAL { %1$s <http://www.w3.org/2004/02/skos/core#altLabel> ?prefLabel . }\n" +
+	private static final String SPARQL_LABEL = "<%1$s> rdfs:label ?rdfsLabel .\n" +
+			"OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel . }\n" +
+			"OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#altLabel> ?prefLabel . }\n" +
 			"BIND ( IF ( BOUND (?prefLabel), ?prefLabel, \n" +
 			"     \t\tIF ( BOUND (?altLabel), ?altLabel, ?rdfsLabel ) )\n" +
 			"     \t AS ?label ) .";
@@ -178,11 +175,9 @@ public class Rdf2GoUtils {
 		if (languageTag == null) return null;
 		String label = null;
 
-		Formatter formatter1 = new Formatter();
-		String labelQuery = formatter1.format(SPARQL_LABEL, concept.stringValue()).out().toString();
+		String labelQuery = String.format(SPARQL_LABEL, concept.stringValue());
 
-		Formatter formatter2 = new Formatter();
-		String languageFilter = formatter2.format(SPARQL_LABEL_LANGUAGE_CONSTRAINTS, languageTag).out().toString();
+		String languageFilter = String.format(SPARQL_LABEL_LANGUAGE_CONSTRAINTS, languageTag);
 		String query = "SELECT ?label WHERE { "
 				+ labelQuery + languageFilter
 				+ "}";
