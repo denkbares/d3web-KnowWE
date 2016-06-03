@@ -110,7 +110,7 @@ public class SessionProvider {
 	private Session createSessionInternally(UserContext context, KnowledgeBase kb) {
 		removeSessionInternally(context, kb, true);
 		Session session = SessionFactory.createSession(kb);
-		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session));
+		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session, context));
 		sessions.put(kb.getId(), session);
 		return session;
 	}
