@@ -520,6 +520,17 @@
 		</profile>
 
 		<profile>
+			<id>load-kb</id>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>d3web-homepage</id>
 			<dependencies>
 				<dependency>
