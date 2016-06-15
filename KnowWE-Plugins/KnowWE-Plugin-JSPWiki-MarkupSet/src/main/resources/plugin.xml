@@ -52,7 +52,7 @@
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="VerbatimType">
+		id="VerbatimTypeJSP">
 		<parameter id="class" value="de.knowwe.jspwiki.types.VerbatimType" />
 		<parameter id="name" value="VerbatimType" />
 		<parameter id="description" value="Represents a VerbatimType in KDOM" />
