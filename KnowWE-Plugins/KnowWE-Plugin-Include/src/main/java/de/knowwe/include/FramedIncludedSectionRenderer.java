@@ -134,7 +134,7 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 			}
 		}
 		else {
-			DelegateRenderer.getInstance().render(targetSection, user, result);
+			result.append(targetSection, user);
 		}
 	}
 }

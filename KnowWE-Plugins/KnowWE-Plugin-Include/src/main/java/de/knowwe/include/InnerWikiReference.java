@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Strings;
-import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.KeywordType;
@@ -45,10 +44,13 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.HasChildrenOfTypeConstraint;
 import de.knowwe.kdom.constraint.NoChildrenOfTypeConstraint;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * KDOM type that references an article or a headed section of an article.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 05.02.2014
  */
@@ -77,7 +79,7 @@ public class InnerWikiReference extends AbstractType {
 					new RegexSectionFinder("^\\s*([^\\n\\r]+?)\\s*$", 0, 1),
 					new HasChildrenOfTypeConstraint(ListMarks.class),
 					new NoChildrenOfTypeConstraint(KeywordType.class)
-					));
+			));
 			return instance;
 		}
 	}
@@ -85,7 +87,7 @@ public class InnerWikiReference extends AbstractType {
 	private static class ArticleReference extends AbstractType {
 
 		public ArticleReference() {
-			setSectionFinder(new RegexSectionFinder("[^#\\s][^#\\n\\r]+"));
+			setSectionFinder(new RegexSectionFinder("[^#\\s][^#@\\n\\r]+"));
 		}
 	}
 
@@ -93,6 +95,13 @@ public class InnerWikiReference extends AbstractType {
 
 		public HeaderReference() {
 			setSectionFinder(new RegexSectionFinder("#([^\\n\\r]+)", 0, 1));
+		}
+	}
+
+	private static class NamedSectionReference extends AbstractType {
+
+		public NamedSectionReference() {
+			setSectionFinder(new RegexSectionFinder("@([^\\n\\r]+)", 0, 1));
 		}
 	}
 
@@ -128,6 +137,7 @@ public class InnerWikiReference extends AbstractType {
 
 		// grap all link characters with whitespaces
 		addChildType(new HeaderReference());
+		addChildType(new NamedSectionReference());
 		addChildType(new ArticleReference());
 	}
 
@@ -136,11 +146,11 @@ public class InnerWikiReference extends AbstractType {
 	 * such section due to a malicious reference. Please note that
 	 * {@link #updateReferences(Section)} must be called first to check the wiki
 	 * for the reference and update the link if the wiki has been changed.
-	 * 
-	 * @created 05.02.2014
+	 *
 	 * @param section this include section to take the reference information
-	 *        from
+	 *                from
 	 * @return the referenced Section
+	 * @created 05.02.2014
 	 */
 	public Section<?> getReferencedSection(Section<InnerWikiReference> section) {
 		String id = (String) KnowWEUtils.getStoredObject(section, TARGET_SECTION_ID_KEY);
@@ -163,10 +173,10 @@ public class InnerWikiReference extends AbstractType {
 	 * return a list of all included sections. If the include line used header
 	 * suppression, but including a specific header, the header section is also
 	 * not part of the list.
-	 * 
-	 * @created 12.02.2014
+	 *
 	 * @param section the section defines the include
 	 * @return the list of sections to be included
+	 * @created 12.02.2014
 	 */
 	public List<Section<?>> getIncludedSections(Section<InnerWikiReference> section) {
 		return getIncludedSections(section, false);
@@ -176,10 +186,10 @@ public class InnerWikiReference extends AbstractType {
 	 * return a list of all included sections. If the include line used header
 	 * suppression, but including a specific header, the header section is also
 	 * not part of the list.
-	 * 
-	 * @created 12.02.2014
+	 *
 	 * @param section the section defines the include
 	 * @return the list of sections to be included
+	 * @created 12.02.2014
 	 */
 	public List<Section<? extends de.knowwe.core.kdom.Type>> getIncludedSections(Section<InnerWikiReference> section, boolean forceSkipHeader) {
 		Section<?> targetSection = getReferencedSection(section);
@@ -200,10 +210,10 @@ public class InnerWikiReference extends AbstractType {
 	/**
 	 * Returns the number of header marks of the most significant heading of the
 	 * included sections. It return 0 if no header is included.
-	 * 
-	 * @created 11.02.2014
+	 *
 	 * @param section the section to be examined
 	 * @return the highest number of header marks of any included header
+	 * @created 11.02.2014
 	 */
 	public int getMaxHeaderMarkCount(Section<InnerWikiReference> section) {
 		List<Section<?>> included = getIncludedSections(section);
@@ -216,36 +226,34 @@ public class InnerWikiReference extends AbstractType {
 
 	private synchronized Section<?> findReferencedSection(Section<InnerWikiReference> section) {
 
-		Class<?> source = getClass();
-		Compiler compiler = null;
-
 		// prepare sub-sections
 		Section<ArticleReference> articleReference = getArticleReference(section);
 		Section<HeaderReference> headerReference = getHeaderReference(section);
+		Section<NamedSectionReference> namedSectionReference = getNamedSectionReference(section);
 
 		// prepare header and article names
 		// and clear all messages and section store
 		String targetArticleName = "";
 		String targetHeaderName = "";
+		String namedSectionName = "";
 		if (articleReference != null) {
 			targetArticleName = articleReference.getText();
-			Messages.clearMessages(compiler, articleReference, source);
 		}
 		if (headerReference != null) {
 			targetHeaderName = headerReference.getText();
-			Messages.clearMessages(compiler, headerReference, source);
 		}
-		Messages.clearMessages(compiler, section, source);
+		if (namedSectionReference != null) {
+			namedSectionName = namedSectionReference.getText();
+		}
 
 		// we do not have an error if we use static text
 		if (getLink(section) == null && getListMarks(section).length() > 0) {
 			return null;
 		}
 
-		// warning if not article specified
+		// warning if no article specified
 		if (Strings.isBlank(targetArticleName)) {
-			Messages.storeMessage(compiler, section, source,
-					Messages.error("No article name specified"));
+			Messages.storeMessage(section, getClass(), Messages.error("No article name specified"));
 			return null;
 		}
 
@@ -253,34 +261,47 @@ public class InnerWikiReference extends AbstractType {
 
 		// warning if article not found
 		if (targetArticle == null) {
-			Messages.storeMessage(compiler, articleReference, source,
-					Messages.error("Article '" + targetArticleName + "' not found!"));
+			Messages.storeMessage(articleReference, getClass(), Messages.error("Article '" + targetArticleName + "' not found!"));
 			return null;
 		}
 
 		// find section to be rendered
 		// if no specific section, use article's root section
-		if (Strings.isBlank(targetHeaderName)) {
+		if (Strings.isBlank(targetHeaderName) && Strings.isBlank(namedSectionName)) {
 			return targetArticle.getRootSection();
 		}
-
-		// otherwise search for the header sections
-		for (Section<HeaderType> header : Sections.successors(targetArticle, HeaderType.class)) {
-			String text = header.get().getHeaderText(header);
-			if (text.equalsIgnoreCase(targetHeaderName)) {
-				return header;
+		else if (!Strings.isBlank(targetHeaderName)) {
+			// search for the header sections
+			for (Section<HeaderType> header : Sections.successors(targetArticle, HeaderType.class)) {
+				String text = header.get().getHeaderText(header);
+				if (text.equalsIgnoreCase(targetHeaderName)) {
+					return header;
+				}
 			}
-		}
-		// and for the definition sections
-		for (Section<DefinitionType> def : Sections.successors(targetArticle, DefinitionType.class)) {
-			String text = def.get().getHeadText(def);
-			if (text.equalsIgnoreCase(targetHeaderName)) {
-				return def;
+			// and for the definition sections
+			for (Section<DefinitionType> def : Sections.successors(targetArticle, DefinitionType.class)) {
+				String text = def.get().getHeadText(def);
+				if (text.equalsIgnoreCase(targetHeaderName)) {
+					return def;
+				}
 			}
+			Messages.storeMessage(headerReference, getClass(), Messages.error("Header '" + targetHeaderName + "' not found!"));
 		}
-		Messages.storeMessage(compiler, headerReference, source,
-				Messages.error("Header '" + targetHeaderName + "' not found!"));
+		else if (!Strings.isBlank(namedSectionName)) {
+			// search for the named section
+			Sections<DefaultMarkupType> namedSections = $(targetArticle).successor(DefaultMarkupType.class)
+					.filter(markupSection -> DefaultMarkupType.getAnnotation(markupSection, "name") != null);
+			if (!namedSections.isEmpty()) {
+				return namedSections.getFirst();
+			}
+			Messages.storeMessage(headerReference, getClass(), Messages.error("Name '" + namedSectionName + "' not found!"));
+		}
+		Messages.storeMessage(headerReference, getClass(), Messages.error("Reference for '" + section.getText() + "' not found!"));
 		return null;
+	}
+
+	private Section<NamedSectionReference> getNamedSectionReference(Section<InnerWikiReference> section) {
+		return $(section).successor(NamedSectionReference.class).getFirst();
 	}
 
 	private static Section<HeaderReference> getHeaderReference(Section<?> section) {
@@ -358,9 +379,9 @@ public class InnerWikiReference extends AbstractType {
 	 * return "true", the eventually referenced header section will
 	 * automatically be removed from the list returned by
 	 *
-	 * @created 12.02.2014
 	 * @param section the section to check the header suppression for
 	 * @return if the header shall not be shown
+	 * @created 12.02.2014
 	 */
 	public boolean isSuppressHeader(Section<InnerWikiReference> section) {
 		return getListMarks(section).endsWith("-");
@@ -368,10 +389,10 @@ public class InnerWikiReference extends AbstractType {
 
 	/**
 	 * Returns if the numbering of the header of the section shall be hidden.
-	 * 
-	 * @created 12.02.2014
+	 *
 	 * @param section the section to check the numbering suppression for
 	 * @return if the header's numbering shall not be shown
+	 * @created 12.02.2014
 	 */
 	public boolean isSuppressNumbering(Section<InnerWikiReference> section) {
 		return getListMarks(section).endsWith("*");
@@ -405,10 +426,10 @@ public class InnerWikiReference extends AbstractType {
 	/**
 	 * Returns the level of the preceding enumeration marks or bullet marks ('#'
 	 * or '*') or "" if no such marks were specified.
-	 * 
-	 * @created 11.02.2014
+	 *
 	 * @param reference the inner wiki reference to get the preceding marks for
 	 * @return the marks preceding the include link
+	 * @created 11.02.2014
 	 */
 	public String getListMarks(Section<InnerWikiReference> reference) {
 		Section<ListMarks> marks = Sections.successor(reference, ListMarks.class);
