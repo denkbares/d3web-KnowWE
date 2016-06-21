@@ -139,7 +139,7 @@ public class Config {
 	private boolean showProperties = true;
 	private boolean showInverse = false;
 	private boolean showOutgoingEdges = false;
-	private String showLabels = null;
+	private String showLabels = "true";
 	private String size = null;
 	private String width = null;
 	private String height = null;
@@ -404,7 +404,9 @@ public class Config {
 	}
 
 	public void setShowLabels(String showLabels) {
-		this.showLabels = showLabels;
+		if(showLabels != null) {
+			this.showLabels = showLabels;
+		}
 	}
 
 	public void setConfig(String config) {

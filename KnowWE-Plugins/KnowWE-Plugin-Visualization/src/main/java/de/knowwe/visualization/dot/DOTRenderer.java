@@ -193,11 +193,11 @@ public class DOTRenderer {
 			}
 			else {
 				String nodeLabel = clearLabel(node.getConceptLabel());
-				//nodeLabel = "<<B>"+nodeLabel+"</B>>";
-
 				if ((!node.getType().equals(NODE_TYPE.LITERAL)) &&
 						"false".equals(config.getShowLabels())) {
 					// use of labels suppressed by the user -> show concept name, i.e. uri
+					// todo: should be handeled by a distinct config parameter (literalTable?)
+					// or: @literals: table|off|popup
 					nodeLabel = createHTMLTable(node, data, style.getFontstyle());
 				}
 				else {

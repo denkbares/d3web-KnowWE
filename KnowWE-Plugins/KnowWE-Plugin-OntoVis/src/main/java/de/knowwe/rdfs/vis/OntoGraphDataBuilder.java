@@ -259,11 +259,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private void addLiterals(Value fringeNode) {
-		String query = "SELECT ?literal ?pred WHERE { <" + fringeNode.stringValue() + "> ?pred ?literal . FILTER isLiteral(?literal) }";
+		String propertyFilter = predicateFilter(Direction.Forward, "literal");
+		String query = "SELECT ?literal ?y WHERE { <" + fringeNode.stringValue() + "> ?y ?literal . FILTER isLiteral(?literal) . "+propertyFilter+" }";
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 		while (result != null && result.hasNext()) {
 			BindingSet row = result.next();
-			Value predURI = row.getValue("pred");
+			Value predURI = row.getValue("y");
 			Value objectLiteral = row.getValue("literal");
 			addConcept(fringeNode, objectLiteral, predURI);
 		}
