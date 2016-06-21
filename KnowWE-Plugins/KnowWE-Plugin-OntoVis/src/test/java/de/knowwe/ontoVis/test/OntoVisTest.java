@@ -88,6 +88,7 @@ public class OntoVisTest {
 		config.setRankDir(Config.RankDir.TB);
 		config.setShowOutgoingEdges(true);
 		config.setShowLabels("true");
+		config.setLiteralMode(Config.LiteralMode.OFF);
 		config.setCacheFileID("instances");
 		config.setCacheDirectoryPath("target");
 
@@ -135,6 +136,7 @@ public class OntoVisTest {
 		config.addExcludeRelations("rdf:first", "owl:equivalentClass", "rdf:type", "owl:assertionProperty", "owl:sameAs");
 		config.setShowOutgoingEdges(false);
 		config.setShowLabels("true");
+		config.setLiteralMode(Config.LiteralMode.OFF);
 		config.setLanguage("en");
 		config.setCacheFileID("classes");
 
@@ -270,6 +272,7 @@ public class OntoVisTest {
 		config.addFilterRelations("si:child");
 		config.setShowOutgoingEdges(true);
 		config.setShowLabels("true");
+		config.setLiteralMode(Config.LiteralMode.OFF);
 		config.setSuccessors(0);
 		config.setCacheFileID("twoconcepts");
 		config.setCacheDirectoryPath("target");
@@ -388,6 +391,7 @@ public class OntoVisTest {
 		config.addExcludeNodes("owl:Thing", "owl:Nothing");
 		config.setShowOutgoingEdges(false);
 		config.setShowLabels("true");
+		config.setLiteralMode(Config.LiteralMode.OFF);
 		config.setShowInverse(false);
 		config.setCacheFileID("testInverse");
 		config.setCacheDirectoryPath("target");

@@ -127,7 +127,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		// evaluate sparql query and create graph data
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, sparqlContentRaw);
 
-		CachedTupleQueryResult resultSet = core.sparqlSelect(sparqlString);
+		CachedTupleQueryResult resultSet = core.sparqlSelect(sparqlString, config.getTimeout());
 		SubGraphData data = convertToGraph(resultSet, config, core, uriProvider, section, messages);
 
 		// if no concept is specified, finally take first guess

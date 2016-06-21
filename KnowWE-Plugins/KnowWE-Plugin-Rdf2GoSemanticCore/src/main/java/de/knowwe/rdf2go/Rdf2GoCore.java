@@ -982,6 +982,17 @@ public class Rdf2GoCore {
 	}
 
 	/**
+	 * Performs a cached SPARQL select query with the specified timeout.
+	 *
+	 * @param query the SPARQL query to perform
+	 * @param timeout the time to be used for timout
+	 * @return the result of the query
+	 */
+	public CachedTupleQueryResult sparqlSelect(String query, long timeout) {
+		return (CachedTupleQueryResult) sparqlSelect(query, true, timeout);
+	}
+
+	/**
 	 * Performs a cached SPARQL ask query with the default timeout of 5 seconds.
 	 *
 	 * @param query the SPARQL query to perform

@@ -202,7 +202,9 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			//TODO find solution for blank node
 			if (!Utils.isBlankNode(fringeValue)) {
 				if (!literalsExpanded.contains(fringeValue)) {
-					addLiterals(fringeValue);
+					if(!config.getLiteralMode().equals(Config.LiteralMode.OFF)) {
+						addLiterals(fringeValue);
+					}
 				}
 				addType(fringeValue);
 			}
@@ -271,22 +273,9 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private void insertMainConcept(Value conceptURI) {
-		String concept = getConceptName(conceptURI);
-
-		String conceptLabel = Utils.fetchLabel(config, conceptURI, rdf2GoCore);
-		if (conceptLabel == null) {
-			conceptLabel = concept;
-		}
-		// the main concept is inserted
-		// TODO: use Utils.createValue() to obtain correct coloring of root
-		/*ConceptNode conceptValue = new ConceptNode(concept,
-				getConceptType(conceptURI.asURI()),
-				conceptURI.toString(), conceptLabel, Utils.getStyle(getConceptType(conceptURI)));
-		*/
 		ConceptNode conceptValue = Utils.createValue(config, rdf2GoCore, uriProvider, section, data, conceptURI, true);
 		conceptValue.setRoot(true);
 		data.addConcept(conceptValue);
-
 	}
 
 	private void addSuccessors(Value conceptToBeExpanded, Value predecessor, Value predecessorPredicate) {
@@ -492,7 +481,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			height++;
 			if (height < config.getPredecessors() || nodeType.equals(NODE_TYPE.BLANKNODE)) {
 				addPredecessors(xURI, conceptToBeExpanded, yURI, Direction.Backward);
-				if (!literalsExpanded.contains(xURI)) {
+				if (!literalsExpanded.contains(xURI) &&
+						!Config.LiteralMode.OFF.equals(config.getLiteralMode())) {
 					// add literals for x
 					addSuccessors(xURI, conceptToBeExpanded, yURI, ExpandMode.LiteralsOnly, Direction.Backward);
 				}

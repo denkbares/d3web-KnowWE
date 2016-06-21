@@ -119,6 +119,8 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotation(VIS_TEMPLATE_EXAMPLE, false);
 		markup.addAnnotationRenderer(VIS_TEMPLATE_EXAMPLE, NothingRenderer.getInstance());
 
+		markup.addAnnotation(Config.TIMEOUT, false);
+		markup.addAnnotationRenderer(Config.TIMEOUT, NothingRenderer.getInstance());
 
 		return markup;
 	}

@@ -52,6 +52,8 @@ public class Config {
 	public static final String SHOW_OUTGOING_EDGES = "showOutgoingEdges";
 	public static final String SHOW_INVERSE = "showInverse";
 	public static final String SHOW_LABELS = "showLabels";
+	public static final String SHOW_LITERALS = "literals";
+	public static final String TIMEOUT = "timeout";
 	public static final String CONCEPT = "concept";
 	public static final String SIZE = "size";
 	public static final String WIDTH = "width";
@@ -87,6 +89,19 @@ public class Config {
 		this.forceVisualizationStyle = forceVisualizationStyle;
 	}
 
+	public long getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(String timeoutString) {
+		try {
+			Long.parseLong(timeoutString);
+			this.timeout = timeout;
+		} catch ( java.lang.NumberFormatException e) {
+			// invalid value
+		}
+	}
+
 	public enum Renderer {
 		DOT, D3
 	}
@@ -97,6 +112,10 @@ public class Config {
 
 	public enum Visualization {
 		WHEEL, FORCE
+	}
+
+	public enum LiteralMode {
+		OFF, TABLE, NODES
 	}
 
 	public enum RankDir {
@@ -145,6 +164,7 @@ public class Config {
 	private String height = null;
 	private String format = "svg";
 	private String language = null;
+	private long timeout = 60000;
 	private LinkMode linkMode = LinkMode.JUMP;
 	private RankDir rankDir = RankDir.LR;
 	private String rankSame = null;
@@ -152,6 +172,7 @@ public class Config {
 	private String dotAddLine = null;
 	private Renderer renderer = Renderer.DOT;
 	private Visualization visualization = Visualization.FORCE;
+	private LiteralMode literalMode = LiteralMode.TABLE;
 	private String forceVisualizationStyle = null;
 	private String design = null;
 	private String config = null;
@@ -192,6 +213,7 @@ public class Config {
 		parseAndSetCSV(section, CONCEPT, this::addConcept);
 		setSize(DefaultMarkupType.getAnnotation(section, SIZE));
 		setWidth(DefaultMarkupType.getAnnotation(section, WIDTH));
+		setTimeout(DefaultMarkupType.getAnnotation(section, TIMEOUT));
 		setHeight(DefaultMarkupType.getAnnotation(section, HEIGHT));
 		setFormat(DefaultMarkupType.getAnnotation(section, FORMAT));
 		setLanguage(DefaultMarkupType.getAnnotation(section, LANGUAGE));
@@ -201,6 +223,7 @@ public class Config {
 		parseAndSetEnum(section, LINK_MODE, LinkMode.class, this::setLinkMode);
 		parseAndSetEnum(section, RENDERER, Renderer.class, this::setRenderer);
 		parseAndSetEnum(section, VISUALIZATION, Visualization.class, this::setVisualization);
+		parseAndSetEnum(section, SHOW_LITERALS, LiteralMode.class, this::setLiteralMode);
 		setDesign(DefaultMarkupType.getAnnotation(section, DESIGN));
 		setPrerender(DefaultMarkupType.getAnnotation(section, PRERENDER));
 		setSectionId(section.getID());
@@ -374,6 +397,16 @@ public class Config {
 		if (rankDir == null) return;
 		this.rankDir = rankDir;
 	}
+
+	public LiteralMode getLiteralMode() {
+		return this.literalMode;
+	}
+
+	public void setLiteralMode(LiteralMode mode) {
+		if (mode == null) return;
+		this.literalMode = mode;
+	}
+
 
 	public void setDotApp(String dotApp) {
 		if (dotApp == null) return;
