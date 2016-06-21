@@ -119,7 +119,12 @@ public final class Messages {
 	public static void clearMessages(Compiler compiler) {
 		for (Message.Type type : Message.Type.values()) {
 			// would be better if we also hash by compiler... not sure if worth the effort though...
-			for (Section<?> section : new ArrayList<>(sectionsWithMessages.getValues(type))) {
+			ArrayList<Section<?>> sections;
+			synchronized (sectionsWithMessages) {
+				// even synchronized collections need manual synchronization for iterating of the entries
+				sections = new ArrayList<>(sectionsWithMessages.getValues(type));
+			}
+			for (Section<?> section : sections) {
 				clearMessages(compiler, section);
 			}
 		}
@@ -615,15 +620,18 @@ public final class Messages {
 	 * Returns all Sections that currently have stored Messages either of Type ERROR or WARNING.
 	 */
 	public static Collection<Section<?>> getSectionsWithMessages(Message.Type... types) {
-		int size = 0;
-		for (Message.Type type : types) {
-			size += sectionsWithMessages.getValues(type).size();
+		synchronized (sectionsWithMessages) {
+			// get values needs external synchronization
+			int size = 0;
+			for (Message.Type type : types) {
+				size += sectionsWithMessages.getValues(type).size();
+			}
+			Set<Section<?>> sections = new HashSet<>(size);
+			for (Message.Type type : types) {
+				sections.addAll(sectionsWithMessages.getValues(type));
+			}
+			return Collections.unmodifiableCollection(sections);
 		}
-		Set<Section<?>> sections = new HashSet<>(size);
-		for (Message.Type type : types) {
-			sections.addAll(sectionsWithMessages.getValues(type));
-		}
-		return Collections.unmodifiableCollection(sections);
 	}
 
 	/**
