@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.core.tools;
+package de.knowwe.kdom.attachment;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,7 +83,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	private static final String START_ANNOTATION = "start";
 	private static final String VERSIONING_ANNOTATION = "versioning";
 	private static final String ZIP_ENTRY_ANNOTATION = "zipEntry";
-	private static final String COMPILE = "compile";
+	public static final String COMPILE = "compile";
 
 	private static final String LOCK_KEY = "lock_key";
 
@@ -100,10 +100,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	static {
 		MARKUP.addAnnotation(ATTACHMENT_ANNOTATION, true);
 		MARKUP.addAnnotationContentType(ATTACHMENT_ANNOTATION, new AttachmentType());
-		MARKUP.addAnnotation(URL_ANNOTATION, true);
+		MARKUP.addAnnotation(URL_ANNOTATION);
 		MARKUP.addAnnotation(COMPILE, false, "true", "false");
 		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
-		MARKUP.addAnnotation(INTERVAL_ANNOTATION, true);
+		MARKUP.addAnnotation(INTERVAL_ANNOTATION);
 		TimeStampType timeStampType = new TimeStampType();
 		timeStampType.setRenderer(new Renderer() {
 			@Override
@@ -181,6 +181,8 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentMarkup> section) {
 
 			if (section.hasErrorInSubtree()) return;
+			if (DefaultMarkupType.getAnnotation(section, INTERVAL_ANNOTATION) == null) return;
+			if (DefaultMarkupType.getAnnotation(section, URL_ANNOTATION) == null) return;
 
 			long interval = getInterval(section);
 

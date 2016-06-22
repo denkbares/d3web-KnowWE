@@ -1,4 +1,4 @@
-package de.knowwe.core.tools;
+package de.knowwe.kdom.attachment;
 
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 

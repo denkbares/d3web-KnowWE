@@ -17,35 +17,26 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.core.tools;
+package de.knowwe.kdom.attachment;
 
+import java.io.IOException;
+
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.user.UserContext;
-import de.knowwe.tools.DefaultTool;
-import de.knowwe.tools.Tool;
-import de.knowwe.tools.ToolProvider;
-import de.knowwe.util.Icon;
+import de.knowwe.core.kdom.parsing.Sections;
 
 /**
- * Provides a tool to the {@link AttachmentMarkup} to update the attachment manually.
+ * Action to force start an update of an attachment with the {@link AttachmentMarkup}.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.06.15
  */
-public class AttachmentUpdateToolProvider implements ToolProvider {
-	@Override
-	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		return new Tool[] {
-				new DefaultTool(Icon.REFRESH,
-						"Update now", "Updates the attachment from the given URL right now",
-						"KNOWWE.core.plugin.attachment.update('" + section.getID() + "')",
-						Tool.ActionType.ONCLICK,
-						Tool.CATEGORY_EXECUTE)
-		};
-	}
+public class AttachmentUpdateAction extends AbstractAction {
 
 	@Override
-	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return true;
+	public void execute(UserActionContext context) throws IOException {
+		Section<AttachmentMarkup> section = Sections.cast(getSection(context), AttachmentMarkup.class);
+		AttachmentMarkup.performUpdate(section);
 	}
 }

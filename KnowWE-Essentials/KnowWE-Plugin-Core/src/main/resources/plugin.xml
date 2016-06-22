@@ -441,7 +441,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AttachmentMarkup">
-		<parameter id="class" value="de.knowwe.core.tools.AttachmentMarkup" />
+		<parameter id="class" value="de.knowwe.kdom.attachment.AttachmentMarkup" />
 		<parameter id="name" value="AttachmentMarkup" />
 		<parameter id="description" value="Markup to handle attachments" />
 		<parameter id="version" value="1.0" />
@@ -450,7 +450,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AttachmentUpdateMarkup">
-		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdaterMarkup" />
+		<parameter id="class" value="de.knowwe.kdom.attachment.AttachmentUpdaterMarkup" />
 		<parameter id="name" value="AttachmentUpdateMarkup" />
 		<parameter id="description" value="Markup to update attachments" />
 		<parameter id="version" value="1.0" />
@@ -459,7 +459,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AttachmentUpdateToolProvider">
-		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateToolProvider" />
+		<parameter id="class" value="de.knowwe.kdom.attachment.AttachmentUpdateToolProvider" />
 		<parameter id="name" value="OnToolProvider" />
 		<parameter id="description" value="Offers tool to force update of attachment." />
 		<parameter id="version" value="1.0" />
@@ -468,7 +468,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AttachmentUpdateAction">
-		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateAction" />
+		<parameter id="class" value="de.knowwe.kdom.attachment.AttachmentUpdateAction" />
 		<parameter id="name" value="AttachmentUpdateAction" />
 		<parameter id="description" value="Action AttachmentUpdateAction" />
 		<parameter id="version" value="1.0" />

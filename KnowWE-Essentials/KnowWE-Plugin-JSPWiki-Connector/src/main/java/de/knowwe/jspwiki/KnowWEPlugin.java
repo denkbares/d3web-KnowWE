@@ -23,6 +23,7 @@ package de.knowwe.jspwiki;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -55,9 +56,11 @@ import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.providers.WikiPageProvider;
 import org.apache.wiki.ui.TemplateManager;
+import org.jetbrains.annotations.NotNull;
 
 import de.d3web.plugin.Plugin;
 import de.d3web.plugin.PluginManager;
+import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
@@ -67,14 +70,20 @@ import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.basicType.AttachmentType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
+import de.knowwe.kdom.attachment.AttachmentMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 import static de.knowwe.core.ResourceLoader.Type.script;
 import static de.knowwe.core.ResourceLoader.Type.stylesheet;
@@ -313,7 +322,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 	}
 
-	private DefaultArticleManager getDefaultArticleManager() {
+	private static DefaultArticleManager getDefaultArticleManager() {
 		return (DefaultArticleManager) Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 	}
 
@@ -417,11 +426,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				String content = engine.getPureText(wp.getName(), wp.getVersion());
 				Article article = Article.createArticle(content, wp.getName(), Environment.DEFAULT_WEB);
 				((DefaultArticleManager) articleManager).queueArticle(article);
+				initCompiledAttachments(article);
 			});
 			Log.info("Sectionized all articles in " + (System.currentTimeMillis() - start) + "ms");
 		}
 		catch (ProviderException e1) {
-			Log.warning("Unable to load all articles, maybe some articles won't be initialized!");
+			Log.warning("Unable to load all articles, maybe some articles won't be initialized!", e1);
 		}
 		finally {
 			articleManager.commit();
@@ -435,6 +445,24 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Log.warning("Caught InterrupedException while waiting til compilation is finished.", e);
 		}
 		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
+	}
+
+	private void initCompiledAttachments(Article article) {
+		DefaultArticleManager articleManager = getDefaultArticleManager();
+		try {
+			List<WikiAttachment> attachments = Environment.getInstance()
+					.getWikiConnector()
+					.getAttachments(article.getTitle());
+			for (WikiAttachment attachment : attachments) {
+				if (!isCompiledAttachment(article, attachment.getPath())) continue;
+				String attachmentText = Strings.readStream(attachment.getInputStream());
+				articleManager.registerArticle(Article.createArticle(attachmentText, attachment.getPath(),
+						articleManager.getWeb()));
+			}
+		}
+		catch (IOException e) {
+			Log.severe("Unable to access attchments of article " + article.getTitle(), e);
+		}
 	}
 
 	private Collection<?> getAllPages(WikiEngine engine) throws ProviderException {
@@ -503,34 +531,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
 		}
 		else if (event instanceof WikiAttachmentEvent) {
-			DefaultArticleManager articleManager = getDefaultArticleManager();
-			WikiAttachmentEvent attachmentEvent = (WikiAttachmentEvent) event;
 			// we fire the KnowWE events and commit asynchronously to avoid dead locks, because we cannot
 			// guarantee at this point, that the thread accessing the attachment has not locked resources
 			// that are required during compilation
-			new Thread() {
-				@Override
-				public void run() {
-					// we open a commit frame to bundle eventual article compilations
-					// that are likely to happen with attachment events
-					articleManager.open();
-					try {
-						if (event.getType() == WikiAttachmentEvent.STORED) {
-							EventManager.getInstance()
-									.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), attachmentEvent
-											.getParentName(), attachmentEvent.getFileName()));
-						}
-						else if (event.getType() == WikiAttachmentEvent.DELETED) {
-							EventManager.getInstance()
-									.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), attachmentEvent
-											.getParentName(), attachmentEvent.getFileName()));
-						}
-					}
-					finally {
-						articleManager.commit();
-					}
-				}
-			}.start();
+			new AttachmentEventHandler((WikiAttachmentEvent) event).start();
 		}
 		else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {
@@ -596,6 +600,72 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		return "";
 	}
 
+	private static boolean isCompiledAttachment(Article article, String attachmentPath) {
+		List<Section<AttachmentMarkup>> attachmentMarkups = Sections.successors(article, AttachmentMarkup.class);
+		for (Section<AttachmentMarkup> attachmentMarkup : attachmentMarkups) {
+			Section<AttachmentType> attachmentTypeSection = Sections.successor(attachmentMarkup, AttachmentType.class);
+			if (attachmentTypeSection == null) continue;
+			String path = AttachmentType.getPath(attachmentTypeSection);
+			if (path.equals(attachmentPath)) {
+				return "true".equals(DefaultMarkupType.getAnnotation(attachmentMarkup, AttachmentMarkup.COMPILE));
+			}
+		}
+		return false;
+	}
+
 	private class UpdateNotAllowedException extends Exception {
+	}
+
+	private static class AttachmentEventHandler extends Thread {
+
+		private final DefaultArticleManager articleManager;
+		private WikiAttachmentEvent event;
+
+		private AttachmentEventHandler(WikiAttachmentEvent attachmentEvent) {
+			this.event = attachmentEvent;
+			this.articleManager = getDefaultArticleManager();
+		}
+
+		@Override
+		public void run() {
+			// we open a commit frame to bundle eventual article compilations
+			// that are likely to happen with attachment events
+			articleManager.open();
+			try {
+				boolean compiledAttachment = isCompiledAttachment(articleManager.getArticle(event.getParentName()), getAttachmentPath());
+				if (event.getType() == WikiAttachmentEvent.STORED) {
+					if (compiledAttachment) {
+						try {
+							WikiAttachment attachment = KnowWEUtils.getAttachment(event.getParentName(), event.getFileName());
+							String attachmentText = Strings.readStream(attachment.getInputStream());
+							articleManager.registerArticle(Article.createArticle(attachmentText, getAttachmentPath(),
+									articleManager.getWeb()));
+						}
+						catch (IOException e) {
+							Log.severe("Unable to compile attachment " + getAttachmentPath(), e);
+						}
+					}
+					EventManager.getInstance()
+							.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), event
+									.getParentName(), event.getFileName()));
+				}
+				else if (event.getType() == WikiAttachmentEvent.DELETED) {
+					if (compiledAttachment) {
+						articleManager.deleteArticle(articleManager.getArticle(getAttachmentPath()));
+					}
+					EventManager.getInstance()
+							.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), event
+									.getParentName(), event.getFileName()));
+				}
+			}
+			finally {
+				articleManager.commit();
+			}
+		}
+
+		@NotNull
+		private String getAttachmentPath() {
+			return event.getParentName() + "/" + event.getFileName();
+		}
 	}
 }
