@@ -440,12 +440,21 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AttachmentMarkup">
+		<parameter id="class" value="de.knowwe.core.tools.AttachmentMarkup" />
+		<parameter id="name" value="AttachmentMarkup" />
+		<parameter id="description" value="Markup to handle attachments" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AttachmentUpdateMarkup">
-		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdateMarkup" />
+		<parameter id="class" value="de.knowwe.core.tools.AttachmentUpdaterMarkup" />
 		<parameter id="name" value="AttachmentUpdateMarkup" />
 		<parameter id="description" value="Markup to update attachments" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="4" />
 		<parameter id="scope" value="root" />
 	</extension>
 

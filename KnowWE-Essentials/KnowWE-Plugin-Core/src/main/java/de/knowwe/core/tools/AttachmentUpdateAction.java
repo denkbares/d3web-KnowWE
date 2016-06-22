@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
- * Action to force start an update of an attachment with the {@link AttachmentUpdateMarkup}.
+ * Action to force start an update of an attachment with the {@link AttachmentMarkup}.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.06.15
@@ -36,7 +36,7 @@ public class AttachmentUpdateAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		Section<AttachmentUpdateMarkup> section = Sections.cast(getSection(context), AttachmentUpdateMarkup.class);
-		AttachmentUpdateMarkup.performUpdate(section);
+		Section<AttachmentMarkup> section = Sections.cast(getSection(context), AttachmentMarkup.class);
+		AttachmentMarkup.performUpdate(section);
 	}
 }

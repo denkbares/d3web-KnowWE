@@ -27,7 +27,7 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 /**
- * Provides a tool to the {@link AttachmentUpdateMarkup} to update the attachment manually.
+ * Provides a tool to the {@link AttachmentMarkup} to update the attachment manually.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.06.15

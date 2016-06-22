@@ -67,15 +67,15 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * This markup allows to update an attachment based on changes to web resource specified via URL. If the resource at
- * the URL changes, it will be downloaded and attached as a new version of the original attachment.
+ * A markup to handle attachments. It allows to update an attachment from a given URL in a given interval of time, also
+ * allows to compile the attachment.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 15.06.15
  */
-public class AttachmentUpdateMarkup extends DefaultMarkupType {
+public class AttachmentMarkup extends DefaultMarkupType {
 
-	private static final DefaultMarkup MARKUP = new DefaultMarkup("AttachmentUpdater");
+	protected static final DefaultMarkup MARKUP = new DefaultMarkup("Attachment");
 
 	private static final String ATTACHMENT_ANNOTATION = "attachment";
 	private static final String URL_ANNOTATION = "url";
@@ -83,6 +83,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 	private static final String START_ANNOTATION = "start";
 	private static final String VERSIONING_ANNOTATION = "versioning";
 	private static final String ZIP_ENTRY_ANNOTATION = "zipEntry";
+	private static final String COMPILE = "compile";
 
 	private static final String LOCK_KEY = "lock_key";
 
@@ -100,6 +101,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ATTACHMENT_ANNOTATION, true);
 		MARKUP.addAnnotationContentType(ATTACHMENT_ANNOTATION, new AttachmentType());
 		MARKUP.addAnnotation(URL_ANNOTATION, true);
+		MARKUP.addAnnotation(COMPILE, false, "true", "false");
 		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, true);
 		TimeStampType timeStampType = new TimeStampType();
@@ -107,7 +109,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			@Override
 			public void render(Section<?> section, UserContext user, RenderResult result) {
 				result.append(section.getText());
-				long sinceLastRun = timeSinceLastRun(Sections.ancestor(section, AttachmentUpdateMarkup.class));
+				long sinceLastRun = timeSinceLastRun(Sections.ancestor(section, AttachmentMarkup.class));
 				if (sinceLastRun < Long.MAX_VALUE) {
 					result.appendHtmlElement("span",
 							" (last update was " + Stopwatch.getDisplay(sinceLastRun) + " ago)",
@@ -122,16 +124,20 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	}
 
-	public AttachmentUpdateMarkup() {
-		super(MARKUP);
+	public AttachmentMarkup() {
+		this(MARKUP);
+	}
+
+	public AttachmentMarkup(DefaultMarkup markup) {
+		super(markup);
 		addCompileScript(new UpdateTaskRegistrationScript());
 	}
 
 	private static class UpdateTask extends TimerTask {
 
-		private Section<AttachmentUpdateMarkup> section;
+		private Section<AttachmentMarkup> section;
 
-		private UpdateTask(Section<AttachmentUpdateMarkup> section) {
+		private UpdateTask(Section<AttachmentMarkup> section) {
 			this.section = section;
 		}
 
@@ -167,12 +173,12 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		return lastRun == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastRun;
 	}
 
-	private static class UpdateTaskRegistrationScript extends DefaultGlobalScript<AttachmentUpdateMarkup> {
+	private static class UpdateTaskRegistrationScript extends DefaultGlobalScript<AttachmentMarkup> {
 
 		private static final String UPDATE_TASK_KEY = "updateTaskKey";
 
 		@Override
-		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
+		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentMarkup> section) {
 
 			if (section.hasErrorInSubtree()) return;
 
@@ -187,14 +193,14 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 
 		@Override
-		public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) {
+		public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentMarkup> section) {
 			UpdateTask updateTask = (UpdateTask) section.removeObject(compiler, UPDATE_TASK_KEY);
 			if (updateTask != null) {
 				updateTask.cancel();
 			}
 		}
 
-		private long getInitialDelay(Section<AttachmentUpdateMarkup> section, long interval) {
+		private long getInitialDelay(Section<AttachmentMarkup> section, long interval) {
 
 			long timeSinceLastRun = timeSinceLastRun(section);
 			if (interval < TimeUnit.HOURS.toMillis(1)) {
@@ -218,7 +224,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 		}
 
-		private long getStartDelayFromAnnotation(Section<AttachmentUpdateMarkup> section) {
+		private long getStartDelayFromAnnotation(Section<AttachmentMarkup> section) {
 			LocalDateTime start = LocalDateTime.now();
 
 			Section<? extends AnnotationContentType> annotationContentSection = DefaultMarkupType.getAnnotationContentSection(section, START_ANNOTATION);
@@ -261,7 +267,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			return LocalDateTime.now().until(start, ChronoUnit.MILLIS);
 		}
 
-		private long getInterval(Section<AttachmentUpdateMarkup> section) {
+		private long getInterval(Section<AttachmentMarkup> section) {
 			Section<TimeStampType> timeStampSection = Sections.successor(section, TimeStampType.class);
 			if (timeStampSection == null) return MIN_INTERVAL;
 			long timeInMillis = TimeStampType.getTimeInMillis(timeStampSection);
@@ -271,7 +277,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 	}
 
-	static void performUpdate(Section<AttachmentUpdateMarkup> section) {
+	static void performUpdate(Section<AttachmentMarkup> section) {
 
 		logLastRun(section);
 		cleanUpLastRuns();
@@ -296,7 +302,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 			String fileName = path.substring(path.indexOf("/") + 1);
 
 			if (path.split("/").length > 2) {
-				Messages.storeMessage(section, AttachmentUpdateMarkup.class, Messages.error("Unable to update entries in zipped attachments!"));
+				Messages.storeMessage(section, AttachmentMarkup.class, Messages.error("Unable to update entries in zipped attachments!"));
 				return;
 			}
 
@@ -348,12 +354,12 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 				}
 
 				Log.info("Updated attachment '" + path + "' with resource from URL " + url.toString());
-				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
-				Messages.clearMessages(section, AttachmentUpdateMarkup.class);
+				Messages.clearMessages(section, AttachmentMarkup.class);
+				Messages.clearMessages(section, AttachmentMarkup.class);
 			}
 			catch (Throwable e) { // NOSONAR
 				String message = "Exception while downloading attachment " + path;
-				Messages.storeMessage(section, AttachmentUpdateMarkup.class, Messages.error(message + ": " + e.getMessage()));
+				Messages.storeMessage(section, AttachmentMarkup.class, Messages.error(message + ": " + e.getMessage()));
 				Log.severe(message, e);
 			}
 		}
@@ -362,7 +368,7 @@ public class AttachmentUpdateMarkup extends DefaultMarkupType {
 		}
 	}
 
-	private static ReentrantLock getLock(Section<AttachmentUpdateMarkup> section) {
+	private static ReentrantLock getLock(Section<AttachmentMarkup> section) {
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (section) {
 			ReentrantLock lock = (ReentrantLock) section.getObject(LOCK_KEY);
