@@ -20,6 +20,7 @@
 
 package de.knowwe.kdom.defaultMarkup;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -34,145 +35,27 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.util.Icon;
 
-public class DefaultMarkup {
+public class DefaultMarkup implements Cloneable {
 
-	public class Annotation {
-
-		private final String name;
-		private final boolean mandatory;
-		private final Pattern pattern; // optional
-		private final boolean isRegex;
-		private boolean deprecated;
-
-		private String documentation = null;
-
-		private final Collection<Type> nameTypes = new LinkedList<Type>();
-		private final Collection<Type> types = new LinkedList<Type>();
-
-		private Renderer renderer = null;
-
-		private Annotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
-			super();
-			this.name = name;
-			this.mandatory = mandatory;
-			this.isRegex = isRegex;
-			this.pattern = pattern;
-		}
-
-		/**
-		 * Returns the name of the annotation. The name is the text after the
-		 * &#64; that uniquely identify the annotation within a default mark-up.
-		 * 
-		 * @return the name of the annotation
-		 */
-		public String getName() {
-			return this.name;
-		}
-
-		/**
-		 * Returns the documentation of the annotation. Returns 'null' if no specific
-		 * documentation for that annotation is defined.
-		 *
-		 * @return the name of the annotation
-		 */
-		public String getDocumentation() {
-			return documentation;
-		}
-
-		/**
-		 * Sets the documentation for this annotation. Set 'null' to remove the documentation.
-		 *
-		 * @param documentation the documentation to be set
-		 */
-		public void setDocumentation(String documentation) {
-			this.documentation = documentation;
-		}
-
-		/**
-		 * Returns whether the annotation is mandatory for the mark-up.
-		 * 
-		 * @return whether the annotation is mandatory
-		 */
-		public boolean isMandatory() {
-			return this.mandatory;
-		}
-
-		/**
-		 * Returns whether the annotation is deprecated
-		 * 
-		 * @created 18.04.2012
-		 * @return true if the annotation is deprecated, false otherwise
-		 */
-		public boolean isDeprecated() {
-			return deprecated;
-		}
-
-		/**
-		 * Returns whether this annotations is described with a regular
-		 * expression instead of name string.
-		 * 
-		 * @created 05.06.2013
-		 * @return if the annotation is a regex
-		 */
-		public boolean isRegex() {
-			return isRegex;
-		}
-
-		/**
-		 * Checks if the content of an annotation matches the annotations
-		 * pattern.
-		 * 
-		 * @param annotationContent the content string to be checked
-		 * @return whether the annotations pattern is matched
-		 */
-		@SuppressWarnings("SimplifiableIfStatement")
-		public boolean matches(String annotationContent) {
-			if (pattern == null) return true;
-			if (annotationContent == null) return false;
-			return pattern.matcher(annotationContent).matches();
-		}
-
-		/**
-		 * Return all {@link Type}s that may be accepted as the content text of
-		 * the annotation. These types will be used to sectionize (parse) and
-		 * render the annotations content text, if there is no other
-		 * renderer/parser defined in the parent's {@link DefaultMarkupType}.
-		 * <p>
-		 * The annotation may also contain any other text. It will be recognized
-		 * as {@link PlainText}, such in any other section or wiki-page. It is
-		 * in responsibility of the {@link de.knowwe.core.compile.CompileScript} of the
-		 * {@link DefaultMarkupType} instance to check for non-allowed content.
-		 * 
-		 * @return the Types of this annotation
-		 */
-		public Type[] getContentTypes() {
-			return this.types.toArray(new Type[this.types.size()]);
-		}
-
-		public Type[] getNameTypes() {
-			return this.nameTypes.toArray(new Type[this.nameTypes.size()]);
-		}
-
-		public Renderer getRenderer() {
-			return renderer;
-		}
-
-		public Pattern getPattern() {
-			return pattern;
-		}
-	}
-
-	private final String name;
-	private final Collection<Type> types = new LinkedList<Type>();
-	private final Map<String, Annotation> annotations = new HashMap<String, Annotation>();
+	private String name;
+	private Collection<Type> types = new ArrayList<>();
+	private Map<String, Annotation> annotations = new HashMap<>();
 	private String deprecatedAlternative = null;
 	private boolean isInline = false;
-
 	private String documentation = null;
 
 	public DefaultMarkup(String name) {
-		super();
 		this.name = name;
+	}
+
+	public DefaultMarkup copy() {
+		DefaultMarkup clone = new DefaultMarkup(this.name);
+		clone.types = new ArrayList<>(this.types);
+		clone.annotations = new HashMap<>(this.annotations);
+		clone.deprecatedAlternative = this.deprecatedAlternative;
+		clone.isInline = this.isInline;
+		clone.documentation = this.documentation;
+		return clone;
 	}
 
 	/**
@@ -182,6 +65,10 @@ public class DefaultMarkup {
 	 */
 	public String getName() {
 		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -437,6 +324,132 @@ public class DefaultMarkup {
 			this.setRenderer((section, user, result) -> result.appendHtml(icon.toHtml()));
 		}
 
+	}
+
+	public class Annotation {
+
+		private final String name;
+		private final boolean mandatory;
+		private final Pattern pattern; // optional
+		private final boolean isRegex;
+		private boolean deprecated;
+
+		private String documentation = null;
+
+		private final Collection<Type> nameTypes = new LinkedList<>();
+		private final Collection<Type> types = new LinkedList<>();
+
+		private Renderer renderer = null;
+
+		private Annotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
+			super();
+			this.name = name;
+			this.mandatory = mandatory;
+			this.isRegex = isRegex;
+			this.pattern = pattern;
+		}
+
+		/**
+		 * Returns the name of the annotation. The name is the text after the
+		 * &#64; that uniquely identify the annotation within a default mark-up.
+		 *
+		 * @return the name of the annotation
+		 */
+		public String getName() {
+			return this.name;
+		}
+
+		/**
+		 * Returns the documentation of the annotation. Returns 'null' if no specific
+		 * documentation for that annotation is defined.
+		 *
+		 * @return the name of the annotation
+		 */
+		public String getDocumentation() {
+			return documentation;
+		}
+
+		/**
+		 * Sets the documentation for this annotation. Set 'null' to remove the documentation.
+		 *
+		 * @param documentation the documentation to be set
+		 */
+		public void setDocumentation(String documentation) {
+			this.documentation = documentation;
+		}
+
+		/**
+		 * Returns whether the annotation is mandatory for the mark-up.
+		 *
+		 * @return whether the annotation is mandatory
+		 */
+		public boolean isMandatory() {
+			return this.mandatory;
+		}
+
+		/**
+		 * Returns whether the annotation is deprecated
+		 *
+		 * @return true if the annotation is deprecated, false otherwise
+		 * @created 18.04.2012
+		 */
+		public boolean isDeprecated() {
+			return deprecated;
+		}
+
+		/**
+		 * Returns whether this annotations is described with a regular
+		 * expression instead of name string.
+		 *
+		 * @return if the annotation is a regex
+		 * @created 05.06.2013
+		 */
+		public boolean isRegex() {
+			return isRegex;
+		}
+
+		/**
+		 * Checks if the content of an annotation matches the annotations
+		 * pattern.
+		 *
+		 * @param annotationContent the content string to be checked
+		 * @return whether the annotations pattern is matched
+		 */
+		@SuppressWarnings("SimplifiableIfStatement")
+		public boolean matches(String annotationContent) {
+			if (pattern == null) return true;
+			if (annotationContent == null) return false;
+			return pattern.matcher(annotationContent).matches();
+		}
+
+		/**
+		 * Return all {@link Type}s that may be accepted as the content text of
+		 * the annotation. These types will be used to sectionize (parse) and
+		 * render the annotations content text, if there is no other
+		 * renderer/parser defined in the parent's {@link DefaultMarkupType}.
+		 * <p>
+		 * The annotation may also contain any other text. It will be recognized
+		 * as {@link PlainText}, such in any other section or wiki-page. It is
+		 * in responsibility of the {@link de.knowwe.core.compile.CompileScript} of the
+		 * {@link DefaultMarkupType} instance to check for non-allowed content.
+		 *
+		 * @return the Types of this annotation
+		 */
+		public Type[] getContentTypes() {
+			return this.types.toArray(new Type[this.types.size()]);
+		}
+
+		public Type[] getNameTypes() {
+			return this.nameTypes.toArray(new Type[this.nameTypes.size()]);
+		}
+
+		public Renderer getRenderer() {
+			return renderer;
+		}
+
+		public Pattern getPattern() {
+			return pattern;
+		}
 	}
 
 }
