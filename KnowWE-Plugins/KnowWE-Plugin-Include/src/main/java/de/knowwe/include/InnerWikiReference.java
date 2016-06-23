@@ -294,9 +294,9 @@ public class InnerWikiReference extends AbstractType {
 			if (!namedSections.isEmpty()) {
 				return namedSections.getFirst();
 			}
-			Messages.storeMessage(headerReference, getClass(), Messages.error("Name '" + namedSectionName + "' not found!"));
+			Messages.storeMessage(namedSectionReference, getClass(), Messages.error("Name '" + namedSectionName + "' not found!"));
 		}
-		Messages.storeMessage(headerReference, getClass(), Messages.error("Reference for '" + section.getText() + "' not found!"));
+		Messages.storeMessage(articleReference, getClass(), Messages.error("Reference for '" + section.getText() + "' not found!"));
 		return null;
 	}
 
