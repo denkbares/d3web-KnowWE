@@ -3,9 +3,9 @@ sep="+25,25";
 splines = true;
 overlap=false;
 graph [ rankdir="LR" ]
-"si:homer"[  shape="box"  style="rounded" label=<<TABLE BORDER="0"><TR><TD BORDER="2"><I>si:Human</I></TD><TD BORDER="2"><B>si:homer</B></TD></TR><TR><TD BORDER="1">si:age</TD><TD BORDER="1">"36"</TD></TR><TR><TD BORDER="1">rdfs:label</TD><TD BORDER="1">"Homer Simpson"</TD></TR></TABLE>> ];
-"si:marge"[  shape="box"  style="rounded" label=<<TABLE BORDER="0"><TR><TD BORDER="2"><I>si:Human</I></TD><TD BORDER="2"><B>si:marge</B></TD></TR><TR><TD BORDER="1">rdfs:label</TD><TD BORDER="1">"Marge Simpson"</TD></TR><TR><TD BORDER="1">si:age</TD><TD BORDER="1">"34"</TD></TR></TABLE>> ];
-"si:lisa"[  shape="box"  style="rounded,bold" label=<<TABLE BORDER="0"><TR><TD BORDER="2"><I>si:Human</I></TD><TD BORDER="2"><B><U>si:lisa</U></B></TD></TR><TR><TD BORDER="1">si:age</TD><TD BORDER="1">"8"</TD></TR><TR><TD BORDER="1">rdfs:label</TD><TD BORDER="1">"Lisa Simpson"</TD></TR></TABLE>> ];
+"si:homer"[  shape="box"  style="rounded" label=<<TABLE BORDER="0"><TR><TD BORDER="2"><I>si:Human</I></TD><TD BORDER="2"><B>si:homer</B></TD></TR><TR><TD BORDER="1">si:age</TD><TD BORDER="1">36</TD></TR><TR><TD BORDER="1">rdfs:label</TD><TD BORDER="1">Homer Simpson</TD></TR></TABLE>> ];
+"si:marge"[  shape="box"  style="rounded" label=<<TABLE BORDER="0"><TR><TD BORDER="2"><I>si:Human</I></TD><TD BORDER="2"><B>si:marge</B></TD></TR><TR><TD BORDER="1">rdfs:label</TD><TD BORDER="1">Marge Simpson</TD></TR><TR><TD BORDER="1">si:age</TD><TD BORDER="1">34</TD></TR></TABLE>> ];
+"si:lisa"[  shape="box"  style="rounded,bold" label=<<TABLE BORDER="0"><TR><TD BORDER="2"><I>si:Human</I></TD><TD BORDER="2"><B><U>si:lisa</U></B></TD></TR><TR><TD BORDER="1">si:age</TD><TD BORDER="1">8</TD></TR><TR><TD BORDER="1">rdfs:label</TD><TD BORDER="1">Lisa Simpson</TD></TR></TABLE>> ];
 "si:marge" -> "si:lisa" [ label = "si:child" arrowtail="normal"  color="black"  ];
 "si:homer" -> "si:lisa" [ label = "si:child" arrowtail="normal"  color="black"  ];
 }
