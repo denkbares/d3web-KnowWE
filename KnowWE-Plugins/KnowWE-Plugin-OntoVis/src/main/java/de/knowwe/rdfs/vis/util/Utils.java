@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
@@ -129,23 +130,7 @@ public class Utils {
 			//add a key to identifier to have distinguish between concepts and literals, e.g., <lns:Q> and "Q"
 			identifier = getIdentifierLiteral(toLiteral);
 			type = GraphDataBuilder.NODE_TYPE.LITERAL;
-			label = toLiteral.toString();
-			if (label.contains("@")) {
-				String lang = label.substring(label.indexOf('@') + 1);
-				label = label.substring(0, label.indexOf('@')) + " (" + lang + ")";
-			}
-			else if (label.contains("^^")) {
-				if (label.contains("#")) {
-					String dataType = label.substring(label.lastIndexOf('#') + 1, label.length() - 1);
-					label = label.substring(0, label.indexOf("^^")) + ("string".equals(dataType) ? "" : " (" + dataType + ")");
-				}
-				else {
-					label = label.substring(0, label.indexOf("^^"));
-				}
-			}
-			else {
-				label = Strings.quote(label);
-			}
+			label = literalToLabel(toLiteral);
 
 			RenderingStyle style = Utils.getStyle(type);
 			visValue = new ConceptNode(identifier, type, null, label, style);
@@ -236,6 +221,29 @@ public class Utils {
 		// this case should/can never happen!
 		Log.severe("No valid Value type!");
 		return null;
+	}
+
+	@NotNull
+	private static String literalToLabel(Literal toLiteral) {
+		String label;
+		label = toLiteral.toString();
+		if (label.contains("@")) {
+			String lang = label.substring(label.indexOf('@') + 1);
+			label = label.substring(0, label.indexOf('@')) + " (" + lang + ")";
+		}
+		else if (label.contains("^^")) {
+			if (label.contains("#")) {
+				String dataType = label.substring(label.lastIndexOf('#') + 1, label.length() - 1);
+				label = Strings.unquote(label.substring(0, label.indexOf("^^"))) + ("string".equals(dataType) ? "" : " (" + dataType + ")");
+			}
+			else {
+				label = label.substring(0, label.indexOf("^^"));
+			}
+		}
+		else {
+			label = Strings.quote(label);
+		}
+		return label;
 	}
 
 	@Nullable
@@ -491,10 +499,7 @@ public class Utils {
 
 		String relationName = relation;
 		if (toLiteral != null) {
-			relationName = toLiteral.toString();
-			if (relationName.contains("@")) {
-				relationName = relationName.substring(0, relationName.indexOf('@'));
-			}
+			relationName = literalToLabel(toLiteral);
 		}
 		else {
 			// if it is no literal look for label for the URI
