@@ -173,6 +173,7 @@ public class AttachmentManager implements EventListener {
 	private void createAndRegisterAttachmentArticle(String attachmentPath) {
 		try {
 			WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(attachmentPath);
+			if (attachment == null) return;
 			String attachmentText = Strings.readStream(attachment.getInputStream());
 			articleManager.registerArticle(Article.createArticle(attachmentText, attachmentPath,
 					articleManager.getWeb()));
