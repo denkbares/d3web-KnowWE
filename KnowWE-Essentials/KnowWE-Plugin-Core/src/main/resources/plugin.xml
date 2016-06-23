@@ -464,7 +464,15 @@
 		<parameter id="description" value="Offers tool to force update of attachment." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="AttachmentUpdateMarkup" />
+		<parameter id="scope" value="AttachmentMarkup" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetSectionTextAction">
+		<parameter id="class" value="de.knowwe.core.action.GetSectionTextAction" />
+		<parameter id="name" value="GetSectionTextAction" />
+		<parameter id="description" value="Action GetSectionTextAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AttachmentUpdateAction">
