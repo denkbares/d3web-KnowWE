@@ -33,7 +33,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.CompilerManager;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -57,6 +56,8 @@ public class DefaultArticleManager implements ArticleManager {
 
 	private final CompilerManager compilerManager;
 
+	private final AttachmentManager attachmentManager;
+
 	private final ReentrantLock mainLock = new ReentrantLock(true);
 	private List<Section<?>> added = Collections.synchronizedList(new ArrayList<>());
 	private List<Section<?>> removed = Collections.synchronizedList(new ArrayList<>());
@@ -64,6 +65,11 @@ public class DefaultArticleManager implements ArticleManager {
 	public DefaultArticleManager(String web) {
 		this.web = web;
 		this.compilerManager = new CompilerManager(this);
+		this.attachmentManager = new AttachmentManager(this);
+	}
+
+	public AttachmentManager getAttachmentManager() {
+		return attachmentManager;
 	}
 
 	@Override
