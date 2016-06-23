@@ -53,6 +53,17 @@ public class AttachmentType extends AbstractType {
 	private static final String LISTENER_KEY = "listener_key";
 
 	public AttachmentType() {
+		this(true);
+	}
+
+	/**
+	 * Creates a new AttachmentType.
+	 *
+	 * @param generateMessages specifies whether the type should produces messages about the validity of the
+	 *                         attachment.
+	 *                         Set to false, if validity is checked independently by other types and scripts.
+	 */
+	public AttachmentType(boolean generateMessages) {
 		setSectionFinder(AllTextFinder.getInstance());
 		addCompileScript(Priority.HIGHER, new DefaultGlobalScript<AttachmentType>() {
 
@@ -61,7 +72,7 @@ public class AttachmentType extends AbstractType {
 
 				section.storeObject(compiler, LISTENER_KEY, new AttachmentChangedListener(section));
 
-				handleMessages(section);
+				if (generateMessages) handleMessages(section);
 
 			}
 
@@ -90,19 +101,19 @@ public class AttachmentType extends AbstractType {
 			attachment = getAttachment(section);
 		}
 		catch (IOException e) {
-			Messages.storeMessage(section,  AttachmentType.class,
+			Messages.storeMessage(section, AttachmentType.class,
 					Messages.internalError("Could not access attachment '"
 							+ path + "'.", e));
 			return;
 		}
 
 		if (attachment == null) {
-			Messages.storeMessage(section,  AttachmentType.class,
+			Messages.storeMessage(section, AttachmentType.class,
 					Messages.noSuchObjectError("Attachment", path));
 			return;
 		}
 
-		Messages.clearMessages(section,  AttachmentType.class);
+		Messages.clearMessages(section, AttachmentType.class);
 	}
 
 	public static WikiAttachment getAttachment(Section<AttachmentType> section) throws IOException {
