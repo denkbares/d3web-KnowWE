@@ -111,8 +111,16 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				result.append(section.getText());
 				long sinceLastRun = timeSinceLastRun(Sections.ancestor(section, AttachmentMarkup.class));
 				if (sinceLastRun < Long.MAX_VALUE) {
+					String timeDisplay;
+					if (sinceLastRun < 5000) {
+						timeDisplay = "moments";
+					}
+					else {
+						timeDisplay = Stopwatch.getDisplay(sinceLastRun);
+
+					}
 					result.appendHtmlElement("span",
-							" (last update was " + Stopwatch.getDisplay(sinceLastRun) + " ago)",
+							" (last update was " + timeDisplay + " ago)",
 							"style", "color: grey");
 				}
 			}
