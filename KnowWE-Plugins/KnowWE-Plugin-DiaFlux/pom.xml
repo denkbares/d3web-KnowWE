@@ -62,6 +62,11 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-Include</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-GlobalTestUtils</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>

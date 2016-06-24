@@ -1,5 +1,6 @@
 package de.knowwe.diaflux;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.knowwe.core.append.PageAppendHandler;
@@ -9,6 +10,11 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.diaflux.type.FlowchartType;
+import de.knowwe.include.IncludeMarkup;
+import de.knowwe.include.WikiReference;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Pre appends DiaFlux resources to article.
@@ -21,9 +27,17 @@ public class DiaFluxResourceAppender implements PageAppendHandler {
 	@Override
 	public void append(String web, String title, UserContext user, RenderResult result) {
 		Article article = user.getArticleManager().getArticle(title);
-		List<Section<FlowchartType>> flowcharts = Sections.successors(article.getRootSection(), FlowchartType.class);
+		List<Section<FlowchartType>> flowcharts = new ArrayList<>(Sections.successors(article.getRootSection(), FlowchartType.class));
+		// also render included flowcharts
+		flowcharts.addAll($(article).successor(IncludeMarkup.class)
+				.successor(WikiReference.class)
+				.stream()
+				.map(reference -> reference.get().getReferencedSection(reference))
+				.flatMap(referencedSection -> $(referencedSection).successor(FlowchartType.class).stream())
+				.collect(toList()));
 		if (!flowcharts.isEmpty()) {
-			FlowchartUtils.insertDiaFluxResources(user, result, flowcharts.toArray(new Section<?>[flowcharts.size()]));
+			Section<?>[] flowchartsArray = flowcharts.toArray(new Section<?>[0]);
+			FlowchartUtils.insertDiaFluxResources(user, result, flowchartsArray);
 		}
 	}
 
