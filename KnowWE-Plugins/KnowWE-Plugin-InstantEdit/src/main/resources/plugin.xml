@@ -53,6 +53,7 @@
         <parameter id="scope" value="RuleMarkup" />
         <parameter id="scope" value="SemanticAutocompletionType" />
 		<parameter id="scope" value="OntologyType" />
+		<parameter id="scope" value="AttachmentMarkup" />
     </extension>
  
     <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
