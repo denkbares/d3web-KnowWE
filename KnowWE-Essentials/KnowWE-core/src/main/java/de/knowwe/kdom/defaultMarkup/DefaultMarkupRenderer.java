@@ -91,7 +91,10 @@ public class DefaultMarkupRenderer implements Renderer {
 		RenderResult content = new RenderResult(result);
 
 		// render messages and content
-		renderMessages(section, content);
+		if (section.get() instanceof DefaultMarkupType) {
+			// only render messages if this is a DefaultMarkupType section (can be other e.g. in %%Include)
+			renderMessages(section, content);
+		}
 		renderProgress(section, user, tools, content);
 		renderContents(section, user, content);
 
