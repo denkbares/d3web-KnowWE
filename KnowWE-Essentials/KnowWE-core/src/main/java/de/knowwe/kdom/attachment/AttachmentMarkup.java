@@ -57,10 +57,7 @@ import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.basicType.URLType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -105,24 +102,21 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION);
 		TimeStampType timeStampType = new TimeStampType();
-		timeStampType.setRenderer(new Renderer() {
-			@Override
-			public void render(Section<?> section, UserContext user, RenderResult result) {
-				result.append(section.getText());
-				long sinceLastRun = timeSinceLastRun(Sections.ancestor(section, AttachmentMarkup.class));
-				if (sinceLastRun < Long.MAX_VALUE) {
-					String timeDisplay;
-					if (sinceLastRun < 5000) {
-						timeDisplay = "moments";
-					}
-					else {
-						timeDisplay = Stopwatch.getDisplay(sinceLastRun);
-
-					}
-					result.appendHtmlElement("span",
-							" (last update was " + timeDisplay + " ago)",
-							"style", "color: grey");
+		timeStampType.setRenderer((section, user, result) -> {
+			result.append(section.getText());
+			long sinceLastRun = timeSinceLastRun(Sections.ancestor(section, AttachmentMarkup.class));
+			if (sinceLastRun < Long.MAX_VALUE) {
+				String timeDisplay;
+				if (sinceLastRun < 5000) {
+					timeDisplay = "moments";
 				}
+				else {
+					timeDisplay = Stopwatch.getDisplay(sinceLastRun);
+
+				}
+				result.appendHtmlElement("span",
+						" (last update was " + timeDisplay + " ago)",
+						"style", "color: grey");
 			}
 		});
 		MARKUP.addAnnotationContentType(INTERVAL_ANNOTATION, timeStampType);
