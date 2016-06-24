@@ -46,22 +46,23 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 	@Override
 	public void render(Section<?> includeMarkup, UserContext user, RenderResult result) {
 
-		// check for errors in links and/or annotations
 		Section<IncludeMarkup> section = Sections.cast(includeMarkup, IncludeMarkup.class);
-		List<Section<InnerWikiReference>> references =
-				Sections.successors(section, InnerWikiReference.class);
-		for (Section<InnerWikiReference> ref : references) {
+
+		// parse parameters
+		String frame = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_FRAME);
+		boolean isFramed = Strings.equalsIgnoreCase(frame, "show") || Strings.equalsIgnoreCase(frame, "true");
+
+		result.appendHtmlTag("div", "id", section.getID(), "class", "IncludeMarkup"); // add marker for edit mode
+
+		// check for errors in links and/or annotations
+		List<Section<WikiReference>> references =
+				Sections.successors(section, WikiReference.class);
+		for (Section<WikiReference> ref : references) {
 			ref.get().updateReferences(ref);
 		}
 
 		// show document title
 		renderDocumentInfo(section, result);
-
-		// parse parameters
-		String frame = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_FRAME);
-		boolean isFramed = Strings.equalsIgnoreCase(frame, "show")
-				// TODO: deprecated, remove 'true' here after 2014
-				|| Strings.equalsIgnoreCase(frame, "true");
 
 		int zoom = 100;
 		Section<?> zoomSection =
@@ -104,7 +105,7 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 		}
 
 		// render included sections
-		for (Section<InnerWikiReference> include : references) {
+		for (Section<WikiReference> include : references) {
 			// find section and render it
 			Section<?> referencedSection = include.get().getReferencedSection(include);
 			int listLevel = include.get().getListMarks(include).length();
@@ -127,6 +128,8 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 			renderIncludedSections(user, referencedSection, result,
 					zoom, isFramed, true);
 		}
+
+		result.appendHtmlTag("/div");
 	}
 
 	private void renderDocumentInfo(Section<IncludeMarkup> section, RenderResult result) {

@@ -25,7 +25,7 @@ import java.util.Set;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.include.IncludeMarkup;
-import de.knowwe.include.InnerWikiReference;
+import de.knowwe.include.WikiReference;
 
 /**
  * Export handler for exporting sections included by the include markup.
@@ -52,9 +52,9 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 		boolean isNew = visited.add(section);
 		if (!isNew) return;
 		try {
-			List<Section<InnerWikiReference>> references =
-					Sections.successors(section, InnerWikiReference.class);
-			for (Section<InnerWikiReference> reference : references) {
+			List<Section<WikiReference>> references =
+					Sections.successors(section, WikiReference.class);
+			for (Section<WikiReference> reference : references) {
 				exportReference(reference, manager);
 			}
 		}
@@ -63,7 +63,7 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 		}
 	}
 
-	private void exportReference(Section<InnerWikiReference> reference, DocumentBuilder manager) throws ExportException {
+	private void exportReference(Section<WikiReference> reference, DocumentBuilder manager) throws ExportException {
 		manager.closeParagraph();
 		int delta = getHeadingDelta(reference);
 		boolean wasSuppressHeaderNumbering = manager.isSuppressHeaderNumbering();
@@ -87,7 +87,7 @@ public class IncludeExporter implements Exporter<IncludeMarkup> {
 		manager.setSuppressHeaderNumbering(wasSuppressHeaderNumbering);
 	}
 
-	private int getHeadingDelta(Section<InnerWikiReference> reference) {
+	private int getHeadingDelta(Section<WikiReference> reference) {
 		int marks = reference.get().getMaxHeaderMarkCount(reference);
 		return marks == 0 ? 0 : (marks - 3);
 	}

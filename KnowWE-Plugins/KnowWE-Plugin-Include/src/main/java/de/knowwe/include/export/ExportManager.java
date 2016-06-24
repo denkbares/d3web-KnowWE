@@ -41,7 +41,7 @@ import de.knowwe.core.kdom.renderer.RenderKDOMType;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.include.IncludeMarkup;
-import de.knowwe.include.InnerWikiReference;
+import de.knowwe.include.WikiReference;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -161,9 +161,9 @@ public class ExportManager {
 
 	private void initIncludedSections(Section<?> section, Set<Section<?>> visited) {
 		if (visited.add(section)) {
-			List<Section<InnerWikiReference>> references =
-					Sections.successors(section, InnerWikiReference.class);
-			for (Section<InnerWikiReference> reference : references) {
+			List<Section<WikiReference>> references =
+					Sections.successors(section, WikiReference.class);
+			for (Section<WikiReference> reference : references) {
 				List<Section<?>> targets = reference.get().getIncludedSections(reference);
 				for (Section<?> target : targets) {
 					initIncludedSections(target, visited);

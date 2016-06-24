@@ -106,7 +106,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
 		m.addContentType(new CommentLineType());
-		m.addContentType(new InnerWikiReference());
+		m.addContentType(new WikiReference());
 		m.addAnnotation(ANNOTATION_DEFINITION, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_FRAME, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_ZOOM, false);

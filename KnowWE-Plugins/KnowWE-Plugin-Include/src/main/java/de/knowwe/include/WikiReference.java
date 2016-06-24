@@ -54,7 +54,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Volker Belli (denkbares GmbH)
  * @created 05.02.2014
  */
-public class InnerWikiReference extends AbstractType {
+public class WikiReference extends AbstractType {
 
 	private static class Indent extends AbstractType {
 
@@ -116,7 +116,7 @@ public class InnerWikiReference extends AbstractType {
 
 	private static final String TARGET_SECTION_ID_KEY = "includedSectionID";
 
-	public InnerWikiReference() {
+	public WikiReference() {
 		// matches everything begins with a
 		// non-whitespace, non-enumeration char,
 		// is on one line and end with some printable character
@@ -152,7 +152,7 @@ public class InnerWikiReference extends AbstractType {
 	 * @return the referenced Section
 	 * @created 05.02.2014
 	 */
-	public Section<?> getReferencedSection(Section<InnerWikiReference> section) {
+	public Section<?> getReferencedSection(Section<WikiReference> section) {
 		String id = (String) KnowWEUtils.getStoredObject(section, TARGET_SECTION_ID_KEY);
 		if (id == null) {
 			// not initialized yet
@@ -178,7 +178,7 @@ public class InnerWikiReference extends AbstractType {
 	 * @return the list of sections to be included
 	 * @created 12.02.2014
 	 */
-	public List<Section<?>> getIncludedSections(Section<InnerWikiReference> section) {
+	public List<Section<?>> getIncludedSections(Section<WikiReference> section) {
 		return getIncludedSections(section, false);
 	}
 
@@ -191,7 +191,7 @@ public class InnerWikiReference extends AbstractType {
 	 * @return the list of sections to be included
 	 * @created 12.02.2014
 	 */
-	public List<Section<? extends de.knowwe.core.kdom.Type>> getIncludedSections(Section<InnerWikiReference> section, boolean forceSkipHeader) {
+	public List<Section<? extends de.knowwe.core.kdom.Type>> getIncludedSections(Section<WikiReference> section, boolean forceSkipHeader) {
 		Section<?> targetSection = getReferencedSection(section);
 		if (targetSection == null) return Collections.emptyList();
 
@@ -215,7 +215,7 @@ public class InnerWikiReference extends AbstractType {
 	 * @return the highest number of header marks of any included header
 	 * @created 11.02.2014
 	 */
-	public int getMaxHeaderMarkCount(Section<InnerWikiReference> section) {
+	public int getMaxHeaderMarkCount(Section<WikiReference> section) {
 		List<Section<?>> included = getIncludedSections(section);
 		int marks = 0;
 		for (Section<HeaderType> header : Sections.successors(included, HeaderType.class)) {
@@ -224,7 +224,7 @@ public class InnerWikiReference extends AbstractType {
 		return marks;
 	}
 
-	private synchronized Section<?> findReferencedSection(Section<InnerWikiReference> section) {
+	private synchronized Section<?> findReferencedSection(Section<WikiReference> section) {
 
 		// prepare sub-sections
 		Section<ArticleReference> articleReference = getArticleReference(section);
@@ -300,7 +300,7 @@ public class InnerWikiReference extends AbstractType {
 		return null;
 	}
 
-	private Section<NamedSectionReference> getNamedSectionReference(Section<InnerWikiReference> section) {
+	private Section<NamedSectionReference> getNamedSectionReference(Section<WikiReference> section) {
 		return $(section).successor(NamedSectionReference.class).getFirst();
 	}
 
@@ -312,7 +312,7 @@ public class InnerWikiReference extends AbstractType {
 		return Sections.successor(section, ArticleReference.class);
 	}
 
-	public synchronized Section<?> updateReferences(Section<InnerWikiReference> section) {
+	public synchronized Section<?> updateReferences(Section<WikiReference> section) {
 		Section<?> targetSection = findReferencedSection(section);
 		// we store the section id
 		// to easily recognize if the section has disappeared
@@ -325,10 +325,10 @@ public class InnerWikiReference extends AbstractType {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
-			Section<InnerWikiReference> innerRef = Sections.cast(section, InnerWikiReference.class);
+			Section<WikiReference> innerRef = Sections.cast(section, WikiReference.class);
 
 			// add break before first on
-			if (Sections.successor(innerRef.getParent(), InnerWikiReference.class) == innerRef) {
+			if (Sections.successor(innerRef.getParent(), WikiReference.class) == innerRef) {
 				result.append("\n");
 			}
 
@@ -345,7 +345,7 @@ public class InnerWikiReference extends AbstractType {
 			result.appendHtml("</span><br>");
 		}
 
-		private void renderLine(Section<InnerWikiReference> innerRef, UserContext user, RenderResult result) {
+		private void renderLine(Section<WikiReference> innerRef, UserContext user, RenderResult result) {
 			// if a header is specified, but it has an error
 			// then we know the article is ok, and therefore render differently
 			Section<HeaderReference> headerReference = getHeaderReference(innerRef);
@@ -383,7 +383,7 @@ public class InnerWikiReference extends AbstractType {
 	 * @return if the header shall not be shown
 	 * @created 12.02.2014
 	 */
-	public boolean isSuppressHeader(Section<InnerWikiReference> section) {
+	public boolean isSuppressHeader(Section<WikiReference> section) {
 		return getListMarks(section).endsWith("-");
 	}
 
@@ -394,11 +394,11 @@ public class InnerWikiReference extends AbstractType {
 	 * @return if the header's numbering shall not be shown
 	 * @created 12.02.2014
 	 */
-	public boolean isSuppressNumbering(Section<InnerWikiReference> section) {
+	public boolean isSuppressNumbering(Section<WikiReference> section) {
 		return getListMarks(section).endsWith("*");
 	}
 
-	public String getLinkName(Section<InnerWikiReference> section) {
+	public String getLinkName(Section<WikiReference> section) {
 		// if a name is specified use the name
 		Section<LinkName> nameSection = Sections.successor(section, LinkName.class);
 		if (nameSection != null) return nameSection.getText();
@@ -411,7 +411,7 @@ public class InnerWikiReference extends AbstractType {
 		return section.getText();
 	}
 
-	public String getLink(Section<InnerWikiReference> section) {
+	public String getLink(Section<WikiReference> section) {
 		Section<ArticleReference> articleReference = getArticleReference(section);
 		Section<HeaderReference> headerReference = getHeaderReference(section);
 		if (articleReference == null && headerReference == null) return null;
@@ -431,7 +431,7 @@ public class InnerWikiReference extends AbstractType {
 	 * @return the marks preceding the include link
 	 * @created 11.02.2014
 	 */
-	public String getListMarks(Section<InnerWikiReference> reference) {
+	public String getListMarks(Section<WikiReference> reference) {
 		Section<ListMarks> marks = Sections.successor(reference, ListMarks.class);
 		if (marks == null) return "";
 		return marks.getText();
