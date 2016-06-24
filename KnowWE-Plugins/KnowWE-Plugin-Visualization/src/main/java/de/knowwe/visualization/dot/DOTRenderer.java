@@ -286,7 +286,10 @@ public class DOTRenderer {
 
 
 	private static String createNodeLabel(String name, RenderingStyle.Fontstyle f) {
-		String nodeLabel = Utils.prepareLabel(name);
+		// prepareLabel adds linebreaks where necessary and possible
+		// however that is not required as we generate only svg
+		//String nodeLabel = Utils.prepareLabel(name);
+		String nodeLabel = Utils.clean(name, Utils.LINE_BREAK);
 		if (f != RenderingStyle.Fontstyle.NORMAL) {
 			nodeLabel = styleLabel(nodeLabel, f);
 		}

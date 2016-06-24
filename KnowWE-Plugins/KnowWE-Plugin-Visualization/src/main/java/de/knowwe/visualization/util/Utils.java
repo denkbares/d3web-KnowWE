@@ -82,6 +82,8 @@ public class Utils {
 			desiredLBs.add((int) Math.round(i * optimalLength));
 		}
 
+		//todo: remove creation of trailing linebreaks
+
 		// try to find those possible line breaks that closest to the optimal
 		// line breaks
 		int d = 0;
@@ -138,24 +140,10 @@ public class Utils {
 		}
 
 		String label = labelBuilder.toString();
-		//
-		// if (label.contains("/")) {
-		// if (label.length() > 25) {
-		// if (!label.contains("\\n")) {
-		// label = label.replaceAll("/", "/\\\\n");
-		// }
-		// }
-		// }
-		//
-		// if (label.endsWith("\\n")) {
-		// label = label.substring(0, label.length() - 2);
-		// }
-		// label = "\"" + label + "\"";
-
 		return label;
 	}
 
-	private static String clean(String text, String lineBreak) {
+	public static String clean(String text, String lineBreak) {
 		String cleanText = StringEscapeUtils.escapeHtml(text);
 		cleanText = cleanText.replaceAll("\\r\\n|\\n", lineBreak);
 		return cleanText.replaceAll("\"", "'");

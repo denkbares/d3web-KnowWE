@@ -3,10 +3,10 @@ sep="+25,25";
 splines = true;
 overlap=false;
 graph [ rankdir="LR" ]
-"si:maggie"[  shape="box"  style="rounded" label="Maggie\nSimpson\n" ];
+"si:maggie"[  shape="box"  style="rounded" label="Maggie Simpson" ];
 "si:bart"[  shape="box"  style="rounded" label="Bart Simpson" ];
 "si:lisa"[  shape="box"  style="rounded" label="Lisa Simpson" ];
-"si:marge"[  shape="box"  style="rounded,bold" label=<<U>Marge<BR ALIGN="CENTER"/>Simpson<BR ALIGN="CENTER"/></U>> ];
+"si:marge"[  shape="box"  style="rounded,bold" label=<<U>Marge Simpson</U>> ];
 "si:lisa" -> "si:lisa" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
 "si:maggie" -> "si:marge" [ label = "si:relatedWith" arrowtail="normal"  color="black"  ];
 "si:lisa" -> "si:marge" [ label = "si:relatedWith" arrowtail="normal"  color="black"  ];
