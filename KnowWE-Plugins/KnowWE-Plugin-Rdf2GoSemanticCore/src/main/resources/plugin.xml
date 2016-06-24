@@ -34,8 +34,6 @@
 	</runtime>
 
 
-
-
 	<extension-point id="Rdf2GoModelConfig">
 		<parameter-def id="name" />
 		<parameter-def id="description" />
@@ -45,7 +43,14 @@
 		<parameter-def id="reasoning" multiplicity="one" />
 	</extension-point>
 
-
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Instantiation" id="RepositoryInitializer">
+		<parameter id="class" value="de.knowwe.rdf2go.RepositoryInitializer" />
+		<parameter id="name" value="RepositoryInitializer" />
+		<parameter id="description"
+			value="Instantiation to initialize the SemanticCore with a proper temp directory." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="SparqlMarkupTypeInstantEditToolProvider">
 		<parameter id="class" value="de.knowwe.instantedit.tools.InstantEditToolProvider" />
@@ -64,7 +69,6 @@
 	</extension>
 
 
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ShowNamespacesType">
 		<parameter id="class" value="de.knowwe.kdom.namespaces.rdf2go.ShowNamespacesType" />
 		<parameter id="name" value="ShowNamespacesType" />
@@ -74,7 +78,6 @@
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-Rdf2GoSemanticCore.js" />
 	</extension>
-
 
 
 	<!-- extensions for basic preview rendering -->
@@ -95,7 +98,6 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-
 
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="RDFXMLExportButtonHandler">
