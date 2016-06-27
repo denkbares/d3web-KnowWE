@@ -74,16 +74,16 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		//markup.addAnnotation(Config.RENDERER, false, GraphDataBuilder.Renderer.values());
 		//markup.addAnnotationRenderer(Config.RENDERER, NothingRenderer.get());
 
-		markup.addAnnotation(Config.VISUALIZATION, false, Config.Visualization.values());
+		markup.addAnnotation(Config.VISUALIZATION, false, Config.Visualization.class);
 		markup.addAnnotationRenderer(Config.VISUALIZATION, NothingRenderer.getInstance());
 
-		markup.addAnnotation(Config.LINK_MODE, false, Config.LinkMode.values());
+		markup.addAnnotation(Config.LINK_MODE, false, Config.LinkMode.class);
 		markup.addAnnotationRenderer(Config.LINK_MODE, NothingRenderer.getInstance());
 
 		markup.addAnnotation(Config.DESIGN, false);
 		markup.addAnnotationRenderer(Config.DESIGN, NothingRenderer.getInstance());
 
-		markup.addAnnotation(Config.RANK_DIR, false, Config.RankDir.values());
+		markup.addAnnotation(Config.RANK_DIR, false, Config.RankDir.class);
 		markup.addAnnotationRenderer(Config.RANK_DIR, NothingRenderer.getInstance());
 
 		markup.addAnnotation(Config.SHOW_LABELS, false);
@@ -107,10 +107,10 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotation(Config.RANK_SAME, false);
 		markup.addAnnotationRenderer(Config.RANK_SAME, NothingRenderer.getInstance());
 
-		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.values());
+		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.class);
 		markup.addAnnotationRenderer(Config.OVERLAP, NothingRenderer.getInstance());
 
-		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.values());
+		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.class);
 		markup.addAnnotationRenderer(Config.LAYOUT, NothingRenderer.getInstance());
 
 		markup.addAnnotation(VIS_TEMPLATE_CLASS, false);

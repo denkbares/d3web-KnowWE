@@ -20,7 +20,6 @@
 package de.knowwe.visualization;
 
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -65,13 +64,13 @@ public class VisualizationConfigType extends DefaultMarkupType {
 		markup.addAnnotation(Config.ADD_TO_DOT, false);
 		markup.addAnnotation(Config.SHOW_OUTGOING_EDGES, false, "true", "false");
 		markup.addAnnotation(Config.SHOW_INVERSE, false, "true", "false");
-		markup.addAnnotation(Config.VISUALIZATION, false, Config.Visualization.values());
-		markup.addAnnotation(Config.LINK_MODE, false, Config.LinkMode.values());
-		markup.addAnnotation(Config.RANK_DIR, false, Config.RankDir.values());
+		markup.addAnnotation(Config.VISUALIZATION, false, Config.Visualization.class);
+		markup.addAnnotation(Config.LINK_MODE, false, Config.LinkMode.class);
+		markup.addAnnotation(Config.RANK_DIR, false, Config.RankDir.class);
 		markup.addAnnotation(Config.SHOW_LABELS, false);
 		markup.addAnnotation(Config.DESIGN, false);
-		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.values());
-		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.values());
+		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.class);
+		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.class);
 		markup.addAnnotation(Config.RANK_SAME, false);
 		return markup;
 	}

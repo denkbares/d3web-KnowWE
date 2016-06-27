@@ -58,9 +58,9 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 		MARKUP.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
 		MARKUP.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
 
-		MARKUP.addAnnotation(Config.VISUALIZATION, false, Visualizations.values());
+		MARKUP.addAnnotation(Config.VISUALIZATION, false, Visualizations.class);
 
-		MARKUP.addAnnotation(Config.LINK_MODE, false, Config.LinkMode.values());
+		MARKUP.addAnnotation(Config.LINK_MODE, false, Config.LinkMode.class);
 		MARKUP.addAnnotationRenderer(Config.LINK_MODE, NothingRenderer.getInstance());
 
 		MARKUP.addAnnotation(Config.RANK_DIR, false, "LR", "RL", "TB", "BT");
@@ -69,7 +69,7 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 		MARKUP.addAnnotation(Config.SHOW_LABELS, false);
 		MARKUP.addAnnotationRenderer(Config.SHOW_LABELS, NothingRenderer.getInstance());
 
-		MARKUP.addAnnotation(Config.SHOW_LITERALS, false, Config.LiteralMode.values());
+		MARKUP.addAnnotation(Config.SHOW_LITERALS, false, Config.LiteralMode.class);
 		MARKUP.addAnnotationRenderer(Config.SHOW_LITERALS, NothingRenderer.getInstance());
 
 		MARKUP.addAnnotation(Config.TIMEOUT, false);

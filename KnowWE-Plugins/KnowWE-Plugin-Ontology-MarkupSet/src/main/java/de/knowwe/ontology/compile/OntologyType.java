@@ -95,11 +95,11 @@ public class OntologyType extends DefaultMarkupType {
 				.toArray(new String[] {}));
 		MARKUP.addAnnotationIcon(ANNOTATION_RULE_SET, Icon.COG.addTitle("Rule Set"));
 
-		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.values());
+		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.class);
 		MARKUP.addAnnotationIcon(ANNOTATION_MULTI_DEF_MODE, Icon.ORDERED_LIST.addTitle("Multi-definition-mode"));
 
 		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new AttachmentType(false));
-		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.values());
+		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class);
 		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
 		compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());
 		compileType.addCompileScript(new OntologyCompilerRegistrationScript());

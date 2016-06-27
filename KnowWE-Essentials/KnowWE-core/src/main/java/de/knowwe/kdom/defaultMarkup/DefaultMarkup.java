@@ -93,7 +93,7 @@ public class DefaultMarkup implements Cloneable {
 
 	/**
 	 * Adds a non mandatory new annotation to the markup.
-	 * 
+	 *
 	 * @param name the name of the annotation to be added
 	 */
 	public void addAnnotation(String name) {
@@ -102,8 +102,8 @@ public class DefaultMarkup implements Cloneable {
 
 	/**
 	 * Adds a new annotation to the markup.
-	 * 
-	 * @param name the name of the annotation to be added
+	 *
+	 * @param name      the name of the annotation to be added
 	 * @param mandatory if the annotation is required for the markup
 	 */
 	public void addAnnotation(String name, boolean mandatory) {
@@ -114,8 +114,8 @@ public class DefaultMarkup implements Cloneable {
 	 * Adds a new annotation to the markup, where the name is a regular
 	 * expression. All annotations with names matching this expression will be
 	 * found and allowed.
-	 * 
-	 * @param regex the regex of the name of the annotations to be added
+	 *
+	 * @param regex     the regex of the name of the annotations to be added
 	 * @param mandatory if the annotation is required for the markup
 	 */
 	public void addRegexAnnotation(String regex, boolean mandatory) {
@@ -126,13 +126,13 @@ public class DefaultMarkup implements Cloneable {
 	/**
 	 * Adds a new annotation to the markup with a fixed list of possible values
 	 * (enumeration).
-	 * 
-	 * @param name the name of the annotation to be added
-	 * @param mandatory if the annotation is required for the markup
+	 *
+	 * @param name       the name of the annotation to be added
+	 * @param mandatory  if the annotation is required for the markup
 	 * @param enumValues the allowed values for the annotation
 	 */
 	public void addAnnotation(String name, boolean mandatory,
-			String... enumValues) {
+							  String... enumValues) {
 		String regex = "^(" + Strings.concat("|", enumValues)
 				+ ")$";
 		int flags = Pattern.CASE_INSENSITIVE;
@@ -146,26 +146,39 @@ public class DefaultMarkup implements Cloneable {
 	/**
 	 * Adds a new annotation to the markup with a fixed list of possible values
 	 * (enumeration).
-	 * 
-	 * @param name the name of the annotation to be added
-	 * @param mandatory if the annotation is required for the markup
+	 *
+	 * @param name       the name of the annotation to be added
+	 * @param mandatory  if the annotation is required for the markup
 	 * @param enumValues the allowed values for the annotation
+	 * @deprecated use {@link #addAnnotation(String, boolean, Class)} instead
 	 */
-	public void addAnnotation(String name, boolean mandatory,
-			Enum<?>... enumValues) {
-		String regex = "^(" + Strings.concat("|", enumValues)
-				+ ")$";
+	public void addAnnotation(String name, boolean mandatory, Enum<?>... enumValues) {
+		String regex = "^(" + Strings.concat("|", enumValues) + ")$";
 		int flags = Pattern.CASE_INSENSITIVE;
 		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
 	}
 
 	/**
+	 * Adds a new annotation to the markup with a fixed list of possible values
+	 * (enumeration).
+	 *
+	 * @param name      the name of the annotation to be added
+	 * @param mandatory if the annotation is required for the markup
+	 * @param enumClass the allowed values for the annotation
+	 */
+	public void addAnnotation(String name, boolean mandatory, Class<? extends Enum<?>> enumClass) {
+		Enum<?>[] enumConstants = enumClass.getEnumConstants();
+		//noinspection deprecation
+		addAnnotation(name, mandatory, enumConstants);
+	}
+
+	/**
 	 * Adds a new annotation to the markup with a pattern to specify the values
 	 * allowed for this annotation.
-	 * 
-	 * @param name the name of the annotation to be added
+	 *
+	 * @param name      the name of the annotation to be added
 	 * @param mandatory if the annotation is required for the markup
-	 * @param pattern a regular expression to check the allowed values
+	 * @param pattern   a regular expression to check the allowed values
 	 */
 	public void addAnnotation(String name, boolean mandatory, Pattern pattern) {
 		this.addAnnotation(name, mandatory, false, pattern);
@@ -174,12 +187,12 @@ public class DefaultMarkup implements Cloneable {
 	/**
 	 * Adds a new annotation to the markup with a pattern to specify the values
 	 * allowed for this annotation.
-	 * 
-	 * @param name the name of the annotation to be added
+	 *
+	 * @param name      the name of the annotation to be added
 	 * @param mandatory if the annotation is required for the markup
-	 * @param isRegex if the given name is a regex allowing a range of
-	 *        annotations
-	 * @param pattern a regular expression to check the allowed values
+	 * @param isRegex   if the given name is a regex allowing a range of
+	 *                  annotations
+	 * @param pattern   a regular expression to check the allowed values
 	 */
 	public void addAnnotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
 		// do not allow duplicates
@@ -201,7 +214,7 @@ public class DefaultMarkup implements Cloneable {
 	/**
 	 * Returns an array of all annotations of a specific markup. If the markup
 	 * has no annotations defined, an empty array is returned.
-	 * 
+	 *
 	 * @return the annotations of the markup
 	 */
 	public Annotation[] getAnnotations() {
@@ -255,7 +268,7 @@ public class DefaultMarkup implements Cloneable {
 	 * {@link PlainText}, such in any other section or wiki-page. It is in
 	 * responsibility of the {@link de.knowwe.core.compile.CompileScript} of the
 	 * {@link DefaultMarkupType} instance to check for non-allowed content.
-	 * 
+	 *
 	 * @return the Types of this mark-up
 	 */
 	public Type[] getTypes() {
@@ -275,9 +288,9 @@ public class DefaultMarkup implements Cloneable {
 	/**
 	 * Sets this markup as deprecated. Set the name for the alternative markup
 	 * replacing this deprecated one.
-	 * 
-	 * @created 26.02.2013
+	 *
 	 * @param alternative the alternative markup replacing this deprecated one
+	 * @created 26.02.2013
 	 */
 	public void setDeprecated(String alternative) {
 		this.deprecatedAlternative = alternative;
@@ -296,9 +309,9 @@ public class DefaultMarkup implements Cloneable {
 	 * that the markup is used in a line containing other wiki text. In this
 	 * case the markup still starts with a "%%" and is terminated either with
 	 * "%%" oder "/%" (sourrounded by white spaces).
-	 * 
-	 * @created 11.11.2013
+	 *
 	 * @return if the markup shall be used inline
+	 * @created 11.11.2013
 	 */
 	public boolean isInline() {
 		return isInline;
@@ -309,9 +322,9 @@ public class DefaultMarkup implements Cloneable {
 	 * that the markup is used in a line containing other wiki text. In this
 	 * case the markup still starts with a "%%" and is terminated either with
 	 * "%%" or "/%" (sourrounded by white spaces).
-	 * 
-	 * @created 11.11.2013
+	 *
 	 * @param isInline if the markup shall be used inline
+	 * @created 11.11.2013
 	 */
 	public void setInline(boolean isInline) {
 		this.isInline = isInline;

@@ -54,19 +54,19 @@ public class ShowSolutionsType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("ShowSolutions");
-		MARKUP.addAnnotation(ANNOTATION_ESTABLISHED, false, BoolValue.values());
+		MARKUP.addAnnotation(ANNOTATION_ESTABLISHED, false, BoolValue.class);
 		MARKUP.addAnnotation(PackageManager.MASTER_ATTRIBUTE_NAME, false);
 		MARKUP.addAnnotationRenderer(PackageManager.MASTER_ATTRIBUTE_NAME,
 				NothingRenderer.getInstance());
 		MARKUP.setAnnotationDeprecated(PackageManager.MASTER_ATTRIBUTE_NAME);
 
-		MARKUP.addAnnotation(ANNOTATION_SUGGESTED, false, BoolValue.values());
-		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.values());
-		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.values());
+		MARKUP.addAnnotation(ANNOTATION_SUGGESTED, false, BoolValue.class);
+		MARKUP.addAnnotation(ANNOTATION_EXCLUDED, false, BoolValue.class);
+		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.class);
 		MARKUP.addAnnotation(ONLY_DERIVATIONS, false);
 		MARKUP.addAnnotation(EXCEPT_DERIVATIONS, false);
 		MARKUP.addAnnotation(SHOW_DIGITS, false);
-		MARKUP.addAnnotation(END_USER_MODE, false, BoolValue.values());
+		MARKUP.addAnnotation(END_USER_MODE, false, BoolValue.class);
 
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
