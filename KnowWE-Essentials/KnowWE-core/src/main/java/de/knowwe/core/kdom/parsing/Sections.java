@@ -42,6 +42,7 @@ import de.knowwe.kdom.filter.SectionFilter;
  * sections. It allows to search and iterate over special typed subclasses, x-path- (scope-)like
  * access to ancestors and so on.
  */
+@SuppressWarnings("Convert2Diamond")
 public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	private final Iterable<Section<T>> sections;
@@ -410,7 +411,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return new Sections<>(() -> new SingleMaperator<>(sections.sections.iterator(), mapping));
 	}
 
-	private static class SingleMaperator<T extends Type, R extends Type> implements Iterator<Section<R>> {
+	private static final class SingleMaperator<T extends Type, R extends Type> implements Iterator<Section<R>> {
 		private final Iterator<Section<T>> base;
 		private final Function<Section<T>, Section<? extends R>> mapper;
 
@@ -448,7 +449,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		});
 	}
 
-	private static class MultiMaperator<T extends Type, R extends Type> implements Iterator<Section<R>> {
+	private static final class MultiMaperator<T extends Type, R extends Type> implements Iterator<Section<R>> {
 		private final Iterator<Section<T>> base;
 		private final Function<Section<T>, Iterator<Section<? extends R>>> mapper;
 

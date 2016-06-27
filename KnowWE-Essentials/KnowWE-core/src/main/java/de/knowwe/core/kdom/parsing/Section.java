@@ -180,7 +180,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public String toString() {
 		String typeString = type != null ? this.get().getClass().getSimpleName() : "Type=null";
 		String content;
-		if (type != null && type instanceof Term) {
+		if (type instanceof Term) {
 			Section<Term> simpleTerm = Sections.cast(this, Term.class);
 			content = simpleTerm.get().getTermIdentifier(simpleTerm).toString();
 		}
@@ -201,7 +201,19 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public int compareTo(Section<? extends Type> section) {
 		if (this == section) return 0;
 		if (section == null) return -1;
-		int comp = getTitle().compareTo(section.getTitle());
+
+		String thisTitle = getTitle();
+		String otherTitle = section.getTitle();
+		int comp = 0;
+		if (thisTitle != null && otherTitle != null) {
+			comp = thisTitle.compareTo(otherTitle);
+		}
+		else if (thisTitle != null) {
+			comp = -1;
+		}
+		else if (otherTitle != null) {
+			comp = 1;
+		}
 		if (comp == 0) {
 			List<Integer> thisPos = getPositionInKDOM();
 			List<Integer> otherPos = section.getPositionInKDOM();
@@ -738,7 +750,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * All objects stored in this {@link Section} with the given <tt>key</tt>
+	 * All objects stored in this Section with the given <tt>key</tt>
 	 * are collected and returned. The {@link Map} stores them by the title of
 	 * the {@link Article} they were stored for. If an object was stored without
 	 * an argument {@link Article} (article independent), the returned
@@ -808,7 +820,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Stores the given Object for the given key and {@link Compiler}.
 	 * <b>Attention:</b> If the Object you want to store is independent from the
-	 * {@link Compiler} that will or has compiled this {@link Section},
+	 * {@link Compiler} that will or has compiled this Section,
 	 * you can either set the {@link Compiler} argument to
 	 * <tt>null</tt> or use the method
 	 * {@link #storeObject(String, Object)} instead (same for
@@ -831,7 +843,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Removes the Object stored for the given key and {@link Compiler}.
 	 * <b>Attention:</b> If the Object you want to remove is independent from the
-	 * {@link Compiler} that will or has compiled this {@link Section}, you can either
+	 * {@link Compiler} that will or has compiled this Section, you can either
 	 * set the {@link Compiler} argument to  <tt>null</tt> or use the method
 	 * {@link #removeObject(String)} instead.
 	 *
