@@ -38,7 +38,7 @@ import de.knowwe.event.KDOMCreatedEvent;
  *
  * @author Jochen
  */
-public class Article {
+public final class Article {
 
 	public static final int LOG_THRESHOLD = 50;
 	/**
@@ -132,6 +132,7 @@ public class Article {
 		dummySection.setArticle(this);
 		getRootType().getParser().parse(text, dummySection);
 		rootSection = Sections.child(dummySection, RootType.class);
+		//noinspection ConstantConditions
 		rootSection.setParent(null);
 
 		if (lastVersion != null) {
