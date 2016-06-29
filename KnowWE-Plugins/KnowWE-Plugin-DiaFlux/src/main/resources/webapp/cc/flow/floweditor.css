@@ -149,11 +149,14 @@ body {
 	bottom: 5px;
 	left: 237px;
 	overflow: scroll;
+	border: 1px solid gray;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
 }
 
 #contents.contents_hover {
 	box-shadow: 0 0 5px 2px grey;
-	border-radius: 3px 3px 3px 3px;
+	border-radius: 3px;
 }
 
 #x_larger, #x_smaller, #y_larger, #y_smaller {
@@ -162,12 +165,6 @@ body {
 
 .FlowchartGroup {
 / / margin-left: 230 px;
-}
-
-.FlowchartGroup .Flowchart {
-	border: 1px solid gray;
-	border-radius: 3px 3px 3px 3px;
-	-moz-border-radius: 3px 3px 3px 3px;
 }
 
 .FlowchartGroup .inputFocus {
