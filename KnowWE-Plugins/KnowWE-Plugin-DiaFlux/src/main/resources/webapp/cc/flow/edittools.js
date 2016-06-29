@@ -24,54 +24,54 @@
  * @param menuButton the html element used to display the menu for
  * @constructor
  */
-FlowEditor.EditorToolMenu = function(flowEditor, menuButton) {
+FlowEditor.EditorToolMenu = function (flowEditor, menuButton) {
 	this.flowEditor = flowEditor;
 	this.menuButton = menuButton;
 	this.editTools = [];
 	this.initTools();
 };
 
-FlowEditor.EditorToolMenu.prototype.isMenuShown = function() {
+FlowEditor.EditorToolMenu.prototype.isMenuShown = function () {
 	return jq$(this.menuButton).hasClass('active');
 };
 
-FlowEditor.EditorToolMenu.prototype.hideMenu = function() {
+FlowEditor.EditorToolMenu.prototype.hideMenu = function () {
 	jq$('.EditorToolMenu').remove();
 	jq$(this.menuButton).removeClass('active');
 };
 
-FlowEditor.EditorToolMenu.prototype.showMenu = function() {
+FlowEditor.EditorToolMenu.prototype.showMenu = function () {
 	var editor = this.flowEditor;
 	var html = jq$("<div class='EditorToolMenu' style='position;absolute'>" +
 		"<div class='closearea'></div>" +
 		"<div class='menuarea'><ul></ul></div></div>");
 	var ul = html.find("ul");
 	var self = this;
-	jq$.each(this.editTools, function(index, item) {
+	jq$.each(this.editTools, function (index, item) {
 		ul.append(item.render(self, editor));
 	});
 	jq$(this.menuButton).addClass('active');
 	jq$(this.menuButton).closest('body').append(html);
 	jq$('.EditorToolMenu').offset(jq$(this.menuButton).offset());
 	jq$('.EditorToolMenu .menuarea ul').menu();
-	jq$('.EditorToolMenu .closearea').click(function() {
+	jq$('.EditorToolMenu .closearea').click(function () {
 		self.hideMenu();
 	});
 };
 
-FlowEditor.EditorToolMenu.prototype.initTools = function() {
+FlowEditor.EditorToolMenu.prototype.initTools = function () {
 
 	/**
 	 * Some helper functions
 	 */
-	var getAction = function(node) {
+	var getAction = function (node) {
 		var nodeModel = node.nodeModel;
 		if (!nodeModel) return null;
 		if (!nodeModel.action) return null;
 		return new Action(nodeModel.action.markup, nodeModel.action.expression);
 	};
 
-	var getInfoObject = function(node) {
+	var getInfoObject = function (node) {
 		var action = getAction(node);
 		if (!action) return null;
 		var objectName = action.getInfoObjectName();
@@ -79,35 +79,35 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		return KBInfo.lookupInfoObject(objectName);
 	};
 
-	var median = function(array, mapper) {
+	var median = function (array, mapper) {
 		var values = jq$.map(array, mapper);
 		values.sort();
 		return values[Math.floor(values.length / 2)];
 	};
 
-	var summarize = function(array, mapper) {
+	var summarize = function (array, mapper) {
 		var total = 0;
-		jq$.each(array, function(index, item) {
+		jq$.each(array, function (index, item) {
 			total += mapper(item);
 		});
 		return total;
 	};
 
-	var average = function(array, mapper) {
+	var average = function (array, mapper) {
 		return summarize(array, mapper) / array.length;
 	};
 
-	var maximize = function(array, mapper) {
+	var maximize = function (array, mapper) {
 		var max = 0;
-		jq$.each(array, function(index, item) {
+		jq$.each(array, function (index, item) {
 			max = Math.max(max, mapper(item));
 		});
 		return max;
 	};
 
-	var getSelectedNodes = function(flow) {
+	var getSelectedNodes = function (flow) {
 		var nodes = [];
-		jq$.each(flow.selection, function(index, item) {
+		jq$.each(flow.selection, function (index, item) {
 			if (item instanceof Rule) {
 				if (!nodes.contains(item.getSourceNode())) nodes.push(item.getSourceNode());
 				if (!nodes.contains(item.getTargetNode())) nodes.push(item.getTargetNode());
@@ -123,31 +123,31 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	/**
 	 * Predicates to specify when a menu item is active
 	 */
-	var oneOrMore = function(flowEditor) {
+	var oneOrMore = function (flowEditor) {
 		var flow = flowEditor.getFlowchart();
 		return flow.selection.length >= 1;
 	};
-	var twoOrMoreNodes = function(flowEditor) {
+	var twoOrMoreNodes = function (flowEditor) {
 		return getSelectedNodes(flowEditor.getFlowchart()).length >= 2;
 	};
-	var oneComposed = function(flowEditor) {
+	var oneComposed = function (flowEditor) {
 		var flow = flowEditor.getFlowchart();
 		if (flow.selection.length != 1) return false;
 		return getInfoObject(flow.selection[0]) instanceof KBInfo.Flowchart;
 	};
-	var disabled = function() {
+	var disabled = function () {
 		return false;
 	};
 
 	/**
 	 * Selecting actions
 	 */
-	var selectPath = function(flow, backwards, includeRules) {
+	var selectPath = function (flow, backwards, includeRules) {
 		if (flow instanceof FlowEditor) {
 			flow = flow.getFlowchart();
 		}
 		var open = [];
-		jq$.each(flow.selection, function(index, item) {
+		jq$.each(flow.selection, function (index, item) {
 			if (item instanceof Node) {
 				open.push(item);
 			}
@@ -158,7 +158,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		});
 		while (open.length > 0) {
 			var rules = backwards ? open.pop().getIncomingRules() : open.pop().getOutgoingRules();
-			jq$.each(rules, function(index, rule) {
+			jq$.each(rules, function (index, rule) {
 				// select rule
 				if (includeRules && !flow.isSelected(rule)) {
 					flow.setSelection(rule, true, false);
@@ -173,19 +173,19 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		}
 	};
 
-	var selectPathAfter = function(flowEditor) {
+	var selectPathAfter = function (flowEditor) {
 		selectPath(flowEditor, false, false);
 	};
 
-	var selectPathBefore = function(flowEditor) {
+	var selectPathBefore = function (flowEditor) {
 		selectPath(flowEditor, true, false);
 	};
 
-	var selectEdges = function(flowEditor) {
+	var selectEdges = function (flowEditor) {
 		var flow = flowEditor.getFlowchart();
 		var nodes = flow.getSelectedNodes();
 		flow.setSelection(
-			jq$.grep(flow.rules, function(rule) {
+			jq$.grep(flow.rules, function (rule) {
 				return nodes.contains(rule.sourceNode) && nodes.contains(rule.targetNode);
 			}),
 			true, false);
@@ -194,14 +194,14 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	/**
 	 * Align actions
 	 */
-	var align = function(flowEditor, horizontal, useMinMiddleMax) {
-		var getPos = function(node) {
+	var align = function (flowEditor, horizontal, useMinMiddleMax) {
+		var getPos = function (node) {
 			var pos = horizontal ? node.getLeft() : node.getTop();
 			var size = horizontal ? node.getWidth() : node.getHeight();
 			return (useMinMiddleMax == "min") ? pos :
 				(useMinMiddleMax == "middle") ? pos + size / 2 : pos + size;
 		};
-		var setPos = function(node, pos) {
+		var setPos = function (node, pos) {
 			var size = horizontal ? node.getWidth() : node.getHeight();
 			if (useMinMiddleMax == "max")  pos -= size;
 			if (useMinMiddleMax == "middle")  pos -= size / 2;
@@ -214,49 +214,49 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		};
 		var nodes = getSelectedNodes(flowEditor.getFlowchart());
 		var medPos = median(nodes, getPos);
-		jq$.each(nodes, function(index, node) {
+		jq$.each(nodes, function (index, node) {
 			setPos(node, medPos);
 		});
 	};
 
-	var alignTop = function(flowEditor) {
+	var alignTop = function (flowEditor) {
 		align(flowEditor, false, "min");
 	};
-	var alignMiddle = function(flowEditor) {
+	var alignMiddle = function (flowEditor) {
 		align(flowEditor, false, "middle");
 	};
-	var alignBottom = function(flowEditor) {
+	var alignBottom = function (flowEditor) {
 		align(flowEditor, false, "max");
 	};
 
-	var alignLeft = function(flowEditor) {
+	var alignLeft = function (flowEditor) {
 		align(flowEditor, true, "min");
 	};
-	var alignCenter = function(flowEditor) {
+	var alignCenter = function (flowEditor) {
 		align(flowEditor, true, "middle");
 	};
-	var alignRight = function(flowEditor) {
+	var alignRight = function (flowEditor) {
 		align(flowEditor, true, "max");
 	};
 
 	/**
 	 * balance & spread actions
 	 */
-	var spread = function(flowEditor, horizontal, center) {
-		var getPos = function(node) {
+	var spread = function (flowEditor, horizontal, center) {
+		var getPos = function (node) {
 			return horizontal ? node.getCenterX() : node.getCenterY();
 		};
-		var getSize = function(node) {
+		var getSize = function (node) {
 			return horizontal ? node.getWidth() : node.getHeight();
 		};
-		var getDistance = function(node1, node2) {
+		var getDistance = function (node1, node2) {
 			var p1 = getPos(node1), p2 = getPos(node2);
 			if (center) return Math.abs(p1 - p2);
 			var s1 = getSize(node1) / 2, s2 = getSize(node2) / 2;
 			var l1 = p1 - s1, r1 = p1 + s1, l2 = p2 - s2, r2 = p2 + s2;
 			return (p1 < p2) ? l2 - r1 : l1 - r2;
 		};
-		var setPos = function(node, pos) {
+		var setPos = function (node, pos) {
 			if (horizontal) {
 				node.moveTo(pos, node.getTop());
 			}
@@ -265,17 +265,17 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			}
 		};
 		var nodes = getSelectedNodes(flowEditor.getFlowchart());
-		nodes.sort(function(n1, n2) {
+		nodes.sort(function (n1, n2) {
 			return getPos(n1) - getPos(n2);
 		});
 		var min = getPos(nodes[0]);
 		var space = 0, previous = null;
-		jq$.each(nodes, function(index, node) {
+		jq$.each(nodes, function (index, node) {
 			if (previous) space += getDistance(previous, node);
 			previous = node;
 		});
 		var pos = min, delta = space / (nodes.length - 1);
-		jq$.each(nodes, function(index, node) {
+		jq$.each(nodes, function (index, node) {
 			var size = getSize(node);
 			if (!center && node != nodes[0]) pos += size / 2;
 			setPos(node, pos - size / 2);
@@ -284,34 +284,34 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		});
 	};
 
-	var spreadDistanceX = function(flowEditor) {
+	var spreadDistanceX = function (flowEditor) {
 		spread(flowEditor, true, false)
 	};
-	var spreadMiddleX = function(flowEditor) {
+	var spreadMiddleX = function (flowEditor) {
 		spread(flowEditor, true, true)
 	};
 
-	var spreadDistanceY = function(flowEditor) {
+	var spreadDistanceY = function (flowEditor) {
 		spread(flowEditor, false, false)
 	};
-	var spreadMiddleY = function(flowEditor) {
+	var spreadMiddleY = function (flowEditor) {
 		spread(flowEditor, false, true)
 	};
 
 	/**
 	 * Cleaning up
 	 */
-	var arrange = function(flowEditor, horizontal) {
-		var getPos = function(node) {
+	var arrange = function (flowEditor, horizontal) {
+		var getPos = function (node) {
 			return horizontal ? node.getCenterX() : node.getCenterY();
 		};
-		var getOtherPos = function(node) {
+		var getOtherPos = function (node) {
 			return horizontal ? node.getCenterY() : node.getCenterX();
 		};
-		var getSize = function(node) {
+		var getSize = function (node) {
 			return horizontal ? node.getWidth() : node.getHeight();
 		};
-		var setPos = function(node, pos) {
+		var setPos = function (node, pos) {
 			var size = getSize(node);
 			if (horizontal) {
 				node.moveTo(pos - size / 2, node.getTop());
@@ -320,7 +320,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 				node.moveTo(node.getLeft(), pos - size / 2);
 			}
 		};
-		var canGroup = function(node1, node2) {
+		var canGroup = function (node1, node2) {
 			// we can group two nodes if they do not intersect
 			// or if they intersect, our used position (x or y)
 			// is closer than the other position
@@ -329,12 +329,12 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			return Math.abs(getPos(node1) - getPos(node2)) < dOther;
 		};
 		var groups = [];
-		var divideAndConquer = function(nodes) {
+		var divideAndConquer = function (nodes) {
 			if (nodes.length == 0) return;
 			var pivot = nodes[Math.floor(nodes.length / 2)];
 			var ppos = getPos(pivot), psize = getSize(pivot);
 			var group = [], above = [], below = [];
-			jq$.each(nodes, function(index, node) {
+			jq$.each(nodes, function (index, node) {
 				// take the middle one and group all non-overlapping nodes
 				// that has roughly same position
 				var npos = getPos(node);
@@ -358,11 +358,11 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		var nodes = getSelectedNodes(flowEditor.getFlowchart());
 		if (nodes.length == 0) {
 			// if no nodes selected, update all nodes (make a copy of the list)
-			nodes = jq$.map(flowEditor.getFlowchart().nodes, function(node) {
+			nodes = jq$.map(flowEditor.getFlowchart().nodes, function (node) {
 				return node;
 			});
 		}
-		nodes.sort(function(n1, n2) {
+		nodes.sort(function (n1, n2) {
 			return getPos(n1) - getPos(n2);
 		});
 		divideAndConquer(nodes);
@@ -371,20 +371,20 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 		// rearrange all items of one group into the same position
 		// and spread the positions if required
 		var minPos = Number.MIN_VALUE;
-		jq$.each(groups, function(index, group) {
+		jq$.each(groups, function (index, group) {
 			var size = maximize(group, getSize);
 			var medPos = median(group, getPos);
 			// make sure that we not intersect the previous line
 			medPos = Math.max(medPos, minPos + size / 2);
 			// align the nodes and update the minPos for the next group, including some spacing
-			jq$.each(group, function(index, node) {
+			jq$.each(group, function (index, node) {
 				setPos(node, medPos);
 			});
 			minPos = medPos + size / 2 + (horizontal ? 40 : 20);
 		});
 	};
 
-	var cleanup = function(flowEditor) {
+	var cleanup = function (flowEditor) {
 		arrange(flowEditor, false);
 		arrange(flowEditor, true);
 	};
@@ -395,28 +395,28 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	 * Find dangling nodes (end nodes or compact subtrees) that can be moved closed to their one
 	 * or multiple incoming edge(s).
 	 */
-	var undangle = function(flowEditor) {
-		var countAnchors = function(node, direction, edgeToExclude) {
+	var undangle = function (flowEditor) {
+		var countAnchors = function (node, direction, edgeToExclude) {
 			var count = 0;
-			jq$.each(node.getOutgoingRules(), function(index, edge) {
+			jq$.each(node.getOutgoingRules(), function (index, edge) {
 				if (edge == edgeToExclude) return;
 				if (edge.getSourceAnchor().type == direction) count++;
 			});
-			jq$.each(node.getIncomingRules(), function(index, edge) {
+			jq$.each(node.getIncomingRules(), function (index, edge) {
 				if (edge == edgeToExclude) return;
 				if (edge.getTargetAnchor().type == direction) count++;
 			});
 			return count;
 		};
-		var createDeltas = function(nodeSet, gapX, gapY, diagonal) {
+		var createDeltas = function (nodeSet, gapX, gapY, diagonal) {
 			// get all edges that comes on or out
 			var edgeSet = [];
-			jq$.each(nodeSet, function(index, node) {
+			jq$.each(nodeSet, function (index, node) {
 				edgeSet = edgeSet.concat(node.getOutgoingRules(), node.getIncomingRules());
 			});
 			// for each make the edge go in any of the four direct directions that are not already occupied
 			var deltas = [];
-			edgeSet = jq$.each(edgeSet, function(index, edge) {
+			edgeSet = jq$.each(edgeSet, function (index, edge) {
 					// make n1 inside and n2 outside the node set
 					var n1 = edge.getSourceNode(), n2 = edge.getTargetNode();
 					if (nodeSet.contains(n2)) {
@@ -426,11 +426,11 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 						n2 = temp;
 					}
 					// move n1 to be at n2 position
-					var addDelta = function(anchor1, anchor2, dx, dy) {
+				var addDelta = function (anchor1, anchor2, dx, dy) {
 						var allowed = diagonal ? 1 : 0;
 						if (countAnchors(n1, anchor1, edge) > allowed) return;
 						if (countAnchors(n2, anchor2, edge) > allowed) return;
-						deltas.push({dx : dx, dy : dy, edge : edge});
+					deltas.push({dx: dx, dy: dy, edge: edge});
 					};
 					var dx = n2.getCenterX() - n1.getCenterX();
 					var dy = n2.getCenterY() - n1.getCenterY();
@@ -453,7 +453,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 						addDelta('bottom', 'top', dx, dy - ddy - gapY);
 					}
 					// todo: for nodes with multiple edges, also add intermediate positions
-					deltas.sort(function(a, b) {
+				deltas.sort(function (a, b) {
 						return Math.sqrt(a.dx * a.dx + a.dy * a.dy) - Math.sqrt(b.dx * b.dx + b.dy * b.dy);
 					});
 				}
@@ -461,11 +461,11 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			;
 			return deltas;
 		};
-		var isFree = function(nodes, dx, dy) {
+		var isFree = function (nodes, dx, dy) {
 			var intersect = false;
-			jq$.each(nodes, function(index, n1) {
+			jq$.each(nodes, function (index, n1) {
 				if (intersect) return;
-				jq$.each(flow.nodes, function(index, n2) {
+				jq$.each(flow.nodes, function (index, n2) {
 					if (intersect) return;
 					if (nodes.contains(n2)) return;
 					var x1 = n1.getLeft() + dx - 10, y1 = n1.getTop() + dy - 10;
@@ -476,15 +476,15 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			});
 			return !intersect;
 		};
-		var moveNodes = function(nodeSet, gapX, gapY, diagonal) {
+		var moveNodes = function (nodeSet, gapX, gapY, diagonal) {
 			var deltas = createDeltas(nodeSet, gapX, gapY, diagonal);
 			var hasMoved = false;
-			jq$.each(deltas, function(index, delta) {
+			jq$.each(deltas, function (index, delta) {
 				if (hasMoved) return;
 				if (isFree(nodeSet, delta.dx, delta.dy)) {
 					hasMoved = true;
 					if (Math.abs(delta.dx) <= 1 && Math.abs(delta.dy) <= 1) return;
-					jq$.each(nodeSet, function(index, node) {
+					jq$.each(nodeSet, function (index, node) {
 						delta.edge.routingPoints = [];
 						node.moveBy(delta.dx, delta.dy);
 					});
@@ -500,18 +500,18 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 
 		// build groups to optimize, but first, optimize single nodes only
 		var groups = [];
-		jq$.each(selectedNodes, function(index, node) {
+		jq$.each(selectedNodes, function (index, node) {
 			if (node.getOutgoingRules().length + node.getIncomingRules().length != 1) return;
 			groups.push([node]);
 		});
 
-		FlowEditor.withDelayedResize(function() {
+		FlowEditor.withDelayedResize(function () {
 			var anyGroupMoved = true;
 			var allowDiagonal = false;
 			while (anyGroupMoved && groups.length > 0) {
 				anyGroupMoved = false;
 				var openGroups = [];
-				jq$.each(groups, function(index, nodeSet) {
+				jq$.each(groups, function (index, nodeSet) {
 					var moved = moveNodes(nodeSet, 80, 40, false);
 					if (!moved) moved = moveNodes(nodeSet, 50, 20, false);
 					if (!moved && allowDiagonal) moved = moveNodes(nodeSet, 80, 40, true);
@@ -533,16 +533,16 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 	/**
 	 * Refactor: inline sub-flow
 	 */
-	var inline = function(flowEditor) {
+	var inline = function (flowEditor) {
 		var flow = flowEditor.getFlowchart();
 		var composedNode = flowEditor.getFlowchart().selection[0];
 		var flowInfo = getInfoObject(composedNode);
-		var getExitName = function(rule) {
+		var getExitName = function (rule) {
 			if (!rule.guard) return null;
 			var condition = rule.guard.conditionString;
 			if (!condition.startsWith("IS_ACTIVE[")) return null;
 			var matches = condition.match(new RegExp(
-					"\\(" + IdentifierUtils.IDENTIFIER_STRING + "\\)\\]$"));
+				"\\(" + IdentifierUtils.IDENTIFIER_STRING + "\\)\\]$"));
 			if (!matches || matches.length == 0) return null;
 			var match = matches[matches.length - 1];
 			return IdentifierUtils.unquote(match.substring(1, match.length - 2));
@@ -550,7 +550,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 
 		// first check if we have only named, positive exits
 		var missingExit = "";
-		jq$.each(composedNode.getOutgoingRules(), function(index, rule) {
+		jq$.each(composedNode.getOutgoingRules(), function (index, rule) {
 			if (!getExitName(rule)) missingExit += "<li>" + rule.getGuard().getDisplayHTML() + "</li>";
 		});
 		if (missingExit.length > 0) {
@@ -562,12 +562,12 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 				'</div>')
 				.appendTo(document.body)
 				.dialog({
-					resizable : false,
-					dialogClass : "no-close",
-					width : 440,
-					modal : true,
-					buttons : {
-						Close : function() {
+					resizable: false,
+					dialogClass: "no-close",
+					width: 440,
+					modal: true,
+					buttons: {
+						Close: function () {
 							jq$(this).dialog("close");
 						}
 					}
@@ -575,7 +575,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			return;
 		}
 
-		var doIt = function(xml) {
+		var doIt = function (xml) {
 			// TODO: allow multiple composed nodes with the same flowchart, but multiple start nodes
 			// now we start to modify the inline flow so that is can replace the calling flow
 			// also remove all unreachable nodes (based on the called start node)
@@ -583,7 +583,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 
 			// first we replace start and exit nodes by comment nodes
 			var interfaceNodes = {};
-			jq$.each(inlineFlow.nodes, function(index, node) {
+			jq$.each(inlineFlow.nodes, function (index, node) {
 				var model = node.getNodeModel();
 				if (model.start) {
 					interfaceNodes["start:" + model.start] = node;
@@ -617,20 +617,20 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			// remove the composed node
 			// #1: link its incoming edges to the called start node
 			// #2: link its outgoing edges to the exit nodes
-			jq$.each(composedNode.getIncomingRules(), function(index, rule) {
+			jq$.each(composedNode.getIncomingRules(), function (index, rule) {
 				var pastedStart = flow.findNode(idMapper.getID(startNode.getNodeModel().fcid));
 				var newRule = new Rule(null, rule.getSourceNode(), rule.getGuard(), pastedStart);
 				newRule.routingPoints = rule.routingPoints;
 				rule.destroy();
 			});
-			jq$.each(composedNode.getOutgoingRules(), function(index, rule) {
+			jq$.each(composedNode.getOutgoingRules(), function (index, rule) {
 				var exitName = getExitName(rule);
 				var exitNode = interfaceNodes["exit:" + exitName];
 				if (!exitName || !exitNode) {
 					throw "The requested exit node '" + rule.getGuard().getDisplayHTML() +
-						"' has not been found in the called flowchart. " +
-						"Maybe this flowchart is outdated or the flowchart to be inlined " +
-						"has been changed during your edit, please save/reload and try again.";
+					"' has not been found in the called flowchart. " +
+					"Maybe this flowchart is outdated or the flowchart to be inlined " +
+					"has been changed during your edit, please save/reload and try again.";
 				}
 				var pastedExit = flow.findNode(idMapper.getID(exitNode.getNodeModel().fcid));
 				var newRule = new Rule(null, pastedExit, null, rule.getTargetNode());
@@ -642,10 +642,10 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			FlowEditor.autoResize();
 		};
 		jq$.ajax({
-			cache : false,
-			url : "action/LoadFlowchartAction",
-			data : {KWikiWeb : "default_web", FlowIdentifier : flowInfo.getID() },
-			success : function(data, textStatus, jqXHR) {
+			cache: false,
+			url: "action/LoadFlowchartAction",
+			data: {KWikiWeb: "default_web", FlowIdentifier: flowInfo.getID()},
+			success: function (data, textStatus, jqXHR) {
 				try {
 					doIt(jqXHR.responseXML);
 				}
@@ -654,7 +654,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 					flowEditor.undo();
 				}
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function (jqXHR, textStatus, errorThrown) {
 				CCMessage.warn(
 					'AJAX error while requesting flowchart to inline.',
 					'Cannot perform flowchart inline. Maybe this flowchart is outdated or the flowchart to be inlined has been changed during your edit, please save/reload and try again.')
@@ -688,7 +688,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
 			new FlowEditor.EditTool("Balance Vertical", spreadDistanceY, twoOrMoreNodes, 'spread-distance-y'),
 			new FlowEditor.EditTool("Spread Vertical", spreadMiddleY, twoOrMoreNodes, 'spread-middle-y')
 		]),
-		new FlowEditor.EditTool("Clean Up", cleanup, null, 'clean-up'),
+		new FlowEditor.EditTool("Clean Up", cleanup, null),
 		new FlowEditor.EditTool("Pack Layout", undangle, null),
 		FlowEditor.EditTool.SEPARATOR,
 		new FlowEditor.EditToolGroup("Refactor", [
@@ -704,7 +704,7 @@ FlowEditor.EditorToolMenu.prototype.initTools = function() {
  * Class for particular editor tools
  */
 
-FlowEditor.EditTool = function(title, actionFun, isActiveFun, icon) {
+FlowEditor.EditTool = function (title, actionFun, isActiveFun, icon) {
 	this.title = title;
 	this.actionFun = actionFun;
 	this.isActiveFun = isActiveFun;
@@ -713,15 +713,15 @@ FlowEditor.EditTool = function(title, actionFun, isActiveFun, icon) {
 
 FlowEditor.EditTool.SEPARATOR = new FlowEditor.EditTool();
 
-FlowEditor.EditTool.prototype.getTitle = function() {
+FlowEditor.EditTool.prototype.getTitle = function () {
 	return this.title;
 };
 
-FlowEditor.EditTool.prototype.getIcon = function() {
+FlowEditor.EditTool.prototype.getIcon = function () {
 	return this.icon;
 };
 
-FlowEditor.EditTool.prototype.render = function(toolMenu, flowEditor) {
+FlowEditor.EditTool.prototype.render = function (toolMenu, flowEditor) {
 	var title = this.getTitle();
 	if (!title) return jq$("<li>-</li>");
 
@@ -732,7 +732,7 @@ FlowEditor.EditTool.prototype.render = function(toolMenu, flowEditor) {
 	}
 	var li = jq$(document.createElement("li"))
 		.append(a)
-		.click(function() {
+		.click(function () {
 			self.execute(flowEditor);
 			toolMenu.hideMenu();
 		});
@@ -742,13 +742,13 @@ FlowEditor.EditTool.prototype.render = function(toolMenu, flowEditor) {
 	return li;
 };
 
-FlowEditor.EditTool.prototype.isActive = function(flowEditor) {
+FlowEditor.EditTool.prototype.isActive = function (flowEditor) {
 	return this.isActiveFun ? this.isActiveFun(flowEditor) : true;
 };
 
-FlowEditor.EditTool.prototype.execute = function(flowEditor) {
+FlowEditor.EditTool.prototype.execute = function (flowEditor) {
 	if (this.actionFun) {
-		flowEditor.withUndo(this.getTitle(), function() {
+		flowEditor.withUndo(this.getTitle(), function () {
 			this.actionFun(flowEditor);
 		}.bind(this));
 	}
@@ -758,39 +758,39 @@ FlowEditor.EditTool.prototype.execute = function(flowEditor) {
  * Class for sub-menus of EditTools
  */
 
-FlowEditor.EditToolGroup = function(title, menuItems, icon) {
+FlowEditor.EditToolGroup = function (title, menuItems, icon) {
 	this.title = title;
 	this.menuItems = menuItems;
 	this.icon = icon;
 };
 
-FlowEditor.EditToolGroup.prototype.getIcon = function() {
+FlowEditor.EditToolGroup.prototype.getIcon = function () {
 	return this.icon;
 };
 
-FlowEditor.EditToolGroup.prototype.getTitle = function() {
+FlowEditor.EditToolGroup.prototype.getTitle = function () {
 	return this.title;
 };
 
-FlowEditor.EditToolGroup.prototype.render = function(toolMenu, flowEditor) {
+FlowEditor.EditToolGroup.prototype.render = function (toolMenu, flowEditor) {
 	var li = jq$(document.createElement("li"))
 		.append(jq$(document.createElement("a")).text(this.getTitle()))
-		.click(function(event) {
+		.click(function (event) {
 			event.stopPropagation()
 		});
 	if (!this.isActive(flowEditor)) {
 		li.addClass("ui-state-disabled");
 	}
 	var subList = jq$(document.createElement("ul")).appendTo(li);
-	jq$.each(this.menuItems, function(index, item) {
+	jq$.each(this.menuItems, function (index, item) {
 		subList.append(item.render(toolMenu, flowEditor));
 	});
 	return li;
 };
 
-FlowEditor.EditToolGroup.prototype.isActive = function(flowEditor) {
+FlowEditor.EditToolGroup.prototype.isActive = function (flowEditor) {
 	var anyActive = false;
-	jq$.each(this.menuItems, function(index, item) {
+	jq$.each(this.menuItems, function (index, item) {
 		if (item.getTitle()) anyActive |= item.isActive(flowEditor);
 		return !anyActive;
 	});
