@@ -76,7 +76,7 @@ public class SparqlResultRenderer {
 		if (containsBoth) nodeRenderer.remove(rnnRenderer);
 	}
 
-	public List<SparqlResultNodeRenderer> getNodeRenderers() {
+	public static List<SparqlResultNodeRenderer> getNodeRenderers() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				OntologyType.PLUGIN_ID, POINT_ID);
 		List<SparqlResultNodeRenderer> renderers = new ArrayList<>();
