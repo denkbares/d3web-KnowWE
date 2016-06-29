@@ -95,8 +95,7 @@
 
 <html>
 <head>
-	<link rel="shortcut icon" type="image/x-icon" href="/KnowWE-Essentials/images/favicon.ico"/>
-	<link rel="icon" type="image/x-icon" href="/KnowWE-Essentials/images/favicon.ico"/>
+	<link rel="icon" type="image/x-icon" href="/KnowWE/images/favicon.ico">
 	<script>
 		var topic = "<%= topic %>";
 		var nodeID = "<%= kdomID %>";
@@ -201,14 +200,12 @@
 			style="position:relative; background-image:url(cc/image/toolbar/cancel.png);;width:80px"><span
 				style="position:absolute;left:38px;top:12px;">Cancel</span>
 	</ul>
-	<div class="propertyArea">
-		<div>
-			<span class="propertyTitle">Name </span><input type=text id="properties.editName"
-														   class="propertyText long"></input>
-			<input type="checkbox" class="pointer" id="properties.autostart"
-				   title="Defines if all startnodes of this flowchart are activated on session start."></input>
-			<label class="propertyTitle pointer" for="properties.autostart">Autostart</label>
-		</div>
+	<div class="propertyArea" id="editNameArea">
+		<span class="propertyTitle">Name </span><input type=text id="properties.editName"
+													   class="propertyText long"></input>
+		<input type="checkbox" class="pointer" id="properties.autostart"
+			   title="Defines if all startnodes of this flowchart are activated on session start."></input>
+		<label class="propertyTitle pointer" for="properties.autostart">Autostart</label>
 	</div>
 	<ul class="toolbar">
 		<li class="icon disabled" id="undo" title="Undo">
@@ -228,11 +225,9 @@
 		<li class="icon NodePrototype" id="snapshot_prototype" title="Snapshot node"
 			style="background-image:url(cc/image/node_decorators/snapshot_32.png);">
 	</ul>
-	<div class="propertyArea">
-		<div>
-			<span class="propertyTitle">Change Note </span><input type=text id="changenote"
-																  class="propertyText medium"></input>
-		</div>
+	<div class="propertyArea" id="changeNoteArea">
+		<span class="propertyTitle">Change Note </span><input type=text id="changenote"
+															  class="propertyText medium"></input>
 	</div>
 </div>
 <div id="leftMenu" class="leftMenu">

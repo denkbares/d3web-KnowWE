@@ -19,18 +19,19 @@ body {
 #toolbar {
 	position: absolute;
 	background-color: #eee;
+	left: 0;
 	top: 5px;
-	left: 5px;
 	right: 5px;
 	min-width: 850px;
 	padding-bottom: 1px;
 	white-space: nowrap;
+	display: flex;
 }
 
 #toolbar ul.toolbar {
 	list-style-type: none;
-	margin: 0px;
-	padding: 0px;
+	margin: 0 0 0 5px;
+	padding: 0;
 	color: #000;
 	text-align: left;
 	display: inline-block;
@@ -39,16 +40,17 @@ body {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	flex: 0 0 auto;
 }
 
 #toolbar ul.toolbar li {
 	display: inline-block;
-	margin: 0px;
+	margin: 0;
 	padding: 3px 5px 3px 5px;
 	min-width: 100px;
 	min-height: 16px;
 	border: 1px solid rgba(0, 0, 0, 0.5);
-	border-width: 1px 0px 1px 1px;
+	border-width: 1px 0 1px 1px;
 	font-size: 10pt;
 }
 
@@ -67,61 +69,55 @@ body {
 	background-position: 12px center;
 }
 
-#toolbar ul.toolbar li.selected,ul.toolbar li:hover {
+#toolbar ul.toolbar li.selected, ul.toolbar li:hover {
 	background-color: rgba(80, 80, 80, 0.25);
 }
-#toolbar ul.toolbar li.selected,ul.toolbar li.disabled:hover {
+
+#toolbar ul.toolbar li.selected, ul.toolbar li.disabled:hover {
 	background-color: transparent;
 }
 
 #toolbar ul.toolbar li:active, ul.toolbar li.active {
 	background-color: rgba(0, 0, 0, 0.3);
 }
+
 #toolbar ul.toolbar li:active, ul.toolbar li.disabled.active {
 	background-color: transparent;
 }
 
 #toolbar ul.toolbar li:first-child {
-	border-radius: 3px 0px 0px 3px;
-	-moz-border-radius: 3px 0px 0px 3px;
+	border-radius: 3px 0 0 3px;
+	-moz-border-radius: 3px 0 0 3px;
 }
 
 #toolbar ul.toolbar li:last-child {
-	border-radius: 0px 3px 3px 0px;
-	-moz-border-radius: 0px 3px 3px 0px;
+	border-radius: 0 3px 3px 0;
+	-moz-border-radius: 0 3px 3px 0;
 	border-width: 1px;
 }
 
-#changenotebar {
-	border: 1px solid gray;
-	border-radius: 3px 3px 3px 3px;
-	-moz-border-radius: 3px 3px 3px 3px;
-	width: 938px;
-	padding-left: 3px;
-	margin-bottom: 5px;
+#editNameArea {
+	flex: 1 0 auto;
 }
 
-#changenotebar label {
-	font-size: 10pt;
-}
-
-#changenotebar #changenote {
-	width: 505px;
-	height: 15px;
-}
-
-.propertyArea div {
-	padding: 8px 0px 0px 0px;
+#changeNoteArea {
+	flex: 3 0 auto;
 }
 
 .propertyArea {
-	padding: 0px 5px;
+	display: flex;
+	align-items: center;
+	margin-left: 5px;
+	padding: 0 0 0 5px;
 	height: 38px;
-	display: inline-block;
 	border: 1px solid gray;
 	border-radius: 3px 3px 3px 3px;
 	-moz-border-radius: 3px 3px 3px 3px;
 	vertical-align: top;
+}
+
+.propertyArea > * {
+	margin-right: 5px;
 }
 
 .propertyArea .propertyTitle {
@@ -129,28 +125,17 @@ body {
 }
 
 .propertyArea label.propertyTitle {
-	margin-left: -5px;
 	margin-top: 2px;
+}
+
+.propertyArea input[type='checkbox'] {
+	width: 16px;
+	margin-top: 5px;
 }
 
 .propertyArea .propertyText {
 	font-size: 10pt;
-}
-
-.propertyArea .short {
-	width: 40px;
-}
-
-.propertyArea .long {
-	width: 307px;
-}
-
-.propertyArea .medium {
-	width: 220px;
-}
-
-.propertyArea .medium {
-	width: 220px;
+	width: 100%;
 }
 
 .pointer {
@@ -167,16 +152,16 @@ body {
 }
 
 #contents.contents_hover {
-	box-shadow: 0px 0px 5px 2px grey;
+	box-shadow: 0 0 5px 2px grey;
 	border-radius: 3px 3px 3px 3px;
 }
 
-#x_larger,#x_smaller,#y_larger,#y_smaller {
+#x_larger, #x_smaller, #y_larger, #y_smaller {
 	display: none;
 }
 
-.FlowchartGroup { //
-	margin-left: 230px;
+.FlowchartGroup {
+/ / margin-left: 230 px;
 }
 
 .FlowchartGroup .Flowchart {
@@ -188,8 +173,8 @@ body {
 .FlowchartGroup .inputFocus {
 	position: fixed;
 	overflow: hidden;
-	width: 0px;
-	height: 0px;
+	width: 0;
+	height: 0;
 	top: 10px;
 	left: 10px;
 	z-index: -100;
@@ -202,6 +187,7 @@ body {
 .Rule .rule_selector, .guard {
 	cursor: crosshair;
 }
+
 .guard select {
 	cursor: default;
 }
@@ -220,8 +206,8 @@ body {
 	overflow: visible;
 	width: 64px;
 	height: 64px;
-	left: 0px;
-	top: 0px;
+	left: 0;
+	top: 0;
 	background-image: url(../image/trash64.png);
 	z-index: 1000;
 }
@@ -284,15 +270,16 @@ body {
 #findSuggestionMenu_Tooltip ul li {
 	list-style-type: disc;
 	margin-left: 2em;
-	padding-left: 0px;
+	padding-left: 0;
 }
 
 /* ie6 hack */
 * html #findSuggestionMenu {
 	background: url(images/tip.png) top left;
 }
+
 /* ie7 hack */
-*:first-child+html #findSuggestionMenu {
+*:first-child + html #findSuggestionMenu {
 	background: url(images/tip.png) top left;
 }
 
@@ -312,24 +299,29 @@ body {
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 5px;
 }
+
 /* ie6 hack */
 * html #findSuggestionMenu .hover {
 	background-color: black;
 }
+
 /* ie7 hack */
-*:first-child+html #findSuggestionMenu .hover {
+*:first-child + html #findSuggestionMenu .hover {
 	background-color: black;
 }
 
 .toolbar #redo {
 	background-image: url(../image/toolbar/redo.png);
 }
+
 .toolbar #redo.disabled {
 	background-image: url(../image/toolbar/redo_disabled.png);
 }
+
 .toolbar #undo {
 	background-image: url(../image/toolbar/undo.png);
 }
+
 .toolbar #undo.disabled {
 	background-image: url(../image/toolbar/undo_disabled.png);
 }
