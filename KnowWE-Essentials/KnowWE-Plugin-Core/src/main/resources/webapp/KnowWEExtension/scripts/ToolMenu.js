@@ -155,11 +155,17 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
 			header.stop().animate({'max-width' : 35, 'z-index' : 1000, opacity : 0.3}, 200);
 			if (menu) {
 				menu.hide();
+				menu.css("margin-top", "");
 			}
 		}).unbind('mouseover').on('mouseover', function(e) {
 			header.stop().animate({'max-width' : 250, 'z-index' : 1500, opacity : 1}, 200);
 			if (menu) {
 				menu.show();
+				var menuBottom = menu[0].getBoundingClientRect().bottom;
+				var windowHeight = jq$(window).height();
+				if (menuBottom > windowHeight) {
+					menu.css("margin-top", "-" + (menuBottom - windowHeight) + "px");
+				}
 				menu.stop().animate({opacity : 0.9}, 100);
 			}
 		});
