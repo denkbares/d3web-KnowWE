@@ -55,7 +55,7 @@ public class RenderPreviewAction extends AbstractAction {
 	private static final String OUTDATED = "<i>The specified article sections are not available, maybe the page has been changed by an other user. Please reload this page.</i>\n";
 	public static final String ATTR_MODE = "mode";
 
-	public static enum Mode {
+	public enum Mode {
 		plain, list
 	}
 
@@ -103,7 +103,7 @@ public class RenderPreviewAction extends AbstractAction {
 
 	private void renderItem(UserActionContext context, String nodeIDs, Mode mode, JSONArray result) {
 		String[] ids = nodeIDs.split(",");
-		List<Section<?>> sections = new LinkedList<Section<?>>();
+		List<Section<?>> sections = new LinkedList<>();
 		for (String sectionID : ids) {
 			Section<? extends Type> section = Sections.get(sectionID);
 			if (section == null) {

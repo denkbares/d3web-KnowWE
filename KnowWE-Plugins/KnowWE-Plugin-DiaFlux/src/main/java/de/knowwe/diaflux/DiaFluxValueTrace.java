@@ -66,7 +66,7 @@ public class DiaFluxValueTrace implements SessionObject {
 
 		@Override
 		public void propagating(Session session, PSMethod psMethod, Collection<PropagationEntry> entries) {
-		};
+		}
 
 		@Override
 		public void postPropagationStarted(Session session, Collection<PropagationEntry> entries) {
@@ -98,7 +98,7 @@ public class DiaFluxValueTrace implements SessionObject {
 	};
 
 	private final Session session;
-	private final Map<Node, Value> tracedValues = new HashMap<Node, Value>();
+	private final Map<Node, Value> tracedValues = new HashMap<>();
 
 	public DiaFluxValueTrace(Session session) {
 		this.session = session;

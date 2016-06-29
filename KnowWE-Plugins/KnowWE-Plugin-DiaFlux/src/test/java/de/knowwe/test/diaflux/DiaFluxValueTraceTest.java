@@ -142,7 +142,7 @@ public class DiaFluxValueTraceTest {
 		instantIndication2.setQASets(questionYN);
 		questionNode2 = new ActionNode("questionNode2_ID", instantIndication2);
 
-		LinkedList<Node> nodesList = new LinkedList<Node>(Arrays.asList(startNode, endNode,
+		LinkedList<Node> nodesList = new LinkedList<>(Arrays.asList(startNode, endNode,
 				questionNode1, snaphot1, snaphot2, questionNode2));
 
 		// ---------------------------------
@@ -163,7 +163,7 @@ public class DiaFluxValueTraceTest {
 		Edge snap2ToEnd = FlowFactory.createEdge("snap2ToEnd_ID", snaphot2, endNode,
 				ConditionTrue.INSTANCE);
 
-		List<Edge> edgesList = new LinkedList<Edge>(Arrays.asList(startToQuestion1,
+		List<Edge> edgesList = new LinkedList<>(Arrays.asList(startToQuestion1,
 				question1ToSnap, snap1ToQuestion2, question2ToSnap2, snap2ToEnd));
 
 		Flow testFlow = FlowFactory.createFlow(kb, "Main", nodesList, edgesList);

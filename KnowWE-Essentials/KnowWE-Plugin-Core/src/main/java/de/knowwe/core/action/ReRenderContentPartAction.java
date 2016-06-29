@@ -114,7 +114,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		String inPre = context.getParameter("inPre");
 		String rawResult = result.toStringRaw();
 
-		if (inPre != null && inPre.equals("false")) {
+		if ("false".equals(inPre)) {
 			rawResult = Environment.getInstance()
 					.getWikiConnector().renderWikiSyntax(rawResult, context.getRequest());
 		}

@@ -48,7 +48,7 @@ public class CollapsibleBoxType extends AbstractType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
-			List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> results = new ArrayList<>();
 			int depth = 0;
 			// marker is the index, where i start to look for types
 			int marker = 0;

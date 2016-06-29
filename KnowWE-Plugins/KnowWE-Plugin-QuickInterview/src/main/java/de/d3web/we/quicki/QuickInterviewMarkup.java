@@ -114,7 +114,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			}
 
 			String saveAnnotation = DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.SAVE_KEY);
-			if (saveAnnotation != null && saveAnnotation.equalsIgnoreCase("true")) {
+			if ("true".equalsIgnoreCase(saveAnnotation)) {
 				string.appendHtml("<div id=\"sessionsave\"><form name=\"loadsave\"> "
 						+ "<select name=\"savedsessions\"  size=\"1\" width=\"30\"><option>-Load Session-</option>"
 						+ getSavedSessions(user)

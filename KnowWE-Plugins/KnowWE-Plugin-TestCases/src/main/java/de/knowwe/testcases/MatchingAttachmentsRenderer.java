@@ -53,7 +53,7 @@ public class MatchingAttachmentsRenderer implements Renderer {
 		}
 		String[] annotations = DefaultMarkupType.getAnnotations(defaultMarkupSection,
 				ANNOTATION_FILE);
-		Set<String> attachments = new TreeSet<String>();
+		Set<String> attachments = new TreeSet<>();
 		for (String s : annotations) {
 			try {
 				for (WikiAttachment attachment : KnowWEUtils.getAttachments(section.getTitle(),
@@ -64,7 +64,7 @@ public class MatchingAttachmentsRenderer implements Renderer {
 			catch (IOException e) {
 			}
 		}
-		if (attachments.size() > 0) {
+		if (!attachments.isEmpty()) {
 			string.append("The following attachments match the specified regular expression(s): \n");
 			for (String s : attachments) {
 				string.append("# " + s + "\n");

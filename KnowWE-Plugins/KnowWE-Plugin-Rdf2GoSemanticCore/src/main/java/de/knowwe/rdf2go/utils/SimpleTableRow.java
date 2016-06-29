@@ -76,7 +76,7 @@ public class SimpleTableRow implements TableRow {
 
 	@Override
 	public List<String> getVariables() {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		Set<String> keySet = values.keySet();
 		result.addAll(keySet);
 		return result;

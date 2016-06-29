@@ -25,7 +25,7 @@ import java.util.List;
 
 public class NonTerminalCondVerbalization extends CondVerbalization {
 
-	private List<CondVerbalization> condVerbs = new ArrayList<CondVerbalization>();
+	private List<CondVerbalization> condVerbs = new ArrayList<>();
 
 	public NonTerminalCondVerbalization(List<CondVerbalization> condVerbs, String operator, String originalClass) {
 		super(operator, originalClass);

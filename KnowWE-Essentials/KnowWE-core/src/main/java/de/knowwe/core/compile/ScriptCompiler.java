@@ -53,7 +53,7 @@ public class ScriptCompiler<C extends Compiler> {
 		scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
 		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
-			compileMap.put(p, new LinkedHashSet<CompilePair>());
+			compileMap.put(p, new LinkedHashSet<>());
 		}
 		currentPriority = Priority.getRegisteredPriorities().first();
 	}

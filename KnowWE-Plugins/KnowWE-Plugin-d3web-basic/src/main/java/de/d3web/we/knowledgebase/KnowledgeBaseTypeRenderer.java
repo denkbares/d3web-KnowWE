@@ -103,7 +103,7 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 			additionalAnnotations.add(annotation);
 		}
 
-		if (additionalAnnotations.size() > 0) {
+		if (!additionalAnnotations.isEmpty()) {
 			string.appendHtml("<div style='padding-top:1em;'>");
 			for (Section<?> annotation : additionalAnnotations) {
 				string.appendHtml("<div>");

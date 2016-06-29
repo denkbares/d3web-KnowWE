@@ -25,8 +25,8 @@ package de.knowwe.diaflux;
  */
 public interface DiaFluxEditorEnhancement {
 
-	public static final String PLUGIN_ID = "KnowWE-Plugin-DiaFlux";
-	public static final String EXTENSION_POINT_ID = "DiaFluxEditorEnhancement";
+	String PLUGIN_ID = "KnowWE-Plugin-DiaFlux";
+	String EXTENSION_POINT_ID = "DiaFluxEditorEnhancement";
 
 	String[] getScripts();
 

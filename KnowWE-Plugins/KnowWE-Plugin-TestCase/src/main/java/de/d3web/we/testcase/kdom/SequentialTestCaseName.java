@@ -43,8 +43,8 @@ public class SequentialTestCaseName extends AbstractType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
-			if (text.length() == 0) return null;
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			if (text.isEmpty()) return null;
+			List<SectionFinderResult> result = new ArrayList<>();
 
 			int start = 0;
 			while (text.charAt(start) == ' ' || text.charAt(start) == '\n'

@@ -542,7 +542,7 @@ public class JSPWikiConnector implements WikiConnector {
 			if (versionHistory.isEmpty()) {
 				// can happen in JSPWiki, of OLD was cleaned up manually
 				WikiPage currentVersion = this.engine.getPage(title);
-				versionHistory = Arrays.asList(currentVersion);
+				versionHistory = Collections.singletonList(currentVersion);
 			}
 			return versionHistory.stream()
 					.map(page -> new WikiPageInfo(page.getName(), page.getAuthor(), page.getVersion(),

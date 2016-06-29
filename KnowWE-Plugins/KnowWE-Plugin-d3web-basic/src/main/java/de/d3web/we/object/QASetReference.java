@@ -77,7 +77,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 
 	public QASetReference() {
 		this.setRenderer(RENDERER);
-		this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
+		this.addCompileScript(new SimpleReferenceRegistrationScript<>(
 				D3webCompiler.class));
 	}
 

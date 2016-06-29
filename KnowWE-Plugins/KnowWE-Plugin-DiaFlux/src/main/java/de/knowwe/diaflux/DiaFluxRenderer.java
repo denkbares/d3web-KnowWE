@@ -77,6 +77,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 		}
 	}
 
+	@Override
 	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
 		String icon = getTitleIcon(section, user);
 		String title = getTitleName(section, user);

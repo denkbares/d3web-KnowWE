@@ -115,7 +115,7 @@ public class TableExporter implements Exporter<WikiTable> {
 	}
 
 	private Matrix<Section<TableCell>> toMatrix(Section<WikiTable> section) {
-		Matrix<Section<TableCell>> matrix = new Matrix<Section<TableCell>>();
+		Matrix<Section<TableCell>> matrix = new Matrix<>();
 		int row = 0;
 		for (Section<TableRow> tableRow : Sections.successors(section, TableRow.class)) {
 			int col = 0;

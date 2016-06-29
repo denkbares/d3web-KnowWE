@@ -101,7 +101,7 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 						"Internal error. No Score-Algorithm present."));
 			}
 
-			Collection<Message> m = new LinkedList<Message>();
+			Collection<Message> m = new LinkedList<>();
 
 			// Default established threshold
 			Double establishedThreshold = getValueFromAnnotation(s,

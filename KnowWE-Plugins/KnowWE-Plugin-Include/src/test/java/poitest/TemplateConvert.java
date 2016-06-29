@@ -67,12 +67,8 @@ public class TemplateConvert {
 
 		File folder = new File("target/result");
 		folder.mkdirs();
-		FileOutputStream stream = new FileOutputStream(new File(folder, "Test.docx"));
-		try {
+		try (FileOutputStream stream = new FileOutputStream(new File(folder, "Test.docx"))) {
 			builder.getDocument().write(stream);
-		}
-		finally {
-			stream.close();
 		}
 		System.out.println("Done.");
 		Exec.runSimpleCommand("open Test.docx", folder);

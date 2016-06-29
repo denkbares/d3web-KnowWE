@@ -68,11 +68,11 @@ public class DashTreeElement extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
 
-			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			ArrayList<SectionFinderResult> result = new ArrayList<>();
 
 			List<SectionFinderResult> lookForSections = LineSectionFinder
 					.getInstance().lookForSections(text, father, type);
-			if (lookForSections != null && lookForSections.size() > 0) {
+			if (lookForSections != null && !lookForSections.isEmpty()) {
 				int index = 0;
 
 				// Search for first non-empty line

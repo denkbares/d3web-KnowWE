@@ -79,7 +79,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 
 			if (Strings.containsUnquoted(text, " =")) {
 
-				List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+				List<SectionFinderResult> result = new ArrayList<>();
 				result.add(new SectionFinderResult(0, text.length()));
 				return result;
 			}

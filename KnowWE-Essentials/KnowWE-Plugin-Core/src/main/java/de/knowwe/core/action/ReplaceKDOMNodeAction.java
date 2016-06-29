@@ -63,7 +63,7 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 		// JSPWiki
 		newText = newText.replaceAll("\\s*$", "");
 
-		Map<String, String> nodesMap = new HashMap<String, String>();
+		Map<String, String> nodesMap = new HashMap<>();
 		nodesMap.put(nodeID, newText);
 
 		String result = replace(context, nodesMap);

@@ -79,6 +79,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 		return false;
 	}
 
+	@Override
 	protected int getTooltipDelay(Section<?> section, UserContext user) {
 		return 1000;
 	}

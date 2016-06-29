@@ -54,13 +54,12 @@ public class AllTextFinderTrimmed implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		List<SectionFinderResult> result = new ArrayList<>();
 
 		String trimmed = trimBlankLinesOnly ? Strings.trimBlankLines(text) : Strings.trim(text);
-		if (trimmed.length() == 0) return result;
+		if (trimmed.isEmpty()) return result;
 		int leadingSpaces = text.indexOf(trimmed);
-		int followingSpaces = text.length()
-				- (trimmed.length() + leadingSpaces);
+		int followingSpaces = text.length() - (trimmed.length() + leadingSpaces);
 
 		result.add(new SectionFinderResult(leadingSpaces, text.length()
 				- followingSpaces));

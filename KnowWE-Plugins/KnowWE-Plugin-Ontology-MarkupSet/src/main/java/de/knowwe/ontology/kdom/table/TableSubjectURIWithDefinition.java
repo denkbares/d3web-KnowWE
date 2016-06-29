@@ -19,20 +19,14 @@
 
 package de.knowwe.ontology.kdom.table;
 
-import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.*;
-import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
-import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.SimpleReference;
-import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.table.TableCellContent;
-import de.knowwe.kdom.table.TableType;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;

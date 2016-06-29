@@ -51,7 +51,7 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 		if (!c.equals(KnowledgeBase.class)) {
 			return Collections.emptyList();
 		}
-		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();
+		List<TestObjectContainer<T>> result = new ArrayList<>();
 		try {
 			Pattern.compile(id);
 		}
@@ -65,7 +65,7 @@ public class WikiKnowledgeBaseProvider implements TestObjectProvider {
 		for (D3webCompiler compiler : compilers) {
 			if (compiler.getCompileSection().getTitle().matches(id)) {
 				KnowledgeBase kb = compiler.getKnowledgeBase();
-				TestObjectContainer<T> container = new TestObjectContainer<T>(kb.getId(),
+				TestObjectContainer<T> container = new TestObjectContainer<>(kb.getId(),
 						c.cast(kb));
 				result.add(container);
 			}

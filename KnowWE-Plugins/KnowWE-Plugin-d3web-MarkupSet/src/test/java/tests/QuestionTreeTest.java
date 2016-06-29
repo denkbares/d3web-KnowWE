@@ -90,11 +90,11 @@ public class QuestionTreeTest extends TestCase {
 
 				// Test Hierarchy: Parents
 				// for-loop for this because ID isnt relevant any more
-				List<String> expectedList = new ArrayList<String>();
+				List<String> expectedList = new ArrayList<>();
 				for (TerminologyObject obj : expected.getParents()) {
 					expectedList.add(obj.getName());
 				}
-				List<String> actualList = new ArrayList<String>();
+				List<String> actualList = new ArrayList<>();
 				for (TerminologyObject obj : actual.getParents()) {
 					actualList.add(obj.getName());
 				}
@@ -110,11 +110,11 @@ public class QuestionTreeTest extends TestCase {
 				}
 
 				// Test Hierarchy: Test children
-				expectedList = new ArrayList<String>();
+				expectedList = new ArrayList<>();
 				for (TerminologyObject obj : expected.getChildren()) {
 					expectedList.add(obj.getName());
 				}
-				actualList = new ArrayList<String>();
+				actualList = new ArrayList<>();
 				for (TerminologyObject obj : actual.getChildren()) {
 					actualList.add(obj.getName());
 				}
@@ -144,11 +144,11 @@ public class QuestionTreeTest extends TestCase {
 
 				// Question Type specific tests
 				if (expected instanceof QuestionChoice) {
-					expectedList = new ArrayList<String>();
+					expectedList = new ArrayList<>();
 					for (Choice obj : ((QuestionChoice) expected).getAllAlternatives()) {
 						expectedList.add(obj.getName());
 					}
-					actualList = new ArrayList<String>();
+					actualList = new ArrayList<>();
 					for (Choice obj : ((QuestionChoice) actual).getAllAlternatives()) {
 						actualList.add(obj.getName());
 					}

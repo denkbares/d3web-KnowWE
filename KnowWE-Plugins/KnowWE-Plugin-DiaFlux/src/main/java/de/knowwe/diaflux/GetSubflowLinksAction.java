@@ -74,7 +74,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 		if (flow == null) return Highlight.EMPTY_HIGHLIGHT;
 
 		StringBuilder builder = new StringBuilder();
-		builder.append("<flow id='" + FlowchartUtils.getParentID(section) + "'>");
+		builder.append("<flow id='").append(FlowchartUtils.getParentID(section)).append("'>");
 		for (ComposedNode node : flow.getNodesOfClass(ComposedNode.class)) {
 			// link to flowchart definition
 			Section<FlowchartType> calledSection = FlowchartUtils.findFlowchartSection(
@@ -82,7 +82,7 @@ public class GetSubflowLinksAction extends AbstractAction {
 			if (calledSection == null) continue;
 
 			String link = KnowWEUtils.getURLLink(calledSection);
-			builder.append("<node id='" + node.getID() + "'>");
+			builder.append("<node id='").append(node.getID()).append("'>");
 			builder.append(link);
 			builder.append("</node>");
 		}

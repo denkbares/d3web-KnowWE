@@ -54,7 +54,7 @@ public class DummyConnector implements WikiConnector {
 
 	private String knowweExtensionPath = null;
 
-	private final Map<String, String> locks = new HashMap<String, String>();
+	private final Map<String, String> locks = new HashMap<>();
 
 	public DummyConnector() {
 		this(new DummyPageProvider());
@@ -67,13 +67,13 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public List<WikiPageInfo> getArticleHistory(String title) throws IOException {
 		if (getArticleText(title) == null) return Collections.emptyList();
-		return Arrays.asList(new WikiPageInfo(title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1)));
+		return Collections.singletonList(new WikiPageInfo(title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1)));
 	}
 
 	@Override
 	public List<WikiAttachmentInfo> getAttachmentHistory(String path) throws IOException {
 		if (getAttachment(path) == null) return Collections.emptyList();
-		return Arrays.asList(new WikiAttachmentInfo(path, DUMMY_USER, 1, getLastModifiedDate(path, 1)));
+		return Collections.singletonList(new WikiAttachmentInfo(path, DUMMY_USER, 1, getLastModifiedDate(path, 1)));
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class DummyConnector implements WikiConnector {
 			throw new NullPointerException(
 					"PageProvider null, so there are no attachments available");
 		}
-		return new ArrayList<WikiAttachment>(dummyPageProvider.getAllAttachments().values());
+		return new ArrayList<>(dummyPageProvider.getAllAttachments().values());
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class DummyConnector implements WikiConnector {
 					"PageProvider null, so there are no attachments available");
 		}
 		Collection<WikiAttachment> attachments = getAttachments();
-		List<WikiAttachment> attachmentsOfPage = new ArrayList<WikiAttachment>();
+		List<WikiAttachment> attachmentsOfPage = new ArrayList<>();
 		for (WikiAttachment attachment : attachments) {
 			if (attachment.getParentName().equals(title)) {
 				attachmentsOfPage.add(attachment);

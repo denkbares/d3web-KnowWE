@@ -26,7 +26,7 @@ public class SingleAction extends AbstractType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			List<StringFragment> actions = Strings.splitUnquoted(text, ";");
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> result = new ArrayList<>();
 			for (StringFragment string : actions) {
 				result.add(new SectionFinderResult(string.getStart(), string.getStart()
 						+ string.getContent().length()));

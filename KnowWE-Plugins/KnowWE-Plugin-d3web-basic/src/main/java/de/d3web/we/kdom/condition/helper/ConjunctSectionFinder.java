@@ -26,8 +26,8 @@ public class ConjunctSectionFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		Map<Integer, Integer> allFoundOps = new HashMap<Integer, Integer>();
-		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
+		Map<Integer, Integer> allFoundOps = new HashMap<>();
+		List<SectionFinderResult> results = new ArrayList<>();
 		for (String symbol : signs) {
 			// separation chars only required if the operator itself contains
 			// any word-chars
@@ -65,7 +65,7 @@ public class ConjunctSectionFinder implements SectionFinder {
 		}
 
         // without any found conj-sings we do not create any conjuncts
-        if (allFoundOps.size() == 0) return null;
+		if (allFoundOps.isEmpty()) return null;
 
 		Integer[] keys = allFoundOps.keySet().toArray(
 				new Integer[allFoundOps.keySet().size()]);

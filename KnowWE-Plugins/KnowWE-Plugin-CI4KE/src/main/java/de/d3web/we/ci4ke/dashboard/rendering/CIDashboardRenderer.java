@@ -200,7 +200,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		Collection<Section<CIDashboardType>> ciDashboardSections = CIDashboardManager.getDashboardSections(
 				dashboard.getDashboardSection().getArticleManager(), dashboard.getDashboardName());
 		if (ciDashboardSections.size() > 1) {
-			TreeSet<String> articleTitles = new TreeSet<String>();
+			TreeSet<String> articleTitles = new TreeSet<>();
 			for (Section<CIDashboardType> section : ciDashboardSections) {
 				articleTitles.add(section.getTitle());
 			}
@@ -218,7 +218,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 			RenderResult errorText = new RenderResult(string);
 			errorText.appendHtml("Multiple dashboards with same name on the following articles: "
-					+ articleLinks.toString()
+					+ articleLinks
 					+ ". Make sure every dashboard has a wiki-wide unique name!");
 			Collection<Message> errorMsgs = Messages.asList(Messages.error(errorText.toStringRaw()));
 			renderMessagesOfType(Message.Type.ERROR, errorMsgs, string);

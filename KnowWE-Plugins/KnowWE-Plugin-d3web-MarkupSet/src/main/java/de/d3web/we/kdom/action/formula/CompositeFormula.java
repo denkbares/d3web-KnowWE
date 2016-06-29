@@ -95,14 +95,14 @@ public class CompositeFormula extends AbstractType {
 	 * tells whether a CompositeCondition is a Conjunction
 	 */
 	public boolean isMultiplication(Section<CompositeFormula> c) {
-		return getMultiplicationElements(c).size() > 0;
+		return !getMultiplicationElements(c).isEmpty();
 	}
 
 	/**
 	 * tells whether a CompositeCondition is a Conjunction
 	 */
 	public boolean isSubtraction(Section<CompositeFormula> c) {
-		return getSubtractionElements(c).size() > 0;
+		return !getSubtractionElements(c).isEmpty();
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class CompositeFormula extends AbstractType {
 	 * tells whether a CompositeCondition is a Conjunction
 	 */
 	public boolean isAddition(Section<CompositeFormula> c) {
-		return getAdditionElements(c).size() > 0;
+		return !getAdditionElements(c).isEmpty();
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class CompositeFormula extends AbstractType {
 	 * tells whether a CompositeCondition is a Conjunction
 	 */
 	public boolean isDivision(Section<CompositeFormula> c) {
-		return getDivisionElements(c).size() > 0;
+		return !getDivisionElements(c).isEmpty();
 	}
 
 	/**

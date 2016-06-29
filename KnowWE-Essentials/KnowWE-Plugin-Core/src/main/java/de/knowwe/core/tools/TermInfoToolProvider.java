@@ -70,7 +70,7 @@ public class TermInfoToolProvider implements ToolProvider {
 		Section<? extends Term> term = Sections.cast(section, Term.class);
 
 		// get sorted list of all defining articles
-		Map<String, Section<?>> articles = new HashMap<String, Section<?>>();
+		Map<String, Section<?>> articles = new HashMap<>();
 		for (TermCompiler termCompiler : Compilers.getCompilers(section, TermCompiler.class)) {
 			TerminologyManager manager = termCompiler.getTerminologyManager();
 			if(manager == null) continue;
@@ -80,7 +80,7 @@ public class TermInfoToolProvider implements ToolProvider {
 				articles.put(definition.getTitle(), previewAncestor == null ? definition : previewAncestor);
 			}
 		}
-		List<String> sorted = new ArrayList<String>(articles.keySet());
+		List<String> sorted = new ArrayList<>(articles.keySet());
 		Collections.sort(sorted);
 
 		// check if we have a home page for that term (article that has the same title)

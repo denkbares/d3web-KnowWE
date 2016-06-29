@@ -49,7 +49,7 @@ public class SearchEngine {
 
 	private final ArticleManager articleManager;
 
-	private final List<SearchOption> options = new LinkedList<SearchOption>();
+	private final List<SearchOption> options = new LinkedList<>();
 
 	public SearchEngine(ArticleManager articleManager) {
 		if (articleManager == null) {
@@ -72,7 +72,7 @@ public class SearchEngine {
 	 */
 	public <T extends Type> Map<Article, Collection<Result>> search(String query, Class<T> clazz) {
 		Iterator<Article> iter = articleManager.getArticles().iterator();
-		Map<Article, Collection<Result>> results = new HashMap<Article, Collection<Result>>();
+		Map<Article, Collection<Result>> results = new HashMap<>();
 
 		while (iter.hasNext()) {
 			Article article = iter.next();
@@ -82,7 +82,7 @@ public class SearchEngine {
 			// (Environment.getInstance().getWikiConnector().userCanViewPage(
 			// article.getTitle())) {
 			Collection<Result> articleResults = search(query, article, clazz);
-			if (articleResults.size() > 0) {
+			if (!articleResults.isEmpty()) {
 				results.put(article, articleResults);
 			}
 			// }
@@ -127,10 +127,10 @@ public class SearchEngine {
 			throw new IllegalArgumentException("Need an article, a query and a class");
 		}
 
-		List<Section<T>> sectionsWithType = new LinkedList<Section<T>>();
+		List<Section<T>> sectionsWithType = new LinkedList<>();
 		Sections.successors(section, clazz, sectionsWithType);
 
-		Collection<Result> results = new LinkedList<Result>();
+		Collection<Result> results = new LinkedList<>();
 		for (Section<T> sectionWithType : sectionsWithType) {
 			Matcher m = query.matcher(sectionWithType.getText());
 			// We add each occurrence in the current section

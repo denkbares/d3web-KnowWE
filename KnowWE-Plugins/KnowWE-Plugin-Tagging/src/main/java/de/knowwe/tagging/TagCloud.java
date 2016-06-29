@@ -43,7 +43,7 @@ public class TagCloud extends AbstractHTMLTagHandler {
 				20);
 		result.appendHtml("<p>");
 		// TagSearch.jsp?query=test+auto&ok=Find!&start=0&maxitems=20
-		List<String> tlist = new ArrayList<String>();
+		List<String> tlist = new ArrayList<>();
 		tlist.addAll(weightedlist.keySet());
 		Collections.sort(tlist);
 		for (String cur : tlist) {

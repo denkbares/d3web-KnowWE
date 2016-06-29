@@ -75,7 +75,7 @@ public class ScopeUtils {
 	 * @created 30.11.2013
 	 */
 	public static List<Extension> getMatchingExtensions(Extension[] extensions, TypePath typePath) {
-		List<Extension> matches = new LinkedList<Extension>();
+		List<Extension> matches = new LinkedList<>();
 		for (Extension extension : extensions) {
 			// if we match any of the existing scopes
 			// we add the extension and proceed to the next extension

@@ -128,7 +128,7 @@ public class GetDiffHighlightAction extends AbstractAction {
 				getA(containedElements),
 				clazz);
 
-		return new Triple<Collection<Section<T>>, Collection<Section<T>>, Collection<Section<T>>>(
+		return new Triple<>(
 				addedElements, removedElements, changedElements);
 
 	}
@@ -153,7 +153,7 @@ public class GetDiffHighlightAction extends AbstractAction {
 	}
 
 	private static <T extends AbstractXMLType> Collection<Section<T>> filterUnchangedElements(Collection<Pair<Section<T>, Section<T>>> pairs) {
-		Collection<Section<T>> result = new LinkedList<Section<T>>();
+		Collection<Section<T>> result = new LinkedList<>();
 		for (Pair<Section<T>, Section<T>> pair : pairs) {
 			// TODO implement better comparison, e.g. ignoring slight position
 			// changes
@@ -168,7 +168,7 @@ public class GetDiffHighlightAction extends AbstractAction {
 	}
 
 	private static <T extends AbstractXMLType> Collection<Section<T>> getA(Collection<Pair<Section<T>, Section<T>>> pairs) {
-		Collection<Section<T>> result = new ArrayList<Section<T>>(pairs.size());
+		Collection<Section<T>> result = new ArrayList<>(pairs.size());
 
 		for (Pair<Section<T>, Section<T>> pair : pairs) {
 			result.add(pair.getA());
@@ -178,7 +178,7 @@ public class GetDiffHighlightAction extends AbstractAction {
 	}
 
 	private static <T extends AbstractXMLType> Collection<Section<T>> getB(Collection<Pair<Section<T>, Section<T>>> pairs) {
-		Collection<Section<T>> result = new ArrayList<Section<T>>(pairs.size());
+		Collection<Section<T>> result = new ArrayList<>(pairs.size());
 
 		for (Pair<Section<T>, Section<T>> pair : pairs) {
 			result.add(pair.getB());
@@ -207,11 +207,11 @@ public class GetDiffHighlightAction extends AbstractAction {
 		List<Section<T>> childs1 = Sections.successors(flow1, clazz);
 		List<Section<T>> childs2 = Sections.successors(flow2, clazz);
 
-		Collection<Pair<Section<T>, Section<T>>> result = new LinkedList<Pair<Section<T>, Section<T>>>();
+		Collection<Pair<Section<T>, Section<T>>> result = new LinkedList<>();
 		for (Section<T> child1 : childs1) {
 			Section<T> otherchild = find(child1, childs2);
 			if (otherchild != null) {
-				result.add(new Pair<Section<T>, Section<T>>(child1, otherchild));
+				result.add(new Pair<>(child1, otherchild));
 			}
 		}
 

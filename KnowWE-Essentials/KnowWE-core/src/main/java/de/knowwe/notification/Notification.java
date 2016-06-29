@@ -27,10 +27,10 @@ import de.knowwe.core.report.Message.Type;
  */
 public interface Notification {
 
-	public String getMessage();
+	String getMessage();
 
-	public String getID();
+	String getID();
 
-	public Type getType();
+	Type getType();
 
 }

@@ -35,7 +35,7 @@ import de.knowwe.core.user.UserContext;
  */
 public class CompositeRenderer implements Renderer {
 
-	private final List<SurroundingRenderer> renderers = new ArrayList<SurroundingRenderer>();
+	private final List<SurroundingRenderer> renderers = new ArrayList<>();
 
 	private final Renderer mainRenderer;
 
@@ -69,7 +69,7 @@ public class CompositeRenderer implements Renderer {
 		mainRenderer.render(section, user, string);
 
 		// render post hooks of all surrounding renderers (reverse order)
-		ArrayList<SurroundingRenderer> reverseList = new ArrayList<SurroundingRenderer>();
+		ArrayList<SurroundingRenderer> reverseList = new ArrayList<>();
 		reverseList.addAll(renderers);
 		Collections.reverse(reverseList);
 		for (SurroundingRenderer r : reverseList) {

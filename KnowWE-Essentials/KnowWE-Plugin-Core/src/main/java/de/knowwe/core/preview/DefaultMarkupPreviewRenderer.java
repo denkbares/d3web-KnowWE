@@ -69,7 +69,7 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 		afterSelected
 	}
 
-	public final Map<Scope, Select> previewItems = new LinkedHashMap<Scope, Select>();
+	public final Map<Scope, Select> previewItems = new LinkedHashMap<>();
 
 	public DefaultMarkupPreviewRenderer() {
 	}
@@ -108,7 +108,7 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
-		List<Section<?>> previews = new LinkedList<Section<?>>();
+		List<Section<?>> previews = new LinkedList<>();
 		// collect all relevant scoped sections plus the matched section
 		for (Entry<Scope, Select> entry : previewItems.entrySet()) {
 			Scope scope = entry.getKey();
@@ -134,8 +134,8 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 					}
 					// add all if no one has shown to be relevant
 					// if this has been requested
-					if (!preview.equals(Select.relevant) && !added) {
-						if (preview.equals(Select.relevantOrSome) && matches.size() > 8) {
+					if (preview != Select.relevant && !added) {
+						if (preview == Select.relevantOrSome && matches.size() > 8) {
 							matches = matches.subList(0, 5);
 						}
 						previews.addAll(matches);

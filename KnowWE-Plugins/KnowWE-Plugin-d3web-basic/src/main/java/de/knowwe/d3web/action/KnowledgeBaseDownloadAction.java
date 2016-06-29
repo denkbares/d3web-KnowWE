@@ -62,7 +62,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		Collection<String> articlesWithWrongVersion = getArticlesOfKnowledgebaseLoadedWithWrongVersion(
 				compileSection);
 
-		if (articlesWithWrongVersion.size() > 0) {
+		if (!articlesWithWrongVersion.isEmpty()) {
 			context.sendError(409,
 					"The following articles are currently loaded with an outdated version: "
 							+ articlesWithWrongVersion.toString()
@@ -91,14 +91,13 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			return;
 		}
 
-		InputStream in = home.openStream();
 		context.setContentType("application/x-bin");
 
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 		OutputStream outs = context.getOutputStream();
 
 		int bit;
-		try {
+		try (InputStream in = home.openStream()) {
 			while ((bit = in.read()) >= 0) {
 				outs.write(bit);
 			}
@@ -108,9 +107,6 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			ioe.printStackTrace(System.out);
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.valueOf(ioe));
 			Log.warning("Error while writing knowledge base", ioe);
-		}
-		finally {
-			in.close();
 		}
 
 		outs.flush();
@@ -132,15 +128,15 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 	private Collection<String> getArticlesOfKnowledgebaseLoadedWithWrongVersion(Section<PackageCompileType> section) {
 		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 		String[] compiledPackages = section.get().getPackagesToCompile(section);
-		Set<Section<?>> compiledSections = new HashSet<Section<?>>();
+		Set<Section<?>> compiledSections = new HashSet<>();
 		for (String compiledPackage : compiledPackages) {
 			compiledSections.addAll(packageManager.getSectionsOfPackage(compiledPackage));
 		}
-		Set<Article> articlesOfKnowledgebase = new HashSet<Article>();
+		Set<Article> articlesOfKnowledgebase = new HashSet<>();
 		for (Section<?> compiledSection : compiledSections) {
 			articlesOfKnowledgebase.add(compiledSection.getArticle());
 		}
-		List<String> wrongVersionTitles = new LinkedList<String>();
+		List<String> wrongVersionTitles = new LinkedList<>();
 		for (Article article : articlesOfKnowledgebase) {
 			String articleText = article.getRootSection().getText();
 			String connectorVersionOfArticleText = Environment.getInstance().getWikiConnector().getArticleText(

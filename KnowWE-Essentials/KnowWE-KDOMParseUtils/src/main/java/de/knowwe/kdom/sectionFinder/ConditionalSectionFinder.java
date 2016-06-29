@@ -41,8 +41,8 @@ public abstract class ConditionalSectionFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
-		if (text.length() > 0) {
+		List<SectionFinderResult> result = new ArrayList<>();
+		if (!text.isEmpty()) {
 			if (condition(text, father)) {
 				return finder.lookForSections(text, father, type);
 			}

@@ -27,6 +27,6 @@ import de.d3web.strings.Identifier;
  */
 public interface LinkToTermDefinitionProvider {
 
-	public String getLinkToTermDefinition(Identifier name, String masterArticle);
+	String getLinkToTermDefinition(Identifier name, String masterArticle);
 
 }

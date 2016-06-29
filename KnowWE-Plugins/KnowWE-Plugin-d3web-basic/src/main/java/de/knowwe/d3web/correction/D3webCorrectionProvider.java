@@ -57,7 +57,7 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 		Term termReference = (Term) section.get();
 
-		List<Suggestion> suggestions = new LinkedList<Suggestion>();
+		List<Suggestion> suggestions = new LinkedList<>();
 		Identifier termIdentifier = termReference.getTermIdentifier(Sections.cast(section,
 				Term.class));
 		Collection<Identifier> otherCaseVersions = terminologyHandler.getAllTermsEqualIgnoreCase(

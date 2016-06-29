@@ -90,9 +90,7 @@ public class QuickInterviewLoadAction extends AbstractAction {
 					if (fileName.startsWith(context.getParameter("loadname"))) {
 						Collection<SessionRecord> sessionRecords = SessionPersistenceManager.getInstance().loadSessions(
 								wikiAttachment.getInputStream());
-						Iterator<SessionRecord> iterator = sessionRecords.iterator();
-						while (iterator.hasNext()) {
-							SessionRecord rec = iterator.next();
+						for (SessionRecord rec : sessionRecords) {
 							List<FactRecord> valueFacts = rec.getValueFacts();
 							for (FactRecord factRecord : valueFacts) {
 								Fact fact = FactFactory.createUserEnteredFact(kb,

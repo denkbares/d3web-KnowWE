@@ -144,7 +144,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 			createTextDiff(ctx, leftBob.toString(), rightBob.toString(), buffy);
 		}
 		catch (DifferentiationFailedException e) {
-			buffy.append("Error in Diff:" + e.getMessage());
+			buffy.append("Error in Diff:").append(e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -179,7 +179,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 
 	private void renderFlow(UserContext user, Section<FlowchartType> flow, StringBuffer buffy, boolean insert, String cssClass) {
 		String parentID = FlowchartUtils.getParentID(flow);
-		buffy.append("<div class=\"" + cssClass + "\">");
+		buffy.append("<div class=\"").append(cssClass).append("\">");
 		insertFlowRenderer(user, flow, buffy, insert, parentID);
 		buffy.append("</div>");
 
@@ -187,7 +187,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 
 	private void renderChangedFlow(UserContext user, Pair<Section<FlowchartType>, Section<FlowchartType>> pair, StringBuffer buffy, boolean insert) {
 		String parentID = FlowchartUtils.getParentID(pair.getA());
-		buffy.append("<div class=\"flowChanged\" id=\"diffParent" + parentID + "\">");
+		buffy.append("<div class=\"flowChanged\" id=\"diffParent").append(parentID).append("\">");
 		insertFlowRenderer(user, pair.getA(), buffy, insert, parentID + "-LEFT");
 		insertFlowRenderer(user, pair.getB(), buffy, false, parentID + "-RGHT");
 		// TODO label

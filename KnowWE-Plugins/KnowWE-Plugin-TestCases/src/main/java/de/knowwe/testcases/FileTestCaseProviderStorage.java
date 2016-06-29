@@ -48,9 +48,9 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public abstract class FileTestCaseProviderStorage implements TestCaseProviderStorage {
 
-	private final Map<String, List<AttachmentTestCaseProvider>> regexMap = new HashMap<String, List<AttachmentTestCaseProvider>>();
+	private final Map<String, List<AttachmentTestCaseProvider>> regexMap = new HashMap<>();
 	private final D3webCompiler compiler;
-	protected final List<Message> messages = new LinkedList<Message>();
+	protected final List<Message> messages = new LinkedList<>();
 	protected final Article sectionArticle;
 	protected final Section<? extends DefaultMarkupType> prefixProvidingSection;
 
@@ -63,7 +63,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 
 	public void update(String[] regexes) {
 		List<String> newRegexp = Arrays.asList(regexes);
-		for (String oldRegexp : new LinkedList<String>(this.regexMap.keySet())) {
+		for (String oldRegexp : new LinkedList<>(this.regexMap.keySet())) {
 			if (!newRegexp.contains(oldRegexp)) {
 				this.regexMap.remove(oldRegexp);
 			}
@@ -72,7 +72,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 		for (String fileRegex : regexes) {
 			List<AttachmentTestCaseProvider> list = regexMap.get(fileRegex);
 			if (list == null) {
-				list = new LinkedList<AttachmentTestCaseProvider>();
+				list = new LinkedList<>();
 				regexMap.put(fileRegex, list);
 			}
 		}
@@ -85,7 +85,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 
 	@Override
 	public Collection<AttachmentTestCaseProvider> getTestCaseProviders() {
-		Collection<AttachmentTestCaseProvider> result = new LinkedList<AttachmentTestCaseProvider>();
+		Collection<AttachmentTestCaseProvider> result = new LinkedList<>();
 		for (Entry<String, List<AttachmentTestCaseProvider>> entry : regexMap.entrySet()) {
 			result.addAll(entry.getValue());
 		}
@@ -117,14 +117,14 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 				continue;
 			}
 			List<AttachmentTestCaseProvider> oldList = regexMap.get(fileRegex);
-			if (fittingAttachments.size() == 0) {
+			if (fittingAttachments.isEmpty()) {
 				messages.add(Messages.error("No Attachment found for: " + fileRegex));
 				// reset all providers, if files reappear, they have to be
 				// parsed again
 				oldList.clear();
 				continue;
 			}
-			List<AttachmentTestCaseProvider> actualList = new LinkedList<AttachmentTestCaseProvider>();
+			List<AttachmentTestCaseProvider> actualList = new LinkedList<>();
 			for (WikiAttachment attachment : fittingAttachments) {
 				boolean exists = false;
 				for (AttachmentTestCaseProvider provider : oldList) {
@@ -152,7 +152,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 
 	@Override
 	public Collection<Message> getMessages() {
-		Collection<Message> result = new LinkedList<Message>();
+		Collection<Message> result = new LinkedList<>();
 		result.addAll(messages);
 		for (TestCaseProvider provider : getTestCaseProviders()) {
 			result.addAll(provider.getMessages());

@@ -59,7 +59,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 			Identifier next = childrenSet.iterator().next();
 			if (!checked.contains(next)) {
 				checked.add(next);
-				return new Pair<Identifier, Set<Identifier>>(next, childrenSet);
+				return new Pair<>(next, childrenSet);
 			}
 		}
 		return null;
@@ -72,19 +72,19 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 		Object compilationCount = parentSection.getObject(compiler, RELATIONS_ADDED);
 		if (compilationCount != null && compilationCount.equals(compiler.getCompilerManager().getCompilationId())) return;
 
-		Collection<Message> msgs = new ArrayList<Message>();
+		Collection<Message> msgs = new ArrayList<>();
 
 		// we collect all children lists given for the current definition by getting all definitions
 		Identifier parentIdentifier = parentSection.get().getTermIdentifier(parentSection);
 		Collection<Section<?>> parentDefiningSections = compiler.getTerminologyManager()
 				.getTermDefiningSections(parentIdentifier);
-		LinkedList<LinkedHashSet<Identifier>> childrenSets = new LinkedList<LinkedHashSet<Identifier>>();
-		LinkedHashSet<Identifier> singleChildren = new LinkedHashSet<Identifier>();
+		LinkedList<LinkedHashSet<Identifier>> childrenSets = new LinkedList<>();
+		LinkedHashSet<Identifier> singleChildren = new LinkedHashSet<>();
 		for (Section<?> parentDefiningSection : parentDefiningSections) {
 			// ignore definitions that are outside a DashTree (like XCL)
 			if (Sections.ancestor(parentDefiningSection, DashTreeElement.class) == null) continue;
 			List<Section<DashTreeElement>> childrenDashtreeElements = getChildrenDashtreeElements(parentDefiningSection);
-			LinkedHashSet<Identifier> childrenSet = new LinkedHashSet<Identifier>();
+			LinkedHashSet<Identifier> childrenSet = new LinkedHashSet<>();
 			for (Section<DashTreeElement> childrenDashtreeElement : childrenDashtreeElements) {
 				Section<TermDefinition> childDefiningSection = Sections.successor(childrenDashtreeElement, TermDefinition.class);
 				if (childDefiningSection == null) continue;
@@ -99,8 +99,8 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 		}
 
 		// we try to merge them into one correct and stable order
-		List<Identifier> orderedChildren = new ArrayList<Identifier>();
-		Set<Identifier> checked = new HashSet<Identifier>();
+		List<Identifier> orderedChildren = new ArrayList<>();
+		Set<Identifier> checked = new HashSet<>();
 		TreeSet<Pair<Identifier, Set<Identifier>>> candidatesWithoutConflict = newCandidatesSet();
 		Set<Identifier> lastUsedSet = null;
 		outer:
@@ -114,13 +114,13 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 				if (candidatesWithoutConflict.isEmpty()) {
 					// no new candidate without conflict was found, apparently we have a conflict
 					// we fail gracefully and just add all checked as winners...
-					winners = new TreeSet<Identifier>(checked);
+					winners = new TreeSet<>(checked);
 					msgs.add(Messages.warning("The order of the following objects is in conflict: "
 							+ Strings.concat(", ", winners)
 							+ ". Check all places where these objects are defined to resolve the conflict."));
 				}
 				else {
-					winners = new TreeSet<Identifier>();
+					winners = new TreeSet<>();
 					Pair<Identifier, Set<Identifier>> winner = null;
 					// To keep the different children lists together as good as possible, we remember which list we
 					// used last time. If we have multiple candidates without conflict, we use the one from the list
@@ -145,7 +145,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 				singleChildren.removeAll(winners);
 				// we add the winner to the ordered list of children and clear the sets
 				orderedChildren.addAll(winners);
-				checked = new HashSet<Identifier>();
+				checked = new HashSet<>();
 				candidatesWithoutConflict = newCandidatesSet();
 			}
 			else {
@@ -173,7 +173,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 	}
 
 	private TreeSet<Pair<Identifier, Set<Identifier>>> newCandidatesSet() {
-		return new TreeSet<Pair<Identifier, Set<Identifier>>>(new Comparator<Pair<Identifier, Set<Identifier>>>() {
+		return new TreeSet<>(new Comparator<Pair<Identifier, Set<Identifier>>>() {
 			@Override
 			public int compare(Pair<Identifier, Set<Identifier>> o1, Pair<Identifier, Set<Identifier>> o2) {
 				return o1.getA().compareTo(o2.getA());

@@ -44,7 +44,7 @@ public class ProgressListenerManager {
 		return instance;
 	}
 
-	private static final Map<Object, AjaxProgressListener> listenerCache = new HashMap<Object, AjaxProgressListener>();
+	private static final Map<Object, AjaxProgressListener> listenerCache = new HashMap<>();
 
 	@Deprecated
 	public synchronized AjaxProgressListener getProgressListener(String progressID) {

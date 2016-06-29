@@ -479,7 +479,7 @@ public class Environment {
 					}
 				}
 				else {
-					if (pluggedRendererForType.size() > 0) {
+					if (!pluggedRendererForType.isEmpty()) {
 						return pluggedRendererForType.get(0);
 					}
 				}

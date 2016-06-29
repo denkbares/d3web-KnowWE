@@ -51,7 +51,7 @@ public class GoToPlayerToolProvider implements ToolProvider {
 		D3webCompiler compiler = D3webUtils.getCompiler(section);
 		TestCaseProviderStorage providerStorage = TestCaseUtils.getTestCaseProviderStorage(
 				compiler, section);
-		if ((providerStorage != null) && providerStorage.getTestCaseProviders().size() > 0) {
+		if ((providerStorage != null) && !providerStorage.getTestCaseProviders().isEmpty()) {
 			String testcasename = providerStorage.getTestCaseProviders().iterator().next().getName();
 			String value = compiler.getCompileSection().getTitle() + "/" + testcasename;
 			Section<? extends PackageCompileType> compileSection = compiler.getCompileSection();

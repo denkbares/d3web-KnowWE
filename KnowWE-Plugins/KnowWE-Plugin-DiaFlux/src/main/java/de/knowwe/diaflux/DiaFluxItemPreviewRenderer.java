@@ -32,8 +32,8 @@ public class DiaFluxItemPreviewRenderer extends AbstractPreviewRenderer {
 		renderFlowchartName(self, user, result);
 
 		// build sets first to avoid duplicates
-		Set<Section<NodeType>> nodes = new LinkedHashSet<Section<NodeType>>();
-		Set<Section<EdgeType>> edges = new LinkedHashSet<Section<EdgeType>>();
+		Set<Section<NodeType>> nodes = new LinkedHashSet<>();
+		Set<Section<EdgeType>> edges = new LinkedHashSet<>();
 		if (relevantSubSections.size() <= 1) {
 			relevantSubSections.addAll(Sections.successors(section, StartType.class));
 			relevantSubSections.addAll(Sections.successors(section, ExitType.class));

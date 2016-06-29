@@ -52,7 +52,7 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		Collection<Identifier> potentiallyMatchingIdentifiers = LazyURIReference.getPotentiallyMatchingIdentifiers(
 				Compilers.getCompiler(section, OntologyCompiler.class), section);
-		return potentiallyMatchingIdentifiers != null && potentiallyMatchingIdentifiers.size() > 0;
+		return potentiallyMatchingIdentifiers != null && !potentiallyMatchingIdentifiers.isEmpty();
 	}
 
 }

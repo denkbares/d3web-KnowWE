@@ -21,6 +21,7 @@ package de.d3web.we.kdom.questionTree.setValue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import de.d3web.core.inference.Rule;
@@ -177,14 +178,14 @@ public class SolutionSetValueLine extends AbstractType {
 				}
 			}
 
-			return Arrays.asList(Messages.creationFailedWarning(
+			return Collections.singletonList(Messages.creationFailedWarning(
 					Rule.class.getSimpleName()));
 
 		}
 
 		private String getArgumentString(Section<SolutionReference> s) {
 			String argument = null;
-			List<Section<AnonymousType>> children = new ArrayList<Section<AnonymousType>>();
+			List<Section<AnonymousType>> children = new ArrayList<>();
 			Sections.successors(s.getParent(), AnonymousType.class, children);
 			for (Section<AnonymousType> section : children) {
 				if (section.get().getName().equals(SETVALUE_ARGUMENT)) {

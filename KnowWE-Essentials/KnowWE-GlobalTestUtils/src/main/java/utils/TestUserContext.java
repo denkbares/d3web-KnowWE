@@ -54,7 +54,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	private final boolean isAsserted;
 	private final String userName = "Testuser #" + (counter++);
 	private final Article article;
-	private final Map<String, String> parameterMap = new HashMap<String, String>();
+	private final Map<String, String> parameterMap = new HashMap<>();
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 	private final Writer writer = new OutputStreamWriter(out);
@@ -214,7 +214,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 		// we write errors to the output stream, replacing the content
 		writer.flush();
 		out.reset();
-		writer.append(sc + ": " + msg);
+		writer.append(String.valueOf(sc)).append(": ").append(msg);
 	}
 
 	@Override

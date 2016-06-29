@@ -34,8 +34,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import de.d3web.strings.Strings;
-
 /**
  * @author Jochen Reutelshöfer
  * @created 29.11.2012
@@ -52,7 +50,7 @@ public class Utils {
 		if (length < 13) return clean(string, lb);
 
 		// find possible line break positions
-		Set<Integer> possibleLBs = new TreeSet<Integer>();
+		Set<Integer> possibleLBs = new TreeSet<>();
 
 		// possible line breaks are before the following chars:
 		// _ >= <= = . ( [ and white spaces
@@ -71,11 +69,11 @@ public class Utils {
 		if (possibleLBs.isEmpty()) return clean(string, lb);
 
 		// add the line breaks were it makes sense
-		List<Integer> desiredLBs = new LinkedList<Integer>();
-		Set<Integer> addedLBs = new TreeSet<Integer>();
+		List<Integer> desiredLBs = new LinkedList<>();
+		Set<Integer> addedLBs = new TreeSet<>();
 
 		// optimal length is determined by the length of the given String
-		double optimalLength = new Double(length) / Math.sqrt(length / 5);
+		double optimalLength = (double) length / Math.sqrt(length / 5);
 
 		for (int i = 1; i < string.length() / optimalLength; i++) {
 			// having the line breaks on these position would be optimal
@@ -99,9 +97,9 @@ public class Utils {
 			if (d == desiredLBs.size() - 1) {
 				double bestVar = Double.MAX_VALUE;
 				for (Integer posLB : possibleLBs) {
-					Set<Integer> temp = new TreeSet<Integer>(addedLBs);
+					Set<Integer> temp = new TreeSet<>(addedLBs);
 					temp.add(posLB);
-					TreeSet<Integer> varianceCheck = new TreeSet<Integer>(temp);
+					TreeSet<Integer> varianceCheck = new TreeSet<>(temp);
 					varianceCheck.add(length);
 					double variance = getVariance(varianceCheck);
 					if (variance <= bestVar) {
@@ -127,7 +125,7 @@ public class Utils {
 
 		// but in the line breaks
 		StringBuilder labelBuilder = new StringBuilder();
-		List<String> split = new ArrayList<String>(addedLBs.size() + 1);
+		List<String> split = new ArrayList<>(addedLBs.size() + 1);
 		int last = 0;
 		for (Integer addedLB : addedLBs) {
 			split.add(string.substring(last, addedLB));
@@ -136,7 +134,7 @@ public class Utils {
 		split.add(string.substring(last, string.length()));
 		for (String s : split) {
 			// clean the substrings
-			labelBuilder.append(clean(s.trim(), lb) + lb);
+			labelBuilder.append(clean(s.trim(), lb)).append(lb);
 		}
 
 		String label = labelBuilder.toString();

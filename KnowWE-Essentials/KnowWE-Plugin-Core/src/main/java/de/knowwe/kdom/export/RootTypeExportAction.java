@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,8 +79,8 @@ public class RootTypeExportAction extends AbstractAction {
 
 		RootType rt = RootType.getInstance();
 		setGeneralGraphSettings();
-		dotSourceLabel = new LinkedList<String>();
-		dotSourceRelations = new LinkedHashMap<Edge, String>();
+		dotSourceLabel = new LinkedList<>();
+		dotSourceRelations = new LinkedHashMap<>();
 		insertMainConcept(rt.getName() + rt.hashCode());
 
 		addSuccessors(rt);
@@ -163,9 +162,7 @@ public class RootTypeExportAction extends AbstractAction {
 	private void addSuccessors(Type type) {
 		List<Type> children = type.getChildrenTypes();
 		if (children == null) return;
-		Iterator<Type> it = children.iterator();
-		while (it.hasNext()) {
-			Type child = it.next();
+		for (Type child : children) {
 			String childString = child.getName() + child.hashCode();
 			String typeString = type.getName() + type.hashCode();
 			if (!dotSourceLabel.contains("\"" + childString + "\"\n")) {
@@ -209,18 +206,14 @@ public class RootTypeExportAction extends AbstractAction {
 	private void connectSources() {
 		// the label of the RootType is added separately (because it is the only
 		// label with specified additional attributes
-		Iterator<String> labels = dotSourceLabel.iterator();
-		while (labels.hasNext()) {
-			String label = labels.next();
+		for (String label : dotSourceLabel) {
 			RootType rt = RootType.getInstance();
 			if (label.equals("\"" + rt.getClass().toString() + rt.hashCode() + "\"")) {
 				dotSource += label;
 			}
 		}
 		// iterate over the relations and add them to the dotSource
-		Iterator<Edge> relationsKeys = dotSourceRelations.keySet().iterator();
-		while (relationsKeys.hasNext()) {
-			Edge key = relationsKeys.next();
+		for (Edge key : dotSourceRelations.keySet()) {
 			dotSource += "\"" + key.getSubject() + "\"" + " -> " + "\"" + key.getObject() + "\" "
 					+ dotSourceRelations.get(key);
 		}

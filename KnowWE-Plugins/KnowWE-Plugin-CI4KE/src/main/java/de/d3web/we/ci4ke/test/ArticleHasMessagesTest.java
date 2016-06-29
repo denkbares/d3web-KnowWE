@@ -51,7 +51,7 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 		boolean hasError = false;
 		StringBuilder buffer = new StringBuilder();
 
-		Collection<de.knowwe.core.report.Message> messages = new LinkedList<de.knowwe.core.report.Message>();
+		Collection<de.knowwe.core.report.Message> messages = new LinkedList<>();
 		Map<Compiler, Collection<de.knowwe.core.report.Message>> allMessagesMap =
 				Messages.getMessagesMapFromSubtree(moni.getRootSection(), type);
 
@@ -61,14 +61,18 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 
 		TestingUtils.checkInterrupt();
 
-		buffer.append(" " + type.toString().toLowerCase() + "s found in article '").append(moni.getTitle()).append("'");
+		buffer.append(" ")
+				.append(type.toString().toLowerCase())
+				.append("s found in article '")
+				.append(moni.getTitle())
+				.append("'");
 		if (!messages.isEmpty()) {
 			// This finds only messages, that are explicitly stored
 			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
 			// is not public!
 			hasError = true;
 			CountingSet<de.knowwe.core.report.Message> msgSet =
-					new CountingSet<de.knowwe.core.report.Message>();
+					new CountingSet<>();
 			for (de.knowwe.core.report.Message message : messages) {
 				msgSet.add(message);
 			}

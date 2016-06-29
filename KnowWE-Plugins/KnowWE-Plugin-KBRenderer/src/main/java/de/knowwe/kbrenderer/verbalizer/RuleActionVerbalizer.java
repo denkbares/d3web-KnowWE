@@ -21,6 +21,7 @@
 package de.knowwe.kbrenderer.verbalizer;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -181,7 +182,7 @@ public class RuleActionVerbalizer implements Verbalizer {
 			if (asv.getQuestion() != null) s += VerbalizationManager.getInstance().verbalize(
 					asv.getQuestion(), RenderingFormat.HTML);
 			s += ": ";
-			if (asv.getValue() != null) s += createActionList(Arrays.asList(asv.getValue()));
+			if (asv.getValue() != null) s += createActionList(Collections.singletonList(asv.getValue()));
 			return s;
 
 		}
@@ -207,7 +208,7 @@ public class RuleActionVerbalizer implements Verbalizer {
 				s += item.toString();
 			}
 			else if (item instanceof FormulaNumber) {
-				s += ((FormulaNumber) item).toString();
+				s += item.toString();
 			}
 			else if (item instanceof NamedObject) {
 				s += getIDObjectVerbalistion((NamedObject) item);
@@ -228,7 +229,7 @@ public class RuleActionVerbalizer implements Verbalizer {
 	// import from the old VerbalizationFactory
 	private static String getIDObjectVerbalistion(NamedObject ido) {
 		if (ido == null) return "";
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(ido.toString());
 
 		return sb.toString();

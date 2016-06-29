@@ -185,7 +185,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 
 	public static List<NamedObject> getAllChoices(D3webCompiler compiler, Section<PropertyAnswerReference> answerReference) {
 		List<Question> questions = compiler.getKnowledgeBase().getManager().getQuestions();
-		List<NamedObject> choices = new ArrayList<NamedObject>(questions.size());
+		List<NamedObject> choices = new ArrayList<>(questions.size());
 		for (Question question : questions) {
 			if (!(question instanceof QuestionChoice)) continue;
 

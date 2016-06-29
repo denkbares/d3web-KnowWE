@@ -47,7 +47,7 @@ public class EmbraceStart extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
 
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> result = new ArrayList<>();
 			if (text.startsWith(start)) {
 				result.add(new SectionFinderResult(0, start.length()));
 			}

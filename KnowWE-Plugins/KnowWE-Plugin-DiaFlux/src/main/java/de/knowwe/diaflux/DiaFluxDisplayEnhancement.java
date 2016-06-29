@@ -28,8 +28,8 @@ import de.knowwe.core.user.UserContext;
  */
 public interface DiaFluxDisplayEnhancement {
 
-	public static final String PLUGIN_ID = "KnowWE-Plugin-DiaFlux";
-	public static final String EXTENSION_POINT_ID = "DiaFluxDisplayEnhancement";
+	String PLUGIN_ID = "KnowWE-Plugin-DiaFlux";
+	String EXTENSION_POINT_ID = "DiaFluxDisplayEnhancement";
 
 	boolean activate(UserContext user, String scope);
 

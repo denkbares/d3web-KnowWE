@@ -74,7 +74,7 @@ public class JSPWikiAttachment implements WikiAttachment {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == null || !(o instanceof JSPWikiAttachment)) return false;
+		if (!(o instanceof JSPWikiAttachment)) return false;
 		JSPWikiAttachment other = (JSPWikiAttachment) o;
 		if (other.attachment == attachment) {
 			return true;

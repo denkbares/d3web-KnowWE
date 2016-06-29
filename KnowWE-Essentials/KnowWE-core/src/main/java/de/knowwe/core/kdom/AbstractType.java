@@ -128,7 +128,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	@Override
 	public boolean replaceChildType(Class<? extends Type> typeToBeReplace, Type newType) {
 		Type replacedType = childrenTypes.replaceType(typeToBeReplace, newType);
-		if (replacedType != null && replacedType instanceof AbstractType) {
+		if (replacedType instanceof AbstractType) {
 			removeParentChildLink((AbstractType) replacedType);
 		}
 		if (newType instanceof AbstractType) {
@@ -266,7 +266,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 */
 	public void removeChildType(Class<? extends Type> typeClass) {
 		Type removedType = this.childrenTypes.removeType(typeClass);
-		if (removedType != null && removedType instanceof AbstractType) {
+		if (removedType instanceof AbstractType) {
 			removeParentChildLink((AbstractType) removedType);
 		}
 		// we could also clean the successorTypes, but for now, because of

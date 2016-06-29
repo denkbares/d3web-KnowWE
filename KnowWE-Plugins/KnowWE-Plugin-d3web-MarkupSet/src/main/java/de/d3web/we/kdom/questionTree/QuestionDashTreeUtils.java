@@ -66,7 +66,7 @@ public class QuestionDashTreeUtils {
 	public static Condition createCondition(
 			D3webCompiler compiler, List<Section<? extends DashTreeElement>> ancestors) {
 
-		List<Condition> simpleConds = new ArrayList<Condition>();
+		List<Condition> simpleConds = new ArrayList<>();
 
 		for (int i = 0; i + 2 <= ancestors.size(); i += 2) {
 			Condition simpleCond = createSimpleCondition(compiler, ancestors
@@ -138,7 +138,6 @@ public class QuestionDashTreeUtils {
 				if (d != null && comp != null) return createCondNum(compiler,
 						numCondSec, comp, d,
 						(QuestionNum) q);
-				;
 			}
 		}
 

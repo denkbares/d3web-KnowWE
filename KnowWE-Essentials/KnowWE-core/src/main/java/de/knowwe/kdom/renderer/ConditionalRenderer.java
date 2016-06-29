@@ -32,7 +32,7 @@ import de.knowwe.core.user.UserContext;
 @SuppressWarnings("rawtypes")
 public abstract class ConditionalRenderer implements Renderer {
 
-	protected List<Renderer> conditionalRenderers = new ArrayList<Renderer>();
+	protected List<Renderer> conditionalRenderers = new ArrayList<>();
 
 	public void addConditionalRenderer(Renderer r) {
 		conditionalRenderers.add(r);

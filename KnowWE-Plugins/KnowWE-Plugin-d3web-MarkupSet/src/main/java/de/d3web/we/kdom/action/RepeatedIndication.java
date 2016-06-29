@@ -57,7 +57,7 @@ public class RepeatedIndication extends BracketsAction<RepeatedIndication> {
 		QASet termObject = qSec.get().getTermObject(compiler, qSec);
 
 		ActionRepeatedIndication repInd = new ActionRepeatedIndication();
-		List<QASet> obs = new ArrayList<QASet>();
+		List<QASet> obs = new ArrayList<>();
 		obs.add(termObject);
 		repInd.setQASets(obs);
 		return repInd;

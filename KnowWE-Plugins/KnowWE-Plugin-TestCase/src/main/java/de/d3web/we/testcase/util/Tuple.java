@@ -29,7 +29,7 @@ public class Tuple<T, V> {
 	private final V second;
 
 	public static <T, V> Tuple<T, V> createTuple(T first, V second) {
-		return new Tuple<T, V>(first, second);
+		return new Tuple<>(first, second);
 	}
 
 	private Tuple(T first, V second) {

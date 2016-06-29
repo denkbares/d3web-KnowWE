@@ -54,7 +54,7 @@ public class UnquotedExpressionFinder implements SectionFinder {
 
 		int index = Strings.indexOf(text, flags, symbol);
 
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		List<SectionFinderResult> result = new ArrayList<>();
 		int counter = 0;
 		// in this loop the text is scanned and cropped for occurrences and the
 		// results are created

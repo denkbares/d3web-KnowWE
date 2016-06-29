@@ -95,7 +95,7 @@ public class KBScanner implements Scanner {
 	 * @return the map of relevant crc codes
 	 */
 	private Map<String, Long> getCrcMap(ZipFile zip, Diff result) {
-		Map<String, Long> crcMap = new HashMap<String, Long>();
+		Map<String, Long> crcMap = new HashMap<>();
 		Enumeration<? extends ZipEntry> entries = zip.entries();
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();

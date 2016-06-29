@@ -48,7 +48,7 @@ public class CompositeEditSaveAction extends AbstractAction {
 
 			// errors and security are handled inside
 			// replaceKDOMNodesSaveAndBuild
-			Map<String, String> nodesMap = new HashMap<String, String>();
+			Map<String, String> nodesMap = new HashMap<>();
 			for (int i = 0; i < replaceSections.length(); i++) {
 				JSONObject explrObject = replaceSections.getJSONObject(i);
 				String id = explrObject.get("id").toString();

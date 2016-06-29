@@ -39,7 +39,7 @@ public class TestUtils {
 
 	public static String readBytes(Reader r) {
 		int zeichen = 0;
-		LinkedList<Integer> ints = new LinkedList<Integer>();
+		LinkedList<Integer> ints = new LinkedList<>();
 		while (true) {
 
 			try {
@@ -116,7 +116,7 @@ public class TestUtils {
 	 * @return
 	 */
 	public static UserActionContext createTestActionContext(String actionName, String path) {
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new HashMap<>();
 		map.put(Attributes.WEB, Environment.DEFAULT_WEB);
 		map.put(Attributes.USER, "Test User");
 		return new ActionContext(actionName != null ? actionName : "", path != null ? path : "",

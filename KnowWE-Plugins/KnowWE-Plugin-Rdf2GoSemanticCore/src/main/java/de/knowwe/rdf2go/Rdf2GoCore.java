@@ -215,7 +215,7 @@ public class Rdf2GoCore {
 	/**
 	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in Turtle and SPARQL
 	 */
-	private Map<String, String> namespacePrefixes = new HashMap<>();
+	private volatile Map<String, String> namespacePrefixes = new HashMap<>();
 
 	private final Object nsPrefixMutex = new Object();
 
@@ -530,13 +530,13 @@ public class Rdf2GoCore {
 			Fire events
              */
 			boolean removedStatements = false;
-			if (removeCache.size() > 0) {
+			if (!removeCache.isEmpty()) {
 				EventManager.getInstance()
 						.fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
 				removedStatements = true;
 			}
 			boolean insertedStatements = false;
-			if (insertCache.size() > 0) {
+			if (!insertCache.isEmpty()) {
 				EventManager.getInstance()
 						.fireEvent(new InsertStatementsEvent(Collections.unmodifiableCollection(removeCache), Collections
 								.unmodifiableCollection(insertCache), this));
@@ -764,19 +764,15 @@ public class Rdf2GoCore {
 	 * Although this map seems trivial, it is helpful for optimization reasons.
 	 */
 	public Map<String, String> getNamespacePrefixes() {
-		Map<String, String> namespacePrefixes = this.namespacePrefixes;
 		// check before synchronizing...
 		if (namespacePrefixes == null) {
 			synchronized (nsPrefixMutex) {
-				// inspection is wrong here, could no longer be null due to another thread initializing the prefixes
-				//noinspection ConstantConditions
 				if (namespacePrefixes == null) {
 					namespacePrefixes = new HashMap<>();
 					Map<String, String> namespaces = getSemanticCoreNameSpaces();
 					for (Entry<String, String> entry : namespaces.entrySet()) {
 						namespacePrefixes.put(Rdf2GoUtils.toNamespacePrefix(entry.getKey()), entry.getValue());
 					}
-					this.namespacePrefixes = namespacePrefixes;
 				}
 			}
 		}
@@ -836,7 +832,7 @@ public class Rdf2GoCore {
 			buffer.append("* ").append(verbalizeStatement(statement)).append("\n");
 		}
 		buffer.append("Done after ").append(System.currentTimeMillis() - start).append("ms");
-		Log.fine(caption + ":\n" + buffer.toString());
+		Log.fine(caption + ":\n" + buffer);
 	}
 
 	public void readFrom(InputStream in, RDFFormat syntax) throws RDFParseException, RepositoryException, IOException {

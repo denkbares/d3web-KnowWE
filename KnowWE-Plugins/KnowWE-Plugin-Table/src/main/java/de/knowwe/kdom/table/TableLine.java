@@ -66,7 +66,7 @@ public class TableLine extends AbstractType {
 	 */
 	public static boolean isHeaderLine(Section<TableLine> tableLine) {
 
-		List<Section<TableCell>> cells = new LinkedList<Section<TableCell>>();
+		List<Section<TableCell>> cells = new LinkedList<>();
 		Sections.successors(tableLine, TableCell.class, cells);
 
 		boolean isHeaderLine = true;

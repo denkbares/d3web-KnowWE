@@ -17,12 +17,8 @@ public class MessageScanner implements Scanner {
 
 	@Override
 	public void scan(Article article, File target) throws IOException {
-		PrintStream printStream = new PrintStream(target);
-		try {
+		try (PrintStream printStream = new PrintStream(target)) {
 			printMessages(article.getRootSection(), printStream);
-		}
-		finally {
-			printStream.close();
 		}
 	}
 

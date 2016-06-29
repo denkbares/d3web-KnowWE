@@ -60,7 +60,7 @@ public class DashesPrefix extends AbstractType {
 			while (text.charAt(index) == key) {
 				index++;
 			}
-			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			ArrayList<SectionFinderResult> result = new ArrayList<>();
 			result.add(new SectionFinderResult(0, index));
 
 			return result;

@@ -61,10 +61,10 @@ public class D3Renderer {
                 + "/KnowWEExtension/scripts/d3.v3.js");
 
         // default visualization: wheel
-        if (visualization != null && visualization.equals("force")) {
+        if ("force".equals(visualization)) {
             drawForce(data, config);
         }
-        else if (visualization != null && visualization.equals("tree")) {
+        else if ("tree".equals(visualization)) {
             try {
                 drawCollapsibleTree(data, config);
             }
@@ -289,7 +289,7 @@ public class D3Renderer {
      * @created 08.07.2013
      */
     private static void writeJSONForceSource(SubGraphData data) {
-        List<String> links = new ArrayList<String>();
+        List<String> links = new ArrayList<>();
 
         // SOURCE
         arraySource = "[\n";

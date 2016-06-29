@@ -40,35 +40,35 @@ public interface UserContext {
 	 * 
 	 * @created 14.10.2010
 	 */
-	public boolean userIsAdmin();
+	boolean userIsAdmin();
 
 	/**
 	 * Returns whether the user is authenticated or not.
 	 * 
 	 * @created 01.02.2011
 	 */
-	public boolean userIsAsserted();
+	boolean userIsAsserted();
 
 	/**
 	 * Returns the name of the current user.
 	 * 
 	 * @created 14.10.2010
 	 */
-	public String getUserName();
+	String getUserName();
 
 	/**
 	 * Returns the title of the article the user is currently visiting.
 	 * 
 	 * @created 14.10.2010 s
 	 */
-	public String getTitle();
+	String getTitle();
 
 	/**
 	 * Returns the Article the user is currently visiting.
 	 * 
 	 * @created 14.10.2010 s
 	 */
-	public Article getArticle();
+	Article getArticle();
 
 	/**
 	 * Returns the web of the user's is currently visiting. It is the web the
@@ -76,7 +76,7 @@ public interface UserContext {
 	 * 
 	 * @created 14.10.2010
 	 */
-	public String getWeb();
+	String getWeb();
 
 	/**
 	 * Returns the parameter map of the http request with which the user is
@@ -84,7 +84,7 @@ public interface UserContext {
 	 * 
 	 * @created 14.10.2010
 	 */
-	public Map<String, String> getParameters();
+	Map<String, String> getParameters();
 
 	/**
 	 * Returns the parameter of the http request with the specified key.
@@ -92,7 +92,7 @@ public interface UserContext {
 	 * @created Mar 4, 2011
 	 * @param key key for the parameter
 	 */
-	public String getParameter(String key);
+	String getParameter(String key);
 
 	/**
 	 * Returns the parameter of the http request with the specified key. If this
@@ -102,7 +102,7 @@ public interface UserContext {
 	 * @param key key for the parameter
 	 * @param defaultValue the default value for the parameter
 	 */
-	public String getParameter(String key, String defaultValue);
+	String getParameter(String key, String defaultValue);
 
 	/**
 	 * Returns the http request with which the user is currently accessing the
@@ -110,27 +110,27 @@ public interface UserContext {
 	 * 
 	 * @created 14.10.2010
 	 */
-	public HttpServletRequest getRequest();
+	HttpServletRequest getRequest();
 
 	/**
 	 * Returns the user's current http session
 	 * 
 	 * @created Mar 4, 2011
 	 */
-	public HttpSession getSession();
+	HttpSession getSession();
 
 	/**
 	 * Returns the servlet context if available.
 	 * 
 	 * @created Mar 4, 2011
 	 */
-	public ServletContext getServletContext();
+	ServletContext getServletContext();
 
 	/**
 	 * Returns the ArticleManager belonging to this context
 	 * 
 	 * @created 14.01.2014
 	 */
-	public ArticleManager getArticleManager();
+	ArticleManager getArticleManager();
 
 }

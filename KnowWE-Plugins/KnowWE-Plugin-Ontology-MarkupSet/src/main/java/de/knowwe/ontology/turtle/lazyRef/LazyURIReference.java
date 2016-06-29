@@ -62,9 +62,9 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		// this should only fail if the section is compiled by different compilers and the lazy uri is resolved
 		// differently by the compilers
 		Map<Compiler,Object> objects = section.getObjects(IDENTIFIER_KEY);
-		Set<Identifier> identifiers = new HashSet<Identifier>(objects.size());
+		Set<Identifier> identifiers = new HashSet<>(objects.size());
 		for (Object identifier : objects.values()) {
-			if (identifier != null && identifier instanceof Identifier) {
+			if (identifier instanceof Identifier) {
 				identifiers.add((Identifier) identifier);
 			}
 		}

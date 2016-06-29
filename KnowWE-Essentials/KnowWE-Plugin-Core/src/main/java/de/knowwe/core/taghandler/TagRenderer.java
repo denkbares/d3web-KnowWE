@@ -43,7 +43,7 @@ public class TagRenderer implements Renderer {
 			string.append(Messages.getMessageBundle(user).getString(
 					"KnowWE.Taghandler.notFoundError"));
 			string.append(" '"
-					+ ((Section<?>) sec.getChildren().get(1)).getText()
+					+ sec.getChildren().get(1).getText()
 					+ "'");
 			string.appendHtml("</p></div>");
 			return;

@@ -46,7 +46,7 @@ public class GuardType extends AbstractXMLType {
 		super("guard");
 		CompositeCondition condition = new CompositeCondition();
 
-		List<Type> types = new ArrayList<Type>();
+		List<Type> types = new ArrayList<>();
 
 		types.add(new SolutionStateCond());
 		types.add(new NodeActiveConditionType());

@@ -48,7 +48,7 @@ public interface CorrectionProvider {
 	 * @param threshold The maximium Levenshtein distance suggestions can have. (KnowWE includes an implementation in secondstring/com.wcohen.ss.Levenstein)
 	 * @return A list of {@link Suggestion} objects containing the found suggestions and their distances.
 	 */
-	public List<Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold);
+	List<Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold);
 	
 
 	

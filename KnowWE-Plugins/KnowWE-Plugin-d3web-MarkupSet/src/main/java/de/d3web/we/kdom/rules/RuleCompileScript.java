@@ -83,7 +83,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 		createRules(compiler, ruleSection, ifCondition, exceptCondition, thenActions, DEFAULT_RULE_STORE_KEY);
 
 		Condition elseCondition = new CondNot(ifCondition);
-		Condition ntUnknownCondition = new CondNonTerminalUnknown(Arrays.asList(ifCondition));
+		Condition ntUnknownCondition = new CondNonTerminalUnknown(Collections.singletonList(ifCondition));
 
 		// the else action has to also fire if except is true
 		if (exceptCondition != null) {
@@ -103,7 +103,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 	}
 
 	private void createRules(D3webCompiler compiler, Section<RuleType> ruleSection, Condition condition, Condition exceptCondition, Collection<RuleAction> thenAction, String key) {
-		Collection<Rule> rules = new ArrayList<Rule>(thenAction.size());
+		Collection<Rule> rules = new ArrayList<>(thenAction.size());
 		for (RuleAction action : thenAction) {
 			@SuppressWarnings("unchecked")
 			Rule rule = RuleFactory.createRule(action.action, condition, exceptCondition, action.psContext);
@@ -126,7 +126,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 
 	private <T extends ActionContainer> Collection<RuleAction> getRuleAction(D3webCompiler compiler, Section<RuleType> ruleSection, Class<T> containerClass) {
 		List<Section<T>> actionContainerSections = Sections.successors(ruleSection, containerClass);
-		Collection<RuleAction> actions = new ArrayList<RuleAction>();
+		Collection<RuleAction> actions = new ArrayList<>();
 		for (Section<T> actionContainerSection : actionContainerSections) {
 			@SuppressWarnings("rawtypes")
 			List<Section<D3webRuleAction>> actionSections = Sections.successors(actionContainerSection,
@@ -153,7 +153,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 		if (exceptConditionSection.size() > 1) {
 			throw CompilerMessage.error("There can only be one EXCEPT condition fore each rule");
 		}
-		else if (exceptConditionSection.size() == 0) {
+		else if (exceptConditionSection.isEmpty()) {
 			return null;
 		}
 		Section<CompositeCondition> conditionSection = Sections
@@ -180,7 +180,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 	 * Returns a collection of all rules created with the given section and compiler.
 	 */
 	public static Collection<Rule> getRules(D3webCompiler compiler, Section<RuleType> section) {
-		Collection<Rule> rules = new ArrayList<Rule>();
+		Collection<Rule> rules = new ArrayList<>();
 		rules.addAll(getDefaultRules(compiler, section));
 		rules.addAll(getElseRules(compiler, section));
 		rules.addAll(getUnknownRules(compiler, section));

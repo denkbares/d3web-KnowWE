@@ -56,7 +56,7 @@ public class CorrectionToolProvider extends AbstractCorrectionToolProvider {
 	public List<Suggestion> getSuggestions(Section<?> section) {
 		Set<Suggestion> suggestions = getSuggestions(section, 1000);
 		// Sort to list of ascending distance
-		List<Suggestion> result = new LinkedList<Suggestion>(suggestions);
+		List<Suggestion> result = new LinkedList<>(suggestions);
 		Collections.sort(result);
 		return result;
 	}
@@ -66,7 +66,7 @@ public class CorrectionToolProvider extends AbstractCorrectionToolProvider {
 		if (matches.isEmpty()) return Collections.emptySet();
 
 		// Ensure there are no duplicates
-		Set<Suggestion> suggestions = new HashSet<Suggestion>();
+		Set<Suggestion> suggestions = new HashSet<>();
 		ResourceBundle wikiConfig = KnowWEUtils.getConfigBundle();
 
 		int threshold = Integer.valueOf(wikiConfig.getString("knowweplugin.correction.threshold"));

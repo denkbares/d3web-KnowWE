@@ -68,11 +68,11 @@ import de.knowwe.kbrenderer.verbalizer.Verbalizer;
 
 public class KBRenderer extends AbstractHTMLTagHandler {
 
-	private Map<Rule, String> renderedRulesCache = new HashMap<Rule, String>();
+	private Map<Rule, String> renderedRulesCache = new HashMap<>();
 
 	private final static String KB_NAME = "kbname";
 
-	private final Map<String, Object> parameterMap = new HashMap<String, Object>();
+	private final Map<String, Object> parameterMap = new HashMap<>();
 
 	public KBRenderer() {
 		super("renderKnowledge");
@@ -89,7 +89,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	@Override
 	public void renderHTML(String web, String topic,
 						   UserContext user, Map<String, String> values, RenderResult result) {
-		renderedRulesCache = new HashMap<Rule, String>();
+		renderedRulesCache = new HashMap<>();
 		KnowledgeBase kb = null;
 		if (values.containsKey(KB_NAME)) {
 			kb = D3webUtils.getKnowledgeBase(web, values.get(KB_NAME));
@@ -144,12 +144,12 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			/*
 			 * Render Rules
 			 */
-			List<KnowledgeSlice> rules = new ArrayList<KnowledgeSlice>(kb
+			List<KnowledgeSlice> rules = new ArrayList<>(kb
 					.getAllKnowledgeSlices());
 
 			boolean appendedRulesHeadline = false;
 			// HashSet for checking duplicate rules
-			HashSet<de.d3web.core.inference.Rule> duplRules = new HashSet<de.d3web.core.inference.Rule>();
+			HashSet<de.d3web.core.inference.Rule> duplRules = new HashSet<>();
 			for (KnowledgeSlice knowledgeSlice : rules) {
 				if (knowledgeSlice instanceof RuleSet) {
 					RuleSet rs = (RuleSet) knowledgeSlice;
@@ -160,7 +160,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				}
 			}
 
-			if (duplRules.size() > 0) {
+			if (!duplRules.isEmpty()) {
 				if (!appendedRulesHeadline) {
 					if (appendedSolutionsHeadline) {
 						text.appendHtml("<br/>\n");
@@ -174,7 +174,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			}
 
 			// List with all Rules (no duplicates)
-			List<de.d3web.core.inference.Rule> sort = new ArrayList<de.d3web.core.inference.Rule>(
+			List<de.d3web.core.inference.Rule> sort = new ArrayList<>(
 					duplRules);
 			// Sort rules
 			Collections.sort(sort, new RuleComparator(user));
@@ -182,7 +182,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				text.append(renderRule(r, parameterMap, user));
 			}
 			text.appendHtml("<p></p>\n");
-			renderedRulesCache = new HashMap<Rule, String>();
+			renderedRulesCache = new HashMap<>();
 
 			/*
 			 * Render DiaFlux Models
@@ -209,7 +209,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 			/*
 			 * Questions
 			 */
-			List<QContainer> questions = new ArrayList<QContainer>(kb.getManager().getQContainers());
+			List<QContainer> questions = new ArrayList<>(kb.getManager().getQContainers());
 			KnowledgeBaseUtils.sortTerminologyObjects(questions);
 			boolean appendedQuestionHeadline = false;
 			for (QContainer q1 : questions) {
@@ -427,7 +427,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 	 * @return String
 	 */
 	private String getAll(TerminologyObject[] nodes, int depth, String title, UserContext user) {
-		return getAll(nodes, new ArrayList<TerminologyObject>(), depth, title, user);
+		return getAll(nodes, new ArrayList<>(), depth, title, user);
 	}
 
 	private class RuleComparator implements Comparator<Rule> {

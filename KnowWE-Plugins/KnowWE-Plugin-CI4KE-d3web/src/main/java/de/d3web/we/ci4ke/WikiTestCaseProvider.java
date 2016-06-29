@@ -52,7 +52,7 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 		if (!clazz.equals(TestCase.class)) {
 			return Collections.emptyList();
 		}
-		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();
+		List<TestObjectContainer<T>> result = new ArrayList<>();
 		try {
 			Pattern.compile(name);
 		}
@@ -67,7 +67,7 @@ public class WikiTestCaseProvider implements TestObjectProvider {
 		for (ProviderTriple triple : testCaseProviders) {
 			TestCaseProvider provider = triple.getA();
 			if (provider.getName().matches(name)) {
-				result.add(new TestObjectContainer<T>(provider.getName(),
+				result.add(new TestObjectContainer<>(provider.getName(),
 						clazz.cast(provider.getTestCase())));
 			}
 		}

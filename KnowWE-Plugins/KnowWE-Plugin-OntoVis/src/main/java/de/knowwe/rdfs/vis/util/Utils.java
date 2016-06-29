@@ -202,7 +202,7 @@ public class Utils {
 				}
 			}
 			else {
-				if (clazz != null && clazz.length() > 0) {
+				if (clazz != null && !clazz.isEmpty()) {
 					// we found a type-triple and add the clazz attribute to the already existing Value
 					visValue.setClazz(clazz);
 					// re-color according to newly found clazz

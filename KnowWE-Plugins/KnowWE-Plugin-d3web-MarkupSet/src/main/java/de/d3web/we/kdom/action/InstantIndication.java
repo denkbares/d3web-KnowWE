@@ -56,7 +56,7 @@ public class InstantIndication extends BracketsAction<InstantIndication> {
 		QASet termObject = qSec.get().getTermObject(compiler, qSec);
 
 		ActionInstantIndication actionContraIndication = new ActionInstantIndication();
-		List<QASet> obs = new ArrayList<QASet>();
+		List<QASet> obs = new ArrayList<>();
 		obs.add(termObject);
 		actionContraIndication.setQASets(obs);
 		return actionContraIndication;

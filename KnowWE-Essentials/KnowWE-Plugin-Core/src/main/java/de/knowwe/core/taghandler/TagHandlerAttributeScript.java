@@ -39,7 +39,7 @@ public class TagHandlerAttributeScript extends DefaultGlobalScript<TagHandlerTyp
 	public void compile(DefaultGlobalCompiler compiler, Section<TagHandlerTypeContent> section) {
 		String text = section.getText();
 
-		Map<String, String> values = new HashMap<String, String>();
+		Map<String, String> values = new HashMap<>();
 		values.put("_cmdline", text);
 
 		// attribute parsen und einfügen

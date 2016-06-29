@@ -68,11 +68,11 @@ public class DummyPageProvider {
 					+ FILE_PATTERN + ")" + BasicAttachmentProvider.ATTDIR_EXTENSION + "/("
 					+ ATTACHMENT_VERSION_FILE_PATTERN + ")$");
 
-	private final TreeMap<String, String> articles = new TreeMap<String, String>();
+	private final TreeMap<String, String> articles = new TreeMap<>();
 
-	private final HashMap<String, WikiAttachment> attachments = new HashMap<String, WikiAttachment>();
+	private final HashMap<String, WikiAttachment> attachments = new HashMap<>();
 
-	private final HashMap<String, Integer> attachmentVersionCache = new HashMap<String, Integer>();
+	private final HashMap<String, Integer> attachmentVersionCache = new HashMap<>();
 
 	private final Date startupDate;
 
@@ -227,7 +227,7 @@ public class DummyPageProvider {
 
 	private Collection<WikiAttachment> getZipEntryAttachments(WikiAttachment attachment) {
 		if (!attachment.getFileName().endsWith(".zip")) return Collections.emptyList();
-		Collection<WikiAttachment> entryAttachments = new ArrayList<WikiAttachment>();
+		Collection<WikiAttachment> entryAttachments = new ArrayList<>();
 		try {
 			InputStream attachmentStream = attachment.getInputStream();
 			ZipInputStream zipStream = new ZipInputStream(attachmentStream);

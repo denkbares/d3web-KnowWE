@@ -62,7 +62,7 @@ public class RegexSectionFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		ArrayList<SectionFinderResult> result = new ArrayList<>();
 		Matcher m = pattern.matcher(text);
 		/*
 		 * vb: changed this behavior. It now proceeds matching after the last

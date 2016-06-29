@@ -86,7 +86,7 @@ public class QClassLine extends AbstractType {
 					}
 					for (Identifier childIdentifier : childrenIdentifier) {
 						NamedObject namedObject = D3webUtils.getTermObject(compiler, childIdentifier);
-						if (namedObject == null || !(namedObject instanceof QASet)) continue;
+						if (!(namedObject instanceof QASet)) continue;
 						QASet childQASet = (QASet) namedObject;
 						rootQASet.removeChild(childQASet);
 						parentQASet.addChild(childQASet);

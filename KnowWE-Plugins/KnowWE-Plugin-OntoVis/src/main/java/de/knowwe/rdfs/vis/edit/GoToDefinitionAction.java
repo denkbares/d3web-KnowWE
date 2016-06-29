@@ -80,6 +80,6 @@ public class GoToDefinitionAction extends AbstractAction {
 
 		String link = Utils.createConceptURL(conceptName, config, section, uriProvider, uri);
 
-		context.getOutputStream().write(link.toString().getBytes());
+		context.getOutputStream().write(link.getBytes());
 	}
 }

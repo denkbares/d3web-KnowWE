@@ -45,7 +45,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 
 		CompositeFormula formula = new CompositeFormula();
 		// crate List of valid terminals
-		List<Type> terminals = new ArrayList<Type>();
+		List<Type> terminals = new ArrayList<>();
 		// terminals may either be numbers...
 		de.knowwe.core.kdom.basicType.Number number = new de.knowwe.core.kdom.basicType.Number();
 		terminals.add(number);

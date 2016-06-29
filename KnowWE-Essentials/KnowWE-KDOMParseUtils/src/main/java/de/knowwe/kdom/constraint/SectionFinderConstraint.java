@@ -28,6 +28,6 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public interface SectionFinderConstraint {
 
-	public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text);
+	<T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text);
 
 }

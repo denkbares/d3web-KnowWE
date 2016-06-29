@@ -193,8 +193,8 @@ public class DOTRenderer {
 			}
 			else {
 				String nodeLabel = clearLabel(node.getConceptLabel());
-				if ((!node.getType().equals(NODE_TYPE.LITERAL)) &&
-						Config.LiteralMode.TABLE.equals(config.getLiteralMode())) {
+				if ((node.getType() != NODE_TYPE.LITERAL) &&
+						Config.LiteralMode.TABLE == config.getLiteralMode()) {
 					// use of labels suppressed by the user -> show concept name, i.e. uri
 					// todo: should be handeled by a distinct config parameter (literalTable?)
 					// or: @literals: table|off|popup
@@ -206,7 +206,7 @@ public class DOTRenderer {
 
 				label = DOTRenderer.createDotConceptLabel(style, node.getConceptUrl(), nodeLabel, true);
 			}
-			dotSource.append("\"" + node.getName() + "\"" + label);
+			dotSource.append("\"").append(node.getName()).append("\"").append(label);
 
 		}
 
@@ -227,7 +227,7 @@ public class DOTRenderer {
 		final Set<Edge> edges = clusters.get(node);
 		String nodeLabel = createNodeLabel(escapeDot(node.getName()), f);
 
-		if (edges == null || edges.size() == 0) {
+		if (edges == null || edges.isEmpty()) {
 			return nodeLabel;
 		}
 		else {
@@ -320,9 +320,14 @@ public class DOTRenderer {
 			boolean arrowHead = key.getSubject().isOuter();
 			label = DOTRenderer.getOuterEdgeLabel(key.getPredicate(), arrowHead);
 		}
-		dotSource.append("\"" + key.getSubject().getName() + "\"" + " -> " + "\""
-				+ key.getObject().getName() + "\" "
-				+ label);
+		dotSource.append("\"")
+				.append(key.getSubject().getName())
+				.append("\"")
+				.append(" -> ")
+				.append("\"")
+				.append(key.getObject().getName())
+				.append("\" ")
+				.append(label);
 	}
 
 	private static String clearLabel(String label) {

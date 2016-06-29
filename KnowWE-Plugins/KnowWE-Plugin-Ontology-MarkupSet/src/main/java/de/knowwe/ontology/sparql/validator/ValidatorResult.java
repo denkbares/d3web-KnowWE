@@ -29,7 +29,7 @@ import java.util.HashSet;
  */
 public class ValidatorResult {
 
-	private final Collection<Exception> exceptions = new HashSet<Exception>();
+	private final Collection<Exception> exceptions = new HashSet<>();
 	private final String query;
 
 	public ValidatorResult(String query) {

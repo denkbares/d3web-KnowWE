@@ -55,9 +55,9 @@ public class ExportModel {
 
 	// observe progress
 	private final ProgressListener progressListener;
-	private final Set<Section<?>> exportedSections = new HashSet<Section<?>>();
+	private final Set<Section<?>> exportedSections = new HashSet<>();
 
-	private final List<Message> messages = new LinkedList<Message>();
+	private final List<Message> messages = new LinkedList<>();
 
 	public ExportModel(ExportManager manager, InputStream templateStream) throws IOException {
 		this(manager, templateStream, null);

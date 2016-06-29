@@ -47,7 +47,7 @@ public class FilterTypeIterable<OT extends Type> implements Iterable<Section<OT>
 	}
 
 	public static <T extends Type, OT extends Type> FilterTypeIterable<OT> create(Iterable<Section<T>> base, Class<OT> clazz) {
-		return new FilterTypeIterable<OT>(base, clazz);
+		return new FilterTypeIterable<>(base, clazz);
 	}
 }
 

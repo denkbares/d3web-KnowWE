@@ -96,7 +96,7 @@ public final class Message implements Comparable<Message>, Serializable {
 	public boolean equals(Object obj) {
 		if (obj instanceof Message) {
 			Message otherMsg = (Message) obj;
-			if (otherMsg.type.equals(this.type)
+			if (otherMsg.type == this.type
 					&& otherMsg.getVerbalization().equals(this.getVerbalization())) {
 				return true;
 			}

@@ -38,7 +38,7 @@ public class SentenceSectionFinder implements SectionFinder {
 			return null;
 		}
 
-		ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		ArrayList<SectionFinderResult> result = new ArrayList<>();
 
 		BreakIterator splitter = BreakIterator.getSentenceInstance();
 		splitter.setText(text);

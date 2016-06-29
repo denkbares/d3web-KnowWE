@@ -156,7 +156,7 @@ public class MyXWPFRun extends XWPFRun {
 	}
 
 	private static List<CTPicture> getCTPictures(XmlObject o) {
-		List<CTPicture> pictures = new ArrayList<CTPicture>();
+		List<CTPicture> pictures = new ArrayList<>();
 		XmlObject[] picts = o.selectPath("declare namespace pic='"
 				+ CTPicture.type.getName().getNamespaceURI() + "' .//pic:pic");
 		for (XmlObject pict : picts) {

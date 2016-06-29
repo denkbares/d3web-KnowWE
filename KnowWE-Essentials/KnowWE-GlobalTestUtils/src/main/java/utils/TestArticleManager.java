@@ -87,7 +87,7 @@ public class TestArticleManager {
 	public static void clear() {
 		ArticleManager articleManager = KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB);
 		Collection<Article> articles = articleManager.getArticles();
-		for (Article article : new ArrayList<Article>(articles)) {
+		for (Article article : new ArrayList<>(articles)) {
 			articleManager.deleteArticle(article);
 		}
 	}

@@ -87,8 +87,8 @@ public class RulesTest extends TestCase {
 
 	private void checkRules(Collection<Rule> loadedRules, Collection<Rule> createdRules) {
 
-		List<String> loadedRulesStrings = new ArrayList<String>();
-		List<String> createdRulesStrings = new ArrayList<String>();
+		List<String> loadedRulesStrings = new ArrayList<>();
+		List<String> createdRulesStrings = new ArrayList<>();
 		for (Rule rule : createdRules) {
 			createdRulesStrings.add(rule.toString());
 		}
@@ -156,7 +156,7 @@ public class RulesTest extends TestCase {
 	 * @return HashMap<String, RuleComplex>
 	 */
 	private Collection<Rule> getRulesInHashMap(KnowledgeBase kb, KnowledgeKind<RuleSet> kind) {
-		Set<Rule> rules = new HashSet<Rule>();
+		Set<Rule> rules = new HashSet<>();
 		for (RuleSet rs : kb.getAllKnowledgeSlicesFor(kind)) {
 			rules.addAll(rs.getRules());
 		}

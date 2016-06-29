@@ -77,7 +77,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 					"Multiple sparql queries in the wiki with name: " + sparqlName);
 		}
 
-		if (querySections.size() == 0) {
+		if (querySections.isEmpty()) {
 			return new Message(Message.Type.ERROR,
 					"No sparql query in the wiki found for name: " + sparqlName);
 		}
@@ -113,7 +113,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		List<Message> failures = ResultTableModel.checkEquality(expectedResultTable,
 				actualResultTable, atLeastFlag);
 
-		if (failures.size() > 0) {
+		if (!failures.isEmpty()) {
 			return new Message(Type.FAILURE, ResultTableModel.generateErrorsText(failures));
 		}
 

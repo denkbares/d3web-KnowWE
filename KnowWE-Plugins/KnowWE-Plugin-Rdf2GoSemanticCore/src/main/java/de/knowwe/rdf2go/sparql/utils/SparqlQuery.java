@@ -62,8 +62,9 @@ public class SparqlQuery {
 
 	public String createContent(String... content) {
 		StringBuilder contentBuilder = new StringBuilder();
-		for (String part : content)
-			contentBuilder.append(part + " ");
+		for (String part : content) {
+			contentBuilder.append(part).append(" ");
+		}
 		return contentBuilder.toString();
 	}
 

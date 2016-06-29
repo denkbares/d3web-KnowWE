@@ -191,7 +191,7 @@ public class RuleType extends AbstractType {
 	}
 
 	public static List<Type> getTerminalConditions() {
-		List<Type> termConds = new ArrayList<Type>();
+		List<Type> termConds = new ArrayList<>();
 		// add all the various allowed TerminalConditions here
 		termConds.add(new SolutionStateCond());
 		termConds.add(new UserRatingConditionType());
@@ -206,7 +206,7 @@ public class RuleType extends AbstractType {
 	}
 
 	public static List<Type> getActions() {
-		List<Type> actions = new ArrayList<Type>();
+		List<Type> actions = new ArrayList<>();
 		// add all the various allowed Actions here
 		actions.add(new SolutionValueAssignment());
 		actions.add(new SetQuestionNumValueAction());

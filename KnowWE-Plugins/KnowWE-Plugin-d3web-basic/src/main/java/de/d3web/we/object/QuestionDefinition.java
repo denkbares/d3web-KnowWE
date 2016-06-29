@@ -51,8 +51,8 @@ import de.knowwe.kdom.renderer.StyleRenderer;
  */
 public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
-	public static enum QuestionType {
-		OC, MC, YN, NUM, DATE, TEXT, INFO;
+	public enum QuestionType {
+		OC, MC, YN, NUM, DATE, TEXT, INFO
 	}
 
 	public QuestionDefinition() {
@@ -121,25 +121,25 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 				}
 
 				Question question = null;
-				if (questionType.equals(QuestionType.OC)) {
+				if (questionType == QuestionType.OC) {
 					question = new QuestionOC(kb, name);
 				}
-				else if (questionType.equals(QuestionType.MC)) {
+				else if (questionType == QuestionType.MC) {
 					question = new QuestionMC(kb, name);
 				}
-				else if (questionType.equals(QuestionType.NUM)) {
+				else if (questionType == QuestionType.NUM) {
 					question = new QuestionNum(kb, name);
 				}
-				else if (questionType.equals(QuestionType.YN)) {
+				else if (questionType == QuestionType.YN) {
 					question = new QuestionYN(kb, name);
 				}
-				else if (questionType.equals(QuestionType.DATE)) {
+				else if (questionType == QuestionType.DATE) {
 					question = new QuestionDate(kb, name);
 				}
-				else if (questionType.equals(QuestionType.INFO)) {
+				else if (questionType == QuestionType.INFO) {
 					question = new QuestionZC(kb, name);
 				}
-				else if (questionType.equals(QuestionType.TEXT)) {
+				else if (questionType == QuestionType.TEXT) {
 					question = new QuestionText(kb, name);
 				}
 				else {

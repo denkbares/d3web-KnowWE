@@ -40,7 +40,7 @@ public class CIEventForwarder implements EventListener {
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(4);
+		ArrayList<Class<? extends Event>> events = new ArrayList<>(4);
 		events.add(CompilerFinishedEvent.class);
 		events.add(CompilationFinishedEvent.class);
 		return events;

@@ -42,7 +42,7 @@ public class DefaultMarkupCompileScript extends DefaultGlobalScript<DefaultMarku
 	@Override
 	public void compile(DefaultGlobalCompiler compiler, Section<DefaultMarkupType> markupSection) {
 
-		List<Message> msgs = new ArrayList<Message>();
+		List<Message> msgs = new ArrayList<>();
 
 		// check defined annotations
 		for (Annotation annotation : this.markup.getAnnotations()) {

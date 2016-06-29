@@ -65,7 +65,7 @@ public class SparqlContentRenderer implements Renderer {
 		 */
 		String showQueryFlag = DefaultMarkupType.getAnnotation(markupSection,
 				SparqlMarkupType.RENDER_QUERY);
-		if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
+		if ("true".equalsIgnoreCase(showQueryFlag)) {
 			/*
 			 * we need an opening html element around all the content as for
 			 * some reason the ajax insert only inserts one (the first) html
@@ -85,7 +85,7 @@ public class SparqlContentRenderer implements Renderer {
 
 		if (sparqlString.toLowerCase().startsWith("construct")) {
 			final Set<Statement> statementsFromCache = core.getStatementsFromCache(section);
-			if (statementsFromCache.size() > 0) {
+			if (!statementsFromCache.isEmpty()) {
 				final SparqlResultRenderer sparqlResultRenderer = SparqlResultRenderer.getInstance();
 				int limit = 20;
 				int count = 0;
@@ -148,7 +148,7 @@ public class SparqlContentRenderer implements Renderer {
 			SparqlResultRenderer.getInstance()
 					.renderSparqlResult(sparqlTypeSection, user, result);
 
-			if (showQueryFlag != null && showQueryFlag.equalsIgnoreCase("true")) {
+			if ("true".equalsIgnoreCase(showQueryFlag)) {
 						/*
 						 * we need an opening html element around all the content as
 						 * for some reason the ajax insert onyl inserts one (the

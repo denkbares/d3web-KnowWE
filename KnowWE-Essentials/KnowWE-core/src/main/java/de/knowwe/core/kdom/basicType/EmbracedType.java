@@ -65,7 +65,7 @@ public class EmbracedType extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
 			String trimmed = text.trim();
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> result = new ArrayList<>();
 			if (bodyType instanceof Sectionizable) {
 				Sectionizable sBodyType = (Sectionizable) bodyType;
 				if (steal) {
@@ -76,7 +76,7 @@ public class EmbracedType extends AbstractType {
 						List<SectionFinderResult> lookAheadSections = sBodyType
 								.getSectionFinder().lookForSections(body, father, type);
 						if (lookAheadSections != null
-								&& lookAheadSections.size() > 0) {
+								&& !lookAheadSections.isEmpty()) {
 							result.add(new SectionFinderResult(text.indexOf(start),
 									text.indexOf(end) + end.length()));
 						}
@@ -91,7 +91,7 @@ public class EmbracedType extends AbstractType {
 								- end.length());
 						List<SectionFinderResult> lookAheadSections = sBodyType.getSectionFinder().lookForSections(
 								body, father, type);
-						if (lookAheadSections != null && lookAheadSections.size() > 0) {
+						if (lookAheadSections != null && !lookAheadSections.isEmpty()) {
 							result.add(new SectionFinderResult(text.indexOf(trimmed),
 									text.indexOf(trimmed) + trimmed.length()));
 						}

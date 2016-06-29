@@ -30,6 +30,6 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface D3webTerm<TermObject extends NamedObject> extends Term {
 
-	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section);
+	TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section);
 
 }

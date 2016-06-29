@@ -380,7 +380,7 @@ public class LinkType extends AbstractType {
 		if (!matcher.matches()) return null; // shouldn't happen
 
 		if (matcher.group(Patterns.LINK_GROUP_ATTRIBUTES) == null) return Collections.emptyMap();
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new HashMap<>();
 
 		String attributes = matcher.group(Patterns.LINK_GROUP_ATTRIBUTES);
 		Matcher attMatcher = ATTRIBUTES_PATTERN.matcher(attributes);

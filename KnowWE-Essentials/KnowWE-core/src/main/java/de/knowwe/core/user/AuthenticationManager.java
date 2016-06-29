@@ -32,7 +32,7 @@ public interface AuthenticationManager {
 	 * @return user is an admin or not
 	 * @created 14.10.2010
 	 */
-	public boolean userIsAdmin();
+	boolean userIsAdmin();
 
 	/**
 	 * Returns whether the user is authenticated or asserted or not.
@@ -40,14 +40,14 @@ public interface AuthenticationManager {
 	 * @return boolean asserted state of the user
 	 * @created 01.02.2011
 	 */
-	public boolean userIsAsserted();
+	boolean userIsAsserted();
 
 	/**
 	 * Returns whether the user is authenticated or not.
 	 *
 	 * @return boolean authentication state of the user
 	 */
-	public boolean userIsAuthenticated();
+	boolean userIsAuthenticated();
 
 	//TODO method for Login
 

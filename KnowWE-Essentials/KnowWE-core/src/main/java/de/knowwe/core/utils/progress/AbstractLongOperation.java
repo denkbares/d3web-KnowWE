@@ -54,6 +54,7 @@ public abstract class AbstractLongOperation implements LongOperation {
 		canceled = true;
 	}
 
+	@Override
 	public boolean isCanceled() {
 		return canceled;
 	}

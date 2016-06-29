@@ -60,7 +60,7 @@ public class TagEditPanel extends AbstractHTMLTagHandler {
 			}
 		}
 
-		if (output.toStringRaw().trim().length() == 0) {
+		if (output.toStringRaw().trim().isEmpty()) {
 			output.append("none");
 		}
 		output.appendHtml("</span>");

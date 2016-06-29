@@ -1,6 +1,7 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -57,7 +58,7 @@ public class AdaptiveMarkupFinder implements SectionFinder {
 				int start = result.getStart();
 				int end = result.getEnd();
 				if (Strings.trim(text.substring(start, end)).equals("%")) {
-					return Arrays.asList(new SectionFinderResult(start, start));
+					return Collections.singletonList(new SectionFinderResult(start, start));
 				}
 			}
 			return results;

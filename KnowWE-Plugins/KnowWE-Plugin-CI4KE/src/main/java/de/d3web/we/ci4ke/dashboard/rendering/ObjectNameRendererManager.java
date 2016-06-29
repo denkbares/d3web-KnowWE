@@ -36,7 +36,7 @@ public class ObjectNameRendererManager {
 	private static Map<String, ObjectNameRenderer> renderers = null;
 
 	private static Map<String, ObjectNameRenderer> initRenderers() {
-		Map<String, ObjectNameRenderer> renderers = new HashMap<String, ObjectNameRenderer>();
+		Map<String, ObjectNameRenderer> renderers = new HashMap<>();
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				ObjectNameRenderer.PLUGIN_ID,
 				ObjectNameRenderer.EXTENSION_POINT_ID);

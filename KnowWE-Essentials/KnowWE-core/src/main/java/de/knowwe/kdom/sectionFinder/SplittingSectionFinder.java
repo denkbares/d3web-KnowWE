@@ -54,7 +54,7 @@ public class SplittingSectionFinder implements SectionFinder {
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 		Matcher tagMatcher = pattern.matcher(text);
-		List<SectionFinderResult> resultRegex = new ArrayList<SectionFinderResult>();
+		List<SectionFinderResult> resultRegex = new ArrayList<>();
 		int nextStart = 0;
 		while (tagMatcher.find()) {
 			resultRegex.add(new SectionFinderResult(nextStart,

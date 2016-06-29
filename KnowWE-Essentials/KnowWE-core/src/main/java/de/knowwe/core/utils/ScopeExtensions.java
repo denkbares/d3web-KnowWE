@@ -22,7 +22,7 @@ import de.knowwe.core.utils.Scope.TypePath;
 public class ScopeExtensions {
 
 	private final Extension[] extensions;
-	private final Map<TypePath, List<Extension>> cache = new HashMap<Scope.TypePath, List<Extension>>();
+	private final Map<TypePath, List<Extension>> cache = new HashMap<>();
 
 	/**
 	 * Creates a new {@link ScopeExtensions} instance for the specified

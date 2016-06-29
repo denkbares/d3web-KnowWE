@@ -40,6 +40,6 @@ public interface Renderer {
 	 * @param user the user context to be used for rendering
 	 * @param result the result buffer to render the output to
 	 */
-	public void render(Section<?> section, UserContext user, RenderResult result);
+	void render(Section<?> section, UserContext user, RenderResult result);
 
 }

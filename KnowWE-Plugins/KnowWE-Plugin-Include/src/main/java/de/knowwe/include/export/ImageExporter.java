@@ -224,13 +224,9 @@ public class ImageExporter implements Exporter<PluginType> {
 
 	private Dimension readImageDimension(WikiAttachment attachment) {
 		try {
-			InputStream stream = attachment.getInputStream();
-			try {
+			try (InputStream stream = attachment.getInputStream()) {
 				BufferedImage bimg = ImageIO.read(stream);
 				return new Dimension(bimg.getWidth(), bimg.getHeight());
-			}
-			finally {
-				stream.close();
 			}
 		}
 		catch (IOException e) {

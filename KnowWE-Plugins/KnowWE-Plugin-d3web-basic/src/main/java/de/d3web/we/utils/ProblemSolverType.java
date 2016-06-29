@@ -20,14 +20,14 @@
 
 package de.d3web.we.utils;
 
-
+@SuppressWarnings("UnnecessaryEnumModifier")
 public enum ProblemSolverType {
 
 	heuristic("heuristic"), setcovering("setcovering"), casebased("casebased"), xcl("xcl");
 
 	private final String idString;
 
-	private ProblemSolverType(String idString) {
+	ProblemSolverType(String idString) {
 		this.idString = idString;
 	}
 

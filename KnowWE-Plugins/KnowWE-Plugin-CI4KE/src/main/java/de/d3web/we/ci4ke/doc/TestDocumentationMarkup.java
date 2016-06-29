@@ -115,7 +115,7 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 			buffer.append("<i>Synopsis: @test ").append(test.getName());
 			buffer.append(" \u00AB").append(getTestObjectName(test)).append("\u00BB");
 			for (TestParameter parameter : test.getParameterSpecification()) {
-				boolean optional = Mode.Optional.equals(parameter.getMode());
+				boolean optional = Mode.Optional == parameter.getMode();
 				if (optional) {
 					buffer.append(" [\u00AB").append(parameter.getName()).append("\u00BB]");
 				}
@@ -132,7 +132,7 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 			buffer.append("<p>").append(title).append(":<ul>");
 			for (TestParameter parameter : parameters) {
 				buffer.append("<li><i>&laquo;").append(parameter.getName()).append("&raquo;</i>");
-				boolean optional = Mode.Optional.equals(parameter.getMode());
+				boolean optional = Mode.Optional == parameter.getMode();
 				if (optional) buffer.append(" (optional)");
 				buffer.append(": ");
 				buffer.append("<br>").append(parameter.getDescription());

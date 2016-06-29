@@ -31,8 +31,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.MessageRenderer;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
@@ -316,7 +314,7 @@ public class DefaultMarkupType extends AbstractType {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		List<Section<? extends AnnotationContentType>> results = new ArrayList<Section<? extends AnnotationContentType>>();
+		List<Section<? extends AnnotationContentType>> results = new ArrayList<>();
 		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
 			Section<AnnotationContentType> annotationContent = (Section<AnnotationContentType>) child;
 			String annotationName = annotationContent.get().getName(annotationContent);
@@ -378,7 +376,7 @@ public class DefaultMarkupType extends AbstractType {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		List<Section<? extends AnnotationContentType>> results = new ArrayList<Section<? extends AnnotationContentType>>();
+		List<Section<? extends AnnotationContentType>> results = new ArrayList<>();
 		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
 			results.add((Section<? extends AnnotationContentType>) child);
 

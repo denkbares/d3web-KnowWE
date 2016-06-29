@@ -21,6 +21,7 @@ public class WikiFileProviderUtils {
 		public void movePage(String from, String to) throws ProviderException {
 		}
 
+		@Override
 		public String mangleName(String pagename) {
 			return super.mangleName(pagename);
 		}

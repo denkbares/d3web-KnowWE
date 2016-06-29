@@ -140,7 +140,7 @@ public class SaveFlowchartAction extends AbstractAction {
 	}
 
 	private String save(UserActionContext context, String topic, String nodeID, String newText) throws IOException {
-		Map<String, String> nodesMap = new HashMap<String, String>();
+		Map<String, String> nodesMap = new HashMap<>();
 		nodesMap.put(nodeID, newText);
 		Sections.ReplaceResult replaceResult = Sections.replace(context, nodesMap);
 		String newId = replaceResult.getSectionMapping().get(nodeID);

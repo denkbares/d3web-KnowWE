@@ -11,12 +11,8 @@ public class KDOMScanner implements Scanner {
 
 	@Override
 	public void scan(Article article, File target) throws IOException {
-		PrintStream printStream = new PrintStream(target);
-		try {
+		try (PrintStream printStream = new PrintStream(target)) {
 			printKDOM(article.getRootSection(), printStream);
-		}
-		finally {
-			printStream.close();
 		}
 	}
 

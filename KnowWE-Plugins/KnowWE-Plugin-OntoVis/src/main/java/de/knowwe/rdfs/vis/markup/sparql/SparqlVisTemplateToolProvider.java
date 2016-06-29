@@ -99,9 +99,7 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 	private Map<String, Section<SparqlVisualizationType>> getClassVisTemplates(Section<?> section) {
 		Map<String, Section<SparqlVisualizationType>> visTemplatesForClasses = new HashMap<>();
 		Collection<Section<SparqlVisualizationType>> allSparqlVisMarkups = Sections.successors(section.getArticleManager(), SparqlVisualizationType.class);
-		Iterator<Section<SparqlVisualizationType>> iterator = allSparqlVisMarkups.iterator();
-		while (iterator.hasNext()) {
-			Section<SparqlVisualizationType> sparqlVisualizationTypeSection = iterator.next();
+		for (Section<SparqlVisualizationType> sparqlVisualizationTypeSection : allSparqlVisMarkups) {
 			String templateClass = DefaultMarkupType.getAnnotation(sparqlVisualizationTypeSection, SparqlVisualizationType.VIS_TEMPLATE_CLASS);
 			if (templateClass != null) {
 				visTemplatesForClasses.put(templateClass, sparqlVisualizationTypeSection);

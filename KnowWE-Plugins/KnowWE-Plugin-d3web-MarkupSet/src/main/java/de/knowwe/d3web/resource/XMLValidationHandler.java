@@ -56,7 +56,7 @@ public class XMLValidationHandler extends DefaultGlobalHandler<AttachmentType> {
 	public Collection<Message> create(DefaultGlobalCompiler compiler, Section<AttachmentType> section) {
 		Map<de.knowwe.core.compile.Compiler, Collection<Message>> errors = Messages.getMessagesMapFromSubtree(
 				section,
-				new Message.Type[] { Message.Type.ERROR });
+				Message.Type.ERROR);
 
 		// if the attachment is not found, we stop here
 		if (!errors.isEmpty()) {

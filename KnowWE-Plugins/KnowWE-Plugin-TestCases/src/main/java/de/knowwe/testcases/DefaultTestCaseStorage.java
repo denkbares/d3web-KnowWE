@@ -61,7 +61,7 @@ public class DefaultTestCaseStorage implements TestCaseProviderStorage {
 
 	@Override
 	public Collection<Message> getMessages() {
-		Collection<Message> messages = new LinkedList<Message>();
+		Collection<Message> messages = new LinkedList<>();
 		for (TestCaseProvider provider : providers) {
 			messages.addAll(provider.getMessages());
 		}

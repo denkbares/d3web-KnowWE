@@ -69,7 +69,7 @@ public class ExportManager {
 		// please note that it is essential to create new instances
 		// for each export process, because the exporters may
 		// store information about the export process or the document
-		List<Exporter<?>> exporters = new LinkedList<Exporter<?>>();
+		List<Exporter<?>> exporters = new LinkedList<>();
 
 		// add exporters
 		exporters.add(new WikiBookPropertyExporter());
@@ -99,7 +99,7 @@ public class ExportManager {
 		exporters.add(new DefinitionExporter());
 
 		// some types to be skipped
-		exporters.add(new HideExporter<RenderKDOMType>(RenderKDOMType.class));
+		exporters.add(new HideExporter<>(RenderKDOMType.class));
 
 		// default exporter
 		exporters.add(new DefaultMarkupExporter());
@@ -150,7 +150,7 @@ public class ExportManager {
 			// sections instead of only the articles
 			// because there might be multiple different includes
 			// in one single article
-			Set<Section<?>> visited = new HashSet<Section<?>>();
+			Set<Section<?>> visited = new HashSet<>();
 			initIncludedSections(section, visited);
 
 			// but after that we take only the sections' articles
@@ -238,12 +238,11 @@ public class ExportManager {
 
 		// detect stream for word template
 		Section<AttachmentType> attach = Sections.successor(section, AttachmentType.class);
-		InputStream stream = (attach == null)
-				? createDefaultTemplateStream()
-				: createAttachmentStream(attach);
 
 		// create builder and export the section
-		try {
+		try (InputStream stream = (attach == null)
+				? createDefaultTemplateStream()
+				: createAttachmentStream(attach)) {
 			ExportModel model = new ExportModel(this, stream, progress.getSubTaskProgressListener(1));
 			DefaultBuilder builder = new DefaultBuilder(model);
 			progress.updateProgress(0, 0.2f);
@@ -254,12 +253,9 @@ public class ExportManager {
 			builder.export(section);
 			// initialize some core properties
 			CoreProperties coreProperties = builder.getDocument().getProperties().getCoreProperties();
-			coreProperties.setModified(new Nullable<Date>(getLastModified()));
+			coreProperties.setModified(new Nullable<>(getLastModified()));
 			progress.updateProgress(1f, MSG_SAVE);
 			return model;
-		}
-		finally {
-			stream.close();
 		}
 	}
 

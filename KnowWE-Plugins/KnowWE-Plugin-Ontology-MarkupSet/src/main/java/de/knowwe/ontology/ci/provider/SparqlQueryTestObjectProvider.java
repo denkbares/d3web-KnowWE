@@ -37,12 +37,12 @@ public class SparqlQueryTestObjectProvider implements TestObjectProvider {
 
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
-		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();
+		List<TestObjectContainer<T>> result = new ArrayList<>();
 		if (!clazz.equals(SparqlQuerySection.class)) return result;
 
 		Collection<Section<SparqlContentType>> sparqlQueryContentSections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(name);
 		for (Section<SparqlContentType> section : sparqlQueryContentSections) {
-			result.add(new TestObjectContainer<T>(SparqlTestObjectProviderUtils.getName(section),
+			result.add(new TestObjectContainer<>(SparqlTestObjectProviderUtils.getName(section),
 					clazz.cast(new SparqlQuerySection(section))));
 		}
 		return result;

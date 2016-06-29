@@ -26,7 +26,7 @@ public class JSPWikiMarkupUtils {
 			Article article) {
 		Section<?> s = article.getRootSection();
 		int i = 0;
-		List<Section<?>> topLevelSections = new ArrayList<Section<?>>();
+		List<Section<?>> topLevelSections = new ArrayList<>();
 		for (Section<?> tlt : s.getChildren().get(0).getChildren()) {
 			if (countHeaderMarks(tlt.getText()) >= i) {
 				topLevelSections.add(tlt);
@@ -43,7 +43,7 @@ public class JSPWikiMarkupUtils {
 	public static List<Section<? extends Type>> getTopLevelSections(
 			List<Section<? extends Type>> list) {
 		int i = 0;
-		List<Section<? extends Type>> topLevelSections = new ArrayList<Section<? extends Type>>();
+		List<Section<? extends Type>> topLevelSections = new ArrayList<>();
 		for (Section<? extends Type> tlt : list) {
 			if (countHeaderMarks(tlt.getText()) >= i) {
 				topLevelSections.add(tlt);
@@ -82,7 +82,7 @@ public class JSPWikiMarkupUtils {
 		List<Section<?>> list = header.getArticle().getRootSection().getChildren();
 		int i = list.indexOf(header) + 1;
 
-		List<Section<? extends Type>> contentSections = new ArrayList<Section<? extends Type>>();
+		List<Section<? extends Type>> contentSections = new ArrayList<>();
 		if (includeHeader) contentSections.add(header);
 		for (; i < list.size(); i++) {
 			if (countHeaderMarks(list.get(i).getText()) < level) {
@@ -103,7 +103,7 @@ public class JSPWikiMarkupUtils {
 				extensions, new Type[] { RootType.getInstance() });
 
 		Plugin plugin = manager.getPlugin("KnowWE-Plugin-JSPWiki-MarkupSet");
-		List<Type> result = new LinkedList<Type>();
+		List<Type> result = new LinkedList<>();
 		for (Extension extension : matches) {
 			if (plugin.equals(extension.getPlugin())) {
 				Type type = (Type) extension.getNewInstance();

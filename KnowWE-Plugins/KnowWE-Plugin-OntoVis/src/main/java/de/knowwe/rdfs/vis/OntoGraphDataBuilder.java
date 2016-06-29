@@ -202,7 +202,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			//TODO find solution for blank node
 			if (!Utils.isBlankNode(fringeValue)) {
 				if (!literalsExpanded.contains(fringeValue)) {
-					if(!config.getLiteralMode().equals(Config.LiteralMode.OFF)) {
+					if (config.getLiteralMode() != Config.LiteralMode.OFF) {
 						addLiterals(fringeValue);
 					}
 				}
@@ -375,7 +375,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			addConcept(conceptToBeExpanded, zURI, yURI);
 
 			depth++;
-			if (depth < config.getSuccessors() || nodeType.equals(NODE_TYPE.BLANKNODE)) {
+			if (depth < config.getSuccessors() || nodeType == NODE_TYPE.BLANKNODE) {
 				addSuccessors(zURI, conceptToBeExpanded, yURI);
 			}
 
@@ -383,7 +383,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			TODO: this should be done _after_ the last concept node has been added to the graph
              */
 			if (depth == config.getSuccessors()) {
-				if (!nodeType.equals(NODE_TYPE.LITERAL)) {
+				if (nodeType != NODE_TYPE.LITERAL) {
 					fringeValues.add(zURI);
 				}
 				//addOutgoingEdgesSuccessors(zURI);
@@ -479,10 +479,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			if (checkTripleFilters(query, y, x, nodeType)) continue;
 
 			height++;
-			if (height < config.getPredecessors() || nodeType.equals(NODE_TYPE.BLANKNODE)) {
+			if (height < config.getPredecessors() || nodeType == NODE_TYPE.BLANKNODE) {
 				addPredecessors(xURI, conceptToBeExpanded, yURI, Direction.Backward);
 				if (!literalsExpanded.contains(xURI) &&
-						!Config.LiteralMode.OFF.equals(config.getLiteralMode())) {
+						Config.LiteralMode.OFF != config.getLiteralMode()) {
 					// add literals for x
 					addSuccessors(xURI, conceptToBeExpanded, yURI, ExpandMode.LiteralsOnly, Direction.Backward);
 				}
@@ -493,7 +493,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			TODO: this should be done _after_ the last concept node has been added to the graph
              */
 			if (height == config.getPredecessors()) {
-				if (!nodeType.equals(NODE_TYPE.LITERAL)) {
+				if (nodeType != NODE_TYPE.LITERAL) {
 					fringeValues.add(xURI);
 				}
 				//addOutgoingEdgesPredecessors(xURI);
@@ -631,7 +631,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	private String conceptFilter(String variable, Collection<ConceptNode> conceptDeclarations) {
 		StringBuilder filter = new StringBuilder();
 		filter.append("FILTER (");
-		if (conceptDeclarations.size() == 0) {
+		if (conceptDeclarations.isEmpty()) {
 			filter.append("true");
 		}
 		else {
@@ -639,10 +639,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			boolean firstIteration = true;
 			while (iterator.hasNext()) {
 				ConceptNode conceptDeclaration = iterator.next();
-				if (conceptDeclaration.getType().equals(NODE_TYPE.LITERAL)) {
+				if (conceptDeclaration.getType() == NODE_TYPE.LITERAL) {
 					continue;
 				}
-				if (conceptDeclaration.getType().equals(NODE_TYPE.BLANKNODE)) {
+				if (conceptDeclaration.getType() == NODE_TYPE.BLANKNODE) {
 					// TODO: find solution for this case
 					continue;
 				}
@@ -676,14 +676,14 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			return propertyExcludeSPARQLFilterCache.get(filterHashcode);
 		}
 
-		if (getFilteredRelations().size() > 0) {
+		if (!getFilteredRelations().isEmpty()) {
 			// we are in white list mode, i.e. show only "..."
 			this.propertyExcludeSPARQLFilterCache.put(filterHashcode, createExclusiveFilter(dir, objectVar));
 			return propertyExcludeSPARQLFilterCache.get(filterHashcode);
 		}
 		else {
 			// we are in black list mode, i.e. show all but "..."
-			if (getExcludedRelations().size() == 0) {
+			if (getExcludedRelations().isEmpty()) {
 				this.propertyExcludeSPARQLFilterCache.put(filterHashcode, "FILTER (true)");
 				return propertyExcludeSPARQLFilterCache.get(filterHashcode);
 			}
@@ -754,7 +754,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private String nodeFilter(String variable, ExpandMode mode) {
-		if (mode.equals(ExpandMode.LiteralsOnly)) {
+		if (mode == ExpandMode.LiteralsOnly) {
 			return " FILTER isLiteral(" + variable + ")";
 		}
 		return " FILTER (true).";
@@ -812,16 +812,16 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		// literals only mode for expansion of fringe nodes
 		if (mode == ExpandMode.LiteralsOnly) {
-			return !(nodeType.equals(NODE_TYPE.LITERAL) || isTypeRelation(y));
+			return !(nodeType == NODE_TYPE.LITERAL || isTypeRelation(y));
 		}
 
-		if (nodeType.equals(NODE_TYPE.LITERAL) || isTypeRelation(y)) {
+		if (nodeType == NODE_TYPE.LITERAL || isTypeRelation(y)) {
 			// only literals and type assertions are not filtered out
 			return false;
 		}
 
 		//noinspection SimplifiableIfStatement
-		if (nodeType.equals(NODE_TYPE.LITERAL) || isTypeRelation(y)) {
+		if (nodeType == NODE_TYPE.LITERAL || isTypeRelation(y)) {
 			// only literals and type assertions are not filtered out
 			return false;
 		}
@@ -831,7 +831,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private boolean isWhiteListMode() {
-		return getFilteredRelations().size() > 0;
+		return !getFilteredRelations().isEmpty();
 	}
 
 	private void addConcept(Value fromURI, Value toURI, Value relationURI) {
@@ -1038,7 +1038,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private boolean isLiteralEdge(Edge edge) {
-		return edge.getObject().getType().equals(NODE_TYPE.LITERAL);
+		return edge.getObject().getType() == NODE_TYPE.LITERAL;
 	}
 
 	enum ExpandMode {Normal, LiteralsOnly}

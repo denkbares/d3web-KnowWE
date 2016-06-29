@@ -33,7 +33,7 @@ import de.knowwe.core.user.UserContext;
  */
 public interface TestCaseProvider {
 
-	public static final String KEY = "TestCaseProvider";
+	String KEY = "TestCaseProvider";
 
 	TestCase getTestCase();
 

@@ -47,7 +47,7 @@ public class EmbraceEnd extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
 
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> result = new ArrayList<>();
 			if (text.endsWith(end)) {
 				result.add(new SectionFinderResult(text.length() - end.length(), text.length()));
 			}

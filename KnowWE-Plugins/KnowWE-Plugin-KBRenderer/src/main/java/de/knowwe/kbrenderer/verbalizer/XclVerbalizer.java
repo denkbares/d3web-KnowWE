@@ -81,22 +81,22 @@ public class XclVerbalizer implements Verbalizer {
 
 	public String verbalizePlainText(XCLModel model, Map<String, Object> parameter) {
 
-		ArrayList<XCLRelationType> types = new ArrayList<XCLRelationType>();
+		ArrayList<XCLRelationType> types = new ArrayList<>();
 		types.add(XCLRelationType.requires);
 		types.add(XCLRelationType.sufficiently);
 		types.add(XCLRelationType.explains);
 		types.add(XCLRelationType.contradicted);
 
-		StringBuffer text = new StringBuffer();
+		StringBuilder text = new StringBuilder();
 
 		ConditionVerbalizer v = new ConditionVerbalizer();
 
-		text.append(model.getSolution().getName() + " {\n");
+		text.append(model.getSolution().getName()).append(" {\n");
 
 		Map<XCLRelationType, Collection<XCLRelation>> relationMap = model.getTypedRelations();
 		for (XCLRelationType type : types) {
 			Collection<XCLRelation> relationsCol = relationMap.get(type);
-			ArrayList<XCLRelation> relations = new ArrayList<XCLRelation>();
+			ArrayList<XCLRelation> relations = new ArrayList<>();
 			relations.addAll(relationsCol);
 			if (type == XCLRelationType.explains) {
 				Collections.sort(relations,
@@ -120,8 +120,9 @@ public class XclVerbalizer implements Verbalizer {
 					weight = "[++]";
 				}
 
-				text.append("  " + v.verbalize(cond, RenderingFormat.PLAIN_TEXT, parameter)
-						+ (weight.equals("") ? "" : " " + weight));
+				text.append("  ")
+						.append(v.verbalize(cond, RenderingFormat.PLAIN_TEXT, parameter))
+						.append(weight.equals("") ? "" : " " + weight);
 
 				text.append(",\n");
 			}
@@ -141,9 +142,9 @@ public class XclVerbalizer implements Verbalizer {
 			if (minSupport.equals("null")) {
 				minSupport = "-";
 			}
-			text.append("[ establishedThreshold = " + established + ",\n");
-			text.append("   suggestedThreshold = " + suggested + ",\n");
-			text.append("   minSupport = " + minSupport + "\n ]");
+			text.append("[ establishedThreshold = ").append(established).append(",\n");
+			text.append("   suggestedThreshold = ").append(suggested).append(",\n");
+			text.append("   minSupport = ").append(minSupport).append("\n ]");
 		}
 
 		return text.toString();
@@ -155,7 +156,7 @@ public class XclVerbalizer implements Verbalizer {
 	public String verbalizeHTML(XCLModel model) {
 		String nl = "<br />";
 		String cont = model.getSolution().toString() + nl;
-		if (model.getNecessaryRelations().size() > 0) {
+		if (!model.getNecessaryRelations().isEmpty()) {
 			cont += "necessary relations:" + nl;
 			for (XCLRelation current : model.getNecessaryRelations()) {
 				cont += VerbalizationManager.getInstance().verbalize(
@@ -163,7 +164,7 @@ public class XclVerbalizer implements Verbalizer {
 						+ nl;
 			}
 		}
-		if (model.getSufficientRelations().size() > 0) {
+		if (!model.getSufficientRelations().isEmpty()) {
 			cont += nl + "sufficient relations:" + nl;
 			for (XCLRelation current : model.getSufficientRelations()) {
 				cont += VerbalizationManager.getInstance().verbalize(
@@ -171,7 +172,7 @@ public class XclVerbalizer implements Verbalizer {
 						+ nl;
 			}
 		}
-		if (model.getContradictingRelations().size() > 0) {
+		if (!model.getContradictingRelations().isEmpty()) {
 			cont += nl + "contradicting relations:" + nl;
 			for (XCLRelation current : model.getContradictingRelations()) {
 				cont += VerbalizationManager.getInstance().verbalize(

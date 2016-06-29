@@ -70,7 +70,7 @@ public class RenderKDOMVisitor {
 	}
 
 	private String getDashes(int cnt) {
-		StringBuffer dashes = new StringBuffer();
+		StringBuilder dashes = new StringBuilder();
 		for (int i = 0; i < cnt; i++) {
 			dashes.append("-");
 		}

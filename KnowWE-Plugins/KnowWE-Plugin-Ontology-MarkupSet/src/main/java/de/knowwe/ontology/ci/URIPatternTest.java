@@ -55,7 +55,7 @@ public class URIPatternTest extends AbstractTest<OntologyCompiler> {
 
 		TerminologyManager manager = testObject.getTerminologyManager();
 		Collection<Identifier> identifiers = manager.getAllDefinedTermsOfType(ResourceDefinition.class);
-		Collection<Message> messages = new LinkedList<Message>();
+		Collection<Message> messages = new LinkedList<>();
 		for (Identifier identifier : identifiers) {
 			// check ignore patterns
 			boolean isIgnored = false;

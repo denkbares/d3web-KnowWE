@@ -10,8 +10,8 @@ import de.knowwe.core.report.Message;
 
 public class StatementProviderResult {
 
-	private final Collection<Message> messages = new ArrayList<Message>(0);
-	private final Collection<Statement> statments = new ArrayList<Statement>();
+	private final Collection<Message> messages = new ArrayList<>(0);
+	private final Collection<Statement> statments = new ArrayList<>();
 
 	public void addMessage(Message m) {
 		messages.add(m);

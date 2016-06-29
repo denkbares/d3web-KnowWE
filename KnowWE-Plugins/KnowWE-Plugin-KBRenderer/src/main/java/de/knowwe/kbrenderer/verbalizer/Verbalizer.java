@@ -40,13 +40,13 @@ public interface Verbalizer {
 
 	// some parameter, that can be used in the parameter hash
 	// we save them here to get a common interface
-	public static final String INDENT = "indent";
-	public static final String IS_SINGLE_LINE = "isSingleLine";
-	public static final String IS_NEGATIVE = "isNegative";
-	public static final String CONTEXT = "context";
-	public static final String ID_VISIBLE = "idVisible";
-	public static final String LOCALE = "locale";
-	public static final String USE_QUOTES = "useQuotes";
+	String INDENT = "indent";
+	String IS_SINGLE_LINE = "isSingleLine";
+	String IS_NEGATIVE = "isNegative";
+	String CONTEXT = "context";
+	String ID_VISIBLE = "idVisible";
+	String LOCALE = "locale";
+	String USE_QUOTES = "useQuotes";
 
 	/**
 	 * Returns a verbalization (String representation) of the given object in
@@ -60,19 +60,19 @@ public interface Verbalizer {
 	 *        (e.g., singleLine, etc...)
 	 * @return A String representation of given object o in the target format
 	 */
-	public String verbalize(Object o, RenderingFormat targetFormat, Map<String, Object> parameter);
+	String verbalize(Object o, RenderingFormat targetFormat, Map<String, Object> parameter);
 
 	/**
 	 * Returns the classes a verbalizer can render
 	 * 
 	 * @return a array of all classes a verbalizer can render
 	 */
-	public Class<?>[] getSupportedClassesForVerbalization();
+	Class<?>[] getSupportedClassesForVerbalization();
 
 	/**
 	 * Returns all target formats a verbalizer can use.
 	 * 
 	 * @return the target formats a verbalizer can use.
 	 */
-	public RenderingFormat[] getSupportedRenderingTargets();
+	RenderingFormat[] getSupportedRenderingTargets();
 }

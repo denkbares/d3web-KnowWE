@@ -20,5 +20,5 @@ package de.knowwe.plugin;
 
 public interface Instantiation {
 
-	public void init(String web);
+	void init(String web);
 }

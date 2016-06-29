@@ -22,6 +22,6 @@ public interface Parser {
 	 * @param parent the parent section of the kdom subtree to be created
 	 * @return the parsed kdom subtree
 	 */
-	public Section<? extends Type> parse(String text, Section<? extends Type> parent);
+	Section<? extends Type> parse(String text, Section<? extends Type> parent);
 
 }

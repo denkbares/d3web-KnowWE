@@ -41,7 +41,7 @@ import de.knowwe.core.kdom.parsing.Section;
 
 public class MultiSectionFinder implements SectionFinder {
 
-	private final List<SectionFinder> finders = new ArrayList<SectionFinder>();
+	private final List<SectionFinder> finders = new ArrayList<>();
 
 	public MultiSectionFinder() {
 	}
@@ -62,7 +62,7 @@ public class MultiSectionFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
+		List<SectionFinderResult> results = new ArrayList<>();
 		lookForSectionsOfType(text, father, type, 0, 0, results);
 		return results;
 	}

@@ -45,7 +45,7 @@ public class ConstraintSectionFinder implements SectionFinder {
 
 	public ConstraintSectionFinder(SectionFinder finder, SectionFinderConstraint... constraints) {
 		this.finder = finder;
-		this.constraintList = new ArrayList<SectionFinderConstraint>();
+		this.constraintList = new ArrayList<>();
 		Collections.addAll(this.constraintList, constraints);
 	}
 

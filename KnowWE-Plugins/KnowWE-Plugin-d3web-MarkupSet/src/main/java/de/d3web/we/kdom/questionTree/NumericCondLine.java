@@ -81,7 +81,7 @@ public class NumericCondLine extends AbstractType {
 						"invalid numeric condition"));
 			}
 
-			return new ArrayList<Message>(0);
+			return new ArrayList<>(0);
 		}
 
 	}

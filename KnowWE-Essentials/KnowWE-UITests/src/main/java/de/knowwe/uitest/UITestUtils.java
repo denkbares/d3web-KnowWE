@@ -79,6 +79,7 @@ public class UITestUtils {
 			this.retryCount = retryCount;
 		}
 
+		@Override
 		public Statement apply(Statement base, Description description) {
 			return statement(base, description);
 		}
@@ -119,6 +120,7 @@ public class UITestUtils {
 			this.successes = 0;
 		}
 
+		@Override
 		public Statement apply(Statement base, Description description) {
 			return statement(base, description);
 		}

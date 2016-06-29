@@ -46,8 +46,7 @@ public class Fingerprint {
 	public static void createFingerprint(Collection<Article> articles, File folder) throws FileNotFoundException, IOException {
 		// create metadata file
 		folder.mkdirs();
-		PrintStream out = new PrintStream(new File(folder, FINGERPRINT));
-		try {
+		try (PrintStream out = new PrintStream(new File(folder, FINGERPRINT))) {
 			String baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
 			out.printf("Base URL: %s\n", baseUrl);
 			out.printf("Created:  %tc\n", new Date());
@@ -60,9 +59,6 @@ public class Fingerprint {
 			else {
 				out.printf("KnowWE Version: --\n");
 			}
-		}
-		finally {
-			out.close();
 		}
 
 		// create scanner files
@@ -89,14 +85,14 @@ public class Fingerprint {
 		page.append("!!!Compared article results: \n");
 		Map<String, File> expectedFiles = getFileMap(expected);
 		Map<String, File> actualFiles = getFileMap(actual);
-		Collection<String> names = new HashSet<String>();
+		Collection<String> names = new HashSet<>();
 		names.addAll(expectedFiles.keySet());
 		names.addAll(actualFiles.keySet());
 		names.remove(FINGERPRINT);
-		List<String> sorted = new LinkedList<String>(names);
+		List<String> sorted = new LinkedList<>(names);
 		Collections.sort(sorted);
-		Collection<String> articleNames = new LinkedHashSet<String>();
-		Map<Pair<String, Scanner>, Diff> results = new LinkedHashMap<Pair<String, Scanner>, Diff>();
+		Collection<String> articleNames = new LinkedHashSet<>();
+		Map<Pair<String, Scanner>, Diff> results = new LinkedHashMap<>();
 		for (String name : sorted) {
 			File expectedFile = expectedFiles.get(name);
 			File actualFile = actualFiles.get(name);
@@ -116,7 +112,7 @@ public class Fingerprint {
 				result = scanner.compare(expectedFile, actualFile);
 			}
 			articleNames.add(articleName);
-			results.put(new Pair<String, Scanner>(articleName, scanner), result);
+			results.put(new Pair<>(articleName, scanner), result);
 		}
 
 		// print result table
@@ -129,11 +125,11 @@ public class Fingerprint {
 		}
 		page.append("\n");
 		// and one line for each article
-		List<Diff> fails = new ArrayList<Diff>(articleNames.size());
+		List<Diff> fails = new ArrayList<>(articleNames.size());
 		for (String articleName : articleNames) {
 			page.append("| ").append(escape(articleName));
 			for (Scanner scanner : scanners) {
-				Diff diff = results.get(new Pair<String, Scanner>(articleName, scanner));
+				Diff diff = results.get(new Pair<>(articleName, scanner));
 				page.append(" | ");
 				if (diff == null) { // NOSONAR
 					// do nothing
@@ -176,7 +172,7 @@ public class Fingerprint {
 	}
 
 	private static Map<String, File> getFileMap(File folder) {
-		Map<String, File> result = new HashMap<String, File>();
+		Map<String, File> result = new HashMap<>();
 		for (File file : folder.listFiles()) {
 			result.put(file.getName(), file);
 		}

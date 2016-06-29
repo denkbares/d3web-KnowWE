@@ -205,7 +205,7 @@ public class OntologyUtils {
 	 * @return the predicate sentences for the subject and predicate
 	 */
 	public static List<Section<PredicateSentence>> findSentences(Article article, Resource subject, URI predicate) {
-		List<Section<PredicateSentence>> result = new LinkedList<Section<PredicateSentence>>();
+		List<Section<PredicateSentence>> result = new LinkedList<>();
 
 		// check all sentences of the specified subject
 		for (Section<TurtleSentence> sentence : findSentences(article, subject)) {
@@ -252,7 +252,7 @@ public class OntologyUtils {
 	 * @return the predicate sentences for the subject and predicate
 	 */
 	public static List<Section<TurtleSentence>> findSentences(Article article, Resource subject) {
-		List<Section<TurtleSentence>> result = new LinkedList<Section<TurtleSentence>>();
+		List<Section<TurtleSentence>> result = new LinkedList<>();
 
 		// check each turtle markup
 		List<Section<TurtleMarkup>> turtles = Sections.successors(

@@ -35,7 +35,7 @@ public class LineRenderer extends TableLineRenderer {
 
 	@Override
 	protected String getClasses(Section<?> tableLine, UserContext user) {
-		if (Messages.getMessagesMap(tableLine, Message.Type.ERROR).size() > 0) {
+		if (!Messages.getMessagesMap(tableLine, Message.Type.ERROR).isEmpty()) {
 			return "lineerror";
 		}
 		return super.getClasses(tableLine, user);

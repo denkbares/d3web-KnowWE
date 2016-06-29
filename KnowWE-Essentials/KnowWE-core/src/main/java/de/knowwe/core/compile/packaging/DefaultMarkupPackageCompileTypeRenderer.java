@@ -82,17 +82,17 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 
 	private void renderPackage(Section<? extends PackageCompileType> compileSection, Section<?> section, String packageName, RenderResult string, UserContext user) {
 
-		Collection<Message> kdomErrors = new LinkedList<Message>();
-		Collection<Message> kdomWarnings = new LinkedList<Message>();
+		Collection<Message> kdomErrors = new LinkedList<>();
+		Collection<Message> kdomWarnings = new LinkedList<>();
 
-		Set<Article> errorArticles = new HashSet<Article>();
-		Set<Article> warningArticles = new HashSet<Article>();
+		Set<Article> errorArticles = new HashSet<>();
+		Set<Article> warningArticles = new HashSet<>();
 
 		for (Section<?> sectionWithMessage : Messages.getSectionsWithMessages(Message.Type.WARNING, Message.Type.ERROR)) {
 			if (!sectionWithMessage.getPackageNames().contains(packageName)) continue;
 			Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
-			Collection<Message> errors = new ArrayList<Message>();
-			Collection<Message> warnings = new ArrayList<Message>();
+			Collection<Message> errors = new ArrayList<>();
+			Collection<Message> warnings = new ArrayList<>();
 			Map<Compiler, Collection<Message>> allmsgs = Messages.getMessagesMap(
 					sectionWithMessage, Message.Type.ERROR, Message.Type.WARNING);
 			for (PackageCompiler packageCompiler : packageCompilers) {
@@ -101,11 +101,11 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 				errors.addAll(Messages.getErrors(compileMessages));
 				warnings.addAll(Messages.getWarnings(compileMessages));
 			}
-			if (errors.size() > 0) {
+			if (!errors.isEmpty()) {
 				kdomErrors.addAll(errors);
 				errorArticles.add(sectionWithMessage.getArticle());
 			}
-			if (warnings.size() > 0) {
+			if (!warnings.isEmpty()) {
 				kdomWarnings.addAll(warnings);
 				warningArticles.add(sectionWithMessage.getArticle());
 			}
@@ -172,7 +172,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 	private void renderDefectArticleNames(Set<Article> articles, RenderResult string) {
 		// print all articles out as links (ordered alphabetically, duplicates
 		// removed)
-		List<String> names = new ArrayList<String>(articles.size());
+		List<String> names = new ArrayList<>(articles.size());
 		for (Article article : articles) {
 			names.add(article.getTitle());
 		}

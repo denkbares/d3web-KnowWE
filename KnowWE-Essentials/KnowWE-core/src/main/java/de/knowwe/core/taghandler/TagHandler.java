@@ -50,7 +50,7 @@ public interface TagHandler {
 	 * 
 	 * @return the name of this tag handler
 	 */
-	public String getTagName();
+	String getTagName();
 
 	/**
 	 * Returns if the tag handler needs to be updated automatically when the
@@ -59,7 +59,7 @@ public interface TagHandler {
 	 * @created 20.10.2010
 	 * @return the auto update flag
 	 */
-	public boolean requiresAutoUpdate();
+	boolean requiresAutoUpdate();
 
 	/**
 	 * Renders the tag handler into a wiki markup string. The resulting string
@@ -71,7 +71,7 @@ public interface TagHandler {
 	 * @param topic the article the tag handler is rendered for.
 	 * @param user the user context for this request
 	 */
-	public void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result);
+	void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result);
 
 	/**
 	 * Returns an usage example of this tag handler.

@@ -99,7 +99,7 @@ class NumberChecker extends DefaultGlobalHandler<Number> {
 
 	@Override
 	public Collection<Message> create(DefaultGlobalCompiler compiler, Section<Number> s) {
-		List<Message> msgs = new ArrayList<Message>();
+		List<Message> msgs = new ArrayList<>();
 		String trim = s.getText().trim();
 		try {
 			Double.parseDouble(trim);

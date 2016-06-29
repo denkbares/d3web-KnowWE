@@ -1,17 +1,8 @@
 package de.knowwe.rdf2go.sparql.utils;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
-import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class RenderOptions {

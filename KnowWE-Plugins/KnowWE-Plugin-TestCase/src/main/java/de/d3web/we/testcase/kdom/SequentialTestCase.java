@@ -53,7 +53,7 @@ public class SequentialTestCase extends AbstractType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
-			List<SectionFinderResult> matches = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> matches = new ArrayList<>();
 
 			List<StringFragment> cases = Strings.splitUnquoted(text, "}", false);
 

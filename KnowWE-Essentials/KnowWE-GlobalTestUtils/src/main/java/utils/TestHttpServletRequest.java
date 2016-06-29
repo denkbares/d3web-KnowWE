@@ -34,7 +34,7 @@ import javax.servlet.http.Part;
  */
 public class TestHttpServletRequest implements HttpServletRequest {
 
-	Map<String, Object> attributes = new HashMap<String, Object>();
+	Map<String, Object> attributes = new HashMap<>();
 	private HttpSession session;
 
 	public TestHttpServletRequest() {

@@ -31,8 +31,8 @@ import de.knowwe.core.user.UserContext;
  */
 public interface SurroundingRenderer {
 
-	public void renderPre(Section<?> section, UserContext user, RenderResult string);
+	void renderPre(Section<?> section, UserContext user, RenderResult string);
 
-	public void renderPost(Section<?> section, UserContext user, RenderResult string);
+	void renderPost(Section<?> section, UserContext user, RenderResult string);
 
 }

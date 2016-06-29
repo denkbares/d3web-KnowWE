@@ -15,7 +15,7 @@ public class PropagationLoopHandler implements EventListener {
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		ArrayList<Class<? extends Event>> events = new ArrayList<Class<? extends Event>>(3);
+		ArrayList<Class<? extends Event>> events = new ArrayList<>(3);
 		events.add(FindingSetEvent.class);
 		events.add(SessionRemovedEvent.class);
 		events.add(InitEvent.class);

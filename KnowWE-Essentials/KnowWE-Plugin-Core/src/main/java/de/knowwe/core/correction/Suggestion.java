@@ -30,7 +30,7 @@ public interface Suggestion extends Comparable<Suggestion>  {
 	 * @created 20.05.2011
 	 * @return The suggested string
 	 */
-	public String getSuggestionText();
+	String getSuggestionText();
 
 	/**
 	 * Returns the label of the suggestion
@@ -38,7 +38,7 @@ public interface Suggestion extends Comparable<Suggestion>  {
 	 * @created 21.04.2015
 	 * @return The label of the suggestion
 	 */
-	public String getSuggestionLabel();
+	String getSuggestionLabel();
 
 	/**
 	 * Returns the distance from the misspelled string, used for sorting
@@ -46,7 +46,7 @@ public interface Suggestion extends Comparable<Suggestion>  {
 	 * @created 20.05.2011
 	 * @return distance
 	 */
-	public int getDistance();
+	int getDistance();
 
 	/**
 	 * Returns true if the suggestion text is a call of a javascript function
@@ -56,5 +56,5 @@ public interface Suggestion extends Comparable<Suggestion>  {
 	 */
 	default boolean isScript() {
 		return false;
-	};
+	}
 }

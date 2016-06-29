@@ -21,6 +21,7 @@ package de.d3web.we.object;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -105,7 +106,7 @@ public abstract class AnswerDefinition
 
 			// if having error somewhere, do nothing and report error
 			if (qDef == null || qDef.hasErrorInSubtree(compiler)) {
-				return Arrays.asList(Messages.objectCreationError(
+				return Collections.singletonList(Messages.objectCreationError(
 						"No valid question for choice '" + name + "'"));
 			}
 

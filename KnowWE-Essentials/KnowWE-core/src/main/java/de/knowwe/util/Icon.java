@@ -135,7 +135,7 @@ public class Icon {
 	public static final Icon WAITING = new Icon(LOADING.getCssClass());
 	public static final Icon CALCULATING = new Icon(LOADING.getCssClass());
 
-	public static enum Percent {
+	public enum Percent {
 		by33,
 		by100,
 		by200,

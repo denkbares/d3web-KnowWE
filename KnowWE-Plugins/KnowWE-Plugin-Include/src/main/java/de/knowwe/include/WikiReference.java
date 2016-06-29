@@ -247,7 +247,7 @@ public class WikiReference extends AbstractType {
 		}
 
 		// we do not have an error if we use static text
-		if (getLink(section) == null && getListMarks(section).length() > 0) {
+		if (getLink(section) == null && !getListMarks(section).isEmpty()) {
 			return null;
 		}
 

@@ -92,15 +92,15 @@ public class TestCaseContent extends AbstractType {
 					de.d3web.empiricaltesting.SequentialTestCase stc =
 							new de.d3web.empiricaltesting.SequentialTestCase();
 					createSTCName(stcSection, index, stc, messages);
-					if (messages.size() > 0) return messages;
+					if (!messages.isEmpty()) return messages;
 					createRTCs(stcSection, index, stc, kb, messages);
-					if (messages.size() > 0) return messages;
+					if (!messages.isEmpty()) return messages;
 
 					// Add STC to Repository
 					repository.add(stc);
 				}
 
-				if (messages.size() == 0) {
+				if (messages.isEmpty()) {
 
 					// Create the test suite
 					TestCase testSuite = new TestCase();

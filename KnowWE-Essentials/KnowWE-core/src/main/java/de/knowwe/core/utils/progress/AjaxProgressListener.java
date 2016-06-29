@@ -35,10 +35,10 @@ public interface AjaxProgressListener extends ExtendedProgressListener {
 	 * @created 19.07.2012
 	 * @return the current message
 	 */
-	public String getMessage();
+	@Override
+	String getMessage();
 
-
-	public String getUserName();
+	String getUserName();
 
 
 	/**
@@ -47,7 +47,7 @@ public interface AjaxProgressListener extends ExtendedProgressListener {
 	 * @created 30.07.2013
 	 * @param message the error message that occurred
 	 */
-	public void setError(String message);
+	void setError(String message);
 
 	/**
 	 * Returns the error message if an error has occurred for this operation. If
@@ -56,7 +56,7 @@ public interface AjaxProgressListener extends ExtendedProgressListener {
 	 * @created 30.07.2013
 	 * @return the error message
 	 */
-	public String getError();
+	String getError();
 
 	/**
 	 * Returns if this progress is still running. Even after calling cancel()
@@ -66,23 +66,23 @@ public interface AjaxProgressListener extends ExtendedProgressListener {
 	 * @created 31.07.2013
 	 * @return if the progress is running
 	 */
-	public boolean isRunning();
+	boolean isRunning();
 
 	/**
 	 * Sets the indicator so specify whether this progress is running or not.
 	 * 
 	 * @created 31.07.2013
 	 */
-	public void setRunning(boolean running);
+	void setRunning(boolean running);
 
 	/**
 	 * Sets an ID for the this listener.
 	 */
-	public void setId(String id);
+	void setId(String id);
 
 	/**
 	 * Returns the ID for the this listener.
 	 */
-	public String getId();
+	String getId();
 
 }

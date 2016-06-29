@@ -54,35 +54,33 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 
 		List<Value> functionalProperties = new ArrayList<>();
 		TupleQueryResult sparqlSelect = rdf2GoCore.sparqlSelect(query);
-		Iterator<BindingSet> iterator = sparqlSelect.iterator();
-		while (iterator.hasNext()) {
-			BindingSet row = iterator.next();
+		for (BindingSet row : sparqlSelect) {
 			Value value = row.getValue(propVariableName.substring(1));
 			functionalProperties.add(value);
 		}
 
-		Map<Value, Map<Value, Set<Value>>> conflicts = new HashMap<Value, Map<Value, Set<Value>>>();
+		Map<Value, Map<Value, Set<Value>>> conflicts = new HashMap<>();
 		for (Value prop : functionalProperties) {
 			Map<Value, Set<Value>> conflictsForProp = checkFunctionalProperty(prop, rdf2GoCore);
-			if (conflictsForProp.size() > 0) {
+			if (!conflictsForProp.isEmpty()) {
 				conflicts.put(prop, conflictsForProp);
 			}
 		}
 
-		if (conflicts.size() > 0) {
+		if (!conflicts.isEmpty()) {
 
-			StringBuffer message = new StringBuffer();
+			StringBuilder message = new StringBuilder();
 			message.append("There are violations for functional properties:\n");
 			Set<Value> propConflicts = conflicts.keySet();
 			for (Value prop : propConflicts) {
-				message.append("\n* " + prop.toString() + ":");
+				message.append("\n* ").append(prop.toString()).append(":");
 				Map<Value, Set<Value>> map = conflicts.get(prop);
 				Set<Value> subjectConflictSet = map.keySet();
 				for (Value subject : subjectConflictSet) {
-					message.append("\n** Subject: " + subject.toString() + " Objects: ");
+					message.append("\n** Subject: ").append(subject.toString()).append(" Objects: ");
 					Set<Value> objects = map.get(subject);
 					for (Value object : objects) {
-						message.append(object.toString() + ", ");
+						message.append(object.toString()).append(", ");
 					}
 
 				}
@@ -113,7 +111,7 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 			throw e;
 		}
 		Iterator<BindingSet> iterator = assertions.iterator();
-		Map<Value, Set<Value>> assertionMap = new HashMap<Value, Set<Value>>();
+		Map<Value, Set<Value>> assertionMap = new HashMap<>();
 		while (iterator.hasNext()) {
 			BindingSet row = iterator.next();
 			Value subject = row.getValue(subjectVariableName.substring(1));
@@ -122,12 +120,12 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 				assertionMap.get(subject).add(object);
 			}
 			else {
-				Set<Value> objects = new HashSet<Value>();
+				Set<Value> objects = new HashSet<>();
 				objects.add(object);
 				assertionMap.put(subject, objects);
 			}
 		}
-		Map<Value, Set<Value>> conflicts = new HashMap<Value, Set<Value>>();
+		Map<Value, Set<Value>> conflicts = new HashMap<>();
 		Set<Value> keySet = assertionMap.keySet();
 		for (Value subject : keySet) {
 			Set<Value> conflictSet = checkUnity(assertionMap.get(subject), core);
@@ -153,7 +151,7 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 			// unity asserted ;-)
 			return set;
 		}
-		Set<Value> conflictSet = new HashSet<Value>();
+		Set<Value> conflictSet = new HashSet<>();
 		for (Value newValue : set) {
 			boolean isIn = false;
 			for (Value unifiedValue : conflictSet) {

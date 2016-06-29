@@ -40,12 +40,12 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public class CIDashboardManager {
 
-	private static final Map<ArticleManager, MultiMap<Object, CIDashboard>> dashboardsForManagers = new WeakHashMap<ArticleManager, MultiMap<Object, CIDashboard>>();
+	private static final Map<ArticleManager, MultiMap<Object, CIDashboard>> dashboardsForManagers = new WeakHashMap<>();
 
 	private static MultiMap<Object, CIDashboard> getDashboardsMap(ArticleManager manager) {
 		MultiMap<Object, CIDashboard> dashboards = dashboardsForManagers.get(manager);
 		if (dashboards == null) {
-			dashboards = new N2MMap<Object, CIDashboard>();
+			dashboards = new N2MMap<>();
 			dashboardsForManagers.put(manager, dashboards);
 		}
 		return dashboards;
@@ -79,7 +79,7 @@ public class CIDashboardManager {
 	}
 
 	public static synchronized Collection<Section<CIDashboardType>> getDashboardSections(ArticleManager manager, String dashboardName) {
-		Collection<Section<CIDashboardType>> dashboardSections = new ArrayList<Section<CIDashboardType>>();
+		Collection<Section<CIDashboardType>> dashboardSections = new ArrayList<>();
 		for (CIDashboard ciDashboard : getDashboardsMap(manager).getValues(dashboardName)) {
 			dashboardSections.add(ciDashboard.getDashboardSection());
 		}

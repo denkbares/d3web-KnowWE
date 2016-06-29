@@ -47,7 +47,7 @@ public class InstantEditSaveAction extends AbstractAction {
 		}
 
 		// errors and security are handled inside replaceKDOMNodesSaveAndBuild
-		Map<String, String> nodesMap = new HashMap<String, String>();
+		Map<String, String> nodesMap = new HashMap<>();
 		nodesMap.put(id, value);
 		Sections.replace(context, nodesMap).sendErrors(context);
 		Compilers.awaitTermination(Compilers.getCompilerManager(context.getWeb()));

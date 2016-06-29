@@ -58,7 +58,7 @@ public class TaggingMangler {
 	/**
 	 * Tag storage map
 	 */
-	private final Map<String, Set<String>> tagMap = new HashMap<String, Set<String>>();
+	private final Map<String, Set<String>> tagMap = new HashMap<>();
 
 	/**
 	 * The separator regex used to split tag strings
@@ -92,7 +92,7 @@ public class TaggingMangler {
 			return;
 		}
 
-		Set<String> set = new HashSet<String>();
+		Set<String> set = new HashSet<>();
 		for (String string : tags) {
 			set.add(string.trim());
 		}
@@ -115,9 +115,9 @@ public class TaggingMangler {
 		// Look for <tags> sections
 		List<Section<Tags>> tagsSections = Sections.successors(
 				article.getRootSection(), Tags.class);
-		Set<String> tags = new HashSet<String>();
+		Set<String> tags = new HashSet<>();
 
-		if (tagsSections.size() > 0) {
+		if (!tagsSections.isEmpty()) {
 
 			for (Section<?> section : tagsSections) {
 				Section<TagsContent> content = Sections.successor(section, TagsContent.class);
@@ -132,7 +132,7 @@ public class TaggingMangler {
 			String output = createTagSectionString(Strings.concat(" ", tags));
 			Section<Tags> firstTagsSection = tagsSections.remove(0);
 
-			Map<String, String> nodesMap = new HashMap<String, String>();
+			Map<String, String> nodesMap = new HashMap<>();
 			nodesMap.put(firstTagsSection.getID(), output);
 			for (Section<Tags> section : tagsSections) {
 				nodesMap.put(section.getID(), "");
@@ -157,9 +157,9 @@ public class TaggingMangler {
 				Environment.DEFAULT_WEB, pagename);
 
 		// Look for <tags> sections
-		List<Section<TagsContent>> tagsSections = new ArrayList<Section<TagsContent>>();
+		List<Section<TagsContent>> tagsSections = new ArrayList<>();
 		Sections.successors(article.getRootSection(), TagsContent.class, tagsSections);
-		Set<String> tags = new HashSet<String>();
+		Set<String> tags = new HashSet<>();
 
 		for (Section<TagsContent> cur : tagsSections) {
 			for (String temptag : cur.getText().split(TAG_SEPARATOR)) {
@@ -179,7 +179,7 @@ public class TaggingMangler {
 
 		Section<?> keep = tagsSections.get(0);
 
-		Map<String, String> nodesMap = new HashMap<String, String>();
+		Map<String, String> nodesMap = new HashMap<>();
 		nodesMap.put(keep.getID(), output);
 		Sections.replace(context, nodesMap).sendErrors(context);
 	}
@@ -191,11 +191,9 @@ public class TaggingMangler {
 	 * @return
 	 */
 	public List<String> getPages(String tag) {
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 
-		Iterator<String> it = tagMap.keySet().iterator();
-		while (it.hasNext()) {
-			String pageName = it.next();
+		for (String pageName : tagMap.keySet()) {
 			if (tagMap.get(pageName).contains(tag)) {
 				result.add(pageName);
 			}
@@ -216,7 +214,7 @@ public class TaggingMangler {
 			return null;
 		}
 
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 		Set<String> tagsForPage = tagMap.get(page);
 
 		if (tagsForPage != null) {
@@ -232,8 +230,8 @@ public class TaggingMangler {
 	 * @return List of Strings with all existing, unique tags
 	 */
 	public List<String> getAllTags() {
-		Set<String> set = new HashSet<String>(getAllTagsWithDuplicates());
-		return new ArrayList<String>(set);
+		Set<String> set = new HashSet<>(getAllTagsWithDuplicates());
+		return new ArrayList<>(set);
 	}
 
 	/**
@@ -251,7 +249,7 @@ public class TaggingMangler {
 			maxSize = t;
 		}
 
-		Map<String, Integer> result = new HashMap<String, Integer>();
+		Map<String, Integer> result = new HashMap<>();
 		Map<String, Float> weighted = getAllTagsWithWeight();
 		float factor = maxSize - minSize;
 
@@ -270,14 +268,14 @@ public class TaggingMangler {
 	 */
 	public Map<String, Float> getAllTagsWithWeight() {
 		List<String> tags = getAllTagsWithDuplicates();
-		HashMap<String, Float> countlist = new HashMap<String, Float>();
+		HashMap<String, Float> countlist = new HashMap<>();
 		float max = 0;
 
 		for (String cur : tags) {
 			float c = 0;
 
 			if (countlist.get(cur) == null) {
-				countlist.put(cur, new Float(1));
+				countlist.put(cur, 1f);
 				c = 1;
 			}
 			else {
@@ -288,10 +286,10 @@ public class TaggingMangler {
 			max = c > max ? c : max;
 		}
 
-		HashMap<String, Float> weighted = new HashMap<String, Float>();
+		HashMap<String, Float> weighted = new HashMap<>();
 
 		for (Entry<String, Float> cur : countlist.entrySet()) {
-			weighted.put(cur.getKey(), new Float(max - 1 == 0 ? 0.5 : (cur
+			weighted.put(cur.getKey(), (float) (max - 1 == 0 ? 0.5 : (cur
 					.getValue() - 1)
 					/ (max - 1)));
 		}
@@ -305,11 +303,10 @@ public class TaggingMangler {
 	 * @return
 	 */
 	private List<String> getAllTagsWithDuplicates() {
-		List<String> result = new LinkedList<String>();
+		List<String> result = new LinkedList<>();
 
-		Iterator<String> it = tagMap.keySet().iterator();
-		while (it.hasNext()) {
-			result.addAll(tagMap.get(it.next()));
+		for (String s : tagMap.keySet()) {
+			result.addAll(tagMap.get(s));
 		}
 
 		return result;
@@ -329,10 +326,10 @@ public class TaggingMangler {
 				article.getRootSection(), Tags.class);
 		String tagSectionString = createTagSectionString(tags);
 
-		if (tagslist.size() > 0) {
+		if (!tagslist.isEmpty()) {
 			Section<?> keep = tagslist.remove(0);
 
-			Map<String, String> nodesMap = new HashMap<String, String>();
+			Map<String, String> nodesMap = new HashMap<>();
 			nodesMap.put(keep.getID(), tagSectionString);
 			for (Section<Tags> section : tagslist) {
 				nodesMap.put(section.getID(), "");
@@ -359,7 +356,7 @@ public class TaggingMangler {
 
 		articleText += createTagSectionString(content);
 
-		Map<String, String> nodesMap = new HashMap<String, String>();
+		Map<String, String> nodesMap = new HashMap<>();
 		nodesMap.put(rootSection.getID(), articleText);
 		Sections.replace(context, nodesMap).sendErrors(context);
 	}
@@ -375,10 +372,10 @@ public class TaggingMangler {
 	 * @return A trimmed tag list separated by spaces
 	 */
 	private String processTagString(String tagString) {
-		Set<String> tags = new HashSet<String>();
+		Set<String> tags = new HashSet<>();
 		for (String rawTag : tagString.split(TAG_SEPARATOR)) {
 			String trimmed = rawTag.trim();
-			if (trimmed.length() > 0) {
+			if (!trimmed.isEmpty()) {
 				tags.add(trimmed);
 			}
 		}
@@ -393,7 +390,7 @@ public class TaggingMangler {
 	 */
 	public List<TaggingSearchResult> searchPages(String querytags) {
 		String[] tags = querytags.split(" ");
-		List<TaggingSearchResult> result = new LinkedList<TaggingSearchResult>();
+		List<TaggingSearchResult> result = new LinkedList<>();
 
 		Iterator<String> it = tagMap.keySet().iterator();
 
@@ -441,12 +438,12 @@ public class TaggingMangler {
 	}
 
 	public String renderResults(Collection<TaggingSearchResult> pages, String queryString) {
-		if (pages.size() == 0) {
+		if (pages.isEmpty()) {
 			return "No pages for query '" + queryString + "'.";
 		}
 
 		TaggingMangler tm = TaggingMangler.getInstance();
-		StringBuffer html = new StringBuffer();
+		StringBuilder html = new StringBuilder();
 		// html.append("<ul>\n");
 		html.append("\n|| Page || Tags \n");
 

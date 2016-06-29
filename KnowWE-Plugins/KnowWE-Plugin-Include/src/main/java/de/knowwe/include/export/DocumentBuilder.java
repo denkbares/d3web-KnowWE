@@ -36,7 +36,8 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface DocumentBuilder {
 
-	public enum Style {
+	@SuppressWarnings("UnnecessaryEnumModifier")
+	enum Style {
 		title("Title"),
 		heading1("Heading1"),
 		heading2("Heading2"),
@@ -58,7 +59,7 @@ public interface DocumentBuilder {
 
 		private final String styleName;
 
-		private Style(String styleName) {
+		Style(String styleName) {
 			this.styleName = styleName;
 		}
 
@@ -171,7 +172,7 @@ public interface DocumentBuilder {
 	 * @throws ExportException
 	 * @created 07.02.2014
 	 */
-	public void export(Collection<Section<? extends Type>> sections) throws ExportException;
+	void export(Collection<Section<? extends Type>> sections) throws ExportException;
 
 	/**
 	 * Exports a section and all contained sub-sections using the exporters of this document writer.
@@ -180,7 +181,7 @@ public interface DocumentBuilder {
 	 * @throws ExportException
 	 * @created 07.02.2014
 	 */
-	public void export(Section<?> section) throws ExportException;
+	void export(Section<?> section) throws ExportException;
 
 	/**
 	 * Returns the document we are currently building.
@@ -188,7 +189,7 @@ public interface DocumentBuilder {
 	 * @return the document of this builder
 	 * @created 09.02.2014
 	 */
-	public XWPFDocument getDocument();
+	XWPFDocument getDocument();
 
 	/**
 	 * Closes a paragraph. If it is already closed, nothing happens. After closing the paragraph, the methods like
@@ -196,7 +197,7 @@ public interface DocumentBuilder {
 	 *
 	 * @created 07.02.2014
 	 */
-	public void closeParagraph();
+	void closeParagraph();
 
 	/**
 	 * Returns the current paragraph or creates a new one if no current one exists.
@@ -204,7 +205,7 @@ public interface DocumentBuilder {
 	 * @return the current paragraph
 	 * @created 07.02.2014
 	 */
-	public XWPFParagraph getParagraph();
+	XWPFParagraph getParagraph();
 
 	/**
 	 * Returns the current paragraph of the specified style. It creates a new paragraph if there is no current one or if
@@ -214,7 +215,7 @@ public interface DocumentBuilder {
 	 * @return the current paragraph of the specified style
 	 * @created 07.02.2014
 	 */
-	public XWPFParagraph getParagraph(Style style);
+	XWPFParagraph getParagraph(Style style);
 
 	/**
 	 * Returns a newly created paragraph. If there has been any paragraph opened before the previous one is closed.
@@ -222,7 +223,7 @@ public interface DocumentBuilder {
 	 * @return a newly created paragraph
 	 * @created 07.02.2014
 	 */
-	public XWPFParagraph getNewParagraph();
+	XWPFParagraph getNewParagraph();
 
 	/**
 	 * Returns a newly created paragraph with the specified style. If there has been any paragraph opened before the
@@ -232,7 +233,7 @@ public interface DocumentBuilder {
 	 * @return a newly created paragraph
 	 * @created 07.02.2014
 	 */
-	public XWPFParagraph getNewParagraph(Style style);
+	XWPFParagraph getNewParagraph(Style style);
 
 	/**
 	 * Appends a new text run to the actual section. If currently no paragraph is available, a new one is created.
@@ -241,7 +242,7 @@ public interface DocumentBuilder {
 	 * @return the run created to append the specified text
 	 * @created 09.02.2014
 	 */
-	public XWPFRun append(String text);
+	XWPFRun append(String text);
 
 	/**
 	 * Appends a new text run to the current paragraph with the specified style. If currently no paragraph is available,
@@ -252,7 +253,7 @@ public interface DocumentBuilder {
 	 * @return the run created for the text, may be used for further formatting
 	 * @created 09.02.2014
 	 */
-	public XWPFRun append(Style style, String text);
+	XWPFRun append(Style style, String text);
 
 	/**
 	 * Appends a forced line break to the current text. If currently no paragraph is available, the method call is
@@ -261,7 +262,7 @@ public interface DocumentBuilder {
 	 *
 	 * @created 09.02.2014
 	 */
-	public void appendLineBreak();
+	void appendLineBreak();
 
 	/**
 	 * Returns the export model this document builder shall be update.
@@ -269,6 +270,6 @@ public interface DocumentBuilder {
 	 * @return the export manager
 	 * @created 10.02.2014
 	 */
-	public ExportModel getModel();
+	ExportModel getModel();
 
 }

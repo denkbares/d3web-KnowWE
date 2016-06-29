@@ -32,11 +32,11 @@ public class HierarchyNode {
 	public HierarchyNode(ConceptNode source) {
 		if (source == null) throw new NullPointerException();
 		this.source = source;
-		children = new LinkedList<HierarchyNode>();
+		children = new LinkedList<>();
 	}
 
 	public boolean hasChildren() {
-		return (children.size() > 0);
+		return (!children.isEmpty());
 	}
 
 	public boolean hasChild(HierarchyNode hn) {

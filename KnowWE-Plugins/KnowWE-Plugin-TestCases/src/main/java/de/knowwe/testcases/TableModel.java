@@ -42,8 +42,8 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class TableModel {
 
-	private final Map<Pair<Integer, Integer>, String> cells = new HashMap<Pair<Integer, Integer>, String>();
-	private final Map<Integer, Integer> columnWidths = new HashMap<Integer, Integer>();
+	private final Map<Pair<Integer, Integer>, String> cells = new HashMap<>();
+	private final Map<Integer, Integer> columnWidths = new HashMap<>();
 	private int rowCount = 0;
 	private int columnCount = 0;
 	private String name;
@@ -81,7 +81,7 @@ public class TableModel {
 	public void addCell(int row, int column, String value, int width) {
 		rowCount = Math.max(rowCount, row);
 		columnCount = Math.max(columnCount, column);
-		cells.put(new Pair<Integer, Integer>(row, column), value);
+		cells.put(new Pair<>(row, column), value);
 		Integer actualWidth = columnWidths.get(column);
 		if (actualWidth == null || actualWidth < width) {
 			columnWidths.put(column, width);
@@ -97,7 +97,7 @@ public class TableModel {
 	}
 
 	public String getCell(int row, int column) {
-		String cell = cells.get(new Pair<Integer, Integer>(row, column));
+		String cell = cells.get(new Pair<>(row, column));
 		if (cell == null) {
 			return "";
 		}
@@ -176,7 +176,7 @@ public class TableModel {
 	}
 
 	private void appendCell(String type, String cell, int column, Set<Integer> collapsedColumns, RenderResult string) {
-		List<String> attributes = new ArrayList<String>();
+		List<String> attributes = new ArrayList<>();
 		if (column > 0) {
 			attributes.add("column");
 			attributes.add(String.valueOf(column));
@@ -199,7 +199,7 @@ public class TableModel {
 
 	private Set<Integer> getCollapsedColumns(Section<?> section, UserContext user) {
 		String key = "columnstatus_" + section.getID() + "_" + name;
-		Set<Integer> collapsed = new HashSet<Integer>();
+		Set<Integer> collapsed = new HashSet<>();
 		String cookie = getEncodedCookie(key, user);
 		if (cookie != null) {
 			String[] columns = cookie.split("#");

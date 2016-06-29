@@ -465,7 +465,7 @@ public class D3webUtils {
 
 		String kbUrlLink = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(kbName));
 		kbName = "<a href=\"" + toAbsolutURL(kbUrlLink) + "\">" + kbName + "</a>";
-		Collection<String> renderedObjects = new ArrayList<String>(loopObjects.size());
+		Collection<String> renderedObjects = new ArrayList<>(loopObjects.size());
 		for (TerminologyObject loopObject : loopObjects) {
 
 			String url = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(loopObject.getName()));
@@ -505,7 +505,7 @@ public class D3webUtils {
 		return kb == null
 				|| (kb.getAllKnowledgeSlices().size() <= 1
 				&& kb.getManager().getQContainers().size() <= 1
-				&& kb.getManager().getQuestions().size() == 0
+				&& kb.getManager().getQuestions().isEmpty()
 				&& kb.getManager().getSolutions().size() <= 1);
 	}
 

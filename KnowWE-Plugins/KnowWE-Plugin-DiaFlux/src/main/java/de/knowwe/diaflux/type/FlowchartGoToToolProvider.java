@@ -46,7 +46,7 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
-		TreeSet<Tool> tools = new TreeSet<Tool>();
+		TreeSet<Tool> tools = new TreeSet<>();
 		D3webCompiler compiler = D3webUtils.getCompiler(section);
 		if (compiler == null) return ToolUtils.emptyToolArray();
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();

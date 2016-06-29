@@ -251,7 +251,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public static void renderContentSections(List<Section<?>> subSections, boolean listAnnotations, UserContext user, RenderResult result) {
-		if (subSections.size() == 0) return;
+		if (subSections.isEmpty()) return;
 		// find two sections that can possibly be skipped
 		Section<?> first = subSections.get(0);
 		Section<?> last = subSections.get(subSections.size() - 1);

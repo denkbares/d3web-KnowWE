@@ -47,7 +47,7 @@ public class HierarchyTree {
 		}
 		this.root = new HierarchyNode(root);
 		this.data = data;
-		containedNodes = new LinkedList<HierarchyNode>();
+		containedNodes = new LinkedList<>();
 		containedNodes.add(this.root);
 
 		addChildren(this.root);
@@ -60,9 +60,7 @@ public class HierarchyTree {
 	 * @created 25.06.2013
 	 */
 	private void addChildren(HierarchyNode hn) {
-		Iterator<Edge> iterator = data.getAllEdges().iterator();
-		while (iterator.hasNext()) {
-			Edge next = iterator.next();
+		for (Edge next : data.getAllEdges()) {
 			// if next is a child of the HierarchyNode
 			if (next.getSubject().equals(hn.getConceptNode())) {
 				ConceptNode conceptChild = next.getObject();

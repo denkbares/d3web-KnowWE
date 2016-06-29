@@ -84,7 +84,7 @@ public class TableSectionFinderTest {
 		TableSectionFinder finder = new TableSectionFinder();
 		List<SectionFinderResult> all = finder.lookForSections(wikiPage, null, null);
 
-		if (all.size() == 0) return;
+		if (all.isEmpty()) return;
 		SectionFinderResult result = all.get(index);
 		Assert.assertEquals("table start not matched", start, result.getStart());
 		Assert.assertEquals("table end not matched", end, result.getEnd());

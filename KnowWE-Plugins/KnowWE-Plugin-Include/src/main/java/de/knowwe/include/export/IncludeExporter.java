@@ -35,7 +35,7 @@ import de.knowwe.include.WikiReference;
  */
 public class IncludeExporter implements Exporter<IncludeMarkup> {
 
-	private final Set<Section<IncludeMarkup>> visited = new HashSet<Section<IncludeMarkup>>();
+	private final Set<Section<IncludeMarkup>> visited = new HashSet<>();
 
 	@Override
 	public Class<IncludeMarkup> getSectionType() {

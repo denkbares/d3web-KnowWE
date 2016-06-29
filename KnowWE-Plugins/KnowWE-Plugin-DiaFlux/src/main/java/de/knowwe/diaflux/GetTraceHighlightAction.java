@@ -54,7 +54,7 @@ public class GetTraceHighlightAction extends AbstractHighlightAction {
 	public void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException {
 
 		Collection<Session> allSessions = SessionProvider.getSessions(context);
-		Collection<Session> sessions = new ArrayList<Session>();
+		Collection<Session> sessions = new ArrayList<>();
 		// ignore sessions that do not even contain the flow
 		for (Session session : allSessions) {
 			if (findFlow(flowchart, session.getKnowledgeBase()) != null) {

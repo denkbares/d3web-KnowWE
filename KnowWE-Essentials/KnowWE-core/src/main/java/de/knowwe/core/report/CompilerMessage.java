@@ -57,7 +57,7 @@ public final class CompilerMessage extends Exception {
 	}
 
 	private static Collection<Message> toMessages(Message.Type type, String... messageTexts) {
-		Collection<Message> messages = new ArrayList<Message>(messageTexts.length);
+		Collection<Message> messages = new ArrayList<>(messageTexts.length);
 		for (String message : messageTexts) {
 			messages.add(new Message(type, message));
 		}

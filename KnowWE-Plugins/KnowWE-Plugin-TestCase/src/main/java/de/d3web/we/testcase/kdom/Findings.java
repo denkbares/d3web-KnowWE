@@ -43,7 +43,7 @@ public class Findings extends AbstractType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> result = new ArrayList<>();
 			List<StringFragment> findings = Strings.splitUnquoted(text, ":");
 
 			int start = text.indexOf(findings.get(0).getContent().trim());

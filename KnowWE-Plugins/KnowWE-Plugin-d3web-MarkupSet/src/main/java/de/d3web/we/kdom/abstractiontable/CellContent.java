@@ -223,6 +223,7 @@ public class CellContent extends AbstractType implements D3webTerm<NamedObject>,
 		}
 	}
 
+	@Override
 	public String getTermName(Section<? extends Term> section) {
 		return Strings.trimQuotes(section.getText());
 	}
@@ -236,7 +237,7 @@ public class CellContent extends AbstractType implements D3webTerm<NamedObject>,
 			if (termObject == null) {
 				Section<CellContent> columnHeader = TableUtils.getColumnHeader(content, CellContent.class);
 				NamedObject question = getTermObject(compiler, columnHeader);
-				if (question == null || !(question instanceof QuestionChoice)) return null;
+				if (!(question instanceof QuestionChoice)) return null;
 				termObject = KnowledgeBaseUtils.findChoice((QuestionChoice) question, getTermName(content), false);
 			}
 			return termObject;

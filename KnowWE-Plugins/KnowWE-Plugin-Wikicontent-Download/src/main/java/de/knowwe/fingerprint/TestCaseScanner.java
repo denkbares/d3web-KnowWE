@@ -34,8 +34,7 @@ public class TestCaseScanner implements Scanner {
 				successors(article.getRootSection(), TestCasePlayerType.class);
 		if (players.isEmpty()) return;
 		Log.info("Scanning cases on " + article.getTitle());
-		PrintStream out = new PrintStream(target);
-		try {
+		try (PrintStream out = new PrintStream(target)) {
 			for (Section<TestCasePlayerType> player : players) {
 				List<ProviderTriple> providers = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(player);
 				for (ProviderTriple triple : providers) {
@@ -49,29 +48,26 @@ public class TestCaseScanner implements Scanner {
 				}
 			}
 		}
-		finally {
-			out.close();
-		}
 	}
 
-	private final Map<Pair<KnowledgeBase, TestCase>, String> cache = new HashMap<Pair<KnowledgeBase, TestCase>, String>();
+	private final Map<Pair<KnowledgeBase, TestCase>, String> cache = new HashMap<>();
 
 	private void execute(KnowledgeBase base, TestCase testCase, PrintStream out) {
-		Pair<KnowledgeBase, TestCase> key = new Pair<KnowledgeBase, TestCase>(base, testCase);
+		Pair<KnowledgeBase, TestCase> key = new Pair<>(base, testCase);
 		String result = cache.get(key);
 		if (result == null) {
 			StringBuilder builder = new StringBuilder();
 			Session session = SessionFactory.createSession(base, testCase.getStartDate());
 			for (Date date : testCase.chronology()) {
-				builder.append("- " + ((date.getTime() < 1000)
-						? ("line " + date.getTime()) : ("time " + date)) + ":\n");
+				builder.append("- ").append((date.getTime() < 1000)
+						? ("line " + date.getTime()) : ("time " + date)).append(":\n");
 //				out.printf("- %s:\n", (date.getTime() < 1000)
 //						? ("line " + date.getTime()) : ("time " + date));
 
 				TestCaseUtils.applyFindings(session, testCase, date);
 				for (Check check : testCase.getChecks(date, session.getKnowledgeBase())) {
-					builder.append("  check '" + check.getCondition()
-							.trim() + "': " + (check.check(session) ? "ok" : "failed") + "\n");
+					builder.append("  check '").append(check.getCondition()
+							.trim()).append("': ").append(check.check(session) ? "ok" : "failed").append("\n");
 //					out.printf("  check '%s': %s\n", check.getCondition().trim(),
 //							check.check(session) ? "ok" : "failed");
 				}

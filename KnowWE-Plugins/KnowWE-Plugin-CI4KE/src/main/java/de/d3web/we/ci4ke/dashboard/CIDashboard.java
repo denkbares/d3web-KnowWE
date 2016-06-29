@@ -140,7 +140,7 @@ public class CIDashboard {
 	 */
 	public List<BuildResult> getBuilds(int fromIndex, int numberOfBuilds) {
 		fromIndex = cap(fromIndex);
-		List<BuildResult> results = new ArrayList<BuildResult>(numberOfBuilds);
+		List<BuildResult> results = new ArrayList<>(numberOfBuilds);
 		int index = fromIndex;
 		while (results.size() < numberOfBuilds && index > 0) {
 			BuildResult build = getBuildIfPossible(index, false);

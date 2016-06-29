@@ -54,7 +54,7 @@ public class TurtleModifier {
 	private final Rdf2GoCompiler compiler;
 	private final boolean compactMode;
 	private final String preferredIndent;
-	private final Map<Article, ArticleTurtleModifier> modifiers = new HashMap<Article, ArticleTurtleModifier>();
+	private final Map<Article, ArticleTurtleModifier> modifiers = new HashMap<>();
 
 	/**
 	 * Creates a new TurtleModifier that will change the wiki articles compiled
@@ -259,7 +259,7 @@ public class TurtleModifier {
 
 		// to modify all contained articles at once,
 		// build a map of changing sections
-		Map<String, String> replaceMap = new HashMap<String, String>();
+		Map<String, String> replaceMap = new HashMap<>();
 		for (ArticleTurtleModifier modifier : modifiers.values()) {
 			String id = modifier.getArticle().getRootSection().getID();
 			String newText = modifier.getResultText();

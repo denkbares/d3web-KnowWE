@@ -13,8 +13,8 @@ public class FirstWordFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		List<SectionFinderResult> result = new ArrayList<SectionFinderResult>(1);
-		if (text.length() == 0) return result;
+		List<SectionFinderResult> result = new ArrayList<>(1);
+		if (text.isEmpty()) return result;
 
 		String trimmedText = Strings.trim(text);
 		int leadingWhiteSpaceChars = text.indexOf(trimmedText);

@@ -64,7 +64,7 @@ public class SparqlAskTest extends AbstractTest<SparqlQuerySection> {
 		boolean result = core.sparqlAsk(
 				sparqlString);
 
-		if(expectedTruthValue.equals(new Boolean(result))) {
+		if (expectedTruthValue.equals(result)) {
 			return new Message(Message.Type.SUCCESS);
 		} else {
 			return new Message(Message.Type.FAILURE,

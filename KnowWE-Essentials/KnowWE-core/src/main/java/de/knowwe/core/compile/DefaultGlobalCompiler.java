@@ -24,8 +24,8 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 	private ScriptCompiler<DefaultGlobalCompiler> destroyScriptCompiler;
 
 	public DefaultGlobalCompiler() {
-		this.scriptCompiler = new ScriptCompiler<DefaultGlobalCompiler>(this);
-		this.destroyScriptCompiler = new ScriptCompiler<DefaultGlobalCompiler>(this);
+		this.scriptCompiler = new ScriptCompiler<>(this);
+		this.destroyScriptCompiler = new ScriptCompiler<>(this);
 	}
 
 	@Override
@@ -57,8 +57,8 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 		}
 		scriptCompiler.compile();
 
-		this.scriptCompiler = new ScriptCompiler<DefaultGlobalCompiler>(this);
-		this.destroyScriptCompiler = new ScriptCompiler<DefaultGlobalCompiler>(this);
+		this.scriptCompiler = new ScriptCompiler<>(this);
+		this.destroyScriptCompiler = new ScriptCompiler<>(this);
 	}
 
 	@Override

@@ -96,9 +96,7 @@ public class Rdf2GoUtils {
 		String query = "SELECT ?class WHERE { <" + instance.stringValue() + "> rdf:type ?class .}";
 		List<URI> resultCollection = new ArrayList<>();
 		TupleQueryResult result = core.sparqlSelect(query);
-		Iterator<BindingSet> iterator = result.iterator();
-		while (iterator.hasNext()) {
-			BindingSet row = iterator.next();
+		for (BindingSet row : result) {
 			Value aClassNode = row.getValue("class");
 			URI uri = (URI) aClassNode;
 			resultCollection.add(uri);
@@ -198,7 +196,7 @@ public class Rdf2GoUtils {
 	public static Rdf2GoCore getRdf2GoCore(Section<?> section) {
 		if (section.get() instanceof DefaultMarkupType) {
 			String globalAnnotation = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.GLOBAL);
-			if (globalAnnotation != null && globalAnnotation.equals("true")) {
+			if ("true".equals(globalAnnotation)) {
 				return Rdf2GoCore.getInstance();
 			}
 		}

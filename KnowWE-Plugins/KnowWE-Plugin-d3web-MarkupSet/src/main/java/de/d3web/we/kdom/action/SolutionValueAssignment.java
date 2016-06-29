@@ -21,6 +21,7 @@ package de.d3web.we.kdom.action;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import de.d3web.core.inference.PSAction;
@@ -49,7 +50,7 @@ import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
  */
 public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssignment> {
 
-	private final List<String> possibleScorePoints = new ArrayList<String>();
+	private final List<String> possibleScorePoints = new ArrayList<>();
 
 	public SolutionValueAssignment() {
 		// possibleScorePoints = D3webUtils.getPossibleScores();
@@ -130,7 +131,7 @@ public class SolutionValueAssignment extends D3webRuleAction<SolutionValueAssign
 					if (trimmedRightHandSide.equals(score)) {
 						// ..and take all when match is found
 						int rightTrimLength = Strings.trimRight(text).length();
-						return Arrays.asList(new SectionFinderResult(rightTrimLength
+						return Collections.singletonList(new SectionFinderResult(rightTrimLength
 								- trimmedRightHandSide.length(), rightTrimLength));
 					}
 				}

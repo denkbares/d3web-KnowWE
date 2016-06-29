@@ -53,7 +53,7 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 						.getTermObjectClass(Sections.cast(section, Term.class)));
 
 		String originalText = originalTermIdentifier.toExternalForm();
-		List<Suggestion> suggestions = new LinkedList<Suggestion>();
+		List<Suggestion> suggestions = new LinkedList<>();
 		Levenstein l = new Levenstein();
 		for (Identifier match : localTermMatches) {
 			double score = l.score(originalText, match.toExternalForm());

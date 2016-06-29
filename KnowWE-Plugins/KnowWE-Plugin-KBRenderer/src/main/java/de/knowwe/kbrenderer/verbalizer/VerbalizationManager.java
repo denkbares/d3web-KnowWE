@@ -78,8 +78,6 @@ public final class VerbalizationManager {
 		HTML, XML, PLAIN_TEXT
 	}
 
-	;
-
 	/**
 	 * The singleton instance of VerbalizationManager
 	 */
@@ -88,7 +86,7 @@ public final class VerbalizationManager {
 	/**
 	 * A list of Verbalizers registered in the Manager
 	 */
-	private List<Verbalizer> registeredVerbalizers = new ArrayList<Verbalizer>();
+	private List<Verbalizer> registeredVerbalizers = new ArrayList<>();
 
 	/**
 	 * This Hashmap saves the priorities of the Verbalizers
@@ -99,7 +97,7 @@ public final class VerbalizationManager {
 	 * private constructor for singleton instantiation
 	 */
 	private VerbalizationManager() {
-		priorityHash = new HashMap<Verbalizer, Integer>();
+		priorityHash = new HashMap<>();
 		register(new DefaultVerbalizer(), PRIORITY_MIN);
 		// register(new RuleVerbalizer(), PRIORITY_LOW);
 		register(new ConditionVerbalizer());

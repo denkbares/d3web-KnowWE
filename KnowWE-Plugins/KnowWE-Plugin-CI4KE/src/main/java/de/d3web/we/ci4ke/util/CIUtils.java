@@ -122,11 +122,11 @@ public class CIUtils {
 		if (src == null || dest == null) {
 			throw new NullPointerException();
 		}
-		if (src.length() == 0) {
+		if (src.isEmpty()) {
 			return orig;
 		}
 
-		StringBuffer res = new StringBuffer(orig.length() + 20); // Pure
+		StringBuilder res = new StringBuilder(orig.length() + 20); // Pure
 		// guesswork
 		int start = 0;
 		int end = 0;

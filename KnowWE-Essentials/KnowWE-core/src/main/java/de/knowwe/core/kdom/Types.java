@@ -211,7 +211,7 @@ public class Types {
 	 */
 	public static <OT extends Type> Collection<OT> successors(Type root, Class<OT> clazz) {
 		Collection<Type> types = getAllChildrenTypesRecursive(root);
-		List<OT> result = new LinkedList<OT>();
+		List<OT> result = new LinkedList<>();
 		for (Type type : types) {
 			if (clazz.isInstance(type)) {
 				result.add(clazz.cast(type));

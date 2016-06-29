@@ -41,7 +41,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.event.TermRenamingEvent;
 import de.knowwe.event.TermRenamingFinishEvent;
 import de.knowwe.event.TermRenamingStartEvent;
 import de.knowwe.notification.NotificationManager;
@@ -138,7 +137,7 @@ public class TermRenamingAction extends AbstractAction {
 	}
 
 	private Set<String> getArticlesWithoutEditRights(Map<String, Set<Section<? extends RenamableTerm>>> allTerms, UserActionContext context) {
-		Set<String> noEditRightsOnThisArticles = new HashSet<String>();
+		Set<String> noEditRightsOnThisArticles = new HashSet<>();
 		for (Map.Entry<String, Set<Section<? extends RenamableTerm>>> sectionsMap : allTerms.entrySet()) {
 			Set<Section<? extends RenamableTerm>> sectionsSet = sectionsMap.getValue();
 			for (Section<? extends RenamableTerm> section : sectionsSet) {
@@ -214,7 +213,7 @@ public class TermRenamingAction extends AbstractAction {
 			for (String title : allTerms.keySet()) {
 				if (Environment.getInstance().getWikiConnector()
 						.userCanEditArticle(title, context.getRequest())) {
-					Map<String, String> nodesMap = new HashMap<String, String>();
+					Map<String, String> nodesMap = new HashMap<>();
 					for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
 						nodesMap.put(
 								termSection.getID(),
@@ -236,7 +235,7 @@ public class TermRenamingAction extends AbstractAction {
 
 	public Set<Identifier> getTerms(String sectionId, String web) {
 		// gathering all terms
-		Set<Identifier> allTerms = new HashSet<Identifier>();
+		Set<Identifier> allTerms = new HashSet<>();
 
 		Section<?> section = Sections.get(sectionId);
 		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(section);

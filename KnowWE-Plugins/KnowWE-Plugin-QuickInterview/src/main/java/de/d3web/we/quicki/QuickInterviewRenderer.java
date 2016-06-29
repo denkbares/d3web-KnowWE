@@ -147,7 +147,7 @@ public class QuickInterviewRenderer {
 
 		// Map all processed TerminologyObjects already in interview table,
 		// avoids endless recursion in cyclic hierarchies
-		Set<TerminologyObject> processedTOs = new HashSet<TerminologyObject>();
+		Set<TerminologyObject> processedTOs = new HashSet<>();
 
 		// add plugin header
 		getInterviewPluginHeader(buffi);
@@ -763,20 +763,20 @@ public class QuickInterviewRenderer {
 										   String cssclass, String onclick, String onmouseover, String id,
 										   String title, RenderResult result) {
 		result.appendHtml("<" + tag);
-		if (id != null && id.length() > 0) {
+		if (id != null && !id.isEmpty()) {
 			result.appendHtml(" id='" + Strings.encodeHtml(id) + "' ");
 		}
-		if (onclick != null && onclick.length() > 0) {
+		if (onclick != null && !onclick.isEmpty()) {
 			result.appendHtml(" " + onclick + " ");
 		}
-		if (onmouseover != null && onmouseover.length() > 0) {
+		if (onmouseover != null && !onmouseover.isEmpty()) {
 			result.appendHtml(" " + onmouseover + " ");
 		}
-		if (title != null && title.length() > 0) {
+		if (title != null && !title.isEmpty()) {
 			cssclass = cssclass + " tooltipster";
 			result.appendHtml(" title='" + Strings.encodeHtml(title) + "' ");
 		}
-		if (cssclass != null && cssclass.length() > 0) {
+		if (cssclass != null && !cssclass.isEmpty()) {
 			result.appendHtml(" class='" + cssclass + "'");
 		}
 		result.appendHtml(">");
@@ -826,7 +826,7 @@ public class QuickInterviewRenderer {
 	}
 
 	private boolean isThisOrFollowUpIndicated(TerminologyObject to) {
-		Set<TerminologyObject> visited = new HashSet<TerminologyObject>();
+		Set<TerminologyObject> visited = new HashSet<>();
 		return isThisOrFollowUpIndicated(visited, to);
 	}
 

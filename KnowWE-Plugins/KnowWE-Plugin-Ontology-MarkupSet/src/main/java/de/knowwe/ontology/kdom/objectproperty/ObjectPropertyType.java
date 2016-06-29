@@ -85,7 +85,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 			Section<DefaultMarkupType> markup = Sections.ancestor(section,
 					DefaultMarkupType.class);
 			String annotation = DefaultMarkupType.getAnnotation(markup, FUNCTIONAL_ANNOTATION_NAME);
-			if (annotation != null && annotation.equalsIgnoreCase("true")) {
+			if ("true".equalsIgnoreCase(annotation)) {
 				core.addStatements(section,
 						core.createStatement(propertyURI, RDF.TYPE, OWL.FUNCTIONALPROPERTY));
 
@@ -125,7 +125,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 					URI objectURI = section.get().getResourceURI(core, section);
 
 					URI predicateURI = RDFS.RANGE;
-					if (kind.equals(DomainRange.DOMAIN)) {
+					if (kind == DomainRange.DOMAIN) {
 						predicateURI = RDFS.DOMAIN;
 					}
 

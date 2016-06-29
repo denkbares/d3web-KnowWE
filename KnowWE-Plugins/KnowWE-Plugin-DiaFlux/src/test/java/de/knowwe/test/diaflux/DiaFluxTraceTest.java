@@ -188,7 +188,7 @@ public class DiaFluxTraceTest {
 		instantIndication3.setQASets(questionYN2);
 		questionNode3 = new ActionNode("questionNode3_ID", instantIndication3);
 
-		LinkedList<Node> nodesList = new LinkedList<Node>(Arrays.asList(startNode, endNode,
+		LinkedList<Node> nodesList = new LinkedList<>(Arrays.asList(startNode, endNode,
 				questionNode1, snaphot1, snaphot2, questionNode2, snaphot3, questionNode3));
 
 		// ---------------------------------
@@ -207,7 +207,7 @@ public class DiaFluxTraceTest {
 
 		snap3ToEnd = createEdge(snaphot3, endNode);
 
-		List<Edge> edgesList = new LinkedList<Edge>(Arrays.asList(startToQuestion1,
+		List<Edge> edgesList = new LinkedList<>(Arrays.asList(startToQuestion1,
 				question1ToSnap, snap1ToQuestion2, question2ToSnap2, snap2ToQuestion3,
 				question3ToSnap3, snap3ToEnd));
 

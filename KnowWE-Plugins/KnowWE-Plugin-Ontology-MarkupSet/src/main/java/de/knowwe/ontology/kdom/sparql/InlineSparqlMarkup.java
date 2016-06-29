@@ -70,6 +70,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 		 * @param section the referencing section contain the reference name
 		 * @return the actual sparql section to be executed
 		 */
+		@Override
 		public Section<SparqlMarkupType> getReferencedSection(Section<? extends SparqlNameReference> section) {
 			Identifier identifier = getTermIdentifier(section);
 			Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);

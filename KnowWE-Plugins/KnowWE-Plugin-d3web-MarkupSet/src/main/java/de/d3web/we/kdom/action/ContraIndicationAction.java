@@ -60,7 +60,7 @@ public class ContraIndicationAction extends BracketsAction<ContraIndicationActio
 		QASet termObject = qSec.get().getTermObject(compiler, qSec);
 
 		ActionContraIndication actionContraIndication = new ActionContraIndication();
-		List<QASet> obs = new ArrayList<QASet>();
+		List<QASet> obs = new ArrayList<>();
 		obs.add(termObject);
 		actionContraIndication.setQASets(obs);
 		return actionContraIndication;

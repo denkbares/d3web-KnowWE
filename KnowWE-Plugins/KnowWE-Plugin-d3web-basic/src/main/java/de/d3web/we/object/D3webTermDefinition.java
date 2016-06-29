@@ -60,7 +60,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	 * @created 12.02.2012
 	 */
 	public AbortCheck canAbortTermObjectCreation(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
-		Collection<Message> msgs = new ArrayList<Message>(1);
+		Collection<Message> msgs = new ArrayList<>(1);
 		if (section.hasErrorInSubtree(compiler)) {
 			// obviously there are already errors present, simply abort
 			AbortCheck check = new AbortCheck();
@@ -97,7 +97,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	}
 
 	private <TermObject extends NamedObject> Collection<NamedObject> getAllTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
-		Set<NamedObject> foundTermObjects = new HashSet<NamedObject>();
+		Set<NamedObject> foundTermObjects = new HashSet<>();
 		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		Collection<Section<?>> termDefiningSections = terminologyHandler.getTermDefiningSections(termIdentifier);

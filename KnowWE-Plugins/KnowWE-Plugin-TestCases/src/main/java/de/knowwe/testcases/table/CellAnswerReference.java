@@ -30,7 +30,7 @@ final class CellAnswerReference extends AnswerReference {
 
 	@Override
 	public MessageRenderer getMessageRenderer(Message.Type messageType) {
-		if (Message.Type.INFO.equals(messageType)) return null;
+		if (Message.Type.INFO == messageType) return null;
 		return super.getMessageRenderer(messageType);
 	}
 }

@@ -93,7 +93,7 @@ public class DownloadWikiZIP extends AbstractAction {
 		try {
 			ArticleManager manager = Environment.getInstance().getArticleManager(
 					Environment.DEFAULT_WEB);
-			Collection<Article> articles = new LinkedList<Article>();
+			Collection<Article> articles = new LinkedList<>();
 			for (Article article : manager.getArticles()) {
 				if (checkRights(article, context)) articles.add(article);
 			}

@@ -94,7 +94,7 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 				"'" + versionSectionID + "', " + nextVersion + ");";
 
 		// make a copy and add update tool
-		actions = new LinkedList<Tool>(actions);
+		actions = new LinkedList<>(actions);
 		actions.add(new DefaultTool(
 				Icon.EDIT,
 				"Update Version to " + nextVersion,
@@ -141,8 +141,7 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 		ParallelProgress progress = new ParallelProgress(listener, 4f, 4f);
 		progress.updateProgress(0, 0.2f, ExportManager.MSG_CREATE);
 		if (hasError()) return;
-		FileOutputStream stream = new FileOutputStream(resultFile);
-		try {
+		try (FileOutputStream stream = new FileOutputStream(resultFile)) {
 			ExportModel model = export.createExport(progress.getSubTaskProgressListener(1));
 			for (Message message : model.getMessages()) {
 				addMessage(message);
@@ -153,9 +152,6 @@ public class DocxDownloadOperation extends FileDownloadOperation {
 		}
 		catch (ExportException e) {
 			addMessage(Messages.error(e.getMessage()));
-		}
-		finally {
-			stream.close();
 		}
 	}
 

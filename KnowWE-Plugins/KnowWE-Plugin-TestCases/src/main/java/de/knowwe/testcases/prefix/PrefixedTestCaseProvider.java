@@ -59,7 +59,7 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 
 	private boolean isLooping(TestCaseProvider providerOfPrefix) {
 		if (isSameProvider(providerOfPrefix)) return true;
-		while (providerOfPrefix != null && providerOfPrefix instanceof PrefixedTestCaseProvider) {
+		while (providerOfPrefix instanceof PrefixedTestCaseProvider) {
 			PrefixedTestCaseProvider prefixProvider = (PrefixedTestCaseProvider) providerOfPrefix;
 			providerOfPrefix = getProviderOfPrefix(prefixProvider.web,
 					prefixProvider.prefixName, prefixProvider.prefixPackages);

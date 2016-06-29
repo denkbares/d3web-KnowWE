@@ -54,7 +54,7 @@ public class RatedTestCase extends AbstractType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> result = new ArrayList<>();
 			List<StringFragment> cases = Strings.splitUnquoted(text, ";", false);
 			for (StringFragment string : cases) {
 				int indexOf = string.getStartTrimmed();

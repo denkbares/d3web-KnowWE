@@ -43,7 +43,7 @@ public class TypePriorityList {
 	 * the final total order of the types the types within a list have
 	 * descending order.
 	 */
-	private final PriorityList<Double, Type> types = new PriorityList<Double, Type>(
+	private final PriorityList<Double, Type> types = new PriorityList<>(
 			DEFAULT_PRIORITY);
 
 	/**

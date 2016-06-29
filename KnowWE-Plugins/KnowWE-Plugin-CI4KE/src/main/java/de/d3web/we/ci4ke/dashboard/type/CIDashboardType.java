@@ -59,7 +59,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String TRIGGER_KEY = "trigger";
 	public static final String VERBOSE_PERSISTENCE_KEY = "persistenceVerbose";
 
-	public static enum CIBuildTriggers {
+	public enum CIBuildTriggers {
 		onDemand, onSave
 	}
 
@@ -114,7 +114,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					try {
 						trigger = CIBuildTriggers.valueOf(matcher.group());
 						// get the monitoredArticles if onSave
-						if (trigger.equals(CIDashboardType.CIBuildTriggers.onSave)) {
+						if (trigger == CIBuildTriggers.onSave) {
 							while (matcher.find()) {
 								String parameter = matcher.group();
 								if (parameter.startsWith("\"") && parameter.endsWith("\"")) {
@@ -136,7 +136,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					}
 				}
 
-				if (CIBuildTriggers.onSave.equals(trigger) && monitoredArticles.isEmpty()) {
+				if (CIBuildTriggers.onSave == trigger && monitoredArticles.isEmpty()) {
 					msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSave
 							+ " requires attached articles to monitor."));
 				}
@@ -176,7 +176,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(s, tests);
 
-			if (trigger != null && trigger.equals(CIBuildTriggers.onSave)) {
+			if (trigger != null && trigger == CIBuildTriggers.onSave) {
 				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
 				CIHookManager.registerHook(ciHook);
 				// Store to be able to unregister in destroy method

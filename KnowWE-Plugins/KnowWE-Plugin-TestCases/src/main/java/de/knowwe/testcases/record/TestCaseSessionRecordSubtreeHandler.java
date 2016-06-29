@@ -26,7 +26,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.testcases.FileTestCaseProviderStorage;
-import de.knowwe.testcases.TestCaseProviderStorage;
 import de.knowwe.testcases.TestCaseUtils;
 
 /**

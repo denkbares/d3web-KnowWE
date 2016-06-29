@@ -53,14 +53,14 @@ public class SubpropertyEliminator {
 		PropertyHierarchy hierarchy = new PropertyHierarchy(core);
 		for (ConceptNode conceptNode : data.getConceptDeclarations()) {
 			Set<Edge> outgoingEdges = data.getAllOutoingEdgesFor(conceptNode);
-			Map<Pair<ConceptNode, ConceptNode>, Set<Edge>> edgeBundles = new HashMap<Pair<ConceptNode, ConceptNode>, Set<Edge>>();
+			Map<Pair<ConceptNode, ConceptNode>, Set<Edge>> edgeBundles = new HashMap<>();
 
 			// at first we need to create the bundles of edges which have the same source and target nodes
 			for (Edge outgoingEdge : outgoingEdges) {
 				Pair pair = new Pair(outgoingEdge.getSubject(), outgoingEdge.getObject());
 				Set<Edge> bundle = edgeBundles.get(pair);
 				if (bundle == null) {
-					bundle = new HashSet<Edge>();
+					bundle = new HashSet<>();
 					edgeBundles.put(pair, bundle);
 				}
 				bundle.add(outgoingEdge);

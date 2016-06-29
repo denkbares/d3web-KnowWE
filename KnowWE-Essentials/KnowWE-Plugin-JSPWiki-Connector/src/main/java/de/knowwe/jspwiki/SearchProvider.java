@@ -37,6 +37,6 @@ public interface SearchProvider {
 	 * @param flags
 	 * @return
 	 */
-	public List<? extends SearchResult> findResults(String query, int flags);
+	List<? extends SearchResult> findResults(String query, int flags);
 
 }

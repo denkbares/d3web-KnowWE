@@ -48,7 +48,7 @@ import de.knowwe.util.Icon;
  */
 public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 
-	private static final Set<Section<?>> cycleDetection = new HashSet<Section<?>>();
+	private static final Set<Section<?>> cycleDetection = new HashSet<>();
 	private final boolean skipHeader;
 
 	public FramedIncludedSectionRenderer(boolean skipHeader) {

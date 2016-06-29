@@ -55,8 +55,8 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 		TerminologyManager manager = Environment.getInstance().getTerminologyManager(article.getWeb(), article.getTitle());
 		
 		Collection<Identifier> terms = manager.getAllDefinedTerms();
-		
-		Map<String, Collection<Section<?>>> multipleDefs = new HashMap<String, Collection<Section<?>>>();
+
+		Map<String, Collection<Section<?>>> multipleDefs = new HashMap<>();
 		
 		Collection<Pattern> ignorePatterns = TestingUtils.compileIgnores(ignores);
 

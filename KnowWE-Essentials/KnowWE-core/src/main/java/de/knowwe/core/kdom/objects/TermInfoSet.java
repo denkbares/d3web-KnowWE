@@ -23,7 +23,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 		private final Identifier identifier;
 		private final String key;
-		private final Collection<TerminologyManager> managers = new LinkedList<TerminologyManager>();
+		private final Collection<TerminologyManager> managers = new LinkedList<>();
 
 		public DefaultTermInfo(Identifier identifier) {
 			this.identifier = identifier;
@@ -96,7 +96,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 		}
 	}
 
-	private final Map<String, DefaultTermInfo> result = new HashMap<String, DefaultTermInfo>();
+	private final Map<String, DefaultTermInfo> result = new HashMap<>();
 	private final boolean caseSensitive;
 	private final Class<?>[] allowedTermClasses;
 
@@ -178,12 +178,12 @@ public class TermInfoSet implements Collection<TermInfo> {
 	private void addTermManagerIfMatches(Identifier termIdentifier, TerminologyManager termManager) {
 		Collection<Identifier> identifiers;
 		if (caseSensitive) {
-			identifiers = Arrays.asList(termIdentifier);
+			identifiers = Collections.singletonList(termIdentifier);
 		}
 		else if (termManager.isUndefinedTerm(termIdentifier)) {
 			// getAllTermsEqualIgnoreCase does not return undefined terms
 			// so we just use the current identifier
-			identifiers = Arrays.asList(termIdentifier);
+			identifiers = Collections.singletonList(termIdentifier);
 		}
 		else {
 			identifiers = termManager.getAllTermsEqualIgnoreCase(termIdentifier);
@@ -286,7 +286,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		List<String> keysToRemove = new LinkedList<String>();
+		List<String> keysToRemove = new LinkedList<>();
 		for (DefaultTermInfo termInfo : result.values()) {
 			if (!c.contains(termInfo)
 					&& !c.contains(termInfo.getKey())

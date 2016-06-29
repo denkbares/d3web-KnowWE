@@ -25,6 +25,6 @@ public class SectionInfo implements Comparable<SectionInfo> {
 		if (sectionExists && !si.sectionExists) return -1;
 		if (!sectionExists && si.sectionExists) return 1;
 		if (!sectionExists && !si.sectionExists) return 0;
-		return new Integer(offSet).compareTo(new Integer(si.offSet));
+		return new Integer(offSet).compareTo(si.offSet);
 	}
 }

@@ -146,7 +146,7 @@ public class TSUtil {
 		stc.setName("STC1");
 
 		// Add SequentialTestCase to the repository
-		List<SequentialTestCase> repository = new ArrayList<SequentialTestCase>();
+		List<SequentialTestCase> repository = new ArrayList<>();
 		repository.add(stc);
 
 		// Create testSuite

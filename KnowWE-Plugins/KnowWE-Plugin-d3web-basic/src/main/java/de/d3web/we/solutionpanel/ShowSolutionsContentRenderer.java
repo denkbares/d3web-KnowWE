@@ -103,7 +103,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
 
 		if (ShowSolutionsType.shouldShowAbstractions(parentSection)) {
-			List<Question> abstractions = new ArrayList<Question>();
+			List<Question> abstractions = new ArrayList<>();
 			List<Question> questions = D3webUtils.getAnsweredQuestionsNonBlocking(session);
 			if (questions == null) {
 				renderPropagationError(buffer);
@@ -142,7 +142,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	 * Renders the derived solutions when panel opted for it.
 	 */
 	private void renderSolutions(Section<?> section, final Session session, RenderResult content) {
-		Set<Solution> allSolutions = new TreeSet<Solution>(new SolutionComparator(session));
+		Set<Solution> allSolutions = new TreeSet<>(new SolutionComparator(session));
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 
 		// collect the solutions to be presented
@@ -177,7 +177,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		// filter unwanted solutions
 		String[] allowedParents = ShowSolutionsType.getAllowedParents(parentSection);
 		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
-		for (Solution solution : new ArrayList<Solution>(allSolutions)) {
+		for (Solution solution : new ArrayList<>(allSolutions)) {
 			if (!SolutionPanelUtils.isShownObject(allowedParents, excludedParents, solution)) {
 				allSolutions.remove(solution);
 			}

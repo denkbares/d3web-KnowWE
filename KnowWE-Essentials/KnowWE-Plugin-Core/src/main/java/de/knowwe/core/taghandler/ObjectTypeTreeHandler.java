@@ -44,7 +44,7 @@ public class ObjectTypeTreeHandler extends AbstractTagHandler {
 
 	@Override
 	public void render(Section<?> section, UserContext userContext, Map<String, String> parameters, RenderResult result) {
-		visitNode(RootType.getInstance(), 1, new HashSet<String>(), false, result);
+		visitNode(RootType.getInstance(), 1, new HashSet<>(), false, result);
 	}
 
 	private void visitNode(Type t, int level, HashSet<String> visitedNodes, boolean doNotRecurse, RenderResult sb) {

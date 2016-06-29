@@ -37,7 +37,7 @@ public class SolutionReference extends D3webTermReference<Solution> {
 
 	public SolutionReference() {
 		this.setRenderer(StyleRenderer.SOLUTION);
-		this.addCompileScript(new SimpleReferenceRegistrationScript<D3webCompiler>(
+		this.addCompileScript(new SimpleReferenceRegistrationScript<>(
 				D3webCompiler.class));
 	}
 

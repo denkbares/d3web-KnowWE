@@ -72,7 +72,7 @@ public class DashTreeUtils {
 						+ DashTreeElement.class.getSimpleName());
 			}
 		}
-		List<Section<DashTreeElement>> found = new ArrayList<Section<DashTreeElement>>();
+		List<Section<DashTreeElement>> found = new ArrayList<>();
 		if (depth >= 0) {
 			Sections.successors(element.getParent(), DashTreeElement.class, depth, found);
 		}
@@ -100,8 +100,8 @@ public class DashTreeUtils {
 	}
 
 	public static List<Section<? extends DashTreeElement>> getAncestorDashTreeElements(Section<?> s) {
-		List<Section<? extends DashTreeElement>> ancestors = new ArrayList<Section<? extends DashTreeElement>>();
-		List<Section<?>> ancestorSubTrees = new ArrayList<Section<?>>();
+		List<Section<? extends DashTreeElement>> ancestors = new ArrayList<>();
+		List<Section<?>> ancestorSubTrees = new ArrayList<>();
 		Section<?> ancestorSubtree = Sections.ancestor(s, DashSubtree.class).getParent();
 		while (ancestorSubtree != null && ancestorSubtree.get() instanceof DashSubtree) {
 			ancestorSubTrees.add(ancestorSubtree);

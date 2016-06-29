@@ -40,7 +40,7 @@ public class Space extends AbstractType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
 				Section<?> father, Type type) {
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> result = new ArrayList<>();
 
 			String trimmed = text.trim();
 			int leadingSpaces = text.indexOf(trimmed);

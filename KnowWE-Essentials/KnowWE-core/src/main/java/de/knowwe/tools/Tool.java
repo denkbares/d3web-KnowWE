@@ -30,7 +30,7 @@ import de.knowwe.util.Icon;
  */
 public interface Tool {
 
-	public enum ActionType {
+	enum ActionType {
 		/**
 		 * The action is added as a href="javascript:..."<br/> This is the default (for historical
 		 * reasons).
@@ -49,42 +49,42 @@ public interface Tool {
 	/**
 	 * Category for tools that execute or run stuff.
 	 */
-	public static final String CATEGORY_EXECUTE = "00-execute";
+	String CATEGORY_EXECUTE = "00-execute";
 
 	/**
 	 * Category for all tools providing additional information for the tool-supporting item.
 	 */
-	public static final String CATEGORY_INFO = "01-info";
+	String CATEGORY_INFO = "01-info";
 
 	/**
 	 * Category for all tools that modify the content of the tool-supporting item, or provides edit
 	 * functionality to the user.
 	 */
-	public static final String CATEGORY_EDIT = "02-edit";
+	String CATEGORY_EDIT = "02-edit";
 
 	/**
 	 * Category for all tools that provides tha ability to download the content of the
 	 * tool-supporting item or any additionally generated content related to the item.
 	 */
-	public static final String CATEGORY_DOWNLOAD = "03-download";
+	String CATEGORY_DOWNLOAD = "03-download";
 
 	/**
 	 * Category for correction suggestions to correct the item. Even this is also a form of editing
 	 * the item, they have their own category to place these (typically longish) list at the end of
 	 * the tool menu.
 	 */
-	public static final String CATEGORY_CORRECT = "04-correct";
+	String CATEGORY_CORRECT = "04-correct";
 
 	/**
 	 * Special category to inline html functionality directly into the tool menu, e.g. for having
 	 * zoom buttons.
 	 */
-	public static final String CATEGORY_INLINE = "inline";
+	String CATEGORY_INLINE = "inline";
 
 	/**
 	 * Special category to sort Tools into the last category of the tool menu, probably because they are not important.
 	 */
-	public static final String CATEGORY_LAST = "last";
+	String CATEGORY_LAST = "last";
 
 	/**
 	 * Returns the icon for the tool. The icon should have a height of 24 pixels and based on a

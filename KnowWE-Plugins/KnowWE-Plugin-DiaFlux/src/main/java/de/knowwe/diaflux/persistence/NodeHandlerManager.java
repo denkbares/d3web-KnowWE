@@ -48,7 +48,7 @@ public class NodeHandlerManager implements NodeHandler {
 
 		INSTANCE = new NodeHandlerManager();
 
-		HANDLERS = new ArrayList<NodeHandler>();
+		HANDLERS = new ArrayList<>();
 
 		HANDLERS.add(new ActionNodeHandler());
 		HANDLERS.add(new StartNodeHandler());

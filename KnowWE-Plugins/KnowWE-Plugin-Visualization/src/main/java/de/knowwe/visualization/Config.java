@@ -95,8 +95,7 @@ public class Config {
 
 	public void setTimeout(String timeoutString) {
 		try {
-			Long.parseLong(timeoutString);
-			this.timeout = timeout;
+			this.timeout = Long.parseLong(timeoutString);
 		} catch ( java.lang.NumberFormatException e) {
 			// invalid value
 		}
@@ -146,8 +145,8 @@ public class Config {
 	}
 
 	private String colors = null;
-	private Map<String, String> relationColors = new HashMap<String, String>();
-	private Map<String, String> classColors = new HashMap<String, String>();
+	private Map<String, String> relationColors = new HashMap<>();
+	private Map<String, String> classColors = new HashMap<>();
 	private int successors = 1;
 	private int predecessors = 1;
 	private Collection<String> excludeNodes = new HashSet<>();

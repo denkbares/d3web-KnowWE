@@ -28,7 +28,7 @@ public class LazyReferenceManager implements EventListener {
 
 	public static LazyReferenceManager instance = null;
 
-	private final Map<TermCompiler, Map<String, Set<Identifier>>> cache = new WeakHashMap<TermCompiler, Map<String, Set<Identifier>>>();
+	private final Map<TermCompiler, Map<String, Set<Identifier>>> cache = new WeakHashMap<>();
 
 	private LazyReferenceManager() {
 	}
@@ -43,7 +43,7 @@ public class LazyReferenceManager implements EventListener {
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		Collection<Class<? extends Event>> result = new ArrayList<Class<? extends Event>>();
+		Collection<Class<? extends Event>> result = new ArrayList<>();
 		result.add(CompilerRemovedEvent.class);
 		result.add(TermDefinitionRegisteredEvent.class);
 		result.add(TermDefinitionUnregisteredEvent.class);
@@ -89,7 +89,7 @@ public class LazyReferenceManager implements EventListener {
 		if (termCompiler == null) return Collections.emptySet();
 		Map<String, Set<Identifier>> suffixMapping = cache.get(termCompiler);
 		if (suffixMapping == null) {
-			suffixMapping = new HashMap<String, Set<Identifier>>();
+			suffixMapping = new HashMap<>();
 			cache.put(termCompiler, suffixMapping);
 			createCache(termCompiler, suffixMapping);
 		}
@@ -112,7 +112,7 @@ public class LazyReferenceManager implements EventListener {
 		String suffix = identifier.getPathElementAt(1);
 		Set<Identifier> suffixSet = suffixMapping.get(suffix);
 		if (suffixSet == null) {
-			suffixSet = new HashSet<Identifier>(4);
+			suffixSet = new HashSet<>(4);
 			suffixMapping.put(suffix, suffixSet);
 		}
 		suffixSet.add(identifier);

@@ -109,17 +109,17 @@ public class ArticleTurtleModifier {
 	 * Statements to be modified
 	 */
 	private final Rdf2GoCompiler compiler;
-	private final List<Statement> insertStatements = new LinkedList<Statement>();
-	private final List<Statement> deleteStatements = new LinkedList<Statement>();
+	private final List<Statement> insertStatements = new LinkedList<>();
+	private final List<Statement> deleteStatements = new LinkedList<>();
 
 	/*
 	 * Some fields required for traversing the tree to create the resulting wiki
 	 * text
 	 */
 	private transient StringBuilder buffer = null;
-	private final transient List<AddedStatement> objectsToAdd = new LinkedList<AddedStatement>();
-	private final transient Set<Section<Object>> objectsToRemove = new HashSet<Section<Object>>();
-	private final transient List<Statement> ignoredStatements = new LinkedList<Statement>();
+	private final transient List<AddedStatement> objectsToAdd = new LinkedList<>();
+	private final transient Set<Section<Object>> objectsToRemove = new HashSet<>();
+	private final transient List<Statement> ignoredStatements = new LinkedList<>();
 
 	/**
 	 * Creates a new {@link TurtleWriter} to modify the turtle statements of the specified wiki
@@ -412,12 +412,12 @@ public class ArticleTurtleModifier {
 	}
 
 	private Map<Resource, List<Statement>> mapByPredicate(Collection<Statement> statements) {
-		Map<Resource, List<Statement>> result = new LinkedHashMap<Resource, List<Statement>>();
+		Map<Resource, List<Statement>> result = new LinkedHashMap<>();
 		for (Statement statement : statements) {
 			URI predicate = statement.getPredicate();
 			List<Statement> list = result.get(predicate);
 			if (list == null) {
-				list = new LinkedList<Statement>();
+				list = new LinkedList<>();
 				result.put(predicate, list);
 			}
 			list.add(statement);
@@ -438,12 +438,12 @@ public class ArticleTurtleModifier {
 	}
 
 	private Map<Resource, List<Statement>> mapBySubject(Collection<Statement> statements) {
-		Map<Resource, List<Statement>> result = new LinkedHashMap<Resource, List<Statement>>();
+		Map<Resource, List<Statement>> result = new LinkedHashMap<>();
 		for (Statement statement : statements) {
 			Resource subject = statement.getSubject();
 			List<Statement> list = result.get(subject);
 			if (list == null) {
-				list = new LinkedList<Statement>();
+				list = new LinkedList<>();
 				result.put(subject, list);
 			}
 			list.add(statement);
@@ -556,7 +556,7 @@ public class ArticleTurtleModifier {
 	}
 
 	private List<Statement> extractStatements(Section<TurtleSentence> sentence, Section<PredicateSentence> predicateSentence) {
-		List<Statement> result = new LinkedList<Statement>();
+		List<Statement> result = new LinkedList<>();
 		Iterator<AddedStatement> iterator = objectsToAdd.iterator();
 		while (iterator.hasNext()) {
 			AddedStatement toAdd = iterator.next();
@@ -645,11 +645,11 @@ public class ArticleTurtleModifier {
 	private boolean traverseChildrenSkipping(Section<?> node, StringBuilder result) {
 		List<Section<?>> children = node.getChildren();
 		List<Pair<Type, String>> childResults =
-				new ArrayList<Pair<Type, String>>(children.size());
+				new ArrayList<>(children.size());
 		for (Section<?> child : children) {
 			StringBuilder part = new StringBuilder();
 			if (traverse(child, part) || isSeparator(child.get())) {
-				childResults.add(new Pair<Type, String>(child.get(), part.toString()));
+				childResults.add(new Pair<>(child.get(), part.toString()));
 			}
 			else {
 				childResults.add(null);
@@ -669,7 +669,7 @@ public class ArticleTurtleModifier {
 
 		// the node shall not be ignored
 		// if at least one child has been added
-		return childResults.size() > 0 | added;
+		return !childResults.isEmpty() | added;
 	}
 
 	/**
@@ -776,13 +776,13 @@ public class ArticleTurtleModifier {
 			if (!hasSamePredicate(ps, statement)) continue;
 			Section<TurtleSentence> ts = Sections.ancestor(ps, TurtleSentence.class);
 			if (!hasSameSubject(ts, statement)) continue;
-			return new Pair<Section<TurtleSentence>, Section<PredicateSentence>>(ts, ps);
+			return new Pair<>(ts, ps);
 		}
 		for (Section<TurtleSentence> ts : Sections.successors(root, TurtleSentence.class)) {
 			if (!hasSameSubject(ts, statement)) continue;
-			return new Pair<Section<TurtleSentence>, Section<PredicateSentence>>(ts, null);
+			return new Pair<>(ts, null);
 		}
-		return new Pair<Section<TurtleSentence>, Section<PredicateSentence>>(null, null);
+		return new Pair<>(null, null);
 	}
 
 	private Section<Object> getDeleteSection(Article article, Statement statement) {

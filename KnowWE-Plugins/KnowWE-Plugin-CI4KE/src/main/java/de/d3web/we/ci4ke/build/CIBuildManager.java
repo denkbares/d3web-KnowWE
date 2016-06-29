@@ -151,7 +151,7 @@ public class CIBuildManager implements EventListener {
 		Section<CIDashboardType> ciDashboardSection = dashboard.getDashboardSection();
 		String flagString = DefaultMarkupType.getAnnotation(ciDashboardSection,
 				CIDashboardType.VERBOSE_PERSISTENCE_KEY);
-		return flagString != null && flagString.equalsIgnoreCase("true");
+		return "true".equalsIgnoreCase(flagString);
 	}
 
 	/**

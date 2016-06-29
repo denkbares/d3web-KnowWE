@@ -76,7 +76,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			Edge newLineRelationsKey = new Edge(fromNode, relationLabel, toNode);
 			data.addEdge(newLineRelationsKey);
 		}
-		if (data.getConceptDeclarations().size() == 0) {
+		if (data.getConceptDeclarations().isEmpty()) {
 			messages.add(new Message(Message.Type.ERROR, "The query produced an empty result set!"));
 			return null;
 		}
@@ -110,7 +110,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		if(!Strings.isBlank(DefaultMarkupType.getAnnotation(section, SparqlVisualizationType.VIS_TEMPLATE_CLASS)))  {
 			// this is a sparql visualization template
 			Collection<String> concepts = config.getConcepts();
-			if(concepts.size() > 0 ) {
+			if (!concepts.isEmpty()) {
 				// we have a concept set via url parameter to fill template
 				String conceptShortURI = concepts.iterator().next();
 				sparqlContentRaw = fillSparqlTemplate(sparqlContentRaw, conceptShortURI);
@@ -131,7 +131,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		SubGraphData data = convertToGraph(resultSet, config, core, uriProvider, section, messages);
 
 		// if no concept is specified, finally take first guess
-		if (data != null && config.getConcepts().isEmpty() && data.getConceptDeclarations().size() > 0) {
+		if (data != null && config.getConcepts().isEmpty() && !data.getConceptDeclarations().isEmpty()) {
 
 			// if no center concept has explicitly been specified, take any
 			config.setConcept(data.getConceptDeclarations().iterator().next().getName());

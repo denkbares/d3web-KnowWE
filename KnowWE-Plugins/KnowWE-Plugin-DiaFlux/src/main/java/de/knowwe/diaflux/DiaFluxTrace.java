@@ -64,8 +64,6 @@ public class DiaFluxTrace implements SessionObject {
 		public void propagating(Session session, PSMethod psMethod, Collection<PropagationEntry> entries) {
 		}
 
-		;
-
 		@Override
 		public void postPropagationStarted(Session session, Collection<PropagationEntry> entries) {
 			if (!DiaFluxUtils.isFlowCase(session)) {
@@ -87,8 +85,8 @@ public class DiaFluxTrace implements SessionObject {
 	};
 
 	private final Session session;
-	private final Collection<Node> tracedActiveNodes = new HashSet<Node>();
-	private final Collection<Edge> tracedActiveEdges = new HashSet<Edge>();
+	private final Collection<Node> tracedActiveNodes = new HashSet<>();
+	private final Collection<Edge> tracedActiveEdges = new HashSet<>();
 
 	public static final SessionObjectSource<DiaFluxTrace> SOURCE = new SessionObjectSource<DiaFluxTrace>() {
 
@@ -134,7 +132,7 @@ public class DiaFluxTrace implements SessionObject {
 		Collection<FlowRun> snappyFlows = FluxSolver.getFlowRunsWithEnteredSnapshot(
 				enteredSnapshots, caseObject);
 
-		Collection<Node> snappyNodes = new HashSet<Node>();
+		Collection<Node> snappyNodes = new HashSet<>();
 		for (SnapshotNode snapshotNode : enteredSnapshots) {
 			snappyNodes.addAll(
 					FluxSolver.getAllActiveNodesOfRunsWithSnapshot(snapshotNode,

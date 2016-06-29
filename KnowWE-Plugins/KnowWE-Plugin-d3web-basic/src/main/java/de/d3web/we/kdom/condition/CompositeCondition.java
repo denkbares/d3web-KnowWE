@@ -115,7 +115,7 @@ public class CompositeCondition extends AbstractType {
 	 * tells whether a CompositeCondition is a disjunction
 	 */
 	public boolean isDisjunction(Section<? extends CompositeCondition> c) {
-		return getDisjuncts(c).size() > 0;
+		return !getDisjuncts(c).isEmpty();
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class CompositeCondition extends AbstractType {
 	 * tells whether a CompositeCondition is a Conjunction
 	 */
 	public boolean isConjunction(Section<? extends CompositeCondition> c) {
-		return getConjuncts(c).size() > 0;
+		return !getConjuncts(c).isEmpty();
 	}
 
 	/**

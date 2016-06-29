@@ -51,9 +51,10 @@ public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 
 		ResourceBundle rb = Messages.getMessageBundle(user);
 
-		StringBuffer html = new StringBuffer();
-		html.append("<div id='taghandlerlist-panel' class='panel'>" + "<h3>"
-				+ rb.getString("KnowWE.TagHandlerList.header") + "</h3> ");
+		StringBuilder html = new StringBuilder();
+		html.append("<div id='taghandlerlist-panel' class='panel'>" + "<h3>")
+				.append(rb.getString("KnowWE.TagHandlerList.header"))
+				.append("</h3> ");
 		html.append("<div class=\"sortable\">");
 		html.append("<table class=\"wikitable\" border=\"1\">");
 		html.append("<tbody>");
@@ -61,13 +62,13 @@ public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 		// html.append("<tr class=\"odd\">");
 
 		// html.append("<table width=100% border=1>");
-		html.append("<TR><TH class=\"sort\">"
-				+ rb.getString("KnowWE.TagHandlerList.table.name")
-				+ "</TH><TH class=\"sort\">"
-				+ rb.getString("KnowWE.TagHandlerList.table.example")
-				+ "</TH><TH class=\"sort\">"
-				+ rb.getString("KnowWE.TagHandlerList.table.description")
-				+ "</TH>");
+		html.append("<TR><TH class=\"sort\">")
+				.append(rb.getString("KnowWE.TagHandlerList.table.name"))
+				.append("</TH><TH class=\"sort\">")
+				.append(rb.getString("KnowWE.TagHandlerList.table.example"))
+				.append("</TH><TH class=\"sort\">")
+				.append(rb.getString("KnowWE.TagHandlerList.table.description"))
+				.append("</TH>");
 		for (TagHandler th : coll) {
 			String name = "no name available";
 			String example = "no example available";
@@ -81,8 +82,13 @@ public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 				description = "Fehler";
 				Log.warning("Unable to get description for TagHandler " + th.getClass(), e);
 			}
-			html.append("<TR><TD>" + name + "</TD><TD>" + example + "</TD><TD>"
-					+ description + "</TD></TR> \n"); // \n only to avoid
+			html.append("<TR><TD>")
+					.append(name)
+					.append("</TD><TD>")
+					.append(example)
+					.append("</TD><TD>")
+					.append(description)
+					.append("</TD></TR> \n"); // \n only to avoid
 			// hmtl-code being cut by
 			// JspWiki (String.length
 			// > 10000)

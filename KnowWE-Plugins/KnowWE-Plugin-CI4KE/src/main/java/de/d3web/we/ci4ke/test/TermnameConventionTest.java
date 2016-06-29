@@ -59,7 +59,7 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 		Section<RootType> rootSection = testObject.getRootSection();
 		List<Section<TermDefinition>> terms = Sections.successors(rootSection,
 				TermDefinition.class);
-		Set<String> invalidTerms = new HashSet<String>(); // using set to filter
+		Set<String> invalidTerms = new HashSet<>(); // using set to filter
 															// duplicates
 		for (Section<TermDefinition> section : terms) {
 			String termName = section.get().getTermName(section);
@@ -69,7 +69,7 @@ public class TermnameConventionTest extends AbstractTest<Article> {
 			TestingUtils.checkInterrupt();
 		}
 
-		if (invalidTerms.size() > 0) {
+		if (!invalidTerms.isEmpty()) {
 			String result = "";
 			for (String string : invalidTerms) {
 				result += "* " + KnowWEUtils.maskJSPWikiMarkup(string) + "\n";

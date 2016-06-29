@@ -21,6 +21,7 @@
 package de.knowwe.kdom.xml;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +40,7 @@ public class XMLHead extends AbstractType {
 			Matcher matcher = pattern.matcher(text);
 			if (matcher.find()) {
 				if (matcher.group(1) == null && matcher.group(4) == null) {
-					return Arrays.asList(new SectionFinderResult(matcher.start(), matcher.end()));
+					return Collections.singletonList(new SectionFinderResult(matcher.start(), matcher.end()));
 				}
 			}
 			return null;

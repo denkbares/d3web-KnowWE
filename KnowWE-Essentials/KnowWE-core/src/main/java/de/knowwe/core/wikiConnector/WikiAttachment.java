@@ -38,14 +38,14 @@ public interface WikiAttachment {
 	 * 
 	 * @created 11.04.2012
 	 */
-	public String getFileName();
+	String getFileName();
 
 	/**
 	 * Returns the name/title of the article the attachment belongs to.
 	 * 
 	 * @created 11.04.2012
 	 */
-	public String getParentName();
+	String getParentName();
 
 	/**
 	 * Returns the path of the attachment in the connected wiki. The path is
@@ -54,7 +54,7 @@ public interface WikiAttachment {
 	 * 
 	 * @created 11.04.2012
 	 */
-	public String getPath();
+	String getPath();
 
 	/**
 	 * Returns the date of the last change of attachment.
@@ -62,7 +62,7 @@ public interface WikiAttachment {
 	 * @return the date of the attachment
 	 * @created 11.04.2012
 	 */
-	public Date getDate();
+	Date getDate();
 
 	/**
 	 * Returns the date when the specified version of attachment has been
@@ -74,7 +74,7 @@ public interface WikiAttachment {
 	 * @throws IllegalArgumentException if the version does not exists
 	 * @created 11.04.2012
 	 */
-	public Date getDate(int version) throws IllegalArgumentException;
+	Date getDate(int version) throws IllegalArgumentException;
 
 	/**
 	 * Returns the size of the attachment in bytes. If the size is unknown, -1
@@ -83,7 +83,7 @@ public interface WikiAttachment {
 	 * @return the size of the attachment
 	 * @created 11.04.2012
 	 */
-	public long getSize();
+	long getSize();
 
 	/**
 	 * Returns the size of specified version of the attachment in bytes. Throws
@@ -94,7 +94,7 @@ public interface WikiAttachment {
 	 * @throws IllegalArgumentException if the version does not exists
 	 * @created 11.04.2012
 	 */
-	public long getSize(int version);
+	long getSize(int version);
 
 	/**
 	 * Returns an InputStream with the content of the attachment.
@@ -105,7 +105,7 @@ public interface WikiAttachment {
 	 * @throws IOException if the attachment cannot be opened
 	 * @created 11.04.2012
 	 */
-	public InputStream getInputStream() throws IOException;
+	InputStream getInputStream() throws IOException;
 
 	/**
 	 * Returns an InputStream with the content of the specified version of the
@@ -120,7 +120,7 @@ public interface WikiAttachment {
 	 * @throws IOException if the attachment cannot be opened
 	 * @created 11.04.2012
 	 */
-	public InputStream getInputStream(int version) throws IOException, IllegalArgumentException;
+	InputStream getInputStream(int version) throws IOException, IllegalArgumentException;
 
 	/**
 	 * Returns the version of this attachment.
@@ -128,7 +128,7 @@ public interface WikiAttachment {
 	 * @created 18.05.2012
 	 * @return the version of this attachment
 	 */
-	public int getVersion();
+	int getVersion();
 
 	/**
 	 * Deletes a specific version of the attachment from the underlying wiki.
@@ -142,7 +142,7 @@ public interface WikiAttachment {
 	 *            exists
 	 * @exception IOException if the version cannot be deleted
 	 */
-	public void delete(int version) throws IOException, IllegalArgumentException;
+	void delete(int version) throws IOException, IllegalArgumentException;
 
 	/**
 	 * Returns an array of all available versions of this attachment. The
@@ -155,5 +155,5 @@ public interface WikiAttachment {
 	 * @return the array of versions still available
 	 * @throws IOException if the list of versions could not been created
 	 */
-	public int[] getAvailableVersions() throws IOException;
+	int[] getAvailableVersions() throws IOException;
 }

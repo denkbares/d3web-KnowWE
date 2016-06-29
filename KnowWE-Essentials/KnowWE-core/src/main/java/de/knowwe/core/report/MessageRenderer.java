@@ -26,8 +26,8 @@ import de.knowwe.core.user.UserContext;
 
 public interface MessageRenderer {
 
-	public void postRenderMessage(Message m, UserContext user, Compiler source, RenderResult result);
+	void postRenderMessage(Message m, UserContext user, Compiler source, RenderResult result);
 
-	public void preRenderMessage(Message m, UserContext user, Compiler source, RenderResult result);
+	void preRenderMessage(Message m, UserContext user, Compiler source, RenderResult result);
 
 }

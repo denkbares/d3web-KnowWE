@@ -25,6 +25,7 @@ import java.io.FileFilter;
 
 public class JarFileFilter implements FileFilter {
 
+	@Override
 	public boolean accept(File f) {
 		return f.getName().endsWith(".jar");
 	}

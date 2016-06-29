@@ -27,9 +27,9 @@ public class CIBuildCache {
 
 	private final int maxSize;
 
-	private final LinkedList<Integer> addOrder = new LinkedList<Integer>();
+	private final LinkedList<Integer> addOrder = new LinkedList<>();
 
-	private final TreeMap<Integer, BuildResult> cache = new TreeMap<Integer, BuildResult>();
+	private final TreeMap<Integer, BuildResult> cache = new TreeMap<>();
 
 	private BuildResult latestBuild = null;
 

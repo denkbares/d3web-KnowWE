@@ -112,7 +112,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 		terminologyManager = new TerminologyManager();
 		Messages.clearMessages(this);
-		ScriptCompiler<D3webCompiler> scriptCompiler = new ScriptCompiler<D3webCompiler>(this);
+		ScriptCompiler<D3webCompiler> scriptCompiler = new ScriptCompiler<>(this);
 		Collection<Section<?>> sectionsOfPackage = getPackageManager().getSectionsOfPackage(
 				packagesToCompile);
 		for (Section<?> section : sectionsOfPackage) {

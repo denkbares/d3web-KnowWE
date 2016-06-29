@@ -57,7 +57,7 @@ public class SwitchAsyncDelegateRenderer implements Renderer {
         String rendererType = DefaultMarkupType.getAnnotation(defMarkupSection,
                 Config.RENDERER);
 
-        if(rendererType != null && rendererType.equalsIgnoreCase("d3")) {
+        if ("d3".equalsIgnoreCase(rendererType)) {
             visRenderer.render(content, user, result);
         } else {
             asynchronRenderer.render(content, user, result);

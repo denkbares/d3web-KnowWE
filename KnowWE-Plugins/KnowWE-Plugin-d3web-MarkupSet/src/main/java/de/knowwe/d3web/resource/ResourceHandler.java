@@ -55,7 +55,7 @@ public class ResourceHandler implements D3webHandler<ResourceType> {
 		String[] sources = DefaultMarkupType.getAnnotations(section, ResourceType.ANNOTATION_SRC);
 		String sourcePath = null;
 		String destinationPath = null;
-		Collection<Message> msgs = new ArrayList<Message>();
+		Collection<Message> msgs = new ArrayList<>();
 		if (paths.length > 0) {
 			destinationPath = paths[0];
 			if (paths.length > 1) {

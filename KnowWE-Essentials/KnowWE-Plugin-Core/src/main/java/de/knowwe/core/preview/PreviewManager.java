@@ -51,7 +51,7 @@ import de.knowwe.plugin.Plugins;
  */
 public class PreviewManager {
 
-	private final Map<Scope, TreeMap<Integer, PreviewRenderer>> previewRenderers = new LinkedHashMap<Scope, TreeMap<Integer, PreviewRenderer>>();
+	private final Map<Scope, TreeMap<Integer, PreviewRenderer>> previewRenderers = new LinkedHashMap<>();
 
 	private static final PreviewManager INSTANCE = new PreviewManager();
 
@@ -125,7 +125,7 @@ public class PreviewManager {
 					// but take care not overwrite an existing scope,
 					// because it has the higher priority
 					if (!previewRenderers.containsKey(scope)) {
-						TreeMap<Integer, PreviewRenderer> priorityMap = new TreeMap<Integer, PreviewRenderer>();
+						TreeMap<Integer, PreviewRenderer> priorityMap = new TreeMap<>();
 						priorityMap.put(priority, (PreviewRenderer) object);
 						previewRenderers.put(scope, priorityMap);
 					}
@@ -148,9 +148,9 @@ public class PreviewManager {
 	 * @created 16.08.2013
 	 */
 	public Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
-		List<Section<?>> list = new ArrayList<Section<?>>(items);
+		List<Section<?>> list = new ArrayList<>(items);
 		Collections.sort(list, KDOMPositionComparator.getInstance());
-		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<Section<?>, Collection<Section<?>>>();
+		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<>();
 		for (Section<?> section : list) {
 			Section<?> previewSection = getPreviewAncestor(section);
 			// handle if the section has no preview renderer
@@ -162,7 +162,7 @@ public class PreviewManager {
 			// or create group if it is new
 			Collection<Section<?>> group = result.get(previewSection);
 			if (group == null) {
-				group = new LinkedList<Section<?>>();
+				group = new LinkedList<>();
 				result.put(previewSection, group);
 			}
 			group.add(section);

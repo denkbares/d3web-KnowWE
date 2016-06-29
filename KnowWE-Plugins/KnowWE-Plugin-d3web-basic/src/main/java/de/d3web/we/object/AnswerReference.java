@@ -55,7 +55,7 @@ public abstract class AnswerReference
 			Section<QuestionReference> questionSection = getQuestionSection(Sections.cast(section, AnswerReference.class));
 			if (questionSection == null) return null;
 			Question question = questionSection.get().getTermObject(compiler, questionSection);
-			if (question == null || !(question instanceof QuestionChoice)) return null;
+			if (!(question instanceof QuestionChoice)) return null;
 			choice = KnowledgeBaseUtils.findChoice((QuestionChoice) question, getTermName(section), false);
 		}
 		return choice;

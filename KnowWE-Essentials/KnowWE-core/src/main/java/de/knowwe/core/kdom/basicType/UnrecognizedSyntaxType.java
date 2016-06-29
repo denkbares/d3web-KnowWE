@@ -47,7 +47,7 @@ public class UnrecognizedSyntaxType extends AbstractType {
 
 			@Override
 			public Collection<Message> create(DefaultGlobalCompiler article, Section<UnrecognizedSyntaxType> section) {
-				Collection<Message> msgs = new ArrayList<Message>(1);
+				Collection<Message> msgs = new ArrayList<>(1);
 				msgs.add(Messages.error("Unrecognizable syntax"));
 				return msgs;
 			}

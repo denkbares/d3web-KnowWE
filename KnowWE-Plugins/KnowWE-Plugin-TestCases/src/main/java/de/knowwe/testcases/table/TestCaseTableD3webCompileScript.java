@@ -21,7 +21,6 @@ package de.knowwe.testcases.table;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.testcase.model.DefaultTestCase;
 import de.d3web.testcase.model.DescribedTestCase;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.we.knowledgebase.D3webCompileScript;

@@ -79,11 +79,11 @@ public class QuestionnaireTest extends TestCase {
 						expected.getName(), actual.getName());
 
 				// Test Hierarchy
-				List<String> expectedList = new ArrayList<String>();
+				List<String> expectedList = new ArrayList<>();
 				for (TerminologyObject obj : expected.getParents()) {
 					expectedList.add(obj.getName());
 				}
-				List<String> actualList = new ArrayList<String>();
+				List<String> actualList = new ArrayList<>();
 				for (TerminologyObject obj : actual.getParents()) {
 					actualList.add(obj.getName());
 				}
@@ -100,11 +100,11 @@ public class QuestionnaireTest extends TestCase {
 				}
 
 				// Children
-				expectedList = new ArrayList<String>();
+				expectedList = new ArrayList<>();
 				for (TerminologyObject obj : expected.getChildren()) {
 					expectedList.add(obj.getName());
 				}
-				actualList = new ArrayList<String>();
+				actualList = new ArrayList<>();
 				for (TerminologyObject obj : actual.getChildren()) {
 					actualList.add(obj.getName());
 				}

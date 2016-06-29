@@ -47,7 +47,7 @@ public class FootnoteExporter implements Exporter<FootnoteType> {
 
 	private int lastFootnoteID = 0;
 	private final Map<Pair<Article, String>, BigInteger> footnoteIDs =
-			new HashMap<Pair<Article, String>, BigInteger>();
+			new HashMap<>();
 
 	@Override
 	public boolean canExport(Section<FootnoteType> section) {
@@ -65,7 +65,7 @@ public class FootnoteExporter implements Exporter<FootnoteType> {
 	}
 
 	private BigInteger getFootnoteIDInternal(DocumentBuilder builder, Article article, String footnoteNumber) {
-		Pair<Article, String> key = new Pair<Article, String>(article, footnoteNumber.trim());
+		Pair<Article, String> key = new Pair<>(article, footnoteNumber.trim());
 		BigInteger id = footnoteIDs.get(key);
 		if (id == null) {
 			XWPFFootnotes footnotes = builder.getDocument().createFootnotes();

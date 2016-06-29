@@ -60,10 +60,10 @@ public class Scope {
 	private static final String SEPERATOR = "/";
 
 	private static final Map<Type, Set<String>> CACHED_NAMES_OF_KDOM_TYPE =
-			new HashMap<Type, Set<String>>();
+			new HashMap<>();
 
 	private static final Map<String, Scope> CACHED_SCOPES =
-			new HashMap<String, Scope>();
+			new HashMap<>();
 
 	public static class TypePath {
 
@@ -124,7 +124,7 @@ public class Scope {
 	 */
 	private Scope(String pathName) {
 		pathName = pathName.trim();
-		List<String> items = new ArrayList<String>(10);
+		List<String> items = new ArrayList<>(10);
 		if (pathName.startsWith(SEPERATOR)) {
 			pathName = pathName.substring(SEPERATOR.length());
 			items.add(ROOT);
@@ -165,7 +165,7 @@ public class Scope {
 	 * @return the matching successors sections
 	 */
 	public List<Section<?>> getMatchingSuccessors(Section<?> root) {
-		List<Section<?>> result = new LinkedList<Section<?>>();
+		List<Section<?>> result = new LinkedList<>();
 		getMatchingSuccessors(root, result);
 		return result;
 	}
@@ -248,7 +248,7 @@ public class Scope {
 		Class<? extends Type> nodeTypeClass = typeElement.getClass();
 		Set<String> names = CACHED_NAMES_OF_KDOM_TYPE.get(typeElement);
 		if (names == null) {
-			names = new HashSet<String>();
+			names = new HashSet<>();
 			// and all class names of the derivation hierarchy
 			collectAllClassNames(nodeTypeClass, names);
 			// we accept the name of the object type (in lower case)

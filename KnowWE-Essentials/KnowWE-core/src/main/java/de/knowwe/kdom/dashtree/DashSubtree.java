@@ -167,7 +167,7 @@ public class DashSubtree extends AbstractType {
 			}
 
 			Matcher m = null;
-			ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			ArrayList<SectionFinderResult> result = new ArrayList<>();
 			if (Strings.isBlank(text)) return result;
 			try {
 				// Searches for line-beginning with correct count of dashes

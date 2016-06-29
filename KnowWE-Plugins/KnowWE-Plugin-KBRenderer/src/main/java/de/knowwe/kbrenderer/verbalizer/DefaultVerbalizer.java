@@ -115,7 +115,7 @@ public class DefaultVerbalizer implements Verbalizer {
 		StringBuilder b = new StringBuilder();
 		b.append('[');
 		for (int i = 0;; i++) {
-			b.append("(" + a[i].getClass().getSimpleName() + ") " + String.valueOf(a[i]));
+			b.append("(").append(a[i].getClass().getSimpleName()).append(") ").append(String.valueOf(a[i]));
 			if (i == iMax) return b.append(']').toString();
 			b.append(", ");
 		}

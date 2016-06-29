@@ -47,7 +47,7 @@ public class AllTextFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		if (text.length() > 0) {
+		if (!text.isEmpty()) {
 			return SectionFinderResult.singleItemList(new SectionFinderResult(0,
 					text.length()));
 		}

@@ -34,7 +34,7 @@ public class RenderingStyle {
 
 	private String shape = "box";
 	private String fontsize = "10";
-	private List<String> style = new ArrayList<String>();
+	private List<String> style = new ArrayList<>();
 	private String fillcolor = "";
 	private String fontcolor = "black";
 	private Fontstyle fontstyle = Fontstyle.NORMAL;
@@ -70,7 +70,7 @@ public class RenderingStyle {
 	}
 
 	public String getStyle() {
-		if (style.size() == 0) return "";
+		if (style.isEmpty()) return "";
 		return Strings.concat(",", style);
 	}
 

@@ -48,7 +48,7 @@ public class TableSectionFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		ArrayList<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+		ArrayList<SectionFinderResult> result = new ArrayList<>();
 		Pattern TABLE_LINE = Pattern.compile(TABLE_LINE_REGEXP, Pattern.MULTILINE);
 		Matcher m = TABLE_LINE.matcher(text);
 

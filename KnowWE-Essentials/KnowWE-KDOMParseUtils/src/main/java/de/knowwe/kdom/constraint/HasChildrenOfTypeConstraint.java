@@ -38,7 +38,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class HasChildrenOfTypeConstraint implements SectionFinderConstraint {
 
 	private final List<Class<? extends Type>> types =
-			new ArrayList<Class<? extends Type>>(1);
+			new ArrayList<>(1);
 
 	public HasChildrenOfTypeConstraint(Class<? extends Type> type) {
 		this.types.add(type);

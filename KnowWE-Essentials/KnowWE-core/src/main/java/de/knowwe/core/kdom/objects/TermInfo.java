@@ -28,7 +28,7 @@ public interface TermInfo extends Iterable<TerminologyManager> {
 	 * @created 26.08.2013
 	 * @return the/a term identifier representing the term of this TermInfo
 	 */
-	public abstract Identifier getIdentifier();
+	Identifier getIdentifier();
 
 	/**
 	 * Returns if the contents of this term info are collected for case
@@ -37,7 +37,7 @@ public interface TermInfo extends Iterable<TerminologyManager> {
 	 * @created 26.08.2013
 	 * @return the case sensitivity flag
 	 */
-	public abstract boolean isCaseSensitive();
+	boolean isCaseSensitive();
 
 	/**
 	 * Returns if the specified identifier will match this {@link TermInfo},
@@ -49,7 +49,7 @@ public interface TermInfo extends Iterable<TerminologyManager> {
 	 *        set
 	 * @return if the identifier matches this set
 	 */
-	public abstract boolean matches(Identifier otherIdentifier);
+	boolean matches(Identifier otherIdentifier);
 
 	/**
 	 * Returns the key the to identify this {@link TermInfo} object. Is
@@ -58,7 +58,7 @@ public interface TermInfo extends Iterable<TerminologyManager> {
 	 * @created 26.08.2013
 	 * @return the key to be used by that term info
 	 */
-	public abstract String getKey();
+	String getKey();
 
 	/**
 	 * Returns a (unmodifiable) collection of all the terminology managers that
@@ -71,7 +71,7 @@ public interface TermInfo extends Iterable<TerminologyManager> {
 	 * @see #getIdentifier()
 	 * @see #isCaseSensitive()
 	 */
-	public abstract Collection<TerminologyManager> getManagers();
+	Collection<TerminologyManager> getManagers();
 
 	/**
 	 * Implementation to iterate through the {@link TermInfo}'s terminology
@@ -80,6 +80,7 @@ public interface TermInfo extends Iterable<TerminologyManager> {
 	 * @created 26.08.2013
 	 * @return an iterator to iterate through the terminology managers
 	 */
-	public abstract Iterator<TerminologyManager> iterator();
+	@Override
+	Iterator<TerminologyManager> iterator();
 
 }

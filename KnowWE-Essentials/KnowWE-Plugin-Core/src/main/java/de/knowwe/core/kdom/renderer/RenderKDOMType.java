@@ -99,7 +99,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 			string.append(Strings.encodeHtml(s.getText()) + "&#8203;");
 			string.appendHtml("</div></div></td>");
 			string.appendHtml("</tr>");
-			if (s.getChildren().size() > 0) {
+			if (!s.getChildren().isEmpty()) {
 				for (Section<?> child : s.getChildren()) {
 					renderSubtree(child, string, (count + 1));
 				}

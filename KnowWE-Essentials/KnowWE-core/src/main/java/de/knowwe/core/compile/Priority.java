@@ -25,9 +25,9 @@ import java.util.TreeSet;
 
 public class Priority implements Comparable<Priority> {
 
-	private static final TreeSet<Priority> registeredPrioritiesTree = new TreeSet<Priority>();
+	private static final TreeSet<Priority> registeredPrioritiesTree = new TreeSet<>();
 
-	private static final HashMap<Integer, Priority> registeredPrioritiesHash = new HashMap<Integer, Priority>();
+	private static final HashMap<Integer, Priority> registeredPrioritiesHash = new HashMap<>();
 
 	public static final Priority INIT = new Priority(-1000);
 

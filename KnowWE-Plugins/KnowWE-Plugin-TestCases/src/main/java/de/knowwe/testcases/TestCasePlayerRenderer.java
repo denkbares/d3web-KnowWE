@@ -105,7 +105,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 		string.appendHtml("<div class='TestCasePlayerContent' id='" + section.getID() + "'>");
 
-		if (providers.size() == 0) {
+		if (providers.isEmpty()) {
 			renderNoProviderWarning(playerSection, string);
 		}
 		else {
@@ -181,7 +181,7 @@ public class TestCasePlayerRenderer implements Renderer {
 
 	private void renderProviderMessages(TestCaseProvider provider, RenderResult string) {
 		List<Message> messages = provider.getMessages();
-		if (messages.size() > 0) {
+		if (!messages.isEmpty()) {
 			DefaultMarkupRenderer.renderMessagesOfType(Type.ERROR, messages, string);
 		}
 	}
@@ -670,7 +670,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			Message notValidTestCaseError = Messages.warning(
 					"There are testcase sections in the specified packages, but none of them generates a testcase.");
 			DefaultMarkupRenderer.renderMessagesOfType(
-					Type.WARNING, Arrays.asList(notValidTestCaseError), string);
+					Type.WARNING, Collections.singletonList(notValidTestCaseError), string);
 		}
 		return selectedTriple;
 	}

@@ -274,7 +274,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 	protected static Set<Section<?>> findTermDefinitionSections(String web, Identifier termIdentifier) {
 		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier, false);
-		Set<Section<?>> sections = new HashSet<Section<?>>();
+		Set<Section<?>> sections = new HashSet<>();
 		if (termInfo == null) {
 			return sections;
 		}
@@ -305,7 +305,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static Collection<Class<?>> getTermObjectClasses(UserContext user, Identifier identifier) {
-		Set<Class<?>> termClasses = new HashSet<Class<?>>();
+		Set<Class<?>> termClasses = new HashSet<>();
 		for (TerminologyManager manager : KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(user.getWeb()))) {
 			termClasses.addAll(manager.getTermClasses(identifier));
 		}
@@ -327,12 +327,12 @@ public class ObjectInfoRenderer implements Renderer {
 
 	private static Map<Article, List<Section<?>>> groupByArticle(Collection<Section<?>> references) {
 		Map<Article, List<Section<?>>> result =
-				new TreeMap<Article, List<Section<?>>>(ArticleComparator.getInstance());
+				new TreeMap<>(ArticleComparator.getInstance());
 		for (Section<?> reference : references) {
 			Article article = reference.getArticle();
 			List<Section<?>> existingReferences = result.get(article);
 			if (existingReferences == null) {
-				existingReferences = new LinkedList<Section<?>>();
+				existingReferences = new LinkedList<>();
 			}
 			existingReferences.add(reference);
 			result.put(article, existingReferences);
@@ -365,9 +365,9 @@ public class ObjectInfoRenderer implements Renderer {
 	 * @created 16.08.2013
 	 */
 	private static Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
-		List<Section<?>> list = new ArrayList<Section<?>>(items);
+		List<Section<?>> list = new ArrayList<>(items);
 		Collections.sort(list, KDOMPositionComparator.getInstance());
-		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<Section<?>, Collection<Section<?>>>();
+		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<>();
 		for (Section<?> section : list) {
 			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
 			// handle if the section has no preview renderer
@@ -379,7 +379,7 @@ public class ObjectInfoRenderer implements Renderer {
 			// or create group if it is new
 			Collection<Section<?>> group = result.get(previewSection);
 			if (group == null) {
-				group = new LinkedList<Section<?>>();
+				group = new LinkedList<>();
 				result.put(previewSection, group);
 			}
 			group.add(section);
@@ -482,7 +482,7 @@ public class ObjectInfoRenderer implements Renderer {
 	 * @created 29.11.2013
 	 */
 	private static CountingSet<Type> getSurroundingMarkupNames(List<Section<?>> sections) {
-		CountingSet<Type> types = new CountingSet<Type>();
+		CountingSet<Type> types = new CountingSet<>();
 		Map<Section<?>, Collection<Section<?>>> groupedByPreview = groupByPreview(sections);
 		for (Section<?> preview : groupedByPreview.keySet()) {
 			types.add(getSurroundingMarkupName(preview));

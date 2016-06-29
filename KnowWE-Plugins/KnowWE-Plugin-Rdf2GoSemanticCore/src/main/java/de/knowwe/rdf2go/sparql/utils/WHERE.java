@@ -47,8 +47,9 @@ public class WHERE extends SparqlQuery {
 	@Override
 	public String createContent(String... content) {
 		StringBuilder contentBuilder = new StringBuilder();
-		for (String part : content)
-			contentBuilder.append(part + " .\n");
+		for (String part : content) {
+			contentBuilder.append(part).append(" .\n");
+		}
 		return contentBuilder.toString();
 	}
 

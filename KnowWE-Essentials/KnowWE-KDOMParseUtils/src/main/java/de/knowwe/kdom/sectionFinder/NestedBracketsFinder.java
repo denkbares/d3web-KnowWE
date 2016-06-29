@@ -74,7 +74,7 @@ public class NestedBracketsFinder implements SectionFinder {
 		Matcher matcher = pattern.matcher(text);
 		int depth = 0;
 		int start = -1;
-		List<SectionFinderResult> results = new ArrayList<SectionFinderResult>();
+		List<SectionFinderResult> results = new ArrayList<>();
 		while (matcher.find()) {
 			int groupCount = matcher.groupCount();
 			boolean foundNesting = matcher.group(1) != null;

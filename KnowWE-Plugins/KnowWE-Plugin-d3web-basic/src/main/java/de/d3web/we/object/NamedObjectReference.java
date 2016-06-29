@@ -56,7 +56,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 	@Override
 	public NamedObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<NamedObject>> section) {
 		Collection<NamedObject> result = getTermObjects(compiler, section);
-		if (result != null && result.size() > 0) {
+		if (result != null && !result.isEmpty()) {
 			return result.iterator().next();
 		}
 		else {

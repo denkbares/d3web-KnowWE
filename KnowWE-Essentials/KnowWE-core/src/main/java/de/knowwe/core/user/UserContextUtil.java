@@ -48,7 +48,7 @@ public class UserContextUtil {
 	 * @return map containing the parameters of the http request.
 	 */
 	public static Map<String, String> getParameters(HttpServletRequest request) {
-		Map<String, String> parameters = new HashMap<String, String>();
+		Map<String, String> parameters = new HashMap<>();
 		if (request != null) {
 			Enumeration<?> iter = request.getParameterNames();
 			boolean decode = checkForFlowChart(request.getParameter("action"));

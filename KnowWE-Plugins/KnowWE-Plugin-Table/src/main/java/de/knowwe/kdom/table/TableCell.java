@@ -94,7 +94,7 @@ public class TableCell extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
 			Matcher tagMatcher = pattern.matcher(text);
-			List<SectionFinderResult> resultRegex = new LinkedList<SectionFinderResult>();
+			List<SectionFinderResult> resultRegex = new LinkedList<>();
 
 			while (tagMatcher.find()) {
 				resultRegex.add(new SectionFinderResult(tagMatcher.start(), tagMatcher.end()));

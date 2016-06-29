@@ -19,14 +19,8 @@
 
 package de.knowwe.ontology.turtle;
 
-import de.d3web.strings.Strings;
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.ontology.turtle.compile.TurtleCompileHandler;
 
 /**
  * @author Jochen Reutelshoefer (denkbares GmbH)

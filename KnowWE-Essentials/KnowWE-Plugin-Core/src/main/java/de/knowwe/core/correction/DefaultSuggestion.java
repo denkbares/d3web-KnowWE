@@ -37,6 +37,7 @@ public class DefaultSuggestion implements Suggestion{
 		this.distance = distance;
 	}
 
+	@Override
 	public String getSuggestionText() {
 		return suggestion;
 	}
@@ -46,6 +47,7 @@ public class DefaultSuggestion implements Suggestion{
 		return suggestion;
 	}
 
+	@Override
 	public int getDistance() {
 		return distance;
 	}

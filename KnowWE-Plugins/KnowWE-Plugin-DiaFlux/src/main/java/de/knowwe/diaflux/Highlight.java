@@ -50,8 +50,8 @@ public class Highlight {
 	public Highlight(String parentId, String prefix) {
 		this.parentId = parentId;
 		this.prefix = prefix;
-		this.edges = new HashMap<String, Map<String, String>>();
-		this.nodes = new HashMap<String, Map<String, String>>();
+		this.edges = new HashMap<>();
+		this.nodes = new HashMap<>();
 	}
 
 	public void add(Edge edge, String key, String value) {
@@ -73,7 +73,7 @@ public class Highlight {
 
 	private void createHighlights(StringBuilder bob, Map<String, Map<String, String>> objects, String objectType) {
 		for (String element : objects.keySet()) {
-			bob.append("<" + objectType + " id='");
+			bob.append("<").append(objectType).append(" id='");
 			bob.append(element);
 			bob.append("' ");
 
@@ -85,7 +85,7 @@ public class Highlight {
 				bob.append("' ");
 			}
 			bob.append(">");
-			bob.append("</" + objectType + ">\r");
+			bob.append("</").append(objectType).append(">\r");
 		}
 
 	}
@@ -93,7 +93,7 @@ public class Highlight {
 	private <T> void putValue(Map<T, Map<String, String>> map, T object, String key, String value) {
 		Map<String, String> values = map.get(object);
 		if (values == null) {
-			values = new HashMap<String, String>();
+			values = new HashMap<>();
 			map.put(object, values);
 		}
 		values.put(key, Strings.encodeHtml(value));
@@ -102,7 +102,7 @@ public class Highlight {
 	private void appendHeader(StringBuilder bob) {
 		bob.append("<flow id='");
 		bob.append(parentId);
-		bob.append("' cssprefix ='" + prefix + "'>\r");
+		bob.append("' cssprefix ='").append(prefix).append("'>\r");
 
 	}
 
@@ -134,7 +134,7 @@ public class Highlight {
 	}
 
 	Collection<String> getRemainingIds(Collection<? extends DiaFluxElement> elements, Collection<String> ids) {
-		Collection<String> result = new ArrayList<String>(elements.size());
+		Collection<String> result = new ArrayList<>(elements.size());
 
 		for (DiaFluxElement element : elements) {
 			result.add(element.getID());

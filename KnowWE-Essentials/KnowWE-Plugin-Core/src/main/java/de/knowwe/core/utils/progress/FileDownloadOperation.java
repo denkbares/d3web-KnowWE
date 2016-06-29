@@ -28,7 +28,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	private File tempFile = null;
 	private UUID requestMarker = null;
 	private final String storeKey = FileDownloadOperation.class.getName();
-	private List<Message> messages = new LinkedList<Message>();
+	private List<Message> messages = new LinkedList<>();
 
 	public static String COMPLETE_MESSAGE = "Done.";
 
@@ -98,7 +98,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 
 	public boolean hasMessage(Type type) {
 		for (Message msg : messages) {
-			if (msg.getType().equals(type)) return true;
+			if (msg.getType() == type) return true;
 		}
 		return false;
 	}
@@ -118,8 +118,8 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		for (Message msg : messages) {
 			Type type = msg.getType();
 			String details = msg.getDetails();
-			StringBuilder builder = (type.equals(Type.ERROR)) ? errors :
-					(type.equals(Type.WARNING)) ? warnings : other;
+			StringBuilder builder = (type == Type.ERROR) ? errors :
+					(type == Type.WARNING) ? warnings : other;
 			if (builder.length() > 0) {
 				builder.append("\n<br>");
 			}

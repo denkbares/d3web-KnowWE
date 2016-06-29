@@ -58,12 +58,12 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 			Log.warning("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
-		List<TestObjectContainer<T>> result = new ArrayList<TestObjectContainer<T>>();
+		List<TestObjectContainer<T>> result = new ArrayList<>();
 		if (c.equals(Article.class)) {
 
 			Collection<Article> articlesMatchingPattern = getArticlesMatchingPattern(testObjectName);
 			for (Article article : articlesMatchingPattern) {
-				result.add(new TestObjectContainer<T>(article.getTitle(), c.cast(article)));
+				result.add(new TestObjectContainer<>(article.getTitle(), c.cast(article)));
 			}
 
 		}
@@ -71,13 +71,13 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		if (c.equals(ArticleManager.class)) {
 			Object byName = Environment.getInstance().getArticleManager(web);
 			if (byName != null) {
-				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
+				result.add(new TestObjectContainer<>(web, c.cast(byName)));
 			}
 		}
 		if (c.equals(PackageManager.class)) {
 			Object byName = KnowWEUtils.getPackageManager(web);
 			if (byName != null) {
-				result.add(new TestObjectContainer<T>(web, c.cast(byName)));
+				result.add(new TestObjectContainer<>(web, c.cast(byName)));
 			}
 		}
 
@@ -88,11 +88,11 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		ArticleManager mgr = Environment.getInstance().getArticleManager(
 				Environment.DEFAULT_WEB);
 		Pattern pattern = Pattern.compile(s);
-		List<Article> matchingArticles = new ArrayList<Article>();
+		List<Article> matchingArticles = new ArrayList<>();
 		// we are asynchronous here, so we need a copy of the collection
 		// the collection returned from the manager is synchronized, so creating
 		// the new collection also happens synchronous
-		for (Article article : new ArrayList<Article>(mgr.getArticles())) {
+		for (Article article : new ArrayList<>(mgr.getArticles())) {
 			String articleName = article.getTitle();
 			if (pattern.matcher(articleName).matches()) {
 				matchingArticles.add(article);

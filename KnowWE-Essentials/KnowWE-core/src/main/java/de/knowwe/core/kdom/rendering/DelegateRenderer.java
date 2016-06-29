@@ -63,7 +63,7 @@ public class DelegateRenderer implements Renderer {
 
 		try {
 			List<Section<?>> subSections = section.getChildren();
-			if (subSections.size() == 0) {
+			if (subSections.isEmpty()) {
 				// KnowWEDomRenderer renderer = getRenderer(section, user);
 				// if (renderer == this) {
 				// // avoid endless recursion
@@ -235,6 +235,6 @@ public class DelegateRenderer implements Renderer {
 
 	private boolean isRenderTypes(Map<String, String> urlParameterMap) {
 		String debug = urlParameterMap.get("renderTypes");
-		return debug != null && debug.equals("true");
+		return "true".equals(debug);
 	}
 }

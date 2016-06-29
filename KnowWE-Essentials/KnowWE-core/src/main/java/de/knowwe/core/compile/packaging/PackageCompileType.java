@@ -35,7 +35,7 @@ public abstract class PackageCompileType extends AbstractType {
 		Collection<PackageCompiler> compilers = (Collection<PackageCompiler>)
 				section.getObject(COMPILER_STORY_KEY);
 		if (compilers == null) {
-			compilers = new ArrayList<PackageCompiler>(5);
+			compilers = new ArrayList<>(5);
 			section.storeObject(COMPILER_STORY_KEY, compilers);
 		}
 		compilers.add(compiler);

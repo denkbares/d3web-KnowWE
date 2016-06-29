@@ -92,11 +92,11 @@ public class SolutionsTest extends TestCase {
 
 				// Test Hierarchy
 				// for-loop for this because id is not relevant any more
-				List<String> expectedList = new ArrayList<String>();
+				List<String> expectedList = new ArrayList<>();
 				for (TerminologyObject obj : expected.getParents()) {
 					expectedList.add(obj.getName());
 				}
-				List<String> actualList = new ArrayList<String>();
+				List<String> actualList = new ArrayList<>();
 				for (TerminologyObject obj : actual.getParents()) {
 					actualList.add(obj.getName());
 				}
@@ -111,11 +111,11 @@ public class SolutionsTest extends TestCase {
 				}
 
 				// Test Hierarchy: Test children
-				expectedList = new ArrayList<String>();
+				expectedList = new ArrayList<>();
 				for (TerminologyObject obj : expected.getChildren()) {
 					expectedList.add(obj.getName());
 				}
-				actualList = new ArrayList<String>();
+				actualList = new ArrayList<>();
 				for (TerminologyObject obj : actual.getChildren()) {
 					actualList.add(obj.getName());
 				}

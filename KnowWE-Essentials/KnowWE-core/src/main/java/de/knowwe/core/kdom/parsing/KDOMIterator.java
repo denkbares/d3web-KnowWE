@@ -20,6 +20,7 @@
 package de.knowwe.core.kdom.parsing;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -89,7 +90,7 @@ public class KDOMIterator implements Iterator<Section<? extends Type>> {
 	 * @see de.knowwe.kdom.filter.SectionFilter#accept(Section)
 	 */
 	public static <T extends Type> KDOMIterator depthFirst(Section<T> root, SectionFilter descentFilter) {
-		return depthFirst(Arrays.asList(root).iterator(), descentFilter);
+		return depthFirst(Collections.singletonList(root).iterator(), descentFilter);
 	}
 
 	/**

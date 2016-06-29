@@ -43,7 +43,7 @@ import de.knowwe.jspwiki.types.LinkType;
 public class FootnoteReferenceExporter implements Exporter<LinkType> {
 
 	private final Map<Pair<Article, String>, String> exportedIDs =
-			new HashMap<Pair<Article, String>, String>();
+			new HashMap<>();
 
 	@Override
 	public boolean canExport(Section<LinkType> section) {
@@ -70,7 +70,7 @@ public class FootnoteReferenceExporter implements Exporter<LinkType> {
 	 */
 	private String getForcedLabel(DocumentBuilder manager, Article article, String refNumber) {
 		// check if this is the first occurrence
-		Pair<Article, String> key = new Pair<Article, String>(article, refNumber);
+		Pair<Article, String> key = new Pair<>(article, refNumber);
 		String exportedID = exportedIDs.get(key);
 		if (exportedID != null) return exportedID;
 
@@ -100,7 +100,7 @@ public class FootnoteReferenceExporter implements Exporter<LinkType> {
 	}
 
 	private void addForcedLabel(Article article, String refNumber, String label) {
-		Pair<Article, String> key = new Pair<Article, String>(article, refNumber);
+		Pair<Article, String> key = new Pair<>(article, refNumber);
 		exportedIDs.put(key, label);
 	}
 

@@ -26,7 +26,7 @@ import de.knowwe.core.action.UserActionContext;
  */
 public class DownloadFileAction extends AbstractAction {
 
-	private static final Set<File> allowedDirectories = new HashSet<File>();
+	private static final Set<File> allowedDirectories = new HashSet<>();
 	private static File defaultTempDirectory = null;
 
 	/**

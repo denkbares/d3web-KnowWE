@@ -6,7 +6,7 @@ import java.util.List;
 public class Diff {
 
 	private boolean equal = true;
-	private final List<String> messages = new LinkedList<String>();
+	private final List<String> messages = new LinkedList<>();
 
 	public boolean isEqual() {
 		return equal;

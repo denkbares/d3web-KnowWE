@@ -192,7 +192,7 @@ public class CoveringList extends AbstractType {
 			@Override
 			public Collection<Message> create(D3webCompiler compiler, Section<CoveringRelation> s) {
 
-				List<Message> result = new ArrayList<Message>();
+				List<Message> result = new ArrayList<>();
 
 				Section<CompositeCondition> cond = Sections.successor(s,
 						CompositeCondition.class);

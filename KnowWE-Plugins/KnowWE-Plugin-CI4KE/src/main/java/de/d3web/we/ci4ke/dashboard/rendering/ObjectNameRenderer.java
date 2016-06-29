@@ -30,8 +30,8 @@ import de.knowwe.core.kdom.rendering.RenderResult;
  */
 public interface ObjectNameRenderer {
 
-	public static final String PLUGIN_ID = "KnowWE-Plugin-CI4KE";
-	public static final String EXTENSION_POINT_ID = "ObjectNameRenderer";
+	String PLUGIN_ID = "KnowWE-Plugin-CI4KE";
+	String EXTENSION_POINT_ID = "ObjectNameRenderer";
 
 	void render(String web, String objectName, RenderResult result);
 

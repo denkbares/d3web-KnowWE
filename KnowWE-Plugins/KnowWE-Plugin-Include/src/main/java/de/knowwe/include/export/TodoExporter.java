@@ -49,7 +49,7 @@ public class TodoExporter implements Exporter<DefaultMarkupType> {
 			STHighlightColor.MAGENTA
 	};
 
-	private final List<String> users = new LinkedList<String>();
+	private final List<String> users = new LinkedList<>();
 
 	@Override
 	public boolean canExport(Section<DefaultMarkupType> section) {

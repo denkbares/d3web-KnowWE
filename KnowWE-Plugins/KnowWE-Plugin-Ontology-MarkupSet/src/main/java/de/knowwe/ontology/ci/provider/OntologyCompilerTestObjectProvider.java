@@ -38,7 +38,7 @@ public class OntologyCompilerTestObjectProvider implements TestObjectProvider {
 
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
-		List<TestObjectContainer<T>> containers = new ArrayList<TestObjectContainer<T>>();
+		List<TestObjectContainer<T>> containers = new ArrayList<>();
 		if (!clazz.equals(OntologyCompiler.class)) return containers;
 		Collection<OntologyCompiler> compilers = Compilers.getCompilers(
 				Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB),
@@ -46,7 +46,7 @@ public class OntologyCompilerTestObjectProvider implements TestObjectProvider {
 		for (OntologyCompiler ontologyCompiler : compilers) {
 			String compilerIdentifier = ontologyCompiler.toString();
 			if (compilerIdentifier.matches(name)) {
-				containers.add(new TestObjectContainer<T>(compilerIdentifier,
+				containers.add(new TestObjectContainer<>(compilerIdentifier,
 						clazz.cast(ontologyCompiler)));
 			}
 		}

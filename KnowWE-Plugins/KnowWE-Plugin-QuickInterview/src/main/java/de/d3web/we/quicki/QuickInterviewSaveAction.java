@@ -72,7 +72,7 @@ public class QuickInterviewSaveAction extends AbstractAction {
 			Session session = SessionProvider.getSession(context, kb);
 
 			// create SessionRecord List
-			List<SessionRecord> srList = new ArrayList<SessionRecord>();
+			List<SessionRecord> srList = new ArrayList<>();
 			srList.add(SessionConversionFactory.copyToSessionRecord(session));
 
 			// store new Attachment with Session information

@@ -189,7 +189,7 @@ public class KBTestUtilNewMarkup {
 		createdKB.getRootQASet().addChild(qc5);
 
 		// Set Init-Questions
-		List<QContainer> initQuestions = new ArrayList<QContainer>();
+		List<QContainer> initQuestions = new ArrayList<>();
 		initQuestions.add(qc1);
 		createdKB.setInitQuestions(initQuestions);
 
@@ -396,7 +396,7 @@ public class KBTestUtilNewMarkup {
 
 		// Create AND Condition:
 		// "Average mileage /100km" > 0 AND KNOWN["Real mileage  /100km"]
-		List<Condition> conditions = new LinkedList<Condition>();
+		List<Condition> conditions = new LinkedList<>();
 		conditions.add(c11);
 		conditions.add(c12);
 		CondAnd c1 = new CondAnd(conditions);
@@ -516,7 +516,7 @@ public class KBTestUtilNewMarkup {
 				answerIf3));
 		CondNot condNot2 = new CondNot(conditionIf3);
 
-		List<Condition> conditions = new LinkedList<Condition>();
+		List<Condition> conditions = new LinkedList<>();
 		conditions.add(condNot2);
 		conditions.add(condNot1);
 		CondOr condOr = new CondOr(conditions);
@@ -555,7 +555,7 @@ public class KBTestUtilNewMarkup {
 		// IF Other problem = ESTABLISHED
 		// THEN Other
 		Question question = createdKB.getManager().searchQuestion("Other");
-		List<QASet> action = new ArrayList<QASet>();
+		List<QASet> action = new ArrayList<>();
 		action.add(question);
 		Solution diag = createdKB.getManager().searchSolution("Other problem");
 		CondDState condState = new CondDState(diag,

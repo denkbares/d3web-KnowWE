@@ -20,6 +20,7 @@
 
 package de.knowwe.tagging;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,10 +47,8 @@ public class TagsContent extends XMLContent {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<TagsContent> section) {
-			Set<String> tags = new HashSet<String>();
-			for (String tag : section.getText().split(TaggingMangler.TAG_SEPARATOR)) {
-				tags.add(tag);
-			}
+			Set<String> tags = new HashSet<>();
+			Collections.addAll(tags, section.getText().split(TaggingMangler.TAG_SEPARATOR));
 			TaggingMangler.getInstance().registerTags(section.getTitle(), tags);
 
 		}

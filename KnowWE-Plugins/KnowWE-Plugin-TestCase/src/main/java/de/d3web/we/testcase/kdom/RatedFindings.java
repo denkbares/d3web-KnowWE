@@ -46,7 +46,7 @@ public class RatedFindings extends AbstractType {
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 
-			List<SectionFinderResult> result = new ArrayList<SectionFinderResult>();
+			List<SectionFinderResult> result = new ArrayList<>();
 			List<StringFragment> ratedsolutions = Strings.splitUnquoted(text, ":");
 
 			if (ratedsolutions.size() > 1) {

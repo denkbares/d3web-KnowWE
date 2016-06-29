@@ -82,7 +82,7 @@ public class CIRenderer {
 		int count = lastBuilds.size();
 		int failed = 0;
 		for (BuildResult build : lastBuilds) {
-			if (!Type.SUCCESS.equals(build.getOverallResult())) {
+			if (Type.SUCCESS != build.getOverallResult()) {
 				failed++;
 			}
 		}
@@ -216,7 +216,7 @@ public class CIRenderer {
 	}
 
 	private MultiMap<String, TestResult> getTestGroups(List<TestResult> testResults) {
-		MultiMap<String, TestResult> groups = new DefaultMultiMap<String, TestResult>(
+		MultiMap<String, TestResult> groups = new DefaultMultiMap<>(
 				MultiMaps.<String>linkedFactory(), MultiMaps.<TestResult>linkedFactory());
 		String currentGroup = null;
 		for (TestResult testResult : testResults) {
@@ -340,7 +340,7 @@ public class CIRenderer {
 	private void appendMessageText(String web, Message message, RenderResult result) {
 		String text = message.getText();
 		if (text == null) text = "";
-		ArrayList<MessageObject> objects = new ArrayList<MessageObject>(message.getObjects());
+		ArrayList<MessageObject> objects = new ArrayList<>(message.getObjects());
 		Collections.sort(objects, new SizeComparator());
 		String[] targets = new String[objects.size()];
 		String[] replacements = new String[objects.size()];

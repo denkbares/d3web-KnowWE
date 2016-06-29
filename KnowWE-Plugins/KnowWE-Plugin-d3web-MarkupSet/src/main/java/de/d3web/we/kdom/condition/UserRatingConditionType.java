@@ -19,6 +19,7 @@
 package de.d3web.we.kdom.condition;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,7 +76,7 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 					String evaluation = matcher.group(1);
 
 					if (evalPattern.matcher(evaluation).matches()) {
-						return Arrays.asList(new SectionFinderResult(matcher.start(0),
+						return Collections.singletonList(new SectionFinderResult(matcher.start(0),
 								matcher.end(0)));
 
 					}
@@ -112,9 +113,9 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 			Solution solution = sRef.get().getTermObject(compiler, sRef);
 			UserEvaluation eval = UserRatingType.getUserEvaluationType(ratingSec);
 			if (solution != null && eval != null) {
-				if (eval.equals(UserEvaluation.CONFIRMED)) return new CondSolutionConfirmed(
+				if (eval == UserEvaluation.CONFIRMED) return new CondSolutionConfirmed(
 						solution);
-				else if (eval.equals(UserEvaluation.REJECTED)) return new CondSolutionRejected(
+				else if (eval == UserEvaluation.REJECTED) return new CondSolutionRejected(
 						solution);
 			}
 		}

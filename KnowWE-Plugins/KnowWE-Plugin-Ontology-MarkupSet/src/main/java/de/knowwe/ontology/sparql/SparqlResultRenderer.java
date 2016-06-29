@@ -401,7 +401,7 @@ public class SparqlResultRenderer {
 				return false;
 			}
 			Collection<TableRow> parentRows = data.findRowFor(ascendorParent);
-			if (parentRows == null || parentRows.size() == 0) return false;
+			if (parentRows == null || parentRows.isEmpty()) return false;
 
 			// we remember the path to detect cycles
 			path.add(ascendor);

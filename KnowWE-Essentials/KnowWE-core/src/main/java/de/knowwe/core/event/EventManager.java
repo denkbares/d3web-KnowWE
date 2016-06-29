@@ -49,7 +49,7 @@ public class EventManager {
 	 * no longer used EventListener.
 	 */
 	private final Map<Class<? extends Event>, WeakHashMap<EventListener, Object>> listenerMap =
-			new HashMap<Class<? extends Event>, WeakHashMap<EventListener, Object>>();
+			new HashMap<>();
 
 	/**
 	 * Creates the listener map by fetching all EventListener extensions from
@@ -67,7 +67,7 @@ public class EventManager {
 			// Register the listener for the event's class
 			WeakHashMap<EventListener, Object> list = listenerMap.get(eventClass);
 			if (list == null) {
-				list = new WeakHashMap<EventListener, Object>();
+				list = new WeakHashMap<>();
 				listenerMap.put(eventClass, list);
 			}
 			list.put(listener, null);
@@ -93,7 +93,7 @@ public class EventManager {
 	 */
 	public void fireEvent(Event event) {
 
-		ArrayList<EventListener> allListeners = new ArrayList<EventListener>();
+		ArrayList<EventListener> allListeners = new ArrayList<>();
 		synchronized (this) {
 			Class<?> eventClass = event.getClass();
 			while (!eventClass.equals(Event.class)) {

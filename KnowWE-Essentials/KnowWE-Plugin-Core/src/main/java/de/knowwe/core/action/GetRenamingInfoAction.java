@@ -69,13 +69,13 @@ public class GetRenamingInfoAction extends AbstractAction {
 	}
 
 	private Set<String> getAllTermOccurencesOnThisArticle(Section<?> section, Identifier termIdentifier, Article article) {
-		Set<Section<?>> sections = new HashSet<Section<?>>();
+		Set<Section<?>> sections = new HashSet<>();
 		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(section.getArticleManager());
 		for (TerminologyManager terminologyManager : terminologyManagers) {
 			sections.addAll(terminologyManager.getTermDefiningSections(termIdentifier));
 			sections.addAll(terminologyManager.getTermReferenceSections(termIdentifier));
 		}
-		Set<String> ids = new HashSet<String>();
+		Set<String> ids = new HashSet<>();
 		for (Section<?> occurenceSection : sections) {
 			if (occurenceSection.getArticle().equals(article) && !occurenceSection.getID().equals(section.getID())) {
 				ids.add(occurenceSection.getID());

@@ -29,8 +29,8 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface PackageCompiler extends Compiler {
 
-	public abstract Section<? extends PackageCompileType> getCompileSection();
+	Section<? extends PackageCompileType> getCompileSection();
 
-	public abstract PackageManager getPackageManager();
+	PackageManager getPackageManager();
 
 }

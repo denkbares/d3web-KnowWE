@@ -43,7 +43,7 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 		TerminologyManager terminologyManager = getTerminologyManager(masterArticle);
 		Collection<Section<?>> termDefinitions = terminologyManager.getTermDefiningSections(name);
 		String targetArticle = name.toString();
-		if (termDefinitions.size() > 0) {
+		if (!termDefinitions.isEmpty()) {
 			targetArticle = termDefinitions.iterator().next().getTitle();
 		}
 		else {
