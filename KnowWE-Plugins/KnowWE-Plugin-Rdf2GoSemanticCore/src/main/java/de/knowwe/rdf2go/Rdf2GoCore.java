@@ -770,13 +770,15 @@ public class Rdf2GoCore {
 			synchronized (nsPrefixMutex) {
 				// inspection is wrong here, could no longer be null due to another thread initializing the prefixes
 				//noinspection ConstantConditions
-				if (namespacePrefixes == null) {
+				if (this.namespacePrefixes == null) {
 					namespacePrefixes = new HashMap<>();
 					Map<String, String> namespaces = getSemanticCoreNameSpaces();
 					for (Entry<String, String> entry : namespaces.entrySet()) {
 						namespacePrefixes.put(Rdf2GoUtils.toNamespacePrefix(entry.getKey()), entry.getValue());
 					}
 					this.namespacePrefixes = namespacePrefixes;
+				} else {
+					namespacePrefixes = this.namespacePrefixes;
 				}
 			}
 		}
