@@ -272,7 +272,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			if (type instanceof AnnotationType) {
 				if (listAnnotations) {
 					if (!listOpen) {
-						result.appendHtml("\n\n<ul class='defaultMarkupAnnotations'>");
+						result.appendHtml("\n\n<ul class='defaultMarkupAnnotations' style='white-space:normal'>");
 						listOpen = true;
 					}
 					result.appendHtml("<li>");
