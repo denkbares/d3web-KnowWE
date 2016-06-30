@@ -28,16 +28,21 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
+ * This SectionFinder takes all the text given, but performing a trim()
+ * operation cutting off whitespace characters.
+ *
  * @author Jochen
- * 
- *         This SectionFinder takes all the text given, but performing a trim()
- *         operation cutting off whitespace characters
- * 
  */
 public class AllTextFinderTrimmed implements SectionFinder {
 
 	private static AllTextFinderTrimmed instance;
-	private final boolean trimBlankLinesOnly;
+	private final TrimType trimType;
+
+	public enum TrimType {
+		ALL,
+		BLANK_LINES,
+		BLANK_LINES_AND_TRAILING_LINE_BREAK
+	}
 
 	public static AllTextFinderTrimmed getInstance() {
 		if (instance == null) instance = new AllTextFinderTrimmed();
@@ -45,18 +50,34 @@ public class AllTextFinderTrimmed implements SectionFinder {
 	}
 
 	public AllTextFinderTrimmed() {
-		this(false);
+		this(TrimType.ALL);
 	}
 
-	public AllTextFinderTrimmed(boolean trimBlankLinesOnly) {
-		this.trimBlankLinesOnly = trimBlankLinesOnly;
+	// for backwards compatibility
+	public AllTextFinderTrimmed(boolean trimBlankLinesAndTrailingLineBreakOnly) {
+		this(trimBlankLinesAndTrailingLineBreakOnly ? TrimType.BLANK_LINES_AND_TRAILING_LINE_BREAK : TrimType.ALL);
+
+	}
+
+	public AllTextFinderTrimmed(TrimType type) {
+		this.trimType = type;
 	}
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		List<SectionFinderResult> result = new ArrayList<>();
 
-		String trimmed = trimBlankLinesOnly ? Strings.trimBlankLines(text) : Strings.trim(text);
+		String trimmed;
+		if (trimType == TrimType.BLANK_LINES) {
+			trimmed = Strings.trimBlankLines(text);
+		}
+		else if (trimType == TrimType.BLANK_LINES_AND_TRAILING_LINE_BREAK) {
+			trimmed = Strings.trimBlankLinesAndTrailingLineBreak(text);
+		}
+		else {
+			trimmed = Strings.trim(text);
+		}
+
 		if (trimmed.isEmpty()) return result;
 		int leadingSpaces = text.indexOf(trimmed);
 		int followingSpaces = text.length() - (trimmed.length() + leadingSpaces);
