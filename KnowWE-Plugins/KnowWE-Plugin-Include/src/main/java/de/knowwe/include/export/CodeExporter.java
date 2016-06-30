@@ -68,7 +68,7 @@ public class CodeExporter implements Exporter<Type> {
 		// preformatted code: make each line a paragraph
 		String text = Strings.trim(section.getText())
 				.replaceAll(prefix, "").replaceAll(postfix, "");
-		String[] lines = Strings.trimBlankLines(text).split("\n\r?");
+		String[] lines = Strings.trimBlankLinesAndTrailingLineBreak(text).split("\n\r?");
 		for (String line : lines) {
 			XWPFParagraph paragraph = manager.getNewParagraph(DocumentBuilder.Style.code);
 			CTR ctr = paragraph.getCTP().addNewR();
