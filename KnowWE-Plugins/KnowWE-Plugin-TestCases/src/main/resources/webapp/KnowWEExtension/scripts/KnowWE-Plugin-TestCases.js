@@ -278,8 +278,7 @@ jq$(document)
 				var ajaxFun, ajaxPrefix = prefix;
 				var otherItems = [];
 				// prepare object name
-				var colName = spreadsheet.getCellTextTrimmed(0,
-					col);
+				var colName = spreadsheet.getCellTextTrimmed(0, col);
 				// prepare ajax
 				if (row == 0) {
 					ajaxFun = AutoComplete.sendD3webValueObjectCompletionAction;

@@ -21,7 +21,7 @@ package de.d3web.we.kdom.condition;
 
 import java.util.List;
 
-import de.d3web.core.inference.condition.CondNum;
+import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondNumEqual;
 import de.d3web.core.inference.condition.CondNumGreater;
 import de.d3web.core.inference.condition.CondNumGreaterEqual;
@@ -61,8 +61,8 @@ import de.knowwe.kdom.sectionFinder.OneOfStringUnquotedFinder;
  */
 public class NumericalFinding extends D3webCondition<NumericalFinding> {
 
-	private static String[] comparators = {
-			"<=", ">=", "==", "=", "<", ">", };
+	private static final String[] comparators = {
+			"<=", ">=", "!=", "==", "=", "<", ">", };
 
 	public NumericalFinding() {
 		this.setSectionFinder(new NumericalFindingFinder());
@@ -87,7 +87,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		this.addChildType(num);
 	}
 
-	class NumericalFindingFinder implements SectionFinder {
+	private static class NumericalFindingFinder implements SectionFinder {
 
 		private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
 
@@ -95,7 +95,6 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			for (String comp : comparators) {
 				if (Strings.containsUnquoted(text, comp)) {
-
 					return textFinder.lookForSections(text,
 							father, type);
 				}
@@ -128,49 +127,43 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 			return null;
 		}
 
-		Question q = qRef.get().getTermObject(compiler, qRef);
-		if (q == null) {
+		Question question = qRef.get().getTermObject(compiler, qRef);
+		if (question == null) {
 			Message error = Messages.error("QuestionNum '" + qRef.get(Term::getTermName) + " 'not found.");
 			Messages.storeMessage(compiler, s, getClass(), error);
 			return null;
 		}
-		if (!(q instanceof QuestionNum)) {
-			Message error = Messages.error("Expected " + QuestionNum.class.getSimpleName() + ", but was " + q.getClass()
+		if (!(question instanceof QuestionNum)) {
+			Message error = Messages.error("Expected " + QuestionNum.class.getSimpleName() + ", but was " + question.getClass()
 					.getSimpleName());
 			Messages.storeMessage(compiler, s, getClass(), error);
 			return null;
 		}
 
-		return createCondNum(comparator, number, q);
+		return createCondNum(comparator, number, question);
 
 	}
 
-	/**
-	 * @param comparator
-	 * @param number
-	 * @param q
-	 * @created 08.08.2013
-	 */
-	public static CondNum createCondNum(String comparator, Double number, Question q) {
-		QuestionNum qnum = (QuestionNum) q;
+	public static Condition createCondNum(String comparator, Double number, Question q) {
+		QuestionNum questionNum = (QuestionNum) q;
 
-		if (comparator.equals("<=")) {
-			return new CondNumLessEqual(qnum, number);
+		if ("<=".equals(comparator)) {
+			return new CondNumLessEqual(questionNum, number);
 		}
-		else if (comparator.equals(">=")) {
-			return new CondNumGreaterEqual(qnum, number);
+		else if (">=".equals(comparator)) {
+			return new CondNumGreaterEqual(questionNum, number);
 		}
-		else if (comparator.equals("<")) {
-			return new CondNumLess(qnum, number);
+		else if ("<".equals(comparator)) {
+			return new CondNumLess(questionNum, number);
 		}
-		else if (comparator.equals(">")) {
-			return new CondNumGreater(qnum, number);
+		else if (">".equals(comparator)) {
+			return new CondNumGreater(questionNum, number);
 		}
-		else if (comparator.equals("==")) {
-			return new CondNumEqual(qnum, number);
+		else if ("!=".equals(comparator)) {
+			return new CondNot(new CondNumEqual(questionNum, number));
 		}
-		else if (comparator.equals("=")) {
-			return new CondNumEqual(qnum, number);
+		else if ("==".equals(comparator) || "=".equals(comparator)) {
+			return new CondNumEqual(questionNum, number);
 		}
 		return null;
 	}

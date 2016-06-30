@@ -115,7 +115,6 @@ public class RuleType extends AbstractType {
 	 */
 	private static class RuleHighlightingRenderer implements Renderer {
 
-		@SuppressWarnings("TryWithIdenticalCatches")
 		@Override
 		public void render(Section<?> sec, UserContext user, RenderResult string) {
 
@@ -160,10 +159,8 @@ public class RuleType extends AbstractType {
 								//classes.add("exceptFalse");
 							}
 						}
-						catch (UnknownAnswerException e) {
+						catch (UnknownAnswerException | NoAnswerException e) {
 							//classes.add("exceptUnknown");
-						}
-						catch (NoAnswerException ignore) {
 						}
 					}
 				}

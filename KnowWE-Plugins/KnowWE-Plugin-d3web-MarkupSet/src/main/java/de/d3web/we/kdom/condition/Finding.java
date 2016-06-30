@@ -23,6 +23,7 @@ package de.d3web.we.kdom.condition;
 import java.util.List;
 
 import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -60,14 +61,22 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
  */
 public class Finding extends D3webCondition<Finding> {
 
+	private static final String NOT_EQUAL = "notEqual";
+	private static final String EQUAL = "equal";
+
 	public Finding() {
 
 		this.setSectionFinder(new FindingFinder());
 
-		// comparator
-		AnonymousType comparator = new AnonymousType("equals");
-		comparator.setSectionFinder(new StringSectionFinderUnquoted("="));
-		this.addChildType(comparator);
+		// not equal
+		AnonymousType unEquals = new AnonymousType(NOT_EQUAL);
+		unEquals.setSectionFinder(new StringSectionFinderUnquoted("!="));
+		this.addChildType(unEquals);
+
+		// equal
+		AnonymousType equals = new AnonymousType(EQUAL);
+		equals.setSectionFinder(new StringSectionFinderUnquoted("="));
+		this.addChildType(equals);
 
 		// question
 		QuestionReference question = new QuestionReference();
@@ -87,7 +96,7 @@ public class Finding extends D3webCondition<Finding> {
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<Finding> section) {
 
-		Section<QuestionReference> qRef = Sections.successor(section,
+		Section<QuestionReference> qRef = Sections.child(section,
 				QuestionReference.class);
 
 		Section<AnswerReference> aRef = Sections.successor(section, AnswerReference.class);
@@ -118,7 +127,14 @@ public class Finding extends D3webCondition<Finding> {
 				return null;
 			}
 			if (value != null) {
-				return new CondEqual(question, value);
+				Section<AnonymousType> operator = Sections.child(section, AnonymousType.class);
+				CondEqual condEqual = new CondEqual(question, value);
+				if (operator != null && operator.get().getName().equals(NOT_EQUAL)) {
+					return new CondNot(condEqual);
+				}
+				else {
+					return condEqual;
+				}
 			}
 		}
 		return null;
@@ -142,16 +158,11 @@ class FindingFinder implements SectionFinder {
 			StringFragment answer = list.get(1);
 			boolean isNumber = false;
 			try {
+				//noinspection ResultOfMethodCallIgnored
 				Double.parseDouble(answer.getContent().trim());
-				// if (answer.contains("d") || answer.contains("D")) {
-				// TODO find better way to check
-				// '5D' is parsed to a valid double '5.0'
-				// }
-				// else {
 				isNumber = true;
-				// }
 			}
-			catch (NumberFormatException e) {
+			catch (NumberFormatException ignored) {
 			}
 			// return it if answer is NOT a number
 			if (!isNumber) {
