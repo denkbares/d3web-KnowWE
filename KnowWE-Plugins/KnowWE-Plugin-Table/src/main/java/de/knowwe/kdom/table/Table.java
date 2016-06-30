@@ -24,6 +24,8 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
+import static de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed.TrimType.BLANK_LINES;
+
 /**
  * <p>
  * Represents the body of the <code>Table</code> tag.
@@ -62,7 +64,7 @@ public class Table extends AbstractType {
 
 	public Table() {
 		this.addChildType(new TableLine());
-		this.setSectionFinder(new AllTextFinderTrimmed(true));
+		this.setSectionFinder(new AllTextFinderTrimmed(BLANK_LINES));
 		this.setRenderer(new TableRenderer());
 	}
 
