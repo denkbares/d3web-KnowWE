@@ -86,7 +86,7 @@
 		<parameter id="name" value="AbstractionTableInstantEditToolProvider" />
 		<parameter id="description" value="Offers a button for quick editing a certain section." />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="4" />
+		<parameter id="priority" value="6" />
 		<parameter id="script" value="TextArea.js" />
 		<parameter id="script" value="KnowWE-Plugin-InstantEdit.js" />
 		<parameter id="script" value="KnowWE-Plugin-AutoComplete.js" />
