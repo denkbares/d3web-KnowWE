@@ -175,7 +175,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		}
 	}
 
-	private CondEqual createCondEqual(D3webCompiler compiler, Section<CellContent> answerReferenceCell) {
+	private Condition createCondEqual(D3webCompiler compiler, Section<CellContent> answerReferenceCell) {
 		Question question = getQuestion(compiler, answerReferenceCell);
 		Choice choice = (Choice) answerReferenceCell.get().getTermObject(compiler, answerReferenceCell);
 		if (choice == null) return null;

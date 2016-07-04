@@ -8,6 +8,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseUtils;
+import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Identifier;
 import de.d3web.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompileScript;
@@ -89,6 +90,10 @@ public class CellContent extends AbstractType implements D3webTerm<NamedObject>,
 				Class<?> termObjectClass = getTermObjectClass(compiler, section);
 				if (termObjectClass != null) {
 					Identifier termIdentifier = getTermIdentifier(compiler, section);
+					if (termIdentifier.getLastPathElement()
+							.equalsIgnoreCase(Unknown.getInstance().getValue().toString())) {
+						return;
+					}
 					termManager.registerTermReference(compiler, section, termObjectClass, termIdentifier);
 					if (termManager.isDefinedTerm(termIdentifier)) {
 						throw new CompilerMessage();
@@ -225,7 +230,31 @@ public class CellContent extends AbstractType implements D3webTerm<NamedObject>,
 
 	@Override
 	public String getTermName(Section<? extends Term> section) {
-		return Strings.trimQuotes(section.getText());
+		String text = Strings.trim(section.getText());
+		if (isNegatedWithExclamation(text)) {
+			text = text.replaceAll("^!=?", "");
+		}
+		else {
+			if (isNegatedWithNOT(text)) {
+				text = text.replaceAll("^NOT\\s*[\\(\\[]", "");
+				text = text.replaceAll("[\\)\\]]\\z", "");
+			}
+		}
+		return Strings.trimQuotes(text);
+	}
+
+	public boolean isNegated(Section<? extends Term> section) {
+		return isNegatedWithExclamation(section.getText()) || isNegatedWithNOT(section.getText());
+	}
+
+	private boolean isNegatedWithNOT(String text) {
+		int indexOfNOT = Strings.indexOf(text, 0, Strings.UNQUOTED, "NOT");
+		return indexOfNOT == 0;
+	}
+
+	private boolean isNegatedWithExclamation(String text) {
+		int indexOfExclamation = Strings.indexOf(text, 0, Strings.UNQUOTED, "!=", "!");
+		return indexOfExclamation == 0;
 	}
 
 	@Override
