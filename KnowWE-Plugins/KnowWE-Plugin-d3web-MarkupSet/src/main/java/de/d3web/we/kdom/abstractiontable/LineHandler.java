@@ -14,7 +14,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
-import de.d3web.core.inference.condition.CondNum;
+import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondNumEqual;
 import de.d3web.core.inference.condition.CondNumGreater;
 import de.d3web.core.inference.condition.CondNumGreaterEqual;
@@ -185,7 +185,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 	private Condition createCondNum(D3webCompiler compiler, Section<CellContent> questionNumCell) {
 		Question question = getQuestion(compiler, questionNumCell);
 		String text = Strings.trim(questionNumCell.getText());
-		CondNum condNum = null;
+		Condition condNum = null;
 
 		Matcher matcher = INTERVAL_PATTERN.matcher(text);
 		if (matcher.find()) {
@@ -256,8 +256,8 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		return action;
 	}
 
-	private CondNum createCondNum(QuestionNum questionNum, String text) {
-		CondNum condNum = null;
+	private Condition createCondNum(QuestionNum questionNum, String text) {
+		Condition condNum = null;
 		Double parsedDouble;
 		if (text.contains("<=")) {
 			parsedDouble = parseDouble("<=", text);
@@ -281,6 +281,12 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 			parsedDouble = parseDouble(">", text);
 			if (parsedDouble != null) {
 				condNum = new CondNumGreater(questionNum, parsedDouble);
+			}
+		}
+		else if (text.contains("!=")) {
+			parsedDouble = parseDouble("!=", text);
+			if (parsedDouble != null) {
+				condNum = new CondNot(new CondNumGreater(questionNum, parsedDouble));
 			}
 		}
 		else {
