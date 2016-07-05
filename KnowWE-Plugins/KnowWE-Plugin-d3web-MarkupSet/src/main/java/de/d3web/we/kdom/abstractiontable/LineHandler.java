@@ -14,6 +14,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
+import de.d3web.core.inference.condition.CondKnown;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondNumEqual;
 import de.d3web.core.inference.condition.CondNumGreater;
@@ -21,6 +22,7 @@ import de.d3web.core.inference.condition.CondNumGreaterEqual;
 import de.d3web.core.inference.condition.CondNumIn;
 import de.d3web.core.inference.condition.CondNumLess;
 import de.d3web.core.inference.condition.CondNumLessEqual;
+import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
@@ -177,34 +179,50 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 
 	private Condition createCondEqual(D3webCompiler compiler, Section<CellContent> answerReferenceCell) {
 		Question question = getQuestion(compiler, answerReferenceCell);
+		if (answerReferenceCell.get(CellContent::isKnown)) {
+			return new CondKnown(question);
+		}
+		else if (answerReferenceCell.get(CellContent::isUnknown)) {
+			return new CondUnknown(question);
+		}
 		Choice choice = (Choice) answerReferenceCell.get().getTermObject(compiler, answerReferenceCell);
 		if (choice == null) return null;
-		return new CondEqual(question, new ChoiceValue(choice));
+		CondEqual condEqual = new CondEqual(question, new ChoiceValue(choice));
+		if (answerReferenceCell.get(CellContent::isNegated)) {
+			return new CondNot(condEqual);
+		}
+		return condEqual;
 	}
 
 	private Condition createCondNum(D3webCompiler compiler, Section<CellContent> questionNumCell) {
 		Question question = getQuestion(compiler, questionNumCell);
 		String text = Strings.trim(questionNumCell.getText());
-		Condition condNum = null;
+		Condition condition = null;
 
 		Matcher matcher = INTERVAL_PATTERN.matcher(text);
 		if (matcher.find()) {
 			NumericalInterval interval = createInterval(matcher);
 			if (interval != null) {
-				condNum = new CondNumIn((QuestionNum) question, interval);
+				condition = new CondNumIn((QuestionNum) question, interval);
 			}
 		}
+		else if (questionNumCell.get(CellContent::isKnown)) {
+			condition = new CondKnown(question);
+		}
+		else if (questionNumCell.get(CellContent::isUnknown)) {
+			condition = new CondUnknown(question);
+		}
 		else {
-			condNum = createCondNum((QuestionNum) question, text);
+			condition = createCondNum((QuestionNum) question, text);
 		}
 
-		if (condNum == null) {
+		if (condition == null) {
 			Messages.storeMessage(compiler, questionNumCell, this.getClass(), Messages.error("Unable to parse '" + text + "'"));
 		}
 		else {
 			Messages.clearMessages(compiler, questionNumCell, this.getClass());
 		}
-		return condNum;
+		return condition;
 	}
 
 	private Condition createCondDState(D3webCompiler compiler, Section<CellContent> cellContent) {
@@ -286,7 +304,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		else if (text.contains("!=")) {
 			parsedDouble = parseDouble("!=", text);
 			if (parsedDouble != null) {
-				condNum = new CondNot(new CondNumGreater(questionNum, parsedDouble));
+				condNum = new CondNot(new CondNumEqual(questionNum, parsedDouble));
 			}
 		}
 		else {
