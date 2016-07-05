@@ -18,7 +18,8 @@
  */
 package de.knowwe.visualization.util;
 
-import org.jdom.input.SAXBuilder;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 
 /**
  * 
@@ -36,7 +37,7 @@ public class SAXBuilderSingleton extends SAXBuilder {
 		if (instance == null) {
 			instance = new SAXBuilderSingleton();
 			instance.setReuseParser(true);
-			instance.setValidation(false);
+			instance.setXMLReaderFactory(XMLReaders.NONVALIDATING);
 			instance.setFeature("http://xml.org/sax/features/validation", false);
 			instance.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar",
 					false);

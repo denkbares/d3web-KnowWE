@@ -25,11 +25,10 @@
   		<artifactId>KnowWE-core</artifactId>
   		<version>${project.version}</version>
   	</dependency>
-  	<dependency>
-  		<groupId>org.jdom</groupId>
-  		<artifactId>jdom</artifactId>
-  		<version>1.1</version>
-  		<type>jar</type>
-	</dependency>
+	  <dependency>
+		  <groupId>org.jdom</groupId>
+		  <artifactId>jdom2</artifactId>
+		  <version>2.0.5</version>
+	  </dependency>
   </dependencies>
 </project>
