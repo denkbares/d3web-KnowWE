@@ -302,9 +302,11 @@ public class Utils {
 					}
 				}
 				URI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
-				String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored.toString()));
-				if (color != null) {
-					style.setFillcolor(color);
+				if(clazzToBeColored != null) {
+					String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored.toString()));
+					if (color != null) {
+						style.setFillcolor(color);
+					}
 				}
 			}
 

@@ -1,13 +1,16 @@
 package de.knowwe.rdfs.vis.markup.sparql;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.utils.Sparqls;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
@@ -67,12 +70,17 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 				continue;
 			}
 
-			ConceptNode fromNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, fromURI, true);
+
+			ConceptNode fromNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, fromURI, true,
+					determineClassType(rdfRepository, variables.get(0), row, fromURI));
+
+
 			String relation = Utils.getConceptName(relationURI, rdfRepository);
-			ConceptNode toNode = Utils.createValue(config, rdfRepository, uriProvider, section,
-					data, toURI, true);
-			String relationLabel = Utils.createRelationLabel(config, rdfRepository, relationURI,
-					relation);
+			String relationLabel = Utils.createRelationLabel(config, rdfRepository, relationURI, relation);
+
+			ConceptNode toNode = Utils.createValue(config, rdfRepository, uriProvider, section,	data, toURI, true,
+					determineClassType(rdfRepository, variables.get(2), row, toURI));
+
 			Edge newLineRelationsKey = new Edge(fromNode, relationLabel, toNode);
 			data.addEdge(newLineRelationsKey);
 		}
@@ -81,6 +89,20 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			return null;
 		}
 		return data;
+	}
+
+	private String determineClassType(Rdf2GoCore rdfRepository, String variable, BindingSet row, Value fromURI) {
+		// try to determine the clazz/type of the source concept
+		String clazz = null;
+		URI uri = Sparqls.asURI(row, variable);
+		if(uri != null ) {
+			org.openrdf.model.URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdfRepository, new URIImpl(fromURI
+					.stringValue()));
+			if(mostSpecificClass != null) {
+					clazz = Rdf2GoUtils.reduceNamespace(rdfRepository, mostSpecificClass.getNamespace()) + mostSpecificClass.getLocalName();
+			}
+		}
+		return clazz;
 	}
 
 	@Override

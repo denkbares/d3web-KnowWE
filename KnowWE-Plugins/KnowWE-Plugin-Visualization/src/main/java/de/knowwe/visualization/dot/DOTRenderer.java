@@ -198,7 +198,7 @@ public class DOTRenderer {
 					// use of labels suppressed by the user -> show concept name, i.e. uri
 					// todo: should be handeled by a distinct config parameter (literalTable?)
 					// or: @literals: table|off|popup
-					nodeLabel = createHTMLTable(node, data, style.getFontstyle());
+					nodeLabel = createHTMLTable(node, data, style.getFontstyle(), config);
 				}
 				else {
 					nodeLabel = createNodeLabel(nodeLabel, style.getFontstyle());
@@ -222,10 +222,14 @@ public class DOTRenderer {
 		return dotSource.toString();
 	}
 
-	private static String createHTMLTable(ConceptNode node, SubGraphData data, RenderingStyle.Fontstyle f) {
+	private static String createHTMLTable(ConceptNode node, SubGraphData data, RenderingStyle.Fontstyle fontStyle, Config config) {
 		final Map<ConceptNode, Set<Edge>> clusters = data.getClusters();
 		final Set<Edge> edges = clusters.get(node);
-		String nodeLabel = createNodeLabel(escapeDot(node.getName()), f);
+		String label = node.getName();
+		if(!"false".equalsIgnoreCase(config.getShowLabels())) {
+			label = node.getConceptLabel();
+		}
+		String nodeLabel = createNodeLabel(escapeDot(label), fontStyle);
 
 		if (edges == null || edges.isEmpty()) {
 			return nodeLabel;
