@@ -53,16 +53,22 @@ public class CIBuildCache {
 		}
 	}
 
-	public void setLatestBuild(BuildResult latestBuild) {
+	public synchronized void setLatestBuild(BuildResult latestBuild) {
 		this.latestBuild = latestBuild;
 	}
 
-	public BuildResult getLatestBuild() {
+	public synchronized BuildResult getLatestBuild() {
 		return this.latestBuild;
 	}
 
-	public BuildResult getBuild(int buildNumber) {
+	public synchronized BuildResult getBuild(int buildNumber) {
 		if (buildNumber < 1) return getLatestBuild();
 		return cache.get(buildNumber);
+	}
+
+	public synchronized void clear() {
+		addOrder.clear();
+		cache.clear();
+		latestBuild = null;
 	}
 }

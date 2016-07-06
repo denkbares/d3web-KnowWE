@@ -44,7 +44,7 @@ public class CIDashboard {
 	private final String dashboardName;
 	private final CIRenderer renderer;
 	private final CIPersistence persistence;
-	private final CIBuildCache buildCache = new CIBuildCache();
+	private final CIBuildCache buildCache;
 	private final Section<CIDashboardType> dashboardSection;
 	private final List<TestSpecification<?>> testSpecifications;
 
@@ -52,8 +52,9 @@ public class CIDashboard {
 		this.dashboardSection = dashboardSection;
 		this.dashboardName = CIDashboardType.getDashboardName(dashboardSection);
 		this.testSpecifications = specifications;
+		this.buildCache = new CIBuildCache();
 		this.renderer = new CIRenderer(this);
-		this.persistence = new CIPersistence(this);
+		this.persistence = new CIPersistence(this, buildCache);
 	}
 
 	public Section<CIDashboardType> getDashboardSection() {
@@ -189,22 +190,14 @@ public class CIDashboard {
 		buildCache.setLatestBuild(build);
 		buildCache.addBuild(build);
 
-
-		// attach to wiki if possible
-		// do it asynchronously
-		new Thread("CI-Persistence") {
-			@Override
-			public void run() {
-				try {
-					persistence.write(build);
-				}
-				catch (IOException e) {
-					// we cannot store the build as attachment
-					// so log this and continue as usual
-					Log.severe("Cannot attached build information due to internal error", e);
-				}
-			}
-		}.start();
+		try {
+			persistence.write(build);
+		}
+		catch (IOException e) {
+			// we cannot store the build as attachment
+			// so log this and continue as usual
+			Log.severe("Cannot attached build information due to internal error", e);
+		}
 
 	}
 

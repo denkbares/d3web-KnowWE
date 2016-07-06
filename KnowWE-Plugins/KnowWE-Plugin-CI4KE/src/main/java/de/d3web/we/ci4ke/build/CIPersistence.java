@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,26 +46,33 @@ import org.xml.sax.SAXException;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.BuildResultPersistenceHandler;
 import de.d3web.testing.TestResult;
+import de.d3web.utils.Log;
+import de.d3web.utils.Streams;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIPersistence {
 
+	public static final int MAX_BUILDS = 200;
+
 	private static final String ATTACHMENT_PREFIX = "ci-build-";
 
 	private final CIDashboard dashboard;
+	private final CIBuildCache buildCache;
 
-	public CIPersistence(CIDashboard dashboard) {
+	public CIPersistence(CIDashboard dashboard, CIBuildCache buildCache) {
 		this.dashboard = dashboard;
+		this.buildCache = buildCache;
 	}
 
 	/**
 	 * Returns the latest build version available in the underlying wiki.
-	 * 
-	 * @created 19.05.2012
+	 *
 	 * @return the latest build version
+	 * @created 19.05.2012
 	 */
 	public int getLatestBuildVersion() {
 		WikiAttachment attachment = null;
@@ -83,12 +92,11 @@ public class CIPersistence {
 		try {
 			handleTestResultAttachments(build);
 
-			Document document = BuildResultPersistenceHandler.toXML(build);
 			// we write the document as an attachment
-			write(document);
+			writeBuild(build);
 		}
 		catch (TransformerFactoryConfigurationError | ParserConfigurationException | TransformerException e) {
-			throwUnecpectedWriterError(e);
+			throwUnexpectedWriterError(e);
 		}
 	}
 
@@ -101,19 +109,22 @@ public class CIPersistence {
 		}
 	}
 
-	private void throwUnecpectedWriterError(Throwable e) throws IOException {
+	private void throwUnexpectedWriterError(Throwable e) throws IOException {
 		String message = "Cannot write build results as attachment due to unexpected internal error: "
 				+ e.getMessage();
 		throw new IOException(message, e);
 	}
 
-	private void throwUnecpectedReadError(Throwable e) throws IOException {
+	private void throwUnexpectedReadError(Throwable e) throws IOException {
 		String message = "Cannot read build results as attachment due to unexpected internal error: "
 				+ e.getMessage();
 		throw new IOException(message, e);
 	}
 
-	private void write(Document document) throws TransformerFactoryConfigurationError, TransformerException, IOException, ParserConfigurationException {
+	private void writeBuild(BuildResult build) throws TransformerFactoryConfigurationError, TransformerException, IOException, ParserConfigurationException {
+
+		Document document = BuildResultPersistenceHandler.toXML(build);
+
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
@@ -122,11 +133,39 @@ public class CIPersistence {
 		DOMSource source = new DOMSource(document);
 		transformer.transform(source, result);
 
-		byte[] bytes = result.getWriter().toString().getBytes();
-		ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+		byte[] bytes = result.getWriter().toString().getBytes("UTF-8");
+		ByteArrayInputStream currentBuildInputStream = new ByteArrayInputStream(bytes);
 
-		Environment.getInstance().getWikiConnector().storeAttachment(
-				dashboard.getDashboardArticle(), getAttachmentName(), "CI-process", in);
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		String userName = "CI-process";
+		if (build.getBuildNumber() > MAX_BUILDS) {
+			// do big cleanup, where the older half of the builds are deleted
+			LinkedList<ByteArrayInputStream> streams = new LinkedList<>();
+			streams.add(currentBuildInputStream);
+			String path = dashboard.getDashboardArticle() + "/" + getAttachmentName();
+			List<WikiAttachmentInfo> attachmentHistory = wikiConnector
+					.getAttachmentHistory(path);
+			// collection newer half
+			for (WikiAttachmentInfo wikiAttachmentInfo : attachmentHistory) {
+				if (streams.size() > MAX_BUILDS / 2) break;
+				InputStream inputStream = wikiAttachmentInfo.getAttachment().getInputStream();
+				streams.addFirst(new ByteArrayInputStream(Streams.getBytesAndClose(inputStream)));
+			}
+			// delete all
+			wikiConnector.deleteAttachment(dashboard.getDashboardArticle(), getAttachmentName(), userName);
+			for (ByteArrayInputStream stream : streams) {
+				// write newer half again
+				wikiConnector.storeAttachment(dashboard.getDashboardArticle(), getAttachmentName(), userName, stream);
+			}
+			buildCache.clear();
+			build.setBuildNumber(streams.size());
+			buildCache.addBuild(build);
+			buildCache.setLatestBuild(build);
+		}
+		else {
+			wikiConnector.storeAttachment(
+					dashboard.getDashboardArticle(), getAttachmentName(), userName, currentBuildInputStream);
+		}
 
 	}
 
@@ -146,10 +185,15 @@ public class CIPersistence {
 			build.setBuildNumber(buildVersion);
 		}
 		catch (ParserConfigurationException | SAXException | ParseException | IllegalArgumentException e) {
-			throwUnecpectedReadError(e);
+			throwUnexpectedReadError(e);
 		}
 		finally {
-			if (in != null) in.close();
+			try {
+				if (in != null) in.close();
+			}
+			catch (IOException e) {
+				Log.severe("Exception while closing", e);
+			}
 		}
 		return build;
 	}
@@ -165,11 +209,11 @@ public class CIPersistence {
 	 * Returns the wiki attachment that stores the results of this CIDashboard.
 	 * The method returns null if the attachment does not exist (yet), e.g. if
 	 * no build has been created/written yet.
-	 * 
-	 * @created 04.10.2013
+	 *
 	 * @return the attachment storing the results
 	 * @throws IOException if the attachment cannot be accessed, should usually
-	 *         not happen
+	 *                     not happen
+	 * @created 04.10.2013
 	 */
 	public WikiAttachment getAttachment() throws IOException {
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
