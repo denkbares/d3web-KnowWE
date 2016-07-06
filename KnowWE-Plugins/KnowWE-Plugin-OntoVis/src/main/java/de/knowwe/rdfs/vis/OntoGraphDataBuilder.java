@@ -149,6 +149,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 					exclude = x;
 				}
 			}
+			// TODO: fix this, as it deletes BOTH directions of the symmetric pair of arcs !!
 			config.addExcludeRelations(exclude);
 		}
 

@@ -155,7 +155,7 @@ public class Config {
 	private Collection<String> concepts = new HashSet<>();
 	private boolean showClasses = true;
 	private boolean showProperties = true;
-	private boolean showInverse = false;
+	private boolean showInverse = true;
 	private boolean showOutgoingEdges = false;
 	private String showLabels = "true";
 	private String size = null;
@@ -163,7 +163,7 @@ public class Config {
 	private String height = null;
 	private String format = "svg";
 	private String language = null;
-	private long timeout = 60000;
+	private long timeout = 300000;
 	private LinkMode linkMode = LinkMode.JUMP;
 	private RankDir rankDir = RankDir.LR;
 	private String rankSame = null;
