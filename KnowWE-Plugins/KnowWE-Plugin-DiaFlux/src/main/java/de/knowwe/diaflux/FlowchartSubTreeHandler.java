@@ -184,8 +184,13 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 			return "";
 		}
 		else {
-			return contentChild.getText().replaceAll("^<!\\[CDATA\\[", "").replaceAll("\\]\\]>$",
-					"");
+			String text = contentChild.getText();
+			if (text.startsWith("<![CDATA[") && text.endsWith("]]>")) {
+				return text.substring(9, text.length() - 3);
+			}
+			else {
+				return Strings.decodeHtml(text);
+			}
 		}
 	}
 
