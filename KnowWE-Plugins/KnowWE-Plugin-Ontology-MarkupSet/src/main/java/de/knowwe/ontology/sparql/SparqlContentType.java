@@ -31,6 +31,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
@@ -45,6 +47,12 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		this.setSectionFinder(AllTextFinder.getInstance());
 		this.setRenderer(new AsynchronousRenderer(new ReRenderSectionMarkerRenderer(new SparqlContentDecoratingRenderer())));
 		this.addCompileScript(Priority.LOWEST, new SparqlConstructHandler());
+
+		// add type (with very low priority) consuming all plain text and rendering it while masking JSPWiki syntax
+		AnonymousType queryText = new AnonymousType("QueryText");
+		queryText.setSectionFinder(AllTextFinder.getInstance());
+		queryText.setRenderer((section, user, result) -> result.append(KnowWEUtils.maskJSPWikiMarkup(section.getText())));
+		this.addChildType(100, queryText);
 	}
 
 	@Override
