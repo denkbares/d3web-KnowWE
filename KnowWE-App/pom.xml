@@ -157,6 +157,11 @@
 					<version>${project.version}</version>
 				</dependency>
 				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>denkbares-SemanticCore-Plugin-Jena</artifactId>
+					<version>1.0-SNAPSHOT</version>
+				</dependency>
+				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
 					<version>${project.version}</version>
@@ -264,6 +269,11 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
+					<artifactId>denkbares-SemanticCore-Plugin-GraphDB</artifactId>
+					<version>1.0-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
 					<artifactId>d3web-Plugin-Tests-ClosedSource</artifactId>
 					<version>${project.version}</version>
 				</dependency>
@@ -351,28 +361,6 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-RightPanel</artifactId>
 					<version>${project.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>graphdb</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>denkbares-SemanticCore-Plugin-GraphDB</artifactId>
-					<version>1.0-SNAPSHOT</version>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>jena</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>denkbares-SemanticCore-Plugin-Jena</artifactId>
-					<version>1.0-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 		</profile>
