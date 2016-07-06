@@ -233,7 +233,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 			Section<? extends AnnotationContentType> annotationContentSection = DefaultMarkupType.getAnnotationContentSection(section, START_ANNOTATION);
 
-			if (annotationContentSection == null) return LocalDateTime.now().until(start, ChronoUnit.MILLIS);
+			if (annotationContentSection == null) return 0;
 
 			String startString = annotationContentSection.getText();
 
