@@ -189,6 +189,9 @@ public class SolutionPanelUtils {
 		else if (value instanceof UndefinedValue) {
 			return "Undefined";
 		}
+		else if (value instanceof Rating) {
+			return Strings.capitalize(value.toString());
+		}
 		else {
 			return value.toString();
 		}

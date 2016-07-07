@@ -36,7 +36,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class SolutionReference extends D3webTermReference<Solution> {
 
 	public SolutionReference() {
-		this.setRenderer(StyleRenderer.SOLUTION);
+		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.SOLUTION));
 		this.addCompileScript(new SimpleReferenceRegistrationScript<>(
 				D3webCompiler.class));
 	}

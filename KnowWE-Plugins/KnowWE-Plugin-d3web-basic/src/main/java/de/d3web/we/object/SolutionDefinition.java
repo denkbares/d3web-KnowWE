@@ -66,7 +66,7 @@ public abstract class SolutionDefinition
 	}
 
 	public SolutionDefinition(Priority p) {
-		this.setRenderer(new SolutionIDHighlightingRenderer());
+		this.setRenderer(new ValueTooltipRenderer(new SolutionIDHighlightingRenderer()));
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR4));
 		this.addCompileScript(p, new CreateSolutionHandler());
 	}
