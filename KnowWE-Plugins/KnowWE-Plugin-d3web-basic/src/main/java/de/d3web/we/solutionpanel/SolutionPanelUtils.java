@@ -1,26 +1,18 @@
 package de.d3web.we.solutionpanel;
 
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
-import de.d3web.core.session.ValueUtils;
-import de.d3web.core.session.values.DateValue;
-import de.d3web.core.session.values.MultipleChoiceValue;
-import de.d3web.core.session.values.NumValue;
-import de.d3web.core.session.values.UndefinedValue;
-import de.d3web.core.session.values.Unknown;
 import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import de.d3web.we.object.ValueTooltipRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.tools.CompositeEditToolProvider;
 import de.knowwe.util.Icon;
 import de.knowwe.util.IconColor;
 
@@ -53,54 +45,55 @@ public class SolutionPanelUtils {
 	}
 
 	public static void renderSolution(Solution solution, Session session, boolean endUser, RenderResult content) {
-		// TODO: look for internationalization and only print getName,
-		// when no intlz is available
-		// content.append("* ");
+
+		// fetch derivation state icon
+		Rating solutionRating = D3webUtils.getRatingNonBlocking(session, solution);
+		appendImage(solutionRating, content);
 
 		String link = solution.getInfoStore().getValue(MMInfo.LINK);
 		String prompt = solution.getInfoStore().getValue(MMInfo.PROMPT);
 		String description = solution.getInfoStore().getValue(MMInfo.DESCRIPTION);
 
-		String infoLink = KnowWEUtils.getURLLinkToObjectInfoPage(new Identifier(solution.getName()));
-
-		String tooltip = "";
-		if (description != null) tooltip = description;
-
-		String label = solution.getName();
+		String label;
 		if (prompt != null) {
-			tooltip = label + "\n" + tooltip;
 			label = prompt;
 		}
-		tooltip = Strings.encodeHtml(tooltip.trim());
+		else if (description != null) {
+			label = description;
+		}
+		else {
+			label = solution.getName();
+		}
 
-		// fetch derivation state icon
-		Rating solutionRating = D3webUtils.getRatingNonBlocking(session, solution);
-		appendImage(solutionRating, content);
-		String stateName = String.valueOf(solutionRating);
+		StringBuilder tooltip = new StringBuilder();
+		if (description != null) {
+			tooltip.append(description);
+		}
 
-		content.appendHtml("<span title=\"" + tooltip + "\" class=\"SOLUTION-" + stateName + "\">");
+		if (solutionRating != null) {
+			if (tooltip.length() > 0) {
+				tooltip.append("<p/>");
+			}
+			ValueTooltipRenderer.appendCurrentValue(solution, solutionRating, tooltip);
+			ValueTooltipRenderer.appendSourceFactsExplanation(solution, session, tooltip);
+		}
+
+		content.appendHtmlTag("span", "title", tooltip.toString(), "class", "SOLUTION-" + String.valueOf(solutionRating) + " tooltipster");
 		if (endUser) {
 			// show solution in end user mode
-			if (prompt == null && description != null) {
-				label = description;
-			}
 			if (link != null) {
-				content.appendHtml("<a href='" + Strings.encodeHtml(link) + "'>");
-				content.append(label);
-				content.appendHtml("</a>");
+				content.appendHtmlElement("a", label, "href", link);
 			}
 			else {
 				content.append(label);
 			}
 		}
 		else {
-			// show solution in developer mode
-			if (!tooltip.isEmpty()) tooltip = "title='" + tooltip.replace('\'', '"') + "' ";
-			content.appendHtml("<a href='" + Strings.encodeHtml(infoLink) + "'>");
-			content.append(solution.getName());
-			content.appendHtml("</a>");
+			content.appendHtmlElement("a", label, "onclick",
+					CompositeEditToolProvider.createCompositeEditModeAction(new Identifier(solution.getName())));
 		}
-		content.appendHtml("</span>\n");
+		content.appendHtmlTag("/span");
+		content.appendHtml("<br/>");
 	}
 
 	public static void appendImage(Rating solutionRating, RenderResult content) {
@@ -125,9 +118,6 @@ public class SolutionPanelUtils {
 	}
 
 	public static void renderAbstraction(Question question, Session session, int digits, RenderResult buffer) {
-		// TODO: look for internationalization and only print getName,
-		// when no intlz is available
-		// buffer.append("* ");
 		appendImage(Icon.ABSTRACT, "Abstraction", buffer);
 		buffer.appendHtml("<span class=\"ABSTRACTION\">");
 		// render the abstraction question with value
@@ -138,7 +128,7 @@ public class SolutionPanelUtils {
 		else {
 			buffer.append(question.getName()
 					+ " = "
-					+ formatValue(question, value, digits));
+					+ ValueTooltipRenderer.formatValue(question, value, digits));
 		}
 
 		// add the unit name for num question, if available
@@ -148,53 +138,6 @@ public class SolutionPanelUtils {
 		}
 
 		buffer.appendHtml("</span>" + "\n");
-	}
-
-	/**
-	 * Renders the string representation of the specified value. For a {@link NumValue} the float is
-	 * truncated to its integer value, when possible.
-	 *
-	 * @param value the specified value
-	 * @return A string representation of the specified value.
-	 * @created 19.10.2010
-	 */
-	public static String formatValue(ValueObject object, Value value, int digits) {
-		if (value instanceof NumValue) {
-			Double numValue = (Double) value.getValue();
-			// check, if we need to round the value
-
-			if (digits >= 0) {
-				double d = Math.pow(10, digits);
-				numValue = (Math.round(numValue * d) / d);
-			}
-			// cut an ending .0 when appropriate
-			if (Math.abs(numValue - Math.round(numValue)) > 0) {
-				return numValue.toString();
-			}
-			else {
-				return String.valueOf(Math.round(numValue));
-			}
-		}
-		else if (value instanceof MultipleChoiceValue) {
-			String mcText = value.toString();
-			// remove the brackets
-			return mcText.substring(1, mcText.length() - 1);
-		}
-		else if (value instanceof DateValue) {
-			return ValueUtils.getDateOrDurationVerbalization((QuestionDate) object, ((DateValue) value).getDate(), true);
-		}
-		else if (value instanceof Unknown) {
-			return "Unknown";
-		}
-		else if (value instanceof UndefinedValue) {
-			return "Undefined";
-		}
-		else if (value instanceof Rating) {
-			return Strings.capitalize(value.toString());
-		}
-		else {
-			return value.toString();
-		}
 	}
 
 }
