@@ -1,5 +1,8 @@
 package de.d3web.we.solutionpanel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
@@ -117,16 +120,37 @@ public class SolutionPanelUtils {
 		content.appendHtml(icon.addTitle(title).addId("sstate-update").toHtml() + " ");
 	}
 
-	public static void renderAbstraction(Question question, Session session, int digits, RenderResult buffer) {
-		appendImage(Icon.ABSTRACT, "Abstraction", buffer);
-		buffer.appendHtml("<span class=\"ABSTRACTION\">");
-		// render the abstraction question with value
+	public static void renderAbstraction(Question question, Session session, int digits, RenderResult result) {
+		appendImage(Icon.ABSTRACT, "Abstraction", result);
 		Value value = D3webUtils.getValueNonBlocking(session, question);
+
+		String description = question.getInfoStore().getValue(MMInfo.DESCRIPTION);
+		StringBuilder tooltip = new StringBuilder();
+		if (description != null) {
+			tooltip.append(description);
+		}
+		if (value != null) {
+			if (tooltip.length() > 0) {
+				tooltip.append("<p/>");
+			}
+			ValueTooltipRenderer.appendSourceFactsExplanation(question, session, tooltip);
+		}
+
+		List<String> attributes = new ArrayList<>();
+		attributes.add("class");
+		attributes.add("ABSTRACTION tooltipster");
+		if (tooltip.length() > 0) {
+			attributes.add("title");
+			attributes.add(tooltip.toString());
+		}
+
+		result.appendHtmlTag("span", attributes.toArray(new String[0]));
+		// render the abstraction question with value
 		if (value == null) {
-			buffer.appendHtml("<i style='color:grey'>value in calculation, please reload later</i>");
+			result.appendHtml("<i style='color:grey'>value in calculation, please reload later</i>");
 		}
 		else {
-			buffer.append(question.getName()
+			result.append(question.getName()
 					+ " = "
 					+ ValueTooltipRenderer.formatValue(question, value, digits));
 		}
@@ -134,10 +158,10 @@ public class SolutionPanelUtils {
 		// add the unit name for num question, if available
 		String unit = question.getInfoStore().getValue(MMInfo.UNIT);
 		if (unit != null) {
-			buffer.append(" " + unit);
+			result.append(" " + unit);
 		}
 
-		buffer.appendHtml("</span>" + "\n");
+		result.appendHtml("</span>" + "\n");
 	}
 
 }
