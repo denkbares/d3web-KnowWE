@@ -1977,6 +1977,7 @@ a.slimbox:hover {
 	width: 100%;
 	background-color: #000;
 	cursor: pointer;
+	z-index: 10;
 }
 
 #lbCenter, #lbBottomContainer {
@@ -1987,6 +1988,7 @@ a.slimbox:hover {
 	color: #666;
 	line-height: 1.5;
 	text-align: left;
+	z-index: 11;
 }
 
 #lbBottomContainer {
