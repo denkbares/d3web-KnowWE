@@ -2,6 +2,7 @@ package de.knowwe.diaflux;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.kdom.Article;
@@ -33,7 +34,9 @@ public class DiaFluxResourceAppender implements PageAppendHandler {
 				.successor(WikiReference.class)
 				.stream()
 				.map(reference -> reference.get().getReferencedSection(reference))
+				.filter(Objects::nonNull)
 				.flatMap(referencedSection -> $(referencedSection).successor(FlowchartType.class).stream())
+				.filter(Objects::nonNull)
 				.collect(toList()));
 		if (!flowcharts.isEmpty()) {
 			Section<?>[] flowchartsArray = flowcharts.toArray(new Section<?>[0]);
