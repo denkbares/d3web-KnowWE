@@ -137,7 +137,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 	private static class UpdateTask extends TimerTask {
 
-		private Section<AttachmentMarkup> section;
+		private final Section<AttachmentMarkup> section;
 
 		private UpdateTask(Section<AttachmentMarkup> section) {
 			this.section = section;
@@ -296,8 +296,8 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 		ReentrantLock lock = getLock(section);
 		if (!lock.tryLock()) {
-			Log.info("Skipped requested updated for attachment '" + Strings.trim(attachmentSection.getText()) + "' with resource from URL " + url
-					.toString() + ", update already running");
+			Log.info("Skipped requested updated for attachment '" + Strings.trim(attachmentSection.getText())
+					+ "' with resource from URL " + url + ", update already running");
 			return;
 		}
 		String path = AttachmentType.getPath(attachmentSection);
@@ -362,7 +362,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				Messages.clearMessages(section, AttachmentMarkup.class);
 			}
 			catch (Throwable e) { // NOSONAR
-				String message = "Exception while downloading attachment " + path;
+				String message = e.getClass().getSimpleName() + " while downloading attachment " + path;
 				Messages.storeMessage(section, AttachmentMarkup.class, Messages.error(message + ": " + e.getMessage()));
 				Log.severe(message, e);
 			}
