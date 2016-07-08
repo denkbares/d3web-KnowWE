@@ -293,6 +293,10 @@ DenkbaresSkin.toggleFavorites = function() {
 	toggle.css(DenkbaresSkin.toggleTransitionDuration);
 	var status = DenkbaresSkin.favoriteStatus;
 	if (DenkbaresSkin.favoriteStatus.status == 'expanded') {
+		if (_EM && _EM.enabled) {
+			KNOWWE.notification.warn(null, "Collapsing left menu not possible while using edit mode.");
+			return;
+		}
 		favorites.css({left : status.favLeftCollapsed + "px"});
 		page.css({left : status.pageLeftCollapsed + "px"});
 		toggle.css({cursor : 'e-resize', left : status.pageLeftCollapsed + "px"});
