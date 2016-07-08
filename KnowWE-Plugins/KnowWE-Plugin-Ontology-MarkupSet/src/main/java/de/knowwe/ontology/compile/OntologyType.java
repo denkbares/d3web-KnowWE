@@ -72,7 +72,7 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String ANNOTATION_EXPORT = "export";
 	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
 
-	private static final DefaultMarkup MARKUP;
+	public static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup("Ontology");

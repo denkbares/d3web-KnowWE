@@ -18,13 +18,22 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.util.regex.Pattern;
+
 import de.d3web.strings.QuoteSet;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.ontology.compile.OntologyCompileScript;
+import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.OntologyType;
 
 /**
- * 
  * @author Jochen Reutelshöfer
  * @created 08.07.2013
  */
@@ -41,12 +50,32 @@ public class TurtleMarkup extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("Turtle");
 		PackageManager.addPackageAnnotation(MARKUP);
-		TurtleContent markupN3Content = new TurtleContent();
-		MARKUP.addContentType(markupN3Content);
+		MARKUP.ignoreAnnotation("prefix");
+		MARKUP.addContentType(new TurtlePrefixType());
+		MARKUP.addContentType(new TurtleContent());
 	}
 
 	public TurtleMarkup() {
 		super(MARKUP);
 	}
 
+	private static class TurtlePrefixType extends AbstractType {
+
+		public TurtlePrefixType() {
+			this.setSectionFinder(new RegexSectionFinder("^\\p{Blank}*@prefix.+?$", Pattern.MULTILINE));
+			this.addCompileScript(new OntologyCompileScript<TurtlePrefixType>() {
+
+				@Override
+				public void compile(OntologyCompiler compiler, Section<TurtlePrefixType> section) throws CompilerMessage {
+					throw new CompilerMessage(Messages.warning("Ignoring '" + section.getText()
+							+ "', please use markup %%" + OntologyType.MARKUP.getName() + " to specify prefixes."));
+				}
+
+				@Override
+				public void destroy(OntologyCompiler compiler, Section<TurtlePrefixType> section) {
+					// nothing to do, message will be destroyed with section
+				}
+			});
+		}
+	}
 }
