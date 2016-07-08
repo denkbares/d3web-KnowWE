@@ -172,42 +172,26 @@ public class DOTRenderer {
 
 	private static String generateGraphSource(SubGraphData data, Config config) {
 		Collection<ConceptNode> dotSourceLabel = data.getConceptDeclarations();
-		final Map<ConceptNode, Set<Edge>> clusters = data.getClusters();
 		StringBuilder dotSource = new StringBuilder();
 
 		// iterate over the labels and add them to the dotSource
+		Map<ConceptNode, Set<Edge>> clusters = data.getClusters();
 		for (ConceptNode node : dotSourceLabel) {
 
-			RenderingStyle style = node.getStyle();
-
-			// root is rendered highlighted
-			if (node.isRoot()) {
-				style.addStyle("bold");
-				style.setFontstyle(RenderingStyle.Fontstyle.UNDERLINING);
-			}
-
-			String label;
-
-			if (node.isOuter()) {
-				label = DOTRenderer.outerLabel;
-			}
-			else {
-				String nodeLabel = clearLabel(node.getConceptLabel());
-				if ((node.getType() != NODE_TYPE.LITERAL) &&
-						Config.LiteralMode.TABLE == config.getLiteralMode()) {
-					// use of labels suppressed by the user -> show concept name, i.e. uri
-					// todo: should be handeled by a distinct config parameter (literalTable?)
-					// or: @literals: table|off|popup
-					nodeLabel = createHTMLTable(node, data, style.getFontstyle(), config);
+			appendNodeDefinitionLineToSource(data, config, dotSource, node);
+			// if the literal mode is 'TABLE', the literals are contained within the node
+			// if the literal mode is 'NODES' we need to define literal nodes from the clusters
+			if(Config.LiteralMode.NODES == config.getLiteralMode()) {
+				Set<Edge> clusterEdges = clusters.get(node);
+				if (clusterEdges != null) {
+					for (Edge clusterEdge : clusterEdges) {
+						ConceptNode object = clusterEdge.getObject();
+						if (object != null) {
+							appendNodeDefinitionLineToSource(data, config, dotSource, object);
+						}
+					}
 				}
-				else {
-					nodeLabel = createNodeLabel(nodeLabel, style.getFontstyle());
-				}
-
-				label = DOTRenderer.createDotConceptLabel(style, node.getConceptUrl(), nodeLabel, true);
 			}
-			dotSource.append("\"").append(node.getName()).append("\"").append(label);
-
 		}
 
 		/*
@@ -219,7 +203,50 @@ public class DOTRenderer {
 			appendEdgeSource(config, dotSource, key);
 		}
 
+		// add literals contained in the clusters if the literal mode is 'NODES'
+		if(Config.LiteralMode.NODES == config.getLiteralMode()) {
+			for (ConceptNode node : dotSourceLabel) {
+				if ((node.getType() != NODE_TYPE.LITERAL)) {
+					Set<Edge> edges = clusters.get(node);
+					if(edges != null) {
+						for (Edge key : edges) {
+							appendEdgeSource(config, dotSource, key);
+						}
+					}
+				}
+			}
+		}
+
 		return dotSource.toString();
+	}
+
+	private static void appendNodeDefinitionLineToSource(SubGraphData data, Config config, StringBuilder dotSource, ConceptNode node) {
+		RenderingStyle style = node.getStyle();
+
+		// root is rendered highlighted
+		if (node.isRoot()) {
+			style.addStyle("bold");
+			style.setFontstyle(RenderingStyle.Fontstyle.UNDERLINING);
+		}
+
+		String label;
+
+		if (node.isOuter()) {
+			label = DOTRenderer.outerLabel;
+		}
+		else {
+			String nodeLabel = clearLabel(node.getConceptLabel());
+			if ((node.getType() != NODE_TYPE.LITERAL) &&
+					Config.LiteralMode.TABLE == config.getLiteralMode()) {
+				// we render the node as a table, showing the selected literals
+				nodeLabel = createHTMLTable(node, data, style.getFontstyle(), config);
+			}
+			else {
+				nodeLabel = createNodeLabel(nodeLabel, style.getFontstyle());
+			}
+			label = DOTRenderer.createDotConceptLabel(style, node.getConceptUrl(), nodeLabel, true);
+		}
+		dotSource.append("\"").append(node.getName()).append("\"").append(label);
 	}
 
 	private static String createHTMLTable(ConceptNode node, SubGraphData data, RenderingStyle.Fontstyle fontStyle, Config config) {

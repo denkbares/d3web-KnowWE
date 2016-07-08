@@ -72,6 +72,7 @@ public class VisualizationConfigType extends DefaultMarkupType {
 		markup.addAnnotation(Config.OVERLAP, false, Config.Overlap.class);
 		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.class);
 		markup.addAnnotation(Config.RANK_SAME, false);
+		markup.addAnnotation(Config.SHOW_LITERALS, false, Config.LiteralMode.class);
 		return markup;
 	}
 }

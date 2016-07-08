@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
@@ -94,10 +95,10 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 	private String determineClassType(Rdf2GoCore rdfRepository, String variable, BindingSet row, Value fromURI) {
 		// try to determine the clazz/type of the source concept
 		String clazz = null;
-		URI uri = Sparqls.asURI(row, variable);
-		if(uri != null ) {
-			org.openrdf.model.URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdfRepository, new URIImpl(fromURI
-					.stringValue()));
+		if(fromURI instanceof org.openrdf.model.URI) {
+			URIImpl uriInstance = new URIImpl(fromURI
+					.stringValue());
+			org.openrdf.model.URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdfRepository, uriInstance);
 			if(mostSpecificClass != null) {
 					clazz = Rdf2GoUtils.reduceNamespace(rdfRepository, mostSpecificClass.getNamespace()) + mostSpecificClass.getLocalName();
 			}

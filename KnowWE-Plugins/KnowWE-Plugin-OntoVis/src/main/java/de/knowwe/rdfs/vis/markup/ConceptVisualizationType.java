@@ -77,6 +77,10 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 
 		MARKUP.addAnnotation(Config.CONFIG, false);
 		MARKUP.addAnnotation(Config.PRERENDER, false);
+
+		MARKUP.addAnnotation(Config.LAYOUT, false, Config.Layout.class);
+		MARKUP.addAnnotationRenderer(Config.LAYOUT, NothingRenderer.getInstance());
+
 		return MARKUP;
 	}
 
