@@ -68,7 +68,7 @@ public class TurtleMarkup extends DefaultMarkupType {
 				@Override
 				public void compile(OntologyCompiler compiler, Section<TurtlePrefixType> section) throws CompilerMessage {
 					throw new CompilerMessage(Messages.warning("Ignoring '" + section.getText()
-							+ "', please use markup %%" + OntologyType.MARKUP.getName() + " to specify prefixes."));
+							+ "', please use markup %%" + OntologyType.MARKUP.getName() + " to specify namespaces."));
 				}
 
 				@Override

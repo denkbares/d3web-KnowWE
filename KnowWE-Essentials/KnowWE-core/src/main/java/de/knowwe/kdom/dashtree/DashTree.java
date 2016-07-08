@@ -28,10 +28,9 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 /**
  * @author Jochen
- * 
+ *         <p>
  *         A simple DashTree. It takes all and tries to build a (dash-) SubTree
  *         (which is defined recursively).
- * 
  */
 
 public class DashTree extends AbstractType {
@@ -48,8 +47,7 @@ public class DashTree extends AbstractType {
 	 * for instantiation. Of course, then it's not a dash-tree any more in its
 	 * literally sense. The parameter startLevel indicates with how many dashes
 	 * the hierarchy is expected to start (0 or 1 in most cases).
-	 * 
-	 * 
+	 *
 	 * @param keyCharacter
 	 * @param startLevel
 	 */
@@ -65,25 +63,18 @@ public class DashTree extends AbstractType {
 	}
 
 	/**
-	 * 
-	 * replaces the inherited default DashTreeElementContent by the customized
+	 * Replaces the inherited default DashTreeElementContent by the customized
 	 * DashTreeElementContent (PropertyDashTreeElementContent) which is a type
 	 * that parses and compiles Property-definitions
-	 * 
-	 * @param dashTree
-	 * @param newContentType
 	 */
 	protected void replaceDashTreeElementContentType(DashTreeElementContent newContentType) {
 		List<Type> types = getChildrenTypes();
 		for (Type Type : types) {
 			if (Type instanceof DashSubtree) {
-				List<Type> content = Type
-						.getChildrenTypes();
+				List<Type> content = Type.getChildrenTypes();
 				for (Type Type2 : content) {
 					if (Type2 instanceof DashTreeElement) {
-						Type2.replaceChildType(DashTreeElementContent.class, newContentType
-						);
-
+						Type2.replaceChildType(DashTreeElementContent.class, newContentType);
 					}
 				}
 			}
