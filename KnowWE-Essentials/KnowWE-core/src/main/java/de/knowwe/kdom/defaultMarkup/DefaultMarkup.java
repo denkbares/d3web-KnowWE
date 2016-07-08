@@ -22,9 +22,12 @@ package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.d3web.strings.Strings;
@@ -40,6 +43,7 @@ public class DefaultMarkup implements Cloneable {
 	private String name;
 	private Collection<Type> types = new ArrayList<>();
 	private Map<String, Annotation> annotations = new HashMap<>();
+	private Set<String> ignoredAnnotations = new HashSet<>();
 	private String deprecatedAlternative = null;
 	private boolean isInline = false;
 	private String documentation = null;
@@ -275,6 +279,10 @@ public class DefaultMarkup implements Cloneable {
 		return this.types.toArray(new Type[this.types.size()]);
 	}
 
+	public Set<String> getIgnoredAnnotations() {
+		return Collections.unmodifiableSet(this.ignoredAnnotations);
+	}
+
 	public void setAnnotationDeprecated(String annotationName) {
 		Annotation annotation = getAnnotation(annotationName);
 		if (annotation != null) {
@@ -328,6 +336,18 @@ public class DefaultMarkup implements Cloneable {
 	 */
 	public void setInline(boolean isInline) {
 		this.isInline = isInline;
+	}
+
+	/**
+	 * Specifies annotations that should be ignored while parsing the default markup. Use this method if you have
+	 * annotation like markup in your content type and don't want it to be recognized as an annotation. This will
+	 * however not work, if another annotation comes prior to the ignored annotation, the content type will end at the
+	 * normal annotation...
+	 *
+	 * @param name the name of the annotation to ignore
+	 */
+	public void ignoreAnnotation(String name) {
+		this.ignoredAnnotations.add(name);
 	}
 
 	private static class IconType extends AbstractType {

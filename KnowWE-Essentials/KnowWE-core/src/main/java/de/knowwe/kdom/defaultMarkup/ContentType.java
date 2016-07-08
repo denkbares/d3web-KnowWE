@@ -21,9 +21,11 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.d3web.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -58,31 +60,39 @@ public class ContentType extends AbstractType {
 		private final static int FLAGS =
 				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 
-		private final static String STARTTAG =
+		private final static String START_TAG =
 				"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=]?\\p{Space}*?(?:\\r?\\n)?+";
 
 		private final static String CONTENT =
-				"(?:(?!$LINESTART$\\p{Space}*@\\w+).)*?";
+				"(?:(?!$LINESTART$\\p{Space}*@$IGNORES$\\w+).)*?";
 
-		private final static String ENDTAG =
-				"(?:^\\p{Blank}*[/%]?%\\p{Blank}*$|\\z|$LINESTART$\\p{Space}*@\\w+$INLINEENDTAG$)";
+		private final static String END_TAG =
+				"(?:^\\p{Blank}*[/%]?%\\p{Blank}*$|\\z|$LINESTART$\\p{Space}*@$IGNORES$\\w+$INLINEENDTAG$)";
 
-		private final static String REGEX = STARTTAG + "(" + CONTENT + ")" + ENDTAG;
+		private final static String REGEX_TEMPLATE = START_TAG + "(" + CONTENT + ")" + END_TAG;
 
 		private final Pattern startPattern;
 
 		private final AdaptiveMarkupFinder adaptiveFinder;
 
 		public ContentFinder(DefaultMarkup markup) {
-			String regex_modified;
+
+			String regex = REGEX_TEMPLATE;
 			if (markup.isInline()) {
-				regex_modified = REGEX.replace("$INLINEENDTAG$", "|%%|/%").replace("$LINESTART$", "^|");
+				regex = regex.replace("$INLINEENDTAG$", "|%%|/%").replace("$LINESTART$", "^|");
 			}
 			else {
-				regex_modified = REGEX.replace("$INLINEENDTAG$", "");
+				regex = regex.replace("$INLINEENDTAG$", "");
 			}
-			adaptiveFinder = new AdaptiveMarkupFinder(markup.getName(), regex_modified, FLAGS, 1, true);
-			startPattern = Pattern.compile(STARTTAG.replace("$NAME$", markup.getName()), FLAGS);
+			Set<String> ignoredAnnotations = markup.getIgnoredAnnotations();
+			if (ignoredAnnotations.isEmpty()) {
+				regex = regex.replace("$IGNORES$", "");
+			}
+			else {
+				regex = regex.replace("$IGNORES$", "(?!" + Strings.concat("|", ignoredAnnotations) + ")");
+			}
+			adaptiveFinder = new AdaptiveMarkupFinder(markup.getName(), regex, FLAGS, 1, true);
+			startPattern = Pattern.compile(START_TAG.replace("$NAME$", markup.getName()), FLAGS);
 		}
 
 		@Override
@@ -101,4 +111,5 @@ public class ContentType extends AbstractType {
 			return results;
 		}
 	}
+
 }
