@@ -7,7 +7,7 @@
 		<copy todir="${basedir}/target/KnowWE-App-1.0-SNAPSHOT">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="KnowWE-Resources/src/main/webapp/**" />
-				<include name="KnowWE-Resources/src/main/webapp/WEB_INF/" />
+				<include name="KnowWE-Resources/src/main/webapp/WEB-INF/" />
 			</fileset>
 			<cutdirsmapper dirs="4" />
 		</copy>
