@@ -73,22 +73,188 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  */
 public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> {
 
-	private ExecutorService executorService = Executors.newFixedThreadPool(2);
+	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+	private static final String[] RESOURCE_TERMS = new String[] {
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#List",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#ObjectProperty",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#Property",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil",
+			"http://www.w3.org/2000/01/rdf-schema#Class",
+			"http://www.w3.org/2000/01/rdf-schema#Container",
+			"http://www.w3.org/2000/01/rdf-schema#ContainerMembershipProperty",
+			"http://www.w3.org/2000/01/rdf-schema#Datatype",
+			"http://www.w3.org/2000/01/rdf-schema#Literal",
+			"http://www.w3.org/2000/01/rdf-schema#Resource",
+			"http://www.w3.org/2001/XMLSchema#NCName",
+			"http://www.w3.org/2001/XMLSchema#NMTOKEN",
+			"http://www.w3.org/2001/XMLSchema#Name",
+			"http://www.w3.org/2001/XMLSchema#anyURI",
+			"http://www.w3.org/2001/XMLSchema#base64Binary",
+			"http://www.w3.org/2001/XMLSchema#boolean",
+			"http://www.w3.org/2001/XMLSchema#byte",
+			"http://www.w3.org/2001/XMLSchema#dateTime",
+			"http://www.w3.org/2001/XMLSchema#dateTimeStamp",
+			"http://www.w3.org/2001/XMLSchema#decimal",
+			"http://www.w3.org/2001/XMLSchema#double",
+			"http://www.w3.org/2001/XMLSchema#float",
+			"http://www.w3.org/2001/XMLSchema#hexBinary",
+			"http://www.w3.org/2001/XMLSchema#int",
+			"http://www.w3.org/2001/XMLSchema#integer",
+			"http://www.w3.org/2001/XMLSchema#language",
+			"http://www.w3.org/2001/XMLSchema#long",
+			"http://www.w3.org/2001/XMLSchema#negativeInteger",
+			"http://www.w3.org/2001/XMLSchema#nonNegativeInteger",
+			"http://www.w3.org/2001/XMLSchema#nonPositiveInteger",
+			"http://www.w3.org/2001/XMLSchema#normalizedString",
+			"http://www.w3.org/2001/XMLSchema#positiveInteger",
+			"http://www.w3.org/2001/XMLSchema#short",
+			"http://www.w3.org/2001/XMLSchema#string",
+			"http://www.w3.org/2001/XMLSchema#token",
+			"http://www.w3.org/2001/XMLSchema#unsignedByte",
+			"http://www.w3.org/2001/XMLSchema#unsignedInt",
+			"http://www.w3.org/2001/XMLSchema#unsignedLong",
+			"http://www.w3.org/2001/XMLSchema#unsignedShort",
+			"http://www.w3.org/2002/07/owl#AllDifferent",
+			"http://www.w3.org/2002/07/owl#AllDisjointClasses",
+			"http://www.w3.org/2002/07/owl#AllDisjointProperties",
+			"http://www.w3.org/2002/07/owl#Annotation",
+			"http://www.w3.org/2002/07/owl#AnnotationProperty",
+			"http://www.w3.org/2002/07/owl#AsymmetricProperty",
+			"http://www.w3.org/2002/07/owl#Axiom",
+			"http://www.w3.org/2002/07/owl#Class",
+			"http://www.w3.org/2002/07/owl#DataRange",
+			"http://www.w3.org/2002/07/owl#DatatypeProperty",
+			"http://www.w3.org/2002/07/owl#DeprecatedClass",
+			"http://www.w3.org/2002/07/owl#DeprecatedProperty",
+			"http://www.w3.org/2002/07/owl#FunctionalProperty",
+			"http://www.w3.org/2002/07/owl#InverseFunctionalProperty",
+			"http://www.w3.org/2002/07/owl#IrreflexiveProperty",
+			"http://www.w3.org/2002/07/owl#NamedIndividual",
+			"http://www.w3.org/2002/07/owl#NegativePropertyAssertion",
+			"http://www.w3.org/2002/07/owl#Nothing",
+			"http://www.w3.org/2002/07/owl#ObjectProperty",
+			"http://www.w3.org/2002/07/owl#Ontology",
+			"http://www.w3.org/2002/07/owl#OntologyProperty",
+			"http://www.w3.org/2002/07/owl#ReflexiveProperty",
+			"http://www.w3.org/2002/07/owl#Restriction",
+			"http://www.w3.org/2002/07/owl#SymmetricProperty",
+			"http://www.w3.org/2002/07/owl#Thing",
+			"http://www.w3.org/2002/07/owl#TransitiveProperty",
+			"http://www.w3.org/2002/07/owl#distinctmembers",
+			"http://www.w3.org/2002/07/owl#rational",
+			"http://www.w3.org/2002/07/owl#real"
+	};
+
+	private static final String[] PROPERTY_TERMS = new String[] {
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#_1",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#first",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#langRange",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#value",
+			"http://www.w3.org/2000/01/rdf-schema#comment",
+			"http://www.w3.org/2000/01/rdf-schema#domain",
+			"http://www.w3.org/2000/01/rdf-schema#isDefinedBy",
+			"http://www.w3.org/2000/01/rdf-schema#label",
+			"http://www.w3.org/2000/01/rdf-schema#member",
+			"http://www.w3.org/2000/01/rdf-schema#range",
+			"http://www.w3.org/2000/01/rdf-schema#seeAlso",
+			"http://www.w3.org/2000/01/rdf-schema#subClassOf",
+			"http://www.w3.org/2000/01/rdf-schema#subPropertyOf",
+			"http://www.w3.org/2001/XMLSchema#length",
+			"http://www.w3.org/2001/XMLSchema#maxExclusive",
+			"http://www.w3.org/2001/XMLSchema#maxInclusive",
+			"http://www.w3.org/2001/XMLSchema#maxLength",
+			"http://www.w3.org/2001/XMLSchema#minExclusive",
+			"http://www.w3.org/2001/XMLSchema#minInclusive",
+			"http://www.w3.org/2001/XMLSchema#minLength",
+			"http://www.w3.org/2001/XMLSchema#pattern",
+			"http://www.w3.org/2002/07/owl#allValuesFrom",
+			"http://www.w3.org/2002/07/owl#annotatedProperty",
+			"http://www.w3.org/2002/07/owl#annotatedSource",
+			"http://www.w3.org/2002/07/owl#annotatedTarget",
+			"http://www.w3.org/2002/07/owl#assertionProperty",
+			"http://www.w3.org/2002/07/owl#backwardCompatibleWith",
+			"http://www.w3.org/2002/07/owl#bottomDataProperty",
+			"http://www.w3.org/2002/07/owl#bottomObjectProperty",
+			"http://www.w3.org/2002/07/owl#cardinality",
+			"http://www.w3.org/2002/07/owl#complementOf",
+			"http://www.w3.org/2002/07/owl#datatypeComplementOf",
+			"http://www.w3.org/2002/07/owl#deprecated",
+			"http://www.w3.org/2002/07/owl#differentFrom",
+			"http://www.w3.org/2002/07/owl#disjointUnionOf",
+			"http://www.w3.org/2002/07/owl#disjointWith",
+			"http://www.w3.org/2002/07/owl#distinctMembers",
+			"http://www.w3.org/2002/07/owl#equivalentClass",
+			"http://www.w3.org/2002/07/owl#equivalentProperty",
+			"http://www.w3.org/2002/07/owl#hasKey",
+			"http://www.w3.org/2002/07/owl#hasSelf",
+			"http://www.w3.org/2002/07/owl#hasValue",
+			"http://www.w3.org/2002/07/owl#imports",
+			"http://www.w3.org/2002/07/owl#incompatibleWith",
+			"http://www.w3.org/2002/07/owl#intersectionOf",
+			"http://www.w3.org/2002/07/owl#inverseOf",
+			"http://www.w3.org/2002/07/owl#maxCardinality",
+			"http://www.w3.org/2002/07/owl#maxQualifiedCardinality",
+			"http://www.w3.org/2002/07/owl#members",
+			"http://www.w3.org/2002/07/owl#minCardinality",
+			"http://www.w3.org/2002/07/owl#minQualifiedCardinality",
+			"http://www.w3.org/2002/07/owl#onClass",
+			"http://www.w3.org/2002/07/owl#onDataRange",
+			"http://www.w3.org/2002/07/owl#onDatatype",
+			"http://www.w3.org/2002/07/owl#onProperties",
+			"http://www.w3.org/2002/07/owl#onProperty",
+			"http://www.w3.org/2002/07/owl#oneOf",
+			"http://www.w3.org/2002/07/owl#priorVersion",
+			"http://www.w3.org/2002/07/owl#propertyChainAxiom",
+			"http://www.w3.org/2002/07/owl#propertyDisjointWith",
+			"http://www.w3.org/2002/07/owl#qualifiedCardinality",
+			"http://www.w3.org/2002/07/owl#sameAs",
+			"http://www.w3.org/2002/07/owl#someValuesFrom",
+			"http://www.w3.org/2002/07/owl#sourceIndividual",
+			"http://www.w3.org/2002/07/owl#targetIndividual",
+			"http://www.w3.org/2002/07/owl#targetValue",
+			"http://www.w3.org/2002/07/owl#topDataProperty",
+			"http://www.w3.org/2002/07/owl#topObjectProperty",
+			"http://www.w3.org/2002/07/owl#unionOf",
+			"http://www.w3.org/2002/07/owl#versionIRI",
+			"http://www.w3.org/2002/07/owl#versionInfo",
+			"http://www.w3.org/2002/07/owl#withRestrictions"
+	};
 
 	@Override
 	public Collection<Message> create(OntologyCompiler compiler, Section<PackageCompileType> section) {
-		registerTerminology(compiler, compiler.getRdf2GoCore(), section);
+		registerBaseTerminology(compiler, section);
 
 		Section<OntologyType> ontologyMarkup = Sections.ancestor(section, OntologyType.class);
 		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(ontologyMarkup, OntologyType.ANNOTATION_IMPORT), false);
 		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(ontologyMarkup, OntologyType.ANNOTATION_SILENT_IMPORT), true);
 
-		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2002/07/owl#Thing", Resource.class);
-		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2002/07/owl#Nothing", Resource.class);
-		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2005/xpath-functions#string-length", Resource.class);
-		registerTerm(compiler, compiler.getRdf2GoCore(), section, "http://www.w3.org/2001/XMLSchema#decimal", Resource.class);
-
 		return Messages.noMessage();
+	}
+
+	private void registerBaseTerminology(OntologyCompiler compiler, Section<PackageCompileType> section) {
+		compiler.getRdf2GoCore().addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		compiler.getRdf2GoCore().addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+		compiler.getRdf2GoCore().addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
+		compiler.getRdf2GoCore().addNamespace("owl", "http://www.w3.org/2002/07/owl#");
+		for (String resourceTerm : RESOURCE_TERMS) {
+			registerTerm(compiler, compiler.getRdf2GoCore(), section, resourceTerm, Resource.class);
+		}
+
+		for (String resourceTerm : PROPERTY_TERMS) {
+			registerTerm(compiler, compiler.getRdf2GoCore(), section, resourceTerm, Property.class);
+		}
 	}
 
 	private void handleImports(OntologyCompiler compiler, List<Section<? extends AnnotationContentType>> annotationContentSections, boolean silent) {
