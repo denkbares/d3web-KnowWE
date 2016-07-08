@@ -21,6 +21,7 @@ KNOWWE.notification = function() {
 
 	var messages = [];
 	var activeIndex = -1;
+	var idGenerator = 0;
 
 	return {
 
@@ -84,6 +85,7 @@ KNOWWE.notification = function() {
 		},
 
 		_add : function(severity, title, details, id) {
+			if (!id) id = idGenerator++;
 			KNOWWE.notification.messages.push({
 				severity : severity,
 				title : title,
