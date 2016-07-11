@@ -19,7 +19,7 @@
 
 package de.knowwe.rdf2go;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * Gets fired after the Rdf2GoCore finishes a commit.
@@ -27,9 +27,9 @@ import de.knowwe.core.event.Event;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 11.06.15
  */
-public class Rdf2GoCoreCommitFinishedEvent extends Event {
+public class Rdf2GoCoreCommitFinishedEvent implements Event {
 
-	private Rdf2GoCore core;
+	private final Rdf2GoCore core;
 
 	public Rdf2GoCoreCommitFinishedEvent(Rdf2GoCore core) {
 		this.core = core;

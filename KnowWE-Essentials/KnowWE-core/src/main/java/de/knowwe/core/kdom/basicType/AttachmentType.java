@@ -28,9 +28,9 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -132,7 +132,7 @@ public class AttachmentType extends AbstractType {
 
 	private static class AttachmentChangedListener implements EventListener {
 
-		private Section<AttachmentType> section;
+		private final Section<AttachmentType> section;
 
 		private AttachmentChangedListener(Section<AttachmentType> section) {
 			this.section = section;

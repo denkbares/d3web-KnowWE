@@ -1,6 +1,6 @@
 package de.knowwe.rdf2go;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * Gets fired when a Rdf2GoCore is to be destroyed.
@@ -8,9 +8,9 @@ import de.knowwe.core.event.Event;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 18.03.2014
  */
-public class Rdf2GoCoreDestroyEvent extends Event {
+public class Rdf2GoCoreDestroyEvent implements Event {
 
-	private Rdf2GoCore core;
+	private final Rdf2GoCore core;
 
 	public Rdf2GoCoreDestroyEvent(Rdf2GoCore rdf2GoCore) {
 		this.core = rdf2GoCore;

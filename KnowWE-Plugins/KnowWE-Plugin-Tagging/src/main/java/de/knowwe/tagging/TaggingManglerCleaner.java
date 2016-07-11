@@ -3,8 +3,8 @@ package de.knowwe.tagging;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.ArticleRegisteredEvent;
 

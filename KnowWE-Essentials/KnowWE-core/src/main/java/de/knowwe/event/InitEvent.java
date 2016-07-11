@@ -20,25 +20,15 @@
 
 package de.knowwe.event;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * The KnowWE Init event.
  * 
- * The Singleton Pattern can be removed if necessary.
- * 
  * @author Sebastian Furth
  * 
  */
-public class InitEvent extends Event {
+public class InitEvent implements Event {
 
-	private static InitEvent instance = new InitEvent();
-
-	private InitEvent() {
-	}
-
-	public static InitEvent getInstance() {
-		return instance;
-	}
 
 }

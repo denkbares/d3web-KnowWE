@@ -27,11 +27,11 @@ import java.util.Collections;
 
 import org.openrdf.rio.RDFFormat;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
 import de.d3web.utils.Log;
 import de.d3web.utils.Stopwatch;
 import de.knowwe.core.Environment;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;

@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import de.d3web.collections.PriorityList;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.event.InitEvent;
 

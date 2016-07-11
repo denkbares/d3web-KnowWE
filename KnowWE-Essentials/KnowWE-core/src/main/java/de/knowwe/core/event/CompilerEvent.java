@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.event;
 
+import com.denkbares.events.Event;
 import de.knowwe.core.compile.Compiler;
 
 /**
@@ -26,7 +27,7 @@ import de.knowwe.core.compile.Compiler;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public abstract class CompilerEvent<C extends de.knowwe.core.compile.Compiler> extends Event {
+public abstract class CompilerEvent<C extends de.knowwe.core.compile.Compiler> implements Event {
 
 	protected C compiler;
 

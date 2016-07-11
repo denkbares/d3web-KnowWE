@@ -18,7 +18,7 @@
  */
 package de.knowwe.event;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -26,7 +26,7 @@ import de.knowwe.core.user.UserContext;
  * @author Jochen Reutelshöfer
  * @created 05.12.2012
  */
-public class PageRenderedEvent extends Event {
+public class PageRenderedEvent implements Event {
 
 	private final String title;
 	private final UserContext user;

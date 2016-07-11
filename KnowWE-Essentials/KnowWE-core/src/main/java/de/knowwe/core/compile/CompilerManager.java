@@ -18,7 +18,7 @@ import de.d3web.collections.PriorityList;
 import de.d3web.collections.PriorityList.Group;
 import de.d3web.utils.Log;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.event.EventManager;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;

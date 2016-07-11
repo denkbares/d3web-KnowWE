@@ -31,6 +31,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
@@ -40,9 +43,6 @@ import de.d3web.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.compile.CompilationStartEvent;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
@@ -79,8 +79,8 @@ public class CIBuildManager implements EventListener {
 
 	private static class CIBuildCallable implements Callable<Void> {
 
-		private CIDashboard dashboard;
-		private TestExecutor testExecutor;
+		private final CIDashboard dashboard;
+		private final TestExecutor testExecutor;
 		AjaxProgressListener listener;
 
 		public CIBuildCallable(CIDashboard dashboard) {

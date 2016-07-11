@@ -31,7 +31,7 @@ import java.util.TreeSet;
 
 import de.d3web.utils.Pair;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.event.EventManager;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
@@ -341,7 +341,7 @@ public class PackageManager {// implements EventListener {
 		HashSet<Section<? extends PackageCompileType>> compilingSections =
 				packageToCompilingSections.get(packageName);
 		return compilingSections == null
-				? Collections.<Section<? extends PackageCompileType>> emptySet()
+				? Collections.emptySet()
 				: Collections.unmodifiableSet(compilingSections);
 	}
 

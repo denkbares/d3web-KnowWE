@@ -31,13 +31,14 @@ import java.util.concurrent.Future;
 
 import de.d3web.utils.Log;
 import de.d3web.utils.Triple;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.ontology.compile.OntologyCompilerFinishedEvent;
+import de.knowwe.rdf2go.Rdf2GoCoreDestroyEvent;
 import de.knowwe.rdfs.vis.markup.PreRenderer;
 
 /**
@@ -51,8 +52,8 @@ public class PreRenderWorker implements EventListener {
 
 	private static PreRenderWorker instance;
 
-	private Map<String, Triple<Future, PreRenderer, Section<?>>> cache;
-	private ExecutorService executor;
+	private final Map<String, Triple<Future, PreRenderer, Section<?>>> cache;
+	private final ExecutorService executor;
 
 	public static PreRenderWorker getInstance() {
 		synchronized (mutex) {

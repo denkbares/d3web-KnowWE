@@ -66,7 +66,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.event.EventManager;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -579,7 +579,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static class AttachmentEventHandler extends Thread {
 
 		private final DefaultArticleManager articleManager;
-		private WikiAttachmentEvent event;
+		private final WikiAttachmentEvent event;
 
 		private AttachmentEventHandler(WikiAttachmentEvent attachmentEvent) {
 			this.event = attachmentEvent;

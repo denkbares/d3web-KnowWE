@@ -20,13 +20,13 @@
 package de.knowwe.event;
 
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 16.06.2014
  */
-public class ArticleManagerEvent extends Event {
+public class ArticleManagerEvent implements Event {
 
 	protected final ArticleManager articleManager;
 

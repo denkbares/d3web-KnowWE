@@ -19,7 +19,7 @@
 
 package de.knowwe.core.compile;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * Gets fired after all Compilers of a compilation process have finished.
@@ -27,9 +27,9 @@ import de.knowwe.core.event.Event;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 16.06.2014
  */
-public class CompilationFinishedEvent extends Event {
+public class CompilationFinishedEvent implements Event {
 
-	private CompilerManager compilerManager;
+	private final CompilerManager compilerManager;
 
 	public CompilationFinishedEvent(CompilerManager compilerManager) {
 		this.compilerManager = compilerManager;

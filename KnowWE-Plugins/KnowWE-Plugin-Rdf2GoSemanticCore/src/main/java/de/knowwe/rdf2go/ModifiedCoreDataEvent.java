@@ -1,8 +1,8 @@
 package de.knowwe.rdf2go;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
-public abstract class ModifiedCoreDataEvent extends Event {
+public abstract class ModifiedCoreDataEvent implements Event {
 
 	private final Rdf2GoCore core;
 

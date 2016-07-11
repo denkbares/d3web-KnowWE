@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerRemovedEvent;
@@ -19,9 +22,6 @@ import de.knowwe.core.compile.terminology.TermDefinitionRegisteredEvent;
 import de.knowwe.core.compile.terminology.TermDefinitionUnregisteredEvent;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.CompilerEvent;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
 
 public class LazyReferenceManager implements EventListener {

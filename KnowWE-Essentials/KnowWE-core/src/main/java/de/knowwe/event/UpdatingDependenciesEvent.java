@@ -1,10 +1,10 @@
 package de.knowwe.event;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 import de.knowwe.core.kdom.Article;
 
 
-public class UpdatingDependenciesEvent extends Event {
+public class UpdatingDependenciesEvent implements Event {
 
 	private final Article article;
 

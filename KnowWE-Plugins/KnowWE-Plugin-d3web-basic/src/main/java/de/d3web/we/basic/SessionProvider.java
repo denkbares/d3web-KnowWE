@@ -34,7 +34,7 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.blackboard.Fact;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.event.EventManager;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.user.UserContext;
 
 /**

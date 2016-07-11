@@ -19,7 +19,7 @@
 
 package de.knowwe.core.compile;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * Gets fired before a compilation frame starts (before any single compiler compiles).
@@ -27,9 +27,9 @@ import de.knowwe.core.event.Event;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 03.03.2016
  */
-public class CompilationStartEvent extends Event {
+public class CompilationStartEvent implements Event {
 
-	private CompilerManager compilerManager;
+	private final CompilerManager compilerManager;
 
 	public CompilationStartEvent(CompilerManager compilerManager) {
 		this.compilerManager = compilerManager;

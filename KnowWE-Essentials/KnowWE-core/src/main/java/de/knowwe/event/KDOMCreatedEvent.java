@@ -1,10 +1,9 @@
 package de.knowwe.event;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 import de.knowwe.core.kdom.Article;
 
-
-public class KDOMCreatedEvent extends Event {
+public class KDOMCreatedEvent implements Event {
 
 	private final Article article;
 

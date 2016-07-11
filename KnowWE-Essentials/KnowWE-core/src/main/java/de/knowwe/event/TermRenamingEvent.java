@@ -22,7 +22,7 @@ package de.knowwe.event;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * Event that gets fired when a term is renamed.
@@ -30,10 +30,10 @@ import de.knowwe.core.event.Event;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 23.10.14
  */
-public abstract class TermRenamingEvent extends Event {
+public abstract class TermRenamingEvent implements Event {
 
-	private ArticleManager articleManager;
-	private UserActionContext context;
+	private final ArticleManager articleManager;
+	private final UserActionContext context;
 	private final Identifier term;
 	private final Identifier replacementTerm;
 

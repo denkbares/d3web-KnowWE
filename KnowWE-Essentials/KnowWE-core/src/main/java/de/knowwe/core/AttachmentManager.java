@@ -10,15 +10,15 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import de.d3web.collections.DefaultMultiMap;
 import de.d3web.collections.MultiMap;
 import de.d3web.collections.MultiMaps;
 import de.d3web.collections.N2MMap;
 import de.d3web.strings.Strings;
 import de.d3web.utils.Log;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,7 +42,7 @@ import static java.util.stream.Collectors.toSet;
  */
 public class AttachmentManager implements EventListener {
 
-	private ArticleManager articleManager;
+	private final ArticleManager articleManager;
 
 	private final MultiMap<String, Section<AttachmentType>> pathToSectionsMap = MultiMaps.synchronizedMultiMap(new N2MMap<>());
 	private final MultiMap<String, Section<AttachmentType>> articleTitleToSectionsMap = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());

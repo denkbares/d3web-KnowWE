@@ -23,6 +23,9 @@ import java.util.Collections;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
@@ -33,9 +36,6 @@ import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -63,7 +63,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private ParallelScriptCompiler<OntologyCompiler> destroyScriptCompiler;
 	private final RepositoryConfig ruleSet;
 	private final String compilingArticle;
-	private MultiDefinitionMode multiDefinitionMode;
+	private final MultiDefinitionMode multiDefinitionMode;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,

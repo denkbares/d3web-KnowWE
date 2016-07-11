@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.event;
 
+import com.denkbares.events.Event;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -26,7 +27,7 @@ import de.knowwe.core.kdom.Article;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 10.12.2013
  */
-public abstract class ArticleEvent extends Event {
+public abstract class ArticleEvent implements Event {
 
 	protected Article article;
 

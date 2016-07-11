@@ -19,7 +19,7 @@
 
 package de.knowwe.event;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * Event concerning attachments attachments
@@ -27,7 +27,7 @@ import de.knowwe.core.event.Event;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 16.06.15
  */
-public abstract class AttachmentEvent extends Event {
+public abstract class AttachmentEvent implements Event {
 
 	private final String parentName;
 	private final String fileName;

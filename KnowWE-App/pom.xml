@@ -499,6 +499,11 @@
 					<artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
 					<version>${project.version}</version>
 				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>denkbares-SemanticCore-Plugin-GraphDB-ClosedSource</artifactId>
+					<version>${project.version}</version>
+				</dependency>
 				<!--dependency>
 					<groupId>jspwiki.plugin</groupId>
 					<artifactId>ImageMapPlus</artifactId>

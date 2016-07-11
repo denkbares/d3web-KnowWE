@@ -30,8 +30,8 @@ import java.util.Map;
 import de.knowwe.core.compile.CompilationFinishedEvent;
 import de.knowwe.core.compile.CompilerFinishedEvent;
 import de.knowwe.core.compile.PackageCompiler;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
 import de.knowwe.core.kdom.Article;
 
 public class CIEventForwarder implements EventListener {

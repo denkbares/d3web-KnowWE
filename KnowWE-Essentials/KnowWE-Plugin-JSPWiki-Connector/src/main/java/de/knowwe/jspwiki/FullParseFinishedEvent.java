@@ -18,11 +18,11 @@
  */
 package de.knowwe.jspwiki;
 
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
  * @created 15.05.14
  */
-public class FullParseFinishedEvent extends Event {
+public class FullParseFinishedEvent implements Event {
 }

@@ -22,7 +22,7 @@ package de.knowwe.d3web.event;
 
 import de.d3web.core.session.Session;
 import de.d3web.core.session.blackboard.Fact;
-import de.knowwe.core.event.Event;
+import com.denkbares.events.Event;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -30,7 +30,7 @@ import de.knowwe.core.user.UserContext;
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  */
-public class FindingSetEvent extends Event {
+public class FindingSetEvent implements Event {
 
 	private final UserContext user;
 	private final Fact fact;

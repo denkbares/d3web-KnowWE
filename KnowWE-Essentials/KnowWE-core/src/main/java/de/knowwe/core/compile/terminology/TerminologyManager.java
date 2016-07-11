@@ -28,12 +28,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.denkbares.events.EventManager;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.PluginManager;
 import de.d3web.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
@@ -55,7 +55,7 @@ public class TerminologyManager {
 
 	private static final Set<Identifier> occupiedTerms = new HashSet<>();
 
-	private TermLogManager termLogManager;
+	private final TermLogManager termLogManager;
 
 	public TerminologyManager() {
 		this(false);
@@ -97,7 +97,7 @@ public class TerminologyManager {
 				? (AbstractPackageCompiler) compiler : null;
 		if (occupiedTerms.contains(termIdentifier)) {
 			Message msg = Messages.error("The term '"
-					+ termIdentifier.toString()
+					+ termIdentifier
 					+ "' is reserved by the system.");
 			Messages.storeMessage(messageCompiler, termDefinition, this.getClass(), msg);
 			return;

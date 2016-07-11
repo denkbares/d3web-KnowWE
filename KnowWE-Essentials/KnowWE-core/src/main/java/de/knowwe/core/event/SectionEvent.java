@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.event;
 
+import com.denkbares.events.Event;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -27,7 +28,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 10.12.2013
  */
-public abstract class SectionEvent<T extends Type> extends Event {
+public abstract class SectionEvent<T extends Type> implements Event {
 
 	protected Section<? extends T> section;
 

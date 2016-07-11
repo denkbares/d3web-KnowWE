@@ -3,10 +3,10 @@ package de.d3web.we.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
 import de.d3web.core.inference.LoopTerminator;
 import de.d3web.we.basic.SessionRemovedEvent;
-import de.knowwe.core.event.Event;
-import de.knowwe.core.event.EventListener;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.d3web.event.FindingSetEvent;
 import de.knowwe.event.InitEvent;

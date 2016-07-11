@@ -40,6 +40,8 @@ import java.util.logging.LogManager;
 
 import javax.servlet.ServletContext;
 
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import de.d3web.collections.PriorityList;
 import de.d3web.plugin.Extension;
 import de.d3web.plugin.JPFPluginManager;
@@ -54,8 +56,6 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.event.EventListener;
-import de.knowwe.core.event.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -145,7 +145,7 @@ public class Environment {
 		instance = new Environment(wiki);
 		instance.init();
 		initialized = true;
-		EventManager.getInstance().fireEvent(InitEvent.getInstance());
+		EventManager.getInstance().fireEvent(new InitEvent());
 
 		Log.info("INITIALIZED KNOWWE ENVIRONMENT");
 	}

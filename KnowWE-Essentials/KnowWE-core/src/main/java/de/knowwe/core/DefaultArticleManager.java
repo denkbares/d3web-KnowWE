@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import de.d3web.utils.Log;
 import de.knowwe.core.compile.CompilerManager;
-import de.knowwe.core.event.EventManager;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.event.ArticleRegisteredEvent;
