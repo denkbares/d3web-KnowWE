@@ -4,14 +4,14 @@
 
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
-	<version>12.0-SNAPSHOT</version>
+	<version>11.0</version>
 	<packaging>pom</packaging>
 	<description>Open Source KnowWE parent</description>
 
 	<properties>
-		<denkbares.version>12.0-SNAPSHOT</denkbares.version>
-		<d3web.version>12.0-SNAPSHOT</d3web.version>
-		<knowwe.version>12.0-SNAPSHOT</knowwe.version>
+		<denkbares.version>11.0</denkbares.version>
+		<d3web.version>11.0</d3web.version>
+		<knowwe.version>11.0</knowwe.version>
 		<ssp.version>3.0-SNAPSHOT</ssp.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.clover.encoding>UTF-8</maven.clover.encoding>
