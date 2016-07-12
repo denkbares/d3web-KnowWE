@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>11.0.0</version>
+		<version>12.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>KnowWE-Plugin-Include</artifactId>
 
@@ -12,7 +12,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
-			<version>${project.version}</version>
+			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -22,12 +22,12 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>${project.version}</version>
+			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-InstantEdit</artifactId>
-			<version>${project.version}</version>
+			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>

@@ -6,7 +6,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>11.0.0</version>
+		<version>12.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-RightPanel</artifactId>
@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>${project.version}</version>
+			<version>${knowwe.version}</version>
 		</dependency>
 	</dependencies>
 </project>
