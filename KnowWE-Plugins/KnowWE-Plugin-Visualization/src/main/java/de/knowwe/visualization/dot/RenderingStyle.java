@@ -22,7 +22,7 @@ package de.knowwe.visualization.dot;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 
 /**
  * A data class for storing the style info of a node/property etc.
@@ -34,7 +34,7 @@ public class RenderingStyle {
 
 	private String shape = "box";
 	private String fontsize = "10";
-	private List<String> style = new ArrayList<>();
+	private final List<String> style = new ArrayList<>();
 	private String fillcolor = "";
 	private String fontcolor = "black";
 	private Fontstyle fontstyle = Fontstyle.NORMAL;

@@ -54,7 +54,7 @@ import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.Environment;

@@ -29,8 +29,8 @@ import java.util.TreeSet;
 
 import org.jetbrains.annotations.NotNull;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.kdom.Type;

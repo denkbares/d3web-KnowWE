@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-import de.d3web.utils.Streams;
+import com.denkbares.utils.Streams;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;

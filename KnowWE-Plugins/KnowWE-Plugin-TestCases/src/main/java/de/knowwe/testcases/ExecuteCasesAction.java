@@ -26,7 +26,7 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;

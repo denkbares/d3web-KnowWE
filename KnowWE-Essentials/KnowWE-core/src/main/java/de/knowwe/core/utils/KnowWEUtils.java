@@ -42,10 +42,10 @@ import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
-import de.d3web.utils.Pair;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;

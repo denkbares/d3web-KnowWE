@@ -3,7 +3,7 @@ package de.knowwe.core.kdom.objects;
 import java.util.Collection;
 import java.util.Iterator;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 
 /**

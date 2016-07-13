@@ -1,7 +1,7 @@
 package de.d3web.we.kdom.abstractiontable;
 
 import de.d3web.scoring.Score;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;

@@ -19,7 +19,7 @@
 
 package de.knowwe.util;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 
 /**
  * Created by Stefan Plehn, Albrecht Striffler (denkbares GmbH) on 21.11.14.

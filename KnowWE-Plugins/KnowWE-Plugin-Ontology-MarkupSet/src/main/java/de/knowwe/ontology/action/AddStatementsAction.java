@@ -16,8 +16,8 @@ import org.json.JSONObject;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.StatementImpl;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -156,7 +156,7 @@ public class AddStatementsAction extends AbstractAction {
 	 */
 	public static String getJSAction(Article source, String targetArticle, boolean compactMode, Statement... statement) {
 		return getJSAction(source, targetArticle, compactMode,
-				Arrays.asList(statement), Collections.<Statement>emptyList());
+				Arrays.asList(statement), Collections.emptyList());
 	}
 
 	/**

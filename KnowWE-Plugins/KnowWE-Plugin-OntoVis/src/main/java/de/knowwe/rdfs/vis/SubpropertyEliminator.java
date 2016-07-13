@@ -25,9 +25,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.collections.PartialHierarchy;
-import de.d3web.collections.PartialHierarchyTree;
-import de.d3web.utils.Pair;
+import com.denkbares.collections.PartialHierarchy;
+import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.utils.Pair;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.visualization.ConceptNode;
@@ -88,7 +88,7 @@ public class SubpropertyEliminator {
 
 	static class PropertyHierarchy implements PartialHierarchy<Edge> {
 
-		private Rdf2GoCore core;
+		private final Rdf2GoCore core;
 
 		PropertyHierarchy(Rdf2GoCore core) {
 			this.core = core;

@@ -29,8 +29,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import de.d3web.utils.Log;
-import de.d3web.utils.Triple;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Triple;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
@@ -38,7 +38,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.ontology.compile.OntologyCompilerFinishedEvent;
-import de.knowwe.rdf2go.Rdf2GoCoreDestroyEvent;
 import de.knowwe.rdfs.vis.markup.PreRenderer;
 
 /**

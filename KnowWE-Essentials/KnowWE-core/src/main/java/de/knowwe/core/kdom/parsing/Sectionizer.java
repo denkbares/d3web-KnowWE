@@ -23,7 +23,7 @@ package de.knowwe.core.kdom.parsing;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.ExclusiveType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;

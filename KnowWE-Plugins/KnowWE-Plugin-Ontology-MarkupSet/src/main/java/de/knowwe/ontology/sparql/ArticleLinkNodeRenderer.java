@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.openrdf.model.Value;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;

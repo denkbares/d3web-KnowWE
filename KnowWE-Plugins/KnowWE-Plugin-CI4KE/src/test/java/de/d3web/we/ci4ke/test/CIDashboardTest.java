@@ -26,8 +26,9 @@ import org.junit.Test;
 import utils.TestUserContext;
 import utils.TestUtils;
 import connector.DummyConnector;
-import de.d3web.plugin.test.InitPluginManager;
-import de.d3web.strings.Strings;
+
+import com.denkbares.plugin.test.InitPluginManager;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.renderer.KDOMRenderer;

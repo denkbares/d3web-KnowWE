@@ -14,9 +14,9 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import de.d3web.collections.PriorityList;
-import de.d3web.collections.PriorityList.Group;
-import de.d3web.utils.Log;
+import com.denkbares.collections.PriorityList;
+import com.denkbares.collections.PriorityList.Group;
+import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Type;

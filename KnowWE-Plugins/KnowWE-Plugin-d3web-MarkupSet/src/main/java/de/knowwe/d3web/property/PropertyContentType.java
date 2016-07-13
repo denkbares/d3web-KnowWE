@@ -21,7 +21,7 @@ package de.knowwe.d3web.property;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;

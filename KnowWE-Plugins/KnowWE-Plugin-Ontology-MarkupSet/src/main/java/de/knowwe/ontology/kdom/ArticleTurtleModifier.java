@@ -38,9 +38,9 @@ import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.turtle.TurtleWriter;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.EqualsUtils;
-import de.d3web.utils.Pair;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.EqualsUtils;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;

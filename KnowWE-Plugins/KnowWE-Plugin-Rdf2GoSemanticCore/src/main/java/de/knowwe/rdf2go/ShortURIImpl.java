@@ -2,12 +2,12 @@ package de.knowwe.rdf2go;
 
 import org.openrdf.model.URI;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 
 public class ShortURIImpl extends org.openrdf.model.impl.URIImpl {
 
 	private static final long serialVersionUID = -5221506155017259902L;
-	private URI uriLong;
+	private final URI uriLong;
 
 	ShortURIImpl(String uriShort, URI uriLong) {
 		super(uriShort);

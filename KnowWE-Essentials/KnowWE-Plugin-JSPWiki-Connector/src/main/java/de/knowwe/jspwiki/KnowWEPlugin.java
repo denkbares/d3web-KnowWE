@@ -57,9 +57,9 @@ import org.apache.wiki.providers.WikiPageProvider;
 import org.apache.wiki.ui.TemplateManager;
 import org.jetbrains.annotations.NotNull;
 
-import de.d3web.plugin.Plugin;
-import de.d3web.plugin.PluginManager;
-import de.d3web.utils.Log;
+import com.denkbares.plugin.Plugin;
+import com.denkbares.plugin.PluginManager;
+import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;

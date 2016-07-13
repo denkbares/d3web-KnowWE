@@ -23,7 +23,7 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 
 /**

@@ -34,8 +34,8 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperties;
 import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperty;
 
-import de.d3web.core.io.progress.ProgressListener;
-import de.d3web.strings.Strings;
+import com.denkbares.progress.ProgressListener;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;

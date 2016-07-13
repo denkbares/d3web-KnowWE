@@ -30,8 +30,8 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import de.d3web.utils.Files;
-import de.d3web.utils.Streams;
+import com.denkbares.utils.Files;
+import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;

@@ -28,10 +28,10 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import de.d3web.collections.DefaultMultiMap;
-import de.d3web.collections.MultiMap;
-import de.d3web.collections.MultiMaps;
-import de.d3web.strings.Strings;
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.MultiMaps;
+import com.denkbares.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -41,7 +41,7 @@ import de.d3web.testing.TestGroup;
 import de.d3web.testing.TestManager;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
@@ -325,7 +325,7 @@ public class CIRenderer {
 				Log.warning("No class found for test: " + testResult.getTestName());
 			}
 			renderResult.appendHtml("<p></p>");
-			renderResult.append("__" + messageType.toString() + "__: ");
+			renderResult.append("__" + messageType + "__: ");
 			appendMessageText(web, message, renderResult);
 			renderResult.appendHtml("<br>\n");
 			if (!message.getText().contains(testObjectName)) {

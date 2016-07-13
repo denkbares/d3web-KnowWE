@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;

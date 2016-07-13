@@ -3,7 +3,7 @@ package de.d3web.we.kdom.abstractiontable;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.condition.SolutionStateType;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;

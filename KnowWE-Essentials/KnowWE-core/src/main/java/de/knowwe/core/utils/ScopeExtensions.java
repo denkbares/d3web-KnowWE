@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.Scope.TypePath;

@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message;
@@ -28,7 +28,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	private File tempFile = null;
 	private UUID requestMarker = null;
 	private final String storeKey = FileDownloadOperation.class.getName();
-	private List<Message> messages = new LinkedList<>();
+	private final List<Message> messages = new LinkedList<>();
 
 	public static String COMPLETE_MESSAGE = "Done.";
 
@@ -161,7 +161,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		if (hasError()) {
 			return Collections.emptyList();
 		}
-		return Collections.<Tool>singletonList(new DefaultTool(
+		return Collections.singletonList(new DefaultTool(
 				getFileIcon(),
 				fileName,
 				"Download the created file from the server.",
@@ -220,9 +220,9 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		for (Tool tool : actions) {
 			if (tool.getActionType() != Tool.ActionType.HREF_SCRIPT) {
 				Log.warning(FileDownloadOperation.class.getSimpleName() + " only supports Tools with "
-						+ Tool.ActionType.class.getSimpleName() + " " + Tool.ActionType.HREF_SCRIPT.toString()
+						+ Tool.ActionType.class.getSimpleName() + " " + Tool.ActionType.HREF_SCRIPT
 						+ ". Skipped " + tool.getClass().getSimpleName() + " with "
-						+ Tool.ActionType.class.getSimpleName() + " " + tool.getActionType().toString());
+						+ Tool.ActionType.class.getSimpleName() + " " + tool.getActionType());
 				continue;
 			}
 			Icon icon = tool.getIcon();

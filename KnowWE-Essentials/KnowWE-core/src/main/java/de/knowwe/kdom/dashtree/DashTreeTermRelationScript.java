@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Pair;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.TermDefinition;

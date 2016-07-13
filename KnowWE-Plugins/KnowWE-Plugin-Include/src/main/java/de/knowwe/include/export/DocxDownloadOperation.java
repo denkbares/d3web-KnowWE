@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.core.io.progress.ParallelProgress;
+import com.denkbares.progress.ParallelProgress;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;

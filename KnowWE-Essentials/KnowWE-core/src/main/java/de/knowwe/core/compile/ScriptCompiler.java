@@ -11,8 +11,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import de.d3web.utils.Log;
-import de.d3web.utils.Pair;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

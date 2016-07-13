@@ -33,7 +33,7 @@ import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
@@ -73,14 +73,14 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 			message.append("There are violations for functional properties:\n");
 			Set<Value> propConflicts = conflicts.keySet();
 			for (Value prop : propConflicts) {
-				message.append("\n* ").append(prop.toString()).append(":");
+				message.append("\n* ").append(prop).append(":");
 				Map<Value, Set<Value>> map = conflicts.get(prop);
 				Set<Value> subjectConflictSet = map.keySet();
 				for (Value subject : subjectConflictSet) {
-					message.append("\n** Subject: ").append(subject.toString()).append(" Objects: ");
+					message.append("\n** Subject: ").append(subject).append(" Objects: ");
 					Set<Value> objects = map.get(subject);
 					for (Value object : objects) {
-						message.append(object.toString()).append(", ");
+						message.append(object).append(", ");
 					}
 
 				}

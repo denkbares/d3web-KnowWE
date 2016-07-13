@@ -36,9 +36,9 @@ import org.openrdf.rio.RDFParseException;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
-import de.d3web.plugin.test.InitPluginManager;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.plugin.test.InitPluginManager;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -332,7 +332,7 @@ public class OntoVisTest {
 			Value toURI = row.getValue(variables.get(2));
 
 			if (fromURI == null || toURI == null || relationURI == null) {
-				Log.warning("incomplete query result row: " + row.toString());
+				Log.warning("incomplete query result row: " + row);
 				continue;
 			}
 

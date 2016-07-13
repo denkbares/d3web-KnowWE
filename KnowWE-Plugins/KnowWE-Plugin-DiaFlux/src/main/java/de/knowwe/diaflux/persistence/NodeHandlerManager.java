@@ -23,8 +23,8 @@ import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Node;
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;

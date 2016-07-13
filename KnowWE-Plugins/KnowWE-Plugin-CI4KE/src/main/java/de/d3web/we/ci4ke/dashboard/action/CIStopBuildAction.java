@@ -20,7 +20,7 @@ package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;

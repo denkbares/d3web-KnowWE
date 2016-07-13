@@ -37,8 +37,8 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.wiki.providers.BasicAttachmentProvider;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.jspwiki.JSPWikiConnector;

@@ -25,7 +25,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;

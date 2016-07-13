@@ -36,11 +36,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import de.d3web.collections.DefaultMultiMap;
-import de.d3web.collections.MultiMap;
-import de.d3web.collections.MultiMaps;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.MultiMaps;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
@@ -503,7 +503,7 @@ public final class Messages {
 		origTerm = Strings.trimQuotes(origTerm);
 		return Messages.error("The term '" + origTerm
 				+ "' is defined with ambiguous term classes: "
-				+ termClassesString.toString());
+				+ termClassesString);
 	}
 
 	public static Message ambiguousTermCaseWarning(Collection<?> termObjects) {
@@ -511,7 +511,7 @@ public final class Messages {
 				.map(Object::toString)
 				.collect(Collectors.toCollection(TreeSet::new));
 		return Messages.warning("There are different cases for the same term: "
-				+ sortedIdentifiers.toString());
+				+ sortedIdentifiers);
 	}
 
 	/**

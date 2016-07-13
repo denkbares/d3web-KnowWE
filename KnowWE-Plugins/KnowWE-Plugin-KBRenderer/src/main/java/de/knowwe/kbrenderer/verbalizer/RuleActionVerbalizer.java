@@ -20,7 +20,6 @@
 
 package de.knowwe.kbrenderer.verbalizer;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +37,7 @@ import de.d3web.indication.ActionInstantIndication;
 import de.d3web.indication.ActionNextQASet;
 import de.d3web.indication.ActionSuppressAnswer;
 import de.d3web.scoring.ActionHeuristicPS;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**
@@ -53,7 +52,7 @@ import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
  */
 public class RuleActionVerbalizer implements Verbalizer {
 
-	private static ResourceBundle propertyRB = ResourceBundle.getBundle("properties.messages");
+	private static final ResourceBundle propertyRB = ResourceBundle.getBundle("properties.messages");
 
 	@Override
 	public Class<?>[] getSupportedClassesForVerbalization() {
@@ -230,7 +229,7 @@ public class RuleActionVerbalizer implements Verbalizer {
 	private static String getIDObjectVerbalistion(NamedObject ido) {
 		if (ido == null) return "";
 		StringBuilder sb = new StringBuilder();
-		sb.append(ido.toString());
+		sb.append(ido);
 
 		return sb.toString();
 	}

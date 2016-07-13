@@ -20,7 +20,7 @@
 
 package de.knowwe.kdom.constraint;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  */
 public class NoBlankSectionsConstraint extends AbstractFilterConstraint {
 
-	private static NoBlankSectionsConstraint instance = new NoBlankSectionsConstraint();
+	private static final NoBlankSectionsConstraint instance = new NoBlankSectionsConstraint();
 
 	public static NoBlankSectionsConstraint getInstance() {
 		return instance;

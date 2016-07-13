@@ -3,7 +3,7 @@ package de.knowwe.rdf2go;
 import java.io.IOException;
 
 import com.denkbares.semanticcore.SemanticCore;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.plugin.Instantiation;
 

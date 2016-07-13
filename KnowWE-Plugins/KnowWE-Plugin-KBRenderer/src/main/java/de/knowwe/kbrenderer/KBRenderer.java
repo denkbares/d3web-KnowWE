@@ -52,7 +52,7 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;

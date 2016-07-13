@@ -19,8 +19,8 @@
 package de.knowwe.testcases.table;
 
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.terminology.RenamableTerm;

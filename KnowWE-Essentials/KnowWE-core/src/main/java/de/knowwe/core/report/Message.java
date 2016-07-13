@@ -22,7 +22,7 @@ package de.knowwe.core.report;
 
 import java.io.Serializable;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 
 /**
  * Message tied to Sections in the KDOM.

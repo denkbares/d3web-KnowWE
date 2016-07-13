@@ -25,7 +25,7 @@ import org.openrdf.model.BNode;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
-import de.d3web.utils.EqualsUtils;
+import com.denkbares.utils.EqualsUtils;
 
 public class QueryRowTableRow implements TableRow {
 

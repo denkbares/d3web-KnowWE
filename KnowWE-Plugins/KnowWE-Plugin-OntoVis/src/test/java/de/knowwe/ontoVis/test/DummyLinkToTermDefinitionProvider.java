@@ -18,8 +18,8 @@
  */
 package de.knowwe.ontoVis.test;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 
 /**

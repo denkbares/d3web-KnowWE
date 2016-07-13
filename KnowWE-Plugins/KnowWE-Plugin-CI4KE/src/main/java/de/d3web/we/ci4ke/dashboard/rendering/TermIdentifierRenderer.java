@@ -18,7 +18,7 @@
  */
 package de.d3web.we.ci4ke.dashboard.rendering;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 

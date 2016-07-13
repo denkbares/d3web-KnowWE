@@ -18,7 +18,7 @@
  */
 package de.knowwe.ontology.kdom.resource;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;

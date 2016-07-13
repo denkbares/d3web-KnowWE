@@ -31,7 +31,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import de.d3web.plugin.test.InitPluginManager;
+import com.denkbares.plugin.test.InitPluginManager;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
 

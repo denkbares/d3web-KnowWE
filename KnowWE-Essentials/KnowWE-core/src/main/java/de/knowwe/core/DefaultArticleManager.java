@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.CompilerManager;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;

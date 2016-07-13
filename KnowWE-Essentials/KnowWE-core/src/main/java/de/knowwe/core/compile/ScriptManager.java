@@ -12,7 +12,7 @@ import java.util.Set;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
-import de.d3web.collections.PriorityList;
+import com.denkbares.collections.PriorityList;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.event.InitEvent;
 

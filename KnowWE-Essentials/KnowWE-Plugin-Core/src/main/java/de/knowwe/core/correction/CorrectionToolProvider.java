@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import de.d3web.plugin.Extension;
+import com.denkbares.plugin.Extension;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.parsing.Section;

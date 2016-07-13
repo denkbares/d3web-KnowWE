@@ -28,8 +28,8 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTShd;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTText;
 
-import de.d3web.collections.Matrix;
-import de.d3web.strings.Strings;
+import com.denkbares.collections.Matrix;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.instantedit.table.WikiTable;

@@ -12,7 +12,7 @@ import java.util.WeakHashMap;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerRemovedEvent;
 import de.knowwe.core.compile.Compilers;

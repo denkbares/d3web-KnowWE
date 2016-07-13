@@ -16,14 +16,14 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
-import de.d3web.collections.PartialHierarchy;
-import de.d3web.collections.PartialHierarchyException;
-import de.d3web.collections.PartialHierarchyTree;
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
-import de.d3web.utils.Pair;
+import com.denkbares.collections.PartialHierarchy;
+import com.denkbares.collections.PartialHierarchyException;
+import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -320,8 +320,8 @@ public class SparqlResultRenderer {
 
 		ResultTableModel result = new ResultTableModel(table.getVariables());
 
-		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> rootLevelNodes = tree.getRootLevelNodesSorted(getComparator(result));
-		for (de.d3web.collections.PartialHierarchyTree.Node<TableRow> node : rootLevelNodes) {
+		List<PartialHierarchyTree.Node<TableRow>> rootLevelNodes = tree.getRootLevelNodesSorted(getComparator(result));
+		for (PartialHierarchyTree.Node<TableRow> node : rootLevelNodes) {
 			TableRow row = node.getData();
 			Value topLevelConcept = row.getValue(table.getVariables().get(1));
 
@@ -341,15 +341,15 @@ public class SparqlResultRenderer {
 		return result;
 	}
 
-	private void addRowRecursively(de.d3web.collections.PartialHierarchyTree.Node<TableRow> node, final ResultTableModel result) {
+	private void addRowRecursively(PartialHierarchyTree.Node<TableRow> node, final ResultTableModel result) {
 		// add current row
 		result.addTableRow(node.getData());
 
 		// sort children order alphabetical
-		List<de.d3web.collections.PartialHierarchyTree.Node<TableRow>> children = node.getChildrenSorted(getComparator(result));
+		List<PartialHierarchyTree.Node<TableRow>> children = node.getChildrenSorted(getComparator(result));
 
 		// add all children recursively
-		for (de.d3web.collections.PartialHierarchyTree.Node<TableRow> child : children) {
+		for (PartialHierarchyTree.Node<TableRow> child : children) {
 			addRowRecursively(child, result);
 		}
 
@@ -466,7 +466,7 @@ public class SparqlResultRenderer {
 		URI datatype = node.getDatatype();
 		if (datatype != null) {
 			sb.append("^^");
-			sb.append(datatype.toString());
+			sb.append(datatype);
 			sb.append("");
 		}
 

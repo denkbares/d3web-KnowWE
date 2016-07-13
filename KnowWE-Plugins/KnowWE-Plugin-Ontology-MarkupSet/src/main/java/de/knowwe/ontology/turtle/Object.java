@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.openrdf.model.Value;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -158,7 +158,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 				Predicate.class);
 
 		if (predicateSection == null) {
-			result.addMessage(Messages.error("No predicate section found: " + section.toString()));
+			result.addMessage(Messages.error("No predicate section found: " + section));
 			return result;
 		}
 

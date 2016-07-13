@@ -33,7 +33,7 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.knowledgebase.D3webCompileScript;
@@ -132,7 +132,7 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 			}
 			else {
 				if (origin instanceof ComposedNode) {
-					msgs.add(Messages.error("Outgoing condition missing for node " + origin.toString()));
+					msgs.add(Messages.error("Outgoing condition missing for node " + origin));
 				}
 				condition = ConditionTrue.INSTANCE;
 			}

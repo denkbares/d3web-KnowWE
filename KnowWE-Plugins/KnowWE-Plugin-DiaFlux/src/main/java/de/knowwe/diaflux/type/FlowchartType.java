@@ -23,8 +23,8 @@ package de.knowwe.diaflux.type;
 import java.util.Map;
 
 import de.d3web.core.session.SessionFactory;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

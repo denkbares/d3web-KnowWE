@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.testcase.model.CheckTemplate;
 import de.d3web.testcase.model.DefaultFindingTemplate;
 import de.d3web.testcase.model.FindingTemplate;

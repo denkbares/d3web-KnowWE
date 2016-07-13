@@ -22,7 +22,7 @@ package de.knowwe.kdom.renderer;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;

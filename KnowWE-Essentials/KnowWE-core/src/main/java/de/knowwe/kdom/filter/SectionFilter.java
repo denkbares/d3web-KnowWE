@@ -22,7 +22,7 @@ package de.knowwe.kdom.filter;
 
 import java.util.Iterator;
 
-import de.d3web.collections.FilterIterator;
+import com.denkbares.collections.FilterIterator;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 

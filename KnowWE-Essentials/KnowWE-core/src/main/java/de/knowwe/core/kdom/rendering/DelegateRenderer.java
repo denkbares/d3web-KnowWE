@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -36,7 +36,7 @@ import de.knowwe.core.user.UserContext;
 
 public class DelegateRenderer implements Renderer {
 
-	private static DelegateRenderer instance;
+	private static final DelegateRenderer instance;
 
 	static {
 		instance = new DelegateRenderer();

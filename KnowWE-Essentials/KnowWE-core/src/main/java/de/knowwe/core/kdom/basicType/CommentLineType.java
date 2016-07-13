@@ -21,7 +21,7 @@ package de.knowwe.core.kdom.basicType;
 
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;

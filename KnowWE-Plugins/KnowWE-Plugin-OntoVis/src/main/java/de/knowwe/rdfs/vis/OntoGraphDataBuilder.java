@@ -36,8 +36,8 @@ import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -59,14 +59,14 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	private int depth = 0;
 
 	private int height = 0;
-	private Set<Value> expandedPredecessors = new HashSet<>();
+	private final Set<Value> expandedPredecessors = new HashSet<>();
 
-	private Set<Value> expandedSuccessors = new HashSet<>();
-	private Set<Value> literalsExpanded = new HashSet<>();
-	private Map<Integer, String> propertyExcludeSPARQLFilterCache = new HashMap<>();
-	private Set<Value> fringeValues = new HashSet<>();
+	private final Set<Value> expandedSuccessors = new HashSet<>();
+	private final Set<Value> literalsExpanded = new HashSet<>();
+	private final Map<Integer, String> propertyExcludeSPARQLFilterCache = new HashMap<>();
+	private final Set<Value> fringeValues = new HashSet<>();
 
-	private String nodeFilterExpression = null;
+	private final String nodeFilterExpression = null;
 	/*
 	For Debugging/Optimization only
 	 */
@@ -76,10 +76,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	private int addPredecessorsCalls = 0;
 	private int addOutgoingPredecessorsCalls = 0;
 	private int addOuterConceptCalls = 0;
-	private List<OuterConceptCheck> outerConceptCalls = new ArrayList<>();
-	private Set<OuterConceptCheck> checkedOuterConcepts = new HashSet<>();
-	private List<String> succQueries = new ArrayList<>();
-	private List<String> predQueries = new ArrayList<>();
+	private final List<OuterConceptCheck> outerConceptCalls = new ArrayList<>();
+	private final Set<OuterConceptCheck> checkedOuterConcepts = new HashSet<>();
+	private final List<String> succQueries = new ArrayList<>();
+	private final List<String> predQueries = new ArrayList<>();
 
 	/**
 	 * Allows to create a new Ontology Rendering Core. For each rendering task a new one should be created.
@@ -889,10 +889,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	class OuterConceptCheck {
-		private Value fromURI;
-		private Value toURI;
-		private Value relationURI;
-		private boolean predecessor;
+		private final Value fromURI;
+		private final Value toURI;
+		private final Value relationURI;
+		private final boolean predecessor;
 
 		OuterConceptCheck(Value fromURI, Value toURI, Value relationURI, boolean predecessor) {
 			this.fromURI = fromURI;
@@ -927,7 +927,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		@Override
 		public String toString() {
-			return fromURI + " " + relationURI + " " + toURI.toString() + " (forward: " + predecessor + ")";
+			return fromURI + " " + relationURI + " " + toURI + " (forward: " + predecessor + ")";
 		}
 	}
 

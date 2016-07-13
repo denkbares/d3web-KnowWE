@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;

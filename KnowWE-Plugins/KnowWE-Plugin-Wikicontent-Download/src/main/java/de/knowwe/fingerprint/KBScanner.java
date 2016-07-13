@@ -13,7 +13,7 @@ import java.util.zip.ZipFile;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.SessionFactory;
-import de.d3web.utils.Streams;
+import com.denkbares.utils.Streams;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.kdom.Article;
@@ -76,7 +76,7 @@ public class KBScanner implements Scanner {
 		return result;
 	}
 
-	private String getContent(ZipFile zip, String entryName, String skipTo) throws IOException, UnsupportedEncodingException {
+	private String getContent(ZipFile zip, String entryName, String skipTo) throws IOException {
 		InputStream in = zip.getInputStream(zip.getEntry(entryName));
 		String text = new String(Streams.getBytesAndClose(in), "UTF-8");
 		if (skipTo != null) {

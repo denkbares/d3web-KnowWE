@@ -25,7 +25,7 @@ import java.net.URLDecoder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.knowwe.core.action.AbstractAction;

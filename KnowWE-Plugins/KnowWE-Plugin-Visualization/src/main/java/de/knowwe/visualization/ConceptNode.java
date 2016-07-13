@@ -18,7 +18,7 @@
  */
 package de.knowwe.visualization;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.visualization.GraphDataBuilder.NODE_TYPE;
 import de.knowwe.visualization.dot.RenderingStyle;
 

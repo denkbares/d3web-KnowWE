@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import de.d3web.collections.PriorityList;
+import com.denkbares.collections.PriorityList;
 
 /**
  * Auxiliary data structure that helps e.g. to build up the list of children

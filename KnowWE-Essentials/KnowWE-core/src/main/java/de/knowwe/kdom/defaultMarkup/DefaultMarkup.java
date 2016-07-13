@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -43,7 +43,7 @@ public class DefaultMarkup implements Cloneable {
 	private String name;
 	private Collection<Type> types = new ArrayList<>();
 	private Map<String, Annotation> annotations = new HashMap<>();
-	private Set<String> ignoredAnnotations = new HashSet<>();
+	private final Set<String> ignoredAnnotations = new HashSet<>();
 	private String deprecatedAlternative = null;
 	private boolean isInline = false;
 	private String documentation = null;

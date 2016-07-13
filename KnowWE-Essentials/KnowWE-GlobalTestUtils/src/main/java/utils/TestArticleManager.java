@@ -23,7 +23,8 @@ import java.util.Collection;
 
 import connector.DummyConnector;
 import connector.DummyPageProvider;
-import de.d3web.strings.Strings;
+
+import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -37,7 +38,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class TestArticleManager {
 
-	private static TestArticleManager instance = new TestArticleManager();
+	private static final TestArticleManager instance = new TestArticleManager();
 
 	/**
 	 * Private Constructor insures noninstantiabilty.

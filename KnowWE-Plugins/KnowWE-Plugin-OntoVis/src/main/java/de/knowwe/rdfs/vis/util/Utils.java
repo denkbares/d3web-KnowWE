@@ -34,10 +34,10 @@ import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
-import de.d3web.collections.PartialHierarchyTree;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -79,7 +79,7 @@ public class Utils {
 		if (label == null) {
 
 			for (String property : properties) {
-				String query = "SELECT ?x WHERE { <" + concept.toString() + "> " + property.trim() + " ?x.}";
+				String query = "SELECT ?x WHERE { <" + concept + "> " + property.trim() + " ?x.}";
 				TupleQueryResult resultTable = repo.sparqlSelect(query);
 				for (BindingSet queryRow : resultTable) {
 					Value node = queryRow.getValue("x");
@@ -95,7 +95,7 @@ public class Utils {
 		if (languageTag == null) return null;
 
 		for (String property : properties) {
-			String query = "SELECT ?x WHERE { <" + concept.toString()
+			String query = "SELECT ?x WHERE { <" + concept
 					+ "> " + property.trim() + " ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
 			TupleQueryResult resultTable = repo.sparqlSelect(query);
 			for (BindingSet queryRow : resultTable) {

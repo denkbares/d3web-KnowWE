@@ -3,7 +3,7 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Arrays;
 import java.util.List;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeChecker;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionDefinition;

@@ -19,7 +19,7 @@
 package de.knowwe.testcases;
 
 import de.d3web.testcase.model.TestCase;
-import de.d3web.utils.Triple;
+import com.denkbares.utils.Triple;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 

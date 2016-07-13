@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**

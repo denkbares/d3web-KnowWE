@@ -36,10 +36,10 @@ import java.util.UUID;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.collections.CountingSet;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.collections.CountingSet;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -78,7 +78,7 @@ public class ObjectInfoRenderer implements Renderer {
 	public static final String TERM_IDENTIFIER = "termIdentifier";
 	public static final int MAX_NUMBER_BY_TYPE = 50;
 
-	private static DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
+	private static final DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
 
 	@Override
 	public final synchronized void render(Section<?> section, UserContext userContext, RenderResult result) {
@@ -372,7 +372,7 @@ public class ObjectInfoRenderer implements Renderer {
 			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
 			// handle if the section has no preview renderer
 			if (previewSection == null) {
-				result.put(section, Collections.<Section<?>>emptyList());
+				result.put(section, Collections.emptyList());
 				continue;
 			}
 			// otherwise add section to preview group

@@ -20,7 +20,7 @@ package de.knowwe.visualization.dot;
 
 import java.io.File;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.visualization.Config;
 import de.knowwe.visualization.GraphVisualizationRenderer;
 import de.knowwe.visualization.SubGraphData;

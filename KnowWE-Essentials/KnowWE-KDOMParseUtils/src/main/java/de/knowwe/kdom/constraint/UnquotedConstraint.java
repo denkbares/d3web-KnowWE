@@ -1,11 +1,11 @@
 package de.knowwe.kdom.constraint;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public class UnquotedConstraint extends AbstractFilterConstraint {
 
-	private static UnquotedConstraint instance = new UnquotedConstraint();
+	private static final UnquotedConstraint instance = new UnquotedConstraint();
 
 	public static UnquotedConstraint getInstance() {
 		return instance;

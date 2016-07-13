@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.strings.StringFragment;
+import com.denkbares.strings.StringFragment;
 import de.knowwe.core.kdom.parsing.Section;
 
 public class SectionFinderResult implements Comparable<SectionFinderResult> {

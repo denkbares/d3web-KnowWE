@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 import de.d3web.core.knowledge.terminology.AnswerNo;
 import de.d3web.core.knowledge.terminology.AnswerYes;
 import de.d3web.core.knowledge.terminology.Choice;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 public class AnswerVerbalizer implements Verbalizer {

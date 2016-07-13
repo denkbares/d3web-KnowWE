@@ -22,7 +22,7 @@ import java.util.Iterator;
 
 import org.openrdf.query.BindingSet;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.ontology.compile.OntologyCompiler;

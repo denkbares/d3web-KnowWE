@@ -38,10 +38,10 @@ import org.openrdf.query.BindingSet;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.TupleQueryResult;
-import de.d3web.collections.SubSpanIterator;
+import com.denkbares.collections.SubSpanIterator;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
-import de.d3web.utils.Pair;
+import com.denkbares.utils.Pair;
 
 public class ResultTableModel {
 
@@ -72,7 +72,7 @@ public class ResultTableModel {
 		return rows.size();
 	}
 
-	private List<Comparator<TableRow>> comparators = new LinkedList<>();
+	private final List<Comparator<TableRow>> comparators = new LinkedList<>();
 
 	public ResultTableModel(CachedTupleQueryResult result) {
 		this.variables = result.getBindingNames();
@@ -149,9 +149,9 @@ public class ResultTableModel {
 	@Override
 	public String toString() {
 		StringBuilder buffy = new StringBuilder();
-		buffy.append("Variables: ").append(variables.toString()).append("\n");
+		buffy.append("Variables: ").append(variables).append("\n");
 		for (TableRow tableRow : rows) {
-			buffy.append(tableRow.toString()).append("\n");
+			buffy.append(tableRow).append("\n");
 		}
 		return buffy.toString();
 	}
@@ -213,7 +213,7 @@ public class ResultTableModel {
 			boolean contained = actualResultTable.contains(expectedTableRow);
 			if (!contained) {
 				errorMessages.add(new Message(Type.ERROR, "result does not contain expected row: "
-						+ expectedTableRow.toString()));
+						+ expectedTableRow));
 			}
 		}
 
@@ -237,13 +237,13 @@ public class ResultTableModel {
 			if (!(node instanceof BNode)) {
 				if (!expectedData.keySet().contains(node)) {
 					errorMessages.add(new Message(Type.ERROR, "node not contained: "
-							+ node.toString()));
+							+ node));
 					continue;
 				}
 
 				if (!(expectedData.get(node).size() == (actualData.get(node).size()))) {
 					errorMessages.add(new Message(Type.ERROR,
-							"number of result rows not matching for: " + node.toString()));
+							"number of result rows not matching for: " + node));
 				}
 			}
 		}

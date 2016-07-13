@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;

@@ -18,7 +18,7 @@
  */
 package de.knowwe.core.utils;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 
 /**
  * 

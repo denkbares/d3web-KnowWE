@@ -3,8 +3,8 @@ package de.d3web.we.kdom.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Pair;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
