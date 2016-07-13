@@ -497,8 +497,10 @@ ActionEditor.prototype.updateInputField = function() {
 		input.focus();
 		input.select();
 		if (this.selectedAction.markup == 'timeDB') {
-			this.autocomplete = new AutoComplete(input, AutoComplete.sendD3webFormulaCompletionAction);
-			jq$(input).blur(jq$.proxy(function() {this.autocomplete.showCompletions(null)}, this));
+			this.autocompletion = new AutoComplete(input, AutoComplete.sendD3webFormulaCompletionAction);
+			jq$(input).blur(jq$.proxy(function () {
+				this.autocompletion.showCompletions(null)
+			}, this));
 		}
 	}
 	else {
@@ -526,9 +528,9 @@ ActionEditor.prototype.setVisible = function(visible) {
 	}
 	else if (this.isVisible() && !visible) {
 		// ==> hide Node
-		if (this.autocomplete) {
-			this.autocomplete.showCompletions(null);
-			this.autocomplete = null;
+		if (this.autocompletion) {
+			this.autocompletion.showCompletions(null);
+			this.autocompletion = null;
 		}
 		this.objectSelect.destroy();
 		this.objectSelect = null;
