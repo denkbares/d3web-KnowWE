@@ -3,7 +3,7 @@ package de.knowwe.ontology.turtle.lazyRef;
 import java.util.Collection;
 import java.util.Iterator;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

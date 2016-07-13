@@ -25,8 +25,8 @@ import java.util.List;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.repository.RepositoryException;
 
-import de.d3web.strings.Identifier;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Identifier;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleDefinition;

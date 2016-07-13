@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -64,8 +63,8 @@ import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.util.TextUtil;
 
-import de.d3web.utils.Log;
-import de.d3web.utils.Pair;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;

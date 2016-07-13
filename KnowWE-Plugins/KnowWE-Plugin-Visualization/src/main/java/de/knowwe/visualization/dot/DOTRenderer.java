@@ -37,8 +37,8 @@ import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.visualization.ConceptNode;
 import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;

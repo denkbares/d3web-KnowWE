@@ -55,7 +55,7 @@ import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.stc.DerivedQuestionCheck;
 import de.d3web.testcase.stc.DerivedSolutionCheck;
-import de.d3web.utils.Triple;
+import com.denkbares.utils.Triple;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Environment;

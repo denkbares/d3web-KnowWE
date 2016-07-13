@@ -22,7 +22,6 @@ package de.knowwe.d3web.action;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
@@ -30,7 +29,7 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;

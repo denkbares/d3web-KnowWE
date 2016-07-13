@@ -47,7 +47,7 @@ import org.apache.wiki.i18n.InternationalizationManager;
 import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.util.TextUtil;
 
-import de.d3web.utils.Pair;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -264,7 +264,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 		RenderResult renderResult = new RenderResult(user);
 		renderResult.append(FlowchartUtils.createFlowchartRenderer(flow, user, parentId,
 				DiaFluxDiffDisplay.SCOPE, insert));
-		ret.append(renderResult.toString());
+		ret.append(renderResult);
 	}
 
 	private String createTextDiff(WikiContext ctx, String p1, String p2, StringBuffer buffy) throws DifferentiationFailedException {

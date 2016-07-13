@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.utils.Pair;
-import de.d3web.utils.Triple;
+import com.denkbares.utils.Pair;
+import com.denkbares.utils.Triple;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;

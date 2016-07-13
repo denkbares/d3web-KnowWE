@@ -25,7 +25,8 @@ import java.io.IOException;
 import junit.framework.TestCase;
 import utils.TestUtils;
 import connector.DummyConnector;
-import de.d3web.plugin.test.InitPluginManager;
+
+import com.denkbares.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 

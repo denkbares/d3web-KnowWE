@@ -18,7 +18,7 @@
  */
 package de.knowwe.core.compile.terminology;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;

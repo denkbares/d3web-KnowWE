@@ -1,6 +1,5 @@
 package de.knowwe.core.kdom.objects;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -224,9 +223,8 @@ public class TermInfoSet implements Collection<TermInfo> {
 		}
 		// if the term has no definitions, there aren't any term classes either
 		// we still might want the references
-		if (termManager.isUndefinedTerm(identifier)) return true;
+		return termManager.isUndefinedTerm(identifier);
 
-		return false;
 	}
 
 	public TermInfo getTermInfo(Identifier identifier) {

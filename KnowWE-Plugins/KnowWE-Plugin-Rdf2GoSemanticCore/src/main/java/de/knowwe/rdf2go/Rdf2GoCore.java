@@ -80,14 +80,14 @@ import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
-import de.d3web.collections.MultiMap;
-import de.d3web.collections.MultiMaps;
-import de.d3web.collections.N2MMap;
+import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.MultiMaps;
+import com.denkbares.collections.N2MMap;
 import de.d3web.core.inference.RuleSet;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
-import de.d3web.utils.Stopwatch;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -110,7 +110,7 @@ public class Rdf2GoCore {
 		SELECT, CONSTRUCT, ASK
 	}
 
-	private static AtomicLong coreId = new AtomicLong(0);
+	private static final AtomicLong coreId = new AtomicLong(0);
 
 	private static Rdf2GoCore globaleInstance;
 
@@ -1126,7 +1126,7 @@ public class Rdf2GoCore {
 	private class SparqlTask extends FutureTask<Object> {
 
 		private long startTime = Long.MIN_VALUE;
-		private SparqlCallable callable;
+		private final SparqlCallable callable;
 		private Thread thread = null;
 		private int size = 1;
 
@@ -1230,7 +1230,7 @@ public class Rdf2GoCore {
 	 */
 	private class SparqlTaskReaper implements Runnable {
 
-		private SparqlTask task;
+		private final SparqlTask task;
 
 		SparqlTaskReaper(SparqlTask task) {
 			this.task = task;
@@ -1278,7 +1278,7 @@ public class Rdf2GoCore {
 		private final String query;
 		private final SparqlType type;
 		private final boolean cached;
-		private long timeOutMillis;
+		private final long timeOutMillis;
 
 		private SparqlCallable(String query, SparqlType type, long timeOutMillis, boolean cached) {
 			this.query = query;

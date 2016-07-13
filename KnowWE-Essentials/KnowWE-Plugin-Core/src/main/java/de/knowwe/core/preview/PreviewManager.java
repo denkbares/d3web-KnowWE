@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
-import de.d3web.utils.Log;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -155,7 +155,7 @@ public class PreviewManager {
 			Section<?> previewSection = getPreviewAncestor(section);
 			// handle if the section has no preview renderer
 			if (previewSection == null) {
-				result.put(section, Collections.<Section<?>>emptyList());
+				result.put(section, Collections.emptyList());
 				continue;
 			}
 			// otherwise add section to preview group

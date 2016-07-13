@@ -29,8 +29,8 @@ import org.openrdf.rio.RDFFormat;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import de.d3web.utils.Log;
-import de.d3web.utils.Stopwatch;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;

@@ -20,7 +20,7 @@ package de.knowwe.core.kdom.objects;
 
 import java.util.Collection;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -49,7 +49,7 @@ public class AssertSingleTermDefinitionScript<C extends TermCompiler> implements
 		Identifier termIdentifier = KnowWEUtils.getTermIdentifier(section);
 		Collection<Section<?>> termDefinitions = tHandler.getTermDefiningSections(termIdentifier);
 		Message msg = Messages.error("There is more than one definition for the term '"
-				+ termIdentifier.toString() + "' which is restricted to only one definition.");
+				+ termIdentifier + "' which is restricted to only one definition.");
 		if (termDefinitions.size() > 1) {
 			for (Section<?> termDef : termDefinitions) {
 				Messages.storeMessage(compiler, termDef, getClass(), msg);

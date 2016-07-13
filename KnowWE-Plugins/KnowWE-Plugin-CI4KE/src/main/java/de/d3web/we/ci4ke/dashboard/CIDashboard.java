@@ -24,7 +24,7 @@ import java.util.List;
 
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestSpecification;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildCache;
 import de.d3web.we.ci4ke.build.CIPersistence;
 import de.d3web.we.ci4ke.build.CIRenderer;

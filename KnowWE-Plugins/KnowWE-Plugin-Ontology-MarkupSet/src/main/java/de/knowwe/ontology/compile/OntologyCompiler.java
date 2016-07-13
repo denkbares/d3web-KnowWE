@@ -29,7 +29,7 @@ import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;

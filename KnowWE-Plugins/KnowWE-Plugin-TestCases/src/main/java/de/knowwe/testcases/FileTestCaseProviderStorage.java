@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;

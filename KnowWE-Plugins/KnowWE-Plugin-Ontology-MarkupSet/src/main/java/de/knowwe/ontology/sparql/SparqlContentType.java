@@ -21,7 +21,7 @@ package de.knowwe.ontology.sparql;
 
 import java.util.concurrent.TimeUnit;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileScript;
 import de.knowwe.core.kdom.AbstractType;

@@ -21,8 +21,8 @@ package de.knowwe.core;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.utils.Files;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Files;
+import com.denkbares.utils.Log;
 
 /**
  * KnowWERessourceLoader.

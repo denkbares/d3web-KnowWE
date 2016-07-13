@@ -22,8 +22,8 @@ package de.d3web.we.ci4ke.hook;
 
 import java.util.Set;
 
-import de.d3web.collections.DefaultMultiMap;
-import de.d3web.collections.MultiMap;
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.knowwe.core.kdom.Article;
 

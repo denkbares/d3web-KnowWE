@@ -27,7 +27,7 @@ import java.util.Comparator;
 import java.util.Map;
 
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
@@ -155,7 +155,7 @@ public class XclVerbalizer implements Verbalizer {
 	 */
 	public String verbalizeHTML(XCLModel model) {
 		String nl = "<br />";
-		String cont = model.getSolution().toString() + nl;
+		String cont = model.getSolution() + nl;
 		if (!model.getNecessaryRelations().isEmpty()) {
 			cont += "necessary relations:" + nl;
 			for (XCLRelation current : model.getNecessaryRelations()) {

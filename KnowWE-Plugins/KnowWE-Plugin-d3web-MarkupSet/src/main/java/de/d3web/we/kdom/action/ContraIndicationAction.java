@@ -26,7 +26,7 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.indication.ActionContraIndication;
 import de.d3web.indication.inference.PSMethodStrategic;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QASetReference;
 import de.knowwe.core.kdom.Type;

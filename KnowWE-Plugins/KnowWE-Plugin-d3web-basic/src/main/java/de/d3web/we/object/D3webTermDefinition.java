@@ -28,7 +28,7 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;

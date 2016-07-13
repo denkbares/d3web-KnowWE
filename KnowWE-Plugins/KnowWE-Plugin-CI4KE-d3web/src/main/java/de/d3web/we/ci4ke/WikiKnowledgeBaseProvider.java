@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;

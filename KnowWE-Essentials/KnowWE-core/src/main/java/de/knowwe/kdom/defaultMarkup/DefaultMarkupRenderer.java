@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;

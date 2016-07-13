@@ -18,7 +18,7 @@
  */
 package de.knowwe.core.append;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;

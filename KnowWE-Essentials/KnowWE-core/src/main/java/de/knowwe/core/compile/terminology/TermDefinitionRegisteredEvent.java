@@ -19,7 +19,7 @@
 
 package de.knowwe.core.compile.terminology;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.event.CompilerEvent;
 
 /**
@@ -28,7 +28,7 @@ import de.knowwe.core.event.CompilerEvent;
  */
 public class TermDefinitionRegisteredEvent extends CompilerEvent {
 
-	private Identifier identifier;
+	private final Identifier identifier;
 
 	public TermDefinitionRegisteredEvent(TermCompiler compiler, Identifier identifier) {
 		super(compiler);

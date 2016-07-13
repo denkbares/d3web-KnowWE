@@ -27,7 +27,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STHighlightColor;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 

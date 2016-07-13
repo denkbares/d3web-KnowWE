@@ -24,7 +24,7 @@ import java.util.Collection;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QContainer;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;

@@ -22,7 +22,7 @@ package de.knowwe.ontology.turtle;
 import java.util.Arrays;
 import java.util.List;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.SimpleReference;

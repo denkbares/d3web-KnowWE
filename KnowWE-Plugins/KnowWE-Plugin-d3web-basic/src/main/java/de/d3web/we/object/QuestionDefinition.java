@@ -30,7 +30,7 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.QuestionZC;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;

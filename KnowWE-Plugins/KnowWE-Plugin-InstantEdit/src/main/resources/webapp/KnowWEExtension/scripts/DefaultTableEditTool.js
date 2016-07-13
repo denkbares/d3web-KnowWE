@@ -724,7 +724,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 
 Spreadsheet.prototype.isAutoCompleteFocused = function(id) {
 	if (typeof AutoComplete != "undefined") {
-		return $(id).autocomplete.hasFocus();
+		return $(id).autocompletion.hasFocus();
 	} else {
 		return false;
 	}
@@ -732,14 +732,14 @@ Spreadsheet.prototype.isAutoCompleteFocused = function(id) {
 
 Spreadsheet.prototype.showAutoComplete = function(id) {
 	if (typeof AutoComplete != "undefined") {
-		$(id).autocomplete.requestFocus();
-		$(id).autocomplete.requestCompletions();
+		$(id).autocompletion.requestFocus();
+		$(id).autocompletion.requestCompletions();
 	}
 };
 
 Spreadsheet.prototype.uninstallAutoComplete = function(id) {
 	if (typeof AutoComplete != "undefined") {
-		$(id).autocomplete.showCompletions(null);
+		$(id).autocompletion.showCompletions(null);
 	}
 };
 

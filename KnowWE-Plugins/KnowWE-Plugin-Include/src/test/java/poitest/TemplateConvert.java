@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import org.apache.poi.openxml4j.opc.PackageProperties;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
-import de.d3web.utils.Exec;
+import com.denkbares.utils.Exec;
 import de.knowwe.include.export.DefaultBuilder;
 import de.knowwe.include.export.DocumentBuilder.Style;
 import de.knowwe.include.export.ExportManager;

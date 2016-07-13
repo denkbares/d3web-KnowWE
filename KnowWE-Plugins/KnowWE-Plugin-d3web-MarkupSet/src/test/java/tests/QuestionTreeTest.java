@@ -35,8 +35,8 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.plugin.test.InitPluginManager;
-import de.d3web.utils.Log;
+import com.denkbares.plugin.test.InitPluginManager;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.Article;
 
 /**

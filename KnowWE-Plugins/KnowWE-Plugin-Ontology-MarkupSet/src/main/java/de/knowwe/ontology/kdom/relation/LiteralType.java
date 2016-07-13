@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 import org.openrdf.model.vocabulary.XMLSchema;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

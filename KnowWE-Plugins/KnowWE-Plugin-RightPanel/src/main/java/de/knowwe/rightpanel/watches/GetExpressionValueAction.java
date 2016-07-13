@@ -25,9 +25,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.collections.PriorityList;
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
+import com.denkbares.collections.PriorityList;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.expression.ExpressionResolver;

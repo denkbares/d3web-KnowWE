@@ -16,9 +16,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Files;
-import de.d3web.utils.Pair;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Files;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -43,7 +43,7 @@ public class Fingerprint {
 		createFingerprint(articles, folder);
 	}
 
-	public static void createFingerprint(Collection<Article> articles, File folder) throws FileNotFoundException, IOException {
+	public static void createFingerprint(Collection<Article> articles, File folder) throws IOException {
 		// create metadata file
 		folder.mkdirs();
 		try (PrintStream out = new PrintStream(new File(folder, FINGERPRINT))) {

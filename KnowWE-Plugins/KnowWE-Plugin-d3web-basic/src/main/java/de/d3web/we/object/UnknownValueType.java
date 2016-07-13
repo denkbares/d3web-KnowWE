@@ -18,7 +18,7 @@
  */
 package de.d3web.we.object;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;

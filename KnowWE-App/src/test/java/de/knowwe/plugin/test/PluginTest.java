@@ -20,7 +20,8 @@ package de.knowwe.plugin.test;
 import org.junit.Assert;
 import junit.framework.TestCase;
 import connector.DummyConnector;
-import de.d3web.plugin.test.InitPluginManager;
+
+import com.denkbares.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
 import de.knowwe.plugin.Plugins;
 

@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 
 import org.openrdf.model.Value;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.objects.Term;

@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import de.d3web.collections.MultiMap;
-import de.d3web.collections.N2MMap;
+import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.N2MMap;
 import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;

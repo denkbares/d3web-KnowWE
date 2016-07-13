@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import de.d3web.utils.Pair;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.Compiler;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;

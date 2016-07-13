@@ -19,7 +19,7 @@
 
 package de.knowwe.ontology.kdom.sparql;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;

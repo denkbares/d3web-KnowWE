@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import de.d3web.utils.Streams;
+import com.denkbares.utils.Streams;
 
 /**
  * 

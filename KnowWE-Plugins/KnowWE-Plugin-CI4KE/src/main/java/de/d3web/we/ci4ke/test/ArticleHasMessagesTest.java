@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-import de.d3web.collections.CountingSet;
+import com.denkbares.collections.CountingSet;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.MessageObject;

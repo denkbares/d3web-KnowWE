@@ -19,7 +19,7 @@
 
 package de.knowwe.event;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
 

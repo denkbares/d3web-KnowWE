@@ -11,7 +11,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.object.ValueTooltipRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;

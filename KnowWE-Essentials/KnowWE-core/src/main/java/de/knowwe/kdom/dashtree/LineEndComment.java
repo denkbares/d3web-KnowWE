@@ -22,7 +22,7 @@ package de.knowwe.kdom.dashtree;
 
 import java.util.List;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;

@@ -37,7 +37,7 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
 import de.d3web.scoring.inference.PSMethodHeuristic;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.condition.SolutionStateType;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -53,7 +53,7 @@ import de.knowwe.kdom.table.TableUtils;
 
 public class LineHandler implements D3webCompileScript<TableLine> {
 
-	private static Pattern INTERVAL_PATTERN = Pattern.compile("(\\[|\\]|\\() *(\\d+\\.?\\d*) +(\\d+\\.?\\d*) *(\\[|\\]|\\))");
+	private static final Pattern INTERVAL_PATTERN = Pattern.compile("(\\[|\\]|\\() *(\\d+\\.?\\d*) +(\\d+\\.?\\d*) *(\\[|\\]|\\))");
 
 	@Override
 	public void compile(D3webCompiler compiler, Section<TableLine> section) throws CompilerMessage {

@@ -27,7 +27,7 @@ import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;

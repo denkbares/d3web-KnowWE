@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.wikiConnector.NotAuthorizedException;
 
 /**

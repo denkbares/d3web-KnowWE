@@ -22,10 +22,10 @@ package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;

@@ -10,7 +10,7 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.knowledgebase.D3webCompiler;

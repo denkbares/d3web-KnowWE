@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.regex.Pattern;
 
 import de.d3web.diaFlux.flow.Flow;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;

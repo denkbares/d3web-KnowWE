@@ -45,9 +45,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
-import de.d3web.utils.Stopwatch;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -312,7 +312,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 			try {
 				if (!needsUpdate(attachmentSection, url)) {
-					Log.info("Resource at URL " + url.toString() + " has not changed, attachment '" + path + "' not updated");
+					Log.info("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated");
 					return;
 				}
 
@@ -357,7 +357,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 					articleManager.commit();
 				}
 
-				Log.info("Updated attachment '" + path + "' with resource from URL " + url.toString());
+				Log.info("Updated attachment '" + path + "' with resource from URL " + url);
 				Messages.clearMessages(section, AttachmentMarkup.class);
 				Messages.clearMessages(section, AttachmentMarkup.class);
 			}

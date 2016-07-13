@@ -2,7 +2,7 @@ package de.d3web.we.kdom.condition.helper;
 
 import java.util.List;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.knowwe.core.kdom.Type;

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 
 /**
  * 
@@ -34,7 +34,7 @@ class TermLogManager {
 
 	private final Map<Identifier, TermLog> termLogs =
 			new HashMap<>();
-	private boolean caseSensitive;
+	private final boolean caseSensitive;
 
 	public TermLogManager(boolean caseSensitive) {
 		this.caseSensitive = caseSensitive;

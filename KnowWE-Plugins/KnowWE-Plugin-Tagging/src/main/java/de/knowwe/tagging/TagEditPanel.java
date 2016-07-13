@@ -23,7 +23,7 @@ package de.knowwe.tagging;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.taghandler.AbstractHTMLTagHandler;

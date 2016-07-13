@@ -19,7 +19,6 @@
 package de.d3web.we.kdom.questionTree.setValue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +28,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.RuleFactory;
 import de.d3web.scoring.Score;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionReference;

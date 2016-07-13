@@ -24,7 +24,7 @@ import java.util.List;
 
 import com.wcohen.ss.Levenstein;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.compile.terminology.TermCompiler;

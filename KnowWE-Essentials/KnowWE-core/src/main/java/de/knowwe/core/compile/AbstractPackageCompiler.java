@@ -20,7 +20,7 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Type;
@@ -37,7 +37,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	private final Section<? extends PackageCompileType> compileSection;
 	private final PackageManager packageManager;
-	private Class<? extends Type> compilingType;
+	private final Class<? extends Type> compilingType;
 
 	private CompilerManager compilerManager;
 

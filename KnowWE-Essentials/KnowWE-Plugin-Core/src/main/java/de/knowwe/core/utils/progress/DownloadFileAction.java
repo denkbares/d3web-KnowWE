@@ -7,9 +7,9 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Files;
-import de.d3web.utils.Streams;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Files;
+import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 

@@ -21,7 +21,7 @@ package de.knowwe.core.taghandler;
 import java.util.Map;
 import java.util.Set;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.TermInfo;
 import de.knowwe.core.kdom.objects.TermUtils;
@@ -51,7 +51,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	public static final String OBJECT_NAME = "objectname";
 	public static final String TERM_IDENTIFIER = "termIdentifier";
 
-	private static DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
+	private static final DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
 
 	public ObjectInfoTagHandler(String tag) {
 		super(tag, true);

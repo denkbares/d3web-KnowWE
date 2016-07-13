@@ -25,7 +25,7 @@ package de.knowwe.rdf2go;
 
 import java.util.Collection;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;

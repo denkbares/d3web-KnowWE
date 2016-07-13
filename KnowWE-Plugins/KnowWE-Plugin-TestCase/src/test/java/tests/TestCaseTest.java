@@ -26,7 +26,7 @@ import junit.framework.TestCase;
 import utils.TSUtil;
 import utils.TestArticleManager;
 import de.d3web.empiricaltesting.RatedTestCase;
-import de.d3web.plugin.test.InitPluginManager;
+import com.denkbares.plugin.test.InitPluginManager;
 import de.knowwe.core.kdom.Article;
 
 /**

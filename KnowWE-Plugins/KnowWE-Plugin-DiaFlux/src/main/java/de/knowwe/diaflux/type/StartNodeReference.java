@@ -19,7 +19,7 @@
 package de.knowwe.diaflux.type;
 
 import de.d3web.diaFlux.flow.StartNode;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;

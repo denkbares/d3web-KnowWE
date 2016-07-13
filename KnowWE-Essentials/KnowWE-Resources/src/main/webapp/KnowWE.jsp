@@ -9,6 +9,7 @@
 <%@ page import="de.knowwe.core.*" %>
 <%@ page import="de.knowwe.utils.*" %>
 <%@ page import="de.knowwe.user.*" %>
+<%@ page import="com.denkbares.strings.Strings" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%!
 String findParam( PageContext ctx, String key )

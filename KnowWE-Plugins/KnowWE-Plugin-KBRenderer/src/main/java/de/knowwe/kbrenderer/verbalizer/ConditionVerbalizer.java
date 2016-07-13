@@ -52,7 +52,7 @@ import de.d3web.core.knowledge.terminology.AnswerNo;
 import de.d3web.core.knowledge.terminology.AnswerYes;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionMC;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**
@@ -264,11 +264,8 @@ public class ConditionVerbalizer implements Verbalizer {
 			else {
 				for (int i = 0; i < ntCond.getCondVerbalizations().size() - 1; i++) {
 					CondVerbalization cond = ntCond.getCondVerbalizations().get(i);
-					s.append(cond instanceof TerminalCondVerbalization ?
-							renderCondVerbalizationPlainText(cond, quote) + " "
-									+ ntCond.getOperator() + " " :
-							("(" + renderCondVerbalizationPlainText(cond, quote) + ")")
-									+ " " + ntCond.getOperator() + " ");
+					s.append((cond instanceof TerminalCondVerbalization ? renderCondVerbalizationPlainText(cond, quote) : "(" + renderCondVerbalizationPlainText(cond, quote) + ")") + " "
+							+ ntCond.getOperator() + " ");
 				}
 
 				if (!ntCond.getCondVerbalizations().isEmpty()) // Avoid AIOOBE
@@ -398,12 +395,12 @@ public class ConditionVerbalizer implements Verbalizer {
 					// answer.append(getResourceBundle().getString("rule.CondNo"));
 				}
 				else {
-					answer.append(tempValue.toString());
+					answer.append(tempValue);
 				}
 			}
 			for (int i = 1; i < values.size(); i++) {
 				tempValue = values.get(i);
-				answer.append(" / ").append(tempValue.toString());
+				answer.append(" / ").append(tempValue);
 			}
 		}
 

@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TreeSet;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
@@ -86,12 +86,8 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		String sourceTextAtBuildTime = Environment.getInstance().getWikiConnector().getArticleText(
 				section.getTitle(), versionAtBuildDate);
 
-		if (sourceTextAtBuildTime.contains(currentDashboardSourcetext)) {
-			// this is only safe for one single dashboard per article
-			return false;
-		}
+		return !sourceTextAtBuildTime.contains(currentDashboardSourcetext);
 
-		return true;
 	}
 
 	/**

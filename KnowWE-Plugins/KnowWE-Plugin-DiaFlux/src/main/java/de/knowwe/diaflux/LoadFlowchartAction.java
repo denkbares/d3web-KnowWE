@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;

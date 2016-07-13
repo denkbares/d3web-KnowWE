@@ -23,7 +23,7 @@ import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;

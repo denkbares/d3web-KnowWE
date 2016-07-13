@@ -20,7 +20,7 @@ package de.knowwe.core.compile.packaging;
 
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;

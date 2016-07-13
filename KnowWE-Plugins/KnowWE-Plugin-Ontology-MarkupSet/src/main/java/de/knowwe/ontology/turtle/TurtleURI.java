@@ -20,8 +20,8 @@ package de.knowwe.ontology.turtle;
 
 import org.openrdf.model.Value;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;

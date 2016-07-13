@@ -27,7 +27,7 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;

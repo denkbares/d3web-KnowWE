@@ -31,7 +31,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFtnEdn;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STFtnEdn;
 
-import de.d3web.utils.Pair;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.include.export.DocumentBuilder.Style;

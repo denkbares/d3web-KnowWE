@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;

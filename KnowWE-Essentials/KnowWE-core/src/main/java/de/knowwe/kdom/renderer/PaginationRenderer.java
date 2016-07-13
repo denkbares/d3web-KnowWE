@@ -32,9 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
-import de.d3web.utils.Pair;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -70,7 +70,7 @@ import de.knowwe.util.Icon;
  * Optionally: You can apply filters to rows by preparing your table column headers with {@code
  * &lt;th class="filterable"&gt;...&lt;/th&gt;} and use in your decorated render class {@link
  * #createFilter(String, String...)} and then {@link #setFilterList(de.knowwe.core.user.UserContext,
- * de.d3web.utils.Pair[])}  }. To get the active filters use {@link #getFilters(de.knowwe.core.kdom.parsing.Section,
+ * Pair[])}  }. To get the active filters use {@link #getFilters(de.knowwe.core.kdom.parsing.Section,
  * de.knowwe.core.user.UserContext)}<br><br> Optionally: If the decorated renderer knows the size of
  * its result it can use {@link #setResultSize(de.knowwe.core.user.UserContext, int)} to render more
  * information in the pagination bar.
@@ -507,7 +507,7 @@ public class PaginationRenderer implements Renderer {
 	 *               <th></th>}) tags
 	 * @param values All the values you want to be able to filter by
 	 * @return a new filter (you have to enable it (and others for other columns) by calling {@link
-	 * #setFilterList(de.knowwe.core.user.UserContext, de.d3web.utils.Pair[])}.
+	 * #setFilterList(de.knowwe.core.user.UserContext, Pair[])}.
 	 */
 	public static Pair<String, List<String>> createFilter(String header, String... values) {
 		List<String> filterTerms = new LinkedList<>();

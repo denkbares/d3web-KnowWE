@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -47,11 +46,11 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.rio.RDFFormat;
 
 import com.denkbares.semanticcore.TupleQueryResult;
-import de.d3web.collections.PartialHierarchy;
-import de.d3web.collections.PartialHierarchyTree;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.collections.PartialHierarchy;
+import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -439,8 +438,8 @@ public class Rdf2GoUtils {
 	}
 
 	private static class SubClassHierarchy implements PartialHierarchy<URI> {
-		private Rdf2GoCore core;
-		private String subClassRelation;
+		private final Rdf2GoCore core;
+		private final String subClassRelation;
 
 		public SubClassHierarchy(Rdf2GoCore core, String subClassRelation) {
 			this.core = core;

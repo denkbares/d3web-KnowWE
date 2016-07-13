@@ -39,9 +39,9 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParseException;
 
 import com.denkbares.semanticcore.config.RepositoryConfigs;
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.terminology.TerminologyManager;

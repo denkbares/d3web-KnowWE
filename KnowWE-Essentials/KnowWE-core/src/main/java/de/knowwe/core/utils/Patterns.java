@@ -22,7 +22,7 @@ package de.knowwe.core.utils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 
 /**
  * 

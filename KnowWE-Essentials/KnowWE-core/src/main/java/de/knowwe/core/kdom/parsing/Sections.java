@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
@@ -1185,7 +1185,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			throws IOException {
 
 		if (!missingIDs.isEmpty()) {
-			context.sendError(409, "The Sections '" + missingIDs.toString()
+			context.sendError(409, "The Sections '" + missingIDs
 					+ "' could not be found, possibly because somebody else"
 					+ " has edited them.");
 			return true;
@@ -1193,7 +1193,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		if (!forbiddenArticles.isEmpty()) {
 			context.sendError(403,
 					"You do not have the permission to edit the following pages: "
-							+ forbiddenArticles.toString() + ".");
+							+ forbiddenArticles + ".");
 			return true;
 		}
 		return false;

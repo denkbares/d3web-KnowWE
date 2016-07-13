@@ -3,9 +3,9 @@ package de.knowwe.core.utils.progress;
 import java.io.File;
 import java.io.IOException;
 
-import de.d3web.core.io.progress.ParallelProgress;
-import de.d3web.core.io.progress.ProgressListener;
-import de.d3web.utils.Files;
+import com.denkbares.progress.ParallelProgress;
+import com.denkbares.progress.ProgressListener;
+import com.denkbares.utils.Files;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;

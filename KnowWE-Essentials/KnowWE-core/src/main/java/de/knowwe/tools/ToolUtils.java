@@ -6,9 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.d3web.plugin.Extension;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.plugin.Extension;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.ScopeExtensions;

@@ -1,19 +1,16 @@
 package de.knowwe.rdfs.vis.markup.sparql;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
-import com.denkbares.semanticcore.utils.Sparqls;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -67,7 +64,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			Value toURI = row.getValue(variables.get(2));
 
 			if (fromURI == null || toURI == null || relationURI == null) {
-				Log.warning("Incomplete query result row: " + row.toString());
+				Log.warning("Incomplete query result row: " + row);
 				continue;
 			}
 

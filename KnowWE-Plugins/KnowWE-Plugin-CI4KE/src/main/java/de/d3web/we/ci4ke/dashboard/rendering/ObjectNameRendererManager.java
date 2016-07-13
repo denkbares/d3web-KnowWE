@@ -21,8 +21,8 @@ package de.d3web.we.ci4ke.dashboard.rendering;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
 
 /**
  * Manager providing the correct ObjectNameRenderer for a certain class.

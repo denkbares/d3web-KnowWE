@@ -38,7 +38,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 
 import static de.knowwe.uitest.UITestUtils.RetryRule;
 import static de.knowwe.uitest.UITestUtils.UseCase;

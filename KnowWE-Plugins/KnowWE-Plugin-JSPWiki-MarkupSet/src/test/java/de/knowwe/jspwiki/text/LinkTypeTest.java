@@ -29,7 +29,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import utils.TestArticleManager;
-import de.d3web.plugin.test.InitPluginManager;
+
+import com.denkbares.plugin.test.InitPluginManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

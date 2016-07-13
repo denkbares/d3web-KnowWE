@@ -19,8 +19,8 @@
 
 package de.knowwe.rightpanel.watches;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

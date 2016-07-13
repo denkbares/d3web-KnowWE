@@ -19,7 +19,7 @@
 
 package de.knowwe.core.utils.progress;
 
-import de.d3web.core.io.progress.ProgressListener;
+import com.denkbares.progress.ProgressListener;
 
 /**
  * Decorating ProgressListener that can be set to interrupt the current thread if a certain flag is set during updating.

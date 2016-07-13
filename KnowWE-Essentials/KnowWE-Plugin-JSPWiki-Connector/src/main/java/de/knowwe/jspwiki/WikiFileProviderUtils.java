@@ -8,7 +8,7 @@ import org.apache.wiki.providers.AbstractFileProvider;
 import org.apache.wiki.providers.BasicAttachmentProvider;
 import org.apache.wiki.util.TextUtil;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.wikiConnector.WikiAttachment;

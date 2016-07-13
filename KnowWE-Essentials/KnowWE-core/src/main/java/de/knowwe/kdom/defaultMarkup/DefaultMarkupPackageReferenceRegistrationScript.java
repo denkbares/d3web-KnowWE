@@ -18,7 +18,7 @@
  */
 package de.knowwe.kdom.defaultMarkup;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.packaging.PackageCompileType;

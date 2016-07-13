@@ -20,7 +20,7 @@
 
 package de.knowwe.core.kdom;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.Environment.CompilationMode;

@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -65,7 +65,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		if (!articlesWithWrongVersion.isEmpty()) {
 			context.sendError(409,
 					"The following articles are currently loaded with an outdated version: "
-							+ articlesWithWrongVersion.toString()
+							+ articlesWithWrongVersion
 							+ ". Refresh them or go back to an up to date version to be"
 							+ " able to download the knowledgebase.");
 			return;

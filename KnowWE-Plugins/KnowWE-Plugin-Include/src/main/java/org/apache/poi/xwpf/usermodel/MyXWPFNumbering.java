@@ -24,7 +24,7 @@ import java.math.BigInteger;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTAbstractNum;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTString;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 
 /**
  * Utility class to grant access to non-exposed methods of XWPSNumbering.

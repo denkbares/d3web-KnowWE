@@ -26,7 +26,7 @@ import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

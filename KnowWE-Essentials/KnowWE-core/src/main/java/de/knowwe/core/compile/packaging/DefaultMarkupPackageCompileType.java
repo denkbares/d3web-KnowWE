@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import de.d3web.strings.Identifier;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;

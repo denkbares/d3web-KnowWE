@@ -18,7 +18,7 @@
  */
 package de.knowwe.core.utils.progress;
 
-import de.d3web.core.io.progress.ExtendedProgressListener;
+import com.denkbares.progress.ExtendedProgressListener;
 
 /**
  * A simple ProgressListener that stores the updated values to be pulled by ajax

@@ -26,8 +26,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import de.d3web.strings.Strings;
-import de.d3web.utils.Log;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -149,9 +149,9 @@ public class Config {
 	private Map<String, String> classColors = new HashMap<>();
 	private int successors = 1;
 	private int predecessors = 1;
-	private Collection<String> excludeNodes = new HashSet<>();
-	private Collection<String> excludeRelations = new HashSet<>();
-	private Collection<String> filterRelations = new HashSet<>();
+	private final Collection<String> excludeNodes = new HashSet<>();
+	private final Collection<String> excludeRelations = new HashSet<>();
+	private final Collection<String> filterRelations = new HashSet<>();
 	private Collection<String> concepts = new HashSet<>();
 	private boolean showClasses = true;
 	private boolean showProperties = true;
@@ -241,7 +241,7 @@ public class Config {
 			}
 			catch (IllegalArgumentException e) {
 				Log.warning("Annotation '" + annotationName + "' expects on of the following values: "
-						+ enumType.toString() + ". '" + annotation + "' is not one of them.");
+						+ enumType + ". '" + annotation + "' is not one of them.");
 			}
 		}
 	}

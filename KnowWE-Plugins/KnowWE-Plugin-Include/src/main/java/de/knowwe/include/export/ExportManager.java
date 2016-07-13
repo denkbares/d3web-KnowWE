@@ -30,9 +30,9 @@ import java.util.Set;
 import org.apache.poi.POIXMLProperties.CoreProperties;
 import org.apache.poi.openxml4j.util.Nullable;
 
-import de.d3web.core.io.progress.ParallelProgress;
-import de.d3web.core.io.progress.ProgressListener;
-import de.d3web.strings.Strings;
+import com.denkbares.progress.ParallelProgress;
+import com.denkbares.progress.ProgressListener;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -57,7 +57,7 @@ public class ExportManager {
 	static final String MSG_CREATE = "Creating word file";
 	static final String MSG_SAVE = "Saving word file";
 
-	private Section<?> section;
+	private final Section<?> section;
 	private Set<Section<?>> includedSections = null;
 	private Set<Article> includedArticles = null;
 

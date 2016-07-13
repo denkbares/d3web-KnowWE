@@ -7,8 +7,8 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.search.LuceneSearchProvider;
 import org.apache.wiki.search.SearchResult;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
 import de.knowwe.plugin.Plugins;
 
 /**

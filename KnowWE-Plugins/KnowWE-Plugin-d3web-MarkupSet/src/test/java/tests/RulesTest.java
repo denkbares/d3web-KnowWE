@@ -39,7 +39,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.RuleSet;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.indication.inference.PSMethodStrategic;
-import de.d3web.plugin.test.InitPluginManager;
+import com.denkbares.plugin.test.InitPluginManager;
 import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.knowwe.core.kdom.Article;
 

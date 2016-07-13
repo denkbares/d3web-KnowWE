@@ -24,7 +24,7 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.manage.RuleFactory;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.kdom.questionTree.NumericCondLine;
 import de.d3web.we.kdom.questionTree.QuestionDashTree;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;

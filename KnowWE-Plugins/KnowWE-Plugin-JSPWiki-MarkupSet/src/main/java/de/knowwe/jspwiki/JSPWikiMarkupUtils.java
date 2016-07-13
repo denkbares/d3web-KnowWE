@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.Plugin;
-import de.d3web.plugin.PluginManager;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.Plugin;
+import com.denkbares.plugin.PluginManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;

@@ -19,7 +19,7 @@
 
 package de.knowwe.tools;
 
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.util.Icon;
 

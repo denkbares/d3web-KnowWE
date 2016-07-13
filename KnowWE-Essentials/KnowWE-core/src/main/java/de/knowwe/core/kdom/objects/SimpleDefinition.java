@@ -20,7 +20,7 @@ package de.knowwe.core.kdom.objects;
 
 import java.util.Collection;
 
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;

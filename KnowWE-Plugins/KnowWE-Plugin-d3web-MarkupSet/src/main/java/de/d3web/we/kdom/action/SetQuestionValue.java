@@ -33,7 +33,7 @@ import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.FindingAnswerReference;
 import de.d3web.we.knowledgebase.D3webCompiler;

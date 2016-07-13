@@ -29,9 +29,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.denkbares.events.EventManager;
-import de.d3web.plugin.Extension;
-import de.d3web.plugin.PluginManager;
-import de.d3web.strings.Identifier;
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Type;

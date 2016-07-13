@@ -4,13 +4,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.openrdf.model.URI;
 
-import de.d3web.collections.PartialHierarchyTree;
-import de.d3web.strings.Identifier;
+import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;

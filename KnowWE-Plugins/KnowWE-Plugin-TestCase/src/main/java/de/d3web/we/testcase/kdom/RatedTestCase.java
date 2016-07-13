@@ -23,8 +23,8 @@ package de.d3web.we.testcase.kdom;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.d3web.strings.StringFragment;
-import de.d3web.strings.Strings;
+import com.denkbares.strings.StringFragment;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.SquareBracedType;

@@ -32,7 +32,7 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.DateValue;
-import de.d3web.strings.Identifier;
+import com.denkbares.strings.Identifier;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;

@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import de.d3web.core.io.PersistenceManager;
-import de.d3web.core.io.progress.DummyProgressListener;
+import com.denkbares.progress.DummyProgressListener;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.io.PluginConfigPersistenceHandler;
 import de.d3web.we.knowledgebase.D3webCompiler;

@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;

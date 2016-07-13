@@ -20,7 +20,7 @@ package de.knowwe.ontology.turtle;
 
 import java.util.regex.Pattern;
 
-import de.d3web.strings.QuoteSet;
+import com.denkbares.strings.QuoteSet;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;

@@ -39,7 +39,7 @@ import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
 import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.testing.TestResult;
-import de.d3web.utils.Log;
+import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.compile.CompilationStartEvent;
