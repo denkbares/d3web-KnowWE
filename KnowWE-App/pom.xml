@@ -98,6 +98,8 @@
 									<failOnError>false</failOnError>
 									<outputDirectory>target/docs</outputDirectory>
 									<includeDependencySources>true</includeDependencySources>
+									<includeTransitiveDependencySources>true</includeTransitiveDependencySources>
+									<additionalparam>-Xdoclint:none</additionalparam>
 									<dependencySourceIncludes>
 										<dependencySourceInclude>de.uniwue.d3web:*</dependencySourceInclude>
 										<dependencySourceInclude>com.denkbares:*</dependencySourceInclude>
