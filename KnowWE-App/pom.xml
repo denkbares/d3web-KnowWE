@@ -18,20 +18,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-sources</id>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<includeScope>compile</includeScope>
-							<includeGroupIds>de.uniwue.d3web,com.denkbares</includeGroupIds>
-							<classifier>sources</classifier>
-							<outputDirectory>${project.build.directory}/sources</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -104,6 +90,24 @@
 										<dependencySourceInclude>de.uniwue.d3web:*</dependencySourceInclude>
 										<dependencySourceInclude>com.denkbares:*</dependencySourceInclude>
 									</dependencySourceIncludes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-sources</id>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeScope>compile</includeScope>
+									<includeGroupIds>de.uniwue.d3web,com.denkbares</includeGroupIds>
+									<classifier>sources</classifier>
+									<outputDirectory>${project.build.directory}/sources</outputDirectory>
 								</configuration>
 							</execution>
 						</executions>
