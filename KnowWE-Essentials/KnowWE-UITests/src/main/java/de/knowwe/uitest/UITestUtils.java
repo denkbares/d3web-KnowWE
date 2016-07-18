@@ -174,10 +174,20 @@ public class UITestUtils {
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 	}
 
+
+	public static void awaitStatusChange(WebDriver driver, String status) {
+		new WebDriverWait(driver, 10).until(ExpectedConditions.not(ExpectedConditions.attributeToBe(By.cssSelector("#knowWEInfoStatus"), "value", status)));
+	}
+
+	public static String getCurrentStatus(WebDriver driver) {
+		return driver.findElement(By.cssSelector("#knowWEInfoStatus")).getAttribute("value");
+	}
+
 	public static void awaitRerender(WebDriver driver, By by) {
 		try {
-			if (!driver.findElements(by).isEmpty()) {
-				new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(driver.findElement(by)));
+			List<WebElement> elements = driver.findElements(by);
+			if (!elements.isEmpty()) {
+				new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(elements.get(0)));
 			}
 		}
 		catch (TimeoutException ignore) {

@@ -1,5 +1,6 @@
 package de.knowwe.uitest;
 
+import java.io.File;
 import java.net.URL;
 
 import org.junit.AfterClass;
@@ -7,7 +8,9 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -27,7 +30,8 @@ public class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {
 		// Create the connection to Sauce Labs to run the tests
 		//noinspection ConstantConditions
 		if (devMode) {
-			driver = new FirefoxDriver();
+			 driver = new FirefoxDriver();
+//			driver = new FirefoxDriver(new FirefoxBinary(new File("C:\\Program Files (x86)\\Mozilla Firefox 24 ESR\\firefox.exe")), null);
 		}
 		else {
 			// Choose the browser, version, and platform to test
