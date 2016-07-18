@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.denkbares.strings.Strings;
 import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
@@ -37,7 +38,6 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
 import de.d3web.scoring.inference.PSMethodHeuristic;
-import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.condition.SolutionStateType;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -140,10 +140,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		}
 		if (score == null) return null;
 		Solution solution = getSolution(compiler, solutionScoreCell);
-		ActionHeuristicPS action = new ActionHeuristicPS();
-		action.setSolution(solution);
-		action.setScore(score);
-		return action;
+		return new ActionHeuristicPS(solution, score);
 	}
 
 	private PSAction createActionSetValue(D3webCompiler compiler, Section<CellContent> answerReference) {

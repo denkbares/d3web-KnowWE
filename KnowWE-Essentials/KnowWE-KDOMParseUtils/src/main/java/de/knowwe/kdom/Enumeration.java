@@ -73,8 +73,8 @@ public class Enumeration<T extends Enum<T>> extends AbstractType {
 		public Collection<Message> create(DefaultGlobalCompiler compiler, Section<Enumeration<T>> section) throws CompilerMessage {
 			T value = section.get().getValue(section);
 			if (value == null) {
-				throw CompilerMessage.error("Invalid value '" + section.getText() + "' where a "
-						+ enumType.getSimpleName() + " name is expected");
+				throw CompilerMessage.error("Invalid value '" + section.getText()
+						+ "'. Expected one of the following: "	+ Strings.concat(", ", enumType.getEnumConstants()));
 			}
 			return Messages.noMessage();
 		}

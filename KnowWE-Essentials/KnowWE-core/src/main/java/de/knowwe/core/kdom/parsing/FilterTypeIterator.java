@@ -42,7 +42,7 @@ public class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>
 		this.base = SectionFilter.filter(base, this);
 	}
 
-	public static <OT extends Type> FilterTypeIterator<OT> create(Iterator<Section<?>> base, Class<OT> clazz) {
+	public static <OT extends Type> FilterTypeIterator<OT> create(Iterator<? extends Section<?>> base, Class<OT> clazz) {
 		return new FilterTypeIterator<>(base, clazz);
 	}
 

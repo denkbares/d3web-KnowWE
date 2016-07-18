@@ -68,6 +68,55 @@
 
 	<profiles>
 		<profile>
+			<id>dist</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.4</version>
+						<executions>
+							<execution>
+								<id>javadoc</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<failOnError>false</failOnError>
+									<outputDirectory>target/docs</outputDirectory>
+									<includeDependencySources>true</includeDependencySources>
+									<includeTransitiveDependencySources>true</includeTransitiveDependencySources>
+									<additionalparam>-Xdoclint:none</additionalparam>
+									<dependencySourceIncludes>
+										<dependencySourceInclude>de.uniwue.d3web:*</dependencySourceInclude>
+										<dependencySourceInclude>com.denkbares:*</dependencySourceInclude>
+									</dependencySourceIncludes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-sources</id>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeScope>compile</includeScope>
+									<includeGroupIds>de.uniwue.d3web,com.denkbares</includeGroupIds>
+									<classifier>sources</classifier>
+									<outputDirectory>${project.build.directory}/sources</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
 			<id>local</id>
 			<build>
 				<plugins>
@@ -366,6 +415,50 @@
 
 		<profile>
 			<id>denkbares-free2use</id>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>copy-open-sources</id>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<includeScope>compile</includeScope>
+									<includeGroupIds>de.uniwue.d3web,com.denkbares</includeGroupIds>
+									<excludeArtifactIds>${closed-source-artifacts}</excludeArtifactIds>
+									<classifier>sources</classifier>
+									<outputDirectory>${project.build.directory}/open-sources</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+
+			<properties>
+				<!--
+				This property is needed for generating just the open sources in the free2use distribution,
+				so always adapt if free2use dependencies are changed!
+				-->
+				<closed-source-artifacts>
+					KnowWE-Plugin-Admin-Utils,
+					KnowWE-Plugin-AutoComplete,
+					KnowWE-Plugin-DenkbaresDialog,
+					KnowWE-Plugin-EditMode,
+					d3web-Plugin-ImageMap,
+					KnowWE-Plugin-ImageMap,
+					KnowWE-Plugin-PlantUML,
+					KnowWE-Plugin-Todos,
+					KnowWE-Plugin-SparqlEndpoint,
+					KnowWE-Plugin-RightPanel
+				</closed-source-artifacts>
+			</properties>
+
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
