@@ -27,7 +27,8 @@ public class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {
 		// Create the connection to Sauce Labs to run the tests
 		//noinspection ConstantConditions
 		if (devMode) {
-			driver = new FirefoxDriver();
+			 driver = new FirefoxDriver();
+//			driver = new FirefoxDriver(new FirefoxBinary(new File("C:\\Program Files (x86)\\Mozilla Firefox 24 ESR\\firefox.exe")), null);
 		}
 		else {
 			// Choose the browser, version, and platform to test

@@ -79,7 +79,7 @@ public abstract class DiaFluxSystemTest {
 	}
 
 	@Rule
-	public RetryRule retry = new RetryRule(3);
+	public RetryRule retry = new RetryRule(1);
 
 	private void logIn() {
 		UITestUtils.logIn(getDriver(), "test", "8bGNmPjn", UseCase.NORMAL_PAGE);
@@ -105,8 +105,8 @@ public abstract class DiaFluxSystemTest {
 		getDriver().findElement(By.id("properties.autostart")).click();
 
 		setFlowName("BMI-Main");
-		addStartNode(-300, 300);
-		addExitNode(100, 300);
+		addStartNode(-150, 300);
+		addExitNode(250, 300);
 
 		saveAndSwitchBack(article);
 
@@ -116,10 +116,10 @@ public abstract class DiaFluxSystemTest {
 
 		setFlowName("BMI-Anamnesis");
 
-		addStartNode(-300, 300);
-		addExitNode(-100, 450, "Illegal arguments");
-		addExitNode(-250, 600, "Weight ok");
-		addExitNode(0, 600, "Weight problem");
+		addStartNode(-150, 300);
+		addExitNode(50, 450, "Illegal arguments");
+		addExitNode(-100, 600, "Weight ok");
+		addExitNode(150, 600, "Weight problem");
 
 		saveAndSwitchBack(article);
 
@@ -128,9 +128,9 @@ public abstract class DiaFluxSystemTest {
 		switchToEditor(article);
 
 		setFlowName("BMI-SelectTherapy");
-		addStartNode(-300, 300, "Mild therapy");
-		addStartNode(-300, 400, "Rigorous therapy");
-		addExitNode(-100, 350, "Done");
+		addStartNode(-150, 300, "Mild therapy");
+		addStartNode(-150, 400, "Rigorous therapy");
+		addExitNode(50, 350, "Done");
 
 		saveAndSwitchBack(article);
 
@@ -139,9 +139,9 @@ public abstract class DiaFluxSystemTest {
 		switchToEditor(article);
 
 		setFlowName("BMI-SelectMode");
-		addStartNode(-300, 300);
-		addExitNode(-100, 450, "Pediatrics");
-		addExitNode(0, 450, "Adult");
+		addStartNode(-150, 300);
+		addExitNode(50, 450, "Pediatrics");
+		addExitNode(150, 450, "Adult");
 
 		saveAndSwitchBack(article);
 
@@ -157,32 +157,32 @@ public abstract class DiaFluxSystemTest {
 
 		switchToEditor(articleHandle);
 
-		addActionNode(-300, 60, "BMI-SelectMode");
+		addActionNode(-150, 60, "BMI-SelectMode");
 
 		connect(2, 4);
 		connect(4, 3, "Pediatrics");
 
-		addActionNode(-100, 150, "BMI-Anamnesis"); // 7
+		addActionNode(50, 150, "BMI-Anamnesis"); // 7
 
 		connect(4, 7, "Adult");
 		connect(7, 3, "Illegal arguments");
 		connect(7, 3, "Weight ok");
 
-		addActionNode(-150, 220, "bmi"); // 11
+		addActionNode(0, 220, "bmi"); // 11
 
 		connect(7, 11, "Weight problem");
 
-		addActionNode(-500, 220, "BMI-SelectTherapy"); // 13
-		addActionNode(-500, 320, "BMI-SelectTherapy", "Rigorous therapy"); // 14
+		addActionNode(-350, 220, "BMI-SelectTherapy"); // 13
+		addActionNode(-350, 320, "BMI-SelectTherapy", "Rigorous therapy"); // 14
 
 		connect(11, 13, "Formula", "gradient(bmi[-7d, 0s]) >= 0 & gradient(bmi[-7d, 0s]) < 5");
 		connect(11, 14, "Formula", "gradient(bmi[-7d, 0s]) >= 5");
 
-		addActionNode(-150, 280, "Continue selected therapy", "ask"); // 17
+		addActionNode(0, 280, "Continue selected therapy", "ask"); // 17
 
 		connect(11, 17, "Formula", "gradient(bmi[-7d, 0s]) < 0");
 
-		addSnapshotNode(-160, 340); // 19
+		addSnapshotNode(-10, 340); // 19
 
 		connect(13, 19, "Done");
 		connect(14, 19, "Done");
@@ -205,24 +205,24 @@ public abstract class DiaFluxSystemTest {
 
 		switchToEditor(articleHandle);
 
-		addActionNode(-300, 60, "Height", "ask"); // 6
-		addActionNode(-100, 60, "Weight", "always ask"); // 7
+		addActionNode(-150, 60, "Height", "ask"); // 6
+		addActionNode(50, 60, "Weight", "always ask"); // 7
 
 		connect(2, 6);
 		connect(6, 7, "> ", "0");
 
-		addActionNode(-300, 150, "Illegal arguments", "established"); // 10
+		addActionNode(-150, 150, "Illegal arguments", "established"); // 10
 
 		connect(6, 10, "= ", "0");
 		connect(10, 3);
 
-		addActionNode(-100, 250, "bmi", "Formula", "Weight / (Height * Height)"); // 13
+		addActionNode(50, 250, "bmi", "Formula", "Weight / (Height * Height)"); // 13
 
 		connect(7, 13, "known");
 
-		addActionNode(-500, 250, "Weight classification", "Normal weight"); // 15
-		addActionNode(-200, 320, "Weight classification", "Overweight"); // 16
-		addActionNode(0, 320, "Weight classification", "Severe overweight"); // 17
+		addActionNode(-350, 250, "Weight classification", "Normal weight"); // 15
+		addActionNode(-50, 320, "Weight classification", "Overweight"); // 16
+		addActionNode(150, 320, "Weight classification", "Severe overweight"); // 17
 
 		connect(13, 15, "[  ..  [", "18.5", "25");
 		connect(13, 16, "[  ..  [", "25", "30");
@@ -248,8 +248,8 @@ public abstract class DiaFluxSystemTest {
 		switchToEditor(articleHandle);
 
 		// white spaces to give the auto complete some time
-		addActionNode(-300, 60, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN, "Mild therapy"); // 5
-		addActionNode(-300, 120, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN, "Rigorous therapy"); // 6
+		addActionNode(-150, 60, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN, "Mild therapy"); // 5
+		addActionNode(-150, 120, "Therapy       " + Keys.ARROW_DOWN + Keys.ARROW_DOWN, "Rigorous therapy"); // 6
 
 		connect(2, 5);
 		connect(3, 6);
@@ -271,10 +271,10 @@ public abstract class DiaFluxSystemTest {
 
 		switchToEditor(articleHandle);
 
-		addActionNode(-400, 60, "Age ", "ask"); // 5
-		addActionNode(-220, 60, "Age classification", "Adult"); // 6
-		addActionNode(-400, 120, "Age classification", "Pediatrics"); // 7
-		addActionNode(-220, 120, "Age classification"); // 8
+		addActionNode(-250, 60, "Age ", "ask"); // 5
+		addActionNode(0, 60, "Age classification", "Adult"); // 6
+		addActionNode(-250, 120, "Age classification", "Pediatrics"); // 7
+		addActionNode(0, 120, "Age classification"); // 8
 
 		connect(2, 5);
 		connect(5, 6, "> ", "14");
@@ -491,7 +491,8 @@ public abstract class DiaFluxSystemTest {
 		Select ruleSelect = new Select(rule.findElement(By.tagName("select")));
 		try {
 			ruleSelect.selectByVisibleText(text);
-		} catch (NoSuchElementException e) {
+		}
+		catch (NoSuchElementException e) {
 			// selecting by text fails with chrome and special chars... try to match as good as possible
 			List<WebElement> options = ruleSelect.getOptions();
 			for (WebElement option : options) {
@@ -530,8 +531,9 @@ public abstract class DiaFluxSystemTest {
 	}
 
 	private void reset() {
+		String currentStatus = UITestUtils.getCurrentStatus(getDriver());
 		getDriver().findElement(By.className("reset")).click();
-		awaitRerender(By.className("reset"));
+		UITestUtils.awaitStatusChange(getDriver(), currentStatus);
 	}
 
 	private void assertBMI(String expected) {
@@ -551,9 +553,9 @@ public abstract class DiaFluxSystemTest {
 	}
 
 	private void setValue(String value, int index) {
+		String currentStatus = UITestUtils.getCurrentStatus(getDriver());
 		getDriver().findElements(By.className("numinput")).get(index).sendKeys(value + Keys.ENTER);
-		awaitRerender(By.className("reset"));
-		awaitRerender(By.className("reset"));
+		UITestUtils.awaitStatusChange(getDriver(), currentStatus);
 	}
 
 	private void connect(int sourceId, int targetId, String... text) throws InterruptedException {
@@ -639,7 +641,7 @@ public abstract class DiaFluxSystemTest {
 	private void saveAndSwitchBack(String winHandleBefore) {
 		getDriver().findElement(By.id("saveClose")).click();
 		getDriver().switchTo().window(winHandleBefore);
-		awaitRerender(By.id("pagecontent"));
+		UITestUtils.awaitRerender(getDriver(), By.id("pagecontent"));
 	}
 
 	private void addActionNode(int xOffset, int yOffset, String... text) throws InterruptedException {
@@ -667,9 +669,12 @@ public abstract class DiaFluxSystemTest {
 		new Actions(getDriver()).dragAndDropBy(start, xOffset, yOffset).perform();
 		Thread.sleep(200);
 		if (text.length > 0) {
-			List<WebElement> nodes = getDriver().findElements(By.cssSelector(".Flowchart > .Node"));
-			WebElement newNode = nodes.get(nodes.size() - 1);
-			new Actions(getDriver()).doubleClick(newNode).perform();
+			String selector = prototypeSelector.toString();
+			if (selector.contains("start") || selector.contains("snapshot") || selector.contains("exit")) { // for decision nodes, editor opens automatically
+				List<WebElement> nodes = getDriver().findElements(By.cssSelector(".Flowchart > .Node"));
+				WebElement newNode = nodes.get(nodes.size() - 1);
+				new Actions(getDriver()).doubleClick(newNode).perform();
+			}
 			setNodeAttributes(textSelector, text);
 		}
 
@@ -731,10 +736,6 @@ public abstract class DiaFluxSystemTest {
 		windowHandles.remove(articleHandle);
 		getDriver().switchTo().window(windowHandles.iterator().next());
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("start_prototype")));
-	}
-
-	private void awaitRerender(By by) {
-		UITestUtils.awaitRerender(getDriver(), by);
 	}
 
 	private String readFile(String fileName) throws IOException {

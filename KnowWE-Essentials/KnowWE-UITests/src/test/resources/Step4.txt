@@ -167,7 +167,7 @@ Illegal arguments
 
 	<!-- nodes of the flowchart -->
 	<node fcid="#node_2">
-		<position left="20" top="20"></position>
+		<position left="0" top="20"></position>
 		<start>Start</start>
 	</node>
 
