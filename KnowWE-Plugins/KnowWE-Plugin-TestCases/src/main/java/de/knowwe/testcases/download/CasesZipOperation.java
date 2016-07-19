@@ -30,12 +30,12 @@ import java.util.zip.ZipOutputStream;
 
 import com.denkbares.progress.ParallelProgress;
 import com.denkbares.progress.ProgressListener;
+import com.denkbares.utils.Triple;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
+import de.d3web.testcase.model.DescribedTestCase;
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testcase.persistence.TestCasePersistenceManager;
-import de.d3web.testcase.model.DescribedTestCase;
-import com.denkbares.utils.Triple;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -171,7 +171,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 		originalDescription = originalDescription.replaceAll("[^ \\.-_+\\w()]", "");
 		int i = 2;
 		String testCaseName = originalDescription;
-		while (usedEntryNames.contains(originalDescription)) {
+		while (usedEntryNames.contains(testCaseName)) {
 			testCaseName = originalDescription + i++;
 		}
 		usedEntryNames.add(testCaseName);
