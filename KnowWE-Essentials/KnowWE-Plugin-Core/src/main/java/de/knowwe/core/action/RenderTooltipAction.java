@@ -20,7 +20,9 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
+import java.util.Collection;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.kdom.renderer.TooltipRenderer;
@@ -36,13 +38,24 @@ public class RenderTooltipAction extends AbstractAction {
 		Section<?> section = getSection(context);
 		Renderer renderer = section.get().getRenderer();
 		if (renderer instanceof TooltipRenderer) {
-			TooltipRenderer tooltipRenderer = (TooltipRenderer) renderer;
-			boolean hasTooltip = tooltipRenderer.hasTooltip(section, context);
-			if (hasTooltip) {
-				String tooltip = tooltipRenderer.getTooltip(section, context);
-				context.setContentType("text/html; charset=UTF-8");
-				context.getWriter().append(tooltip);
+			sendToolTip(context, section, (TooltipRenderer) renderer);
+		} else {
+			Collection<Renderer> additionalRenderers = Environment.getInstance().getRenderersForType(section.get());
+			for (Renderer additionalRenderer : additionalRenderers) {
+				if (additionalRenderer instanceof TooltipRenderer) {
+					sendToolTip(context, section, (TooltipRenderer) additionalRenderer);
+					return;
+				}
 			}
+		}
+	}
+
+	private void sendToolTip(UserActionContext context, Section<?> section, TooltipRenderer tooltipRenderer) throws IOException {
+		boolean hasTooltip = tooltipRenderer.hasTooltip(section, context);
+		if (hasTooltip) {
+			String tooltip = tooltipRenderer.getTooltip(section, context);
+			context.setContentType("text/html; charset=UTF-8");
+			context.getWriter().append(tooltip);
 		}
 	}
 }

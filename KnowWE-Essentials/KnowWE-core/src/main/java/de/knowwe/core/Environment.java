@@ -497,6 +497,10 @@ public class Environment {
 		rendererForType.add(0, r);
 	}
 
+	public Collection<Renderer> getRenderersForType(Type type) {
+		return additionalRenderer.getOrDefault(type, Collections.emptyList());
+	}
+
 	/**
 	 * Builds an {@link Article} and registers it in the {@link ArticleManager}.
 	 */
