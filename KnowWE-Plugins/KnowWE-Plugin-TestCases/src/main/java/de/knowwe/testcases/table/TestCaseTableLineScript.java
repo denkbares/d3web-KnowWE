@@ -81,7 +81,6 @@ public class TestCaseTableLineScript extends DefaultGlobalScript<TableLine> {
 			else {
 				timeStamp = ((long) lastTimeStampObject) + 1;
 			}
-			tableSection.storeObject(LAST_TIME_STAMP_KEY, timeStamp);
 		}
 		else {
 			try {
@@ -95,6 +94,7 @@ public class TestCaseTableLineScript extends DefaultGlobalScript<TableLine> {
 		}
 		date = new Date(timeStamp);
 
+		tableSection.storeObject(LAST_TIME_STAMP_KEY, timeStamp);
 		section.storeObject(DATE_KEY, date);
 
 		Section<NameType> nameSection = $(section).successor(NameType.class).getFirst();

@@ -19,14 +19,11 @@
 package de.knowwe.testcases.stc;
 
 import java.io.IOException;
-import java.util.List;
-
-import javax.xml.stream.XMLStreamException;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.empiricaltesting.LazyKnowledgeBase;
 import de.d3web.empiricaltesting.SequentialTestCase;
-import de.d3web.empiricaltesting.TestPersistence;
+import de.d3web.testcase.model.DefaultTestCase;
+import de.d3web.testcase.persistence.TestCasePersistenceManager;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
@@ -37,7 +34,7 @@ import de.knowwe.testcases.AttachmentTestCaseProvider;
 
 /**
  * Wraps an Attachment containing an {@link SequentialTestCase}
- * 
+ *
  * @author Markus Friedrich (denkbares GmbH)
  * @created 25.01.2012
  */
@@ -51,32 +48,16 @@ public class STCTestCaseProvider extends AttachmentTestCaseProvider {
 	public void parse() {
 		testCase = null;
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-		KnowledgeBase lazyKb = new LazyKnowledgeBase();
-
 		if (kb == null) {
 			messages.add(Messages.error("Kb not found."));
 			return;
 		}
 		try {
-			List<SequentialTestCase> cases = TestPersistence.getInstance().loadCases(
-					attachment.getInputStream(), lazyKb);
-			if (cases == null) {
-				messages.add(Messages.error("No testcases found in : " + attachment.getFileName()));
+			this.testCase = TestCasePersistenceManager.getInstance().loadTestCase(attachment.getInputStream());
+			if (testCase instanceof DefaultTestCase) {
+				((DefaultTestCase) testCase).setDescription(attachment.getFileName());
 			}
-			else if (cases.size() != 1) {
-				messages.add(Messages.error("The attached SequentialTestCase file "
-						+ attachment.getFileName()
-						+ " has " + cases.size()
-						+ " cases. Only files with exactly one case are allowed."));
-			}
-			else {
-				testCase = cases.get(0);
-				updateTestCaseMessages(kb);
-			}
-		}
-		catch (XMLStreamException e) {
-			messages.add(Messages.error("File " + attachment.getFileName()
-					+ " does not contain correct xml markup."));
+			updateTestCaseMessages(kb);
 		}
 		catch (IOException e) {
 			messages.add(Messages.error("File " + attachment.getFileName() + " is not accessible."));
