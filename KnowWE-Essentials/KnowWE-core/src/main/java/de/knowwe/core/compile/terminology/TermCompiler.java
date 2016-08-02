@@ -47,6 +47,24 @@ public interface TermCompiler extends de.knowwe.core.compile.Compiler {
 	}
 
 	/**
+	 * Defines how the compiler should handle term references without definition
+	 */
+	enum ReferenceValidationMode {
+		/**
+		 * Invalid references are ignored (they are considered ok, no warning/error is generated).
+		 */
+		ignore,
+		/**
+		 * If a term reference is not valid, a warning is generated.
+		 */
+		warn,
+		/**
+		 * If a term reference is not valid, an error is generated.
+		 */
+		error
+	}
+
+	/**
 	 * Returns the {@link TerminologyManager} that will hold all defined
 	 * terminology of this compiler. Each compiler has its own terminology
 	 * manager that will be distinct by all other compilers.
@@ -64,6 +82,16 @@ public interface TermCompiler extends de.knowwe.core.compile.Compiler {
 	@NotNull
 	default MultiDefinitionMode getMultiDefinitionRegistrationMode() {
 		return MultiDefinitionMode.ignore;
+	}
+
+	/**
+	 * Defines how the compiler should handle invalid term references (undefined term).
+	 *
+	 * @return the current {@link ReferenceValidationMode} of this compiler.
+	 */
+	@NotNull
+	default ReferenceValidationMode getReferenceValidationMode() {
+		return ReferenceValidationMode.error;
 	}
 
 }

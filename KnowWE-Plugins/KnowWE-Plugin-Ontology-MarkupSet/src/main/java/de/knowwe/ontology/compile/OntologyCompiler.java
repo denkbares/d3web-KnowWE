@@ -35,6 +35,7 @@ import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -64,14 +65,16 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private final RepositoryConfig ruleSet;
 	private final String compilingArticle;
 	private final MultiDefinitionMode multiDefinitionMode;
+	private final ReferenceValidationMode referenceValidationMode;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
 							Class<? extends Type> compilingType,
-							RepositoryConfig ruleSet, MultiDefinitionMode multiDefMode) {
+							RepositoryConfig ruleSet, MultiDefinitionMode multiDefMode, ReferenceValidationMode referenceValidationMode) {
 		super(manager, compileSection, compilingType);
 		EventManager.getInstance().registerListener(this);
 		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
+		this.referenceValidationMode = referenceValidationMode == null ? ReferenceValidationMode.error : referenceValidationMode;
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
 		this.compilingArticle = compileSection.getTitle();
@@ -81,6 +84,12 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	@NotNull
 	public MultiDefinitionMode getMultiDefinitionRegistrationMode() {
 		return multiDefinitionMode;
+	}
+
+	@Override
+	@NotNull
+	public ReferenceValidationMode getReferenceValidationMode() {
+		return referenceValidationMode;
 	}
 
 	@Override

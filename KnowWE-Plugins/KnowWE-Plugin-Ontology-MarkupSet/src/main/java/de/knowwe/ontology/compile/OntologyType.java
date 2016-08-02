@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.compile;
 
+import java.sql.Ref;
 import java.util.List;
 
 import com.denkbares.semanticcore.config.RepositoryConfig;
@@ -33,8 +34,10 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import com.denkbares.events.EventManager;
+import de.knowwe.core.compile.terminology.TermCompiler.ReferenceValidationMode;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -67,6 +70,7 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String ANNOTATION_COMPILE = "uses";
 	public static final String ANNOTATION_RULE_SET = "ruleset";
 	public static final String ANNOTATION_MULTI_DEF_MODE = "multiDefinitionMode";
+	public static final String ANNOTATION_REFERENCE_VALIDATION_MODE = "referenceValidationMode";
 	public static final String ANNOTATION_COMMIT = "commit";
 	public static final String ANNOTATION_IMPORT = "import";
 	public static final String ANNOTATION_EXPORT = "export";
@@ -97,6 +101,9 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.class);
 		MARKUP.addAnnotationIcon(ANNOTATION_MULTI_DEF_MODE, Icon.ORDERED_LIST.addTitle("Multi-definition-mode"));
+
+		MARKUP.addAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE, false, ReferenceValidationMode.class);
+		MARKUP.addAnnotationIcon(ANNOTATION_REFERENCE_VALIDATION_MODE, Icon.ORDERED_LIST.addTitle("Reference-validation-mode"));
 
 		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new AttachmentType(false));
 		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class);
@@ -142,8 +149,10 @@ public class OntologyType extends DefaultMarkupType {
 			RepositoryConfig ruleSet = getRuleSet(ruleSetValue);
 			String multiDefModeValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_MULTI_DEF_MODE);
 			MultiDefinitionMode multiDefMode = getMultiDefinitionMode(multiDefModeValue);
+			String referenceValidationModeValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_REFERENCE_VALIDATION_MODE);
+			ReferenceValidationMode referenceValidationMode = getReferenceValidationMode(referenceValidationModeValue);
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
-					compiler.getPackageManager(), section, OntologyType.class, ruleSet, multiDefMode);
+					compiler.getPackageManager(), section, OntologyType.class, ruleSet, multiDefMode, referenceValidationMode);
 			compiler.getCompilerManager().addCompiler(5, ontologyCompiler);
 
 			//OntologyConstructCompiler constructCompiler = new OntologyConstructCompiler(ontologyCompiler);
@@ -152,6 +161,10 @@ public class OntologyType extends DefaultMarkupType {
 			if (ruleSetValue != null && ruleSet == null) {
 				throw CompilerMessage.warning("The rule set \"" + ruleSetValue + "\" does not exist.");
 			}
+		}
+
+		private ReferenceValidationMode getReferenceValidationMode(String referenceValidationMode) {
+			return parseEnum(ReferenceValidationMode.class, referenceValidationMode, "reference-validation-mode", ReferenceValidationMode.error);
 		}
 
 		private MultiDefinitionMode getMultiDefinitionMode(String multiDefModeValue) {

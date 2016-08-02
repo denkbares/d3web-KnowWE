@@ -20,6 +20,7 @@
 
 package de.knowwe.core.report;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -458,11 +459,15 @@ public final class Messages {
 	}
 
 	public static Message noSuchObjectError(String type, String name) {
+		return noSuchObjectError(type, name, Message.Type.ERROR);
+	}
+
+	public static Message noSuchObjectError(String type, String name, Message.Type messageType) {
 		if (name != null && name.isEmpty()) {
 			name = "empty String";
 		}
 		name = Strings.trimQuotes(name);
-		return Messages.error(type + " '" + name + "' not found");
+		return new Message(messageType, type + " '" + name + "' not found");
 	}
 
 	/**

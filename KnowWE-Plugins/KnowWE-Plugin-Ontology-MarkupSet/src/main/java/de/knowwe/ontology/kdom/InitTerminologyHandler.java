@@ -404,17 +404,17 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		String query = "SELECT ?resource \n" +
 				"WHERE {\n" +
 				"\t{ ?resource rdf:type rdfs:Resource } \n" +
-				"\t\tUNION {\t?resource rdf:type rdfs:Class }\n" +
+				"\t\tUNION { ?resource rdf:type rdfs:Class }\n" +
 				"\t\tUNION { ?resource rdf:type owl:Class }\n" +
-				"\tMINUS {\t?resource rdf:type rdf:Property } .\n" +
+				"\tMINUS { ?resource rdf:type rdf:Property } .\n" +
 				"\tFILTER (!isBlank(?resource)) .\n" +
 				"}";
 		registerQueryResult(compiler, rdf2GoCore, section, query, Resource.class);
 
 		query = "SELECT ?resource  WHERE {\n" +
 				"\t{ ?resource rdf:type rdf:Property } \n" +
-				"\t\tUNION {\t?resource rdf:type owl:ObjectProperty }\n" +
-				"\t\tUNION {\t?resource rdf:type rdfs:subPropertyOf } .\n" +
+				"\t\tUNION { ?resource rdf:type owl:ObjectProperty }\n" +
+				"\t\tUNION { ?resource rdf:type rdfs:subPropertyOf } .\n" +
 				"\tFILTER (!isBlank(?resource)) .\n" +
 				"}";
 		query = Rdf2GoUtils.createSparqlString(rdf2GoCore, query);

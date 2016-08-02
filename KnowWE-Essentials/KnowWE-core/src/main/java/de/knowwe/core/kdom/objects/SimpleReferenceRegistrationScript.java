@@ -20,6 +20,8 @@ package de.knowwe.core.kdom.objects;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.DestroyScript;
@@ -77,18 +79,23 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	 * @created 28.02.2012
 	 */
 	public Collection<Message> validateReference(C compiler, Section<Term> section) {
+		TermCompiler.@NotNull ReferenceValidationMode validationMode = compiler.getReferenceValidationMode();
+		if (validationMode == TermCompiler.ReferenceValidationMode.ignore) {
+			return Messages.noMessage();
+		}
 		TerminologyManager tHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		if (!tHandler.isDefinedTerm(termIdentifier)) {
-			return Messages.asList(getInvalidTermMessage(section));
+			return Messages.asList(getInvalidTermMessage(section, validationMode));
 		}
 		return Messages.noMessage();
 	}
 
-	private Message getInvalidTermMessage(Section<Term> section) {
+	private Message getInvalidTermMessage(Section<Term> section, TermCompiler.ReferenceValidationMode validationMode) {
 		return Messages.noSuchObjectError(
 				section.get().getTermObjectClass(section).getSimpleName(),
-				section.get().getTermName(section));
+				section.get().getTermName(section),
+				validationMode == TermCompiler.ReferenceValidationMode.warn ? Message.Type.WARNING : Message.Type.ERROR);
 	}
 
 	@Override
