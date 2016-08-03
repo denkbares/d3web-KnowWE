@@ -701,6 +701,13 @@
 					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
+				<dependency>
+					<!-- We don't need the right panel, setting the scope to test effectively removes it -->
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-RightPanel</artifactId>
+					<version>${knowwe.version}</version>
+					<scope>test</scope>
+				</dependency>
 			</dependencies>
 		</profile>
 
