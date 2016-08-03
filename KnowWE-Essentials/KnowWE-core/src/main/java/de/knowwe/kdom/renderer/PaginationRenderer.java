@@ -410,7 +410,7 @@ public class PaginationRenderer implements Renderer {
 				list.add(sortObject);
 			}
 			catch (JSONException e) {
-				e.printStackTrace();
+				Log.severe("Invalid JSON", e);
 			}
 		}
 
@@ -494,6 +494,7 @@ public class PaginationRenderer implements Renderer {
 	 * @param context the user context
 	 * @param filters created by {@link #createFilter(String, String...)}
 	 */
+	@SafeVarargs
 	public static void setFilterList(UserContext context, Pair<String, List<String>>... filters) {
 		List<Pair<String, List<String>>> filterList = new LinkedList<>();
 		Collections.addAll(filterList, filters);
