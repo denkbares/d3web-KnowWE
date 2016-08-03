@@ -15,12 +15,12 @@ import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
-import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyException;
 import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
+import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
@@ -148,8 +148,6 @@ public class SparqlResultRenderer {
 
 	private SparqlRenderResult renderQueryResultLocked(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
-
-
 		RenderResult renderResult = new RenderResult(user);
 		if (!qrt.iterator().hasNext()) {
 			renderResult.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
@@ -190,7 +188,7 @@ public class SparqlResultRenderer {
 				.append(isTree
 						? " class='sparqltable sparqltreetable'"
 						: " class='sparqltable'")
-				.append(isNavigation ? " sortable='multi'" : "")
+				.append(opts.isSorting() ? " sortable='multi'" : "")
 				.append(">");
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 		int column = 0;
@@ -208,8 +206,10 @@ public class SparqlResultRenderer {
 		PaginationRenderer.setResultSize(user, table.getSize());
 		Iterator<TableRow> iterator;
 		if (isNavigation) {
-			List<Pair<String, Boolean>> multiColumnSorting = PaginationRenderer.getMultiColumnSorting(section, user);
-			table.sortRows(multiColumnSorting);
+			if (opts.isSorting()) {
+				List<Pair<String, Boolean>> multiColumnSorting = PaginationRenderer.getMultiColumnSorting(section, user);
+				table.sortRows(multiColumnSorting);
+			}
 			int startRow = PaginationRenderer.getStartRow(section, user);
 			int count = PaginationRenderer.getCount(section, user);
 			if (count != Integer.MAX_VALUE) {
@@ -287,9 +287,11 @@ public class SparqlResultRenderer {
 		Section<DefaultMarkupType> defaultMarkupTypeSection = Sections.ancestor(section, DefaultMarkupType.class);
 		String annotation = DefaultMarkupType.getAnnotation(defaultMarkupTypeSection, SparqlMarkupType.RENDER_MODE);
 		if (annotation != null) {
-			RenderMode renderMode = RenderMode.valueOf(annotation);
-			if (renderMode != null) {
-				return renderMode;
+			try {
+				return RenderMode.valueOf(annotation);
+			}
+			catch (IllegalArgumentException e) {
+				Log.severe("Invalid render mode: " + annotation, e);
 			}
 		}
 		return RenderMode.HTML;
@@ -311,7 +313,7 @@ public class SparqlResultRenderer {
 			}
 			catch (PartialHierarchyException e) {
 				renderResult.appendException(e.getMessage(), e);
-				e.printStackTrace();
+				Log.severe("Exception while rendering sorted table.", e);
 			}
 		}
 
@@ -373,7 +375,7 @@ public class SparqlResultRenderer {
 		};
 	}
 
-	class ResultTableHierarchy implements PartialHierarchy<TableRow> {
+	private static class ResultTableHierarchy implements PartialHierarchy<TableRow> {
 
 		private final ResultTableModel data;
 
@@ -388,7 +390,7 @@ public class SparqlResultRenderer {
 		}
 
 		@SuppressWarnings("SimplifiableIfStatement")
-		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor, Set<TableRow> path)  throws PartialHierarchyException{
+		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor, Set<TableRow> path) throws PartialHierarchyException {
 
 			Value ascendorNode = ascendor.getValue(data.getVariables().get(0));
 			Value potentialAncestorNode = ancestor.getValue(data.getVariables().get(0));
@@ -407,7 +409,7 @@ public class SparqlResultRenderer {
 			path.add(ascendor);
 
 			TableRow parent = parentRows.iterator().next();
-			if(path.contains(parent)) {
+			if (path.contains(parent)) {
 				throw new PartialHierarchyException(parent, path);
 			}
 			return checkSuccessorshipRecursively(parent, ancestor, path);
