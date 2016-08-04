@@ -396,11 +396,6 @@
 					<version>${knowwe.version}</version>
 				</dependency>
 				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-d3web-ClosedSource</artifactId>
-					<version>${knowwe.version}</version>
-				</dependency>
-				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-SparqlEndpoint</artifactId>
 					<version>${knowwe.version}</version>
@@ -678,6 +673,22 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
+					<version>${knowwe.version}</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>avl</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>d3web-Plugin-AVL</artifactId>
+					<version>${d3web.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-LoadKnowledgeBase</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
 			</dependencies>
