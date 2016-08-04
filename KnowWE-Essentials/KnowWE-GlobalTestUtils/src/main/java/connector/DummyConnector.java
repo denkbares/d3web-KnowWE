@@ -86,7 +86,6 @@ public class DummyConnector implements WikiConnector {
 		return content;
 	}
 
-
 	@Override
 	public boolean doesArticleExist(String title) {
 		if (dummyPageProvider == null) {

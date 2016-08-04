@@ -99,6 +99,7 @@ public class DummyPageProvider {
 		if (wikiContent.isDirectory()) {
 
 			File[] wikiFiles = wikiContent.listFiles();
+			//noinspection ConstantConditions
 			Arrays.sort(wikiFiles);
 
 			for (File wikiFile : wikiFiles) {
@@ -153,10 +154,12 @@ public class DummyPageProvider {
 
 	private void cacheFileSystemAttachment(File wikiFile) {
 		File[] attributeFiles = wikiFile.listFiles();
+		//noinspection ConstantConditions
 		for (File attributeFile : attributeFiles) {
 			// filter for directories that contain attachments
 			if (isAttachmentDirectory(attributeFile)) {
 				File[] attachmentVersionFiles = attributeFile.listFiles();
+				//noinspection ConstantConditions
 				for (File attachmentVersionFile : attachmentVersionFiles) {
 					// filter for actual versions of the attachments
 					if (isAttachmentVersionFile(attachmentVersionFile)) {
@@ -188,12 +191,6 @@ public class DummyPageProvider {
 		return latestVersion;
 	}
 
-	/**
-	 * 
-	 * @created 11.04.2012
-	 * @param attachmentVersionFile
-	 * @return
-	 */
 	private boolean isAttachmentVersionFile(File attachmentVersionFile) {
 		return attachmentVersionFile.isFile()
 				&& attachmentVersionFile.getName().matches(
