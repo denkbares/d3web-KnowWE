@@ -32,6 +32,7 @@ import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -41,7 +42,6 @@ import de.d3web.testing.TestGroup;
 import de.d3web.testing.TestManager;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
-import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
@@ -172,8 +172,7 @@ public class CIRenderer {
 	 * @created 27.05.2010
 	 */
 	public void renderCurrentBuildStatus(RenderResult result) {
-		BuildResult build = dashboard.getLatestBuild();
-		if (build != null) renderBuildStatus(build.getOverallResult(), true, Icon.BULB, result);
+		renderBuildStatus(Type.SUCCESS, true, Icon.BULB, result);
 	}
 
 	/**
@@ -435,9 +434,11 @@ public class CIRenderer {
 		result.appendHtml("<div class='ci-header' id='ci-header_"
 				+ dashboard.getDashboardName() + "'>");
 
-		if (latestBuild != null || CIBuildManager.isRunning(dashboard)) {
-			CIRenderer renderer = dashboard.getRenderer();
+		CIRenderer renderer = dashboard.getRenderer();
+		if (latestBuild != null) {
 			renderer.renderBuildHealthReport(result);
+		}
+		if (CIBuildManager.isRunning(dashboard)) {
 			renderer.renderCurrentBuildStatus(result);
 		}
 		result.appendHtml("<span class='ci-name'>" + dashboardName + "</span>");
