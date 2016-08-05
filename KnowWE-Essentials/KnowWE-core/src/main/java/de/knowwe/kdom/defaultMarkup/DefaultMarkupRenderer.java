@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
@@ -96,7 +97,17 @@ public class DefaultMarkupRenderer implements Renderer {
 			renderMessages(section, content);
 		}
 		renderProgress(section, user, tools, content);
-		renderContents(section, user, content);
+		int validLength = content.length();
+		try {
+			renderContents(section, user, content);
+		}
+		catch (Throwable e) {
+			content.delete(validLength, content.length());
+			content.appendHtmlElement("span", "Error while rendering content, if the problem persists, "
+					+ "please contact your administrator.\n"
+					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error");
+			Log.severe("Exception while rendering content of " + section.get().getName(), e);
+		}
 
 		String cssClassName = "type_" + section.get().getName();
 
