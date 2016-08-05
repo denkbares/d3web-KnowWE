@@ -50,7 +50,9 @@ public class AttachmentManager implements EventListener {
 
 	public AttachmentManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
-		EventManager.getInstance().registerListener(this);
+		synchronized (EventManager.getInstance()) {
+			EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+		}
 	}
 
 	@Override

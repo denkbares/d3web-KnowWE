@@ -22,15 +22,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.Priority;
-import com.denkbares.events.Event;
-import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -136,7 +136,9 @@ public class AttachmentType extends AbstractType {
 
 		private AttachmentChangedListener(Section<AttachmentType> section) {
 			this.section = section;
-			EventManager.getInstance().registerListener(this);
+			synchronized (EventManager.getInstance()) {
+				EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+			}
 		}
 
 		@Override

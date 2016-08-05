@@ -35,7 +35,6 @@ import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -72,7 +71,9 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 							Class<? extends Type> compilingType,
 							RepositoryConfig ruleSet, MultiDefinitionMode multiDefMode, ReferenceValidationMode referenceValidationMode) {
 		super(manager, compileSection, compilingType);
-		EventManager.getInstance().registerListener(this);
+		synchronized (EventManager.getInstance()) {
+			EventManager.getInstance().registerListener(this, EventManager.RegistrationType.WEAK);
+		}
 		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
 		this.referenceValidationMode = referenceValidationMode == null ? ReferenceValidationMode.error : referenceValidationMode;
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
@@ -99,6 +100,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	@Override
 	public void destroy() {
+		EventManager.getInstance().unregister(this);
 		this.rdf2GoCore.destroy();
 	}
 
