@@ -14,6 +14,8 @@ import java.util.UUID;
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
+import org.openrdf.query.Binding;
+import org.openrdf.query.BindingSet;
 
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyException;
@@ -149,7 +151,7 @@ public class SparqlResultRenderer {
 	private SparqlRenderResult renderQueryResultLocked(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
 		RenderResult renderResult = new RenderResult(user);
-		if (!qrt.iterator().hasNext()) {
+		if (isEmpty(qrt)) {
 			renderResult.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
 			return new SparqlRenderResult(renderResult.toStringRaw());
 		}
@@ -281,6 +283,23 @@ public class SparqlResultRenderer {
 		renderResult.appendHtml("</table>");
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());
+	}
+
+	private boolean isEmpty(CachedTupleQueryResult qrt) {
+		if (qrt.getBindingSets().isEmpty()) return true;
+		if (qrt.getBindingSets().size() == 1) {
+			// some queries return one result with only blank entries, we ignore them as their rendering is weird
+			BindingSet bindings = qrt.getBindingSets().get(0);
+			boolean empty = true;
+			for (Binding binding : bindings) {
+				if (!Strings.isBlank(binding.getValue().stringValue())) {
+					empty = false;
+					break;
+				}
+			}
+			if (empty) return true;
+		}
+		return false;
 	}
 
 	private RenderMode getRenderMode(Section<?> section) {
