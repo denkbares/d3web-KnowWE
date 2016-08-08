@@ -86,14 +86,14 @@ KNOWWE.notification = function() {
 
 		_add : function(severity, title, details, id) {
 			if (!id) id = idGenerator++;
-			KNOWWE.notification.messages.push({
+			messages.push({
 				severity : severity,
 				title : title,
 				details : details,
 				id : id
 			});
 			KNOWWE.notification
-				._select(KNOWWE.notification.messages.length - 1);
+				._select(messages.length - 1);
 		},
 
 		/**
@@ -102,7 +102,7 @@ KNOWWE.notification = function() {
 		_select : function(index) {
 
 			KNOWWE.notification.activeIndex = index;
-			var message = KNOWWE.notification.messages[index];
+			var message = messages[index];
 			var dom = KNOWWE.notification._getDom();
 
 			// set colors
@@ -141,10 +141,10 @@ KNOWWE.notification = function() {
 			jq$('#KnowWENotificationMessage').html(message.details);
 
 			// counter
-			if (KNOWWE.notification.messages.length > 1) {
+			if (messages.length > 1) {
 				var counterHTML = "";
 				var counter = '&nbsp;<span>(' + (index + 1) + '/'
-					+ KNOWWE.notification.messages.length + ')</span>';
+					+ messages.length + ')</span>';
 				var next = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
 					+ (index + 1) + ');">&gt;</a>';
 				var prev = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
@@ -153,11 +153,11 @@ KNOWWE.notification = function() {
 					counterHTML += counter;
 					counterHTML += next;
 				} else if (index >= 0
-					&& index < KNOWWE.notification.messages.length - 1) {
+					&& index < messages.length - 1) {
 					counterHTML += prev;
 					counterHTML += counter;
 					counterHTML += next;
-				} else if (index == KNOWWE.notification.messages.length - 1) {
+				} else if (index == messages.length - 1) {
 					counterHTML += prev;
 					counterHTML += counter;
 				}
@@ -179,7 +179,6 @@ KNOWWE.notification = function() {
 		 * Removes a specified notification both from server and client
 		 */
 		removeNotification : function(id) {
-			var messages = KNOWWE.notification.messages;
 			var index = -1;
 			for (var i = 0; i < messages.length; i++) {
 				if (messages[i].id == id) {
@@ -220,7 +219,6 @@ KNOWWE.notification = function() {
 		 * Loads all notifications from the server and displays them.
 		 */
 		loadNotifications : function() {
-			KNOWWE.notification.messages = [];
 			var params = {
 				action : 'GetNotificationsAction'
 			};
@@ -245,8 +243,6 @@ KNOWWE.notification = function() {
 										notification.id);
 								}
 							}
-						} else {
-							jq$('#KnowWENotificationDom').hide();
 						}
 					}
 				}
