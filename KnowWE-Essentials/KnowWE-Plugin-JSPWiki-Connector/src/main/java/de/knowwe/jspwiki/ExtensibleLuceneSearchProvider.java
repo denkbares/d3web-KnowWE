@@ -3,6 +3,7 @@ package de.knowwe.jspwiki;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.wiki.WikiContext;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.search.LuceneSearchProvider;
 import org.apache.wiki.search.SearchResult;
@@ -22,8 +23,8 @@ public class ExtensibleLuceneSearchProvider extends LuceneSearchProvider {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<SearchResult> findPages(String query, int flags) throws ProviderException {
-		Collection<SearchResult> results = super.findPages(query, flags);
+	public Collection<SearchResult> findPages(String query, int flags, WikiContext wikiContext ) throws ProviderException {
+		Collection<SearchResult> results = super.findPages(query, flags, wikiContext );
 
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID,
