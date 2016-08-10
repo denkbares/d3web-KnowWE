@@ -476,7 +476,11 @@ jspwiki.plugin.externalJars =
 #  should work fine. In addition to the properties below, you may also
 #  want to modify the security policy file WEB-INF/jspwiki.policy. See
 #  the policy file for more details.
-#
+
+
+# Define the policy file here, relative to the WEB-INF folder!
+jspwiki.policy.file = jspwiki.policy
+
 #  AUTHENTICATION
 #
 #  For authentication, JSPWiki uses JAAS (Java Authentication and Authorization
