@@ -30,6 +30,7 @@ public class Edge {
 	private final ConceptNode subject;
 	private final String predicate;
 	private final ConceptNode object;
+	private boolean isBidirectionalEdge;
 
 	public boolean isOuter() {
 		return subject.isOuter() || object.isOuter();
@@ -39,6 +40,7 @@ public class Edge {
 		this.subject = s;
 		this.predicate = p;
 		this.object = o;
+		this.setBidirectionalEdge(false);
 	}
 
 	@Override
@@ -74,4 +76,11 @@ public class Edge {
 		return object;
 	}
 
+	public boolean isBidirectionalEdge() {
+		return isBidirectionalEdge;
+	}
+
+	public void setBidirectionalEdge(boolean bidirectionalEdge) {
+		isBidirectionalEdge = bidirectionalEdge;
+	}
 }

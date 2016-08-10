@@ -3,23 +3,17 @@ sep="+25,25";
 splines = true;
 overlap=false;
 graph [ rankdir="LR" ]
-"si:maggie"[  shape="box"  style="rounded" label="Maggie Simpson" ];
 "si:bart"[  shape="box"  style="rounded" label="Bart Simpson" ];
 "si:lisa"[  shape="box"  style="rounded" label="Lisa Simpson" ];
+"si:maggie"[  shape="box"  style="rounded" label="Maggie Simpson" ];
 "si:marge"[  shape="box"  style="rounded,bold" label=<<U>Marge Simpson</U>> ];
-"si:lisa" -> "si:lisa" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
 "si:maggie" -> "si:marge" [ label = "si:relatedWith" arrowtail="normal"  color="black"  ];
 "si:lisa" -> "si:marge" [ label = "si:relatedWith" arrowtail="normal"  color="black"  ];
 "si:bart" -> "si:marge" [ label = "si:relatedWith" arrowtail="normal"  color="black"  ];
-"si:lisa" -> "si:bart" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
-"si:bart" -> "si:lisa" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
-"si:lisa" -> "si:maggie" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
-"si:maggie" -> "si:lisa" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:lisa" -> "si:bart" [ dir="both" label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:lisa" -> "si:maggie" [ dir="both" label = "si:sibling" arrowtail="normal"  color="black"  ];
 "si:marge" -> "si:bart" [ label = "si:child" arrowtail="normal"  color="black"  ];
 "si:marge" -> "si:lisa" [ label = "si:child" arrowtail="normal"  color="black"  ];
-"si:bart" -> "si:bart" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
-"si:maggie" -> "si:maggie" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
-"si:maggie" -> "si:bart" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
-"si:bart" -> "si:maggie" [ label = "si:sibling" arrowtail="normal"  color="black"  ];
+"si:maggie" -> "si:bart" [ dir="both" label = "si:sibling" arrowtail="normal"  color="black"  ];
 "si:marge" -> "si:maggie" [ label = "si:child" arrowtail="normal"  color="black"  ];
 }

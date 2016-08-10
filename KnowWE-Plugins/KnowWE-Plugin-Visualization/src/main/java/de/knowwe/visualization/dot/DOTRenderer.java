@@ -55,8 +55,8 @@ import de.knowwe.visualization.util.Utils;
 public class DOTRenderer {
 
 	// appearance of outer node
-	public static final String outerLabel = "[ shape=\"none\" fontsize=\"0\" fontcolor=\"white\" ];\n";
-	public static final int TIMEOUT = 50000;
+	private static final String outerLabel = "[ shape=\"none\" fontsize=\"0\" fontcolor=\"white\" ];\n";
+	private static final int TIMEOUT = 50000;
 
 	private static final Set<String> cleanedCacheDirectories = new HashSet<>();
 
@@ -64,7 +64,7 @@ public class DOTRenderer {
 		return getDirectoryPath(config) + config.getCacheFileID();
 	}
 
-	public static String getDirectoryPath(Config config) {
+	private static String getDirectoryPath(Config config) {
 		String path = config.getCacheDirectoryPath() + FileUtils.FILE_SEPARATOR + FileUtils.KNOWWEEXTENSION_FOLDER + FileUtils.FILE_SEPARATOR
 				+ FileUtils.TMP_FOLDER
 				+ FileUtils.FILE_SEPARATOR;
@@ -75,10 +75,11 @@ public class DOTRenderer {
 	/**
 	 * Cleans up all cache directories once on startup.
 	 */
-	protected static void handleCleanup(String path) {
+	private static void handleCleanup(String path) {
 		if (cleanedCacheDirectories.add(path)) {
 			File dir = new File(path);
 			if (dir.exists() && dir.isDirectory()) {
+				//noinspection ConstantConditions
 				for (File file1 : dir.listFiles()) {
 					//noinspection ResultOfMethodCallIgnored
 					file1.delete();
@@ -108,16 +109,24 @@ public class DOTRenderer {
 	 *
 	 * @created 06.09.2012
 	 */
-	private static String innerRelation(String label, String color) {
+	private static String innerRelation(String label, String color, boolean isBiDirectional) {
 		// Basic Relation Attributes
 		String arrowtail = "normal";
+		String dir = "[ ";
 
 		if (color == null) {
 			// black is default
 			color = "black";
 		}
-		return "[ label = \"" + label
+
+		if (isBiDirectional) {
+			dir += "dir=\"both\" ";
+		}
+
+		return dir
+				+ "label = \"" + label
 				+ "\"" + buildRelation(arrowtail, color) + " ];\n";
+
 	}
 
 	/**
@@ -125,37 +134,40 @@ public class DOTRenderer {
 	 *
 	 * @created 18.08.2012
 	 */
-	public static String createDotSources(SubGraphData data, Config config) {
+	static String createDotSources(SubGraphData data, Config config) {
+
+		// we clean up the graph before rendering (e. g. undesired cycles etc)
+		simplifyGraph(data);
+
 		String dotSource = "digraph {\n";
 
 		// printing title of graph top left of visualization
-		if(config.getTitle() != null) {
-			dotSource += "graph [label = \""+config.getTitle()+" ("+new Date()+")\", labelloc = \"t\", labeljust = \"left\", fontsize = 10];\n";
+		if (config.getTitle() != null) {
+			dotSource += "graph [label = \"" + config.getTitle() + " (" + new Date() + ")\", labelloc = \"t\", labeljust = \"left\", fontsize = 10];\n";
 		}
 
 		//only useful for neato, ignored for dot
 		dotSource += "sep=\"+25,25\";\n";
 		dotSource += "splines = true;\n";
-		if (!Strings.isBlank(config.getOverlap())) {
-			dotSource += "overlap=" + config.getOverlap() + ";\n";
+		if (Strings.isBlank(config.getOverlap())) {
+			dotSource += "overlap=false;\n";
 		}
 		else {
-			dotSource += "overlap=false;\n";
+			dotSource += "overlap=" + config.getOverlap() + ";\n";
 		}
 
 		// using rankSame constraints for custom layouting
 		String rankSameValue = config.getRankSame();
-		if (!Strings.isBlank(rankSameValue)) {
-			String valueResult = rankSameValue;
-			if (rankSameValue.contains(",")) {
-				String[] values = rankSameValue.split(",");
-				valueResult = "";
-				for (String value : values) {
-					valueResult += "\"" + value.trim() + "\" ";
-				}
+		if (!Strings.isBlank(rankSameValue) && rankSameValue.contains(",")) {
+			StringBuilder sb = new StringBuilder();
+			String[] values = rankSameValue.split(",");
+
+			for (String value : values) {
+				sb.append("\"").append(value.trim()).append("\" ");
 			}
+
 			//{rank=same; q4 q3}
-			dotSource += "{rank=same; " + valueResult + "}\n";
+			dotSource += "{rank=same; " + sb + "}\n";
 		}
 
 		// set graph size and rankDir
@@ -170,6 +182,72 @@ public class DOTRenderer {
 		return dotSource;
 	}
 
+	@SuppressWarnings("Duplicates")
+	private static Set<Edge> getDoubleEdges(Set<Edge> edges) {
+		Set<Edge> doubleEdges = new HashSet<>();
+		ConceptNode o, s;
+		Edge e1, e2;
+
+		//look up every Edge in my SubGraphData
+		for (int i = 0; i < edges.size() - 1; i++) {
+			//for (Edge e1 : myEdges) {
+			//memorize Object & Subject
+			e1 = (Edge) edges.toArray()[i];
+			o = e1.getObject();
+			s = e1.getSubject();
+
+			//look up every OTHER Edge
+			for (int j = i + 1; j < edges.size(); j++) {
+				//for (Edge e2 : myEdges) {
+				// If subject == object (both directions) AND predicates are the same
+				{
+					e2 = (Edge) edges.toArray()[j];
+
+					if (o.equals(e2.getSubject())
+							&& s.equals(e2.getObject())
+							&& e1.getPredicate().equals(e2.getPredicate())) {
+						//mark first edge as bidirectional and add second Edge to redundant Set
+						e1.setBidirectionalEdge(true);
+						doubleEdges.add(e2);
+//						data.removeEdge(e2);
+					}
+				}
+			}
+		}
+
+		return doubleEdges;
+	}
+
+	private static Set<Edge> getRecursiveEdges(Set<Edge> edges) {
+		Set<Edge> recursiveEdges = new HashSet<>();
+		ConceptNode s, o;
+
+		for (Edge e : edges) {
+			s = e.getSubject();
+			o = e.getObject();
+
+			if (s.equals(o)) {
+				recursiveEdges.add(e);
+			}
+		}
+
+		return recursiveEdges;
+	}
+
+	private static void simplifyGraph(SubGraphData data) {
+		Set<Edge> myEdges = data.getAllEdges();
+		Set<Edge> redundantEdges;
+
+		//receive all double edges
+		redundantEdges = getDoubleEdges(myEdges);
+
+		//receive and add all recursive edges
+		redundantEdges.addAll(getRecursiveEdges(myEdges));
+
+		// loop through redundant Set to remove all redundant Edges
+		redundantEdges.forEach(data::removeEdge);
+	}
+
 	private static String generateGraphSource(SubGraphData data, Config config) {
 		Collection<ConceptNode> dotSourceLabel = data.getConceptDeclarations();
 		StringBuilder dotSource = new StringBuilder();
@@ -181,7 +259,7 @@ public class DOTRenderer {
 			appendNodeDefinitionLineToSource(data, config, dotSource, node);
 			// if the literal mode is 'TABLE', the literals are contained within the node
 			// if the literal mode is 'NODES' we need to define literal nodes from the clusters
-			if(Config.LiteralMode.NODES == config.getLiteralMode()) {
+			if (Config.LiteralMode.NODES == config.getLiteralMode()) {
 				Set<Edge> clusterEdges = clusters.get(node);
 				if (clusterEdges != null) {
 					for (Edge clusterEdge : clusterEdges) {
@@ -204,11 +282,11 @@ public class DOTRenderer {
 		}
 
 		// add literals contained in the clusters if the literal mode is 'NODES'
-		if(Config.LiteralMode.NODES == config.getLiteralMode()) {
+		if (Config.LiteralMode.NODES == config.getLiteralMode()) {
 			for (ConceptNode node : dotSourceLabel) {
 				if ((node.getType() != NODE_TYPE.LITERAL)) {
 					Set<Edge> edges = clusters.get(node);
-					if(edges != null) {
+					if (edges != null) {
 						for (Edge key : edges) {
 							appendEdgeSource(config, dotSource, key);
 						}
@@ -253,7 +331,7 @@ public class DOTRenderer {
 		final Map<ConceptNode, Set<Edge>> clusters = data.getClusters();
 		final Set<Edge> edges = clusters.get(node);
 		String label = node.getName();
-		if(!"false".equalsIgnoreCase(config.getShowLabels())) {
+		if (!"false".equalsIgnoreCase(config.getShowLabels())) {
 			label = node.getConceptLabel();
 		}
 		String nodeLabel = createNodeLabel(escapeDot(label), fontStyle);
@@ -315,18 +393,20 @@ public class DOTRenderer {
 		return text;
 	}
 
-
 	private static String createNodeLabel(String name, RenderingStyle.Fontstyle f) {
 		// prepareLabel adds linebreaks where necessary and possible
 		// however that is not required as we generate only svg
 		//String nodeLabel = Utils.prepareLabel(name);
 		String nodeLabel = Utils.clean(name, Utils.LINE_BREAK);
-		if (f != RenderingStyle.Fontstyle.NORMAL) {
-			nodeLabel = styleLabel(nodeLabel, f);
-		}
-		else {
+		if (f == RenderingStyle.Fontstyle.NORMAL) {
 			nodeLabel = "\"" + nodeLabel + "\"";
 		}
+		else {
+			nodeLabel = styleLabel(nodeLabel, f);
+		}
+
+		Log.info("dwfsd");
+		//System.out.println("dwfsd");
 		return nodeLabel;
 	}
 
@@ -345,8 +425,10 @@ public class DOTRenderer {
 	}
 
 	private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key) {
+//		private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key, boolean isBiDirectional) {
 		String label = DOTRenderer.innerRelation(key.getPredicate(),
-				config.getRelationColors().get(key.getPredicate()));
+				config.getRelationColors().get(key.getPredicate()),
+				key.isBidirectionalEdge());
 		if (key.isOuter()) {
 			boolean arrowHead = key.getSubject().isOuter();
 			label = DOTRenderer.getOuterEdgeLabel(key.getPredicate(), arrowHead);
@@ -401,23 +483,8 @@ public class DOTRenderer {
 		String ratio = "";
 
 		if (width != null || height != null) {
-			if (width != null) {
-				if (width.matches("\\d+px")) {
-					width = width.substring(0, width.length() - 2);
-				}
-				if (width.matches("\\d+")) {
-					width = String.valueOf(Double.valueOf(width) * 0.010415597);
-				}
-			}
-
-			if (height != null) {
-				if (height.matches("\\d+px")) {
-					height = height.substring(0, height.length() - 2);
-				}
-				if (height.matches("\\d+")) {
-					height = String.valueOf(Double.valueOf(height) * 0.010415597);
-				}
-			}
+			width = getSizeProperties(width);
+			height = getSizeProperties(height);
 
 			if (height != null && width != null) {
 				// ratio = " ratio=\"" + Double.valueOf(height)/Double.valueOf(width) + "\" ";
@@ -461,6 +528,18 @@ public class DOTRenderer {
 		return source;
 	}
 
+	private static String getSizeProperties(String property) {
+		if (property != null) {
+			if (property.matches("\\d+px")) {
+				property = property.substring(0, property.length() - 2);
+			}
+			if (property.matches("\\d+")) {
+				property = String.valueOf(Double.valueOf(property) * 0.010415597);
+			}
+		}
+		return property;
+	}
+
 	private static String calculateAutomaticGraphSize(int numberOfConcepts) {
 		if (numberOfConcepts == 1) return "1";
 		if (numberOfConcepts == 2) return "3";
@@ -472,13 +551,16 @@ public class DOTRenderer {
 	 *
 	 * @created 20.08.2012
 	 */
-	public static File[] createAndWriteFiles(Config config, String dotSource) {
+	static File[] createAndWriteFiles(Config config, String dotSource) {
 		File dotFile = createFile("dot", getFilePath(config));
 		File svgFile = createFile("svg", getFilePath(config));
 		// File pngFile = createFile("png", filePath);
 
-		dotFile.delete();
-		svgFile.delete();
+		boolean dotFileDeleted = dotFile.delete();
+		boolean svgFileDeleted = svgFile.delete();
+		if (!svgFileDeleted) {
+			Log.warning("Could not delete file." + svgFile.getName());
+		}
 		// pngFile.delete();
 
 		FileUtils.writeFile(dotFile, dotSource);
@@ -498,7 +580,7 @@ public class DOTRenderer {
 		return new File[] { dotFile, svgFile };
 	}
 
-	protected static String[] getSVGCommand(Config config, File dot, File svg) {
+	private static String[] getSVGCommand(Config config, File dot, File svg) {
 		String dotApp = config.getDotApp();
 		String layout = config.getLayout();
 		if (layout != null) {
@@ -529,7 +611,7 @@ public class DOTRenderer {
 	/**
 	 * Returns true, if a valid dot installation can be found.
 	 */
-	public static boolean checkDotInstallation(Config config) {
+	static boolean checkDotInstallation(Config config) {
 		String dotApp = config.getDotApp();
 		try {
 			ProcessBuilder builder = new ProcessBuilder(dotApp, "-V");
