@@ -223,6 +223,14 @@ jspwiki.diffProvider = TraditionalDiffProvider
 #
 #jspwiki.referenceStyle=relative
 
+#  Determines if the references in the wiki are serialized or not.
+#  If this is set to false, the startup time will be a bit slower, but
+#  changes to the wikiContent will notably faster, especially for large wikis.
+#
+#  Possible values are true/false.
+#
+jspwiki.referenceManager.serialize=true
+
 #
 #  Determines which character encoding JSPWiki should use.  If you want
 #  to support all languages in your Wiki, you probably want to enable
