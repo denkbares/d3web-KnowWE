@@ -31,9 +31,9 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.CompilerManager;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.event.ArticleRegisteredEvent;
@@ -182,6 +182,7 @@ public class DefaultArticleManager implements ArticleManager {
 		if (CompilerManager.isCompileThread()) {
 			throw new IllegalStateException("Cannot register articles during compilation");
 		}
+		//noinspection LockAcquiredButNotSafelyReleased
 		mainLock.lock();
 	}
 
