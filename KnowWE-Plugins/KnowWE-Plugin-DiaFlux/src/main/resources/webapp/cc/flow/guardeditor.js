@@ -12,7 +12,7 @@ Guard.prototype.toXML = function(rule) {
 
 			var action = new Action(nodeModel.action.markup, nodeModel.action.expression);
 
-			return "eval(" + action.getInfoObjectName() + " " + match[1] + match[2] + ")";
+			return "eval(" + IdentifierUtils.quoteIfNeeded(action.getInfoObjectName()) + " " + match[1] + match[2] + ")";
 		}
 
 	}
