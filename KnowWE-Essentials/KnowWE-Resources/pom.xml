@@ -25,6 +25,8 @@
 							<artifactId>jspwiki-knowwe-war</artifactId>
 							<excludes>
 								<exclude>WEB-INF/lib/commons-*.jar</exclude>
+								<exclude>WEB-INF/lib/slf4j-log4j12-*.jar</exclude>
+								<exclude>WEB-INF/lib/slf4j-api-*.jar</exclude>
 							</excludes>
 						</overlay>
 					</overlays>
@@ -83,6 +85,10 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
