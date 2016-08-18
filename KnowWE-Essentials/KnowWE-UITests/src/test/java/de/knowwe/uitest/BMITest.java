@@ -28,13 +28,10 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.Platform;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -61,37 +58,28 @@ public class BMITest {
 
 	@Test
 	public void testBmi() throws Exception {
-		driver.get("http://www.d3web.de/Wiki.jsp?page=Body-Mass-Index");
+		driver.get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=Body-Mass-Index");
 		By reset = By.className("reset");
 
+		String currentStatus = UITestUtils.getCurrentStatus(driver);
 		driver.findElement(reset).click();
-		awaitRerender(reset);
+		UITestUtils.awaitStatusChange(driver, currentStatus);
 
+		currentStatus = UITestUtils.getCurrentStatus(driver);
 		driver.findElements(By.className("numinput")).get(0).sendKeys("2" + Keys.ENTER);
-		awaitRerender(reset);
+		UITestUtils.awaitStatusChange(driver, currentStatus);
 
+		currentStatus = UITestUtils.getCurrentStatus(driver);
 		List<WebElement> numinput = driver.findElements(By.className("numinput"));
 		numinput.get(1).sendKeys("100" + Keys.ENTER);
-		awaitRerender(reset);
+		UITestUtils.awaitStatusChange(driver, currentStatus);
 
 		assertEquals("25", driver.findElements(By.className("numinput")).get(2).getAttribute("value"));
 		assertEquals("Normal weight", driver.findElement(By.className("SOLUTION-ESTABLISHED")).getText());
 		assertEquals("bmi = 25", driver.findElement(By.className("ABSTRACTION")).getText());
 	}
 
-	private void awaitRerender(By by) {
-		doWait(by);
-		doWait(by);
-	}
 
-	private void doWait(By by) {
-		try {
-			new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(driver.findElement(by)));
-		} catch (TimeoutException ignore) {
-			System.out.println("Staleness check timed out!");
-		}
-		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
-	}
 
 	@After
 	public void tearDown() throws Exception {

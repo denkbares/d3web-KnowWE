@@ -56,4 +56,9 @@ public class ChromeDiaFluxSystemTest extends DiaFluxSystemTest {
 	protected WebDriver getDriver() {
 		return driver;
 	}
+
+	@Override
+	public String getTestName() {
+		return "ST-BMI-Chrome";
+	}
 }

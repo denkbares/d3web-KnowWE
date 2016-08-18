@@ -70,19 +70,21 @@ public abstract class DiaFluxSystemTest {
 	@Before
 	public void load() throws Exception {
 		if (isDevMode()) {
-			getDriver().get("http://localhost:8080/KnowWE/Wiki.jsp?page=ST-BMI");
+			getDriver().get("http://localhost:8080/KnowWE/Wiki.jsp?page=" + getTestName());
 		}
 		else {
-			getDriver().get("https://www.d3web.de/Wiki.jsp?page=ST-BMI");
+			getDriver().get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=" + getTestName());
 			logIn();
 		}
 	}
 
+	public abstract String getTestName();
+
 	@Rule
-	public RetryRule retry = new RetryRule(1);
+	public RetryRule retry = new RetryRule(2);
 
 	private void logIn() {
-		UITestUtils.logIn(getDriver(), "test", "8bGNmPjn", UseCase.NORMAL_PAGE);
+		UITestUtils.logIn(getDriver(), "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", UseCase.NORMAL_PAGE);
 	}
 
 	@Test
@@ -739,7 +741,7 @@ public abstract class DiaFluxSystemTest {
 	}
 
 	private String readFile(String fileName) throws IOException {
-		return Strings.readFile(RESOURCE_DIR + fileName);
+		return Strings.readFile(RESOURCE_DIR + fileName).replace("%%package systemtest", "%%package systemtest" + getTestName());
 	}
 
 }
