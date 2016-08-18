@@ -35,6 +35,7 @@
 				<exclude name="KnowWE-Plugin-AugmentationEdit/**" />
 				<exclude name="KnowWE-Plugin-DenkbaresTmp/**" />
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
+				<exclude name="KnowWE-Plugin-ExperienceDatabase/**" />
 
 				<!-- for performance reasons... -->
 				<exclude name="KnowWE-Plugin-XSL/**" />
@@ -54,5 +55,4 @@
 			<cutdirsmapper dirs="5" />
 		</copy>
 	</target>
-
 </project>
