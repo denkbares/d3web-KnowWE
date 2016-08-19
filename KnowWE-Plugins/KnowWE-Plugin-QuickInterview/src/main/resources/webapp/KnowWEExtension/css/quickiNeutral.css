@@ -175,7 +175,7 @@
 
 /* styling of input box */
 .quickinterview .numinput {
-	height: 12px;
+	/*height: 12px;*/
 	float: left;
 	margin-left: 0;
 	cursor: pointer;

@@ -124,6 +124,7 @@
 	list-style: none;
 	padding: 0.25em;
 	white-space: nowrap;
+	margin-bottom: 0;
 }
 
 .defaultMarkupFrame .markupMenuItem > img {
@@ -135,6 +136,7 @@
 	padding: 0.25em;
 	margin: -0.25em;
 	color: #036;
+	border: 0;
 }
 
 .defaultMarkupFrame .customMenuItem a.markupMenuItem {
@@ -361,6 +363,7 @@ span.markupMenuItem {
 	list-style: none;
 	padding: 0.25em;
 	white-space: nowrap;
+	margin-bottom: 0;
 }
 
 .toolMenuFrame .markupMenuItem > img {
@@ -371,6 +374,7 @@ span.markupMenuItem {
 .toolMenuFrame .markupMenuItem a.markupMenuItem {
 	padding: 0.25em;
 	margin: -0.25em;
+	border: 0;
 }
 
 .InlineTool a.markupMenuInlineSpacer {
@@ -388,6 +392,7 @@ span.markupMenuItem {
 	margin: 0em;
 	margin-left: -0.25em;
 	margin-right: -0.25em;
+	border: 0;
 }
 
 .toolMenuFrame a.markupMenuItem:hover {
