@@ -411,7 +411,7 @@ KNOWWE.plugin.quicki = function() {
 		 * Parameters: event - the event firing the action
 		 */
 		numAnswerClicked : function(event) {
-			event = new Event(event).stopPropagation();
+			event.stopPropagation();
 			var rel = eval("(" + _KE.target(event).getAttribute('rel') + ")");
 
 			// get the provided value if any is provided

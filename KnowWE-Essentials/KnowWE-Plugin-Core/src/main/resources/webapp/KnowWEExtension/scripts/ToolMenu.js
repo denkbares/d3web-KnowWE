@@ -163,8 +163,18 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
 				menu.show();
 				var menuBottom = menu[0].getBoundingClientRect().bottom;
 				var windowHeight = jq$(window).height();
-				if (menuBottom > windowHeight) {
-					menu.css("margin-top", "-" + (menuBottom - windowHeight) + "px");
+				var footerHeightVisible = 0;
+				if (jq$('.footer').first()) {
+					//Calculate user's scroll position from bottom
+					var scrollPosition = window.pageYOffset;
+					var windowSize     = window.innerHeight;
+					var bodyHeight     = document.body.offsetHeight;
+					var distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
+
+					footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
+				}
+				if (menuBottom > (windowHeight - footerHeightVisible)) {
+					menu.css("margin-top", "-" + (menuBottom - (windowHeight - footerHeightVisible)) + "px");
 				}
 				menu.stop().animate({opacity : 0.9}, 100);
 			}

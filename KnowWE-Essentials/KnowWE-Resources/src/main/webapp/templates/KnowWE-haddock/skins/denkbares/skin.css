@@ -248,6 +248,10 @@ hr, .hr, .clearbox {
 	clear: both;
 }
 
+blockquote p {
+	font-size: inherit;
+}
+
 #favorites hr {
 	background-image: url(left-menu-break.png);
 	background-position: center;
@@ -596,7 +600,7 @@ a.footnote {
 
 .quote {
 	border-left: 4px solid #bbb;
-	padding-left: 3em;
+	padding-left: 2em;
 	margin: 0 0.5em;
 }
 

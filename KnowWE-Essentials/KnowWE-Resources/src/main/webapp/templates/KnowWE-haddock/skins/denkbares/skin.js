@@ -349,7 +349,7 @@ DenkbaresSkin.scrollTop = function() {
 	return Math.min(Math.max(jq$(window).scrollTop(), 0), maxScroll);
 };
 
-DenkbaresSkin.addFavoriteToggle = function() {
+/*DenkbaresSkin.addFavoriteToggle = function() {
 	jq$('#page').before("<div id='favorites-toggle'></div>");
 	jq$('#menu-pagecontent').before("<div id='favorites-toggle-button' title='Hide left menu'>" +
 	"<i class='fa fa-angle-double-left'></i></div>");
@@ -372,11 +372,11 @@ DenkbaresSkin.addFavoriteToggle = function() {
 	setTogglePosition();
 	jq$('#favorites-toggle').unbind('click').click(DenkbaresSkin.toggleFavorites);
 	jq$('#favorites-toggle-button').unbind('click').click(DenkbaresSkin.toggleFavorites);
-};
+};*/
 
 
 jq$(document).ready(function() {
-	DenkbaresSkin.addFavoriteToggle();
+	//DenkbaresSkin.addFavoriteToggle();
 	DenkbaresSkin.cleanTrail();
 	//DenkbaresSkin.initPageScroll();
 
