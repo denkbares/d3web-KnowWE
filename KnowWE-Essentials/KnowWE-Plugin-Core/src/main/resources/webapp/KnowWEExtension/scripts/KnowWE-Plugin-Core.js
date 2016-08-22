@@ -361,9 +361,10 @@ KNOWWE.plugin.renaming = function() {
 
 		if (jq$("#compositeEdit").length > 0) {
 			viewRoot = "#compositeEdit ";
-		}
-		else {
+		} else if (jq$("#pagecontent").length > 0) {
 			viewRoot = "#pagecontent ";
+		} else {
+			viewRoot = ".page-content "; // haddock template
 		}
 
 	}
