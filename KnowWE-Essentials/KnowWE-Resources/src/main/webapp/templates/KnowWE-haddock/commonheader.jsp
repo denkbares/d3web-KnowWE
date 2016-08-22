@@ -59,7 +59,7 @@ String.I18N.PREFIX = "javascript.";
 <wiki:IncludeResources type="inlinecss" />
 
 <%-- JAVASCRIPT --%>
-
+<script type="text/javascript" src="<wiki:Link format='url' jsp='scripts/mootools.js'/>"></script>
 <script src="<wiki:Link format='url' jsp='scripts/haddock.js'/>"></script>
 
 <wiki:IncludeResources type="script"/>

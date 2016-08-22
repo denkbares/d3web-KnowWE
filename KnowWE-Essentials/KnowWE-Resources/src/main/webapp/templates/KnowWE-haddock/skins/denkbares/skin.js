@@ -228,7 +228,7 @@ DenkbaresSkin.initPageScroll = function() {
 	DenkbaresSkin.originalPageOffset = jq$("#page").offset().top;
 };
 
-DenkbaresSkin.scrollPage = function() {
+/*DenkbaresSkin.scrollPage = function() {
 	var page = jq$("#page");
 	var body = jq$('body');
 	var scrollTop = DenkbaresSkin.scrollTop();
@@ -255,7 +255,7 @@ DenkbaresSkin.scrollPage = function() {
 		});
 		body.width("auto");
 	}
-};
+};*/
 
 DenkbaresSkin.cleanTrail = function() {
 	var breadcrumbs = jq$('.breadcrumbs');
@@ -295,7 +295,6 @@ DenkbaresSkin.cleanTrail = function() {
 };
 
 DenkbaresSkin.resizeFlows = function() {
-	console.log("Resizing Flowchart");
 	jq$('.Flowchart').each(function() {
 		var newWidth = parseInt(jq$('.page-content').first().css('width'));
 		newWidth = (Math.round(newWidth / 10) * 10) - 24;
@@ -303,7 +302,7 @@ DenkbaresSkin.resizeFlows = function() {
 	});
 };
 
-DenkbaresSkin.toggleFavorites = function() {
+/*DenkbaresSkin.toggleFavorites = function() {
 	var favorites = jq$('#favorites');
 	var page = jq$('#page');
 	var toggle = jq$('#favorites-toggle');
@@ -334,7 +333,7 @@ DenkbaresSkin.toggleFavorites = function() {
 	jq$(page).bind('transitionend', function() {
 		jq$(window).resize();
 	});
-};
+};*/
 
 // does not return "elastic scroll" values from OSX.
 DenkbaresSkin.scrollLeft = function() {

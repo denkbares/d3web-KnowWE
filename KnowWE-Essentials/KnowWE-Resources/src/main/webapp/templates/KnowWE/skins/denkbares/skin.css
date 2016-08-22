@@ -225,17 +225,7 @@ th, td {
 	border-bottom: 1px solid #ddd;
 }
 
-.hidden {
-	display: none;
-}
 
-.visible {
-	display: inline;
-}
-
-.visibleBlock {
-	display: block;
-}
 
 hr, .hr, .clearbox {
 	clear: both;

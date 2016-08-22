@@ -58,6 +58,17 @@ a:hover {
 
 /* #CCFF00; */
 
+.KnowWE .hidden {
+	display: none;
+}
+
+.KnowWE .visible {
+	display: inline;
+}
+
+.KnowWE .visibleBlock {
+	display: block;
+}
 
 h1, h2, h3, h4 {
 	font-family: Helvetica, Sans-Serif, Arial;
