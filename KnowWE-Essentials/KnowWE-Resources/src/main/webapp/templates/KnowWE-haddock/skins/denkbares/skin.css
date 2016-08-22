@@ -279,10 +279,10 @@ div.pagename a:hover {
 }
 
 #pagecontent h1, h2, h3, h4 {
-	clear: left;
 	margin: 1em 0 0.5em 0;
-	padding: 0.25em 0;
+	/*padding: 0.25em 0;*/
 	line-height: 1.2;
+	clear: left;
 }
 
 h2 {
@@ -441,7 +441,7 @@ fieldset {
 
 /* +++ 240 Pre-formatted text blocks and code +++ */
 code, tt, pre {
-	font: 110% Monaco, "Courier New", Courier, monospace;
+	font: 105% Monaco, "Courier New", Courier, monospace;
 	overflow: auto;
 }
 
@@ -626,8 +626,8 @@ a.footnote {
 .diffnote, .information, .warning, .error {
 	display: block;
 	clear: both;
-	margin: 1em .5em;
-	padding: 1em 1em 1em 3em;
+	/*margin: 1em .5em;
+	padding: 1em 1em 1em 3em;*/
 	background-position: .8em .9em;
 	background-repeat: no-repeat;
 }
@@ -842,7 +842,7 @@ a.tool {
 	text-decoration: none;
 }
 
-a.tool:hover, .btn:hover {
+a.tool:hover {
 	background-color: #ddd !important;
 }
 
@@ -878,6 +878,13 @@ a.tool:hover, .btn:hover {
 	cursor: pointer;
 	overflow: hidden;
 	white-space: nowrap;
+}
+
+#section-TOC {
+	padding: 0;
+	font-weight: initial;
+	font-size: initial;
+	clear: none;
 }
 
 /* ie6 hack ensure moremenu remains properly aligned */
@@ -1003,8 +1010,8 @@ a.tool:hover, .btn:hover {
 */
 
 .userbox {
-	overflow: hidden;
-	padding: 0.5em 0;
+	/*overflow: hidden;*/
+	/*padding: 0.5em 0;*/
 }
 
 #favorites .userbox a.action, #favorites .userbox .username {
@@ -1359,10 +1366,10 @@ html > body #previewcontent, html > body #info, html > body #pagecontent, html >
 }
 
 #searchForm #query {
-	width: 164px;
+	/*	width: 164px;
 	padding: 2px 22px 2px 2px;
 	vertical-align: middle;
-	color: #555;
+	color: #555;*/
 }
 
 #searchSubmit {
@@ -1456,8 +1463,6 @@ body.view {
 /* +++ 625 Table of contents plugin +++ */
 div.toc {
 	width: 60%;
-	float: left;
-	clear: left;
 }
 
 /* duplicate toc items links back to the first rendered table of contents */
@@ -2402,8 +2407,8 @@ div.coverflow .knob {
 }
 
 #searchSubmit {
-	background: none;
-	top: 2px;
+	/*background: none;
+	top: 2px;*/
 }
 
 #searchSubmit:before {
@@ -2465,4 +2470,8 @@ a.action.quick2top:before {
 
 .stickyOn {
 	z-index: 2000;
+}
+
+.backdrop, .slmbx .slmodal {
+	background: #000000;
 }
