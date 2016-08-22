@@ -57,6 +57,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		html.appendHtml("<input type='hidden' id='knowWEInfoAdmin' value='" + KnowWEUtils.isAdmin(user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanWrite' value='" + KnowWEUtils.canWrite(article, user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanView' value='" + KnowWEUtils.canView(article, user) + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoTemplate' value='" + connector.getTemplate() + "'>");
 		html.appendHtml("</div>");
 	}
 

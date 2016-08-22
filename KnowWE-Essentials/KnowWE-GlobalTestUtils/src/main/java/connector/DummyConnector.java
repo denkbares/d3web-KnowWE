@@ -35,6 +35,8 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
@@ -61,6 +63,11 @@ public class DummyConnector implements WikiConnector {
 
 	public DummyConnector(DummyPageProvider dummyPageProvider) {
 		this.dummyPageProvider = dummyPageProvider;
+	}
+
+	@Override
+	public @Nullable String getTemplate() {
+		return "KnowWE";
 	}
 
 	@Override

@@ -33,6 +33,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -391,4 +393,12 @@ public interface WikiConnector {
 	 * @param context the {@link UserContext} of the user changing the article
 	 */
 	boolean writeArticleToWikiPersistence(String title, String content, UserContext context);
+
+	/**
+	 * Returns the current (rendering) template of the wiki. If the wiki does not support templates, the method will
+	 * return null.
+	 *
+	 * @return the current template of the wiki.
+	 */
+	@Nullable String getTemplate();
 }

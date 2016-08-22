@@ -62,6 +62,7 @@ import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.util.TextUtil;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
@@ -116,6 +117,11 @@ public class JSPWikiConnector implements WikiConnector {
 		WikiPage page = new WikiPage(engine, "Dummy");
 		PageLock lock = mgr.lockPage(page, "Dummy");
 		mgr.unlockPage(lock);
+	}
+
+	@Override
+	public @Nullable String getTemplate() {
+		return getEngine().getWikiProperties().getProperty("jspwiki.templateDir");
 	}
 
 	@Override
@@ -191,7 +197,7 @@ public class JSPWikiConnector implements WikiConnector {
 			pages = pageManager.getProvider().getAllPages();
 		}
 		catch (ProviderException e) {
-			e.printStackTrace();
+			Log.severe("Exception while retrieving articles.", e);
 		}
 		if (pages == null) return null;
 
@@ -202,7 +208,7 @@ public class JSPWikiConnector implements WikiConnector {
 						wikiPage.getVersion());
 			}
 			catch (ProviderException e) {
-				e.printStackTrace();
+				Log.severe("Exception while retrieving articles.", e);
 			}
 			if (pageContent != null) {
 				result.put(wikiPage.getName(), pageContent);
@@ -226,7 +232,7 @@ public class JSPWikiConnector implements WikiConnector {
 			}
 		}
 		catch (WikiSecurityException e) {
-			e.printStackTrace();
+			Log.severe("Exception while retrieving users.", e);
 		}
 
 		return users;
@@ -581,7 +587,7 @@ public class JSPWikiConnector implements WikiConnector {
 			return note == null ? "" : note;
 		}
 		catch (ProviderException e) {
-			e.printStackTrace();
+			Log.severe("Exception while retrieving change notes.", e);
 		}
 
 		return null;
