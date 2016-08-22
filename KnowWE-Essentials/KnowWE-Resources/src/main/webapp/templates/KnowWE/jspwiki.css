@@ -1,11 +1,49 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+*/
 
+/* JSPWiki stylesheet jspwiki.css
+ * April 07, based on BrushedTemplate
+ * Styles can be overwritten by print and skin stylesheets
+ * /
+
+/* COLOR scheme
+	normal font color
+	#f9f9f9 code, comment, weblogentries, (light grey)
+	#d7d7d7 table header(darker grey)
+	#ddd table borders,
+	#d9e8ff edit background
+	#eee hover color
+	#f93 highlight color, searchbars, ...  (amber)
+	#e0e0ff information (light blue)
+	#ffff80 warning (light yellow)
+	#ffe0e0 error (light pink)
+ */
+
+/* +++ 010 LAYOUT of main ID blocks +++ */
 #wikibody {
 	margin: 1em 2em;
 	padding: 0.25em;
 }
 
-#header,
-#footer {
+#header, #footer {
 	padding: 0 0 0 20%;
 }
 
@@ -43,7 +81,7 @@
 
 #favorites {
 	float: left;
-	overflow: hidden;
+	overflow: hidden; /*avoid overflow for wide content of leftmenu or leftmenufooter */
 	margin-top: 1.75em;
 	width: 18%;
 	padding: 0.5em;
@@ -56,37 +94,37 @@
 	display: none;
 }
 
-#favorites .login,
-#favorites .logoff {
+#favorites .login, #favorites .logoff {
 	clear: left;
+}
+
+#footer .copyright {
 }
 
 #content {
 	margin: 1em 0;
 }
 
-#page,
-#wikibody.fav-right #favorites {
+/*#wikibody.fav-left*/
+#page, #wikibody.fav-right #favorites {
 	float: right;
 }
 
-#wikibody.fav-right #page,
+#wikibody.fav-right #page, /*#wikibody.fav-left*/
 #favorites {
 	float: left;
 }
 
-* html #page,
-* html #wikibody.fav-right #favorites {
-	margin-left: -3px;
+/*ie6 hack*/
+* html #page, * html #wikibody.fav-right #favorites {
+	margin-left: -3px; /*Three Pixel Text Jog*/
 }
 
-* html #wikibody.fav-right #page,
-* html #favorites {
-	margin-right: -3px;
+* html #wikibody.fav-right #page, * html #favorites {
+	margin-right: -3px; /*Three Pixel Text Jog*/
 }
 
-#wikibody.fav-right #header,
-#wikibody.fav-right #footer {
+#wikibody.fav-right #header, #wikibody.fav-right #footer {
 	padding: 0 20% 0 0;
 }
 
@@ -108,6 +146,7 @@
 	z-index: 10;
 }
 
+/* ie hack */
 * html #actionsTop {
 	margin-top: 1px;
 }
@@ -117,75 +156,28 @@
 	margin-bottom: 0.5em;
 }
 
-* html #header,
-* html .userbox {
-	height: 1%;
+* html #header, * html .userbox {
+	height: 1%; /*hasLayout:true; --ie peekaboo/layout hack */
 }
 
-html,
-body,
-div,
-span,
-applet,
-object,
-iframe,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-blockquote,
-pre,
-a,
-abbr,
-acronym,
-address,
-big,
-cite,
-code,
-del,
-dfn,
-em,
-font,
-img,
-ins,
-kbd,
-q,
-s,
-samp,
-small,
-strike,
-strong,
-sub,
-sup,
-tt,
-var,
-dl,
-dt,
-dd,
-ol,
-ul,
-li,
-fieldset,
-form,
-label,
-legend,
-table,
-caption,
-tbody,
-tfoot,
-thead,
-tr,
-th,
-td {
+b.roundedCorners {
+}
+
+/* +++ 200 Generic stuff here +++ */
+/* refined global reset */
+/* inspired by http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/ and yui reset */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
 	margin: 0;
 	padding: 0;
 	border: 0;
 	outline: none;
+	/* vertical-align:baseline; seems to give printing errors in FF */
 }
 
+/* remember to define focus styles! */
 :focus {
 	outline: 0;
 }
@@ -194,7 +186,8 @@ body {
 	color: black;
 	background: white;
 	margin: 0;
-	font: 76%/140% Verdana, Arial, Helvetica, sans-serif;
+	/*font: 12px/1.5 "Lucida Grande", Arial, Helvetica, Sans-Serif;*/
+	font: 12px/140% Verdana, Arial, Helvetica, sans-serif;
 }
 
 table {
@@ -203,24 +196,11 @@ table {
 	empty-cells: show;
 }
 
-h1,
-h2,
-h3,
-h4,
-p,
-blockquote,
-label,
-ul,
-ol,
-dl,
-hr,
-.hr,
-.quote {
+h1, h2, h3, h4, p, blockquote, label, ul, ol, dl, hr, .hr, .quote {
 	margin: 0.5em 0;
 }
 
-th,
-td {
+th, td {
 	padding: 0.25em 0.5em;
 }
 
@@ -229,12 +209,11 @@ td {
 	border-bottom: 1px solid #ddd;
 }
 
-hr,
-.hr,
-.clearbox {
+hr, .hr, .clearbox {
 	clear: both;
 }
 
+/* +++ 210 Page titles, headings, and paragraphs +++ */
 .titlebox {
 	color: #555;
 	padding: 0.25em 1em;
@@ -247,9 +226,22 @@ hr,
 	margin-bottom: 0.5em;
 }
 
-h2,
-h3,
-h4 {
+/*
+Headings:
+	The headings h2, h3 and h4 get a {{clear:left}} so they can appear
+	side by side with .commentbox-es.
+
+	The {{.editsection}} and {{hashlink}} define the styling of the
+	[[Edit] and # hash-hover link on each heading.
+
+DOM structure:
+>	<h2 id="section-...">Header-Title
+>	<a class="hashlink" href="...">#</a>
+>	<a class="editsection href="...&section=0">[Edit]</a>
+>	</h2>
+
+*/
+h2, h3, h4 {
 	clear: left;
 	margin: 1em 0 0.5em 0;
 	padding: 0.25em;
@@ -260,8 +252,7 @@ h2 {
 	font-size: 150%;
 }
 
-h2 .editsection,
-h2 .hashlink {
+h2 .editsection, h2 .hashlink {
 	font-size: 67%;
 }
 
@@ -269,8 +260,7 @@ h3 {
 	font-size: 132%;
 }
 
-h3 .editsection,
-h3 .hashlink {
+h3 .editsection, h3 .hashlink {
 	font-size: 76%;
 }
 
@@ -278,13 +268,11 @@ h4 {
 	font-size: 116%;
 }
 
-h4 .editsection,
-h4 .hashlink {
+h4 .editsection, h4 .hashlink {
 	font-size: 86%;
 }
 
-a.editsection,
-a.hashlink {
+a.editsection, a.hashlink {
 	font-weight: normal;
 	line-height: 1.2;
 	padding: 0.25em;
@@ -292,23 +280,17 @@ a.hashlink {
 	color: #ccc;
 }
 
-a.editsection:hover,
-a.hashlink:hover {
+a.editsection:hover, a.hashlink:hover {
 	background-color: #ddd;
 	color: blue !important;
 }
 
-h2:hover .editsection,
-h3:hover .editsection,
-h4:hover .editsection,
-h2:hover .hashlink,
-h3:hover .hashlink,
-h4:hover .hashlink {
+h2:hover .editsection, h3:hover .editsection, h4:hover .editsection,
+h2:hover .hashlink, h3:hover .hashlink, h4:hover .hashlink {
 	color: #999;
 }
 
-b,
-i {
+b, i {
 	color: inherit;
 }
 
@@ -316,13 +298,12 @@ br {
 	clear: both;
 }
 
-ul ul,
-ol ol {
+/* +++ 220 Lists and bullets +++ */
+ul ul, ol ol {
 	margin: 0;
 }
 
-ul,
-ol {
+ul, ol {
 	padding-left: 3em;
 }
 
@@ -334,8 +315,15 @@ dl dd {
 	margin-left: 2em;
 }
 
+/* +++ 225 Forms, Labels, form-values and form-help +++ */
+.wikiform {
+}
+
 .wikiform tr {
 	vertical-align: middle;
+}
+
+.wikiform td {
 }
 
 .formvalue {
@@ -347,8 +335,13 @@ dl dd {
 	margin: 0.5em 0;
 }
 
-legend,
-label {
+/*
+textarea, input[type=text] {
+	padding: 1px 0 1px 3px;
+	border: 1px solid #ddd;
+}
+*/
+legend, label {
 	font-weight: bold;
 	white-space: nowrap;
 	padding-right: 0.5em;
@@ -368,40 +361,31 @@ fieldset {
 	padding: 0.5em;
 }
 
-.wikiform input,
-.wikiform option {
+.wikiform input, .wikiform option {
 	color: #555;
 	border: 1px solid #ddd;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
-.wikiform input[type='submit'],
-.wikiform input[type='button'],
-.wikiform input[type='file'],
-.wikiform button,
-.btn {
+.wikiform input[type='submit'], .wikiform input[type='button'], .wikiform input[type='file'], .wikiform button, .btn {
 	display: inline-block;
 	cursor: pointer;
+
 	background: transparent;
-	background: -moz-linear-gradient(top, transparent, rgba(0, 0, 0, 0.1));
-	background: -webkit-gradient(linear, left top, left bottom, from(transparent), to(rgba(0, 0, 0, 0.1)));
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+	background: -moz-linear-gradient(top, transparent, rgba(0, 0, 0, .1));
+	background: -webkit-gradient(linear, left top, left bottom, from(transparent), to(rgba(0, 0, 0, .1)));
+	text-shadow: 0 1px 0 rgba(255, 255, 255, .8);
 }
 
-.wikiform input[type='submit']:hover,
-.wikiform input[type='button']:hover,
-.wikiform input[type='file']:hover,
-.wikiform button:hover,
-.btn:hover {
-	background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0.1)), to(transparent));
-	background: -moz-linear-gradient(top, rgba(0, 0, 0, 0.1), transparent);
+.wikiform input[type='submit']:hover, .wikiform input[type='button']:hover, .wikiform input[type='file']:hover, .wikiform button:hover, .btn:hover {
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, .1)), to(transparent));
+	background: -moz-linear-gradient(top, rgba(0, 0, 0, .1), transparent);
 }
 
-code,
-tt,
-pre {
-	font: 110% Monaco, "Courier New", Courier, monospace;
+/* +++ 240 Pre-formatted text blocks and code +++ */
+code, tt, pre {
+	font: Monaco, "Courier New", Courier, monospace;
 	overflow: auto;
 }
 
@@ -414,41 +398,63 @@ pre {
 	border: 1px solid #ddd;
 	_width: 100%;
 	_overflow-x: auto;
-	_padding-bottom: 1.5em;
+	_padding-bottom: 1.5em; /*take scrollbar into account on ie ugh*/
 }
 
-#previewcontent,
-#info,
-#pagecontent,
-#attach,
-#findcontent,
-.diffbody {
-	overflow-y: hidden;
+#previewcontent, #info, #pagecontent, #attach, #findcontent, .diffbody {
+	overflow-y: hidden; /*safari only -- ?? */
 	_width: 100%;
 	_overflow-x: auto;
-	_padding-bottom: 1.5em !important;
+	_padding-bottom: 1.5em !important; /*take scrollbar into account on ie ugh*/
 }
 
+/* +++ 250 Hyperlinks +++ */
 a {
 	color: blue;
+}
+
+a:link {
+}
+
+a:visited {
+}
+
+a:active {
 }
 
 .hover {
 	background-color: #eee;
 }
 
+/* ie6 hack */
 * html .hover {
 	background-color: #eee;
 }
 
+/* ie7 hack */
 *:first-child + html .hover {
 	background-color: #eee;
+}
+
+a:hover {
+}
+
+a:focus {
+}
+
+a.wikipage {
 }
 
 a.createpage {
 	color: red;
 	text-decoration: none;
 	border-bottom: 1px dashed red;
+}
+
+a.external {
+}
+
+a.interwiki {
 }
 
 a.feed {
@@ -465,8 +471,33 @@ a.feed {
 	float: right;
 }
 
+/* switch to gif for better ie rendering, but selectors nok in ie6 (fine in ie7) */
+/*a.infolink {
+	background-image:url("../../images/jspwiki-strip.gif");
+	background-repeat:no-repeat;
+	background-position:right -16px;
+	padding-right:16px;
+	line-height:16px !important;
+	height:16px;
+	overflow:hidden;
+}
+a.infolink img {
+	display:none;
+}*/
+
+/* +++ 260 Image styles +++ */
 img {
 	border: none;
+	/* max-width:99%; FIXME ff ok to fit in parent */
+}
+
+img.inline {
+}
+
+img.outlink {
+}
+
+img.attlink {
 }
 
 .applicationlogo a {
@@ -484,6 +515,7 @@ img {
 	background-position: 0 0;
 }
 
+/* +++ 270 Footnotes and small text +++ */
 a.footnoteref {
 	vertical-align: super;
 	font-size: 85%;
@@ -540,14 +572,14 @@ a.footnote {
 	display: none;
 }
 
+/* also used by the TASKS plugin */
+
+/* +++ 280 Convenience styles and info/warning/error dialogs +++ */
 .additinfo {
 	background-color: #e0e0ff;
 }
 
-.diffnote,
-.information,
-.warning,
-.error {
+.diffnote, .information, .warning, .error {
 	display: block;
 	clear: both;
 	margin: 1em .5em;
@@ -556,14 +588,11 @@ a.footnote {
 	background-repeat: no-repeat;
 }
 
-td .information,
-td .warning,
-td .error {
+td .information, td .warning, td .error {
 	margin: 0;
 }
 
-.diffnote,
-.information {
+.diffnote, .information {
 	background-image: url(images/information.gif);
 	background-color: #e0e0ff;
 }
@@ -584,6 +613,7 @@ td .error {
 	padding-left: 0;
 }
 
+/* +++ 290 Comment boxes (used on some pages) +++ */
 .commentbox {
 	display: block;
 	float: right;
@@ -602,6 +632,7 @@ td .error {
 	padding-left: 0;
 }
 
+/* +++ 300 Wiki tables and zebra tables +++ */
 .wikitable {
 	margin: 0.5em 0.25em;
 }
@@ -620,6 +651,7 @@ td .error {
 	border: 1px solid #ddd;
 	vertical-align: top;
 	text-align: left;
+	/*word-wrap:break-word;*/
 }
 
 .zebra-table tr.odd td {
@@ -630,6 +662,13 @@ td .error {
 	border-top: 1px solid #d9d9d9;
 }
 
+/* CHECK */
+
+/* +++ 350 Attachments +++ */
+#attach {
+}
+
+/* upload submit button */
 #upload {
 	float: left;
 }
@@ -730,6 +769,21 @@ td .error {
 	background-position: 0 -144px;
 }
 
+/* +++ 400 Styles for specific JSPs +++ */
+
+/* +++ 405 AttachmentTab +++ */
+
+/* +++ 410 CommentContent +++ */
+#commentcontent {
+}
+
+/* +++ 415 ConflictContent +++ */
+#conflict,
+#conflictother,
+#conflictown {
+}
+
+/* +++ 420 DiffContent and Diff Providers:Traditional and External +++ */
 #diffcontent {
 	clear: both;
 }
@@ -738,9 +792,8 @@ td .error {
 	padding: 0.5em;
 }
 
-td.diffadd,
-td.diffrem,
-td.diff {
+/* .diffnote equals .information */
+td.diffadd, td.diffrem, td.diff {
 	font: 110% Monaco, "Courier New", Courier, monospace;
 	line-height: 1;
 }
@@ -757,6 +810,7 @@ td.diff {
 	background: #fff;
 }
 
+/* +++ 421 Contextual diff provider +++ */
 .diff-wikitext {
 	font: 110% Monaco, "Courier New", Courier, monospace;
 	line-height: 1;
@@ -780,18 +834,27 @@ td.diff {
 	text-decoration: none;
 }
 
+/* +++ 425 Edit/EditContent and CommentContent +++ */
+body.edit {
+}
+
+body.comment {
+}
+
+#edithelp {
+}
+
+/* +++ 430 Edit/EditContent +++ */
 .textarea-resizer {
-	background: #eeeeee url(images/resize-horizontal.gif) top center;
-	cursor: s-resize;
+	background: #eee url(images/resize-horizontal.gif) top center;
+	cursor: s-resize; /* css3 row-resize */
 	font-size: 1px;
 	height: 6px;
 	line-height: 6px;
 	overflow: hidden;
 }
 
-#toolbuttons,
-#toolextra,
-#searchbar {
+#toolbuttons, #toolextra, #searchbar {
 	margin-left: 1em;
 	clear: both;
 }
@@ -815,8 +878,7 @@ a.tool {
 	text-decoration: none;
 }
 
-a.tool:hover,
-.btn:hover {
+a.tool:hover, .btn:hover {
 	background-color: #ddd !important;
 }
 
@@ -841,6 +903,22 @@ a.tool:hover,
 	width: auto !important;
 }
 
+/*#tbOUTLINE	{ background-position:0 0; width:auto !important;}
+#tbOUTLINE	{
+	width:auto !important;
+	background-image:url("images/book_open.png") !important;
+}
+*/
+/*
+label[for="edittoc"] {
+	background-repeat:no-repeat;
+	background-position:center left;
+	xxbackground-image:url("images/editor-strip.gif");
+	background-image:url("images/book_open.png") !important;
+	background-color:transparent;
+	padding:2px 0 2px 20px;
+}
+*/
 #tbH1 {
 	background-position: 0 -192px;
 }
@@ -869,6 +947,10 @@ a.tool:hover,
 	background-position: 0 -160px;
 }
 
+/*
+#tbColor  	{ background-image:url("images/paintbrush.png");  }
+#tbBackground { background-image:url("images/paintcan.png");  }
+*/
 #tbPRE {
 	background-position: 0 -64px;
 }
@@ -949,10 +1031,6 @@ a.tool:hover,
 	background-position: 0 -288px;
 }
 
-#tbDOREPLACE {
-	background-image: url("images/doreplace.png") !important;
-}
-
 .editor {
 	font: 110% Monaco, "Courier New", Courier, monospace;
 	padding: 4px;
@@ -988,10 +1066,12 @@ a.tool:hover,
 	white-space: nowrap;
 }
 
+/* ie6 hack ensure moremenu remains properly aligned */
 * html #editorarea {
 	padding: 4px 0;
 }
 
+/*ie7 hack */
 *:first-child + html #editorarea {
 	padding: 4px 0;
 }
@@ -1000,8 +1080,7 @@ a.tool:hover,
 	margin-right: 2em;
 }
 
-#commentcontent,
-#editcontent {
+#commentcontent, #editcontent {
 	width: 100%;
 }
 
@@ -1013,29 +1092,29 @@ a.tool:hover,
 	white-space: nowrap;
 }
 
-#findSuggestionMenu {
-	max-height: 66%;
-	top: 20px;
-	left: 20px;
-	position:fixed;
-	color:white;
-	background-color:rgba(0,0,0,0.7);
-	-moz-border-radius:10px;
-	-webkit-border-radius:5px;
-	-webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-	z-index: 2000;
-	font-size:85%;
-	overflow-x:hidden;
-	overflow-y:auto;
-	min-width:210px;
+#searchbarhelp {
 }
 
+#findSuggestionMenu {
+	position: absolute;
+	color: white;
+	background-color: rgba(0, 0, 0, 0.7);
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 5px;
+	border-radius: 10px;
+	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+	z-index: 10;
+	font-size: 85%;
+	overflow: hidden;
+}
 
-
+/* ie6 hack */
 * html #findSuggestionMenu {
 	background: url(images/tip.png) top left;
 }
 
+/* ie7 hack */
 *:first-child + html #findSuggestionMenu {
 	background: url(images/tip.png) top left;
 }
@@ -1058,13 +1137,78 @@ a.tool:hover,
 	border-radius: 10px;
 }
 
+/* ie6 hack */
 * html #findSuggestionMenu .hover {
 	background-color: black;
 }
 
+/* ie7 hack */
 *:first-child + html #findSuggestionMenu .hover {
 	background-color: black;
 }
+
+/* +++ 440 Favorites +++ */
+/* fixme
+#collapseFavs {
+	position:absolute;
+	margin-left:-1px;
+	left:-0.5em;
+	top:-1px;
+	width:0.5em;
+	height:100%;
+	background:#f9f9f9;
+	border-top:1px solid #f9f9f9;
+	border-bottom:1px solid #f9f9f9;
+	cursor:pointer;
+}
+#wikibody.fav-right #collapseFavs {
+	left:auto;
+	right:-0.5em;
+	margin-left:0;
+	margin-right:-1px;
+}
+#collapseFavs.hover {
+	background-color:#eee;
+	border-color:#eee;
+}
+#collapseFavsWrapper {
+	position:absolute;
+	padding-right:1em;
+	left:0.5em;
+	top:-2em;
+	cursor:auto;
+	overflow:hidden;
+}
+#wikibody.fav-right #collapseFavsWrapper {
+	left:auto;
+	right:0.5em;
+	padding-right:0;
+	padding-left:1em;
+}
+#collapseFavsWrapper #favorites {
+	background:white;
+	border:0.5em solid #eee;
+	border-left:none;
+}
+#wikibody.fav-right #collapseFavsWrapper #favorites {
+	border-right:none;
+	border-left:0.5em solid #eee;
+}
+#collapseFavsPointer {
+	position:absolute;
+	width:4px;
+	height:12px;
+	background:url(images/arrleft.gif) top left no-repeat;
+	margin-left:-15px;
+	z-index:5;
+}
+#wikibody.fav-right #collapseFavsPointer{
+	margin-left:15px;
+}
+.fav-slide #collapseFavsPointer {
+	background-image:url(images/arrright.gif);
+}
+*/
 
 .userbox {
 	overflow: hidden;
@@ -1072,11 +1216,10 @@ a.tool:hover,
 	white-space: nowrap;
 }
 
-#favorites .userbox a.action,
-#favorites .userbox .username {
+#favorites .userbox a.action, #favorites .userbox .username {
 	float: left;
 	display: block;
-	margin-right: 4px;
+	margin-right: 4px; /*spacing between buttons */
 }
 
 .username {
@@ -1084,16 +1227,27 @@ a.tool:hover,
 	padding: 0.25em 0.5em;
 }
 
-.wikiversion,
-.rssfeed {
+.username.anonymous {
+}
+
+.username.asserted {
+}
+
+.username.authenticated {
+}
+
+.wikiversion, .rssfeed {
 	font-size: 90%;
 	padding: 0.25em;
 	text-align: center;
 }
 
-#details,
-#scope {
+/* +++ 450 FindContent +++ */
+#details, #scope {
 	margin-left: 2em;
+}
+
+.gBar {
 }
 
 .graphBar {
@@ -1117,17 +1271,22 @@ a.tool:hover,
 	font-style: italic;
 }
 
+/* For the search_highlight.js.  This style defines the how the words that have
+   been found look like.  If you look for "thingy", you will get these following
+   in the results.
+   <span class="searchword">thingy</span>
+ */
 .cursor {
 	background-color: #eee;
 }
 
-.searchword,
-.searchmatch {
+.searchword, .searchmatch {
 	background-color: #f93;
 	color: black;
 	text-decoration: inherit;
 }
 
+/* +++ 455 Footer +++ */
 .copyright {
 	padding: 1em 0.25em;
 	font-size: 90%;
@@ -1135,16 +1294,17 @@ a.tool:hover,
 	color: #555;
 }
 
+/* +++ 460 Header +++ */
 .breadcrumbs {
 	font-size: 90%;
 	padding: 0 1.5em 1em 0;
 }
 
-#incomingLinks,
-#outgoingLinks,
-#externalLinks,
-#attachmentLinks,
-#versionhistory {
+/* +++ 465 InfoContent +++ */
+#infocontent {
+}
+
+#incomingLinks, #outgoingLinks, #externalLinks, #attachmentLinks, #versionhistory {
 	width: 30%;
 	overflow: hidden;
 	margin-right: 0.5em;
@@ -1159,19 +1319,18 @@ a.tool:hover,
 	margin: 0.25em;
 	padding: 0.5em;
 	background: #eee;
+	/*line-height:1;*/
 }
 
 .pagination a {
 	cursor: pointer;
 }
 
-.pagination a,
-.pagination .cursor {
+.pagination a, .pagination .cursor {
 	padding: 0.5em;
 }
 
-.pagination .cursor,
-.pagination a:hover {
+.pagination .cursor, .pagination a:hover {
 	background-color: #d7d7d7;
 }
 
@@ -1179,8 +1338,7 @@ td.changenote {
 	font-style: italic;
 }
 
-th.changenote,
-td.changenote {
+th.changenote, td.changenote {
 	width: 30%;
 	overflow: hidden;
 }
@@ -1189,6 +1347,7 @@ td.changenote {
 	display: block;
 }
 
+/* +++ 470 PageActions +++ */
 .pageactions {
 	line-height: 1.5;
 }
@@ -1208,7 +1367,7 @@ td.changenote {
 	position: absolute;
 	background: white;
 	border: 2px solid #ddd;
-	left: 0;
+	left: 0; /*right:2.5em; */
 	z-index: 10;
 }
 
@@ -1227,6 +1386,7 @@ td.changenote {
 	border-top: 2px solid #ddd;
 }
 
+/* undo settings for nested information! */
 .pageactions li ul li ul {
 	position: static;
 	left: auto;
@@ -1234,6 +1394,7 @@ td.changenote {
 }
 
 .pageactions li ul li ul li {
+	/* nothing to undo ?? */
 }
 
 #hiddenmorepopup {
@@ -1245,6 +1406,7 @@ td.changenote {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+
 }
 
 #morebutton ul a {
@@ -1257,18 +1419,24 @@ td.changenote {
 	display: block;
 }
 
-#morebutton a:hover,
-a.action:hover,
-#sectiontoc a:hover .userbox a.action:hover,
-a.action.quick2bottom:hover,
-a.action.quick2top:hover {
+#morebutton a:hover, a.action:hover, #sectiontoc a:hover
+.userbox a.action:hover, a.action.quick2bottom:hover, a.action.quick2top:hover {
 	background-color: #eee !important;
 }
 
-#searchTools a.action,
-.userbox a.action,
-a.action.edit,
-a.action.more {
+a.action.view,
+a.action.comment,
+a.action.prefs,
+a.action.attach,
+a.action.info,
+a.action.viewgroup,
+a.action.creategroup,
+a.action.workflow,
+a.action.login,
+a.action.logout {
+}
+
+#searchTools a.action, .userbox a.action, a.action.edit, a.action.more {
 	padding: 0.25em 0.5em;
 	text-decoration: none;
 	line-height: normal;
@@ -1276,8 +1444,7 @@ a.action.more {
 	background: #f9f9f9;
 }
 
-a.action.edit,
-a.action.more {
+a.action.edit, a.action.more {
 	margin-left: 4px;
 	border-bottom: none;
 }
@@ -1287,8 +1454,7 @@ a.action.more {
 	background: #f9f9f9 url(images/arrdownsmall.gif) 95% center no-repeat;
 }
 
-a.action.quick2top,
-a.action.quick2bottom {
+a.action.quick2top, a.action.quick2bottom {
 	overflow: hidden;
 	padding: 0;
 	text-indent: 20px;
@@ -1301,6 +1467,7 @@ a.action.quick2top {
 	background: url(images/arrup.gif) no-repeat 3px 3px;
 }
 
+/*********/
 .popup ul {
 	position: absolute;
 	background: white;
@@ -1323,10 +1490,12 @@ a.action.quick2top {
 	background-color: #eee !important;
 }
 
+/* +++ 472 PageContent.jsp +++ */
 #pagecontent {
 	padding: 0.5em 0;
 }
 
+/* +++ 475 PreviewContent - "This is a preview" comment +++ */
 #sneakpreviewheader {
 	clear: both;
 	font-size: 110%;
@@ -1335,15 +1504,27 @@ a.action.quick2top {
 	margin: 0.5em 0;
 }
 
+#sneakpreview {
+}
+
+#previewcontent {
+}
+
 .previewcontent {
 	background-image: url(images/preview.gif);
 }
 
+/* +++ 480 PreferencesContent, LoginContent, GroupContent +++ */
+
+/* +++ 485 SearchBox +++ */
 .spin {
 	background: url(images/spin.gif) no-repeat;
 	width: 16px;
 	height: 16px;
 	margin: 0 0.5em;
+}
+
+.searchbox {
 }
 
 #searchForm #query {
@@ -1357,6 +1538,7 @@ a.action.quick2top {
 	position: absolute;
 	top: 5px;
 	right: 3px;
+
 	margin: 0;
 	padding: 0;
 	width: 16px;
@@ -1376,8 +1558,9 @@ a.action.quick2top {
 	z-index: 15;
 }
 
+/*ie6 hack*/
 * html #searchboxMenu {
-	white-space: nowrap;
+	white-space: nowrap; /*ensure box has proper width ugh! */
 }
 
 #searchboxMenu ul {
@@ -1390,8 +1573,7 @@ a.action.quick2top {
 	padding: 0 0.5em;
 }
 
-#searchTools a:hover,
-#searchboxMenu li:hover {
+#searchTools a:hover, #searchboxMenu li:hover {
 	background: #eee;
 }
 
@@ -1403,9 +1585,14 @@ a.action.quick2top {
 	text-align: left;
 }
 
+/* +++ 490 ViewTemplate +++ */
 body.view {
+	/*background-image:white;*/
 }
 
+/* +++ 600 JSPWiki plugins +++ */
+
+/* +++ 610 Image plugin +++ */
 .imageplugin {
 	margin: .5em 0;
 }
@@ -1421,6 +1608,10 @@ body.view {
 .imageplugin * {
 	padding: 0;
 	margin: 0;
+}
+
+/* +++ 620 Index plugin +++ */
+.index {
 }
 
 .index .header {
@@ -1443,12 +1634,14 @@ body.view {
 	margin-top: 1.5ex;
 }
 
+/* +++ 625 Table of contents plugin +++ */
 div.toc {
 	width: 60%;
 	float: left;
 	clear: left;
 }
 
+/* duplicate toc items links back to the first rendered table of contents */
 a.toc {
 	color: grey;
 	padding: 0.25em;
@@ -1488,6 +1681,9 @@ a.toc:hover {
 	margin-left: 2.5em;
 }
 
+/*continue here ...*/
+
+/* +++ 630 Weblog and weblogarchive plugins +++ */
 .weblog {
 	margin: 0 2em;
 	clear: both;
@@ -1524,6 +1720,12 @@ a.toc:hover {
 	clear: both;
 }
 
+.weblogarchive {
+}
+
+.weblogarchive ul {
+}
+
 .weblogarchive li {
 	margin-left: 1em;
 	display: block;
@@ -1537,7 +1739,7 @@ a.toc:hover {
 }
 
 .archiveyear:after {
-	content: " AD";
+	content: " AD"
 }
 
 .weblogcommentstitle {
@@ -1555,10 +1757,12 @@ a.toc:hover {
 	padding: 1em;
 }
 
+/* +++ 640 RecentChangesPlugin +++ */
 .recentchanges {
 	table-layout: fixed;
 }
 
+/*faster renderer */
 .recentchanges .changenote {
 	font-style: italic;
 }
@@ -1579,8 +1783,14 @@ a.toc:hover {
 	background-color: transparent;
 }
 
+/* +++ 800 JSPWiki JSP Taglibs +++ */
+
+/* +++ 805 CalendarTag +++ */
 div.calendar {
 	border: 1px solid black;
+}
+
+table.calendar {
 }
 
 table.calendar td {
@@ -1595,10 +1805,28 @@ table.calendar td.link {
 	background: #f9f9f9;
 }
 
+table.calendar tr.month {
+}
+
 table.calendar tr.weekdays {
 	color: red;
 }
 
+/* +++ 900 "Special-effects" JavaScript styles +++ */
+.add-css {
+	display: none;
+}
+
+/* +++ 910 Tabbed Pages +++ */
+/* use absolute position trick to avoid page bump when inserting tabmenu
+ * "tabs" surrounds the actual tab-content :only border right-bottom-left
+ * "tabmenu" visualises the actuals tabs :border-bottom to close the tabs box
+ * "tabmenu a" for the actual tabs :border left-top-right to draw the tab
+ *    Note:margin-left -2px to compensate border-width ico you want adjacent tabs
+ *          increase/decrease margin-left to create space between the tabs
+ *   "active" is the active tab  :border-bottom --white-- to 'reopen' the tabmenu border
+ *   "alerttab" is a --red-- tab used in edit mode for msg like lock etc.
+ */
 .accesskey {
 	text-decoration: underline;
 }
@@ -1619,14 +1847,17 @@ table.calendar tr.weekdays {
 	font-weight: bold;
 }
 
+/* nested tabs should not allow floated stuff to appear next to the tabmenu - ugh */
 .tabs .tabmenu {
 	clear: both;
 }
 
+/* ie6 and lower */
 * html .tabmenu {
 	border: 1px solid white;
 }
 
+/*ie7 hack */
 *:first-child + html .tabmenu {
 	border: 1px solid white;
 }
@@ -1654,8 +1885,8 @@ table.calendar tr.weekdays {
 	cursor: default;
 }
 
-.accordion,
-.tabbedAccordion {
+/* +++ 910 Accordion +++ */
+.accordion, .tabbedAccordion {
 	clear: both;
 	border: 1px solid #ddd;
 	margin-bottom: 0.5em;
@@ -1670,8 +1901,7 @@ table.calendar tr.weekdays {
 	padding: 0.25em 1em 0.25em 0;
 }
 
-.accordion .toggle:hover,
-.menu .toggle:hover {
+.accordion .toggle:hover, .menu .toggle:hover {
 	background: #eee;
 }
 
@@ -1680,23 +1910,23 @@ table.calendar tr.weekdays {
 }
 
 .menu {
-	clear: both;
+	clear: both; /* check out */
 	color: gray;
 	font-weight: bold;
 }
 
 .menu.top {
-	margin-left: 0.5em;
+	margin-left: 0.5em; /* small left indent of first toggle */
 }
 
 .menu.left {
 	float: left;
-	margin-top: 0.5em;
+	margin-top: 0.5em; /* small top indent of first toggle */
 }
 
 .menu.right {
 	float: right;
-	margin-top: 0.5em;
+	margin-top: 0.5em; /* small top indent of first toggle */
 }
 
 .menu .toggle {
@@ -1708,16 +1938,16 @@ table.calendar tr.weekdays {
 
 .menu.top .toggle {
 	float: left;
-	margin: 0 0 -1px -1px;
+	margin: 0 0 -1px -1px; /* adjacent toggle will stick: let 1px border overlap.*/
 	display: inline;
 }
 
 .menu.left .toggle {
-	margin: 0 -1px -1px 0;
+	margin: 0 -1px -1px 0; /* adjacent toggle will stick: let 1px border overlap.*/
 }
 
 .menu.right .toggle {
-	margin: 0 0 -1px -1px;
+	margin: 0 0 -1px -1px; /* adjacent toggle will stick: let 1px border overlap.*/
 }
 
 .menu .toggle.active {
@@ -1742,22 +1972,40 @@ table.calendar tr.weekdays {
 	padding: 0.5em;
 }
 
-.leftAccordion,
-.rightAccordion {
+.leftAccordion, .rightAccordion {
 	margin-bottom: 0.5em;
 }
 
-.leftAccordion .tab,
-.rightAccordion .tab {
+.leftAccordion .tab, .rightAccordion .tab {
 	border: 1px solid #ddd !important;
-	margin: 0 0 -2px 0;
+	margin: 0 0 -2px 0; /* trick :: -2px to reveal top and bottom borders the tabs */
 	padding: 0.25em 0.5em;
 }
 
+/* ie only hack no needed ?
+* html .togglemenu {
+	margin-top:1px;
+}
+*/
+
+/* margin is not compatible with scrollHeigth used by accordion - replace it by padding */
+/*
+.tab h1, .tab h2, .tab h3, .tab h4,
+.tab p, .tab pre, .tab blockquote, .tab label,
+.tab ul, .tab ol, .tab dl, .xxtab hr {
+	margin:0 auto;
+	padding-top:0.5em;
+	padding-bottom:0.5em;
+}
+*/
+
+/* +++ 912 wiki columns +++ */
+/*ie6 and lower hack */
 * html .columns {
 	width: 100%;
 }
 
+/*ie7 hack */
 *:first-child + html .columns {
 	width: 100%;
 }
@@ -1767,6 +2015,7 @@ table.calendar tr.weekdays {
 	padding: 0 0.25em;
 }
 
+/* +++ 915 Tips +++ */
 .tip-anchor {
 	border-bottom: 2px solid #545454;
 	cursor: pointer;
@@ -1774,7 +2023,7 @@ table.calendar tr.weekdays {
 
 .tip-tip {
 	color: white;
-	width: auto;
+	width: auto; /*240px;*/
 	z-index: 100;
 	font-size: 90%;
 	background-color: rgba(0, 0, 0, 0.7);
@@ -1794,6 +2043,7 @@ table.calendar tr.weekdays {
 	background: url(images/tip.png) top left;
 }
 
+/*ie7 hack */
 *:first-child + html .tip-title {
 	background: url(images/tip.png) top left;
 }
@@ -1810,6 +2060,7 @@ table.calendar tr.weekdays {
 	background: url(images/tip.png) bottom right;
 }
 
+/*ie7 hack */
 *:first-child + html .tip-text {
 	background: url(images/tip.png) bottom right;
 }
@@ -1818,14 +2069,14 @@ table.calendar tr.weekdays {
 	color: white !important;
 }
 
-div.collapse ul,
-div.collapse ol {
+/* +++ 920 Collapsible lists +++ */
+div.collapse ul, div.collapse ol {
 	margin: 0;
 	padding: 0;
 }
 
-* html div.collapse ul,
-* html div.collapse ol {
+/* ie6 hack : avoid strange side-effect on borders */
+* html div.collapse ul, * html div.collapse ol {
 	width: 100%;
 }
 
@@ -1833,33 +2084,36 @@ div.collapse li {
 	list-style-type: none;
 }
 
-.collapse .collapsebody,
-.collapsebox .collapse .collapsebody {
+.collapse .collapsebody, .collapsebox .collapse .collapsebody {
 	padding-left: 1.5em;
 }
 
+/*
+Make sure to print collapsed items as it they were not collapsed.
+This requires some smart 'specific' css selector rules, in order to
+overwrite the style set by the mootools animation routines.
+*/
 @media print {
-	.collapse .collapsebody ul,
-	.collapsebox div.collapsebody {
+	.collapse .collapsebody ul, .collapsebox div.collapsebody {
 		height: auto !important;
 	}
 }
 
+/* ie7 hack */
 *:first-child + html .collapse .collapsebody,
 *:first-child + html .collapsebox .collapse .collapsebody {
 	float: left;
 	padding-left: 0.5em;
 }
 
-* html .collapse .collapsebody,
-* html .collapsebox .collapse .collapsebody {
+/* ie6 hack */
+* html .collapse .collapsebody, * html .collapsebox .collapse .collapsebody {
 	float: left;
 	padding-left: 0.5em;
 }
 
-.collapseBullet,
-.collapseOpen,
-.collapseClose {
+/* collapse icons */
+.collapseBullet, .collapseOpen, .collapseClose {
 	clear: left;
 	float: left;
 	text-align: center;
@@ -1870,13 +2124,13 @@ div.collapse li {
 	height: 1em;
 }
 
-.collapseOpen,
-.collapseClose {
+.collapseOpen, .collapseClose {
 	cursor: pointer;
 }
 
+/* +++ collapsebox +++ */
 .collapsebox {
-	clear: right;
+	clear: right; /* avoid clash with intern floated bullet */
 	border: 1px solid #ddd;
 	margin: 0 0 0.5em 0;
 }
@@ -1891,9 +2145,8 @@ div.collapse li {
 	padding: 0 0.5em;
 }
 
-.sortable .sortAscending,
-.sortable .sortDescending,
-.sortable .sort {
+/* +++ 930 Sortable tables +++ */
+.sortable .sortAscending, .sortable .sortDescending, .sortable .sort {
 	background-repeat: no-repeat;
 	background-position: 2px 4px;
 	cursor: pointer;
@@ -1914,15 +2167,14 @@ div.collapse li {
 	background-position: 2px 0px;
 }
 
+/* +++ 940 SLIMBOX Attachment viewer etc. +++ */
 a.slimbox {
 	font-weight: bold;
 	font-size: 1.3em;
 	padding: 0 0.2em;
 }
 
-a.slimbox:visited,
-a.slimbox:active,
-a.slimbox:link {
+a.slimbox:visited, a.slimbox:active, a.slimbox:link {
 	text-decoration: none;
 	border: none;
 }
@@ -1940,8 +2192,7 @@ a.slimbox:hover {
 	cursor: pointer;
 }
 
-#lbCenter,
-#lbBottomContainer {
+#lbCenter, #lbBottomContainer {
 	position: absolute;
 	left: 50%;
 	overflow: hidden;
@@ -1964,7 +2215,7 @@ a.slimbox:hover {
 }
 
 .lbLoading {
-	background: #ffffff url(images/spin.gif) no-repeat center;
+	background: #fff url(images/spin.gif) no-repeat center;
 }
 
 #lbImage {
@@ -1987,9 +2238,7 @@ a.slimbox:hover {
 	overflow: hidden;
 }
 
-#lbCaption,
-#lbPrevLink,
-#lbNextLink {
+#lbCaption, #lbPrevLink, #lbNextLink {
 	font-weight: bold;
 }
 
@@ -2012,6 +2261,7 @@ a.slimbox:hover {
 	z-index: 10;
 }
 
+/* gif icons for ie */
 * html #lbCloseLink {
 	background: url(images/slimbox_close.gif) 4px 12px no-repeat;
 }
@@ -2020,16 +2270,13 @@ a.slimbox:hover {
 	background-image: url(images/slimbox_close_hover.gif);
 }
 
-#lbBottomContainer *:visited,
-#lbBottomContainer *:active,
-#lbBottomContainer *:link,
-#lbCenter *:visited,
-#lbCenter *:active,
-#lbCenter *:link {
+#lbBottomContainer *:visited, #lbBottomContainer *:active, #lbBottomContainer *:link,
+#lbCenter *:visited, #lbCenter *:active, #lbCenter *:link {
 	text-decoration: none;
 	border-bottom: none;
 }
 
+/* +++ 950 Categorised +++ */
 .categoryLink {
 	border-bottom: 2px solid #545454;
 	text-decoration: none;
@@ -2050,17 +2297,17 @@ a.slimbox:hover {
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
+/* ie6 hack */
 * html .categoryPopup {
 	width: 240px;
 }
 
+/* ie7 hack */
 *:first-child + html .categoryPopup {
 	width: 240px;
 }
 
-.categoryPopup a:link,
-.categoryPopup a:active,
-.categoryPopup a:visited {
+.categoryPopup a:link, .categoryPopup a:active, .categoryPopup a:visited {
 	color: white;
 	text-decoration: none;
 }
@@ -2070,10 +2317,12 @@ a.slimbox:hover {
 	font-weight: bold;
 }
 
+/* ie6 hack */
 * html .categoryTitle {
 	background: url(images/tip.png) top left;
 }
 
+/* ie7 hack */
 *:first-child + html .categoryTitle {
 	background: url(images/tip.png) top left;
 }
@@ -2082,10 +2331,12 @@ a.slimbox:hover {
 	padding: 4px 0;
 }
 
+/* ie6 hack */
 * html .categoryText {
 	background: url(images/tip.png) bottom right;
 }
 
+/* ie7 hack */
 *:first-child + html .categoryText {
 	background: url(images/tip.png) bottom right;
 }
@@ -2108,106 +2359,156 @@ a.slimbox:hover {
 	border-radius: 10px;
 }
 
+/* ie6 hack */
 * html .categoryPopup .hover {
 	background-color: black;
 }
 
+/* ie7 hack */
 *:first-child + html .categoryPopup .hover {
 	background-color: black;
 }
 
+/* Pretty printing styles. Used with prettify.js.
+pre.prettyprint {
+}
+
+.str {color: #489a1b; }
+.kwd {color: #1b609a; }
+.com {color: #888; }
+.typ {color: #666; }
+.lit {color: #066; }
+.pun {color: #660; }
+.pln {color: #000; }
+.tag {color: #008; }
+.atn {color: #606; }
+.atv {color: #080; }
+.dec {color: #606; }
+
+@media print {
+  .str {color: #060; }
+  .kwd {color: #006; font-weight: bold; }
+  .com {color: #600; font-style: italic; }
+  .typ {color: #404; font-weight: bold; }
+  .lit {color: #044; }
+  .pun {color: #440; }
+  .pln {color: #000; }
+  .tag {color: #006; font-weight: bold; }
+  .atn {color: #404; }
+  .atv {color: #060; }
+}
+*/
+
+/* Pretty printing styles. Used with prettify.js from
+   Google Code Prettify (4 March 2013 version). Below CSS
+   adapted from prettify.css in GCP download.
+   CSS for line nums not included, as presently not
+   supported by JSPWiki.
+*/
+pre.prettyprint {
+}
+
 .pln {
-	color: #000000;
+	color: #000
 }
 
+/* plain text */
 .str {
-	color: #008800;
+	color: #080
 }
 
+/* string content */
 .kwd {
-	color: #000088;
+	color: #008
 }
 
+/* a keyword */
 .com {
-	color: #880000;
+	color: #800
 }
 
+/* a comment */
 .typ {
-	color: #660066;
+	color: #606
 }
 
+/* a type name */
 .lit {
-	color: #006666;
+	color: #066
 }
 
-.pun,
-.opn,
-.clo {
-	color: #666600;
+/* a literal value */
+/* punctuation, lisp open bracket, lisp close bracket */
+.pun, .opn, .clo {
+	color: #660
 }
 
 .tag {
-	color: #000088;
+	color: #008
 }
 
+/* a markup tag name */
 .atn {
-	color: #660066;
+	color: #606
 }
 
+/* a markup attribute name */
 .atv {
-	color: #008800;
+	color: #080
 }
 
-.dec,
-.var {
-	color: #660066;
+/* a markup attribute value */
+.dec, .var {
+	color: #606
 }
 
+/* a declaration; a variable name */
 .fun {
-	color: #ff0000;
+	color: red
 }
 
+/* a function name */
+
+/* Use higher contrast and text-weight for printable form. */
 @media print {
 	.str {
-		color: #006600;
+		color: #060
 	}
 
 	.kwd {
 		color: #006;
-		font-weight: bold;
+		font-weight: bold
 	}
 
 	.com {
 		color: #600;
-		font-style: italic;
+		font-style: italic
 	}
 
 	.typ {
 		color: #404;
-		font-weight: bold;
+		font-weight: bold
 	}
 
 	.lit {
-		color: #004444;
+		color: #044
 	}
 
-	.pun,
-	.opn,
-	.clo {
-		color: #444400;
+	.pun, .opn, .clo {
+		color: #440
 	}
 
 	.tag {
 		color: #006;
-		font-weight: bold;
+		font-weight: bold
 	}
 
 	.atn {
-		color: #440044;
+		color: #404
 	}
 
 	.atv {
-		color: #006600;
+		color: #060
 	}
 }
 

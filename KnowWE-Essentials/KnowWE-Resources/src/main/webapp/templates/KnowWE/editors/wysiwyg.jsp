@@ -78,6 +78,11 @@
 
 <div style="width:100%"> <%-- Required for IE6 on Windows --%>
 
+<%--
+WYSIWYG not yet implemented for the JSPWiki Default template.
+Falling back to the plain editor.
+--%>
+
 <form action="<wiki:CheckRequestContext
      context='edit'><wiki:EditLink format='url'/></wiki:CheckRequestContext><wiki:CheckRequestContext
      context='comment'><wiki:CommentLink format='url'/></wiki:CheckRequestContext>"
