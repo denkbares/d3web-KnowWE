@@ -543,14 +543,13 @@ img.attlink {
 
 a.logo {
 	display: block;
-	width: 245px;
-	height: 136px;
+	width: 112px;
+	height: 47px;
 	overflow: hidden;
 	margin-left: auto;
 	margin-right: auto;
 	text-indent: -1000px;
 	background: url(../../../../KnowWEExtension/images/knowwe_logo.png) 10px 0px no-repeat;
-	position: absolute;
 	left: 0;
 	border: 0;
 	right: auto;
@@ -1634,6 +1633,10 @@ table.calendar tr.month {
 
 table.calendar tr.weekdays {
 	color: red;
+}
+
+tr.visible {
+	display: grid;
 }
 
 /* +++ 900 "Special-effects" JavaScript styles +++ */

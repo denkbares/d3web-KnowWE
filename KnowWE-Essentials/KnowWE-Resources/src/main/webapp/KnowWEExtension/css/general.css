@@ -58,17 +58,6 @@ a:hover {
 
 /* #CCFF00; */
 
-.hidden {
-	display: none;
-}
-
-.visible {
-	display: inline;
-}
-
-.visibleBlock {
-	display: block;
-}
 
 h1, h2, h3, h4 {
 	font-family: Helvetica, Sans-Serif, Arial;
