@@ -462,6 +462,11 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
+					<artifactId>denkbares-SemanticCore-Plugin-GraphDB</artifactId>
+					<version>${denkbares.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
