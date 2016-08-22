@@ -8,6 +8,8 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -37,7 +39,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 	@Override
 	public void render(Section<?> content, UserContext user, RenderResult string) {
-		if(user.getParameter("concept") != null) {
+		if (user.getParameter("concept") != null) {
 			// we have received a concept via url parameter to be visualized
 			// hence we need to clear the cached visualization
 			PreRenderWorker.getInstance().clearCache(content);
@@ -52,12 +54,33 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 	}
 
 	private SubGraphData convertToGraph(CachedTupleQueryResult resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
-		SubGraphData data = new SubGraphData();
+		SubGraphData data;
+		MultiMap<String, String> subPropertiesMap = new DefaultMultiMap<>();
+
+		// Get all  SubProperties and add all non-recursive to a ArrayList
+		String subPropertyQuery = "SELECT ?Property ?SubProperty WHERE {\n" +
+				"\t  ?SubProperty rdfs:subPropertyOf ?Property\n" +
+				"  }\n";
+		CachedTupleQueryResult propertyRelations = rdfRepository.sparqlSelect(subPropertyQuery);
+		for (BindingSet propertyRelation : propertyRelations) {
+			String subProperty = propertyRelation.getValue("SubProperty").stringValue();
+			String property = propertyRelation.getValue("Property").stringValue();
+
+			// if SubProperty is not same as Property
+			if (!property.equals(subProperty)) {
+				subPropertiesMap.put(property, subProperty);
+			}
+
+		}
+
+		data = new SubGraphData(subPropertiesMap);
+
 		List<String> variables = resultSet.getBindingNames();
 		if (variables.size() < 3) {
 			messages.add(new Message(Message.Type.ERROR, "A sparqlvis query requires exactly three variables!"));
 			return null;
 		}
+
 		for (BindingSet row : resultSet) {
 			Value fromURI = row.getValue(variables.get(0));
 			Value relationURI = row.getValue(variables.get(1));
@@ -68,36 +91,36 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 				continue;
 			}
 
-
 			ConceptNode fromNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, fromURI, true,
 					determineClassType(rdfRepository, variables.get(0), row, fromURI));
-
 
 			String relation = Utils.getConceptName(relationURI, rdfRepository);
 			String relationLabel = Utils.createRelationLabel(config, rdfRepository, relationURI, relation);
 
-			ConceptNode toNode = Utils.createValue(config, rdfRepository, uriProvider, section,	data, toURI, true,
+			ConceptNode toNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, toURI, true,
 					determineClassType(rdfRepository, variables.get(2), row, toURI));
 
-			Edge newLineRelationsKey = new Edge(fromNode, relationLabel, toNode);
+			Edge newLineRelationsKey = new Edge(fromNode, relationLabel, relationURI.stringValue(), toNode);
 			data.addEdge(newLineRelationsKey);
 		}
 		if (data.getConceptDeclarations().isEmpty()) {
 			messages.add(new Message(Message.Type.ERROR, "The query produced an empty result set!"));
 			return null;
 		}
+
 		return data;
 	}
 
 	private String determineClassType(Rdf2GoCore rdfRepository, String variable, BindingSet row, Value fromURI) {
 		// try to determine the clazz/type of the source concept
 		String clazz = null;
-		if(fromURI instanceof org.openrdf.model.URI) {
+		if (fromURI instanceof org.openrdf.model.URI) {
 			URIImpl uriInstance = new URIImpl(fromURI
 					.stringValue());
 			org.openrdf.model.URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdfRepository, uriInstance);
-			if(mostSpecificClass != null) {
-					clazz = Rdf2GoUtils.reduceNamespace(rdfRepository, mostSpecificClass.getNamespace()) + mostSpecificClass.getLocalName();
+			if (mostSpecificClass != null) {
+				clazz = Rdf2GoUtils.reduceNamespace(rdfRepository, mostSpecificClass.getNamespace()) + mostSpecificClass
+						.getLocalName();
 			}
 		}
 		return clazz;
@@ -127,18 +150,20 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 		String sparqlContentRaw = content.getText();
 
-		if(!Strings.isBlank(DefaultMarkupType.getAnnotation(section, SparqlVisualizationType.VIS_TEMPLATE_CLASS)))  {
+		if (!Strings.isBlank(DefaultMarkupType.getAnnotation(section, SparqlVisualizationType.VIS_TEMPLATE_CLASS))) {
 			// this is a sparql visualization template
 			Collection<String> concepts = config.getConcepts();
 			if (!concepts.isEmpty()) {
 				// we have a concept set via url parameter to fill template
 				String conceptShortURI = concepts.iterator().next();
 				sparqlContentRaw = fillSparqlTemplate(sparqlContentRaw, conceptShortURI);
-			} else {
+			}
+			else {
 				String exampleConcept = DefaultMarkupType.getAnnotation(section, SparqlVisualizationType.VIS_TEMPLATE_EXAMPLE);
-				if(Strings.isBlank(exampleConcept)) {
+				if (Strings.isBlank(exampleConcept)) {
 					// we have an incomplete/inconsistent markup definition
-				} else {
+				}
+				else {
 					sparqlContentRaw = fillSparqlTemplate(sparqlContentRaw, exampleConcept);
 				}
 			}

@@ -37,6 +37,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+import com.denkbares.collections.MultiMap;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.visualization.ConceptNode;
@@ -235,17 +236,83 @@ public class DOTRenderer {
 	}
 
 	private static void simplifyGraph(SubGraphData data) {
-		Set<Edge> myEdges = data.getAllEdges();
+		Set<Edge> myEdges;
 		Set<Edge> redundantEdges;
 
+		//mark all the superProperties (sets superProperty attributes)
+		data = defineSuperProperties(data, data.getSubPropertiesMap());
+
 		//receive all double edges
-		redundantEdges = getDoubleEdges(myEdges);
+		redundantEdges = getDoubleEdges(data.getAllEdges());
 
 		//receive and add all recursive edges
-		redundantEdges.addAll(getRecursiveEdges(myEdges));
+		redundantEdges.addAll(getRecursiveEdges(data.getAllEdges()));
+
+		//receive and add all edges which are SuperProperties
+		redundantEdges.addAll(getRedundantSuperPropertyEdges(data.getAllEdges()));
 
 		// loop through redundant Set to remove all redundant Edges
 		redundantEdges.forEach(data::removeEdge);
+	}
+
+	private static SubGraphData defineSuperProperties(SubGraphData data, MultiMap<String, String> subPropertiesMap) {
+		SubGraphData newData = data;
+		Set<Edge> edges = data.getAllEdges();
+		String relationURI, subURI;
+		ConceptNode s1;
+		ConceptNode o1;
+		ConceptNode s2;
+		ConceptNode o2;
+
+		Set<String> subProperties;
+
+		// Check every Edge for SubProperties
+		for (Edge e1 : edges) {
+			relationURI = e1.getRelationURI();
+			s1 = e1.getSubject();
+			o1 = e1.getObject();
+
+			// Check if there is SubProperties to this Edge's relationURI
+			if (subPropertiesMap.getValues(relationURI).size() > 0) {
+				subProperties = subPropertiesMap.getValues(relationURI);
+
+				// Check edges once again for SubProperties, skip if it's the same edge
+				for (Edge e2 : edges
+						) {
+					// skip if same edge
+					if (e1.equals(e2)) {
+						continue;
+					}
+					else {
+						s2 = e2.getSubject();
+						o2 = e2.getObject();
+						subURI = e2.getRelationURI();
+
+						// check for same Source, Destination (swapped aswell!) and for being SubProperty
+						// mark e1 as SuperProperty if true, continue outer loop (break inner loop)
+						if ((s1.equals(s2) && o1.equals(o2)) || (s1.equals(o2) && o1.equals(s2)) && subProperties.contains(subURI)) {
+							e1.setSuperProperty(true);
+						}
+					}
+				}
+
+			}
+		}
+		return newData;
+	}
+
+	private static Set<Edge> getRedundantSuperPropertyEdges(Set<Edge> edges) {
+		Set<Edge> redundantSuperPopertyEdges = new HashSet<>();
+
+		// Checks if isSuperProperty and adds if true
+		for (Edge e : edges
+				) {
+			if (e.isSuperProperty()) {
+				redundantSuperPopertyEdges.add(e);
+			}
+		}
+
+		return redundantSuperPopertyEdges;
 	}
 
 	private static String generateGraphSource(SubGraphData data, Config config) {

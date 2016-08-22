@@ -21,7 +21,7 @@ package de.knowwe.visualization;
 /**
  * An edge in a named graph comprising a source node (predicate), a named
  * relation (predicate), and a target node (object).
- * 
+ *
  * @author Jochen Reutelshöfer
  * @created 06.12.2012
  */
@@ -31,6 +31,8 @@ public class Edge {
 	private final String predicate;
 	private final ConceptNode object;
 	private boolean isBidirectionalEdge;
+	private boolean isSuperProperty;
+	private String relationURI;
 
 	public boolean isOuter() {
 		return subject.isOuter() || object.isOuter();
@@ -39,8 +41,28 @@ public class Edge {
 	public Edge(ConceptNode s, String p, ConceptNode o) {
 		this.subject = s;
 		this.predicate = p;
+		this.setRelationURI(null);
 		this.object = o;
 		this.setBidirectionalEdge(false);
+		this.setSuperProperty(false);
+	}
+
+	public Edge(ConceptNode s, String p, String r, ConceptNode o) {
+		this.subject = s;
+		this.predicate = p;
+		this.setRelationURI(r);
+		this.object = o;
+		this.setBidirectionalEdge(false);
+		this.setSuperProperty(false);
+	}
+
+	public Edge(ConceptNode s, String p, String r, ConceptNode o, boolean superProperty) {
+		this.subject = s;
+		this.predicate = p;
+		this.setRelationURI(r);
+		this.object = o;
+		this.setBidirectionalEdge(false);
+		this.setSuperProperty(superProperty);
 	}
 
 	@Override
@@ -82,5 +104,21 @@ public class Edge {
 
 	public void setBidirectionalEdge(boolean bidirectionalEdge) {
 		isBidirectionalEdge = bidirectionalEdge;
+	}
+
+	public boolean isSuperProperty() {
+		return isSuperProperty;
+	}
+
+	public void setSuperProperty(boolean superProperty) {
+		isSuperProperty = superProperty;
+	}
+
+	public String getRelationURI() {
+		return relationURI;
+	}
+
+	public void setRelationURI(String relationURI) {
+		this.relationURI = relationURI;
 	}
 }

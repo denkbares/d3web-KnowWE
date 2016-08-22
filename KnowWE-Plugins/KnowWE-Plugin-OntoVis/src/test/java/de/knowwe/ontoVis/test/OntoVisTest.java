@@ -34,9 +34,11 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.rio.RDFParseException;
 
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
+import com.denkbares.plugin.test.InitPluginManager;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
-import com.denkbares.plugin.test.InitPluginManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
@@ -60,6 +62,7 @@ import static org.junit.Assert.assertEquals;
 public class OntoVisTest {
 
 	static Rdf2GoCore rdfRepository = null;
+	static Rdf2GoCore rdfRepository2 = null;
 
 	@BeforeClass
 	public static void setUp() throws IOException, RDFParseException, RepositoryException {
@@ -73,9 +76,20 @@ public class OntoVisTest {
 		rdfRepository.addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
 		rdfRepository.addNamespace("si", "http://www.example.org/ontology#");
 
+		rdfRepository2 = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
+				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", RepositoryConfigs.find("OWL2_RL_OPTIMIZED"));
+		rdfRepository2.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+		rdfRepository2.addNamespace("owl", "http://www.w3.org/2002/07/owl#");
+		rdfRepository2.addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+		rdfRepository2.addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
+		rdfRepository2.addNamespace("sis", "http://www.example.org/newOntology#");
 
 		File ontologyFile = new File("src/test/resources/simpsons-ontology.xml");
+		File ontologyFile2 = new File("src/test/resources/simpsonsSmall-ontology.xml");
+
 		rdfRepository.readFrom(ontologyFile);
+		rdfRepository2.readFrom(ontologyFile2);
+
 	}
 
 	@Test
@@ -437,4 +451,99 @@ public class OntoVisTest {
 		return list;
 	}
 
+	@SuppressWarnings("Duplicates") // Took testSparql as Template
+	@Test
+	public void testSubProperties() {
+		Config config = new Config();
+		config.setCacheDirectoryPath("target");
+		config.setCacheFileID("subProperties");
+		config.setShowLabels("false");
+
+		MultiMap<String, String> subPropertiesMap = new DefaultMultiMap<>();
+
+		// Get all  SubProperties and add all non-recursive to a ArrayList
+		String subPropertyQuery = "SELECT ?Property ?SubProperty WHERE {\n" +
+				"\t  ?SubProperty rdfs:subPropertyOf ?Property\n" +
+				"  }\n";
+		CachedTupleQueryResult propertyRelations = rdfRepository2.sparqlSelect(subPropertyQuery);
+		for (BindingSet propertyRelation : propertyRelations) {
+			String subProperty = propertyRelation.getValue("SubProperty").stringValue();
+			String property = propertyRelation.getValue("Property").stringValue();
+
+			// if SubProperty is not same as Property
+			if (!property.equals(subProperty)) {
+				subPropertiesMap.put(property, subProperty);
+			}
+		}
+
+		String sparql = "SELECT ?xLabel ?y ?zLabel WHERE {\n?x ?y ?z .\n?x rdf:type sis:Human.\n?z rdf:type sis:Human.\n?x rdfs:label ?xLabel.\n?z rdfs:label ?zLabel.\n}";
+
+		LinkToTermDefinitionProvider uriProvider = new DummyLinkToTermDefinitionProvider();
+
+		String sparqlString = Rdf2GoUtils.createSparqlString(rdfRepository2, sparql);
+		CachedTupleQueryResult resultSet = rdfRepository2.sparqlSelect(sparqlString);
+
+		//SubGraphData data = new SubGraphData();
+		SubGraphData data = new SubGraphData(subPropertiesMap);
+		List<String> variables = resultSet.getBindingNames();
+
+		for (BindingSet row : resultSet) {
+
+			Value fromURI = row.getValue(variables.get(0));
+
+			Value relationURI = row.getValue(variables.get(1));
+
+			Value toURI = row.getValue(variables.get(2));
+
+			if (fromURI == null || toURI == null || relationURI == null) {
+				Log.warning("incomplete query result row: " + row);
+				continue;
+			}
+
+			ConceptNode fromNode = Utils.createValue(config, rdfRepository2, uriProvider,
+					null, data, fromURI, true);
+			String relation = Utils.getConceptName(relationURI, rdfRepository2);
+
+			ConceptNode toNode = Utils.createValue(config, rdfRepository2, uriProvider, null,
+					data, toURI, true);
+
+			String relationLabel = Utils.createRelationLabel(config, rdfRepository2, relationURI,
+					relation);
+
+			//Edge newLineRelationsKey = new Edge(fromNode, relationLabel, toNode);
+			Edge newLineRelationsKey = new Edge(fromNode, relationLabel, relationURI.stringValue(), toNode);
+
+			data.addEdge(newLineRelationsKey);
+		}
+
+		String conceptName = data.getConceptDeclarations().iterator().next().getName();
+		config.setConcept(conceptName);
+
+		GraphVisualizationRenderer graphRenderer = new DOTVisualizationRenderer(data,
+				config);
+		graphRenderer.generateSource();
+
+		String generatedSource = graphRenderer.getSource().trim();
+		String expectedSource = null;
+		try {
+			expectedSource = Strings.readFile(new File("src/test/resources/graph-SubProperties.dot")).trim();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// the expressions do not have constant order within the dot-code
+		// therefore we need some fuzzy-compare
+
+		assertEquals(
+				"Length of generated dot-source does not match length of expected dot-source.",
+				String.valueOf(expectedSource).length(),
+				String.valueOf(generatedSource).length());
+		List<Byte> expectedBytes = asSortedByteList(expectedSource);
+		List<Byte> generatedBytes = asSortedByteList(generatedSource);
+
+		assertEquals(
+				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
+				expectedBytes, generatedBytes);
+	}
 }

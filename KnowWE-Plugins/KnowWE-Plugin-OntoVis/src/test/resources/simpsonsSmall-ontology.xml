@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sis="http://www.example.org/newOntology#">
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#mother">
+		<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#father">
+		<rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#Human">
+		<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#SimpsonsSmallConcept">
+		<rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#homer">
+		<rdf:type rdf:resource="http://www.example.org/newOntology#Human" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#lisa">
+		<rdf:type rdf:resource="http://www.example.org/newOntology#Human" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#bart">
+		<rdf:type rdf:resource="http://www.example.org/newOntology#Human" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#relatedWith">
+		<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ReflexiveProperty" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#parent">
+		<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#mother">
+		<rdfs:subPropertyOf rdf:resource="http://www.example.org/newOntology#parent" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#father">
+		<rdfs:subPropertyOf rdf:resource="http://www.example.org/newOntology#parent" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#parent">
+		<rdfs:subPropertyOf rdf:resource="http://www.example.org/newOntology#relatedWith" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#LivingBeing">
+		<rdfs:subClassOf rdf:resource="http://www.example.org/newOntology#SimpsonsSmallConcept" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#Human">
+		<rdfs:subClassOf rdf:resource="http://www.example.org/newOntology#LivingBeing" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#relatedWith">
+		<owl:inverseOf rdf:resource="http://www.example.org/newOntology#relatedWith" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#lisa">
+		<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lisa Simpsons</rdfs:label>
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#LivingBeing">
+		<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Living being</rdfs:label>
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#homer">
+		<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Homer Simpson</rdfs:label>
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#Human">
+		<rdfs:label xml:lang="de">Mensch</rdfs:label>
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#LivingBeing">
+		<rdfs:label xml:lang="de">Lebewesen</rdfs:label>
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#Human">
+		<rdfs:label xml:lang="en">Human</rdfs:label>
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#bart">
+		<rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bart Simpsons</rdfs:label>
+		<sis:relatedWith rdf:resource="http://www.example.org/newOntology#lisa" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#lisa">
+		<sis:relatedWith rdf:resource="http://www.example.org/newOntology#bart" />
+		<sis:father rdf:resource="http://www.example.org/newOntology#homer" />
+	</rdf:Description>
+
+	<rdf:Description rdf:about="http://www.example.org/newOntology#bart">
+		<sis:father rdf:resource="http://www.example.org/newOntology#homer" />
+	</rdf:Description>
+
+</rdf:RDF>

@@ -1,0 +1,12 @@
+digraph {
+sep="+25,25";
+splines = true;
+overlap=false;
+graph [ rankdir="LR" ]
+"Lisa SimpsonsONTOVIS-LITERAL"[  shape="box"  style="filled"  fillcolor="lightgray" label="Lisa Simpsons" ];
+"Bart SimpsonsONTOVIS-LITERAL"[  shape="box"  style="filled"  fillcolor="lightgray" label="Bart Simpsons" ];
+"Homer SimpsonONTOVIS-LITERAL"[  shape="box"  style="filled"  fillcolor="lightgray" label="Homer Simpson" ];
+"Lisa SimpsonsONTOVIS-LITERAL" -> "Homer SimpsonONTOVIS-LITERAL" [ label = "sis:father" arrowtail="normal"  color="black"  ];
+"Lisa SimpsonsONTOVIS-LITERAL" -> "Bart SimpsonsONTOVIS-LITERAL" [ dir="both" label = "sis:relatedWith" arrowtail="normal"  color="black"  ];
+"Bart SimpsonsONTOVIS-LITERAL" -> "Homer SimpsonONTOVIS-LITERAL" [ label = "sis:father" arrowtail="normal"  color="black"  ];
+}

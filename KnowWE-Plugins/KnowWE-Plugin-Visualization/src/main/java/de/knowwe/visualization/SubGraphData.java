@@ -25,6 +25,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.MultiMaps;
+
 /**
  * Contains a sub-set of a graph.
  *
@@ -33,16 +37,20 @@ import java.util.Set;
  */
 public class SubGraphData {
 
-	private final Map<String, ConceptNode> concepts;
-	private final Map<ConceptNode, Set<Edge>> clusters;
+	private final Map<String, ConceptNode> concepts = new LinkedHashMap<>();
+	private final Map<ConceptNode, Set<Edge>> clusters = new HashMap<>();
+	private MultiMap<String, String> subPropertiesMap = new DefaultMultiMap<>();
 
 	/**
 	 *
 	 */
 	public SubGraphData() {
-		concepts = new LinkedHashMap<>();
-		clusters = new HashMap<>();
+		this(MultiMaps.emptyMultiMap());
+	}
+
+	public SubGraphData(MultiMap<String, String> subPropertiesMap) {
 		clusters.put(ConceptNode.DEFAULT_CLUSTER_NODE, new HashSet<>());
+		this.subPropertiesMap = subPropertiesMap;
 	}
 
 	public void createCluster(ConceptNode node) {
@@ -138,4 +146,7 @@ public class SubGraphData {
 		concepts.put(n.getName(), n);
 	}
 
+	public MultiMap<String, String> getSubPropertiesMap() {
+		return subPropertiesMap;
+	}
 }
