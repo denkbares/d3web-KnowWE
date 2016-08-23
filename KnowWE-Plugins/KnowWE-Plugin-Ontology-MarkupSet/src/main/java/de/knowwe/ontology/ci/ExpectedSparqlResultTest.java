@@ -22,7 +22,6 @@ package de.knowwe.ontology.ci;
 import java.util.Collection;
 import java.util.List;
 
-import com.denkbares.semanticcore.CachedTupleQueryResult;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -84,6 +83,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 
 		Section<SparqlContentType> querySection = querySections.iterator().next();
 		Rdf2GoCompiler compiler = Compilers.getCompiler(querySection, Rdf2GoCompiler.class);
+		assert compiler != null;
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 
 		if (core == null) {
