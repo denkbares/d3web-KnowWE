@@ -433,6 +433,14 @@ KNOWWE.core.util = function() {
 			}
 			// other browser
 			return false;
+		},
+
+		getTemplate : function() {
+			return jq$('#knowWEInfoTemplate').val();
+		},
+
+		getPageContentSelector : function() {
+			return KNOWWE.core.util.getTemplate() === "KnowWE" ? '#pagecontent' : '.page-content';
 		}
 	}
 }();
