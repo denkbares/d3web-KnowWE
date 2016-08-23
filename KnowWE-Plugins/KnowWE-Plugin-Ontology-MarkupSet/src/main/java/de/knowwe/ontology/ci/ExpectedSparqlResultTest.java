@@ -94,8 +94,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		String sparqlString = Rdf2GoUtils.createSparqlString(core,
 				querySection.getText());
 
-		CachedTupleQueryResult resultSet = core.sparqlSelect(sparqlString);
-		ResultTableModel actualResultTable = new ResultTableModel(resultSet);
+		ResultTableModel actualResultTable = new ResultTableModel(core.sparqlSelect(sparqlString));
 
 		List<String> variables = actualResultTable.getVariables();
 

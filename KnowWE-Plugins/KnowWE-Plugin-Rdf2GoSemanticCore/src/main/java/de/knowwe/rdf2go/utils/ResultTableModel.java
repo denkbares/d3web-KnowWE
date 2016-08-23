@@ -77,6 +77,7 @@ public class ResultTableModel {
 	public ResultTableModel(CachedTupleQueryResult result) {
 		this.variables = result.getBindingNames();
 		populateTable(result);
+		result.close();
 	}
 
 	public ResultTableModel(List<TableRow> rows, List<String> variables) {
