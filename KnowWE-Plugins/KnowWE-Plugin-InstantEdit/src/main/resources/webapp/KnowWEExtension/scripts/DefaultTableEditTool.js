@@ -468,19 +468,18 @@ Spreadsheet.prototype.createTable = function(model) {
 	this.element.find(" tr > td > div > a").keydown(function(event) {
 		var cell = jq$(this).parents(" tr > td");
 		var data = cell.data("cellInfo");
-		event = new Event(event);
-		var multi = event.shift;
-		var command = event.control || event.meta;
-		var alt = event.alt;
+		var multi = event.shiftKey;
+		var command = event.ctrlKey || event.metaKey;
+		var alt = event.altKey;
 
 		// toplevel handle undo/redo
 		if (_EC.isModifier(event)) {
-			if (event.code == 89 || (event.code == 90 && event.shift)) { // Y
+			if (event.keyCode == 89 || (event.keyCode == 90 && event.shiftKey)) { // Y
 				event.stop();
 				data.spreadsheet.redo();
 				return;
 			}
-			if (event.code == 90) { // Z
+			if (event.keyCode == 90) { // Z
 				event.stop();
 				data.spreadsheet.snapshot();
 				data.spreadsheet.undo();
@@ -488,7 +487,7 @@ Spreadsheet.prototype.createTable = function(model) {
 			}
 		}
 		// otherwise handle event normally
-		var handled = data.spreadsheet.handleKeyDown(cell, event.code, multi, command, alt);
+		var handled = data.spreadsheet.handleKeyDown(cell, event.keyCode, multi, command, alt);
 		if (handled) {
 			event.preventDefault();
 		}
