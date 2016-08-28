@@ -643,7 +643,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	this.uncopyCopiedCells();
 	this.selectCell(row, col);
 	var contentElement = this.getSelectedCell().find("div > a");
-	var pos = contentElement.parent().position();
+	var pos = contentElement.parent().parent().position();
 	var textAreaID = this.createCellAreaID(row, col);
 	var cellText = this.getCellText(row, col);
 	if (cellText.match(/^[ \t\u00A0\u200B]*$/g)) cellText = "";

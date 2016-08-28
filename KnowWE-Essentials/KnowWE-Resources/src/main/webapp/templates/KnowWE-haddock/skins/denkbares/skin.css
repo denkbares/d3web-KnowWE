@@ -2376,7 +2376,7 @@ div.coverflow .knob {
 	border-bottom: 0px;
 }
 
-.sortable .sort {
+/*.sortable .sort {
 	background-image: none;
 }
 
@@ -2407,7 +2407,7 @@ div.coverflow .knob {
 	content: "\f0de";
 	float: left;
 	margin-right: 4px;
-}
+}*/
 
 #searchSubmit {
 	/*background: none;
@@ -2477,4 +2477,16 @@ a.action.quick2top:before {
 
 .backdrop, .slmbx .slmodal {
 	background: #000000;
+}
+
+.tablePopupIcon .toolsMenuDecorator {
+	top: 0;
+}
+
+.wikitable {
+	width: inherit;
+}
+
+table.spreadsheet {
+	font-size: inherit;
 }
