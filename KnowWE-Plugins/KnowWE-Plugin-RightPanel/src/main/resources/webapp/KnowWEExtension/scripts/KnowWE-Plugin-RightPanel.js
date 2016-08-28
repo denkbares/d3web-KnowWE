@@ -75,7 +75,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function rightPanelScroll() {
-		var element = $("rightPanel");
+		var element = jq$("#rightPanel")[0];
 		if (!element)
 			return;
 		var originY = initScrolling;
@@ -86,7 +86,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		var scrollY = window.getScrollTop();
 		var scrollMax = docHeight - wHeight;
 		var favToScroll = favHeight - wHeight;
-		var actionsBottom = $("actionsBottom");
+		var actionsBottom = jq$("#actionsBottom")[0];
 		var disableFixing = (actionsBottom == null
 		|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
 		if (scrollY <= originY || disableFixing) {

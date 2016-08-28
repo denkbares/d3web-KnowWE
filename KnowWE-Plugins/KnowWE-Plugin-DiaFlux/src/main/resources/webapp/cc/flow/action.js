@@ -437,7 +437,7 @@ function ActionEditor(parent, action) {
 	this.objectSelect = null;
 	this.selectableActions = null;
 	this.setVisible(true);
-	
+
 	this.answers = [];
 }
 
@@ -456,14 +456,14 @@ ActionEditor.prototype.getNodeModel = function() {
 ActionEditor.prototype.getAction = function() {
 	this.handleValueSelected();
 	if (this.selectedAction && this.selectedAction.isFormula()) {
-		
+
 		if (this.selectedAction.markup == 'timeDB') {
 			this.selectedAction.setValueString('eval('+this.dom.select('.input')[0].value+')');
 		} else {
 			this.selectedAction.setValueString('('+this.dom.select('.input')[0].value+')');
-			
+
 		}
-		
+
 	}
 	return this.selectedAction;
 }
@@ -520,8 +520,8 @@ ActionEditor.prototype.setVisible = function(visible) {
 		this.dom = this.render();
 		this.parent.appendChild(this.dom);
 		this.objectSelect = new ObjectSelect(
-			this.dom.select('.object')[0], 
-			[KBInfo.QSet, KBInfo.Question, KBInfo.Solution, KBInfo.Flowchart], 
+			this.dom.select('.object')[0],
+			[KBInfo.QSet, KBInfo.Question, KBInfo.Solution, KBInfo.Flowchart],
 			this.selectedAction ? this.selectedAction.getInfoObjectName() : '',
 			function() {this.handleObjectSelected();}.bind(this));
 		this.refreshValueInput();
@@ -543,20 +543,20 @@ ActionEditor.prototype.getFormulaString = function() {
 
 	if (!this.selectedAction || !this.selectedAction.isFormula())
 		return '()';
-	
+
 	var formula = this.selectedAction.getValueString();
-	
+
 	return Action._extractFormulaExpression(this.selectedAction.markup, this.selectedAction.valueString)
-	
+
 
 }
-	
+
 ActionEditor.prototype.render = function() {
 	var formula = this.getFormulaString();
-	
+
 	var dom = Builder.node('div', {
 		className: 'ActionEditor'
-	}, 
+	},
 	[
 		Builder.node('div', {className: 'object'}),	// ObjectSelect parent
 		Builder.node('div', {className: 'value'}),	// value dropdown parent
@@ -573,7 +573,7 @@ ActionEditor.prototype.refreshValueInput = function() {
 	if (!this.isVisible()) return;
 	// remove existing input method
 	var root = this.dom.select('.value')[0];
-	
+
 	// check if object is in cache
 	var infoObject = (this.objectSelect) ? this.objectSelect.getMatchedItem() : null;
 	if (!infoObject) {
@@ -585,7 +585,7 @@ ActionEditor.prototype.refreshValueInput = function() {
 	}
 
 
-	// iterate all actions	
+	// iterate all actions
 	// create drop down list for existing info object
 	// also look for a similar action to the current one
 	// if no such exists, select the first one
@@ -607,37 +607,37 @@ ActionEditor.prototype.refreshValueInput = function() {
 
 	for (var i=0; i<actions.length; i++) {
 		var action = actions[i];
-		if (DiaFluxUtils.isString(action)) 
+		if (DiaFluxUtils.isString(action))
 			continue;
-		
+
 		var actionValueString = action.getValueString();
 		var actionMarkup = action.getMarkup();
 		this.selectableActions.push(action);
-		// ein Wert wird dann selektiert wenn der Wert gleich ist 
+		// ein Wert wird dann selektiert wenn der Wert gleich ist
 		// oder beides eine Formel ist (da dann der Wert in der Drop-Down-Liste leer ist)
 		// Ausserdem wird die erste Action gemerkt, da eventuell keine passende mehr nachfolgt
-		
+
 		if (indexToSelect == -1 // noch keine Aktion ausgewählt -> nimm die erste
 			|| (actionValueString == valueToSelect // sonst muss markup und wert übereinstimmen
 				&& markupToSelect == actionMarkup)) {
-			
+
 			indexToSelect = i;
-		
+
 			this.selectedAction = action;
-		
-		
-		} else if (markupToSelect == actionMarkup 
+
+
+		} else if (markupToSelect == actionMarkup
 				&& action.isFormula() && isSelectFormula) {
 
 			indexToSelect = i;
-			
+
 			// bei Formeln der Wert uebernehmen
 			this.selectedAction = Object.clone(action);
 			this.selectedAction.setValueString(valueToSelect);
 
 		}
-				
-			
+
+
 	}
 
 	var html = '<select ' +
@@ -650,10 +650,10 @@ ActionEditor.prototype.refreshValueInput = function() {
 			html +=  '<optgroup label="--- ' + action + ' ---"></optgroup>';
 		}
 		else {
-			html += '<option value=' + (value++) + 
-				(indexToSelect == i ? ' selected' : '') + 
+			html += '<option value=' + (value++) +
+				(indexToSelect == i ? ' selected' : '') +
 				'>' +
-				action.getDisplayHtml() + 
+				action.getDisplayHtml() +
 				'</option>';
 		}
 	}
@@ -669,10 +669,10 @@ ActionEditor.prototype.destroy = function() {
 
 
 /**
- * ActionPane ist eine Klasse zur Anzeige einer Aktion ohne Editiermoeglichkeit. 
+ * ActionPane ist eine Klasse zur Anzeige einer Aktion ohne Editiermoeglichkeit.
  * Neben dem Rendern der Inhalte ueberwacht ActionPane auch den KBInfo Cache.
  */
- 
+
  function ActionPane(parent, action, onChange, flowname, fcid) {
 	this.parent = $(parent);
 	this.action = action;

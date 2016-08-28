@@ -22,14 +22,14 @@ Wiki.locatemenu = function(base, el) {
 	};
 
 	// some special treatment for search to avoid annoying menu position
-	if (base == $('query')) {
+	if (base == jq$('#query')[0]) {
 		parent = {
 			'x' : base.offsetWidth,
 			'y' : base.offsetHeight
 		};
 	} else {
 		// search for parent defining it own coordinate system
-		for (var anchor = $(el.parentNode); anchor && anchor != document; anchor = $(anchor.parentNode)) {
+		for (var anchor = el.parentNode; anchor && anchor != document; anchor = anchor.parentNode) {
 			var cssPosition = anchor.getStyle('position');
 			if (cssPosition == 'absolute' || cssPosition == 'relative') {
 				parent = anchor.getPosition();
@@ -61,13 +61,13 @@ if (SearchBox) {
 		SearchBox.onPageLoadQuickSearch_original();
 		// remove hover events
 		if (this.query) {
-			$(this.query.form).removeEvents("mouseout");
-			$(this.query.form).removeEvents("mouseover");
+			jq$(this.query.form).off("mouseout");
+			jq$(this.query.form).off("mouseover");
 			// and add focus events instead
-			$(this.query).addEvent("blur", function() {
+			jq$(this.query).blur(function() {
 				this.hover.start(0);
-			}.bind(this)).addEvent("focus", function() {
-				Wiki.locatemenu(this.query, $("searchboxMenu"));
+			}.bind(this)).focus(function() {
+				Wiki.locatemenu(this.query, jq$("#searchboxMenu")[0]);
 				this.hover.start(0.9);
 			}.bind(this));
 		}
@@ -76,14 +76,14 @@ if (SearchBox) {
 	SearchBox.ajaxQuickSearch = function() {
 		// capture original text before first search
 		if (!SearchBox.noSearchTargetText_original) {
-			SearchBox.noSearchTargetText_original = $('searchTarget').innerHTML;
+			SearchBox.noSearchTargetText_original = jq$('#searchTarget')[0].innerHTML;
 		}
 		SearchBox.ajaxQuickSearch_original();
 		// if search is empty, restore original text and relocate menu
 		var a = this.query.value.stripScripts();
 		if ((a == null) || (a.trim() == "") || (a == this.query.defaultValue)) {
-			$('searchTarget').innerHTML = SearchBox.noSearchTargetText_original;
-			Wiki.locatemenu($("query"), $("searchboxMenu"));
+			jq$('#searchTarget')[0].innerHTML = SearchBox.noSearchTargetText_original;
+			Wiki.locatemenu(jq$("#query")[0], jq$("#searchboxMenu")[0]);
 		}
 	}
 }

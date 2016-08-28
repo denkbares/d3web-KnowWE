@@ -241,11 +241,11 @@ KNOWWE.plugin.instantEdit = function() {
         }, 
 
         disableDefaultEditTool: function() {
-            $$('div.InstantEditTool').setStyle("display", "none");
+            jq$('div.InstantEditTool').css("display", "none");
         },
 
         enableDefaultEditTool: function() {
-            $$('div.InstantEditTool').setStyle("display", null);
+            jq$('div.InstantEditTool').css("display", null);
         }, 
         
         getSaveCancelDeleteButtons: function(id, additionalButtonArray) {        

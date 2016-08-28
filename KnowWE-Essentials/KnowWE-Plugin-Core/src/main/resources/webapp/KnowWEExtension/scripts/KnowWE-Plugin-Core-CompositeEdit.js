@@ -332,11 +332,11 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function createTextAreaID(id) {
-		return "defaultEdit" + id;
+		return "#defaultEdit" + id;
 	}
 
 	function postProcessHTML(id) {
-		var textarea = $(createTextAreaID(id));
+		var textarea = jq$(createTextAreaID(id))[0];
 		if (typeof AutoComplete != "undefined") {
 			new AutoComplete(textarea, function(callback, prefix) {
 				var scope = "root";
@@ -834,8 +834,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 				response : {
 					action : 'none',
 					fn : function() {
-						$(window).removeEvents('beforeunload');
-						$(window).removeEvents('unload');
+						window.onbeforeunload = null;
+						window.onunload = null;
 						_KU.hideProcessingIndicator();
 						_CE.disable();
 						_IE.disable(_CEWT.rootID, true);

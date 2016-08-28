@@ -134,7 +134,7 @@ ToolMenu.prototype.getToolMenuHtml = function(node) {
 
 ToolMenu.prototype.hideToolsPopupMenu = function() {
 	this.lastMenuId = null;
-	var old = $('toolPopupMenuID');
+	var old = jq$('#toolPopupMenuID')[0];
 	if (old) {
 		old.remove();
 	}

@@ -47,7 +47,7 @@ DiaFlux.Highlight.highlightFlow = function(flowXML){
 	}
 	var prefix = flowXML.getAttribute('cssprefix');
 	
-	var flowDOM = $(flowid).getElementsBySelector('.FlowchartGroup')[0];
+	var flowDOM = jq$('#' + flowid)[0].getElementsByClassName('FlowchartGroup')[0];
 	var flowchart = flowDOM.__flowchart;
 	
 	var nodes = flowXML.getElementsByTagName('node');
@@ -70,7 +70,7 @@ DiaFlux.Highlight.highlightEdges = function(flowchart, prefix, edges){
 	
 	for (var i = 0; i < edges.length; i++) {
 		var edge = flowchart.findRule(edges[i].getAttribute('id'));
-		var lines = edge.getDOM().getElementsBySelector('.h_line, .v_line');
+		var lines = edge.getDOM().getElementsByClassName('h_line, v_line');
 		DiaFlux.Highlight.addAttributesToDOM(lines, edges[i].attributes, prefix);
 	}
 }

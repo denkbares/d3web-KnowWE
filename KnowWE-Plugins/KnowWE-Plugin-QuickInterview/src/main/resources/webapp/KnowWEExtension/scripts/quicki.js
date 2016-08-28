@@ -175,7 +175,7 @@ KNOWWE.plugin.quicki = function() {
 
 					var groupEl = _KS('#group_' + qid);
 					var questionnaire = _KS('#' + qid);
-					var indicated = $(questionnaire).hasClass('indicated');
+					var indicated = questionnaire.hasClass('indicated');
 
 					// 0 means set style and image to invisible if questionnaire
 					// is not indicated
@@ -629,7 +629,7 @@ KNOWWE.plugin.quicki = function() {
 			var group = _KS('#group_' + questionnaire.id);
 
 			if (group.style.display == 'block') {
-				var indicated = $(questionnaire).hasClass('indicated');
+				var indicated = questionnaire.hasClass('indicated');
 				if (indicated) {
 					questionnaireVis[questionnaire.id] = 2;
 				} else {

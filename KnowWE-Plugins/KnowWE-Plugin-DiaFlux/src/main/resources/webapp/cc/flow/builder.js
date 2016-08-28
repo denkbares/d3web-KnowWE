@@ -90,7 +90,7 @@ var Builder = {
     for(attribute in attributes)
       attrs.push((attribute in this.ATTR_MAP ? this.ATTR_MAP[attribute] : attribute) +
           '="' + attributes[attribute].toString().escapeHTML() + '"');
-      //TODO    
+      //TODO
       //.gsub(/"/,'&quot;') + '"');
     return attrs.join(" ");
   },

@@ -171,7 +171,7 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 * adds the menu dropdowns to alls cells in first row / col
 	 */
 	function addMenuHandlers(table) {
-		var rows = $(table).getElements('tr');
+		var rows = table.getElements('tr');
 		var result = [];
 		
 		if (rows.length == 0)
@@ -425,7 +425,7 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 		 *
 		 */
 	    postProcessHTML : function(id) {
-			var editarea = $(id);
+			var editarea = jq$('#' + id)[0];
 			
 			removeDMFrame(editarea);
 			

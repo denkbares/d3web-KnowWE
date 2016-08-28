@@ -2,7 +2,7 @@ function TextArea(area) {
 	if (area.textarea != null) {
 		return area.textarea;
 	}
-	this.area = $(area);
+	this.area = jq$(area)[0];
 	area.textarea = this;
 	this.area.undoHistory = [];
 	this.area.redoHistory = [];
@@ -37,6 +37,7 @@ TextArea.isSelectionAtStartOfLine = function(area) {
 TextArea.replaceSelection = function(a, g) {
 	return new TextArea(a).replaceSelection(g);
 };
+
 TextArea.prototype.isLongerSelection = function() {
 	return this.getSelection().length > 0 && this.getSelection().indexOf('\n') >= 0;
 };
@@ -44,7 +45,7 @@ TextArea.prototype.handleKeyDown = function(event) {
 	// with this line, we remove a hack of jspwiki-edit.js,
 	// that is no longer needed but instead messes with keydown
 	// events of tab (keycode == 9) in chrome/webkit
-	var $editorarea = $('editorarea');
+	var $editorarea = jq$('#editorarea')[0];
 	if ($editorarea) $editorarea.removeEvents('keydown');
 
 	event = jq$.event.fix(event);
@@ -211,7 +212,7 @@ TextArea.prototype.moveLines = function(direction) {
 	var newStart = insertionPos;
 	var newEnd = -1;
 
-	var text = area.getValue();
+	var text = area.value;
 	var splitLines = lines.split("\n");
 	if (direction == "up") {
 		insertionPos = text.substring(0, newStart - 1).lastIndexOf('\n') + 1;
@@ -335,7 +336,7 @@ TextArea.prototype.moveLines = function(direction) {
 };
 TextArea.prototype.getLinesLimits = function() {
 	var area = this.area;
-	var text = area.getValue();
+	var text = area.value;
 	var sel = this.getSelectionCoordinates();
 	var sel1 = Math.min(sel.start, sel.end);
 	var sel2 = Math.max(sel.start, sel.end);
@@ -357,7 +358,7 @@ TextArea.prototype.undo = function() {
 		if (area.undoHistory.length == 0) return;
 		var shot = area.undoHistory.pop();
 		area.redoHistory.push(shot);
-		if (shot.text != area.getValue()) break;
+		if (shot.text != area.value) break;
 	}
 	this.restoreSnapshot(shot);
 };
@@ -367,13 +368,13 @@ TextArea.prototype.redo = function() {
 		if (area.redoHistory.length == 0) return;
 		var shot = area.redoHistory.pop();
 		area.undoHistory.push(shot);
-		if (shot.text != area.getValue()) break;
+		if (shot.text != area.value) break;
 	}
 	this.restoreSnapshot(shot);
 };
 TextArea.prototype.snapshot = function() {
 	var area = this.area;
-	var text = area.getValue();
+	var text = area.value;
 	// avoid duplicate entries
 	if (area.undoHistory.length > 0 && area.undoHistory[area.undoHistory.length - 1].text == text) return;
 	if (area.redoHistory.length > 0 && area.redoHistory[area.redoHistory.length - 1].text == text) return;
@@ -400,7 +401,7 @@ TextArea.prototype.restoreSnapshot = function(shot) {
 };
 TextArea.prototype.getSelection = function() {
 	var b = this.getSelectionCoordinates();
-	var text = this.area.getValue().substring(b.start, b.end);
+	var text = this.area.value.substring(b.start, b.end);
 	return text;
 };
 TextArea.prototype.setSelection = function(f, a) {
@@ -429,7 +430,7 @@ TextArea.prototype.getCursor = function() {
 
 TextArea.prototype.getIntend = function() {
 	var area = this.area;
-	var text = area.getValue().substring(0, this.getCursor(area));
+	var text = area.value.substring(0, this.getCursor(area));
 	var pos = text.lastIndexOf("\n") + 1;
 	var intend = "";
 	while (pos < text.length) {
@@ -441,7 +442,7 @@ TextArea.prototype.getIntend = function() {
 };
 TextArea.prototype.getSelectionCoordinates = function() {
 	var area = this.area;
-	var f = $(area), e = {
+	var f = area, e = {
 		start : 0,
 		end : 0,
 		thin : true

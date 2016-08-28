@@ -197,7 +197,7 @@ Element.scrollVisible = function(scrollPane, element) {
 	var x2 = posElement.left + element.offsetWidth;
 	var y1 = posElement.top;
 	var y2 = posElement.top + element.offsetHeight;
-	
+
 	var posScroll = $(scrollPane).cumulativeOffset();
 	var sx1 = posScroll.left;
 	var sx2 = posScroll.left + scrollPane.offsetWidth;

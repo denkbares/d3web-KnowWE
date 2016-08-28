@@ -764,7 +764,7 @@ Flowchart.prototype.getSelection = function() {
  * @param {Node | Rule | [Node, ..., Rule, ...]} nodeOrRuleOrArray
  */
 Flowchart.prototype.removeFromSelection = function(nodeOrRuleOrArray) {
-	// create new and defined selection array 
+	// create new and defined selection array
 	// for the items to be selected
 	var items;
 	if (nodeOrRuleOrArray == null) {

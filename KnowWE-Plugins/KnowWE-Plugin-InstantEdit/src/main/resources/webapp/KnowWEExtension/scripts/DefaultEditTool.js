@@ -7,7 +7,7 @@ KNOWWE.plugin.defaultEditTool = function() {
     return {
     	
 	    generateHTML : function(id) {
-	    	return "<textarea id = " + createTextAreaID(id) + " class='defaultEditTool' style='height: " + $(id).clientHeight + "px;'>"
+	    	return "<textarea id = " + createTextAreaID(id) + " class='defaultEditTool' style='height: " + jq$('#' + id)[0].clientHeight + "px;'>"
 		    	+ _EC.encodeForHtml(_EC.getWikiText(id))
 		    	+ "</textarea>";
 	    },
@@ -17,7 +17,7 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    },
 	    
 	    postProcessHTML : function(id) {
-	    	var textarea = $(createTextAreaID(id));
+	    	var textarea = jq$('#' + createTextAreaID(id))[0];
 	    	if (typeof AutoComplete != "undefined") {	    		
 	    		new AutoComplete(textarea);
 	    	}
@@ -35,7 +35,7 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    },
 	    
 	    unloadCondition : function(id) {
-	    	var textArea = $(createTextAreaID(id));
+	    	var textArea = jq$('#' + createTextAreaID(id))[0];
 			if (textArea) {
 	    		return textArea.defaultValue == textArea.value;
 	    	}
@@ -43,8 +43,8 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    },
 	    
 	    generateWikiText : function(id) {
-	    	if ($(createTextAreaID(id))) {
-	    		return $(createTextAreaID(id)).value;
+	    	if (jq$('#' + createTextAreaID(id))[0]) {
+	    		return jq$('#' + createTextAreaID(id)[0]).value;
 	    	} else {
 	    		return _EC.getWikiText(id);
 	    	}
