@@ -20,7 +20,7 @@
 .ui-dialog {
 	border: 1px solid #9ACBFB !important;
 	padding: 0 0 0 0 !important;
-	z-index: 1000 !important;
+	z-index: 3000 !important;
 }
 
 .ui-dialog .ui-dialog-titlebar {

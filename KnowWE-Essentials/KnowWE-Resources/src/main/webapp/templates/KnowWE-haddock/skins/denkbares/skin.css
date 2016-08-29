@@ -2490,3 +2490,7 @@ a.action.quick2top:before {
 table.spreadsheet {
 	font-size: inherit;
 }
+
+.edittoolbar {
+	left: -76px !important;
+}
