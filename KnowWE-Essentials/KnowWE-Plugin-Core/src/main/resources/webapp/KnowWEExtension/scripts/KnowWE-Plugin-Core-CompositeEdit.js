@@ -336,7 +336,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function postProcessHTML(id) {
-		var textarea = jq$(createTextAreaID('#' + id))[0];
+		var textarea = jq$('#' + createTextAreaID(id))[0];
 		if (typeof AutoComplete != "undefined") {
 			new AutoComplete(textarea, function(callback, prefix) {
 				var scope = "root";
@@ -707,7 +707,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 				}, {
 					duration : 500,
 					step : function() {
-						jq$(_CE.dialogDiv).dialog('option', 'position', 'center');
+						jq$(_CE.dialogDiv).dialog('option', 'position', {my: 'center', at: 'center', of: window});
 					}
 				});
 				jq$(_CE.dialogDiv).dialog("option", "height", window.innerHeight);
@@ -721,7 +721,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 				}, {
 					duration : 500,
 					step : function() {
-						jq$(_CE.dialogDiv).dialog('option', 'position', 'center');
+						jq$(_CE.dialogDiv).dialog('option', 'position', {my: 'center', at: 'center', of: window});
 					}
 				});
 				jq$(_CE.dialogDiv).dialog("option", "height", window.innerHeight * .9);
