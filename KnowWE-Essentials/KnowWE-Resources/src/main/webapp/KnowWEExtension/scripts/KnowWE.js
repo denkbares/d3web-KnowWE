@@ -536,15 +536,16 @@ KNOWWE.core.util.form = function() {
 		showExtendedPanel : function() {
 			var el = this;
 
-			var style = el._next().style;
+			var nextEl = el._next();
+			var style = nextEl.style;
 			el.removeAttribute('class');
 
 			if (style['display'] == 'inline') {
-				style['display'] = 'none';
+				nextEl.style.setProperty('display', 'none', 'important');
 				//el.setAttribute('class', 'show extend pointer extend-panel-down');
 				el.setAttribute('class', 'show extend pointer extend-panel-right');
 			} else {
-				style['display'] = 'inline';
+				nextEl.style.setProperty('display', 'inline', 'important');
 				el.setAttribute('class', 'show extend pointer extend-panel-down');
 			}
 		}

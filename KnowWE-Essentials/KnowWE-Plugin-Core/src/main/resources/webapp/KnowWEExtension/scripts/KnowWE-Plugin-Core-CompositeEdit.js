@@ -332,11 +332,11 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function createTextAreaID(id) {
-		return "#defaultEdit" + id;
+		return "defaultEdit" + id;
 	}
 
 	function postProcessHTML(id) {
-		var textarea = jq$(createTextAreaID(id))[0];
+		var textarea = jq$(createTextAreaID('#' + id))[0];
 		if (typeof AutoComplete != "undefined") {
 			new AutoComplete(textarea, function(callback, prefix) {
 				var scope = "root";

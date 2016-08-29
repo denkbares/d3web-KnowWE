@@ -2494,3 +2494,12 @@ table.spreadsheet {
 .edittoolbar {
 	left: -76px !important;
 }
+
+.objectInfoPanel.hidden {
+	display: inline !important;
+	visibility: visible !important;
+}
+
+.ui-dialog {
+	font-size: 12px;
+}
