@@ -699,6 +699,10 @@ td .information, td .warning, td .error {
 	border-top: 1px solid #d9d9d9;
 }
 
+.zebra-table {
+	overflow: auto;
+}
+
 /* CHECK */
 
 /* +++ 350 Attachments +++ */
