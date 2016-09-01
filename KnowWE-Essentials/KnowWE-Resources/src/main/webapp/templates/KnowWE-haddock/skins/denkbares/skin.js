@@ -214,7 +214,7 @@ DenkbaresSkin.scrollFavorites = function() {
 };
 
 DenkbaresSkin.initPageScroll = function() {
-	DenkbaresSkin.originalPageOffset = jq$("#page").offset().top;
+	DenkbaresSkin.originalPageOffset = jq$(".page").offset().top;
 };
 
 DenkbaresSkin.adjustPageHeight = function() {
@@ -289,10 +289,6 @@ DenkbaresSkin.scrollTop = function() {
 	return Math.min(Math.max(jq$(window).scrollTop(), 0), maxScroll);
 };
 
-DenkbaresSkin.resizeQuickSearchBox = function() {
-	//TODO
-};
-
 jq$(document).ready(function() {
 	DenkbaresSkin.cleanTrail();
 
@@ -303,6 +299,8 @@ jq$(document).ready(function() {
 	});
 
 	DenkbaresSkin.adjustPageHeight();
+	if (window.getWidth() < 700) DenkbaresSkin.hideSidebar();
+	else DenkbaresSkin.showSidebar();
 
 	// add auto-resize to edit page
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
@@ -327,8 +325,4 @@ jq$(window).scroll(DenkbaresSkin.highlightActiveTOC);
 jq$(window).resize(DenkbaresSkin.scrollFavorites);
 jq$(window).resize(DenkbaresSkin.resizeFlows);
 jq$(window).resize(DenkbaresSkin.adjustPageHeight);
-jq$(window).resize(function() {
-	if (window.getWidth() < 700) DenkbaresSkin.hideSidebar();
-	else DenkbaresSkin.showSidebar();
-});
 jq$(document).on('quickSearchResult', DenkbaresSkin.resizeQuickSearchBox);

@@ -44,7 +44,7 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    
 	    generateWikiText : function(id) {
 	    	if (jq$('#' + createTextAreaID(id))[0]) {
-	    		return jq$('#' + createTextAreaID(id)[0]).value;
+	    		return jq$('#' + createTextAreaID(id))[0].value;
 	    	} else {
 	    		return _EC.getWikiText(id);
 	    	}
