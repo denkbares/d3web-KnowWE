@@ -1100,9 +1100,16 @@ a.tool:hover {
 }
 
 /* +++ 460 Header +++ */
-.breadcrumbs {
-	font-size: 90%;
-	padding: 0 1.5em 1em 0;
+.breadcrumb {
+	color: white;
+}
+
+.breadcrumb a {
+	opacity: 0.8;
+}
+
+.breadcrumb a:hover {
+	color: inherit;
 }
 
 /* +++ 465 InfoContent +++ */
@@ -2477,6 +2484,7 @@ a.action.quick2top:before {
 
 .stickyOn {
 	z-index: 2000;
+	width: 100% !important;
 }
 
 .backdrop, .slmbx .slmodal {
@@ -2506,4 +2514,8 @@ table.spreadsheet {
 
 .ui-dialog {
 	font-size: 12px;
+}
+
+li.findpages .btn {
+	margin: 0;
 }

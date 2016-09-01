@@ -221,69 +221,30 @@ DenkbaresSkin.adjustPageHeight = function() {
 	jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
 }
 
-/*DenkbaresSkin.scrollPage = function() {
- var page = jq$("#page");
- var body = jq$('body');
- var scrollTop = DenkbaresSkin.scrollTop();
- var windowHeight = jq$(window).height();
- var actionHeight = jq$('#actionsTop').height();
- var pageLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
- DenkbaresSkin.favoriteStatus.pageLeftExpanded : DenkbaresSkin.favoriteStatus.pageLeftCollapsed;
- if (page.height() < windowHeight
- && page.offset().top - scrollTop < -actionHeight) {
- // setting the page position fixed will cause the document width to be reduced
- // we set it manually to avoid odd behavior
- body.width(jq$(document).width());
- page.css({
- position : 'fixed',
- top : "0",
- left : (pageLeft - DenkbaresSkin.scrollLeft()) + "px"
- });
- }
- if (scrollTop < DenkbaresSkin.originalPageOffset + actionHeight) {
- page.css({
- position : 'absolute',
- top : "auto",
- left : pageLeft + "px"
- });
- body.width("auto");
- }
- };*/
-
 DenkbaresSkin.cleanTrail = function() {
-	var breadcrumbs = jq$('.breadcrumbs');
+	var breadcrumbs = jq$('.breadcrumb');
 	if (breadcrumbs.length == 0)
 		return;
 	var crumbs = breadcrumbs.find('a.wikipage');
 	if (crumbs.length == 0)
 		return;
 	var crumbsCheck = {};
-	var removeBecauseLeadingComma = false;
 	// remove duplicate entries
 	for (var i = crumbs.length - 1; i >= 0; i--) {
 		var crumb = crumbs[i];
-		var crumbHtml = jq$(crumb).clone().wrap('<p>').parent().html();
-		var existingEntry = crumbsCheck[crumbHtml];
-		if (typeof existingEntry == "undefined") {
-			crumbsCheck[crumbHtml] = i;
-		} else {
+		var crumbText = jq$(crumb).text();
+		if (crumbsCheck[crumbText]) {
+			if (jq$(crumb).prev().hasClass('divider')) {
+				jq$(crumb).prev().remove();
+			}
 			jq$(crumb).remove();
-			if (i == 0)
-				removeBecauseLeadingComma = true;
+		} else {
+			crumbsCheck[crumbText] = true;
 		}
 	}
-	// remove superfluous commas
-	var lastNodeText = "";
-	for (i = 0; i < breadcrumbs[0].childNodes.length; i++) {
-		var childNode = breadcrumbs[0].childNodes[i];
-		var tempValue = childNode.nodeValue;
-		if ((lastNodeText == ", " || removeBecauseLeadingComma == true)
-			&& tempValue == ", ") {
-			childNode.nodeValue = "";
-			removeBecauseLeadingComma = false;
-		}
-		lastNodeText = tempValue;
-
+	var firstRemainingCrumb = jq$('.breadcrumb a.wikipage')[0];
+	if (jq$(firstRemainingCrumb).prev().hasClass('divider')) {
+		jq$(firstRemainingCrumb).prev().remove();
 	}
 };
 
@@ -328,10 +289,12 @@ DenkbaresSkin.scrollTop = function() {
 	return Math.min(Math.max(jq$(window).scrollTop(), 0), maxScroll);
 };
 
+DenkbaresSkin.resizeQuickSearchBox = function() {
+	//TODO
+};
 
 jq$(document).ready(function() {
 	DenkbaresSkin.cleanTrail();
-	//DenkbaresSkin.initPageScroll();
 
 	// workaround, because sometimes we are too early
 	window.setTimeout(function() {
@@ -361,7 +324,6 @@ KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows)
 
 jq$(window).scroll(DenkbaresSkin.scrollFavorites);
 jq$(window).scroll(DenkbaresSkin.highlightActiveTOC);
-//jq$(window).scroll(DenkbaresSkin.scrollPage);
 jq$(window).resize(DenkbaresSkin.scrollFavorites);
 jq$(window).resize(DenkbaresSkin.resizeFlows);
 jq$(window).resize(DenkbaresSkin.adjustPageHeight);
@@ -369,3 +331,4 @@ jq$(window).resize(function() {
 	if (window.getWidth() < 700) DenkbaresSkin.hideSidebar();
 	else DenkbaresSkin.showSidebar();
 });
+jq$(document).on('quickSearchResult', DenkbaresSkin.resizeQuickSearchBox);
