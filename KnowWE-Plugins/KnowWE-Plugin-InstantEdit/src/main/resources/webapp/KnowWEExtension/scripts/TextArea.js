@@ -45,8 +45,8 @@ TextArea.prototype.handleKeyDown = function(event) {
 	// with this line, we remove a hack of jspwiki-edit.js,
 	// that is no longer needed but instead messes with keydown
 	// events of tab (keycode == 9) in chrome/webkit
-	var $editorarea = jq$('#editorarea')[0];
-	if ($editorarea) $editorarea.removeEvents('keydown');
+	var $editor = jq$('.editor')[0];
+	if ($editor) $editor.removeEvents('keydown');
 
 	event = jq$.event.fix(event);
 	if (_EC.isModifier(event)) {

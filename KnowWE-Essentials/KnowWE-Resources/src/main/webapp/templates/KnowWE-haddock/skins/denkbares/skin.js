@@ -302,6 +302,9 @@ jq$(document).ready(function() {
 	if (window.getWidth() < 700) DenkbaresSkin.hideSidebar();
 	else DenkbaresSkin.showSidebar();
 
+	// add ID #favorites to sidebar
+	jq$(jq$('.sidebar')[0]).attr('id', 'favorites');
+
 	// add auto-resize to edit page
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
 		var editPane = jq$('form #editorarea');
