@@ -89,6 +89,8 @@ public abstract class AbstractActionServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Log.fine("GET: " + request.getRequestURI() + "?" + request.getQueryString());
+		response.setCharacterEncoding("UTF-8");
+
 		if (request.getPathInfo() == null || request.getPathInfo().length() <= 1) {
 			// no path provided (or only "/" as path)
 			Log.info("no path provided (or only \"/\" as path): " + request.getRequestURI());
@@ -96,7 +98,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 					"<b>ActionServlet:</b> No path provided (or only \"/\" as path): "
 							+ request.getRequestURI());
 		}
-		else if (request.getPathInfo().equals("/command")) {
+		else if ("/command".equals(request.getPathInfo())) {
 			// xml base command list
 			doXmlActions(request, response, new StringReader(request.getQueryString()));
 		}
@@ -109,6 +111,8 @@ public abstract class AbstractActionServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Log.fine("POST: " + request.getRequestURI());
+		response.setCharacterEncoding("UTF-8");
+
 		if (request.getPathInfo().equals("/command")) {
 			doXmlActions(request, response, request.getReader());
 		}
