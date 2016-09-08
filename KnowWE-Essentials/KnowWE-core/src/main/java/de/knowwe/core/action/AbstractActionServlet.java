@@ -113,7 +113,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 		Log.fine("POST: " + request.getRequestURI());
 		response.setCharacterEncoding("UTF-8");
 
-		if (request.getPathInfo().equals("/command")) {
+		if ("/command".equals(request.getPathInfo())) {
 			doXmlActions(request, response, request.getReader());
 		}
 		else {
@@ -138,6 +138,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 
 	protected abstract UserActionContext createActionContext(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
+	@SuppressWarnings("UnusedParameters")
 	private void doXmlActions(HttpServletRequest request, HttpServletResponse response, Reader xmlReader) throws IOException {
 		throw new IllegalStateException("Not implemented yet");
 	}
@@ -146,7 +147,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 	 * Method that is called to execute the action of the specified user context.
 	 *
 	 * @param context the action context to be executed
-	 * @throws IOException
+	 * @throws IOException if ServletResponse is not writable
 	 */
 	protected void doAction(UserActionContext context) throws IOException {
 		Action action = context.getAction();
@@ -189,5 +190,4 @@ public abstract class AbstractActionServlet extends HttpServlet {
 
 		return path.substring(pathStartPos + 1, pathEndPos);
 	}
-
 }
