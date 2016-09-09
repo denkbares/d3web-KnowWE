@@ -36,163 +36,8 @@
  */
 
 /* +++ 010 LAYOUT of main ID blocks +++ */
-#wikibody {
-	margin: 0em 0em;
-	padding: 0em 0em;
-}
-
-#header {
-	background: #ffffff; /* Old browsers */
-	background: -moz-linear-gradient(top, #ffffff 57%, #f5f5f5 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(57%, #ffffff), color-stop(100%, #f5f5f5)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #ffffff 57%, #f5f5f5 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #ffffff 57%, #f5f5f5 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #ffffff 57%, #f5f5f5 100%); /* IE10+ */
-	background: linear-gradient(to bottom, #ffffff 57%, #f5f5f5 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f5f5f5', GradientType=0); /* IE6-9 */
-}
-
-#header, #footer {
-	padding: 0 5px 25px 250px;
-}
-
-/*#header .applicationlogo {
-	position: absolute;
-	left: 0em;
-	right: auto;
-	width: 225px;
-}*/
-
-#footer {
-	display: none;
-}
-
-#header .userbox {
-	float: right;
-	white-space: nowrap;
-}
-
-#header .pagename {
-	float: left;
-}
-
-#header .searchbox {
-	clear: right;
-	float: right;
-}
-
-#header .breadcrumbs {
-	clear: left;
-}
-
-#favorites {
-	margin-top: 0;
-	width: 223px;
-	padding: 0 13px 15px 13px;
-	left: 0;
-	border-left: 0;
-	border-top: 0;
-	border-bottom: 0;
-	background-color: #F5F5F5;
-	border-right: 1px solid #9ACBFB;
-}
-
-#favorites .userbox {
-	border: 1px solid #ddd;
-	margin-bottom: 0.5em;
-	padding: 0.25em 0.5em;
-	display: none;
-}
-
-#favorites .login, #favorites .logoff {
-	clear: left;
-}
-
-#favorites-toggle {
-	position: fixed;
-	cursor: w-resize;
-	margin-left: -5px;
-	width: 5px;
-	top: 0;
-	bottom: 0;
-	z-index: 20;
-}
-
-#footer .copyright {
-}
-
-#content {
-	margin: 0 0;
-	tab-size: 4;
-}
-
-/*#wikibody.fav-left*/
-#page, #wikibody.fav-right #favorites {
-	float: right;
-}
-
-#wikibody.fav-right #page, /*#wikibody.fav-left*/
-#favorites {
-	float: left;
-}
-
-/*ie6 hack*/
-* html /*#wikibody.fav-left*/ #page, * html #wikibody.fav-right #favorites {
-	margin-left: -3px; /*Three Pixel Text Jog*/
-}
-
-* html #wikibody.fav-right #page, * html /*#wikibody.fav-left*/ #favorites {
-	margin-right: -3px; /*Three Pixel Text Jog*/
-}
-
-#wikibody.fav-right #header, #wikibody.fav-right #footer {
-	padding: 0 20% 0 0;
-}
-
-/*#wikibody.fav-right #header .applicationlogo {
-	left: auto;
-	right: 2em;
-}*/
-
-#page {
-	position: absolute;
-	left: 249px;
-	right: 0px;
-	margin-top: -23px;
-	width: auto;
-	z-index: 1;
-}
-
-#page > .tabs {
-	border-right: 0px;
-	border-bottom: 0px;
-	margin-bottom: 0px;
-}
-
-#wikibody.fav-slide #page {
-	width: 100%;
-}
-
-#actionsTop {
-	float: right;
-	z-index: 10;
-	padding-right: 5px;
-}
-
-/* ie hack */
-* html #actionsTop {
-	margin-top: 1px;
-}
-
-#actionsBottom {
-	text-align: right;
-	margin-bottom: 0px;
-	border-left: 1px solid #9ACBFB;
-	padding-top: 0.5em;
-}
-
-* html #header, * html .userbox {
-	height: 1% /*hasLayout:true; --ie peekaboo/layout hack */
+.header, .footer {
+	background-color: #162746;
 }
 
 b.roundedCorners {
@@ -699,6 +544,10 @@ td .information, td .warning, td .error {
 	border-top: 1px solid #d9d9d9;
 }
 
+.zebra-table {
+	overflow: auto;
+}
+
 /* CHECK */
 
 /* +++ 350 Attachments +++ */
@@ -1096,9 +945,18 @@ a.tool:hover {
 }
 
 /* +++ 460 Header +++ */
-.breadcrumbs {
-	font-size: 90%;
-	padding: 0 1.5em 1em 0;
+.breadcrumb {
+	color: white;
+}
+
+.breadcrumb a, .breadcrumb .divider {
+	opacity: 0.6;
+}
+
+.breadcrumb a:hover {
+	color: inherit;
+	text-decoration: none;
+	opacity: 1;
 }
 
 /* +++ 465 InfoContent +++ */
@@ -2376,44 +2234,6 @@ div.coverflow .knob {
 	border-bottom: 0px;
 }
 
-.sortable .sort {
-	background-image: none;
-}
-
-.sortable .sort:before {
-	content: "\f0dc";
-	font-family: FontAwesome;
-	float: left;
-	margin-right: 4px;
-}
-
-.sortable .sortDescending {
-	background-image: none;
-}
-
-.sortable .sortDescending:before {
-	font-family: FontAwesome;
-	content: "\f0dd";
-	float: left;
-	margin-right: 4px;
-}
-
-.sortable .sortAscending {
-	background-image: none;
-}
-
-.sortable .sortAscending:before {
-	font-family: FontAwesome;
-	content: "\f0de";
-	float: left;
-	margin-right: 4px;
-}
-
-#searchSubmit {
-	/*background: none;
-	top: 2px;*/
-}
-
 #searchSubmit:before {
 	content: "\f002";
 	font-family: FontAwesome;
@@ -2434,11 +2254,6 @@ div.coverflow .knob {
 	top: -2px;
 	margin-left: 3px;
 
-}
-
-#rightPanel-toggle-button {
-	padding: 5px 0.5em 2px 0.5em !important;
-	text-decoration: none;
 }
 
 #favorites-toggle-button i:hover {
@@ -2473,8 +2288,111 @@ a.action.quick2top:before {
 
 .stickyOn {
 	z-index: 2000;
+	width: 100% !important;
 }
 
 .backdrop, .slmbx .slmodal {
 	background: #000000;
 }
+
+.tablePopupIcon .toolsMenuDecorator {
+	top: 0;
+}
+
+.wikitable {
+	width: inherit;
+}
+
+table.spreadsheet {
+	font-size: inherit;
+}
+
+.edittoolbar {
+	left: -76px !important;
+}
+
+.objectInfoPanel.hidden {
+	display: inline !important;
+	visibility: visible !important;
+}
+
+.ui-dialog {
+	font-size: 12px;
+}
+
+li.findpages .btn {
+	margin: 0;
+}
+
+#searchForm > .btn:hover, #searchForm > .btn:focus,
+.userbox > .btn:hover, .userbox > .btn:focus {
+	color: #777
+}
+
+#findSuggestionMenu {
+	position:fixed;
+	color:white;
+	background-color:rgba(0,0,0,0.7);
+	-moz-border-radius:10px;
+	-webkit-border-radius:5px;
+	border-radius:10px;
+	-webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
+	box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
+	z-index:10;
+	font-size:85%;
+	overflow:hidden;
+}
+/* ie6 hack */
+* html #findSuggestionMenu {
+	background:url(images/tip.png) top left;
+}
+/* ie7 hack */
+*:first-child+html #findSuggestionMenu {
+	background:url(images/tip.png) top left;
+}
+
+#findSuggestionMenu ul {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+#findSuggestionMenu li {
+	padding:0.25em 0.5em;
+	cursor:pointer;
+}
+#findSuggestionMenu .hover {
+	background-color:rgba(0,0,0,0.5);
+	-moz-border-radius:10px;
+	-webkit-border-radius:5px;
+	border-radius:10px;
+}
+/* ie6 hack */
+* html #findSuggestionMenu .hover {
+	background-color:black;
+}
+/* ie7 hack */
+*:first-child+html #findSuggestionMenu .hover {
+	background-color:black;
+}
+
+#rightPanel {
+	border: none;
+}
+#rightPanel .topbar {
+	border: none;
+	background: #e5e8ed;
+}
+
+#rightPanel .tooltip {
+	display: inline;
+	z-index: inherit;
+	opacity: 1;
+	line-height: inherit;
+	font-size: inherit;
+	position: inherit;
+}
+
+.rightpanelhide {
+	display: none;
+}
+

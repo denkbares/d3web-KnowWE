@@ -47,7 +47,7 @@ if (typeof KNOWWE.core.plugin == "undefined" || !KNOWWE.core.plugin) {
 /**
  * Namespace: KNOWWE.core.plugin.rightPanel for debugging D3web expressions in KnowWE
  */
-KNOWWE.core.plugin.rightPanel = function () {
+KNOWWE.core.plugin.rightPanel = function() {
 
 	var rightPanelStorageKey = "rightPanel";
 
@@ -60,6 +60,37 @@ KNOWWE.core.plugin.rightPanel = function () {
 	var initScrolling = null;
 
 	var windowWidth;
+
+	var isOnBottom = false;
+
+	jq$(window).resize(function() {
+		if (showSidebar) {
+			windowWidth = jq$(window).width();
+
+			var resize = jq$(window).width() - jq$('#rightPanel').width();
+			if (KNOWWE.core.util.isKnowWETemplate()) {
+				resize -= jq$(KNOWWE.core.util.getPageSelector()).offset().left;
+				jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
+				var pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
+				rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
+			} else {
+				if (windowWidth < 600) {
+					KNOWWE.core.plugin.rightPanel.moveToBottom();
+					resize = 100
+					jq$(KNOWWE.core.util.getPageContentSelector()).css("width", resize + "%");
+				} else {
+					KNOWWE.core.plugin.rightPanel.moveToRight();
+					resize -= jq$(KNOWWE.core.util.getPageContentSelector()).offset().left;
+					jq$(KNOWWE.core.util.getPageContentSelector()).css("width", resize + "px");
+				}
+				rightPanelScroll();
+			}
+		}
+	});
+
+	jq$(window).scroll(function() {
+		rightPanelScroll();
+	});
 
 	function getSelected() {
 		var t = '';
@@ -75,35 +106,96 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function rightPanelScroll() {
-		var element = $("rightPanel");
-		if (!element)
-			return;
-		var originY = initScrolling;
-		var wHeight = window.getHeight();
+		// Old standard Template
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			var element = $("rightPanel");
+			if (!element)
+				return;
+			var originY = initScrolling;
+			var wHeight = window.getHeight();
 
-		var docHeight = getDocHeight();
-		var favHeight = element.clientHeight;
-		var scrollY = window.getScrollTop();
-		var scrollMax = docHeight - wHeight;
-		var favToScroll = favHeight - wHeight;
-		var actionsBottom = $("actionsBottom");
-		var disableFixing = (actionsBottom == null
-		|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
-		if (scrollY <= originY || disableFixing) {
-			// when reaching top of page or if page height is made by leftMenu
-			// align fav originally to page
-			element.style.position = "absolute";
-			element.style.top = originY + "px";
-		} else if (scrollMax - scrollY <= favToScroll) {
-			// when reaching end of page
-			// align bottom of fav to bottom of page
-			element.style.position = "absolute";
-			element.style.top = (docHeight - favHeight) + "px";
+			var docHeight = getDocHeight();
+			var favHeight = element.clientHeight;
+			var scrollY = window.getScrollTop();
+			var scrollMax = docHeight - wHeight;
+			var favToScroll = favHeight - wHeight;
+			var actionsBottom = $("actionsBottom");
+			var disableFixing = (actionsBottom == null
+			|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
+			if (scrollY <= originY || disableFixing) {
+				// when reaching top of page or if page height is made by leftMenu
+				// align fav originally to page
+				element.style.position = "absolute";
+				element.style.top = originY + "px";
+			} else if (scrollMax - scrollY <= favToScroll) {
+				// when reaching end of page
+				// align bottom of fav to bottom of page
+				element.style.position = "absolute";
+				element.style.top = (docHeight - favHeight) + "px";
+			} else {
+				// otherwise fix fav to the top of the viewport
+				element.style.position = "fixed";
+				element.style.top = "0px";
+
+			}
 		} else {
-			// otherwise fix fav to the top of the viewport
-			element.style.position = "fixed";
-			element.style.top = "0px";
+			if (!isOnBottom) {
+				// HaddockTemplate on the right
+				var sidebar = jq$('#rightPanel');
+				var sidebarTop = 0
+				if (sidebar) {
+					sidebarTop = sidebar.offset().top;
+					var sidebarHeight = sidebar.outerHeight();
+				}
+				var footer = jq$('.footer');
+				var footerTop = 0;
+				if (footer) {
+					footerTop = footer.offset().top;
+				}
+				var limit = footerTop - sidebarHeight;
+				var stickyMenuHeight = jq$('.sticky').outerHeight();
+				var windowTop = jq$(window).scrollTop();
 
+				jq$("#rightPanel").css(DenkbaresSkin.scrollTransitionDuration);
+				jq$(".page").css(DenkbaresSkin.scrollTransitionDuration);
+
+				// when header is visible, place sidebar beneath it
+				if (window.pageYOffset <= jq$('.header').outerHeight()) {
+					sidebar.css({
+						position : "absolute",
+						top : "0"
+					});
+					// keep sidebar fixed on the left when header is not visible
+				} else if (sidebarTop - stickyMenuHeight < windowTop) {
+					sidebar.css({
+						position : 'fixed',
+						top : stickyMenuHeight + 'px'
+					});
+				}
+				// if footer is visible align bottom of sidebar with footer's top
+				if (limit - stickyMenuHeight < windowTop) {
+					var diff = limit - (windowTop);
+					sidebar.css({
+						position : 'fixed',
+						top : diff + 'px'
+					})
+				}
+			} else {
+				//Haddock Template on the bottom
+
+				//Calculate user's scroll position from bottom
+				var scrollPosition = window.pageYOffset;
+				var windowSize = window.innerHeight;
+				var bodyHeight = document.body.offsetHeight;
+				var distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
+
+				var footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
+
+				var sidebar = jq$('#rightPanel');
+				sidebar.css({
+					bottom : footerHeightVisible + 'px'
+				});
+			}
 		}
 
 		function getDocHeight() {
@@ -116,27 +208,61 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 
-	function makeRightPanelResizable() {
-		rightPanel.resizable({
-			handles: "w",
-			minWidth: 300,
-			maxWidth: jq$(window).width()
-			- (jq$(".tabmenu a:last-child").first().offset().left
-			+ jq$(".tabmenu a:last-child").first().outerWidth()
-			+ jq$("#actionsTop").outerWidth()
-			+ jq$("#rightPanel .ui-resizable-w").width() + 20),
-			alsoResize: "#watches textarea, #watches .watchlistline",
-			resize: function (event, ui) {
-				jq$(window).resize();
-			}
+	function moveRightPanelToBottom() {
+		isOnBottom = true;
+		rightPanel.css({
+			position : 'fixed',
+			width : '100%',
+			top : 'auto',
+			right : 'auto'
 		});
+		rightPanelScroll();
+		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', 'auto');
+		var currentHeight = jq$(KNOWWE.core.util.getPageContentSelector).height();
+		var rightPanelHeight = jq$('#rightPanel').height();
+		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', (currentHeight + rightPanelHeight) + 'px');
+	}
+
+	function moveRightPanelToRight() {
+		isOnBottom = false;
+		rightPanel.css({
+			bottom : 'auto',
+			width : '300px',
+			right : '0'
+		})
+		rightPanelScroll();
+		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', 'auto');
+	}
+
+	function makeRightPanelResizable() {
+		var theMaxWidth = jq$(window).width();
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			theMaxWidth = theMaxWidth
+				- (jq$(".tabmenu a:last-child").first().offset().left
+				+ jq$(".tabmenu a:last-child").first().outerWidth()
+				+ jq$(KNOWWE.core.util.getActionsTopSelector()).outerWidth()
+				+ jq$("#rightPanel .ui-resizable-w").width() + 20)
+		} else {
+			theMaxWidth /= 2;
+		}
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			rightPanel.resizable({
+				handles : "w",
+				minWidth : 300,
+				maxWidth : theMaxWidth,
+				resize : function(event, ui) {
+					jq$(window).resize();
+				}
+			});
+		}
+
 	}
 
 	function restoreLayout() {
 		var resize = jq$(window).width() - jq$("#favorites").outerWidth() - 300;
-		jq$("#page").css("width", resize + "px");
+		jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
 		jq$(rightPanel).css("width", "300px");
-		var pagesRightOffset = (jq$(window).width() - (jq$("#actionsTop").offset().left + jq$("#actionsTop").width()));
+		var pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
 		rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
 	}
 
@@ -144,96 +270,125 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 		showSidebar = true;
 
-		var options = {right: '0px'};
+		var options = {right : '0px'};
 
-		rightPanel.animate(options, globalFloatingTime, function () {
-			//"left" is needed for resizable to work properly
-			var pagesRightOffset = (jq$(window).width() - (jq$("#actionsTop").offset().left + jq$("#actionsTop").width()));
-			rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
-		});
-		initScrolling = jq$(".tabs").offset().top;
-		jq$(window).scroll(function () {
-			rightPanelScroll();
-		});
-
-		windowWidth = jq$(window).width();
-
-		jq$(window).resize(function () {
-			if (showSidebar) {
-				windowWidth = jq$(window).width();
-
-				var resize = jq$(window).width() - jq$('#rightPanel').width() - jq$("#page").offset().left;
-				jq$("#page").css("width", resize + "px");
-
-				var pagesRightOffset = (jq$(window).width() - (jq$("#actionsTop").offset().left + jq$("#actionsTop").width()));
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			rightPanel.animate(options, globalFloatingTime, function() {
+				//"left" is needed for resizable to work properly
+				var pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
 				rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
+
+			});
+		} else {
+			if (!isOnBottom) {
+				rightPanelScroll();
+				rightPanel.animate({'right' : '0'}, globalFloatingTime, function() {
+					jq$(window).resize();
+				});
+			} else {
+				rightPanel.animate({'bottom' : '0'}, globalFloatingTime, function() {
+					jq$(window).resize();
+				});
 			}
-		});
+		}
+
+		initScrolling = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : jq$('.sticky').offset().top;
 
 		//make sidebar resizable
 		makeRightPanelResizable();
 	}
 
 	function shrinkPage() {
-		jq$("#page").animate({
-			'width': "-=300px"
-		}, globalFloatingTime);
-		jq$("#pagecontent").css("margin-right", "5px");
-		jq$("#actionsBottom").css("margin-right", "5px");
+		isOnBottom = jq$(window).width() < 600;
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			jq$(KNOWWE.core.util.getPageSelector()).animate({'width' : "-=300px"}, globalFloatingTime);
+			jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "5px");
+			jq$("#actionsBottom").css("margin-right", "5px");
+		} else {
+			if (!isOnBottom) {
+				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'width' : "-=300px"}, globalFloatingTime);
+			}
+		}
 	}
 
 	function growPage() {
-		jq$("#morepopup").css("display", "none");
-		var pageWidth = jq$('#page').width() + jq$('#rightPanel').width();
-		jq$("#page").animate({
-			'width': pageWidth
-		}, globalFloatingTime, function () {
-			jq$('#page').css("width", "auto");
-		});
-		rightPanel.animate({
-			left: (jq$(window).width() + "px")
-		}, globalFloatingTime, function () {
-			rightPanel.remove();
-			jq$("#morepopup").css("display", "block");
-		});
-		jq$("#pagecontent").css("margin-right", "auto");
-		jq$("#actionsBottom").css("margin-right", "auto");
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			jq$(KNOWWE.core.util.getMorePopupSelector()).css("display", "none");
+			var pageWidth = jq$(KNOWWE.core.util.getPageSelector()).width() + jq$('#rightPanel').width();
+			jq$(KNOWWE.core.util.getPageSelector()).animate({'width' : pageWidth}, globalFloatingTime, function() {
+				jq$(KNOWWE.core.util.getPageSelector()).css("width", "auto");
+			});
+			rightPanel.animate({left : (jq$(window).width() + "px")}, globalFloatingTime, function() {
+				rightPanel.remove();
+				jq$(KNOWWE.core.util.getMorePopupSelector()).css("display", "block");
+			});
+			jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "auto");
+			jq$("#actionsBottom").css("margin-right", "auto");
+		} else {
+			if (!isOnBottom) {
+				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'width' : '+=300px'}, globalFloatingTime);
+				rightPanel.animate({'right' : '-=300px'}, globalFloatingTime, function() {
+					removeRightPanel();
+				});
+			} else {
+				rightPanel.animate({'bottom' : -rightPanel.height() + 'px'}, globalFloatingTime, function() {
+					removeRightPanel();
+				});
+			}
+		}
+
+	}
+
+	function removeRightPanel() {
+		isOnBottom = false;
+		rightPanel.remove();
 	}
 
 	function buildRightPanel() {
-		var offsetTop = jq$(".tabs").offset().top;
+		var offsetTop = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : 0;
 		var scrollTop = jq$(window).scrollTop();
+		var width = isOnBottom ? '100%' : '300px';
+		var right = isOnBottom ? 'auto' : '-300px';
+		var position = isOnBottom ? 'fixed' : 'absolute'
 		rightPanel = jq$('<div/>', {
-			'id': 'rightPanel',
-			'css': {
-				'position': 'absolute',
-				'top': (offsetTop - scrollTop) + 'px',
-				'right': '-300px',
-				'width': "300px",
-				'overflow-x': 'hidden',
-				'overflow-y': 'hidden'
+			'id' : 'rightPanel',
+			'css' : {
+				'position' : position,
+				'right' : right,
+				'width' : width,
+				'overflow-x' : 'hidden',
+				'overflow-y' : 'hidden'
 			}
 		});
 
+
 		var rightPanelHide = jq$('<div/>', {
-			'class': 'rightpanelhide'
+			'class' : 'rightpanelhide'
 		});
 
-
 		var rightPanelHideText = jq$('<span/>', {
-			'text': 'Hide'
+			'text' : 'Hide'
 
 		});
 
 		var rightPanelHideIcon = jq$('<img/>', {
-			'src': 'KnowWEExtension/images/arrow_right.png'
+			'src' : 'KnowWEExtension/images/arrow_right.png'
 
 		});
 
 		rightPanelHide.append(rightPanelHideText);
 		rightPanelHide.append(rightPanelHideIcon);
 		rightPanel.append(rightPanelHide);
-		jq$("#content").append(rightPanel);
+		if (isOnBottom) {
+			rightPanel.css('bottom', '-' + jq$('#rightPanel').height());
+		} else {
+			rightPanel.css('top', (offsetTop - scrollTop) + 'px')
+		}
+		if (KNOWWE.core.util.isKnowWETemplate()) {
+			jq$(KNOWWE.core.util.getContentSelector()).append(rightPanel);
+		} else {
+			jq$(KNOWWE.core.util.getPageSelector()).append(rightPanel);
+		}
 
 	}
 
@@ -255,15 +410,15 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function bindCollapseIcons() {
-		jq$("#rightPanel").on("click", ".tool .topbar", function () {
+		jq$("#rightPanel").on("click", ".tool .topbar", function() {
 			if (jq$(this).find("i").hasClass("fa-caret-down")) {
 				jq$(this).find("i").removeClass("fa-caret-down").addClass("fa-caret-right");
-				jq$(this).parent().find(".content").first().slideUp();
+				jq$(this).parent().find(".right-panel-content").first().slideUp();
 			}
 			else {
 				if (jq$(this).find("i").hasClass("fa-caret-right")) {
 					jq$(this).find("i").removeClass("fa-caret-right").addClass("fa-caret-down");
-					jq$(this).parent().find(".content").first().slideDown();
+					jq$(this).parent().find(".right-panel-content").first().slideDown();
 				}
 			}
 		});
@@ -271,34 +426,34 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 
 	function bindHideFunctions() {
-		jq$("#morebutton .watches").unbind();
+		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").unbind();
 		bindHideInPanel();
 		bindHideInMoreMenu();
 
 
 		function bindHideInMoreMenu() {
-			jq$("#morebutton .watches").prop("title", "Hide Right Panel");
-			jq$("#morebutton .watches").on("click", function () {
+			jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").prop("title", "Hide Right Panel");
+			jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").on("click", function() {
 				terminateRightPanel();
 			});
-			jq$("#morebutton .watches").text("Hide Right Panel");
+			jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").text("Hide Right Panel");
 		}
 
 
 		function bindHideInPanel() {
-			jq$("#rightPanel .rightpanelhide").on("click", function () {
+			jq$("#rightPanel .rightpanelhide").on("click", function() {
 				terminateRightPanel();
 			})
 		}
 	}
 
 	function changeHideToShow() {
-		jq$("#morebutton .watches").prop("title", "Show Right Panel");
-		jq$("#morebutton .watches").unbind();
-		jq$("#morebutton .watches").on("click", function () {
+		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").prop("title", "Show Right Panel");
+		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").unbind();
+		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").on("click", function() {
 			KNOWWE.plugin.core.rightPanel.showRightPanel();
 		});
-		jq$("#morebutton .watches").text("Show Right Panel");
+		jq$(KNOWWE.core.util.getMoreButtonSelector() + " .watches").text("Show Right Panel");
 	}
 
 	function bindUiActions() {
@@ -334,24 +489,24 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	function buildToolContainer(id) {
 		return tool = jq$('<div/>', {
-			'id': id,
-			'class': 'tool',
-			'css': {
-				'position': 'relative'
+			'id' : id,
+			'class' : 'tool',
+			'css' : {
+				'position' : 'relative'
 			}
 		});
 	}
 
 	function buildTopBar(title) {
 		var toolTopbar = jq$('<div/>', {
-			'class': 'topbar'
+			'class' : 'topbar'
 		});
 		var collapseIcon = jq$('<i/>', {
-			'class': 'collapseicon fa fa-fw fa-caret-down'
+			'class' : 'collapseicon fa fa-fw fa-caret-down'
 		});
 		var toolTitle = jq$('<div/>', {
-			'class': 'title',
-			'text': title
+			'class' : 'title',
+			'text' : title
 		});
 		toolTitle.prepend(collapseIcon);
 		toolTopbar.append(toolTitle);
@@ -366,7 +521,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	function buildToolContent(pluginDiv) {
 		var content = jq$('<div/>', {
-				'class': 'content'
+				'class' : 'right-panel-content'
 			}
 		);
 		content.append(pluginDiv);
@@ -380,9 +535,13 @@ KNOWWE.core.plugin.rightPanel = function () {
 	function initRightPanelToggleButton(isShown) {
 		var orientation = (isShown ? "right" : "left");
 		var status = (isShown ? "Hide" : "Show");
-		jq$('#morebutton').after("<li><a id='rightPanel-toggle-button' title='" + status + " right panel'"
+		jq$(KNOWWE.core.util.getMoreButtonSelector()).after("<li><a id='rightPanel-toggle-button' title='" + status + " right panel'"
 			+ " class='action fa fa-angle-double-" + orientation + "'></a></li>");
-		jq$('#rightPanel-toggle-button').unbind('click').click(function () {
+		bindRightPanelToggleButton();
+	}
+
+	function bindRightPanelToggleButton() {
+		jq$('#rightPanel-toggle-button').unbind('click').click(function() {
 			var $this = jq$(this);
 			if (isRightPanelShown()) {
 				KNOWWE.core.plugin.rightPanel.hideRightPanel();
@@ -396,15 +555,15 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	return {
 
-		showRightPanel: function () {
+		showRightPanel : function() {
 			initRightPanel(false);
 		},
 
-		hideRightPanel: function () {
+		hideRightPanel : function() {
 			terminateRightPanel();
 		},
 
-		init: function () {
+		init : function() {
 			var isShown = isRightPanelShown();
 			if (isShown) {
 				initRightPanel(true);
@@ -412,18 +571,28 @@ KNOWWE.core.plugin.rightPanel = function () {
 			initRightPanelToggleButton(isShown);
 		},
 
-		addToolToRightPanel: function (title, id, pluginDiv) {
+		addToolToRightPanel : function(title, id, pluginDiv) {
 			var tool = buildToolContainer(id);
 			var topbar = buildTopBar(title);
 			var content = buildToolContent(pluginDiv);
 			appendNewToolToRightPanel(tool, topbar, content);
+		},
+
+		moveToBottom : function() {
+			moveRightPanelToBottom();
+		},
+
+		moveToRight : function() {
+			moveRightPanelToRight()
 		}
 
 	}
-}();
+
+}
+();
 
 
-KNOWWE.core.plugin.rightPanel.watches = function () {
+KNOWWE.core.plugin.rightPanel.watches = function() {
 
 	var watchesStorageKey = "watches";
 
@@ -436,19 +605,19 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	var watchlist;
 
 	function bindUiActions() {
-		watches.on("click", ".watchlistentry", function (e) {
+		watches.on("click", ".watchlistentry", function(e) {
 			editWatch(this);
 		});
-		watches.on("click", ".addwatch", function (e) {
+		watches.on("click", ".addwatch", function(e) {
 			addWatch();
 		});
-		watches.on("click", ".fromselection", function (e) {
+		watches.on("click", ".fromselection", function(e) {
 			addWatchFromSelection();
 		});
-		watches.on("keydown", "textarea", function (e) {
+		watches.on("keydown", "textarea", function(e) {
 			handleTextarea(this, e);
 		});
-		watches.on("click", ".deletewatch", function (e) {
+		watches.on("click", ".deletewatch", function(e) {
 			e.stopPropagation();
 			removeWatch(this);
 		});
@@ -458,7 +627,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		var parsed = JSON.parse(data);
 		var expressionArrays = parsed.values;
 		var oldEntries = watchlist.find(".watchlistentry");
-		jq$.each(expressionArrays, function (index, value) {
+		jq$.each(expressionArrays, function(index, value) {
 			var newEntry = createNewEntry(watchesArray[index], value);
 			jq$(oldEntries[index]).replaceWith(newEntry);
 		});
@@ -470,7 +639,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function updateWatches() {
-		getExpressionValue(watchesArray).success(function (data) {
+		getExpressionValue(watchesArray).success(function(data) {
 			updateOldWatchesList(data);
 		});
 
@@ -561,7 +730,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		//shift+enter = newline, enter=submit
 		if (e.keyCode == 13 && !e.shiftKey) {
 			if (trimmedValue == "") {
-				jq$(that).tooltip({position: {my: "right bottom", at: "left top"}});
+				jq$(that).tooltip({position : {my : "right bottom", at : "left top"}});
 				jq$(that).attr("title", "Please enter an expression.");
 				jq$(that).trigger("mouseover");
 				// prevent default behavior
@@ -587,37 +756,37 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function getExpressionValue(expr, id) {
-		var data = {expressions: expr, page: KNOWWE.helper.gup('page'), id: id};
+		var data = {expressions : expr, page : KNOWWE.helper.gup('page'), id : id};
 		return jq$.ajax({
-			type: 'post',
-			url: 'action/GetExpressionValueAction',
-			data: JSON.stringify(data),
-			cache: false,
-			contentType: 'application/json, UTF-8'
+			type : 'post',
+			url : 'action/GetExpressionValueAction',
+			data : JSON.stringify(data),
+			cache : false,
+			contentType : 'application/json, UTF-8'
 		});
 	}
 
 
 	function createTextarea(that, text) {
 		var watchesNewEntry = jq$('<div/>', {
-			'class': 'newwatch watchlistline'
+			'class' : 'newwatch watchlistline'
 		});
 		var textarea = jq$('<textarea>', {});
 
 		var textareaDom = textarea[0];
 
 		if (typeof AutoComplete != "undefined") {
-			new AutoComplete(textareaDom, function (callback, prefix) {
+			new AutoComplete(textareaDom, function(callback, prefix) {
 				var scope = "$d3web/condition";
-				var data = {prefix: prefix, scope: scope};
+				var data = {prefix : prefix, scope : scope};
 				if (KNOWWE && KNOWWE.helper) {
 					data.KWiki_Topic = KNOWWE.helper.gup('page');
 				}
 				jq$.ajax({
-					url: 'action/CompletionAction',
-					cache: false,
-					data: data
-				}).success(function (data) {
+					url : 'action/CompletionAction',
+					cache : false,
+					data : data
+				}).success(function(data) {
 					callback(eval(data));
 				});
 			});
@@ -632,24 +801,24 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		if (typeof text != 'undefined') {
 			textarea.val(text);
 		}
-		textarea.autosize({minHeight: "22px"});
+		textarea.autosize({minHeight : "22px"});
 		watchesNewEntry.append(textarea);
 		return watchesNewEntry;
 	}
 
 	function createWatchesEntryValueSpan(value) {
 		return jq$('<span/>', {
-			'class': 'value tooltip',
-			'text': value.value,
-			'title': value.kbname
+			'class' : 'value tooltip',
+			'text' : value.value,
+			'title' : value.kbname
 		});
 	}
 
 
 	function createWatchesEntryHistoryValueSpan(title) {
 		return jq$('<span/>', {
-			'class': 'value tooltip history',
-			'title': title
+			'class' : 'value tooltip history',
+			'title' : title
 		});
 	}
 
@@ -659,10 +828,10 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 			var watchesEntryValue = createWatchesEntryValueSpan(value);
 			var tooltipcontent = jq$('<span style="padding-right: 5px" class="fa fa-book"></span><span>' + value.kbname + '  </span>');
 			jq$(watchesEntryValue).tooltipster({
-				content: tooltipcontent,
-				position: "top-left",
-				delay: 300,
-				theme: ".tooltipster-knowwe"
+				content : tooltipcontent,
+				position : "top-left",
+				delay : 300,
+				theme : ".tooltipster-knowwe"
 			});
 			watchesEntry.append(watchesEntryValue);
 		});
@@ -678,8 +847,8 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 
 			jq$.each(value.value, function iterateValuesInHistory(index, value) {
 				var historyEntrySpan = jq$('<span/>', {
-					'class': 'value tooltip historyentry',
-					'text': value.value
+					'class' : 'value tooltip historyentry',
+					'text' : value.value
 				});
 				createTimestampsToolTip.call(this, historyEntrySpan);
 				watchesEntryValue.append(historyEntrySpan);
@@ -699,10 +868,10 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 				tooltipcontent = jq$('<span>Start: ' + start + '</span>');
 			}
 			jq$(historyEntrySpan).tooltipster({
-				content: tooltipcontent,
-				position: "top-left",
-				delay: 300,
-				theme: ".tooltipster-knowwe"
+				content : tooltipcontent,
+				position : "top-left",
+				delay : 300,
+				theme : ".tooltipster-knowwe"
 			});
 		}
 
@@ -712,13 +881,13 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	function createNewEntry(expression, responseObject) {
 
 		var watchesEntry = jq$('<div/>', {
-			'class': 'watchlistline watchlistentry'
+			'class' : 'watchlistline watchlistentry'
 
 		});
 		watchesEntry.uniqueId();
 		var watchesEntryExpression = jq$('<span/>', {
-			'class': 'expression',
-			'text': expression
+			'class' : 'expression',
+			'text' : expression
 		});
 		watchesEntry.append(watchesEntryExpression);
 
@@ -735,8 +904,8 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		}
 		else {
 			var watchesEntryValue = jq$('<span/>', {
-				'class': 'value expressionerror',
-				'text': '<not a valid expression>'
+				'class' : 'value expressionerror',
+				'text' : '<not a valid expression>'
 			});
 			watchesEntry.append(watchesEntryValue);
 		}
@@ -750,8 +919,8 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		var expression = original.val();
 
 		var watchesEntry = jq$('<div/>', {
-			'class': 'watchlistline watchlistentry',
-			'text': expression
+			'class' : 'watchlistline watchlistentry',
+			'text' : expression
 		});
 		jq$(original).parent().replaceWith(watchesEntry);
 
@@ -763,7 +932,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		}
 		updateCookies();
 
-		getExpressionValue(watchesArray).success(function (data) {
+		getExpressionValue(watchesArray).success(function(data) {
 			updateOldWatchesList(data);
 		});
 	}
@@ -773,7 +942,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		var watchcontent = jq$('<div/>', {});
 
 		var watchlist = jq$('<div/>', {
-			'class': 'watchlist'
+			'class' : 'watchlist'
 		});
 
 		var watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-plus-circle'></i>&nbsp;Add Watch</button>");
@@ -791,7 +960,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	function createDeleteButton() {
 
 		var deleteContainer = jq$('<div/>', {
-			'class': 'iconcontainer deletewatch select'
+			'class' : 'iconcontainer deletewatch select'
 		});
 
 		var deleteIcon = jq$("<a class=''><i class='fa fa-times-circle icon'></i></a>");
@@ -803,10 +972,10 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	function loadWatchesFromCookies() {
 		watchesArray = simpleStorage.get(watchesStorageKey);
 		if (typeof watchesArray != 'undefined') {
-			getExpressionValue(watchesArray).success(function (data) {
+			getExpressionValue(watchesArray).success(function(data) {
 				var parsed = JSON.parse(data);
 				var expressionArrays = parsed.values;
-				jq$.each(expressionArrays, function (index, value) {
+				jq$.each(expressionArrays, function(index, value) {
 					var newEntry = createNewEntry(watchesArray[index], value);
 					watchlist.append(newEntry);
 				});
@@ -837,19 +1006,27 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	return {
-		initWatchesTool: function () {
+		initWatchesTool : function() {
 			buildBasicWatchesDiv();
 			loadWatchesFromCookies();
 			initVariables();
 			bindUiActions();
-			KNOWWE.helper.observer.subscribe("update", function () {
+			KNOWWE.helper.observer.subscribe("update", function() {
 				updateWatches();
 			});
 		},
 
-		addToWatches: function (text) {
+		addToWatches : function(text) {
 			KNOWWE.core.plugin.rightPanel.showRightPanel();
 			addWatch(text);
+		},
+
+		moveToBottom : function() {
+			moveRightPanelToBottom();
+		},
+
+		moveToRight : function() {
+			moveRightPanelToRight();
 		}
 	}
 }();
@@ -858,8 +1035,9 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 
 	window.addEvent('domready', _KL.setup);
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-		window.addEvent('domready', function () {
+		window.addEvent('domready', function() {
 			KNOWWE.core.plugin.rightPanel.init();
+			jq$(window).resize();
 		});
 	}
 }());

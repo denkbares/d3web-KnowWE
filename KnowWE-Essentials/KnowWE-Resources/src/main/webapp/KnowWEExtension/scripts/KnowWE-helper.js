@@ -281,7 +281,7 @@ KNOWWE.helper = function(){
         	var opacity = options.opacity || 0.7;
         	var opaque = (opacity / 100);
         	var bgcolor = options.bgcolor || '#000000';
-        	var dark = $('knowwe_fog');
+        	var dark = jq$('#knowwe_fog')[0];
         	
         	if (!dark) {
         		dark = new Element('div', {
@@ -381,7 +381,7 @@ KNOWWE.helper.message = function() {
 			var ok = new Element('button', {
 				events: {
 					click: function(e) {
-						$('knowwe_message').remove();
+						jq$('#knowwe_message')[0].remove();
 						KNOWWE.helper.greyOut();
 					}
 				}

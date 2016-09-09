@@ -54,7 +54,7 @@ KNOWWE.editCommons = function() {
 		},
 
 		hideTools : function() {
-			$$('.markupTools').setStyle("display", "none");
+			jq$('.markupTools').css("display", "none");
 		},
 
 		showAjaxLoader : function() {

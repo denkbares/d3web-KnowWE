@@ -56,14 +56,14 @@ ObjectTree.prototype.setRoots = function(roots) {
 
 ObjectTree.prototype.render = function() {
 	if (!this.roots) return Builder.build(this.defaultHTML); //TODO remove build
-	
+
 	var dom = Builder.node('div', {
 		className: 'ObjectTree',
 //		style: "position:relative;"
 	});
-	
+
 	this.addChildTreeItems(dom, this.roots, 'rootTree');
-	
+
 	return dom;
 }
 
@@ -83,7 +83,7 @@ ObjectTree.prototype.handleToggle = function(parentElement, toggleElement) {
 					childs[i].show();
 					hasSubTrees = true;
 				}
-			}			
+			}
 			// if not, then append the subTrees the first time
 			if (!hasSubTrees) {
 				var childs = parentObj.getChilds();
@@ -116,7 +116,7 @@ ObjectTree.prototype.addChildTreeItems = function(dom, childIDs, className) {
 			missingIDs.push(childID);
 			childDom = this.renderWaitItem(childID, className);
 		}
-		if (this.domsByID[childID]) { 
+		if (this.domsByID[childID]) {
 			this.domsByID[childID].push(childDom);
 		}
 		else {
@@ -131,21 +131,21 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 	var isLeaf = (infoObject.getChilds().length == 0);
 	var icon = infoObject.getIconURL();
 	var childs = [];
-	
+
 	if (!isLeaf) {
 		childs.push(Builder.node('span', {
 			className: 'expandButton',
 			onclick: 'this.parentNode.__objectTree.handleToggle(this.parentNode, this);'
 		}));
 	}
-	
+
 	var name = ActionPane.insertWordWrapPoints(infoObject.getName());
 	var dragItem;
 	childs.push(dragItem = Builder.node('span', {
 		className: 'item NodePrototype',
 		onclick: (!isLeaf ? 'this.parentNode.__objectTree.handleToggle(this.parentNode, this.previousSibling);' : '')
-		}, 
-		(icon) 
+		},
+		(icon)
 			? [Builder.node('span', {className: 'icon'}, [
 					Builder.node('img', {src: icon})
 				]), name]
@@ -185,7 +185,7 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 				action = {markup: 'KnOffice', expression: name };
 			}
 			var model = {
-				//id: 'mf'+(mfCounter++), 
+				//id: 'mf'+(mfCounter++),
 				position: {left: left, top: top-d2},
 				action: action
 			};
@@ -194,12 +194,12 @@ ObjectTree.prototype.renderTreeItem = function(infoObject, className, isVisible)
 			});
 		};
 		//TODO: avoid memory leak by remeber the Draggable and remove it on destroy
-		new Draggable(dragItem, { 
-			ghosting: true, 
+		new Draggable(dragItem, {
+			ghosting: true,
 			//scroll: theFlowchart.getContentPane().parentNode.parentNode,
-			revert: true, 
-			reverteffect: ObjectTree.revertEffect, 
-			starteffect: ObjectTree.startEffect 
+			revert: true,
+			reverteffect: ObjectTree.revertEffect,
+			starteffect: ObjectTree.startEffect
 		});
 	}
 	return dom;

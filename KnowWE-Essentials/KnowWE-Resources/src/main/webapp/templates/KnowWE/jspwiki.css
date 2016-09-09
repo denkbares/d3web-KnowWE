@@ -1096,7 +1096,7 @@ label[for="edittoc"] {
 }
 
 #findSuggestionMenu {
-	position: absolute;
+	position: fixed;
 	color: white;
 	background-color: rgba(0, 0, 0, 0.7);
 	-moz-border-radius: 10px;

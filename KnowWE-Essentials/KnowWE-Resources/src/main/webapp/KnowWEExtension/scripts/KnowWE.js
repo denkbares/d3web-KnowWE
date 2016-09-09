@@ -435,12 +435,55 @@ KNOWWE.core.util = function() {
 			return false;
 		},
 
+		//////////////////////////////////////////////////
+		/////// Template Specific Helper Mehods //////////
+		//////////////////////////////////////////////////
 		getTemplate : function() {
 			return jq$('#knowWEInfoTemplate').val();
 		},
 
+		isKnowWETemplate : function() {
+			return KNOWWE.core.util.getTemplate() === "KnowWE";
+		},
+
+		isHaddockTemplate : function() {
+			return KNOWWE.core.util.getTemplate() === "KnowWE-haddock"
+		},
+
+		getContainerSelector : function() {
+			return KNOWWE.core.util.isKnowWETemplate() ? '#wikibody' : '.container-fluid'
+		},
+
+		getHeaderSelector : function() {
+			return KNOWWE.core.util.isKnowWETemplate() ? '#header' : '.header';
+		},
+
+		getContentSelector : function() {
+			return KNOWWE.core.util.isKnowWETemplate() ? '#content' : '.content';
+		},
+
+		getSidebarSelector : function() {
+			return KNOWWE.core.util.isKnowWETemplate() ? '#favorites' : '.sidebar';
+		},
+
+		getPageSelector : function() {
+			return KNOWWE.core.util.isKnowWETemplate() ? '#page' : '.page';
+		},
+
 		getPageContentSelector : function() {
-			return KNOWWE.core.util.getTemplate() === "KnowWE" ? '#pagecontent' : '.page-content';
+			return KNOWWE.core.util.isKnowWETemplate() ? '#pagecontent' : '.page-content';
+		},
+
+		getActionsTopSelector : function() {
+			return KNOWWE.core.util.isKnowWETemplate() ? '#actionsTop' : '.nav-pills:nth-child(2)'
+		},
+
+		getMoreButtonSelector : function() {
+			return KNOWWE.core.util.isKnowWETemplate() ? '#morebutton' : '#more';
+		},
+
+		getMorePopupSelector : function() {
+			return KNOWWE.core.util.isKnowWETemplate() ? '#morepopup' : '#more ul';
 		}
 	}
 }();
@@ -536,15 +579,16 @@ KNOWWE.core.util.form = function() {
 		showExtendedPanel : function() {
 			var el = this;
 
-			var style = el._next().style;
+			var nextEl = el._next();
+			var style = nextEl.style;
 			el.removeAttribute('class');
 
 			if (style['display'] == 'inline') {
-				style['display'] = 'none';
+				nextEl.style.setProperty('display', 'none', 'important');
 				//el.setAttribute('class', 'show extend pointer extend-panel-down');
 				el.setAttribute('class', 'show extend pointer extend-panel-right');
 			} else {
-				style['display'] = 'inline';
+				nextEl.style.setProperty('display', 'inline', 'important');
 				el.setAttribute('class', 'show extend pointer extend-panel-down');
 			}
 		}

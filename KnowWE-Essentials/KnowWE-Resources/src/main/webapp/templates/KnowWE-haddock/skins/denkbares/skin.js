@@ -41,14 +41,14 @@ Wiki.locatemenu = function(base, el) {
 	};
 
 	// some special treatment for search to avoid annoying menu position
-	if (base == $('query')) {
+	if (base == jq$('#query')[0]) {
 		parent = {
 			'x' : base.offsetWidth,
 			'y' : base.offsetHeight
 		};
 	} else {
 		// search for parent defining it own coordinate system
-		for (var anchor = $(el.parentNode); anchor && anchor != document; anchor = $(anchor.parentNode)) {
+		for (var anchor = el.parentNode; anchor && anchor != document; anchor = anchor.parentNode) {
 			var cssPosition = anchor.getStyle('position');
 			if (cssPosition == 'absolute' || cssPosition == 'relative') {
 				parent = anchor.getPosition();
@@ -80,13 +80,13 @@ if (SearchBox) {
 		SearchBox.onPageLoadQuickSearch_original();
 		// remove hover events
 		if (this.query) {
-			$(this.query.form).removeEvents("mouseout");
-			$(this.query.form).removeEvents("mouseover");
+			jq$(this.query.form).off("mouseout");
+			jq$(this.query.form).off("mouseover");
 			// and add focus events instead
-			$(this.query).addEvent("blur", function() {
+			jq$(this.query).blur(function() {
 				this.hover.start(0);
-			}.bind(this)).addEvent("focus", function() {
-				Wiki.locatemenu(this.query, $("searchboxMenu"));
+			}.bind(this)).focus(function() {
+				Wiki.locatemenu(this.query, jq$("#searchboxMenu")[0]);
 				this.hover.start(0.9);
 			}.bind(this));
 		}
@@ -95,14 +95,14 @@ if (SearchBox) {
 	SearchBox.ajaxQuickSearch = function() {
 		// capture original text before first search
 		if (!SearchBox.noSearchTargetText_original) {
-			SearchBox.noSearchTargetText_original = $('searchTarget').innerHTML;
+			SearchBox.noSearchTargetText_original = jq$('#searchTarget')[0].innerHTML;
 		}
 		SearchBox.ajaxQuickSearch_original();
 		// if search is empty, restore original text and relocate menu
 		var a = this.query.value.stripScripts();
 		if ((a == null) || (a.trim() == "") || (a == this.query.defaultValue)) {
-			$('searchTarget').innerHTML = SearchBox.noSearchTargetText_original;
-			Wiki.locatemenu($("query"), $("searchboxMenu"));
+			jq$('#searchTarget')[0].innerHTML = SearchBox.noSearchTargetText_original;
+			Wiki.locatemenu(jq$("#query")[0], jq$("#searchboxMenu")[0]);
 		}
 	}
 }
@@ -139,7 +139,7 @@ DenkbaresSkin.checkDocSizeScroll = function() {
  * if there is a TOC in the left menu, highlight the current visible chapter.
  */
 DenkbaresSkin.highlightActiveTOC = function() {
-	var tocItems = jq$("#favorites > .leftmenu > .toc li");
+	var tocItems = jq$(".sidebar > .leftmenu > .toc li");
 	if (tocItems.length == 0) return;
 
 	// find the first section that is visible on the screen, if there is no such section
@@ -179,118 +179,84 @@ DenkbaresSkin.highlightActiveTOC = function() {
  * optimally used.
  */
 DenkbaresSkin.scrollFavorites = function() {
-	var favorites = jq$("#favorites");
-	if (!favorites) return;
-	var wHeight = jq$(window).height();
-	var docHeight = jq$(document).height();
-	var favHeight = favorites.outerHeight();
-	var scrollY = DenkbaresSkin.scrollTop();
-	var scrollMax = docHeight - wHeight;
-	var favToScroll = favHeight - wHeight;
-	var actionsBottom = jq$("#actionsBottom");
-	var disableFixing = (!actionsBottom.exists()
-	|| favHeight >= actionsBottom.offset().top + actionsBottom.height());
-	if (!DenkbaresSkin.favoriteStatus) return;
-	var favLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
-		DenkbaresSkin.favoriteStatus.favLeftExpanded : DenkbaresSkin.favoriteStatus.favLeftCollapsed;
-	jq$("#favorites").css(DenkbaresSkin.scrollTransitionDuration);
-	jq$("#page").css(DenkbaresSkin.scrollTransitionDuration);
-	jq$('#favorites-toggle').css(DenkbaresSkin.scrollTransitionDuration);
-	if (scrollY <= jq$('#header').outerHeight() || disableFixing) {
-		// when reaching top of page or if page height is made by leftMenu
-		// align fav originally to page
-		favorites.css({
+	/*var sidebar = jq$('.sidebar');
+	var sidebarTop = 0
+	if (sidebar) {
+		sidebarTop = sidebar.offset().top;
+		var sidebarHeight = sidebar.outerHeight();
+	}
+	var footer = jq$('.footer');
+	var footerTop = 0;
+	if (footer) {
+		footerTop = footer.offset().top;
+	}
+	var limit = footerTop - sidebarHeight;
+	var stickyMenuHeight = jq$('.sticky').outerHeight();
+	var windowTop = jq$(window).scrollTop();
+
+	jq$(".sidebar").css(DenkbaresSkin.scrollTransitionDuration);
+	jq$(".page").css(DenkbaresSkin.scrollTransitionDuration);
+
+	var sWidth = sidebar.parent().width() * 0.21654752221994123;
+
+	// when header is visible, place sidebar beneath it
+	if (window.pageYOffset <= jq$('.header').outerHeight()) {
+		sidebar.css({
 			position : "relative",
 			top : "auto",
-			left : favLeft + "px"
+			width: sWidth
 		});
-	} else if (scrollMax - scrollY <= favToScroll) {
-		// when reaching end of page
-		// align bottom of fav to bottom of page
-		favorites.css({
-			position : "absolute",
-			top : (docHeight - favHeight) + "px",
-			left : favLeft + "px"
-		});
-	} else {
-		// otherwise fix fav to the top of the viewport
-		favorites.css({
-			position : "fixed",
-			top : "0px",
-			left : (favLeft - DenkbaresSkin.scrollLeft()) + "px"
+		// keep sidebar fixed on the left when header is not visible
+	} else if (sidebarTop - stickyMenuHeight < windowTop) {
+		sidebar.css({
+			position : 'fixed',
+			top : stickyMenuHeight + 'px',
+			width: sWidth
 		});
 	}
-	var minHeight = wHeight - favorites.offset().top - (favHeight - favorites.height()) + scrollY;
-	favorites.css({'min-height' : minHeight + "px"});
+	// if footer is visible align bottom of sidebar with footer's top
+	if (limit - stickyMenuHeight < windowTop) {
+		var diff = limit - (windowTop);
+		sidebar.css({
+			position : 'fixed',
+			top : diff + 'px',
+			width: sWidth
+		})
+	}*/
 };
 
 DenkbaresSkin.initPageScroll = function() {
-	DenkbaresSkin.originalPageOffset = jq$("#page").offset().top;
+	DenkbaresSkin.originalPageOffset = jq$(".page").offset().top;
 };
 
-/*DenkbaresSkin.scrollPage = function() {
-	var page = jq$("#page");
-	var body = jq$('body');
-	var scrollTop = DenkbaresSkin.scrollTop();
-	var windowHeight = jq$(window).height();
-	var actionHeight = jq$('#actionsTop').height();
-	var pageLeft = DenkbaresSkin.favoriteStatus.status == 'expanded' ?
-		DenkbaresSkin.favoriteStatus.pageLeftExpanded : DenkbaresSkin.favoriteStatus.pageLeftCollapsed;
-	if (page.height() < windowHeight
-		&& page.offset().top - scrollTop < -actionHeight) {
-		// setting the page position fixed will cause the document width to be reduced
-		// we set it manually to avoid odd behavior
-		body.width(jq$(document).width());
-		page.css({
-			position : 'fixed',
-			top : "0",
-			left : (pageLeft - DenkbaresSkin.scrollLeft()) + "px"
-		});
-	}
-	if (scrollTop < DenkbaresSkin.originalPageOffset + actionHeight) {
-		page.css({
-			position : 'absolute',
-			top : "auto",
-			left : pageLeft + "px"
-		});
-		body.width("auto");
-	}
-};*/
+DenkbaresSkin.adjustPageHeight = function() {
+	jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
+}
 
 DenkbaresSkin.cleanTrail = function() {
-	var breadcrumbs = jq$('.breadcrumbs');
+	var breadcrumbs = jq$('.breadcrumb');
 	if (breadcrumbs.length == 0)
 		return;
 	var crumbs = breadcrumbs.find('a.wikipage');
 	if (crumbs.length == 0)
 		return;
 	var crumbsCheck = {};
-	var removeBecauseLeadingComma = false;
 	// remove duplicate entries
 	for (var i = crumbs.length - 1; i >= 0; i--) {
 		var crumb = crumbs[i];
-		var crumbHtml = jq$(crumb).clone().wrap('<p>').parent().html();
-		var existingEntry = crumbsCheck[crumbHtml];
-		if (typeof existingEntry == "undefined") {
-			crumbsCheck[crumbHtml] = i;
-		} else {
+		var crumbText = jq$(crumb).text();
+		if (crumbsCheck[crumbText]) {
+			if (jq$(crumb).prev().hasClass('divider')) {
+				jq$(crumb).prev().remove();
+			}
 			jq$(crumb).remove();
-			if (i == 0)
-				removeBecauseLeadingComma = true;
+		} else {
+			crumbsCheck[crumbText] = true;
 		}
 	}
-	// remove superfluous commas
-	var lastNodeText = "";
-	for (i = 0; i < breadcrumbs[0].childNodes.length; i++) {
-		var childNode = breadcrumbs[0].childNodes[i];
-		var tempValue = childNode.nodeValue;
-		if ((lastNodeText == ", " || removeBecauseLeadingComma == true)
-			&& tempValue == ", ") {
-			childNode.nodeValue = "";
-			removeBecauseLeadingComma = false;
-		}
-		lastNodeText = tempValue;
-
+	var firstRemainingCrumb = jq$('.breadcrumb a.wikipage')[0];
+	if (jq$(firstRemainingCrumb).prev().hasClass('divider')) {
+		jq$(firstRemainingCrumb).prev().remove();
 	}
 };
 
@@ -302,38 +268,40 @@ DenkbaresSkin.resizeFlows = function() {
 	});
 };
 
-/*DenkbaresSkin.toggleFavorites = function() {
-	var favorites = jq$('#favorites');
-	var page = jq$('#page');
-	var toggle = jq$('#favorites-toggle');
-	var toggleButton = jq$('#favorites-toggle-button');
-	favorites.css(DenkbaresSkin.toggleTransitionDuration);
-	page.css(DenkbaresSkin.toggleTransitionDuration);
-	toggle.css(DenkbaresSkin.toggleTransitionDuration);
-	var status = DenkbaresSkin.favoriteStatus;
-	if (DenkbaresSkin.favoriteStatus.status == 'expanded') {
-		if (_EM && _EM.enabled) {
-			KNOWWE.notification.warn(null, "Collapsing left menu not possible while using edit mode.");
-			return;
-		}
-		favorites.css({left : status.favLeftCollapsed + "px"});
-		page.css({left : status.pageLeftCollapsed + "px"});
-		toggle.css({cursor : 'e-resize', left : status.pageLeftCollapsed + "px"});
-		toggleButton.attr('title', 'Show left menu');
-		toggleButton.find('i').removeClass('fa-angle-double-left').addClass('fa-angle-double-right');
-		DenkbaresSkin.favoriteStatus.status = 'collapsed';
+DenkbaresSkin.showSidebar = function() {
+	jq$('.content').addClass('active');
+}
+
+DenkbaresSkin.hideSidebar = function() {
+	jq$('.content').removeClass('active');
+}
+
+DenkbaresSkin.toggleSidebar = function() {
+	if (DenkbaresSkin.isSidebarShown()) {
+		DenkbaresSkin.hideSidebar();
 	} else {
-		favorites.css({left : status.favLeftExpanded + "px"});
-		page.css({left : status.pageLeftExpanded + "px"});
-		toggle.css({cursor : 'w-resize', left : status.pageLeftExpanded + "px"});
-		toggleButton.attr('title', 'Hide left menu');
-		toggleButton.find('i').removeClass('fa-angle-double-right').addClass('fa-angle-double-left');
-		DenkbaresSkin.favoriteStatus.status = 'expanded';
+		DenkbaresSkin.showSidebar();
 	}
-	jq$(page).bind('transitionend', function() {
-		jq$(window).resize();
-	});
-};*/
+}
+
+DenkbaresSkin.toggleFavorites = function() {
+	DenkbaresSkin.toggleSidebar();
+}
+
+DenkbaresSkin.isSidebarShown = function() {
+	return jq$('.content').hasClass('active');
+}
+
+DenkbaresSkin.onHideSidebar = function() {
+	var sWidth = jq$('.sidebar').width();
+	/*jq$(KNOWWE.core.util.getPageContentSelector()).animate({
+		'width' : '+=' + sWidth
+	}, 300);*/
+}
+
+DenkbaresSkin.onShowSidebar = function() {
+
+}
 
 // does not return "elastic scroll" values from OSX.
 DenkbaresSkin.scrollLeft = function() {
@@ -348,42 +316,17 @@ DenkbaresSkin.scrollTop = function() {
 	return Math.min(Math.max(jq$(window).scrollTop(), 0), maxScroll);
 };
 
-/*DenkbaresSkin.addFavoriteToggle = function() {
-	jq$('#page').before("<div id='favorites-toggle'></div>");
-	jq$('#menu-pagecontent').before("<div id='favorites-toggle-button' title='Hide left menu'>" +
-	"<i class='fa fa-angle-double-left'></i></div>");
-	var setTogglePosition = function() {
-		jq$('#favorites-toggle').css({
-			'left' : (jq$('#page').offset().left - DenkbaresSkin.scrollLeft()) + "px"
-		});
-	};
-	DenkbaresSkin.favoriteStatus = {
-		status : 'expanded',
-		favLeftExpanded : jq$('#favorites').offset().left,
-		pageLeftExpanded : jq$('#page').offset().left,
-		toggleLeftExpanded : jq$('#favorites-toggle').offset().left,
-		favLeftCollapsed : -(jq$('#page').offset().left - 5),
-		pageLeftCollapsed : 5,
-		toggleLeftCollapsed : 5
-	};
-	jq$(window).scroll(setTogglePosition);
-	jq$(window).resize(setTogglePosition);
-	setTogglePosition();
-	jq$('#favorites-toggle').unbind('click').click(DenkbaresSkin.toggleFavorites);
-	jq$('#favorites-toggle-button').unbind('click').click(DenkbaresSkin.toggleFavorites);
-};*/
-
-
 jq$(document).ready(function() {
-	//DenkbaresSkin.addFavoriteToggle();
 	DenkbaresSkin.cleanTrail();
-	//DenkbaresSkin.initPageScroll();
 
 	// workaround, because sometimes we are too early
 	window.setTimeout(function() {
 		DenkbaresSkin.initFavoritesScroll();
 		DenkbaresSkin.scrollFavorites();
 	});
+
+	// add ID #favorites to sidebar
+	jq$(jq$('.sidebar')[0]).attr('id', 'favorites');
 
 	// add auto-resize to edit page
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
@@ -398,6 +341,14 @@ jq$(document).ready(function() {
 			}, time);
 		}
 	}
+
+	jq$('#menu').click(function(){
+		if (DenkbaresSkin.isSidebarShown()) {
+			DenkbaresSkin.onShowSidebar();
+		} else {
+			DenkbaresSkin.onHideSidebar();
+		}
+	});
 });
 
 
@@ -405,6 +356,9 @@ KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows)
 
 jq$(window).scroll(DenkbaresSkin.scrollFavorites);
 jq$(window).scroll(DenkbaresSkin.highlightActiveTOC);
-//jq$(window).scroll(DenkbaresSkin.scrollPage);
 jq$(window).resize(DenkbaresSkin.scrollFavorites);
 jq$(window).resize(DenkbaresSkin.resizeFlows);
+jq$(window).resize(DenkbaresSkin.adjustPageHeight);
+//jq$(document).on('rightPanelResize', DenkbaresSkin.scrollFavorites);
+//jq$(document).on('rightPanelResize', DenkbaresSkin.resizeFlows);
+jq$(document).on('quickSearchResult', DenkbaresSkin.resizeQuickSearchBox);

@@ -516,7 +516,7 @@ public class ObjectInfoRenderer implements Renderer {
 			result.appendHtml("</span>");
 		}
 		result.appendHtml("</p>");
-		result.appendHtml("<div class=\"objectInfoPanel hidden\" style=\"display:none\">");
+		result.appendHtml("<div class=\"objectInfoPanel hidden\" style=\"display:none !important\">");
 		result.append(content);
 		result.appendHtml("</div>");
 

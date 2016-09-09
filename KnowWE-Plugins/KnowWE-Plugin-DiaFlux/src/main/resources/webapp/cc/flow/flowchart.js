@@ -1,5 +1,5 @@
 function Flowchart(parent, id, width, height, idCounter) {
-	this.parent = $(parent);
+	this.parent = jq$('#' + parent)[0];
 	this.id = id || this.createID('sheet');
 	this.width = width;
 	this.height = height;
@@ -160,7 +160,7 @@ Flowchart.prototype.setVisible = function(visible) {
  * @return left offset of flowchart
  */
 Flowchart.prototype.getLeft = function() {
-	return $(this.id).cumulativeOffset().left;
+	return jq$('#' + this.id)[0].cumulativeOffset().left;
 };
 
 /**
@@ -168,7 +168,7 @@ Flowchart.prototype.getLeft = function() {
  * @return top offset of flowchart
  */
 Flowchart.prototype.getTop = function() {
-	return $(this.id).cumulativeOffset().top;
+	return jq$('#' + this.id)[0].cumulativeOffset().top;
 };
 
 Flowchart.prototype.addNode = function(node) {
