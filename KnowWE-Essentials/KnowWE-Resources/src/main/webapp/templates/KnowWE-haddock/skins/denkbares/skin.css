@@ -2256,11 +2256,6 @@ div.coverflow .knob {
 
 }
 
-#rightPanel-toggle-button {
-	padding: 5px 0.5em 2px 0.5em !important;
-	text-decoration: none;
-}
-
 #favorites-toggle-button i:hover {
 	color: blue;
 }
@@ -2379,3 +2374,25 @@ li.findpages .btn {
 *:first-child+html #findSuggestionMenu .hover {
 	background-color:black;
 }
+
+#rightPanel {
+	border: none;
+}
+#rightPanel .topbar {
+	border: none;
+	background: #e5e8ed;
+}
+
+#rightPanel .tooltip {
+	display: inline;
+	z-index: inherit;
+	opacity: 1;
+	line-height: inherit;
+	font-size: inherit;
+	position: inherit;
+}
+
+.rightpanelhide {
+	display: none;
+}
+
