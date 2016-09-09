@@ -106,95 +106,97 @@ KNOWWE.core.plugin.rightPanel = function() {
 	}
 
 	function rightPanelScroll() {
-		// Old standard Template
-		if (KNOWWE.core.util.isKnowWETemplate()) {
-			var element = $("rightPanel");
-			if (!element)
-				return;
-			var originY = initScrolling;
-			var wHeight = window.getHeight();
+		if (showSidebar) {
+			// Old standard Template
+			if (KNOWWE.core.util.isKnowWETemplate()) {
+				var element = $("rightPanel");
+				if (!element)
+					return;
+				var originY = initScrolling;
+				var wHeight = window.getHeight();
 
-			var docHeight = getDocHeight();
-			var favHeight = element.clientHeight;
-			var scrollY = window.getScrollTop();
-			var scrollMax = docHeight - wHeight;
-			var favToScroll = favHeight - wHeight;
-			var actionsBottom = $("actionsBottom");
-			var disableFixing = (actionsBottom == null
-			|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
-			if (scrollY <= originY || disableFixing) {
-				// when reaching top of page or if page height is made by leftMenu
-				// align fav originally to page
-				element.style.position = "absolute";
-				element.style.top = originY + "px";
-			} else if (scrollMax - scrollY <= favToScroll) {
-				// when reaching end of page
-				// align bottom of fav to bottom of page
-				element.style.position = "absolute";
-				element.style.top = (docHeight - favHeight) + "px";
-			} else {
-				// otherwise fix fav to the top of the viewport
-				element.style.position = "fixed";
-				element.style.top = "0px";
+				var docHeight = getDocHeight();
+				var favHeight = element.clientHeight;
+				var scrollY = window.getScrollTop();
+				var scrollMax = docHeight - wHeight;
+				var favToScroll = favHeight - wHeight;
+				var actionsBottom = $("actionsBottom");
+				var disableFixing = (actionsBottom == null
+				|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
+				if (scrollY <= originY || disableFixing) {
+					// when reaching top of page or if page height is made by leftMenu
+					// align fav originally to page
+					element.style.position = "absolute";
+					element.style.top = originY + "px";
+				} else if (scrollMax - scrollY <= favToScroll) {
+					// when reaching end of page
+					// align bottom of fav to bottom of page
+					element.style.position = "absolute";
+					element.style.top = (docHeight - favHeight) + "px";
+				} else {
+					// otherwise fix fav to the top of the viewport
+					element.style.position = "fixed";
+					element.style.top = "0px";
 
-			}
-		} else {
-			if (!isOnBottom) {
-				// HaddockTemplate on the right
-				var sidebar = jq$('#rightPanel');
-				var sidebarTop = 0
-				if (sidebar) {
-					sidebarTop = sidebar.offset().top;
-					var sidebarHeight = sidebar.outerHeight();
-				}
-				var footer = jq$('.footer');
-				var footerTop = 0;
-				if (footer) {
-					footerTop = footer.offset().top;
-				}
-				var limit = footerTop - sidebarHeight;
-				var stickyMenuHeight = jq$('.sticky').outerHeight();
-				var windowTop = jq$(window).scrollTop();
-
-				jq$("#rightPanel").css(DenkbaresSkin.scrollTransitionDuration);
-				jq$(".page").css(DenkbaresSkin.scrollTransitionDuration);
-
-				// when header is visible, place sidebar beneath it
-				if (window.pageYOffset <= jq$('.header').outerHeight()) {
-					sidebar.css({
-						position : "absolute",
-						top : "0"
-					});
-					// keep sidebar fixed on the left when header is not visible
-				} else if (sidebarTop - stickyMenuHeight < windowTop) {
-					sidebar.css({
-						position : 'fixed',
-						top : stickyMenuHeight + 'px'
-					});
-				}
-				// if footer is visible align bottom of sidebar with footer's top
-				if (limit - stickyMenuHeight < windowTop) {
-					var diff = limit - (windowTop);
-					sidebar.css({
-						position : 'fixed',
-						top : diff + 'px'
-					})
 				}
 			} else {
-				//Haddock Template on the bottom
+				if (!isOnBottom) {
+					// HaddockTemplate on the right
+					var sidebar = jq$('#rightPanel');
+					var sidebarTop = 0
+					if (sidebar) {
+						sidebarTop = sidebar.offset().top;
+						var sidebarHeight = sidebar.outerHeight();
+					}
+					var footer = jq$('.footer');
+					var footerTop = 0;
+					if (footer) {
+						footerTop = footer.offset().top;
+					}
+					var limit = footerTop - sidebarHeight;
+					var stickyMenuHeight = jq$('.sticky').outerHeight();
+					var windowTop = jq$(window).scrollTop();
 
-				//Calculate user's scroll position from bottom
-				var scrollPosition = window.pageYOffset;
-				var windowSize = window.innerHeight;
-				var bodyHeight = document.body.offsetHeight;
-				var distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
+					jq$("#rightPanel").css(DenkbaresSkin.scrollTransitionDuration);
+					jq$(".page").css(DenkbaresSkin.scrollTransitionDuration);
 
-				var footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
+					// when header is visible, place sidebar beneath it
+					if (window.pageYOffset <= jq$('.header').outerHeight()) {
+						sidebar.css({
+							position : "absolute",
+							top : "0"
+						});
+						// keep sidebar fixed on the left when header is not visible
+					} else if (sidebarTop - stickyMenuHeight < windowTop) {
+						sidebar.css({
+							position : 'fixed',
+							top : stickyMenuHeight + 'px'
+						});
+					}
+					// if footer is visible align bottom of sidebar with footer's top
+					if (limit - stickyMenuHeight < windowTop) {
+						var diff = limit - (windowTop);
+						sidebar.css({
+							position : 'fixed',
+							top : diff + 'px'
+						})
+					}
+				} else {
+					//Haddock Template on the bottom
 
-				var sidebar = jq$('#rightPanel');
-				sidebar.css({
-					bottom : footerHeightVisible + 'px'
-				});
+					//Calculate user's scroll position from bottom
+					var scrollPosition = window.pageYOffset;
+					var windowSize = window.innerHeight;
+					var bodyHeight = document.body.offsetHeight;
+					var distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
+
+					var footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
+
+					var sidebar = jq$('#rightPanel');
+					sidebar.css({
+						bottom : footerHeightVisible + 'px'
+					});
+				}
 			}
 		}
 
