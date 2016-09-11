@@ -47,7 +47,7 @@ DiaFlux.Highlight.highlightFlow = function(flowXML){
 	}
 	var prefix = flowXML.getAttribute('cssprefix');
 	
-	var flowDOM = jq$('#' + flowid)[0].getElementsByClassName('FlowchartGroup')[0];
+	var flowDOM = document.getElementById(flowid).getElementsByClassName('FlowchartGroup')[0];
 	var flowchart = flowDOM.__flowchart;
 	
 	var nodes = flowXML.getElementsByTagName('node');

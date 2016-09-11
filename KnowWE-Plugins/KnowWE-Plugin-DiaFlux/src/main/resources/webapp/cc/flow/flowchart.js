@@ -1,5 +1,5 @@
 function Flowchart(parent, id, width, height, idCounter) {
-	this.parent = jq$('#' + parent)[0];
+	this.parent = document.getElementById(parent);
 	this.id = id || this.createID('sheet');
 	this.width = width;
 	this.height = height;
