@@ -123,7 +123,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		String imageURL = "https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl="
 				+ kbURL;
 		String id = section.getID();
-		String jsAction = "var node=$E('.markupText', '" + id + "'); " +
+		String jsAction = "var node=jq$('#" + id + "')[0]; " +
 				"var visible = (node.firstChild.nodeName == 'IMG'); " +
 				"if (visible) node.firstChild.remove();" +
 				"else " +
