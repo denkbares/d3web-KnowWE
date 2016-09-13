@@ -39,7 +39,7 @@
     <div class="cage pull-left">
     <a class="logo pull-left"
         href="<wiki:Link page='${frontpage}' format='url' />"
-       title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> "></a>
+       title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> ">KnowWE</a>
 
         <wiki:PageExists page="HomeMenu">
         <ul class="dropdown-menu" data-hover-parent=".cage"  style="color:black;">

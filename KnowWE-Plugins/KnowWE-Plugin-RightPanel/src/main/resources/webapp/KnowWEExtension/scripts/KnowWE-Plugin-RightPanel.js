@@ -76,12 +76,10 @@ KNOWWE.core.plugin.rightPanel = function() {
 			} else {
 				if (windowWidth < 600) {
 					KNOWWE.core.plugin.rightPanel.moveToBottom();
-					resize = 100
-					jq$(KNOWWE.core.util.getPageContentSelector()).css("width", resize + "%");
+					jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "0");
 				} else {
 					KNOWWE.core.plugin.rightPanel.moveToRight();
-					resize -= jq$(KNOWWE.core.util.getPageContentSelector()).offset().left;
-					jq$(KNOWWE.core.util.getPageContentSelector()).css("width", resize + "px");
+					jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "300px");
 				}
 				rightPanelScroll();
 			}
@@ -156,9 +154,6 @@ KNOWWE.core.plugin.rightPanel = function() {
 					var limit = footerTop - sidebarHeight;
 					var stickyMenuHeight = jq$('.sticky').outerHeight();
 					var windowTop = jq$(window).scrollTop();
-
-					jq$("#rightPanel").css(DenkbaresSkin.scrollTransitionDuration);
-					jq$(".page").css(DenkbaresSkin.scrollTransitionDuration);
 
 					// when header is visible, place sidebar beneath it
 					if (window.pageYOffset <= jq$('.header').outerHeight()) {
@@ -308,7 +303,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 			jq$("#actionsBottom").css("margin-right", "5px");
 		} else {
 			if (!isOnBottom) {
-				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'width' : "-=300px"}, globalFloatingTime);
+				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right' : "300px"}, globalFloatingTime);
 			}
 		}
 	}
@@ -328,7 +323,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 			jq$("#actionsBottom").css("margin-right", "auto");
 		} else {
 			if (!isOnBottom) {
-				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'width' : '+=300px'}, globalFloatingTime);
+				jq$(KNOWWE.core.util.getPageContentSelector()).animate({'margin-right' : '0'}, globalFloatingTime);
 				rightPanel.animate({'right' : '-=300px'}, globalFloatingTime, function() {
 					removeRightPanel();
 				});
@@ -342,8 +337,8 @@ KNOWWE.core.plugin.rightPanel = function() {
 	}
 
 	function removeRightPanel() {
-		isOnBottom = false;
 		rightPanel.remove();
+		isOnBottom = false;
 	}
 
 	function buildRightPanel() {
@@ -586,6 +581,10 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 		moveToRight : function() {
 			moveRightPanelToRight()
+		},
+
+		isShownOnRight : function() {
+			return isRightPanelShown() && !isOnBottom;
 		}
 
 	}

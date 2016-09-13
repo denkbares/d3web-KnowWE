@@ -179,58 +179,67 @@ DenkbaresSkin.highlightActiveTOC = function() {
  * optimally used.
  */
 DenkbaresSkin.scrollFavorites = function() {
-	/*var sidebar = jq$('.sidebar');
-	var sidebarTop = 0
-	if (sidebar) {
-		sidebarTop = sidebar.offset().top;
-		var sidebarHeight = sidebar.outerHeight();
-	}
-	var footer = jq$('.footer');
-	var footerTop = 0;
-	if (footer) {
-		footerTop = footer.offset().top;
-	}
-	var limit = footerTop - sidebarHeight;
-	var stickyMenuHeight = jq$('.sticky').outerHeight();
-	var windowTop = jq$(window).scrollTop();
+	if (DenkbaresSkin.isSidebarShown() && jq$(window).width() >= 550) {
+		var sidebar = jq$('.sidebar');
+		var sidebarTop = 0
+		if (sidebar) {
+			sidebarTop = sidebar.offset().top;
+			var sidebarHeight = sidebar.outerHeight();
+		}
+		var footer = jq$('.footer');
+		var footerTop = 0;
+		if (footer) {
+			footerTop = footer.offset().top;
+		}
+		var limit = footerTop - sidebarHeight;
+		var stickyMenuHeight = jq$('.sticky').outerHeight();
+		var windowTop = jq$(window).scrollTop();
 
-	jq$(".sidebar").css(DenkbaresSkin.scrollTransitionDuration);
-	jq$(".page").css(DenkbaresSkin.scrollTransitionDuration);
-
-	var sWidth = sidebar.parent().width() * 0.21654752221994123;
-
-	// when header is visible, place sidebar beneath it
-	if (window.pageYOffset <= jq$('.header').outerHeight()) {
-		sidebar.css({
-			position : "relative",
-			top : "auto",
-			width: sWidth
-		});
-		// keep sidebar fixed on the left when header is not visible
-	} else if (sidebarTop - stickyMenuHeight < windowTop) {
-		sidebar.css({
-			position : 'fixed',
-			top : stickyMenuHeight + 'px',
-			width: sWidth
-		});
-	}
-	// if footer is visible align bottom of sidebar with footer's top
-	if (limit - stickyMenuHeight < windowTop) {
-		var diff = limit - (windowTop);
-		sidebar.css({
-			position : 'fixed',
-			top : diff + 'px',
-			width: sWidth
+		// when header is visible, place sidebar beneath it
+		if (window.pageYOffset <= jq$('.header').outerHeight()) {
+			sidebar.css({
+				position : "absolute",
+				top : "0"
+			});
+			// keep sidebar fixed on the left when header is not visible
+		} else if (sidebarTop - stickyMenuHeight < windowTop) {
+			sidebar.css({
+				position : 'fixed',
+				top : stickyMenuHeight + 'px'
+			});
+		}
+		// if footer is visible align bottom of sidebar with footer's top
+		if (limit - stickyMenuHeight < windowTop) {
+			var diff = limit - (windowTop);
+			sidebar.css({
+				position : 'fixed',
+				top : diff + 'px'
+			})
+		}
+	} else {
+		jq$('.sidebar').css({
+			position : "absolute",
+			top : "0"
 		})
-	}*/
+	}
 };
+
+DenkbaresSkin.adjustSidebarVisibility = function() {
+	if (jq$(window).width() < 825) {
+		DenkbaresSkin.hideSidebar();
+	} else {
+		DenkbaresSkin.showSidebar();
+	}
+}
 
 DenkbaresSkin.initPageScroll = function() {
 	DenkbaresSkin.originalPageOffset = jq$(".page").offset().top;
 };
 
 DenkbaresSkin.adjustPageHeight = function() {
-	jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
+	if (DenkbaresSkin.isSidebarShown()) {
+		jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
+	}
 }
 
 DenkbaresSkin.cleanTrail = function() {
@@ -270,10 +279,12 @@ DenkbaresSkin.resizeFlows = function() {
 
 DenkbaresSkin.showSidebar = function() {
 	jq$('.content').addClass('active');
+	DenkbaresSkin.onShowSidebar();
 }
 
 DenkbaresSkin.hideSidebar = function() {
 	jq$('.content').removeClass('active');
+	DenkbaresSkin.onHideSidebar();
 }
 
 DenkbaresSkin.toggleSidebar = function() {
@@ -293,14 +304,24 @@ DenkbaresSkin.isSidebarShown = function() {
 }
 
 DenkbaresSkin.onHideSidebar = function() {
-	var sWidth = jq$('.sidebar').width();
-	/*jq$(KNOWWE.core.util.getPageContentSelector()).animate({
-		'width' : '+=' + sWidth
-	}, 300);*/
+	jq$('.sidebar').css('width', '275px');
+	jq$('.sidebar').css('left', '-275px');
+	jq$('.page').css('display', 'block');
+	jq$('.content').css('min-height', 'auto');
 }
 
 DenkbaresSkin.onShowSidebar = function() {
-
+	DenkbaresSkin.scrollFavorites();
+	jq$('.sidebar').css('left', '0');
+	if (jq$(window).width() < 550) {
+		jq$('.sidebar').css('width', '100vw');
+		jq$('.page').css('display', 'none');
+		jq$('.content').css('min-height', jq$('.sidebar').outerHeight() + 'px');
+	} else {
+		jq$('.sidebar').css({
+			'width' : '275px'
+		});
+	}
 }
 
 // does not return "elastic scroll" values from OSX.
@@ -322,6 +343,8 @@ jq$(document).ready(function() {
 	// workaround, because sometimes we are too early
 	window.setTimeout(function() {
 		DenkbaresSkin.initFavoritesScroll();
+		DenkbaresSkin.adjustSidebarVisibility();
+		DenkbaresSkin.adjustPageHeight();
 		DenkbaresSkin.scrollFavorites();
 	});
 
@@ -342,13 +365,14 @@ jq$(document).ready(function() {
 		}
 	}
 
-	jq$('#menu').click(function(){
+	jq$('#menu').click(function() {
 		if (DenkbaresSkin.isSidebarShown()) {
 			DenkbaresSkin.onShowSidebar();
 		} else {
 			DenkbaresSkin.onHideSidebar();
 		}
 	});
+
 });
 
 
@@ -356,8 +380,9 @@ KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows)
 
 jq$(window).scroll(DenkbaresSkin.scrollFavorites);
 jq$(window).scroll(DenkbaresSkin.highlightActiveTOC);
-jq$(window).resize(DenkbaresSkin.scrollFavorites);
 jq$(window).resize(DenkbaresSkin.resizeFlows);
+jq$(window).resize(DenkbaresSkin.adjustSidebarVisibility);
+jq$(window).resize(DenkbaresSkin.scrollFavorites);
 jq$(window).resize(DenkbaresSkin.adjustPageHeight);
 //jq$(document).on('rightPanelResize', DenkbaresSkin.scrollFavorites);
 //jq$(document).on('rightPanelResize', DenkbaresSkin.resizeFlows);

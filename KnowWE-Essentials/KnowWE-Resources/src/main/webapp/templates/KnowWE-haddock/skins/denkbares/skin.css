@@ -388,16 +388,25 @@ img.attlink {
 
 a.logo {
 	display: block;
-	width: 112px;
+	width: 130px;
 	height: 47px;
 	overflow: hidden;
 	margin-left: auto;
 	margin-right: auto;
-	text-indent: -1000px;
-	background: url(../../../../KnowWEExtension/images/knowwe_logo.png) 10px 0px no-repeat;
+	background: none;
 	left: 0;
 	border: 0;
 	right: auto;
+	letter-spacing: 0;
+	font-family: 'Avenir', 'Helvetica', sans-serif;
+	font-size: 28px;
+	padding-left: 0;
+	font-weight: bold;
+}
+
+a.logo:hover{
+	text-decoration: none;
+	color: inherit;
 }
 
 /*.applicationlogo a:hover {
@@ -765,6 +774,7 @@ a.tool:hover {
 }
 
 #findSuggestionMenu {
+	top: 143px;
 }
 
 /* ie6 hack */
@@ -2396,3 +2406,28 @@ li.findpages .btn {
 	display: none;
 }
 
+.sidebar {
+	width: 275px;
+	position: absolute;
+	float: none;
+	top: 0;
+	background: #e5e8ed;
+	min-height: 100vh;
+	transition: left .5s;
+	margin-left: 0;
+	z-index: 600;
+}
+
+.content:after {
+	content: none;
+}
+
+.content.active .page {
+	margin-left: 275px;
+	width: auto;
+}
+
+.page {
+	float: none;
+	transition: margin-left .5s;
+}
