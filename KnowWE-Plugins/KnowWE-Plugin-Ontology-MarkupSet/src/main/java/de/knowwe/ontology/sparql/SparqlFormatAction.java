@@ -1,12 +1,12 @@
 package de.knowwe.ontology.sparql;
 
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
+import java.io.IOException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
 
 /**
  * Pretty formats a sparql query.
@@ -56,8 +56,8 @@ public class SparqlFormatAction extends AbstractAction {
 		// Count Brackets and set Indices of Keywords.
 		for (int i = 0; i < tmpWikiText.length(); i++) {
 
-			//Breaks the loop if tmpWikitext has more than 9999 characters to avoid an endless loop.
-			if (i > 9999) {
+			// heuristic to detect loops... should probably be removed after a algorithm seems stable
+			if (i > 1000000) {
 				return tmpWikiText;
 			}
 
