@@ -1765,7 +1765,7 @@ KNOWWE.helper.logger = function(){
 	                    	try {
                                 f[j].call(scope);
 	                    	} catch(ex) {
-	                    		if (console) console.exception(ex);
+	                    		if (console) console.log(ex);
 	                    	}
 	                    }
 	                }

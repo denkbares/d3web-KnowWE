@@ -52,6 +52,10 @@ import static org.junit.Assert.assertFalse;
  */
 public abstract class DiaFluxSystemTest {
 
+	protected enum WikiTemplate {
+		standard, haddock
+	}
+
 	public static final String RESOURCE_DIR = "src/test/resources/";
 
 	/**
@@ -67,12 +71,13 @@ public abstract class DiaFluxSystemTest {
 
 	protected abstract WebDriver getDriver();
 
+	protected abstract WikiTemplate getTemplate();
+
 	@Before
 	public void load() throws Exception {
 		if (isDevMode()) {
 			getDriver().get("http://localhost:8080/KnowWE/Wiki.jsp?page=" + getTestName());
-		}
-		else {
+		} else {
 			getDriver().get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=" + getTestName());
 			logIn();
 		}
@@ -493,8 +498,7 @@ public abstract class DiaFluxSystemTest {
 		Select ruleSelect = new Select(rule.findElement(By.tagName("select")));
 		try {
 			ruleSelect.selectByVisibleText(text);
-		}
-		catch (NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			// selecting by text fails with chrome and special chars... try to match as good as possible
 			List<WebElement> options = ruleSelect.getOptions();
 			for (WebElement option : options) {
@@ -574,15 +578,12 @@ public abstract class DiaFluxSystemTest {
 			if (text[0].equalsIgnoreCase("formula")) {
 				select.selectByIndex(10);
 				getDriver().findElement(By.cssSelector(".selectedRule textarea")).sendKeys(text[1] + Keys.ENTER);
-			}
-			else {
+			} else {
 				if (text[0].equals("[  ..  ]")) {
 					select.selectByValue("8");
-				}
-				else if (text[0].equals("[  ..  [")) {
+				} else if (text[0].equals("[  ..  [")) {
 					select.selectByValue("9");
-				}
-				else {
+				} else {
 					select.selectByVisibleText(text[0].trim());
 				}
 				if (text.length > 1) {
@@ -590,8 +591,7 @@ public abstract class DiaFluxSystemTest {
 					inputs.get(0).sendKeys(text[1]);
 					if (text.length > 2) {
 						inputs.get(1).sendKeys(text[2] + Keys.ENTER);
-					}
-					else {
+					} else {
 						inputs.get(0).sendKeys(Keys.ENTER);
 					}
 				}
@@ -603,6 +603,11 @@ public abstract class DiaFluxSystemTest {
 		int attempt = 0;
 		while (attempt < 5 && getDriver().getWindowHandles().size() == 1) {
 			clickTool("type_DiaFlux", nth, "visual editor");
+			if (getDriver() instanceof JavascriptExecutor) {
+				// Avoid possible overlay with sticky bar
+				JavascriptExecutor jse = (JavascriptExecutor) getDriver();
+				jse.executeScript("scroll(0, 52);");
+			}
 			Thread.sleep(500);
 			attempt++;
 		}
@@ -621,15 +626,16 @@ public abstract class DiaFluxSystemTest {
 	private void changeArticleText(String newText) {
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 		getDriver().findElement(By.id("edit-source-button")).click();
-		WebElement editorArea = new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("editorarea")));
+		String areaSelector = getTemplate() == WikiTemplate.haddock ?  ".editor.form-control" : "#editorarea";
+		List<WebElement> editorAreas = new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(areaSelector)));
 		if (getDriver() instanceof JavascriptExecutor) {
 			// hacky but fast/instant!
-			((JavascriptExecutor) getDriver()).executeScript("document.getElementById('editorarea').value = arguments[0]", newText);
-		}
-		else {
+			((JavascriptExecutor) getDriver()).executeScript("var areas = document.querySelectorAll('" + areaSelector + "');" +
+					"for (var i=0; i<areas.length; i++) { areas[i].value = arguments[0] };", newText);
+		} else {
 			// sets the keys one by one, pretty slow...
-			editorArea.clear();
-			editorArea.sendKeys(newText);
+			editorAreas.forEach(webElement -> webElement.clear());
+			editorAreas.forEach(webElement -> webElement.sendKeys(newText));
 		}
 		getDriver().findElement(By.name("ok")).click();
 	}
@@ -643,7 +649,8 @@ public abstract class DiaFluxSystemTest {
 	private void saveAndSwitchBack(String winHandleBefore) {
 		getDriver().findElement(By.id("saveClose")).click();
 		getDriver().switchTo().window(winHandleBefore);
-		UITestUtils.awaitRerender(getDriver(), By.id("pagecontent"));
+		String pageContentSelector = getTemplate() == WikiTemplate.haddock ?  ".page-content" : "#pagecontent";
+		UITestUtils.awaitRerender(getDriver(), By.cssSelector(pageContentSelector));
 	}
 
 	private void addActionNode(int xOffset, int yOffset, String... text) throws InterruptedException {
@@ -712,12 +719,10 @@ public abstract class DiaFluxSystemTest {
 				//actionSelect.findElement(By.xpath("//option[@value='" + 1 + "']")).click();
 				//actionSelect.findElements(By.tagName("option")).get(1).click();
 				getDriver().findElement(By.cssSelector(".ActionEditor textarea")).sendKeys(text[2] + Keys.ENTER);
-			}
-			else if (text[1].startsWith("" + Keys.ARROW_DOWN)) {
+			} else if (text[1].startsWith("" + Keys.ARROW_DOWN)) {
 				actionSelect.selectByIndex(text[1].length() - 1);
 				//actionSelect.sendKeys(text[1] + Keys.ENTER);
-			}
-			else {
+			} else {
 				actionSelect.selectByVisibleText(text[1]);
 				//actionSelect.findElement(By.xpath("//option[text()='" + text[1] + "']")).click();
 			}
@@ -741,7 +746,8 @@ public abstract class DiaFluxSystemTest {
 	}
 
 	private String readFile(String fileName) throws IOException {
-		return Strings.readFile(RESOURCE_DIR + fileName).replace("%%package systemtest", "%%package systemtest" + getTestName());
+		return Strings.readFile(RESOURCE_DIR + fileName)
+				.replace("%%package systemtest", "%%package systemtest" + getTestName());
 	}
 
 }

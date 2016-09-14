@@ -477,11 +477,10 @@ a.footnote {
 }
 
 .diffnote, .information, .warning, .error {
-	display: block;
+	display: block !important;
 	clear: both;
 	/*margin: 1em .5em;
 	padding: 1em 1em 1em 3em;*/
-	background-position: .8em .9em;
 	background-repeat: no-repeat;
 }
 
@@ -2431,4 +2430,8 @@ li.findpages .btn {
 .page {
 	float: none;
 	transition: margin-left .5s;
+}
+
+.edit .page {
+	transition: none;
 }

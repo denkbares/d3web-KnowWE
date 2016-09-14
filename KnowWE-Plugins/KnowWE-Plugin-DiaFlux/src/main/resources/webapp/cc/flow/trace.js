@@ -11,7 +11,7 @@ DiaFlux.Trace.getTrace = function(){
 
 DiaFlux.Trace.refreshAllTraces = function() {
 	
-	var flows = document.getElementsBySelector('.FlowchartGroup');
+	var flows = document.querySelectorAll('.FlowchartGroup');
 	
 	for ( var i = 0; i < flows.length; i++) {
 		DiaFlux.Trace.getTrace.call({flow: flows[i].__flowchart});

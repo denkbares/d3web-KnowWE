@@ -15,7 +15,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  *
  * Created by Albrecht Striffler (denkbares GmbH) on 25.04.2015.
  */
-public class ChromeDiaFluxSystemTest extends DiaFluxSystemTest {
+public abstract class ChromeDiaFluxSystemTest extends DiaFluxSystemTest {
 
 	private static RemoteWebDriver driver;
 
