@@ -72,9 +72,17 @@
 		<parameter id="description" value="Action CIAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-	</extension>	
-	
-	
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+		id="CIResultDownloadAction">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.action.CIResultDownloadAction" />
+		<parameter id="name" value="CIResultDownloadAction" />
+		<parameter id="description" value="Action to download the latest CI build results as XML." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CIStopBuildAction">
