@@ -612,9 +612,9 @@ KNOWWE.core.rerendercontent = function() {
 				if (typeof this == "object" && this != window) {
 					jq$.extend(parameters, this);
 				}
-				jq$('.ReRenderSectionMarker').rerender(null, parameters);
+				jq$('.ReRenderSectionMarker').rerender(parameters);
 			});
-			jq$('.asynchronRenderer').rerender(null, {reason : "asynchronRenderer", globalProcessingState : false});
+			jq$('.asynchronRenderer').rerender({reason : "asynchronRenderer", globalProcessingState : false});
 
 			//Add css class indicating skin used
 			jq$('body').addClass(jq$('#knowWEInfoTemplate').val());

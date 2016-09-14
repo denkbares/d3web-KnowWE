@@ -94,10 +94,10 @@
 	 * You can also just select successors of the default markup, the method will automatically choose the right
 	 * elements to rerender.
 	 */
-	jq$.fn.rerender = function(callback, parameters) {
+	jq$.fn.rerender = function(options) {
 
 		function showGlobalProcessingState() {
-			return typeof parameters.globalProcessingState === "undefined" || parameters.globalProcessingState === true;
+			return typeof options.globalProcessingState === "undefined" || options.globalProcessingState === true;
 		}
 
 		this.each(function(i) {
@@ -106,9 +106,9 @@
 			var id = $element.attr('sectionId');
 			if (!id) id = $element.attr('id');
 
-			if (!parameters) parameters = {};
+			if (!options) options = {};
 			var data = {SectionID : id};
-			jq$.extend(data, parameters);
+			jq$.extend(data, options);
 
 			if (showGlobalProcessingState()) {
 				KNOWWE.core.util.updateProcessingState(1);
@@ -136,7 +136,7 @@
 				jq$('#knowWEInfoStatus').val(parsed.status);
 				KNOWWE.core.actions.init();
 				KNOWWE.helper.observer.notify("afterRerender", $element);
-				if (callback) callback();
+				if (options.callback) options.callback();
 			}).always(function() {
 				if (showGlobalProcessingState()) {
 					KNOWWE.core.util.updateProcessingState(-1);
