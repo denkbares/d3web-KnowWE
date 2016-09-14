@@ -70,6 +70,10 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 
+import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.MultiMaps;
+import com.denkbares.collections.N2MMap;
+import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.RepositoryConnection;
 import com.denkbares.semanticcore.SemanticCore;
@@ -80,20 +84,16 @@ import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
-import com.denkbares.collections.MultiMap;
-import com.denkbares.collections.MultiMaps;
-import com.denkbares.collections.N2MMap;
-import de.d3web.core.inference.RuleSet;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
+import de.d3web.core.inference.RuleSet;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -282,8 +282,6 @@ public class Rdf2GoCore {
 
 	/**
 	 * Make sure to close the connection after use!
-	 *
-	 * @throws RepositoryException
 	 */
 	public RepositoryConnection getRepositoryConnection() throws RepositoryException {
 		return semanticCore.getConnection();
@@ -751,7 +749,7 @@ public class Rdf2GoCore {
 			}
 		}
 		catch (RepositoryException e) {
-			e.printStackTrace();
+			Log.severe("Exceptin while getting namespaces", e);
 		}
 		return temp;
 	}
@@ -798,7 +796,7 @@ public class Rdf2GoCore {
 			statements1 = Iterations.asSet(statements);
 		}
 		catch (RepositoryException e) {
-			e.printStackTrace();
+			Log.severe("Exception while getting statements", e);
 		}
 		return statements1;
 	}
@@ -1098,12 +1096,13 @@ public class Rdf2GoCore {
 			// way sooner in normal cases.
 			return sparqlTask.get(timeOutMillis * 2, TimeUnit.MILLISECONDS);
 		}
-		catch (CancellationException | InterruptedException e) {
+		catch (CancellationException | InterruptedException | TimeoutException e) {
 //			Log.warning("SPARQL query failed due to an exception", e);
 			throw new RuntimeException(timeOutMessage, e);
 		}
 		catch (Exception e) {
 			Throwable cause = e.getCause();
+			if (cause == null) cause = e;
 			if (cause instanceof ThreadDeath || cause instanceof QueryInterruptedException) {
 				throw new RuntimeException(timeOutMessage, cause);
 			}
@@ -1184,7 +1183,6 @@ public class Rdf2GoCore {
 
 		@Override
 		public Object get() throws InterruptedException, ExecutionException {
-			System.out.println(isCancelled());
 			return super.get();
 		}
 
@@ -1228,7 +1226,7 @@ public class Rdf2GoCore {
 	 * these timeouts do not work as desired (probably not well implemented by underlying repos) so we use this
 	 * kill switch to make sure the query is terminated after 150% of the intended timeout.
 	 */
-	private class SparqlTaskReaper implements Runnable {
+	private static class SparqlTaskReaper implements Runnable {
 
 		private final SparqlTask task;
 
@@ -1423,7 +1421,6 @@ public class Rdf2GoCore {
 	 * format.
 	 *
 	 * @param out the target to write the model to
-	 * @throws IOException
 	 * @created 03.02.2012
 	 */
 	public void writeModel(Writer out) throws IOException {
@@ -1436,7 +1433,6 @@ public class Rdf2GoCore {
 	 *
 	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
-	 * @throws IOException
 	 * @created 28.07.2014
 	 */
 	public void writeModel(Writer out, RDFFormat syntax) throws IOException {
@@ -1454,7 +1450,6 @@ public class Rdf2GoCore {
 	 *
 	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
-	 * @throws IOException
 	 * @created 28.07.2014
 	 */
 	public void writeModel(OutputStream out, RDFFormat syntax) throws IOException {
