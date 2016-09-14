@@ -122,6 +122,7 @@ public class SparqlResultRenderer {
 
 	public static void handleRuntimeException(Section<? extends SparqlType> section, RenderResult result, RuntimeException e) {
 		String message = e.getMessage();
+		if (message == null) message = "RuntimeException without message.";
 		message = Strings.trimRight(message);
 		if (!message.endsWith(".")) message += ".";
 		result.appendHtml("<span class='warning'>"
