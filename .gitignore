@@ -23,8 +23,4 @@ overlays/
 *.class
 
 #Other
-jspwiki-custom.properties
-jspwiki-custom.properties.bak
-jspwiki.policy
-jspwiki.policy.bak
 fontconfig/
