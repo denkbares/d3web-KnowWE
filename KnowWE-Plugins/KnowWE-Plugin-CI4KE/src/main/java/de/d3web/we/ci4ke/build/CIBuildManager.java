@@ -34,12 +34,12 @@ import java.util.concurrent.FutureTask;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
+import com.denkbares.utils.Log;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
 import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.testing.TestResult;
-import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.compile.CompilationStartEvent;
@@ -142,6 +142,7 @@ public class CIBuildManager implements EventListener {
 	}
 
 	private static void deleteAttachmentTempFiles(BuildResult build) {
+		if (build == null) return;
 		for (TestResult testResult : build.getResults()) {
 			testResult.handleAutoDelete();
 		}
