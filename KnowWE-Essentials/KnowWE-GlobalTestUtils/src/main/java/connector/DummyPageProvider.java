@@ -213,6 +213,7 @@ public class DummyPageProvider {
 	}
 
 	public void storeAttachment(WikiAttachment attachment) {
+		Log.info("Cached attachment: " + attachment.getPath());
 		// this method can also be used for example by the dummy page provider,
 		// so we further extract the ZipEntryAttachments here
 		attachments.put(attachment.getPath(), attachment);
