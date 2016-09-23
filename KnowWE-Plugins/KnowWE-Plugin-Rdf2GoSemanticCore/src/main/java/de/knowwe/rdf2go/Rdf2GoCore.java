@@ -120,7 +120,8 @@ public class Rdf2GoCore {
 			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-Sparql-Thread");
 
 	private static final ThreadPoolExecutor shutDownThreadPool = createThreadPool(
-			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-SemanticCore-Shutdown-Thread");
+			Math.max(Runtime.getRuntime()
+					.availableProcessors() - 1, 1), "KnowWE-SemanticCore-Shutdown-Thread");
 
 	private static final ThreadPoolExecutor sparqlReaperPool = createThreadPool(
 			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon");
@@ -134,9 +135,9 @@ public class Rdf2GoCore {
 	private int resultCacheSize = 0;
 
 	/**
-	 * Some models have extreme slow downs if during a SPARQL query new statements are added or removed. Concurrent
-	 * SPARQLs however are no problem. Therefore we use a lock that locks exclusively for writing but shared for
-	 * reading.
+	 * Some models have extreme slow downs if during a SPARQL query new statements are added or
+	 * removed. Concurrent SPARQLs however are no problem. Therefore we use a lock that locks
+	 * exclusively for writing but shared for reading.
 	 */
 
 	private final Object statementLock = new Object();
@@ -180,9 +181,8 @@ public class Rdf2GoCore {
 	/**
 	 * @return one global instance for all webs an compilers
 	 * @created 14.12.2013
-	 * @deprecated use {@link Rdf2GoCore#getInstance(Rdf2GoCompiler)} instead.
-	 * Using the global instance will cause problems with different
-	 * webs or different article managers
+	 * @deprecated use {@link Rdf2GoCore#getInstance(Rdf2GoCompiler)} instead. Using the global
+	 * instance will cause problems with different webs or different article managers
 	 */
 	@Deprecated
 	public static Rdf2GoCore getInstance() {
@@ -213,7 +213,8 @@ public class Rdf2GoCore {
 	private final Object nsMutext = new Object();
 
 	/**
-	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in Turtle and SPARQL
+	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in
+	 * Turtle and SPARQL
 	 */
 	private volatile Map<String, String> namespacePrefixes = new HashMap<>();
 
@@ -251,8 +252,8 @@ public class Rdf2GoCore {
 	 * that the RuleSet argument only has an effect if OWLIM is used as underlying
 	 * implementation.
 	 *
-	 * @param lns       the uri used as local namespace
-	 * @param bns       the uri used as base namespace
+	 * @param lns the uri used as local namespace
+	 * @param bns the uri used as base namespace
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
 	public Rdf2GoCore(String lns, String bns, RepositoryConfig reasoning) {
@@ -295,7 +296,7 @@ public class Rdf2GoCore {
 	 * Add a namespace to the model.
 	 *
 	 * @param abbreviation the short version of the namespace
-	 * @param namespace    the namespace (URL)
+	 * @param namespace the namespace (URL)
 	 */
 	public void addNamespace(String abbreviation, String namespace) {
 		synchronized (nsMutext) {
@@ -381,8 +382,8 @@ public class Rdf2GoCore {
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param source     the {@link StatementSource} for which the {@link Statement}s are
-	 *                   added and cached
+	 * @param source the {@link StatementSource} for which the {@link Statement}s are added and
+	 * cached
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(StatementSource source, Statement... statements) {
@@ -396,8 +397,8 @@ public class Rdf2GoCore {
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param source     the {@link StatementSource} for which the {@link Statement}s are
-	 *                   added and cached
+	 * @param source the {@link StatementSource} for which the {@link Statement}s are added and
+	 * cached
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(StatementSource source, Collection<Statement> statements) {
@@ -418,8 +419,7 @@ public class Rdf2GoCore {
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param section    the {@link Section} for which the {@link Statement}s are
-	 *                   added and cached
+	 * @param section the {@link Section} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
 	 * @created 06.12.2010
 	 */
@@ -434,8 +434,7 @@ public class Rdf2GoCore {
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param section    the {@link Section} for which the {@link Statement}s are
-	 *                   added and cached
+	 * @param section the {@link Section} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
 	 * @created 06.12.2010
 	 */
@@ -488,7 +487,8 @@ public class Rdf2GoCore {
 		try {
 			int removeSize = removeCache.size();
 			int insertSize = insertCache.size();
-			boolean verboseLog = removeSize + insertSize < 50 && !Log.logger().isLoggable(Level.FINE);
+			boolean verboseLog = removeSize + insertSize < 50 && !Log.logger()
+					.isLoggable(Level.FINE);
 
 			if (removeSize > 0 || insertSize > 0) {
 				synchronized (resultCache) {
@@ -668,6 +668,10 @@ public class Rdf2GoCore {
 		return createURI(uri);
 	}
 
+	public Resource createResource(java.net.URI uri) {
+		return createResource(uri.toString());
+	}
+
 	public static String unquoteTurtleLiteral(String turtle) {
 		turtle = turtle.trim();
 		int len = turtle.length();
@@ -700,6 +704,10 @@ public class Rdf2GoCore {
 	public URI createURI(String value) {
 		if (value.startsWith(":")) value = "lns" + value;
 		return getValueFactory().createURI(Rdf2GoUtils.expandNamespace(this, value));
+	}
+
+	public URI createURI(java.net.URI uri) {
+		return createURI(uri.toString());
 	}
 
 	private ValueFactory getValueFactory() {
@@ -775,7 +783,8 @@ public class Rdf2GoCore {
 						namespacePrefixes.put(Rdf2GoUtils.toNamespacePrefix(entry.getKey()), entry.getValue());
 					}
 					this.namespacePrefixes = namespacePrefixes;
-				} else {
+				}
+				else {
 					namespacePrefixes = this.namespacePrefixes;
 				}
 			}
@@ -802,7 +811,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Returns the set of statements that have been created from the given section during the compile process
+	 * Returns the set of statements that have been created from the given section during the
+	 * compile process
 	 */
 	public Set<Statement> getStatementsFromCache(Section<?> source) {
 		return statementCache.getValues(new SectionSource(source));
@@ -905,8 +915,7 @@ public class Rdf2GoCore {
 	 * added (and cached) in connection with a {@link Section} using methods
 	 * like {@link Rdf2GoCore#addStatements(Section, Collection)}.
 	 *
-	 * @param section the {@link Section} for which the {@link Statement}s
-	 *                should be removed
+	 * @param section the {@link Section} for which the {@link Statement}s should be removed
 	 * @created 06.12.2010
 	 */
 	public void removeStatements(Section<? extends Type> section) {
@@ -949,8 +958,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Clears any cached result for the given sparql query. This way, if the query is executed again, it has to be
-	 * calculated anew.
+	 * Clears any cached result for the given sparql query. This way, if the query is executed
+	 * again, it has to be calculated anew.
 	 *
 	 * @param query the query for which the cached result should be removed
 	 * @return true if a result was cached, false if not
@@ -1013,12 +1022,12 @@ public class Rdf2GoCore {
 //	}
 
 	/**
-	 * Performs a SPARQL select query with the given parameters. Be aware that, in case of an uncached query, the
-	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
-	 * take a long time not covered by the timeout.
+	 * Performs a SPARQL select query with the given parameters. Be aware that, in case of an
+	 * uncached query, the timeout only effects the process of creating the iterator. Retrieving
+	 * elements from the iterator might again take a long time not covered by the timeout.
 	 *
-	 * @param query         the SPARQL query to perform
-	 * @param cached        sets whether the SPARQL query is to be cached or not
+	 * @param query the SPARQL query to perform
+	 * @param cached sets whether the SPARQL query is to be cached or not
 	 * @param timeOutMillis the timeout of the query
 	 * @return the result of the query
 	 */
@@ -1027,12 +1036,12 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Performs a SPARQL ask query with the given parameters. Be aware that, in case of an uncached query, the
-	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
-	 * take a long time not covered by the timeout.
+	 * Performs a SPARQL ask query with the given parameters. Be aware that, in case of an uncached
+	 * query, the timeout only effects the process of creating the iterator. Retrieving elements
+	 * from the iterator might again take a long time not covered by the timeout.
 	 *
-	 * @param query         the SPARQL query to perform
-	 * @param cached        sets whether the SPARQL query is to be cached or not
+	 * @param query the SPARQL query to perform
+	 * @param cached sets whether the SPARQL query is to be cached or not
 	 * @param timeOutMillis the timeout of the query
 	 * @return the result of the query
 	 */
@@ -1221,10 +1230,10 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Observes the SPARQL task end cancels/stops it, if it takes to long.
-	 * We normally use the build-in sesame timeout to terminate queries that are too slow. In some cases though,
-	 * these timeouts do not work as desired (probably not well implemented by underlying repos) so we use this
-	 * kill switch to make sure the query is terminated after 150% of the intended timeout.
+	 * Observes the SPARQL task end cancels/stops it, if it takes to long. We normally use the
+	 * build-in sesame timeout to terminate queries that are too slow. In some cases though, these
+	 * timeouts do not work as desired (probably not well implemented by underlying repos) so we use
+	 * this kill switch to make sure the query is terminated after 150% of the intended timeout.
 	 */
 	private static class SparqlTaskReaper implements Runnable {
 
@@ -1332,7 +1341,6 @@ public class Rdf2GoCore {
 			}
 			return result;
 		}
-
 	}
 
 	private String getReadableQuery(String query, SparqlType type) {
@@ -1431,7 +1439,7 @@ public class Rdf2GoCore {
 	 * Writes the current repository model to the given writer in the specified
 	 * syntax.
 	 *
-	 * @param out    the target to write the model to
+	 * @param out the target to write the model to
 	 * @param syntax the syntax of the target file
 	 * @created 28.07.2014
 	 */
@@ -1448,7 +1456,7 @@ public class Rdf2GoCore {
 	 * Writes the current repository model to the given writer in the specified
 	 * syntax.
 	 *
-	 * @param out    the target to write the model to
+	 * @param out the target to write the model to
 	 * @param syntax the syntax of the target file
 	 * @created 28.07.2014
 	 */
@@ -1482,11 +1490,9 @@ public class Rdf2GoCore {
 			this.semanticCore.shutdown();
 			Log.info("SemanticCore shutdown in " + stopwatch.getDisplay());
 		});
-
 	}
 
 	public RepositoryConfig getRuleSet() {
 		return ruleSet;
 	}
-
 }
