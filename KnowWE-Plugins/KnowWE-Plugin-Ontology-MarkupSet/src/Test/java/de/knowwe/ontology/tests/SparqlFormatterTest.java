@@ -1,7 +1,8 @@
 package de.knowwe.ontology.tests;
 
-import de.knowwe.ontology.sparql.SparqlFormatAction;
 import org.junit.Test;
+
+import de.knowwe.ontology.sparql.SparqlFormatAction;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,14 +47,10 @@ public class SparqlFormatterTest {
 				"\t?Substance lns:hasEstablished <lns:OECD+HPV+Chemical>\n" +
 				"\t\n" +
 				"}\n" +
-				"ORDER BY ?Name ?CAS ?EC";
+				"ORDER BY ?Name ?CAS ?EC\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
-
 
 	@Test
 	public void testRecursiveCall() {
@@ -117,14 +114,10 @@ public class SparqlFormatterTest {
 				"}\n" +
 				"\n" +
 				"ORDER BY ?Name ?CAS ?EC\n" +
-				"%";
+				"%\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
-
 
 	@Test
 	public void testDeeperRecursiveCall() {
@@ -292,14 +285,10 @@ public class SparqlFormatterTest {
 				"ORDER BY ?BfR\n" +
 				"\n" +
 				"@timeout: 60s\n" +
-				"%";
+				"%\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
-
 
 	@Test
 	public void testSELECTIndentedWrong() {
@@ -338,12 +327,8 @@ public class SparqlFormatterTest {
 				"ORDER BY ?Name ?CAS ?EC\n" +
 				"%\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
-
 
 	@Test
 	public void testSimpleSparql2() {
@@ -363,7 +348,7 @@ public class SparqlFormatterTest {
 				"    \n" +
 				"    }\n" +
 				"        ORDER BY ?Name ?CAS ?EC\n" +
-				"%";
+				"%\n";
 
 		String expectedSparql = "%%Sparql\n" +
 				"\n" +
@@ -381,14 +366,10 @@ public class SparqlFormatterTest {
 				"\t\n" +
 				"}\n" +
 				"ORDER BY ?Name ?CAS ?EC\n" +
-				"%";
+				"%\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
-
 
 	@Test
 	public void testSparqlWithMoreThanThreeAttributesInOptional() {
@@ -411,7 +392,7 @@ public class SparqlFormatterTest {
 				"}\n" +
 				"\n" +
 				"ORDER BY ?Name ?CAS ?EC\n" +
-				"%";
+				"%\n";
 
 		String expectedSparql = "%%Sparql\n" +
 				"\n" +
@@ -432,7 +413,6 @@ public class SparqlFormatterTest {
 				"\t\t?Substance <lns:hasFirstSubstance+Name> ?Name .\n" +
 				"\t\t?Substance <lns:hasFirstEC+Number> ?EC .\n" +
 				"\t\t?Substance <lns:hasFirstEC+Number> ?EC .\n" +
-				"\t\t\n" +
 				"\t\t?Substance <lns:hasFirstEC+Number> ?EC .\n" +
 				"\t}\n" +
 				"\tOPTIONAL { ?Substance <lns:hasFirstGroup+Name> ?Name }\n" +
@@ -442,12 +422,9 @@ public class SparqlFormatterTest {
 				"}\n" +
 				"\n" +
 				"ORDER BY ?Name ?CAS ?EC\n" +
-				"%";
+				"%\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
 
 	@Test
@@ -470,8 +447,7 @@ public class SparqlFormatterTest {
 
 		String expectedSparql = "%%Sparql\n" +
 				"\n" +
-				"SELECT ?Substance ?CAS ?EC ?Name\n" +
-				"WHERE {\n" +
+				"SELECT ?Substance ?CAS ?EC ?Name WHERE {\n" +
 				"\t\n" +
 				"\t?Substance rdf:type lns:Substance .\n" +
 				"\tOPTIONAL { ?Substance <lns:hasFirstCAS+Number> ?CAS }\n" +
@@ -483,14 +459,10 @@ public class SparqlFormatterTest {
 				"\t\n" +
 				"}\n" +
 				"ORDER BY ?Name ?CAS ?EC\n" +
-				"%";
+				"%\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
-
 
 	@Test
 	public void testEncapsulatedSparql() {
@@ -587,8 +559,7 @@ public class SparqlFormatterTest {
 				"%\n";
 
 		String expectedSparql = "%%Sparql\n" +
-				"SELECT ?BfR ?CC ?Dossier ?EC ?Name ?Decisions ?Reasons ?1 ?M1 ?2 ?M2 ?3 ?M3 ?4 ?M4 ?5 ?M5 ?6 ?M6 ?7 ?M7 ?8 ?M8 ?9 ?M9 ?10 ?M10 ?11 ?M11 ?Memos\n" +
-				"WHERE {\n" +
+				"SELECT ?BfR ?CC ?Dossier ?EC ?Name ?Decisions ?Reasons ?1 ?M1 ?2 ?M2 ?3 ?M3 ?4 ?M4 ?5 ?M5 ?6 ?M6 ?7 ?M7 ?8 ?M8 ?9 ?M9 ?10 ?M10 ?11 ?M11 ?Memos WHERE {\n" +
 				"\t?CC rdf:type <lns:Compliance+Check> .\n" +
 				"\tOPTIONAL { ?CC <lns:hasDossier+UUID> ?Dossier }\n" +
 				"\tOPTIONAL { ?CC <lns:hasFirstEC+Number> ?EC }\n" +
@@ -599,15 +570,14 @@ public class SparqlFormatterTest {
 				"\t?CC lns:hasEstablished ?DecisionsTO .\n" +
 				"\t?DecisionsTO rdfs:subClassOf <lns:Decisions+on+Compliance+Abbaubarkeit> .\n" +
 				"\t?DecisionsTO rdfs:label ?Decisions .\n" +
-				"\tFilter regex(?Decisions, \"UC Biotische Abbaubarkeit\" )\n" +
+				"\tFilter regex(?Decisions, \"UC Biotische Abbaubarkeit\")\n" +
 				"\t\n" +
 				"\tOPTIONAL {\n" +
-				"\t\tSELECT (GROUP_CONCAT(?Reason ; separator = \"\\n\" ) AS ?Reasons)\n" +
-				"\t\tWHERE {\n" +
+				"\t\tSELECT (GROUP_CONCAT(?Reason ; separator = \"\\n\") AS ?Reasons) WHERE {\n" +
 				"\t\t\t?CC lns:hasEstablished ?ReasonsTO .\n" +
 				"\t\t\t?ReasonsTO rdfs:subClassOf <lns:Decisions+on+Compliance+Abbaubarkeit> .\n" +
 				"\t\t\t?ReasonsTO rdfs:label ?Reason .\n" +
-				"\t\t\tFilter regex(?Reason, \"UCBA\" )\n" +
+				"\t\t\tFilter regex(?Reason, \"UCBA\")\n" +
 				"\t\t}\n" +
 				"\t\tORDER BY ?Reason\n" +
 				"\t}\n" +
@@ -657,11 +627,10 @@ public class SparqlFormatterTest {
 				"\t}\n" +
 				"\t\n" +
 				"\tOPTIONAL {\n" +
-				"\t\tSELECT (GROUP_CONCAT(?Memo ; separator = \"\\n\" ) AS ?Memos)\n" +
-				"\t\tWHERE {\n" +
+				"\t\tSELECT (GROUP_CONCAT(?Memo ; separator = \"\\n\") AS ?Memos) WHERE {\n" +
 				"\t\t\t?CC lns:hasMemo ?MemoId .\n" +
 				"\t\t\t?MemoId lns:hasTitle ?Titel .\n" +
-				"\t\t\tFilter regex(?Titel, \"BioDeg\" )\n" +
+				"\t\t\tFilter regex(?Titel, \"BioDeg\")\n" +
 				"\t\t\t?MemoId lns:hasContent ?Memo .\n" +
 				"\t\t}\n" +
 				"\t\tORDER BY ?Memo\n" +
@@ -674,26 +643,20 @@ public class SparqlFormatterTest {
 				"@timeout: 120s\n" +
 				"%\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
 
 	@Test
 	public void testIndention() {
 		String testSparql = "SELECT { asdasd WHERE }";
 
-		String expectedSparql = "SELECT { asdasd\n" +
-				"\tWHERE }";
+		String expectedSparql = "SELECT {\tasdasd WHERE\n" +
+				"}\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
-
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
 
-//	@Test
+	//	@Test
 	public void testQuotesInLiteral() {
 		String testSparql = "  SELECT ?Substance ?CAS ?EC ?Name\n" +
 				"  \n" +
@@ -723,11 +686,143 @@ public class SparqlFormatterTest {
 				"    ?Substance lns:hasEstablished ?URI .\n" +
 				"    ?URI rdfs:label \"Hallo Max, \\\\\\\"wie\\\" gehts\" .\n" +
 				"    }\n" +
-				"    ORDER BY ?Name ?CAS ?EC";
+				"    ORDER BY ?Name ?CAS ?EC\n";
 
-		SparqlFormatAction sparqlFormatAction = new SparqlFormatAction();
-		String formattedSparql = sparqlFormatAction.formatSparql(new StringBuilder(testSparql), 0).toString();
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
+	}
 
-		assertEquals("Compared Sparqls are not equal", expectedSparql, formattedSparql);
+	@Test
+	public void testIndentationAfterLineBreak() {
+		String testSparql = "SELECT ?name\n" +
+				"?x ?w\n" +
+				"WHERE {\n" +
+				"\t{ ?x " +
+				"\t\t\t  rdf:type   \n" +
+				"si:Human ;\n" +
+				"\t\trdfs:label ?name .} UNION {\n" +
+				"\t\t?x rdf:type\n" +
+				"\tsi:Animal    ;\n" +
+				"\t\trdfs:label\t\n" +
+				"\t?name .\n" +
+				"\t}}";
+		String expectedSparql = "SELECT ?name\n" +
+				"\t?x ?w\n" +
+				"WHERE {\n" +
+				"\t{\t?x rdf:type\n" +
+				"\t\t\tsi:Human ;\n" +
+				"\t\t\trdfs:label ?name .\n" +
+				"\t} UNION {\n" +
+				"\t\t?x rdf:type\n" +
+				"\t\t\tsi:Animal ;\n" +
+				"\t\t\trdfs:label\n" +
+				"\t\t\t\t?name .\n" +
+				"\t}\n" +
+				"}\n";
+
+		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
+	}
+
+	@Test
+	public void testMore() {
+		String test = "%%SparqlSELECT ?Substance\n" +
+				"\t\t  \t?Name\n" +
+				"\t     ?CAS\n" +
+				"\t\t\t\t?EC\n" +
+				"\t\t\t\n\tWHERE {SELECT ?Substance\n" +
+				"\t\t  \t?Name\n" +
+				"\t?CAS\n" +
+				"?EC\n" +
+				"\t\t\t\n\tWHERE {\n?Substance rdf:type lns:Substance.OPTIONAL{?Substance\n" +
+				"<lns:hasFirstSubstance+Name> ?Name ;\n" +
+				"<lns:hasCAS+Number> ?CAS\n" +
+				"\t}OPTIONAL { OPTIONAL { ?Substance <lns:hasCAS+Number> ?CAS}\n" +
+				"?Substance <lns:hasCAS+Number> ?CAS}OPTIONAL {\n" +
+				"?Substance <lns:hasEC+Number> ?EC.}}" +
+				"\t?Substance rdf:type lns:Substance .\n" +
+				"\tOPTIONAL{?Substance\n" +
+				"<lns:hasFirstSubstance+Name> ?Name ;\n" +
+				"<lns:hasCAS+Number> ?CAS\n" +
+				"\t}OPTIONAL { OPTIONAL { ?Substance <lns:hasCAS+Number> ?CAS}\n" +
+				"?Substance <lns:hasCAS+Number> ?CAS}OPTIONAL {\n" +
+				"?Substance <lns:hasEC+Number> ?EC\n" +
+				".}}UNION{\n" +
+				"\t\t?Substance\n" +
+				"rdf:type\n" +
+				"\tsi:Animal ;\n" +
+				"\t\trdfs:label\n" +
+				"\t\t\t\t\t\t?name .\n" +
+				"}}}" +
+				"\n" +
+				"\n" +
+				"\n" +
+				"\tFILTER (!REGEX(STR(?Substance), \"=(S|G)\\\\d{7}$\")).{}{\n" +
+				"ORDER BY ?Name\n" +
+				"\n" +
+				"@navigation: true\n" +
+				"%\n" +
+				"\n" +
+				"\n" +
+				"\n";
+		String expected = "%%Sparql\n" +
+				"SELECT ?Substance\n" +
+				"\t?Name\n" +
+				"\t?CAS\n" +
+				"\t?EC\n" +
+				"\n" +
+				"WHERE {\tSELECT ?Substance\n" +
+				"\t\t?Name\n" +
+				"\t\t?CAS\n" +
+				"\t\t?EC\n" +
+				"\t\n" +
+				"\tWHERE {\n" +
+				"\t\t?Substance rdf:type lns:Substance .\n" +
+				"\t\tOPTIONAL {\n" +
+				"\t\t\t?Substance\n" +
+				"\t\t\t\t<lns:hasFirstSubstance+Name> ?Name ;\n" +
+				"\t\t\t\t<lns:hasCAS+Number> ?CAS\n" +
+				"\t\t}\n" +
+				"\t\tOPTIONAL {\n" +
+				"\t\t\tOPTIONAL { ?Substance <lns:hasCAS+Number> ?CAS }\n" +
+				"\t\t\t?Substance <lns:hasCAS+Number> ?CAS\n" +
+				"\t\t}\n" +
+				"\t\tOPTIONAL { ?Substance <lns:hasEC+Number> ?EC . }\n" +
+				"\t} ?Substance rdf:type lns:Substance .\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?Substance\n" +
+				"\t\t\t<lns:hasFirstSubstance+Name> ?Name ;\n" +
+				"\t\t\t<lns:hasCAS+Number> ?CAS\n" +
+				"\t}\n" +
+				"\tOPTIONAL {\n" +
+				"\t\tOPTIONAL { ?Substance <lns:hasCAS+Number> ?CAS }\n" +
+				"\t\t?Substance <lns:hasCAS+Number> ?CAS\n" +
+				"\t}\n" +
+				"\tOPTIONAL {\n" +
+				"\t\t?Substance <lns:hasEC+Number> ?EC\n" +
+				"\t\t.\n" +
+				"\t}\n" +
+				"} UNION {\n" +
+				"\t?Substance\n" +
+				"\t\trdf:type\n" +
+				"\t\t\tsi:Animal ;\n" +
+				"\t\trdfs:label\n" +
+				"\t\t\t?name .\n" +
+				"}\n" +
+				"}\n" +
+				"}\n" +
+				"\n" +
+				"FILTER (!REGEX(STR(?Substance), \"=(S|G)\\\\d{7}$\")) .\n" +
+				"{\n" +
+				"}\n" +
+				"{\n" +
+				"\tORDER BY ?Name\n" +
+				"\t\n" +
+				"\t@navigation: true\n" +
+				"\t%\n";
+		assertEquals("Compared Sparqls are not equal", expected, format(test));
+	}
+
+	public String format(String testSparql) {
+		SparqlFormatAction.Formatter formatter = new SparqlFormatAction.Formatter(testSparql);
+		return formatter.formatSparql().toString();
 	}
 }
