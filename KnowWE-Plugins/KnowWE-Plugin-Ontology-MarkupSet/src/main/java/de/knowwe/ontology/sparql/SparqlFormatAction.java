@@ -59,8 +59,10 @@ public class SparqlFormatAction extends AbstractAction {
 			for (int i = 0; i < tmpWikiText.length() - 1; i++) {
 
 				// Don't format when quoted
-				if (quoted && tmpWikiText.charAt(i) == '"') {
-					quoted = false;
+				if (quoted) {
+					if (tmpWikiText.charAt(i) == '"') {
+						quoted = false;
+					}
 					continue;
 				}
 
@@ -74,6 +76,7 @@ public class SparqlFormatAction extends AbstractAction {
 			}
 
 			removeUnwantedSpaces();
+
 			return tmpWikiText.toString();
 		}
 
