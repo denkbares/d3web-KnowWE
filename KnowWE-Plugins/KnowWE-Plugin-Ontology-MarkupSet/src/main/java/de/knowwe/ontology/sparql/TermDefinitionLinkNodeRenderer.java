@@ -41,7 +41,7 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 			if (termDefiningSection != null) {
 				String termName = Strings.concat(":", split);
 				if (mode == RenderMode.HTML) {
-					String hrefLink = "<a href=" + KnowWEUtils.getURLLink(termDefiningSection) + "'>" + termName + "</a>";
+					String hrefLink = "<a href='" + KnowWEUtils.getURLLink(termDefiningSection) + "'>" + termName + "</a>";
 					return hrefLink;
 				}
 				if( mode == RenderMode.ToolMenu) {
