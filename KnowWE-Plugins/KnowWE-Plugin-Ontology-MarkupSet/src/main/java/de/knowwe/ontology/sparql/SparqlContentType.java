@@ -28,6 +28,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
@@ -51,7 +52,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		// add type (with very low priority) consuming all plain text and rendering it while masking JSPWiki syntax
 		AnonymousType queryText = new AnonymousType("QueryText");
 		queryText.setSectionFinder(AllTextFinder.getInstance());
-		queryText.setRenderer((section, user, result) -> result.append(KnowWEUtils.maskJSPWikiMarkup(section.getText())));
+		queryText.setRenderer((section, user, result) -> result.append(KnowWEUtils.maskJSPWikiMarkup(Strings.encodeHtml(section.getText()))));
 		this.addChildType(100, queryText);
 	}
 

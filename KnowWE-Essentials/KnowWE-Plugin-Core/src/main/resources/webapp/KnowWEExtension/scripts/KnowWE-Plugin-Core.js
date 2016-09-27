@@ -682,7 +682,7 @@ KNOWWE.core.plugin.pagination = function() {
 		});
 		jq$(this).prepend(filterIcon);
 		var text = jq$(this).text();
-		var preparedFilter = jq$("#paginationFilters div[filtername=" + text + "]").detach();
+		var preparedFilter = jq$(".paginationFilters div[filtername=" + text + "]").detach();
 		jq$(filterIcon).tooltipster({
 			content : jq$(preparedFilter),
 			interactive : true,

@@ -31,6 +31,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.ontology.compile.OntologyType;
@@ -126,7 +127,7 @@ public class SparqlResultRenderer {
 		message = Strings.trimRight(message);
 		if (!message.endsWith(".")) message += ".";
 		result.appendHtml("<span class='warning'>"
-				+ message + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
+				+ Strings.encodeHtml(message) + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
 				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
 				+ " class='tooltipster'>Try again...</a></span>");
 	}

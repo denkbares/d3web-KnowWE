@@ -78,6 +78,7 @@ import de.knowwe.util.Icon;
  * @author Stefan Plehn
  * @created 14.01.2014
  */
+@SuppressWarnings({ "WeakerAccess", "unused" })
 public class PaginationRenderer implements Renderer {
 
 	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 10;
@@ -370,13 +371,8 @@ public class PaginationRenderer implements Renderer {
 	 * the natural order (true is ascending)
 	 */
 	public static Pair<String, Boolean> getSingleColumnSorting(Section<?> sec, UserContext user) {
-		if (!(getSorting(sec, user, true).isEmpty())) {
-			return getSorting(sec, user, true).stream().findFirst().get();
-		}
-		else {
-			return null;
-		}
-
+		List<Pair<String, Boolean>> sorting = getSorting(sec, user, true);
+		return sorting.isEmpty() ? null : sorting.get(0);
 	}
 
 	/**
@@ -528,7 +524,7 @@ public class PaginationRenderer implements Renderer {
 
 	public static void renderHiddenFilterDiv(UserContext context, RenderResult result, Section<?> section) {
 		List<Pair<String, List<String>>> filterList = getFilterList(context);
-		result.appendHtmlTag("div", "id", "paginationFilters", "display", "none");
+		result.appendHtmlTag("div", "class", "paginationFilters", "display", "none");
 
 		for (Pair<String, List<String>> filter : filterList) {
 			result.appendHtmlTag("div", "filterName", filter.getA());
@@ -549,7 +545,6 @@ public class PaginationRenderer implements Renderer {
 			}
 			result.appendHtml("</div>");
 		}
-		result.appendHtml("</ul>");
 		result.appendHtml("</div>");
 	}
 

@@ -66,16 +66,12 @@ public class SparqlContentRenderer implements Renderer {
 		String showQueryFlag = DefaultMarkupType.getAnnotation(markupSection,
 				SparqlMarkupType.RENDER_QUERY);
 		if ("true".equalsIgnoreCase(showQueryFlag)) {
-			/*
-			 * we need an opening html element around all the content as for
-			 * some reason the ajax insert only inserts one (the first) html
-			 * element into the page
-			 */
+			 // we need an opening html element around all the content as for
+			 // some reason the ajax insert only inserts one (the first) html
+			 // element into the page
 			result.appendHtml("<div>");
 
-			/*
-			 * render query text
-			 */
+			 // render query text
 			result.appendHtml("<span>");
 			DelegateRenderer.getInstance().render(section, user, result);
 			result.appendHtml("</span>");
@@ -134,8 +130,8 @@ public class SparqlContentRenderer implements Renderer {
 				String query = sparqlTypeSection.get().getSparqlQuery(sparqlTypeSection, user);
 				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, true, opts.getTimeout());
 				result.appendHtml("<div class='sparqlAsk' sparqlSectionId='" + opts.getId() + "'>");
-				result.append(Boolean.valueOf(askResult).toString());
 				if (opts.isBorder()) result.appendHtml("<div class='border'>");
+				result.append(Boolean.valueOf(askResult).toString());
 				if (opts.isBorder()) result.appendHtml("</div>");
 				result.appendHtml("</div>");
 			}
@@ -144,19 +140,14 @@ public class SparqlContentRenderer implements Renderer {
 			}
 		}
 		else {
-
 			SparqlResultRenderer.getInstance()
 					.renderSparqlResult(sparqlTypeSection, user, result);
-
-			if ("true".equalsIgnoreCase(showQueryFlag)) {
-						/*
-						 * we need an opening html element around all the content as
-						 * for some reason the ajax insert onyl inserts one (the
-						 * first) html element into the page
-						 */
-				result.appendHtml("</div>");
-			}
-
+		}
+		if ("true".equalsIgnoreCase(showQueryFlag)) {
+			// we need an opening html element around all the content as
+			// for some reason the ajax insert only inserts one (the
+			// first) html element into the page
+			result.appendHtml("</div>");
 		}
 	}
 
