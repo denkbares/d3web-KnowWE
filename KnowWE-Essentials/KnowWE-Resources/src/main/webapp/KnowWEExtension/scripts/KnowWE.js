@@ -436,7 +436,7 @@ KNOWWE.core.util = function() {
 		},
 
 		//////////////////////////////////////////////////
-		/////// Template Specific Helper Mehods //////////
+		/////// Template Specific Helper Methods /////////
 		//////////////////////////////////////////////////
 		getTemplate : function() {
 			return jq$('#knowWEInfoTemplate').val();
