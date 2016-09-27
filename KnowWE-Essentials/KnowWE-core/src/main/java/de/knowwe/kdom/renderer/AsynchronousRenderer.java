@@ -39,7 +39,7 @@ public class AsynchronousRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		if (user instanceof ActionContext || !isAsynchronous(section)) {
+		if (!isAsynchronous(section, user)) {
 			decoratedRenderer.render(section, user, result);
 		}
 		else {
@@ -57,7 +57,8 @@ public class AsynchronousRenderer implements Renderer {
 		}
 	}
 
-	private boolean isAsynchronous(Section<?> section) {
+	private boolean isAsynchronous(Section<?> section, UserContext user) {
+		if (!user.allowAsynchronousRendering()) return false;
 		Section<DefaultMarkupType> defaultMarkupSection = getDefaultMarkupSection(section);
 		if (defaultMarkupSection == null) return true;
 		String asynchronousString = DefaultMarkupType.getAnnotation(

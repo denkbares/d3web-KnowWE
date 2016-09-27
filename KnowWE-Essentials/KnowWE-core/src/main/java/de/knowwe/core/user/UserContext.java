@@ -133,4 +133,11 @@ public interface UserContext {
 	 */
 	ArticleManager getArticleManager();
 
+	/**
+	 * Returns if asynchronous rendering should be executed
+	 *
+	 * @return true if asynchronous rendering shall be executed, false otherwise
+	 */
+	boolean allowAsynchronousRendering();
+
 }

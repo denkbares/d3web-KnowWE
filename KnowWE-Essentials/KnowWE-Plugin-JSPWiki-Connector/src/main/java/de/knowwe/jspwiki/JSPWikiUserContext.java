@@ -35,6 +35,8 @@ public class JSPWikiUserContext extends AbstractUserContext {
 
 	private final Map<String, String> urlParameter;
 	private final WikiContext context;
+	boolean allowAsynchronousRendering = true;
+
 
 	public JSPWikiUserContext(WikiContext context,
 			Map<String, String> urlParameter) {
@@ -80,6 +82,18 @@ public class JSPWikiUserContext extends AbstractUserContext {
 	public ServletContext getServletContext() {
 		if (this.context.getHttpRequest() == null) return null;
 		return this.context.getHttpRequest().getSession().getServletContext();
+	}
+
+	public WikiContext getWikiContext() {
+		return context;
+	}
+
+	public void setAsychronousRenderingAllowed(boolean isAsynchronousRenderingAllowed) {
+		this.allowAsynchronousRendering = isAsynchronousRenderingAllowed;
+	}
+
+	public boolean allowAsynchronousRendering() {
+		return allowAsynchronousRendering;
 	}
 
 }

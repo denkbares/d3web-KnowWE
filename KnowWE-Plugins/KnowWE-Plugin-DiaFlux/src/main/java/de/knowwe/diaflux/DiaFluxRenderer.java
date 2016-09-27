@@ -50,48 +50,54 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 
 		if (flowchart == null) {
 			return "New flowchart";
-		}
-		else {
+		} else {
 			return FlowchartType.getFlowchartName(flowchart);
 		}
 	}
 
 	@Override
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+		if (user.getRequest().getRequestURL().toString().contains("AJAXPreview.jsp")) {
+			//In live preview show info message
+			string.append("%%information DiaFlux is not rendered in live preview. /%");
+		} else {
+			Section<FlowchartType> flowchart = Sections.successor(section, FlowchartType.class);
 
-		Section<FlowchartType> flowchart = Sections.successor(section, FlowchartType.class);
+			if (flowchart == null) {
+				string.append("%%information ");
+				string.append("No flowchart created yet.");
+				string.appendHtml("<br><a href=\""
+						+ FlowchartEditProvider.createEditLink(section, user)
+						+ "\">"
+						+ "Click here to create one." + "</a><br>");
+			}
 
-		if (flowchart == null) {
-			string.append("%%information ");
-			string.append("No flowchart created yet.");
-			string.appendHtml("<br><a href=\""
-					+ FlowchartEditProvider.createEditLink(section, user)
-					+ "\">"
-					+ "Click here to create one." + "</a><br>");
-		}
+			super.renderContents(section, user, string);
 
-		super.renderContents(section, user, string);
-
-		if (flowchart == null) {
-			string.append(" %%\n");
+			if (flowchart == null) {
+				string.append(" %%\n");
+			}
 		}
 	}
 
 	@Override
 	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
-		String icon = getTitleIcon(section, user);
-		String title = getTitleName(section, user);
+		if (!user.getRequest().getRequestURL().toString().contains("AJAXPreview.jsp")) {
 
-		// render icon
-		if (icon != null) {
-			string.appendHtml("<img class='markupIcon' src='" + icon + "' /> ");
-		}
-		Section<FlowchartXMLHeadType.FlowchartTermDef> termDefSection
-				= Sections.successor(section, FlowchartXMLHeadType.FlowchartTermDef.class);
-		if (termDefSection != null) {
-			// render heading
-			string.appendHtml("<span><span toolmenuidentifier='" + termDefSection.getID() + "'>")
-					.append(title).appendHtml("</span></span>");
+			String icon = getTitleIcon(section, user);
+			String title = getTitleName(section, user);
+
+			// render icon
+			if (icon != null) {
+				string.appendHtml("<img class='markupIcon' src='" + icon + "' /> ");
+			}
+			Section<FlowchartXMLHeadType.FlowchartTermDef> termDefSection
+					= Sections.successor(section, FlowchartXMLHeadType.FlowchartTermDef.class);
+			if (termDefSection != null) {
+				// render heading
+				string.appendHtml("<span><span toolmenuidentifier='" + termDefSection.getID() + "'>")
+						.append(title).appendHtml("</span></span>");
+			}
 		}
 	}
 }

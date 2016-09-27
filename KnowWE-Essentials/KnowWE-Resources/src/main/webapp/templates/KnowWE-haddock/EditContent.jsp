@@ -33,7 +33,6 @@
 <%-- This has been source ordered to come first in the markup (and on small devices)
      but to be to the right of the nav on larger screens --%>
 <div class="page-content">
-
   <wiki:CheckLock mode="locked" id="lock">
     <div class="alert alert-danger">
       <fmt:message key="edit.locked">

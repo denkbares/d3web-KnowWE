@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.wiki.ui.TemplateManager;
+
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -13,6 +15,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.include.IncludeMarkup;
 import de.knowwe.include.WikiReference;
+import de.knowwe.jspwiki.JSPWikiUserContext;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 import static java.util.stream.Collectors.toList;

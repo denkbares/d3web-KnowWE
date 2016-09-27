@@ -23,6 +23,7 @@ package de.knowwe.jspwiki;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -54,6 +55,7 @@ import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.providers.WikiPageProvider;
+import org.apache.wiki.render.RenderingManager;
 import org.apache.wiki.ui.TemplateManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -68,6 +70,8 @@ import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compilers;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
@@ -318,7 +322,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		return (DefaultArticleManager) Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 	}
 
-	private Article updateArticle(WikiContext wikiContext, String content) throws InterruptedException, UpdateNotAllowedException {
+	private static Article updateArticle(WikiContext wikiContext, String content) throws InterruptedException, UpdateNotAllowedException {
 		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
 		if (httpRequest == null) {
 			// When a page is rendered the first time, the request is null.
@@ -348,13 +352,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		return article;
 	}
 
-	private boolean isFullParse(HttpServletRequest httpRequest) {
+	private static boolean isFullParse(HttpServletRequest httpRequest) {
 		String parse = UserContextUtil.getParameters(httpRequest).get("parse");
 		Object fullParseFired = httpRequest.getAttribute(FULL_PARSE_FIRED);
 		return parse != null && (parse.equals("full") || parse.equals("true")) && fullParseFired == null;
 	}
 
-	private void renderPostPageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
+	private static void renderPostPageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
 		for (PageAppendHandler pageAppendHandler : appendhandlers) {
 			if (!pageAppendHandler.isPre()) {
 				pageAppendHandler.append(
@@ -374,7 +378,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				new PageRenderedEvent(article.getTitle(), userContext));
 	}
 
-	private void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
+	private static void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
 		for (PageAppendHandler pageAppendHandler : appendHandlers) {
 			if (pageAppendHandler.isPre()) {
 				pageAppendHandler.append(
@@ -382,6 +386,44 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						userContext, renderResult);
 			}
 		}
+	}
+
+	public static String renderPreview(WikiContext wikiContext, String content) {
+
+		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
+		if (httpRequest == null) {
+			// When a page is rendered the first time, the request is null.
+			// Since this version with no http request is not shown to the user,
+			// we can just ignore it.
+			return content;
+		}
+
+		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
+				UserContextUtil.getParameters(httpRequest));
+		userContext.setAsychronousRenderingAllowed(false);
+		includeDOMResources(wikiContext);
+		RenderResult renderResult = new RenderResult(userContext.getRequest());
+		String title = wikiContext.getRealPage().getName();
+		Article article = null;
+		try {
+			article = updateArticle(wikiContext, content);
+		} catch (InterruptedException e) {
+			Log.fine("Updating Article interrupted while rendering preview", e);
+		} catch (UpdateNotAllowedException e) {
+			Log.fine("Updating Article not allowed while rendering preview", e);
+		}
+		if (article == null) return content;
+		// Replace Flowcharts with info message
+
+		List<PageAppendHandler> appendHandlers = Environment.getInstance()
+				.getAppendHandlers();
+		renderPrePageAppendHandler(userContext, title, renderResult, appendHandlers);
+		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
+				renderResult);
+		renderPostPageAppendHandler(userContext, title, renderResult, appendHandlers);
+		String stringRaw = renderResult.toStringRaw();
+
+		return stringRaw;
 	}
 
 	private String getExceptionRendering(UserContext context, Throwable e) {
@@ -573,7 +615,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		return "";
 	}
 
-	private class UpdateNotAllowedException extends Exception {
+	private static class UpdateNotAllowedException extends Exception {
 	}
 
 	private static class AttachmentEventHandler extends Thread {

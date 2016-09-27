@@ -223,6 +223,11 @@ public class TestUserContext implements UserContext, UserActionContext {
 	}
 
 	@Override
+	public boolean allowAsynchronousRendering() {
+		return false;
+	}
+
+	@Override
 	public Article getArticle() {
 		return article;
 	}

@@ -151,6 +151,11 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 	}
 
 	@Override
+	public boolean allowAsynchronousRendering() {
+		return false;
+	}
+
+	@Override
 	public HttpServletRequest getRequest() {
 		return this.request;
 	}
