@@ -662,7 +662,7 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getLinkHTMLToSection(Section<?> section) {
-		return "<a href=" + getURLLink(section) + "'>" + section
+		return "<a href='" + getURLLink(section) + "'>" + section
 				.getTitle() + "</a>";
 	}
 
