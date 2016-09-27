@@ -23,7 +23,6 @@ package de.knowwe.jspwiki;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -55,10 +54,10 @@ import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.providers.WikiPageProvider;
-import org.apache.wiki.render.RenderingManager;
 import org.apache.wiki.ui.TemplateManager;
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.plugin.Plugin;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.utils.Log;
@@ -68,10 +67,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compilers;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
@@ -91,6 +87,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String LEFT_MENU = "LeftMenu";
 	private static final String MORE_MENU = "MoreMenu";
 	public static final String FULL_PARSE_FIRED = "fullParseFired";
+	public static final String RENDER_MODE = "renderMode";
+	public static final String PREVIEW = "preview";
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
@@ -401,6 +399,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
 				UserContextUtil.getParameters(httpRequest));
 		userContext.setAsychronousRenderingAllowed(false);
+		userContext.getRequest().setAttribute(RENDER_MODE, PREVIEW);
 		includeDOMResources(wikiContext);
 		RenderResult renderResult = new RenderResult(userContext.getRequest());
 		String title = wikiContext.getRealPage().getName();
@@ -654,5 +653,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		private String getAttachmentPath() {
 			return event.getParentName() + "/" + event.getFileName();
 		}
+	}
+
+	public static boolean isRenderingPreview(UserContext user) {
+		return user != null
+				&& user.getRequest() != null
+				&& KnowWEPlugin.PREVIEW.equals(user.getRequest().getAttribute(KnowWEPlugin.RENDER_MODE));
 	}
 }
