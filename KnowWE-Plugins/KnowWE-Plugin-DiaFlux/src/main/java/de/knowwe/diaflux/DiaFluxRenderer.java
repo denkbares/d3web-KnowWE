@@ -10,6 +10,8 @@ import de.knowwe.diaflux.type.FlowchartXMLHeadType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.ToolSet;
 
+import static de.knowwe.jspwiki.KnowWEPlugin.isRenderingPreview;
+
 /**
  * @author Reinhard Hatko
  * @created 24.11.2010
@@ -57,7 +59,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
-		if (user.getRequest().getRequestURL().toString().contains("AJAXPreview.jsp")) {
+		if (isRenderingPreview(user)) {
 			//In live preview show info message
 			string.append("%%information DiaFlux is not rendered in live preview. /%");
 		} else {
@@ -82,7 +84,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
-		if (!user.getRequest().getRequestURL().toString().contains("AJAXPreview.jsp")) {
+		if (!isRenderingPreview(user)) {
 
 			String icon = getTitleIcon(section, user);
 			String title = getTitleName(section, user);
