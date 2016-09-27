@@ -2304,6 +2304,10 @@ a.action.quick2top:before {
 	background: #000000;
 }
 
+.slmbx .viewport, .slmodal {
+	z-index: 1000;
+}
+
 .tablePopupIcon .toolsMenuDecorator {
 	top: 0;
 }
