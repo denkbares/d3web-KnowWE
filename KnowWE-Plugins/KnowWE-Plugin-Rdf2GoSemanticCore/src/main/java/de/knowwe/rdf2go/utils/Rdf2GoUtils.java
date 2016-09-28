@@ -45,9 +45,9 @@ import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.query.BindingSet;
 import org.openrdf.rio.RDFFormat;
 
-import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -106,10 +106,7 @@ public class Rdf2GoUtils {
 	/**
 	 * Returns a rdfs:label of the given concept in the given language, if existing.
 	 *
-	 * @param uri         full uri of the concept to be labeled
-	 * @param repo
-	 * @param languageTag
-	 * @return
+	 * @param uri full uri of the concept to be labeled
 	 */
 	public static String getLabel(String uri, Rdf2GoCore repo, String languageTag) {
 		try {
@@ -139,11 +136,10 @@ public class Rdf2GoUtils {
 					+ labelQuery
 					+ "}";
 			TupleQueryResult resultTable = repo.sparqlSelect(query);
-			for (BindingSet queryRow : resultTable.getBindingSets()) {
-				Value node = queryRow.getValue("label");
-				String value = node.stringValue();
-				label = value;
-				break; // we assume there is only one label
+			List<BindingSet> bindingSets = resultTable.getBindingSets();
+			if (!bindingSets.isEmpty()) {
+				Value node = bindingSets.iterator().next().getValue("label");
+				label = node.stringValue();
 
 			}
 		}
@@ -179,15 +175,13 @@ public class Rdf2GoUtils {
 				+ labelQuery + languageFilter
 				+ "}";
 		TupleQueryResult resultTable = repo.sparqlSelect(query);
-		for (BindingSet queryRow : resultTable.getBindingSets()) {
-			Value node = queryRow.getValue("label");
-			String value = node.stringValue();
-			label = value;
+		List<BindingSet> bindingSets = resultTable.getBindingSets();
+		if (!bindingSets.isEmpty()) {
+			Value node = bindingSets.iterator().next().getValue("label");
+			label = node.stringValue();
 			if (label.charAt(label.length() - 3) == '@') {
 				label = label.substring(0, label.length() - 3);
 			}
-			break; // we assume there is only one label
-
 		}
 		return label;
 	}
@@ -196,6 +190,7 @@ public class Rdf2GoUtils {
 		if (section.get() instanceof DefaultMarkupType) {
 			String globalAnnotation = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.GLOBAL);
 			if ("true".equals(globalAnnotation)) {
+				//noinspection deprecation, used for backwards compatibility
 				return Rdf2GoCore.getInstance();
 			}
 		}
@@ -514,22 +509,6 @@ public class Rdf2GoUtils {
 		statements.add(core.createStatement(subject, predicate, object));
 	}
 
-	/**
-	 * This method adds a rdfs:label statement for the given Node to the collection of statements.
-	 * Be aware, that for now this only works with lns nodes!
-	 */
-//	public static void addRdfsLabel(Rdf2GoCore core, Node node, Collection<Statement> statements) {
-//		if (node instanceof URI) {
-//			URI uriNode = node.asURI();
-//			String uriNodeString = uriNode.toString();
-//			if (uriNodeString.startsWith(core.getLocalNamespace())) {
-//				String stringPart = uriNodeString.substring(core.getLocalNamespace().length());
-//				org.openrdf.model.Literal nodeLiteral = core.createLiteral(Strings.decodeURL(stringPart));
-//				statements.add(core.createStatement(uriNode, RDFS.label,
-//						nodeLiteral));
-//			}
-//		}
-//	}
 	public static String getCleanedExternalForm(Identifier identifier) {
 		String externalForm = identifier.toExternalForm();
 		if (identifier.countPathElements() == 1) {
@@ -539,6 +518,7 @@ public class Rdf2GoUtils {
 	}
 
 	public static RDFFormat syntaxForFileName(String fileName) {
+		//noinspection deprecation backwards compatibility
 		return RDFFormat.forFileName(fileName, RDFFormat.RDFXML);
 	}
 

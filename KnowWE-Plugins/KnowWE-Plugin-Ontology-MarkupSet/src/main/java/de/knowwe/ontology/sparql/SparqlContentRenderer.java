@@ -136,7 +136,7 @@ public class SparqlContentRenderer implements Renderer {
 				result.appendHtml("</div>");
 			}
 			catch (RuntimeException e) {
-				SparqlResultRenderer.handleRuntimeException(sparqlTypeSection, result, e);
+				SparqlResultRenderer.handleRuntimeException(sparqlTypeSection, user, result, e);
 			}
 		}
 		else {

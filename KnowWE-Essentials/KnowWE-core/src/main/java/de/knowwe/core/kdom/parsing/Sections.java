@@ -103,7 +103,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	public static Sections<? extends Type> definitions(TerminologyManager manager, Identifier identifier) {
-		return $(manager.getTermDefiningSections(identifier));
+		//noinspection unchecked
+		return new Sections(manager.getTermDefiningSections(identifier));
 	}
 
 	public static Sections<? extends Type> definitions(TermCompiler compiler, Identifier identifier) {
@@ -112,7 +113,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	public static Sections<? extends Type> references(TerminologyManager manager, Identifier identifier) {
-		return $(manager.getTermReferenceSections(identifier));
+		//noinspection unchecked
+		return new Sections(manager.getTermReferenceSections(identifier));
 	}
 
 	public static Sections<? extends Type> references(TermCompiler compiler, Identifier identifier) {

@@ -22,22 +22,17 @@ package de.knowwe.ontology.sparql;
 import java.util.concurrent.TimeUnit;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.packaging.PackageCompileScript;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
-import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
-import de.knowwe.ontology.compile.OntologyConstructCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -47,7 +42,6 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	public SparqlContentType() {
 		this.setSectionFinder(AllTextFinder.getInstance());
 		this.setRenderer(new AsynchronousRenderer(new ReRenderSectionMarkerRenderer(new SparqlContentDecoratingRenderer())));
-		this.addCompileScript(Priority.LOWEST, new SparqlConstructHandler());
 
 		// add type (with very low priority) consuming all plain text and rendering it while masking JSPWiki syntax
 		AnonymousType queryText = new AnonymousType("QueryText");
@@ -126,41 +120,5 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		return timeOutMillis;
 	}
 
-	private class SparqlConstructHandler implements PackageCompileScript<OntologyConstructCompiler, SparqlContentType> {
-
-		@Override
-		public void compile(OntologyConstructCompiler compiler, Section<SparqlContentType> section) throws CompilerMessage {
-			String sparqlString = section.getText();
-			sparqlString = sparqlString.trim();
-			sparqlString = sparqlString.replaceAll("\n", "");
-			sparqlString = sparqlString.replaceAll("\r", "");
-			if (sparqlString.toLowerCase().startsWith("construct")) {
-				// leads to ConcurrentModificationException in model.addAll()
-				//compiler.getRdf2GoCore().commit();
-				try {
-//					ClosableIterable<org.openrdf.model.Statement> sparqlConstruct = compiler.getRdf2GoCore()
-//							.sparqlConstruct(
-//							sparqlString);
-//
-//					for (org.openrdf.model.Statement aSparqlConstruct : sparqlConstruct) {
-//						compiler.getRdf2GoCore().addStatements(section, aSparqlConstruct);
-//					}
-				}
-				catch (Exception e) {
-					throw CompilerMessage.error(e.getMessage());
-				}
-			}
-		}
-
-		@Override
-		public Class<OntologyConstructCompiler> getCompilerClass() {
-			return OntologyConstructCompiler.class;
-		}
-
-		@Override
-		public void destroy(OntologyConstructCompiler compiler, Section<SparqlContentType> section) {
-			compiler.getRdf2GoCore().removeStatements(section);
-		}
-	}
 
 }

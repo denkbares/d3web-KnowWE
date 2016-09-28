@@ -190,11 +190,11 @@ public class TerminologyManager {
 	 * @param termIdentifier the {@link Identifier} for the defining Sections you are looking for
 	 * @return the defining Sections for this term or an empty Collection if the term is not defined
 	 */
-	public synchronized Collection<Section<? extends Type>> getTermDefiningSections(Identifier termIdentifier) {
+	public synchronized Collection<Section<?>> getTermDefiningSections(Identifier termIdentifier) {
 		if(termIdentifier == null) {
 			return Collections.emptyList();
 		}
-		Collection<Section<? extends Type>> definitions = new ArrayList<>();
+		Collection<Section<?>> definitions = new ArrayList<>();
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			definitions = refLog.getDefinitions();
@@ -205,7 +205,7 @@ public class TerminologyManager {
 	/**
 	 * For an Identifier the redundant TermDefinition are returned.
 	 */
-	public synchronized Collection<Section<? extends Type>> getRedundantTermDefiningSections(Identifier termIdentifier) {
+	public synchronized Collection<Section<?>> getRedundantTermDefiningSections(Identifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
 			return Collections.unmodifiableSet(refLog.getRedundantDefinitions());
@@ -216,7 +216,7 @@ public class TerminologyManager {
 	/**
 	 * For an Identifier the {@link TermReference}s are returned.
 	 */
-	public synchronized Collection<Section<? extends Type>> getTermReferenceSections(Identifier termIdentifier) {
+	public synchronized Collection<Section<?>> getTermReferenceSections(Identifier termIdentifier) {
 
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 

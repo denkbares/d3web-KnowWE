@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -54,7 +55,6 @@ import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.flow.StartNode;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.d3web.diaFlux.inference.FluxSolver;
-import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.Environment;
@@ -223,7 +223,7 @@ public class GetInfoObjects extends AbstractAction {
 		NamedObject object = null;
 		outer:
 		for (D3webCompiler compiler : compilers) {
-			Collection<Section<? extends Type>> termDefiningSections = compiler.getTerminologyManager()
+			Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
 					.getTermDefiningSections(new Identifier(objectName));
 			for (Section<? extends Type> termDefiningSection : termDefiningSections) {
 				if (termDefiningSection.getTitle().equals(title)) {
@@ -358,9 +358,9 @@ public class GetInfoObjects extends AbstractAction {
 	private static void appendChildren(D3webCompiler definitionCompiler, String title, TerminologyObject object, StringBuilder bob) {
 		outer:
 		for (TerminologyObject child : object.getChildren()) {
-			Collection<Section<? extends Type>> termDefiningSections = definitionCompiler.getTerminologyManager()
+			Collection<Section<?>> termDefiningSections = definitionCompiler.getTerminologyManager()
 					.getTermDefiningSections(new Identifier(child.getName()));
-			for (Section<? extends Type> termDefiningSection : termDefiningSections) {
+			for (Section<?> termDefiningSection : termDefiningSections) {
 				if (termDefiningSection.getTitle().equals(title)) {
 					appendChild(title, child, bob);
 					continue outer;

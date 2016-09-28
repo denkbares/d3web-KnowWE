@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
+import org.openrdf.query.MalformedQueryException;
 
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyException;
@@ -31,13 +33,13 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 import de.knowwe.rdf2go.utils.SimpleTableRow;
 import de.knowwe.rdf2go.utils.TableRow;
@@ -110,7 +112,7 @@ public class SparqlResultRenderer {
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
-			handleRuntimeException(section, result, e);
+			handleRuntimeException(section, user, result, e);
 		}
 		if (qrt != null) {
 			renderResult = getSparqlRenderResult(qrt, opts, user, section);
@@ -121,15 +123,71 @@ public class SparqlResultRenderer {
 		result.appendHtml("</div>");
 	}
 
-	public static void handleRuntimeException(Section<? extends SparqlType> section, RenderResult result, RuntimeException e) {
-		String message = e.getMessage();
-		if (message == null) message = "RuntimeException without message.";
-		message = Strings.trimRight(message);
-		if (!message.endsWith(".")) message += ".";
-		result.appendHtml("<span class='warning'>"
-				+ Strings.encodeHtml(message) + " <a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
+	public static void handleRuntimeException(Section<? extends SparqlType> section, UserContext user, RenderResult result, RuntimeException e) {
+		result.appendHtml("<span class='warning'>");
+		appendMessage(section, e, user, result);
+		result.appendHtml("<br/><a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
 				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
 				+ " class='tooltipster'>Try again...</a></span>");
+	}
+
+	private static void appendMessage(Section<? extends SparqlType> section, RuntimeException e, UserContext user, RenderResult result) {
+		if (e.getCause() instanceof MalformedQueryException) {
+			injectAffectedQueryPart(section, e.getMessage(), user, result);
+		}
+		else {
+			String message = e.getMessage();
+			if (message == null) message = "RuntimeException without message.";
+			message = Strings.trimRight(message);
+			if (!message.endsWith(".")) message += ".";
+			result.append(message);
+		}
+	}
+
+	private static void injectAffectedQueryPart(Section<? extends SparqlType> section, String message, UserContext user, RenderResult result) {
+		String query = section.get().getSparqlQuery(section, user);
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(section);
+		if (query == null || core == null || !message.contains("Was expecting one of:")) {
+			result.append(message);
+			return;
+		}
+		query = core.prependPrefixesToQuery(query);
+		Scanner msgScanner = new Scanner(message);
+		int lineNumber = msgScanner.nextInt();
+		int columnNumber = msgScanner.nextInt();
+
+		Scanner queryScanner = new Scanner(query);
+		String queryLine = null;
+		for (int i = 0; i < lineNumber && queryScanner.hasNext(); i++) {
+			queryLine = queryScanner.nextLine();
+		}
+		if (queryLine == null) {
+			result.append(message);
+			return;
+		}
+		int start = Math.min(0, columnNumber - 15);
+		int end = Math.max(columnNumber + 15, queryLine.length());
+		String queryContextPrefix = queryLine.substring(start, columnNumber);
+		String charAtException = queryLine.substring(columnNumber, columnNumber + 1);
+		String queryContextSuffix = queryLine.substring(columnNumber + 1, end);
+
+		msgScanner = new Scanner(message);
+		boolean first = true;
+		while (msgScanner.hasNextLine()) {
+			String line = msgScanner.nextLine();
+			if (first) {
+				if (line.endsWith(".")) line = line.substring(0, line.length() - 1);
+				result.append(line);
+				result.append("Context: ").append(queryContextPrefix);
+				result.appendHtmlElement("span", charAtException, "style", "color: red");
+				result.append(queryContextSuffix);
+				result.append(".");
+				first = false;
+			}
+			else {
+				result.append(line);
+			}
+		}
 	}
 
 	/**
