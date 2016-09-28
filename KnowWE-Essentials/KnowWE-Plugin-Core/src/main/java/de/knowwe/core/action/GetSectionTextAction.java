@@ -28,7 +28,7 @@ public class GetSectionTextAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String sectionText = null;
+		String sectionText;
 		String title = context.getParameter("title");
 		if (title == null) title = context.getParameter("article");
 		final String name = context.getParameter("name");
@@ -62,7 +62,7 @@ public class GetSectionTextAction extends AbstractAction {
 			return;
 		}
 
-		File tempTextFile = File.createTempFile(name, "_SectionText.txt");
+		File tempTextFile = File.createTempFile(fileName, "_SectionText.txt");
 		try {
 			Strings.writeFile(tempTextFile.getPath(), sectionText);
 
