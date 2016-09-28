@@ -14,11 +14,12 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
-import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -39,6 +40,15 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String filename = context.getParameter(PARAM_FILENAME);
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
+
+		if (sectionId == null) {
+			// may be specified by Attributes.TOPIC
+			Article article = context.getArticle();
+			if (article != null) {
+				Section<?> kbSection = Sections.successor(article.getRootSection(), KnowledgeBaseType.class);
+				if (kbSection != null) sectionId = kbSection.getID();
+			}
+		}
 
 		Section<?> section = Sections.get(sectionId);
 		Section<PackageCompileType> compileSection = null;
@@ -101,7 +111,6 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			while ((bit = in.read()) >= 0) {
 				outs.write(bit);
 			}
-
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace(System.out);
@@ -111,7 +120,6 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 
 		outs.flush();
 		outs.close();
-
 	}
 
 	public URL saveKnowledge(String web, KnowledgeBase base) throws IOException {
@@ -139,8 +147,10 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		List<String> wrongVersionTitles = new LinkedList<>();
 		for (Article article : articlesOfKnowledgebase) {
 			String articleText = article.getRootSection().getText();
-			String connectorVersionOfArticleText = Environment.getInstance().getWikiConnector().getArticleText(
-					article.getTitle(), -1);
+			String connectorVersionOfArticleText = Environment.getInstance()
+					.getWikiConnector()
+					.getArticleText(
+							article.getTitle(), -1);
 			if (!articleText.equals(connectorVersionOfArticleText)) {
 				wrongVersionTitles.add(article.getTitle());
 			}
