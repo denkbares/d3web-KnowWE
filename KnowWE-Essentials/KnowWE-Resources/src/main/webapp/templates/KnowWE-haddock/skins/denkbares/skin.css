@@ -264,6 +264,11 @@ textarea, input[type=text] {
 	border: 1px solid #ddd;
 }
 */
+
+.editor.form-control {
+	z-index: initial;
+}
+
 legend, label {
 	font-weight: bold;
 	white-space: nowrap;
