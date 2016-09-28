@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
@@ -124,16 +126,16 @@ public class SparqlResultRenderer {
 	}
 
 	public static void handleRuntimeException(Section<? extends SparqlType> section, UserContext user, RenderResult result, RuntimeException e) {
-		result.appendHtml("<span class='warning'>");
+		result.appendHtml("<div class='warning'>");
 		appendMessage(section, e, user, result);
 		result.appendHtml("<br/><a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
 				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
-				+ " class='tooltipster'>Try again...</a></span>");
+				+ " class='tooltipster'>Try again...</a></div>");
 	}
 
 	private static void appendMessage(Section<? extends SparqlType> section, RuntimeException e, UserContext user, RenderResult result) {
 		if (e.getCause() instanceof MalformedQueryException) {
-			injectAffectedQueryPart(section, e.getMessage(), user, result);
+			appendMalformedQueryMessage(section, e.getMessage(), user, result);
 		}
 		else {
 			String message = e.getMessage();
@@ -144,48 +146,70 @@ public class SparqlResultRenderer {
 		}
 	}
 
-	private static void injectAffectedQueryPart(Section<? extends SparqlType> section, String message, UserContext user, RenderResult result) {
+	private static void appendMalformedQueryMessage(Section<? extends SparqlType> section, String message, UserContext user, RenderResult result) {
+		message = Strings.encodeHtml(message);
 		String query = section.get().getSparqlQuery(section, user);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(section);
-		if (query == null || core == null || !message.contains("Was expecting one of:")) {
+		if (query == null || core == null) {
 			result.append(message);
 			return;
 		}
-		query = core.prependPrefixesToQuery(query);
-		Scanner msgScanner = new Scanner(message);
-		int lineNumber = msgScanner.nextInt();
-		int columnNumber = msgScanner.nextInt();
 
-		Scanner queryScanner = new Scanner(query);
-		String queryLine = null;
-		for (int i = 0; i < lineNumber && queryScanner.hasNext(); i++) {
-			queryLine = queryScanner.nextLine();
+		Matcher lineMatcher = Pattern.compile("(?:at line )(\\d+)").matcher(message);
+		int lineNumber = -1;
+		if (lineMatcher.find()) {
+			lineNumber = Integer.parseInt(lineMatcher.group(1)) - 1;
 		}
+
+		Matcher columnMatcher = Pattern.compile("(?:, column )(\\d+)").matcher(message);
+		int columnNumber = -1;
+		if (columnMatcher.find()) {
+			columnNumber = Integer.parseInt(columnMatcher.group(1)) - 1;
+		}
+		if (columnNumber == -1 || lineNumber == -1) {
+			result.append(message);
+			return;
+		}
+
+		query = core.prependPrefixesToQuery(query);
+		String queryLine = query.split("\n")[lineNumber];
+
 		if (queryLine == null) {
 			result.append(message);
 			return;
 		}
-		int start = Math.min(0, columnNumber - 15);
-		int end = Math.max(columnNumber + 15, queryLine.length());
-		String queryContextPrefix = queryLine.substring(start, columnNumber);
+		int start = Math.max(0, columnNumber - 15);
+		int end = Math.min(columnNumber + 15, queryLine.length());
+		while (start > 0 && queryLine.charAt(start) != ' ') start--;
+		if (start > 0) start++;
+		while (end < queryLine.length() && queryLine.charAt(end) != ' ') end++;
+		String queryContextPrefix = "..." + queryLine.substring(start, columnNumber);
 		String charAtException = queryLine.substring(columnNumber, columnNumber + 1);
-		String queryContextSuffix = queryLine.substring(columnNumber + 1, end);
+		String queryContextSuffix = queryLine.substring(columnNumber + 1, end) + "...";
 
-		msgScanner = new Scanner(message);
+		Scanner scanner = new Scanner(message);
 		boolean first = true;
-		while (msgScanner.hasNextLine()) {
-			String line = msgScanner.nextLine();
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
 			if (first) {
-				if (line.endsWith(".")) line = line.substring(0, line.length() - 1);
-				result.append(line);
-				result.append("Context: ").append(queryContextPrefix);
-				result.appendHtmlElement("span", charAtException, "style", "color: red");
+				int index = line.indexOf("Encountered ");
+				if (index >= 0) {
+					result.append(line.substring(0, index + 12))
+							.append("'").append(charAtException).append("' ")
+							.append("at line ").append(lineNumber + 1)
+							.append(", column ").append(columnNumber + 1).append(".");
+				}
+				else {
+					result.append(line);
+				}
+				result.append(" Context: ").append(queryContextPrefix);
+				result.appendHtmlElement("span", charAtException, "style", "color: red; font-weight: bold");
 				result.append(queryContextSuffix);
-				result.append(".");
+				result.append(".\n");
 				first = false;
 			}
 			else {
-				result.append(line);
+				result.append(line).append("\n");
 			}
 		}
 	}
