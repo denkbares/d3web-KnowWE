@@ -191,6 +191,9 @@ public class TerminologyManager {
 	 * @return the defining Sections for this term or an empty Collection if the term is not defined
 	 */
 	public synchronized Collection<Section<? extends Type>> getTermDefiningSections(Identifier termIdentifier) {
+		if(termIdentifier == null) {
+			return Collections.emptyList();
+		}
 		Collection<Section<? extends Type>> definitions = new ArrayList<>();
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {

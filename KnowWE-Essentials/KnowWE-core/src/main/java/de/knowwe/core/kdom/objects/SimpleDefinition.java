@@ -32,6 +32,8 @@ import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Message;
 
 public abstract class SimpleDefinition extends AbstractType implements TermDefinition, RenamableTerm {
 
@@ -68,12 +70,15 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 		}
 
 		@Override
-		public void compile(C compiler, Section<SimpleDefinition> section) {
+		public void compile(C compiler, Section<SimpleDefinition> section) throws CompilerMessage {
 
 			if (!verifyDefinition(compiler, section)) return;
 
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
+			if(termIdentifier == null) {
+				throw new CompilerMessage(new Message(Message.Type.ERROR, "Could not determine TermIdentifier"));
+			}
 
 			terminologyManager.registerTermDefinition(compiler,
 					section, section.get().getTermObjectClass(section),
@@ -93,6 +98,11 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 		public void destroy(C compiler, Section<SimpleDefinition> section) {
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
+			if(termIdentifier == null) {
+				// we assume that also nothing could have been registered without an Identifier -> ergo nothing to unregister
+				return;
+				//throw new CompilerMessage(new Message(Message.Type.ERROR, "Could not determine TermIdentifier"));
+			}
 			terminologyManager.unregisterTermDefinition(compiler,
 					section, section.get().getTermObjectClass(section),
 					termIdentifier);
