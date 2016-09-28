@@ -21,9 +21,14 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.AttachmentManager;
+import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
@@ -32,7 +37,11 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.attachment.AttachmentMarkup;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
+import static java.util.stream.Collectors.toList;
 
 /**
  * This class represents a section of the top-level default markup. That markup always starts with
@@ -129,6 +138,7 @@ public class DefaultMarkupType extends AbstractType {
 					"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?[%/]%)"; // CONTENT
 
 	private DefaultMarkup markup;
+	private PackageManager packageManager;
 
 	public DefaultMarkupType(DefaultMarkup markup) {
 		applyMarkup(markup);
@@ -345,6 +355,8 @@ public class DefaultMarkupType extends AbstractType {
 	 * Returns the packages the given default markup section belongs to according to the defined
 	 * annotations. If there are no such annotations, the default packages for the article are
 	 * returned.
+	 * In case the section is part of an article based on a compiled attachment, we also check the compiling
+	 * %%Attachment markups for packages.
 	 *
 	 * @param section the section to be check for packages
 	 * @created 12.03.2012
@@ -353,11 +365,24 @@ public class DefaultMarkupType extends AbstractType {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
 		}
-		String[] packageNames = DefaultMarkupType.getAnnotations(section,
-				annotation);
-		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
+		String[] packageNames = DefaultMarkupType.getAnnotations(section, annotation);
 		if (packageNames.length == 0) {
-			packageNames = packageManager.getDefaultPackages(section.getArticle());
+			packageNames = KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
+		}
+		// if we only have the default package, check if this is an article based on an compiled attachment
+		// and if yes, get packages from compiling %%Attachment markups
+		if (packageNames.length == 1 && packageNames[0].equals(PackageManager.DEFAULT_PACKAGE)) {
+			ArticleManager articleManager = section.getArticleManager();
+			if (!(articleManager instanceof DefaultArticleManager)) return packageNames;
+			AttachmentManager attachmentManager = ((DefaultArticleManager) articleManager).getAttachmentManager();
+			String[] collectedPackageNames = attachmentManager.getCompilingAttachmentSections(section
+					.getArticle())
+					.stream()
+					.map(s -> $(s).ancestor(AttachmentMarkup.class).getFirst())
+					.filter(Objects::nonNull)
+					.map(DefaultMarkupType::getPackages).flatMap(Arrays::stream)
+					.collect(toList()).toArray(new String[0]);
+			if (collectedPackageNames.length > 0) packageNames = collectedPackageNames;
 		}
 		return packageNames;
 	}

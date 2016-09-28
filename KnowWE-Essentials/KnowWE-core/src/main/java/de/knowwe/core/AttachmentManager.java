@@ -10,13 +10,13 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.denkbares.events.Event;
-import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.collections.N2MMap;
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.Article;
@@ -209,4 +209,13 @@ public class AttachmentManager implements EventListener {
 		return false;
 	}
 
+	/**
+	 * In case the given article represents the content of an attachment compiled via the %%Attachment markup, we check
+	 * which {@link Section}s of type {@link AttachmentType} reference the attachment represented by the given article.
+	 *
+	 * @param article the object for which we check if there are attachment sections
+	 */
+	public Set<Section<AttachmentType>> getCompilingAttachmentSections(Article article) {
+		return pathToSectionsMap.getValues(article.getTitle());
+	}
 }
