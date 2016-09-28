@@ -1996,7 +1996,7 @@ if( !String.startsWith ){
      *     str - The prefix used for checking
      */
     String.prototype.startsWith = function( str ) {
-        return (this.match("^"+str) == str);
+       return this.indexOf(str) === 0;
     };
 }
 if( !String.endsWith ){ 
@@ -2008,7 +2008,8 @@ if( !String.endsWith ){
      *     str - The prefix used for checking
      */
     String.prototype.endsWith = function(str){
-        return (this.match(str+"$") == str);
+		var d = this.length - str.length;
+		return d >= 0 && this.lastIndexOf(str) === d;
     };
 }
 
