@@ -246,7 +246,7 @@ KNOWWE.helper = function(){
             
             var path = window.location.pathname;
             //quick fix for checking if init actions should apply to start page
-            if(path == '/KnowWE/') return true; 
+            if(path == '/KnowWE/' && pages === 'Wiki.jsp') return true;
             
             var path = path.split('/');
             var page = path[path.length - 1];
