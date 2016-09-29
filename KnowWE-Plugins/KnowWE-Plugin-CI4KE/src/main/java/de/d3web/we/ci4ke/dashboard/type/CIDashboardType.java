@@ -41,6 +41,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
@@ -96,7 +97,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		return name;
 	}
 
-	private class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
+	private static class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) throws CompilerMessage {
@@ -125,6 +126,17 @@ public class CIDashboardType extends DefaultMarkupType {
 									monitoredArticles.add(parameter);
 								}
 								else {
+									// also resolve regex for onSave trigger articles
+									Collection<Article> articles = s.getArticleManager().getArticles();
+									Pattern onSaveArticleRegexPattern = Pattern.compile(parameter);
+									for (Article article : articles) {
+										if(onSaveArticleRegexPattern.matcher(article.getTitle()).matches()) {
+											monitoredArticles.add(article.getTitle());
+										}
+									}
+
+								}
+								if(monitoredArticles.isEmpty()) {
 									msgs.add(Messages.error("Article '" + parameter
 											+ "' for trigger does not exist"));
 								}
