@@ -50,6 +50,10 @@ public class GetWikiSectionTextAction extends GetSectionTextAction {
 		if (wikiReference != null) {
 			Article auxiliaryArticle = Article.createArticle("%%include\n["+wikiReference+"]\n%", "AuxArticle", "AuxWeb");
 			Section<WikiReference> wikiReferenceSection = Sections.successor(auxiliaryArticle.getRootSection(), WikiReference.class);
+			if(wikiReferenceSection == null) {
+				context.sendError(HttpServletResponse.SC_NOT_FOUND, "No WikiReference found: "+wikiReference);
+				return;
+			}
 			Section<?> headerSection = WikiReference.findReferencedSection(wikiReferenceSection, articleManager);
 			if(headerSection != null && headerSection.get() instanceof HeaderType) {
 				sectionList = JSPWikiMarkupUtils.getContent(Sections.cast(headerSection, HeaderType.class));
