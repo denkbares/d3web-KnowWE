@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.KeywordType;
@@ -152,7 +153,7 @@ public class WikiReference extends AbstractType {
 	 * @return the referenced Section
 	 * @created 05.02.2014
 	 */
-	public Section<?> getReferencedSection(Section<WikiReference> section) {
+	public static Section<?> getReferencedSection(Section<WikiReference> section) {
 		String id = (String) KnowWEUtils.getStoredObject(section, TARGET_SECTION_ID_KEY);
 		if (id == null) {
 			// not initialized yet
@@ -224,7 +225,11 @@ public class WikiReference extends AbstractType {
 		return marks;
 	}
 
-	private synchronized Section<?> findReferencedSection(Section<WikiReference> section) {
+	public static synchronized Section<?> findReferencedSection(Section<WikiReference> section) {
+		return findReferencedSection(section, section.getArticleManager());
+	}
+
+	public static synchronized Section<?> findReferencedSection(Section<WikiReference> section, ArticleManager articleManager) {
 
 		// prepare sub-sections
 		Section<ArticleReference> articleReference = getArticleReference(section);
@@ -253,15 +258,15 @@ public class WikiReference extends AbstractType {
 
 		// warning if no article specified
 		if (Strings.isBlank(targetArticleName)) {
-			Messages.storeMessage(section, getClass(), Messages.error("No article name specified"));
+			Messages.storeMessage(section, WikiReference.class, Messages.error("No article name specified"));
 			return null;
 		}
 
-		Article targetArticle = section.getArticleManager().getArticle(targetArticleName);
+		Article targetArticle = articleManager.getArticle(targetArticleName);
 
 		// warning if article not found
 		if (targetArticle == null) {
-			Messages.storeMessage(articleReference, getClass(), Messages.error("Article '" + targetArticleName + "' not found!"));
+			Messages.storeMessage(articleReference, WikiReference.class, Messages.error("Article '" + targetArticleName + "' not found!"));
 			return null;
 		}
 
@@ -285,7 +290,7 @@ public class WikiReference extends AbstractType {
 					return def;
 				}
 			}
-			Messages.storeMessage(headerReference, getClass(), Messages.error("Header '" + targetHeaderName + "' not found!"));
+			Messages.storeMessage(headerReference, WikiReference.class, Messages.error("Header '" + targetHeaderName + "' not found!"));
 		}
 		else if (!Strings.isBlank(namedSectionName)) {
 			// search for the named section
@@ -294,25 +299,25 @@ public class WikiReference extends AbstractType {
 			if (!namedSections.isEmpty()) {
 				return namedSections.getFirst();
 			}
-			Messages.storeMessage(namedSectionReference, getClass(), Messages.error("Name '" + namedSectionName + "' not found!"));
+			Messages.storeMessage(namedSectionReference,WikiReference.class, Messages.error("Name '" + namedSectionName + "' not found!"));
 		}
-		Messages.storeMessage(articleReference, getClass(), Messages.error("Reference for '" + section.getText() + "' not found!"));
+		Messages.storeMessage(articleReference, WikiReference.class, Messages.error("Reference for '" + section.getText() + "' not found!"));
 		return null;
 	}
 
-	private Section<NamedSectionReference> getNamedSectionReference(Section<WikiReference> section) {
+	public static  Section<NamedSectionReference> getNamedSectionReference(Section<WikiReference> section) {
 		return $(section).successor(NamedSectionReference.class).getFirst();
 	}
 
-	private static Section<HeaderReference> getHeaderReference(Section<?> section) {
+	public static Section<HeaderReference> getHeaderReference(Section<?> section) {
 		return Sections.successor(section, HeaderReference.class);
 	}
 
-	private static Section<ArticleReference> getArticleReference(Section<?> section) {
+	public static Section<ArticleReference> getArticleReference(Section<?> section) {
 		return Sections.successor(section, ArticleReference.class);
 	}
 
-	public synchronized Section<?> updateReferences(Section<WikiReference> section) {
+	public static synchronized Section<?> updateReferences(Section<WikiReference> section) {
 		Section<?> targetSection = findReferencedSection(section);
 		// we store the section id
 		// to easily recognize if the section has disappeared
@@ -321,7 +326,7 @@ public class WikiReference extends AbstractType {
 		return targetSection;
 	}
 
-	private class InterWikiReferenceRenderer implements Renderer {
+	private static class InterWikiReferenceRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
@@ -398,7 +403,7 @@ public class WikiReference extends AbstractType {
 		return getListMarks(section).endsWith("*");
 	}
 
-	public String getLinkName(Section<WikiReference> section) {
+	public static  String getLinkName(Section<WikiReference> section) {
 		// if a name is specified use the name
 		Section<LinkName> nameSection = Sections.successor(section, LinkName.class);
 		if (nameSection != null) return nameSection.getText();
@@ -411,7 +416,7 @@ public class WikiReference extends AbstractType {
 		return section.getText();
 	}
 
-	public String getLink(Section<WikiReference> section) {
+	public static  String getLink(Section<WikiReference> section) {
 		Section<ArticleReference> articleReference = getArticleReference(section);
 		Section<HeaderReference> headerReference = getHeaderReference(section);
 		if (articleReference == null && headerReference == null) return null;
@@ -431,7 +436,7 @@ public class WikiReference extends AbstractType {
 	 * @return the marks preceding the include link
 	 * @created 11.02.2014
 	 */
-	public String getListMarks(Section<WikiReference> reference) {
+	public static  String getListMarks(Section<WikiReference> reference) {
 		Section<ListMarks> marks = Sections.successor(reference, ListMarks.class);
 		if (marks == null) return "";
 		return marks.getText();

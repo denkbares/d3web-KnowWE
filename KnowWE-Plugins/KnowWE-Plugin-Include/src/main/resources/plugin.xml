@@ -39,5 +39,13 @@
         <parameter id="priority" value="5" />
         <parameter id="scope" value="IncludeMarkup" />
    </extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetWikiSectionTextAction">
+		<parameter id="class" value="de.knowwe.include.GetWikiSectionTextAction" />
+		<parameter id="name" value="GetWikiSectionTextAction" />
+		<parameter id="description" value="Action GetWikiSectionTextAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
  
  </plugin>

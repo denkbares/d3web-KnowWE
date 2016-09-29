@@ -62,6 +62,10 @@ public class GetSectionTextAction extends AbstractAction {
 			return;
 		}
 
+		writeFile(context, sectionText, fileName);
+	}
+
+	protected void writeFile(UserActionContext context, String sectionText, String fileName) throws IOException {
 		File tempTextFile = File.createTempFile(fileName, "_SectionText.txt");
 		try {
 			Strings.writeFile(tempTextFile.getPath(), sectionText);
