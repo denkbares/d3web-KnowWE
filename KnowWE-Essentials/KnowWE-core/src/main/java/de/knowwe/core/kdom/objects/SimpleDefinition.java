@@ -76,7 +76,7 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
-			if(termIdentifier == null) {
+			if (termIdentifier == null) {
 				throw new CompilerMessage(new Message(Message.Type.ERROR, "Could not determine TermIdentifier"));
 			}
 
@@ -98,7 +98,7 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 		public void destroy(C compiler, Section<SimpleDefinition> section) {
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = section.get().getTermIdentifier(section);
-			if(termIdentifier == null) {
+			if (termIdentifier == null) {
 				// we assume that also nothing could have been registered without an Identifier -> ergo nothing to unregister
 				return;
 				//throw new CompilerMessage(new Message(Message.Type.ERROR, "Could not determine TermIdentifier"));
