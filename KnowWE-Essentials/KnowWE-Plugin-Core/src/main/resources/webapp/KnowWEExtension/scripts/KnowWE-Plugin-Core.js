@@ -236,7 +236,7 @@ KNOWWE.plugin.renaming = function() {
 	function renameTerms(oldValue, replacement, sectionId, forceRename) {
 		if (forceRename == null)
 			forceRename = false;
-		if (oldValue && replacement) {
+		if (oldValue && (replacement || replacement === "")) {
 			var changeNote = 'Renaming: "' + oldValue + '" -> "'
 				+ replacement + '"';
 			var params = {
@@ -247,7 +247,7 @@ KNOWWE.plugin.renaming = function() {
 				force : forceRename ? "true" : "false"
 			};
 			KNOWWE.core.util.updateProcessingState(1);
-			var request = jq$.ajax({
+			jq$.ajax({
 				type : "post", url : KNOWWE.core.util.getURL(params),
 				success : function(data, text) {
 
