@@ -22,34 +22,34 @@ function ToolMenu() {
 	this.lastMenuId = null;
 }
 
-ToolMenu.prototype.decorateToolMenus = function($parent) {
+ToolMenu.prototype.decorateToolMenus = function ($parent) {
 	if (!$parent) $parent = jq$('.toolMenuParent');
 	var decorators = $parent.find('.toolsMenuDecorator');
-	decorators.each(function() {
+	decorators.each(function () {
 		var a = jq$(this);
 		if (a.data('toolMenuDecorated') === 'true') return;
-		a.parent().mouseenter(function() {
+		a.parent().mouseenter(function () {
 			a.css('visibility', 'visible');
 		});
-		a.parent().mouseleave(function() {
+		a.parent().mouseleave(function () {
 			a.css('visibility', 'hidden');
 		});
-		a.click(function() {
+		a.click(function () {
 			_TM.showToolPopupMenu(a);
 		});
-		a.dblclick(function() {
+		a.dblclick(function () {
 			_TM.hideToolsPopupMenu();
 			_TM.selectTerm(this);
 		});
 		a.data('toolMenuDecorated', 'true');
 		//prevent "click through" in composite edit
-		a.click(function(e) {
+		a.click(function (e) {
 			e.stopPropagation();
 		});
 	});
 };
 
-ToolMenu.prototype.selectTerm = function(element) {
+ToolMenu.prototype.selectTerm = function (element) {
 	element = jq$(element).parent().find('.clickable-term')[0];
 	var selection = window.getSelection();
 	var range = document.createRange();
@@ -58,7 +58,7 @@ ToolMenu.prototype.selectTerm = function(element) {
 	selection.addRange(range);
 };
 
-ToolMenu.prototype.showToolPopupMenu = function(node) {
+ToolMenu.prototype.showToolPopupMenu = function (node) {
 	// we hide all open tooltipster tool tips to reduce clutter
 	jq$(document).find('.tooltipster').tooltipster('hide');
 
@@ -69,21 +69,29 @@ ToolMenu.prototype.showToolPopupMenu = function(node) {
 	if (lastMenuId == currentMenuId) return;
 	this.lastMenuId = currentMenuId;
 
+	node.unbind('mouseleave').mouseleave(function (event) {
+		var rect = this.getBoundingClientRect();
+		console.log(event.clientY + " " + rect.bottom);
+		if (event.clientY <= rect.bottom - 1) {
+			_TM.hideToolsPopupMenu();
+		}
+		jq$(this).unbind('mouseleave');
+	});
 	node = node[0];
 	var scale = 1;
-	jq$(node).parentsUntil('#pagecontent').each(function() {
+	jq$(node).parentsUntil('#pagecontent').each(function () {
 		if (scale == 1) scale = jq$(this).scale();
 	});
 	var parent = new Element('div', {
-		'id' : 'toolPopupMenuID',
-		'styles' : {
-			'top' : jq$(node).offset().top + node.offsetHeight * scale + 'px',
-			'left' : jq$(node).offset().left + node.offsetWidth * scale + 'px',
-			'z-index' : '10000',
-			'position' : 'absolute'
+		'id': 'toolPopupMenuID',
+		'styles': {
+			'top': jq$(node).offset().top + node.offsetHeight * scale + 'px',
+			'left': jq$(node).offset().left + node.offsetWidth * scale + 'px',
+			'z-index': '10000',
+			'position': 'absolute'
 		},
-		'events' : {
-			'mouseleave' : _TM.hideToolsPopupMenu
+		'events': {
+			'mouseleave': _TM.hideToolsPopupMenu
 		}
 	});
 	document.body.appendChild(parent);
@@ -96,7 +104,7 @@ ToolMenu.prototype.showToolPopupMenu = function(node) {
 	if (menuLeft < 0) menu.css('right', menuLeft + 'px');
 };
 
-ToolMenu.prototype.getToolMenuHtml = function(node) {
+ToolMenu.prototype.getToolMenuHtml = function (node) {
 
 
 	var toolMenuIdentifier = jq$(node).attr('toolMenuIdentifier');
@@ -108,15 +116,15 @@ ToolMenu.prototype.getToolMenuHtml = function(node) {
 		}
 
 		var params = {
-			action : toolMenuAction,
-			identifier : toolMenuIdentifier
+			action: toolMenuAction,
+			identifier: toolMenuIdentifier
 		};
 
 		var options = {
-			url : KNOWWE.core.util.getURL(params),
-			async : false,
-			response : {
-				onError : _EC.onErrorBehavior
+			url: KNOWWE.core.util.getURL(params),
+			async: false,
+			response: {
+				onError: _EC.onErrorBehavior
 			}
 		};
 		var ajaxCall = new _KA(options);
@@ -132,7 +140,7 @@ ToolMenu.prototype.getToolMenuHtml = function(node) {
 	return this.cache[toolMenuIdentifier];
 };
 
-ToolMenu.prototype.hideToolsPopupMenu = function() {
+ToolMenu.prototype.hideToolsPopupMenu = function () {
 	this.lastMenuId = null;
 	var old = jq$('#toolPopupMenuID')[0];
 	if (old) {
@@ -140,10 +148,10 @@ ToolMenu.prototype.hideToolsPopupMenu = function() {
 	}
 };
 
-ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
+ToolMenu.prototype.animateDefaultMarkupMenu = function ($parent) {
 	if (!$parent) $parent = jq$('.defaultMarkupFrame');
 	var $markups = $parent.is('.defaultMarkupFrame') ? $parent : $parent.find('.defaultMarkupFrame');
-	$markups.each(function() {
+	$markups.each(function () {
 		var markup = jq$(this);
 		var header = markup.find('.headerMenu').first();
 		var menu = markup.find('.markupMenu').first();
@@ -151,14 +159,14 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
 			header.find('.markupMenuIndicator').hide();
 		}
 
-		header.unbind('mouseout').on('mouseout', function(e) {
-			header.stop().animate({'max-width' : 35, 'z-index' : 1000, opacity : 0.3}, 200);
+		header.unbind('mouseout').on('mouseout', function (e) {
+			header.stop().animate({'max-width': 35, 'z-index': 1000, opacity: 0.3}, 200);
 			if (menu) {
 				menu.hide();
 				menu.css("margin-top", "");
 			}
-		}).unbind('mouseover').on('mouseover', function(e) {
-			header.stop().animate({'max-width' : 250, 'z-index' : 1500, opacity : 1}, 200);
+		}).unbind('mouseover').on('mouseover', function (e) {
+			header.stop().animate({'max-width': 250, 'z-index': 1500, opacity: 1}, 200);
 			if (menu) {
 				menu.show();
 				var menuBottom = menu[0].getBoundingClientRect().bottom;
@@ -176,7 +184,7 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
 				if (menuBottom > (windowHeight - footerHeightVisible)) {
 					menu.css("margin-top", "-" + (menuBottom - (windowHeight - footerHeightVisible)) + "px");
 				}
-				menu.stop().animate({opacity : 0.9}, 100);
+				menu.stop().animate({opacity: 0.9}, 100);
 			}
 		});
 	});
@@ -184,16 +192,16 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function($parent) {
 
 var _TM = new ToolMenu();
 
-jq$(document).ready(function() {
+jq$(document).ready(function () {
 	_TM.animateDefaultMarkupMenu();
 	_TM.decorateToolMenus();
 });
 
-KNOWWE.helper.observer.subscribe("flowchartrendered", function() {
+KNOWWE.helper.observer.subscribe("flowchartrendered", function () {
 	_TM.decorateToolMenus(jq$('.Flowchart'))
 });
 
-KNOWWE.helper.observer.subscribe("afterRerender", function() {
+KNOWWE.helper.observer.subscribe("afterRerender", function () {
 	_TM.animateDefaultMarkupMenu(jq$(this));
 	_TM.decorateToolMenus(jq$(this));
 });
