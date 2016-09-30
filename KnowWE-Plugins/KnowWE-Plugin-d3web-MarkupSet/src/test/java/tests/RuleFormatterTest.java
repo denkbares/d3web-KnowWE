@@ -106,8 +106,9 @@ public class RuleFormatterTest {
 				"THEN Leaking air intake system = P5\n" +
 				"\n" +
 				"IF NOT (Driving = insufficient power on sorted partial load\n" +
-				"\tOR Driving = unsteady idle speed\n" +
-				"\tOR Driving = insufficient power on full load) AND something = \"Hallo OR , ich stehe in der Zeile\"\n" +
+				"\t\tOR Driving = unsteady idle speed\n" +
+				"\t\tOR Driving = insufficient power on full load)\n" +
+				"\tAND something = \"Hallo OR , ich stehe in der Zeile\"\n" +
 				"THEN Leaking air intake system = N3\n" +
 				"\n" +
 				"IF Driving = insufficient power on full load\n" +
