@@ -244,3 +244,39 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 		});
 	}
 }());
+
+KNOWWE.plugin.rule = {};
+
+KNOWWE.plugin.rule.editTool = {};
+jq$.extend(KNOWWE.plugin.rule.editTool, KNOWWE.plugin.defaultEditTool);
+
+KNOWWE.plugin.rule.editTool.generateButtons = function (id) {
+	return _EC.elements.getSaveCancelDeleteButtons(id,
+		["<a class='action format' onclick='KNOWWE.plugin.rule.editTool.format(\"" + id + "\")'>" +
+		"Format</a>"]);
+};
+
+
+/*
+ *   Sends rule's to the server and receives formatted rules.
+ */
+KNOWWE.plugin.rule.editTool.format = function (id) {
+
+	var textarea = jq$("#defaultEdit" + id);
+	var wikiText = textarea.val();
+
+	jq$.ajax("action/RuleFormatAction", {
+		data : {
+			sectionID : id,
+			wikiText : wikiText
+		},
+		type : 'post',
+		cache : false,
+		success : function(json) {
+			textarea.val(json.wikiText);
+		}
+	});
+
+	return;
+
+}

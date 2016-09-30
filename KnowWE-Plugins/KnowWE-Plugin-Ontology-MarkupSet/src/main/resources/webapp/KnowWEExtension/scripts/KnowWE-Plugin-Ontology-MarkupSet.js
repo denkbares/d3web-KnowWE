@@ -62,6 +62,7 @@ KNOWWE.plugin.ontology = function () {
 
 KNOWWE.plugin.sparql.editTool = {};
 jq$.extend(KNOWWE.plugin.sparql.editTool, KNOWWE.plugin.defaultEditTool);
+
 KNOWWE.plugin.sparql.editTool.generateButtons = function (id) {
     return _EC.elements.getSaveCancelDeleteButtons(id,
         ["<a class='action format' onclick='KNOWWE.plugin.sparql.editTool.format(\"" + id + "\")'>" +

@@ -822,7 +822,7 @@ public class SparqlFormatterTest {
 	}
 
 	public String format(String testSparql) {
-		SparqlFormatAction.Formatter formatter = new SparqlFormatAction.Formatter(testSparql);
-		return formatter.formatSparql().toString();
+		SparqlFormatAction.SparqlFormatter formatter = new SparqlFormatAction.SparqlFormatter(testSparql);
+		return formatter.format();
 	}
 }

@@ -255,4 +255,25 @@
 		<parameter id="scope" value="PropertyTableType" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RuleFormatAction">
+		<parameter id="class" value="de.d3web.we.kdom.rules.RuleFormatAction" />
+		<parameter id="name" value="RuleFormatAction" />
+		<parameter id="description" value="Pretty prints Rules" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
+		id="RuleEditToolProvider">
+		<parameter id="class"
+			value="de.d3web.we.kdom.rules.utils.RuleEditToolProvider"/>
+		<parameter id="name" value="RuleEditToolProvider"/>
+		<parameter id="description"
+			value="Offers a tool for formatting rules"/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="3"/>
+		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js"/>
+		<parameter id="scope" value="Rule"/>
+	</extension>
+
 </plugin>
