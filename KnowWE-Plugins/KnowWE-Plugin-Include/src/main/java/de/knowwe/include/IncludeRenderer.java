@@ -58,7 +58,7 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 		List<Section<WikiReference>> references =
 				Sections.successors(section, WikiReference.class);
 		for (Section<WikiReference> ref : references) {
-			ref.get().updateReferences(ref);
+			WikiReference.updateReferences(ref);
 		}
 
 		// show document title
@@ -107,8 +107,8 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 		// render included sections
 		for (Section<WikiReference> include : references) {
 			// find section and render it
-			Section<?> referencedSection = include.get().getReferencedSection(include);
-			int listLevel = include.get().getListMarks(include).length();
+			Section<?> referencedSection = WikiReference.getReferencedSection(include);
+			int listLevel = WikiReference.getListMarks(include).length();
 			// check for simple include
 			if (listLevel == 0) {
 				renderIncludedSections(user, referencedSection, result,
@@ -120,7 +120,7 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 			// (if not preceded with "-")
 			// and suppress the existing one
 			if (!include.get().isSuppressHeader(include)) {
-				String title = include.get().getLinkName(include);
+				String title = WikiReference.getLinkName(include);
 				result.appendHtml("<h" + listLevel + ">")
 						.append(title)
 						.appendHtml("</h" + listLevel + ">\n");

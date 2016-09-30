@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.TreeSet;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
@@ -67,6 +68,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		String title = section.getTitle();
 		String currentDashboardSourcetext = section.getText();
 		CIDashboard dashboard = CIDashboardManager.getDashboard(section);
+		assert dashboard != null;
 		BuildResult latestBuild = dashboard.getLatestBuild();
 		if (latestBuild == null) return false; // nothing to do
 
@@ -74,13 +76,20 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		int versionAtBuildDate = -1;
 
 		try {
-			versionAtBuildDate = KnowWEUtils.getArticleVersionAtDate(
-					title, buildDate);
+			assert title != null;
+			if(title.contains("/")) {
+				// is a attached article
+				versionAtBuildDate = KnowWEUtils.getAttachmentVersionAtDate(title, buildDate);
+			} else {
+				// normal article
+				versionAtBuildDate = KnowWEUtils.getArticleVersionAtDate(
+						title, buildDate);
+			}
 			// case for invalid buildDates (before corresponding page existed)
 			if (versionAtBuildDate < -1) return true;
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			Log.severe("Could not determine build version for date", e);
 		}
 
 		String sourceTextAtBuildTime = Environment.getInstance().getWikiConnector().getArticleText(

@@ -42,6 +42,7 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.PageLock;
 import org.apache.wiki.PageManager;
@@ -519,7 +520,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String getArticleText(String title, int version) {
 		// Surrounded this because getPage()
-		// caused a Nullpointer on first KnowWE startup
+		// caused a NullPointer on first KnowWE startup
 		try {
 			if ((this.engine == null) || (this.engine.getPage(title) == null)) return null;
 		}
@@ -528,10 +529,24 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 
 		String pageText;
+		if (title.contains("/")) {
+			// we have an attached article
+			try {
+				WikiAttachment attachment = getAttachment(title, version);
+				if (attachment != null) {
+					InputStream inputStream = attachment.getInputStream();
+					return IOUtils.toString(inputStream);
+				}
+			}
+			catch (IOException e) {
+				Log.warning("Could not read attachment content from: " + title);
+			}
+		}
 		try {
 			pageText = engine.getPageManager().getPageText(title, version);
 		}
 		catch (ProviderException e) {
+			Log.warning("Could not obtain page text from PageManager for: " + title);
 			return null;
 		}
 
@@ -545,7 +560,7 @@ public class JSPWikiConnector implements WikiConnector {
 			List<WikiPage> versionHistory = this.engine.getPageManager().getVersionHistory(title);
 			if (versionHistory == null) return Collections.emptyList();
 			if (versionHistory.isEmpty()) {
-				// can happen in JSPWiki, of OLD was cleaned up manually
+				// can happen in JSPWiki, if OLD was cleaned up manually
 				WikiPage currentVersion = this.engine.getPage(title);
 				versionHistory = Collections.singletonList(currentVersion);
 			}

@@ -20,9 +20,11 @@
 package de.knowwe.core.utils;
 
 import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -203,8 +205,11 @@ public class KnowWEUtils {
 	public static void appendToFile(String path, String entry) {
 
 		try {
-			FileWriter fstream = new FileWriter(path, true);
-			BufferedWriter out = new BufferedWriter(fstream);
+			OutputStreamWriter writer = new OutputStreamWriter(
+					new FileOutputStream(path, true),
+					Charset.forName("UTF-8").newEncoder()
+			);
+			BufferedWriter out = new BufferedWriter(writer);
 			out.write(entry);
 			out.close();
 		}
@@ -798,6 +803,16 @@ public class KnowWEUtils {
 	 */
 	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(String title, Date date) throws IOException {
 		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getAttachmentHistory(title), date);
+	}
+
+	/**
+	 * Returns the version of the attachment at the given date or the version saved closest before the given date. If
+	 * there
+	 * is no such version or article, -1 is returned. In JSPWiki -1 represents the latest version of an attachment.
+	 */
+	public static int getAttachmentVersionAtDate(String title, Date date) throws IOException {
+		WikiAttachmentInfo attachmentVersionInfoAtDate = getAttachmentVersionInfoAtDate(title, date);
+		return attachmentVersionInfoAtDate == null ? -1 : attachmentVersionInfoAtDate.getVersion();
 	}
 
 	private static <T extends WikiObjectInfo> T getObjectInfoAtDate(List<T> objectHistory, Date date) throws IOException {
