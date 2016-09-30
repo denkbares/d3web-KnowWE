@@ -138,13 +138,14 @@ public class CIPersistence {
 
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		String userName = "CI-process";
+		String dashboardArticle = attachmentTargetArticle(dashboard.getDashboardArticle());
+
 		if (build.getBuildNumber() > MAX_BUILDS) {
 			// do big cleanup, where the older half of the builds are deleted
 			LinkedList<ByteArrayInputStream> streams = new LinkedList<>();
 			streams.add(currentBuildInputStream);
-			String path = dashboard.getDashboardArticle() + "/" + getAttachmentName();
 			List<WikiAttachmentInfo> attachmentHistory = wikiConnector
-					.getAttachmentHistory(path);
+					.getAttachmentHistory(getAttachmentPath());
 			// collection newer half
 			for (WikiAttachmentInfo wikiAttachmentInfo : attachmentHistory) {
 				if (streams.size() > MAX_BUILDS / 2) break;
@@ -152,10 +153,10 @@ public class CIPersistence {
 				streams.addFirst(new ByteArrayInputStream(Streams.getBytesAndClose(inputStream)));
 			}
 			// delete all
-			wikiConnector.deleteAttachment(dashboard.getDashboardArticle(), getAttachmentName(), userName);
+			wikiConnector.deleteAttachment(dashboardArticle, getAttachmentName(), userName);
 			for (ByteArrayInputStream stream : streams) {
 				// write newer half again
-				wikiConnector.storeAttachment(dashboard.getDashboardArticle(), getAttachmentName(), userName, stream);
+				wikiConnector.storeAttachment(dashboardArticle, getAttachmentName(), userName, stream);
 			}
 			buildCache.clear();
 			build.setBuildNumber(streams.size());
@@ -163,10 +164,20 @@ public class CIPersistence {
 			buildCache.setLatestBuild(build);
 		}
 		else {
+
 			wikiConnector.storeAttachment(
-					dashboard.getDashboardArticle(), getAttachmentName(), userName, currentBuildInputStream);
+					dashboardArticle, getAttachmentName(), userName, currentBuildInputStream);
 		}
 
+	}
+
+	private String attachmentTargetArticle(String dashboardArticle) {
+		if(dashboardArticle.contains("/")) {
+			// the dashboard is already in an attachment
+			// we cut off the attachment part to determine the actual article where additional information can be attached
+			return dashboardArticle.substring(0, dashboardArticle.indexOf("/"));
+		}
+		return dashboardArticle;
 	}
 
 	public BuildResult read(int buildVersion) throws IOException {
@@ -221,7 +232,7 @@ public class CIPersistence {
 	}
 
 	private String getAttachmentPath() {
-		return dashboard.getDashboardArticle() + "/" + getAttachmentName();
+		return attachmentTargetArticle(dashboard.getDashboardArticle()) + "/" + getAttachmentName();
 	}
 
 	private String getAttachmentName() {
