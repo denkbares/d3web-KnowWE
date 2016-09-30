@@ -85,7 +85,11 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 		Iterator<BindingSet> iterator = resultSet.iterator();
 		int count = 0;
 		while (iterator.hasNext()) {
-			iterator.next();
+			BindingSet binding = iterator.next();
+			if(binding.size() == 0) {
+				// invalid empty row - not actually a result
+				continue;
+			}
 			count++;
 		}
 
