@@ -71,7 +71,6 @@ ToolMenu.prototype.showToolPopupMenu = function (node) {
 
 	node.unbind('mouseleave').mouseleave(function (event) {
 		var rect = this.getBoundingClientRect();
-		console.log(event.clientY + " " + rect.bottom);
 		if (event.clientY <= rect.bottom - 1) {
 			_TM.hideToolsPopupMenu();
 		}
