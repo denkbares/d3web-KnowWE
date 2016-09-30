@@ -37,14 +37,14 @@ public class AbbreviationDefinition extends SimpleDefinition {
 	public AbbreviationDefinition() {
 		super(OntologyCompiler.class, AbbreviationDefinition.class, Priority.HIGHEST);
 		this.setSectionFinder(new ConstraintSectionFinder(
-				new RegexSectionFinder("(?<=^\\s*)" + PN_CHARS_BASE + "((_|[A-Z]|[a-z]|-|[0-9]|\\.)*" + PN_CHARS + ")?"),
+				new RegexSectionFinder("(?<=^\\s*)(" + PN_CHARS_BASE + "((_|[A-Z]|[a-z]|-|[0-9]|\\.)*" + PN_CHARS + ")?)|(?=:)"),
 				AtMostOneFindingConstraint.getInstance()));
 		this.setRenderer(StyleRenderer.Questionaire);
 	}
 
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		// we dont want resource to be quoted by interface's default implementation
+		// we don't want resource to be quoted by interface's default implementation
 		return newIdentifier.getLastPathElement();
 	}
 

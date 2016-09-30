@@ -41,7 +41,7 @@ public class AbbreviationReference extends SimpleReference {
 
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		// we dont want resource to be quoted by interface's default implementation
+		// we don't want resource to be quoted by interface's default implementation
 		return newIdentifier.getLastPathElement();
 	}
 

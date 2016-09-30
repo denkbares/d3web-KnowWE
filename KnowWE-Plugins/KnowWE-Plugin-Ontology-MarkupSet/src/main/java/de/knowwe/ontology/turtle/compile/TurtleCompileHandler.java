@@ -25,7 +25,7 @@ public class TurtleCompileHandler<Z extends Type> extends OntologyHandler<Z> {
 			StatementProviderResult providerResult = statementSection.get().getStatements(
 					statementSection, compiler);
 			if (providerResult != null) {
-				compiler.getRdf2GoCore().addStatements(section, providerResult.getStatments());
+				compiler.getRdf2GoCore().addStatements(section, providerResult.getStatements());
 				messages.addAll(providerResult.getMessages());
 			}
 

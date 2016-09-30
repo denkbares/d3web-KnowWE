@@ -59,10 +59,9 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
-		Section<LanguageTagPart> langTagPartSection = Sections.child(section,
-				LanguageTagPart.class);
-		String literal = literalPartSection.get()
-				.getLiteral(literalPartSection);
+		Section<LanguageTagPart> langTagPartSection = Sections.child(section, LanguageTagPart.class);
+		assert literalPartSection != null;
+		String literal = literalPartSection.get().getLiteral(literalPartSection);
 		if (langTagPartSection != null) {
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));

@@ -702,7 +702,6 @@ public class Rdf2GoCore {
 	}
 
 	public URI createURI(String value) {
-		if (value.startsWith(":")) value = "lns" + value;
 		return getValueFactory().createURI(Rdf2GoUtils.expandNamespace(this, value));
 	}
 
@@ -757,8 +756,9 @@ public class Rdf2GoCore {
 			}
 		}
 		catch (RepositoryException e) {
-			Log.severe("Exceptin while getting namespaces", e);
+			Log.severe("Exception while getting namespaces", e);
 		}
+		if (!temp.containsKey("")) temp.put("", getLocalNamespace());
 		return temp;
 	}
 

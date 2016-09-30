@@ -78,7 +78,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
             } else {
 				// TODO: clarify whenever this case can make sense...!?
                 final StatementProviderResult statementProviderResult = objectReference.get().getStatements(objectReference, compiler);
-                statements.addAll(statementProviderResult.getStatments());
+                statements.addAll(statementProviderResult.getStatements());
             }
         }
 

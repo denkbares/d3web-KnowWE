@@ -25,7 +25,7 @@ public class StatementProviderResult {
 		return messages;
 	}
 
-	public Collection<Statement> getStatments() {
+	public Collection<Statement> getStatements() {
 		return statments;
 	}
 

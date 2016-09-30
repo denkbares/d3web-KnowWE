@@ -35,6 +35,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
+import de.knowwe.kdom.AnonymousType;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -46,6 +47,9 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 		this.addCompileScript(Priority.HIGHEST, new NamespaceSubtreeHandler());
 		this.setSectionFinder(new RegexSectionFinder("\\s*\\S+?\\s\\S+"));
 		this.addChildType(new AbbreviationDefinition());
+		AnonymousType abbreviationSeparator = new AnonymousType("AbbreviationSeparator");
+		abbreviationSeparator.setSectionFinder(new RegexSectionFinder("^:\\s"));
+		this.addChildType(abbreviationSeparator);
 		this.addChildType(new NamespaceDefinition());
 	}
 
@@ -70,6 +74,7 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 	public String getNamespace(Section<? extends Term> section) {
 		Section<NamespaceDefinition> namespace = Sections.child(section,
 				NamespaceDefinition.class);
+		assert namespace != null;
 		return namespace.getText();
 	}
 
@@ -107,10 +112,10 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<NamespaceAbbreviationDefinition> section) {
-			Section<AbbreviationDefinition> abbreviation1 = Sections.child(section,
+			Section<AbbreviationDefinition> abbreviationDef = Sections.child(section,
 					AbbreviationDefinition.class);
-			String abbreviationName = abbreviation1.get().getTermName(abbreviation1);
-			String abbreviation = abbreviationName;
+			assert abbreviationDef != null;
+			String abbreviation = abbreviationDef.get().getTermName(abbreviationDef);
 			try {
 				Rdf2GoCore.getInstance(compiler).removeNamespace(abbreviation);
 			}

@@ -321,18 +321,22 @@ public class Rdf2GoUtils {
 	 * @created 15.07.2012
 	 */
 	public static String parseKnownNamespacePrefix(Rdf2GoCore core, String string) {
-		if (core != null) {
-			for (String prefix : core.getNamespacePrefixes().keySet()) {
-				if (string.startsWith(prefix)) {
-					return prefix;
-				}
-			}
+		if (core == null) return null;
 
-			// also checking local namespace
-			if (string.startsWith(":")) {
-				return Rdf2GoCore.LNS_ABBREVIATION + ":";
+
+		if (string.startsWith(":")) {
+			if (core.getNamespacePrefixes().containsKey(":")) {
+				return ":";
+			}
+			return null;
+		}
+
+		for (String prefix : core.getNamespacePrefixes().keySet()) {
+			if (string.startsWith(prefix)) {
+				return prefix;
 			}
 		}
+
 		return null;
 	}
 
@@ -346,7 +350,6 @@ public class Rdf2GoUtils {
 	 * @created 04.01.2011
 	 */
 	public static String expandNamespace(Rdf2GoCore core, String string) {
-		if (string.startsWith(":")) string = Rdf2GoCore.LNS_ABBREVIATION + string;
 		String prefix = parseKnownNamespacePrefix(core, string);
 		if (prefix == null) return string;
 		return core.getNamespacePrefixes().get(prefix) + string.substring(prefix.length());

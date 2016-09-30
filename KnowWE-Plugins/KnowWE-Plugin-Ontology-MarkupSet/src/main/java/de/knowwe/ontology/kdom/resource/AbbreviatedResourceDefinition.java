@@ -25,7 +25,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
-import de.knowwe.ontology.kdom.namespace.AbbreviationReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class AbbreviatedResourceDefinition extends AbstractType {
@@ -43,23 +42,18 @@ public class AbbreviatedResourceDefinition extends AbstractType {
 	public String getResource(Section<? extends AbbreviatedResourceDefinition> section) {
 		Section<ResourceDefinition> resourceSection = Sections.child(section,
 				ResourceDefinition.class);
-		String resource = resourceSection.get().getTermName(resourceSection);
-		return resource;
+		if (resourceSection == null) {
+			return null;
+		}
+		return resourceSection.get().getTermName(resourceSection);
 	}
 
 	public String getAbbreviation(Section<? extends AbbreviatedResourceDefinition> section) {
 		Section<AbbreviationPrefixReference> abbreviationPrefixSection = Sections.child(
 				section, AbbreviationPrefixReference.class);
-		String abbreviation;
-		if (abbreviationPrefixSection == null) {
-			abbreviation = Rdf2GoCore.LNS_ABBREVIATION;
-		}
-		else {
-			Section<AbbreviationReference> abbreviationSection = Sections.child(
-					abbreviationPrefixSection, AbbreviationReference.class);
-			abbreviation = abbreviationSection.get().getTermName(abbreviationSection);
-		}
-		return abbreviation;
+		return abbreviationPrefixSection == null ?
+				Rdf2GoCore.LNS_ABBREVIATION
+				: abbreviationPrefixSection.get().getAbbreviation(abbreviationPrefixSection);
 	}
 
 	public URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceDefinition> section) {

@@ -54,10 +54,6 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 			return getNodeForIdentifier(core, identifier);
 		}
 		else {
-
-			if (turtleURIText.startsWith(":")) {
-				turtleURIText = "lns:" + turtleURIText;
-			}
 			String uri = Rdf2GoUtils.expandNamespace(core, turtleURIText);
 			return core.createURI(uri);
 		}

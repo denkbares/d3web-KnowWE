@@ -44,6 +44,7 @@ public class ResourceReference extends SimpleReference {
 		if (identifier == null) {
 			Section<AbbreviatedResourceReference> abbResDef = Sections.ancestor(section,
 					AbbreviatedResourceReference.class);
+			assert abbResDef != null;
 			String abbreviation = abbResDef.get().getAbbreviation(abbResDef);
 			identifier = new Identifier(abbreviation, getTermName(section));
 			section.storeObject(IDENTIFIER_KEY, identifier);

@@ -32,6 +32,7 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
+import de.knowwe.ontology.kdom.resource.ResourceDefinition;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 
 /**
@@ -79,6 +80,7 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 		}
 
 		Section<NodeProvider> successor = Sections.successor(predicate, NodeProvider.class);
+		assert successor != null;
 		String turtleURI = successor.collectTextsFromChildren();
 		Class<?> termClass = Resource.class;
 		if (turtleURI.equals("rdfs:subPropertyOf")) {
@@ -108,12 +110,16 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 			termClass = simpleDefinitionSection.get().getTermObjectClass(simpleDefinitionSection);
 		}
 		terminologyManager.registerTermDefinition(compiler, s, termClass, termIdentifier);
+		ResourceDefinition.registerCompatibilityIdentifier(compiler, s);
 	}
 
 	@Override
 	public void destroy(OntologyCompiler compiler, Section<SimpleReference> s) {
-		compiler.getTerminologyManager().unregisterTermDefinition(compiler, s,
-				s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
+		TerminologyManager terminologyManager = compiler.getTerminologyManager();
+		Class<?> termObjectClass = s.get().getTermObjectClass(s);
+		terminologyManager.unregisterTermDefinition(compiler, s,
+				termObjectClass, s.get().getTermIdentifier(s));
+		ResourceDefinition.unregisterCompatibilityIdentifier(compiler, s);
 	}
 
 }

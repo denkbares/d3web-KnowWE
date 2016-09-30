@@ -19,9 +19,12 @@
 package de.knowwe.ontology.kdom.namespace;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class AbbreviationPrefixReference extends AbstractType {
 
@@ -32,6 +35,24 @@ public class AbbreviationPrefixReference extends AbstractType {
 				ABBREVIATION_PREFIX_PATTERN),
 				AtMostOneFindingConstraint.getInstance()));
 		this.addChildType(new AbbreviationReference());
+	}
+
+	public String getAbbreviation(Section<? extends AbbreviationPrefixReference> abbreviationPrefixSection) {
+		String abbreviation;
+		if (abbreviationPrefixSection == null) {
+			abbreviation = Rdf2GoCore.LNS_ABBREVIATION;
+		}
+		else {
+			Section<AbbreviationReference> abbreviationSection = Sections.child(
+					abbreviationPrefixSection, AbbreviationReference.class);
+			if (abbreviationSection == null) {
+				return "";
+			}
+			else {
+				abbreviation = abbreviationSection.get().getTermName(abbreviationSection);
+			}
+		}
+		return abbreviation;
 	}
 
 }

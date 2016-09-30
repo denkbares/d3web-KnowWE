@@ -28,6 +28,7 @@ import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class LazyURIReference extends SimpleReference implements NodeProvider<LazyURIReference> {
 
@@ -61,7 +62,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		// we just return the first identifier we can find
 		// this should only fail if the section is compiled by different compilers and the lazy uri is resolved
 		// differently by the compilers
-		Map<Compiler,Object> objects = section.getObjects(IDENTIFIER_KEY);
+		Map<Compiler, Object> objects = section.getObjects(IDENTIFIER_KEY);
 		Set<Identifier> identifiers = new HashSet<>(objects.size());
 		for (Object identifier : objects.values()) {
 			if (identifier instanceof Identifier) {
@@ -102,12 +103,15 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 				message = "Resource '" + termName
 						+ "' not found.";
 			}
-			else if (potentiallyMatchingIdentifiers.size() == 1) {
-				identifier = potentiallyMatchingIdentifiers.iterator().next();
-			}
 			else {
-				message = "Resource '" + termName
-						+ "' is ambiguous: " + Strings.concat(", ", potentiallyMatchingIdentifiers);
+				if (potentiallyMatchingIdentifiers.size() == 1
+						|| isLnsOnly(compiler, potentiallyMatchingIdentifiers)) {
+					identifier = potentiallyMatchingIdentifiers.iterator().next();
+				}
+				else {
+					message = "Resource '" + termName
+							+ "' is ambiguous: " + Strings.concat(", ", potentiallyMatchingIdentifiers);
+				}
 			}
 			if (identifier == null) {
 				// as a fail save we use the lns
@@ -128,6 +132,12 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 			else {
 				throw CompilerMessage.error(message);
 			}
+		}
+
+		private boolean isLnsOnly(OntologyCompiler compiler, Collection<Identifier> potentiallyMatchingIdentifiers) {
+			Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
+			return potentiallyMatchingIdentifiers.size() == 2
+					&& rdf2GoCore.getLocalNamespace().equals(compiler.getRdf2GoCore().getNamespaces().get(""));
 		}
 
 		@Override
