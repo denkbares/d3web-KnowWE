@@ -65,6 +65,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
             // obviously no subject in this line, could be an empty table line
             return;
         }
+		@SuppressWarnings("unchecked")
 		Value subjectNode = subjectReference.get().getNode(subjectReference, compiler);
 		List<Section<Object>> objects = findObjects(section);
         for (Section<Object> objectReference : objects) {
@@ -92,6 +93,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		Section<OntologyTableMarkup.BasicURIType> colHeaderConcept = Sections.successor(rowHeaderCell, OntologyTableMarkup.BasicURIType.class);
 		if(colHeaderConcept != null) {
 			Section<NodeProvider> nodeProviderSection = Sections.$(colHeaderConcept).successor(NodeProvider.class).getFirst();
+			@SuppressWarnings("unchecked")
 			Value headerClassResource = nodeProviderSection.get().getNode(nodeProviderSection, compiler);
 			Sections<DefaultMarkupType> markup = Sections.$(section).ancestor(DefaultMarkupType.class);
 			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);

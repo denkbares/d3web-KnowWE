@@ -19,6 +19,7 @@
 
 <!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
         "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<!--suppress DeprecatedClassUsageInspection -->
 <plugin id="KnowWE-Plugin-Ontology-MarkupSet" version="0.0.1">
 
     <requires>
@@ -527,7 +528,7 @@
         <parameter id="description" value="Type LineHandler"/>
         <parameter id="version" value="1.0"/>
         <parameter id="priority" value="4.55"/>
-        <parameter id="compilepriority" value="0"/>
+        <parameter id="compilepriority" value="100"/>
         <parameter id="scope" value="OntologyTableMarkup/**/TableLine"/>
     </extension>
 
