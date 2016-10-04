@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import javax.servlet.http.HttpServletResponse;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -34,6 +38,7 @@ public class GetSectionTextAction extends AbstractAction {
 		final String name = context.getParameter("name");
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		String fileName = null;
+		Instant lastModified;
 
 		Section<?> referencedSection = null;
 		if (sectionId != null) {
@@ -51,6 +56,9 @@ public class GetSectionTextAction extends AbstractAction {
 		if (referencedSection != null) {
 			if (KnowWEUtils.canView(referencedSection, context)) {
 				sectionText = referencedSection.getText();
+				lastModified = Environment.getInstance()
+						.getWikiConnector()
+						.getLastModifiedDate(referencedSection.getTitle(), -1).toInstant();
 			}
 			else {
 				context.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to view/download section");
@@ -62,15 +70,16 @@ public class GetSectionTextAction extends AbstractAction {
 			return;
 		}
 
-		writeFile(context, sectionText, fileName);
+		writeFile(context, sectionText, fileName, lastModified);
 	}
 
-	protected void writeFile(UserActionContext context, String sectionText, String fileName) throws IOException {
+	protected void writeFile(UserActionContext context, String sectionText, String fileName, Instant lastModified) throws IOException {
 		File tempTextFile = File.createTempFile(fileName, "_SectionText.txt");
 		try {
 			Strings.writeFile(tempTextFile.getPath(), sectionText);
 
 			context.setContentType("application/x-bin");
+			context.setHeader("Last-Modified", DateTimeFormatter.RFC_1123_DATE_TIME.withZone(ZoneOffset.UTC).format(lastModified));
 			context.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + ".txt\"");
 
 			FileInputStream in = new FileInputStream(tempTextFile);
