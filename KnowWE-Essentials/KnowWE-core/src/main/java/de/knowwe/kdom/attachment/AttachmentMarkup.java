@@ -322,7 +322,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			try {
 				State attachmentState = needsUpdate(attachmentSection, url);
 				if (attachmentState == State.UP_TO_DATE) {
-					Log.info("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
+					Log.fine("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
 					return;
 				}
 
@@ -342,7 +342,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 						byte[] connectionBytes = Streams.getBytesAndClose(connectionStream);
 						byte[] attachmentBytes = Streams.getBytesAndClose(attachment.getInputStream());
 						if (Arrays.equals(connectionBytes, attachmentBytes)) {
-							Log.info("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on content comparison).");
+							Log.fine("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on content comparison).");
 							return;
 						}
 						connectionStream = new ByteArrayInputStream(connectionBytes);
