@@ -63,6 +63,8 @@ import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * A markup to handle attachments. It allows to update an attachment from a given URL in a given interval of time, also
  * allows to compile the attachment.
@@ -319,27 +321,12 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 				if (url.getUserInfo() != null) {
-					String basicAuth = "Basic " + new String(Base64.getEncoder().encode(url.getUserInfo().getBytes()));
+					String basicAuth = "Basic " + new String(Base64.getEncoder().encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
 					connection.setRequestProperty("Authorization", basicAuth);
 				}
 
-				InputStream attachmentStream = null;
-				String zipEntryName = DefaultMarkupType.getAnnotation(section, ZIP_ENTRY_ANNOTATION);
-				if (zipEntryName != null) {
-					ZipInputStream zipStream = new ZipInputStream(connection.getInputStream());
-					for (ZipEntry zipEntry; (zipEntry = zipStream.getNextEntry()) != null; ) {
-						if (zipEntry.getName().equals(zipEntryName)) {
-							attachmentStream = zipStream;
-							break;
-						}
-					}
-					if (attachmentStream == null) {
-						throw new ZipException(zipEntryName + " not found at linked resource.");
-					}
-				}
-				else {
-					attachmentStream = connection.getInputStream();
-				}
+				InputStream attachmentStream = getAttachmentStream(section, connection);
+
 
 				ArticleManager articleManager = section.getArticleManager();
 				articleManager.open();
@@ -359,7 +346,6 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 				Log.info("Updated attachment '" + path + "' with resource from URL " + url);
 				Messages.clearMessages(section, AttachmentMarkup.class);
-				Messages.clearMessages(section, AttachmentMarkup.class);
 			}
 			catch (Throwable e) { // NOSONAR
 				String message = e.getClass().getSimpleName() + " while downloading attachment " + path;
@@ -370,6 +356,27 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		finally {
 			lock.unlock();
 		}
+	}
+
+	private static InputStream getAttachmentStream(Section<AttachmentMarkup> section, HttpURLConnection connection) throws IOException {
+		InputStream attachmentStream = null;
+		String zipEntryName = DefaultMarkupType.getAnnotation(section, ZIP_ENTRY_ANNOTATION);
+		if (zipEntryName != null) {
+			ZipInputStream zipStream = new ZipInputStream(connection.getInputStream());
+			for (ZipEntry zipEntry; (zipEntry = zipStream.getNextEntry()) != null; ) {
+				if (zipEntry.getName().equals(zipEntryName)) {
+					attachmentStream = zipStream;
+					break;
+				}
+			}
+			if (attachmentStream == null) {
+				throw new ZipException(zipEntryName + " not found at linked resource.");
+			}
+		}
+		else {
+			attachmentStream = connection.getInputStream();
+		}
+		return attachmentStream;
 	}
 
 	private static ReentrantLock getLock(Section<AttachmentMarkup> section) {
@@ -393,7 +400,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 		if (url.getUserInfo() != null) {
-			String basicAuth = "Basic " + new String(Base64.getEncoder().encode(url.getUserInfo().getBytes()));
+			String basicAuth = "Basic " + new String(Base64.getEncoder().encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
 			connection.setRequestProperty("Authorization", basicAuth);
 		}
 
