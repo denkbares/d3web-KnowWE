@@ -427,12 +427,12 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		connection.setRequestMethod("HEAD");
 		connection.connect();
 
-		LocalDateTime urlDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(connection.getLastModified()), ZoneId
-				.systemDefault());
+		LocalDateTime urlDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(connection.getLastModified()),
+				ZoneId.systemDefault());
 
-		LocalDateTime attachmentDateTime = LocalDateTime.ofInstant(attachment.getDate().toInstant(), ZoneId
-				.systemDefault());
-		attachmentDateTime = attachmentDateTime.withSecond(0);
+		LocalDateTime attachmentDateTime = LocalDateTime.ofInstant(attachment.getDate().toInstant(),
+				ZoneId.systemDefault());
+
 		State state;
 		// we only compare seconds, because http header does not transmit milliseconds...
 		if (urlDateTime.truncatedTo(ChronoUnit.SECONDS)
