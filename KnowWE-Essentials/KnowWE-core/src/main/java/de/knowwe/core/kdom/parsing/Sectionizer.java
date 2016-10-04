@@ -127,9 +127,8 @@ public class Sectionizer implements Parser {
 				if (result.getStart() < lastEnd || result.getStart() > result.getEnd()
 						|| result.getStart() < 0 || result.getEnd() > text.length()) {
 					Log.warning("Invalid SectionFinderResults for the Type '"
-							+ type.getName() + "'. Results: " + results
-							+ ". Result " + result
-							+ " will be skipped.");
+							+ type.getName() + "' in parent section '" + father.getText() + "' in article '"
+							+ father.getTitle()	+ "'. Results: " + results + ". Result " + result + " will be skipped.");
 					continue;
 				}
 
