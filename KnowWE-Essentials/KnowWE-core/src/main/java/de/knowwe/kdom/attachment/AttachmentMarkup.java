@@ -19,6 +19,7 @@
 
 package de.knowwe.kdom.attachment;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -32,6 +33,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,6 +50,7 @@ import java.util.zip.ZipInputStream;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
+import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -95,6 +98,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	private static final Timer UPDATE_TIMER = new Timer();
 
 	private static final Map<String, Long> LAST_RUNS = new HashMap<>();
+
+	private enum State {
+		OUTDATED, UP_TO_DATE, UNKNOWN
+	}
 
 	static {
 		MARKUP.addAnnotation(ATTACHMENT_ANNOTATION, true);
@@ -313,32 +320,44 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			}
 
 			try {
-				if (!needsUpdate(attachmentSection, url)) {
-					Log.info("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated");
+				State attachmentState = needsUpdate(attachmentSection, url);
+				if (attachmentState == State.UP_TO_DATE) {
+					Log.info("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
 					return;
 				}
 
 				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 				if (url.getUserInfo() != null) {
-					String basicAuth = "Basic " + new String(Base64.getEncoder().encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
+					String basicAuth = "Basic " + new String(Base64.getEncoder()
+							.encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
 					connection.setRequestProperty("Authorization", basicAuth);
 				}
 
-				InputStream attachmentStream = getAttachmentStream(section, connection);
-
+				InputStream connectionStream = getAttachmentStream(section, connection);
+				if (attachmentState == State.UNKNOWN) {
+					// if state is unknown, compare contents, so we don't produce unnecessary attachment versions and compiles
+					WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(path);
+					if (attachment != null) {
+						byte[] connectionBytes = Streams.getBytesAndClose(connectionStream);
+						byte[] attachmentBytes = Streams.getBytesAndClose(attachment.getInputStream());
+						if (Arrays.equals(connectionBytes, attachmentBytes)) {
+							Log.info("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on content comparison).");
+							return;
+						}
+						connectionStream = new ByteArrayInputStream(connectionBytes);
+					}
+				}
 
 				ArticleManager articleManager = section.getArticleManager();
 				articleManager.open();
 				try {
 					if ("false".equalsIgnoreCase(DefaultMarkupType.getAnnotation(section, VERSIONING_ANNOTATION))) {
-						Environment.getInstance()
-								.getWikiConnector()
-								.deleteAttachment(parentName, fileName, "SYSTEM");
+						Environment.getInstance().getWikiConnector().deleteAttachment(parentName, fileName, "SYSTEM");
 					}
 					Environment.getInstance()
 							.getWikiConnector()
-							.storeAttachment(parentName, fileName, "SYSTEM", attachmentStream);
+							.storeAttachment(parentName, fileName, "SYSTEM", connectionStream);
 				}
 				finally {
 					articleManager.commit();
@@ -359,24 +378,24 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	}
 
 	private static InputStream getAttachmentStream(Section<AttachmentMarkup> section, HttpURLConnection connection) throws IOException {
-		InputStream attachmentStream = null;
+		InputStream connectionStream = null;
 		String zipEntryName = DefaultMarkupType.getAnnotation(section, ZIP_ENTRY_ANNOTATION);
 		if (zipEntryName != null) {
 			ZipInputStream zipStream = new ZipInputStream(connection.getInputStream());
 			for (ZipEntry zipEntry; (zipEntry = zipStream.getNextEntry()) != null; ) {
 				if (zipEntry.getName().equals(zipEntryName)) {
-					attachmentStream = zipStream;
+					connectionStream = zipStream;
 					break;
 				}
 			}
-			if (attachmentStream == null) {
+			if (connectionStream == null) {
 				throw new ZipException(zipEntryName + " not found at linked resource.");
 			}
 		}
 		else {
-			attachmentStream = connection.getInputStream();
+			connectionStream = connection.getInputStream();
 		}
-		return attachmentStream;
+		return connectionStream;
 	}
 
 	private static ReentrantLock getLock(Section<AttachmentMarkup> section) {
@@ -391,16 +410,17 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		}
 	}
 
-	private static boolean needsUpdate(Section<AttachmentType> attachmentSection, URL url) throws IOException {
+	private static State needsUpdate(Section<AttachmentType> attachmentSection, URL url) throws IOException {
 
 		WikiAttachment attachment = AttachmentType.getAttachment(attachmentSection);
 
-		if (attachment == null) return true;
+		if (attachment == null) return State.OUTDATED;
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 		if (url.getUserInfo() != null) {
-			String basicAuth = "Basic " + new String(Base64.getEncoder().encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
+			String basicAuth = "Basic " + new String(Base64.getEncoder()
+					.encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
 			connection.setRequestProperty("Authorization", basicAuth);
 		}
 
@@ -409,25 +429,26 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 		LocalDateTime urlDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(connection.getLastModified()), ZoneId
 				.systemDefault());
-		urlDateTime = urlDateTime.withSecond(0);
 
 		LocalDateTime attachmentDateTime = LocalDateTime.ofInstant(attachment.getDate().toInstant(), ZoneId
 				.systemDefault());
 		attachmentDateTime = attachmentDateTime.withSecond(0);
-
+		State state;
 		// we only compare seconds, because http header does not transmit milliseconds...
-		boolean update = urlDateTime.truncatedTo(ChronoUnit.SECONDS)
-				.isAfter(attachmentDateTime.truncatedTo(ChronoUnit.SECONDS));
-
-		if (!update) {
-			// check if urlDateTime is equal to unix time 0
-			// if it is, the time was not set (maybe because of server settings) and we just update always
-			update = urlDateTime.equals(LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()));
+		if (urlDateTime.truncatedTo(ChronoUnit.SECONDS)
+				.isAfter(attachmentDateTime.truncatedTo(ChronoUnit.SECONDS))) {
+			state = State.OUTDATED;
 		}
-
+		else if (urlDateTime.equals(LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()))) {
+			// check if urlDateTime is equal to unix time 0
+			// if it is, the time was not set (maybe because of server settings)
+			state = State.UNKNOWN;
+		}
+		else {
+			state = State.UP_TO_DATE;
+		}
 		connection.disconnect();
-
-		return update;
+		return state;
 	}
 
 }
