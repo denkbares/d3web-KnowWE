@@ -66,6 +66,7 @@ import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -331,6 +332,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		String title = wikiContext.getRealPage().getName();
 
+		CompilerManager compilerManager = Compilers.getCompilerManager(Environment.DEFAULT_WEB);
+		if (compilerManager.isCompiling(title)) {
+			// it is possible, that compilation of this article was triggered independently from calling this method...
+			compilerManager.awaitTermination();
+		}
+
 		String originalText = "";
 		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
 		if (article != null) {
@@ -344,7 +351,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				throw new UpdateNotAllowedException();
 			}
 			article = Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
-			Compilers.getCompilerManager(Environment.DEFAULT_WEB).awaitTermination();
+			compilerManager.awaitTermination();
 			if (fullParse) EventManager.getInstance().fireEvent(new FullParseFinishedEvent());
 		}
 		return article;
@@ -406,9 +413,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		Article article = null;
 		try {
 			article = updateArticle(wikiContext, content);
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			Log.fine("Updating Article interrupted while rendering preview", e);
-		} catch (UpdateNotAllowedException e) {
+		}
+		catch (UpdateNotAllowedException e) {
 			Log.fine("Updating Article not allowed while rendering preview", e);
 		}
 		if (article == null) return content;
