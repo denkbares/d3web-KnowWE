@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
@@ -42,7 +44,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
@@ -179,15 +180,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	@Override
 	public String toString() {
 		String typeString = type != null ? this.get().getClass().getSimpleName() : "Type=null";
-		String content;
-		if (type instanceof Term) {
-			Section<Term> simpleTerm = Sections.cast(this, Term.class);
-			content = simpleTerm.get().getTermIdentifier(simpleTerm).toString();
-		}
-		else {
-			content = getText();
-		}
-		return typeString + " (" + getTitle() + "): '" + content + "'";
+		return typeString + " (" + getTitle() + "): '" + getText() + "'";
 	}
 
 	/**
@@ -198,9 +191,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * if below.<br/> If a Sections is compared with itself, 0 will be returned.
 	 */
 	@Override
-	public int compareTo(Section<? extends Type> section) {
+	public int compareTo(@NotNull Section<? extends Type> section) {
 		if (this == section) return 0;
-		if (section == null) return -1;
 
 		String thisTitle = getTitle();
 		String otherTitle = section.getTitle();
@@ -502,7 +494,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	public void collectTextsFromLeaves(StringBuilder buffer) {
 		if (!this.getChildren().isEmpty()) {
-			getChildren().stream().forEach(section -> section.collectTextsFromLeaves(buffer));
+			getChildren().forEach(section -> section.collectTextsFromLeaves(buffer));
 		}
 		else {
 			buffer.append(this.getText());
