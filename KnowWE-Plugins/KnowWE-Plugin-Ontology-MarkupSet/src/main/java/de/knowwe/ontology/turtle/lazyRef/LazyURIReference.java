@@ -38,6 +38,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		super(OntologyCompiler.class, Resource.class);
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
+		//noinspection unchecked
 		this.removeCompileScript(OntologyCompiler.class, SimpleReferenceRegistrationScript.class);
 		this.addCompileScript(new LazyURIReferenceHandler());
 	}
@@ -46,7 +47,7 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 	public Value getNode(Section<LazyURIReference> section, Rdf2GoCompiler compiler) {
 		Identifier identifier = (Identifier) section.getObject(compiler, IDENTIFIER_KEY);
 		if (identifier == null) {
-			throw new IllegalStateException("Cannot get Node before compilation");
+			throw new IllegalStateException("Cannot get Node for section " + section + " before compilation");
 		}
 		return TurtleURI.getNodeForIdentifier(compiler.getRdf2GoCore(), identifier);
 	}
