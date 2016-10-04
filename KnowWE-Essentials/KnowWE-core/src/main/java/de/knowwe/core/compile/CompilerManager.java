@@ -11,14 +11,15 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
+import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
@@ -54,7 +55,9 @@ public class CompilerManager {
 	private Iterator<Group<Double, Compiler>> running = null;
 	private final ExecutorService threadPool;
 	private final Object lock = new Object();
+	private final Object dummy = new Object();
 	private static final Map<Thread, Object> compileThreads = Collections.synchronizedMap(new WeakHashMap<>());
+	private static final ConcurrentHashMap<String, Object> currentlyCompiledArticles = new ConcurrentHashMap<>();
 
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
@@ -136,6 +139,8 @@ public class CompilerManager {
 	private boolean startCompile(final Collection<Section<?>> added, final Collection<Section<?>> removed) {
 		synchronized (lock) {
 			if (isCompiling()) return false;
+			setCompiling(added);
+			setCompiling(removed);
 			running = compilers.groupIterator();
 			compilationCount++;
 		}
@@ -151,8 +156,9 @@ public class CompilerManager {
 			finally {
 				synchronized (lock) {
 					running = null;
+					currentlyCompiledArticles.clear();
 					Log.info("Compiled " + added.size() + " added and " + removed.size()
-							+ " removed section" + (removed.size() != 1 ? "s" : "")
+							+ " removed section" + (removed.size() == 1 ? "" : "s")
 							+ " after " + (System.currentTimeMillis() - startTime)
 							+ "ms");
 					lock.notifyAll();
@@ -161,6 +167,14 @@ public class CompilerManager {
 			}
 		});
 		return true;
+	}
+
+	private void setCompiling(Collection<Section<?>> sections) {
+		for (Section<?> section : sections) {
+			String title = section.getTitle();
+			if (title == null) continue;
+			currentlyCompiledArticles.put(title, dummy);
+		}
 	}
 
 	private void doCompile(final Collection<Section<?>> added, final Collection<Section<?>> removed) throws InterruptedException {
@@ -251,6 +265,20 @@ public class CompilerManager {
 	}
 
 	/**
+	 * Returns if this compiler manager is currently compiling an article with the given title. You
+	 * may use {@link #awaitTermination()} or {@link #awaitTermination(long)} to
+	 * wait for the compilation to complete.
+	 *
+	 * @return if a compilation is ongoing
+	 * @created 04.10.2016
+	 */
+	public boolean isCompiling(String title) {
+		synchronized (lock) {
+			return running != null && currentlyCompiledArticles.containsKey(title);
+		}
+	}
+
+	/**
 	 * Returns the priority-sorted list of compilers that are currently defined
 	 * for the web this CompilerManager is created for.
 	 *
@@ -331,6 +359,7 @@ public class CompilerManager {
 	 */
 	public void awaitTermination() throws InterruptedException {
 		// repeatedly wait 10 seconds until all compiles have been completed
+		//noinspection StatementWithEmptyBody
 		while (!awaitTermination(10000)) {
 		}
 	}
