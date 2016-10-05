@@ -512,7 +512,7 @@ public class CIRenderer {
 		result.appendHtml(imgForecast);
 	}
 
-	private class SizeComparator implements Comparator<MessageObject> {
+	private static class SizeComparator implements Comparator<MessageObject> {
 
 		@Override
 		public int compare(MessageObject o1, MessageObject o2) {
@@ -521,6 +521,7 @@ public class CIRenderer {
 			if (o2 == null) return 1;
 			String objectName1 = o1.getObjectName();
 			String objectName2 = o2.getObjectName();
+			//noinspection StringEquality
 			if (objectName1 == objectName2) return 0; // if both are null
 			if (objectName1 == null) return -1;
 			if (objectName2 == null) return 1;
