@@ -381,6 +381,7 @@ KNOWWE.helper.observer.subscribe("flowchartrendered", DenkbaresSkin.resizeFlows)
 
 jq$(window).scroll(DenkbaresSkin.scrollFavorites);
 jq$(window).scroll(DenkbaresSkin.highlightActiveTOC);
+jq$(window).scroll(AutoComplete.adjustPosition);
 jq$(window).resize(DenkbaresSkin.resizeFlows);
 jq$(window).resize(DenkbaresSkin.adjustSidebarVisibility);
 jq$(window).resize(DenkbaresSkin.scrollFavorites);

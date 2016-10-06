@@ -1096,6 +1096,9 @@ label[for="edittoc"] {
 }
 
 #findSuggestionMenu {
+	max-height: 66%;
+	top: 20px;
+	left: 20px;
 	position: fixed;
 	color: white;
 	background-color: rgba(0, 0, 0, 0.7);
@@ -1106,7 +1109,9 @@ label[for="edittoc"] {
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 	z-index: 10;
 	font-size: 85%;
-	overflow: hidden;
+	overflow-x:hidden;
+	overflow-y:auto;
+	min-width:210px;
 }
 
 /* ie6 hack */

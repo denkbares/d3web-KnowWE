@@ -2349,18 +2349,24 @@ li.findpages .btn {
 }
 
 #findSuggestionMenu {
-	position:fixed;
-	color:white;
-	background-color:rgba(0,0,0,0.7);
-	-moz-border-radius:10px;
-	-webkit-border-radius:5px;
-	border-radius:10px;
-	-webkit-box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-	box-shadow:0 0 5px rgba(0, 0, 0, 0.5);
-	z-index:1000;
-	font-size:85%;
-	overflow:hidden;
+	max-height: 66%;
+	top: 161px;
+	left: 20px;
+	position: fixed;
+	color: white;
+	background-color: rgba(0, 0, 0, 0.7);
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 5px;
+	border-radius: 10px;
+	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+	z-index: 1000;
+	font-size: 85%;
+	overflow-x:hidden;
+	overflow-y:auto;
+	min-width:235px;
 }
+
 /* ie6 hack */
 * html #findSuggestionMenu {
 	background:url(images/tip.png) top left;
