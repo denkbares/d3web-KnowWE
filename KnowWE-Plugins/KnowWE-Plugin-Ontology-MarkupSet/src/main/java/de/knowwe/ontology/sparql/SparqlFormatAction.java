@@ -7,10 +7,10 @@ import org.json.JSONObject;
 
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.utils.AbstractFormatter;
+import de.knowwe.core.utils.AbstractTripleFormatter;
 
 /**
- * Pretty formats a sparql query.
+ * Pretty formats a SPARQL query.
  * <p>
  * Created by Maximilian Brell on 01.03.16.
  * Edited and redesigned by Adrian Müller on 22.09.16.
@@ -37,11 +37,9 @@ public class SparqlFormatAction extends AbstractAction {
 		}
 	}
 
-	public static class SparqlFormatter extends AbstractFormatter {
+	public static class SparqlFormatter extends AbstractTripleFormatter {
 		boolean select = false;
 		boolean optional = false, minus = false; // for holding in one line
-		int addDepth = 0; // additional indents for sentenceparts
-		TriplePart currentPart = TriplePart.NONE;
 
 		public SparqlFormatter(String wikiText) {
 			super(wikiText);
@@ -50,6 +48,9 @@ public class SparqlFormatAction extends AbstractAction {
 		@Override
 		protected int handleChar(int i) {
 			switch (tmpWikiText.charAt(i)) {
+				case ',':
+					currentPart = currentPart.prev();
+					break;
 				case '{':
 					i = handleOpenBracket(i);
 					break;
@@ -69,29 +70,24 @@ public class SparqlFormatAction extends AbstractAction {
 				case '#':
 					i = skipLine(i);
 					break;
-				case '"':
-					currentPart = currentPart.next();
-					quoted = true;
-					break;
 				case '(':
-					currentPart = currentPart.next();
 					i = skip(i, '(', ')');
 					break;
 				case '<':
-					currentPart = currentPart.next();
 					i = skip(i, '<', '>');
 					break;
-				//case ')': // let default do that
-				//case '>':
-				//	break;
+				case '[':
+					i = skip(i, '[', ']');
+					break;
 				case '.':
 					i = handlePoint(i);
 					break;
 				case ';':
 					i = handleSemicolon(i);
 					break;
-				// " already caught
-				default:
+				case '"':
+					quoted = true;
+				default: // fall-through with intention
 					i = processTriplePart(i);
 					break;
 			}
@@ -114,12 +110,14 @@ public class SparqlFormatAction extends AbstractAction {
 			if (tmpWikiText.toString().regionMatches(true, i, "select", 0, 6)) {
 				if (!select) {
 					select = true;
-					i = handleKeywordIndentation(i, false);
+					i = bringOnOwnLine(i);
 					i += 6;
 				}
 			}
 			else if (tmpWikiText.toString().regionMatches(true, i, "where", 0, 5)) {
-				i = handleKeywordIndentation(i, true);
+				if (i > 0 && tmpWikiText.charAt(i - 1) != ' ') {
+					i = bringOnOwnLine(i);
+				}
 				if (select) {
 					select = false;
 					resetIndentSpecials();
@@ -128,26 +126,28 @@ public class SparqlFormatAction extends AbstractAction {
 				i += 4;
 			}
 			else if (tmpWikiText.toString().regionMatches(true, i, "order by", 0, 8)) {
-				i = handleKeywordIndentation(i, true);
+				if (i > 0 && tmpWikiText.charAt(i - 1) != ' ') {
+					i = bringOnOwnLine(i);
+				}
 				i += 7;
 				currentPart = TriplePart.SECOND;
 			}
 			else if (tmpWikiText.toString().regionMatches(true, i, "union", 0, 5)) {
 				i += 4;
-				removeFollowingSpaces(tmpWikiText, i, false);
+				removeFollowingSpaces(i, false);
 				guaranteeNext(i, ' ');
 			}
 			else if (tmpWikiText.toString().regionMatches(true, i, "optional", 0, 8)) {
-				i = handleKeywordIndentation(i, false);
+				i = bringOnOwnLine(i);
 				i += 7;
-				removeFollowingSpaces(tmpWikiText, i, false);
+				removeFollowingSpaces(i, false);
 				guaranteeNext(i, ' ');
 				optional = true;
 			}
 			else if (tmpWikiText.toString().regionMatches(true, i, "minus", 0, 5)) {
-				i = handleKeywordIndentation(i, false);
+				i = bringOnOwnLine(i);
 				i += 4;
-				removeFollowingSpaces(tmpWikiText, i, false);
+				removeFollowingSpaces(i, false);
 				guaranteeNext(i, ' ');
 				minus = true;
 			}
@@ -162,7 +162,7 @@ public class SparqlFormatAction extends AbstractAction {
 					tmpWikiText.insert(i++, ' ');
 				}
 			}
-			removeFollowingSpaces(tmpWikiText, i, false);
+			removeFollowingSpaces(i, false);
 			// Push a following { oder } on a new line
 			if (tmpWikiText.charAt(i + 1) == '{' || tmpWikiText.charAt(i + 1) == '}') {
 				tmpWikiText.insert(i + 1, '\n');
@@ -175,28 +175,14 @@ public class SparqlFormatAction extends AbstractAction {
 					tmpWikiText.insert(i + 1, '\t');
 				}
 			}
-			currentPart = TriplePart.NONE;
-			if (depth > addDepth) {
-				depth -= addDepth;
-			}
-			else {
-				depth = 0;
-			}
-			addDepth = 0;
+			super.resetIndentSpecials();
 			return i;
 		}
 
 		private int handleCloseBracket(int i) {
 			// reset indent
-			currentPart = TriplePart.NONE;
-			if (depth > addDepth + 1) {
-				depth -= addDepth;
-				depth--;
-			}
-			else {
-				depth = 0;
-			}
-			addDepth = 0;
+			depth--;
+			super.resetIndentSpecials();
 			// correct indent
 			i = correctIndentation(i);
 			// bring it on next line, if there's a non-space-char before
@@ -215,7 +201,7 @@ public class SparqlFormatAction extends AbstractAction {
 				}
 			}
 			resetIndentSpecials();
-			removeFollowingSpaces(tmpWikiText, i, false);
+			removeFollowingSpaces(i, false);
 			// Push a following { oder } on a new line
 			if (tmpWikiText.charAt(i + 1) == '{' || tmpWikiText.charAt(i + 1) == '}') {
 				tmpWikiText.insert(i + 1, '\n');
@@ -227,36 +213,22 @@ public class SparqlFormatAction extends AbstractAction {
 			return i;
 		}
 
-		private int handleNewline(int i) {
-			// remove the spaces at the beginning of the next line
-			removeFollowingSpaces(tmpWikiText, i, false);
-			if (currentPart == TriplePart.THIRD) {
+		@Override
+		protected int handleNewline(int i) {
+			i = super.handleNewline(i);
+			removeFollowingSpaces(i, false);
+			if (select && tmpWikiText.charAt(i + 1) == '\n') {
 				resetIndentSpecials();
+				select = false;
 			}
-			// remove more than one empty line
-			if (tmpWikiText.charAt(i + 1) == '\n') {
-				if (select) {
-					resetIndentSpecials();
-					select = false;
-				}
-				removeFollowingSpaces(tmpWikiText, i + 1, true);
-				// remove the second newline on fileend
-				if (i + 1 == tmpWikiText.length() - 1) {
-					tmpWikiText.deleteCharAt(i + 1);
-					return i;
-				}
-			}
-			// indent next line
 			indent(i);
 			return i;
 		}
 
-		private int handlePoint(int i) {
-			// guarantee Space before
-			if (i > 0 && tmpWikiText.charAt(i - 1) != ' ') {
-				tmpWikiText.insert(i++, ' ');
-			}
-			removeFollowingSpaces(tmpWikiText, i, false);
+		@Override
+		protected int handlePoint(int i) {
+			i = guaranteeBefore(i, ' ');
+			removeFollowingSpaces(i, false);
 			if (optional || minus) {
 				i = searchForCloseBracket(i);
 				if (tmpWikiText.charAt(i + 1) != ' ') {
@@ -267,19 +239,6 @@ public class SparqlFormatAction extends AbstractAction {
 				guaranteeNext(i, '\n');
 			}
 			resetIndentSpecials();
-			return i;
-		}
-
-		private int handleSemicolon(int i) {
-			resetIndentSpecials();
-			addDepth++;
-			depth++;
-			currentPart = TriplePart.FIRST;
-			// guarantee Space before
-			if (i > 0 && tmpWikiText.charAt(i - 1) != ' ') {
-				tmpWikiText.insert(i++, ' ');
-			}
-			guaranteeNext(i, '\n');
 			return i;
 		}
 
@@ -303,7 +262,7 @@ public class SparqlFormatAction extends AbstractAction {
 					// if second or third are on a new line, they are indented, so there cannot be '\n' before
 					if (!select && (prev == '\t' || prev == ' ')) currentPart = currentPart.next();
 					if (next == '\t' || next == ' ') {
-						removeFollowingSpaces(tmpWikiText, i, false);
+						removeFollowingSpaces(i, false);
 						tmpWikiText.insert(i + 1, ' ');
 					}
 					else if (next == '\n') {
@@ -316,7 +275,7 @@ public class SparqlFormatAction extends AbstractAction {
 					break;
 				case THIRD:
 					if (next == '\t' || next == ' ') {
-						removeFollowingSpaces(tmpWikiText, i, false);
+						removeFollowingSpaces(i, false);
 						if (optional || minus) {
 							i = searchForCloseBracket(i);
 						}
@@ -345,7 +304,7 @@ public class SparqlFormatAction extends AbstractAction {
 			}
 			else if (tmpWikiText.charAt(i + 1) == '\n') {
 				if (i < tmpWikiText.length() - 2) {
-					removeFollowingSpaces(tmpWikiText, i + 1, true);
+					removeFollowingSpaces(i + 1, true);
 					if (tmpWikiText.charAt(i + 2) == '}') {
 						tmpWikiText.deleteCharAt(i + 1);
 						tmpWikiText.insert(++i, ' ');
@@ -362,7 +321,7 @@ public class SparqlFormatAction extends AbstractAction {
 			if (depth > 0) {
 				depth--; // } found but skipped
 			}
-			removeFollowingSpaces(tmpWikiText, i, false);
+			removeFollowingSpaces(i, false);
 			// Push a following { oder } on a new line
 			if (tmpWikiText.charAt(i + 1) == '{' || tmpWikiText.charAt(i + 1) == '}') {
 				tmpWikiText.insert(i + 1, '\n');
@@ -396,61 +355,11 @@ public class SparqlFormatAction extends AbstractAction {
 			return ++i;
 		}
 
-		private void resetIndentSpecials() {
-			currentPart = TriplePart.NONE;
-			if (depth > addDepth) {
-				depth -= addDepth;
-			}
-			else {
-				depth = 0;
-			}
-			addDepth = 0;
+		@Override
+		protected void resetIndentSpecials() {
+			super.resetIndentSpecials();
 			optional = false;
 			minus = false;
-		}
-
-		/* Checks if a certain keyword is wrong indented. If so, it adds a new line.*/
-		private int handleKeywordIndentation(int i, boolean allowWhitespace) {
-			if (i > 0) {
-				char prev = tmpWikiText.charAt(i - 1);
-				if (prev == '\t' || prev == '\n' || (allowWhitespace && prev == ' ')) {
-					return i;
-				}
-				tmpWikiText.insert(i, "\n");
-				indent(i);
-				i += depth;
-				i++;
-			}
-			return i;
-		}
-
-		/* deletes previous tabs and indents again */
-		private int correctIndentation(int i) {
-			while (i > 0 && tmpWikiText.charAt(i - 1) == '\t') {
-				tmpWikiText.deleteCharAt(--i);
-			}
-			if (i > 0 && tmpWikiText.charAt(i - 1) == '\n') {
-				indent(i - 1);
-				i += depth;
-			}
-			return i;
-		}
-	}
-
-	private enum TriplePart {
-		FIRST, SECOND, THIRD, NONE;
-
-		public TriplePart next() {
-			switch (this) {
-				case NONE:
-					return TriplePart.FIRST;
-				case FIRST:
-					return TriplePart.SECOND;
-				case SECOND:
-					return TriplePart.THIRD;
-				default:
-					return TriplePart.NONE;
-			}
 		}
 	}
 }

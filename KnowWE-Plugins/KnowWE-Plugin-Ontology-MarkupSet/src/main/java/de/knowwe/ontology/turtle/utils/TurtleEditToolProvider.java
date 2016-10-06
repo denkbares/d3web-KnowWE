@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.ontology.sparql.utils;
+package de.knowwe.ontology.turtle.utils;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -27,11 +27,11 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 /**
- * Toolprovider for %%SPARQL markup
- * @author Veronika Sehne (denkbares GmbH)
- * @created 02.11.15
+ * Toolprovider for %%Turtle markup
+ * @author Adrian Müller (denkbares GmbH)
+ * @created 30.09.16
  */
-public class SparqlEditToolProvider implements ToolProvider {
+public class TurtleEditToolProvider implements ToolProvider {
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		return true;
@@ -39,14 +39,14 @@ public class SparqlEditToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		return new Tool[]{getSparqlEditTool(section, userContext)};
+		return new Tool[]{getTurtleEditTool(section, userContext)};
 	}
 
-	protected Tool getSparqlEditTool(Section<?> section, UserContext userContext) {
+	protected Tool getTurtleEditTool(Section<?> section, UserContext userContext) {
 		return new InstantEditTool(
 				Icon.EDIT,
-				"Edit SPARQL",
-				"Edit this SPARQL markup",
-				section, "KNOWWE.plugin.sparql.editTool");
+				"Edit turtle",
+				"Edit this turtle markup",
+				section, "KNOWWE.plugin.turtle.editTool");
 	}
 }

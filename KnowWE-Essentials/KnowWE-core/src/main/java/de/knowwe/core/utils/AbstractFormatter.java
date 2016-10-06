@@ -1,7 +1,9 @@
 package de.knowwe.core.utils;
 
 /**
- * Created by ad on 30.09.16.
+ * Provides utils for easily creating a formatter.
+ * <p>
+ * Created by Adrian Müller on 30.09.16.
  */
 public abstract class AbstractFormatter {
 
@@ -15,7 +17,7 @@ public abstract class AbstractFormatter {
 
 	public String format() {
 
-		removeUnwantedSpaces(tmpWikiText);
+		removeUnwantedSpaces();
 		// add a newline to end if not existent, cause last char will not be processed
 		guaranteeNext(tmpWikiText.length() - 1, '\n');
 
@@ -42,7 +44,7 @@ public abstract class AbstractFormatter {
 			i = handleChar(i);
 		}
 
-		removeUnwantedSpaces(tmpWikiText);
+		removeUnwantedSpaces();
 
 		return tmpWikiText.toString();
 	}
@@ -51,6 +53,27 @@ public abstract class AbstractFormatter {
 
 	protected abstract int handleChar(int i);
 
+	protected int handleNewline(int i) {
+		// remove the spaces at the beginning of the next line
+		removeFollowingSpaces(i, false);
+		// remove more than one empty line
+		if (tmpWikiText.charAt(i + 1) == '\n') {
+			removeFollowingSpaces(i + 1, false);
+			// remove more than one empty line
+			while (i < tmpWikiText.length() - 2 && tmpWikiText.charAt(i + 2) == '\n') {
+				tmpWikiText.deleteCharAt(i + 2);
+				removeFollowingSpaces(i + 1, false);
+			}
+			// remove the second newline on fileend
+			if (i + 1 == tmpWikiText.length() - 1) {
+				tmpWikiText.deleteCharAt(i + 1);
+			}
+		}
+		// indent next line
+		indent(i);
+		return i;
+	}
+
 	protected void guaranteeNext(int i, char required) {
 		if (i < tmpWikiText.length() - 1) {
 			if (tmpWikiText.charAt(i + 1) != required) {
@@ -58,12 +81,24 @@ public abstract class AbstractFormatter {
 			}
 		}
 		else {
-			tmpWikiText.append('\n');
+			tmpWikiText.append(required);
 		}
 	}
 
+	protected int guaranteeBefore(int i, char required) {
+		if (i > 0) {
+			if (tmpWikiText.charAt(i - 1) != required) {
+				tmpWikiText.insert(i++, required);
+			}
+		}
+		else {
+			tmpWikiText.insert(i++, required);
+		}
+		return i;
+	}
+
 	/* Removes all following tabs and whitespaces and optional newlines. */
-	protected void removeFollowingSpaces(StringBuilder tmpWikiText, int i, boolean deleteNewlines) {
+	protected void removeFollowingSpaces(int i, boolean deleteNewlines) {
 		if (i < tmpWikiText.length() - 1) {
 			char next = tmpWikiText.charAt(i + 1);
 			while (next == '\t' || next == ' ' || (deleteNewlines && next == '\n')) {
@@ -101,7 +136,7 @@ public abstract class AbstractFormatter {
  	* - tabs and whitespaces at the end of lines.
  	* - whitespaces before a tab
  	*/
-	protected void removeUnwantedSpaces(StringBuilder tmpWikiText) {
+	private void removeUnwantedSpaces() {
 		while (tmpWikiText.length() > 0 && tmpWikiText.charAt(0) == '\n') {
 			tmpWikiText.deleteCharAt(0);
 		}
@@ -137,9 +172,22 @@ public abstract class AbstractFormatter {
 		return --i; // get '\n' (last char is \n as well) in next loop
 	}
 
-	/* Indent the current line with tabs in number of 'depth' */
+	/* Indent the following line with tabs in number of 'depth'.
+	For consistence charAt(i) should always be a '\n' */
 	protected void indent(int i) {
 		for (int j = 0; j < depth; j++) tmpWikiText.insert(i + 1, "\t");
+	}
+
+	/* deletes previous tabs and indents again */
+	protected int correctIndentation(int i) {
+		while (i > 0 && tmpWikiText.charAt(i - 1) == '\t') {
+			tmpWikiText.deleteCharAt(--i);
+		}
+		if (i > 0 && tmpWikiText.charAt(i - 1) == '\n') {
+			indent(i - 1);
+			i += depth;
+		}
+		return i;
 	}
 
 	protected int skip(int i, char opening, char closing) {
@@ -157,16 +205,29 @@ public abstract class AbstractFormatter {
 		return --i; //next loop char is closing char (for processing end of triplepart)
 	}
 
+	/* Counts the length of the line (incl. '\n' at the end) where i is */
 	protected int lineLength(int i) {
 		int charsBefore = 0;
 		int charsAfter = 0;
 		for (int j = i; j > 0 && tmpWikiText.charAt(j - 1) != '\n'; j--) {
 			charsBefore++;
 		}
-		for (int j = i; j < tmpWikiText.length() - 1 && tmpWikiText.charAt(i - 1) != '\n'; j++) {
+		for (int j = i; j < tmpWikiText.length() && tmpWikiText.charAt(j) != '\n'; j++) {
 			charsAfter++;
-			i++;
 		}
-		return charsBefore + 1 + charsAfter;
+		return charsBefore + charsAfter + 1;
+	}
+
+	/* Checks if a certain keyword is on its own line. If not, it adds a new line.*/
+	protected int bringOnOwnLine(int i) {
+		i = removePreviousSpaces(i, false);
+		if (i > 0) {
+			if (tmpWikiText.charAt(i - 1) != '\n') {
+				tmpWikiText.insert(i++, "\n");
+			}
+			indent(i - 1);
+			i += depth;
+		}
+		return i;
 	}
 }

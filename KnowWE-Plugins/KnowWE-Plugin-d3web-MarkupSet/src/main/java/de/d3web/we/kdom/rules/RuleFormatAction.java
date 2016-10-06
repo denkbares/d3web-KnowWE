@@ -10,7 +10,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.utils.AbstractFormatter;
 
 /**
- * Pretty formats a rule.
+ * Pretty formats rules.
  * <p>
  * Created by Adrian Müller on 26.09.16.
  */
@@ -55,18 +55,7 @@ public class RuleFormatAction extends AbstractAction {
 					quoted = true;
 					break;
 				case '\n':
-					removeFollowingSpaces(tmpWikiText, i, false);
-					// remove more than one empty line
-					if (tmpWikiText.charAt(i + 1) == '\n') {
-						removeFollowingSpaces(tmpWikiText, i + 1, true);
-						// remove the second newline on fileend
-						if (i + 1 == tmpWikiText.length() - 1) {
-							tmpWikiText.deleteCharAt(i + 1);
-							return i;
-						}
-					}
-					// indent next line
-					indent(i);
+					i = handleNewline(i);
 					break;
 				default:
 					break;
@@ -80,22 +69,22 @@ public class RuleFormatAction extends AbstractAction {
 					otherKeywords = { "AND", "UND", "OR", "ODER" },
 					thenKeywords = { "THEN", "DANN" };
 			String wikiString = tmpWikiText.toString();
-			int changeDepth = 1;
+
 			for (String keyword : ifKeywords) {
 				if (wikiString.regionMatches(false, i, keyword, 0, keyword.length())) {
-					i = handleKeywordIndentation(i);
+					i = bringOnOwnLine(i);
 					depth++;
 					i += keyword.length() - 1;
-					removeFollowingSpaces(tmpWikiText, i, true);
+					removeFollowingSpaces(i, true);
 					tmpWikiText.insert(i + 1, ' ');
 					return i;
 				}
 			}
 			for (String keyword : otherKeywords) {
 				if (wikiString.regionMatches(false, i, keyword, 0, keyword.length())) {
-					i = handleKeywordIndentation(i);
+					i = bringOnOwnLine(i);
 					i += keyword.length() - 1;
-					removeFollowingSpaces(tmpWikiText, i, true);
+					removeFollowingSpaces(i, true);
 					tmpWikiText.insert(i + 1, ' ');
 					return i;
 				}
@@ -103,9 +92,9 @@ public class RuleFormatAction extends AbstractAction {
 			for (String keyword : thenKeywords) {
 				if (wikiString.regionMatches(false, i, keyword, 0, keyword.length())) {
 					depth--;
-					i = handleKeywordIndentation(i);
+					i = bringOnOwnLine(i);
 					i += keyword.length() - 1;
-					removeFollowingSpaces(tmpWikiText, i, true);
+					removeFollowingSpaces(i, true);
 					tmpWikiText.insert(i + 1, ' ');
 					return i;
 				}
@@ -113,31 +102,6 @@ public class RuleFormatAction extends AbstractAction {
 			if (wikiString.regionMatches(false, i, "//", 0, 2)) {
 				i = skipLine(i);
 				return i;
-			}
-			return i;
-		}
-
-		/* Checks if a certain keyword is wrong indented. If so, it adds a new line.*/
-		private int handleKeywordIndentation(int i) {
-			if (i > 0) {
-				i = removePreviousSpaces(i, false);
-				if (tmpWikiText.charAt(i - 1) != '\n') {
-					tmpWikiText.insert(i++, "\n");
-				}
-				indent(i - 1);
-				i += depth;
-			}
-			return i;
-		}
-
-		/* deletes previous tabs and indents again */
-		private int correctIndentation(int i) {
-			while (i > 0 && tmpWikiText.charAt(i - 1) == '\t') {
-				tmpWikiText.deleteCharAt(--i);
-			}
-			if (i > 0 && tmpWikiText.charAt(i - 1) == '\n') {
-				indent(i - 1);
-				i += depth;
 			}
 			return i;
 		}

@@ -30,7 +30,7 @@ public class SparqlFormatterTest {
 						" \t   }\n" +
 						"      \t  ORDER BY ?Name ?CAS ?EC";
 
-		String expectedSparql = "\nSELECT ?Substance ?CAS ?EC ?Name\n" +
+		String expectedSparql = "SELECT ?Substance ?CAS ?EC ?Name\n" +
 				"\n" +
 				"WHERE {\n" +
 				"\t\n" +
@@ -662,7 +662,7 @@ public class SparqlFormatterTest {
 				"  \n" +
 				"  WHERE {\n" +
 				"  \n" +
-				"    ?Substance rdf:type lns:Substance .\n" +
+				"    ?Substance rdf:type lns:Substance\t\t.\n" +
 				"    OPTIONAL { ?Substance <lns:hasFirstCAS+Number> ?CAS }\n" +
 				"    OPTIONAL { ?Substance <lns:hasFirstEC+Number> ?EC }\n" +
 				"    OPTIONAL { ?Substance <lns:hasFirstSubstance+Name> ?Name }\n" +
@@ -686,7 +686,8 @@ public class SparqlFormatterTest {
 				"    ?Substance lns:hasEstablished ?URI .\n" +
 				"    ?URI rdfs:label \"Hallo Max, \\\\\\\"wie\\\" gehts\" .\n" +
 				"    }\n" +
-				"    ORDER BY ?Name ?CAS ?EC\n";
+				"    ORDER BY ?Name ?CAS ?EC\n" +
+				"";
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
@@ -702,6 +703,9 @@ public class SparqlFormatterTest {
 				"\t\trdfs:label ?name .} UNION {\n" +
 				"\t\t?x rdf:type\n" +
 				"\tsi:Animal    ;\n" +
+				"\n" +
+				"\n" +
+				"\n" +
 				"\t\trdfs:label\t\n" +
 				"\t?name .\n" +
 				"\t}}";
@@ -714,10 +718,12 @@ public class SparqlFormatterTest {
 				"\t} UNION {\n" +
 				"\t\t?x rdf:type\n" +
 				"\t\t\tsi:Animal ;\n" +
+				"\t\t\t\n" +
 				"\t\t\trdfs:label\n" +
 				"\t\t\t\t?name .\n" +
 				"\t}\n" +
-				"}\n";
+				"}\n" +
+				"";
 
 		assertEquals("Compared Sparqls are not equal", expectedSparql, format(testSparql));
 	}
@@ -762,14 +768,16 @@ public class SparqlFormatterTest {
 				"%\n" +
 				"\n" +
 				"\n" +
-				"\n";
+				"\n" +
+				"";
 		String expected = "%%Sparql\n" +
 				"SELECT ?Substance\n" +
 				"\t?Name\n" +
 				"\t?CAS\n" +
 				"\t?EC\n" +
 				"\n" +
-				"WHERE {\tSELECT ?Substance\n" +
+				"WHERE {\n" +
+				"\tSELECT ?Substance\n" +
 				"\t\t?Name\n" +
 				"\t\t?CAS\n" +
 				"\t\t?EC\n" +
@@ -817,7 +825,8 @@ public class SparqlFormatterTest {
 				"\tORDER BY ?Name\n" +
 				"\t\n" +
 				"\t@navigation: true\n" +
-				"\t%\n";
+				"\t%\n" +
+				"\t";
 		assertEquals("Compared Sparqls are not equal", expected, format(test));
 	}
 

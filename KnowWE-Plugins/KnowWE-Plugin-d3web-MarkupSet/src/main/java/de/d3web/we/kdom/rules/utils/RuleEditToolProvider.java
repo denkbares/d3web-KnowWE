@@ -27,6 +27,8 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 /**
+ * Toolprovider for %%Rule markup
+ *
  * @author Adrian Müller (denkbares GmbH)
  * @created 26.09.16
  */
@@ -38,7 +40,7 @@ public class RuleEditToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		return new Tool[]{getRuleEditTool(section, userContext)};
+		return new Tool[] { getRuleEditTool(section, userContext) };
 	}
 
 	protected Tool getRuleEditTool(Section<?> section, UserContext userContext) {

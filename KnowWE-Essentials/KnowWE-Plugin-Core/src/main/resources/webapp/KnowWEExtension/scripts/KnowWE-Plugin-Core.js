@@ -958,6 +958,26 @@ KNOWWE.core.plugin.pagination = function() {
 	}
 }();
 
+KNOWWE.core.plugin.formatterAjax = function(id, actionClass) {
+
+	var textarea = jq$("#defaultEdit" + id);
+	var wikiText = textarea.val();
+
+	jq$.ajax("action/" + actionClass, {
+		data : {
+			sectionID : id,
+			wikiText : wikiText
+		},
+		type : 'post',
+		cache : false,
+		success : function(json) {
+			textarea.val(json.wikiText);
+		}
+	});
+
+	return;
+
+}
 
 KNOWWE.core.plugin.reloadNamespaceFile = function() {
 

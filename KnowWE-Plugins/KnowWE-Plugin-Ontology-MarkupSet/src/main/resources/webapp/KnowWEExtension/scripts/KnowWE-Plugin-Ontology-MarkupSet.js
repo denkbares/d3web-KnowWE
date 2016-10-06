@@ -4,7 +4,7 @@
  * preserved.
  */
 if (typeof KNOWWE == "undefined" || !KNOWWE) {
-    var KNOWWE = {};
+	var KNOWWE = {};
 }
 
 var toSelect;
@@ -14,9 +14,9 @@ var toSelect;
  * defined namespaces are preserved.
  */
 if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
-    KNOWWE.plugin = function () {
-        return {}
-    }
+	KNOWWE.plugin = function() {
+		return {}
+	}
 }
 
 /**
@@ -24,72 +24,63 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
  * is already defined, the existing KNOWWE.plugin.ontology object will not be
  * overwritten so that defined namespaces are preserved.
  */
-KNOWWE.plugin.ontology = function () {
-    return {
-        commitOntology: function (sectionID) {
-            new _KA({
-                url: KNOWWE.core.util.getURL({
-                    action: 'CommitOntologyAction',
-                    SectionID: sectionID
-                }),
-                fn: function () {
-                    KNOWWE.core.util.hideProcessingIndicator();
-                    location.reload();
-                }
-            }).send();
-            KNOWWE.core.util.showProcessingIndicator();
-        },
-        expandLazyReference: function (sectionID, newReferenceText, rerenderID) {
-            var params = {
-                action: 'ReplaceKDOMNodeAction',
-                TargetNamespace: sectionID,
-                KWikitext: newReferenceText,
-            };
-            var options = {
-                url: KNOWWE.core.util.getURL(params),
-                response: {
-                    fn: function () {
-                        // todo: rerender markup block
-                        location.reload();
-                    }
-                }
-            }
-            new _KA(options).send();
-        }
-    }
+KNOWWE.plugin.ontology = function() {
+	return {
+		commitOntology : function(sectionID) {
+			new _KA({
+				url : KNOWWE.core.util.getURL({
+					action : 'CommitOntologyAction',
+					SectionID : sectionID
+				}),
+				fn : function() {
+					KNOWWE.core.util.hideProcessingIndicator();
+					location.reload();
+				}
+			}).send();
+			KNOWWE.core.util.showProcessingIndicator();
+		},
+		expandLazyReference : function(sectionID, newReferenceText, rerenderID) {
+			var params = {
+				action : 'ReplaceKDOMNodeAction',
+				TargetNamespace : sectionID,
+				KWikitext : newReferenceText,
+			};
+			var options = {
+				url : KNOWWE.core.util.getURL(params),
+				response : {
+					fn : function() {
+						// todo: rerender markup block
+						location.reload();
+					}
+				}
+			}
+			new _KA(options).send();
+		}
+	}
 }();
 
 
 KNOWWE.plugin.sparql.editTool = {};
 jq$.extend(KNOWWE.plugin.sparql.editTool, KNOWWE.plugin.defaultEditTool);
 
-KNOWWE.plugin.sparql.editTool.generateButtons = function (id) {
-    return _EC.elements.getSaveCancelDeleteButtons(id,
-        ["<a class='action format' onclick='KNOWWE.plugin.sparql.editTool.format(\"" + id + "\")'>" +
-        "Format</a>"]);
+KNOWWE.plugin.sparql.editTool.generateButtons = function(id) {
+	KNOWWE.plugin.sparql.editTool.format = function() {
+		KNOWWE.core.plugin.formatterAjax(id, "SparqlFormatAction");
+	};
+	return _EC.elements.getSaveCancelDeleteButtons(id,
+		["<a class='action format' onclick='KNOWWE.plugin.sparql.editTool.format(\"" + id + "\")'>" +
+		"Format</a>"]);
 };
 
+KNOWWE.plugin.turtle = {};
+KNOWWE.plugin.turtle.editTool = {};
+jq$.extend(KNOWWE.plugin.turtle.editTool, KNOWWE.plugin.defaultEditTool);
 
-/*
- *   Sends sparql's to the server and receives formatted sparqls.
- */
-KNOWWE.plugin.sparql.editTool.format = function (id) {
-
-    var textarea = jq$("#defaultEdit" + id);
-    var wikiText = textarea.val();
-
-    jq$.ajax("action/SparqlFormatAction", {
-        data : {
-            sectionID : id,
-            wikiText : wikiText
-        },
-		type : 'post',
-        cache : false,
-        success : function(json) {
-            textarea.val(json.wikiText);
-        }
-    });
-
-    return;
-
-}
+KNOWWE.plugin.turtle.editTool.generateButtons = function(id) {
+	KNOWWE.plugin.turtle.editTool.format = function() {
+		KNOWWE.core.plugin.formatterAjax(id, "TurtleFormatAction");
+	};
+	return _EC.elements.getSaveCancelDeleteButtons(id,
+		["<a class='action format' onclick='KNOWWE.plugin.turtle.editTool.format(\"" + id + "\")'>" +
+		"Format</a>"]);
+};

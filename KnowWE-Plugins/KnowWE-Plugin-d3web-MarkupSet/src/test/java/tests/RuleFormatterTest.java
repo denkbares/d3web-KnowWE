@@ -7,7 +7,7 @@ import de.d3web.we.kdom.rules.RuleFormatAction;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by Maximilian Brell on 21.03.16.
+ * Created by Adrian Müller on 26.09.16.
  */
 public class RuleFormatterTest {
 
