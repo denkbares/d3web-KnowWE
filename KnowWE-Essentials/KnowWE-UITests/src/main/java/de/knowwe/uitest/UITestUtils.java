@@ -19,16 +19,22 @@
 
 package de.knowwe.uitest;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -51,8 +57,7 @@ public class UITestUtils {
 		driver.get(url + "/Wiki.jsp?page=" + articleName);
 		try {
 			driver.switchTo().alert().accept();
-		}
-		catch (NoAlertPresentException ignore) {
+		} catch (NoAlertPresentException ignore) {
 		}
 	}
 
@@ -94,8 +99,7 @@ public class UITestUtils {
 						try {
 							base.evaluate();
 							return;
-						}
-						catch (Throwable t) {
+						} catch (Throwable t) {
 							caughtThrowable = t;
 							System.err.println("Run " + (i + 1) + "/" + retryCount + " of '" + description.getDisplayName() + "' failed");
 						}
@@ -136,8 +140,7 @@ public class UITestUtils {
 							base.evaluate();
 							successes++;
 							System.err.println("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' successful");
-						}
-						catch (Throwable throwable) {
+						} catch (Throwable throwable) {
 							caughtThrowable = throwable;
 							System.err.println("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' failed");
 							throwable.printStackTrace();
@@ -154,15 +157,13 @@ public class UITestUtils {
 		List<WebElement> elements = null;
 		if (use == UseCase.LOGIN_PAGE) {
 			elements = driver.findElements(By.id("logincontent"));
-		}
-		else if (use == UseCase.NORMAL_PAGE) {
+		} else if (use == UseCase.NORMAL_PAGE) {
 			elements = driver.findElements(By.cssSelector("a.action.login"));
 		}
 
 		if (elements == null) {
 			throw new NullPointerException("No Login Interface found.");
-		}
-		else if (elements.isEmpty()) {
+		} else if (elements.isEmpty()) {
 			return; // already logged in
 		}
 
@@ -173,7 +174,6 @@ public class UITestUtils {
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 	}
-
 
 	public static void awaitStatusChange(WebDriver driver, String status) {
 		new WebDriverWait(driver, 10).until(ExpectedConditions.not(ExpectedConditions.attributeToBe(By.cssSelector("#knowWEInfoStatus"), "value", status)));
@@ -189,9 +189,23 @@ public class UITestUtils {
 			if (!elements.isEmpty()) {
 				new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(elements.get(0)));
 			}
-		}
-		catch (TimeoutException ignore) {
+		} catch (TimeoutException ignore) {
 		}
 		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
+	}
+
+	public static RemoteWebDriver setUp(boolean devMode, DesiredCapabilities capabilities, String testClassName) throws MalformedURLException {
+		RemoteWebDriver driver;
+		if (devMode) {
+			driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
+		} else {
+			capabilities.setCapability("name", testClassName);
+			capabilities.setCapability("platform", Platform.WINDOWS);
+			driver = new RemoteWebDriver(
+					new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"),
+					capabilities);
+		}
+		driver.manage().window().setSize(new Dimension(1024, 768));
+		return driver;
 	}
 }

@@ -13,7 +13,7 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
  * DiaFluxSystemTest for FireFox.
- *
+ * <p>
  * Created by Albrecht Striffler (denkbares GmbH) on 25.04.2015.
  */
 public abstract class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {
@@ -24,22 +24,7 @@ public abstract class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		// Create the connection to Sauce Labs to run the tests
-		//noinspection ConstantConditions
-		if (devMode) {
-			 driver = new FirefoxDriver();
-//			driver = new FirefoxDriver(new FirefoxBinary(new File("C:\\Program Files (x86)\\Mozilla Firefox 24 ESR\\firefox.exe")), null);
-		}
-		else {
-			// Choose the browser, version, and platform to test
-			DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-			capabilities.setCapability("name", FireFoxDiaFluxSystemTest.class.getSimpleName());
-			capabilities.setCapability("platform", Platform.WINDOWS);
-			driver = new RemoteWebDriver(
-					new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"),
-					capabilities);
-		}
-		driver.manage().window().setSize(new Dimension(1024, 768));
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), FireFoxDiaFluxSystemTest.class.getSimpleName());
 	}
 
 	@AfterClass

@@ -23,21 +23,7 @@ public abstract class ChromeDiaFluxSystemTest extends DiaFluxSystemTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		// Create the connection to Sauce Labs to run the tests
-		//noinspection ConstantConditions
-		if (devMode) {
-			driver = new RemoteWebDriver(new URL("http://localhost:9515"), DesiredCapabilities.chrome());
-		}
-		else {
-			// Choose the browser, version, and platform to test
-			DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-			capabilities.setCapability("name", ChromeDiaFluxSystemTest.class.getSimpleName());
-			capabilities.setCapability("platform", Platform.WINDOWS);
-			driver = new RemoteWebDriver(
-					new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"),
-					capabilities);
-		}
-		driver.manage().window().setSize(new Dimension(1024, 768));
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), ChromeDiaFluxSystemTest.class.getSimpleName());
 	}
 
 	@AfterClass
