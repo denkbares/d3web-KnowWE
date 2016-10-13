@@ -112,6 +112,10 @@ var DenkbaresSkin = {};
 // we set
 DenkbaresSkin.scrollTransitionDuration = {'transition' : 'left', '-webkit-transition' : 'left'};
 DenkbaresSkin.toggleTransitionDuration = {'transition' : 'left 400ms', '-webkit-transition' : 'left 400ms'};
+DenkbaresSkin.sideBarButtonWasPressed = false;
+DenkbaresSkin.narrowPageWidth = 550;
+DenkbaresSkin.mediumPageWidth = 825;
+DenkbaresSkin.lastPageWidth;
 
 /**
  * Initialize cutting edge favorite scrolling
@@ -179,7 +183,7 @@ DenkbaresSkin.highlightActiveTOC = function() {
  * optimally used.
  */
 DenkbaresSkin.scrollFavorites = function() {
-	if (DenkbaresSkin.isSidebarShown() && jq$(window).width() >= 550) {
+	if (DenkbaresSkin.isSidebarShown() && jq$(window).width() >= DenkbaresSkin.narrowPageWidth) {
 		var sidebar = jq$('.sidebar');
 		var sidebarTop = 0
 		if (sidebar) {
@@ -225,11 +229,38 @@ DenkbaresSkin.scrollFavorites = function() {
 };
 
 DenkbaresSkin.adjustSidebarVisibility = function() {
-	if (jq$(window).width() < 825) {
-		DenkbaresSkin.hideSidebar();
-	} else {
-		DenkbaresSkin.showSidebar();
+	var windowWidth = jq$(window).width();
+	if (DenkbaresSkin.sideBarButtonWasPressed) {
+		DenkbaresSkin.sideBarButtonWasPressed = !DenkbaresSkin.windowSizePassedThreshold(windowWidth);
 	}
+	if (!DenkbaresSkin.sideBarButtonWasPressed) {
+		if (windowWidth < DenkbaresSkin.mediumPageWidth) {
+			DenkbaresSkin.hideSidebar();
+		} else {
+			DenkbaresSkin.showSidebar();
+		}
+	}
+	DenkbaresSkin.lastPageWidth = windowWidth;
+}
+
+DenkbaresSkin.windowSizePassedThreshold = function(newWindowWidth) {
+	if (DenkbaresSkin.lastPageWidth < DenkbaresSkin.narrowPageWidth
+		&& newWindowWidth > DenkbaresSkin.narrowPageWidth) {
+		return true;
+	}
+	if (DenkbaresSkin.lastPageWidth > DenkbaresSkin.narrowPageWidth
+		&& newWindowWidth < DenkbaresSkin.narrowPageWidth) {
+		return true;
+	}
+	if (DenkbaresSkin.lastPageWidth < DenkbaresSkin.mediumPageWidth
+		&& newWindowWidth > DenkbaresSkin.mediumPageWidth) {
+		return true;
+	}
+	if (DenkbaresSkin.lastPageWidth > DenkbaresSkin.mediumPageWidth
+		&& newWindowWidth < DenkbaresSkin.mediumPageWidth) {
+		return true;
+	}
+	return false;
 }
 
 DenkbaresSkin.initPageScroll = function() {
@@ -314,7 +345,7 @@ DenkbaresSkin.onHideSidebar = function() {
 DenkbaresSkin.onShowSidebar = function() {
 	DenkbaresSkin.scrollFavorites();
 	jq$('.sidebar').css('left', '0');
-	if (jq$(window).width() < 550) {
+	if (jq$(window).width() < DenkbaresSkin.narrowPageWidth) {
 		jq$('.sidebar').css('width', '100vw');
 		jq$('.page').css('display', 'none');
 		jq$('.content').css('min-height', jq$('.sidebar').outerHeight() + 'px');
@@ -340,6 +371,8 @@ DenkbaresSkin.scrollTop = function() {
 
 jq$(document).ready(function() {
 	DenkbaresSkin.cleanTrail();
+	DenkbaresSkin.sideBarButtonWasPressed = false;
+	DenkbaresSkin.lastPageWidth = jq$(window).width();
 
 	// workaround, because sometimes we are too early
 	window.setTimeout(function() {
@@ -367,6 +400,7 @@ jq$(document).ready(function() {
 	}
 
 	jq$('#menu').click(function() {
+		DenkbaresSkin.sideBarButtonWasPressed = true;
 		if (DenkbaresSkin.isSidebarShown()) {
 			DenkbaresSkin.onShowSidebar();
 		} else {
