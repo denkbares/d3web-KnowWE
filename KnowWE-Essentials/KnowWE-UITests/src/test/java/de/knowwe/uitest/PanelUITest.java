@@ -62,84 +62,78 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 	@Test
 	public void testSidebarToggleButton() throws InterruptedException {
-		boolean sideBarWasVisible = isSidebarVisible();
+		pressSidebarButton();
+		assertFalse("Sidebar toggle button does not work correctly", isSidebarVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRight());
 
 		pressSidebarButton();
-		assertEquals("Sidebar toggle button does not work correctly", !sideBarWasVisible, isSidebarVisible());
-		if (isSidebarVisible()) assertTrue(pageAlignedLeftWithSidebar()); else assertTrue(pageAlignedLeft());
-
-		pressSidebarButton();
-		assertEquals("Sidebar toggle button does not work correctly", sideBarWasVisible, isSidebarVisible());
-		if (isSidebarVisible()) assertTrue(pageAlignedLeftWithSidebar()); else assertTrue(pageAlignedLeft());
+		assertTrue("Sidebar toggle button does not work correctly", isSidebarVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRight());
 	}
 
 	@Test
 	public void testRightPanelToggleButton() throws InterruptedException {
-		boolean rightPanelWasVisible = isRightPanelVisible();
 
 		pressRightPanelButton();
-		assertEquals("RightPanel toggle button does not work correctly", !rightPanelWasVisible, isRightPanelVisible());
-		if (isRightPanelVisible()) assertTrue(pageAlignedRightWithRightPanel()); else assertTrue(pageAlignedRight());
+		assertTrue("RightPanel toggle button does not work correctly", isRightPanelVisible());
+		assertTrue(isPageAlignedRightWithRightPanel());
+		assertTrue(isPageAlignedLeftWithSidebar());
 
 		pressRightPanelButton();
-		assertEquals("RightPanel toggle button does not work correctly", rightPanelWasVisible, isRightPanelVisible());
-		if (isRightPanelVisible()) assertTrue(pageAlignedRightWithRightPanel()); else assertTrue(pageAlignedRight());
+		assertFalse("RightPanel toggle button does not work correctly", isRightPanelVisible());
+		assertTrue(isPageAlignedRight());
+		assertTrue(isPageAlignedLeftWithSidebar());
 	}
 
 	@Test
 	public void testRightPanelCollapseWatches() throws InterruptedException {
-		if (!isRightPanelVisible()) pressRightPanelButton();
+		pressRightPanelButton();
 		WebElement watches = getRightPanel().findElement(By.id("watches"));
 		watches.findElement(By.className("title")).click();
-		Thread.sleep(1000);
+		Thread.sleep(500);
 		WebElement watchesContent = watches.findElement(By.className("right-panel-content"));
 		assertEquals("Watches shoud be collapsed", watchesContent.getCssValue("display"), "none");
 		watches.findElement(By.className("title")).click();
-		Thread.sleep(1000);
+		Thread.sleep(500);
 		assertThat(watchesContent.getCssValue("display"), is(not("none")));
 		pressRightPanelButton();
 	}
 
 	@Test
 	public void testSidebarAndRightPanel() throws InterruptedException {
-		if (!isSidebarVisible()) pressSidebarButton();
-		if (!isRightPanelVisible()) pressRightPanelButton();
-		Thread.sleep(500);
-		assertTrue(isSidebarVisible());
-		assertTrue(isRightPanelVisible());
-
-		Thread.sleep(500);
-		pressSidebarButton();
-		pressRightPanelButton();
-		Thread.sleep(500);
-		assertFalse(isSidebarVisible());
-		assertFalse(isRightPanelVisible());
-
-		Thread.sleep(500);
-		pressRightPanelButton();
-		pressSidebarButton();
-		Thread.sleep(500);
-		assertTrue(isSidebarVisible());
-		assertTrue(isRightPanelVisible());
-
-		Thread.sleep(500);
-		pressSidebarButton();
-		Thread.sleep(500);
-		assertFalse(isSidebarVisible());
-		assertTrue(isRightPanelVisible());
-
-		Thread.sleep(500);
-		pressSidebarButton();
-		pressRightPanelButton();
-		Thread.sleep(500);
 		assertTrue(isSidebarVisible());
 		assertFalse(isRightPanelVisible());
+
+		pressRightPanelButton();
+		assertTrue(isSidebarVisible());
+		assertTrue(isRightPanelVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRightWithRightPanel());
+
+		pressSidebarButton();
+		assertFalse(isSidebarVisible());
+		assertTrue(isRightPanelVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRightWithRightPanel());
+
+		pressSidebarButton();
+		assertTrue(isSidebarVisible());
+		assertTrue(isRightPanelVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRightWithRightPanel());
+
+		pressRightPanelButton();
+		assertTrue(isSidebarVisible());
+		assertFalse(isRightPanelVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRight());
 	}
 
 	@Test
 	public void testScrollingHalfPage() throws InterruptedException {
-		if (!isSidebarVisible()) pressSidebarButton();
-		if (!isRightPanelVisible()) pressRightPanelButton();
+		pressRightPanelButton();
 
 		JavascriptExecutor jse = (JavascriptExecutor) getDriver();
 		Long halfDocumentHeight = ((Long) jse.executeScript("return document.body.scrollHeight;")) / 2;
@@ -147,6 +141,7 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 		assertEquals("Sidebar is supposed to be fixed after scrolling half page", getSidebar().getCssValue("position"), "fixed");
 		assertEquals("RightPanel is supposed to be fixed after scrolling half page", getSidebar().getCssValue("position"), "fixed");
+
 
 		int topSidebar = Integer.parseInt(getSidebar().getCssValue("top").replace("px", ""));
 		int topRightPanel = Integer.parseInt(getRightPanel().getCssValue("top").replace("px", ""));
@@ -164,11 +159,10 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 	@Test
 	public void testScrollingFullPage() throws InterruptedException {
-		if (!isSidebarVisible()) pressSidebarButton();
-		if (!isRightPanelVisible()) pressRightPanelButton();
-		Thread.sleep(1000);
+		pressRightPanelButton();
+		Thread.sleep(500);
 
-		for (int i = 0; i < 18; i++) {
+		for (int i = 0; i < 10; i++) {
 			addWatchDummy();
 		}
 
@@ -191,8 +185,6 @@ public abstract class PanelUITest extends KnowWEUITest {
 		assertTrue("Sidebar should not overlay with header after scrolling to top", sidebarPosY >= getHeaderBottom());
 		assertTrue("RightPanel should not overlay with header after scrolling to top", rightPanelPosY >= getHeaderBottom());
 
-		clearWatches();
-
 	}
 
 	protected abstract void pressSidebarButton();
@@ -204,7 +196,7 @@ public abstract class PanelUITest extends KnowWEUITest {
 	}
 
 	protected boolean isSidebarVisible() throws InterruptedException {
-		Thread.sleep(1000);
+		Thread.sleep(500);
 		int x = getSidebar().getLocation().getX();
 		int width = getSidebar().getSize().getWidth();
 		int paddingLeft = Integer.parseInt(getSidebar().getCssValue("padding-left").replace("px", ""));
@@ -221,7 +213,7 @@ public abstract class PanelUITest extends KnowWEUITest {
 	}
 
 	protected boolean isRightPanelVisible() throws InterruptedException {
-		Thread.sleep(1000);
+		Thread.sleep(500);
 		WebElement rightPanel;
 		try {
 			rightPanel = getRightPanel();
@@ -253,13 +245,13 @@ public abstract class PanelUITest extends KnowWEUITest {
 		return getDriver().findElement(By.id("rightPanel"));
 	}
 
-	protected abstract boolean pageAlignedLeft();
+	protected abstract boolean isPageAlignedLeft();
 
-	protected abstract boolean pageAlignedLeftWithSidebar();
+	protected abstract boolean isPageAlignedLeftWithSidebar();
 
-	protected abstract boolean pageAlignedRight();
+	protected abstract boolean isPageAlignedRight();
 
-	protected abstract boolean pageAlignedRightWithRightPanel();
+	protected abstract boolean isPageAlignedRightWithRightPanel();
 
 	protected void addWatchDummy() {
 		getRightPanel().findElement(By.className("addwatch")).click();

@@ -21,6 +21,7 @@ package de.knowwe.uitest;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -28,15 +29,14 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  * Edit class text
  *
  * @author Jonas Müller
- * @created 06.10.16
+ * @created 13.10.16
  */
-public class ChromePanelHaddockUITest extends PanelHaddockUITest {
-
+public class FirefoxPanelDefaultUITest extends PanelDefaultUITest {
 	private static RemoteWebDriver driver;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), ChromePanelHaddockUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), FirefoxPanelDefaultUITest.class.getSimpleName());
 	}
 
 	@AfterClass
@@ -51,7 +51,6 @@ public class ChromePanelHaddockUITest extends PanelHaddockUITest {
 
 	@Override
 	public String getTestName() {
-		return "UITest-Panel-Chrome";
+		return "UITest-Panel-Firefox";
 	}
 }
-

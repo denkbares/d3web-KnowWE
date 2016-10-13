@@ -19,77 +19,37 @@
 
 package de.knowwe.uitest;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import static org.junit.Assert.fail;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
  * Edit class text
  *
  * @author Jonas Müller
- * @created 06.10.16
+ * @created 13.10.16
  */
-public class ChromePanelDefaultUITest extends ChromePanelUITest {
-	@Override
-	protected WikiTemplate getTemplate() {
-		return WikiTemplate.standard;
+public class ChromePanelDefaultUITest extends PanelDefaultUITest {
+	private static RemoteWebDriver driver;
+
+	@BeforeClass
+	public static void setUp() throws Exception {
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), ChromePanelDefaultUITest.class.getSimpleName());
+	}
+
+	@AfterClass
+	public static void tearDown() throws Exception {
+		if (!devMode) driver.quit();
 	}
 
 	@Override
-	protected void pressSidebarButton() {
-		String idSidebarButton = "favorites-toggle-button";
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id(idSidebarButton)));
-		getDriver().findElement(By.id(idSidebarButton)).click();
-	}
-
-
-	@Override
-	protected WebElement getSidebar() {
-		return getDriver().findElement(By.id("favorites"));
+	protected RemoteWebDriver getDriver() {
+		return driver;
 	}
 
 	@Override
-	protected int getHeaderBottom() {
-		int headerHeight = getDriver().findElement(By.id("header")).getSize().getHeight();
-		JavascriptExecutor executor = getDriver();
-		Long scrollY = (Long) executor.executeScript("return window.scrollY;");
-		headerHeight = (int) Math.max(0, headerHeight -  scrollY);
-		return headerHeight;
-	}
-
-	@Override
-	protected int getFooterTop() {
-		JavascriptExecutor executor = getDriver();
-		Long footerTop = (Long) executor.executeScript("return document.body.scrollHeight;");
-		return Math.toIntExact(footerTop);
-	}
-
-	@Override
-	protected boolean pageAlignedLeft() {
-		//TODO
-		return false;
-	}
-
-	@Override
-	protected boolean pageAlignedLeftWithSidebar() {
-		//TODO
-		return false;
-	}
-
-	@Override
-	protected boolean pageAlignedRight() {
-		//TODO
-		return false;
-	}
-
-	@Override
-	protected boolean pageAlignedRightWithRightPanel() {
-		//TODO
-		return false;
+	public String getTestName() {
+		return "UITest-Panel-Chrome";
 	}
 }

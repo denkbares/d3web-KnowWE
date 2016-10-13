@@ -20,8 +20,6 @@ public abstract class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {
 
 	private static RemoteWebDriver driver;
 
-	private static boolean devMode = false;
-
 	@BeforeClass
 	public static void setUp() throws Exception {
 		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), FireFoxDiaFluxSystemTest.class.getSimpleName());
@@ -32,11 +30,6 @@ public abstract class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {
 		// if we quit, we don't see the status of the test at the end
 		//noinspection ConstantConditions
 		if (!devMode) driver.quit();
-	}
-
-	@Override
-	protected boolean isDevMode() {
-		return devMode;
 	}
 
 	@Override

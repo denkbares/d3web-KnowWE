@@ -56,14 +56,14 @@ public abstract class KnowWEUITest {
 	 * and start it on your machine. Also, you need a locally running KnowWE with a page "ST-BMI".
 	 * State of the page does not matter, it will be cleared for each new test.
 	 */
-	protected abstract boolean isDevMode();
+	protected static boolean devMode = false;
 
 
 	public abstract String getTestName();
 
 	@Before
 	public void load() throws Exception {
-		if (isDevMode()) {
+		if (devMode) {
 			getDriver().get("http://localhost:8080/KnowWE/Wiki.jsp?page=" + getTestName());
 		} else {
 			getDriver().get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=" + getTestName());

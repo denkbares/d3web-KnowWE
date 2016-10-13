@@ -19,12 +19,9 @@
 
 package de.knowwe.uitest;
 
-import java.net.URL;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Platform;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -32,27 +29,19 @@ import org.openqa.selenium.remote.RemoteWebDriver;
  * Edit class text
  *
  * @author Jonas Müller
- * @created 06.10.16
+ * @created 13.10.16
  */
-public abstract class ChromePanelUITest extends PanelUITest {
-
+public class FireFoxPanelHaddockUITest extends PanelHaddockUITest {
 	private static RemoteWebDriver driver;
-
-	private static boolean devMode = true;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), ChromePanelUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), FireFoxPanelHaddockUITest.class.getSimpleName());
 	}
 
 	@AfterClass
 	public static void tearDown() throws Exception {
 		if (!devMode) driver.quit();
-	}
-
-	@Override
-	protected boolean isDevMode() {
-		return devMode;
 	}
 
 	@Override
@@ -62,7 +51,6 @@ public abstract class ChromePanelUITest extends PanelUITest {
 
 	@Override
 	public String getTestName() {
-		return "UITest-Panel-Chrome";
+		return "UITest-Panel-Firefox";
 	}
 }
-
