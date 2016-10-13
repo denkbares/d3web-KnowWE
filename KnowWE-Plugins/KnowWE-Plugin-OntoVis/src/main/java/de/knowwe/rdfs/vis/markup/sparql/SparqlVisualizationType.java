@@ -93,6 +93,9 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		//markup.addAnnotation(OntoVisType.Config.SHOWINVERSE, false, "true", "false");
 		//markup.addAnnotationRenderer(OntoVisType.Config.SHOWINVERSE,NothingRenderer.get());
 
+		markup.addAnnotation(Config.SHOW_INVERSE, false, "TRUE", "FALSE");
+		markup.addAnnotationRenderer(Config.SHOW_INVERSE, NothingRenderer.getInstance());
+
 		markup.addAnnotation(Config.COLORS, false);
 		markup.addAnnotationRenderer(Config.COLORS, NothingRenderer.getInstance());
 
