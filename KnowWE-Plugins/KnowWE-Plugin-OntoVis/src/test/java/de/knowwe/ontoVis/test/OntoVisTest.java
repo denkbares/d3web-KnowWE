@@ -445,6 +445,7 @@ public class OntoVisTest {
 				expectedBytes, generatedBytes);
 	}
 
+	@SuppressWarnings("Duplicates") // Was reused in the newer headless Test implementation aswell
 	private List<Byte> asSortedByteList(String expectedSource) {
 		byte[] bytes = expectedSource.getBytes();
 		Byte[] Bytes = new Byte[bytes.length];
