@@ -50,47 +50,10 @@ import static org.junit.Assert.assertFalse;
  * <p>
  * Test the Test Protocol for DiaFlux (System Test - Manual DiaFlux BMI)
  */
-public abstract class DiaFluxSystemTest {
-
-	protected enum WikiTemplate {
-		standard, haddock
-	}
-
-	public static final String RESOURCE_DIR = "src/test/resources/";
-
-	/**
-	 * If you set devMode to true, you can test locally, which will be much faster
-	 * Don't commit this as true, because Jenkins build WILL fail!
-	 * <p>
-	 * To test locally, you also need to download the ChromeDriver from
-	 * https://sites.google.com/a/chromium.org/chromegetDriver()/downloads
-	 * and start it on your machine. Also, you need a locally running KnowWE with a page "ST-BMI".
-	 * State of the page does not matter, it will be cleared for each new test.
-	 */
-	protected abstract boolean isDevMode();
-
-	protected abstract WebDriver getDriver();
-
-	protected abstract WikiTemplate getTemplate();
-
-	@Before
-	public void load() throws Exception {
-		if (isDevMode()) {
-			getDriver().get("http://localhost:8080/KnowWE/Wiki.jsp?page=" + getTestName());
-		} else {
-			getDriver().get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=" + getTestName());
-			logIn();
-		}
-	}
-
-	public abstract String getTestName();
+public abstract class DiaFluxSystemTest extends KnowWEUITest {
 
 	@Rule
-	public RetryRule retry = new RetryRule(2);
-
-	private void logIn() {
-		UITestUtils.logIn(getDriver(), "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", UseCase.NORMAL_PAGE);
-	}
+	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
 
 	@Test
 	public void addTerminology() throws IOException {
@@ -511,14 +474,6 @@ public abstract class DiaFluxSystemTest {
 		}
 	}
 
-	private void checkNoErrorsExist() {
-		assertEquals(0, getDriver().findElements(By.className("error")).size());
-	}
-
-	private void checkErrorsExist() {
-		assertFalse(getDriver().findElements(By.className("error")).isEmpty());
-	}
-
 	private void assertActiveNodes(String flow, int expectedActive, int expectedSnap) {
 		assertEquals(expectedActive, getDriver().findElements(By.cssSelector("#" + flow + " .Node.traceActive"))
 				.size());
@@ -621,23 +576,6 @@ public abstract class DiaFluxSystemTest {
 				.filter(element -> Strings.containsIgnoreCase(element.getAttribute("title"), tooltipContains))
 				.findFirst().get();
 		new Actions(getDriver()).moveToElement(toolMenu).moveToElement(editTool).click(editTool).perform();
-	}
-
-	private void changeArticleText(String newText) {
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
-		getDriver().findElement(By.id("edit-source-button")).click();
-		String areaSelector = getTemplate() == WikiTemplate.haddock ?  ".editor.form-control" : "#editorarea";
-		List<WebElement> editorAreas = new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(areaSelector)));
-		if (getDriver() instanceof JavascriptExecutor) {
-			// hacky but fast/instant!
-			((JavascriptExecutor) getDriver()).executeScript("var areas = document.querySelectorAll('" + areaSelector + "');" +
-					"for (var i=0; i<areas.length; i++) { areas[i].value = arguments[0] };", newText);
-		} else {
-			// sets the keys one by one, pretty slow...
-			editorAreas.forEach(webElement -> webElement.clear());
-			editorAreas.forEach(webElement -> webElement.sendKeys(newText));
-		}
-		getDriver().findElement(By.name("ok")).click();
 	}
 
 	private void createNextFlow() {
