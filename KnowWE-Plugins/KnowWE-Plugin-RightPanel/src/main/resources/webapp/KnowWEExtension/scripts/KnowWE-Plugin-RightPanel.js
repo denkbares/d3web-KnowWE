@@ -274,7 +274,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 				//"left" is needed for resizable to work properly
 				var pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
 				rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
-
+				jq$(window).resize();
 			});
 		} else {
 			if (!isOnBottom) {
@@ -318,6 +318,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 			rightPanel.animate({left : (jq$(window).width() + "px")}, globalFloatingTime, function() {
 				rightPanel.remove();
 				jq$(KNOWWE.core.util.getMorePopupSelector()).css("display", "block");
+				jq$(window).resize();
 			});
 			jq$(KNOWWE.core.util.getPageContentSelector()).css("margin-right", "auto");
 			jq$("#actionsBottom").css("margin-right", "auto");
@@ -339,6 +340,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 	function removeRightPanel() {
 		rightPanel.remove();
 		isOnBottom = false;
+		jq$(window).resize();
 	}
 
 	function buildRightPanel() {
@@ -1038,7 +1040,6 @@ KNOWWE.core.plugin.rightPanel.watches = function() {
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
 		window.addEvent('domready', function() {
 			KNOWWE.core.plugin.rightPanel.init();
-			jq$(window).resize();
 		});
 	}
 }());
