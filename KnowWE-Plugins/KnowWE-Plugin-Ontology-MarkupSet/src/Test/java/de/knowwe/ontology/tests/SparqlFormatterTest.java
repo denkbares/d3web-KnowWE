@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Maximilian Brell on 21.03.16.
+ * Edited by Adrian Müller on 22.09.16.
  */
 public class SparqlFormatterTest {
 
@@ -300,7 +301,9 @@ public class SparqlFormatterTest {
 				"\tOPTIONAL { ?Substance <lns:hasFirstCAS+Number> ?CAS }\n" +
 				"\tOPTIONAL { ?Substance <lns:hasFirstEC+Number> ?EC }\n" +
 				"\tOPTIONAL { ?Substance <lns:hasFirstSubstance+Name> ?Name }\n" +
-				"\tOPTIONAL { ?Substance <lns:hasFirstGroup+Name> ?Name }\n" +
+				"\tOPTIONAL { \n" +
+				"?Substance <lns:hasFirstGroup+Name> ?Name \n" +
+				"}\n" +
 				"\t\n" +
 				"\t?Substance lns:hasEstablished <lns:OECD+HPV+Chemical>\n" +
 				"\t\n" +
