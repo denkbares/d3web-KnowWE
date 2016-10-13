@@ -310,9 +310,9 @@
 			<releases>
 				<enabled>true</enabled>
 			</releases>
-			<id>des-repo-public</id>
+			<id>des-repo-des</id>
 			<name>Denkbares Public Repository</name>
-			<url>https://repo.denkbares.com/repo-public/</url>
+			<url>https://repo.denkbares.com/repo/</url>
 		</repository>
 	</repositories>
 
