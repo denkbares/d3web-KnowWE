@@ -582,6 +582,11 @@
 					<version>${knowwe.version}</version>
 				</dependency>
 				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-CityVis</artifactId>
+					<version>${knowwe.version}</version>
+				</dependency>
+				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-SemanticServiceCore</artifactId>
 					<version>${knowwe.version}</version>
