@@ -138,7 +138,9 @@ public class DOTRenderer {
 	static String createDotSources(SubGraphData data, Config config) {
 
 		// we clean up the graph before rendering (e. g. undesired cycles etc)
-		simplifyGraph(data);
+		if (config.getShowInverse() == Config.ShowInverse.FALSE_DOT_BASED || config.getShowInverse() == Config.ShowInverse.FALSE) {
+			simplifyGraph(data);
+		}
 
 		String dotSource = "digraph {\n";
 
@@ -236,7 +238,6 @@ public class DOTRenderer {
 	}
 
 	private static void simplifyGraph(SubGraphData data) {
-		Set<Edge> myEdges;
 		Set<Edge> redundantEdges;
 
 		//mark all the superProperties (sets superProperty attributes)
@@ -256,13 +257,9 @@ public class DOTRenderer {
 	}
 
 	private static SubGraphData defineSuperProperties(SubGraphData data, MultiMap<String, String> subPropertiesMap) {
-		SubGraphData newData = data;
 		Set<Edge> edges = data.getAllEdges();
 		String relationURI, subURI;
-		ConceptNode s1;
-		ConceptNode o1;
-		ConceptNode s2;
-		ConceptNode o2;
+		ConceptNode o1, o2, s1, s2;
 
 		Set<String> subProperties;
 
@@ -273,17 +270,14 @@ public class DOTRenderer {
 			o1 = e1.getObject();
 
 			// Check if there is SubProperties to this Edge's relationURI
-			if (subPropertiesMap.getValues(relationURI).size() > 0) {
+			if (!subPropertiesMap.getValues(relationURI).isEmpty()) {
 				subProperties = subPropertiesMap.getValues(relationURI);
 
 				// Check edges once again for SubProperties, skip if it's the same edge
 				for (Edge e2 : edges
 						) {
 					// skip if same edge
-					if (e1.equals(e2)) {
-						continue;
-					}
-					else {
+					if (!e1.equals(e2)) {
 						s2 = e2.getSubject();
 						o2 = e2.getObject();
 						subURI = e2.getRelationURI();
@@ -298,21 +292,21 @@ public class DOTRenderer {
 
 			}
 		}
-		return newData;
+		return data;
 	}
 
 	private static Set<Edge> getRedundantSuperPropertyEdges(Set<Edge> edges) {
-		Set<Edge> redundantSuperPopertyEdges = new HashSet<>();
+		Set<Edge> redundantSuperPropertyEdges = new HashSet<>();
 
 		// Checks if isSuperProperty and adds if true
 		for (Edge e : edges
 				) {
 			if (e.isSuperProperty()) {
-				redundantSuperPopertyEdges.add(e);
+				redundantSuperPropertyEdges.add(e);
 			}
 		}
 
-		return redundantSuperPopertyEdges;
+		return redundantSuperPropertyEdges;
 	}
 
 	private static String generateGraphSource(SubGraphData data, Config config) {

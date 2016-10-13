@@ -20,15 +20,13 @@ import de.knowwe.visualization.Config;
 
 public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implements PreRenderer {
 
+	public static final String VISUALIZATION_RENDERER_KEY = "conceptVisualizationRendererKey";
+
 	@Override
 	public void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		PreRenderWorker.getInstance().handlePreRendering(section, user, this);
-		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(createKey());
+		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(VISUALIZATION_RENDERER_KEY);
 		if (builder != null) builder.render(string);
-	}
-
-	protected String createKey() {
-		return this.getClass().getName();
 	}
 
 	@Override
@@ -44,12 +42,12 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 		OntoGraphDataBuilder builder = new OntoGraphDataBuilder(section, config, new PackageCompileLinkToTermDefinitionProvider(), core);
 		builder.createData();
-		section.storeObject(createKey(), builder);
+		section.storeObject(VISUALIZATION_RENDERER_KEY, builder);
 	}
 
 	@Override
 	public void cleanUp(Section<?> section) {
-		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(createKey());
+		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(VISUALIZATION_RENDERER_KEY);
 		if (builder != null) builder.getGraphRenderer().cleanUp();
 	}
 

@@ -282,7 +282,9 @@ public class OntoVisTest {
 		Config config = new Config();
 		config.setConcept("si:abraham", "si:maggie");
 		config.addFilterRelations("si:child");
-		config.setShowInverse(false);
+		//Old implementation
+		//config.setShowInverse(false);
+		config.setShowInverse(Config.ShowInverse.FALSE_ONTOLOGY_BASED);
 		config.addFilterRelations("si:child");
 		config.setShowOutgoingEdges(true);
 		config.setShowLabels("true");
@@ -406,7 +408,10 @@ public class OntoVisTest {
 		config.setShowOutgoingEdges(false);
 		config.setShowLabels("true");
 		config.setLiteralMode(Config.LiteralMode.OFF);
-		config.setShowInverse(false);
+		//old implementation
+//		config.setShowInverse(false);
+
+		config.setShowInverse(Config.ShowInverse.FALSE_ONTOLOGY_BASED);
 		config.setCacheFileID("testInverse");
 		config.setCacheDirectoryPath("target");
 

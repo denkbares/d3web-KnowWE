@@ -21,6 +21,7 @@ package de.knowwe.rdfs.vis.markup.sparql;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.ontology.sparql.Rdf2GoCoreCheckRenderer;
 import de.knowwe.rdfs.vis.markup.PreRenderer;
 import de.knowwe.rdfs.vis.markup.VisualizationType;
@@ -125,6 +126,7 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotation(Config.SHOW_LITERALS, false, Config.LiteralMode.class);
 		markup.addAnnotationRenderer(Config.SHOW_LITERALS, NothingRenderer.getInstance());
 
+		markup.addAnnotation(AsynchronousRenderer.ASYNCHRONOUS, false);
 		return markup;
 	}
 

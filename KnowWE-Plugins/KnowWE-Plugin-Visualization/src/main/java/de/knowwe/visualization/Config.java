@@ -72,6 +72,44 @@ public class Config {
 	public static final String TITLE = "title";
 	public static final String LAYOUT = "layout";
 	public static final String OVERLAP = "overlap";
+	private final Collection<String> excludeNodes = new HashSet<>();
+	private final Collection<String> excludeRelations = new HashSet<>();
+	private final Collection<String> filterRelations = new HashSet<>();
+	private String colors = null;
+	private Map<String, String> relationColors = new HashMap<>();
+	private Map<String, String> classColors = new HashMap<>();
+	private int successors = 1;
+	private int predecessors = 1;
+	private Collection<String> concepts = new HashSet<>();
+	private boolean showClasses = true;
+	private boolean showProperties = true;
+	private boolean showOutgoingEdges = false;
+	private String showLabels = "true";
+	private String size = null;
+	private String width = null;
+	private String height = null;
+	private String format = "svg";
+	private String language = null;
+	private long timeout = 300000;
+	private LinkMode linkMode = LinkMode.JUMP;
+	private RankDir rankDir = RankDir.LR;
+	private ShowInverse showInverse = ShowInverse.FALSE_DOT_BASED;
+	private String rankSame = null;
+	private String dotApp = "dot";
+	private String dotAddLine = null;
+	private Renderer renderer = Renderer.DOT;
+	private Visualization visualization = Visualization.FORCE;
+	private LiteralMode literalMode = LiteralMode.TABLE;
+	private String forceVisualizationStyle = null;
+	private String design = null;
+	private String config = null;
+	private String prerender = null;
+	private String cacheFileID = null;
+	private String sectionId = null;
+	private String title = null;
+	private String layout = null;
+	private String overlap = null;
+	private String cacheDirectoryPath = null;
 
 	public Config() {
 	}
@@ -96,37 +134,10 @@ public class Config {
 	public void setTimeout(String timeoutString) {
 		try {
 			this.timeout = Long.parseLong(timeoutString);
-		} catch ( java.lang.NumberFormatException e) {
+		}
+		catch (java.lang.NumberFormatException e) {
 			// invalid value
 		}
-	}
-
-	public enum Renderer {
-		DOT, D3
-	}
-
-	public enum LinkMode {
-		JUMP, BROWSE
-	}
-
-	public enum Visualization {
-		WHEEL, FORCE
-	}
-
-	public enum LiteralMode {
-		OFF, TABLE, NODES
-	}
-
-	public enum RankDir {
-		LR, RL, TB, BT
-	}
-
-	public enum Layout {
-		DOT, NEATO, FDP, CIRCO, TWOPI
-	}
-
-	public enum Overlap {
-		TRUE, FALSE, SCALEXY, SCALE, COMPRESS, VPSC, VORONOI, ORTHO, ORTHOXY, ORTHOYX, PORTHO, PORTHOXY, PORTHOYX
 	}
 
 	public String getCacheDirectoryPath() {
@@ -136,52 +147,25 @@ public class Config {
 		return cacheDirectoryPath;
 	}
 
+	public void setCacheDirectoryPath(String cachePath) {
+		this.cacheDirectoryPath = cachePath;
+	}
+
 	public String getTitle() {
 		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getSectionId() {
 		return sectionId;
 	}
 
-	private String colors = null;
-	private Map<String, String> relationColors = new HashMap<>();
-	private Map<String, String> classColors = new HashMap<>();
-	private int successors = 1;
-	private int predecessors = 1;
-	private final Collection<String> excludeNodes = new HashSet<>();
-	private final Collection<String> excludeRelations = new HashSet<>();
-	private final Collection<String> filterRelations = new HashSet<>();
-	private Collection<String> concepts = new HashSet<>();
-	private boolean showClasses = true;
-	private boolean showProperties = true;
-	private boolean showInverse = true;
-	private boolean showOutgoingEdges = false;
-	private String showLabels = "true";
-	private String size = null;
-	private String width = null;
-	private String height = null;
-	private String format = "svg";
-	private String language = null;
-	private long timeout = 300000;
-	private LinkMode linkMode = LinkMode.JUMP;
-	private RankDir rankDir = RankDir.LR;
-	private String rankSame = null;
-	private String dotApp = "dot";
-	private String dotAddLine = null;
-	private Renderer renderer = Renderer.DOT;
-	private Visualization visualization = Visualization.FORCE;
-	private LiteralMode literalMode = LiteralMode.TABLE;
-	private String forceVisualizationStyle = null;
-	private String design = null;
-	private String config = null;
-	private String prerender = null;
-	private String cacheFileID = null;
-	private String sectionId = null;
-	private String title = null;
-	private String layout = null;
-	private String overlap = null;
-	private String cacheDirectoryPath = null;
+	public void setSectionId(String sectionId) {
+		this.sectionId = sectionId;
+	}
 
 	public void readFromSection(Section<? extends DefaultMarkupType> section) {
 
@@ -207,7 +191,7 @@ public class Config {
 		parseAndSetBoolean(section, SHOW_CLASSES, this::setShowClasses);
 		parseAndSetBoolean(section, SHOW_PROPERTIES, this::setShowProperties);
 		parseAndSetBoolean(section, SHOW_OUTGOING_EDGES, this::setShowOutgoingEdges);
-		parseAndSetBoolean(section, SHOW_INVERSE, this::setShowInverse);
+		parseAndSetEnum(section, SHOW_INVERSE, ShowInverse.class, this::setShowInverse);
 		setShowLabels(DefaultMarkupType.getAnnotation(section, SHOW_LABELS));
 		parseAndSetCSV(section, CONCEPT, this::addConcept);
 		setSize(DefaultMarkupType.getAnnotation(section, SIZE));
@@ -277,7 +261,6 @@ public class Config {
 		this.layout = layout.toString();
 	}
 
-
 	private void parseAndSetInt(Section<? extends DefaultMarkupType> section, String annotationName, Consumer<Integer> setter) {
 		String annotation = DefaultMarkupType.getAnnotation(section, annotationName);
 		if (annotation != null) {
@@ -297,31 +280,6 @@ public class Config {
 				setter.accept(new String[] { Strings.trim(csv) });
 			}
 		}
-	}
-
-	public void setColors(String colors) {
-		if (colors == null) return;
-		this.colors = colors;
-	}
-
-	public void setRelationColors(Map<String, String> relationColors) {
-		// TODO: refactor this to be a map of color assignments
-		if (relationColors == null) return;
-		this.relationColors = relationColors;
-	}
-
-	public void setClassColors(Map<String, String> classColors) {
-		// TODO: refactor this to be a map of color assignments
-		if (classColors == null) return;
-		this.classColors = classColors;
-	}
-
-	public void setSuccessors(int successors) {
-		this.successors = successors;
-	}
-
-	public void setPredecessors(int predecessors) {
-		this.predecessors = predecessors;
 	}
 
 	public void addExcludeNodes(String... excludeNodes) {
@@ -345,58 +303,6 @@ public class Config {
 		addConcept(concepts);
 	}
 
-	public void setShowClasses(boolean showClasses) {
-		this.showClasses = showClasses;
-	}
-
-	public void setShowProperties(boolean showProperties) {
-		this.showProperties = showProperties;
-	}
-
-	public void setShowOutgoingEdges(boolean showOutgoingEdges) {
-		this.showOutgoingEdges = showOutgoingEdges;
-	}
-
-	public void setShowInverse(boolean showInverse) {
-		this.showInverse = showInverse;
-	}
-
-	public void setSize(String size) {
-		if (size == null) return;
-		this.size = size;
-	}
-
-	public void setWidth(String width) {
-		if (width == null) return;
-		this.width = width;
-	}
-
-	public void setHeight(String height) {
-		if (height == null) return;
-		this.height = height;
-	}
-
-	public void setFormat(String format) {
-		if (format == null) return;
-		format = format.toLowerCase();
-		this.format = format;
-	}
-
-	public void setLanguage(String language) {
-		if (language == null) return;
-		this.language = language;
-	}
-
-	public void setLinkMode(LinkMode linkMode) {
-		if (linkMode == null) return;
-		this.linkMode = linkMode;
-	}
-
-	public void setRankDir(RankDir rankDir) {
-		if (rankDir == null) return;
-		this.rankDir = rankDir;
-	}
-
 	public LiteralMode getLiteralMode() {
 		return this.literalMode;
 	}
@@ -406,39 +312,17 @@ public class Config {
 		this.literalMode = mode;
 	}
 
-
-	public void setDotApp(String dotApp) {
-		if (dotApp == null) return;
-		this.dotApp = dotApp;
+	public String getColors() {
+		return colors;
 	}
 
-	public void setDotAddLine(String dotAddLine) {
-		if (dotAddLine == null) return;
-		if (!dotAddLine.matches("^.*?\r?\n$")) {
-			dotAddLine = dotAddLine + "\n";
-		}
-		this.dotAddLine = dotAddLine;
+	public void setColors(String colors) {
+		if (colors == null) return;
+		this.colors = colors;
 	}
 
-	public void setRenderer(Renderer renderer) {
-		if (renderer == null) return;
-		this.renderer = renderer;
-	}
-
-	public void setVisualization(Visualization visualization) {
-		if (visualization == null) return;
-		this.visualization = visualization;
-	}
-
-	public void setDesign(String design) {
-		if (design == null) return;
-		this.design = design;
-	}
-
-	public void setShowLabels(String showLabels) {
-		if(showLabels != null) {
-			this.showLabels = showLabels;
-		}
+	public String getConfig() {
+		return config;
 	}
 
 	public void setConfig(String config) {
@@ -446,38 +330,40 @@ public class Config {
 		this.config = config;
 	}
 
-	public void setPrerender(String prerender) {
-		if (prerender == null) return;
-		this.prerender = prerender;
-	}
-
-	public void setCacheFileID(String fileID) {
-		if (fileID == null) return;
-		this.cacheFileID = fileID;
-	}
-
-	public String getColors() {
-		return colors;
-	}
-
-	public String getConfig() {
-		return config;
-	}
-
 	public Map<String, String> getRelationColors() {
 		return relationColors;
+	}
+
+	public void setRelationColors(Map<String, String> relationColors) {
+		// TODO: refactor this to be a map of color assignments
+		if (relationColors == null) return;
+		this.relationColors = relationColors;
 	}
 
 	public Map<String, String> getClassColors() {
 		return classColors;
 	}
 
+	public void setClassColors(Map<String, String> classColors) {
+		// TODO: refactor this to be a map of color assignments
+		if (classColors == null) return;
+		this.classColors = classColors;
+	}
+
 	public int getSuccessors() {
 		return successors;
 	}
 
+	public void setSuccessors(int successors) {
+		this.successors = successors;
+	}
+
 	public int getPredecessors() {
 		return predecessors;
+	}
+
+	public void setPredecessors(int predecessors) {
+		this.predecessors = predecessors;
 	}
 
 	public Collection<String> getExcludeNodes() {
@@ -496,20 +382,34 @@ public class Config {
 		return showClasses;
 	}
 
+	public void setShowClasses(boolean showClasses) {
+		this.showClasses = showClasses;
+	}
+
 	public boolean isShowProperties() {
 		return showProperties;
+	}
+
+	public void setShowProperties(boolean showProperties) {
+		this.showProperties = showProperties;
 	}
 
 	public boolean isShowOutgoingEdges() {
 		return showOutgoingEdges;
 	}
 
-	public boolean isShowInverse() {
-		return showInverse;
+	public void setShowOutgoingEdges(boolean showOutgoingEdges) {
+		this.showOutgoingEdges = showOutgoingEdges;
 	}
 
 	public String getShowLabels() {
 		return showLabels;
+	}
+
+	public void setShowLabels(String showLabels) {
+		if (showLabels != null) {
+			this.showLabels = showLabels;
+		}
 	}
 
 	public Collection<String> getConcepts() {
@@ -520,67 +420,170 @@ public class Config {
 		return size;
 	}
 
+	public void setSize(String size) {
+		if (size == null) return;
+		this.size = size;
+	}
+
 	public String getWidth() {
 		return width;
+	}
+
+	public void setWidth(String width) {
+		if (width == null) return;
+		this.width = width;
 	}
 
 	public String getHeight() {
 		return height;
 	}
 
+	public void setHeight(String height) {
+		if (height == null) return;
+		this.height = height;
+	}
+
 	public String getFormat() {
 		return format;
+	}
+
+	public void setFormat(String format) {
+		if (format == null) return;
+		format = format.toLowerCase();
+		this.format = format;
 	}
 
 	public String getLanguage() {
 		return language;
 	}
 
+	public void setLanguage(String language) {
+		if (language == null) return;
+		this.language = language;
+	}
+
 	public LinkMode getLinkMode() {
 		return linkMode;
+	}
+
+	public void setLinkMode(LinkMode linkMode) {
+		if (linkMode == null) return;
+		this.linkMode = linkMode;
 	}
 
 	public RankDir getRankDir() {
 		return rankDir;
 	}
 
+	public void setRankDir(RankDir rankDir) {
+		if (rankDir == null) return;
+		this.rankDir = rankDir;
+	}
+
 	public String getDotApp() {
 		return dotApp;
+	}
+
+	public void setDotApp(String dotApp) {
+		if (dotApp == null) return;
+		this.dotApp = dotApp;
 	}
 
 	public String getDotAddLine() {
 		return dotAddLine;
 	}
 
+	public void setDotAddLine(String dotAddLine) {
+		if (dotAddLine == null) return;
+		if (!dotAddLine.matches("^.*?\r?\n$")) {
+			dotAddLine = dotAddLine + "\n";
+		}
+		this.dotAddLine = dotAddLine;
+	}
+
 	public Renderer getRenderer() {
 		return renderer;
+	}
+
+	public void setRenderer(Renderer renderer) {
+		if (renderer == null) return;
+		this.renderer = renderer;
 	}
 
 	public Visualization getVisualization() {
 		return visualization;
 	}
 
+	public void setVisualization(Visualization visualization) {
+		if (visualization == null) return;
+		this.visualization = visualization;
+	}
+
 	public String getDesign() {
 		return design;
+	}
+
+	public void setDesign(String design) {
+		if (design == null) return;
+		this.design = design;
 	}
 
 	public String getPrerender() {
 		return prerender;
 	}
 
+	public void setPrerender(String prerender) {
+		if (prerender == null) return;
+		this.prerender = prerender;
+	}
+
 	public String getCacheFileID() {
 		return cacheFileID;
 	}
 
-	public void setSectionId(String sectionId) {
-		this.sectionId = sectionId;
+	public void setCacheFileID(String fileID) {
+		if (fileID == null) return;
+		this.cacheFileID = fileID;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
+	public ShowInverse getShowInverse() {
+		return showInverse;
 	}
 
-	public void setCacheDirectoryPath(String cachePath) {
-		this.cacheDirectoryPath = cachePath;
+	public void setShowInverse(ShowInverse showInverse) {
+		if (showInverse == null) return;
+		this.showInverse = showInverse;
+	}
+
+	public enum Renderer {
+		DOT, D3
+	}
+
+	public enum LinkMode {
+		JUMP, BROWSE
+	}
+
+	public enum Visualization {
+		WHEEL, FORCE
+	}
+
+	public enum LiteralMode {
+		OFF, TABLE, NODES
+	}
+
+	public enum RankDir {
+		LR, RL, TB, BT
+	}
+
+	public enum Layout {
+		DOT, NEATO, FDP, CIRCO, TWOPI
+	}
+
+	public enum Overlap {
+		TRUE, FALSE, SCALEXY, SCALE, COMPRESS, VPSC, VORONOI, ORTHO, ORTHOXY, ORTHOYX, PORTHO, PORTHOXY, PORTHOYX
+	}
+
+	public enum ShowInverse {
+		TRUE, FALSE, FALSE_DOT_BASED, FALSE_ONTOLOGY_BASED
 	}
 }

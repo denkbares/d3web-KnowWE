@@ -54,32 +54,29 @@ import de.knowwe.visualization.GraphDataBuilder;
  */
 public class OntoGraphDataBuilder extends GraphDataBuilder {
 
-	private Rdf2GoCore rdf2GoCore = null;
-
-	private int depth = 0;
-
-	private int height = 0;
-	private final Set<Value> expandedPredecessors = new HashSet<>();
-
-	private final Set<Value> expandedSuccessors = new HashSet<>();
-	private final Set<Value> literalsExpanded = new HashSet<>();
-	private final Map<Integer, String> propertyExcludeSPARQLFilterCache = new HashMap<>();
-	private final Set<Value> fringeValues = new HashSet<>();
-
-	private final String nodeFilterExpression = null;
 	/*
 	For Debugging/Optimization only
 	 */
 	private static final boolean DEBUG_MODE = false;
+	final String previousBlankValueSparqlVariableName = "previousBlankValue";
+	private final Set<Value> expandedPredecessors = new HashSet<>();
+	private final Set<Value> expandedSuccessors = new HashSet<>();
+	private final Set<Value> literalsExpanded = new HashSet<>();
+	private final Map<Integer, String> propertyExcludeSPARQLFilterCache = new HashMap<>();
+	private final Set<Value> fringeValues = new HashSet<>();
+	private final String nodeFilterExpression = null;
+	private final List<OuterConceptCheck> outerConceptCalls = new ArrayList<>();
+	private final Set<OuterConceptCheck> checkedOuterConcepts = new HashSet<>();
+	private final List<String> succQueries = new ArrayList<>();
+	private final List<String> predQueries = new ArrayList<>();
+	private Rdf2GoCore rdf2GoCore = null;
+	private int depth = 0;
+	private int height = 0;
 	private int addSuccessorsCalls = 0;
 	private int addOutgoingSuccessorsCalls = 0;
 	private int addPredecessorsCalls = 0;
 	private int addOutgoingPredecessorsCalls = 0;
 	private int addOuterConceptCalls = 0;
-	private final List<OuterConceptCheck> outerConceptCalls = new ArrayList<>();
-	private final Set<OuterConceptCheck> checkedOuterConcepts = new HashSet<>();
-	private final List<String> succQueries = new ArrayList<>();
-	private final List<String> predQueries = new ArrayList<>();
 
 	/**
 	 * Allows to create a new Ontology Rendering Core. For each rendering task a new one should be created.
@@ -95,11 +92,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		initialiseData(section, config, uriProvider);
 
-		// filter inverseOf-relations if asked (default is no filter)
-		if (!config.isShowInverse()) {
+		// filter inverseOf-relations if asked (default is dot-based filtering)
+		if (config.getShowInverse() == Config.ShowInverse.FALSE_ONTOLOGY_BASED) {
 			addInverseRelationsToFilter();
 		}
-
 	}
 
 	private void addInverseRelationsToFilter() {
@@ -282,8 +278,6 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	private void addSuccessors(Value conceptToBeExpanded, Value predecessor, Value predecessorPredicate) {
 		addSuccessors(conceptToBeExpanded, predecessor, predecessorPredicate, ExpandMode.Normal, Direction.Forward);
 	}
-
-	final String previousBlankValueSparqlVariableName = "previousBlankValue";
 
 	private void addSuccessors(Value conceptToBeExpanded, Value previousValue, Value previousPredicate, ExpandMode mode, Direction direction) {
 
@@ -888,49 +882,6 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		return relation.length() > 4 && relation.substring(relation.length() - 4).equalsIgnoreCase("type");
 	}
 
-	class OuterConceptCheck {
-		private final Value fromURI;
-		private final Value toURI;
-		private final Value relationURI;
-		private final boolean predecessor;
-
-		OuterConceptCheck(Value fromURI, Value toURI, Value relationURI, boolean predecessor) {
-			this.fromURI = fromURI;
-			this.toURI = toURI;
-			this.relationURI = relationURI;
-			this.predecessor = predecessor;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			OuterConceptCheck that = (OuterConceptCheck) o;
-
-			if (predecessor != that.predecessor) return false;
-			if (!fromURI.equals(that.fromURI)) return false;
-			//noinspection SimplifiableIfStatement
-			if (!relationURI.equals(that.relationURI)) return false;
-			return toURI.equals(that.toURI);
-
-		}
-
-		@Override
-		public int hashCode() {
-			int result = fromURI.hashCode();
-			result = 31 * result + toURI.hashCode();
-			result = 31 * result + relationURI.hashCode();
-			result = 31 * result + (predecessor ? 1 : 0);
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return fromURI + " " + relationURI + " " + toURI + " (forward: " + predecessor + ")";
-		}
-	}
-
 	/**
 	 * Adds a nodes expanded by a fringe node.
 	 * <p>
@@ -1045,4 +996,47 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	enum ExpandMode {Normal, LiteralsOnly}
 
 	enum Direction {Forward, Backward}
+
+	class OuterConceptCheck {
+		private final Value fromURI;
+		private final Value toURI;
+		private final Value relationURI;
+		private final boolean predecessor;
+
+		OuterConceptCheck(Value fromURI, Value toURI, Value relationURI, boolean predecessor) {
+			this.fromURI = fromURI;
+			this.toURI = toURI;
+			this.relationURI = relationURI;
+			this.predecessor = predecessor;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			OuterConceptCheck that = (OuterConceptCheck) o;
+
+			if (predecessor != that.predecessor) return false;
+			if (!fromURI.equals(that.fromURI)) return false;
+			//noinspection SimplifiableIfStatement
+			if (!relationURI.equals(that.relationURI)) return false;
+			return toURI.equals(that.toURI);
+
+		}
+
+		@Override
+		public int hashCode() {
+			int result = fromURI.hashCode();
+			result = 31 * result + toURI.hashCode();
+			result = 31 * result + relationURI.hashCode();
+			result = 31 * result + (predecessor ? 1 : 0);
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return fromURI + " " + relationURI + " " + toURI + " (forward: " + predecessor + ")";
+		}
+	}
 }

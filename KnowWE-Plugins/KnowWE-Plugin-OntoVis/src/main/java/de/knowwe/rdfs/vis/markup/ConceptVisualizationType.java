@@ -9,14 +9,6 @@ import de.knowwe.visualization.Config;
 
 public class ConceptVisualizationType extends DefaultMarkupType implements VisualizationType {
 
-	public enum DotApps {
-		dot, neato
-	}
-
-	public enum Visualizations {
-		wheel, force
-	}
-
 	public ConceptVisualizationType() {
 		applyMarkup(createMarkup());
 		this.setRenderer(new AsynchronousRenderer(getPreRenderer()));
@@ -53,7 +45,9 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 		MARKUP.addAnnotation(Config.ADD_TO_DOT, false);
 
 		MARKUP.addAnnotation(Config.SHOW_OUTGOING_EDGES, false, "true", "false");
-		MARKUP.addAnnotation(Config.SHOW_INVERSE, false, "true", "false");
+
+		MARKUP.addAnnotation(Config.SHOW_INVERSE, false, Config.ShowInverse.class);
+		MARKUP.addAnnotationRenderer(Config.SHOW_INVERSE, NothingRenderer.getInstance());
 
 		MARKUP.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
 		MARKUP.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
@@ -81,6 +75,8 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 		MARKUP.addAnnotation(Config.LAYOUT, false, Config.Layout.class);
 		MARKUP.addAnnotationRenderer(Config.LAYOUT, NothingRenderer.getInstance());
 
+		MARKUP.addAnnotation(AsynchronousRenderer.ASYNCHRONOUS, false);
+
 		return MARKUP;
 	}
 
@@ -91,6 +87,14 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 	@Override
 	public PreRenderer getPreRenderer() {
 		return new ConceptVisualizationRenderer();
+	}
+
+	public enum DotApps {
+		dot, neato
+	}
+
+	public enum Visualizations {
+		wheel, force
 	}
 
 }

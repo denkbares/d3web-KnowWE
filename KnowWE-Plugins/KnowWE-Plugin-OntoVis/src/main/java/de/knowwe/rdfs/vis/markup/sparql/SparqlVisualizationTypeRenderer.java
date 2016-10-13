@@ -37,6 +37,8 @@ import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
 public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
+	public static final String VISUALIZATION_RENDERER_KEY = "sparqlVisualizationRendererKey";
+
 	@Override
 	public void render(Section<?> content, UserContext user, RenderResult string) {
 		if (user.getParameter("concept") != null) {
@@ -45,13 +47,10 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			PreRenderWorker.getInstance().clearCache(content);
 		}
 		PreRenderWorker.getInstance().handlePreRendering(content, user, this);
-		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) content.getObject(getKey());
+		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) content.getObject(VISUALIZATION_RENDERER_KEY);
 		if (graphRenderer != null) string.appendHtml(graphRenderer.getHTMLIncludeSnipplet());
 	}
 
-	protected String getKey() {
-		return this.getClass().getName();
-	}
 
 	private SubGraphData convertToGraph(CachedTupleQueryResult resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
 		SubGraphData data;
@@ -193,7 +192,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 			graphRenderer.generateSource();
 
-			content.storeObject(getKey(), graphRenderer);
+			content.storeObject(VISUALIZATION_RENDERER_KEY, graphRenderer);
 		}
 
 	}
@@ -204,7 +203,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 	@Override
 	public void cleanUp(Section<?> section) {
-		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) section.getObject(getKey());
+		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) section.getObject(VISUALIZATION_RENDERER_KEY);
 		if (graphRenderer != null) graphRenderer.cleanUp();
 	}
 
