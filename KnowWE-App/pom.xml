@@ -513,6 +513,11 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-CityVis</artifactId>
+					<version>${knowwe.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DiaFlux-Review</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
