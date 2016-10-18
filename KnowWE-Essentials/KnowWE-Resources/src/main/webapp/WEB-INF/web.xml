@@ -99,7 +99,7 @@
 	  -->
     <listener>
         <listener-class>org.apache.wiki.auth.SessionMonitor</listener-class>
-        <listener-class>de.knowwe.core.ServletContextEventDelegate</listener-class>
+        <listener-class>de.knowwe.core.ServletContextEventListener</listener-class>
     </listener>
 
     <!--

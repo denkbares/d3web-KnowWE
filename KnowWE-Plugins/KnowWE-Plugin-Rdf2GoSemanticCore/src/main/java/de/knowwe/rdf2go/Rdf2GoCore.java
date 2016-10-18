@@ -90,6 +90,7 @@ import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.d3web.core.inference.RuleSet;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
@@ -116,6 +117,17 @@ public class Rdf2GoCore {
 
 	public static final String GLOBAL = "GLOBAL";
 
+
+	public static final int DEFAULT_TIMEOUT = 15000;
+
+	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
+
+	private final Map<String, SparqlTask> resultCache = new LinkedHashMap<>(16, 0.75f, true);
+
+	private final Object statementMutex = new Object();
+
+	private int resultCacheSize = 0;
+
 	private static final ThreadPoolExecutor sparqlThreadPool = createThreadPool(
 			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-Sparql-Thread");
 
@@ -126,21 +138,14 @@ public class Rdf2GoCore {
 	private static final ThreadPoolExecutor sparqlReaperPool = createThreadPool(
 			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon");
 
-	public static final int DEFAULT_TIMEOUT = 15000;
-
-	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
-
-	private final Map<String, SparqlTask> resultCache = new LinkedHashMap<>(16, 0.75f, true);
-
-	private int resultCacheSize = 0;
-
-	/**
-	 * Some models have extreme slow downs if during a SPARQL query new statements are added or
-	 * removed. Concurrent SPARQLs however are no problem. Therefore we use a lock that locks
-	 * exclusively for writing but shared for reading.
-	 */
-
-	private final Object statementLock = new Object();
+	static {
+		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
+			Log.info("Shutting down Rdf2Go thread pools.");
+			sparqlThreadPool.shutdown();
+			sparqlReaperPool.shutdown();
+			shutDownThreadPool.shutdown();
+		});
+	}
 
 	public static Rdf2GoCore getInstance(Section<?> section) {
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
@@ -256,11 +261,12 @@ public class Rdf2GoCore {
 	 * that the RuleSet argument only has an effect if OWLIM is used as underlying
 	 * implementation.
 	 *
-	 * @param lns the uri used as local namespace
-	 * @param bns the uri used as base namespace
+	 * @param lns       the uri used as local namespace
+	 * @param bns       the uri used as base namespace
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
 	public Rdf2GoCore(String lns, String bns, RepositoryConfig reasoning) {
+
 		if (reasoning == null) {
 			reasoning = RepositoryConfigs.get(RdfConfig.class);
 		}
@@ -300,7 +306,7 @@ public class Rdf2GoCore {
 	 * Add a namespace to the model.
 	 *
 	 * @param abbreviation the short version of the namespace
-	 * @param namespace the namespace (URL)
+	 * @param namespace    the namespace (URL)
 	 */
 	public void addNamespace(String abbreviation, String namespace) {
 		synchronized (nsMutext) {
@@ -386,8 +392,8 @@ public class Rdf2GoCore {
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param source the {@link StatementSource} for which the {@link Statement}s are added and
-	 * cached
+	 * @param source     the {@link StatementSource} for which the {@link Statement}s are added and
+	 *                   cached
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(StatementSource source, Statement... statements) {
@@ -401,12 +407,12 @@ public class Rdf2GoCore {
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param source the {@link StatementSource} for which the {@link Statement}s are added and
-	 * cached
+	 * @param source     the {@link StatementSource} for which the {@link Statement}s are added and
+	 *                   cached
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(StatementSource source, Collection<Statement> statements) {
-		synchronized (statementLock) {
+		synchronized (statementMutex) {
 			for (Statement statement : statements) {
 				if (!statementCache.containsValue(statement)) {
 					insertCache.add(statement);
@@ -423,7 +429,7 @@ public class Rdf2GoCore {
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param section the {@link Section} for which the {@link Statement}s are added and cached
+	 * @param section    the {@link Section} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
 	 * @created 06.12.2010
 	 */
@@ -438,7 +444,7 @@ public class Rdf2GoCore {
 	 * You can remove the {@link Statement}s using the method
 	 * {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param section the {@link Section} for which the {@link Statement}s are added and cached
+	 * @param section    the {@link Section} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
 	 * @created 06.12.2010
 	 */
@@ -885,7 +891,7 @@ public class Rdf2GoCore {
 	 * @created 13.06.2012
 	 */
 	public void removeStatements(Collection<Statement> statements) {
-		synchronized (statementLock) {
+		synchronized (statementMutex) {
 			removeStatements(null, statements);
 		}
 	}
@@ -897,7 +903,7 @@ public class Rdf2GoCore {
 	 */
 	public void removeStatements(StatementSource source) {
 		Collection<Statement> statements = statementCache.getValues(source);
-		synchronized (statementLock) {
+		synchronized (statementMutex) {
 			removeStatements(source, new ArrayList<>(statements));
 		}
 	}
@@ -997,7 +1003,7 @@ public class Rdf2GoCore {
 	/**
 	 * Performs a cached SPARQL select query with the specified timeout.
 	 *
-	 * @param query the SPARQL query to perform
+	 * @param query   the SPARQL query to perform
 	 * @param timeout the time to be used for timout
 	 * @return the result of the query
 	 */
@@ -1030,8 +1036,8 @@ public class Rdf2GoCore {
 	 * uncached query, the timeout only effects the process of creating the iterator. Retrieving
 	 * elements from the iterator might again take a long time not covered by the timeout.
 	 *
-	 * @param query the SPARQL query to perform
-	 * @param cached sets whether the SPARQL query is to be cached or not
+	 * @param query         the SPARQL query to perform
+	 * @param cached        sets whether the SPARQL query is to be cached or not
 	 * @param timeOutMillis the timeout of the query
 	 * @return the result of the query
 	 */
@@ -1044,8 +1050,8 @@ public class Rdf2GoCore {
 	 * query, the timeout only effects the process of creating the iterator. Retrieving elements
 	 * from the iterator might again take a long time not covered by the timeout.
 	 *
-	 * @param query the SPARQL query to perform
-	 * @param cached sets whether the SPARQL query is to be cached or not
+	 * @param query         the SPARQL query to perform
+	 * @param cached        sets whether the SPARQL query is to be cached or not
 	 * @param timeOutMillis the timeout of the query
 	 * @return the result of the query
 	 */
@@ -1443,7 +1449,7 @@ public class Rdf2GoCore {
 	 * Writes the current repository model to the given writer in the specified
 	 * syntax.
 	 *
-	 * @param out the target to write the model to
+	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
 	 * @created 28.07.2014
 	 */
@@ -1460,7 +1466,7 @@ public class Rdf2GoCore {
 	 * Writes the current repository model to the given writer in the specified
 	 * syntax.
 	 *
-	 * @param out the target to write the model to
+	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
 	 * @created 28.07.2014
 	 */
@@ -1488,12 +1494,19 @@ public class Rdf2GoCore {
 	 * Destroys this Rdf2GoCore and its underlying model.
 	 */
 	public void destroy() {
-		shutDownThreadPool.execute(() -> {
-			Stopwatch stopwatch = new Stopwatch();
-			EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
-			this.semanticCore.shutdown();
-			Log.info("SemanticCore shutdown in " + stopwatch.getDisplay());
-		});
+		if (ServletContextEventListener.isDestroyInProgress()) {
+			shutDown();
+		}
+		else {
+			shutDownThreadPool.execute(this::shutDown);
+		}
+	}
+
+	private void shutDown() {
+		Stopwatch stopwatch = new Stopwatch();
+		EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+		this.semanticCore.shutdown();
+		Log.info("SemanticCore shutdown in " + stopwatch.getDisplay());
 	}
 
 	public RepositoryConfig getRuleSet() {

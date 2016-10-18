@@ -5,7 +5,7 @@ import javax.servlet.ServletContextEvent;
 import com.denkbares.events.Event;
 
 /**
- * Gets fired when the current servlet context gets destroyed, e.g. tomcat shutdown or redeploy of KnowWE webapp.
+ * Gets fired when the current servlet context gets destroyed, e.g. tomcat shutdown or redeploy of the webapp.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 18.10.16

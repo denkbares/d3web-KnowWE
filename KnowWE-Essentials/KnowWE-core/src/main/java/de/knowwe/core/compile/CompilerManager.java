@@ -1,5 +1,6 @@
 package de.knowwe.core.compile;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
@@ -46,7 +48,7 @@ import de.knowwe.event.ServletContextDestroyedEvent;
  * priorities. Only compilers with same priority may compile in parallel.
  * <p/>
  */
-public class CompilerManager implements EventListener {
+public class CompilerManager {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
 	private int compilationCount = 0;
@@ -67,7 +69,16 @@ public class CompilerManager implements EventListener {
 		this.compilerCache = new HashSet<>();
 		this.compilers = new PriorityList<>(5d);
 		this.threadPool = createExecutorService();
-		EventManager.getInstance().registerListener(this);
+		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
+			onContextDestroyed();
+		});
+	}
+
+	private void onContextDestroyed() {
+		Log.info("Shutting down KnowWE compilers.");
+		new ArrayList<>(compilerCache).forEach(this::removeCompiler);
+		compileThreads.clear();
+		threadPool.shutdown();
 	}
 
 	/**
@@ -337,7 +348,7 @@ public class CompilerManager implements EventListener {
 		// debug code: check that we only remove items
 		// that already have been added
 		if (!compilers.contains(compiler)) {
-			throw new NoSuchElementException("Removeing non-exisitng compiler instance.");
+			throw new NoSuchElementException("Removing non-existing compiler instance.");
 		}
 		// remove the compiler, being thread-save
 		synchronized (lock) {
@@ -416,15 +427,4 @@ public class CompilerManager implements EventListener {
 		}
 	}
 
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		return Collections.singleton(ServletContextDestroyedEvent.class);
-	}
-
-	@Override
-	public void notify(Event event) {
-		Log.info("Shutting down KnowWE compilers.");
-		compileThreads.clear();
-		threadPool.shutdown();
-	}
 }

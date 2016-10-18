@@ -53,6 +53,7 @@ import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
 import de.knowwe.core.kdom.basicType.AttachmentType;
@@ -133,6 +134,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(VERSIONING_ANNOTATION, false, "true", "false");
 		MARKUP.addAnnotation(ZIP_ENTRY_ANNOTATION);
 
+		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
+			Log.info("Shutting down attachment update timer.");
+			UPDATE_TIMER.cancel();
+		});
 	}
 
 	public AttachmentMarkup() {
