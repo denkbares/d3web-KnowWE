@@ -95,7 +95,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
 	private static final String PATH_SEPARATOR = "/";
 
-	private static final Timer UPDATE_TIMER = new Timer();
+	private static final Timer UPDATE_TIMER = new Timer(true);
 
 	private static final Map<String, Long> LAST_RUNS = new HashMap<>();
 

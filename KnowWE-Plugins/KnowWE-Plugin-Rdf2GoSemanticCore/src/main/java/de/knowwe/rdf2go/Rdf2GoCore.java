@@ -169,7 +169,11 @@ public class Rdf2GoCore {
 
 	private static ThreadPoolExecutor createThreadPool(int threadCount, final String threadName) {
 		return (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount,
-				runnable -> new Thread(runnable, threadName));
+				runnable -> {
+					Thread thread = new Thread(runnable, threadName);
+					thread.setDaemon(true);
+					return thread;
+				});
 	}
 
 	@Deprecated
