@@ -767,6 +767,8 @@ var _KU = KNOWWE.core.util;
 			if (window.onbeforeunload) {
 				message = window.onbeforeunload();
 			}
+			// we only update if the onbeforeunload function does not return a message... if it would return a
+			// message, we can assume that there is unsaved work and we should not refresh...
 			if (!message) {
 				KNOWWE.helper.observer.notify('update', {status : jq$('#knowWEInfoStatus').val()});
 			}
