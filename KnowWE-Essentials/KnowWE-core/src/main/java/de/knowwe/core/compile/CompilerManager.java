@@ -17,12 +17,15 @@ import java.util.concurrent.Executors;
 
 import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
+import de.knowwe.event.ServletContextDestroyedEvent;
 
 /**
  * This class represents the compile manager for a specific
@@ -43,7 +46,7 @@ import de.knowwe.core.report.Messages;
  * priorities. Only compilers with same priority may compile in parallel.
  * <p/>
  */
-public class CompilerManager {
+public class CompilerManager implements EventListener {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
 	private int compilationCount = 0;
@@ -64,6 +67,7 @@ public class CompilerManager {
 		this.compilerCache = new HashSet<>();
 		this.compilers = new PriorityList<>(5d);
 		this.threadPool = createExecutorService();
+		EventManager.getInstance().registerListener(this);
 	}
 
 	/**
@@ -79,6 +83,7 @@ public class CompilerManager {
 		int threadCount = Runtime.getRuntime().availableProcessors() + 1;
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount, runnable -> {
 			Thread thread = new Thread(runnable, "KnowWE-Compiler");
+			thread.setDaemon(true);
 			compileThreads.put(thread, null);
 			return thread;
 		});
@@ -411,4 +416,15 @@ public class CompilerManager {
 		}
 	}
 
+	@Override
+	public Collection<Class<? extends Event>> getEvents() {
+		return Collections.singleton(ServletContextDestroyedEvent.class);
+	}
+
+	@Override
+	public void notify(Event event) {
+		Log.info("Shutting down KnowWE compilers.");
+		compileThreads.clear();
+		threadPool.shutdown();
+	}
 }
