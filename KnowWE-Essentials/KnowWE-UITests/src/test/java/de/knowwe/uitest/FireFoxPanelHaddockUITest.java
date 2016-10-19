@@ -26,8 +26,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
- * Edit class text
- *
+ * Test for left and right panel for Firefox and haddock template
+ * <p>
+ * You will need a UITest-Panel-FireFox wiki page in order to carry out this test locally
+ * <p>
  * @author Jonas Müller
  * @created 13.10.16
  */
@@ -51,6 +53,6 @@ public class FireFoxPanelHaddockUITest extends PanelHaddockUITest {
 
 	@Override
 	public String getTestName() {
-		return "UITest-Panel-Firefox";
+		return "UITest-Panel-FireFox";
 	}
 }

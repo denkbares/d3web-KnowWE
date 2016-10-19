@@ -22,6 +22,7 @@ package de.knowwe.uitest;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -31,11 +32,12 @@ import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static de.knowwe.uitest.WikiTemplate.haddock;
+import static de.knowwe.uitest.WikiTemplate.standard;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
- *
  * @author Jonas Müller
  * @created 06.10.16
  */
@@ -53,33 +55,47 @@ public abstract class KnowWEUITest {
 	 * <p>
 	 * To test locally, you also need to download the ChromeDriver from
 	 * https://sites.google.com/a/chromium.org/chromegetDriver()/downloads
-	 * and start it on your machine. Also, you need a locally running KnowWE with a page "ST-BMI".
+	 * and start it on your machine.
 	 * State of the page does not matter, it will be cleared for each new test.
 	 */
 	protected static boolean devMode = false;
 
-
 	public abstract String getTestName();
+
+	private static boolean loggedIn = false;
+
+	@BeforeClass
+	public static void setLoggedIn() {
+		loggedIn = false;
+	}
 
 	@Before
 	public void load() throws Exception {
 		if (devMode) {
-			getDriver().get("http://localhost:8080/KnowWE/Wiki.jsp?page=" + getTestName());
+			getDriver().get("http://localhost:800/KnowWE/Wiki.jsp?page=" + getTestName());
 		} else {
-			getDriver().get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=" + getTestName());
-			logIn();
+			if (getTemplate() == haddock) {
+				getDriver().get("https://knowwe-nightly-haddock.denkbares.com/Wiki.jsp?page=" + getTestName());
+			} else {
+				getDriver().get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=" + getTestName());
+			}
+			if (!loggedIn) {
+				logIn();
+				loggedIn = true;
+			}
 		}
 	}
 
-	protected void logIn() {
-		UITestUtils.logIn(getDriver(), "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", UITestUtils.UseCase.NORMAL_PAGE);
+	protected void logIn() throws InterruptedException {
+		UITestUtils.logIn(getDriver(), "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", UITestUtils.UseCase.NORMAL_PAGE, getTemplate());
 	}
 
 	protected void changeArticleText(String newText) {
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 		getDriver().findElement(By.id("edit-source-button")).click();
-		String areaSelector = getTemplate() == WikiTemplate.haddock ?  ".editor.form-control" : "#editorarea";
-		List<WebElement> editorAreas = new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(areaSelector)));
+		String areaSelector = getTemplate() == WikiTemplate.haddock ? ".editor.form-control" : "#editorarea";
+		List<WebElement> editorAreas = new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By
+				.cssSelector(areaSelector)));
 		if (getDriver() instanceof JavascriptExecutor) {
 			// hacky but fast/instant!
 			((JavascriptExecutor) getDriver()).executeScript("var areas = document.querySelectorAll('" + areaSelector + "');" +

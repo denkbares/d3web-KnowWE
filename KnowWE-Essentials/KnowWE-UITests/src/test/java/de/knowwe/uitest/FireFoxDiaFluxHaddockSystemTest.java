@@ -22,7 +22,7 @@ package de.knowwe.uitest;
 import org.junit.Ignore;
 
 /**
- * Edit class text
+ * DiaFluxSystem Test for FireFox with haddock template
  *
  * @author Jonas Müller
  * @created 13.09.16

@@ -28,11 +28,13 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -45,6 +47,10 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @created 03.07.15
  */
 public class UITestUtils {
+
+	public enum WebOS {
+		windows, macOS, linux, other
+	}
 
 	/**
 	 * Loads the given article and waits for it to be loaded. If an alert pops up, it will be accepted.
@@ -153,12 +159,18 @@ public class UITestUtils {
 		}
 	}
 
-	public static void logIn(WebDriver driver, String username, String password, UseCase use) {
+	public static void logIn(WebDriver driver, String username, String password, UseCase use, WikiTemplate template) throws InterruptedException {
 		List<WebElement> elements = null;
 		if (use == UseCase.LOGIN_PAGE) {
-			elements = driver.findElements(By.id("logincontent"));
+			String idLoginElement = template == WikiTemplate.haddock ? "section-login" : "logincontent";
+			elements = driver.findElements(By.id(idLoginElement));
 		} else if (use == UseCase.NORMAL_PAGE) {
-			elements = driver.findElements(By.cssSelector("a.action.login"));
+			if (template == WikiTemplate.haddock) {
+				driver.findElement(By.className("userbox")).click();
+				Thread.sleep(1000); //Animation
+			}
+			String loginSelector = template == WikiTemplate.haddock? "a.btn.btn-primary.btn-block.login" : "a.action.login";
+			elements = driver.findElements(By.cssSelector(loginSelector));
 		}
 
 		if (elements == null) {
@@ -171,7 +183,9 @@ public class UITestUtils {
 		driver.findElement(By.id("j_username")).sendKeys(username);
 		driver.findElement(By.id("j_password")).sendKeys(password);
 		driver.findElement(By.name("submitlogin")).click();
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
+		if (template == WikiTemplate.standard) {
+			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
+		}
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 	}
 
@@ -207,5 +221,15 @@ public class UITestUtils {
 		}
 		driver.manage().window().setSize(new Dimension(1024, 768));
 		return driver;
+	}
+
+	public static WebOS getWebOS(WebDriver driver) {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		String os = (String) jse.executeScript("return navigator.appVersion");
+		os = os.toLowerCase();
+		if (os.contains("win")) return WebOS.windows;
+		if (os.contains("mac")) return WebOS.macOS;
+		if (os.contains("nux") || os.contains("nix")) return WebOS.linux;
+		return WebOS.other;
 	}
 }

@@ -25,8 +25,10 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
- * Edit class text
- *
+ * Test for left and right panel for Chrome and haddock template
+ * <p>
+ * You will need a UITest-Panel-Chrome wiki page in order to carry out this test locally
+ * <p>
  * @author Jonas Müller
  * @created 06.10.16
  */

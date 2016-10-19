@@ -20,7 +20,7 @@
 package de.knowwe.uitest;
 
 /**
- * Edit class text
+ * DiaFluxSystem Test for FireFox with default template.
  *
  * @author Jonas Müller
  * @created 13.09.16

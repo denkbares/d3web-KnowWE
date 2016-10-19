@@ -19,9 +19,11 @@
 
 package de.knowwe.uitest;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -31,6 +33,8 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.denkbares.strings.Strings;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
@@ -103,32 +107,32 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 	@Test
 	public void testSidebarAndRightPanel() throws InterruptedException {
-		assertTrue(isSidebarVisible());
-		assertFalse(isRightPanelVisible());
+		assertTrue("Sidebar should be visible at the beginning", isSidebarVisible());
+		assertFalse("Right Panel should not be visible at the beginning", isRightPanelVisible());
 
 		pressRightPanelButton();
-		assertTrue(isSidebarVisible());
-		assertTrue(isRightPanelVisible());
-		assertTrue(isPageAlignedLeftWithSidebar());
-		assertTrue(isPageAlignedRightWithRightPanel());
+		assertTrue("Sidebar should be visible after showing right panel", isSidebarVisible());
+		assertTrue("Right panel should be visible after pressing its button", isRightPanelVisible());
+		assertTrue("Page content should be aligned correctly with sidebar visible", isPageAlignedLeftWithSidebar());
+		assertTrue("Page content should be aligned correctly with right panel visible", isPageAlignedRightWithRightPanel());
 
 		pressSidebarButton();
-		assertFalse(isSidebarVisible());
-		assertTrue(isRightPanelVisible());
-		assertTrue(isPageAlignedLeft());
-		assertTrue(isPageAlignedRightWithRightPanel());
+		assertFalse("Sidebar should be hidden after pressing its button", isSidebarVisible());
+		assertTrue("Right panel should be visible after hiding sidebar", isRightPanelVisible());
+		assertTrue("Page content should be aligned correctly without sidebar visible", isPageAlignedLeft());
+		assertTrue("Page content should be aligned correctly with right panel visible", isPageAlignedRightWithRightPanel());
 
 		pressSidebarButton();
-		assertTrue(isSidebarVisible());
-		assertTrue(isRightPanelVisible());
-		assertTrue(isPageAlignedLeftWithSidebar());
-		assertTrue(isPageAlignedRightWithRightPanel());
+		assertTrue("Sidebar should be visible after pressing its button", isSidebarVisible());
+		assertTrue("Right panel should be visible after showing sidebar", isRightPanelVisible());
+		assertTrue("Page content should be aligned correctly after showing sidebar", isPageAlignedLeftWithSidebar());
+		assertTrue("Page content should be aligned correctly with right panel visible after showing sidebar", isPageAlignedRightWithRightPanel());
 
 		pressRightPanelButton();
-		assertTrue(isSidebarVisible());
-		assertFalse(isRightPanelVisible());
-		assertTrue(isPageAlignedLeftWithSidebar());
-		assertTrue(isPageAlignedRight());
+		assertTrue("Sidebar should be visible after hiding right panel", isSidebarVisible());
+		assertFalse("Right panel should not be visible after pressing its button", isRightPanelVisible());
+		assertTrue("Page content should be aligned correctly with sidebar after hiding right panel", isPageAlignedLeftWithSidebar());
+		assertTrue("Page content should be aligned correctly without right panel after hiding right panel", isPageAlignedRight());
 	}
 
 	@Test
@@ -160,7 +164,6 @@ public abstract class PanelUITest extends KnowWEUITest {
 	@Test
 	public void testScrollingFullPage() throws InterruptedException {
 		pressRightPanelButton();
-		Thread.sleep(500);
 
 		for (int i = 0; i < 10; i++) {
 			addWatchDummy();
@@ -187,16 +190,16 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 	}
 
-	protected abstract void pressSidebarButton();
+	protected abstract void pressSidebarButton() throws InterruptedException;
 
-	protected void pressRightPanelButton() {
+	protected void pressRightPanelButton() throws InterruptedException {
 		String idRightPanel = "rightPanel-toggle-button";
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id(idRightPanel)));
 		getDriver().findElement(By.id(idRightPanel)).click();
+		Thread.sleep(500); // Wait for Animation
 	}
 
 	protected boolean isSidebarVisible() throws InterruptedException {
-		Thread.sleep(500);
 		int x = getSidebar().getLocation().getX();
 		int width = getSidebar().getSize().getWidth();
 		int paddingLeft = Integer.parseInt(getSidebar().getCssValue("padding-left").replace("px", ""));
@@ -212,8 +215,7 @@ public abstract class PanelUITest extends KnowWEUITest {
 		}
 	}
 
-	protected boolean isRightPanelVisible() throws InterruptedException {
-		Thread.sleep(500);
+	protected boolean isRightPanelVisible() {
 		WebElement rightPanel;
 		try {
 			rightPanel = getRightPanel();

@@ -12,7 +12,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 /**
  * DiaFluxSystemTest for Chrome.
- *
+ *<p>
+ * You will need a ST-BMI-Chrome wiki page in order to carry out this test
+ *<p>
  * Created by Albrecht Striffler (denkbares GmbH) on 25.04.2015.
  */
 public abstract class ChromeDiaFluxSystemTest extends DiaFluxSystemTest {

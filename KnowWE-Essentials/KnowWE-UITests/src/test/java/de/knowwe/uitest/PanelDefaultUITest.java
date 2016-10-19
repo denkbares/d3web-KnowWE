@@ -29,7 +29,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.junit.Assert.fail;
 
 /**
- * Edit class text
+ * Tests correct behavior of left and right panel for default template
  *
  * @author Jonas Müller
  * @created 06.10.16
@@ -41,10 +41,11 @@ public abstract class PanelDefaultUITest extends PanelUITest {
 	}
 
 	@Override
-	protected void pressSidebarButton() {
+	protected void pressSidebarButton() throws InterruptedException {
 		String idSidebarButton = "favorites-toggle-button";
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id(idSidebarButton)));
 		getDriver().findElement(By.id(idSidebarButton)).click();
+		Thread.sleep(500); // Wait for animation
 	}
 
 	@Override
@@ -86,28 +87,19 @@ public abstract class PanelDefaultUITest extends PanelUITest {
 
 	@Override
 	protected boolean isPageAlignedRight() {
-		int pageWidth = getDriver().findElement(By.id("page")).getSize().getWidth();
-		int sideBarWidthVisible = getSidebar().getSize().getWidth();
-		sideBarWidthVisible += Integer.parseInt(getSidebar().getCssValue("left").replaceAll("px", ""));
 		int windowWidth = getDriver().manage().window().getSize().getWidth();
 		int posXEnd = getDriver().findElement(By.id("pagecontent")).getLocation().getX();
 		posXEnd += getDriver().findElement(By.id("pagecontent")).getSize().getWidth();
-		return Math.abs(windowWidth - pageWidth - sideBarWidthVisible) <= 5
-				&& Math.abs(windowWidth - posXEnd) <= 10;
+		UITestUtils.WebOS os = UITestUtils.getWebOS(getDriver());
+		int tolerance = os == UITestUtils.WebOS.windows ? 35 : 10; //Scrollbar width
+		return Math.abs(windowWidth - posXEnd) <= tolerance;
 	}
 
 	@Override
 	protected boolean isPageAlignedRightWithRightPanel() {
-		int sideBarWidthVisible = getSidebar().getSize().getWidth();
-		sideBarWidthVisible += Integer.parseInt(getSidebar().getCssValue("left").replaceAll("px", ""));
-		int rightPanelWidth = getRightPanel().getSize().getWidth();
-		int pageWidth = Integer.parseInt(getDriver().findElement(By.id("page")).getCssValue("width").replaceAll("px", ""));
-		int windowWidth = getDriver().manage().window().getSize().getWidth();
-
 		int posXEnd = getDriver().findElement(By.id("pagecontent")).getLocation().getX();
 		posXEnd += getDriver().findElement(By.id("pagecontent")).getSize().getWidth();
 
-		return Math.abs(windowWidth - sideBarWidthVisible - rightPanelWidth - pageWidth) <= 10
-				&& posXEnd < getRightPanel().getLocation().getX();
+		return posXEnd < getRightPanel().getLocation().getX();
 	}
 }

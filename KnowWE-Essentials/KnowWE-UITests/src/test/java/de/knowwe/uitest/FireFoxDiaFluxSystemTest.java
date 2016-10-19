@@ -14,6 +14,8 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 /**
  * DiaFluxSystemTest for FireFox.
  * <p>
+ * You will need a ST-BMI-FireFox wiki page in order to carry out this test locally
+ * <p>
  * Created by Albrecht Striffler (denkbares GmbH) on 25.04.2015.
  */
 public abstract class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {

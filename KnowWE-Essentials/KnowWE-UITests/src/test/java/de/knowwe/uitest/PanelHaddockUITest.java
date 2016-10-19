@@ -32,7 +32,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 /**
- * Edit class text
+ * Tests correct behavior of left and right panel for haddock template
  *
  * @author Jonas Müller
  * @created 06.10.16
@@ -72,8 +72,9 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 
 		pressSidebarButton();
 		assertTrue(isSidebarVisible());
+		int tolerance = UITestUtils.getWebOS(getDriver()) == UITestUtils.WebOS.windows ? 30 : 0; //Scrollbars
 		assertEquals("Sidebar should take complete window width on narrow window", getSidebar().getSize()
-				.getWidth(), getDriver().manage().window().getSize().getWidth());
+				.getWidth(), getDriver().manage().window().getSize().getWidth(), tolerance);
 
 		pressSidebarButton();
 		assertFalse(isSidebarVisible());
@@ -95,7 +96,8 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 		assertTrue(isRightPanelVisible());
 		int rightPanelWidth = Integer.parseInt(getRightPanel().getCssValue("width").replaceAll("px", ""));
 		int windowWidth = getDriver().manage().window().getSize().getWidth();
-		assertTrue("Right Panel should have full width", rightPanelWidth == windowWidth);
+		int tolerance = UITestUtils.getWebOS(getDriver()) == UITestUtils.WebOS.windows ? 30 : 0; //Scrollbars
+		assertEquals("Right Panel should have full width", rightPanelWidth, windowWidth, tolerance);
 		assertTrue("Right Panel should be fixed", getRightPanel().getCssValue("position").equals("fixed"));
 		assertTrue("Right Panel should be on bottom of the page", Integer.parseInt(getRightPanel().getCssValue("bottom")
 				.replaceAll("px", "")) == 0);
@@ -209,8 +211,9 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 	}
 
 	@Override
-	protected void pressSidebarButton() {
+	protected void pressSidebarButton() throws InterruptedException {
 		getDriver().findElement(By.id("menu")).click();
+		Thread.sleep(500); // Wait for Animation
 	}
 
 	@Override
