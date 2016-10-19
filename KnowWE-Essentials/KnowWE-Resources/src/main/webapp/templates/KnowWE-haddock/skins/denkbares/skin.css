@@ -1537,12 +1537,6 @@ tr.visible {
 	margin-bottom: 6px;
 }
 
-@media screen, projection {
-	.tabs {
-		border: 1px solid #9ACBFB;
-	}
-}
-
 .tabmenu {
 	padding: 0 1em;
 	font-weight: normal;
