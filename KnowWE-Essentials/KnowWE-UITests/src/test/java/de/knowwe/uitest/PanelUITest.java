@@ -60,6 +60,7 @@ public abstract class PanelUITest extends KnowWEUITest {
 		getDriver().manage().window().setSize(STANDARD_SIZE);
 		scrollToTop();
 		clearWatches();
+		Thread.sleep(500);
 		if (!isSidebarVisible()) pressSidebarButton();
 		if (isRightPanelVisible()) pressRightPanelButton();
 	}
@@ -157,8 +158,8 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 		int sidebarPosY = getSidebar().getLocation().getY();
 		int rightPanelPosY = getRightPanel().getLocation().getY();
-		assertTrue("Sidebar should not overlay with header after scrolling to top", sidebarPosY >= getHeaderBottom());
-		assertTrue("RightPanel should not overlay with header after scrolling to top", rightPanelPosY >= getHeaderBottom());
+		assertEquals("Sidebar should not overlay with header after scrolling to top", Math.abs(sidebarPosY - getHeaderBottom()), 0, 1);
+		assertEquals("RightPanel should not overlay with header after scrolling to top", Math.abs(rightPanelPosY - getHeaderBottom()), 0, 1);
 	}
 
 	@Test

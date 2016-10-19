@@ -72,7 +72,7 @@ public abstract class KnowWEUITest {
 	@Before
 	public void load() throws Exception {
 		if (devMode) {
-			getDriver().get("http://localhost:800/KnowWE/Wiki.jsp?page=" + getTestName());
+			getDriver().get("http://localhost:8080/KnowWE/Wiki.jsp?page=" + getTestName());
 		} else {
 			if (getTemplate() == haddock) {
 				getDriver().get("https://knowwe-nightly-haddock.denkbares.com/Wiki.jsp?page=" + getTestName());

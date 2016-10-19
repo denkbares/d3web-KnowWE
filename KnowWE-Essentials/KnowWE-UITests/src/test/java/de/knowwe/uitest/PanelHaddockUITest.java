@@ -42,6 +42,8 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 	@Test
 	public void testSidebarOnMediumWindow() throws InterruptedException {
 		getDriver().manage().window().setSize(MEDIUM_SIZE);
+		Thread.sleep(500);
+
 		assertFalse(isSidebarVisible());
 		assertTrue(isPageAlignedLeft());
 		assertTrue(isPageAlignedRight());
@@ -57,6 +59,7 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 		assertTrue(isPageAlignedRight());
 
 		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
 
 		assertTrue(isSidebarVisible());
 		assertTrue(isPageAlignedLeftWithSidebar());
@@ -66,6 +69,8 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 	@Test
 	public void testSideBarOnNarrowWindow() throws InterruptedException {
 		getDriver().manage().window().setSize(NARROW_SIZE);
+		Thread.sleep(500);
+
 		assertFalse(isSidebarVisible());
 		assertTrue(isPageAlignedLeft());
 		assertTrue(isPageAlignedRight());
@@ -82,6 +87,7 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 		assertTrue(isPageAlignedRight());
 
 		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
 
 		assertTrue(isSidebarVisible());
 		assertTrue(isPageAlignedLeftWithSidebar());
@@ -93,6 +99,8 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 		if (!isRightPanelVisible()) pressRightPanelButton();
 
 		getDriver().manage().window().setSize(NARROW_SIZE);
+		Thread.sleep(500);
+
 		assertTrue(isRightPanelVisible());
 		int rightPanelWidth = Integer.parseInt(getRightPanel().getCssValue("width").replaceAll("px", ""));
 		int windowWidth = getDriver().manage().window().getSize().getWidth();
@@ -113,11 +121,15 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 
 		scrollToTop();
 		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
+
 	}
 
 	@Test
 	public void testRightPanelCollapseWatchesOnNarrowWindow() throws InterruptedException {
 		getDriver().manage().window().setSize(NARROW_SIZE);
+		Thread.sleep(500);
+
 		if (!isRightPanelVisible()) pressRightPanelButton();
 		assertTrue(isRightPanelVisible());
 		WebElement watches = getRightPanel().findElement(By.id("watches"));
@@ -131,11 +143,14 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 		assertThat(watchesContent.getCssValue("display"), is(not("none")));
 		pressRightPanelButton();
 		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
+
 	}
 
 	@Test
 	public void testSidebarAndRightPanelOnMediumWindow() throws InterruptedException {
 		getDriver().manage().window().setSize(MEDIUM_SIZE);
+		Thread.sleep(500);
 
 		assertFalse(isSidebarVisible());
 		assertFalse(isRightPanelVisible());
@@ -173,11 +188,13 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 		assertTrue(isPageAlignedRight());
 
 		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
 	}
 
 	@Test
 	public void testSidebarAndRightPanelOnSmallWindow() throws InterruptedException {
 		getDriver().manage().window().setSize(NARROW_SIZE);
+		Thread.sleep(500);
 
 		assertFalse(isSidebarVisible());
 		assertFalse(isRightPanelVisible());
@@ -203,6 +220,7 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 		assertTrue(isPageAlignedRight());
 
 		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
 	}
 
 	@Override
