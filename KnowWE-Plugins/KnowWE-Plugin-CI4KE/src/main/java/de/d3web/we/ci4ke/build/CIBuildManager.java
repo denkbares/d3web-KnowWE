@@ -42,6 +42,7 @@ import de.d3web.testing.TestObjectProviderManager;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.CompilationStartEvent;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
@@ -63,6 +64,13 @@ public class CIBuildManager implements EventListener {
 	}
 
 	private static final ExecutorService ciBuildExecutor = Executors.newFixedThreadPool(2);
+
+	static {
+		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
+			Log.info("Shutting down CI build executor.");
+			ciBuildExecutor.shutdown();
+		});
+	}
 
 	private static final Map<CIDashboard, CIBuildFuture> ciBuildQueue = new ConcurrentHashMap<>();
 
