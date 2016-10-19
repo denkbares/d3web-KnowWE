@@ -144,6 +144,7 @@ public class Rdf2GoCore {
 			sparqlThreadPool.shutdown();
 			sparqlReaperPool.shutdown();
 			shutDownThreadPool.shutdown();
+			SemanticCore.shutDownRepositoryManager();
 		});
 	}
 
