@@ -65,7 +65,11 @@ public abstract class PanelDefaultUITest extends PanelUITest {
 	@Override
 	protected int getFooterTop() {
 		JavascriptExecutor executor = (JavascriptExecutor) getDriver();
-		Long footerTop = (Long) executor.executeScript("return document.body.scrollHeight;");
+		Long footerTop = (Long) executor.executeScript("return Math.max(" +
+				"document.body.scrollHeight, document.documentElement.scrollHeight," +
+				"document.body.offsetHeight, document.documentElement.offsetHeight," +
+				"document.body.clientHeight, document.documentElement.clientHeight" +
+				");");
 		return Math.toIntExact(footerTop);
 	}
 

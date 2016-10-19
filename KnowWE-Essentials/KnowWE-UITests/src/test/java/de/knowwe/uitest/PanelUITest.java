@@ -272,7 +272,11 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 	protected void scrollToBottom() {
 		JavascriptExecutor jse = (JavascriptExecutor) getDriver();
-		Long documentHeight = ((Long) jse.executeScript("return document.body.scrollHeight;"));
+		Long documentHeight = ((Long) jse.executeScript("return Math.max(" +
+				"document.body.scrollHeight, document.documentElement.scrollHeight," +
+				"document.body.offsetHeight, document.documentElement.offsetHeight," +
+				"document.body.clientHeight, document.documentElement.clientHeight" +
+				");"));
 		scrollTo(0, Math.toIntExact(documentHeight));
 	}
 
