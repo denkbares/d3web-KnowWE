@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -54,6 +55,9 @@ public abstract class PanelUITest extends KnowWEUITest {
 	protected final Dimension STANDARD_SIZE = new Dimension(1024, 768);
 	protected final Dimension MEDIUM_SIZE = new Dimension(768, 768);
 	protected final Dimension NARROW_SIZE = new Dimension(400, 768);
+
+	@Rule
+	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
 
 	@After
 	public void restoreDefault() throws InterruptedException {

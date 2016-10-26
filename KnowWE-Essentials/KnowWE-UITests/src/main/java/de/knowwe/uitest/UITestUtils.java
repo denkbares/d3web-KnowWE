@@ -34,11 +34,12 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.denkbares.utils.Log;
 
 /**
  * Utils methods for selenium UI tests.
@@ -84,7 +85,7 @@ public class UITestUtils {
 	 */
 	public static class RetryRule implements TestRule {
 
-		private int retryCount;
+		private final int retryCount;
 
 		public RetryRule(int retryCount) {
 			this.retryCount = retryCount;
@@ -107,10 +108,10 @@ public class UITestUtils {
 							return;
 						} catch (Throwable t) {
 							caughtThrowable = t;
-							System.err.println("Run " + (i + 1) + "/" + retryCount + " of '" + description.getDisplayName() + "' failed");
+							Log.severe("Run " + (i + 1) + "/" + retryCount + " of '" + description.getDisplayName() + "' failed", t);
 						}
 					}
-					System.err.println("Giving up after " + retryCount + " failures of '" + description.getDisplayName() + "'");
+					Log.severe("Giving up after " + retryCount + " failures of '" + description.getDisplayName() + "'");
 					throw caughtThrowable;
 				}
 			};
@@ -122,7 +123,7 @@ public class UITestUtils {
 	 */
 	public static class RerunRule implements TestRule {
 
-		private int rerunCount;
+		private final int rerunCount;
 		private int successes;
 
 		public RerunRule(int rerunCount) {
@@ -145,14 +146,13 @@ public class UITestUtils {
 						try {
 							base.evaluate();
 							successes++;
-							System.err.println("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' successful");
+							Log.severe("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' successful");
 						} catch (Throwable throwable) {
 							caughtThrowable = throwable;
-							System.err.println("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' failed");
-							throwable.printStackTrace();
+							Log.severe("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' failed", throwable);
 						}
 					}
-					System.err.println("Final statistic for " + description.getDisplayName() + ": " + successes + "/" + rerunCount + " successes");
+					Log.severe("Final statistic for " + description.getDisplayName() + ": " + successes + "/" + rerunCount + " successes");
 					if (caughtThrowable != null) throw caughtThrowable;
 				}
 			};
@@ -169,7 +169,7 @@ public class UITestUtils {
 				driver.findElement(By.className("userbox")).click();
 				Thread.sleep(1000); //Animation
 			}
-			String loginSelector = template == WikiTemplate.haddock? "a.btn.btn-primary.btn-block.login" : "a.action.login";
+			String loginSelector = template == WikiTemplate.haddock ? "a.btn.btn-primary.btn-block.login" : "a.action.login";
 			elements = driver.findElements(By.cssSelector(loginSelector));
 		}
 
@@ -183,10 +183,14 @@ public class UITestUtils {
 		driver.findElement(By.id("j_username")).sendKeys(username);
 		driver.findElement(By.id("j_password")).sendKeys(password);
 		driver.findElement(By.name("submitlogin")).click();
-		if (template == WikiTemplate.standard) {
-			new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
-		}
+		String logoutSelector = template == WikiTemplate.haddock ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(logoutSelector)));
 		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+	}
+
+	public static boolean isLoggedIn(WebDriver driver, WikiTemplate template) {
+		String logoutSelector = template == WikiTemplate.haddock ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
+		return !driver.findElements(By.cssSelector(logoutSelector)).isEmpty();
 	}
 
 	public static void awaitStatusChange(WebDriver driver, String status) {

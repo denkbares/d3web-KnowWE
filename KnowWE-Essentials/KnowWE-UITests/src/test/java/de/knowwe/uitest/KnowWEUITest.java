@@ -62,13 +62,6 @@ public abstract class KnowWEUITest {
 
 	public abstract String getTestName();
 
-	private static boolean loggedIn = false;
-
-	@BeforeClass
-	public static void setLoggedIn() {
-		loggedIn = false;
-	}
-
 	@Before
 	public void load() throws Exception {
 		if (devMode) {
@@ -79,9 +72,8 @@ public abstract class KnowWEUITest {
 			} else {
 				getDriver().get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=" + getTestName());
 			}
-			if (!loggedIn) {
+			if (!UITestUtils.isLoggedIn(getDriver(), getTemplate())) {
 				logIn();
-				loggedIn = true;
 			}
 		}
 	}
@@ -102,7 +94,7 @@ public abstract class KnowWEUITest {
 					"for (var i=0; i<areas.length; i++) { areas[i].value = arguments[0] };", newText);
 		} else {
 			// sets the keys one by one, pretty slow...
-			editorAreas.forEach(webElement -> webElement.clear());
+			editorAreas.forEach(WebElement::clear);
 			editorAreas.forEach(webElement -> webElement.sendKeys(newText));
 		}
 		getDriver().findElement(By.name("ok")).click();

@@ -20,10 +20,12 @@
 package de.knowwe.uitest;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -359,7 +361,7 @@ public abstract class DiaFluxSystemTest extends KnowWEUITest {
 	}
 
 	@Test
-	public void testSpecialChars() throws IOException, InterruptedException {
+	public void testSpecialChars() throws Exception {
 		changeArticleText(readFile("Step8.txt"));
 
 		checkErrorsExist();
@@ -448,7 +450,7 @@ public abstract class DiaFluxSystemTest extends KnowWEUITest {
 		assertActiveEdges("BMI-SelectMode", 0, 4);
 	}
 
-	private void showTraces() {
+	private void showTraces() throws UnsupportedEncodingException {
 		if (getDriver().findElements(By.className("traceActive")).isEmpty()) {
 			clickTool("type_DiaFlux", 2, "highlights active nodes");
 			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.className("traceActive")));
@@ -534,12 +536,16 @@ public abstract class DiaFluxSystemTest extends KnowWEUITest {
 				select.selectByIndex(10);
 				getDriver().findElement(By.cssSelector(".selectedRule textarea")).sendKeys(text[1] + Keys.ENTER);
 			} else {
-				if (text[0].equals("[  ..  ]")) {
-					select.selectByValue("8");
-				} else if (text[0].equals("[  ..  [")) {
-					select.selectByValue("9");
-				} else {
-					select.selectByVisibleText(text[0].trim());
+				switch (text[0]) {
+					case "[  ..  ]":
+						select.selectByValue("8");
+						break;
+					case "[  ..  [":
+						select.selectByValue("9");
+						break;
+					default:
+						select.selectByVisibleText(text[0].trim());
+						break;
 				}
 				if (text.length > 1) {
 					List<WebElement> inputs = getDriver().findElements(By.cssSelector(".GuardEditor input"));
@@ -554,27 +560,35 @@ public abstract class DiaFluxSystemTest extends KnowWEUITest {
 		}
 	}
 
-	private void openVisualEditor(int nth) throws InterruptedException {
+	private void openVisualEditor(int nth) throws Exception {
 		int attempt = 0;
 		while (attempt < 5 && getDriver().getWindowHandles().size() == 1) {
-			clickTool("type_DiaFlux", nth, "visual editor");
-			if (getDriver() instanceof JavascriptExecutor) {
-				// Avoid possible overlay with sticky bar
-				JavascriptExecutor jse = (JavascriptExecutor) getDriver();
-				jse.executeScript("scroll(0, 52);");
+			try {
+				clickTool("type_DiaFlux", nth, "visual editor");
+				Thread.sleep(500);
+				attempt++;
+			} catch (Exception e) {
+				if (attempt == 4) {
+					throw new Exception(e);
+				}
 			}
-			Thread.sleep(500);
-			attempt++;
 		}
 	}
 
-	private void clickTool(String markupClass, int nth, String tooltipContains) {
+	protected void clickTool(String markupClass, int nth, String tooltipContains) throws UnsupportedEncodingException {
 		WebElement markup = getDriver().findElements(By.className(markupClass)).get(nth - 1);
 		WebElement toolMenu = markup.findElement(By.className("headerMenu"));
 		WebElement editTool = markup.findElements(By.cssSelector(".markupMenu a.markupMenuItem"))
 				.stream()
 				.filter(element -> Strings.containsIgnoreCase(element.getAttribute("title"), tooltipContains))
 				.findFirst().get();
+		if (getDriver() instanceof JavascriptExecutor) {
+			List<WebElement> stickyRows = getDriver().findElements(By.className("sticky"));
+			JavascriptExecutor jse = (JavascriptExecutor) getDriver();
+			for (WebElement row : stickyRows) {
+				jse.executeScript("arguments[0].style.display = 'none';", row);
+			}
+		}
 		new Actions(getDriver()).moveToElement(toolMenu).moveToElement(editTool).click(editTool).perform();
 	}
 
@@ -587,7 +601,7 @@ public abstract class DiaFluxSystemTest extends KnowWEUITest {
 	private void saveAndSwitchBack(String winHandleBefore) {
 		getDriver().findElement(By.id("saveClose")).click();
 		getDriver().switchTo().window(winHandleBefore);
-		String pageContentSelector = getTemplate() == WikiTemplate.haddock ?  ".page-content" : "#pagecontent";
+		String pageContentSelector = getTemplate() == WikiTemplate.haddock ? ".page-content" : "#pagecontent";
 		UITestUtils.awaitRerender(getDriver(), By.cssSelector(pageContentSelector));
 	}
 
@@ -675,7 +689,7 @@ public abstract class DiaFluxSystemTest extends KnowWEUITest {
 		getDriver().findElement(By.id("properties.editName")).sendKeys(flowName);
 	}
 
-	private void switchToEditor(String articleHandle) throws InterruptedException {
+	protected void switchToEditor(String articleHandle) throws InterruptedException {
 		new WebDriverWait(getDriver(), 10).until((WebDriver driver) -> driver.getWindowHandles().size() == 2);
 		Set<String> windowHandles = new HashSet<>(getDriver().getWindowHandles());
 		windowHandles.remove(articleHandle);
