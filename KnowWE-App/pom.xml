@@ -216,6 +216,11 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Visualization</artifactId>
+					<version>${knowwe.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-TestCase</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
