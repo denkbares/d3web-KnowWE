@@ -56,8 +56,6 @@ public abstract class KnowWEUITest {
 	 */
 	protected static boolean devMode = false;
 
-	protected abstract boolean isDevMode();
-
 	public abstract String getTestName();
 
 	@Before

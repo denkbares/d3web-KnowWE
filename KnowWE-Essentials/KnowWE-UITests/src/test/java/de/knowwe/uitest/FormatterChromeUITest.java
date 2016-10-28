@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 public abstract class FormatterChromeUITest extends KnowWEUITest {
 
 	private static RemoteWebDriver driver;
-	private static boolean devMode = false;
 
 	@Override
 	protected abstract WikiTemplate getTemplate();
@@ -27,11 +26,6 @@ public abstract class FormatterChromeUITest extends KnowWEUITest {
 	@Override
 	protected WebDriver getDriver() {
 		return driver;
-	}
-
-	@Override
-	protected boolean isDevMode() {
-		return devMode;
 	}
 
 	@Override
