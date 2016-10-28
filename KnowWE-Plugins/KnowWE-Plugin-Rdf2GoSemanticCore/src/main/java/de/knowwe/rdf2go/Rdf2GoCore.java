@@ -1005,11 +1005,11 @@ public class Rdf2GoCore {
 	 * Performs a cached SPARQL select query with the specified timeout.
 	 *
 	 * @param query   the SPARQL query to perform
-	 * @param timeout the time to be used for timout
+	 * @param timeoutMillis the time to be used for timeout in ms
 	 * @return the result of the query
 	 */
-	public CachedTupleQueryResult sparqlSelect(String query, long timeout) {
-		return (CachedTupleQueryResult) sparqlSelect(query, true, timeout);
+	public CachedTupleQueryResult sparqlSelect(String query, long timeoutMillis) {
+		return (CachedTupleQueryResult) sparqlSelect(query, true, timeoutMillis);
 	}
 
 	/**
