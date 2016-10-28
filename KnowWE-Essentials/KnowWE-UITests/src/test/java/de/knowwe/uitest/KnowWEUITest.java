@@ -22,18 +22,14 @@ package de.knowwe.uitest;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.BrowserType;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static de.knowwe.uitest.WikiTemplate.haddock;
-import static de.knowwe.uitest.WikiTemplate.standard;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -59,6 +55,8 @@ public abstract class KnowWEUITest {
 	 * State of the page does not matter, it will be cleared for each new test.
 	 */
 	protected static boolean devMode = false;
+
+	protected abstract boolean isDevMode();
 
 	public abstract String getTestName();
 
