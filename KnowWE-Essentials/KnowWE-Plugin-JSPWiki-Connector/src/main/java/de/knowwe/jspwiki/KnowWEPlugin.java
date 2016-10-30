@@ -22,7 +22,8 @@ package de.knowwe.jspwiki;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -87,9 +88,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String LEFT_MENU_FOOTER = "LeftMenuFooter";
 	private static final String LEFT_MENU = "LeftMenu";
 	private static final String MORE_MENU = "MoreMenu";
-	public static final String FULL_PARSE_FIRED = "fullParseFired";
-	public static final String RENDER_MODE = "renderMode";
-	public static final String PREVIEW = "preview";
+	private static final String FULL_PARSE_FIRED = "fullParseFired";
+	private static final String RENDER_MODE = "renderMode";
+	private static final String PREVIEW = "preview";
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
@@ -110,31 +111,31 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		String copyCorePages = KnowWEUtils.getConfigBundle().getString(
 				"knowweplugin.jspwikiconnector.copycorepages");
-		if (copyCorePages.equals("true")) {
+		if ("true".equals(copyCorePages)) {
 			try {
-				BufferedReader in = new BufferedReader(new FileReader(
-						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/jspwiki.properties"));
+				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(
+						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/classes/jspwiki-custom.properties"), "UTF-8"));
 				String line;
-				File pagedir = null;
+				File pageDir = null;
 				while ((line = in.readLine()) != null) {
 					if (!line.contains("#")
 							&& line.contains("jspwiki.fileSystemProvider.pageDir")) {
 						line = line.trim();
 						line = line.substring(line.lastIndexOf(" ") + 1);
-						pagedir = new File(line);
+						pageDir = new File(line);
 						in.close();
 						break;
 					}
 				}
 
-				if (pagedir != null && pagedir.exists()) {
+				if (pageDir != null && pageDir.exists()) {
 					File coreDir = new File(KnowWEUtils.getApplicationRootPath()
 							+ "/WEB-INF/resources/core-pages");
 					File[] files = coreDir.listFiles();
 					if (files != null) {
 						for (File corePage : files) {
 							if (!corePage.getName().endsWith(".txt")) continue;
-							File newFile = new File(pagedir.getPath() + "/" + corePage.getName());
+							File newFile = new File(pageDir.getPath() + "/" + corePage.getName());
 							if (!newFile.exists()) FileUtils.copyFile(corePage, newFile);
 						}
 					}
@@ -429,9 +430,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 				renderResult);
 		renderPostPageAppendHandler(userContext, title, renderResult, appendHandlers);
-		String stringRaw = renderResult.toStringRaw();
 
-		return stringRaw;
+		return renderResult.toStringRaw();
 	}
 
 	private String getExceptionRendering(UserContext context, Throwable e) {
