@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -371,8 +372,11 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				Log.info("Updated attachment '" + path + "' with resource from URL " + url);
 				Messages.clearMessages(section, AttachmentMarkup.class);
 			}
+			catch (UnknownHostException e) {
+				Log.warning("Unable to reach " + url + " while trying to update attachment " + path);
+			}
 			catch (Throwable e) { // NOSONAR
-				String message = e.getClass().getSimpleName() + " while downloading attachment " + path;
+				String message = e.getClass().getSimpleName() + " while trying to update attachment " + path;
 				Messages.storeMessage(section, AttachmentMarkup.class, Messages.error(message + ": " + e.getMessage()));
 				Log.severe(message, e);
 			}
