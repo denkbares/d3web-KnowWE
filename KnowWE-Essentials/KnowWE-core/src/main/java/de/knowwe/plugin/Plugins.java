@@ -77,6 +77,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_SearchProvider = "SearchProvider";
 	public static final String EXTENDED_POINT_Compiler = "Compiler";
 	public static final String EXTENDED_POINT_StatusProvider = "StatusProvider";
+	public static final String EXTENDED_POINT_IncludeExporter = "IncludeExporter";
 
 	private static <T> List<T> getSingletons(String point, Class<T> clazz) {
 		PluginManager pm = PluginManager.getInstance();
