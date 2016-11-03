@@ -393,6 +393,7 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 	function initRightPanelTools() {
 		KNOWWE.core.plugin.rightPanel.watches.initWatchesTool();
+		KNOWWE.core.plugin.rightPanel.custom.initCustomContent();
 	}
 
 	function setRightPanelCookie(b) {
@@ -593,6 +594,37 @@ KNOWWE.core.plugin.rightPanel = function() {
 
 }
 ();
+
+KNOWWE.core.plugin.rightPanel.custom = function() {
+
+	function buildCustomContentDiv() {
+		var customContent = jq$('<div/>', {});
+
+		jq$.ajax({
+			url : KNOWWE.core.util.getURL({
+				action : 'GetRightPanelContentAction'
+			}),
+			cache : false,
+			async : true,
+			data : {},
+			type : 'post'
+		}).success(function(r) {
+			customContent.append(r);
+			jq$(document).trigger("rightPanelReady");
+		}).error(
+			_IE.onErrorBehavior
+		);
+
+		KNOWWE.core.plugin.rightPanel.addToolToRightPanel("Custom", "custom", customContent);
+	}
+
+	return {
+		initCustomContent : function() {
+			buildCustomContentDiv();
+		}
+	}
+
+}();
 
 
 KNOWWE.core.plugin.rightPanel.watches = function() {

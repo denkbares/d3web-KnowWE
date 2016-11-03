@@ -64,4 +64,14 @@
 		<parameter id="css" value="KnowWE-Plugin-RightPanel.css" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetRightPanelContentAction">
+		<parameter id="class" value="de.knowwe.rightpanel.custom.GetRightPanelContentAction" />
+		<parameter id="name" value="GetRightPanelContentAction" />
+		<parameter id="description" value="Action that gets custom content for the right panel." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-RightPanel.js" />
+		<parameter id="css" value="KnowWE-Plugin-RightPanel.css" />
+	</extension>
+
 </plugin>
