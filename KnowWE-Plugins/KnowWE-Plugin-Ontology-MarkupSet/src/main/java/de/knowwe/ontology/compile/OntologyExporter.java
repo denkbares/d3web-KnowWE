@@ -22,6 +22,7 @@ package de.knowwe.ontology.compile;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -67,7 +68,8 @@ public class OntologyExporter implements EventListener {
 	@Override
 	public void notify(Event event) {
 		OntologyCompilerFinishedEvent finishedEvent = (OntologyCompilerFinishedEvent) event;
-		final Rdf2GoCore rdf2GoCore = finishedEvent.getCompiler().getRdf2GoCore();
+		final OntologyCompiler compiler = finishedEvent.getCompiler();
+		final Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 		Section<OntologyType> ontologySection = $(finishedEvent.getCompiler()
 				.getCompileSection()).ancestor(OntologyType.class)
 				.getFirst();
@@ -112,19 +114,33 @@ public class OntologyExporter implements EventListener {
 			public void run() {
 				Stopwatch stopwatch = new Stopwatch();
 				WikiConnector connector = Environment.getInstance().getWikiConnector();
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				ByteArrayInputStream stream;
 				try {
+					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 					// cleanup so the versions don't stack to bad...
-					connector.deleteAttachment(title, annotationName, "SYSTEM");
 					rdf2GoCore.writeModel(outputStream, syntax);
-					ByteArrayInputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
+					stream = new ByteArrayInputStream(outputStream.toByteArray());
+				}
+				catch (Exception e) {
+					if (e.getCause() instanceof ClosedChannelException) {
+						Log.warning("Export of ontology from '" + compiler.getCompileSection()
+								.getTitle() + "' aborted due to repository shutdown.");
+					}
+					else {
+						Log.severe("Unable to export ontology from '" + compiler.getCompileSection()
+								.getTitle() + "'", e);
+					}
+					return;
+				}
+				try {
+					connector.deleteAttachment(title, annotationName, "SYSTEM");
 					connector.storeAttachment(title, annotationName, "SYSTEM", stream);
 				}
 				catch (IOException e) {
-					Log.severe("Unable to export ontology", e);
+					Log.severe("Unable to save exported ontology as an attachment in '" + title + "/" + annotationName + "'", e);
 					return;
 				}
-				Log.info("Exported ontology to attachment '" + title + "/" + annotationName + " in " + stopwatch.getDisplay());
+				Log.info("Exported ontology to attachment '" + title + "/" + annotationName + "' in " + stopwatch.getDisplay());
 			}
 		};
 		exportTread.start();
