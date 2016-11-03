@@ -160,7 +160,12 @@ public class AttachmentManager implements EventListener {
 		synchronized (pathToSectionsMap) {
 			paths = new ArrayList<>(pathToSectionsMap.keySet());
 		}
-		paths.parallelStream().forEach(this::createAndRegisterAttachmentArticle);
+		articleManager.open();
+		try {
+			paths.forEach(this::createAndRegisterAttachmentArticle);
+		} finally {
+			articleManager.commit();
+		}
 	}
 
 	private void registerAttachment(@NotNull String parent, @NotNull String fileName) {
