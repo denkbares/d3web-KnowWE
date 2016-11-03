@@ -30,6 +30,8 @@ import java.util.Set;
 import org.apache.poi.POIXMLProperties.CoreProperties;
 import org.apache.poi.openxml4j.util.Nullable;
 
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.PluginManager;
 import com.denkbares.progress.ParallelProgress;
 import com.denkbares.progress.ProgressListener;
 import com.denkbares.strings.Strings;
@@ -44,6 +46,7 @@ import de.knowwe.include.IncludeMarkup;
 import de.knowwe.include.WikiReference;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.plugin.Plugins;
 
 /**
  * Manages the export of the included wiki pages into a specific export
@@ -70,6 +73,10 @@ public class ExportManager {
 		// for each export process, because the exporters may
 		// store information about the export process or the document
 		List<Exporter<?>> exporters = new LinkedList<>();
+
+		Extension[] extensions = PluginManager.getInstance().getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID,
+				Plugins.EXTENDED_POINT_IncludeExporter);
 
 		// add exporters
 		exporters.add(new WikiBookPropertyExporter());
@@ -100,6 +107,15 @@ public class ExportManager {
 
 		// some types to be skipped
 		exporters.add(new HideExporter<>(RenderKDOMType.class));
+
+		// add additionally plugged exporters
+		for (Extension extension : extensions) {
+			Object newInstance = extension.getNewInstance();
+			if (newInstance instanceof Exporter) {
+				Exporter exporter = ((Exporter) newInstance);
+				exporters.add(exporter);
+			}
+		}
 
 		// default exporter
 		exporters.add(new DefaultMarkupExporter());
