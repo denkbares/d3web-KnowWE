@@ -284,7 +284,7 @@ public class OntoVisTest {
 		config.addFilterRelations("si:child");
 		//Old implementation
 		//config.setShowInverse(false);
-		config.setShowInverse(Config.ShowInverse.FALSE_ONTOLOGY_BASED);
+		config.setShowInverse(false);
 		config.addFilterRelations("si:child");
 		config.setShowOutgoingEdges(true);
 		config.setShowLabels("true");
@@ -379,52 +379,6 @@ public class OntoVisTest {
 		String expectedSource = null;
 		try {
 			expectedSource = Strings.readFile(new File("src/test/resources/graph-Sparql.dot")).trim();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// the expressions do not have constant order within the dot-code
-		// therefore we need some fuzzy-compare
-
-		assertEquals(
-				"Length of generated dot-source does not match length of expected dot-source.",
-				String.valueOf(expectedSource).length(),
-				String.valueOf(generatedSource).length());
-		List<Byte> expectedBytes = asSortedByteList(expectedSource);
-		List<Byte> generatedBytes = asSortedByteList(generatedSource);
-
-		assertEquals(
-				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
-				expectedBytes, generatedBytes);
-	}
-
-	@Test
-	public void testInverse() {
-		Config config = new Config();
-		config.setConcept("si:marge");
-		config.addExcludeRelations("rdf:type", "onto:_checkChain3", "owl:sameAs", "si:father", "si:mother", "si:gender", "si:livesIn");
-		config.addExcludeNodes("owl:Thing", "owl:Nothing");
-		config.setShowOutgoingEdges(false);
-		config.setShowLabels("true");
-		config.setLiteralMode(Config.LiteralMode.OFF);
-		//old implementation
-//		config.setShowInverse(false);
-
-		config.setShowInverse(Config.ShowInverse.FALSE_ONTOLOGY_BASED);
-		config.setCacheFileID("testInverse");
-		config.setCacheDirectoryPath("target");
-
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
-				config,
-				new DummyLinkToTermDefinitionProvider(), rdfRepository);
-
-		ontoGraphDataBuilder.createData();
-
-		String generatedSource = ontoGraphDataBuilder.getSource().trim();
-		String expectedSource = null;
-		try {
-			expectedSource = Strings.readFile(new File("src/test/resources/graph-Marge.dot")).trim();
 		}
 		catch (IOException e) {
 			e.printStackTrace();

@@ -51,6 +51,7 @@ public class Config {
 	public static final String SHOW_PROPERTIES = "showProperties";
 	public static final String SHOW_OUTGOING_EDGES = "showOutgoingEdges";
 	public static final String SHOW_INVERSE = "showInverse";
+	public static final String SHOW_REDUNDANT = "showRedundant";
 	public static final String SHOW_LABELS = "showLabels";
 	public static final String SHOW_LITERALS = "literals";
 	public static final String TIMEOUT = "timeout";
@@ -84,6 +85,10 @@ public class Config {
 	private boolean showClasses = true;
 	private boolean showProperties = true;
 	private boolean showOutgoingEdges = false;
+	private boolean showInverse = false;
+	private boolean showRedundant = false;
+
+
 	private String showLabels = "true";
 	private String size = null;
 	private String width = null;
@@ -93,7 +98,6 @@ public class Config {
 	private long timeout = 300000;
 	private LinkMode linkMode = LinkMode.JUMP;
 	private RankDir rankDir = RankDir.LR;
-	private ShowInverse showInverse = ShowInverse.FALSE_DOT_BASED;
 	private String rankSame = null;
 	private String dotApp = "dot";
 	private String dotAddLine = null;
@@ -191,7 +195,8 @@ public class Config {
 		parseAndSetBoolean(section, SHOW_CLASSES, this::setShowClasses);
 		parseAndSetBoolean(section, SHOW_PROPERTIES, this::setShowProperties);
 		parseAndSetBoolean(section, SHOW_OUTGOING_EDGES, this::setShowOutgoingEdges);
-		parseAndSetEnum(section, SHOW_INVERSE, ShowInverse.class, this::setShowInverse);
+		parseAndSetBoolean(section, SHOW_INVERSE, this::setShowInverse);
+		parseAndSetBoolean(section, SHOW_REDUNDANT, this::setShowRedundant);
 		setShowLabels(DefaultMarkupType.getAnnotation(section, SHOW_LABELS));
 		parseAndSetCSV(section, CONCEPT, this::addConcept);
 		setSize(DefaultMarkupType.getAnnotation(section, SIZE));
@@ -546,13 +551,20 @@ public class Config {
 		this.cacheFileID = fileID;
 	}
 
-	public ShowInverse getShowInverse() {
+	public boolean isShowInverse() {
 		return showInverse;
 	}
 
-	public void setShowInverse(ShowInverse showInverse) {
-		if (showInverse == null) return;
+	public void setShowInverse(boolean showInverse) {
 		this.showInverse = showInverse;
+	}
+
+	public boolean isShowRedundant() {
+		return showRedundant;
+	}
+
+	public void setShowRedundant(boolean showRedundant) {
+		this.showRedundant = showRedundant;
 	}
 
 	public enum Renderer {
@@ -581,9 +593,5 @@ public class Config {
 
 	public enum Overlap {
 		TRUE, FALSE, SCALEXY, SCALE, COMPRESS, VPSC, VORONOI, ORTHO, ORTHOXY, ORTHOYX, PORTHO, PORTHOXY, PORTHOYX
-	}
-
-	public enum ShowInverse {
-		TRUE, FALSE, FALSE_DOT_BASED, FALSE_ONTOLOGY_BASED
 	}
 }

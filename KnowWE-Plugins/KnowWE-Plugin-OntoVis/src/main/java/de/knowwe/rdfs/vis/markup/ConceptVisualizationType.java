@@ -46,8 +46,11 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 
 		MARKUP.addAnnotation(Config.SHOW_OUTGOING_EDGES, false, "true", "false");
 
-		MARKUP.addAnnotation(Config.SHOW_INVERSE, false, Config.ShowInverse.class);
+		MARKUP.addAnnotation(Config.SHOW_INVERSE, false, "true", "false");
 		MARKUP.addAnnotationRenderer(Config.SHOW_INVERSE, NothingRenderer.getInstance());
+
+		MARKUP.addAnnotation(Config.SHOW_REDUNDANT, false, "true", "false");
+		MARKUP.addAnnotationRenderer(Config.SHOW_REDUNDANT, NothingRenderer.getInstance());
 
 		MARKUP.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
 		MARKUP.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());

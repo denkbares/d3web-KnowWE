@@ -28,19 +28,15 @@ package de.knowwe.visualization;
 public class Edge {
 
 	private final ConceptNode subject;
-	private final String predicate;
 	private final ConceptNode object;
+	private String predicate;
 	private boolean isBidirectionalEdge;
 	private boolean isSuperProperty;
 	private String relationURI;
 
-	public boolean isOuter() {
-		return subject.isOuter() || object.isOuter();
-	}
-
 	public Edge(ConceptNode s, String p, ConceptNode o) {
 		this.subject = s;
-		this.predicate = p;
+		this.setPredicate(p);
 		this.setRelationURI(null);
 		this.object = o;
 		this.setBidirectionalEdge(false);
@@ -49,7 +45,7 @@ public class Edge {
 
 	public Edge(ConceptNode s, String p, String r, ConceptNode o) {
 		this.subject = s;
-		this.predicate = p;
+		this.setPredicate(p);
 		this.setRelationURI(r);
 		this.object = o;
 		this.setBidirectionalEdge(false);
@@ -58,29 +54,33 @@ public class Edge {
 
 	public Edge(ConceptNode s, String p, String r, ConceptNode o, boolean superProperty) {
 		this.subject = s;
-		this.predicate = p;
+		this.setPredicate(p);
 		this.setRelationURI(r);
 		this.object = o;
 		this.setBidirectionalEdge(false);
 		this.setSuperProperty(superProperty);
 	}
 
+	public boolean isOuter() {
+		return subject.isOuter() || object.isOuter();
+	}
+
 	@Override
 	public String toString() {
-		return subject + " " + predicate + ": " + object;
+		return subject + " " + getPredicate() + ": " + object;
 	}
 
 	@Override
 	public int hashCode() {
 
-		return subject.hashCode() + predicate.hashCode() + object.hashCode();
+		return subject.hashCode() + getPredicate().hashCode() + object.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Edge) {
 			Edge other = ((Edge) obj);
-			return other.subject.equals(this.subject) && other.predicate.equals(this.predicate)
+			return other.subject.equals(this.subject) && other.getPredicate().equals(this.getPredicate())
 					&& other.object.equals(this.object);
 		}
 		return super.equals(obj);
@@ -92,6 +92,10 @@ public class Edge {
 
 	public String getPredicate() {
 		return predicate;
+	}
+
+	public void setPredicate(String predicate) {
+		this.predicate = predicate;
 	}
 
 	public ConceptNode getObject() {

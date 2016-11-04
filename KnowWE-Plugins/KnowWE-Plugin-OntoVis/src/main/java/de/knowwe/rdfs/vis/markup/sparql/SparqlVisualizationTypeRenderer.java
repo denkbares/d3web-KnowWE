@@ -8,7 +8,6 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 
-import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.Strings;
@@ -54,25 +53,16 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 	private SubGraphData convertToGraph(CachedTupleQueryResult resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
 		SubGraphData data;
-		MultiMap<String, String> subPropertiesMap = new DefaultMultiMap<>();
 
-		// Get all  SubProperties and add all non-recursive to a ArrayList
-		String subPropertyQuery = "SELECT ?Property ?SubProperty WHERE {\n" +
-				"\t  ?SubProperty rdfs:subPropertyOf ?Property\n" +
-				"  }\n";
-		CachedTupleQueryResult propertyRelations = rdfRepository.sparqlSelect(subPropertyQuery);
-		for (BindingSet propertyRelation : propertyRelations) {
-			String subProperty = propertyRelation.getValue("SubProperty").stringValue();
-			String property = propertyRelation.getValue("Property").stringValue();
+		MultiMap<String, String> subPropertiesMap = Utils.getSubPropertyMap(rdfRepository);
+		MultiMap<String, String> inverseRelationsMap = Utils.getInverseRelationsMap(rdfRepository);
 
-			// if SubProperty is not same as Property
-			if (!property.equals(subProperty)) {
-				subPropertiesMap.put(property, subProperty);
-			}
+		// Get all
 
-		}
+		//data = new SubGraphData(subPropertiesMap);
+		data = new SubGraphData(subPropertiesMap, inverseRelationsMap);
+		//data = new SubGraphData(Utils.getSubPropertyMap(rdfRepository), Utils.getInverseRelationsMap(rdfRepository));
 
-		data = new SubGraphData(subPropertiesMap);
 
 		List<String> variables = resultSet.getBindingNames();
 		if (variables.size() < 3) {

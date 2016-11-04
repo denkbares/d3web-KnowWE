@@ -35,6 +35,7 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -47,6 +48,9 @@ import de.knowwe.visualization.ConceptNode;
 import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
 import de.knowwe.visualization.GraphDataBuilder;
+import de.knowwe.visualization.SubGraphData;
+import de.knowwe.visualization.d3.D3VisualizationRenderer;
+import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
 /**
  * @author Johanna Latt
@@ -91,64 +95,26 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		this.rdf2GoCore = rdf2GoCore;
 
 		initialiseData(section, config, uriProvider);
-
-		// filter inverseOf-relations if asked (default is dot-based filtering)
-		if (config.getShowInverse() == Config.ShowInverse.FALSE_ONTOLOGY_BASED) {
-			addInverseRelationsToFilter();
-		}
 	}
 
-	private void addInverseRelationsToFilter() {
+	@Override
+	public void initialiseData(Section<?> section, Config config, LinkToTermDefinitionProvider uriProvider) {
+		this.uriProvider = uriProvider;
+		this.config = config;
+		this.section = section;
 
-		String exclude;
+		MultiMap<String, String> subPropertiesMap = Utils.getSubPropertyMap(rdf2GoCore);
+		MultiMap<String, String> inverseRelationsMap = Utils.getInverseRelationsMap(rdf2GoCore);
 
-		// find all inverse Relations
-		String query = "SELECT ?x ?z WHERE { ?x owl:inverseOf ?z }";
-		Iterator<BindingSet> result =
-				rdf2GoCore.sparqlSelectIt(query);
-		while (result.hasNext()) {
-			BindingSet row = result.next();
-			Value xURI = row.getValue("x");
-			String x = getConceptName(xURI);
+		data = new SubGraphData(subPropertiesMap, inverseRelationsMap);
 
-			Value zURI = row.getValue("z");
-			String z = getConceptName(zURI);
-
-			// find out which relation should be excluded
-			boolean isXFiltered = getFilteredRelations().contains(x);
-			boolean isZFiltered = getFilteredRelations().contains(z);
-
-			boolean isXExcluded = getExcludedRelations().contains(x);
-			boolean isZExcluded = getExcludedRelations().contains(z);
-
-			if (isXFiltered || isZFiltered) {
-				if (isXFiltered) {
-					exclude = z;
-				}
-				else {
-					exclude = x;
-				}
-			}
-			else if (isXExcluded || isZExcluded) {
-				if (isXExcluded) {
-					exclude = x;
-				}
-				else {
-					exclude = z;
-				}
-			}
-			else {
-				if (x.compareTo(z) < 0) {
-					exclude = z;
-				}
-				else {
-					exclude = x;
-				}
-			}
-			// TODO: fix this, as it deletes BOTH directions of the symmetric pair of arcs !!
-			config.addExcludeRelations(exclude);
+		// current default source renderer is DOT
+		if (config.getRenderer() == Config.Renderer.D3) {
+			graphRenderer = new D3VisualizationRenderer(data, config);
 		}
-
+		else {
+			graphRenderer = new DOTVisualizationRenderer(data, config);
+		}
 	}
 
 	public String getConceptName(Value uri) {
@@ -207,7 +173,6 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			}
 		}
 
-		SubpropertyEliminator.eliminateSubproperties(data, rdf2GoCore);
 		data.clearIsolatedNodesFromDefaultLevel();
 
 		if (DEBUG_MODE) {
@@ -872,7 +837,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		if (Strings.isBlank(clazz)) {
 			// classes are rendered as cluster labels - so no extra edge is required
-			Edge edge = new Edge(fromValue, relation, toValue);
+			Edge edge = new Edge(fromValue, relation, relationURI.stringValue(), toValue);
+
 			addEdge(edge);
 		}
 
@@ -928,7 +894,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		boolean nodeIsNew = !data.getConceptDeclarations().contains(current);
 
-		Edge edge = new Edge(fromValue, relation, toValue);
+		Edge edge = new Edge(fromValue, relation, relationURI.stringValue(), toValue);
 
 		boolean edgeIsNew = !data.getAllEdges().contains(edge);
 

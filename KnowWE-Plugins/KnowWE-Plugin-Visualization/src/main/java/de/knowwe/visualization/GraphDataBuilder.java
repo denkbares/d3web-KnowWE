@@ -36,21 +36,23 @@ import de.knowwe.visualization.dot.DOTVisualizationRenderer;
  */
 public abstract class GraphDataBuilder {
 
-	protected Config config;
-
-	public enum NODE_TYPE {
-		CLASS, PROPERTY, INSTANCE, UNDEFINED, LITERAL, BLANKNODE,
-	}
-
-
 	// stores the actual subset of the rdf-graph to rendered
 	public SubGraphData data;
-
+	protected Config config;
 	protected Section<?> section;
-
 	protected LinkToTermDefinitionProvider uriProvider = null;
+	protected GraphVisualizationRenderer graphRenderer = null;
 
-	private GraphVisualizationRenderer graphRenderer = null;
+	public static String createBaseURL() {
+		if (Environment.getInstance() != null
+				&& Environment.getInstance().getWikiConnector() != null) {
+			return Environment.getInstance().getWikiConnector().getBaseUrl() + "Wiki.jsp";
+		}
+		else {
+			// for tests only
+			return "http://localhost:8080/KnowWE/Wiki.jsp";
+		}
+	}
 
 	public Config getParameterMap() {
 		return config;
@@ -142,17 +144,6 @@ public abstract class GraphDataBuilder {
 		return createBaseURL() + "?page=" + section.getTitle() + "&concept=" + to;
 	}
 
-	public static String createBaseURL() {
-		if (Environment.getInstance() != null
-				&& Environment.getInstance().getWikiConnector() != null) {
-			return Environment.getInstance().getWikiConnector().getBaseUrl() + "Wiki.jsp";
-		}
-		else {
-			// for tests only
-			return "http://localhost:8080/KnowWE/Wiki.jsp";
-		}
-	}
-
 	/**
 	 * Tests if the given node x is being excluded in the annotations.
 	 *
@@ -172,7 +163,6 @@ public abstract class GraphDataBuilder {
 		// TODO: improve handling of node 'name' with respect to namespace prefix...
 		return getExcludedRelations().contains(y) || getExcludedNodes().contains("lns:" + y);
 	}
-
 
 	/**
 	 * Tests if the given relation y is set as a filtered relation in the annotations.
@@ -202,6 +192,10 @@ public abstract class GraphDataBuilder {
 
 	public GraphVisualizationRenderer getGraphRenderer() {
 		return graphRenderer;
+	}
+
+	public enum NODE_TYPE {
+		CLASS, PROPERTY, INSTANCE, UNDEFINED, LITERAL, BLANKNODE,
 	}
 
 }

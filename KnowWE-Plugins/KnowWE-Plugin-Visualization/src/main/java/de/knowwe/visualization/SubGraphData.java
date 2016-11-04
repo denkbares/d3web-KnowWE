@@ -40,6 +40,7 @@ public class SubGraphData {
 	private final Map<String, ConceptNode> concepts = new LinkedHashMap<>();
 	private final Map<ConceptNode, Set<Edge>> clusters = new HashMap<>();
 	private MultiMap<String, String> subPropertiesMap = new DefaultMultiMap<>();
+	private MultiMap<String, String> inversePropertiesMap = new DefaultMultiMap<>();
 
 	/**
 	 *
@@ -51,6 +52,12 @@ public class SubGraphData {
 	public SubGraphData(MultiMap<String, String> subPropertiesMap) {
 		clusters.put(ConceptNode.DEFAULT_CLUSTER_NODE, new HashSet<>());
 		this.subPropertiesMap = subPropertiesMap;
+	}
+
+	public SubGraphData(MultiMap<String, String> subPropertiesMap, MultiMap<String, String> inversePropertiesMap) {
+		clusters.put(ConceptNode.DEFAULT_CLUSTER_NODE, new HashSet<>());
+		this.subPropertiesMap = subPropertiesMap;
+		this.inversePropertiesMap = inversePropertiesMap;
 	}
 
 	public void createCluster(ConceptNode node) {
@@ -148,5 +155,9 @@ public class SubGraphData {
 
 	public MultiMap<String, String> getSubPropertiesMap() {
 		return subPropertiesMap;
+	}
+
+	public MultiMap<String, String> getInversePropertiesMap() {
+		return inversePropertiesMap;
 	}
 }

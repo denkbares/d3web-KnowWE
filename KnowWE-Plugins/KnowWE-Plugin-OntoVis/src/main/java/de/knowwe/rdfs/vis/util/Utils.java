@@ -33,8 +33,11 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
-import com.denkbares.semanticcore.TupleQueryResult;
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -302,7 +305,7 @@ public class Utils {
 					}
 				}
 				URI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
-				if(clazzToBeColored != null) {
+				if (clazzToBeColored != null) {
 					String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored.toString()));
 					if (color != null) {
 						style.setFillcolor(color);
@@ -541,4 +544,46 @@ public class Utils {
 		return "";
 	}
 
+	@NotNull
+	public static MultiMap<String, String> getSubPropertyMap(Rdf2GoCore rdfRepository) {
+		MultiMap<String, String> subPropertiesMap = new DefaultMultiMap<>();
+
+		// Get all  SubProperties and add all non-recursive to an ArrayList
+		String subPropertyQuery = "SELECT ?Property ?SubProperty WHERE {\n" +
+				"\t  ?SubProperty rdfs:subPropertyOf ?Property\n" +
+				"  }\n";
+		CachedTupleQueryResult propertyRelations = rdfRepository.sparqlSelect(subPropertyQuery);
+		for (BindingSet propertyRelation : propertyRelations) {
+			String subProperty = propertyRelation.getValue("SubProperty").stringValue();
+			String property = propertyRelation.getValue("Property").stringValue();
+
+			// if SubProperty is not same as Property
+			if (!property.equals(subProperty)) {
+				subPropertiesMap.put(property, subProperty);
+			}
+
+		}
+		return subPropertiesMap;
+	}
+
+	@SuppressWarnings("Duplicates")
+	public static MultiMap<String, String> getInverseRelationsMap(Rdf2GoCore rdfRepository) {
+		MultiMap<String, String> inversePropertiesMap = new DefaultMultiMap<>();
+		// find all inverse Relations
+		String query = "SELECT ?Property ?InverseProperty WHERE {\n" +
+				"\t  ?Property owl:inverseOf ?InverseProperty\n" +
+				"  }\n";
+		CachedTupleQueryResult relations = rdfRepository.sparqlSelect(query);
+		for (BindingSet relation : relations) {
+			String Property = relation.getValue("Property").stringValue();
+			String inverseProperty = relation.getValue("InverseProperty").stringValue();
+
+			// if SubProperty is not same as Property
+			//if (!inverseProperty.equals(Property)) {
+			inversePropertiesMap.put(inverseProperty, Property);
+			//}
+
+		}
+		return inversePropertiesMap;
+	}
 }

@@ -138,9 +138,11 @@ public class DOTRenderer {
 	static String createDotSources(SubGraphData data, Config config) {
 
 		// we clean up the graph before rendering (e. g. undesired cycles etc)
-		if (config.getShowInverse() == Config.ShowInverse.FALSE_DOT_BASED || config.getShowInverse() == Config.ShowInverse.FALSE) {
-			simplifyGraph(data);
-		}
+//		if (config.getShowInverse() == Config.ShowInverse.FALSE_DOT_BASED || config.getShowInverse() == Config.ShowInverse.FALSE) {
+//			simplifyGraph(data);
+//		}
+		// we clean up the graph before rendering (e. g. undesired cycles etc)
+		simplifyGraph(data, config);
 
 		String dotSource = "digraph {\n";
 
@@ -237,23 +239,77 @@ public class DOTRenderer {
 		return recursiveEdges;
 	}
 
-	private static void simplifyGraph(SubGraphData data) {
+	private static void simplifyGraph(SubGraphData data, Config config) {
 		Set<Edge> redundantEdges;
 
-		//mark all the superProperties (sets superProperty attributes)
-		data = defineSuperProperties(data, data.getSubPropertiesMap());
+		if (!config.isShowRedundant()) {
+			//mark all the superProperties (sets superProperty attributes)
+			data = defineSuperProperties(data, data.getSubPropertiesMap());
 
-		//receive all double edges
-		redundantEdges = getDoubleEdges(data.getAllEdges());
+			//receive all double edges
+			redundantEdges = getDoubleEdges(data.getAllEdges());
 
-		//receive and add all recursive edges
-		redundantEdges.addAll(getRecursiveEdges(data.getAllEdges()));
+			//receive and add all recursive edges
+			redundantEdges.addAll(getRecursiveEdges(data.getAllEdges()));
 
-		//receive and add all edges which are SuperProperties
-		redundantEdges.addAll(getRedundantSuperPropertyEdges(data.getAllEdges()));
+			//receive and add all edges which are SuperProperties
+			redundantEdges.addAll(getRedundantSuperPropertyEdges(data.getAllEdges()));
 
-		// loop through redundant Set to remove all redundant Edges
-		redundantEdges.forEach(data::removeEdge);
+			// loop through redundant Set to remove all redundant Edges
+			redundantEdges.forEach(data::removeEdge);
+		}
+
+		if (!config.isShowInverse()) {
+			// change predicates of inverse Edges and receive now redundant Edges
+			redundantEdges = defineInverseProperties(data, data.getInversePropertiesMap());
+
+			// loop through redundant Set to remove all redundant Edges, once again
+			redundantEdges.forEach(data::removeEdge);
+		}
+	}
+
+	private static Set<Edge> defineInverseProperties(SubGraphData data, MultiMap<String, String> inversePropertiesMap) {
+		Set<Edge> edges = data.getAllEdges();
+		String relationURI, inverseURI, p1, p2 = null;
+		Set<Edge> redundantEdges = new HashSet<>();
+		Set<String> inverseProperties;
+
+		ConceptNode o1, o2, s1, s2;
+
+		// Check every Edge for inverseProperties
+		for (Edge e1 : edges) {
+			relationURI = e1.getRelationURI();
+			s1 = e1.getSubject();
+			o1 = e1.getObject();
+			p1 = e1.getPredicate();
+			inverseProperties = inversePropertiesMap.getValues(relationURI);
+
+			if (inversePropertiesMap.getValues(relationURI).size() != 1) {
+				continue;
+			}
+
+			inverseURI = (String) inversePropertiesMap.getValues(relationURI).toArray()[0];
+
+			// Check if this there's a inverseProperty to this Edge's relationURI
+			// and it's not an reflexive inverse
+			// and isn't already redundant
+			if (inverseProperties.size() == 1 && !inverseURI.equals(relationURI) && !redundantEdges.contains(e1)) {
+				for (Edge e2 : edges) {
+					s2 = e2.getSubject();
+					o2 = e2.getObject();
+
+					// Check if this edge is the inverse we are looking for
+					if (e2.getRelationURI().equals(inverseURI) && s1.equals(o2) && o1.equals(s2)) {
+						// if so: change Predicate of first edge, change to bidirectional and add second (inverse) edge to redundant edges
+						p2 = e2.getPredicate();
+						e1.setPredicate(p1 + " | " + p2);
+						e1.setBidirectionalEdge(true);
+						redundantEdges.add(e2);
+					}
+				}
+			}
+		}
+		return redundantEdges;
 	}
 
 	private static SubGraphData defineSuperProperties(SubGraphData data, MultiMap<String, String> subPropertiesMap) {
