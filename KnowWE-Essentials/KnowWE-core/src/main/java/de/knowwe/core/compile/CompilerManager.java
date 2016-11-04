@@ -18,8 +18,6 @@ import java.util.concurrent.Executors;
 
 import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
-import com.denkbares.events.Event;
-import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
@@ -27,7 +25,6 @@ import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
-import de.knowwe.event.ServletContextDestroyedEvent;
 
 /**
  * This class represents the compile manager for a specific
@@ -69,9 +66,7 @@ public class CompilerManager {
 		this.compilerCache = new HashSet<>();
 		this.compilers = new PriorityList<>(5d);
 		this.threadPool = createExecutorService();
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			onContextDestroyed();
-		});
+		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> onContextDestroyed());
 	}
 
 	private void onContextDestroyed() {
