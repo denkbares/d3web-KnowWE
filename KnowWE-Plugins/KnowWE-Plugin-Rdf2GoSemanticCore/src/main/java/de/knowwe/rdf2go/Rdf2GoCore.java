@@ -87,7 +87,6 @@ import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
-import com.denkbares.utils.Stopwatch;
 import de.d3web.core.inference.RuleSet;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ServletContextEventListener;
@@ -116,7 +115,6 @@ public class Rdf2GoCore {
 	private static Rdf2GoCore globaleInstance;
 
 	public static final String GLOBAL = "GLOBAL";
-
 
 	public static final int DEFAULT_TIMEOUT = 15000;
 
@@ -1004,7 +1002,7 @@ public class Rdf2GoCore {
 	/**
 	 * Performs a cached SPARQL select query with the specified timeout.
 	 *
-	 * @param query   the SPARQL query to perform
+	 * @param query         the SPARQL query to perform
 	 * @param timeoutMillis the time to be used for timeout in ms
 	 * @return the result of the query
 	 */
@@ -1496,18 +1494,19 @@ public class Rdf2GoCore {
 	 */
 	public void destroy() {
 		if (ServletContextEventListener.isDestroyInProgress()) {
-			shutDown();
+			EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+			this.semanticCore.shutdown();
 		}
 		else {
-			shutDownThreadPool.execute(this::shutDown);
+			shutDownThreadPool.execute(() -> {
+				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+				this.semanticCore.release();
+				if (this.semanticCore.isAllocated()) {
+					Log.warning("Semantic core " + this.semanticCore.getRepositoryId()
+							+ " is still allocated and cannot be shut down, this may be an memory leak.");
+				}
+			});
 		}
-	}
-
-	private void shutDown() {
-		Stopwatch stopwatch = new Stopwatch();
-		EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
-		this.semanticCore.shutdown();
-		Log.info("SemanticCore shutdown in " + stopwatch.getDisplay());
 	}
 
 	public RepositoryConfig getRuleSet() {
