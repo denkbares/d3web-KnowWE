@@ -16,13 +16,13 @@ if (typeof KNOWWE.core.plugin == "undefined" || !KNOWWE.core.plugin) {
 }
 
 KNOWWE.helper.observer.subscribe("beforeRerender", function() {
-	jq$('.progress-container').each(function() {
+	jq$('.long-op-progress-container').each(function() {
 		KNOWWE.core.plugin.progress.cache[jq$(this).attr('id')] = this;
 	});
 });
 
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
-	jq$('.progress-container').each(function() {
+	jq$('.long-op-progress-container').each(function() {
 		jq$(this).replaceWith(KNOWWE.core.plugin.progress.cache[jq$(this).attr('id')]);
 	});
 });
@@ -85,7 +85,7 @@ KNOWWE.core.plugin.progress = function() {
 			removeAllErrors();
 
 			// remove old progress indicators (create a new one)
-			var container = jq$("#" + sectionID + " .progress-container");
+			var container = jq$("#" + sectionID + " .long-op-progress-container");
 			container.find("#" + operationID).remove();
 
 			new _KA(options).send();
@@ -173,7 +173,7 @@ KNOWWE.core.plugin.progress = function() {
 				response : {
 					fn : function() {
 						var json = eval(this.responseText);
-						var container = jq$("#" + sectionId + " .progress-container");
+						var container = jq$("#" + sectionId + " .long-op-progress-container");
 						var refresh = false;
 						for (var i = 0; i < json.length; i++) {
 							var opId = json[i].operationID;

@@ -169,17 +169,17 @@ span.markupMenuItem {
 	padding: 0 !important;
 }
 
-.defaultMarkupFrame .progress-container {
+.defaultMarkupFrame .long-op-progress-container {
 }
 
-.defaultMarkupFrame .progress-container .progress-bar {
+.defaultMarkupFrame .long-op-progress-container .progress-bar {
 	display: inline-block;
 	width: 50%;
-	height: 12px;
+	height: 21px;
 	position: relative;
 }
 
-.defaultMarkupFrame .progress-container .progress-bar .progress-bar-percent {
+.defaultMarkupFrame .long-op-progress-container .progress-bar .progress-bar-percent {
 	position: absolute;
 	top: -2px;
 	left: 10px;
@@ -187,58 +187,58 @@ span.markupMenuItem {
 	text-align: center;
 }
 
-.defaultMarkupFrame .progress-container .progress-bar .ui-progressbar-value {
-	height: 12px;
+.defaultMarkupFrame .long-op-progress-container .progress-bar .ui-progressbar-value {
+	height: 21px;
 }
 
-.defaultMarkupFrame .progress-container .progress-state {
+.defaultMarkupFrame .long-op-progress-container .progress-state {
 	display: inline-block;
 	position: relative;
 	top: -3px;
-	margin-right: 8px;
+	margin: 2px 2px 2px 5px;
 	background-image: none
 }
 
-.defaultMarkupFrame .progress-container .progress-state:hover {
+.defaultMarkupFrame .long-op-progress-container .progress-state:hover {
 	cursor: pointer;
 }
 
-.defaultMarkupFrame .progress-container .progress-state:before {
+.defaultMarkupFrame .long-op-progress-container .progress-state:before {
 	font-family: FontAwesome;
 	content: "\f04d";
 	color: #CC3333;
 }
 
-.defaultMarkupFrame .progress-container .progress-error .progress-state {
+.defaultMarkupFrame .long-op-progress-container .progress-error .progress-state {
 	background-image: none;
 }
 
-.defaultMarkupFrame .progress-container .progress-error .progress-state:before {
+.defaultMarkupFrame .long-op-progress-container .progress-error .progress-state:before {
 	font-family: FontAwesome;
 	content: "\f111";
 	color: #CC3333;
 	background-image: none;
 }
 
-.defaultMarkupFrame .progress-container .progress-success .progress-state {
+.defaultMarkupFrame .long-op-progress-container .progress-success .progress-state {
 	background-image: none;
 }
 
-.defaultMarkupFrame .progress-container .progress-success .progress-state:before {
+.defaultMarkupFrame .long-op-progress-container .progress-success .progress-state:before {
 	font-family: FontAwesome;
 	content: "\f111";
 	color: #6A9514;
 }
 
-.defaultMarkupFrame .progress-container .progress-message,
-.defaultMarkupFrame .progress-container .progress-close {
+.defaultMarkupFrame .long-op-progress-container .progress-message,
+.defaultMarkupFrame .long-op-progress-container .progress-close {
 	display: inline-block;
 	margin-left: 5px;
 	top: -3px;
 	position: relative;
 }
 
-.defaultMarkupFrame .progress-container .progress-close {
+.defaultMarkupFrame .long-op-progress-container .progress-close {
 	color: grey;
 }
 
