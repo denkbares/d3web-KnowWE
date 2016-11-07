@@ -241,7 +241,7 @@ public class CIBuildManager implements EventListener {
 		// we synchronize the method so there will not be any new builds
 		// added between shutting down and awaiting termination
 		shutDownNow();
-		awaitTermination();
+//		awaitTermination();
 	}
 
 }
