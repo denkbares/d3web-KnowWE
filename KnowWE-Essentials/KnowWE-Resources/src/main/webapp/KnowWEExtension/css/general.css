@@ -238,40 +238,12 @@ code.box {
 }
 
 /* ################################################## */
-/* ------------->>> Panel Different  <<<------------- */
+/* ------------->>> Panel Admin      <<<------------- */
 /* ################################################## */
-/*General Panel Settings */
-.panel {
-	border: 1px solid #96BBD9;
-	margin: 5px 0px;
-	padding: 5px;
-}
-
-.panel[id='dialog-panel'] {
-	border: none;
-}
-
-.panel h3 {
-	background-color: #96BBD9;
-	color: #000;
-	cursor: pointer;
-	font-size: 1.4em;
-	padding: 3px 15px;
-	margin: 3px 0px;
-}
-
-.panel img {
-	margin-right: 5px;
-	vertical-align: middle;
-}
-
 #admin-panel ul {
 	list-style-type: none;
 }
 
-/* ################################################## */
-/* ------------->>> Panel Admin      <<<------------- */
-/* ################################################## */
 #admin-panel li {
 	font-size: 0.9em;
 	padding: 0px 20px;
