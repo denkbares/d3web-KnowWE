@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
@@ -13,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.openrdf.model.Literal;
 import org.openrdf.model.URI;
@@ -21,9 +21,8 @@ import org.openrdf.query.Binding;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.MalformedQueryException;
 
-import com.denkbares.collections.PartialHierarchy;
-import com.denkbares.collections.PartialHierarchyException;
-import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
@@ -44,7 +43,6 @@ import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
-import de.knowwe.rdf2go.utils.SimpleTableRow;
 import de.knowwe.rdf2go.utils.TableRow;
 
 public class SparqlResultRenderer {
@@ -111,7 +109,8 @@ public class SparqlResultRenderer {
 
 		CachedTupleQueryResult qrt = null;
 		try {
-			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore().sparqlSelect(query, true, opts.getTimeout());
+			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
+					.sparqlSelect(query, true, opts.getTimeout());
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
@@ -216,7 +215,7 @@ public class SparqlResultRenderer {
 	}
 
 	/**
-	 * @param qrt  the query result to render
+	 * @param qrt the query result to render
 	 * @param opts the options to control the rendered output
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
@@ -404,122 +403,85 @@ public class SparqlResultRenderer {
 	private ResultTableModel createMagicallySortedTable(ResultTableModel table, RenderResult renderResult) {
 		Stopwatch stopwatch = new Stopwatch();
 		// creating hierarchy order using PartialHierarchyTree
-		ResultTableHierarchy resultTableHierarchy = new ResultTableHierarchy(table);
-		PartialHierarchyTree<TableRow> tree = new
-				PartialHierarchyTree<>(
-				resultTableHierarchy);
-
-		// add all nodes to create the tree
-		Iterator<TableRow> iterator = table.iterator();
-		while (iterator.hasNext()) {
-			TableRow next = iterator.next();
-			try {
-				tree.insert(next);
-			}
-			catch (PartialHierarchyException e) {
-				renderResult.appendException(e.getMessage(), e);
-				Log.severe("Exception while rendering sorted table.", e);
-			}
-		}
-
-		// DFS traversion will create the desired order
-		// List<TableRow> nodesDFSOrder = tree.getNodesDFSOrder();
-
+		ResultTableHierarchy tree = new ResultTableHierarchy(table);
 		ResultTableModel result = new ResultTableModel(table.getVariables());
 
-		List<PartialHierarchyTree.Node<TableRow>> rootLevelNodes = tree.getRootLevelNodesSorted(getComparator(result));
-		for (PartialHierarchyTree.Node<TableRow> node : rootLevelNodes) {
-			TableRow row = node.getData();
-			Value topLevelConcept = row.getValue(table.getVariables().get(1));
+		List<TableRow> rootLevelNodes = tree.getRoots();
 
-			if (topLevelConcept != null
-					&& !topLevelConcept.equals(row.getValue(table.getVariables().get(1)))) {
-				// check whether an artificial root node is needed
-				SimpleTableRow artificialTopLevelRow = new SimpleTableRow();
-				artificialTopLevelRow.addValue(table.getVariables().get(0), topLevelConcept);
-				artificialTopLevelRow.addValue(table.getVariables().get(1), topLevelConcept);
-				artificialTopLevelRow.addValue(table.getVariables().get(2), topLevelConcept);
-				result.addTableRow(artificialTopLevelRow);
-			}
-
-			addRowRecursively(node, result);
+		for (TableRow row : rootLevelNodes) {
+			addRowRecursively(row, tree, result);
 		}
 		Log.info("Create hierarchical sparql result table in " + stopwatch.getDisplay());
 		return result;
 	}
 
-	private void addRowRecursively(PartialHierarchyTree.Node<TableRow> node, final ResultTableModel result) {
+	private void addRowRecursively(TableRow row, ResultTableHierarchy tree, final ResultTableModel result) {
 		// add current row
-		result.addTableRow(node.getData());
-
-		// sort children order alphabetical
-		List<PartialHierarchyTree.Node<TableRow>> children = node.getChildrenSorted(getComparator(result));
+		result.addTableRow(row);
 
 		// add all children recursively
-		for (PartialHierarchyTree.Node<TableRow> child : children) {
-			addRowRecursively(child, result);
+		for (TableRow child : tree.getChildren(row)) {
+			addRowRecursively(child, tree, result);
 		}
-
 	}
 
-	private Comparator<TableRow> getComparator(final ResultTableModel result) {
-		return (o1, o2) -> {
-			Value concept1 = o1.getValue(result.getVariables().get(0));
-			Value concept2 = o2.getValue(result.getVariables().get(0));
-			if (result.getVariables().size() >= 3) {
-				Value tmp1 = o1.getValue(result.getVariables().get(2));
-				Value tmp2 = o2.getValue(result.getVariables().get(2));
-				if (tmp1 != null && tmp2 != null) {
-					concept1 = o1.getValue(result.getVariables().get(2));
-					concept2 = o2.getValue(result.getVariables().get(2));
-				}
-
-			}
-
-			return concept1.toString().compareTo(concept2.toString());
-		};
-	}
-
-	private static class ResultTableHierarchy implements PartialHierarchy<TableRow> {
+	private static class ResultTableHierarchy {
 
 		private final ResultTableModel data;
+		private final List<TableRow> roots = new LinkedList<>();
+		private final MultiMap<TableRow, TableRow> children = new DefaultMultiMap<>();
+		private final Comparator<TableRow> comparator;
 
 		public ResultTableHierarchy(ResultTableModel data) {
 			this.data = data;
+			this.comparator = getComparator(data);
+			init();
 		}
 
-		@Override
-		public boolean isSuccessorOf(TableRow row1, TableRow row2) throws PartialHierarchyException {
-			LinkedHashSet<TableRow> path = new LinkedHashSet<>();
-			return checkSuccessorshipRecursively(row1, row2, path);
+		public List<TableRow> getRoots() {
+			return roots.stream()
+					.sorted(comparator)
+					.collect(Collectors.toList());
 		}
 
-		@SuppressWarnings("SimplifiableIfStatement")
-		private boolean checkSuccessorshipRecursively(TableRow ascendor, TableRow ancestor, Set<TableRow> path) throws PartialHierarchyException {
+		public List<TableRow> getChildren(TableRow row) {
+			return children.getValues(row).stream()
+					.sorted(comparator)
+					.collect(Collectors.toList());
+		}
 
-			Value ascendorNode = ascendor.getValue(data.getVariables().get(0));
-			Value potentialAncestorNode = ancestor.getValue(data.getVariables().get(0));
-
-			if (ascendorNode.equals(potentialAncestorNode)) return true;
-
-			Value ascendorParent = ascendor.getValue(data.getVariables().get(1));
-			if (ascendorNode.equals(ascendorParent)) {
-				// is artificial, invalid root node
-				return false;
+		private void init() {
+			for (TableRow tableRow : data) {
+				String parentColumn = data.getVariables().get(1);
+				Value parentId = tableRow.getValue(parentColumn);
+				Collection<TableRow> parents = data.findRowFor(parentId);
+				if (parents.isEmpty()) {
+					roots.add(tableRow);
+				}
+				else {
+					for (TableRow parent : parents) {
+						children.put(parent, tableRow);
+					}
+				}
 			}
-			Collection<TableRow> parentRows = data.findRowFor(ascendorParent);
-			if (parentRows == null || parentRows.isEmpty()) return false;
-
-			// we remember the path to detect cycles
-			path.add(ascendor);
-
-			TableRow parent = parentRows.iterator().next();
-			if (path.contains(parent)) {
-				throw new PartialHierarchyException(parent, path);
-			}
-			return checkSuccessorshipRecursively(parent, ancestor, path);
 		}
 
+		private static Comparator<TableRow> getComparator(final ResultTableModel result) {
+			return (o1, o2) -> {
+				Value concept1 = o1.getValue(result.getVariables().get(0));
+				Value concept2 = o2.getValue(result.getVariables().get(0));
+				if (result.getVariables().size() >= 3) {
+					Value tmp1 = o1.getValue(result.getVariables().get(2));
+					Value tmp2 = o2.getValue(result.getVariables().get(2));
+					if (tmp1 != null && tmp2 != null) {
+						concept1 = o1.getValue(result.getVariables().get(2));
+						concept2 = o2.getValue(result.getVariables().get(2));
+					}
+				}
+
+				return concept1.toString().compareTo(concept2.toString());
+			};
+		}
 	}
 
 	private String valueToID(String variable, TableRow row) {
@@ -542,7 +504,8 @@ public class SparqlResultRenderer {
 		}
 		if (!rawOutput) {
 			for (SparqlResultNodeRenderer nodeRenderer : nodeRenderers) {
-				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer) continue;
+				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer)
+					continue;
 
 				String temp = rendered;
 				rendered = nodeRenderer.renderNode(node, rendered, var, user, core, mode);
@@ -554,8 +517,8 @@ public class SparqlResultRenderer {
 	}
 
 	/**
-	 * Right now we cant use Literal#toString, because it renders the xsd inside < >, which somehow does not render in
-	 * JSPWiki.
+	 * Right now we cant use Literal#toString, because it renders the xsd inside < >, which somehow
+	 * does not render in JSPWiki.
 	 */
 	private String renderLiteral(Literal node) {
 		StringBuilder sb = new StringBuilder();
@@ -579,5 +542,17 @@ public class SparqlResultRenderer {
 
 		return sb.toString();
 	}
-
+//
+//	private void testSlowRendering(File source) throws IOException {
+//		String csv = Files.getText(source);
+//		ResultTableModel table = ResultTableModel.fromCSV(csv);
+//		RenderResult result = new RenderResult(new TestUserContext("TestArticle"));
+//		ResultTableModel resultTable  = createMagicallySortedTable(table, result);
+//		System.out.println(result.toString());
+//	}
+//
+//	public static void main(String[] args) throws IOException {
+//		InitPluginManager.init(new File("../../KnowWE-App/target/dependencies/output.txt"));
+//		new SparqlResultRenderer().testSlowRendering(new File("/Users/volker_belli/Desktop/leopard.csv"));
+//	}
 }

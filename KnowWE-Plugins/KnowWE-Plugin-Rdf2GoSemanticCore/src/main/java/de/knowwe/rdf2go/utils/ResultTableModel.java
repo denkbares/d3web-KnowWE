@@ -20,6 +20,7 @@
 package de.knowwe.rdf2go.utils;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,11 +34,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
+import org.jetbrains.annotations.NotNull;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Value;
+import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.query.BindingSet;
 
 import com.denkbares.collections.SubSpanIterator;
@@ -47,7 +53,7 @@ import com.denkbares.utils.Pair;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
 
-public class ResultTableModel {
+public class ResultTableModel implements Iterable<TableRow> {
 
 	public Map<Value, Set<TableRow>> getData() {
 		if (groupedRows == null) {
@@ -97,6 +103,7 @@ public class ResultTableModel {
 		return rows.contains(row);
 	}
 
+	@Override
 	public Iterator<TableRow> iterator() {
 		if (comparators.isEmpty()) {
 			return rows.iterator();
@@ -123,7 +130,6 @@ public class ResultTableModel {
 			};
 			comparators.add(comparator);
 		}
-
 	}
 
 	/**
@@ -169,8 +175,9 @@ public class ResultTableModel {
 		return variables;
 	}
 
+	@NotNull
 	public Collection<TableRow> findRowFor(Value ascendorParent) {
-		return getData().get(ascendorParent);
+		return getData().getOrDefault(ascendorParent, Collections.emptySet());
 	}
 
 	public void addTableRow(TableRow artificialTopLevelRow) {
@@ -266,9 +273,10 @@ public class ResultTableModel {
 
 	public String toCSV() throws IOException {
 		StringWriter out = new StringWriter();
-		CSVPrinter printer = CSVFormat.DEFAULT.withHeader(variables.toArray(new String[variables.size()])).print(out);
+		CSVPrinter printer = CSVFormat.DEFAULT.withHeader(variables.toArray(new String[variables.size()]))
+				.print(out);
 		for (TableRow row : rows) {
-			List<Object> values = new ArrayList<>();
+			List<Object> values = new ArrayList<>(variables.size());
 			for (String variable : variables) {
 				Value value = row.getValue(variable);
 				values.add(value == null ? null : value.stringValue());
@@ -278,5 +286,31 @@ public class ResultTableModel {
 		return out.toString();
 	}
 
+	public static ResultTableModel fromCSV(String csv) throws IOException {
+		try (CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(new StringReader(csv))) {
+
+			// read the header
+			Map<String, Integer> headerMap = parser.getHeaderMap();
+			List<String> variables = headerMap.entrySet().stream()
+					.sorted(Comparator.comparing(Map.Entry::getValue))
+					.map(Map.Entry::getKey).collect(Collectors.toList());
+
+			// read the rows
+			List<TableRow> rows = new LinkedList<>();
+			for (final CSVRecord record : parser) {
+				SimpleTableRow row = new SimpleTableRow();
+				for (String variable : variables) {
+					String value = record.get(variable);
+					if (value != null) {
+						row.addValue(variable, new LiteralImpl(value));
+					}
+				}
+				rows.add(row);
+			}
+
+			//  and return the parsed table
+			return new ResultTableModel(rows, variables);
+		}
+	}
 }
 
