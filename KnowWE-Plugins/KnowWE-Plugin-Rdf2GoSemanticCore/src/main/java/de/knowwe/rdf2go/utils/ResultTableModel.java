@@ -19,6 +19,8 @@
  */
 package de.knowwe.rdf2go.utils;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,16 +34,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Value;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.collections.SubSpanIterator;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.TupleQueryResult;
-import com.denkbares.collections.SubSpanIterator;
+import com.denkbares.utils.Pair;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
-import com.denkbares.utils.Pair;
 
 public class ResultTableModel {
 
@@ -258,6 +262,20 @@ public class ResultTableModel {
 			buffy.append(message.getText()).append("\n");
 		}
 		return buffy.toString();
+	}
+
+	public String toCSV() throws IOException {
+		StringWriter out = new StringWriter();
+		CSVPrinter printer = CSVFormat.DEFAULT.withHeader(variables.toArray(new String[variables.size()])).print(out);
+		for (TableRow row : rows) {
+			List<Object> values = new ArrayList<>();
+			for (String variable : variables) {
+				Value value = row.getValue(variable);
+				values.add(value == null ? null : value.stringValue());
+			}
+			printer.printRecord(values);
+		}
+		return out.toString();
 	}
 
 }
