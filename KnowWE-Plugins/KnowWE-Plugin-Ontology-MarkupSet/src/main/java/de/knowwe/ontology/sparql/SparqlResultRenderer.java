@@ -30,6 +30,7 @@ import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -401,6 +402,7 @@ public class SparqlResultRenderer {
 	}
 
 	private ResultTableModel createMagicallySortedTable(ResultTableModel table, RenderResult renderResult) {
+		Stopwatch stopwatch = new Stopwatch();
 		// creating hierarchy order using PartialHierarchyTree
 		ResultTableHierarchy resultTableHierarchy = new ResultTableHierarchy(table);
 		PartialHierarchyTree<TableRow> tree = new
@@ -442,7 +444,7 @@ public class SparqlResultRenderer {
 
 			addRowRecursively(node, result);
 		}
-
+		Log.info("Create hierarchical sparql result table in " + stopwatch.getDisplay());
 		return result;
 	}
 
