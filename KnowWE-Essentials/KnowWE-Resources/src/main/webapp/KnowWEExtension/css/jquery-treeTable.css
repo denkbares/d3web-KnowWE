@@ -1,3 +1,10 @@
+.KnowWE-haddock table.treetable * {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
+
 .table_text {
 	height: 18px;
 	max-height: 400px;
