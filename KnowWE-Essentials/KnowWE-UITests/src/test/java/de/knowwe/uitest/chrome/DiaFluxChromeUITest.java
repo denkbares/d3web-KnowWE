@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import de.knowwe.uitest.DiaFluxSystemTest;
+import de.knowwe.uitest.DiaFluxUITest;
 import de.knowwe.uitest.UITestUtils;
 
 /**
@@ -16,13 +16,13 @@ import de.knowwe.uitest.UITestUtils;
  *<p>
  * Created by Albrecht Striffler (denkbares GmbH) on 25.04.2015.
  */
-public abstract class ChromeDiaFluxSystemTest extends DiaFluxSystemTest {
+public abstract class DiaFluxChromeUITest extends DiaFluxUITest {
 
 	private static RemoteWebDriver driver;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), ChromeDiaFluxSystemTest.class.getSimpleName());
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), DiaFluxChromeUITest.class.getSimpleName());
 	}
 
 	@AfterClass

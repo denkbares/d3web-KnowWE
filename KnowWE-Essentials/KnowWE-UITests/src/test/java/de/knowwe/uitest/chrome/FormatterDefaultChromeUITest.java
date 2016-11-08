@@ -2,9 +2,10 @@ package de.knowwe.uitest.chrome;
 
 import de.knowwe.uitest.WikiTemplate;
 
-public class ChromeHaddockFormatterUITest extends ChromeFormatterUITest {
+public class FormatterDefaultChromeUITest extends FormatterChromeUITest {
+
 	@Override
 	protected WikiTemplate getTemplate() {
-		return WikiTemplate.haddock;
+		return WikiTemplate.standard;
 	}
 }

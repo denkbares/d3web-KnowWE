@@ -52,7 +52,7 @@ import static org.junit.Assert.assertFalse;
  * <p>
  * Test the Test Protocol for DiaFlux (System Test - Manual DiaFlux BMI)
  */
-public abstract class DiaFluxSystemTest extends KnowWEUITest {
+public abstract class DiaFluxUITest extends KnowWEUITest {
 
 	@Rule
 	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);

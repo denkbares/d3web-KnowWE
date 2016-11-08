@@ -35,13 +35,13 @@ import de.knowwe.uitest.UITestUtils;
  * @author Jonas Müller
  * @created 06.10.16
  */
-public class ChromePanelHaddockUITest extends PanelHaddockUITest {
+public class PanelChromeHaddockUITest extends PanelHaddockUITest {
 
 	private static RemoteWebDriver driver;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), ChromePanelHaddockUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), PanelChromeHaddockUITest.class.getSimpleName());
 	}
 
 	@AfterClass

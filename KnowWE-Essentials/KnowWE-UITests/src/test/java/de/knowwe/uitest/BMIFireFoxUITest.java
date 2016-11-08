@@ -41,7 +41,7 @@ import static junit.framework.TestCase.assertEquals;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 21.01.15
  */
-public class BMITest {
+public class BMIFireFoxUITest {
 
 	private WebDriver driver;
 

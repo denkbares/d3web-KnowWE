@@ -13,7 +13,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.denkbares.strings.Strings;
-import de.knowwe.uitest.DiaFluxSystemTest;
+import de.knowwe.uitest.DiaFluxUITest;
 import de.knowwe.uitest.UITestUtils;
 
 /**
@@ -23,13 +23,13 @@ import de.knowwe.uitest.UITestUtils;
  * <p>
  * Created by Albrecht Striffler (denkbares GmbH) on 25.04.2015.
  */
-public abstract class FireFoxDiaFluxSystemTest extends DiaFluxSystemTest {
+public abstract class DiaFluxFireFoxUITest extends DiaFluxUITest {
 
 	private static RemoteWebDriver driver;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), FireFoxDiaFluxSystemTest.class.getSimpleName());
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), DiaFluxFireFoxUITest.class.getSimpleName());
 	}
 
 	@AfterClass

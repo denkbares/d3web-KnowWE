@@ -16,20 +16,34 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
+package de.knowwe.uitest.chrome;
 
-package de.knowwe.uitest.firefox;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
-import de.knowwe.uitest.WikiTemplate;
+import de.knowwe.uitest.FormatterUITest;
+import de.knowwe.uitest.UITestUtils;
 
-/**
- * DiaFluxSystem Test for FireFox with default template.
- *
- * @author Jonas Müller
- * @created 13.09.16
- */
-public class FireFoxDiaFluxDefaultSystemTest extends FireFoxDiaFluxSystemTest {
+public abstract class FormatterChromeUITest extends FormatterUITest {
+
+	private static RemoteWebDriver driver;
+
 	@Override
-	protected WikiTemplate getTemplate() {
-		return WikiTemplate.standard;
+	protected WebDriver getDriver() {
+		return driver;
 	}
+
+	@BeforeClass
+	public static void setUp() throws Exception {
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), FormatterChromeUITest.class.getSimpleName());
+	}
+
+	@AfterClass
+	public static void tearDown() throws Exception {
+		if (!devMode) driver.quit();
+	}
+
 }

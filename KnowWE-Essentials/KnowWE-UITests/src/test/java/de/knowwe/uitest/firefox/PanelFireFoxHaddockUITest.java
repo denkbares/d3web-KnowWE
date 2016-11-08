@@ -24,24 +24,23 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import de.knowwe.uitest.PanelDefaultUITest;
+import de.knowwe.uitest.PanelHaddockUITest;
 import de.knowwe.uitest.UITestUtils;
 
 /**
- * Test for left and right panel for Firefox and default template
+ * Test for left and right panel for Firefox and haddock template
  * <p>
  * You will need a UITest-Panel-FireFox wiki page in order to carry out this test locally
  * <p>
- *
  * @author Jonas Müller
  * @created 13.10.16
  */
-public class FireFoxPanelDefaultUITest extends PanelDefaultUITest {
+public class PanelFireFoxHaddockUITest extends PanelHaddockUITest {
 	private static RemoteWebDriver driver;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), FireFoxPanelDefaultUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), PanelFireFoxHaddockUITest.class.getSimpleName());
 	}
 
 	@AfterClass

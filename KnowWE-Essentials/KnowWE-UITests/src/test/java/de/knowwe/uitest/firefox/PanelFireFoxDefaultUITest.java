@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.uitest.chrome;
+package de.knowwe.uitest.firefox;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -28,20 +28,20 @@ import de.knowwe.uitest.PanelDefaultUITest;
 import de.knowwe.uitest.UITestUtils;
 
 /**
- * Test for left and right panel for Chrome and default template
+ * Test for left and right panel for Firefox and default template
  * <p>
- * You will need a UITest-Panel-Chrome wiki page in order to carry out this test locally
+ * You will need a UITest-Panel-FireFox wiki page in order to carry out this test locally
  * <p>
  *
  * @author Jonas Müller
  * @created 13.10.16
  */
-public class ChromePanelDefaultUITest extends PanelDefaultUITest {
+public class PanelFireFoxDefaultUITest extends PanelDefaultUITest {
 	private static RemoteWebDriver driver;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), ChromePanelDefaultUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.firefox(), PanelFireFoxDefaultUITest.class.getSimpleName());
 	}
 
 	@AfterClass
@@ -56,6 +56,6 @@ public class ChromePanelDefaultUITest extends PanelDefaultUITest {
 
 	@Override
 	public String getTestName() {
-		return "UITest-Panel-Chrome";
+		return "UITest-Panel-FireFox";
 	}
 }
