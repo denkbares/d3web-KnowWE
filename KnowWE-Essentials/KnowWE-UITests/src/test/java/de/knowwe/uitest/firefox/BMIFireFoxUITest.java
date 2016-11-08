@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.uitest;
+package de.knowwe.uitest.firefox;
 
 import java.net.URL;
 import java.util.List;
@@ -32,6 +32,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
+import de.knowwe.uitest.UITestUtils;
 
 import static junit.framework.TestCase.assertEquals;
 
