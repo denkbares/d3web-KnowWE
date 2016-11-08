@@ -1,14 +1,13 @@
-package de.knowwe.uitest;
-
-import java.net.URL;
+package de.knowwe.uitest.chrome;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
+import de.knowwe.uitest.DiaFluxSystemTest;
+import de.knowwe.uitest.UITestUtils;
 
 /**
  * DiaFluxSystemTest for Chrome.

@@ -17,12 +17,15 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.uitest;
+package de.knowwe.uitest.firefox;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
+import de.knowwe.uitest.PanelDefaultUITest;
+import de.knowwe.uitest.UITestUtils;
 
 /**
  * Test for left and right panel for Firefox and default template

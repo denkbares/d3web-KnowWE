@@ -17,17 +17,22 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.uitest;
+package de.knowwe.uitest.chrome;
+
+import org.junit.Ignore;
+
+import de.knowwe.uitest.WikiTemplate;
 
 /**
- * DiaFluxSystem Test for Chrome with old default template
+ * DiaFluxSystem Test for Chrome with haddock template
  *
  * @author Jonas Müller
  * @created 13.09.16
  */
-public class ChromeDiaFluxDefaultSystemTest extends ChromeDiaFluxSystemTest {
+@Ignore
+public class ChromeDiaFluxHaddockSystemTest extends ChromeDiaFluxSystemTest {
 	@Override
 	protected WikiTemplate getTemplate() {
-		return WikiTemplate.standard;
+		return WikiTemplate.haddock;
 	}
 }

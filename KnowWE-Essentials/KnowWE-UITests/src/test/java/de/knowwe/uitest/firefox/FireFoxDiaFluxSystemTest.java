@@ -1,26 +1,20 @@
-package de.knowwe.uitest;
+package de.knowwe.uitest.firefox;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
-import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.uitest.DiaFluxSystemTest;
+import de.knowwe.uitest.UITestUtils;
 
 /**
  * DiaFluxSystemTest for FireFox.

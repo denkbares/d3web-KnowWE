@@ -17,13 +17,15 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.uitest;
+package de.knowwe.uitest.firefox;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+
+import de.knowwe.uitest.PanelHaddockUITest;
+import de.knowwe.uitest.UITestUtils;
 
 /**
  * Test for left and right panel for Firefox and haddock template
