@@ -104,6 +104,7 @@ KNOWWE.core.plugin.progress = function() {
 				loader : false,
 				response : {
 					fn : function() {
+						KNOWWE.core.plugin.progress.hiddenProgress[operationID] = false;
 						KNOWWE.core.plugin.progress.updateProgressBar(sectionID);
 					},
 					onError : handleErrResponse
