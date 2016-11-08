@@ -20,7 +20,7 @@ package de.knowwe.uitest.chrome;
 
 import de.knowwe.uitest.WikiTemplate;
 
-public class FormatterHaddockUITest extends FormatterChromeUITest {
+public class FormatterHaddockChromeUITest extends FormatterChromeUITest {
 
 	@Override
 	protected WikiTemplate getTemplate() {

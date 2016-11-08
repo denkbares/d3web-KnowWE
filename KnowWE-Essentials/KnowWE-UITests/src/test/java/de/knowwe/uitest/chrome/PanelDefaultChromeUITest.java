@@ -24,24 +24,24 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-import de.knowwe.uitest.PanelHaddockUITest;
+import de.knowwe.uitest.PanelDefaultUITest;
 import de.knowwe.uitest.UITestUtils;
 
 /**
- * Test for left and right panel for Chrome and haddock template
+ * Test for left and right panel for Chrome and default template
  * <p>
  * You will need a UITest-Panel-Chrome wiki page in order to carry out this test locally
  * <p>
+ *
  * @author Jonas Müller
- * @created 06.10.16
+ * @created 13.10.16
  */
-public class PanelChromeHaddockUITest extends PanelHaddockUITest {
-
+public class PanelDefaultChromeUITest extends PanelDefaultUITest {
 	private static RemoteWebDriver driver;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), PanelChromeHaddockUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), PanelDefaultChromeUITest.class.getSimpleName());
 	}
 
 	@AfterClass
@@ -59,4 +59,3 @@ public class PanelChromeHaddockUITest extends PanelHaddockUITest {
 		return "UITest-Panel-Chrome";
 	}
 }
-
