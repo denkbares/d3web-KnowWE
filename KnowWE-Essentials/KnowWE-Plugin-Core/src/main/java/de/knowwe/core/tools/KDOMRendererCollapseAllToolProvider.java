@@ -43,13 +43,9 @@ public class KDOMRendererCollapseAllToolProvider implements ToolProvider{
     @Override
     public boolean hasTools(Section<?> section, UserContext userContext) {
         // RenderKDOM
-        Article article = userContext.getArticle();
+        Article article = section.getArticle();
         Section<RenderKDOMType> successor = Sections.successor(article, RenderKDOMType.class);
-        if (successor == null || successor.isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return !(successor == null || successor.isEmpty());
     }
 
     protected Tool getCollapseAllTool(Section<?> section, UserContext userContext) {
