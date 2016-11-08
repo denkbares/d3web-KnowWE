@@ -34,6 +34,7 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -213,6 +214,14 @@ public class UITestUtils {
 	}
 
 	public static RemoteWebDriver setUp(boolean devMode, DesiredCapabilities capabilities, String testClassName) throws MalformedURLException {
+
+		String chromeBinary = System.getProperty("mate.chrome.binary");
+		if (chromeBinary != null) {
+			ChromeOptions chromeOptions = new ChromeOptions();
+			chromeOptions.setBinary(chromeBinary);
+			capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+		}
+
 		RemoteWebDriver driver;
 		if (devMode) {
 			driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
