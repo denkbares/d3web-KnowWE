@@ -21,8 +21,6 @@ package de.knowwe.uitest;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static org.junit.Assert.assertEquals;
 
@@ -161,23 +159,23 @@ public abstract class FormatterUITest extends KnowWEUITest {
 	}
 
 	private String testFormatButton(String unformatted) {
-		getDriver().findElement(By.id("edit-mode-button")).click();
-		getDriver().findElement(By.className("markupText")).click();
-		new WebDriverWait(getDriver(), 5).until(ExpectedConditions.presenceOfElementLocated(By.className("defaultEditTool")));
-		getDriver().findElement(By.className("defaultEditTool")).clear();
-		getDriver().findElement(By.className("defaultEditTool")).sendKeys(unformatted);
+		waitTilClickable(By.id("edit-mode-button")).click();
+		waitTilClickable(By.className("markupHeader")).click();
+		waitTilPresent(By.className("defaultEditTool"));
+		find(By.className("defaultEditTool")).clear();
+		find(By.className("defaultEditTool")).sendKeys(unformatted);
 		saveAndReopen();
-		getDriver().findElement(By.cssSelector(".action.format")).click();
+		find(By.cssSelector(".action.format")).click();
 		saveAndReopen();
-		new WebDriverWait(getDriver(), 5).until(ExpectedConditions.presenceOfElementLocated(By.className("defaultEditTool")));
-		return getDriver().findElement(By.className("defaultEditTool")).getAttribute("value");
+		waitTilPresent(By.className("defaultEditTool"));
+		return find(By.className("defaultEditTool")).getAttribute("value");
 	}
 
 	private void saveAndReopen() {
-		getDriver().findElement(By.cssSelector(".action.save")).click();
-		new WebDriverWait(getDriver(), 5).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-mode-button")));
-		new WebDriverWait(getDriver(), 5).until(ExpectedConditions.visibilityOfElementLocated(By.id("edit-mode-button")));
-		getDriver().findElement(By.id("edit-mode-button")).click();
-		getDriver().findElement(By.className("markupText")).click();
+		find(By.cssSelector(".action.save")).click();
+		waitTilPresent(By.id("edit-mode-button"));
+		waitUntilVisible(By.id("edit-mode-button")).click();
+		waitTilClickable(By.className("markupHeader")).click();
 	}
+
 }

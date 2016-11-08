@@ -230,7 +230,7 @@ public abstract class PanelHaddockUITest extends PanelUITest {
 
 	@Override
 	protected void pressSidebarButton() throws InterruptedException {
-		getDriver().findElement(By.id("menu")).click();
+		find(By.id("menu")).click();
 		Thread.sleep(500); // Wait for Animation
 	}
 

@@ -21,11 +21,13 @@ package de.knowwe.uitest;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -102,6 +104,36 @@ public abstract class KnowWEUITest {
 
 	protected void checkErrorsExist() {
 		assertFalse(getDriver().findElements(By.className("error")).isEmpty());
+	}
+
+	protected WebElement find(By selector) {
+		return getDriver().findElement(selector);
+	}
+
+	protected void waitTilPresent(By selector) {
+		await().until(ExpectedConditions.presenceOfElementLocated(selector));
+	}
+
+	protected WebElement waitTilClickable(By selector) {
+		return await().until(ExpectedConditions.elementToBeClickable(selector));
+	}
+
+	@NotNull
+	protected WebDriverWait await() {
+		return await(10);
+	}
+
+	@NotNull
+	protected WebDriverWait await(int timeOutInSeconds) {
+		return new WebDriverWait(getDriver(), timeOutInSeconds);
+	}
+
+	protected WebElement waitUntilVisible(By selector) {
+		return await().until(ExpectedConditions.visibilityOfElementLocated(selector));
+	}
+
+	protected void moveMouseTo(By selector) {
+		new Actions(getDriver()).moveToElement(getDriver().findElement(selector));
 	}
 
 }
