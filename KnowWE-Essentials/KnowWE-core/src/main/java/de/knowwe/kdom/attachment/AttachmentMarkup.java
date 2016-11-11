@@ -362,8 +362,9 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				}
 
 				InputStream connectionStream = getAttachmentStream(section, connection);
-				if (attachmentState == State.UNKNOWN) {
+				if (attachmentState == State.UNKNOWN || attachmentState == State.OUTDATED) {
 					// if state is unknown, compare contents, so we don't produce unnecessary attachment versions and compiles
+					// to be sure that there is actually change, also compare content if we see outdated based on header info...
 					WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(path);
 					if (attachment != null) {
 						byte[] connectionBytes = Streams.getBytesAndClose(connectionStream);
