@@ -116,17 +116,12 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		timeStampType.setRenderer((section, user, result) -> {
 			result.append(section.getText());
 			long sinceLastRun = timeSinceLastRun(Sections.ancestor(section, AttachmentMarkup.class));
-			if (sinceLastRun < Long.MAX_VALUE) {
-				String timeDisplay;
-				if (sinceLastRun < 5000) {
-					timeDisplay = "moments";
-				}
-				else {
-					timeDisplay = Stopwatch.getDisplay(sinceLastRun);
-
-				}
+			long sinceLastChange = timeSinceLastChange(Sections.ancestor(section, AttachmentMarkup.class));
+			if (sinceLastRun < Long.MAX_VALUE && sinceLastChange < Long.MAX_VALUE) {
+				String lastRunDisplay = getDisplay(sinceLastRun);
+				String lastChangeDisplay = getDisplay(sinceLastChange);
 				result.appendHtmlElement("span",
-						" (last update was " + timeDisplay + " ago)",
+						" (last update was " + lastRunDisplay + " ago, last change was " + lastChangeDisplay + " ago)",
 						"style", "color: grey");
 			}
 		});
@@ -139,6 +134,18 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			Log.info("Shutting down attachment update timer.");
 			UPDATE_TIMER.cancel();
 		});
+	}
+
+	private static String getDisplay(long since) {
+		String timeDisplay;
+		if (since < 5000) {
+			timeDisplay = "moments";
+		}
+		else {
+			timeDisplay = Stopwatch.getDisplay(since);
+
+		}
+		return timeDisplay;
 	}
 
 	public AttachmentMarkup() {
@@ -188,6 +195,20 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	private static long timeSinceLastRun(Section<?> section) {
 		Long lastRun = LAST_RUNS.get(section.getID());
 		return lastRun == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastRun;
+	}
+
+	private static long timeSinceLastChange(Section<?> section) {
+		Section<AttachmentType> attachmentSection = Sections.successor(section, AttachmentType.class);
+		try {
+			WikiAttachment attachment = AttachmentType.getAttachment(attachmentSection);
+			if (attachment != null) {
+				return System.currentTimeMillis() - attachment.getDate().getTime();
+			}
+		}
+		catch (IOException e) {
+			Log.warning("Unable to get last change of attachment...", e);
+		}
+		return Long.MAX_VALUE;
 	}
 
 	private static class UpdateTaskRegistrationScript extends DefaultGlobalScript<AttachmentMarkup> {
