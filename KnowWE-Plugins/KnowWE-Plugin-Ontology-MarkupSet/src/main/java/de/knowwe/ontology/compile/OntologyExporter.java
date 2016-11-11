@@ -68,6 +68,7 @@ public class OntologyExporter implements EventListener {
 	@Override
 	public void notify(Event event) {
 		OntologyCompilerFinishedEvent finishedEvent = (OntologyCompilerFinishedEvent) event;
+		if (!finishedEvent.isOntologyChanged()) return;
 		final OntologyCompiler compiler = finishedEvent.getCompiler();
 		final Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 		Section<OntologyType> ontologySection = $(finishedEvent.getCompiler()

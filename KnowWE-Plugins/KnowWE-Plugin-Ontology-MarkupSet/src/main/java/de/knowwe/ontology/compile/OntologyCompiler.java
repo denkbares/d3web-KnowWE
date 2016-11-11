@@ -159,6 +159,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 		compile(sectionsOfPackage);
 
+		boolean changed = false;
 		if (getCommitType(this) == CommitType.onDemand) {
 			NotificationManager.addGlobalNotification(new StandardNotification("There are changes not yet committed to " +
 					"the ontology repository. Committing may take some time. If you want to commit the changes now, " +
@@ -166,10 +167,10 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 					Message.Type.INFO, getCommitNotificationId(this)));
 		}
 		else {
-			commitOntology(this);
+			changed = commitOntology(this);
 		}
 
-		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this));
+		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this, changed));
 
 		firstCompilation = false;
 		completeCompilation = false;
@@ -212,9 +213,10 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		return COMMIT_NOTIFICATION_ID + compiler.getCompileSection().getID();
 	}
 
-	public static void commitOntology(OntologyCompiler compiler) {
-		compiler.rdf2GoCore.commit();
+	public static boolean commitOntology(OntologyCompiler compiler) {
+		boolean changed = compiler.rdf2GoCore.commit();
 		NotificationManager.removeGlobalNotification(getCommitNotificationId(compiler));
+		return changed;
 	}
 
 	private void createTerminologyManager() {

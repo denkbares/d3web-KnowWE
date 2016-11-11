@@ -28,8 +28,17 @@ import de.knowwe.core.compile.CompilerFinishedEvent;
  */
 public class OntologyCompilerFinishedEvent extends CompilerFinishedEvent<OntologyCompiler> {
 
-	public OntologyCompilerFinishedEvent(OntologyCompiler compiler) {
+	private final boolean changed;
+
+	public OntologyCompilerFinishedEvent(OntologyCompiler compiler, boolean changed) {
 		super(compiler);
+		this.changed = changed;
 	}
 
+	/**
+	 * Signals whether the ontology has changed during the compilation.
+	 */
+	public boolean isOntologyChanged() {
+		return changed;
+	}
 }
