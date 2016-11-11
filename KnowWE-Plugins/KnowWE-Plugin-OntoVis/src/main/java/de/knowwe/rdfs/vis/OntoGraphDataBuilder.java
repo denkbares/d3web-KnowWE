@@ -35,8 +35,11 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.TupleQueryResult;
+import com.denkbares.semanticcore.utils.Sparqls;
+import com.denkbares.semanticcore.utils.Text;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
@@ -226,11 +229,82 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		String propertyFilter = predicateFilter(Direction.Forward, "literal");
 		String query = "SELECT ?literal ?y WHERE { <" + fringeNode.stringValue() + "> ?y ?literal . FILTER isLiteral(?literal) . "+propertyFilter+" }";
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
+
+		MultiMap<Value, BindingSet> literalsMap = new DefaultMultiMap<>();
+		Set<Text> literalsSet = new HashSet<>();
+		String language;
+
 		while (result != null && result.hasNext()) {
 			BindingSet row = result.next();
 			Value predURI = row.getValue("y");
-			Value objectLiteral = row.getValue("literal");
-			addConcept(fringeNode, objectLiteral, predURI);
+			literalsMap.put(predURI, row);
+		}
+
+		// Check every key in the multimap for values having the chosen language
+		for (Value key : literalsMap.keySet()) {
+			Set<BindingSet> set = literalsMap.getValues(key);
+
+			// Case 1: language is specified in config (de, en, ...)
+			if (config.getLanguage() != null) {
+
+				// Case 1.1: key has values with specified language: Show fitting language specific values only
+				if (hasLanguage(set, config.getLanguage())) {
+					filterAndAddBindingSets(fringeNode, set, config.getLanguage());
+				}
+				// Case 1.2: key has no fitting values with specified language, but unspecified: show unspecified
+				else if (hasLanguage(set, "")) {
+					filterAndAddBindingSets(fringeNode, set, "");
+				}
+				// Case 1.3: key has neither fitting specified values nor unspecified: show all
+				else {
+					filterAndAddBindingSets(fringeNode, set, null);
+				}
+			}
+//			Case 2: language is unspecified in config (null)
+			else {
+//				Case 2.1: key has unspecified values: show unspecified
+				if (hasLanguage(set, "")) {
+					filterAndAddBindingSets(fringeNode, set, "");
+				}
+//				Case 2.2: key has no unspecified values (only language specific): show all of them
+				else {
+					filterAndAddBindingSets(fringeNode, set, null);
+				}
+			}
+		}
+	}
+
+	// checks given BindingSet for rows containing chosen language
+	private boolean hasLanguage(Set<BindingSet> set, String language) {
+		Text literal;
+		String l;
+
+		for (BindingSet b : set) {
+			literal = Sparqls.asText(b, "literal");
+			l = literal.getLanguage().toString();
+			if (l.equals(language)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void filterAndAddBindingSets(Value fringeNode, Set<BindingSet> set, String language) {
+		Value predURI;
+		Value objectLiteral;
+		Text literal;
+		String l;
+
+		for (BindingSet b : set) {
+			predURI = b.getValue("y");
+			objectLiteral = b.getValue("literal");
+			literal = Sparqls.asText(b, "literal");
+			l = literal.getLanguage().toString();
+
+			// if literal language is same as asked language or given language is unspecified: add values
+			if ((l.equals(language) && !excludedRelation(objectLiteral.stringValue())) || language == null) {
+				addConcept(fringeNode, objectLiteral, predURI);
+			}
 		}
 	}
 
@@ -330,6 +404,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				}
 			}
 
+			if (nodeType == NODE_TYPE.LITERAL) {
+				// literals are handled separately after this loop
+				continue;
+			}
+
+
 			if (checkTripleFilters(query, y, z, nodeType, mode)) continue;
 
 			addConcept(conceptToBeExpanded, zURI, yURI);
@@ -356,6 +436,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 			depth--;
 		}
+
+		// finally add the literals
+		addLiterals(conceptToBeExpanded);
+
+
 		if (DEBUG_MODE) {
 			if (succQueries.contains(query)) {
 				Log.warning("Query was already processed in succ:" + query);
