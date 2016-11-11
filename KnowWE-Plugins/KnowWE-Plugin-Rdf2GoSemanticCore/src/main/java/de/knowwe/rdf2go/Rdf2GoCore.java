@@ -490,9 +490,11 @@ public class Rdf2GoCore {
 	 * s that were cached to be added to the triple store are added.
 	 *
 	 * @created 12.06.2012
+	 * @return true, if the underlying model was changed due to the commit, false if it was not changed
 	 */
-	public void commit() {
-
+	public boolean commit() {
+		boolean removedStatements = false;
+		boolean insertedStatements = false;
 		try {
 			int removeSize = removeCache.size();
 			int insertSize = insertCache.size();
@@ -536,13 +538,11 @@ public class Rdf2GoCore {
             /*
 			Fire events
              */
-			boolean removedStatements = false;
 			if (!removeCache.isEmpty()) {
 				EventManager.getInstance()
 						.fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
 				removedStatements = true;
 			}
-			boolean insertedStatements = false;
 			if (!insertCache.isEmpty()) {
 				EventManager.getInstance()
 						.fireEvent(new InsertStatementsEvent(Collections.unmodifiableCollection(removeCache), Collections
@@ -585,6 +585,7 @@ public class Rdf2GoCore {
 			lastModified = System.currentTimeMillis();
 			EventManager.getInstance().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 		}
+		return removedStatements || insertedStatements;
 	}
 
 	public BNode createBlankNode() {
