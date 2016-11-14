@@ -19,6 +19,7 @@
 
 package de.knowwe.uitest;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
@@ -30,6 +31,9 @@ import static org.junit.Assert.assertEquals;
  * Created by Adrian Müller on 13.10.16.
  */
 public abstract class FormatterUITest extends KnowWEUITest {
+
+	@Rule
+	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
 
 	@Override
 	protected abstract WikiTemplate getTemplate();
