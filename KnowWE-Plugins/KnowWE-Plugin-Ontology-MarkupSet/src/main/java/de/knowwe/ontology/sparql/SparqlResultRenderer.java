@@ -542,17 +542,4 @@ public class SparqlResultRenderer {
 
 		return sb.toString();
 	}
-//
-//	private void testSlowRendering(File source) throws IOException {
-//		String csv = Files.getText(source);
-//		ResultTableModel table = ResultTableModel.fromCSV(csv);
-//		RenderResult result = new RenderResult(new TestUserContext("TestArticle"));
-//		ResultTableModel resultTable  = createMagicallySortedTable(table, result);
-//		System.out.println(result.toString());
-//	}
-//
-//	public static void main(String[] args) throws IOException {
-//		InitPluginManager.init(new File("../../KnowWE-App/target/dependencies/output.txt"));
-//		new SparqlResultRenderer().testSlowRendering(new File("/Users/volker_belli/Desktop/leopard.csv"));
-//	}
 }
