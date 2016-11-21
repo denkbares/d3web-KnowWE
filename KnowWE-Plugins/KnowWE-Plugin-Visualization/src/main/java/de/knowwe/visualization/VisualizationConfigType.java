@@ -34,13 +34,13 @@ public class VisualizationConfigType extends DefaultMarkupType {
 
 
 
-	protected String getMarkupName() {
-		return "VisualizationConfig";
-	}
-
 	public VisualizationConfigType() {
 		applyMarkup(createMarkup());
 		this.setRenderer(new DefaultMarkupRenderer());
+	}
+
+	protected String getMarkupName() {
+		return "VisualizationConfig";
 	}
 
 	public  DefaultMarkup createMarkup() {
@@ -60,12 +60,10 @@ public class VisualizationConfigType extends DefaultMarkupType {
 		markup.addAnnotation(Config.SHOW_PROPERTIES, false, "true", "false");
 		markup.addAnnotation(PackageManager.MASTER_ATTRIBUTE_NAME, false);
 		markup.addAnnotation(Config.LANGUAGE, false);
-		markup.addAnnotation(Config.DOT_APP, false);
 		markup.addAnnotation(Config.ADD_TO_DOT, false);
 		markup.addAnnotation(Config.SHOW_OUTGOING_EDGES, false, "true", "false");
 		markup.addAnnotation(Config.SHOW_INVERSE, false, "true", "false");
 		markup.addAnnotation(Config.VISUALIZATION, false, Config.Visualization.class);
-		markup.addAnnotation(Config.LINK_MODE, false, Config.LinkMode.class);
 		markup.addAnnotation(Config.RANK_DIR, false, Config.RankDir.class);
 		markup.addAnnotation(Config.SHOW_LABELS, false);
 		markup.addAnnotation(Config.DESIGN, false);

@@ -31,7 +31,6 @@ import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
 import de.knowwe.visualization.GraphVisualizationRenderer;
 import de.knowwe.visualization.SubGraphData;
-import de.knowwe.visualization.d3.D3VisualizationRenderer;
 import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
 public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
@@ -173,15 +172,8 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 		if (data != null && !Thread.currentThread().isInterrupted()) {
 			GraphVisualizationRenderer graphRenderer;
-			if (config.getRenderer() == Config.Renderer.D3) {
-				graphRenderer = new D3VisualizationRenderer(data, config);
-			}
-			else {
-				graphRenderer = new DOTVisualizationRenderer(data, config);
-			}
-
+			graphRenderer = new DOTVisualizationRenderer(data, config);
 			graphRenderer.generateSource();
-
 			content.storeObject(VISUALIZATION_RENDERER_KEY, graphRenderer);
 		}
 

@@ -41,7 +41,6 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 		MARKUP.addAnnotation(Config.SHOW_PROPERTIES, false, "true", "false");
 		MARKUP.addAnnotation(Config.LANGUAGE, false);
 
-		MARKUP.addAnnotation(Config.DOT_APP, false);
 		MARKUP.addAnnotation(Config.ADD_TO_DOT, false);
 
 		MARKUP.addAnnotation(Config.SHOW_OUTGOING_EDGES, false, "true", "false");
@@ -57,9 +56,6 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 
 		MARKUP.addAnnotation(Config.VISUALIZATION, false, Visualizations.class);
 
-		MARKUP.addAnnotation(Config.LINK_MODE, false, Config.LinkMode.class);
-		MARKUP.addAnnotationRenderer(Config.LINK_MODE, NothingRenderer.getInstance());
-
 		MARKUP.addAnnotation(Config.RANK_DIR, false, "LR", "RL", "TB", "BT");
 		MARKUP.addAnnotationRenderer(Config.RANK_DIR, NothingRenderer.getInstance());
 
@@ -73,7 +69,6 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 		MARKUP.addAnnotationRenderer(Config.TIMEOUT, NothingRenderer.getInstance());
 
 		MARKUP.addAnnotation(Config.CONFIG, false);
-		MARKUP.addAnnotation(Config.PRERENDER, false);
 
 		MARKUP.addAnnotation(Config.LAYOUT, false, Config.Layout.class);
 		MARKUP.addAnnotationRenderer(Config.LAYOUT, NothingRenderer.getInstance());

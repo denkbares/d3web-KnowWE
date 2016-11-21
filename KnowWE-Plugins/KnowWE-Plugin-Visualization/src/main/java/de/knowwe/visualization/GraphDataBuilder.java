@@ -27,7 +27,6 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
-import de.knowwe.visualization.d3.D3VisualizationRenderer;
 import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
 /**
@@ -65,15 +64,7 @@ public abstract class GraphDataBuilder {
 		this.section = section;
 
 		data = new SubGraphData();
-
-		// current default source renderer is DOT
-		if (config.getRenderer() == Config.Renderer.D3) {
-			graphRenderer = new D3VisualizationRenderer(data, config);
-		}
-		else {
-			graphRenderer = new DOTVisualizationRenderer(data, config);
-		}
-
+		graphRenderer = new DOTVisualizationRenderer(data, config);
 	}
 
 	public void createData() {

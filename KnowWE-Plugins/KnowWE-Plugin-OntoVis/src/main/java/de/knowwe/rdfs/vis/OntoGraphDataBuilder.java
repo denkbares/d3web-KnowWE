@@ -52,7 +52,6 @@ import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
 import de.knowwe.visualization.GraphDataBuilder;
 import de.knowwe.visualization.SubGraphData;
-import de.knowwe.visualization.d3.D3VisualizationRenderer;
 import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
 /**
@@ -110,14 +109,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		MultiMap<String, String> inverseRelationsMap = Utils.getInverseRelationsMap(rdf2GoCore);
 
 		data = new SubGraphData(subPropertiesMap, inverseRelationsMap);
-
-		// current default source renderer is DOT
-		if (config.getRenderer() == Config.Renderer.D3) {
-			graphRenderer = new D3VisualizationRenderer(data, config);
-		}
-		else {
-			graphRenderer = new DOTVisualizationRenderer(data, config);
-		}
+		graphRenderer = new DOTVisualizationRenderer(data, config);
 	}
 
 	public String getConceptName(Value uri) {

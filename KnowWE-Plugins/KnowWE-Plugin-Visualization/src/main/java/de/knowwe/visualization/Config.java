@@ -61,21 +61,19 @@ public class Config {
 	public static final String HEIGHT = "height";
 	public static final String FORMAT = "format";
 	public static final String LANGUAGE = "language";
-	public static final String LINK_MODE = "linkMode";
 	public static final String RANK_DIR = "rankDir";
 	public static final String RANK_SAME = "rankSame";
-	public static final String DOT_APP = "dotApp";
 	public static final String ADD_TO_DOT = "dotAddLine";
-	public static final String RENDERER = "renderer";
 	public static final String VISUALIZATION = "visualization";
 	public static final String DESIGN = "design";
-	public static final String PRERENDER = "prerender";
 	public static final String TITLE = "title";
 	public static final String LAYOUT = "layout";
 	public static final String OVERLAP = "overlap";
 	private final Collection<String> excludeNodes = new HashSet<>();
 	private final Collection<String> excludeRelations = new HashSet<>();
 	private final Collection<String> filterRelations = new HashSet<>();
+	private final LinkMode linkMode = LinkMode.JUMP;
+	private final String dotApp = "dot";
 	private String colors = null;
 	private Map<String, String> relationColors = new HashMap<>();
 	private Map<String, String> classColors = new HashMap<>();
@@ -87,8 +85,6 @@ public class Config {
 	private boolean showOutgoingEdges = false;
 	private boolean showInverse = false;
 	private boolean showRedundant = false;
-
-
 	private String showLabels = "true";
 	private String size = null;
 	private String width = null;
@@ -96,18 +92,15 @@ public class Config {
 	private String format = "svg";
 	private String language = null;
 	private long timeout = 300000;
-	private LinkMode linkMode = LinkMode.JUMP;
 	private RankDir rankDir = RankDir.LR;
 	private String rankSame = null;
-	private String dotApp = "dot";
 	private String dotAddLine = null;
-	private Renderer renderer = Renderer.DOT;
 	private Visualization visualization = Visualization.FORCE;
 	private LiteralMode literalMode = LiteralMode.TABLE;
 	private String forceVisualizationStyle = null;
 	private String design = null;
 	private String config = null;
-	private String prerender = null;
+	//	private String prerender = null;
 	private String cacheFileID = null;
 	private String sectionId = null;
 	private String title = null;
@@ -206,14 +199,10 @@ public class Config {
 		setFormat(DefaultMarkupType.getAnnotation(section, FORMAT));
 		setLanguage(DefaultMarkupType.getAnnotation(section, LANGUAGE));
 		parseAndSetEnum(section, RANK_DIR, RankDir.class, this::setRankDir);
-		setDotApp(DefaultMarkupType.getAnnotation(section, DOT_APP));
 		setDotAddLine(DefaultMarkupType.getAnnotation(section, ADD_TO_DOT));
-		parseAndSetEnum(section, LINK_MODE, LinkMode.class, this::setLinkMode);
-		parseAndSetEnum(section, RENDERER, Renderer.class, this::setRenderer);
 		parseAndSetEnum(section, VISUALIZATION, Visualization.class, this::setVisualization);
 		parseAndSetEnum(section, SHOW_LITERALS, LiteralMode.class, this::setLiteralMode);
 		setDesign(DefaultMarkupType.getAnnotation(section, DESIGN));
-		setPrerender(DefaultMarkupType.getAnnotation(section, PRERENDER));
 		setSectionId(section.getID());
 		setTitle(DefaultMarkupType.getAnnotation(section, TITLE));
 		setRankSame(DefaultMarkupType.getAnnotation(section, RANK_SAME));
@@ -467,15 +456,6 @@ public class Config {
 		this.language = language;
 	}
 
-	public LinkMode getLinkMode() {
-		return linkMode;
-	}
-
-	public void setLinkMode(LinkMode linkMode) {
-		if (linkMode == null) return;
-		this.linkMode = linkMode;
-	}
-
 	public RankDir getRankDir() {
 		return rankDir;
 	}
@@ -489,11 +469,6 @@ public class Config {
 		return dotApp;
 	}
 
-	public void setDotApp(String dotApp) {
-		if (dotApp == null) return;
-		this.dotApp = dotApp;
-	}
-
 	public String getDotAddLine() {
 		return dotAddLine;
 	}
@@ -504,15 +479,6 @@ public class Config {
 			dotAddLine = dotAddLine + "\n";
 		}
 		this.dotAddLine = dotAddLine;
-	}
-
-	public Renderer getRenderer() {
-		return renderer;
-	}
-
-	public void setRenderer(Renderer renderer) {
-		if (renderer == null) return;
-		this.renderer = renderer;
 	}
 
 	public Visualization getVisualization() {
@@ -531,15 +497,6 @@ public class Config {
 	public void setDesign(String design) {
 		if (design == null) return;
 		this.design = design;
-	}
-
-	public String getPrerender() {
-		return prerender;
-	}
-
-	public void setPrerender(String prerender) {
-		if (prerender == null) return;
-		this.prerender = prerender;
 	}
 
 	public String getCacheFileID() {
