@@ -318,31 +318,34 @@ public class Utils {
 	}
 
 	public static String createConceptURL(String to, Config config, Section<?> section, LinkToTermDefinitionProvider uriProvider, String uri) {
-		final OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
-		final String shortURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri);
-		Identifier identifier = new Identifier(shortURI);
-		String[] identifierParts = shortURI.split(":");
-		if (identifierParts.length == 2) {
-			identifier = new Identifier(
-					identifierParts[0], Strings.decodeURL(identifierParts[1]));
+		// TODO: 21.11.16 find better solution for this, after successor for deprecated LinkMode annotation has been found
+		if (section != null) {
+			final OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+			final String shortURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri);
+			Identifier identifier = new Identifier(shortURI);
+			String[] identifierParts = shortURI.split(":");
+			if (identifierParts.length == 2) {
+				identifier = new Identifier(
+						identifierParts[0], Strings.decodeURL(identifierParts[1]));
 
-		}
-
-		final TerminologyManager terminologyManager = compiler.getTerminologyManager();
-		final Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(identifier);
-		if (termDefiningSection == null) {
-			// we have no definition found
-			return null;
-		}
-		// get the closes ancestor that will have an anchor to jump to
-		Section<?> anchorAncestor = PreviewManager.getInstance()
-				.getPreviewAncestor(termDefiningSection);
-		String url = KnowWEUtils.getURLLink(anchorAncestor);
-		if (url != null) {
-			if (!url.startsWith("http:")) {
-				url = Environment.getInstance().getWikiConnector().getBaseUrl() + url;
 			}
-			return url;
+
+			final TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			final Section<?> termDefiningSection = terminologyManager.getTermDefiningSection(identifier);
+			if (termDefiningSection == null) {
+				// we have no definition found
+				return null;
+			}
+			// get the closes ancestor that will have an anchor to jump to
+			Section<?> anchorAncestor = PreviewManager.getInstance()
+					.getPreviewAncestor(termDefiningSection);
+			String url = KnowWEUtils.getURLLink(anchorAncestor);
+			if (url != null) {
+				if (!url.startsWith("http:")) {
+					url = Environment.getInstance().getWikiConnector().getBaseUrl() + url;
+				}
+				return url;
+			}
 		}
 		return OntoGraphDataBuilder.createBaseURL() + "?" + (section == null ? "" : "page="
 				+ section.getTitle() + "&") + "concept=" + to;

@@ -72,7 +72,6 @@ public class Config {
 	private final Collection<String> excludeNodes = new HashSet<>();
 	private final Collection<String> excludeRelations = new HashSet<>();
 	private final Collection<String> filterRelations = new HashSet<>();
-	private final LinkMode linkMode = LinkMode.JUMP;
 	private final String dotApp = "dot";
 	private String colors = null;
 	private Map<String, String> relationColors = new HashMap<>();
@@ -526,10 +525,6 @@ public class Config {
 
 	public enum Renderer {
 		DOT, D3
-	}
-
-	public enum LinkMode {
-		JUMP, BROWSE
 	}
 
 	public enum Visualization {
