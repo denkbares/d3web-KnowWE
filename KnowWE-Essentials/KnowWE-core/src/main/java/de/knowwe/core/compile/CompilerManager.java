@@ -388,6 +388,10 @@ public class CompilerManager {
 	 * @see #compile
 	 */
 	public boolean awaitTermination(long timeoutMilliSeconds) throws InterruptedException {
+		if (isCompileThread()) {
+			Log.severe("Unable to wait for compilation to finish in a compile thread, because it would cause a deadlock.");
+			return true;
+		}
 		long endTime = System.currentTimeMillis() + timeoutMilliSeconds;
 		synchronized (lock) {
 			while (true) {
