@@ -1,5 +1,8 @@
 package de.knowwe.rdfs.vis.markup;
 
+import java.util.regex.Pattern;
+
+import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -65,7 +68,7 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 		MARKUP.addAnnotation(Config.SHOW_LITERALS, false, Config.LiteralMode.class);
 		MARKUP.addAnnotationRenderer(Config.SHOW_LITERALS, NothingRenderer.getInstance());
 
-		MARKUP.addAnnotation(Config.TIMEOUT, false);
+		MARKUP.addAnnotation(Config.TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
 		MARKUP.addAnnotationRenderer(Config.TIMEOUT, NothingRenderer.getInstance());
 
 		MARKUP.addAnnotation(Config.CONFIG, false);

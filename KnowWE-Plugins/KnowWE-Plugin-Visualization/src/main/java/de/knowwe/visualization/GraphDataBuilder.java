@@ -41,6 +41,7 @@ public abstract class GraphDataBuilder {
 	protected Section<?> section;
 	protected LinkToTermDefinitionProvider uriProvider = null;
 	protected GraphVisualizationRenderer graphRenderer = null;
+	protected boolean isTimeOut;
 
 	public static String createBaseURL() {
 		if (Environment.getInstance() != null
@@ -67,11 +68,13 @@ public abstract class GraphDataBuilder {
 		graphRenderer = new DOTVisualizationRenderer(data, config);
 	}
 
-	public void createData() {
+	public void createData(long timeOutMillis) {
 		if (Thread.currentThread().isInterrupted()) return;
 
 		// select the relevant sub-graph from the overall rdf-graph
-		selectGraphData();
+		selectGraphData(timeOutMillis);
+
+		if (isTimeOut) return;
 
 		if (Thread.currentThread().isInterrupted()) return;
 
@@ -95,7 +98,7 @@ public abstract class GraphDataBuilder {
 	 *
 	 * @created 20.08.2012
 	 */
-	public abstract void selectGraphData();
+	public abstract void selectGraphData(long timeOutMillis);
 
 	public String getSource() {
 		return this.graphRenderer.getSource();

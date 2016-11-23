@@ -3,10 +3,12 @@ package de.knowwe.rdfs.vis.markup;
 import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.PackageCompileLinkToTermDefinitionProvider;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -24,9 +26,14 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 	@Override
 	public void renderContents(Section<?> section, UserContext user, RenderResult string) {
-		PreRenderWorker.getInstance().handlePreRendering(section, user, this);
 		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(VISUALIZATION_RENDERER_KEY);
 		if (builder != null) builder.render(string);
+	}
+
+	@Override
+	public void render(Section<?> section, UserContext user, RenderResult result) {
+		PreRenderWorker.getInstance().handlePreRendering(section, user, this);
+		super.render(section, user, result);
 	}
 
 	@Override
@@ -41,7 +48,14 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 		if (Thread.currentThread().isInterrupted()) return;
 
 		OntoGraphDataBuilder builder = new OntoGraphDataBuilder(section, config, new PackageCompileLinkToTermDefinitionProvider(), core);
-		builder.createData();
+		builder.createData(config.getTimeout());
+
+		if (builder.isTimeOut()) {
+			Messages.storeMessage(section, this.getClass(), Messages.warning("Creation of visualization timed out after " + Stopwatch.getDisplay(config.getTimeout())));
+		} else {
+			Messages.clearMessages(section, this.getClass());
+		}
+
 		section.storeObject(VISUALIZATION_RENDERER_KEY, builder);
 	}
 

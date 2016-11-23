@@ -115,7 +115,7 @@ public class OntoVisTest {
 				config,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
-		ontoGraphDataBuilder.createData();
+		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
 
 		String generatedSource = ontoGraphDataBuilder.getSource().trim();
 		String expectedSource = null;
@@ -163,7 +163,7 @@ public class OntoVisTest {
 		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
 				config, new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
-		ontoGraphDataBuilder.createData();
+		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
 
 		String generatedSource = ontoGraphDataBuilder.getSource().trim();
 		String expectedSource = null;
@@ -211,7 +211,7 @@ public class OntoVisTest {
 				config,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
-		ontoGraphDataBuilder.createData();
+		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
 
 		String generatedSource = ontoGraphDataBuilder.getSource().trim();
 		String expectedSource = null;
@@ -251,7 +251,7 @@ public class OntoVisTest {
 				config,
 				new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
-		ontoGraphDataBuilder.createData();
+		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
 
 		String generatedSource = ontoGraphDataBuilder.getSource().trim();
 		String expectedSource = null;
@@ -296,7 +296,7 @@ public class OntoVisTest {
 		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
 				config, new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
-		ontoGraphDataBuilder.createData();
+		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
 
 		String generatedSource = ontoGraphDataBuilder.getSource().trim();
 		String expectedSource = null;

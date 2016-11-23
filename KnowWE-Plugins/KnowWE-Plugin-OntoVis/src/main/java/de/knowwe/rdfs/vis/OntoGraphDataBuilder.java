@@ -42,6 +42,7 @@ import com.denkbares.semanticcore.utils.Sparqls;
 import com.denkbares.semanticcore.utils.Text;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -117,9 +118,9 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	@Override
-	public void selectGraphData() {
+	public void selectGraphData(long timeOutMillis) {
 
-		long before = System.currentTimeMillis();
+		Stopwatch stopwatch = new Stopwatch();
 
 		List<URI> mainConceptURIs = new ArrayList<>();
 		final List<String> mainConcepts = getMainConcepts();
@@ -137,6 +138,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			}
 			URI conceptURI = new URIImpl(url);
 			mainConceptURIs.add(conceptURI);
+
+			if (isTimeOut(stopwatch, timeOutMillis)) return;
 		}
 
 		for (URI conceptURI : mainConceptURIs) {
@@ -150,6 +153,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				addSuccessors(conceptURI, null, null);
 			}
 			addType(conceptURI);
+
+			if (isTimeOut(stopwatch, timeOutMillis)) return;
 		}
 
 		//expand edges of fringe nodes
@@ -166,6 +171,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				}
 				addType(fringeValue);
 			}
+
+			if (isTimeOut(stopwatch, timeOutMillis)) return;
 		}
 
 		data.clearIsolatedNodesFromDefaultLevel();
@@ -175,7 +182,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			long after = System.currentTimeMillis();
 
 			Log.info("Visualization Stats for: " + Strings.concat(",", getMainConcepts()));
-			Log.info("took " + (after - before) + "ms");
+			Log.info("took " + stopwatch.getDisplay());
 			Log.info("addSuccessorCalls: " + addSuccessorsCalls);
 			Log.info("addPredecessorCalls: " + addPredecessorsCalls);
 			Log.info("addOutgoingSuccessorCalls: " + addOutgoingSuccessorsCalls);
@@ -202,6 +209,18 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		}
 	}
 
+	private boolean isTimeOut(Stopwatch stopwatch, long timeOutMillis) {
+		boolean timedOut = stopwatch.getTime() > timeOutMillis;
+		if (timedOut) {
+			this.isTimeOut = true;
+		}
+		return timedOut;
+	}
+
+	public boolean isTimeOut() {
+		return isTimeOut;
+	}
+
 	private void addType(Value node) {
 		String query = "SELECT ?class ?pred WHERE { <" + node.stringValue() + "> ?pred ?class . FILTER regex(str(?pred),\"type\") }";
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
@@ -219,7 +238,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 	private void addLiterals(Value fringeNode) {
 		String propertyFilter = predicateFilter(Direction.Forward, "literal");
-		String query = "SELECT ?literal ?y WHERE { <" + fringeNode.stringValue() + "> ?y ?literal . FILTER isLiteral(?literal) . "+propertyFilter+" }";
+		String query = "SELECT ?literal ?y WHERE { <" + fringeNode.stringValue() + "> ?y ?literal . FILTER isLiteral(?literal) . " + propertyFilter + " }";
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 
 		MultiMap<Value, BindingSet> literalsMap = new DefaultMultiMap<>();
@@ -401,7 +420,6 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				continue;
 			}
 
-
 			if (checkTripleFilters(query, y, z, nodeType, mode)) continue;
 
 			addConcept(conceptToBeExpanded, zURI, yURI);
@@ -431,7 +449,6 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		// finally add the literals
 		addLiterals(conceptToBeExpanded);
-
 
 		if (DEBUG_MODE) {
 			if (succQueries.contains(query)) {
@@ -875,7 +892,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		String relation = getConceptName(relationURI);
 
         /*
-        cluster change
+		cluster change
         */
 		String clazz = null;
 		if (isTypeRelation(relation)) {

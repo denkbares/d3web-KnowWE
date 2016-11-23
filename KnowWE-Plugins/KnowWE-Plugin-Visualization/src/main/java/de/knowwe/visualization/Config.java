@@ -24,11 +24,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -69,6 +71,7 @@ public class Config {
 	public static final String TITLE = "title";
 	public static final String LAYOUT = "layout";
 	public static final String OVERLAP = "overlap";
+	private static final long DEFAULT_TIMEOUT = 20 * 1000; // 20 seconds
 	private final Collection<String> excludeNodes = new HashSet<>();
 	private final Collection<String> excludeRelations = new HashSet<>();
 	private final Collection<String> filterRelations = new HashSet<>();
@@ -90,7 +93,7 @@ public class Config {
 	private String height = null;
 	private String format = "svg";
 	private String language = null;
-	private long timeout = 300000;
+	private long timeout = DEFAULT_TIMEOUT;
 	private RankDir rankDir = RankDir.LR;
 	private String rankSame = null;
 	private String dotAddLine = null;
@@ -128,11 +131,19 @@ public class Config {
 	}
 
 	public void setTimeout(String timeoutString) {
-		try {
-			this.timeout = Long.parseLong(timeoutString);
-		}
-		catch (java.lang.NumberFormatException e) {
-			// invalid value
+		if (timeoutString != null) {
+			try {
+				this.timeout = TimeStampType.getTimeInMillis(timeoutString);
+			}
+			catch (NumberFormatException ignore1) {
+				// if we can not parse (because there is no time unit maybe, we just try parseDouble
+				try {
+					this.timeout = (long) (Double.parseDouble(timeoutString) * TimeUnit.SECONDS.toMillis(1));
+				}
+				catch (NumberFormatException ignore2) {
+				}
+				// if this also fails, we will have the default timeout
+			}
 		}
 	}
 
