@@ -270,7 +270,7 @@ public class DOTRenderer {
 
 	private static Set<Edge> defineInverseProperties(SubGraphData data, MultiMap<String, String> inversePropertiesMap) {
 		Set<Edge> edges = data.getAllEdges();
-		String relationURI, inverseURI, p1, p2 = null;
+		String relationURI, inverseURI, p1, p2;
 		Set<Edge> redundantEdges = new HashSet<>();
 		Set<String> inverseProperties;
 
@@ -521,9 +521,6 @@ public class DOTRenderer {
 		else {
 			nodeLabel = styleLabel(nodeLabel, f);
 		}
-
-		Log.info("dwfsd");
-		//System.out.println("dwfsd");
 		return nodeLabel;
 	}
 
