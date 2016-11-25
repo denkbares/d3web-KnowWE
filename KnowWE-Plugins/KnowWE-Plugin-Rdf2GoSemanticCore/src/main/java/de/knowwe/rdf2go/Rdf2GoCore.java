@@ -1094,7 +1094,7 @@ public class Rdf2GoCore {
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
 			try {
-				return new SparqlCallable(completeQuery, type, 0, true).call();
+				return new SparqlCallable(completeQuery, type, Long.MAX_VALUE, true).call();
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
