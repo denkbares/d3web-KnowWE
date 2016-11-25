@@ -43,6 +43,7 @@
 		<parameter id="script" value="d3wheel.js" />
 		<parameter id="script" value="d3download.js" />
 		<parameter id="script" value="contextmenu.js" />
+		<parameter id="script" value="KnowWe-Plugin-OntoVis.js" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SparqlVisType">
@@ -224,4 +225,12 @@
 		<parameter id="scope" value="ResourceReference"/>
 	</extension>
 
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="OntoVisReRenderAction">
+		<parameter id="class" value="de.knowwe.rdfs.vis.markup.OntoVisReRenderAction" />
+		<parameter id="name" value="OntoVisReRenderAction" />
+		<parameter id="description" value="Action OntoVisReRender" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 </plugin>

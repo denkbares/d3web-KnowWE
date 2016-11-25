@@ -1053,6 +1053,10 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		return edge.getObject().getType() == NODE_TYPE.LITERAL;
 	}
 
+	public Config getConfig() {
+		return config;
+	}
+
 	enum ExpandMode {Normal, LiteralsOnly}
 
 	enum Direction {Forward, Backward}

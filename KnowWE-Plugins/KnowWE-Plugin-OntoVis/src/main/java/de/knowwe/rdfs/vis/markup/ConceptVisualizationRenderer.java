@@ -8,7 +8,6 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.PackageCompileLinkToTermDefinitionProvider;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -27,7 +26,18 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 	@Override
 	public void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(VISUALIZATION_RENDERER_KEY);
-		if (builder != null) builder.render(string);
+		if (builder != null) {
+			builder.render(string);
+			if (builder.isTimeOut()) {
+				string.appendHtml("<div class='warning'>");
+				//appendMessage(section, e, user, result);
+				Config config = builder.getConfig();
+				string.appendHtml("Creation of visualization timed out after " + Stopwatch.getDisplay(config.getTimeout()));
+				string.appendHtml("<br/><a onclick='KNOWWE.plugin.ontovis.retry(\"" + section.getID()
+						+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
+						+ " class='tooltipster'>Try again...</a>");
+			}
+		}
 	}
 
 	@Override
@@ -49,12 +59,6 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 		OntoGraphDataBuilder builder = new OntoGraphDataBuilder(section, config, new PackageCompileLinkToTermDefinitionProvider(), core);
 		builder.createData(config.getTimeout());
-
-		if (builder.isTimeOut()) {
-			Messages.storeMessage(section, this.getClass(), Messages.warning("Creation of visualization timed out after " + Stopwatch.getDisplay(config.getTimeout())));
-		} else {
-			Messages.clearMessages(section, this.getClass());
-		}
 
 		section.storeObject(VISUALIZATION_RENDERER_KEY, builder);
 	}
