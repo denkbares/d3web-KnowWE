@@ -489,93 +489,96 @@ public class Rdf2GoCore {
 	 * to be removed from the triple store are removed and all {@link Statement}
 	 * s that were cached to be added to the triple store are added.
 	 *
-	 * @created 12.06.2012
 	 * @return true, if the underlying model was changed due to the commit, false if it was not changed
+	 * @created 12.06.2012
 	 */
 	public boolean commit() {
 		boolean removedStatements = false;
 		boolean insertedStatements = false;
 		try {
-			int removeSize = removeCache.size();
-			int insertSize = insertCache.size();
-			boolean verboseLog = removeSize + insertSize < 50 && !Log.logger()
-					.isLoggable(Level.FINE);
+			synchronized (statementMutex) {
 
-			if (removeSize > 0 || insertSize > 0) {
-				synchronized (resultCache) {
-					resultCache.clear();
-					resultCacheSize = 0;
+				int removeSize = removeCache.size();
+				int insertSize = insertCache.size();
+				boolean verboseLog = removeSize + insertSize < 50 && !Log.logger()
+						.isLoggable(Level.FINE);
+
+				if (removeSize > 0 || insertSize > 0) {
+					synchronized (resultCache) {
+						resultCache.clear();
+						resultCacheSize = 0;
+					}
 				}
+
+				/*
+				Hazard Filter:
+				Since removing statements is expansive, we do not remove statements
+				that are inserted again anyway.
+				Since inserting a statement is cheap and the fact that a statement in
+				the remove cache has not necessarily been committed to the model
+				before (e.g. compiling the same sections multiple times before the
+				first commit), we do not remove statements from the insert cache.
+				Duplicate statements are ignored by the model anyway.
+				*/
+
+				removeCache.removeAll(insertCache);
+
+
+				/*
+				Do actual changes on the model
+				 */
+				long connectionStart = System.currentTimeMillis();
+				try (RepositoryConnection connection = semanticCore.getConnection()) {
+					connection.begin();
+
+					connection.remove(removeCache);
+					connection.add(insertCache);
+
+					connection.commit();
+				}
+
+				/*
+				Fire events
+				 */
+				if (!removeCache.isEmpty()) {
+					EventManager.getInstance()
+							.fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
+					removedStatements = true;
+				}
+				if (!insertCache.isEmpty()) {
+					EventManager.getInstance()
+							.fireEvent(new InsertStatementsEvent(Collections.unmodifiableCollection(removeCache), Collections
+									.unmodifiableCollection(insertCache), this));
+					insertedStatements = true;
+				}
+				if (removedStatements || insertedStatements) {
+					EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
+				}
+
+				/*
+				Logging
+				 */
+				if (verboseLog) {
+					logStatements(removeCache, connectionStart,
+							"Removed statements:\n");
+					logStatements(insertCache, connectionStart,
+							"Inserted statements:\n");
+				}
+				else {
+					Log.info("Removed " + removeSize + " statements from and added "
+							+ insertSize
+							+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
+							+ (System.currentTimeMillis() - connectionStart) + "ms.");
+				}
+
+				Log.info("Current number of statements: " + statementCache.size());
+
+				/*
+				Reset caches
+				 */
+				removeCache = new HashSet<>();
+				insertCache = new HashSet<>();
 			}
-
-            /*
-			Hazard Filter:
-			Since removing statements is expansive, we do not remove statements
-			that are inserted again anyway.
-			Since inserting a statement is cheap and the fact that a statement in
-			the remove cache has not necessarily been committed to the model
-			before (e.g. compiling the same sections multiple times before the
-			first commit), we do not remove statements from the insert cache.
-			Duplicate statements are ignored by the model anyway.
-			*/
-
-			removeCache.removeAll(insertCache);
-
-
-            /*
-			Do actual changes on the model
-             */
-			long connectionStart = System.currentTimeMillis();
-			try (RepositoryConnection connection = semanticCore.getConnection()) {
-				connection.begin();
-
-				connection.remove(removeCache);
-				connection.add(insertCache);
-
-				connection.commit();
-			}
-
-            /*
-			Fire events
-             */
-			if (!removeCache.isEmpty()) {
-				EventManager.getInstance()
-						.fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
-				removedStatements = true;
-			}
-			if (!insertCache.isEmpty()) {
-				EventManager.getInstance()
-						.fireEvent(new InsertStatementsEvent(Collections.unmodifiableCollection(removeCache), Collections
-								.unmodifiableCollection(insertCache), this));
-				insertedStatements = true;
-			}
-			if (removedStatements || insertedStatements) {
-				EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
-			}
-
-            /*
-			Logging
-             */
-			if (verboseLog) {
-				logStatements(removeCache, connectionStart,
-						"Removed statements:\n");
-				logStatements(insertCache, connectionStart,
-						"Inserted statements:\n");
-			}
-			else {
-				Log.info("Removed " + removeSize + " statements from and added "
-						+ insertSize
-						+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
-						+ (System.currentTimeMillis() - connectionStart) + "ms.");
-			}
-
-			Log.info("Current number of statements: " + statementCache.size());
-
-            /*
-			Reset caches
-             */
-			removeCache = new HashSet<>();
-			insertCache = new HashSet<>();
 		}
 		catch (RepositoryException e) {
 			Log.severe("Exception while committing changes to repository", e);
