@@ -71,7 +71,9 @@ public class Config {
 	public static final String TITLE = "title";
 	public static final String LAYOUT = "layout";
 	public static final String OVERLAP = "overlap";
+	public static final String LINK_MODE = "linkMode";
 	private static final long DEFAULT_TIMEOUT = 20 * 1000; // 20 seconds
+	private final LinkMode linkMode = LinkMode.JUMP;
 	private final Collection<String> excludeNodes = new HashSet<>();
 	private final Collection<String> excludeRelations = new HashSet<>();
 	private final Collection<String> filterRelations = new HashSet<>();
@@ -334,6 +336,13 @@ public class Config {
 		this.config = config;
 	}
 
+	public LinkMode getLinkMode() {
+		return linkMode;
+	}
+
+	public void setLinkMode(LinkMode linkMode) {
+	}
+
 	public Map<String, String> getRelationColors() {
 		return relationColors;
 	}
@@ -548,6 +557,10 @@ public class Config {
 
 	public enum RankDir {
 		LR, RL, TB, BT
+	}
+
+	public enum LinkMode {
+		JUMP, BROWSE
 	}
 
 	public enum Layout {
