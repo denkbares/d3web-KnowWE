@@ -828,7 +828,9 @@ public class Rdf2GoCore {
 	 * compile process
 	 */
 	public Set<Statement> getStatementsFromCache(Section<?> source) {
-		return statementCache.getValues(new SectionSource(source));
+		synchronized (statementMutex) {
+			return statementCache.getValues(new SectionSource(source));
+		}
 	}
 
 	public long getSize() {
@@ -876,8 +878,10 @@ public class Rdf2GoCore {
 
 	public void removeAllCachedStatements() {
 		// get all statements of this wiki and remove them from the model
-		removeCache.addAll(statementCache.valueSet());
-		statementCache.clear();
+		synchronized (statementMutex) {
+			removeCache.addAll(statementCache.valueSet());
+			statementCache.clear();
+		}
 	}
 
 	public void removeNamespace(String abbreviation) throws RepositoryException {
@@ -905,17 +909,19 @@ public class Rdf2GoCore {
 	 * @param source the {@link StatementSource} for which the statements should be removed
 	 */
 	public void removeStatements(StatementSource source) {
-		Collection<Statement> statements = statementCache.getValues(source);
 		synchronized (statementMutex) {
+			Collection<Statement> statements = statementCache.getValues(source);
 			removeStatements(source, new ArrayList<>(statements));
 		}
 	}
 
 	private void removeStatements(StatementSource source, Collection<Statement> statements) {
-		for (Statement statement : statements) {
-			statementCache.remove(source, statement);
-			if (!statementCache.containsValue(statement)) {
-				removeCache.add(statement);
+		synchronized (statementMutex) {
+			for (Statement statement : statements) {
+				statementCache.remove(source, statement);
+				if (!statementCache.containsValue(statement)) {
+					removeCache.add(statement);
+				}
 			}
 		}
 	}
@@ -945,13 +951,15 @@ public class Rdf2GoCore {
 	 * @created 13.12.2013
 	 */
 	public Set<Article> getSourceArticles(Statement statement) {
-		Collection<StatementSource> list = statementCache.getKeys(statement);
-		if (list.isEmpty()) return Collections.emptySet();
-		Set<Article> result = new HashSet<>();
-		for (StatementSource source : list) {
-			result.add(source.getArticle());
+		synchronized (statementMutex) {
+			Collection<StatementSource> list = statementCache.getKeys(statement);
+			if (list.isEmpty()) return Collections.emptySet();
+			Set<Article> result = new HashSet<>();
+			for (StatementSource source : list) {
+				result.add(source.getArticle());
+			}
+			return Collections.unmodifiableSet(result);
 		}
-		return Collections.unmodifiableSet(result);
 	}
 
 	/**
@@ -965,9 +973,11 @@ public class Rdf2GoCore {
 	 * @created 13.12.2013
 	 */
 	public Article getSourceArticle(Statement statement) {
-		Collection<StatementSource> list = statementCache.getKeys(statement);
-		if (list.isEmpty()) return null;
-		return list.iterator().next().getArticle();
+		synchronized (statementMutex) {
+			Collection<StatementSource> list = statementCache.getKeys(statement);
+			if (list.isEmpty()) return null;
+			return list.iterator().next().getArticle();
+		}
 	}
 
 	/**
@@ -1490,7 +1500,9 @@ public class Rdf2GoCore {
 	 * @created 19.04.2013
 	 */
 	public boolean isEmpty() {
-		return statementCache.isEmpty();
+		synchronized (statementMutex) {
+			return statementCache.isEmpty();
+		}
 	}
 
 	/**
