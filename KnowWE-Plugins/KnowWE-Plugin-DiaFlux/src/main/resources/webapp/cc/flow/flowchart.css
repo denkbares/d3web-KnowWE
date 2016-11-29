@@ -6,6 +6,7 @@
 	/* DefaultMarkup sets white-space to pre -> No wrap in nodes */
 	white-space: normal;
 	-webkit-print-color-adjust:exact;
+	line-height: 16px;
 }
 
 .Flowchart_ghost {
