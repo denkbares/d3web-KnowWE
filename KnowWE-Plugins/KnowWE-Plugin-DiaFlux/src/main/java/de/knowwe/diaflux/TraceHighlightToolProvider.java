@@ -31,7 +31,7 @@ import de.knowwe.util.Icon;
  * @author Markus Friedrich (denkbares GmbH)
  * @created 23.02.2011
  */
-public class HighlightProvider implements ToolProvider {
+public class TraceHighlightToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
@@ -52,7 +52,8 @@ public class HighlightProvider implements ToolProvider {
 		if (doHighlighting) {
 			return new DefaultTool(Icon.DEBUG, "Hide Trace",
 					"Highlights active nodes and edges in the flowchart.",
-					DiaFluxTraceHighlight.getDeactivationJSAction(),
+					"jq$.cookie('DiaFluxHighlightTraces', 'false'); window.location.reload()",
+					Tool.ActionType.ONCLICK,
 					Tool.CATEGORY_INFO);
 		}
 		else {
@@ -60,7 +61,8 @@ public class HighlightProvider implements ToolProvider {
 					Icon.DEBUG,
 					"Show Trace",
 					"Highlights active nodes and edges in the flowchart.",
-					DiaFluxTraceHighlight.getActivationJSAction(DiaFluxTraceHighlight.TRACE_HIGHLIGHT),
+					"jq$.cookie('DiaFluxHighlightTraces', 'true'); window.location.reload()",
+					Tool.ActionType.ONCLICK,
 					Tool.CATEGORY_INFO);
 		}
 	}

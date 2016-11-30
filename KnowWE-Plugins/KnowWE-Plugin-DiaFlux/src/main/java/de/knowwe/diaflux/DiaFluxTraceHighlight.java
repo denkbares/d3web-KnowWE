@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import de.knowwe.core.user.UserContext;
-
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * 
@@ -44,13 +44,10 @@ public class DiaFluxTraceHighlight implements DiaFluxDisplayEnhancement {
 
 	}
 
-	/**
-	 * 
-	 * @created 10.10.2011
-	 * @param user
-	 * @return
-	 */
 	public static boolean checkForHighlight(UserContext user, String value) {
+		if (KnowWEUtils.getCookie("DiaFluxHighlightTraces", "false", user).equals("true")) {
+			return true;
+		}
 		HttpServletRequest request = user.getRequest();
 		String highlight = user.getParameters().get("highlight");
 		// can be null when booting KnowWE
@@ -59,8 +56,7 @@ public class DiaFluxTraceHighlight implements DiaFluxDisplayEnhancement {
 			// if highlight is null, use highlight from session
 			if (highlight == null) {
 				String temp = (String) httpSession.getAttribute(HIGHLIGHT_KEY);
-				if (temp == null) return false;
-				else return temp.equalsIgnoreCase(value);
+				return temp != null && temp.equalsIgnoreCase(value);
 			}
 			else if (highlight.equalsIgnoreCase(value)) {
 				// save in session

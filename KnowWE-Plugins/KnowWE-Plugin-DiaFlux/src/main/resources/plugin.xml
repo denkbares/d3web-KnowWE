@@ -290,7 +290,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="HighlightProvider">
-		<parameter id="class" value="de.knowwe.diaflux.HighlightProvider" />
+		<parameter id="class" value="de.knowwe.diaflux.TraceHighlightToolProvider" />
 		<parameter id="name" value="HighlightProvider" />
 		<parameter id="description" value="Enables highlighting for active nodes and edges." />
 		<parameter id="version" value="1.0" />
