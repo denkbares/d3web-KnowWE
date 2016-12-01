@@ -37,7 +37,6 @@ import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
@@ -183,13 +182,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	}
 
 	private static void cleanUpLastRuns() {
-		for (Iterator<Map.Entry<String, Long>> iterator = LAST_RUNS.entrySet()
-				.iterator(); iterator.hasNext(); ) {
-			Map.Entry<String, Long> entry = iterator.next();
-			if (Sections.get(entry.getKey()) == null) {
-				iterator.remove();
-			}
-		}
+		LAST_RUNS.entrySet().removeIf(entry -> Sections.get(entry.getKey()) == null);
 	}
 
 	private static long timeSinceLastRun(Section<?> section) {
