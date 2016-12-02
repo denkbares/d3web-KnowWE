@@ -26,7 +26,6 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
@@ -36,7 +35,6 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentEvent;
@@ -178,10 +176,9 @@ public class AttachmentType extends AbstractType {
 			if (thisAttachmentPath.startsWith(eventAttachmentPath)) {
 
 				// basically, do a full parse...
-				ArticleManager articleManager = KnowWEUtils.getArticleManager(web);
 				Article article = section.getArticle();
 				Article newArticle = Article.createArticle(article.getText(), article.getTitle(), web);
-				articleManager.registerArticle(newArticle);
+				article.getArticleManager().registerArticle(newArticle);
 			}
 		}
 	}
