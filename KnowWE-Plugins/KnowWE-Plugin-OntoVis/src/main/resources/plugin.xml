@@ -233,4 +233,13 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetVisMenuAction">
+		<parameter id="class" value="de.knowwe.rdfs.vis.markup.GetVisMenuAction" />
+		<parameter id="name" value="GetVisMenuAction" />
+		<parameter id="description" value="Action GetVisMenuAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 </plugin>

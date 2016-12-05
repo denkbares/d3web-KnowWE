@@ -42,7 +42,7 @@ import de.knowwe.tools.ToolUtils;
 public class GetToolMenuAction extends AbstractAction {
 
 	public static final String IDENTIFIER = "identifier";
-	private static DefaultMarkupRenderer defaultMarkupRenderer =
+	private static final DefaultMarkupRenderer defaultMarkupRenderer =
 			new DefaultMarkupRenderer();
 
 	@Override
@@ -57,6 +57,11 @@ public class GetToolMenuAction extends AbstractAction {
 		RenderResult string = new RenderResult(context);
 		defaultMarkupRenderer.appendMenu(tools, identifier, context, string);
 
+		writeResponse(context, section, string);
+
+	}
+
+	public void writeResponse(UserActionContext context, Section<? extends Type> section, RenderResult string) throws IOException {
 		JSONObject response = new JSONObject();
 		try {
 			response.accumulate("menuHTML", string.toString());
@@ -69,7 +74,6 @@ public class GetToolMenuAction extends AbstractAction {
 		catch (JSONException e) {
 			throw new IOException(e);
 		}
-
 	}
 
 	/**

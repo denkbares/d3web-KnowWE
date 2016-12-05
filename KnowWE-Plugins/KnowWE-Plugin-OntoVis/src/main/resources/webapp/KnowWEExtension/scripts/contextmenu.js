@@ -37,27 +37,6 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
 
 KNOWWE.plugin.visualization = {
 
-	addHTMLMenu : function() {
-		// if the menu hasn't been created yet create it!
-		if (jq$("#vismenu").length <= 0) {
-			var menudiv = jq$('<div/>', {id : 'vismenu'});
-
-			var literalsdiv = jq$('<div/>', {id: 'literals'})
-				.appendTo(menudiv)
-				.append(jq$('<span/>', {id: 'literalHeading', text:'Literals'}))
-				.append(jq$('<table/>', {id: 'literalsTable'}));
-
-			var menulist = jq$('<ul/>', {class : 'menuitems'})
-				.appendTo(menudiv)
-				.append(jq$('<li/>', {id : 'expand', text : 'Expand Concept'}))
-				.append(jq$('<li/>', {id : 'exclude', text : 'Exclude Concept'}))
-				.append(jq$('<li/>', {id : 'gotodef', text : 'Go to Definition'}))
-				.append(jq$('<li/>', {id : 'newvis', text : 'New Visualization'}));
-
-			jq$("#content").append(menudiv);
-		}
-	},
-
 	addClickEventsToGraph : function(objectTag) {
 		// get the corresponding section ID of this svg
 		var sectionID = jq$(objectTag).parent().parent().parent().parent().attr('id');
@@ -80,146 +59,55 @@ KNOWWE.plugin.visualization = {
 			var conceptName = this.children[0].innerHTML;
 
 			// menu deactivated for now, just go to definition...
-			KNOWWE.plugin.visualization.goToDef(sectionID, conceptName);
+			//KNOWWE.plugin.visualization.goToDef(sectionID, conceptName);
 
-			//var clickPosition = KNOWWE.plugin.visualization.getClickPosition(e, sectionID, scrollParent);
-			//
-			//KNOWWE.plugin.visualization.fillAndShowMenu(clickPosition.x, clickPosition.y, conceptName, sectionID)
+			var clickPosition = KNOWWE.plugin.visualization.getClickPosition(e, sectionID, scrollParent);
+
+			KNOWWE.plugin.visualization.fetchToolMenuHTML(clickPosition.x, clickPosition.y, conceptName, sectionID)
 		});
 	},
 
-	goToDef : function(sectionID, conceptName) {
+	fetchToolMenuHTML : function(mouseX, mouseY, term, sectionID) {
 		var params = {
-			action : 'GoToDefinitionAction',
-			kdomid : sectionID,
-			concept : conceptName
+			action : 'GetVisMenuAction',
+			term : term,
+			sectionID : sectionID
 		};
-
 		var options = {
 			url : KNOWWE.core.util.getURL(params),
 			response : {
 				fn : function() {
-					window.location.href = this.response.trim();
+					// insert new browser data
+					var htmlCode = this.response;
+
+					var menudiv = jq$("#vismenu");
+
+					if (!menudiv.exists()) {
+						menudiv = jq$('<div/>', {
+							id : 'vismenu'
+						});
+						jq$("#content").append(menudiv);
+					}
+					menudiv.empty();
+					menudiv.append(htmlCode);
+
+					// show menu at the mouse position
+					menudiv.css({top : mouseY, left : mouseX, position : 'absolute', visibility : 'invisible'});
+
+					_TM.decorateToolMenus(menudiv);
+					var decoratorSpan = jq$(menudiv).find(".toolsMenuDecorator");
+					_TM.showToolPopupMenu(decoratorSpan);
+
+					jq$(document).click(function(e) {
+						var clickedElement = jq$(e.target);
+						var toolPopupMenu = jq$("#toolPopupMenuID");
+						toolPopupMenu.css({visibility : 'hidden'});
+					});
+
 				}
 			}
 		};
-		new _KA(options).send();
-	}
 
-	, fillAndShowMenu : function(mouseX, mouseY, conceptName, sectionID) {
-		// add the literals for the given concept to the menu
-		KNOWWE.plugin.visualization.addLiteralsToMenu(conceptName, sectionID);
-
-		// add click-functionality to the menu
-		jq$("#vismenu #expand").off('click').on('click', function(e) {
-			var params = {
-				action : 'ExpandCurrentConceptAction',
-				kdomid : sectionID,
-				concept : conceptName
-			};
-
-			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				response : {
-					fn : function() {
-						location.reload();
-						//var newID =  this.response.trim();
-						//KNOWWE.plugin.visualization.reRenderGraph(newID, sectionID);
-					}
-				}
-			};
-			new _KA(options).send();
-		});
-
-		jq$("#vismenu #exclude").off('click').on('click', function(e) {
-			var params = {
-				action : 'ExcludeCurrentConceptAction',
-				kdomid : sectionID,
-				concept : conceptName
-			};
-
-			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				response : {
-					fn : function() {
-						location.reload();
-						//var newID =  this.response.trim();
-						//KNOWWE.plugin.visualization.reRenderGraph(newID, sectionID);
-					}
-				}
-			};
-			new _KA(options).send();
-		});
-
-		jq$("#vismenu #gotodef").off().on('click', function(e) {
-			KNOWWE.plugin.visualization.goToDef(sectionID, conceptName);
-		});
-
-		jq$("#vismenu #newvis").off().on('click', function(e) {
-			var params = {
-				action : 'MakeNewVisualizationOfConceptAction',
-				kdomid : sectionID,
-				concept : conceptName
-			};
-
-			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				response : {
-					fn : function() {
-						location.reload();
-
-						//var newID =  this.response.trim();
-						//KNOWWE.plugin.visualization.reRenderGraph(newID, sectionID);
-					}
-				}
-			};
-			new _KA(options).send();
-		});
-
-		// show menu at the mouse position
-		jq$('#vismenu').css({top : mouseY, left : mouseX, position : 'absolute', visibility : 'visible'});
-	},
-
-	addLiteralsToMenu : function(conceptName, sectionID) {
-		var params = {
-			action : 'FindLiteralsForConceptAction',
-			kdomid : sectionID,
-			concept : conceptName
-		};
-
-		var options = {
-			url : KNOWWE.core.util.getURL(params),
-			response : {
-				fn : function() {
-					var jsonLiteralsArray = jq$.parseJSON(this.response);
-
-					if (jsonLiteralsArray.length > 0) {
-						// show literals-part of the menu
-						jq$('#vismenu #literals').css({display : 'block'});
-
-						// change heading
-						jq$('#literalHeading').text(conceptName);
-
-						// add each literal to the table (after emptying it)
-						var table = jq$('#vismenu #literalsTable').empty();
-
-						for (var i = 0; i < jsonLiteralsArray.length; i++) {
-							var jsonLiteralArray = jq$.makeArray(jsonLiteralsArray[i]);
-							if (jsonLiteralArray.length != 2) continue;
-
-							// create a new table row for the literal
-							var literalsdiv = jq$('<tr/>')
-								.appendTo(table)
-								.append(jq$('<td/>', {text: jsonLiteralArray[0]}))
-								.append(jq$('<td/>', {text: jsonLiteralArray[1]}));
-						}
-					} else {
-						// hide literals-part of the menu
-						jq$('#vismenu #literals').css({display : 'none'});
-					}
-				}
-			}
-		};
 		new _KA(options).send();
 	},
 
@@ -308,17 +196,3 @@ KNOWWE.plugin.visualization = {
 		return { x : xPosition, y : yPosition };
 	}
 };
-
-// deactivated for now
-// close open menus by clicking somewhere outside of them
-//jq$(document).click(function(e) {
-//	var clickedElement = jq$(e.target);
-//	if (!clickedElement.is('#vismenu')) {
-//		KNOWWE.plugin.visualization.closeContextMenu();
-//	}
-//});
-//
-//KNOWWE.helper.observer.subscribe("afterRerender", function() {
-//	// add the menu-div to the page
-//	KNOWWE.plugin.visualization.addHTMLMenu();
-//});
