@@ -353,4 +353,7 @@ public class DummyConnector implements WikiConnector {
 		return true;
 	}
 
+	public void setPageProvider(DummyPageProvider pageProvider) {
+		this.dummyPageProvider = pageProvider;
+	}
 }
