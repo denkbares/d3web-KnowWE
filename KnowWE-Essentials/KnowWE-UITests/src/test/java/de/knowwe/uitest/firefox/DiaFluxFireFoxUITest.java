@@ -60,7 +60,14 @@ public abstract class DiaFluxFireFoxUITest extends DiaFluxUITest {
 				.findFirst().get();
 		if (getDriver() instanceof JavascriptExecutor) {
 			JavascriptExecutor jse = (JavascriptExecutor) getDriver();
-			String js = URLDecoder.decode(editTool.getAttribute("href"), "UTF-8");
+			String href = editTool.getAttribute("href");
+			String js;
+			if (href == null) {
+				js = editTool.getAttribute("onclick");
+			}
+			else {
+				js = URLDecoder.decode(href, "UTF-8");
+			}
 			jse.executeScript(js);
 		}
 	}
