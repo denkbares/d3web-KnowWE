@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +50,7 @@ public class SparqlResultRenderer {
 
 	private static final String POINT_ID = "SparqlResultNodeRenderer";
 	private static final String MAGIC_TABLE = "magicTable";
+	private static final String TABLE_TREE = "tableTree";
 	private static final String USED_IDS = "usedIDs";
 
 	private static SparqlResultRenderer instance = null;
@@ -250,11 +249,10 @@ public class SparqlResultRenderer {
 
 		// tree table init
 		String idVariable = null;
-		String parentVariable = null;
 		if (isTree) {
 			if (qrt.getBindingNames().size() > 2) {
 				idVariable = qrt.getBindingNames().get(0);
-				parentVariable = qrt.getBindingNames().get(1);
+				qrt.getBindingNames().get(1);
 			} else {
 				isTree = false;
 				renderResult.append("%%warning The renderResult table requires at least three columns to enable tree mode.\n");
@@ -328,16 +326,15 @@ public class SparqlResultRenderer {
 					: "<tr class='" + Strings.concat(" ", classNames) + "'");
 
 			if (isTree) {
+				ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(TABLE_TREE);
 				Value value = row.getValue(idVariable);
 				String valueID = valueToID(value);
 				usedIDs.put(valueID, value);
 
 				renderResult.append(" data-tt-id='sparql-id-").append(valueID).append("'");
-				renderResult.append(" data-tt-branch='true'");
-				/*if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
-					renderResult.append(" data-tt-parent-id='sparql-id-")
-							.append(parentID).append("'");
-				}*/
+				if (!tree.getChildren(row).isEmpty()) {
+					renderResult.append(" data-tt-branch='true'");
+				}
 			}
 			renderResult.append(">");
 
@@ -407,13 +404,14 @@ public class SparqlResultRenderer {
 		}
 		Log.info("Create hierarchical sparql result table in " + stopwatch.getDisplay());
 		section.storeObject(MAGIC_TABLE, table);
+		section.storeObject(TABLE_TREE, tree);
 		return result;
 	}
 
 	public void getTreeChildren(Section<? extends SparqlType> section, String parentNodeID, UserActionContext user, RenderResult result) {
 		parentNodeID = parentNodeID.replace("sparql-id-", "");
 		ResultTableModel table = (ResultTableModel) section.getObject(MAGIC_TABLE);
-		ResultTableHierarchy tree = new ResultTableHierarchy(table);
+		ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(TABLE_TREE);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
 		String query = section.get().getSparqlQuery(section, user);
 
@@ -428,7 +426,7 @@ public class SparqlResultRenderer {
 
 		if (qrt != null) {
 			List<String> variables = qrt.getBindingNames();
-			Map<String, Value> usedIDs = (Map<String, Value>) section.getObject(USED_IDS);
+			@SuppressWarnings("unchecked") Map<String, Value> usedIDs = (Map<String, Value>) section.getObject(USED_IDS);
 			Collection<TableRow> parents = table.findRowFor(usedIDs.get(parentNodeID));
 			for (TableRow parent : parents) {
 				for (TableRow child : tree.getChildren(parent)) {
@@ -439,7 +437,7 @@ public class SparqlResultRenderer {
 					result.append(" data-tt-parent-id='sparql-id-")
 							.append(parentNodeID).append("'");
 					if (!tree.getChildren(child).isEmpty()) {
-							result.append(" data-tt-branch='true' ");
+						result.append(" data-tt-branch='true' ");
 					}
 					result.append(">");
 					int column = 0;
