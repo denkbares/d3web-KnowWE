@@ -387,15 +387,23 @@ jq$(document).ready(function() {
 
 	// add auto-resize to edit page
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
-		var editPane = jq$('form #editorarea');
-		editPane.autosize();
+		var editPanes = jq$('.editor');
+		for (var i = 0; i < editPanes.length; i++) {
+			jq$(editPanes[i]).autosize();
+		}
 		for (var time = 100; time <= 500; time += 100) {
 			window.setTimeout(function() {
-				editPane.trigger('autosize.resize');
+				for (var i = 0; i < editPanes.length; i++) {
+					jq$(editPanes[i]).trigger('autosize.resize');
+				}
 				if (Wiki && Wiki.prefs && Wiki.prefs.set) {
 					Wiki.prefs.set("EditorSize", null);
 				}
 			}, time);
+		}
+		var ajaxpreview = jq$('.ajaxpreview');
+		if (ajaxpreview) {
+			ajaxpreview.height(jq$(editPanes[0]).height());
 		}
 	}
 
