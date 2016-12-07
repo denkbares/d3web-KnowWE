@@ -42,6 +42,7 @@ public class Attributes {
 	public static final String UPLOAD_KB_ID = "UploadKBID";
 	public static final String COMPLETION_TEXT = "CompletionText";
 	public static final String SCL_DATA = "SCLData";
+	public static final String PARENT_NODE_ID = "ParentNodeID";
 
 	public static final String NEWKB_NAME = "NewKBName";
 	public static final String ATTACHMENT_NAME = "AttachmentName";

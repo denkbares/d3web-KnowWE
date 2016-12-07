@@ -3,10 +3,12 @@ package de.knowwe.ontology.sparql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
@@ -30,6 +32,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -48,6 +51,8 @@ import de.knowwe.rdf2go.utils.TableRow;
 public class SparqlResultRenderer {
 
 	private static final String POINT_ID = "SparqlResultNodeRenderer";
+	private static final String MAGIC_TABLE = "magicTable";
+	private static final String USED_IDS = "usedIDs";
 
 	private static SparqlResultRenderer instance = null;
 
@@ -74,8 +79,7 @@ public class SparqlResultRenderer {
 		for (SparqlResultNodeRenderer sparqlResultNodeRenderer : nodeRenderer) {
 			if (sparqlResultNodeRenderer instanceof ReduceNamespaceNodeRenderer) {
 				rnnRenderer = (ReduceNamespaceNodeRenderer) sparqlResultNodeRenderer;
-			}
-			else if (sparqlResultNodeRenderer instanceof TrimNamespaceNodeRenderer) {
+			} else if (sparqlResultNodeRenderer instanceof TrimNamespaceNodeRenderer) {
 				containsBoth = true;
 			}
 		}
@@ -112,8 +116,7 @@ public class SparqlResultRenderer {
 			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
 					.sparqlSelect(query, true, opts.getTimeout());
 			qrt = section.get().postProcessResult(qrt, user, opts);
-		}
-		catch (RuntimeException e) {
+		} catch (RuntimeException e) {
 			handleRuntimeException(section, user, result, e);
 		}
 		if (qrt != null) {
@@ -136,8 +139,7 @@ public class SparqlResultRenderer {
 	private static void appendMessage(Section<? extends SparqlType> section, RuntimeException e, UserContext user, RenderResult result) {
 		if (e.getCause() instanceof MalformedQueryException) {
 			appendMalformedQueryMessage(section, e.getMessage(), user, result);
-		}
-		else {
+		} else {
 			String message = e.getMessage();
 			if (message == null) message = "RuntimeException without message.";
 			message = Strings.trimRight(message);
@@ -198,8 +200,7 @@ public class SparqlResultRenderer {
 							.append("'").append(charAtException).append("' ")
 							.append("at line ").append(lineNumber + 1)
 							.append(", column ").append(columnNumber + 1).append(".");
-				}
-				else {
+				} else {
 					result.append(line);
 				}
 				result.append(" Context: ").append(queryContextPrefix);
@@ -207,15 +208,14 @@ public class SparqlResultRenderer {
 				result.append(queryContextSuffix);
 				result.append(".\n");
 				first = false;
-			}
-			else {
+			} else {
 				result.append(line).append("\n");
 			}
 		}
 	}
 
 	/**
-	 * @param qrt the query result to render
+	 * @param qrt  the query result to render
 	 * @param opts the options to control the rendered output
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
@@ -224,8 +224,7 @@ public class SparqlResultRenderer {
 		Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
-		}
-		catch (Throwable e) {
+		} catch (Throwable e) {
 			String message = "Exception while rendering SPARQL result";
 			Log.severe(message, e);
 			return new SparqlRenderResult(new RenderResult(user).appendException(e).toStringRaw());
@@ -256,8 +255,7 @@ public class SparqlResultRenderer {
 			if (qrt.getBindingNames().size() > 2) {
 				idVariable = qrt.getBindingNames().get(0);
 				parentVariable = qrt.getBindingNames().get(1);
-			}
-			else {
+			} else {
 				isTree = false;
 				renderResult.append("%%warning The renderResult table requires at least three columns to enable tree mode.\n");
 			}
@@ -300,21 +298,19 @@ public class SparqlResultRenderer {
 			int count = PaginationRenderer.getCount(section, user);
 			if (count != Integer.MAX_VALUE) {
 				iterator = table.iterator(startRow - 1, startRow + count - 1);
-			}
-			else {
+			} else {
 				iterator = table.iterator();
 			}
-		}
-		else if (isTree) {
-			table = createMagicallySortedTable(table, renderResult);
+		} else if (isTree) {
+			table = createMagicallySortedTable(table, renderResult, section);
 			iterator = table.iterator();
-		}
-		else {
+		} else {
 			iterator = table.iterator();
 		}
 
 		List<String> classNames = new LinkedList<>();
-		Set<String> usedIDs = new HashSet<>();
+		Map<String, Value> usedIDs = new HashMap<>();
+		section.storeObject(USED_IDS, usedIDs);
 		int line = 1;
 
 		while (iterator.hasNext()) {
@@ -332,17 +328,16 @@ public class SparqlResultRenderer {
 					: "<tr class='" + Strings.concat(" ", classNames) + "'");
 
 			if (isTree) {
-				String valueID = valueToID(idVariable, row);
-				boolean isNew = usedIDs.add(valueID);
-				if (!isNew) {
-					valueID = UUID.randomUUID().toString();
-				}
+				Value value = row.getValue(idVariable);
+				String valueID = valueToID(value);
+				usedIDs.put(valueID, value);
+
 				renderResult.append(" data-tt-id='sparql-id-").append(valueID).append("'");
-				String parentID = valueToID(parentVariable, row);
-				if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
+				renderResult.append(" data-tt-branch='true'");
+				/*if (!Strings.isBlank(parentID) && !parentID.equals(valueID) && usedIDs.contains(parentID)) {
 					renderResult.append(" data-tt-parent-id='sparql-id-")
 							.append(parentID).append("'");
-				}
+				}*/
 			}
 			renderResult.append(">");
 
@@ -392,15 +387,14 @@ public class SparqlResultRenderer {
 		if (annotation != null) {
 			try {
 				return RenderMode.valueOf(annotation);
-			}
-			catch (IllegalArgumentException e) {
+			} catch (IllegalArgumentException e) {
 				Log.severe("Invalid render mode: " + annotation, e);
 			}
 		}
 		return RenderMode.HTML;
 	}
 
-	private ResultTableModel createMagicallySortedTable(ResultTableModel table, RenderResult renderResult) {
+	private ResultTableModel createMagicallySortedTable(ResultTableModel table, RenderResult renderResult, Section section) {
 		Stopwatch stopwatch = new Stopwatch();
 		// creating hierarchy order using PartialHierarchyTree
 		ResultTableHierarchy tree = new ResultTableHierarchy(table);
@@ -409,19 +403,63 @@ public class SparqlResultRenderer {
 		List<TableRow> rootLevelNodes = tree.getRoots();
 
 		for (TableRow row : rootLevelNodes) {
-			addRowRecursively(row, tree, result);
+			result.addTableRow(row);
 		}
 		Log.info("Create hierarchical sparql result table in " + stopwatch.getDisplay());
+		section.storeObject(MAGIC_TABLE, table);
 		return result;
 	}
 
-	private void addRowRecursively(TableRow row, ResultTableHierarchy tree, final ResultTableModel result) {
-		// add current row
-		result.addTableRow(row);
+	public void getTreeChildren(Section<? extends SparqlType> section, String parentNodeID, UserActionContext user, RenderResult result) {
+		parentNodeID = parentNodeID.replace("sparql-id-", "");
+		ResultTableModel table = (ResultTableModel) section.getObject(MAGIC_TABLE);
+		ResultTableHierarchy tree = new ResultTableHierarchy(table);
+		RenderOptions opts = section.get().getRenderOptions(section, user);
+		String query = section.get().getSparqlQuery(section, user);
 
-		// add all children recursively
-		for (TableRow child : tree.getChildren(row)) {
-			addRowRecursively(child, tree, result);
+		CachedTupleQueryResult qrt = null;
+		try {
+			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
+					.sparqlSelect(query, true, opts.getTimeout());
+			qrt = section.get().postProcessResult(qrt, user, opts);
+		} catch (RuntimeException e) {
+			handleRuntimeException(section, user, result, e);
+		}
+
+		if (qrt != null) {
+			List<String> variables = qrt.getBindingNames();
+			Map<String, Value> usedIDs = (Map<String, Value>) section.getObject(USED_IDS);
+			Collection<TableRow> parents = table.findRowFor(usedIDs.get(parentNodeID));
+			for (TableRow parent : parents) {
+				for (TableRow child : tree.getChildren(parent)) {
+					Value value = child.getValue(qrt.getBindingNames().get(0));
+					String valueID = valueToID(value);
+					usedIDs.put(valueID, value);
+					result.appendHtml("<tr class='treetr' data-tt-id='sparql-id-").append(valueID).append("'");
+					result.append(" data-tt-parent-id='sparql-id-")
+							.append(parentNodeID).append("'");
+					if (!tree.getChildren(child).isEmpty()) {
+							result.append(" data-tt-branch='true' ");
+					}
+					result.append(">");
+					int column = 0;
+					for (String var : variables) {
+						// ignore first two columns
+						if (column++ < 2) {
+							continue;
+						}
+
+						Value node = child.getValue(var);
+						String erg = renderNode(node, var, opts.isRawOutput(), user, opts.getRdf2GoCore(),
+								getRenderMode(section));
+
+						result.appendHtml("<td>");
+						result.append(erg);
+						result.appendHtml("</td>\n");
+					}
+					result.appendHtml("</tr>");
+				}
+			}
 		}
 	}
 
@@ -457,8 +495,7 @@ public class SparqlResultRenderer {
 				Collection<TableRow> parents = data.findRowFor(parentId);
 				if (parents.isEmpty()) {
 					roots.add(tableRow);
-				}
-				else {
+				} else {
 					for (TableRow parent : parents) {
 						children.put(parent, tableRow);
 					}
@@ -484,8 +521,7 @@ public class SparqlResultRenderer {
 		}
 	}
 
-	private String valueToID(String variable, TableRow row) {
-		Value value = row.getValue(variable);
+	private String valueToID(Value value) {
 		if (value == null) return null;
 		int code = value.toString().replaceAll("[\\s\"]+", "").hashCode();
 		return Integer.toString(code);
@@ -498,14 +534,14 @@ public class SparqlResultRenderer {
 		String rendered;
 		if (rawOutput && node instanceof Literal) {
 			rendered = renderLiteral((Literal) node);
-		}
-		else {
+		} else {
 			rendered = node.stringValue();
 		}
 		if (!rawOutput) {
 			for (SparqlResultNodeRenderer nodeRenderer : nodeRenderers) {
-				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer)
+				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer) {
 					continue;
+				}
 
 				String temp = rendered;
 				rendered = nodeRenderer.renderNode(node, rendered, var, user, core, mode);

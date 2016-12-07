@@ -353,6 +353,14 @@
 			return this;
 		};
 
+		Tree.prototype.findLastNode = function (node) {
+			if (node.children.length > 0) {
+				return this.findLastNode(node.children[node.children.length - 1]);
+			} else {
+				return node;
+			}
+		};
+
 		return Tree;
 	})();
 
@@ -441,13 +449,30 @@
 		},
 
 		loadBranch : function(node, rows) {
+			var settings = this.data("treetable").settings,
+				tree = this.data("treetable").tree;
+
+			// TODO Switch to $.parseHTML
 			rows = jq$(rows);
-			if (node.children.length > 0) {
-				rows.insertAfter(node.children[node.children.length - 1].row);
+
+			if (node == null) { // Inserting new root nodes
+				this.append(rows);
 			} else {
-				rows.insertAfter(node.row);
+				var lastNode = this.data("treetable").findLastNode(node);
+				rows.insertAfter(lastNode.row);
 			}
+
 			this.data("treetable").loadRows(rows);
+
+			// Make sure nodes are properly initialized
+			rows.filter("tr").each(function() {
+				tree[jq$(this).data(settings.nodeIdAttr)].show();
+			});
+
+			if (node != null) {
+				// Re-render parent to ensure expander icon is shown (#79)
+				node.render().expand();
+			}
 
 			return this;
 		},
