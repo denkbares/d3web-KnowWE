@@ -117,7 +117,7 @@ Flowchart.prototype.setSize = function(width, height, exactSize) {
 			w = Math.ceil(width / 10.0) * 10 + 1;
 			h = Math.ceil(height / 10.0) * 10;
 		}
-		var div = this.dom.select('.Flowchart')[0];
+		var div = jq$('.Flowchart')[0];
 		div.style.width = w + 'px';
 		div.style.height = h + 'px';
 	}
