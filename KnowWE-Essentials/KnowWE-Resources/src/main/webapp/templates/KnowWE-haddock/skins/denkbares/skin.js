@@ -389,17 +389,7 @@ jq$(document).ready(function() {
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
 		var editPanes = jq$('.editor');
 		for (var i = 0; i < editPanes.length; i++) {
-			jq$(editPanes[i]).autosize();
-		}
-		for (var time = 100; time <= 500; time += 100) {
-			window.setTimeout(function() {
-				for (var i = 0; i < editPanes.length; i++) {
-					jq$(editPanes[i]).trigger('autosize.resize');
-				}
-				if (Wiki && Wiki.prefs && Wiki.prefs.set) {
-					Wiki.prefs.set("EditorSize", null);
-				}
-			}, time);
+			jq$(editPanes[i]).trigger('autosize.resize');
 		}
 		var ajaxpreview = jq$('.ajaxpreview');
 		if (ajaxpreview) {

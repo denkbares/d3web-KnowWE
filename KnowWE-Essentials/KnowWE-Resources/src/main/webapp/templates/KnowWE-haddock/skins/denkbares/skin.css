@@ -2443,3 +2443,6 @@ li.findpages .btn {
 .edit .page {
 	transition: none;
 }
+.resizer {
+	display:none;
+}
