@@ -141,6 +141,15 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="VersionMarkupType">
+		<parameter id="class" value="de.knowwe.version.VersionMarkupType" />
+		<parameter id="name" value="VersionMarkupType" />
+		<parameter id="description" value="Type VersionMarkupType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5.0" />
+		<parameter id="scope" value="root" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="VerbatimType">
 		<parameter id="class" value="de.knowwe.kdom.verbatim.VerbatimType" />
 		<parameter id="name" value="VerbatimType" />
