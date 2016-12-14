@@ -387,14 +387,17 @@ jq$(document).ready(function() {
 
 	// add auto-resize to edit page
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
-		var editPanes = jq$('.editor');
-		for (var i = 0; i < editPanes.length; i++) {
-			jq$(editPanes[i]).trigger('autosize.resize');
-		}
-		var ajaxpreview = jq$('.ajaxpreview');
-		if (ajaxpreview) {
-			ajaxpreview.height(jq$(editPanes[0]).height());
-		}
+		window.setTimeout(function() {
+			var editPanes = jq$('.editor');
+			for (var i = 0; i < editPanes.length; i++) {
+				jq$(editPanes[i]).trigger('autosize.resize');
+			}
+			var ajaxpreview = jq$('.ajaxpreview');
+			if (ajaxpreview) {
+				ajaxpreview.height(jq$(editPanes[0]).height());
+			}
+		}, 0);
+
 	}
 
 	jq$('#menu').click(function() {
