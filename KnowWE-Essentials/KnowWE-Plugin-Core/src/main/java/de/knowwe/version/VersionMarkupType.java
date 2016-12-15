@@ -24,23 +24,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
-import org.apache.commons.lang.ObjectUtils;
-
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.version.taghandler.VersionTagHandler;
 
@@ -64,33 +54,39 @@ public class VersionMarkupType extends DefaultMarkupType {
 			String manifestPath = Environment.getInstance()
 					.getWikiConnector()
 					.getApplicationRootPath() + "/META-INF/MANIFEST.MF";
+			Manifest manifest;
 			try {
-				Manifest manifest = new Manifest(new FileInputStream(new File(manifestPath)));
-				Attributes attributes = manifest.getMainAttributes();
-
-				if ("long".equals(type)) {
-					result.appendHtml("<span style='font-weight:bold'>Version:</span> ");
-				}
-
-				result.appendHtml("<span>" + attributes.getValue("Implementation-Version") + ",</span> ");
-
-				if ("long".equals(type)) {
-					result.appendHtml("<br><span style='font-weight:bold'>Date:</span> ");
-				}
-
-				String dateString;
-				try {
-					Date date = Date.from(Instant.parse(attributes.getValue("Build-Date")));
-					dateString = new SimpleDateFormat("yyyy-MM-dd HH:MM").format(date);
-				} catch (NullPointerException npe) {
-					dateString = VersionTagHandler.getBuildTime();
-				}
-
-				result.appendHtml("<span>" + dateString + "</span>");
-
-			} catch (IOException e) {
-				Log.severe("Could not read manifest file", e);
+				manifest = new Manifest(new FileInputStream(new File(manifestPath)));
 			}
+			catch (IOException e) {
+				Log.severe("Could not read manifest file", e);
+				return;
+			}
+
+			result.appendHtml("<div style='font-size: 90%'>");
+			Attributes attributes = manifest.getMainAttributes();
+
+			if ("long".equals(type)) {
+				result.appendHtml("<span style='font-weight:bold'>Version:</span> ");
+			}
+
+			result.appendHtml("<span>" + attributes.getValue("Implementation-Version") + ",</span> ");
+
+			if ("long".equals(type)) {
+				result.appendHtml("<br><span style='font-weight:bold'>Date:</span> ");
+			}
+
+			String dateString;
+			try {
+				Date date = Date.from(Instant.parse(attributes.getValue("Build-Date")));
+				dateString = new SimpleDateFormat("yyyy-MM-dd HH:MM").format(date);
+			}
+			catch (NullPointerException npe) {
+				dateString = VersionTagHandler.getBuildTime();
+			}
+
+			result.appendHtml("<span>" + dateString + "</span>");
+			result.appendHtml("</div>");
 		});
 	}
 
