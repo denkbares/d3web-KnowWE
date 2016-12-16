@@ -179,6 +179,10 @@ span.markupMenuItem {
 	position: relative;
 }
 
+.KnowWE .defaultMarkupFrame .long-op-progress-container .progress-bar {
+	height: 12px;
+}
+
 .defaultMarkupFrame .long-op-progress-container .progress-bar .progress-bar-percent {
 	position: absolute;
 	top: -2px;
@@ -191,12 +195,20 @@ span.markupMenuItem {
 	height: 21px;
 }
 
+.KnowWE .defaultMarkupFrame .long-op-progress-container .progress-bar .ui-progressbar-value {
+	height: 21px;
+}
+
 .defaultMarkupFrame .long-op-progress-container .progress-state {
 	display: inline-block;
 	position: relative;
 	top: -3px;
 	margin: 2px 2px 2px 5px;
 	background-image: none
+}
+
+.KnowWE .defaultMarkupFrame .long-op-progress-container .progress-state {
+	margin-right: 8px;
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-state:hover {
