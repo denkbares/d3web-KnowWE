@@ -22,7 +22,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
-					<parallel>classes</parallel>
+					<parallel>false</parallel>
 					<threadCount>1</threadCount>
 				</configuration>
 			</plugin>
