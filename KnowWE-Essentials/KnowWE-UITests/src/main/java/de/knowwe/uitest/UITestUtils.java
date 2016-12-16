@@ -42,6 +42,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.denkbares.utils.Log;
 
+import static de.knowwe.uitest.WikiTemplate.haddock;
+
 /**
  * Utils methods for selenium UI tests.
  *
@@ -53,6 +55,9 @@ public class UITestUtils {
 	public enum WebOS {
 		windows, macOS, linux, other
 	}
+
+	private static boolean DEV_MODE;
+	private static String KNOWWE_URL;
 
 	/**
 	 * Loads the given article and waits for it to be loaded. If an alert pops up, it will be accepted.
@@ -202,6 +207,20 @@ public class UITestUtils {
 		return driver.findElement(By.cssSelector("#knowWEInfoStatus")).getAttribute("value");
 	}
 
+	public static String getKnowWEUrl(WikiTemplate template, String testName) {
+		String defaultUrl = template == haddock ? "https://knowwe-nightly-haddock.denkbares.com" : "https://knowwe-nightly.denkbares.com";
+		if (DEV_MODE) {
+			KNOWWE_URL = System.getProperty("knowwe.url", defaultUrl);
+		} else {
+			KNOWWE_URL = defaultUrl;
+		}
+		return KNOWWE_URL + "/Wiki.jsp?page=" + testName;
+	}
+
+	public static boolean getDevMode() {
+		return DEV_MODE;
+	}
+
 	public static void awaitRerender(WebDriver driver, By by) {
 		try {
 			List<WebElement> elements = driver.findElements(by);
@@ -213,8 +232,9 @@ public class UITestUtils {
 		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
 	}
 
-	public static RemoteWebDriver setUp(boolean devMode, DesiredCapabilities capabilities, String testClassName) throws MalformedURLException {
+	public static RemoteWebDriver setUp(DesiredCapabilities capabilities, String testClassName) throws MalformedURLException {
 
+		DEV_MODE = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
 		String chromeBinary = System.getProperty("mate.chrome.binary");
 		if (chromeBinary != null) {
 			ChromeOptions chromeOptions = new ChromeOptions();
@@ -223,7 +243,7 @@ public class UITestUtils {
 		}
 
 		RemoteWebDriver driver;
-		if (devMode) {
+		if (DEV_MODE) {
 			driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
 		} else {
 			capabilities.setCapability("name", testClassName);

@@ -38,12 +38,12 @@ public abstract class FormatterChromeUITest extends FormatterUITest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), FormatterChromeUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(DesiredCapabilities.chrome(), FormatterChromeUITest.class.getSimpleName());
 	}
 
 	@AfterClass
 	public static void tearDown() throws Exception {
-		if (!devMode) driver.quit();
+		if (!UITestUtils.getDevMode()) driver.quit();
 	}
 
 }

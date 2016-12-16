@@ -48,7 +48,7 @@ public abstract class KnowWEUITest {
 	protected abstract WebDriver getDriver();
 
 	/**
-	 * If you set devMode to true, you can test locally, which will be much faster
+	 * If you set DEV_MODE to true, you can test locally, which will be much faster
 	 * Don't commit this as true, because Jenkins build WILL fail!
 	 * <p>
 	 * To test locally, you also need to download the ChromeDriver from
@@ -56,23 +56,14 @@ public abstract class KnowWEUITest {
 	 * and start it on your machine.
 	 * State of the page does not matter, it will be cleared for each new test.
 	 */
-	protected static boolean devMode = false;
-
 	public abstract String getTestName();
 
 	@Before
 	public void load() throws Exception {
-		if (devMode) {
-			getDriver().get("http://localhost:8080/KnowWE/Wiki.jsp?page=" + getTestName());
-		} else {
-			if (getTemplate() == haddock) {
-				getDriver().get("https://knowwe-nightly-haddock.denkbares.com/Wiki.jsp?page=" + getTestName());
-			} else {
-				getDriver().get("https://knowwe-nightly.denkbares.com/Wiki.jsp?page=" + getTestName());
-			}
-			if (!UITestUtils.isLoggedIn(getDriver(), getTemplate())) {
-				logIn();
-			}
+		getDriver().get(UITestUtils.getKnowWEUrl(getTemplate(), getTestName()));
+
+		if (!UITestUtils.isLoggedIn(getDriver(), getTemplate())) {
+			logIn();
 		}
 	}
 

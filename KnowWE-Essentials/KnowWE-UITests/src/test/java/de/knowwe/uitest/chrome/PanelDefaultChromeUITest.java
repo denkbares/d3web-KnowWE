@@ -41,12 +41,12 @@ public class PanelDefaultChromeUITest extends PanelDefaultUITest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), PanelDefaultChromeUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(DesiredCapabilities.chrome(), PanelDefaultChromeUITest.class.getSimpleName());
 	}
 
 	@AfterClass
 	public static void tearDown() throws Exception {
-		if (!devMode) driver.quit();
+		if (!UITestUtils.getDevMode()) driver.quit();
 	}
 
 	@Override

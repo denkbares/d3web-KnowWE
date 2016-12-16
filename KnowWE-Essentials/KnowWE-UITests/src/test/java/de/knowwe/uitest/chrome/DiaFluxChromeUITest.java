@@ -22,14 +22,14 @@ public abstract class DiaFluxChromeUITest extends DiaFluxUITest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-		driver = UITestUtils.setUp(devMode, DesiredCapabilities.chrome(), DiaFluxChromeUITest.class.getSimpleName());
+		driver = UITestUtils.setUp(DesiredCapabilities.chrome(), DiaFluxChromeUITest.class.getSimpleName());
 	}
 
 	@AfterClass
 	public static void tearDown() throws Exception {
 		// if we quit, we don't see the status of the test at the end
 		//noinspection ConstantConditions
-		if (!devMode) driver.quit();
+		if (!UITestUtils.getDevMode()) driver.quit();
 	}
 
 	@Override
