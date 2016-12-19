@@ -33,8 +33,13 @@ public abstract class LongOperationToolProvider implements ToolProvider {
 
 	private String createJSAction(Section<?> section) {
 		String id = LongOperationUtils.registerLongOperation(section, getOperation(section));
-		return "KNOWWE.core.plugin.progress.startLongOperation('" + section.getID() + "','" + id
-				+ "');";
+		String onSuccessScript = getOnSuccessFunction(section, id);
+		if (onSuccessScript == null) {
+			return "KNOWWE.core.plugin.progress.startLongOperation('" + section.getID() + "','" + id
+					+ "');";
+		}
+		return "KNOWWE.core.plugin.progress.startLongOperation('" + section.getID() + "', '" + id
+				+ "', null, " + onSuccessScript + ");";
 	}
 
 	@Override
@@ -45,6 +50,10 @@ public abstract class LongOperationToolProvider implements ToolProvider {
 	}
 
 	public abstract LongOperation getOperation(Section<?> section);
+
+	public String getOnSuccessFunction(Section<?> section, String id) {
+		return null;
+	}
 
 	@Override
 	public final boolean hasTools(Section<?> section, UserContext userContext) {

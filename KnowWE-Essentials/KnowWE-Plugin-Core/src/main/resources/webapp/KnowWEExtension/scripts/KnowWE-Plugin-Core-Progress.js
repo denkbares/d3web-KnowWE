@@ -58,7 +58,17 @@ KNOWWE.core.plugin.progress = function() {
 
 		cache : {},
 
-		startLongOperation : function(sectionID, operationID, parameters) {
+		startLongOperation : function(sectionID, operationID, parameters, onSuccessFunction) {
+
+			if (typeof onSuccessFunction == 'function') {
+				var onSuccessCaller = function() {
+					onSuccessFunction(operationID);
+					KNOWWE.helper.observer.unsubscribe("longOperationSuccessful", onSuccessCaller);
+				};
+				KNOWWE.helper.observer.subscribe("longOperationSuccessful", onSuccessCaller);
+			}
+
+
 			KNOWWE.core.util.updateProcessingState(1);
 			var progressID = new Date().getMilliseconds() + Math.floor((Math.random() * 10) + 1);
 
@@ -112,6 +122,8 @@ KNOWWE.core.plugin.progress = function() {
 			};
 
 			new _KA(options).send();
+
+
 		},
 
 		cancelLongOperation : function(sectionID, operationID) {
@@ -257,5 +269,6 @@ KNOWWE.core.plugin.progress = function() {
 
 			new _KA(options).send();
 		}
+
 	}
 }();

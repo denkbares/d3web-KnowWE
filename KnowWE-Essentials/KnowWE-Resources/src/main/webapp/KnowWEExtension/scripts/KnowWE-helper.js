@@ -1708,7 +1708,7 @@ KNOWWE.helper.logger = function(){
         if( l ){
             for(var i = 0; i < observations.length; i++){
                 var obj = observations[i];
-                if( obj.constructor === Observation && obj.name() === name){
+                if( obj.constructor === Observation && obj.name === name){
                     observations.splice(i,1);
                 }
             }
