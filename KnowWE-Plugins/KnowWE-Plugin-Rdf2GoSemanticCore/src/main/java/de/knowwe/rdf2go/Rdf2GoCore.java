@@ -1126,7 +1126,12 @@ public class Rdf2GoCore {
 			// We set a generous time out to be sure to not be blocked indefinitely, even if stuff goes wrong with
 			// stopping the thread cold. Using maxEvaluation timeout and the SparqlTaskReaper, we should return
 			// way sooner in normal cases.
-			return sparqlTask.get(timeOutMillis * 2, TimeUnit.MILLISECONDS);
+			long maxTimeOut = timeOutMillis * 2;
+			if (timeOutMillis > 0 && maxTimeOut < 0) {
+				// in case we get an overflow because timeOutMillis is near MAX_VALUE
+				maxTimeOut = Long.MAX_VALUE;
+			}
+			return sparqlTask.get(maxTimeOut, TimeUnit.MILLISECONDS);
 		}
 		catch (CancellationException | InterruptedException | TimeoutException e) {
 //			Log.warning("SPARQL query failed due to an exception", e);
