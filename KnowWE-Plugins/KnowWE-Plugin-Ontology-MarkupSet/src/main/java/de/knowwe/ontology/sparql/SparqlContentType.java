@@ -48,6 +48,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		queryText.setSectionFinder(AllTextFinder.getInstance());
 		queryText.setRenderer((section, user, result) -> result.append(KnowWEUtils.maskJSPWikiMarkup(Strings.encodeHtml(section.getText()))));
 		this.addChildType(100, queryText);
+
 	}
 
 	@Override
@@ -84,8 +85,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	}
 
 	public static boolean isConstructQuery(Section<?> section) {
-		return section.get() instanceof SparqlContentType && Strings.startsWithIgnoreCase(section.getText()
-				.trim(), "construct");
+		return (section.getParent().get() instanceof SparqlMarkupType) && Strings.startsWithIgnoreCase(section.getText().trim(),"construct");
 	}
 
 	private boolean checkSortingAnnotation(Section<DefaultMarkupType> markupSection, String sorting) {
@@ -119,6 +119,5 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		}
 		return timeOutMillis;
 	}
-
 
 }

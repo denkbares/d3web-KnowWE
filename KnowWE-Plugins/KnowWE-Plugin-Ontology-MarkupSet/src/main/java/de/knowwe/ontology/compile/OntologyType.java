@@ -92,11 +92,11 @@ public class OntologyType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
 
-		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, RepositoryConfigs.values()
+		List<String> collect = RepositoryConfigs.values()
 				.stream()
 				.map(RepositoryConfig::getName)
-				.collect(toList())
-				.toArray(new String[] {}));
+				.collect(toList());
+		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, collect.toArray(new String[collect.size()]));
 		MARKUP.addAnnotationIcon(ANNOTATION_RULE_SET, Icon.COG.addTitle("Rule Set"));
 
 		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.class);
@@ -126,6 +126,7 @@ public class OntologyType extends DefaultMarkupType {
 				List<Section<AnnotationType>> annotations = Sections.successors(section, AnnotationType.class);
 				for (Section<AnnotationType> annotation : annotations) {
 					Section<AnnotationNameType> annotationName = Sections.successor(annotation, AnnotationNameType.class);
+					assert annotationName != null;
 					if (annotationName.getText().startsWith("@" + ANNOTATION_COMPILE)) continue;
 					DelegateRenderer.getInstance().render(annotation, user, string);
 					string.appendHtml("<br>");
@@ -154,9 +155,6 @@ public class OntologyType extends DefaultMarkupType {
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
 					compiler.getPackageManager(), section, OntologyType.class, ruleSet, multiDefMode, referenceValidationMode);
 			compiler.getCompilerManager().addCompiler(5, ontologyCompiler);
-
-			//OntologyConstructCompiler constructCompiler = new OntologyConstructCompiler(ontologyCompiler);
-			//compiler.getCompilerManager().addCompiler(6, constructCompiler);
 
 			if (ruleSetValue != null && ruleSet == null) {
 				throw CompilerMessage.warning("The rule set \"" + ruleSetValue + "\" does not exist.");
