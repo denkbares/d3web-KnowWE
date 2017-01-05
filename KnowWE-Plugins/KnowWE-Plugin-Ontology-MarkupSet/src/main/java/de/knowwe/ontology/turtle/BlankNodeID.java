@@ -20,7 +20,7 @@ package de.knowwe.ontology.turtle;
 
 import java.util.List;
 
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;

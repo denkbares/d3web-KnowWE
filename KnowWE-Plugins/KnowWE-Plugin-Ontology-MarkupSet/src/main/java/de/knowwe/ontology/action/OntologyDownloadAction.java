@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collection;
 
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -58,7 +59,7 @@ public class OntologyDownloadAction extends AbstractAction {
 			}
 		}
 
-		RDFFormat syntax = RDFFormat.valueOf(context.getParameter(PARAM_SYNTAX));
+		RDFFormat syntax = Rio.getWriterFormatForMIMEType(context.getParameter(PARAM_SYNTAX)).orElse(RDFFormat.TURTLE);
 		String mimeType = syntax.getDefaultMIMEType() + "; charset=UTF-8";
 		context.setContentType(mimeType);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");

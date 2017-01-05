@@ -26,7 +26,8 @@ import java.nio.channels.ClosedChannelException;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
@@ -39,7 +40,6 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -107,43 +107,39 @@ public class OntologyExporter implements EventListener {
 		// if not failed yet, clean up messages
 		Messages.clearMessages(exportAnnotation, this.getClass());
 
-		RDFFormat parsedSyntax = Rdf2GoUtils.syntaxForFileName(annotationName);
-		final RDFFormat syntax = parsedSyntax == null ? RDFFormat.TURTLE : parsedSyntax;
+		RDFFormat syntax = Rio.getWriterFormatForFileName(annotationName).orElse(RDFFormat.TURTLE);
 
-		Thread exportTread = new Thread() {
-			@Override
-			public void run() {
-				Stopwatch stopwatch = new Stopwatch();
-				WikiConnector connector = Environment.getInstance().getWikiConnector();
-				ByteArrayInputStream stream;
-				try {
-					ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-					// cleanup so the versions don't stack to bad...
-					rdf2GoCore.writeModel(outputStream, syntax);
-					stream = new ByteArrayInputStream(outputStream.toByteArray());
-				}
-				catch (Exception e) {
-					if (e.getCause() instanceof ClosedChannelException) {
-						Log.warning("Export of ontology from '" + compiler.getCompileSection()
-								.getTitle() + "' aborted due to repository shutdown.");
-					}
-					else {
-						Log.severe("Unable to export ontology from '" + compiler.getCompileSection()
-								.getTitle() + "'", e);
-					}
-					return;
-				}
-				try {
-					connector.deleteAttachment(title, annotationName, "SYSTEM");
-					connector.storeAttachment(title, annotationName, "SYSTEM", stream);
-				}
-				catch (IOException e) {
-					Log.severe("Unable to save exported ontology as an attachment in '" + title + "/" + annotationName + "'", e);
-					return;
-				}
-				Log.info("Exported ontology to attachment '" + title + "/" + annotationName + "' in " + stopwatch.getDisplay());
+		Thread exportTread = new Thread(() -> {
+			Stopwatch stopwatch = new Stopwatch();
+			WikiConnector connector = Environment.getInstance().getWikiConnector();
+			ByteArrayInputStream stream;
+			try {
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				// cleanup so the versions don't stack to bad...
+				rdf2GoCore.writeModel(outputStream, syntax);
+				stream = new ByteArrayInputStream(outputStream.toByteArray());
 			}
-		};
+			catch (Exception e) {
+				if (e.getCause() instanceof ClosedChannelException) {
+					Log.warning("Export of ontology from '" + compiler.getCompileSection()
+							.getTitle() + "' aborted due to repository shutdown.");
+				}
+				else {
+					Log.severe("Unable to export ontology from '" + compiler.getCompileSection()
+							.getTitle() + "'", e);
+				}
+				return;
+			}
+			try {
+				connector.deleteAttachment(title, annotationName, "SYSTEM");
+				connector.storeAttachment(title, annotationName, "SYSTEM", stream);
+			}
+			catch (IOException e) {
+				Log.severe("Unable to save exported ontology as an attachment in '" + title + "/" + annotationName + "'", e);
+				return;
+			}
+			Log.info("Exported ontology to attachment '" + title + "/" + annotationName + "' in " + stopwatch.getDisplay());
+		});
 		exportTread.start();
 
 	}

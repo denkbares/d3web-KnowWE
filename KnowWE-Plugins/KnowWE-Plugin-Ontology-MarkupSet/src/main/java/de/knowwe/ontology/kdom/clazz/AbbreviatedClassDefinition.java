@@ -29,8 +29,8 @@ import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceDefinition;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-import static org.openrdf.model.vocabulary.RDF.*;
-import static org.openrdf.model.vocabulary.RDFS.*;
+import static org.eclipse.rdf4j.model.vocabulary.RDF.*;
+import static org.eclipse.rdf4j.model.vocabulary.RDFS.*;
 
 public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 
@@ -39,7 +39,7 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 		this.addCompileScript(new AbbreviatedClassHandler());
 	}
 
-	public org.openrdf.model.URI getClassNameURI(Rdf2GoCore core, Section<AbbreviatedClassDefinition> section) {
+	public org.eclipse.rdf4j.model.URI getClassNameURI(Rdf2GoCore core, Section<AbbreviatedClassDefinition> section) {
 		return super.getResourceURI(core, section);
 	}
 
@@ -50,9 +50,9 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
-			org.openrdf.model.URI classNameURI = getClassNameURI(core, section);
+			org.eclipse.rdf4j.model.URI classNameURI = getClassNameURI(core, section);
 
-			org.openrdf.model.Statement classStatement = core.createStatement(classNameURI, TYPE, CLASS);
+			org.eclipse.rdf4j.model.Statement classStatement = core.createStatement(classNameURI, TYPE, CLASS);
 			core.addStatements(section, classStatement);
 
 			return Messages.noMessage();

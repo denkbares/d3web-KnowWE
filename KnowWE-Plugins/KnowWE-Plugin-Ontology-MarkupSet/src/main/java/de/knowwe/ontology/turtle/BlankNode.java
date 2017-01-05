@@ -18,7 +18,7 @@
  */
 package de.knowwe.ontology.turtle;
 
-import org.openrdf.model.Resource;
+import org.eclipse.rdf4j.model.Resource;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -63,7 +63,7 @@ public class BlankNode extends AbstractType implements ResourceProvider<BlankNod
 	}
 
 	@Override
-	public org.openrdf.model.Value getNode(Section<BlankNode> section, Rdf2GoCompiler core) {
+	public org.eclipse.rdf4j.model.Value getNode(Section<BlankNode> section, Rdf2GoCompiler core) {
 		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 

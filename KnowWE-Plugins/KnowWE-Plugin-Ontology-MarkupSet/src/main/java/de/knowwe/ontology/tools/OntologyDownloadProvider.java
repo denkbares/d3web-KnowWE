@@ -6,7 +6,8 @@ package de.knowwe.ontology.tools;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFWriterRegistry;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
@@ -38,7 +39,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<Tool> tools = new LinkedList<>();
-		for (RDFFormat syntax : RDFFormat.values()) {
+		for (RDFFormat syntax : RDFWriterRegistry.getInstance().getKeys()) {
 			Tool tool = getDownloadTool(section, syntax);
 			if (tool != null) tools.add(tool);
 		}
@@ -64,7 +65,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 		String extension = syntax.getDefaultFileExtension();
 
 		List<Section<OntologyType>> ontologySections = Sections.successors(section.getArticle(), OntologyType.class);
-		String jsAction = "";
+		String jsAction;
 		//if there is only one ontology section on this article provide static URL access per article name
 		String identifierForThisOntology;
 		if (ontologySections.size() == 1) {

@@ -1,10 +1,10 @@
 package de.knowwe.rdf2go;
 
-import org.openrdf.model.URI;
+import org.eclipse.rdf4j.model.URI;
 
 import com.denkbares.strings.Identifier;
 
-public class ShortURIImpl extends org.openrdf.model.impl.URIImpl {
+public class ShortURIImpl extends org.eclipse.rdf4j.model.impl.URIImpl {
 
 	private static final long serialVersionUID = -5221506155017259902L;
 	private final URI uriLong;

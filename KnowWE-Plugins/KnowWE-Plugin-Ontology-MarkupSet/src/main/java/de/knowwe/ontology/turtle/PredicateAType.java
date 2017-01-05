@@ -19,7 +19,7 @@
 
 package de.knowwe.ontology.turtle;
 
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -43,6 +43,6 @@ public class PredicateAType extends AbstractType implements NodeProvider<TurtleL
 
     @Override
     public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
-        return org.openrdf.model.vocabulary.RDF.TYPE;
+        return org.eclipse.rdf4j.model.vocabulary.RDF.TYPE;
     }
 }

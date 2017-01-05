@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.openrdf.model.Statement;
-import org.openrdf.model.impl.StatementImpl;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.impl.StatementImpl;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;

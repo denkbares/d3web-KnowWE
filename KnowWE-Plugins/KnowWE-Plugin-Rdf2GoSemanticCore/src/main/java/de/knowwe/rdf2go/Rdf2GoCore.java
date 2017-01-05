@@ -49,26 +49,27 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 import java.util.logging.Level;
 
-import info.aduna.iteration.Iterations;
-import org.openrdf.model.BNode;
-import org.openrdf.model.Namespace;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.LiteralImpl;
-import org.openrdf.model.vocabulary.XMLSchema;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.QueryEvaluationException;
-import org.openrdf.query.QueryInterruptedException;
-import org.openrdf.query.QueryLanguage;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.RepositoryResult;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
+import org.eclipse.rdf4j.common.iteration.Iterations;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Namespace;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.LiteralImpl;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.eclipse.rdf4j.query.QueryEvaluationException;
+import org.eclipse.rdf4j.query.QueryInterruptedException;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.repository.RepositoryResult;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFHandlerException;
+import org.eclipse.rdf4j.rio.RDFParseException;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
@@ -331,7 +332,7 @@ public class Rdf2GoCore {
 	 * @created 13.11.2013
 	 */
 	public URI toShortURI(java.net.URI uri) {
-		return toShortURI(new org.openrdf.model.impl.URIImpl(uri.toString()));
+		return toShortURI(new org.eclipse.rdf4j.model.impl.URIImpl(uri.toString()));
 	}
 
 	/**
@@ -605,7 +606,7 @@ public class Rdf2GoCore {
 	 * @param boolValue the value of the literal
 	 * @return a datatype literal for the specified value
 	 */
-	public org.openrdf.model.Literal createDatatypeLiteral(boolean boolValue) {
+	public Literal createDatatypeLiteral(boolean boolValue) {
 		return createDatatypeLiteral(String.valueOf(boolValue), XMLSchema.BOOLEAN);
 	}
 
@@ -615,7 +616,7 @@ public class Rdf2GoCore {
 	 * @param intValue the value of the literal
 	 * @return a datatype literal for the specified value
 	 */
-	public org.openrdf.model.Literal createDatatypeLiteral(int intValue) {
+	public Literal createDatatypeLiteral(int intValue) {
 		return createDatatypeLiteral(String.valueOf(intValue), XMLSchema.INTEGER);
 	}
 
@@ -625,31 +626,31 @@ public class Rdf2GoCore {
 	 * @param doubleValue the value of the literal
 	 * @return a datatype literal for the specified value
 	 */
-	public org.openrdf.model.Literal createDatatypeLiteral(double doubleValue) {
+	public Literal createDatatypeLiteral(double doubleValue) {
 		return createDatatypeLiteral(String.valueOf(doubleValue), XMLSchema.DOUBLE);
 	}
 
-	public org.openrdf.model.Literal createDatatypeLiteral(String literal, String datatype) {
+	public Literal createDatatypeLiteral(String literal, String datatype) {
 		return createDatatypeLiteral(literal, createURI(datatype));
 	}
 
-	public org.openrdf.model.Literal createDatatypeLiteral(String literal, URI datatype) {
+	public Literal createDatatypeLiteral(String literal, URI datatype) {
 		return getValueFactory().createLiteral(literal, datatype);
 	}
 
-	public org.openrdf.model.Literal createLanguageTaggedLiteral(String text) {
+	public Literal createLanguageTaggedLiteral(String text) {
 		return new LiteralImpl(text);
 	}
 
-	public org.openrdf.model.Literal createLanguageTaggedLiteral(String text, String tag) {
+	public Literal createLanguageTaggedLiteral(String text, String tag) {
 		return getValueFactory().createLiteral(text, tag);
 	}
 
-	public org.openrdf.model.Literal createLiteral(String text) {
+	public Literal createLiteral(String text) {
 		return getValueFactory().createLiteral(text);
 	}
 
-	public org.openrdf.model.Literal createLiteral(String literal, URI datatypeURI) {
+	public Literal createLiteral(String literal, URI datatypeURI) {
 		return getValueFactory().createLiteral(literal, datatypeURI);
 	}
 

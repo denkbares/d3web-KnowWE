@@ -2,7 +2,7 @@ package de.knowwe.ontology.sparql;
 
 import java.util.Collection;
 
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;

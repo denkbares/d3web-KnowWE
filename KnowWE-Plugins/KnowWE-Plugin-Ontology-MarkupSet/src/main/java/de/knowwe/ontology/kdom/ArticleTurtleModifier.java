@@ -28,15 +28,16 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.vocabulary.XMLSchema;
-import org.openrdf.rio.turtle.TurtleWriter;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.rio.turtle.TurtleWriter;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.EqualsUtils;
@@ -415,11 +416,7 @@ public class ArticleTurtleModifier {
 		Map<Resource, List<Statement>> result = new LinkedHashMap<>();
 		for (Statement statement : statements) {
 			URI predicate = statement.getPredicate();
-			List<Statement> list = result.get(predicate);
-			if (list == null) {
-				list = new LinkedList<>();
-				result.put(predicate, list);
-			}
+			List<Statement> list = result.computeIfAbsent(predicate, k -> new LinkedList<>());
 			list.add(statement);
 		}
 		return result;
@@ -441,11 +438,7 @@ public class ArticleTurtleModifier {
 		Map<Resource, List<Statement>> result = new LinkedHashMap<>();
 		for (Statement statement : statements) {
 			Resource subject = statement.getSubject();
-			List<Statement> list = result.get(subject);
-			if (list == null) {
-				list = new LinkedList<>();
-				result.put(subject, list);
-			}
+			List<Statement> list = result.computeIfAbsent(subject, k -> new LinkedList<>());
 			list.add(statement);
 		}
 		return result;
@@ -471,9 +464,9 @@ public class ArticleTurtleModifier {
 				URI datatype = compiler.getRdf2GoCore().toShortURI(literal.getDatatype());
 				return Strings.quote(literal.getLabel()) + "^^" + datatype;
 			}
-			String language = literal.getLanguage();
-			if (language != null) {
-				return Strings.quote(literal.getLabel()) + "@" + language;
+			Optional<String> language = literal.getLanguage();
+			if (language.isPresent()) {
+				return Strings.quote(literal.getLabel()) + "@" + language.get();
 			}
 			return Strings.quote(literal.getLabel());
 		}
@@ -752,7 +745,7 @@ public class ArticleTurtleModifier {
 		if (sentence == null) return false;
 		Section<Subject> subject = Sections.successor(sentence, Subject.class);
 		if (subject == null) return false;
-		org.openrdf.model.Resource resource = subject.get().getResource(subject, compiler);
+		org.eclipse.rdf4j.model.Resource resource = subject.get().getResource(subject, compiler);
 		return resource.equals(statement.getSubject());
 	}
 
@@ -760,7 +753,7 @@ public class ArticleTurtleModifier {
 		if (predicateSentence == null) return false;
 		Section<Predicate> predicate = Sections.successor(predicateSentence, Predicate.class);
 		if (predicate == null) return false;
-		org.openrdf.model.URI uri = predicate.get().getURI(predicate, compiler);
+		org.eclipse.rdf4j.model.URI uri = predicate.get().getURI(predicate, compiler);
 		return uri.equals(statement.getPredicate());
 	}
 

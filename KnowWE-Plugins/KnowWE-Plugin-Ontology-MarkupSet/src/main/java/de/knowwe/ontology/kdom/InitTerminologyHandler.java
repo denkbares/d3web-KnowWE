@@ -32,11 +32,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.rdf4j.rio.Rio;
 import org.jetbrains.annotations.NotNull;
-import org.openrdf.query.BindingSet;
-import org.openrdf.repository.RepositoryException;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFParseException;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.repository.RepositoryException;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParseException;
 
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
@@ -355,7 +356,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		}
 
 		String fileName = attachment.getFileName();
-		RDFFormat syntax = Rdf2GoUtils.syntaxForFileName(fileName);
+		RDFFormat syntax = Rio.getParserFormatForFileName(fileName).orElse(RDFFormat.RDFXML);
 		Future<?> mainReadFuture = executorService.submit(() -> readFrom(compiler, section, core, attachment, syntax));
 		if (!silent) {
 			// we need rdfs reasoning for the SPARQLs to work

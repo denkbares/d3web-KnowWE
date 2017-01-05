@@ -21,7 +21,7 @@ package de.knowwe.ontology.turtle;
 import java.util.Collections;
 import java.util.List;
 
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -162,7 +162,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			return result;
 		}
 
-		org.openrdf.model.URI predicate = predicateSection.get().getURI(predicateSection, core);
+		org.eclipse.rdf4j.model.URI predicate = predicateSection.get().getURI(predicateSection, core);
 
 		// check term definition
 		Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);
@@ -183,7 +183,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle SUBJECT
 		 */
-		org.openrdf.model.Resource subject;
+		org.eclipse.rdf4j.model.Resource subject;
 		// the subject can either be a normal turtle sentence subject
 		// OR a blank node
 		Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection,

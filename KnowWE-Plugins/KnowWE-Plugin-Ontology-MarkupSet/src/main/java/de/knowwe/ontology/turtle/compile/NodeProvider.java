@@ -1,6 +1,6 @@
 package de.knowwe.ontology.turtle.compile;
 
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;

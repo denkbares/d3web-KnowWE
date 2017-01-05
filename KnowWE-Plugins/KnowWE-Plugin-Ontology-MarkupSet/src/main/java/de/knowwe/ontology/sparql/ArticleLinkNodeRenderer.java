@@ -3,7 +3,7 @@ package de.knowwe.ontology.sparql;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;

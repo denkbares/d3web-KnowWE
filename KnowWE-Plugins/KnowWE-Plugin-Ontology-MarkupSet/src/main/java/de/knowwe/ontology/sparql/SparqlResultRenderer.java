@@ -8,18 +8,19 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.query.Binding;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.MalformedQueryException;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.Binding;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.MalformedQueryException;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
@@ -561,13 +562,13 @@ public class SparqlResultRenderer {
 		sb.append(node.getLabel());
 		sb.append('"');
 
-		String language = node.getLanguage();
-		if (language != null) {
+		Optional<String> language = node.getLanguage();
+		if (language.isPresent()) {
 			sb.append('@');
-			sb.append(language);
+			sb.append(language.get());
 		}
 
-		URI datatype = node.getDatatype();
+		IRI datatype = node.getDatatype();
 		if (datatype != null) {
 			sb.append("^^");
 			sb.append(datatype);

@@ -3,7 +3,7 @@ package de.knowwe.ontology.turtle.compile;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.openrdf.model.Statement;
+import org.eclipse.rdf4j.model.Statement;
 
 import de.knowwe.core.report.Message;
 

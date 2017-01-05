@@ -2,7 +2,7 @@ package de.knowwe.rdf2go;
 
 import java.util.Collection;
 
-import org.openrdf.model.Statement;
+import org.eclipse.rdf4j.model.Statement;
 
 public class RemoveStatementsEvent extends ModifiedCoreDataEvent {
 
