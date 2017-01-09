@@ -248,7 +248,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				if (supportArticle != null
 						&& supportArticle.getRootSection().getText().equals(
 						content)) {
-					return renderKDOM(content, userContext, supportArticle);
+					RenderResult renderResult = new RenderResult(userContext.getRequest());
+					render(userContext, supportArticle, renderResult);
+					return renderResult.toStringRaw();
 				}
 			}
 			catch (Exception e) {
@@ -294,15 +296,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			boolean isQueuedForCompilation = articleManager.isQueuedArticle(article);
 
 			if (article != null && !isQueuedForCompilation) {
-				List<PageAppendHandler> appendHandlers = Environment.getInstance()
-						.getAppendHandlers();
-
-				renderPrePageAppendHandler(userContext, title, renderResult, appendHandlers);
-
-				renderPage(userContext, article, renderResult);
-
-				renderPostPageAppendHandler(userContext, title, renderResult, appendHandlers);
-
+				render(userContext, article, renderResult);
 			}
 			stringRaw = renderResult.toStringRaw();
 			userContext.getRequest().setAttribute("renderresult" + title, stringRaw);
@@ -316,6 +310,17 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Log.severe("Exception while compiling and rendering article '" + title + "'", e);
 			return getExceptionRendering(userContext, e);
 		}
+	}
+
+	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
+		List<PageAppendHandler> appendHandlers = Environment.getInstance()
+				.getAppendHandlers();
+
+		renderPrePageAppendHandler(userContext, article.getTitle(), renderResult, appendHandlers);
+
+		renderPage(userContext, article, renderResult);
+
+		renderPostPageAppendHandler(userContext, article.getTitle(), renderResult, appendHandlers);
 	}
 
 	private static DefaultArticleManager getDefaultArticleManager() {
@@ -372,16 +377,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						userContext, renderResult);
 			}
 		}
-	}
-
-	private void renderPage(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
-		long start = System.currentTimeMillis();
-		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
-				renderResult);
-		Log.info("Rendered article '" + article.getTitle() + "' in "
-				+ (System.currentTimeMillis() - start) + "ms");
-		EventManager.getInstance().fireEvent(
-				new PageRenderedEvent(article.getTitle(), userContext));
 	}
 
 	private static void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
@@ -513,15 +508,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		return wikiPages;
 	}
 
-	private String renderKDOM(String content, UserContext userContext,
-							  Article article) {
-		if (article != null) {
-			RenderResult articleString = new RenderResult(userContext.getRequest());
-			article.getRootType().getRenderer().render(article.getRootSection(), userContext,
-					articleString);
-			return articleString.toStringRaw();
-		}
-		return content + "\n(no KDOM)";
+	private void renderPage(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
+		long start = System.currentTimeMillis();
+		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
+				renderResult);
+		Log.info("Rendered article '" + article.getTitle() + "' in "
+				+ (System.currentTimeMillis() - start) + "ms");
+		EventManager.getInstance().fireEvent(
+				new PageRenderedEvent(article.getTitle(), userContext));
 	}
 
 	/**
