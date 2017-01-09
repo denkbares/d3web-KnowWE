@@ -22,13 +22,13 @@ package de.d3web.we.kdom.questionTree;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerDefinition;
 import de.d3web.we.object.QuestionDefinition;
@@ -83,7 +83,7 @@ public class QuestionTreeQuestionRelationScript extends DashTreeTermRelationScri
 
 	public static List<Section<DashTreeElement>> getQuestionChildrenDashtreeElements(Section<?> termDefiningSection) {
 		List<Section<DashTreeElement>> childrenList = DashTreeUtils.findChildrenDashtreeElements(termDefiningSection);
-		LinkedList<Section<DashTreeElement>> augmentedChildrenList = new LinkedList();
+		LinkedList<Section<DashTreeElement>> augmentedChildrenList = new LinkedList<>();
 		for (Section<DashTreeElement> child : childrenList) {
 			augmentedChildrenList.add(child);
 			Section<AnswerDefinition> answerDef = Sections.successor(child, AnswerDefinition.class);

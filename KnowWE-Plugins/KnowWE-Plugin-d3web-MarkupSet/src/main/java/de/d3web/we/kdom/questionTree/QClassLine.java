@@ -22,12 +22,12 @@ package de.d3web.we.kdom.questionTree;
 import java.util.Collection;
 import java.util.List;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
@@ -79,9 +79,8 @@ public class QClassLine extends AbstractType {
 					QASet parentQASet = (QASet) D3webUtils.getTermObject(compiler, parentIdentifier);
 					if (parentQASet == null) return;
 					QASet rootQASet = parentQASet.getKnowledgeBase().getRootQASet();
-					if (parentQASet == rootQASet) return;
 					TerminologyObject[] parents = parentQASet.getParents();
-					if (parents.length == 0) {
+					if (parents.length == 0 && parentQASet != rootQASet) {
 						rootQASet.addChild(parentQASet);
 					}
 					for (Identifier childIdentifier : childrenIdentifier) {
