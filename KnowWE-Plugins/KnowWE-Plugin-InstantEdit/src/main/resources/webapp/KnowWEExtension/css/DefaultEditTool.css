@@ -1,5 +1,12 @@
-.defaultEditTool {
+.KnowWE .defaultEditTool {
 	font-size: 13px;
+}
+
+.KnowWE-haddock .defaultEditTool {
+	font-size: 90%;
+}
+
+.defaultEditTool {
 	font-family: monospace;
 	display: block;
 	border: 1px dashed black;

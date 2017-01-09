@@ -98,7 +98,7 @@ public class CIRenderer {
 
 		List<BuildResult> builds = dashboard.getBuilds(indexFromBack, numberOfBuilds);
 
-		sb.appendHtml("<H4>Builds</H4>");
+		sb.appendHtml("<div class='ci-name'>Builds</div>");
 		sb.appendHtml("<table width=\"100%\" border='1' class=\"build-table\">");
 
 		// reverse order to have the most current builds on top
@@ -381,7 +381,7 @@ public class CIRenderer {
 	private void apppendBuildHeadline(BuildResult build, RenderResult buffy) {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		String buildDate = dateFormat.format(build.getBuildDate());
-		buffy.appendHtml("<H4>Build #").append(build.getBuildNumber())
+		buffy.appendHtml("<div class='ci-name'>Build #").append(build.getBuildNumber())
 				.append(" (").append(buildDate).append(") ");
 
 		// get the build duration time
@@ -398,7 +398,7 @@ public class CIRenderer {
 			buffy.append(String.format("%d:%02d min.", sec / 60, sec % 60));
 		}
 
-		buffy.appendHtml("</H4>");
+		buffy.appendHtml("</div>");
 	}
 
 	public void renderBuildStatus(Type resultType, boolean checkRunning, Icon icon, RenderResult result) {

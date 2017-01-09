@@ -114,12 +114,12 @@ a.ci-daemon:hover {
 }
 
 .ci-forecast {
-	margin: 0px 10px 0px 5px;
+	margin: 0 10px 1px 5px;
 }
 
 .ci-name {
 	font-weight: bold;
-	font-size: 16px;
+	margin: 5px;
 }
 
 .ci-collapsible-box h4 {
