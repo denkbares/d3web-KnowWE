@@ -55,6 +55,10 @@ public abstract class KnowWEUITest {
 	 * https://sites.google.com/a/chromium.org/chromegetDriver()/downloads
 	 * and start it on your machine.
 	 * State of the page does not matter, it will be cleared for each new test.
+	 *
+	 * In order to test locally set the following dev mode parameters
+	 * -Dknowwe.devMode="true"
+	 * -Dknowwe.url="your-URL"
 	 */
 	public abstract String getTestName();
 

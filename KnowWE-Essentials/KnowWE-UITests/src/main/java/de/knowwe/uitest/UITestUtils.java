@@ -56,6 +56,11 @@ public class UITestUtils {
 		windows, macOS, linux, other
 	}
 
+	/**
+	 * In order to test locally set the following dev mode parameters
+	 * -Dknowwe.devMode="true"
+	 * -Dknowwe.url="your-URL"
+	 */
 	private static boolean DEV_MODE;
 	private static String KNOWWE_URL;
 
