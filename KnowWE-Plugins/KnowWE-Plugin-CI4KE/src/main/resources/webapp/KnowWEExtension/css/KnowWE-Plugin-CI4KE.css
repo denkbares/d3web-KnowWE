@@ -76,7 +76,6 @@ a.ci-daemon:hover {
 
 .ci-test-title {
 	margin-left: 4px;
-	font-size: 12px;
 }
 
 .ci-test-group {
@@ -93,7 +92,6 @@ a.ci-daemon:hover {
 	padding-left: 20px;
 	padding-bottom: 3px;
 	border-left: 1px solid #ddd;
-	font-size: 10px;
 }
 
 .ci-configuration {
