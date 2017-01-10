@@ -186,7 +186,7 @@ DenkbaresSkin.scrollFavorites = function() {
 	if (DenkbaresSkin.isSidebarShown() && jq$(window).width() >= DenkbaresSkin.narrowPageWidth) {
 		var sidebar = jq$('.sidebar');
 		var sidebarTop = 0
-		if (sidebar) {
+		if (sidebar.exists()) {
 			sidebarTop = sidebar.offset().top;
 			var sidebarHeight = sidebar.outerHeight();
 		}
