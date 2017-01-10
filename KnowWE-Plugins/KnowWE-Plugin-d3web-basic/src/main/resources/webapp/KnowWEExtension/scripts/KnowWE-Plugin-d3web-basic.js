@@ -216,6 +216,7 @@ KNOWWE.plugin.d3webbasic.actions = function() {
 							KNOWWE.helper.observer.notify('update', fnAfter);
 						} catch (e) { /* ignore */
 						}
+						KNOWWE.notification.removeNotification(sectionId);
 						KNOWWE.core.util.updateProcessingState(-1);
 					},
 					onError : _EC.onErrorBehavior

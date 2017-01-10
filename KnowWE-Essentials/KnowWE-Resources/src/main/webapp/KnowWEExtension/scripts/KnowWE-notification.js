@@ -17,38 +17,37 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
  * Class: KNOWWE.notification functions and variables for the notification
  * mechanism.
  */
-KNOWWE.notification = function() {
+KNOWWE.notification = function () {
 
 	var messages = [];
-	var activeIndex = -1;
 	var idGenerator = 0;
 
 	return {
 
-		error : function(title, details, id) {
-			KNOWWE.notification._add('error', title, details, id);
+		error: function (title, details, id, fromServer) {
+			KNOWWE.notification._add('error', title, details, id, fromServer);
 		},
 
-		warn : function(title, details, id) {
-			KNOWWE.notification._add('warn', title, details, id);
+		warn: function (title, details, id, fromServer) {
+			KNOWWE.notification._add('warn', title, details, id, fromServer);
 		},
 
-		success : function(title, details, id) {
-			KNOWWE.notification._add('success', title, details, id);
+		success: function (title, details, id, fromServer) {
+			KNOWWE.notification._add('success', title, details, id, fromServer);
 		},
 
-		_getDom : function() {
+		_getDom: function () {
 			if (!document.getElementById('KnowWENotificationDom')) {
 				// title
 				title = jq$('<div></div>').attr({
-					id : 'KnowWENotificationTitle',
-					style : 'float:left'
+					id: 'KnowWENotificationTitle',
+					style: 'float:left'
 				});
 
 				// message
 				message = jq$('<div></div>').attr({
-					id : 'KnowWENotificationMessage',
-					style : 'width: 95%;'
+					id: 'KnowWENotificationMessage',
+					style: 'width: 95%;'
 				});
 
 				// title + message -> wrapper
@@ -59,22 +58,22 @@ KNOWWE.notification = function() {
 				// counter
 				counter = jq$('<div></div>').attr(
 					{
-						id : 'KnowWENotificationCounter',
-						style : 'padding: 5px; ' + 'position: fixed; '
+						id: 'KnowWENotificationCounter',
+						style: 'padding: 5px; ' + 'position: fixed; '
 						+ 'top: 0px; ' + 'right: 25px;'
 					});
 
 				// quit
 				quit = jq$('<div></div>').attr(
 					{
-						id : 'KnowWENotificationQuit',
-						style : 'padding: 5px; ' + 'position: fixed; '
+						id: 'KnowWENotificationQuit',
+						style: 'padding: 5px; ' + 'position: fixed; '
 						+ 'top: 0px; ' + 'right: 10px;'
 					});
 
 				// dom
 				dom = jq$('<div></div>').attr({
-					id : 'KnowWENotificationDom'
+					id: 'KnowWENotificationDom'
 				});
 				wrapper.appendTo(dom);
 				counter.appendTo(dom);
@@ -84,22 +83,36 @@ KNOWWE.notification = function() {
 			return jq$('#KnowWENotificationDom');
 		},
 
-		_add : function(severity, title, details, id) {
+		_add: function (severity, title, details, id, fromServer) {
 			if (!id) id = idGenerator++;
-			messages.push({
-				severity : severity,
-				title : title,
-				details : details,
-				id : id
-			});
-			KNOWWE.notification
-				._select(messages.length - 1);
+			var duplicate = false;
+			var i = 0
+			for (; i < messages.length; i++) {
+				if (messages[i].id == id) {
+					duplicate = true;
+					break;
+				}
+			}
+			var message = {
+				severity: severity,
+				title: title,
+				details: details,
+				id: id,
+				fromServer: fromServer
+			};
+			if (duplicate) {
+				messages[i] = message;
+				KNOWWE.notification._select(i);
+			} else {
+				messages.push(message);
+				KNOWWE.notification._select(messages.length - 1);
+			}
 		},
 
 		/**
 		 * Shows the notification with the specified index
 		 */
-		_select : function(index) {
+		_select: function (index) {
 
 			KNOWWE.notification.activeIndex = index;
 			var message = messages[index];
@@ -120,7 +133,7 @@ KNOWWE.notification = function() {
 
 			// css
 			dom.attr({
-				style : 'opacity:0.95;' + 'position:fixed;' + 'z-index:2000;'
+				style: 'opacity:0.95;' + 'position:fixed;' + 'z-index:2000;'
 				+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;'
 				+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
 				+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor
@@ -178,7 +191,7 @@ KNOWWE.notification = function() {
 		/**
 		 * Removes a specified notification both from server and client
 		 */
-		removeNotification : function(id) {
+		removeNotification: function (id) {
 			var index = -1;
 			for (var i = 0; i < messages.length; i++) {
 				if (messages[i].id == id) {
@@ -202,14 +215,14 @@ KNOWWE.notification = function() {
 			}
 
 			var params = {
-				action : 'RemoveNotificationAction',
-				notificationid : id
+				action: 'RemoveNotificationAction',
+				notificationid: id
 			};
 
 			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				response : {
-					action : 'none'
+				url: KNOWWE.core.util.getURL(params),
+				response: {
+					action: 'none'
 				}
 			};
 			new _KA(options).send();
@@ -218,29 +231,46 @@ KNOWWE.notification = function() {
 		/**
 		 * Loads all notifications from the server and displays them.
 		 */
-		loadNotifications : function() {
+		loadNotifications: function () {
 			var params = {
-				action : 'GetNotificationsAction'
+				action: 'GetNotificationsAction'
 			};
 
 			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				method : 'GET',
-				response : {
-					action : 'none',
-					fn : function() {
+				url: KNOWWE.core.util.getURL(params),
+				method: 'GET',
+				response: {
+					action: 'none',
+					fn: function () {
 						var notifications = JSON.parse(this.responseText);
+						var idsToAdd = notifications.map(function (item) {
+							return item.id;
+						});
+						// remove all messages that were from the server but are no longer present
+						var idsToRemove = [];
+						for (var i = 0; i < messages.length; i++) {
+							if (messages[i].fromServer) {
+								idsToRemove.push(messages[i].id);
+							}
+						}
+						for (i = 0; i < idsToRemove.length; i++) {
+							if (idsToAdd.indexOf(idsToRemove[i]) == -1) {
+								KNOWWE.notification.removeNotification(idsToRemove[i]);
+							}
+						}
 						if (notifications.length > 0) {
-							for (var i = 0; i < notifications.length; i++) {
+							for (i = 0; i < notifications.length; i++) {
 								var notification = notifications[i];
 								if (notification.type == "error") {
 									KNOWWE.notification.error(null,
 										notification.message,
-										notification.id);
+										notification.id,
+										true);
 								} else {
 									KNOWWE.notification.warn(null,
 										notification.message,
-										notification.id);
+										notification.id,
+										true);
 								}
 							}
 						}
@@ -257,7 +287,7 @@ KNOWWE.notification = function() {
  */
 (function init() {
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-		window.addEvent('domready', function() {
+		window.addEvent('domready', function () {
 			KNOWWE.notification.loadNotifications();
 			KNOWWE.helper.observer.subscribe('update',
 				KNOWWE.notification.loadNotifications);

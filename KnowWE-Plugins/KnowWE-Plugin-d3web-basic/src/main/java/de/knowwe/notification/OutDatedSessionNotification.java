@@ -55,7 +55,7 @@ public class OutDatedSessionNotification implements Notification {
 		message.append("<a ");
 		message.append("onclick='javascript:KNOWWE.plugin.d3webbasic.actions.resetSession(\"");
 		message.append(id);
-		message.append("\");KNOWWE.notification.loadNotifications();'>reset</a>.");
+		message.append("\")'>reset</a>.");
 		return message.toString();
 	}
 
