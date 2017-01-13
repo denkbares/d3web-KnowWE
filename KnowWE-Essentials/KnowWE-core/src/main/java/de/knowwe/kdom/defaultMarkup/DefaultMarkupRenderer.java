@@ -32,8 +32,10 @@ import java.util.Map.Entry;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -160,14 +162,9 @@ public class DefaultMarkupRenderer implements Renderer {
 			compilers.add(null);
 			Map<Message, Collection<Compiler>> compilersForMessage = new LinkedHashMap<>();
 			for (Compiler compiler : compilers) {
-				Collection<Message> messages = Messages.getMessages(compiler, subTreeSection,
-						messageType);
+				Collection<Message> messages = Messages.getMessages(compiler, subTreeSection, messageType);
 				for (Message message : messages) {
-					Collection<Compiler> messageCompilers = compilersForMessage.get(message);
-					if (messageCompilers == null) {
-						messageCompilers = new HashSet<>();
-						compilersForMessage.put(message, messageCompilers);
-					}
+					Collection<Compiler> messageCompilers = compilersForMessage.computeIfAbsent(message, k -> new HashSet<>());
 					messageCompilers.add(compiler);
 				}
 			}
@@ -229,7 +226,32 @@ public class DefaultMarkupRenderer implements Renderer {
 				messages.add(message);
 			}
 		}
+
+		if (type == Type.WARNING) {
+			checkNotCompiledWarning(rootSection, messages);
+		}
+
 		return messages;
+	}
+
+	/**
+	 * We create an additional warning in case this section has package compile scripts but no compiler compiling them
+	 */
+	private static void checkNotCompiledWarning(Section<?> rootSection, Collection<String> messages) {
+		// if there is a package annotation, a message will be produced there, no need to produce another one
+		if (DefaultMarkupType.getAnnotation(rootSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) != null) return;
+
+		CompilerManager.getScriptManagers()
+				.stream()
+				// ignore markups that don't have package compile scripts
+				.filter(sm -> PackageCompiler.class.isAssignableFrom(sm.getCompilerClass()))
+				// check if the script manager has script for the type of this section or any sub type
+				.filter(sm -> sm.hasScriptsForSubtree(rootSection.get()))
+				// get all remaining managers for which there is currently no compiler
+				.filter(sm -> Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
+				.findAny()
+				.ifPresent(scriptManager -> messages.add(
+						"This section does not belong to a package that is used to compile knowledge."));
 	}
 
 	private static boolean isMultiCompiled(Collection<Compiler> compilers, Section<?> rootSection) {
