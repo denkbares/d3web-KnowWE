@@ -66,11 +66,7 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 			throw new UnsupportedOperationException("Adding scripts after initialization is not supported!");
 		}
 		// find map and create lazy if not exists
-		ScriptList list = scripts.get(type);
-		if (list == null) {
-			list = new ScriptList();
-			scripts.put(type, list);
-		}
+		ScriptList list = scripts.computeIfAbsent(type, k -> new ScriptList());
 
 		// add script to list
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
