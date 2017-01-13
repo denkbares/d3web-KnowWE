@@ -1,7 +1,6 @@
 package de.knowwe.core;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,7 +45,7 @@ public class AttachmentManager implements EventListener {
 
 	private final MultiMap<String, Section<AttachmentType>> pathToSectionsMap = MultiMaps.synchronizedMultiMap(new N2MMap<>());
 	private final MultiMap<String, Section<AttachmentType>> articleTitleToSectionsMap = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());
-	private boolean articlesInitialized = false;
+	private boolean allArticlesInitialized = false;
 
 	public AttachmentManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
@@ -73,17 +72,11 @@ public class AttachmentManager implements EventListener {
 		}
 		else if (event instanceof ArticleRegisteredEvent) {
 			Article article = ((ArticleRegisteredEvent) event).getArticle();
-			if (articlesInitialized) {
-				handleArticleUpdate(article);
-			}
-			else {
-				addAttachmentSectionsOfNewArticle(article);
-			}
+			handleArticleUpdate(article);
 
 		}
 		else if (event instanceof InitializedArticlesEvent) {
-			articlesInitialized = true;
-			initializeAttachments();
+			allArticlesInitialized = true;
 		}
 	}
 
@@ -154,20 +147,6 @@ public class AttachmentManager implements EventListener {
 		}
 	}
 
-	private void initializeAttachments() {
-		ArrayList<String> paths;
-		// create copy in case attachment contains additional compiling attachment markups...
-		synchronized (pathToSectionsMap) {
-			paths = new ArrayList<>(pathToSectionsMap.keySet());
-		}
-		articleManager.open();
-		try {
-			paths.forEach(this::createAndRegisterAttachmentArticle);
-		} finally {
-			articleManager.commit();
-		}
-	}
-
 	private void registerAttachment(@NotNull String parent, @NotNull String fileName) {
 
 		String attachmentPath = asPath(parent, fileName);
@@ -182,8 +161,13 @@ public class AttachmentManager implements EventListener {
 			WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(attachmentPath);
 			if (attachment == null) return;
 			String attachmentText = Strings.readStream(attachment.getInputStream());
-			articleManager.registerArticle(Article.createArticle(attachmentText, attachmentPath,
-					articleManager.getWeb()));
+			Article attachmentArticle = Article.createArticle(
+					attachmentText, attachmentPath, articleManager.getWeb());
+			if (allArticlesInitialized) {
+				articleManager.registerArticle(attachmentArticle);
+			} else {
+				((DefaultArticleManager) articleManager).queueArticle(attachmentArticle);
+			}
 		}
 		catch (IOException e) {
 			Log.severe("Unable to compile attachment " + attachmentPath, e);
