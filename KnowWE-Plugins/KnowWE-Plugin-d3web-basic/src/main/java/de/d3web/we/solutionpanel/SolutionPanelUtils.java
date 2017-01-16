@@ -3,6 +3,7 @@ package de.d3web.we.solutionpanel;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
@@ -11,7 +12,6 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
-import com.denkbares.strings.Identifier;
 import de.d3web.we.object.ValueTooltipRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -92,8 +92,10 @@ public class SolutionPanelUtils {
 			}
 		}
 		else {
-			content.appendHtmlElement("a", label, "onclick",
+			content.appendHtmlTag("a", false, "onclick",
 					CompositeEditToolProvider.createCompositeEditModeAction(new Identifier(solution.getName())));
+			content.append(label);
+			content.appendHtmlTag("/a");
 		}
 		content.appendHtmlTag("/span");
 		content.appendHtml("<br/>");
