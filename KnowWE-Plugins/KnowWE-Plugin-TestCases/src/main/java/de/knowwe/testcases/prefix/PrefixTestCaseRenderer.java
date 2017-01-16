@@ -24,7 +24,9 @@ public class PrefixTestCaseRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		refreshPrefixWarning(section);
+		if (!user.isRenderingPreview()) {
+			refreshPrefixWarning(section);
+		}
 		renderer.render(section, user, string);
 	}
 
@@ -33,16 +35,15 @@ public class PrefixTestCaseRenderer implements Renderer {
 		String prefix = DefaultMarkupType.getAnnotation(section,
 				PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME);
 		List<TestCaseProvider> found = (prefix == null)
-				? Collections.<TestCaseProvider> emptyList()
+				? Collections.<TestCaseProvider>emptyList()
 				: TestCaseUtils.getTestCaseProviders(
-						section.getWeb(), section.getPackageNames(),
-						"^" + Pattern.quote(prefix) + "$");
+				section.getWeb(), section.getPackageNames(),
+				"^" + Pattern.quote(prefix) + "$");
 		if (prefix != null && found.isEmpty()) {
 			Message warning = Messages.warning("Prefix testcase '" + prefix
 					+ "' does not exist or has errors");
 			Messages.storeMessage(section, PrefixTestCaseRenderer.class, warning);
-		}
-		else {
+		} else {
 			Messages.clearMessages(section, PrefixTestCaseRenderer.class);
 		}
 	}

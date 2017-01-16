@@ -162,7 +162,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private Section(String text, T objectType, Section<?> parent) {
 		this.parent = parent;
 		this.type = objectType;
-		this.textLength = text.length();
+		this.textLength = text != null ? text.length() : 0;
 		if (parent == null) {
 			// Should only happen in text scenarios or while initializing... since we don't have an article, we set the
 			// text manually. As soon as an article is set, the text is removed again.

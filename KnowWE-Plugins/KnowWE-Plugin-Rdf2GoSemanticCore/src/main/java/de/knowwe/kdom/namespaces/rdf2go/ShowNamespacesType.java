@@ -50,6 +50,11 @@ public class ShowNamespacesType extends DefaultMarkupType {
 		@Override
 		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 
+			if (user.isRenderingPreview()) {
+				string.append("%%information Namespaces are not rendered in live preview. /%");
+				return;
+			}
+
 			Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
 					ShowNamespacesType.class));
 

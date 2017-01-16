@@ -89,8 +89,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String LEFT_MENU = "LeftMenu";
 	private static final String MORE_MENU = "MoreMenu";
 	private static final String FULL_PARSE_FIRED = "fullParseFired";
-	private static final String RENDER_MODE = "renderMode";
-	private static final String PREVIEW = "preview";
+	public static final String RENDER_MODE = "renderMode";
+	public static final String PREVIEW = "preview";
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
@@ -140,8 +140,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 						}
 					}
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				Log.severe("Exception while trying to copy core pages", e);
 				// Start wiki without pages...
 			}
@@ -178,12 +177,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			throws FilterException {
 		try {
 			updateArticle(wikiContext, content);
-		}
-		catch (UpdateNotAllowedException e) {
+		} catch (UpdateNotAllowedException e) {
 			String title = wikiContext.getPage().getName();
 			Log.fine("Somebody tried to update article " + title + " without appropriate rights", e);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			String title = wikiContext.getPage().getName();
 			Log.severe("Exception while compiling article " + title, e);
 		}
@@ -203,8 +200,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			}
 
 			return htmlContent;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			Log.severe("Exception in post translate", e);
 			return "";
 		}
@@ -252,8 +248,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					render(userContext, supportArticle, renderResult);
 					return renderResult.toStringRaw();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				Log.severe("Exception while compiling and rendering article '" + title + "'", e);
 				return getExceptionRendering(userContext, e);
 			}
@@ -264,8 +259,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		if (versionString != null) {
 			try {
 				version = Integer.parseInt(versionString);
-			}
-			catch (NumberFormatException ignore) {
+			} catch (NumberFormatException ignore) {
 			}
 		}
 		WikiEngine engine = wikiContext.getEngine();
@@ -301,12 +295,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			stringRaw = renderResult.toStringRaw();
 			userContext.getRequest().setAttribute("renderresult" + title, stringRaw);
 			return stringRaw;
-		}
-		catch (UpdateNotAllowedException e) {
+		} catch (UpdateNotAllowedException e) {
 			Log.fine("Somebody tried to update article " + title + " without appropriate rights", e);
 			return getExceptionRendering(userContext, e);
-		}
-		catch (Throwable e) { // NOSONAR
+		} catch (Throwable e) { // NOSONAR
 			Log.severe("Exception while compiling and rendering article '" + title + "'", e);
 			return getExceptionRendering(userContext, e);
 		}
@@ -406,16 +398,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		includeDOMResources(wikiContext);
 		RenderResult renderResult = new RenderResult(userContext.getRequest());
 		String title = wikiContext.getRealPage().getName();
-		Article article = null;
-		try {
+		Article article = Article.createArticle(content, title, Environment.DEFAULT_WEB);
+		/*try {
+			// TODO besser createArticle
 			article = updateArticle(wikiContext, content);
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			Log.fine("Updating Article interrupted while rendering preview", e);
-		}
-		catch (UpdateNotAllowedException e) {
+		} catch (UpdateNotAllowedException e) {
 			Log.fine("Updating Article not allowed while rendering preview", e);
-		}
+		}*/
 		if (article == null) return content;
 		// Replace Flowcharts with info message
 
@@ -435,8 +426,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		if (e instanceof UpdateNotAllowedException) {
 			message = "Your request tries to change the content of the current article. "
 					+ "You are not authorized to do that.";
-		}
-		else {
+		} else {
 			message = "An exception occurred while compiling and rendering this article, "
 					+ "try going back to the last working version of the article.\n\n"
 					+ ExceptionUtils.getStackTrace(e);
@@ -465,19 +455,16 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				((DefaultArticleManager) articleManager).queueArticle(article);
 			});
 			Log.info("Sectionized all articles in " + (System.currentTimeMillis() - start) + "ms");
-		}
-		catch (ProviderException e1) {
+		} catch (ProviderException e1) {
 			Log.warning("Unable to load all articles, maybe some articles won't be initialized!", e1);
-		}
-		finally {
+		} finally {
 			articleManager.commit();
 		}
 
 		try {
 			// we wait to get an accurate reading on the server startup time
 			articleManager.getCompilerManager().awaitTermination();
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			Log.warning("Caught InterrupedException while waiting til compilation is finished.", e);
 		}
 		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
@@ -501,8 +488,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		*/
 		if (provider instanceof CachingProvider) {
 			wikiPages = ((CachingProvider) provider).getRealProvider().getAllPages();
-		}
-		else {
+		} else {
 			wikiPages = mgr.getAllPages();
 		}
 		return wikiPages;
@@ -538,22 +524,19 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				articleManager.deleteArticle(articleToDelete);
 			}
 
-		}
-		else if (event instanceof WikiPageRenameEvent) {
+		} else if (event instanceof WikiPageRenameEvent) {
 			WikiPageRenameEvent renameEvent = (WikiPageRenameEvent) event;
 
 			String oldArticleTitle = renameEvent.getOldPageName();
 			String newArticleTitle = renameEvent.getNewPageName();
 
 			KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
-		}
-		else if (event instanceof WikiAttachmentEvent) {
+		} else if (event instanceof WikiAttachmentEvent) {
 			// we fire the KnowWE events and commit asynchronously to avoid dead locks, because we cannot
 			// guarantee at this point, that the thread accessing the attachment has not locked resources
 			// that are required during compilation
 			new AttachmentEventHandler((WikiAttachmentEvent) event).start();
-		}
-		else if (event instanceof WikiEngineEvent) {
+		} else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {
 				WikiEngine engine = ((WikiEngineEvent) event).getEngine();
 				initEnvironmentIfNeeded(engine);
@@ -640,14 +623,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 					EventManager.getInstance()
 							.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), event
 									.getParentName(), event.getFileName()));
-				}
-				else if (event.getType() == WikiAttachmentEvent.DELETED) {
+				} else if (event.getType() == WikiAttachmentEvent.DELETED) {
 					EventManager.getInstance()
 							.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), event
 									.getParentName(), event.getFileName()));
 				}
-			}
-			finally {
+			} finally {
 				articleManager.commit();
 			}
 		}

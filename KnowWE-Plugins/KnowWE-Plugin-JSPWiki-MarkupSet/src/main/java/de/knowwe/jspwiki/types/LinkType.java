@@ -27,6 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.RenderPreviewAction;
@@ -289,7 +290,12 @@ public class LinkType extends AbstractType {
 			else if (link.contains("#")) {
 				String articleName = link.substring(0, index);
 				headerName = link.substring(index + 1);
-				article = sourceArticle.getArticleManager().getArticle(articleName);
+				article = Environment.getInstance().getArticleManager(sourceArticle.getWeb()).getArticle(articleName);
+			}
+			else if (sourceArticle.getArticleManager() == null) { // can happen in preview mode
+				ArticleManager articleManager = Environment.getInstance().getArticleManager(sourceArticle.getWeb());
+				article = articleManager.getArticle(link);
+				headerName = null;
 			}
 			else {
 				article = sourceArticle.getArticleManager().getArticle(link);

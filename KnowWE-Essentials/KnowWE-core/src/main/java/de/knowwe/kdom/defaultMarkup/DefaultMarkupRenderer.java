@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -96,7 +97,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		// render messages and content
 		if (section.get() instanceof DefaultMarkupType) {
 			// only render messages if this is a DefaultMarkupType section (can be other e.g. in %%Include)
-			renderMessages(section, content);
+			renderMessages(section, content, user);
 		}
 		renderProgress(section, user, tools, content);
 		int validLength = content.length();
@@ -151,8 +152,8 @@ public class DefaultMarkupRenderer implements Renderer {
 		return section.get().getName();
 	}
 
-	public void renderMessages(Section<?> section, RenderResult string) {
-		renderMessageBlock(section, string, Message.Type.ERROR, Message.Type.WARNING);
+	public void renderMessages(Section<?> section, RenderResult string, UserContext context) {
+		renderMessageBlock(section, string, context, Message.Type.ERROR, Message.Type.WARNING);
 	}
 
 	private static Map<Section<?>, Map<Message, Collection<Compiler>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {
@@ -177,10 +178,11 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public static void renderMessageBlock(Section<?> rootSection,
 										  RenderResult string,
+										  UserContext context,
 										  Message.Type... types) {
 
 		for (Type type : types) {
-			Collection<String> messages = getMessageStrings(rootSection, type);
+			Collection<String> messages = getMessageStrings(rootSection, type, context);
 
 			// only if there are such messages
 			if (messages.isEmpty()) continue;
@@ -197,7 +199,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 	}
 
-	public static Collection<String> getMessageStrings(Section<?> rootSection, Type type) {
+	public static Collection<String> getMessageStrings(Section<?> rootSection, Type type, UserContext context) {
 		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages =
 				getMessageSectionsOfSubtree(rootSection, type);
 
@@ -228,7 +230,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 
 		if (type == Type.WARNING) {
-			checkNotCompiledWarning(rootSection, messages);
+			checkNotCompiledWarning(rootSection, messages, context);
 		}
 
 		return messages;
@@ -237,9 +239,10 @@ public class DefaultMarkupRenderer implements Renderer {
 	/**
 	 * We create an additional warning in case this section has package compile scripts but no compiler compiling them
 	 */
-	private static void checkNotCompiledWarning(Section<?> rootSection, Collection<String> messages) {
+	private static void checkNotCompiledWarning(Section<?> rootSection, Collection<String> messages, UserContext context) {
 		// if there is a package annotation, a message will be produced there, no need to produce another one
 		if (DefaultMarkupType.getAnnotation(rootSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) != null) return;
+		if (context != null && context.isRenderingPreview()) return;
 
 		CompilerManager.getScriptManagers()
 				.stream()

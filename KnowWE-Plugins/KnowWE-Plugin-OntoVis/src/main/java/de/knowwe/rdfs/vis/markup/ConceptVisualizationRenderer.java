@@ -42,6 +42,10 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
+		if (user.isRenderingPreview()) {
+			result.append("%%information Concept Visualization is not rendered in live preview. /%");
+			return;
+		}
 		PreRenderWorker.getInstance().handlePreRendering(section, user, this);
 		super.render(section, user, result);
 	}

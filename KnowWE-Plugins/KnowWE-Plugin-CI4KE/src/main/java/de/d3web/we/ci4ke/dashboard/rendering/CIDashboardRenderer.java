@@ -108,6 +108,9 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	 * @created 02.12.2010
 	 */
 	public static String renderDashboardContents(UserContext user, CIDashboard dashboard) {
+		if (user.isRenderingPreview()) {
+			return "%%information Dashboard is not rendered in live preview. /%";
+		}
 		String dashboardName = dashboard.getDashboardName();
 		Section<CIDashboardType> dashboardSection = dashboard.getDashboardSection();
 

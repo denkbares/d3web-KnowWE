@@ -44,18 +44,22 @@ public class Rdf2GoCoreCheckRenderer extends DefaultMarkupRenderer {
 		Rdf2GoCore rdf2GoCore = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
 				DefaultMarkupType.class));
 		if (rdf2GoCore == null) {
-			String message = "No ontology found! The package";
-			Set<String> packageNames = section.getPackageNames();
-			String packagesString = Strings.concat(" ,", packageNames);
-			if (packageNames.size() > 1) {
-				message += "s '" + packagesString + "' are";
-			}
-			else {
-				message += " '" + packagesString + "' is";
-			}
-			message += " not used to compile an ontology.";
+			if (user.isRenderingPreview()) {
+				result.append("%%information No rendering in live preview. /%");
+				return;
+			} else {
+				String message = "No ontology found! The package";
+				Set<String> packageNames = section.getPackageNames();
+				String packagesString = Strings.concat(" ,", packageNames);
+				if (packageNames.size() > 1) {
+					message += "s '" + packagesString + "' are";
+				} else {
+					message += " '" + packagesString + "' is";
+				}
+				message += " not used to compile an ontology.";
 
-			Messages.storeMessage(section, getClass(), Messages.warning(message));
+				Messages.storeMessage(section, getClass(), Messages.warning(message));
+			}
 		}
 		else {
 			Messages.clearMessages(section, getClass());

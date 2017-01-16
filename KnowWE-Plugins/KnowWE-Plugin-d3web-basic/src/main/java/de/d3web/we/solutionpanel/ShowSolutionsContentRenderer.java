@@ -33,6 +33,8 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -73,12 +75,20 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			string.append(text + "\n");
 		}
 
+
 		Session session = getSessionFor(section, user);
 		if (session == null) {
-			String msg = "Unable to find knowledgeg base. Please either add to a package" +
-					" used for a knowledge base or specify a master article.";
-			DefaultMarkupRenderer.renderMessagesOfType(Message.Type.WARNING,
-					Messages.asList(Messages.warning(msg)), string);
+			if (user.isRenderingPreview()) {
+				string.append("%%information Solutions are not rendered in live preview. /%");
+				//String msg = "Solutions are not rendered in preview mode";
+				//DefaultMarkupRenderer.renderMessagesOfType(Message.Type.INFO,
+				//		Messages.asList(Messages.notice(msg)), string);
+			} else {
+				String msg = "Unable to find knowledge base. Please either add to a package" +
+						" used for a knowledge base or specify a master article.";
+				DefaultMarkupRenderer.renderMessagesOfType(Message.Type.WARNING,
+						Messages.asList(Messages.warning(msg)), string);
+			}
 		}
 		else {
 
@@ -203,7 +213,8 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
 		String title = null;
 		if (masterArticleName == null) {
-			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
+			ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+			PackageManager packageManager = KnowWEUtils.getPackageManager(articleManager);
 			Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
 
 			for (String compilingArticle : compilingArticles) {
@@ -217,6 +228,8 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		if (title == null) return null;
 
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+		if (kb == null) return null;
+
 		return SessionProvider.getSession(user, kb);
 	}
 

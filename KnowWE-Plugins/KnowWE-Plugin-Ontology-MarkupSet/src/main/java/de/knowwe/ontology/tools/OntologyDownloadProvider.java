@@ -14,6 +14,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.action.OntologyDownloadAction;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -47,11 +48,14 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 	protected Tool getDownloadTool(Section<?> section, RDFFormat syntax) {
 
-		// check if ontology is empty
-		Rdf2GoCore ontology = Rdf2GoCore.getInstance(OntologyUtils.getOntologyCompiler(section));
-		if (ontology == null || ontology.isEmpty()
-			//|| !ontology.getAvailableSyntaxes().contains(syntax)
-				) {
+		OntologyCompiler compiler = OntologyUtils.getOntologyCompiler(section);
+		if (compiler == null) {
+			return null;
+		}
+
+		Rdf2GoCore ontology = Rdf2GoCore.getInstance(compiler);
+
+		if (ontology == null || ontology.isEmpty()) {
 			return null;
 		}
 

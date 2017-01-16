@@ -109,10 +109,14 @@ public class QuickInterviewRenderer {
 		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(section);
 
 		if (knowledgeBase == null) {
-			result.appendHtmlElement(
-					"span",
-					"No knowledge base found for this interview.",
-					"class", "warning");
+			if (user.isRenderingPreview()) {
+				result.append("%%information Interview is not rendered in live preview. /%");
+			} else {
+				result.appendHtmlElement(
+						"span",
+						"No knowledge base found for this interview.",
+						"class", "warning");
+			}
 			return;
 		}
 		Session session = SessionProvider.getSession(user, knowledgeBase);

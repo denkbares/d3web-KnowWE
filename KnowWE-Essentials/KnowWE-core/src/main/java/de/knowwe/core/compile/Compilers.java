@@ -26,6 +26,7 @@ import java.util.Set;
 
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -58,8 +59,7 @@ public class Compilers {
 			for (CompileScript<C, T> compileScript : scriptList) {
 				try {
 					compileScript.compile(compiler, section);
-				}
-				catch (CompilerMessage cm) {
+				} catch (CompilerMessage cm) {
 					Messages.storeMessages(compiler, section, compileScript.getClass(),
 							cm.getMessages());
 				}
@@ -85,8 +85,7 @@ public class Compilers {
 				if (!(compileScript instanceof DestroyScript)) continue;
 				try {
 					((DestroyScript<C, T>) compileScript).destroy(compiler, section);
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					String msg = "Unexpected internal exception while destroying with script "
 							+ section;
 					Log.severe(msg, e);
@@ -130,8 +129,7 @@ public class Compilers {
 		Collection<C> compilers = getCompilers(section, compilerClass, true);
 		if (compilers.isEmpty()) {
 			return null;
-		}
-		else {
+		} else {
 			return compilers.iterator().next();
 		}
 	}
@@ -148,8 +146,7 @@ public class Compilers {
 		Collection<C> compilers = getCompilers(manager, compilerClass, true);
 		if (compilers.isEmpty()) {
 			return null;
-		}
-		else {
+		} else {
 			return compilers.iterator().next();
 		}
 	}
@@ -167,9 +164,11 @@ public class Compilers {
 	}
 
 	private static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass, boolean firstOnly) {
-		List<Compiler> allCompilers = section.getArticleManager()
-				.getCompilerManager()
-				.getCompilers();
+		ArticleManager articleManager = section.getArticleManager();
+		if (articleManager == null) { // can happen in preview
+			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
+		}
+		List<Compiler> allCompilers = articleManager.getCompilerManager().getCompilers();
 		Collection<C> compilers = new ArrayList<>();
 		for (Compiler compiler : allCompilers) {
 			if (compilerClass.isAssignableFrom(compiler.getClass())
@@ -281,8 +280,7 @@ public class Compilers {
 	public static void awaitTermination(CompilerManager manager) {
 		try {
 			manager.awaitTermination();
-		}
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			Log.warning("Interrupted while waiting for compiler to finish", e);
 		}
 	}

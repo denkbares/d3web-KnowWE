@@ -40,6 +40,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.jspwiki.KnowWEPlugin;
 
 /**
  * 
@@ -225,6 +226,11 @@ public class TestUserContext implements UserContext, UserActionContext {
 	@Override
 	public boolean allowAsynchronousRendering() {
 		return false;
+	}
+
+	@Override
+	public boolean isRenderingPreview() {
+		return KnowWEPlugin.isRenderingPreview(this);
 	}
 
 	@Override

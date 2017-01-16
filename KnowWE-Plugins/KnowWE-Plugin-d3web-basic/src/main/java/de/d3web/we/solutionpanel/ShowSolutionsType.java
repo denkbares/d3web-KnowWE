@@ -19,6 +19,8 @@
 package de.d3web.we.solutionpanel;
 
 import de.d3web.we.object.QuestionnaireReference;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -98,7 +100,11 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		if (packageName != null) {
 			return packageName;
 		}
-		PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
+		ArticleManager articleManager = section.getArticleManager();
+		if (articleManager == null) {
+			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
+		}
+		PackageManager packageManager = KnowWEUtils.getPackageManager(articleManager);
 		String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 		for (String defaultPackage : defaultPackages) {
 			packageName = defaultPackage;

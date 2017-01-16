@@ -24,6 +24,8 @@
 <%@ page import="org.apache.wiki.auth.permissions.*" %>
 <%@ page import="org.apache.wiki.preferences.Preferences" %>
 <%@ page import="de.knowwe.jspwiki.KnowWEPlugin" %>
+<%@ page import="de.knowwe.jspwiki.JSPWikiUserContext" %>
+<%@ page import="de.knowwe.core.user.UserContextUtil" %>
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%! 
@@ -42,6 +44,8 @@
   response.setContentType("text/html; charset="+wiki.getContentEncoding() );
 
   String wikimarkup = request.getParameter( "wikimarkup" );
+  JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext, UserContextUtil.getParameters(request));
+  userContext.getRequest().setAttribute(KnowWEPlugin.RENDER_MODE, KnowWEPlugin.PREVIEW);
   String html = KnowWEPlugin.renderPreview(wikiContext, wikimarkup);
   String result = wiki.textToHTML(wikiContext, html);
 

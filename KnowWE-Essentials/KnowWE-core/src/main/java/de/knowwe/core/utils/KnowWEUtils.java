@@ -970,7 +970,8 @@ public class KnowWEUtils {
 	 * @created 07.01.2014
 	 */
 	public static PackageManager getPackageManager(Section<?> section) {
-		return getPackageManager(section.getArticleManager());
+		ArticleManager manager = Environment.getInstance().getArticleManager(section.getWeb());
+		return getPackageManager(manager);
 	}
 
 	/**

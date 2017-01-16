@@ -156,6 +156,11 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 	}
 
 	@Override
+	public boolean isRenderingPreview() {
+		return false;
+	}
+
+	@Override
 	public HttpServletRequest getRequest() {
 		return this.request;
 	}
