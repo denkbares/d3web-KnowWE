@@ -98,7 +98,7 @@ public class JSPWikiUserContext extends AbstractUserContext {
 
 	@Override
 	public boolean isRenderingPreview() {
-		return KnowWEPlugin.isRenderingPreview(this);
+		return KnowWEPlugin.PREVIEW.equals(getRequest().getAttribute(KnowWEPlugin.RENDER_MODE));
 	}
 
 }

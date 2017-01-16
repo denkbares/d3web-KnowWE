@@ -230,7 +230,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 
 	@Override
 	public boolean isRenderingPreview() {
-		return KnowWEPlugin.isRenderingPreview(this);
+		return KnowWEPlugin.PREVIEW.equals(getRequest().getAttribute(KnowWEPlugin.RENDER_MODE));
 	}
 
 	@Override

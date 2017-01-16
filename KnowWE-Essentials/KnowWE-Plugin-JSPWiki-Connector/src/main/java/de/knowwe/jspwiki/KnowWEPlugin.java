@@ -642,6 +642,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	public static boolean isRenderingPreview(UserContext user) {
 		return user != null
 				&& user.getRequest() != null
-				&& KnowWEPlugin.PREVIEW.equals(user.getRequest().getAttribute(KnowWEPlugin.RENDER_MODE));
+				&& user.isRenderingPreview();
 	}
 }
