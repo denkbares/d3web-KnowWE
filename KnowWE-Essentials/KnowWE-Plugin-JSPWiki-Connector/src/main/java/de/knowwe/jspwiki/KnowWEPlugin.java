@@ -287,7 +287,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			// before the call of this preTranslate method, e.g. in an action with Sections#replace(...).
 			// in this case, the article will not be compiled at this moment and rendering does not make sense and can
 			// cause exceptions.
-			boolean isQueuedForCompilation = articleManager.isQueuedArticle(article);
+			boolean isQueuedForCompilation = articleManager.getQueuedArticles().contains(article);
 
 			if (article != null && !isQueuedForCompilation) {
 				render(userContext, article, renderResult);

@@ -31,6 +31,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.CompilerManager;
@@ -59,8 +61,8 @@ public class DefaultArticleManager implements ArticleManager {
 	private final AttachmentManager attachmentManager;
 
 	private final ReentrantLock mainLock = new ReentrantLock(true);
-	private List<Section<?>> added = Collections.synchronizedList(new ArrayList<>());
-	private List<Section<?>> removed = Collections.synchronizedList(new ArrayList<>());
+	private final List<Article> added = Collections.synchronizedList(new ArrayList<>());
+	private final List<Article> removed = Collections.synchronizedList(new ArrayList<>());
 
 	public DefaultArticleManager(String web) {
 		this.web = web;
@@ -126,10 +128,10 @@ public class DefaultArticleManager implements ArticleManager {
 
 		String title = article.getTitle();
 
-		added.add(article.getRootSection());
+		added.add(article);
 
 		Article lastVersion = getArticle(title);
-		if (lastVersion != null) removed.add(lastVersion.getRootSection());
+		if (lastVersion != null) removed.add(lastVersion);
 
 		articleMap.put(title.toLowerCase(), article);
 		// in case an article with the same name gets added in the same compilation window
@@ -141,8 +143,11 @@ public class DefaultArticleManager implements ArticleManager {
 		article.clearLastVersion();
 	}
 
-	public boolean isQueuedArticle(Article article) {
-		return added.contains(article.getRootSection());
+	@Override
+	public @NotNull Collection<Article> getQueuedArticles() {
+		synchronized (added) {
+			return Collections.unmodifiableCollection(new ArrayList<>(added));
+		}
 	}
 
 	/**
@@ -195,10 +200,22 @@ public class DefaultArticleManager implements ArticleManager {
 	public void commit() {
 		try {
 			if (mainLock.getHoldCount() == 1) {
-				if (!added.isEmpty() || !removed.isEmpty()) {
-					compilerManager.compile(added, removed);
-					added = Collections.synchronizedList(new ArrayList<>());
-					removed = Collections.synchronizedList(new ArrayList<>());
+				ArrayList<Section<?>> addedSections = new ArrayList<>();
+				ArrayList<Section<?>> removedSections = new ArrayList<>();
+				synchronized (added) {
+					synchronized (removed) {
+						for (Article article : added) {
+							addedSections.add(article.getRootSection());
+						}
+						for (Article article : removed) {
+							removedSections.add(article.getRootSection());
+						}
+						added.clear();
+						removed.clear();
+					}
+				}
+				if (!addedSections.isEmpty() || !removedSections.isEmpty()) {
+					compilerManager.compile(addedSections, removedSections);
 				}
 				synchronized (deleteAfterCompile) {
 					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {

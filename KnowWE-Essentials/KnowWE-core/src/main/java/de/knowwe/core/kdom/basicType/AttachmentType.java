@@ -26,6 +26,7 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
@@ -174,11 +175,18 @@ public class AttachmentType extends AbstractType {
 			String eventAttachmentPath = attachmentEvent.getPath();
 
 			if (thisAttachmentPath.startsWith(eventAttachmentPath)) {
-
-				// basically, do a full parse...
 				Article article = section.getArticle();
-				Article newArticle = Article.createArticle(article.getText(), article.getTitle(), web);
-				article.getArticleManager().registerArticle(newArticle);
+				ArticleManager articleManager = article.getArticleManager();
+
+				boolean alreadyQueued = articleManager.getQueuedArticles()
+						.stream()
+						.anyMatch(a -> a.getTitle().equals(article.getTitle()));
+				if (!alreadyQueued) {
+					// basically, do a full parse...
+					Article newArticle = Article.createArticle(article.getText(), article.getTitle(), web);
+					articleManager.registerArticle(newArticle);
+				}
+
 			}
 		}
 	}

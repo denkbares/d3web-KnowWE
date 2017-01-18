@@ -20,6 +20,8 @@ package de.knowwe.core;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 
@@ -28,6 +30,10 @@ import de.knowwe.core.kdom.Article;
  * @created 01.11.2013
  */
 public interface ArticleManager {
+
+	CompilerManager getCompilerManager();
+
+	String getWeb();
 
 	/**
 	 * Returns the Article for a given article name/title. The case of the article is ignored.
@@ -46,11 +52,21 @@ public interface ArticleManager {
 	 */
 	void registerArticle(Article article);
 
-	CompilerManager getCompilerManager();
-
-	String getWeb();
-
+	/**
+	 * Deletes the given article from this article manager
+	 *
+	 * @param article the article to delete
+	 */
 	void deleteArticle(Article article);
+
+	/**
+	 * Provides an immutable snapshot of the internal queue of registered/queued, but not yet compiled articles. If there
+	 * currently is no open registration frame, the list will always be empty.
+	 *
+	 * @return the queued articles of the current compilation frame
+	 */
+	@NotNull
+	Collection<Article> getQueuedArticles();
 
 	/**
 	 * Opens the manager for registration of articles. Only after calling the method {@link ArticleManager#commit()}
