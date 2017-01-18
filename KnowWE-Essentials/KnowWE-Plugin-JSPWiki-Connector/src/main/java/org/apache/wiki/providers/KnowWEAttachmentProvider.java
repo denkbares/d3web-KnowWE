@@ -36,6 +36,8 @@ import org.apache.wiki.event.WikiEventManager;
  */
 public class KnowWEAttachmentProvider extends BasicAttachmentProvider {
 
+	public static final String FIRE_DELETE_EVENT = "fireDeleteEvent";
+
 	@Override
 	public void putAttachmentData(Attachment att, InputStream data) throws ProviderException, IOException {
 		super.putAttachmentData(att, data);
@@ -45,6 +47,8 @@ public class KnowWEAttachmentProvider extends BasicAttachmentProvider {
 	@Override
 	public void deleteAttachment(Attachment att) throws ProviderException {
 		super.deleteAttachment(att);
-		WikiEventManager.fireEvent(this, new WikiAttachmentEvent(this, att.getParentName(), att.getFileName(), WikiAttachmentEvent.DELETED));
+		if (!"false".equals(att.getAttribute(FIRE_DELETE_EVENT))) {
+			WikiEventManager.fireEvent(this, new WikiAttachmentEvent(this, att.getParentName(), att.getFileName(), WikiAttachmentEvent.DELETED));
+		}
 	}
 }

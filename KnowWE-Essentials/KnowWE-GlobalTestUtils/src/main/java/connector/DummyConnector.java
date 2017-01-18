@@ -311,6 +311,11 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream, boolean versioning) throws IOException {
+		return storeAttachment(title, filename, user, stream);
+	}
+
+	@Override
 	public void deleteAttachment(String title, String fileName, String user) throws IOException {
 		if (dummyPageProvider == null) {
 			throw new NullPointerException(

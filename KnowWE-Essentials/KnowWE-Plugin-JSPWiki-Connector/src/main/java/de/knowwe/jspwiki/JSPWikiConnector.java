@@ -61,6 +61,7 @@ import org.apache.wiki.auth.permissions.PagePermission;
 import org.apache.wiki.auth.permissions.PermissionFactory;
 import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.providers.CachingAttachmentProvider;
+import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.util.TextUtil;
 import org.jetbrains.annotations.Nullable;
@@ -698,7 +699,21 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream, boolean versioning) throws IOException {
+		if (!versioning) {
+			// we just delete the current attachment version and don't fire delete-event
+			// there will be a stored-event
+			deleteAttachment(title, filename, user, false);
+		}
+		return storeAttachment(title, filename, user, stream);
+	}
+
+	@Override
 	public void deleteAttachment(String title, String fileName, String user) throws IOException {
+		deleteAttachment(title, fileName, user, true);
+	}
+
+	private void deleteAttachment(String title, String fileName, String user, boolean fireDeleteEvent) throws IOException {
 		String path = toPath(title, fileName);
 		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 		if (actualPathAndEntry.getB() != null) {
@@ -710,6 +725,13 @@ public class JSPWikiConnector implements WikiConnector {
 			if (!wasLocked) lockArticle(title, user);
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Attachment attachment = attachmentManager.getAttachmentInfo(path);
+
+			if (!fireDeleteEvent) {
+				// will cause the KnowWEAttachmentProvider to not fire a delete event
+				// not pretty, but the JSPWiki API is not on our side here
+				attachment.setAttribute(KnowWEAttachmentProvider.FIRE_DELETE_EVENT, "false");
+			}
+
 			if (attachment != null) {
 				attachmentManager.deleteAttachment(attachment);
 				Log.info("Deleted attachment '" + path + "'");

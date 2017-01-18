@@ -373,12 +373,9 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				ArticleManager articleManager = section.getArticleManager();
 				articleManager.open();
 				try {
-					if ("false".equalsIgnoreCase(DefaultMarkupType.getAnnotation(section, VERSIONING_ANNOTATION))) {
-						Environment.getInstance().getWikiConnector().deleteAttachment(parentName, fileName, "SYSTEM");
-					}
-					Environment.getInstance()
-							.getWikiConnector()
-							.storeAttachment(parentName, fileName, "SYSTEM", connectionStream);
+					boolean versioning = !"false".equalsIgnoreCase(DefaultMarkupType.getAnnotation(section, VERSIONING_ANNOTATION));
+					Environment.getInstance().getWikiConnector()
+							.storeAttachment(parentName, fileName, "SYSTEM", connectionStream, versioning);
 				}
 				finally {
 					articleManager.commit();

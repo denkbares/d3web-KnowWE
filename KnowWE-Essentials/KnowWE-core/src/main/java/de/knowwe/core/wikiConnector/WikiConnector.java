@@ -342,6 +342,31 @@ public interface WikiConnector {
 	WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException;
 
 	/**
+	 * Creates a new wiki attachment of the specified path and the specified
+	 * content. Please note that the stream will not be closed by this method.
+	 * When the method return the stream has been fully read. It's in the
+	 * callers responsibility to close the stream afterwards.
+	 * <p/>
+	 * If there is already an attachment with this path and <tt>versioning</tt>
+	 * is set to true, a new version of the attachment will be created. If
+	 * <tt>versioning</tt> is set to false, any previous versions (if there are
+	 * any) will be removed.
+	 * In all cases you can use the returned {@link WikiAttachment} to access
+	 * the attachment.
+	 *
+	 * @param title      the title of the article, for which this attachment should
+	 *                   be stored
+	 * @param filename   the name for which the attachment should be stored
+	 * @param user       is the user wanting to store the attachment
+	 * @param stream     the stream for the content of the file
+	 * @param versioning decides whether the attachment should be stored with versioning
+	 * @return the newly created attachment
+	 * @throws IOException if the stream cannot be read of if the content cannot
+	 *                     be stored as an attachment
+	 */
+	WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream, boolean versioning) throws IOException;
+
+	/**
 	 * Deletes the attachment <tt>fileName</tt> from the article with the given <tt>title</tt>. If the attachment is
 	 * versioned, all versions of the attachment are deleted (as if the attachment never existed).
 	 *
