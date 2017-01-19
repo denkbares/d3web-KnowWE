@@ -359,6 +359,19 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				}
 
 				InputStream connectionStream = getAttachmentStream(section, connection);
+
+				// configure replacement, if applicable
+				String replacement = DefaultMarkupType.getAnnotation(section, REPLACEMENT);
+				if (!Strings.isBlank(replacement)) {
+					String[] replacementDefinition = replacement.split("->");
+					Map<byte[], byte[]> replacements = new HashMap<>();
+					replacements.put(replacementDefinition[0].getBytes("UTF-8"),
+							replacementDefinition.length > 1 ?
+									replacementDefinition[1].getBytes("UTF-8") :
+									"".getBytes("UTF-8"));
+					connectionStream = new ReplacingInputStream(connectionStream, replacements);
+				}
+
 				if (attachmentState == State.UNKNOWN || attachmentState == State.OUTDATED) {
 					// if state is unknown, compare contents, so we don't produce unnecessary attachment versions and compiles
 					// to be sure that there is actually change, also compare content if we see outdated based on header info...
@@ -379,19 +392,6 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				try {
 					// check for versioning
 					boolean versioning = !"false".equalsIgnoreCase(DefaultMarkupType.getAnnotation(section, VERSIONING_ANNOTATION));
-
-					// configure replacement, if applicable
-					String replacement = DefaultMarkupType.getAnnotation(section, REPLACEMENT);
-					if (!Strings.isBlank(replacement)) {
-						String[] replacementDefinition = replacement.split("->");
-						Map<byte[], byte[]> replacements = new HashMap<>();
-						replacements.put(replacementDefinition[0].getBytes("UTF-8"),
-								replacementDefinition.length > 1 ?
-										replacementDefinition[1].getBytes("UTF-8") :
-										"".getBytes("UTF-8"));
-
-						connectionStream = new ReplacingInputStream(connectionStream, replacements);
-					}
 
 					// read and store
 					Environment.getInstance().getWikiConnector()
