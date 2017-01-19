@@ -52,7 +52,7 @@ public class ExpectedSparqlResultTable extends Table {
 		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
 		for (Section<TableLine> line : lines) {
 			SimpleTableRow row = createResultRow(line, variables, c);
-			rows.add(row);
+			if (!row.isEmpty()) rows.add(row);
 		}
 
 		return new ResultTableModel(rows, variables);

@@ -82,4 +82,8 @@ public class SimpleTableRow implements TableRow {
 		return result;
 	}
 
+	public boolean isEmpty() {
+		return values.isEmpty();
+	}
+
 }
