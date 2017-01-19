@@ -43,10 +43,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
+import com.denkbares.streams.ReplacingInputStream;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
@@ -86,6 +88,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	private static final String START_ANNOTATION = "start";
 	private static final String VERSIONING_ANNOTATION = "versioning";
 	private static final String ZIP_ENTRY_ANNOTATION = "zipEntry";
+	private static final String REPLACEMENT = "replacement";
 	public static final String COMPILE = "compile";
 
 	private static final String LOCK_KEY = "lock_key";
@@ -111,6 +114,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(COMPILE, false, "true", "false");
 		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION);
+		MARKUP.addAnnotation(REPLACEMENT,false, Pattern.compile(".+->.*"));
 		TimeStampType timeStampType = new TimeStampType();
 		timeStampType.setRenderer((section, user, result) -> {
 			result.append(section.getText());
@@ -373,7 +377,23 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				ArticleManager articleManager = section.getArticleManager();
 				articleManager.open();
 				try {
+					// check for versioning
 					boolean versioning = !"false".equalsIgnoreCase(DefaultMarkupType.getAnnotation(section, VERSIONING_ANNOTATION));
+
+					// configure replacement, if applicable
+					String replacement = DefaultMarkupType.getAnnotation(section, REPLACEMENT);
+					if (!Strings.isBlank(replacement)) {
+						String[] replacementDefinition = replacement.split("->");
+						Map<byte[], byte[]> replacements = new HashMap<>();
+						replacements.put(replacementDefinition[0].getBytes("UTF-8"),
+								replacementDefinition.length > 1 ?
+										replacementDefinition[1].getBytes("UTF-8") :
+										"".getBytes("UTF-8"));
+
+						connectionStream = new ReplacingInputStream(connectionStream, replacements);
+					}
+
+					// read and store
 					Environment.getInstance().getWikiConnector()
 							.storeAttachment(parentName, fileName, "SYSTEM", connectionStream, versioning);
 				}
