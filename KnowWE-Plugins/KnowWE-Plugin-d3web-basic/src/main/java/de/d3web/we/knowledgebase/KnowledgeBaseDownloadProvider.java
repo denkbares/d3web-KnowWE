@@ -26,6 +26,7 @@ import java.net.UnknownHostException;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -106,13 +107,9 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 			URL url = new URL(baseUrl);
 			baseUrl = new URL(url.getProtocol(), ip, url.getPort(), url.getPath()).toExternalForm();
 		}
-		catch (UnknownHostException e1) {
+		catch (UnknownHostException | MalformedURLException e1) {
 			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Log.severe("Exception creating url for QR code. ");
 		}
 		String kbURL = baseUrl + "action/KnowledgeBaseDownloadAction" +
 				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
