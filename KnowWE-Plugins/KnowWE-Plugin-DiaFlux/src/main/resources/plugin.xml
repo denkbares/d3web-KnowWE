@@ -263,6 +263,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DotFormatterAction">
+		<parameter id="class" value="de.knowwe.diaflux.DotFormatterAction" />
+		<parameter id="name" value="DotFormatterAction" />
+		<parameter id="description" value="Action DotFormatterAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="LoadFlowchartAction">
 		<parameter id="class" value="de.knowwe.diaflux.LoadFlowchartAction" />
 		<parameter id="name" value="LoadFlowchartAction" />
