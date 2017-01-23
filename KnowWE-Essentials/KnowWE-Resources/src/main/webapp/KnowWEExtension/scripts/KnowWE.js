@@ -447,7 +447,7 @@ KNOWWE.core.util = function () {
 		},
 
 		isHaddockTemplate: function () {
-			return KNOWWE.core.util.getTemplate() === "KnowWE-haddock"
+			return KNOWWE.core.util.getTemplate() === "haddock"
 		},
 
 		getContainerSelector: function () {
