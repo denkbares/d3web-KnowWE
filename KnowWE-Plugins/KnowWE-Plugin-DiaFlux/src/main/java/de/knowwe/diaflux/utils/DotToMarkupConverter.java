@@ -9,8 +9,6 @@ import java.util.Set;
 import org.jgrapht.ext.ImportException;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import com.denkbares.strings.Strings;
-
 /**
  * Converts a dotfile to DiaFlux-Markup.
  * <p>
@@ -38,23 +36,21 @@ public class DotToMarkupConverter {
 	}
 
 	private void traceMaxIdFromSet(Set<? extends FCIDed> elements) {
-		elements.forEach(o -> {
-			int idNumber = getIdNumber(o);
+		for (FCIDed e : elements) {
+			int idNumber = getIdNumber(e);
 			if (idNumber > idCounter) {
 				idCounter = idNumber;
 			}
-		});
+		}
 	}
 
 	private int getIdNumber(FCIDed o) {
-		int id;
 		try {
-			id = Integer.parseInt(o.fcid.substring(o.fcid.lastIndexOf("_") + 1));
+			return Integer.parseInt(o.fcid.substring(o.fcid.lastIndexOf("_") + 1));
 		}
 		catch (NumberFormatException e) {
 			return 0;
 		}
-		return id;
 	}
 
 	private void importGraph(String dot) throws ImportException {
@@ -128,7 +124,7 @@ public class DotToMarkupConverter {
 		markup.append("\t<!-- nodes of the flowchart -->\n");
 		for (Node node : nodeList) {
 			markup.append("\t<node fcid=\"")
-					.append(node.fcid)
+					.append(fitEncoding(node.fcid))
 					.append("\">\n")
 					.append("\t\t<position left=\"")
 					.append(node.posx)
@@ -144,7 +140,7 @@ public class DotToMarkupConverter {
 					markup.append("\t\t<action markup=\"")
 							.append(node.markup)
 							.append("\">");
-					appendCDATA(node.name, "timeDB".equals(node.markup));
+					markup.append(removeQuoteEscaping(node.name));
 					markup.append("</action>\n");
 					break;
 				case "start":
@@ -156,7 +152,7 @@ public class DotToMarkupConverter {
 							.append(node.label)
 							.append(">");
 					if ("decision".equals(node.label)) {
-						appendCDATA(node.name, false);
+						markup.append(removeQuoteEscaping(node.name));
 					}
 					else {
 						markup.append(fitEncoding(removeQuoteEscaping(node.name)));
@@ -170,62 +166,30 @@ public class DotToMarkupConverter {
 		}
 	}
 
-	private void appendCDATA(String nodeName, boolean encode) {
-//		markup.append("<![CDATA[");
-		String name = removeQuoteEscaping(nodeName);
-		if (encode) {
-			String prefix = "";
-			int bracketIndex = name.indexOf("[");
-			if (bracketIndex > -1 && name.endsWith("]")) {
-				prefix = name.substring(0, bracketIndex + 1);
-				name = name.substring(bracketIndex + 1, name.length() - 1);
-			}
-			if (name.contains("eval(")) {
-				int indexOfEval = name.indexOf("eval(");
-				name = fitEncoding(name.substring(0, indexOfEval))
-						+ name.substring(indexOfEval);
-			}
-			else {
-				name = fitEncoding(name);
-			}
-
-			if (!"".equals(prefix)) {
-				name = prefix + name + "]";
-			}
-		}
-		markup.append(name);
-//				.append("]]>");
-	}
-
 	private void createEdgeList() {
 		ArrayList<Edge> edgeList = new ArrayList<>(graph.edgeSet());
 		edgeList.sort(Comparator.comparingInt(this::getIdNumber));
 		markup.append("\t<!-- rules of the flowchart -->\n");
 		for (Edge edge : edgeList) {
 			markup.append("\t<edge fcid=\"")
-					.append(edge.fcid)
+					.append(fitEncoding(edge.fcid))
 					.append("\">\n")
 					.append("\t\t<origin>")
-					.append(edge.origin.fcid)
+					.append(fitEncoding(edge.origin.fcid))
 					.append("</origin>\n")
 					.append("\t\t<target>")
-					.append(edge.target.fcid)
+					.append(fitEncoding(edge.target.fcid))
 					.append("</target>\n");
 			if (edge.guard != null) {
 				markup.append("\t\t<guard markup=\"")
 						.append(removeQuoteEscaping(edge.markup))
 						.append("\">");
-				if ("timeDB".equals(edge.markup)) {
-					appendCDATA(edge.guard, true);
+				if (name.endsWith(" = known")) {
+					name = name.substring(0, name.length() - " = known".length());
+					markup.append("KNOWN[\"").append(removeQuoteEscaping(edge.guard)).append("\"]");
 				}
 				else {
-					if (name.endsWith(" = known")) {
-						name = name.substring(0, name.length() - " = known".length());
-						markup.append("KNOWN[\"").append(removeQuoteEscaping(edge.guard)).append("\"]");
-					}
-					else {
-						markup.append(removeQuoteEscaping(edge.guard));
-					}
+					markup.append(removeQuoteEscaping(edge.guard));
 				}
 				markup.append("</guard>\n");
 			}
@@ -238,7 +202,6 @@ public class DotToMarkupConverter {
 	}
 
 	private String fitEncoding(String value) {
-		value = Strings.decodeHtml(value);
 		return value.replace("&", "&amp;").
 				replace("\"", "&quot;").
 				replace("'", "&apos;").
