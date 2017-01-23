@@ -246,7 +246,7 @@ public class ResultTableModel implements Iterable<TableRow> {
 		Map<Value, Set<TableRow>> actualData = actualResultTable.getData();
 		Set<Value> keySet = actualData.keySet();
 		for (Value node : keySet) {
-			if (!(node instanceof BNode)) {
+			if (node != null && !(node instanceof BNode)) {
 				if (!expectedData.keySet().contains(node)) {
 					errorMessages.add(new Message(Type.ERROR, "node not contained: "
 							+ node));
@@ -255,7 +255,7 @@ public class ResultTableModel implements Iterable<TableRow> {
 
 				if (!(expectedData.get(node).size() == (actualData.get(node).size()))) {
 					errorMessages.add(new Message(Type.ERROR,
-							"number of result rows not matching for: " + node));
+							"number of result columns not matching for: " + node));
 				}
 			}
 		}
