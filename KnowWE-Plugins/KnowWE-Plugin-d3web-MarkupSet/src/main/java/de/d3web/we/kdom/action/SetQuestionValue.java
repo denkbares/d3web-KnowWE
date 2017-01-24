@@ -22,18 +22,20 @@ package de.d3web.we.kdom.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.denkbares.strings.Strings;
 import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
+import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.session.ValueUtils;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
-import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.FindingAnswerReference;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -91,7 +93,7 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 	@Override
 	public PSAction createAction(D3webCompiler compiler, Section<SetQuestionValue> section) throws CompilerMessage {
 
-		Object value;
+		Object value = null;
 		Section<AnswerReference> answerReferenceSection = null;
 
 		if (Sections.successor(section, UnknownValueType.class) != null) {
@@ -101,7 +103,10 @@ public class SetQuestionValue extends D3webRuleAction<SetQuestionValue> {
 			answerReferenceSection = Sections.successor(section,
 					AnswerReference.class);
 			if (answerReferenceSection == null) return null;
-			value = answerReferenceSection.get().getTermObject(compiler, answerReferenceSection);
+			Choice choice = answerReferenceSection.get().getTermObject(compiler, answerReferenceSection);
+			if (choice != null) {
+				value = new ChoiceValue(choice);
+			}
 		}
 
 		Section<QuestionReference> questionReferenceSection = Sections.successor(section, QuestionReference.class);

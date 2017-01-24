@@ -2,6 +2,7 @@ package de.d3web.we.kdom.action;
 
 import java.util.List;
 
+import com.denkbares.strings.Strings;
 import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaNumber;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
@@ -10,7 +11,6 @@ import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.session.values.Unknown;
-import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.auxiliary.Equals;
 import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -100,7 +100,7 @@ public class SetQuestionNumValueAction extends D3webRuleAction<SolutionValueAssi
 		if (!(q instanceof QuestionNum)) return null;
 		QuestionNum qnum = (QuestionNum) q;
 
-		if (qnum == null || value == null) return null;
+		if (value == null) return null;
 
 		ActionSetQuestion a = new ActionSetQuestion();
 		a.setQuestion(q);

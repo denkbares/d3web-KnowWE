@@ -22,6 +22,7 @@ package de.d3web.we.kdom.questionTree.setValue;
 
 import java.util.List;
 
+import com.denkbares.strings.Strings;
 import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.Rule;
@@ -30,7 +31,7 @@ import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.RuleFactory;
-import com.denkbares.strings.Strings;
+import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.we.kdom.questionTree.QuestionDashTreeUtils;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -122,7 +123,7 @@ public class QuestionSetValueLine extends AbstractType {
 
 						ActionSetQuestion ac = new ActionSetQuestion();
 						ac.setQuestion(q);
-						ac.setValue(choice);
+						ac.setValue(new ChoiceValue(choice));
 
 						Rule rule = RuleFactory.createRule(ac, cond, null, PSMethodAbstraction.class);
 
