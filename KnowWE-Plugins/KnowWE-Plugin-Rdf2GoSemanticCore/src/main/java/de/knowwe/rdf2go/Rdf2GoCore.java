@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -200,9 +202,9 @@ public class Rdf2GoCore {
 		return globaleInstance;
 	}
 
-	private final String bns;
+	private String bns;
 
-	private final String lns;
+	private String lns;
 
 	private RepositoryConfig ruleSet;
 
@@ -249,10 +251,7 @@ public class Rdf2GoCore {
 	 * @param ruleSet specifies the reasoning profile.
 	 */
 	public Rdf2GoCore(RepositoryConfig ruleSet) {
-		this(Environment.getInstance().getWikiConnector().getBaseUrl()
-						+ "Wiki.jsp?page=", "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#",
-				ruleSet
-		);
+		this(null, null, ruleSet);
 	}
 
 	/**
@@ -268,6 +267,20 @@ public class Rdf2GoCore {
 
 		if (reasoning == null) {
 			reasoning = RepositoryConfigs.get(RdfConfig.class);
+		}
+		if (bns == null) {
+			bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
+		}
+		if (lns == null) {
+			String baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+			try {
+				new URL(baseUrl); // check if we have a valid url or just context root
+			}
+			catch (MalformedURLException e) {
+				Log.warning("Invalid local namespace (lns), using fallback http://localhost:8080/KnowWE/");
+				baseUrl = "http://localhost:8080/KnowWE/";
+			}
+			lns = baseUrl + "Wiki.jsp?page=";
 		}
 		this.bns = bns;
 		this.lns = lns;
@@ -312,6 +325,11 @@ public class Rdf2GoCore {
 			try {
 				try (RepositoryConnection connection = semanticCore.getConnection()) {
 					connection.setNamespace(abbreviation, namespace);
+				}
+				if ("lns".equals(abbreviation)) {
+					this.lns = namespace;
+				} else if ("ns".equals(abbreviation)) {
+					this.bns = namespace;
 				}
 				namespaces = null; // clear caches namespaces, will be get created lazy if needed
 				namespacePrefixes = null;
