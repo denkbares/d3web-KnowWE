@@ -2,6 +2,7 @@ package de.knowwe.diaflux;
 
 import java.io.IOException;
 
+import org.jetbrains.annotations.NotNull;
 import org.jgrapht.ext.ImportException;
 
 import de.knowwe.core.Attributes;
@@ -17,17 +18,16 @@ import de.knowwe.diaflux.utils.MarkupToDotConverter;
  */
 public class DotFormatterAction extends AbstractAction {
 
-	private static String removeDiaFluxSectionType(String markup) {
+	public static String removeDiaFluxSectionType(String markup) {
 		markup = markup.trim();
-		if (markup.startsWith("%%DiaFlux") && markup.endsWith("%")) {
-			markup = markup.substring("%%DiaFlux".length(), markup.length() - 2);
+		if (markup.contains("<flowchart") && markup.contains("</flowchart>")) {
+			markup = markup.substring(markup.indexOf("<flowchart"), markup.lastIndexOf("</flowchart>") + "</flowchart>".length());
 		}
 		return markup;
 	}
 
-	@Override
-	public void execute(UserActionContext context) throws IOException {
-		String markup = context.getParameter(Attributes.TEXT);
+	@NotNull
+	public static String formatMarkup(String markup) throws IOException {
 		String unpositioned = new MarkupToDotConverter().toDot(removeDiaFluxSectionType(markup));
 		String positioned = new GraphvizConnector().execute(unpositioned);
 		// outputFile.dot -> wiki-markup
@@ -38,7 +38,13 @@ public class DotFormatterAction extends AbstractAction {
 		catch (ImportException e) {
 			throw new IOException("ImportException: " + e.getLocalizedMessage());
 		}
-		context.getWriter().write(removeDiaFluxSectionType(content));
+		return content;
+	}
 
+	@Override
+	public void execute(UserActionContext context) throws IOException {
+		String markup = context.getParameter(Attributes.TEXT);
+		String content = formatMarkup(markup);
+		context.getWriter().write(removeDiaFluxSectionType(content));
 	}
 }
