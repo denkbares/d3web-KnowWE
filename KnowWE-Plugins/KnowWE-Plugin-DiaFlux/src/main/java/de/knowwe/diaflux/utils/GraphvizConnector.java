@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
-import org.jgrapht.ext.ImportException;
 
 import com.denkbares.strings.Strings;
 
@@ -34,17 +33,32 @@ public class GraphvizConnector {
 	public String execute(String dotInput) throws IOException {
 		String output;
 		try {
-			writeOut(dotInput);
-			// add position attributes
-			Process p = Runtime.getRuntime().exec("dot -o " + tmpPos.getAbsolutePath()
-					+ " -Tdot " + tmpUnpos.getAbsolutePath());
-			p.waitFor();
-			// catch errors
-			if (p.getErrorStream().available() > 0) {
-				String err = IOUtils.toString(p.getErrorStream(), Charset.defaultCharset());
-				throw new IOException("Graphviz could not process dotfile: " + err);
+			try {
+				writeOut(dotInput);
 			}
-			output = Strings.readFile(tmpPos);
+			catch (IOException e) {
+				throw new IOException("Writing unpositioned dot failed.", e);
+			}
+			// add position attributes
+			try {
+				Process p = Runtime.getRuntime().exec("dot -o " + tmpPos.getAbsolutePath()
+						+ " -Tdot " + tmpUnpos.getAbsolutePath());
+				p.waitFor();
+				if (p.getErrorStream().available() > 0) {
+					String err = IOUtils.toString(p.getErrorStream(), Charset.defaultCharset());
+					throw new IOException("Graphviz could not process dotfile: " + err);
+				}
+			}
+			catch (IOException e) {
+				throw new IOException("Executing graphviz failed. ", e);
+			}
+			// catch errors
+			try {
+				output = Strings.readFile(tmpPos);
+			}
+			catch (IOException e) {
+				throw new IOException("Could not read from positioned dot file. " + e);
+			}
 		}
 		catch (InterruptedException e) {
 			throw new IOException("Graphviz has been interrupted: " + e.getLocalizedMessage());

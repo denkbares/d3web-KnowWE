@@ -10,29 +10,81 @@ import org.jgrapht.ext.ImportException;
 import org.jgrapht.graph.DirectedMultigraph;
 
 /**
- * Converts a dotfile to DiaFlux-Markup.
+ * Converts a dotfile to DiaFlux-Markup. A dotfile should contain only ONE flow. An object of this class can be reused
+ * for multiple flows by calling {@link #toMarkup(String)} multiple times.
  * <p>
- * See {@link Node} and {@link Edge} for observed attributes. {@link Node#posx} and {@link Node#posy} are generated from
- * attribute "pos" of nodes.
+ * See {@link Node} and {@link Edge} for observed attributes.
  *
  * @author Adrian Müller
  * @created 21.10.16
  */
 public class DotToMarkupConverter {
 
-	private final DirectedMultigraph<Node, Edge> graph = new DirectedMultigraph<>(Edge.class);
+	private static DOTImporter<NamedNode, Edge> doti = new DOTImporter<>((s, map) -> {
+		if ("graph".equals(s)) {
+			Header h = new Header();
+			String[] dims = map.get("bb").split(",");
+			h.width = Double.parseDouble(dims[2]) * 2;
+			h.height = Double.parseDouble(dims[3]);
+			h.name = map.get("name");
+			h.autostart = Boolean.parseBoolean(map.get("autostart"));
+			h.fcid = map.get("fcid");
+			return h;
+		}
+		if (map.get("fcid") == null) {
+			return null;
+		}
+		Node n = new Node();
+		String[] pos = map.get("pos").split(",");
+		n.posx = Double.parseDouble(pos[0]);
+		n.posy = Double.parseDouble(pos[1]);
+		n.fcid = map.get("fcid");
+		n.name = map.get("name");
+		n.label = map.get("label");
+		// Will be null, if not available
+		n.markup = map.get("markup");
+		// Skip width and height
+
+		return n;
+	}, (node, v1, s, map) -> {
+		// s is null
+		Edge e = new Edge();
+		e.fcid = map.get("fcid");
+		// ignore pos
+		e.origin = node;
+		e.target = v1;
+		e.guard = map.get("guard");
+		e.markup = map.get("markup");
+		return e;
+	});
+
+	private DirectedMultigraph<NamedNode, Edge> graph;
 	private StringBuilder markup;
-	private String name;
 	private int fcid = 1, idCounter = 1;
-	private double width, height;
-	private boolean autostart;
+	private Header h;
 
 	public StringBuilder toMarkup(String dotfile) throws IOException, ImportException {
-		importGraph(dotfile);
+		idCounter = 1;
+		graph = new DirectedMultigraph<>(Edge.class);
+		doti.importGraph(graph, new StringReader(dotfile));
+		findHeader();
 		traceMaxIdFromSet(graph.vertexSet());
 		traceMaxIdFromSet(graph.edgeSet());
 		convertGraphToMarkup();
 		return markup;
+	}
+
+	private void findHeader() throws ImportException {
+		for (NamedNode n : graph.vertexSet()) {
+			if (n instanceof Header) {
+				h = (Header) n;
+				break;
+			}
+		}
+		if (h == null) {
+			throw new ImportException("Head of graph is missing.");
+		}
+		graph.removeVertex(h);
 	}
 
 	private void traceMaxIdFromSet(Set<? extends FCIDed> elements) {
@@ -53,46 +105,9 @@ public class DotToMarkupConverter {
 		}
 	}
 
-	private void importGraph(String dot) throws ImportException {
-		DOTImporter<Node, Edge> doti = new DOTImporter<>((s, map) -> {
-			if ("graph".equals(s)) {
-				String[] dims = map.get("bb").split(",");
-				width = Double.parseDouble(dims[2]) * 2;
-				height = Double.parseDouble(dims[3]);
-				name = map.get("name");
-				autostart = Boolean.parseBoolean(map.get("autostart"));
-				return null;
-			}
-			if ("node".equals(s)) {
-				return null;
-			}
-			Node n = new Node();
-			n.calcPos(map.get("pos").split(","), height);
-			n.fcid = map.get("fcid");
-			n.name = map.get("name");
-			n.label = map.get("label");
-			// Will be null, if not available
-			n.markup = map.get("markup");
-			// Skip width and height
-
-			return n;
-		}, (node, v1, s, map) -> {
-			// s is null
-			Edge e = new Edge();
-			e.fcid = map.get("fcid");
-			// ignore pos
-			e.origin = node;
-			e.target = v1;
-			e.guard = map.get("guard");
-			e.markup = map.get("markup");
-			return e;
-		});
-		doti.importGraph(graph, new StringReader(dot));
-	}
-
 	private StringBuilder convertGraphToMarkup() {
 		markup = new StringBuilder();
-		markup.append("%%DiaFlux\n").append("<flowchart fcid=\"flow_");
+		markup.append("%%DiaFlux\n");
 		createHeader();
 		markup.append("\n");
 		createNodeList();
@@ -103,15 +118,16 @@ public class DotToMarkupConverter {
 	}
 
 	private void createHeader() {
-		markup.append(Integer.toHexString(fcid))
+		markup.append("<flowchart fcid=\"flow_")
+				.append(Integer.toHexString(fcid))
 				.append("\" name=\"")
-				.append(fitEncoding(removeQuoteEscaping(name)))
+				.append(fitEncoding(removeQuoteEscaping(h.name)))
 				.append("\" width=\"")
-				.append(width)
+				.append(h.width)
 				.append("\" height=\"")
-				.append(height + 42)
+				.append(h.height + 42)
 				.append("\" autostart=\"")
-				.append(autostart)
+				.append(h.autostart)
 				.append("\" idCounter=\"")
 				.append(idCounter)
 				.append("\">\n");
@@ -119,10 +135,16 @@ public class DotToMarkupConverter {
 	}
 
 	private void createNodeList() {
-		ArrayList<Node> nodeList = new ArrayList<>(graph.vertexSet());
+		ArrayList<Node> nodeList = new ArrayList<>();
+		for (NamedNode n : graph.vertexSet()) {
+			if (n instanceof Node) {
+				nodeList.add((Node) n);
+			}
+		}
 		nodeList.sort(Comparator.comparingInt(this::getIdNumber));
 		markup.append("\t<!-- nodes of the flowchart -->\n");
 		for (Node node : nodeList) {
+			node.calcPos(h.height);
 			markup.append("\t<node fcid=\"")
 					.append(fitEncoding(node.fcid))
 					.append("\">\n")
@@ -181,12 +203,13 @@ public class DotToMarkupConverter {
 					.append(fitEncoding(edge.target.fcid))
 					.append("</target>\n");
 			if (edge.guard != null) {
+				String guard = edge.guard;
 				markup.append("\t\t<guard markup=\"")
 						.append(removeQuoteEscaping(edge.markup))
 						.append("\">");
-				if (name.endsWith(" = known")) {
-					name = name.substring(0, name.length() - " = known".length());
-					markup.append("KNOWN[\"").append(removeQuoteEscaping(edge.guard)).append("\"]");
+				if (guard.endsWith(" = known")) {
+					guard = guard.substring(0, guard.length() - " = known".length());
+					markup.append("KNOWN[\"").append(removeQuoteEscaping(guard)).append("\"]");
 				}
 				else {
 					markup.append(removeQuoteEscaping(edge.guard));
@@ -213,19 +236,28 @@ public class DotToMarkupConverter {
 		String fcid;
 	}
 
-	private static class Node extends FCIDed {
-		double posx, posy;
-		String name, label, markup;
+	private static class NamedNode extends FCIDed {
+		String name;
+	}
 
-		void calcPos(String[] pos, double graphHeight) {
-			posx = Double.parseDouble(pos[0]) * 2;
-			posy = Double.parseDouble(pos[1]);
+	private static class Node extends NamedNode {
+		double posx, posy;
+		String label, markup;
+
+		void calcPos(double graphHeight) {
+			posx = posx * 2;
+			posy = posy * 1;
 			posy = -(posy) + graphHeight;
 		}
 	}
 
 	private static class Edge extends FCIDed {
 		String guard, markup;
-		Node origin, target;
+		NamedNode origin, target;
+	}
+
+	private static class Header extends NamedNode {
+		double width, height;
+		boolean autostart;
 	}
 }
