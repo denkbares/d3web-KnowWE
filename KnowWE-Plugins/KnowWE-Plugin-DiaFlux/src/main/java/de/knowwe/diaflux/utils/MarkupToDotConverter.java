@@ -13,6 +13,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.XMLUtils;
 
 /**
@@ -56,7 +57,7 @@ public class MarkupToDotConverter {
 	private void createHeader(NamedNodeMap attr) {
 		dot.append("\tgraph [");
 		dot.append("name=\"")
-				.append(replaceQuotWithEscapedQuot(attr.getNamedItem("name").getNodeValue()))
+				.append(escapeQuoteAndBackslash(attr.getNamedItem("name").getNodeValue()))
 				.append("\",\n");
 		dot.append("\t\tautostart=\"")
 				.append(attr.getNamedItem("autostart").getNodeValue())
@@ -67,7 +68,7 @@ public class MarkupToDotConverter {
 		for (Node node : nodes) {
 			String label = "", name = "";
 			String fcid = node.getAttributes().getNamedItem("fcid").getNodeValue();
-			dot.append("\t").append(fcid.substring(1)).append("\t [");
+			dot.append("\t").append(Strings.quote(fcid)).append("\t [");
 			for (int i = 0; i < node.getChildNodes().getLength(); i++) {
 				Node attr = node.getChildNodes().item(i);
 				switch (attr.getNodeName()) {
@@ -77,7 +78,7 @@ public class MarkupToDotConverter {
 								.getAttributes()
 								.getNamedItem("markup")
 								.getNodeValue();
-						dot.append("markup=\"").append(replaceQuotWithEscapedQuot(markup)).append("\"");
+						dot.append("markup=\"").append(escapeQuoteAndBackslash(markup)).append("\"");
 						dot.append(",\n\t\t");
 						// fallthrough
 					case "decision":
@@ -93,8 +94,8 @@ public class MarkupToDotConverter {
 				}
 			}
 			dot.append("label=\"").append(label).append("\"");
-			dot.append(",\n\t\tfcid=\"").append(replaceQuotWithEscapedQuot(fcid)).append("\"");
-			dot.append(",\n\t\tname=\"").append(replaceQuotWithEscapedQuot(name)).append("\"");
+			dot.append(",\n\t\tfcid=\"").append(escapeQuoteAndBackslash(fcid)).append("\"");
+			dot.append(",\n\t\tname=\"").append(escapeQuoteAndBackslash(name)).append("\"");
 			dot.append("];\n");
 		}
 	}
@@ -117,26 +118,27 @@ public class MarkupToDotConverter {
 				}
 			}
 			dot.append("\t")
-					.append(attrs.get("origin").substring(1))
+					.append(Strings.quote(attrs.get("origin")))
 					.append(" -> ")
-					.append(attrs.get("target").substring(1))
+					.append(Strings.quote(attrs.get("target")))
 					.append("\t [")
 					.append("fcid=\"")
-					.append(replaceQuotWithEscapedQuot(edge.getAttributes().getNamedItem("fcid").getNodeValue()))
+					.append(escapeQuoteAndBackslash(edge.getAttributes().getNamedItem("fcid").getNodeValue()))
 					.append("\"");
-			if (attrs.containsKey("markup")) {
-				dot.append(",\n\t\tmarkup=\"KnOffice\"")
+			String markup = attrs.get("markup");
+			if (markup != null) {
+				dot.append(",\n\t\tmarkup=\"")
+						.append(markup)
+						.append("\"")
 						.append(",\n\t\tguard=\"")
-						.append(replaceQuotWithEscapedQuot(attrs.get("guard")))
+						.append(escapeQuoteAndBackslash(attrs.get("guard")))
 						.append("\"");
 			}
 			dot.append("];\n");
 		}
 	}
 
-	private String replaceQuotWithEscapedQuot(String value) {
-		return value.replace("\\", "\\\\").replace("\"", "\\\"").
-				replace("<", "&lt;").
-				replace(">", "&gt;");
+	private String escapeQuoteAndBackslash(String value) {
+		return value.replace("\\", "\\\\").replace("\"", "\\\"");
 	}
 }

@@ -265,6 +265,10 @@ class DOTImporter<V, E>
 		}
 
 		sectionBuffer.append(input.charAt(position));
+		if (current == '"') {
+			skipQuoted();
+			return NEXT;
+		}
 		if (position < (input.length() - 1)) {
 			char next = input.charAt(position + 1);
 			if (current == '-') {

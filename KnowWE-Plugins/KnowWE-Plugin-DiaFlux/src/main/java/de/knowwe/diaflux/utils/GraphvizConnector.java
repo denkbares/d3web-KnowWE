@@ -37,7 +37,7 @@ public class GraphvizConnector {
 				writeOut(dotInput);
 			}
 			catch (IOException e) {
-				throw new IOException("Writing unpositioned dot failed.", e);
+				throw new IOException("Writing unpositioned dot failed. " + e.getLocalizedMessage());
 			}
 			// add position attributes
 			try {
@@ -50,14 +50,14 @@ public class GraphvizConnector {
 				}
 			}
 			catch (IOException e) {
-				throw new IOException("Executing graphviz failed. ", e);
+				throw new IOException("Executing graphviz failed. " + e.getLocalizedMessage());
 			}
 			// catch errors
 			try {
 				output = Strings.readFile(tmpPos);
 			}
 			catch (IOException e) {
-				throw new IOException("Could not read from positioned dot file. " + e);
+				throw new IOException("Could not read from positioned dot file. " + e.getLocalizedMessage());
 			}
 		}
 		catch (InterruptedException e) {
