@@ -1,9 +1,9 @@
 package de.d3web.we.kdom.questionTree;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
-import com.denkbares.strings.Strings;
 import de.d3web.we.object.D3webTermDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -28,7 +28,7 @@ public class ObjectDescription extends AbstractType {
 
 	private static final String QTEXT_START_SYMBOL = "~";
 
-	public ObjectDescription(final Property<?> prop) {
+	public ObjectDescription(final Property<String> prop) {
 		this.setSectionFinder(new MatchUntilEndFinder(new StringSectionFinderUnquoted(
 				QTEXT_START_SYMBOL)));
 

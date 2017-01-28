@@ -18,9 +18,9 @@
  */
 package de.d3web.we.kdom.propertytable;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
-import com.denkbares.strings.Strings;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
@@ -37,7 +37,7 @@ import de.knowwe.kdom.table.TableUtils;
 
 /**
  * Type for property values. Values must be parseable by according property.
- * 
+ *
  * @author Reinhard Hatko
  * @created 11.06.2013
  */
@@ -56,7 +56,7 @@ public class PropertyValueType extends AbstractType {
 
 			Section<PropertyType> propType = Sections.successor(header, PropertyType.class);
 
-			Property<?> property = propType.get().getProperty(propType);
+			Property property = propType.get().getProperty(propType);
 			if (property == null) {
 				// do nothing, results in an error for header
 				return Messages.noMessage();
@@ -77,7 +77,6 @@ public class PropertyValueType extends AbstractType {
 			catch (Exception e) {
 				return Messages.asList(Messages.objectCreationError("Could not parse as property value: "
 						+ value));
-
 			}
 
 			Section<TableCellContent> rowHeader = TableUtils.getRowHeader(section);
@@ -96,9 +95,9 @@ public class PropertyValueType extends AbstractType {
 						+ object.getName() + "'"));
 			}
 
+			//noinspection unchecked
 			object.getInfoStore().addValue(property, parsedValue);
 			return Messages.noMessage();
 		});
 	}
-
 }
