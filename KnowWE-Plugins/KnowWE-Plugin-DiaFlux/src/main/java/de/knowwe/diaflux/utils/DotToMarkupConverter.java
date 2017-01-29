@@ -18,9 +18,9 @@ import org.jgrapht.graph.DirectedMultigraph;
  * @author Adrian Müller
  * @created 21.10.16
  */
-public class DotToMarkupConverter {
+public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 
-	private static DOTImporter<NamedNode, Edge> doti = new DOTImporter<>((s, map) -> {
+	private static final DOTImporter<NamedNode, Edge> doti = new DOTImporter<>((s, map) -> {
 		if ("graph".equals(s)) {
 			Header h = new Header();
 			String[] dims = map.get("bb").split(",");
@@ -59,7 +59,6 @@ public class DotToMarkupConverter {
 	});
 
 	private DirectedMultigraph<NamedNode, Edge> graph;
-	private StringBuilder markup;
 	private int fcid = 1, idCounter = 1;
 	private Header h;
 
@@ -70,8 +69,7 @@ public class DotToMarkupConverter {
 		findHeader();
 		traceMaxIdFromSet(graph.vertexSet());
 		traceMaxIdFromSet(graph.edgeSet());
-		convertGraphToMarkup();
-		return markup;
+		return convert();
 	}
 
 	private void findHeader() throws ImportException {
@@ -105,20 +103,13 @@ public class DotToMarkupConverter {
 		}
 	}
 
-	private StringBuilder convertGraphToMarkup() {
-		markup = new StringBuilder();
-		markup.append("%%DiaFlux\n");
-		createHeader();
-		markup.append("\n");
-		createNodeList();
-		markup.append("\n");
-		createEdgeList();
-		markup.append("</flowchart>\n").append("%\n");
-		return markup;
+	private StringBuilder convert() {
+		return convert("%%DiaFlux", "%");
 	}
 
-	private void createHeader() {
-		markup.append("<flowchart fcid=\"flow_")
+	@Override
+	protected void createHeader() {
+		res.append("<flowchart fcid=\"flow_")
 				.append(Integer.toHexString(fcid))
 				.append("\" name=\"")
 				.append(fitEncoding(removeQuoteEscaping(h.name)))
@@ -134,7 +125,8 @@ public class DotToMarkupConverter {
 		fcid++;
 	}
 
-	private void createNodeList() {
+	@Override
+	protected void createNodeList() {
 		ArrayList<Node> nodeList = new ArrayList<>();
 		for (NamedNode n : graph.vertexSet()) {
 			if (n instanceof Node) {
@@ -142,10 +134,10 @@ public class DotToMarkupConverter {
 			}
 		}
 		nodeList.sort(Comparator.comparingInt(this::getIdNumber));
-		markup.append("\t<!-- nodes of the flowchart -->\n");
+		res.append("\t<!-- nodes of the flowchart -->\n");
 		for (Node node : nodeList) {
 			node.calcPos(h.height);
-			markup.append("\t<node fcid=\"")
+			res.append("\t<node fcid=\"")
 					.append(fitEncoding(node.fcid))
 					.append("\">\n")
 					.append("\t\t<position left=\"")
@@ -159,41 +151,42 @@ public class DotToMarkupConverter {
 					if (node.name.startsWith("INDICATED")) {
 						node.name = node.name.substring(11, node.name.length() - 1);
 					}
-					markup.append("\t\t<action markup=\"")
+					res.append("\t\t<action markup=\"")
 							.append(node.markup)
 							.append("\">");
-					markup.append(removeQuoteEscaping(node.name));
-					markup.append("</action>\n");
+					res.append(removeQuoteEscaping(node.name));
+					res.append("</action>\n");
 					break;
 				case "start":
 				case "decision":
 				case "exit":
 				case "comment":
 				case "snapshot":
-					markup.append("\t\t<")
+					res.append("\t\t<")
 							.append(node.label)
 							.append(">");
 					if ("decision".equals(node.label)) {
-						markup.append(removeQuoteEscaping(node.name));
+						res.append(removeQuoteEscaping(node.name));
 					}
 					else {
-						markup.append(fitEncoding(removeQuoteEscaping(node.name)));
+						res.append(fitEncoding(removeQuoteEscaping(node.name)));
 					}
-					markup.append("</").append(node.label).append(">\n");
+					res.append("</").append(node.label).append(">\n");
 					break;
 				default:
 					// should be only these
 			}
-			markup.append("\t</node>\n\n");
+			res.append("\t</node>\n\n");
 		}
 	}
 
-	private void createEdgeList() {
+	@Override
+	protected void createEdgeList() {
 		ArrayList<Edge> edgeList = new ArrayList<>(graph.edgeSet());
 		edgeList.sort(Comparator.comparingInt(this::getIdNumber));
-		markup.append("\t<!-- rules of the flowchart -->\n");
+		res.append("\t<!-- rules of the flowchart -->\n");
 		for (Edge edge : edgeList) {
-			markup.append("\t<edge fcid=\"")
+			res.append("\t<edge fcid=\"")
 					.append(fitEncoding(edge.fcid))
 					.append("\">\n")
 					.append("\t\t<origin>")
@@ -204,20 +197,21 @@ public class DotToMarkupConverter {
 					.append("</target>\n");
 			if (edge.guard != null) {
 				String guard = edge.guard;
-				markup.append("\t\t<guard markup=\"")
+				res.append("\t\t<guard markup=\"")
 						.append(removeQuoteEscaping(edge.markup))
 						.append("\">");
 				if (guard.endsWith(" = known")) {
 					guard = guard.substring(0, guard.length() - " = known".length());
-					markup.append("KNOWN[\"").append(removeQuoteEscaping(guard)).append("\"]");
+					res.append("KNOWN[\"").append(removeQuoteEscaping(guard)).append("\"]");
 				}
 				else {
-					markup.append(removeQuoteEscaping(edge.guard));
+					res.append(removeQuoteEscaping(edge.guard));
 				}
-				markup.append("</guard>\n");
+				res.append("</guard>\n");
 			}
-			markup.append("\t</edge>\n\n");
+			res.append("\t</edge>\n\n");
 		}
+		res.append("</flowchart>\n");
 	}
 
 	private String removeQuoteEscaping(String value) {

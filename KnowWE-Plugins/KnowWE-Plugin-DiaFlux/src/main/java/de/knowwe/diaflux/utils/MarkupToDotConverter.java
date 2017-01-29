@@ -21,15 +21,17 @@ import com.denkbares.utils.XMLUtils;
  * @created 10.01.17
  * <p>
  */
-public class MarkupToDotConverter {
+public class MarkupToDotConverter extends AbstractDiaFluxToDotConverter {
 
-	private StringBuilder dot;
+	private Node head;
+	private List<Node> nodes, edges;
 
 	public String toDot(String markup) throws IOException {
 		Document doc = XMLUtils.streamToDocument(new ByteArrayInputStream(markup.getBytes(StandardCharsets.UTF_8)));
-		Node flowchart = doc.getFirstChild();
-		NodeList list = flowchart.getChildNodes();
-		List<Node> nodes = new ArrayList<>(), edges = new ArrayList<>();
+		head = doc.getFirstChild();
+		NodeList list = head.getChildNodes();
+		nodes = new ArrayList<>();
+		edges = new ArrayList<>();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node n = list.item(i);
 			switch (n.getNodeName()) {
@@ -43,32 +45,27 @@ public class MarkupToDotConverter {
 					// ignore
 			}
 		}
-		dot = new StringBuilder();
-		dot.append("digraph G {\n");
-		createHeader(flowchart.getAttributes());
-		dot.append("\n");
-		createNodeList(nodes);
-		dot.append("\n");
-		createEdgeList(edges);
-		dot.append("}\n");
-		return dot.toString();
+		return convert();
 	}
 
-	private void createHeader(NamedNodeMap attr) {
-		dot.append("\tgraph [");
-		dot.append("name=\"")
+	@Override
+	protected void createHeader() {
+		NamedNodeMap attr = head.getAttributes();
+		res.append("\tgraph [");
+		res.append("name=\"")
 				.append(escapeQuoteAndBackslash(attr.getNamedItem("name").getNodeValue()))
 				.append("\",\n");
-		dot.append("\t\tautostart=\"")
+		res.append("\t\tautostart=\"")
 				.append(attr.getNamedItem("autostart").getNodeValue())
 				.append("\"];");
 	}
 
-	private void createNodeList(List<Node> nodes) {
+	@Override
+	protected void createNodeList() {
 		for (Node node : nodes) {
 			String label = "", name = "";
 			String fcid = node.getAttributes().getNamedItem("fcid").getNodeValue();
-			dot.append("\t").append(Strings.quote(fcid)).append("\t [");
+			res.append("\t").append(Strings.quote(fcid)).append("\t [");
 			for (int i = 0; i < node.getChildNodes().getLength(); i++) {
 				Node attr = node.getChildNodes().item(i);
 				switch (attr.getNodeName()) {
@@ -78,8 +75,8 @@ public class MarkupToDotConverter {
 								.getAttributes()
 								.getNamedItem("markup")
 								.getNodeValue();
-						dot.append("markup=\"").append(escapeQuoteAndBackslash(markup)).append("\"");
-						dot.append(",\n\t\t");
+						res.append("markup=\"").append(escapeQuoteAndBackslash(markup)).append("\"");
+						res.append(",\n\t\t");
 						// fallthrough
 					case "decision":
 					case "start":
@@ -93,14 +90,15 @@ public class MarkupToDotConverter {
 						// no other
 				}
 			}
-			dot.append("label=\"").append(label).append("\"");
-			dot.append(",\n\t\tfcid=\"").append(escapeQuoteAndBackslash(fcid)).append("\"");
-			dot.append(",\n\t\tname=\"").append(escapeQuoteAndBackslash(name)).append("\"");
-			dot.append("];\n");
+			res.append("label=\"").append(label).append("\"");
+			res.append(",\n\t\tfcid=\"").append(escapeQuoteAndBackslash(fcid)).append("\"");
+			res.append(",\n\t\tname=\"").append(escapeQuoteAndBackslash(name)).append("\"");
+			res.append("];\n");
 		}
 	}
 
-	private void createEdgeList(List<Node> edges) {
+	@Override
+	protected void createEdgeList() {
 		for (Node edge : edges) {
 			Map<String, String> attrs = new HashMap<>();
 			for (int i = 0; i < edge.getChildNodes().getLength(); i++) {
@@ -117,7 +115,7 @@ public class MarkupToDotConverter {
 						// no other
 				}
 			}
-			dot.append("\t")
+			res.append("\t")
 					.append(Strings.quote(attrs.get("origin")))
 					.append(" -> ")
 					.append(Strings.quote(attrs.get("target")))
@@ -127,18 +125,15 @@ public class MarkupToDotConverter {
 					.append("\"");
 			String markup = attrs.get("markup");
 			if (markup != null) {
-				dot.append(",\n\t\tmarkup=\"")
+				res.append(",\n\t\tmarkup=\"")
 						.append(markup)
 						.append("\"")
 						.append(",\n\t\tguard=\"")
 						.append(escapeQuoteAndBackslash(attrs.get("guard")))
 						.append("\"");
 			}
-			dot.append("];\n");
+			res.append("];\n");
 		}
 	}
 
-	private String escapeQuoteAndBackslash(String value) {
-		return value.replace("\\", "\\\\").replace("\"", "\\\"");
-	}
 }
