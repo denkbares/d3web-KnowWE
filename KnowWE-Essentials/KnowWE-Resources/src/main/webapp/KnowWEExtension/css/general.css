@@ -197,7 +197,7 @@ code.box {
 .warning {
 	background: #FFF6BF url(../images/msg_info_yellow.png) center no-repeat;
 	background-position: 10px 50%; /* x-pos y-pos */
-	padding: 5px 20px 5px 45px;
+	padding: 5px 20px 5px 45px !important;
 }
 
 .error {
