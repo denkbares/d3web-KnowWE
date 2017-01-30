@@ -39,6 +39,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 	public void append(String web, String title, UserContext user, RenderResult html) {
 		WikiConnector connector = Environment.getInstance().getWikiConnector();
 		Article article = KnowWEUtils.getArticle(web, title);
+		if (article == null) return; // Can happen in preview mode
 		int version = connector.getVersion(title);
 		long modDate = connector.getLastModifiedDate(title, -1).getTime();
 		String userName = user.getUserName();
