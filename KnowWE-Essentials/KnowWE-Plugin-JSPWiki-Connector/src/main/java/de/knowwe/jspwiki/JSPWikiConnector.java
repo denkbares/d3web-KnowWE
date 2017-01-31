@@ -726,7 +726,7 @@ public class JSPWikiConnector implements WikiConnector {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Attachment attachment = attachmentManager.getAttachmentInfo(path);
 
-			if (!fireDeleteEvent) {
+			if (attachment != null && !fireDeleteEvent) {
 				// will cause the KnowWEAttachmentProvider to not fire a delete event
 				// not pretty, but the JSPWiki API is not on our side here
 				attachment.setAttribute(KnowWEAttachmentProvider.FIRE_DELETE_EVENT, "false");
