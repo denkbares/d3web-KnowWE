@@ -554,6 +554,13 @@ input.knowwe-paginationFilter {
 	color: #888;
 }
 
+.haddock a.anchor {
+	display: block;
+	position: relative;
+	top: -55px;
+	visibility: hidden;
+}
+
 /* ################################################## */
 /* ------------- Font Awesome Customisation----------- */
 /* ################################################## */

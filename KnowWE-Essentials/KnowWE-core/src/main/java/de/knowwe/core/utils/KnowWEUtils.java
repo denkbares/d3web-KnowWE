@@ -256,7 +256,7 @@ public class KnowWEUtils {
 	 */
 	public static void renderAnchor(Section<?> section, RenderResult result) {
 		String anchorName = KnowWEUtils.getAnchor(section);
-		result.appendHtml("<a name='" + anchorName + "'></a>");
+		result.appendHtml("<a class='anchor' name='" + anchorName + "'></a>");
 	}
 
 	/**
