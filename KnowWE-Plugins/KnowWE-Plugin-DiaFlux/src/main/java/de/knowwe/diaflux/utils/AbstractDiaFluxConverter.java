@@ -6,9 +6,10 @@ package de.knowwe.diaflux.utils;
  */
 public abstract class AbstractDiaFluxConverter {
 
-	protected StringBuilder res = new StringBuilder();
+	protected StringBuilder res;
 
 	StringBuilder convert(String start, String end) {
+		res = new StringBuilder();
 		res.append(start);
 		res.append("\n");
 		createHeader();
