@@ -23,10 +23,12 @@ package de.d3web.we.quicki;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -54,7 +56,6 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
-import com.denkbares.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -740,7 +741,7 @@ public class QuickInterviewRenderer {
 		else if (value != null) {
 			cssclass = "answerunknown";
 		}
-		String prompt = MMInfo.getUnknownPrompt(q, null);
+		String prompt = MMInfo.getUnknownPrompt(q, (Locale) null);
 
 		if (!(q instanceof QuestionNum)) {
 			// separator already rendered in renderNumAnswers
