@@ -192,7 +192,7 @@ DenkbaresSkin.scrollFavorites = function() {
 		}
 		var footer = jq$('.footer');
 		var footerTop = 0;
-		if (footer) {
+		if (footer.exists()) {
 			footerTop = footer.offset().top;
 		}
 		var limit = footerTop - sidebarHeight;
