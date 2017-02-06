@@ -123,6 +123,9 @@
 				data : data
 			}).success(function(data, status, jqXHR) {
 				if (jqXHR.status === 304) return; // no changes, do nothing
+				if (options.beforeReplace) {
+					options.beforeReplace.call(this, $element, data);
+				}
 				var parsed = JSON.parse(data);
 				var html = parsed.html;
 				if ($element.is('.ReRenderSectionMarker')) {
@@ -136,7 +139,9 @@
 				jq$('#knowWEInfoStatus').val(parsed.status);
 				KNOWWE.core.actions.init();
 				KNOWWE.helper.observer.notify("afterRerender", $element);
-				if (options.callback) options.callback();
+				if (options.callback) {
+					options.callback.call(this, $element);
+				}
 			}).always(function() {
 				if (showGlobalProcessingState()) {
 					KNOWWE.core.util.updateProcessingState(-1);
