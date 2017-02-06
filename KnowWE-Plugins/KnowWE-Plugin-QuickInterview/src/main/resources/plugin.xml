@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
 <plugin id="KnowWE-Plugin-QuickInterview" version="1.0">
-	
+
 	<requires>
 		<import plugin-id="KnowWEExtensionPoints" />
 		<import plugin-id="KnowWE-Plugin-d3web-basic" />
 	</requires>
-	
+
 	<runtime>
 		<library id="de.d3web" path="." type="code">
 			<export prefix="*" />
@@ -15,32 +15,18 @@
 			<export prefix="*" />
 		</library>
 	</runtime>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
-		id="QuickInterviewTagHandler">
-		<parameter id="class"
-			value="de.d3web.we.quicki.QuickInterviewTagHandler" />
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="QuickInterviewTagHandler">
+		<parameter id="class" value="de.d3web.we.quicki.QuickInterviewTagHandler" />
 		<parameter id="name" value="QuickInterviewTagHandler" />
 		<parameter id="description" value="TagHandler QuickInterviewTagHandler" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="script" value="quicki.js" />
 	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-		id="QuickInterviewAction">
-		<parameter id="class"
-			value="de.d3web.we.quicki.QuickInterviewAction" />
-		<parameter id="name" value="QuickInterviewAction" />
-		<parameter id="description" value="Action QuickInterviewAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-	
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="QuickInterviewMarkup">
-		<parameter id="class"
-			value="de.d3web.we.quicki.QuickInterviewMarkup" />
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="QuickInterviewMarkup">
+		<parameter id="class" value="de.d3web.we.quicki.QuickInterviewMarkup" />
 		<parameter id="name" value="QuickInterviewMarkup" />
 		<parameter id="description" value="Markup for QuickInterview" />
 		<parameter id="version" value="1.0" />
@@ -50,22 +36,19 @@
 		<parameter id="script" value="loadQuicki.js" />
 		<parameter id="script" value="saveQuicki.js" />
 	</extension>
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-                id="QuickInterviewLoadAction">
-                <parameter id="class"
-                        value="de.d3web.we.quicki.QuickInterviewLoadAction" />
-                <parameter id="name" value="QuickInterviewLoadAction" />
-                <parameter id="description" value="Action for loading a Session" />
-                <parameter id="version" value="1.0" />
-                <parameter id="priority" value="5" />
-        </extension>
-        <extension plugin-id="KnowWEExtensionPoints" point-id="Action"
-                id="QuickInterviewSaveAction">
-                <parameter id="class"
-                        value="de.d3web.we.quicki.QuickInterviewSaveAction" />
-                <parameter id="name" value="QuickInterviewSaveAction" />
-                <parameter id="description" value="Action for saving a Session" />
-                <parameter id="version" value="1.0" />
-                <parameter id="priority" value="5" />
-        </extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="QuickInterviewLoadAction">
+		<parameter id="class" value="de.d3web.we.quicki.QuickInterviewLoadAction" />
+		<parameter id="name" value="QuickInterviewLoadAction" />
+		<parameter id="description" value="Action for loading a Session" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="QuickInterviewSaveAction">
+		<parameter id="class" value="de.d3web.we.quicki.QuickInterviewSaveAction" />
+		<parameter id="name" value="QuickInterviewSaveAction" />
+		<parameter id="description" value="Action for saving a Session" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 </plugin>
