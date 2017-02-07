@@ -61,6 +61,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -679,7 +680,16 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getURLLink(Section<?> section) {
-		return "Wiki.jsp?page=" + Strings.encodeURL(section.getTitle()) + "#" + getAnchor(section);
+		String title = section.getTitle();
+		ArticleManager articleManager = section.getArticleManager();
+		if (articleManager instanceof DefaultArticleManager) {
+			Set<Section<AttachmentType>> compilingAttachmentSections = ((DefaultArticleManager) articleManager).getAttachmentManager()
+					.getCompilingAttachmentSections(section.getArticle());
+			if (!compilingAttachmentSections.isEmpty()) {
+				title = compilingAttachmentSections.iterator().next().getTitle();
+			}
+		}
+		return "Wiki.jsp?page=" + Strings.encodeURL(title) + "#" + getAnchor(section);
 	}
 
 	/**
