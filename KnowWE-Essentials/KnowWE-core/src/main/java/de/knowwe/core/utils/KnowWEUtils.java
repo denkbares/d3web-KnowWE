@@ -239,10 +239,7 @@ public class KnowWEUtils {
 	 * @return the unique anchor name
 	 */
 	public static String getAnchor(Section<?> section) {
-		// TODO: figure out how JSPWiki builds section anchor names
-		return "section-"
-				+ section.getArticle().getTitle().replace(' ', '+') + "-"
-				+ Math.abs(section.getID().hashCode());
+		return "section-" + section.getID();
 	}
 
 	/**

@@ -58,6 +58,7 @@ public class AnchorRenderer implements Renderer {
 		KnowWEUtils.renderAnchor(section, result);
 		result.append(separator);
 		delegate.render(section, user, result);
+		result.appendHtmlElement("a", "", "class", "anchor-end", "name", KnowWEUtils.getAnchor(section));
 	}
 
 	/**

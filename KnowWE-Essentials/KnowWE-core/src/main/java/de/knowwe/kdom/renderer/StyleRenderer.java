@@ -136,13 +136,16 @@ public class StyleRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
-		renderOpeningTag(string);
+		renderOpeningTag(section, string);
 		renderContent(section, user, string);
 		string.appendHtml("</span>");
 	}
 
-	private void renderOpeningTag(RenderResult string) {
+	private void renderOpeningTag(Section<?> section, RenderResult string) {
 		string.appendHtml("<span");
+		if (section != null) {
+			string.append(" sectionid='").append(section.getID()).append("'");
+		}
 		if (cssClass != null) {
 			string.append(" class='").append(cssClass).append("'");
 		}
@@ -153,7 +156,7 @@ public class StyleRenderer implements Renderer {
 	}
 
 	public void renderText(String text, UserContext user, RenderResult string) {
-		renderOpeningTag(string);
+		renderOpeningTag(null, string);
 		string.append(text);
 		string.appendHtml("</span>");
 	}
