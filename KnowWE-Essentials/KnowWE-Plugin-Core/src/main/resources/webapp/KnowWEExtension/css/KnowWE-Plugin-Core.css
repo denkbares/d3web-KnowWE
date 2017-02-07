@@ -555,9 +555,9 @@ input.knowwe-paginationFilter {
 }
 
 .haddock a.anchor {
-	display: block;
+	display: inline-block;
 	position: relative;
-	top: -55px;
+	top: -71px;
 	visibility: hidden;
 }
 
