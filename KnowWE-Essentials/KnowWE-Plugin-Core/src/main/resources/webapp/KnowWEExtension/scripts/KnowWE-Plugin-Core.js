@@ -34,7 +34,7 @@ KNOWWE.core.plugin.objectinfo = function () {
 		// section not found, try highlighting from anchor to anchor-end
 		var anchor = jq$('.anchor[name="' + name + '"]');
 		if (!anchor.exists()) return;
-		var endSelector = '.anchor-end[name="' + name + '"]';
+		var endSelector = '.anchor,.anchor-end[name="' + name + '"]';
 		if (!anchor.nextAll(endSelector).exists()) return;
 		var next = anchor.next();
 		while (!next.is(endSelector)) {
