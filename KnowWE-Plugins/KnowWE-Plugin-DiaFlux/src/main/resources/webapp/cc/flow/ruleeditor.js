@@ -1,55 +1,57 @@
 //Rule event handlers
 //register click-listener for that class
-CCEvents.addClassListener('click', 'ArrowTool', function(event) {/*NOP, but avoid bubbling*/
+CCEvents.addClassListener('click', 'ArrowTool', function (event) {/*NOP, but avoid bubbling*/
 });
-CCEvents.addClassListener('click', 'RoutingTool', function(event) {/*NOP, but avoid bubbling*/
+CCEvents.addClassListener('click', 'RoutingTool', function (event) {/*NOP, but avoid bubbling*/
 });
-CCEvents.addClassListener('click', 'RoutingToolGray', function(event) {/*NOP, but avoid bubbling*/
+CCEvents.addClassListener('click', 'RoutingToolGray', function (event) {/*NOP, but avoid bubbling*/
 });
 
-CCEvents.addClassListener('dblclick', 'RoutingTool', function(event) {
+CCEvents.addClassListener('dblclick', 'RoutingTool', function (event) {
 	this.__routingTool.routingPoint.destroy();
 });
 
 
 //register select click events for rule
 CCEvents.addClassListener('click', 'Rule',
-	function(event) {
+	function (event) {
 		if (this.__rule) this.__rule.select(DiaFluxUtils.isControlKey(event));
 
-		if (event.isRightClick()) {
-			contextMenuFlowchart.close();
-			contextMenuNode.close();
-			contextMenuRule.show(event, this.__rule);
-		} else {
-			contextMenuNode.close();
-			contextMenuFlowchart.close();
-			contextMenuRule.close();
+		if (typeof contextMenuNode != "undefined") {
+			if (event.isRightClick()) {
+				contextMenuFlowchart.close();
+				contextMenuNode.close();
+				contextMenuRule.show(event, this.__rule);
+			} else {
+				contextMenuNode.close();
+				contextMenuFlowchart.close();
+				contextMenuRule.close();
 
+			}
 		}
 	}
 );
 
 //overrides empty implementation in rule.js
-Rule.prototype.createDraggable = function() {
+Rule.prototype.createDraggable = function () {
 	var newDrag = new Draggable(this.getDOM(), {
-		ghosting : false,
-		revert : true,
-		starteffect : null,
-		endeffect : null
+		ghosting: false,
+		revert: true,
+		starteffect: null,
+		endeffect: null
 	});
 	newDrag.__rule = this;
 	this.draggable = newDrag;
 }
 
 //overrides empty implementation in rule.js
-Rule.prototype.destroyDraggable = function() {
+Rule.prototype.destroyDraggable = function () {
 	this.draggable.destroy();
 	this.draggable = null;
 }
 
 
-Rule.prototype.toXML = function(dx, dy) {
+Rule.prototype.toXML = function (dx, dy) {
 	var xml = '\t<edge' +
 		(this.fcid ? ' fcid="' + this.fcid + '"' : '') +
 		'>\n';
@@ -86,15 +88,15 @@ function RuleArrowTool(rule) {
 	this.draggable = null;
 }
 
-RuleArrowTool.prototype.getDOM = function() {
+RuleArrowTool.prototype.getDOM = function () {
 	return this.dom;
 }
 
-RuleArrowTool.prototype.isVisible = function() {
+RuleArrowTool.prototype.isVisible = function () {
 	return (this.dom != null);
 }
 
-RuleArrowTool.prototype.setVisible = function(visible) {
+RuleArrowTool.prototype.setVisible = function (visible) {
 	if (!this.isVisible() && visible) {
 		this.dom = this.render();
 		this.flowchart.getContentPane().appendChild(this.dom);
@@ -109,11 +111,11 @@ RuleArrowTool.prototype.setVisible = function(visible) {
 	}
 }
 
-RuleArrowTool.prototype.destroy = function() {
+RuleArrowTool.prototype.destroy = function () {
 	this.setVisible(false);
 }
 
-RuleArrowTool.prototype.render = function() {
+RuleArrowTool.prototype.render = function () {
 	var x, y, dom, arrow;
 	x = this.rule.coordinates[this.rule.coordinates.length - 1][0] - 13;
 	y = this.rule.coordinates[this.rule.coordinates.length - 1][1] - 13;
@@ -122,37 +124,37 @@ RuleArrowTool.prototype.render = function() {
 	var arrowDir = ruleDOM.select('.arrow')[0].className.match(/_(\w+)/)[1];
 
 	dom = Builder.node('div', {
-		id : this.rule.fcid + '_arrow_tool',
-		className : 'ArrowTool ArrowTool_' + arrowDir,
-		style : "left: " + x + "px; top:" + y + "px;"
+		id: this.rule.fcid + '_arrow_tool',
+		className: 'ArrowTool ArrowTool_' + arrowDir,
+		style: "left: " + x + "px; top:" + y + "px;"
 	});
 	dom.__arrowTool = this;
 	return dom;
 }
 
-RuleArrowTool.prototype.createDraggable = function() {
+RuleArrowTool.prototype.createDraggable = function () {
 	var newDrag = new Draggable(this.getDOM(), {
-		ghosting : false,
-		revert : true,
-		starteffect : null,
-		endeffect : null,
-		onStart : function(draggable, event) {
+		ghosting: false,
+		revert: true,
+		starteffect: null,
+		endeffect: null,
+		onStart: function (draggable, event) {
 		},
-		onEnd : function(draggable, event) {
+		onEnd: function (draggable, event) {
 			draggable.__arrowTool.showLine(null, null);
 		},
-		snap : function(x, y, draggable) {
+		snap: function (x, y, draggable) {
 			draggable.__arrowTool.showLine(x, y);
 			return [x, y];
 		},
-		scroll : this.flowchart.fcid
+		scroll: this.flowchart.fcid
 	});
 	newDrag.__arrowTool = this;
 	return newDrag;
 }
 
-RuleArrowTool.prototype.createRule = function(targetNode) {
-	EditorInstance.withUndo("Relocate Edge", function() {
+RuleArrowTool.prototype.createRule = function (targetNode) {
+	EditorInstance.withUndo("Relocate Edge", function () {
 		if (this.rule.getTargetNode() != targetNode && this.rule.getSourceNode() != targetNode) {
 			var rule = new Rule(this.rule.fcid, this.rule.getSourceNode(), this.rule.getGuard(), targetNode);
 			this.rule.destroy();
@@ -161,7 +163,7 @@ RuleArrowTool.prototype.createRule = function(targetNode) {
 	}.bind(this));
 };
 
-RuleArrowTool.prototype.showLine = function(x, y) {
+RuleArrowTool.prototype.showLine = function (x, y) {
 	if (this.lineDOM) {
 		this.flowchart.getContentPane().removeChild(this.lineDOM);
 		this.lineDOM = null;
@@ -190,19 +192,19 @@ function RoutingTool(routingPoint, insertIndex) {
 	this.draggable = null;
 }
 
-RoutingTool.prototype.getDOM = function() {
+RoutingTool.prototype.getDOM = function () {
 	return this.dom;
 }
 
-RoutingTool.prototype.isInsert = function() {
+RoutingTool.prototype.isInsert = function () {
 	return typeof this.insertIndex === 'number';
 }
 
-RoutingTool.prototype.isVisible = function() {
+RoutingTool.prototype.isVisible = function () {
 	return (this.dom != null);
 }
 
-RoutingTool.prototype.setVisible = function(visible) {
+RoutingTool.prototype.setVisible = function (visible) {
 	if (!this.isVisible() && visible) {
 		this.dom = this.render();
 		this.flowchart.getContentPane().appendChild(this.dom);
@@ -217,25 +219,25 @@ RoutingTool.prototype.setVisible = function(visible) {
 	}
 }
 
-RoutingTool.prototype.destroy = function() {
+RoutingTool.prototype.destroy = function () {
 	this.setVisible(false);
 }
 
-RoutingTool.prototype.render = function() {
+RoutingTool.prototype.render = function () {
 	var x = this.routingPoint.getX() - 7;
 	var y = this.routingPoint.getY() - 7;
 	var className = this.isInsert() ? 'RoutingToolGray' : 'RoutingTool';
 
 	this.dom = Builder.node('div', {
-		id : this.routingPoint.rule.fcid + '_routing_tool', // TODO: remove id if possible or make unique
-		className : className,
-		style : "left: " + x + "px; top:" + y + "px;"
+		id: this.routingPoint.rule.fcid + '_routing_tool', // TODO: remove id if possible or make unique
+		className: className,
+		style: "left: " + x + "px; top:" + y + "px;"
 	});
 	this.dom.__routingTool = this;
 	return this.dom;
 }
 
-RoutingTool.prototype.createDraggable = function() {
+RoutingTool.prototype.createDraggable = function () {
 
 	if (!this.snapManager) {
 		this.snapManager = new SnapManager(this.flowchart);
@@ -244,15 +246,15 @@ RoutingTool.prototype.createDraggable = function() {
 	var lastX = this.routingPoint.getX();
 	var lastY = this.routingPoint.getY();
 	var newDrag = new Draggable(this.getDOM(), {
-		ghosting : false,
-		revert : true,
-		starteffect : null,
-		endeffect : null,
-		onStart : function(draggable, event) {
+		ghosting: false,
+		revert: true,
+		starteffect: null,
+		endeffect: null,
+		onStart: function (draggable, event) {
 			draggable.__snapManager.initializeSnapsForRoutingPoint(newDrag.__routingTool.routingPoint);
 		},
-		onEnd : function(draggable, event) {
-			EditorInstance.withUndo("Edge Routing", function() {
+		onEnd: function (draggable, event) {
+			EditorInstance.withUndo("Edge Routing", function () {
 				draggable.__snapManager.showSnapLines(null, null);
 				draggable.__routingTool.showLine(null, null);
 				var routingPoint = draggable.__routingTool.routingPoint;
@@ -266,7 +268,7 @@ RoutingTool.prototype.createDraggable = function() {
 				rule.select(false, true);
 			});
 		},
-		snap : function(x, y, draggable) {
+		snap: function (x, y, draggable) {
 			draggable.__routingTool.showLine(x, y);
 			// TODO: handle snap to source / target / other routing points
 			var coords = draggable.__snapManager.snapIt(x, y);
@@ -274,14 +276,14 @@ RoutingTool.prototype.createDraggable = function() {
 			lastY = coords[1] + 7;
 			return coords;
 		},
-		scroll : this.flowchart.fcid
+		scroll: this.flowchart.fcid
 	});
 	newDrag.__snapManager = this.snapManager;
 	newDrag.__routingTool = this;
 	return newDrag;
 }
 
-RoutingTool.prototype.showLine = function(x, y) {
+RoutingTool.prototype.showLine = function (x, y) {
 	if (this.lineDOM1) {
 		this.flowchart.getContentPane().removeChild(this.lineDOM1);
 		this.lineDOM1 = null;
