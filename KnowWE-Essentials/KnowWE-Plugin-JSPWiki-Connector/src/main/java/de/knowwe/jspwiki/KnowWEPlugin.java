@@ -290,7 +290,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			boolean isQueuedForCompilation = articleManager.getQueuedArticles().contains(article);
 
 			if (article != null && !isQueuedForCompilation) {
+				long start = System.currentTimeMillis();
 				render(userContext, article, renderResult);
+				Log.info("Rendered article '" + article.getTitle() + "' in "
+						+ (System.currentTimeMillis() - start) + "ms");
 			}
 			stringRaw = renderResult.toStringRaw();
 			userContext.getRequest().setAttribute("renderresult" + title, stringRaw);
@@ -495,11 +498,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	private void renderPage(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
-		long start = System.currentTimeMillis();
 		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 				renderResult);
-		Log.info("Rendered article '" + article.getTitle() + "' in "
-				+ (System.currentTimeMillis() - start) + "ms");
 		EventManager.getInstance().fireEvent(
 				new PageRenderedEvent(article.getTitle(), userContext));
 	}
