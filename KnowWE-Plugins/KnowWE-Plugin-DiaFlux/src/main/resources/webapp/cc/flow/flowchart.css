@@ -1,3 +1,11 @@
+.haddock .type_DiaFlux a.anchor {
+	display: inherit;
+}
+
+.haddock .type_DiaFlux * {
+	box-sizing: content-box;
+}
+
 .Flowchart {
 	position:	relative;
 	background-image: url(../image/grid_10.png);

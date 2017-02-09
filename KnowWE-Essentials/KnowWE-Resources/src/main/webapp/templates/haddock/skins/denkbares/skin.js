@@ -301,12 +301,11 @@ DenkbaresSkin.cleanTrail = function() {
 };
 
 DenkbaresSkin.resizeFlows = function() {
-	jq$('.type_DiaFlux').each(function() {
-		jq$(this).css('width', '100%');
-	});
 	jq$('.Flowchart').each(function() {
-		jq$(this).css('width', '100%');
-	})
+		var newWidth = jq$('.page-content').width();
+		newWidth = (Math.round(newWidth / 10) * 10) - 9;
+		jq$(this).css('min-width', newWidth);
+	});
 };
 
 DenkbaresSkin.showSidebar = function() {
