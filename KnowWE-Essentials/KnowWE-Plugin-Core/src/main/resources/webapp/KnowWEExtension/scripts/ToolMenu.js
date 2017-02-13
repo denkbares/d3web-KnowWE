@@ -60,7 +60,7 @@ ToolMenu.prototype.selectTerm = function (element) {
 
 ToolMenu.prototype.showToolPopupMenu = function (node) {
 	// we hide all open tooltipster tool tips to reduce clutter
-	jq$(document).find('.tooltipster').tooltipster('hide');
+	jq$('.tooltipstered').tooltipster('hide');
 
 	// hide tool menus opened for other terms
 	var lastMenuId = this.lastMenuId;
