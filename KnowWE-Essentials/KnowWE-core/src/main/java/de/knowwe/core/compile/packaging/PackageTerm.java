@@ -26,7 +26,6 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -42,11 +41,6 @@ public class PackageTerm extends SimpleReference {
 		this.addCompileScript(Priority.LOW, new PackageNotCompiledWarningScript());
 		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\s*((?=\\s*\\S).+?)\\s*(?:\r?\n|\\z)"), 1));
 		setRenderer(StyleRenderer.PACKAGE);
-	}
-
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		return section.getText();
 	}
 
 	@Override
