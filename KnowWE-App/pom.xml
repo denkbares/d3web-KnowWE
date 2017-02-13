@@ -692,9 +692,9 @@
 			<id>avl</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.denkbares</groupId>
+					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>d3web-Plugin-AVL</artifactId>
-					<version>${d3web.version}</version>
+					<version>${ssp.version}</version>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
