@@ -20,13 +20,13 @@ import org.jgrapht.graph.DirectedMultigraph;
  */
 public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 
-	private static final DOTImporter<NamedNode, Edge> doti = new DOTImporter<>((s, map) -> {
+	private static final DOTImporter<LabeledNode, Edge> doti = new DOTImporter<>((s, map) -> {
 		if ("graph".equals(s)) {
 			Header h = new Header();
 			String[] dims = map.get("bb").split(",");
 			h.width = Double.parseDouble(dims[2]) * 2;
 			h.height = Double.parseDouble(dims[3]);
-			h.name = map.get("name");
+			h.label = map.get("label");
 			h.autostart = Boolean.parseBoolean(map.get("autostart"));
 			h.fcid = map.get("fcid");
 			return h;
@@ -39,8 +39,8 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 		n.posx = Double.parseDouble(pos[0]);
 		n.posy = Double.parseDouble(pos[1]);
 		n.fcid = map.get("fcid");
-		n.name = map.get("name");
 		n.label = map.get("label");
+		n.type = map.get("type");
 		// Will be null, if not available
 		n.markup = map.get("markup");
 		// Skip width and height
@@ -58,7 +58,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 		return e;
 	});
 
-	private DirectedMultigraph<NamedNode, Edge> graph;
+	private DirectedMultigraph<LabeledNode, Edge> graph;
 	private int fcid = 1, idCounter = 1;
 	private Header h;
 
@@ -73,7 +73,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 	}
 
 	private void findHeader() throws ImportException {
-		for (NamedNode n : graph.vertexSet()) {
+		for (LabeledNode n : graph.vertexSet()) {
 			if (n instanceof Header) {
 				h = (Header) n;
 				break;
@@ -112,7 +112,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 		res.append("<flowchart fcid=\"flow_")
 				.append(Integer.toHexString(fcid))
 				.append("\" name=\"")
-				.append(fitEncoding(removeQuoteEscaping(h.name)))
+				.append(fitEncoding(removeQuoteEscaping(h.label)))
 				.append("\" width=\"")
 				.append(h.width)
 				.append("\" height=\"")
@@ -128,7 +128,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 	@Override
 	protected void createNodeList() {
 		ArrayList<Node> nodeList = new ArrayList<>();
-		for (NamedNode n : graph.vertexSet()) {
+		for (LabeledNode n : graph.vertexSet()) {
 			if (n instanceof Node) {
 				nodeList.add((Node) n);
 			}
@@ -146,15 +146,15 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 					.append(node.posy)
 					.append("\"></position>\n");
 
-			switch (node.label) {
+			switch (node.type) {
 				case "action":
-					if (node.name.startsWith("INDICATED")) {
-						node.name = node.name.substring(11, node.name.length() - 1);
+					if (node.label.startsWith("INDICATED")) {
+						node.label = node.label.substring(11, node.label.length() - 1);
 					}
 					res.append("\t\t<action markup=\"")
 							.append(node.markup)
 							.append("\">");
-					res.append(removeQuoteEscaping(node.name));
+					res.append(removeQuoteEscaping(node.label));
 					res.append("</action>\n");
 					break;
 				case "start":
@@ -163,15 +163,15 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 				case "comment":
 				case "snapshot":
 					res.append("\t\t<")
-							.append(node.label)
+							.append(node.type)
 							.append(">");
-					if ("decision".equals(node.label)) {
-						res.append(removeQuoteEscaping(node.name));
+					if ("decision".equals(node.type)) {
+						res.append(removeQuoteEscaping(node.label));
 					}
 					else {
-						res.append(fitEncoding(removeQuoteEscaping(node.name)));
+						res.append(fitEncoding(removeQuoteEscaping(node.label)));
 					}
-					res.append("</").append(node.label).append(">\n");
+					res.append("</").append(node.type).append(">\n");
 					break;
 				default:
 					// should be only these
@@ -230,16 +230,16 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 		String fcid;
 	}
 
-	private static class NamedNode extends FCIDed {
-		String name;
+	private static class LabeledNode extends FCIDed {
+		String label;
 	}
 
-	private static class Node extends NamedNode {
+	private static class Node extends LabeledNode {
 		double posx, posy;
-		String label, markup;
+		String type, markup;
 
 		void calcPos(double graphHeight) {
-			posx = posx * 2;
+			posx = posx * 1;
 			posy = posy * 1;
 			posy = -(posy) + graphHeight;
 		}
@@ -247,10 +247,10 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 
 	private static class Edge extends FCIDed {
 		String guard, markup;
-		NamedNode origin, target;
+		LabeledNode origin, target;
 	}
 
-	private static class Header extends NamedNode {
+	private static class Header extends LabeledNode {
 		double width, height;
 		boolean autostart;
 	}

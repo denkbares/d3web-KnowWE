@@ -52,7 +52,7 @@ public class MarkupToDotConverter extends AbstractDiaFluxToDotConverter {
 	protected void createHeader() {
 		NamedNodeMap attr = head.getAttributes();
 		res.append("\tgraph [");
-		res.append("name=\"")
+		res.append("label=\"")
 				.append(escapeQuoteAndBackslash(attr.getNamedItem("name").getNodeValue()))
 				.append("\",\n");
 		res.append("\t\tautostart=\"")
@@ -63,7 +63,7 @@ public class MarkupToDotConverter extends AbstractDiaFluxToDotConverter {
 	@Override
 	protected void createNodeList() {
 		for (Node node : nodes) {
-			String label = "", name = "";
+			String type = "", label = "";
 			String fcid = node.getAttributes().getNamedItem("fcid").getNodeValue();
 			res.append("\t").append(Strings.quote(fcid)).append("\t [");
 			for (int i = 0; i < node.getChildNodes().getLength(); i++) {
@@ -83,16 +83,16 @@ public class MarkupToDotConverter extends AbstractDiaFluxToDotConverter {
 					case "exit":
 					case "comment":
 					case "snapshot":
-						label = attr.getNodeName();
-						name = attr.getFirstChild().getNodeValue();
+						type = attr.getNodeName();
+						label = attr.getFirstChild().getNodeValue();
 						break;
 					default:
 						// no other
 				}
 			}
-			res.append("label=\"").append(label).append("\"");
+			res.append("type=\"").append(type).append("\"");
 			res.append(",\n\t\tfcid=\"").append(escapeQuoteAndBackslash(fcid)).append("\"");
-			res.append(",\n\t\tname=\"").append(escapeQuoteAndBackslash(name)).append("\"");
+			res.append(",\n\t\tlabel=\"").append(escapeQuoteAndBackslash(label)).append("\"");
 			res.append("];\n");
 		}
 	}
