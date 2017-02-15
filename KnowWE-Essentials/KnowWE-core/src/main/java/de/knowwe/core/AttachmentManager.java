@@ -26,6 +26,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.event.ArticleRegisteredEvent;
 import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
+import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.kdom.attachment.AttachmentMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -57,7 +58,7 @@ public class AttachmentManager implements EventListener {
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
 		return Arrays.asList(AttachmentStoredEvent.class, AttachmentDeletedEvent.class,
-				ArticleRegisteredEvent.class, InitializedArticlesEvent.class);
+				ArticleRegisteredEvent.class, InitializedArticlesEvent.class, FullParseEvent.class);
 	}
 
 	@Override
@@ -75,8 +76,28 @@ public class AttachmentManager implements EventListener {
 			handleArticleUpdate(article);
 
 		}
+		else if (event instanceof FullParseEvent) {
+			Article article = ((FullParseEvent) event).getArticle();
+			doFullParseOfCompiledAttachments(article);
+
+		}
 		else if (event instanceof InitializedArticlesEvent) {
 			allArticlesInitialized = true;
+		}
+	}
+
+	private void doFullParseOfCompiledAttachments(Article article) {
+		Collection<String> queuedArticles = articleManager.getQueuedArticles()
+				.stream()
+				.map(Article::getTitle)
+				.collect(toSet());
+		Set<String> compiledAttachmentArticleTitles = articleTitleToSectionsMap.getValues(article.getTitle())
+				.stream()
+				.map(AttachmentType::getPath)
+				.filter(title -> !queuedArticles.contains(title))
+				.collect(toSet());
+		for (String attachmentArticleTitle : compiledAttachmentArticleTitles) {
+			createAndRegisterAttachmentArticle(attachmentArticleTitle);
 		}
 	}
 
@@ -165,7 +186,8 @@ public class AttachmentManager implements EventListener {
 					attachmentText, attachmentPath, articleManager.getWeb());
 			if (allArticlesInitialized) {
 				articleManager.registerArticle(attachmentArticle);
-			} else {
+			}
+			else {
 				((DefaultArticleManager) articleManager).queueArticle(attachmentArticle);
 			}
 		}

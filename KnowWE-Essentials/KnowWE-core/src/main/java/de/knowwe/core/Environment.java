@@ -530,12 +530,7 @@ public class Environment {
 	 * @param web the web of the {@link ArticleManager}
 	 */
 	public ArticleManager getArticleManager(String web) {
-		ArticleManager mgr = this.articleManagers.get(web);
-		if (mgr == null) {
-			mgr = new DefaultArticleManager(web);
-			articleManagers.put(web, mgr);
-		}
-		return mgr;
+		return this.articleManagers.computeIfAbsent(web, k -> new DefaultArticleManager(web));
 	}
 
 	public ServletContext getContext() {
