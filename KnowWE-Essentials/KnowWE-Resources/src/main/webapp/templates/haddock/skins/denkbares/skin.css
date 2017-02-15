@@ -112,10 +112,10 @@ blockquote p {
 }
 
 .pagename {
-/*	font-size: 175%;
-	line-height: 1.4;
-	font-weight: bold;
-	margin-bottom: 0.5em;*/
+	/*	font-size: 175%;
+		line-height: 1.4;
+		font-weight: bold;
+		margin-bottom: 0.5em;*/
 }
 
 div.pagename a:hover {
@@ -408,7 +408,7 @@ a.logo {
 	font-weight: bold;
 }
 
-a.logo:hover{
+a.logo:hover {
 	text-decoration: none;
 	color: inherit;
 }
@@ -558,6 +558,23 @@ td .information, td .warning, td .error {
 
 .zebra-table {
 	overflow: auto;
+}
+
+.wikitable > thead > tr > th, .wikitable > tbody > tr > th,
+.wikitable > tfoot > tr > th, .wikitable > thead > tr > td,
+.wikitable > tbody > tr > td, .wikitable > tfoot > tr > td {
+	border-top: 0;
+	border-bottom: 1px solid #ddd;
+}
+
+.wikitable > thead > tr > th, .wikitable > tbody > tr > th,
+.wikitable > tfoot > tr > th, .wikitable > thead > tr:last-child > td,
+.wikitable > tbody > tr:last-child > td, .wikitable > tfoot > tr:last-child > td {
+	border-bottom: 0;
+}
+
+.knowwetable {
+	border: 0 !important;
 }
 
 /* CHECK */
@@ -2213,19 +2230,18 @@ div.coverflow .knob {
 .defaultMarkupFrame {
 	#display: inline-block;
 	max-width: 100%;
-	border-right: 0px;
-	border-left: 0px;
-	border-bottom: 0px;
 	border-right: 1px solid white;
 	border-left: 1px solid white;
 	border-bottom: 1px solid white;
+	margin: 0 0 -0.5em 0;
+	padding: 0 0 0.5em 0;
 }
 
 @media screen, projection {
 	.defaultMarkupFrame:hover {
-		border-right: 1px solid #DDD;
+		/*border-right: 1px solid #DDD;
 		border-left: 1px solid #DDD;
-		border-bottom: 1px solid #DDD;
+		border-bottom: 1px solid #DDD;*/
 		background-color: #F9F9F9;
 	}
 }
@@ -2239,6 +2255,10 @@ div.coverflow .knob {
 	border-right: 0px;
 	border-left: 0px;
 	border-bottom: 0px;
+}
+
+.defaultMarkupFrame .headerMenu {
+	border-right: 1px solid #ddd;
 }
 
 #searchSubmit:before {
@@ -2323,6 +2343,10 @@ table.spreadsheet {
 	z-index: 1000;
 }
 
+.edittoolbar a.action {
+	min-height: 21px;
+}
+
 .objectInfoPanel.hidden {
 	display: inline !important;
 	visibility: visible !important;
@@ -2355,47 +2379,53 @@ li.findpages .btn {
 	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 	z-index: 1000;
 	font-size: 85%;
-	overflow-x:hidden;
-	overflow-y:auto;
-	min-width:235px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	min-width: 235px;
 }
 
 /* ie6 hack */
 * html #findSuggestionMenu {
-	background:url(images/tip.png) top left;
+	background: url(images/tip.png) top left;
 }
+
 /* ie7 hack */
-*:first-child+html #findSuggestionMenu {
-	background:url(images/tip.png) top left;
+*:first-child + html #findSuggestionMenu {
+	background: url(images/tip.png) top left;
 }
 
 #findSuggestionMenu ul {
-	list-style:none;
-	margin:0;
-	padding:0;
+	list-style: none;
+	margin: 0;
+	padding: 0;
 }
+
 #findSuggestionMenu li {
-	padding:0.25em 0.5em;
-	cursor:pointer;
+	padding: 0.25em 0.5em;
+	cursor: pointer;
 }
+
 #findSuggestionMenu .hover {
-	background-color:rgba(0,0,0,0.5);
-	-moz-border-radius:10px;
-	-webkit-border-radius:5px;
-	border-radius:10px;
+	background-color: rgba(0, 0, 0, 0.5);
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 5px;
+	border-radius: 10px;
 }
+
 /* ie6 hack */
 * html #findSuggestionMenu .hover {
-	background-color:black;
+	background-color: black;
 }
+
 /* ie7 hack */
-*:first-child+html #findSuggestionMenu .hover {
-	background-color:black;
+*:first-child + html #findSuggestionMenu .hover {
+	background-color: black;
 }
 
 #rightPanel {
 	border: none;
 }
+
 #rightPanel .topbar {
 	border: none;
 	background: #e5e8ed;
@@ -2443,6 +2473,7 @@ li.findpages .btn {
 .edit .page {
 	transition: none;
 }
+
 .resizer {
-	display:none;
+	display: none;
 }
