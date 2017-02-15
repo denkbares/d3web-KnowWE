@@ -21,19 +21,19 @@
  * KnowWE specific util methods using jQuery!
  */
 
-(function(jq$) {
+(function (jq$) {
 
 	/**
 	 * Checks whether the selector returned any elements
 	 */
-	jq$.fn.exists = function() {
+	jq$.fn.exists = function () {
 		return this.length > 0;
 	};
 
 	/**
 	 * Scales the selected elements using a smooth css transition.
 	 */
-	jq$.fn.scale = function(scale) {
+	jq$.fn.scale = function (scale) {
 		if (scale) {
 			this.css('transform', 'scale(' + scale + ')');
 		} else {
@@ -58,11 +58,11 @@
 	 * This is an extract of the "Masked Input Plugin",
 	 * Copyright (c) 2007-2014 Josh Bush (digitalbush.com).
 	 */
-	$.fn.caret = function(begin, end) {
+	$.fn.caret = function (begin, end) {
 		if (this.length == 0) return;
 		if (typeof begin == 'number') {
 			end = (typeof end == 'number') ? end : begin;
-			return this.each(function() {
+			return this.each(function () {
 				if (this.setSelectionRange) {
 					this.setSelectionRange(begin, end);
 				} else if (this.createTextRange) {
@@ -85,7 +85,7 @@
 				begin = 0 - range.duplicate().moveStart('character', -100000);
 				end = begin + range.text.length;
 			}
-			return {begin : begin, end : end};
+			return {begin: begin, end: end};
 		}
 	};
 
@@ -94,20 +94,20 @@
 	 * You can also just select successors of the default markup, the method will automatically choose the right
 	 * elements to rerender.
 	 */
-	jq$.fn.rerender = function(options) {
+	jq$.fn.rerender = function (options) {
 
 		function showGlobalProcessingState() {
 			return typeof options.globalProcessingState === "undefined" || options.globalProcessingState === true;
 		}
 
-		this.each(function(i) {
+		this.each(function (i) {
 			var $element = jq$(this);
 
 			var id = $element.attr('sectionId');
 			if (!id) id = $element.attr('id');
 
 			if (!options) options = {};
-			var data = {SectionID : id};
+			var data = {SectionID: id};
 			jq$.extend(data, options);
 
 			if (showGlobalProcessingState()) {
@@ -115,14 +115,20 @@
 			}
 			KNOWWE.helper.observer.notify("beforeRerender", $element);
 			jq$.ajax({
-				url : KNOWWE.core.util.getURL({
-					action : 'ReRenderContentPartAction'
+				url: KNOWWE.core.util.getURL({
+					action: 'ReRenderContentPartAction'
 				}),
-				type : 'post',
-				cache : false,
-				data : data
-			}).success(function(data, status, jqXHR) {
-				if (jqXHR.status === 304) return; // no changes, do nothing
+				type: 'post',
+				cache: false,
+				data: data
+			}).success(function (data, status, jqXHR) {
+				if (options.checkReplaceNeeded) {
+					if (!options.checkReplaceNeeded.call(this, data, status, jqXHR)) {
+						return
+					}
+				} else if (jqXHR.status === 304) {
+					return; // no changes, do nothing
+				}
 				if (options.beforeReplace) {
 					options.beforeReplace.call(this, $element, data);
 				}
@@ -142,7 +148,7 @@
 				if (options.callback) {
 					options.callback.call(this, $element);
 				}
-			}).always(function() {
+			}).always(function () {
 				if (showGlobalProcessingState()) {
 					KNOWWE.core.util.updateProcessingState(-1);
 				}
@@ -165,7 +171,7 @@
  * Copyright 2013 Klaus Hartl
  * Released under the MIT license
  */
-(function(factory) {
+(function (factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD
 		define(['jquery'], factory);
@@ -176,7 +182,7 @@
 		// Browser globals
 		factory(jQuery);
 	}
-}(function(jq$) {
+}(function (jq$) {
 
 	var pluses = /\+/g;
 
@@ -213,7 +219,7 @@
 		return jq$.isFunction(converter) ? converter(value) : value;
 	}
 
-	var config = jq$.cookie = function(key, value, options) {
+	var config = jq$.cookie = function (key, value, options) {
 
 		// Write
 
@@ -265,23 +271,23 @@
 
 	config.defaults = {};
 
-	jq$.removeCookie = function(key, options) {
+	jq$.removeCookie = function (key, options) {
 		if (jq$.cookie(key) === undefined) {
 			return false;
 		}
 
 		// Must not alter options, thus extending a fresh object...
-		jq$.cookie(key, '', jq$.extend({}, options, {expires : -1}));
+		jq$.cookie(key, '', jq$.extend({}, options, {expires: -1}));
 		return !jq$.cookie(key);
 	};
 
 }));
 
 
-(function(jq$) {
-	jq$.waitForFinalEvent = (function() {
+(function (jq$) {
+	jq$.waitForFinalEvent = (function () {
 		var timers = {};
-		return function(callback, ms, uniqueId) {
+		return function (callback, ms, uniqueId) {
 			if (!uniqueId) {
 				uniqueId = "Don't call this twice without a uniqueId";
 			}
@@ -337,9 +343,9 @@
  *
  */
 
-(function(jq$) {
+(function (jq$) {
 
-	jq$.fn.editable = function(target, options) {
+	jq$.fn.editable = function (target, options) {
 
 		if ('disable' == target) {
 			jq$(this).data('disabled.editable', true);
@@ -357,12 +363,12 @@
 			return;
 		}
 
-		var settings = jq$.extend({}, jq$.fn.editable.defaults, {target : target}, options);
+		var settings = jq$.extend({}, jq$.fn.editable.defaults, {target: target}, options);
 
 		/* setup some functions */
-		var plugin = jq$.editable.types[settings.type].plugin || function() {
+		var plugin = jq$.editable.types[settings.type].plugin || function () {
 			};
-		var submit = jq$.editable.types[settings.type].submit || function() {
+		var submit = jq$.editable.types[settings.type].submit || function () {
 			};
 		var buttons = jq$.editable.types[settings.type].buttons
 			|| jq$.editable.types['defaults'].buttons;
@@ -372,15 +378,15 @@
 			|| jq$.editable.types['defaults'].element;
 		var reset = jq$.editable.types[settings.type].reset
 			|| jq$.editable.types['defaults'].reset;
-		var callback = settings.callback || function() {
+		var callback = settings.callback || function () {
 			};
-		var onedit = settings.onedit || function() {
+		var onedit = settings.onedit || function () {
 			};
-		var onsubmit = settings.onsubmit || function() {
+		var onsubmit = settings.onsubmit || function () {
 			};
-		var onreset = settings.onreset || function() {
+		var onreset = settings.onreset || function () {
 			};
-		var afterreset = settings.afterreset || function() {
+		var afterreset = settings.afterreset || function () {
 			};
 		var onerror = settings.onerror || reset;
 
@@ -392,7 +398,7 @@
 		settings.autowidth = 'auto' == settings.width;
 		settings.autoheight = 'auto' == settings.height;
 
-		return this.each(function() {
+		return this.each(function () {
 
 			/* save this to self because this changes when scope changes */
 			var self = this;
@@ -410,7 +416,7 @@
 				jq$(this).html(settings.placeholder);
 			}
 
-			jq$(this).bind(settings.event, function(e) {
+			jq$(this).bind(settings.event, function (e) {
 
 				/* abort if disabled for this element */
 				if (true === jq$(this).data('disabled.editable')) {
@@ -493,7 +499,7 @@
 				var input_content;
 
 				if (settings.loadurl) {
-					var t = setTimeout(function() {
+					var t = setTimeout(function () {
 						input.disabled = true;
 						content.apply(form, [settings.loadtext, settings, self]);
 					}, 100);
@@ -506,11 +512,11 @@
 						jq$.extend(loaddata, settings.loaddata);
 					}
 					jq$.ajax({
-						type : settings.loadtype,
-						url : settings.loadurl,
-						data : loaddata,
-						async : false,
-						success : function(result) {
+						type: settings.loadtype,
+						url: settings.loadurl,
+						data: loaddata,
+						async: false,
+						success: function (result) {
 							window.clearTimeout(t);
 							input_content = result;
 							input.disabled = false;
@@ -546,7 +552,7 @@
 				}
 
 				/* discard changes if pressing esc */
-				input.keydown(function(e) {
+				input.keydown(function (e) {
 					if (e.keyCode == 27) {
 						e.preventDefault();
 						//self.reset();
@@ -558,30 +564,30 @@
 				/* do nothing is usable when navigating with tab */
 				var t;
 				if ('cancel' == settings.onblur) {
-					input.blur(function(e) {
+					input.blur(function (e) {
 						/* prevent canceling if submit was clicked */
-						t = setTimeout(function() {
+						t = setTimeout(function () {
 							reset.apply(form, [settings, self]);
 						}, 500);
 					});
 				} else if ('submit' == settings.onblur) {
-					input.blur(function(e) {
+					input.blur(function (e) {
 						/* prevent double submit if submit was clicked */
-						t = setTimeout(function() {
+						t = setTimeout(function () {
 							form.submit();
 						}, 200);
 					});
 				} else if (jq$.isFunction(settings.onblur)) {
-					input.blur(function(e) {
+					input.blur(function (e) {
 						settings.onblur.apply(self, [input.val(), settings]);
 					});
 				} else {
-					input.blur(function(e) {
+					input.blur(function (e) {
 						/* TODO: maybe something here */
 					});
 				}
 
-				form.submit(function(e) {
+				form.submit(function (e) {
 
 					if (t) {
 						clearTimeout(t);
@@ -629,11 +635,11 @@
 
 								/* defaults for ajaxoptions */
 								var ajaxoptions = {
-									type : 'POST',
-									data : submitdata,
-									dataType : 'html',
-									url : settings.target,
-									success : function(result, status) {
+									type: 'POST',
+									data: submitdata,
+									dataType: 'html',
+									url: settings.target,
+									success: function (result, status) {
 										if (ajaxoptions.dataType == 'html') {
 											jq$(self).html(result);
 										}
@@ -643,7 +649,7 @@
 											jq$(self).html(settings.placeholder);
 										}
 									},
-									error : function(xhr, status, error) {
+									error: function (xhr, status, error) {
 										onerror.apply(form, [settings, self, xhr]);
 									}
 								};
@@ -664,7 +670,7 @@
 			});
 
 			/* privileged methods */
-			this.reset = function(form) {
+			this.reset = function (form) {
 				/* prevent calling reset twice when blurring */
 				if (this.editing) {
 					/* before reset hook, if it returns false abort reseting */
@@ -689,25 +695,25 @@
 
 
 	jq$.editable = {
-		types : {
-			defaults : {
-				element : function(settings, original) {
+		types: {
+			defaults: {
+				element: function (settings, original) {
 					var input = jq$('<input type="hidden">');
 					jq$(this).append(input);
 					return (input);
 				},
-				content : function(string, settings, original) {
+				content: function (string, settings, original) {
 					jq$(':input:first', this).val(string);
 				},
-				reset : function(settings, original) {
+				reset: function (settings, original) {
 					original.reset(this);
 				},
-				buttons : function(settings, original) {
+				buttons: function (settings, original) {
 					var form = this;
 					if (settings.submit) {
 						/* if given html string use that */
 						if (settings.submit.match(/>jq$/)) {
-							var submit = jq$(settings.submit).click(function() {
+							var submit = jq$(settings.submit).click(function () {
 								if (submit.attr("type") != "submit") {
 									form.submit();
 								}
@@ -730,7 +736,7 @@
 						}
 						jq$(this).append(cancel);
 
-						jq$(cancel).click(function(event) {
+						jq$(cancel).click(function (event) {
 							//original.reset();
 							if (jq$.isFunction(jq$.editable.types[settings.type].reset)) {
 								var reset = jq$.editable.types[settings.type].reset;
@@ -743,8 +749,8 @@
 					}
 				}
 			},
-			text : {
-				element : function(settings, original) {
+			text: {
+				element: function (settings, original) {
 					var input = jq$('<input />');
 					if (settings.width != 'none') {
 						input.width(settings.width);
@@ -759,8 +765,8 @@
 					return (input);
 				}
 			},
-			textarea : {
-				element : function(settings, original) {
+			textarea: {
+				element: function (settings, original) {
 					var textarea = jq$('<textarea />');
 					if (settings.rows) {
 						textarea.attr('rows', settings.rows);
@@ -776,13 +782,13 @@
 					return (textarea);
 				}
 			},
-			select : {
-				element : function(settings, original) {
+			select: {
+				element: function (settings, original) {
 					var select = jq$('<select />');
 					jq$(this).append(select);
 					return (select);
 				},
-				content : function(data, settings, original) {
+				content: function (data, settings, original) {
 					/* If it is string assume it is json. */
 					if (String == data.constructor) {
 						eval('var json = ' + data);
@@ -801,7 +807,7 @@
 						jq$('select', this).append(option);
 					}
 					/* Loop option again to set selected. IE needed this... */
-					jq$('select', this).children().each(function() {
+					jq$('select', this).children().each(function () {
 						if (jq$(this).val() == json['selected'] ||
 							jq$(this).text() == jq$.trim(original.revert)) {
 							jq$(this).attr('selected', 'selected');
@@ -812,31 +818,31 @@
 		},
 
 		/* Add new input type */
-		addInputType : function(name, input) {
+		addInputType: function (name, input) {
 			jq$.editable.types[name] = input;
 		}
 	};
 
 	// publicly accessible defaults
 	jq$.fn.editable.defaults = {
-		name : 'value',
-		id : 'id',
-		type : 'text',
-		width : 'auto',
-		height : 'auto',
-		event : 'click.editable',
-		onblur : 'cancel',
-		loadtype : 'GET',
-		loadtext : 'Loading...',
-		placeholder : 'Click to edit',
-		loaddata : {},
-		submitdata : {},
-		ajaxoptions : {}
+		name: 'value',
+		id: 'id',
+		type: 'text',
+		width: 'auto',
+		height: 'auto',
+		event: 'click.editable',
+		onblur: 'cancel',
+		loadtype: 'GET',
+		loadtext: 'Loading...',
+		placeholder: 'Click to edit',
+		loaddata: {},
+		submitdata: {},
+		ajaxoptions: {}
 	};
 
 })(jQuery);
 
-jQuery.fn.insertAt = function(index, element) {
+jQuery.fn.insertAt = function (index, element) {
 	var lastIndex = this.children().size();
 	if (index < 0) {
 		index = Math.max(0, lastIndex + 1 + index)
@@ -853,21 +859,21 @@ jQuery.fn.insertAt = function(index, element) {
  license: MIT
  http://www.jacklmoore.com/autosize
  */
-(function($) {
+(function ($) {
 	var
 		defaults = {
-			className : 'autosizejs',
-			id : 'autosizejs',
-			append : '\n',
-			callback : false,
-			resizeDelay : 10,
-			placeholder : true
+			className: 'autosizejs',
+			id: 'autosizejs',
+			append: '\n',
+			callback: false,
+			resizeDelay: 10,
+			placeholder: true
 		},
 
-	// border:0 is unnecessary, but avoids a bug in Firefox on OSX
+		// border:0 is unnecessary, but avoids a bug in Firefox on OSX
 		copy = '<textarea tabindex="-1" style="position:absolute; top:-999px; left:0; right:auto; bottom:auto; border:0; padding: 0; -moz-box-sizing:content-box; -webkit-box-sizing:content-box; box-sizing:content-box; word-wrap:break-word; height:0 !important; min-height:0 !important; overflow:hidden; transition:none; -webkit-transition:none; -moz-transition:none;"/>',
 
-	// line-height is conditionally included because IE7/IE8/old Opera do not return the correct value.
+		// line-height is conditionally included because IE7/IE8/old Opera do not return the correct value.
 		typographyStyles = [
 			'fontFamily',
 			'fontSize',
@@ -880,10 +886,10 @@ jQuery.fn.insertAt = function(index, element) {
 			'whiteSpace'
 		],
 
-	// to keep track which textarea is being mirrored when adjust() is called.
+		// to keep track which textarea is being mirrored when adjust() is called.
 		mirrored,
 
-	// the mirror element, which is used to calculate what size the mirrored element should be.
+		// the mirror element, which is used to calculate what size the mirrored element should be.
 		mirror = $(copy).data('autosize', true)[0];
 
 	// test that line-height can be accurately copied.
@@ -893,7 +899,7 @@ jQuery.fn.insertAt = function(index, element) {
 	}
 	mirror.style.lineHeight = '';
 
-	$.fn.autosize = function(options) {
+	$.fn.autosize = function (options) {
 		if (!this.length) {
 			return this;
 		}
@@ -904,7 +910,7 @@ jQuery.fn.insertAt = function(index, element) {
 			$(document.body).append(mirror);
 		}
 
-		return this.each(function() {
+		return this.each(function () {
 			var
 				ta = this,
 				$ta = $(ta),
@@ -913,11 +919,11 @@ jQuery.fn.insertAt = function(index, element) {
 				boxOffset = 0,
 				callback = $.isFunction(options.callback),
 				originalStyles = {
-					height : ta.style.height,
-					overflow : ta.style.overflow,
-					overflowY : ta.style.overflowY,
-					wordWrap : ta.style.wordWrap,
-					resize : ta.style.resize
+					height: ta.style.height,
+					overflow: ta.style.overflow,
+					overflowY: ta.style.overflowY,
+					wordWrap: ta.style.wordWrap,
+					resize: ta.style.resize
 				},
 				timeout,
 				width = $ta.width(),
@@ -937,9 +943,9 @@ jQuery.fn.insertAt = function(index, element) {
 			minHeight = Math.max(parseFloat($ta.css('minHeight')) - boxOffset || 0, $ta.height());
 
 			$ta.css({
-				overflow : 'hidden',
-				overflowY : 'hidden',
-				wordWrap : 'break-word' // horizontal overflow is hidden, so break-word is necessary for handling words longer than the textarea width
+				overflow: 'hidden',
+				overflowY: 'hidden',
+				wordWrap: 'break-word' // horizontal overflow is hidden, so break-word is necessary for handling words longer than the textarea width
 			});
 
 			if (taResize === 'vertical') {
@@ -962,7 +968,7 @@ jQuery.fn.insertAt = function(index, element) {
 						width = parseFloat(style.width);
 					}
 
-					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i, val) {
+					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function (i, val) {
 						width -= parseFloat(style[val]);
 					});
 				} else {
@@ -985,7 +991,7 @@ jQuery.fn.insertAt = function(index, element) {
 				// original textarea.  mirror always has a height of 0.
 				// This gives a cross-browser supported way getting the actual
 				// height of the text, through the scrollTop property.
-				$.each(typographyStyles, function(i, val) {
+				$.each(typographyStyles, function (i, val) {
 					styles[val] = $ta.css(val);
 				});
 
@@ -1063,7 +1069,7 @@ jQuery.fn.insertAt = function(index, element) {
 
 			function resize() {
 				clearTimeout(timeout);
-				timeout = setTimeout(function() {
+				timeout = setTimeout(function () {
 					var newWidth = $ta.width();
 
 					if (newWidth !== width) {
@@ -1081,7 +1087,7 @@ jQuery.fn.insertAt = function(index, element) {
 					$ta.on('input.autosize keyup.autosize', adjust);
 				} else {
 					// IE7 / IE8
-					$ta.on('propertychange.autosize', function() {
+					$ta.on('propertychange.autosize', function () {
 						if (event.propertyName === 'value') {
 							adjust();
 						}
@@ -1105,12 +1111,12 @@ jQuery.fn.insertAt = function(index, element) {
 
 			// Event for manual triggering that also forces the styles to update as well.
 			// Should only be needed if one of typography styles of the textarea change, and the textarea is already the target of the adjust method.
-			$ta.on('autosize.resizeIncludeStyle', function() {
+			$ta.on('autosize.resizeIncludeStyle', function () {
 				mirrored = null;
 				adjust();
 			});
 
-			$ta.on('autosize.destroy', function() {
+			$ta.on('autosize.destroy', function () {
 				mirrored = null;
 				clearTimeout(timeout);
 				$(window).off('resize', resize);
@@ -1131,18 +1137,18 @@ jQuery.fn.insertAt = function(index, element) {
 /**
  * DatePicker and DateTimePicker, extended from jQuery UI
  */
-(function(jq$) {
+(function (jq$) {
 
-	jq$.datepicker.setDefaults({dateFormat : "dd.mm.yy"});
+	jq$.datepicker.setDefaults({dateFormat: "dd.mm.yy"});
 
 	var datepickerFunction = jq$.fn.datepicker;
-	jq$.fn.datepicker = function() {
+	jq$.fn.datepicker = function () {
 		this.attr('placeholder', "dd.mm.yyyy");
 		return datepickerFunction.apply(this, arguments);
 	};
 
 	// ok, this implementation is pretty lame so far, implement something better if needed
-	jq$.fn.datetimepicker = function() {
+	jq$.fn.datetimepicker = function () {
 		this.attr('placeholder', "dd.mm.yyyy HH:MM");
 	}
 })(jQuery);
