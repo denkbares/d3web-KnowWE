@@ -22,9 +22,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
-					<parallel>classes</parallel>
-					<threadCount>4</threadCount>
-					<useUnlimitedThreads>true</useUnlimitedThreads>
+					<forkCount>4</forkCount>
+					<reuseForks>false</reuseForks>
 				</configuration>
 			</plugin>
 		</plugins>
