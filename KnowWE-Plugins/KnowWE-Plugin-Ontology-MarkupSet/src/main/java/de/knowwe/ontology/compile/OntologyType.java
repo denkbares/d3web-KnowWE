@@ -18,9 +18,10 @@
  */
 package de.knowwe.ontology.compile;
 
-import java.sql.Ref;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
@@ -34,11 +35,10 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
-import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.compile.terminology.TermCompiler.ReferenceValidationMode;
 import de.knowwe.core.kdom.basicType.AttachmentType;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -74,6 +74,7 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String ANNOTATION_COMMIT = "commit";
 	public static final String ANNOTATION_IMPORT = "import";
 	public static final String ANNOTATION_EXPORT = "export";
+	public static final String ANNOTATION_EXPORT_DELAY = "exportDelay";
 	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
 
 	public static final DefaultMarkup MARKUP;
@@ -88,6 +89,9 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_EXPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT, Icon.GLOBE.addTitle("Export"));
+
+		MARKUP.addAnnotation(ANNOTATION_EXPORT_DELAY, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
+		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT_DELAY, Icon.CLOCK.addTitle("Time to wait for additional changes to the ontology before starting a new export"));
 
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));

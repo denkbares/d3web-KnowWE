@@ -25,6 +25,11 @@ import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.openrdf.rio.RDFFormat;
 
@@ -33,6 +38,7 @@ import com.denkbares.events.EventListener;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -50,7 +56,10 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class OntologyExporter implements EventListener {
 
+	private static final int DEFAULT_EXPORT_DELAY = 20000; // 20 seconds
 	private static OntologyExporter instance = null;
+
+	private final Map<String, Timer> timers = new ConcurrentHashMap<>();
 
 	public static OntologyExporter getInstance() {
 		if (instance == null) instance = new OntologyExporter();
@@ -69,6 +78,7 @@ public class OntologyExporter implements EventListener {
 	public void notify(Event event) {
 		OntologyCompilerFinishedEvent finishedEvent = (OntologyCompilerFinishedEvent) event;
 		if (!finishedEvent.isOntologyChanged()) return;
+
 		final OntologyCompiler compiler = finishedEvent.getCompiler();
 		final Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 		Section<OntologyType> ontologySection = $(finishedEvent.getCompiler()
@@ -78,6 +88,10 @@ public class OntologyExporter implements EventListener {
 			Log.severe("Unable to find ontology section of OntologyCompiler, something is very wrong...");
 			return;
 		}
+
+		Timer lastTimer = timers.get(ontologySection.getID());
+		if (lastTimer != null) lastTimer.cancel();
+
 		Section<?> exportAnnotation = DefaultMarkupType.getAnnotationContentSection(ontologySection, OntologyType.ANNOTATION_EXPORT);
 		if (exportAnnotation == null) return; // no export specified, we are finished here
 		String export = exportAnnotation.getText();
@@ -110,7 +124,9 @@ public class OntologyExporter implements EventListener {
 		RDFFormat parsedSyntax = Rdf2GoUtils.syntaxForFileName(annotationName);
 		final RDFFormat syntax = parsedSyntax == null ? RDFFormat.TURTLE : parsedSyntax;
 
-		Thread exportTread = new Thread() {
+		long exportDelay = getExportDelay(ontologySection);
+		Timer timer = new Timer();
+		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				Stopwatch stopwatch = new Stopwatch();
@@ -141,10 +157,26 @@ public class OntologyExporter implements EventListener {
 					Log.severe("Unable to save exported ontology as an attachment in '" + title + "/" + annotationName + "'", e);
 					return;
 				}
-				Log.info("Exported ontology to attachment '" + title + "/" + annotationName + "' in " + stopwatch.getDisplay());
+				Log.info("Exported ontology to attachment '" + title + "/" + annotationName + "' in "
+						+ stopwatch.getDisplay() + " after a delay of " + Stopwatch.getDisplay(exportDelay));
 			}
-		};
-		exportTread.start();
+		}, exportDelay);
+		timers.put(ontologySection.getID(), timer);
+	}
 
+	private static long getExportDelay(Section<? extends DefaultMarkupType> markupSection) {
+		String exportDelayString = DefaultMarkupType.getAnnotation(markupSection, OntologyType.ANNOTATION_EXPORT_DELAY);
+		long exportDelay = DEFAULT_EXPORT_DELAY;
+		if (exportDelayString != null) {
+			try {
+				exportDelay = TimeStampType.getTimeInMillis(exportDelayString);
+			}
+			catch (NumberFormatException e) {
+				// if we can not parse (because there is no time unit maybe, we just try parseDouble
+				exportDelay = (long) (Double.parseDouble(exportDelayString) * TimeUnit.SECONDS.toMillis(1));
+				// if this also fails, we will have the default timeout
+			}
+		}
+		return exportDelay;
 	}
 }
