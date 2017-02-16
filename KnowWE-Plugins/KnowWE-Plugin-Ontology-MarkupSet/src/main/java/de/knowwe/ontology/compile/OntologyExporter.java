@@ -25,10 +25,10 @@ import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.openrdf.rio.RDFFormat;
@@ -40,6 +40,7 @@ import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
@@ -59,7 +60,7 @@ public class OntologyExporter implements EventListener {
 	private static final int DEFAULT_EXPORT_DELAY = 20000; // 20 seconds
 	private static OntologyExporter instance = null;
 
-	private final Map<String, Timer> timers = new ConcurrentHashMap<>();
+	private final Map<String, Timer> timers = new HashMap<>();
 
 	public static OntologyExporter getInstance() {
 		if (instance == null) instance = new OntologyExporter();
@@ -89,8 +90,12 @@ public class OntologyExporter implements EventListener {
 			return;
 		}
 
-		Timer lastTimer = timers.get(ontologySection.getID());
-		if (lastTimer != null) lastTimer.cancel();
+		synchronized (timers) {
+			Timer lastTimer = timers.get(ontologySection.getID());
+			if (lastTimer != null) lastTimer.cancel();
+			// cleanup times of now longer existing sections
+			timers.keySet().removeIf(sectionId -> Sections.get(sectionId) == null);
+		}
 
 		Section<?> exportAnnotation = DefaultMarkupType.getAnnotationContentSection(ontologySection, OntologyType.ANNOTATION_EXPORT);
 		if (exportAnnotation == null) return; // no export specified, we are finished here
@@ -161,7 +166,9 @@ public class OntologyExporter implements EventListener {
 						+ stopwatch.getDisplay() + " after a delay of " + Stopwatch.getDisplay(exportDelay));
 			}
 		}, exportDelay);
-		timers.put(ontologySection.getID(), timer);
+		synchronized (timers) {
+			timers.put(ontologySection.getID(), timer);
+		}
 	}
 
 	private static long getExportDelay(Section<? extends DefaultMarkupType> markupSection) {
