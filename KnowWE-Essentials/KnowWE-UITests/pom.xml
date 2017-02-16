@@ -23,7 +23,7 @@
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
 					<parallel>classes</parallel>
-					<threadCount>1</threadCount>
+					<threadCountClasses>4</threadCountClasses>
 				</configuration>
 			</plugin>
 		</plugins>
