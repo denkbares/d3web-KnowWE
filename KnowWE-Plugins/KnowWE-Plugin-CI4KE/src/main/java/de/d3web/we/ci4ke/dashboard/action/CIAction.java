@@ -118,8 +118,7 @@ public class CIAction extends AbstractAction {
 		// reload
 		RenderResult temp = new RenderResult(html);
 		temp.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(
-				html.toStringRaw(),
-				context.getRequest()));
+				html.toStringRaw()));
 
 		context.setContentType("text/html; charset=UTF-8");
 		context.getWriter().write(temp.toString());

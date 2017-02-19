@@ -230,6 +230,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		JSPWikiUserContext userContext = new JSPWikiUserContext(wikiContext,
 				UserContextUtil.getParameters(httpRequest));
+		if (isRenderingPreview(userContext)) {
+			return content;
+		}
+
 		includeDOMResources(wikiContext);
 		/*
 		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter get extra

@@ -657,7 +657,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String renderWikiSyntax(String content, HttpServletRequest request) {
 		try {
-			WikiContext context = engine.createContext(null, WikiContext.VIEW);
+			WikiContext context = engine.createContext(request, WikiContext.VIEW);
 			content = engine.textToHTML(context, content);
 		}
 		catch (InternalWikiException e) {

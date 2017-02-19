@@ -48,7 +48,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		if (sectionId == null)  sectionId = context.getParameter("KdomNodeId"); // compatibility
-		execute(context, Sections.get(sectionId));
+ 		execute(context, Sections.get(sectionId));
 	}
 
 	private static void execute(UserActionContext context, Section<?> section) throws IOException {
@@ -87,6 +87,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 	 */
 	private static boolean handleStatusChanges(UserActionContext context) {
 		String status = context.getParameter("status");
+		//noinspection SimplifiableIfStatement
 		if (status == null) {
 			// no status was given, we disregard status
 			return false;
@@ -116,11 +117,11 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		if ("false".equals(inPre)) {
 			rawResult = Environment.getInstance()
-					.getWikiConnector().renderWikiSyntax(rawResult, context.getRequest());
+					.getWikiConnector().renderWikiSyntax(rawResult);
 		}
 		else {
 			rawResult = Environment.getInstance().getWikiConnector()
-					.renderWikiSyntax(rawResult, context.getRequest());
+					.renderWikiSyntax(rawResult);
 		}
 
 		return RenderResult.unmask(rawResult, context);
