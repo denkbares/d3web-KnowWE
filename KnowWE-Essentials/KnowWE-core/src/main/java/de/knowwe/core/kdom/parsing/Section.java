@@ -663,6 +663,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 */
 	private static int generateAndRegisterSectionID(Section<?> section) {
 		int idCandidate = section.getSignatureString().hashCode();
+		if (section.getArticle().isTemporary()) return idCandidate;
 		synchronized (sectionMap) {
 			Section<?> existingSection = sectionMap.get(idCandidate);
 			while (existingSection != null || idCandidate == -1) {

@@ -57,6 +57,7 @@ public final class Article {
 	private Article lastVersion;
 
 	private final boolean fullParse;
+	private boolean temporary;
 
 	public static Article createArticle(String text, String title, String web) {
 		return createArticle(text, title, web, false);
@@ -66,11 +67,14 @@ public final class Article {
 		return new Article(title, web);
 	}
 
-	public static Article createArticle(String text, String title,
-										String web, boolean fullParse) {
+	public static Article createArticle(String text, String title, String web, boolean fullParse) {
+		return createArticle(text, title, web, fullParse, false);
+	}
+
+	public static Article createArticle(String text, String title, String web, boolean fullParse, boolean temporary) {
 		Article article = null;
 		try {
-			article = new Article(text, title, web, fullParse);
+			article = new Article(text, title, web, fullParse, temporary);
 			EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
 		}
 		catch (Exception e) {
@@ -82,13 +86,14 @@ public final class Article {
 	/**
 	 * Constructor: starts recursive parsing by creating new Section object
 	 */
-	private Article(String text, String title, String web, boolean fullParse) {
+	private Article(String text, String title, String web, boolean fullParse, boolean temporary) {
 
 		long start = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
 		this.text = text;
-		this.lastVersion = Environment.isInitialized() ? Environment.getInstance().getArticle(web, title) : null;
+		this.temporary = temporary;
+		this.lastVersion = Environment.isInitialized() && !temporary ? Environment.getInstance().getArticle(web, title) : null;
 
 		this.fullParse = fullParse
 				|| lastVersion == null
@@ -252,6 +257,10 @@ public final class Article {
 
 	public ArticleManager getArticleManager() {
 		return articleManager;
+	}
+
+	public boolean isTemporary() {
+		return temporary;
 	}
 
 }

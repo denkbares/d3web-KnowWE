@@ -1081,11 +1081,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		for (String id : allIds) {
 			Section<?> section = Sections.get(id);
 			String title = section == null ? null : section.getTitle();
-			Collection<String> ids = idsByTitle.get(title);
-			if (ids == null) {
-				ids = new ArrayList<>();
-				idsByTitle.put(title, ids);
-			}
+			Collection<String> ids = idsByTitle.computeIfAbsent(title, k -> new ArrayList<>());
 			ids.add(id);
 		}
 		return idsByTitle;

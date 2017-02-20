@@ -125,6 +125,9 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 	public void queueArticle(Article article) {
 		Objects.requireNonNull(article);
+		if (article.isTemporary()) {
+			throw new IllegalArgumentException("Cannot add a temporary article to an article manager!");
+		}
 
 		String title = article.getTitle();
 
