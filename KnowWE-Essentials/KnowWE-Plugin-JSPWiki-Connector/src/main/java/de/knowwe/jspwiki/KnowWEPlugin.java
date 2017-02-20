@@ -421,17 +421,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		includeDOMResources(wikiContext);
 		RenderResult renderResult = new RenderResult(userContext.getRequest());
 		String title = wikiContext.getRealPage().getName();
-		Article article = Article.createArticle(content, title, Environment.DEFAULT_WEB);
-		/*try {
-			// TODO besser createArticle
-			article = updateArticle(wikiContext, content);
-		} catch (InterruptedException e) {
-			Log.fine("Updating Article interrupted while rendering preview", e);
-		} catch (UpdateNotAllowedException e) {
-			Log.fine("Updating Article not allowed while rendering preview", e);
-		}*/
-		if (article == null) return content;
-		// Replace Flowcharts with info message
+		Article article = Article.createArticle(content, title, Environment.DEFAULT_WEB, false, true);
 
 		List<PageAppendHandler> appendHandlers = Environment.getInstance()
 				.getAppendHandlers();
