@@ -45,13 +45,28 @@ public class CIDashboardToolProvider implements ToolProvider {
 			return new Tool[0];
 		}
 		else {
-			return new Tool[] { getStartNewBuildTool(dashboardName, section.getTitle()) };
+			return new Tool[] { getStartNewBuildTool(dashboardName, section.getTitle()),
+			getReportDownloadTool(dashboardName, section.getTitle())};
 		}
 	}
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		return DefaultMarkupType.getAnnotation(section, CIDashboardType.NAME_KEY) != null;
+	}
+
+	public static Tool getReportDownloadTool(String dashboardName, String title) {
+
+		String jsAction = "action/CIReportDownloadAction" +
+				"?name=" + dashboardName;
+		// assemble download tool
+		return new DefaultTool(
+				Icon.DOWNLOAD,
+				"Download as HTML",
+				"Download current build result as HTML.",
+				jsAction,
+				Tool.ActionType.HREF,
+				Tool.CATEGORY_DOWNLOAD);
 	}
 
 	public static Tool getStartNewBuildTool(String dashboardName, String title) {
