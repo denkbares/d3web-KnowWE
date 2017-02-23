@@ -1,0 +1,179 @@
+This simple knowledge base derives the body-mass-index (BMI) of a person based on the weight and height. 
+Please note that this is a simple example for demonstration uses!
+\\
+To test it, add some values in the interview questionnaire below.
+
+
+!! Interview
+
+%%QuickInterview 
+%
+
+
+!! Solutions
+
+%%ShowSolutions
+@show_abstractions: true
+@show_digits: 2 
+%
+
+
+!! The Knowledge Base
+
+In this part of the article, the knowledge base for this demo is defined.
+
+
+!Terminology
+
+We first define __what__ questions can be asked and solutions can be derived in this demo.
+
+%%Question
+Start questionaire #1
+- Height [num] (0.1 3) {m} 
+- Weight [num] (1 300) {kg}
+- bmi [num] <abstract>
+%
+
+%%Solution
+Weight Assessment
+- Underweight
+- Normal weight
+- Overweight
+- Severe overweight
+%
+
+We also define german question and solution texts. This is optional. If no texts are given for a certain language, the original name is shown.
+
+%%Property 
+Height.prompt.de = Wie groß sind Sie?
+Weight.prompt.de = Wie schwer sind Sie?
+
+bmi.prompt.de = Ihr Body Mass Index
+
+Underweight.prompt.de = Untergewicht
+Normal weight.prompt.de = Normalgewicht
+Overweight.prompt.de = Übergewicht
+Severe overweight.prompt.de = Starkes Übergewicht
+Severe overweight.description.de = Ihr BMI ist größer 35. Sie sollten dringend abnehmen.
+
+%
+
+
+!Knowledge
+
+Here we define __how__ the BMI is calculated and the solutions are derived.\\
+\\
+The BMI is calculated using DiaFlux models, where first the "Height" and "Weight" is asked to the user. 
+Then, the value of the abstraction "bmi" is derived, when values for the aforementioned questions are known.
+Final solutions are derived depending on the result of the calculated value of "bmi".
+
+
+%%DiaFlux
+<flowchart fcid="flow_26ef012e" name="Main" icon="sanduhr.gif" width="789" height="262" autostart="true" idCounter="21">
+
+	<!-- nodes of the flowchart -->
+	<node fcid="#node_2">
+		<position left="20" top="89"></position>
+		<action markup="KnOffice"><![CDATA[Height]]></action>
+	</node>
+
+	<node fcid="#node_3">
+		<position left="175" top="89"></position>
+		<action markup="KnOffice"><![CDATA[Weight]]></action>
+	</node>
+
+	<node fcid="#node_5">
+		<position left="32" top="20"></position>
+		<start>Start</start>
+	</node>
+
+	<node fcid="#node_7">
+		<position left="327" top="89"></position>
+		<action markup="KnOffice"><![CDATA["bmi" = ((Weight / (Height*Height)))]]></action>
+	</node>
+
+	<node fcid="#node_9">
+		<position left="173" top="211"></position>
+		<action markup="KnOffice"><![CDATA["Underweight" = P7]]></action>
+	</node>
+
+	<node fcid="#node_11">
+		<position left="331" top="211"></position>
+		<action markup="KnOffice"><![CDATA["Normal weight" = P7]]></action>
+	</node>
+
+	<node fcid="#node_13">
+		<position left="480" top="211"></position>
+		<action markup="KnOffice"><![CDATA["Overweight" = P7]]></action>
+	</node>
+
+	<node fcid="#node_20">
+		<position left="635" top="211"></position>
+		<action markup="KnOffice"><![CDATA["Severe overweight" = P7]]></action>
+	</node>
+
+
+	<!-- rules of the flowchart -->
+	<edge fcid="#rule_4">
+		<origin>#node_2</origin>
+		<target>#node_3</target>
+		<guard markup="KnOffice"><![CDATA["Height" > 0]]></guard>
+	</edge>
+
+	<edge fcid="#rule_6">
+		<origin>#node_5</origin>
+		<target>#node_2</target>
+	</edge>
+
+	<edge fcid="#rule_8">
+		<origin>#node_3</origin>
+		<target>#node_7</target>
+		<guard markup="KnOffice"><![CDATA[KNOWN["Weight"]]]></guard>
+	</edge>
+
+	<edge fcid="#rule_10">
+		<origin>#node_7</origin>
+		<target>#node_9</target>
+		<guard markup="KnOffice"><![CDATA["bmi" < 18.5]]></guard>
+	</edge>
+
+	<edge fcid="#rule_12">
+		<origin>#node_7</origin>
+		<target>#node_11</target>
+		<guard markup="KnOffice"><![CDATA["bmi" >= 18.5 AND "bmi" <= 25]]></guard>
+	</edge>
+
+	<edge fcid="#rule_14">
+		<origin>#node_7</origin>
+		<target>#node_13</target>
+		<guard markup="KnOffice"><![CDATA["bmi" > 25 AND "bmi" <= 35]]></guard>
+	</edge>
+
+	<edge fcid="#rule_21">
+		<origin>#node_7</origin>
+		<target>#node_20</target>
+		<guard markup="KnOffice"><![CDATA["bmi" > 35]]></guard>
+	</edge>
+
+</flowchart>
+
+
+%
+
+
+!Definition of Knowledge Base
+
+Here we follow with some basic stuff that is needed to tell the system, that we have a knowledge base here.
+
+%%KnowledgeBase
+BMI Demo
+%
+
+
+!Package
+
+%%Package BMIDemo
+
+%%tags
+DemoBMI  
+%

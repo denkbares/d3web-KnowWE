@@ -19,8 +19,9 @@
 
 package de.knowwe.uitest;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.rules.TestRule;
@@ -35,13 +36,16 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 
+import static de.knowwe.uitest.UITestUtils.UseCase.NORMAL_PAGE;
 import static de.knowwe.uitest.WikiTemplate.haddock;
 
 /**
@@ -55,14 +59,6 @@ public class UITestUtils {
 	public enum WebOS {
 		windows, macOS, linux, other
 	}
-
-	/**
-	 * In order to test locally set the following dev mode parameters
-	 * -Dknowwe.devMode="true"
-	 * -Dknowwe.url="your-URL"
-	 */
-	private static boolean DEV_MODE;
-	private static String KNOWWE_URL;
 
 	/**
 	 * Loads the given article and waits for it to be loaded. If an alert pops up, it will be accepted.
@@ -89,6 +85,178 @@ public class UITestUtils {
 
 	public enum UseCase {
 		LOGIN_PAGE, NORMAL_PAGE
+	}
+
+	public static void logIn(WebDriver driver, String username, String password, UseCase use, WikiTemplate template) throws InterruptedException {
+		List<WebElement> elements = null;
+		if (use == UseCase.LOGIN_PAGE) {
+			String idLoginElement = template == WikiTemplate.haddock ? "section-login" : "logincontent";
+			elements = driver.findElements(By.id(idLoginElement));
+		} else if (use == UseCase.NORMAL_PAGE) {
+			if (template == WikiTemplate.haddock) {
+				new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(By.className("userbox")));
+				driver.findElement(By.className("userbox")).click();
+				Thread.sleep(1000); //Animation
+			}
+			String loginSelector = template == WikiTemplate.haddock ? "a.btn.btn-primary.btn-block.login" : "a.action.login";
+			new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(By.cssSelector(loginSelector)));
+			elements = driver.findElements(By.cssSelector(loginSelector));
+		}
+
+		if (elements == null) {
+			throw new NullPointerException("No Login Interface found.");
+		} else if (elements.isEmpty()) {
+			return; // already logged in
+		}
+
+		elements.get(0).click();
+		driver.findElement(By.id("j_username")).sendKeys(username);
+		driver.findElement(By.id("j_password")).sendKeys(password);
+		driver.findElement(By.name("submitlogin")).click();
+		String logoutSelector = template == WikiTemplate.haddock ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(logoutSelector)));
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+	}
+
+	private static boolean isLoggedIn(WebDriver driver, WikiTemplate template) {
+		String logoutSelector = template == WikiTemplate.haddock ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
+		return !driver.findElements(By.cssSelector(logoutSelector)).isEmpty();
+	}
+
+	public static void awaitStatusChange(WebDriver driver, String status) {
+		new WebDriverWait(driver, 10).until(ExpectedConditions.not(ExpectedConditions.attributeToBe(By.cssSelector("#knowWEInfoStatus"), "value", status)));
+	}
+
+	public static String getCurrentStatus(WebDriver driver) {
+		return driver.findElement(By.cssSelector("#knowWEInfoStatus")).getAttribute("value");
+	}
+
+	public static String getKnowWEUrl(WikiTemplate template, String testName, boolean devMode) {
+		String defaultUrl = template == haddock ? "https://knowwe-nightly-haddock.denkbares.com" : "https://knowwe-nightly.denkbares.com";
+		String knowweUrl;
+		if (devMode) {
+			knowweUrl = System.getProperty(template == haddock ? "knowwe.haddock.url" : "knowwe.standard.url", defaultUrl);
+		} else {
+			knowweUrl = defaultUrl;
+		}
+		return knowweUrl + "/Wiki.jsp?page=" + testName;
+	}
+
+	public static LinkedList<Object[]> getTestParameters() {
+		LinkedList<Object[]> params = new LinkedList<>();
+		params.add(new Object[] { "firefox", Platform.WINDOWS });
+		//params.add(new Object[] { "firefox", Platform.LINUX });
+		//params.add(new Object[] { "firefox", Platform.MAC });
+		params.add(new Object[] { "chrome", Platform.WINDOWS });
+		//params.add(new Object[] { "chrome", Platform.LINUX });
+		//params.add(new Object[] { "chrome", Platform.MAC });
+		return params;
+	}
+
+	public static void awaitRerender(WebDriver driver, By by) {
+		try {
+			List<WebElement> elements = driver.findElements(by);
+			if (!elements.isEmpty()) {
+				new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(elements.get(0)));
+			}
+		} catch (TimeoutException ignore) {
+		}
+		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
+	}
+
+	public static RemoteWebDriver setUp(String browser, String testClassName, Platform os, WikiTemplate template, String testName, boolean devMode) throws IOException, InterruptedException {
+
+		DesiredCapabilities capabilities = new DesiredCapabilities();
+		capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
+		String chromeBinary = System.getProperty("knowwe.chrome.binary");
+		if (chromeBinary != null) {
+			ChromeOptions chromeOptions = new ChromeOptions();
+			chromeOptions.setBinary(chromeBinary);
+			capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+		}
+
+		RemoteWebDriver driver;
+		if (devMode) {
+			driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
+		} else {
+			capabilities.setCapability("name", testClassName);
+			capabilities.setCapability("platform", os);
+			driver = new RemoteWebDriver(
+					new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"),
+					capabilities);
+		}
+		driver.manage().window().setSize(new Dimension(1024, 768));
+		driver.get(UITestUtils.getKnowWEUrl(template, "Main", devMode));
+		if (!UITestUtils.isLoggedIn(driver, template)) {
+			UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", NORMAL_PAGE, template);
+		}
+		driver.get(getKnowWEUrl(template, testName, devMode));
+		if (!pageExists(template, driver)) {
+			createDummyPage(template, driver);
+		}
+		return driver;
+	}
+
+	private static boolean pageExists(WikiTemplate template, WebDriver driver) {
+		if (template == haddock) {
+			try {
+				new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("a.createpage")));
+			} catch (Exception e) {
+				// Element not present
+			}
+			return driver.findElements(By.cssSelector("a.createpage")).isEmpty();
+		} else {
+			try {
+				new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("div.information a")));
+			} catch (Exception e) {
+				// Element not present
+			}
+			return driver.findElements(By.cssSelector("div.information a"))
+					.stream()
+					.noneMatch(webElement -> Strings.containsIgnoreCase(webElement.getText(), "create it"));
+		}
+	}
+
+	private static void createDummyPage(WikiTemplate template, WebDriver driver) throws IOException {
+		WebElement href;
+		if (template == haddock) {
+			href = driver.findElement(By.cssSelector("a.createpage"));
+		} else {
+			href = driver.findElements(By.cssSelector("div.information a"))
+					.stream()
+					.filter(webElement -> Strings.containsIgnoreCase(webElement.getText(), "create it"))
+					.findFirst()
+					.get();
+		}
+		href.click();
+		enterArticleText(Strings.readFile("src/test/resources/Dummy.txt"), driver, template);
+
+	}
+
+	public static void enterArticleText(String newText, WebDriver driver, WikiTemplate template) {
+		String areaSelector = template == WikiTemplate.haddock ? ".editor.form-control" : "#editorarea";
+		List<WebElement> editorAreas = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By
+				.cssSelector(areaSelector)));
+		if (driver instanceof JavascriptExecutor) {
+			// hacky but fast/instant!
+			((JavascriptExecutor) driver).executeScript("var areas = document.querySelectorAll('" + areaSelector + "');" +
+					"for (var i=0; i<areas.length; i++) { areas[i].value = arguments[0] };", newText);
+		} else {
+			// sets the keys one by one, pretty slow...
+			editorAreas.forEach(WebElement::clear);
+			editorAreas.forEach(webElement -> webElement.sendKeys(newText));
+		}
+		driver.findElement(By.name("ok")).click();
+	}
+
+	public static WebOS getWebOS(WebDriver driver) {
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
+		String os = (String) jse.executeScript("return navigator.appVersion");
+		os = os.toLowerCase();
+		if (os.contains("win")) return WebOS.windows;
+		if (os.contains("mac")) return WebOS.macOS;
+		if (os.contains("nux") || os.contains("nix")) return WebOS.linux;
+		return WebOS.other;
 	}
 
 	/**
@@ -123,7 +291,9 @@ public class UITestUtils {
 						}
 					}
 					Log.severe("Giving up after " + retryCount + " failures of '" + description.getDisplayName() + "'");
-					throw caughtThrowable;
+					if (caughtThrowable != null) {
+						throw caughtThrowable;
+					}
 				}
 			};
 		}
@@ -168,106 +338,5 @@ public class UITestUtils {
 				}
 			};
 		}
-	}
-
-	public static void logIn(WebDriver driver, String username, String password, UseCase use, WikiTemplate template) throws InterruptedException {
-		List<WebElement> elements = null;
-		if (use == UseCase.LOGIN_PAGE) {
-			String idLoginElement = template == WikiTemplate.haddock ? "section-login" : "logincontent";
-			elements = driver.findElements(By.id(idLoginElement));
-		} else if (use == UseCase.NORMAL_PAGE) {
-			if (template == WikiTemplate.haddock) {
-				driver.findElement(By.className("userbox")).click();
-				Thread.sleep(1000); //Animation
-			}
-			String loginSelector = template == WikiTemplate.haddock ? "a.btn.btn-primary.btn-block.login" : "a.action.login";
-			elements = driver.findElements(By.cssSelector(loginSelector));
-		}
-
-		if (elements == null) {
-			throw new NullPointerException("No Login Interface found.");
-		} else if (elements.isEmpty()) {
-			return; // already logged in
-		}
-
-		elements.get(0).click();
-		driver.findElement(By.id("j_username")).sendKeys(username);
-		driver.findElement(By.id("j_password")).sendKeys(password);
-		driver.findElement(By.name("submitlogin")).click();
-		String logoutSelector = template == WikiTemplate.haddock ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(logoutSelector)));
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
-	}
-
-	public static boolean isLoggedIn(WebDriver driver, WikiTemplate template) {
-		String logoutSelector = template == WikiTemplate.haddock ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
-		return !driver.findElements(By.cssSelector(logoutSelector)).isEmpty();
-	}
-
-	public static void awaitStatusChange(WebDriver driver, String status) {
-		new WebDriverWait(driver, 10).until(ExpectedConditions.not(ExpectedConditions.attributeToBe(By.cssSelector("#knowWEInfoStatus"), "value", status)));
-	}
-
-	public static String getCurrentStatus(WebDriver driver) {
-		return driver.findElement(By.cssSelector("#knowWEInfoStatus")).getAttribute("value");
-	}
-
-	public static String getKnowWEUrl(WikiTemplate template, String testName) {
-		String defaultUrl = template == haddock ? "https://knowwe-nightly-haddock.denkbares.com" : "https://knowwe-nightly.denkbares.com";
-		if (DEV_MODE) {
-			KNOWWE_URL = System.getProperty("knowwe.url", defaultUrl);
-		} else {
-			KNOWWE_URL = defaultUrl;
-		}
-		return KNOWWE_URL + "/Wiki.jsp?page=" + testName;
-	}
-
-	public static boolean getDevMode() {
-		return DEV_MODE;
-	}
-
-	public static void awaitRerender(WebDriver driver, By by) {
-		try {
-			List<WebElement> elements = driver.findElements(by);
-			if (!elements.isEmpty()) {
-				new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(elements.get(0)));
-			}
-		} catch (TimeoutException ignore) {
-		}
-		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
-	}
-
-	public static RemoteWebDriver setUp(DesiredCapabilities capabilities, String testClassName) throws MalformedURLException {
-
-		DEV_MODE = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
-		String chromeBinary = System.getProperty("mate.chrome.binary");
-		if (chromeBinary != null) {
-			ChromeOptions chromeOptions = new ChromeOptions();
-			chromeOptions.setBinary(chromeBinary);
-			capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-		}
-
-		RemoteWebDriver driver;
-		if (DEV_MODE) {
-			driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
-		} else {
-			capabilities.setCapability("name", testClassName);
-			capabilities.setCapability("platform", Platform.WINDOWS);
-			driver = new RemoteWebDriver(
-					new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"),
-					capabilities);
-		}
-		driver.manage().window().setSize(new Dimension(1024, 768));
-		return driver;
-	}
-
-	public static WebOS getWebOS(WebDriver driver) {
-		JavascriptExecutor jse = (JavascriptExecutor) driver;
-		String os = (String) jse.executeScript("return navigator.appVersion");
-		os = os.toLowerCase();
-		if (os.contains("win")) return WebOS.windows;
-		if (os.contains("mac")) return WebOS.macOS;
-		if (os.contains("nux") || os.contains("nix")) return WebOS.linux;
-		return WebOS.other;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 denkbares GmbH, Germany
+ * Copyright (C) 2017 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,22 +17,41 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.uitest.firefox;
+package de.knowwe.uitest;
 
-import org.junit.Ignore;
-
-import de.knowwe.uitest.WikiTemplate;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.WebDriver;
 
 /**
- * DiaFluxSystem Test for FireFox with haddock template
+ * Edit class text
  *
  * @author Jonas Müller
- * @created 13.09.16
+ * @created 17.02.17
  */
-@Ignore
-public class DiaFluxHaddockFireFoxUITest extends DiaFluxFireFoxUITest {
+public class UITestConfig {
+
+	private final String browser;
+	private final Platform os;
+
+	public UITestConfig(String browser, Platform os) {
+		this.browser = browser;
+		this.os = os;
+	}
+
 	@Override
-	protected WikiTemplate getTemplate() {
-		return WikiTemplate.haddock;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		UITestConfig config = (UITestConfig) o;
+
+		return (browser != null ? browser.equals(config.browser) : config.browser == null) && os == config.os;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = browser != null ? browser.hashCode() : 0;
+		result = 31 * result + (os != null ? os.hashCode() : 0);
+		return result;
 	}
 }

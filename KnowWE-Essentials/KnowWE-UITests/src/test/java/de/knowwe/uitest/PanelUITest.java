@@ -19,11 +19,9 @@
 
 package de.knowwe.uitest;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -35,14 +33,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.denkbares.strings.Strings;
-
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.*;
 
 /**
  * Tests correct behavior of left and right panel
@@ -55,6 +50,15 @@ public abstract class PanelUITest extends KnowWEUITest {
 	protected final Dimension STANDARD_SIZE = new Dimension(1024, 768);
 	protected final Dimension MEDIUM_SIZE = new Dimension(768, 768);
 	protected final Dimension NARROW_SIZE = new Dimension(400, 768);
+
+	public PanelUITest() {
+		super();
+	}
+
+	@Override
+	public String getTestName() {
+		return "Panel";
+	}
 
 	@Rule
 	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
@@ -172,6 +176,7 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 		for (int i = 0; i < 10; i++) {
 			addWatchDummy();
+			Thread.sleep(100);
 		}
 
 		getDriver().manage().window().setSize(new Dimension(1024, 250));
@@ -187,10 +192,11 @@ public abstract class PanelUITest extends KnowWEUITest {
 		getDriver().manage().window().setSize(new Dimension(1024, 768));
 
 		scrollToTop();
+		Thread.sleep(100);
 
 		int sidebarPosY = getSidebar().getLocation().getY();
 		int rightPanelPosY = getRightPanel().getLocation().getY();
-		assertTrue("Sidebar should not overlay with header after scrolling to top", sidebarPosY >= getHeaderBottom());
+		assertTrue("Sidebar should not overlay with header after scrolling to top", (sidebarPosY + 5) >= getHeaderBottom());
 		assertTrue("RightPanel should not overlay with header after scrolling to top", rightPanelPosY >= getHeaderBottom());
 
 	}
@@ -260,10 +266,10 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 	protected abstract boolean isPageAlignedRightWithRightPanel();
 
-	protected void addWatchDummy() {
+	protected void addWatchDummy() throws InterruptedException {
 		getRightPanel().findElement(By.className("addwatch")).click();
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.tagName("textarea")));
-		getRightPanel().findElement(By.tagName("textarea")).sendKeys("Weight");
+		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfNestedElementLocatedBy(getRightPanel(), By.tagName("textarea")));
+		getRightPanel().findElement(By.tagName("textarea")).sendKeys("Test");
 		getRightPanel().findElement(By.tagName("textarea")).sendKeys(Keys.ENTER);
 	}
 

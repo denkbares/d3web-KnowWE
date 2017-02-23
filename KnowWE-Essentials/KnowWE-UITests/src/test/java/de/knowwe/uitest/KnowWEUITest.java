@@ -19,19 +19,19 @@
 
 package de.knowwe.uitest;
 
-import java.util.List;
+import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
+import org.junit.AfterClass;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import static de.knowwe.uitest.WikiTemplate.haddock;
+import com.denkbares.strings.Strings;
+
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -40,6 +40,20 @@ import static org.junit.Assert.assertFalse;
  * @created 06.10.16
  */
 public abstract class KnowWEUITest {
+
+	/**
+	 * In order to test locally set the following dev mode parameters
+	 * -Dknowwe.devMode="true"
+	 * -Dknowwe.haddock.url="your-haddock-URL"
+	 * -Dknowwe.standard.url="your-standardTemplate-URL"
+	 */
+	protected boolean devMode;
+	protected String knowWeUrl;
+
+	public KnowWEUITest() {
+		devMode = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
+		knowWeUrl = UITestUtils.getKnowWEUrl(getTemplate(), getTestName(), devMode);
+	}
 
 	public static final String RESOURCE_DIR = "src/test/resources/";
 
@@ -62,35 +76,10 @@ public abstract class KnowWEUITest {
 	 */
 	public abstract String getTestName();
 
-	@Before
-	public void load() throws Exception {
-		getDriver().get(UITestUtils.getKnowWEUrl(getTemplate(), getTestName()));
-
-		if (!UITestUtils.isLoggedIn(getDriver(), getTemplate())) {
-			logIn();
-		}
-	}
-
-	protected void logIn() throws InterruptedException {
-		UITestUtils.logIn(getDriver(), "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", UITestUtils.UseCase.NORMAL_PAGE, getTemplate());
-	}
-
 	protected void changeArticleText(String newText) {
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 		getDriver().findElement(By.id("edit-source-button")).click();
-		String areaSelector = getTemplate() == WikiTemplate.haddock ? ".editor.form-control" : "#editorarea";
-		List<WebElement> editorAreas = new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By
-				.cssSelector(areaSelector)));
-		if (getDriver() instanceof JavascriptExecutor) {
-			// hacky but fast/instant!
-			((JavascriptExecutor) getDriver()).executeScript("var areas = document.querySelectorAll('" + areaSelector + "');" +
-					"for (var i=0; i<areas.length; i++) { areas[i].value = arguments[0] };", newText);
-		} else {
-			// sets the keys one by one, pretty slow...
-			editorAreas.forEach(WebElement::clear);
-			editorAreas.forEach(webElement -> webElement.sendKeys(newText));
-		}
-		getDriver().findElement(By.name("ok")).click();
+		UITestUtils.enterArticleText(newText, getDriver(), getTemplate());
 	}
 
 	protected void checkNoErrorsExist() {
@@ -105,11 +94,11 @@ public abstract class KnowWEUITest {
 		return getDriver().findElement(selector);
 	}
 
-	protected void waitTilPresent(By selector) {
+	protected void waitUntilPresent(By selector) {
 		await().until(ExpectedConditions.presenceOfElementLocated(selector));
 	}
 
-	protected WebElement waitTilClickable(By selector) {
+	protected WebElement waitUntilClickable(By selector) {
 		return await().until(ExpectedConditions.elementToBeClickable(selector));
 	}
 
@@ -129,6 +118,11 @@ public abstract class KnowWEUITest {
 
 	protected void moveMouseTo(By selector) {
 		new Actions(getDriver()).moveToElement(getDriver().findElement(selector));
+	}
+
+	protected String readFile(String fileName) throws IOException {
+		return Strings.readFile(RESOURCE_DIR + fileName)
+				.replace("%%package systemtest", "%%package systemtest" + getTestName());
 	}
 
 }

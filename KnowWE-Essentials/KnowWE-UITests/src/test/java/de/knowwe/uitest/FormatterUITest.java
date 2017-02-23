@@ -19,6 +19,8 @@
 
 package de.knowwe.uitest;
 
+import java.io.IOException;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -32,19 +34,22 @@ import static org.junit.Assert.assertEquals;
  */
 public abstract class FormatterUITest extends KnowWEUITest {
 
-	@Rule
-	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
-
-	@Override
-	protected abstract WikiTemplate getTemplate();
+	public FormatterUITest() {
+		super();
+	}
 
 	@Override
 	public String getTestName() {
-		return "UITest-Formatter-Chrome";
+		return "Formatter";
 	}
 
+	@Rule
+	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
+
 	@Test
-	public void testSparqlFormatButton() throws InterruptedException {
+	public void testSparqlFormatButton() throws InterruptedException, IOException {
+		changeArticleText(readFile("FormatterUITest.txt"));
+
 		String unformatted = "%%Sparql\n" +
 				"\n" +
 				"  SELECT ?Substance ?CAS ?EC ?Name\n" +
@@ -88,7 +93,9 @@ public abstract class FormatterUITest extends KnowWEUITest {
 	}
 
 	@Test
-	public void testTurtleFormatButton() throws InterruptedException {
+	public void testTurtleFormatButton() throws InterruptedException, IOException {
+		changeArticleText(readFile("FormatterUITest.txt"));
+
 		String unformatted = "%%turtle\n" +
 				"si:SimpsonsConcept\n" +
 				"\t?a\n" +
@@ -126,7 +133,9 @@ public abstract class FormatterUITest extends KnowWEUITest {
 	}
 
 	@Test
-	public void testRuleFormatButton() throws InterruptedException {
+	public void testRuleFormatButton() throws InterruptedException, IOException {
+		changeArticleText(readFile("FormatterUITest.txt"));
+
 		String unformatted = "%%Rule\n" +
 				"\n" +
 				"IF Driving = insufficient power on full load \n" +
@@ -163,23 +172,23 @@ public abstract class FormatterUITest extends KnowWEUITest {
 	}
 
 	private String testFormatButton(String unformatted) {
-		waitTilClickable(By.id("edit-mode-button")).click();
-		waitTilClickable(By.className("markupHeader")).click();
-		waitTilPresent(By.className("defaultEditTool"));
+		waitUntilClickable(By.id("edit-mode-button")).click();
+		waitUntilClickable(By.className("markupHeader")).click();
+		waitUntilPresent(By.className("defaultEditTool"));
 		find(By.className("defaultEditTool")).clear();
 		find(By.className("defaultEditTool")).sendKeys(unformatted);
 		saveAndReopen();
 		find(By.cssSelector(".action.format")).click();
 		saveAndReopen();
-		waitTilPresent(By.className("defaultEditTool"));
+		waitUntilPresent(By.className("defaultEditTool"));
 		return find(By.className("defaultEditTool")).getAttribute("value");
 	}
 
 	private void saveAndReopen() {
 		find(By.cssSelector(".action.save")).click();
-		waitTilPresent(By.id("edit-mode-button"));
+		waitUntilPresent(By.id("edit-mode-button"));
 		waitUntilVisible(By.id("edit-mode-button")).click();
-		waitTilClickable(By.className("markupHeader")).click();
+		waitUntilClickable(By.className("markupHeader")).click();
 	}
 
 }

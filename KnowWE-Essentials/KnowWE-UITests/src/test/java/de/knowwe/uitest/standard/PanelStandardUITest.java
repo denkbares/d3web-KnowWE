@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 denkbares GmbH, Germany
+ * Copyright (C) 2017 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,13 +17,28 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.uitest;
+package de.knowwe.uitest.standard;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.LinkedList;
+
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import de.knowwe.uitest.PanelUITest;
+import de.knowwe.uitest.UITestConfig;
+import de.knowwe.uitest.UITestUtils;
+import de.knowwe.uitest.WikiTemplate;
+import de.knowwe.uitest.haddock.BMIHaddockUITest;
 
 /**
  * Tests correct behavior of left and right panel for default template
@@ -31,10 +46,37 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  * @author Jonas Müller
  * @created 06.10.16
  */
-public abstract class PanelDefaultUITest extends PanelUITest {
-	@Override
-	protected WikiTemplate getTemplate() {
-		return WikiTemplate.standard;
+@RunWith(Parameterized.class)
+public class PanelStandardUITest extends PanelUITest {
+
+	private final String browser;
+	private final Platform os;
+	private final WebDriver driver;
+
+	private final static WikiTemplate TEMPLATE = WikiTemplate.standard;
+	private static final HashMap<UITestConfig, WebDriver> drivers = new HashMap<>();
+
+	public PanelStandardUITest(String browser, Platform os) throws IOException, InterruptedException {
+		super();
+
+		this.browser = browser;
+		this.os = os;
+
+		UITestConfig config = new UITestConfig(browser, os);
+		if (drivers.get(config) != null) {
+			driver = drivers.get(config);
+		} else {
+			for (WebDriver d : drivers.values()) {
+				d.quit();
+			}
+			driver = UITestUtils.setUp(browser, BMIHaddockUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
+			drivers.put(config, driver);
+		}
+	}
+
+	@Parameterized.Parameters
+	public static LinkedList<Object[]> parameters() {
+		return UITestUtils.getTestParameters();
 	}
 
 	@Override
@@ -102,5 +144,20 @@ public abstract class PanelDefaultUITest extends PanelUITest {
 		posXEnd += getDriver().findElement(By.id("pagecontent")).getSize().getWidth();
 
 		return posXEnd < getRightPanel().getLocation().getX();
+	}
+
+	@Override
+	protected WikiTemplate getTemplate() {
+		return TEMPLATE;
+	}
+
+	@Override
+	protected WebDriver getDriver() {
+		return driver;
+	}
+
+	@Override
+	public String getTestName() {
+		return "UI-Test-" + super.getTestName() + "-" + TEMPLATE + "-" + browser + "-" + os;
 	}
 }

@@ -1,0 +1,15 @@
+%%turtle
+si:SimpsonsConcept
+	?a
+		rdfs:Class .
+
+si:LivingBeing rdfs:subClassOf si:SimpsonsConcept ;
+	rdfs:label "Lebewesen"@de, "Living being" .
+
+si:Human
+	rdfs:subClassOf si:LivingBeing ;
+	?a rdfs:Class ;
+
+	rdfs:label "Mensch"@de, "Human"@en .
+
+%
