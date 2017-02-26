@@ -163,11 +163,11 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 				res.append("\t\t<")
 						.append(node.type)
 						.append(">");
-				if (node.type.equals("comment")) {
-					res.append(fitEncoding(removeQuoteEscaping(node.label)));
+				if ("decision".equals(node.type)) {
+					res.append(surroundWithCDATA(removeQuoteEscaping(node.label)));
 				}
 				else {
-					res.append(removeQuoteEscaping(node.label));
+					res.append(fitEncoding(removeQuoteEscaping(node.label)));
 				}
 				res.append("</")
 						.append(node.type)
