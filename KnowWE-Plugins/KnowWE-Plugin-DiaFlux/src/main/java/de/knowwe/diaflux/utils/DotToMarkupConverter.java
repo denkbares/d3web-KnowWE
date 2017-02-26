@@ -62,6 +62,10 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 	private int fcid = 1, idCounter = 1;
 	private Header h;
 
+	private static String surroundWithCDATA(String text) {
+		return "<![CDATA[" + text + "]]>";
+	}
+
 	public StringBuilder toMarkup(String dotfile) throws IOException, ImportException {
 		idCounter = 1;
 		graph = new DirectedMultigraph<>(Edge.class);
@@ -145,36 +149,29 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 					.append("\" top=\"")
 					.append(node.posy)
 					.append("\"></position>\n");
-
-			switch (node.type) {
-				case "action":
-					if (node.label.startsWith("INDICATED")) {
-						node.label = node.label.substring(11, node.label.length() - 1);
-					}
-					res.append("\t\t<action markup=\"")
-							.append(node.markup)
-							.append("\">");
+			if (node.type.equals("action")) {
+				if (node.label.startsWith("INDICATED")) {
+					node.label = node.label.substring(11, node.label.length() - 1);
+				}
+				res.append("\t\t<action markup=\"")
+						.append(node.markup)
+						.append("\">");
+				res.append(surroundWithCDATA(removeQuoteEscaping(node.label)));
+				res.append("</action>\n");
+			}
+			else {
+				res.append("\t\t<")
+						.append(node.type)
+						.append(">");
+				if (node.type.equals("comment")) {
+					res.append(fitEncoding(removeQuoteEscaping(node.label)));
+				}
+				else {
 					res.append(removeQuoteEscaping(node.label));
-					res.append("</action>\n");
-					break;
-				case "start":
-				case "decision":
-				case "exit":
-				case "comment":
-				case "snapshot":
-					res.append("\t\t<")
-							.append(node.type)
-							.append(">");
-					if ("decision".equals(node.type)) {
-						res.append(removeQuoteEscaping(node.label));
-					}
-					else {
-						res.append(fitEncoding(removeQuoteEscaping(node.label)));
-					}
-					res.append("</").append(node.type).append(">\n");
-					break;
-				default:
-					// should be only these
+				}
+				res.append("</")
+						.append(node.type)
+						.append(">\n");
 			}
 			res.append("\t</node>\n\n");
 		}
@@ -195,7 +192,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 					.append("\t\t<target>")
 					.append(fitEncoding(edge.target.fcid))
 					.append("</target>\n");
-			if (edge.guard != null) {
+			if (edge.markup != null) {
 				String guard = edge.guard;
 				res.append("\t\t<guard markup=\"")
 						.append(removeQuoteEscaping(edge.markup))
@@ -205,7 +202,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 					res.append("KNOWN[\"").append(removeQuoteEscaping(guard)).append("\"]");
 				}
 				else {
-					res.append(removeQuoteEscaping(edge.guard));
+					res.append(surroundWithCDATA(removeQuoteEscaping(edge.guard)));
 				}
 				res.append("</guard>\n");
 			}
