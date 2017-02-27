@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.turtle;
 
+import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
 import com.denkbares.strings.Identifier;
@@ -59,7 +60,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 		}
 	}
 
-	public static Value getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
+	public static URI getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
 		if (identifier == null) return null;
 		String[] idPath = identifier.getPathElements();
 		String shortURI;

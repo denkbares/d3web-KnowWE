@@ -598,4 +598,14 @@
         <parameter id="script" value="KnowWE-Plugin-Ontology-MarkupSet.js"/>
         <parameter id="scope" value="Turtle"/>
     </extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ClassHierarchyTreeMarkupType">
+		<parameter id="class" value="de.knowwe.ontology.kdom.clazztree.ClassHierarchyTreeMarkupType"/>
+		<parameter id="name" value="ClassHierarchyTreeMarkupType"/>
+		<parameter id="description" value="Defines dashtree markup for a class hierarchy."/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="5"/>
+		<parameter id="scope" value="root"/>
+	</extension>
+
 </plugin>

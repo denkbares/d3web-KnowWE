@@ -35,7 +35,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class ResourceDefinition extends SimpleDefinition {
 
-	private static final String IDENTIFIER_KEY = "identifierKey";
+	protected static final String IDENTIFIER_KEY = "identifierKey";
 
 	public ResourceDefinition(Class<?> termClass) {
 		super(OntologyCompiler.class, termClass);

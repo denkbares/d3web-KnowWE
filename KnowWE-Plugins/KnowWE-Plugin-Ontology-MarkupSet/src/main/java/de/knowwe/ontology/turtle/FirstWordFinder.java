@@ -21,7 +21,7 @@ public class FirstWordFinder implements SectionFinder {
 		int indexOfFirstWhitspace = Strings.indexOfUnquoted(trimmedText, " ", "\t", "\n", "\r");
 
 		// if no whitespace is found, entire text is taken as one 'word'
-		if (indexOfFirstWhitspace == Integer.MAX_VALUE) {
+		if (indexOfFirstWhitspace == Integer.MAX_VALUE || indexOfFirstWhitspace == -1) {
 			indexOfFirstWhitspace = trimmedText.length();
 		}
 		// return first 'word' of input
