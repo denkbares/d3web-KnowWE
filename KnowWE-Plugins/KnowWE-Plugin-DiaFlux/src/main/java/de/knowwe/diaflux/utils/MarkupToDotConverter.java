@@ -27,6 +27,7 @@ public class MarkupToDotConverter extends AbstractDiaFluxToDotConverter {
 	private List<Node> nodes, edges;
 
 	public String toDot(String markup) throws IOException {
+		// Failing: CITest-DiaFlux6 - Flow 2
 		Document doc = XMLUtils.streamToDocument(new ByteArrayInputStream(markup.getBytes(StandardCharsets.UTF_8)));
 		head = doc.getFirstChild();
 		NodeList list = head.getChildNodes();
@@ -93,6 +94,7 @@ public class MarkupToDotConverter extends AbstractDiaFluxToDotConverter {
 			res.append("type=\"").append(type).append("\"");
 			res.append(",\n\t\tfcid=\"").append(escapeQuoteAndBackslash(fcid)).append("\"");
 			res.append(",\n\t\tlabel=\"").append(escapeQuoteAndBackslash(label)).append("\"");
+			appendWidthAndHeight(type, label);
 			res.append("];\n");
 		}
 	}

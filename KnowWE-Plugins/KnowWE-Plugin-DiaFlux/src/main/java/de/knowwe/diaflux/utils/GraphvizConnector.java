@@ -41,7 +41,11 @@ public class GraphvizConnector {
 			}
 			// add position attributes
 			try {
-				Process p = Runtime.getRuntime().exec("dot -o " + tmpPos.getAbsolutePath()
+				// -q suppresses warnings
+				// -o defines output file
+				// -Tdot defines output type
+				// last argument is the input file
+				Process p = Runtime.getRuntime().exec("dot -q -o " + tmpPos.getAbsolutePath()
 						+ " -Tdot " + tmpUnpos.getAbsolutePath());
 				p.waitFor();
 				if (p.getErrorStream().available() > 0) {
