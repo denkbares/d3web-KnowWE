@@ -69,7 +69,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 	public StringBuilder toMarkup(String dotfile) throws IOException, ImportException {
 		idCounter = 1;
 		graph = new DirectedMultigraph<>(Edge.class);
-		doti.importGraph(graph, new StringReader(dotfile));
+		doti.importGraph(graph, new StringReader(dotfile.replace("\r", "")));
 		findHeader();
 		traceMaxIdFromSet(graph.vertexSet());
 		traceMaxIdFromSet(graph.edgeSet());
