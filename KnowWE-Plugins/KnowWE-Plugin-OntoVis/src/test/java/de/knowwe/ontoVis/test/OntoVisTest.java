@@ -93,7 +93,7 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void testInstances() {
+	public void testInstances() throws IOException {
 		Config config = new Config();
 		config.setConcept("si:bart");
 		config.setFormat("svg");
@@ -111,38 +111,11 @@ public class OntoVisTest {
 		colorMap.put("si:child", "#398743");
 		config.setRelationColors(colorMap);
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
-				config,
-				new DummyLinkToTermDefinitionProvider(), rdfRepository);
-
-		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
-
-		String generatedSource = ontoGraphDataBuilder.getSource().trim();
-		String expectedSource = null;
-		try {
-			expectedSource = Strings.readFile(new File("src/test/resources/graph-Bart.dot")).trim();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// the expressions do not have constant order within the dot-code
-		// therefore we need some fuzzy-compare
-
-		assertEquals(
-				"Length of generated dot-source does not match length of expected dot-source.",
-				String.valueOf(expectedSource).length(),
-				String.valueOf(generatedSource).length());
-		List<Byte> expectedBytes = asSortedByteList(expectedSource);
-		List<Byte> generatedBytes = asSortedByteList(generatedSource);
-
-		assertEquals(
-				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
-				expectedBytes, generatedBytes);
+		generateAndCompare(config, "src/test/resources/graph-Bart.dot");
 	}
 
 	@Test
-	public void testClasses() {
+	public void testClasses() throws IOException {
 		Config config = new Config();
 		config.setConcept("si:Human");
 		config.setFormat("png");
@@ -160,37 +133,11 @@ public class OntoVisTest {
 		config.setPredecessors(3);
 		config.setCacheDirectoryPath("target");
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
-				config, new DummyLinkToTermDefinitionProvider(), rdfRepository);
-
-		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
-
-		String generatedSource = ontoGraphDataBuilder.getSource().trim();
-		String expectedSource = null;
-		try {
-			expectedSource = Strings.readFile(new File("src/test/resources/graph-Human.dot")).trim();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// the expressions do not have constant order within the dot-code
-		// therefore we need some fuzzy-compare
-
-		assertEquals(
-				"Length of generated dot-source does not match length of expected dot-source.",
-				String.valueOf(expectedSource).length(),
-				String.valueOf(generatedSource).length());
-		List<Byte> expectedBytes = asSortedByteList(expectedSource);
-		List<Byte> generatedBytes = asSortedByteList(generatedSource);
-
-		assertEquals(
-				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
-				expectedBytes, generatedBytes);
+		generateAndCompare(config, "src/test/resources/graph-Human.dot");
 	}
 
 	@Test
-	public void testProperties() {
+	public void testProperties() throws IOException {
 		Config config = new Config();
 		config.addConcept("si:child");
 		config.setFormat("svg");
@@ -207,38 +154,11 @@ public class OntoVisTest {
 		config.setPredecessors(3);
 		config.setCacheDirectoryPath("target");
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
-				config,
-				new DummyLinkToTermDefinitionProvider(), rdfRepository);
-
-		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
-
-		String generatedSource = ontoGraphDataBuilder.getSource().trim();
-		String expectedSource = null;
-		try {
-			expectedSource = Strings.readFile(new File("src/test/resources/graph-Child.dot")).trim();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// the expressions do not have constant order within the dot-code
-		// therefore we need some fuzzy-compare
-
-		assertEquals(
-				"Length of generated dot-source does not match length of expected dot-source.",
-				String.valueOf(expectedSource).length(),
-				String.valueOf(generatedSource).length());
-		List<Byte> expectedBytes = asSortedByteList(expectedSource);
-		List<Byte> generatedBytes = asSortedByteList(generatedSource);
-
-		assertEquals(
-				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
-				expectedBytes, generatedBytes);
+		generateAndCompare(config, "src/test/resources/graph-Child.dot");
 	}
 
 	@Test
-	public void testTable() {
+	public void testTable() throws IOException {
 		Config config = new Config();
 		config.setConcept("si:lisa");
 		config.addFilterRelations("si:age", "rdfs:label", "si:child");
@@ -247,38 +167,11 @@ public class OntoVisTest {
 		config.setCacheFileID("table");
 		config.setCacheDirectoryPath("target");
 
-		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
-				config,
-				new DummyLinkToTermDefinitionProvider(), rdfRepository);
-
-		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
-
-		String generatedSource = ontoGraphDataBuilder.getSource().trim();
-		String expectedSource = null;
-		try {
-			expectedSource = Strings.readFile(new File("src/test/resources/graph-Table.dot")).trim();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// the expressions do not have constant order within the dot-code
-		// therefore we need some fuzzy-compare
-
-		assertEquals(
-				"Length of generated dot-source does not match length of expected dot-source.",
-				String.valueOf(expectedSource).length(),
-				String.valueOf(generatedSource).length());
-		List<Byte> expectedBytes = asSortedByteList(expectedSource);
-		List<Byte> generatedBytes = asSortedByteList(generatedSource);
-
-		assertEquals(
-				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
-				expectedBytes, generatedBytes);
+		generateAndCompare(config, "src/test/resources/graph-Table.dot");
 	}
 
 	@Test
-	public void testTwoConcepts() {
+	public void testTwoConcepts() throws IOException {
 		Config config = new Config();
 		config.setConcept("si:abraham", "si:maggie");
 		config.addFilterRelations("si:child");
@@ -293,23 +186,27 @@ public class OntoVisTest {
 		config.setCacheFileID("twoconcepts");
 		config.setCacheDirectoryPath("target");
 
+		generateAndCompare(config, "src/test/resources/graph-TwoConcepts.dot");
+	}
+
+	private void generateAndCompare(Config config, String pathname) throws IOException {
 		OntoGraphDataBuilder ontoGraphDataBuilder = new OntoGraphDataBuilder(null,
 				config, new DummyLinkToTermDefinitionProvider(), rdfRepository);
 
 		ontoGraphDataBuilder.createData(Long.MAX_VALUE);
 
-		String generatedSource = ontoGraphDataBuilder.getSource().trim();
-		String expectedSource = null;
-		try {
-			expectedSource = Strings.readFile(new File("src/test/resources/graph-TwoConcepts.dot")).trim();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		String generatedSource = ontoGraphDataBuilder.getSource();
+		String expectedSource = Strings.readFile(new File(pathname));
+		compare(generatedSource, expectedSource);
 
+	}
+
+	private void compare(String generatedSource, String expectedSource) {
 		// the expressions do not have constant order within the dot-code
 		// therefore we need some fuzzy-compare
 
+		generatedSource = generatedSource.trim().replace("\r", "");
+		expectedSource = expectedSource.trim().replace("\r", "");
 		assertEquals(
 				"Length of generated dot-source does not match length of expected dot-source.",
 				String.valueOf(expectedSource).length(),
@@ -323,7 +220,7 @@ public class OntoVisTest {
 	}
 
 	@Test
-	public void testSparql() {
+	public void testSparql() throws IOException {
 		Config config = new Config();
 		config.setCacheDirectoryPath("target");
 		config.setCacheFileID("sparql");
@@ -375,28 +272,13 @@ public class OntoVisTest {
 				config);
 		graphRenderer.generateSource();
 
-		String generatedSource = graphRenderer.getSource().trim();
-		String expectedSource = null;
-		try {
-			expectedSource = Strings.readFile(new File("src/test/resources/graph-Sparql.dot")).trim();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		String generatedSource = graphRenderer.getSource();
+		String expectedSource = Strings.readFile(new File("src/test/resources/graph-Sparql.dot"));
 
 		// the expressions do not have constant order within the dot-code
 		// therefore we need some fuzzy-compare
 
-		assertEquals(
-				"Length of generated dot-source does not match length of expected dot-source.",
-				String.valueOf(expectedSource).length(),
-				String.valueOf(generatedSource).length());
-		List<Byte> expectedBytes = asSortedByteList(expectedSource);
-		List<Byte> generatedBytes = asSortedByteList(generatedSource);
-
-		assertEquals(
-				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
-				expectedBytes, generatedBytes);
+		compare(generatedSource, expectedSource);
 	}
 
 	@SuppressWarnings("Duplicates") // Was reused in the newer headless Test implementation aswell
@@ -413,7 +295,7 @@ public class OntoVisTest {
 
 	@SuppressWarnings("Duplicates") // Took testSparql as Template
 	@Test
-	public void testSubProperties() {
+	public void testSubProperties() throws IOException {
 		Config config = new Config();
 		config.setCacheDirectoryPath("target");
 		config.setCacheFileID("subProperties");
@@ -483,27 +365,12 @@ public class OntoVisTest {
 				config);
 		graphRenderer.generateSource();
 
-		String generatedSource = graphRenderer.getSource().trim();
-		String expectedSource = null;
-		try {
-			expectedSource = Strings.readFile(new File("src/test/resources/graph-SubProperties.dot")).trim();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		String generatedSource = graphRenderer.getSource();
+		String expectedSource = Strings.readFile(new File("src/test/resources/graph-SubProperties.dot"));
 
 		// the expressions do not have constant order within the dot-code
 		// therefore we need some fuzzy-compare
 
-		assertEquals(
-				"Length of generated dot-source does not match length of expected dot-source.",
-				String.valueOf(expectedSource).length(),
-				String.valueOf(generatedSource).length());
-		List<Byte> expectedBytes = asSortedByteList(expectedSource);
-		List<Byte> generatedBytes = asSortedByteList(generatedSource);
-
-		assertEquals(
-				"Generated dot-source does not match (sorted-bytes) expected dot-source.",
-				expectedBytes, generatedBytes);
+		compare(generatedSource, expectedSource);
 	}
 }
