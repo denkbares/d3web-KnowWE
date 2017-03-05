@@ -171,7 +171,8 @@ public class GetInfoObjects extends AbstractAction {
 					|| Question.class.isAssignableFrom(termObjectClass))) {
 				Section<D3webTermDefinition> d3webDefinition = Sections.cast(section, D3webTermDefinition.class);
 				@SuppressWarnings("unchecked")
-				NamedObject object = d3webDefinition.get().getTermObject(definitionCompiler, d3webDefinition);
+				NamedObject object = d3webDefinition.get()
+						.getTermObject(definitionCompiler, d3webDefinition);
 				if (object != null) {
 					objects.add(object);
 				}
@@ -255,7 +256,6 @@ public class GetInfoObjects extends AbstractAction {
 			else {
 				bob.append("<unknown id='").append(objectName).append("'></unknown>");
 			}
-
 		}
 	}
 
@@ -300,18 +300,15 @@ public class GetInfoObjects extends AbstractAction {
 		else if (object instanceof QuestionNum) {
 			InfoStore infoStore = object.getInfoStore();
 			if (infoStore.contains(BasicProperties.QUESTION_NUM_RANGE)) {
-				NumericalInterval interval = infoStore.getValue(
-						BasicProperties.QUESTION_NUM_RANGE);
+				NumericalInterval interval = infoStore.getValue(BasicProperties.QUESTION_NUM_RANGE);
 				// TODO: check for open/closed
 				bob.append("<range min='").append(interval.getLeft()).append("' ");
 				bob.append("max='").append(interval.getRight()).append("'></range>");
 			}
 			if (infoStore.contains(MMInfo.UNIT)) {
 				String value = infoStore.getValue(MMInfo.UNIT);
-
 				bob.append("<unit>").append(value).append("</unit>");
 			}
-
 		}
 		bob.append("\t</question>\n");
 	}

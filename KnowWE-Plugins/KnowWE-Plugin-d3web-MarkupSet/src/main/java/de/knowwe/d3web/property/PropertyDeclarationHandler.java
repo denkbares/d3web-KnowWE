@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
-import de.d3web.core.knowledge.InfoStore;
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
@@ -33,7 +33,6 @@ import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.ValueUtils;
-import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webHandler;
@@ -52,8 +51,6 @@ import de.knowwe.d3web.property.PropertyObjectReference.PropertyAnswerReference;
  * @created 10.11.2010
  */
 public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarationType> {
-
-
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<PropertyDeclarationType> section) {
@@ -156,7 +153,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 
 	public static Locale getLocale(Section<PropertyDeclarationType> s) {
 		Section<LocaleType> localeSection = Sections.successor(s, LocaleType.class);
-		Locale locale = InfoStore.NO_LANGUAGE;
+		Locale locale = Locale.ROOT;
 		if (localeSection != null) {
 			locale = localeSection.get().getLocale(localeSection);
 		}
@@ -193,7 +190,6 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 			Choice choice = KnowledgeBaseUtils.findChoice(questionChoice,
 					answerReference.getText());
 			if (choice != null) choices.add(choice);
-
 		}
 		return choices;
 	}
@@ -218,7 +214,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		if (content == null || content.trim().isEmpty()) {
 			return;
 		}
-		Locale locale = InfoStore.NO_LANGUAGE;
+		Locale locale = Locale.ROOT;
 		if (localeSection != null) {
 			locale = localeSection.get().getLocale(localeSection);
 		}

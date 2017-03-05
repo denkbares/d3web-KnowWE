@@ -18,6 +18,8 @@
  */
 package de.d3web.we.kdom.propertytable;
 
+import java.util.Locale;
+
 import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
@@ -75,8 +77,8 @@ public class PropertyValueType extends AbstractType {
 				parsedValue = property.parseValue(value);
 			}
 			catch (Exception e) {
-				return Messages.asList(Messages.objectCreationError("Could not parse as property value: "
-						+ value));
+				return Messages.asList(Messages.objectCreationError(
+						"Could not parse as property value: " + value));
 			}
 
 			Section<TableCellContent> rowHeader = TableUtils.getRowHeader(section);
@@ -88,11 +90,11 @@ public class PropertyValueType extends AbstractType {
 				return Messages.noMessage();
 			}
 
-			if (object.getInfoStore().contains(property)) {
+			// test if the property is already set for the ROOT language,
+			// because we are going to overwrite this
+			if (object.getInfoStore().contains(property, Locale.ROOT)) {
 				return Messages.asList(Messages.objectAlreadyDefinedWarning("Property '"
-						+ property.getName()
-						+ "' for object '"
-						+ object.getName() + "'"));
+						+ property.getName() + "' for object '" + object.getName() + "'"));
 			}
 
 			//noinspection unchecked
