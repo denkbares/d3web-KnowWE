@@ -101,7 +101,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		}
 		catch (NoSuchMethodException e) {
 			return Messages.asList(Messages.syntaxError("The property '" + property.getName()
-					+ "' is not supported by the %%Propery markup."));
+					+ "' is not supported by the %%Property markup."));
 		}
 		catch (IllegalArgumentException e) {
 			return Messages.asList(Messages.syntaxError("The property value '" + content
