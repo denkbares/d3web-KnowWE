@@ -55,8 +55,14 @@ Rule.prototype.toXML = function (dx, dy) {
 	var xml = '\t<edge' +
 		(this.fcid ? ' fcid="' + this.fcid + '"' : '') +
 		'>\n';
-	xml += '\t\t<origin>' + this.sourceNode.getNodeModel().fcid + '</origin>\n';
-	xml += '\t\t<target>' + this.targetNode.getNodeModel().fcid + '</target>\n';
+	var originFcid = this.sourceNode.getNodeModel().fcid;
+	var targetFcid = this.targetNode.getNodeModel().fcid;
+	if (!isValidXml(originFcid))
+		originFcid = '<![CDATA[' + originFcid + ']]>';
+	if (!isValidXml(targetFcid))
+		targetFcid = '<![CDATA[' + targetFcid + ']]>';
+	xml += '\t\t<origin>' + originFcid + '</origin>\n';
+	xml += '\t\t<target>' + targetFcid +'</target>\n';
 	if (this.guard && this.guard.getMarkup() != 'NOP') {
 		if (DiaFluxUtils.isString(this.guard)) {
 			xml += '\t\t<guard><![CDATA[' + this.guard + ']]></guard>\n';
@@ -73,6 +79,10 @@ Rule.prototype.toXML = function (dx, dy) {
 	}
 	xml += '\t</edge>\n';
 	return xml;
+}
+
+function isValidXml(text) {
+	return !/.*[<>&"'].*/.test(text);
 }
 
 

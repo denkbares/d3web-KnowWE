@@ -173,7 +173,7 @@ Node.prototype.moveTo = function(left, top, noRouting) {
 Node.prototype.toXML = function(dx, dy) {
 	if (!dx) dx = 0;
 	if (!dy) dy = 0;
-	var xml = '\t<node fcid="' + this.nodeModel.fcid + '">\n';
+	var xml = '\t<node fcid="' + this.nodeModel.fcid.escapeXML() + '">\n';
 	xml += '\t\t<position left="' + (this.getLeft() + dx) + '" top="' + (this.getTop() + dy) + '"></position>\n';
 	if (this.nodeModel.start) {
 		xml += '\t\t<start>' + this.nodeModel.start.escapeXML() + '</start>\n';
