@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import com.denkbares.collections.PriorityList;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
+import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.expression.ExpressionResolver;
@@ -53,12 +54,12 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 		try {
 			JSONObject requestObject = new JSONObject(data);
 
-			String expr = requestObject.getString(EXPRESSION).replaceAll("\u200b", "").replaceAll("\00a0", " ");
+			JSONArray expressionArray = requestObject.getJSONArray(EXPRESSION);
 			ArticleManager articleManager = KnowWEUtils.getArticleManager(context.getWeb());
-			JSONArray expressionArray = new JSONArray(expr);
 			for (int k = 0; k < expressionArray.length(); k++) {
-				JSONObject jsonValuesObject = getExpressionValue(expressionArray.get(k)
-						.toString(), context, articleManager);
+				String expression = expressionArray.get(k)
+						.toString().replaceAll("\u200b", "").replaceAll("\00a0", " ");
+				JSONObject jsonValuesObject = getExpressionValue(expression, context, articleManager);
 				responseArray.put(jsonValuesObject);
 			}
 			responseObject.put("values", responseArray);
@@ -69,7 +70,7 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 			responseObject.write(context.getWriter());
 		}
 		catch (JSONException | IOException e) {
-			e.printStackTrace();
+			Log.severe("Exception while resolving watch expression: " + data + "\n", e);
 		}
 
 	}
