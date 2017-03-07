@@ -69,7 +69,7 @@ public abstract class BMIUITest extends KnowWEUITest {
 		UITestUtils.awaitStatusChange(getDriver(), currentStatus);
 
 		assertEquals("25", getDriver().findElements(By.className("numinput")).get(2).getAttribute("value"));
-		assertEquals("Normal weight", getDriver().findElement(By.className("SOLUTION-ESTABLISHED")).getText());
+		assertEquals("Normalgewicht", getDriver().findElement(By.className("SOLUTION-ESTABLISHED")).getText());
 		assertEquals("bmi = 25", getDriver().findElement(By.className("ABSTRACTION")).getText());
 	}
 

@@ -69,7 +69,7 @@ public class PanelStandardUITest extends PanelUITest {
 			for (WebDriver d : drivers.values()) {
 				d.quit();
 			}
-			driver = UITestUtils.setUp(browser, BMIHaddockUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
+			driver = UITestUtils.setUp(browser, PanelStandardUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
 			drivers.put(config, driver);
 		}
 	}

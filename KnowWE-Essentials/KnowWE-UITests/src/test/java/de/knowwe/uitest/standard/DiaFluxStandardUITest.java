@@ -64,7 +64,7 @@ public class DiaFluxStandardUITest extends DiaFluxUITest {
 			for (WebDriver d : drivers.values()) {
 				d.quit();
 			}
-			driver = UITestUtils.setUp(browser, BMIHaddockUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
+			driver = UITestUtils.setUp(browser, DiaFluxStandardUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
 			drivers.put(config, driver);
 		}
 	}

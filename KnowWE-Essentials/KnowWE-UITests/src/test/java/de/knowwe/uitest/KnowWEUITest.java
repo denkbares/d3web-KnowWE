@@ -20,6 +20,7 @@
 package de.knowwe.uitest;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.AfterClass;
@@ -69,7 +70,7 @@ public abstract class KnowWEUITest {
 	 * https://sites.google.com/a/chromium.org/chromegetDriver()/downloads
 	 * and start it on your machine.
 	 * State of the page does not matter, it will be cleared for each new test.
-	 *
+	 * <p>
 	 * In order to test locally set the following dev mode parameters
 	 * -Dknowwe.devMode="true"
 	 * -Dknowwe.url="your-URL"
@@ -80,6 +81,32 @@ public abstract class KnowWEUITest {
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 		getDriver().findElement(By.id("edit-source-button")).click();
 		UITestUtils.enterArticleText(newText, getDriver(), getTemplate());
+
+		// Check if editing page worked
+		someoneEditedPageWorkaround();
+	}
+
+	private void someoneEditedPageWorkaround() {
+		try {
+			if (getTemplate() == WikiTemplate.haddock) {
+				new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.className("error")));
+				Optional oops = getDriver().findElements(By.cssSelector("h4"))
+						.stream()
+						.filter(webElement -> Strings.containsIgnoreCase(webElement.getText(), "Oops!"))
+						.findFirst();
+				if (oops.isPresent()) {
+					getDriver().findElement(By.cssSelector("a.btn.btn-primary.btn-block")).click();
+				}
+			} else {
+				new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("conflict")));
+				WebElement conflict = getDriver().findElement(By.id("conflict"));
+				conflict.findElement(By.cssSelector("a")).click();
+			}
+			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated((By.name("ok"))));
+			getDriver().findElement(By.name("ok")).click();
+		} catch (Exception e) {
+			// No errors exist
+		}
 	}
 
 	protected void checkNoErrorsExist() {

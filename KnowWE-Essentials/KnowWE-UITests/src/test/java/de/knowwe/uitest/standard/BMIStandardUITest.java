@@ -64,7 +64,7 @@ public class BMIStandardUITest extends BMIUITest {
 			for (WebDriver d : drivers.values()) {
 				d.quit();
 			}
-			driver = UITestUtils.setUp(browser, BMIHaddockUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
+			driver = UITestUtils.setUp(browser, BMIStandardUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
 			drivers.put(config, driver);
 		}
 	}

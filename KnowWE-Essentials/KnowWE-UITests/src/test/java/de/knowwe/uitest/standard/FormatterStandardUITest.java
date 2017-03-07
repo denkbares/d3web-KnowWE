@@ -64,7 +64,7 @@ public class FormatterStandardUITest extends FormatterUITest {
 			for (WebDriver d : drivers.values()) {
 				d.quit();
 			}
-			driver = UITestUtils.setUp(browser, BMIHaddockUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
+			driver = UITestUtils.setUp(browser, FormatterStandardUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
 			drivers.put(config, driver);
 		}
 	}

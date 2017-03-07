@@ -74,7 +74,7 @@ public class PanelHaddockUITest extends PanelUITest {
 			for (WebDriver d : drivers.values()) {
 				d.quit();
 			}
-			driver = UITestUtils.setUp(browser, BMIHaddockUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
+			driver = UITestUtils.setUp(browser, PanelHaddockUITest.class.getSimpleName(), os, TEMPLATE, getTestName(), devMode);
 			drivers.put(config, driver);
 		}
 	}
@@ -157,7 +157,7 @@ public class PanelHaddockUITest extends PanelUITest {
 
 		for (int i = 0; i < 10; i++) {
 			addWatchDummy();
-			Thread.sleep(100);
+			Thread.sleep(200);
 		}
 		scrollToBottom();
 
