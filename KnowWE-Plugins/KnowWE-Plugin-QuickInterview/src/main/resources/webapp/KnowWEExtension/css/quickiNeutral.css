@@ -175,7 +175,6 @@
 
 /* styling of input box */
 .quickinterview .numinput {
-	/*height: 12px;*/
 	float: left;
 	margin-left: 0;
 	cursor: pointer;
@@ -212,7 +211,6 @@
 
 /* styling of input box date answers */
 .quickinterview .inputdate {
-	height: 12px;
 	float: left;
 	margin-left: 0;
 	cursor: pointer;
@@ -220,7 +218,6 @@
 
 /* styling of input box text answers */
 .quickinterview .inputtextvalue {
-	height: 12px;
 	float: left;
 	margin-left: 0;
 	cursor: pointer;
