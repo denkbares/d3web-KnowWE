@@ -78,35 +78,33 @@ public abstract class KnowWEUITest {
 	public abstract String getTestName();
 
 	protected void changeArticleText(String newText) {
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+		try {
+			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+		} catch (Exception e) {
+			someoneEditedPageWorkaround();
+			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+		}
 		getDriver().findElement(By.id("edit-source-button")).click();
 		UITestUtils.enterArticleText(newText, getDriver(), getTemplate());
-
-		// Check if editing page worked
-		someoneEditedPageWorkaround();
 	}
 
 	private void someoneEditedPageWorkaround() {
-		try {
-			if (getTemplate() == WikiTemplate.haddock) {
-				new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.className("error")));
-				Optional oops = getDriver().findElements(By.cssSelector("h4"))
-						.stream()
-						.filter(webElement -> Strings.containsIgnoreCase(webElement.getText(), "Oops!"))
-						.findFirst();
-				if (oops.isPresent()) {
-					getDriver().findElement(By.cssSelector("a.btn.btn-primary.btn-block")).click();
-				}
-			} else {
-				new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("conflict")));
-				WebElement conflict = getDriver().findElement(By.id("conflict"));
-				conflict.findElement(By.cssSelector("a")).click();
+		if (getTemplate() == WikiTemplate.haddock) {
+			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.className("error")));
+			Optional oops = getDriver().findElements(By.cssSelector("h4"))
+					.stream()
+					.filter(webElement -> Strings.containsIgnoreCase(webElement.getText(), "Oops!"))
+					.findFirst();
+			if (oops.isPresent()) {
+				getDriver().findElement(By.cssSelector("a.btn.btn-primary.btn-block")).click();
 			}
-			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated((By.name("ok"))));
-			getDriver().findElement(By.name("ok")).click();
-		} catch (Exception e) {
-			// No errors exist
+		} else {
+			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("conflict")));
+			WebElement conflict = getDriver().findElement(By.id("conflict"));
+			conflict.findElement(By.cssSelector("a")).click();
 		}
+		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated((By.name("ok"))));
+		getDriver().findElement(By.name("ok")).click();
 	}
 
 	protected void checkNoErrorsExist() {
