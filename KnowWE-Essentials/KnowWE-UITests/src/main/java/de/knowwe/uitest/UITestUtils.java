@@ -200,14 +200,14 @@ public class UITestUtils {
 	private static boolean pageExists(WikiTemplate template, WebDriver driver) {
 		if (template == haddock) {
 			try {
-				new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("a.createpage")));
+				new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("a.createpage")));
 			} catch (Exception e) {
 				// Element not present
 			}
 			return driver.findElements(By.cssSelector("a.createpage")).isEmpty();
 		} else {
 			try {
-				new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("div.information a")));
+				new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("div.information a")));
 			} catch (Exception e) {
 				// Element not present
 			}
