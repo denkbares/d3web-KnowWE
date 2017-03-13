@@ -114,7 +114,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(COMPILE, false, "true", "false");
 		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION);
-		MARKUP.addAnnotation(REPLACEMENT,false, Pattern.compile(".+->.*"));
+		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->.*"));
 		TimeStampType timeStampType = new TimeStampType();
 		timeStampType.setRenderer((section, user, result) -> {
 			result.append(section.getText());
@@ -360,16 +360,18 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 				InputStream connectionStream = getAttachmentStream(section, connection);
 
-				// configure replacement, if applicable
-				String replacement = DefaultMarkupType.getAnnotation(section, REPLACEMENT);
-				if (!Strings.isBlank(replacement)) {
-					String[] replacementDefinition = replacement.split("->");
-					Map<byte[], byte[]> replacements = new HashMap<>();
-					replacements.put(replacementDefinition[0].getBytes("UTF-8"),
-							replacementDefinition.length > 1 ?
-									replacementDefinition[1].getBytes("UTF-8") :
-									"".getBytes("UTF-8"));
-					connectionStream = new ReplacingInputStream(connectionStream, replacements);
+				// configure replacements, if applicable
+				String[] replacements = DefaultMarkupType.getAnnotations(section, REPLACEMENT);
+				for (String replacement : replacements) {
+					if (!Strings.isBlank(replacement)) {
+						String[] replacementDefinition = replacement.split("->");
+						Map<byte[], byte[]> replaceMap = new HashMap<>();
+						byte[] bytesToReplace = replacementDefinition[0].getBytes("UTF-8");
+						byte[] replacementBytes = replacementDefinition.length > 1 ?
+								replacementDefinition[1].getBytes("UTF-8") : new byte[0];
+						replaceMap.put(bytesToReplace, replacementBytes);
+						connectionStream = new ReplacingInputStream(connectionStream, replaceMap);
+					}
 				}
 
 				if (attachmentState == State.UNKNOWN || attachmentState == State.OUTDATED) {
