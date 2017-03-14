@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.AttachmentManager;
 import de.knowwe.core.DefaultArticleManager;
@@ -186,6 +189,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @throws IllegalArgumentException if the specified section is not of {@link
 	 *                                  DefaultMarkupType}
 	 */
+	@NotNull
 	public static String getContent(Section<?> section) {
 		Section<? extends ContentType> contentSection = getContentSection(section);
 		if (contentSection != null) {
@@ -205,6 +209,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @throws IllegalArgumentException if the specified section is not of {@link
 	 *                                  DefaultMarkupType}
 	 */
+	@Nullable
 	public static Section<? extends ContentType> getContentSection(Section<?> section) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
@@ -219,6 +224,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @return {@link ContentType} or null, if there is no {@link ContentType} as childtype
 	 * @created 13.03.2012
 	 */
+	@Nullable
 	public static ContentType getContentType(DefaultMarkupType defaultMarkupType) {
 		for (Type type : defaultMarkupType.getChildrenTypes()) {
 			if (type instanceof ContentType) {
@@ -239,6 +245,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @throws IllegalArgumentException if the specified section is not of {@link
 	 *                                  DefaultMarkupType}
 	 */
+	@Nullable
 	public static String getAnnotation(Section<?> section, String name) {
 		Section<?> annotationSection = getAnnotationContentSection(section, name);
 		if (annotationSection == null) return null;
@@ -255,6 +262,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @return the content strings of the found annotation
 	 * @created 26.01.2011
 	 */
+	@NotNull
 	public static String[] getAnnotations(Section<?> section, String name) {
 		List<Section<? extends AnnotationContentType>> annotationSections = getAnnotationContentSections(section, name);
 		String[] result = new String[annotationSections.size()];
@@ -277,6 +285,7 @@ public class DefaultMarkupType extends AbstractType {
 	 *                                  DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
+	@Nullable
 	public static Section<? extends AnnotationContentType> getAnnotationContentSection(Section<? extends Type> section, String name) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
@@ -304,6 +313,7 @@ public class DefaultMarkupType extends AbstractType {
 	 *                                  DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
+	@NotNull
 	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String name) {
 		return getAnnotationContentSections(section, new String[] { name });
 	}
@@ -320,6 +330,7 @@ public class DefaultMarkupType extends AbstractType {
 	 *                                  DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
+	@NotNull
 	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String... names) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
@@ -346,7 +357,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @param section the section to be check for packages
 	 * @created 11.03.2012
 	 */
-
+	@NotNull
 	public static String[] getPackages(Section<?> section) {
 		return getPackages(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
 	}
@@ -361,6 +372,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @param section the section to be check for packages
 	 * @created 12.03.2012
 	 */
+	@NotNull
 	public static String[] getPackages(Section<?> section, String annotation) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
@@ -397,6 +409,7 @@ public class DefaultMarkupType extends AbstractType {
 	 *                                  DefaultMarkupType}
 	 */
 	@SuppressWarnings("unchecked")
+	@NotNull
 	public static List<Section<? extends AnnotationContentType>> getAllAnnotationContentSections(Section<?> section) {
 		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
 			throw new IllegalArgumentException("section not of type DefaultMarkupType");
