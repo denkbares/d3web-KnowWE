@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -44,11 +46,11 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
-import com.denkbares.streams.ReplacingInputStream;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
@@ -362,16 +364,20 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 				// configure replacements, if applicable
 				String[] replacements = DefaultMarkupType.getAnnotations(section, REPLACEMENT);
-				for (String replacement : replacements) {
-					if (!Strings.isBlank(replacement)) {
-						String[] replacementDefinition = replacement.split("->");
-						Map<byte[], byte[]> replaceMap = new HashMap<>();
-						byte[] bytesToReplace = replacementDefinition[0].getBytes("UTF-8");
-						byte[] replacementBytes = replacementDefinition.length > 1 ?
-								replacementDefinition[1].getBytes("UTF-8") : new byte[0];
-						replaceMap.put(bytesToReplace, replacementBytes);
-						connectionStream = new ReplacingInputStream(connectionStream, replaceMap);
+				if (replacements.length > 0) {
+					String connectionString = Strings.readStream(connectionStream);
+					for (String replacement : replacements) {
+						if (Strings.isBlank(replacement)) continue;
+						String[] parsedReplacement = Strings.parseConcat("->", replacement);
+						if (parsedReplacement.length < 2) continue;
+						try {
+							connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
+						}
+						catch (PatternSyntaxException e) {
+							connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
+						}
 					}
+					connectionStream = new ByteArrayInputStream(connectionString.getBytes(StandardCharsets.UTF_8));
 				}
 
 				if (attachmentState == State.UNKNOWN || attachmentState == State.OUTDATED) {
@@ -470,6 +476,12 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		connection.setRequestMethod("HEAD");
 		connection.connect();
 
+		Date attachmentSectionDate = Environment.getInstance()
+				.getWikiConnector()
+				.getLastModifiedDate(attachmentSection.getTitle(), -1);
+
+		LocalDateTime attachmentSectionDateTime = LocalDateTime.ofInstant(attachmentSectionDate.toInstant(), ZoneId.systemDefault());
+
 		LocalDateTime urlDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(connection.getLastModified()),
 				ZoneId.systemDefault());
 
@@ -482,7 +494,8 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				.isAfter(attachmentDateTime.truncatedTo(ChronoUnit.SECONDS))) {
 			state = State.OUTDATED;
 		}
-		else if (urlDateTime.equals(LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()))) {
+		else if (urlDateTime.equals(LocalDateTime.ofInstant(Instant.ofEpochMilli(0), ZoneId.systemDefault()))
+				|| attachmentSectionDateTime.isAfter(attachmentDateTime)) {
 			// check if urlDateTime is equal to unix time 0
 			// if it is, the time was not set (maybe because of server settings)
 			state = State.UNKNOWN;
