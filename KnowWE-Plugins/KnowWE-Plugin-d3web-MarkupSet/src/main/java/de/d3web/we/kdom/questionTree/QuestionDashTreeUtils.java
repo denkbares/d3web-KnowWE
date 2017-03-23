@@ -61,7 +61,6 @@ public class QuestionDashTreeUtils {
 	 * will be returned. Such a List of DashTreeElements can be created with
 	 * <tt>DashTreeElement.getDashTreeAncestors(Section s)</tt>, if <tt>s</tt>
 	 * is the child Section of an answer in a valid DashTree.
-	 * 
 	 */
 	public static Condition createCondition(
 			D3webCompiler compiler, List<Section<? extends DashTreeElement>> ancestors) {
@@ -116,9 +115,7 @@ public class QuestionDashTreeUtils {
 		if (answerSec != null && q instanceof QuestionChoice) {
 			Choice a = answerSec.get().getTermObject(compiler, answerSec);
 			if (a != null) {
-				CondEqual c = new CondEqual(q, new ChoiceValue(
-						a));
-				return c;
+				return new CondEqual(q, new ChoiceValue(a));
 			}
 		}
 
@@ -134,10 +131,7 @@ public class QuestionDashTreeUtils {
 				Double d = NumericCondLine.getValue(numCondSec);
 				if (d == null) return null;
 				String comp = NumericCondLine.getComparator(numCondSec);
-
-				if (d != null && comp != null) return createCondNum(compiler,
-						numCondSec, comp, d,
-						(QuestionNum) q);
+				if (comp != null) return createCondNum(compiler, numCondSec, comp, d, (QuestionNum) q);
 			}
 		}
 
@@ -146,22 +140,27 @@ public class QuestionDashTreeUtils {
 	}
 
 	private static Condition createCondNum(PackageCompiler compiler,
-			Section<NumericCondLine> comp, String comparator, Double valueOf,
-			QuestionNum questionNum) {
+										   Section<NumericCondLine> comp, String comparator, Double valueOf,
+										   QuestionNum questionNum) {
 		Messages.clearMessages(compiler, comp, QuestionDashTreeUtils.class);
 
-		if (comparator.equals("=")) return new CondNumEqual(questionNum, valueOf);
-		else if (comparator.equals(">")) return new CondNumGreater(questionNum, valueOf);
-		else if (comparator.equals(">=")) return new CondNumGreaterEqual(questionNum,
-				valueOf);
-		else if (comparator.equals("<")) return new CondNumLess(questionNum, valueOf);
-		else if (comparator.equals("<=")) return new CondNumLessEqual(questionNum,
-				valueOf);
-		else {
-			Messages.storeMessage(compiler, comp,
-					QuestionDashTreeUtils.class,
-					Messages.error("Unkown comparator '" + comparator + "'."));
-			return null;
+		switch (comparator) {
+			case "=":
+				return new CondNumEqual(questionNum, valueOf);
+			case ">":
+				return new CondNumGreater(questionNum, valueOf);
+			case ">=":
+				return new CondNumGreaterEqual(questionNum, valueOf);
+			case "<":
+				return new CondNumLess(questionNum, valueOf);
+			case "<=":
+				return new CondNumLessEqual(questionNum,
+						valueOf);
+			default:
+				Messages.storeMessage(compiler, comp,
+						QuestionDashTreeUtils.class,
+						Messages.error("Unkown comparator '" + comparator + "'."));
+				return null;
 		}
 	}
 
@@ -188,11 +187,9 @@ public class QuestionDashTreeUtils {
 			if (lvl1SubtreeAncestor != null) {
 				Section<DashTreeElement> lvl1Element = Sections.child(
 						lvl1SubtreeAncestor, DashTreeElement.class);
-				Section<? extends Term> termRefSection = Sections.successor(
-						lvl1Element,
-						Term.class);
+				Section<? extends Term> termRefSection = Sections.successor(lvl1Element, Term.class);
 
-				if (termRefSection.get() instanceof QASetDefinition) {
+				if (termRefSection != null && termRefSection.get() instanceof QASetDefinition) {
 					rootQuestionSubtree = lvl1SubtreeAncestor;
 				}
 				else {

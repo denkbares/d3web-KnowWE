@@ -58,11 +58,10 @@ public class NumericCondLine extends AbstractType {
 	}
 
 	/**
-	 * 
 	 * This handler just checks whether a valid condition COULD be created from
 	 * this NumericConditionLine using the same method as when real rules are
 	 * created
-	 * 
+	 *
 	 * @author Jochen
 	 * @created 03.08.2010
 	 */
@@ -93,13 +92,14 @@ public class NumericCondLine extends AbstractType {
 			content = content.substring(1, content.length() - 1);
 		}
 
-		String value = content.substring(getComparator(sec).length()).trim();
+		String comparator = getComparator(sec);
+		if (comparator == null) return null;
+		String value = content.substring(comparator.length()).trim();
 		Double d = null;
 		try {
 			d = Double.parseDouble(value);
 		}
-		catch (NumberFormatException e) {
-			// FIXME
+		catch (NumberFormatException ignore) {
 		}
 		return d;
 	}
@@ -132,10 +132,7 @@ public class NumericCondLine extends AbstractType {
 					interval.checkValidity();
 					return interval;
 				}
-				catch (NumberFormatException e) {
-					return null;
-				}
-				catch (IntervalException ie) {
+				catch (NumberFormatException | IntervalException e) {
 					return null;
 				}
 			}
@@ -144,10 +141,7 @@ public class NumericCondLine extends AbstractType {
 	}
 
 	public static boolean isIntervall(Section<NumericCondLine> sec) {
-		if (sec.getText().startsWith("[") && sec.getText().endsWith("]")) {
-			return true;
-		}
-		return false;
+		return sec.getText().startsWith("[") && sec.getText().endsWith("]");
 	}
 
 }
