@@ -34,6 +34,7 @@ import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
@@ -110,7 +111,7 @@ public class UITestUtils {
 		}
 
 		elements.get(0).click();
-		driver.findElement(By.id("j_username")).sendKeys(username);
+		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("j_username"))).sendKeys(username);
 		driver.findElement(By.id("j_password")).sendKeys(password);
 		driver.findElement(By.name("submitlogin")).click();
 		String logoutSelector = template == WikiTemplate.haddock ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
@@ -226,7 +227,7 @@ public class UITestUtils {
 					.stream()
 					.filter(webElement -> Strings.containsIgnoreCase(webElement.getText(), "create it"))
 					.findFirst()
-					.get();
+					.orElseThrow(() -> new WebDriverException("Create button not found"));
 		}
 		href.click();
 		enterArticleText(Strings.readFile("src/test/resources/Dummy.txt"), driver, template);
