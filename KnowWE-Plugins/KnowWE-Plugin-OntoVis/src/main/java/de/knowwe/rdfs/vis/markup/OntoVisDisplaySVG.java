@@ -48,7 +48,7 @@ public class OntoVisDisplaySVG extends AbstractAction {
 
 		Section<?> section = Sections.get(context.getParameter("SectionID"));
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class));
-		config.setCacheFileID(Utils.getFileID(section));
+		config.setCacheFileID(Utils.getFileID(section, context));
 		File svg = new File(DOTRenderer.getFilePath(config) + ".svg");
 
 		FileInputStream fis = new FileInputStream(svg);

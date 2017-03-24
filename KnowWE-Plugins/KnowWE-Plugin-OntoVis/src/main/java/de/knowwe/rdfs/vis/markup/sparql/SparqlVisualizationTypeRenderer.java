@@ -37,6 +37,18 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 	public static final String VISUALIZATION_RENDERER_KEY = "sparqlVisualizationRendererKey";
 
+	public static String getVisualizationRendererKey(UserContext user) {
+		String key = VISUALIZATION_RENDERER_KEY;
+		String concept = Utils.getConceptFromRequest(user);
+
+		if (user == null || concept == null) {
+			return key;
+		}
+		else {
+			return key + concept;
+		}
+	}
+
 	@Override
 	public void render(Section<?> content, UserContext user, RenderResult string) {
 		if (user.getParameter("concept") != null) {
@@ -45,10 +57,9 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			PreRenderWorker.getInstance().clearCache(content);
 		}
 		PreRenderWorker.getInstance().handlePreRendering(content, user, this);
-		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) content.getObject(VISUALIZATION_RENDERER_KEY);
+		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) content.getObject(getVisualizationRendererKey(user));
 		if (graphRenderer != null) string.appendHtml(graphRenderer.getHTMLIncludeSnipplet());
 	}
-
 
 	private SubGraphData convertToGraph(CachedTupleQueryResult resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
 		SubGraphData data;
@@ -124,10 +135,10 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 
 		List<Message> messages = new ArrayList<>();
 		Config config = new Config();
-		config.setCacheFileID(getCacheFileID(section));
+		config.setCacheFileID(getCacheFileID(section, user));
 		config.readFromSection(section);
 
-		Utils.getConceptFromRequest(user, config);
+		config.setConcept(Utils.getConceptFromRequest(user));
 
 		if (!Strings.isBlank(config.getColors())) {
 			config.setRelationColors(Utils.createColorCodings(config.getColors(), core, "rdf:Property"));
@@ -174,7 +185,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			GraphVisualizationRenderer graphRenderer;
 			graphRenderer = new DOTVisualizationRenderer(data, config);
 			graphRenderer.generateSource();
-			content.storeObject(VISUALIZATION_RENDERER_KEY, graphRenderer);
+			content.storeObject(SparqlVisualizationTypeRenderer.getVisualizationRendererKey(user), graphRenderer);
 		}
 
 	}

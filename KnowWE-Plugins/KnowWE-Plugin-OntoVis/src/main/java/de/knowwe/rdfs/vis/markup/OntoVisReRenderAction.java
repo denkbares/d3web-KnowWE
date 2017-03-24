@@ -8,6 +8,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.rdfs.vis.OntoGraphDataBuilder;
 import de.knowwe.rdfs.vis.PreRenderWorker;
+import de.knowwe.rdfs.vis.util.Utils;
 
 /*
  * Copyright (C) 2012 denkbares GmbH
@@ -37,7 +38,8 @@ public class OntoVisReRenderAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		// Execute clean up and clearCache methods in ConceptVisualizationRenderer
 		Section<?> section = Sections.get(context.getParameter("SectionID"));
-		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(ConceptVisualizationRenderer.VISUALIZATION_RENDERER_KEY);
+		String concept = Utils.getConceptFromRequest(context);
+		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(ConceptVisualizationRenderer.getVisualizationRendererKey(context));
 		if (builder != null) builder.getGraphRenderer().cleanUp();
 		PreRenderWorker.getInstance().clearCache(section);
 	}

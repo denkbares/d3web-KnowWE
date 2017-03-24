@@ -23,9 +23,21 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 	public static final String VISUALIZATION_RENDERER_KEY = "conceptVisualizationRendererKey";
 
+	public static String getVisualizationRendererKey(UserContext user) {
+		String key = VISUALIZATION_RENDERER_KEY;
+		String concept = Utils.getConceptFromRequest(user);
+		if (user == null || concept == null) {
+			return key;
+		}
+		else {
+			return key + concept;
+		}
+	}
+
 	@Override
 	public void renderContents(Section<?> section, UserContext user, RenderResult string) {
-		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(VISUALIZATION_RENDERER_KEY);
+		String concept = Utils.getConceptFromRequest(user);
+		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(getVisualizationRendererKey(user));
 		if (builder != null) {
 			builder.render(string);
 			if (builder.isTimeOut()) {
@@ -64,8 +76,9 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 		OntoGraphDataBuilder builder = new OntoGraphDataBuilder(section, config, new PackageCompileLinkToTermDefinitionProvider(), core);
 		builder.createData(config.getTimeout());
 
-		section.storeObject(VISUALIZATION_RENDERER_KEY, builder);
+		section.storeObject(getVisualizationRendererKey(user), builder);
 	}
+
 
 	@Override
 	public void cleanUp(Section<?> section) {
@@ -75,7 +88,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 	Config createConfig(Section<?> section, UserContext user, Rdf2GoCore core) {
 		Config config = new Config();
-		config.setCacheFileID(getCacheFileID(section));
+		config.setCacheFileID(getCacheFileID(section, user));
 
 		if (core != null && !core.getRuleSet().equals(RepositoryConfigs.get(RdfConfig.class))) {
 			config.addExcludeRelations("onto:_checkChain2", "onto:_checkChain1", "onto:_checkChain3");
@@ -83,7 +96,12 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 		config.readFromSection(Sections.cast(section, DefaultMarkupType.class));
 
-		Utils.getConceptFromRequest(user, config);
+//		Is this a ConceptVisualization template?
+		if (!Strings.isBlank(DefaultMarkupType.getAnnotation(section, ConceptVisualizationType.VIS_TEMPLATE_CLASS))) {
+//			Yay, it is!
+			config.setConcept(Utils.getConceptFromRequest(user));
+			config.setCacheFileID(getCacheFileID(section, user));
+		}
 
 		if (!Strings.isBlank(config.getColors())) {
 			config.setRelationColors(Utils.createColorCodings(config.getColors(), core, "rdf:Property"));

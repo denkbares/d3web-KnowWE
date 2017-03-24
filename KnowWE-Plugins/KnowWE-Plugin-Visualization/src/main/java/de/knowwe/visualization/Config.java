@@ -19,11 +19,13 @@
 
 package de.knowwe.visualization;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -34,6 +36,8 @@ import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Data structure for visualization configuration.
@@ -305,6 +309,9 @@ public class Config {
 	}
 
 	public void setConcept(String... concepts) {
+		if (concepts == null) return;
+		concepts = Arrays.stream(concepts).filter(Objects::nonNull).collect(toList()).toArray(new String[0]);
+		if (concepts.length == 0) return;
 		this.concepts = new HashSet<>();
 		addConcept(concepts);
 	}

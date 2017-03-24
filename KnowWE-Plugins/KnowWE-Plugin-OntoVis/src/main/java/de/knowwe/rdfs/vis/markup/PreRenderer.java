@@ -37,8 +37,8 @@ public interface PreRenderer extends Renderer {
 
 	void preRender(Section<?> section, UserContext user);
 
-	default String getCacheFileID(Section<? extends Type> section) {
-		return Utils.getFileID(section);
+	default String getCacheFileID(Section<? extends Type> section, UserContext user) {
+		return Utils.getFileID(section, user);
 	}
 
 	void cleanUp(Section<?> section);

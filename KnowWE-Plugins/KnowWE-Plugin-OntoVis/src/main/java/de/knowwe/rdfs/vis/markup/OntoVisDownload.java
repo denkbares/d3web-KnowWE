@@ -54,7 +54,7 @@ public abstract class OntoVisDownload extends AbstractAction {
 		// find graph name
 		Section<?> section = Sections.get(context.getParameter("SectionID"));
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class));
-		config.setCacheFileID(Utils.getFileID(section));
+		config.setCacheFileID(Utils.getFileID(section, context));
 		File svg = new File(DOTRenderer.getFilePath(config) + "." + getExtension());
 		String filename = svg.getName();
 		context.setContentType("application/x-bin");

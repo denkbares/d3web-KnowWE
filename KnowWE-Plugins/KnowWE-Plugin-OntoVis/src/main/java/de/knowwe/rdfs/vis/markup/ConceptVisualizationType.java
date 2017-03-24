@@ -12,6 +12,8 @@ import de.knowwe.visualization.Config;
 
 public class ConceptVisualizationType extends DefaultMarkupType implements VisualizationType {
 
+	public static final String VIS_TEMPLATE_CLASS = "isVisTemplateForClass";
+
 	public ConceptVisualizationType() {
 		applyMarkup(createMarkup());
 		this.setRenderer(new AsynchronousRenderer(getPreRenderer()));
@@ -67,6 +69,9 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 
 		MARKUP.addAnnotation(Config.SHOW_LITERALS, false, Config.LiteralMode.class);
 		MARKUP.addAnnotationRenderer(Config.SHOW_LITERALS, NothingRenderer.getInstance());
+
+		MARKUP.addAnnotation(VIS_TEMPLATE_CLASS, false);
+		MARKUP.addAnnotationRenderer(VIS_TEMPLATE_CLASS, NothingRenderer.getInstance());
 
 		MARKUP.addAnnotation(Config.TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
 		MARKUP.addAnnotationRenderer(Config.TIMEOUT, NothingRenderer.getInstance());

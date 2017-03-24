@@ -1,4 +1,4 @@
-package de.knowwe.rdfs.vis.markup.sparql;
+package de.knowwe.rdfs.vis.markup;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -26,16 +26,16 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 /**
- * @author Jochen Reutelshoefer (denkbares GmbH)
- * @created 29.04.16.
+ * @author Dmitrij Kozlov (denkbares GmbH)
+ * @created 22.03.17
  */
-public class SparqlVisTemplateToolProvider implements ToolProvider {
+public class ConceptVisTemplateToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Section<SparqlVisualizationType> templateSection = findApplicableTemplate(section);
+		Section<ConceptVisualizationType> templateSection = findApplicableTemplate(section);
 		if (templateSection == null) return new Tool[] {};
-		String templateClass = DefaultMarkupType.getAnnotation(templateSection, SparqlVisualizationType.VIS_TEMPLATE_CLASS);
+		String templateClass = DefaultMarkupType.getAnnotation(templateSection, ConceptVisualizationType.VIS_TEMPLATE_CLASS);
 		if (templateClass == null) return new Tool[] {};
 
 		URI uri = getURI(section);
@@ -56,7 +56,8 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 
 		return new Tool[] { new DefaultTool(
 				Icon.SHOWTRACE,
-				"Visualize with SparqlVis template '" + templateClass + "'", "Open SparqlVis template for class " + templateClass,
+//				derp
+				"Visualize with ConceptVis template '" + templateClass + "'", "Open ConceptVis template for class " + templateClass,
 				link, Tool.ActionType.HREF, Tool.CATEGORY_INFO) };
 	}
 
@@ -77,31 +78,31 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 		return null;
 	}
 
-	private Section<SparqlVisualizationType> findApplicableTemplate(Section<?> section) {
-		Map<String, Section<SparqlVisualizationType>> templates = getClassVisTemplates(section);
+	private Section<ConceptVisualizationType> findApplicableTemplate(Section<?> section) {
+		Map<String, Section<ConceptVisualizationType>> templates = getClassVisTemplates(section);
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
 		URI uri = getURI(section);
 		if (uri == null || compiler == null) return null;
 		PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
 		for (URI clazzURI : classHierarchy.getNodesDFSOrder()) {
-			Section<SparqlVisualizationType> sparqlVisualizationTypeSection = templates.get(Rdf2GoUtils.reduceNamespace(compiler
+			Section<ConceptVisualizationType> conceptVisualizationTypeSection = templates.get(Rdf2GoUtils.reduceNamespace(compiler
 					.getRdf2GoCore(), clazzURI.toString()));
-			if (sparqlVisualizationTypeSection != null) {
+			if (conceptVisualizationTypeSection != null) {
 				// found applicable template
-				return sparqlVisualizationTypeSection;
+				return conceptVisualizationTypeSection;
 			}
 		}
 		return null;
 	}
 
-	private Map<String, Section<SparqlVisualizationType>> getClassVisTemplates(Section<?> section) {
-		Map<String, Section<SparqlVisualizationType>> visTemplatesForClasses = new HashMap<>();
-		Collection<Section<SparqlVisualizationType>> allSparqlVisMarkups = Sections.successors(section.getArticleManager(), SparqlVisualizationType.class);
-		for (Section<SparqlVisualizationType> sparqlVisualizationTypeSection : allSparqlVisMarkups) {
-			String templateClass = DefaultMarkupType.getAnnotation(sparqlVisualizationTypeSection, SparqlVisualizationType.VIS_TEMPLATE_CLASS);
+	private Map<String, Section<ConceptVisualizationType>> getClassVisTemplates(Section<?> section) {
+		Map<String, Section<ConceptVisualizationType>> visTemplatesForClasses = new HashMap<>();
+		Collection<Section<ConceptVisualizationType>> allConceptVisMarkups = Sections.successors(section.getArticleManager(), ConceptVisualizationType.class);
+		for (Section<ConceptVisualizationType> conceptVisualizationTypeSection : allConceptVisMarkups) {
+			String templateClass = DefaultMarkupType.getAnnotation(conceptVisualizationTypeSection, ConceptVisType.VIS_TEMPLATE_CLASS);
 			if (templateClass != null) {
-				visTemplatesForClasses.put(templateClass, sparqlVisualizationTypeSection);
+				visTemplatesForClasses.put(templateClass, conceptVisualizationTypeSection);
 			}
 		}
 		return visTemplatesForClasses;
