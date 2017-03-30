@@ -47,6 +47,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.preview.PreviewManager;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
@@ -434,7 +435,9 @@ public class Utils {
 		return null;
 	}
 
-	public static Map<String, String> createColorCodings(String relationName, Rdf2GoCore core, String entityName) {
+	public static Map<String, String> createColorCodings(Section<?> section, String relationName, Rdf2GoCore core, String entityName) {
+		Messages.clearMessages(section, Utils.class);
+
 		String query = "SELECT ?entity ?color WHERE {" +
 				"?entity <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + entityName + " ." +
 				"?entity " + relationName + " ?color" +
@@ -444,14 +447,21 @@ public class Utils {
 //			Value entity = row.getValue("entity");
 //			String color = row.getValue("color").stringValue();
 		Map<String, String> colorCodings = new HashMap<>();
-		TupleQueryResult resultTable = core.sparqlSelect(query);
-		for (BindingSet row : resultTable) {
-			Value entity = row.getValue("entity");
-			String color = row.getValue("color").stringValue();
-			String shortURI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
-			colorCodings.put(shortURI, color);
+		try {
+			TupleQueryResult resultTable = core.sparqlSelect(query);
+			for (BindingSet row : resultTable) {
+				Value entity = row.getValue("entity");
+				String color = row.getValue("color").stringValue();
+				String shortURI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
+				colorCodings.put(shortURI, color);
+			}
+			return colorCodings;
 		}
-		return colorCodings;
+		catch (Exception e) {
+			Log.severe("Exception while looking up color codes", e);
+			Messages.storeMessage(section, Utils.class, Messages.error("Unable to find color " + relationName + "."));
+		}
+		return null;
 	}
 
 	public static RenderingStyle getStyle(GraphDataBuilder.NODE_TYPE type) {

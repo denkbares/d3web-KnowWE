@@ -8,6 +8,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.PackageCompileLinkToTermDefinitionProvider;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -94,6 +95,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 			config.addExcludeRelations("onto:_checkChain2", "onto:_checkChain1", "onto:_checkChain3");
 		}
 
+		Messages.clearMessages(section, this.getClass());
 		config.readFromSection(Sections.cast(section, DefaultMarkupType.class));
 
 //		Is this a ConceptVisualization template?
@@ -104,8 +106,8 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 		}
 
 		if (!Strings.isBlank(config.getColors())) {
-			config.setRelationColors(Utils.createColorCodings(config.getColors(), core, "rdf:Property"));
-			config.setClassColors(Utils.createColorCodings(config.getColors(), core, "rdfs:Class"));
+			config.setRelationColors(Utils.createColorCodings(section, config.getColors(), core, "rdf:Property"));
+			config.setClassColors(Utils.createColorCodings(section, config.getColors(), core, "rdfs:Class"));
 		}
 		return config;
 	}

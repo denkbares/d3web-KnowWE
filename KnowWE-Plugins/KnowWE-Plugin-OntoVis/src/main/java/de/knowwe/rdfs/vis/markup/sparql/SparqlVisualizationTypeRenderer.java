@@ -17,6 +17,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.core.utils.PackageCompileLinkToTermDefinitionProvider;
@@ -136,13 +137,15 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		List<Message> messages = new ArrayList<>();
 		Config config = new Config();
 		config.setCacheFileID(getCacheFileID(section, user));
+
+		Messages.clearMessages(section, this.getClass());
 		config.readFromSection(section);
 
 		config.setConcept(Utils.getConceptFromRequest(user));
 
 		if (!Strings.isBlank(config.getColors())) {
-			config.setRelationColors(Utils.createColorCodings(config.getColors(), core, "rdf:Property"));
-			config.setClassColors(Utils.createColorCodings(config.getColors(), core, "rdfs:Class"));
+			config.setRelationColors(Utils.createColorCodings(section, config.getColors(), core, "rdf:Property"));
+			config.setClassColors(Utils.createColorCodings(section, config.getColors(), core, "rdfs:Class"));
 		}
 
 		LinkToTermDefinitionProvider uriProvider = new PackageCompileLinkToTermDefinitionProvider();

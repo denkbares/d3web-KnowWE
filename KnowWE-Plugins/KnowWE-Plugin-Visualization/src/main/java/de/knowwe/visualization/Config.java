@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -32,9 +33,12 @@ import java.util.function.Consumer;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 import static java.util.stream.Collectors.toList;
@@ -181,18 +185,30 @@ public class Config {
 	}
 
 	public void readFromSection(Section<? extends DefaultMarkupType> section) {
-
+		int configCount = 0;
 		String[] configNames = DefaultMarkupType.getAnnotations(section, CONFIG);
 		if (configNames.length > 0) {
-			Collection<Section<VisualizationConfigType>> configTypeSections = Sections.successors(section.getArticleManager(), VisualizationConfigType.class);
+
+			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
+			Collection<Section<?>> sectionsOfPackages = packageManager.getSectionsOfPackage(section.getPackageNames()
+					.toArray(new String[0]));
+			List<Section<VisualizationConfigType>> configTypeSections = Sections.successors(sectionsOfPackages, VisualizationConfigType.class);
+
+
+
 			HashSet<String> names = new HashSet<>();
 			Collections.addAll(names, configNames);
 			for (Section<VisualizationConfigType> configTypeSection : configTypeSections) {
 				String name = DefaultMarkupType.getAnnotation(configTypeSection, VisualizationConfigType.ANNOTATION_NAME);
 				if (names.contains(name)) {
+					configCount++;
 					readFromSection(configTypeSection);
 				}
 			}
+		}
+
+		if (configCount > 1) {
+			Messages.storeMessage(section, this.getClass(), Messages.warning("Multiple visualization configs having the same name found. This could lead to conflicts!"));
 		}
 
 		setColors(DefaultMarkupType.getAnnotation(section, COLORS));
