@@ -57,6 +57,10 @@ import static de.knowwe.uitest.UITestUtils.UseCase.LOGIN_PAGE;
  */
 public class UITestUtils {
 
+	public enum TestMode {
+		local, saucelabs
+	}
+
 	public enum WebOS {
 		windows, macOS, linux, other
 	}
@@ -110,15 +114,9 @@ public class UITestUtils {
 		return driver.findElement(By.cssSelector("#knowWEInfoStatus")).getAttribute("value");
 	}
 
-	public static String getKnowWEUrl(WikiTemplate template, String articleName, boolean devMode) {
+	public static String getKnowWEUrl(WikiTemplate template, String articleName) {
 		String defaultUrl = template instanceof HaddockTemplate ? "https://knowwe-nightly-haddock.denkbares.com" : "https://knowwe-nightly.denkbares.com";
-		String knowweUrl;
-		if (devMode) {
-			knowweUrl = System.getProperty(template instanceof HaddockTemplate ? "knowwe.haddock.url" : "knowwe.standard.url", defaultUrl);
-		}
-		else {
-			knowweUrl = defaultUrl;
-		}
+		String knowweUrl = System.getProperty(template instanceof HaddockTemplate ? "knowwe.haddock.url" : "knowwe.standard.url", defaultUrl);
 		return knowweUrl + "/Wiki.jsp?page=" + articleName;
 	}
 
@@ -163,7 +161,7 @@ public class UITestUtils {
 		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
 	}
 
-	public static RemoteWebDriver setUp(Browser browser, Platform os, WikiTemplate template, String articleName, boolean devMode) throws IOException, InterruptedException {
+	public static RemoteWebDriver setUp(Browser browser, Platform os, WikiTemplate template, String articleName, TestMode testMode) throws IOException, InterruptedException {
 
 		String testName = "UITest-" + articleName + "-" + template + "-" + browser + "-" + os.name().toLowerCase();
 
@@ -179,13 +177,14 @@ public class UITestUtils {
 			}
 		}
 		else if (browser == Browser.firefox) {
+			// nothing to do here
 		}
 		else {
 			throw new IllegalArgumentException("Browser " + browser + " not yet supported.");
 		}
 
 		RemoteWebDriver driver;
-		if (devMode) {
+		if (testMode == TestMode.local) {
 			if (browser == Browser.chrome) {
 				driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
 			}
@@ -197,20 +196,23 @@ public class UITestUtils {
 					throw new IllegalArgumentException();
 				}
 		}
-		else {
+		else if (testMode == TestMode.saucelabs) {
 			capabilities.setCapability("name", testName);
 			capabilities.setCapability("platform", os);
 			driver = new RemoteWebDriver(
 					new URL("http://d3web:8c7e5a48-56dd-4cde-baf0-b17f83803044@ondemand.saucelabs.com:80/wd/hub"),
 					capabilities);
 		}
+		else {
+			throw new IllegalArgumentException("TestMode " + testMode + " not yet supported.");
+		}
 		driver.manage().window().setSize(new Dimension(1024, 768));
-		driver.get(UITestUtils.getKnowWEUrl(template, "Main", devMode));
+		driver.get(UITestUtils.getKnowWEUrl(template, "Main"));
 		if (!UITestUtils.isLoggedIn(driver, template)) {
-			driver.get(UITestUtils.getKnowWEUrl(template, "Login", devMode));
+			driver.get(UITestUtils.getKnowWEUrl(template, "Login"));
 			UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", LOGIN_PAGE, template);
 		}
-		driver.get(getKnowWEUrl(template, testName, devMode));
+		driver.get(getKnowWEUrl(template, testName));
 		if (!pageExists(template, driver)) {
 			createDummyPage(template, driver);
 		}

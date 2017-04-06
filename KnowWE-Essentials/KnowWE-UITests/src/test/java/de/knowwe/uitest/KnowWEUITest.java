@@ -35,6 +35,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.uitest.UITestUtils.Browser;
+import de.knowwe.uitest.UITestUtils.TestMode;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -45,9 +46,9 @@ import static org.junit.Assert.assertFalse;
  */
 public abstract class KnowWEUITest {
 
+	private final TestMode testMode;
+	private final String knowWeUrl;
 	private final RemoteWebDriver driver;
-	protected boolean devMode;
-	protected String knowWeUrl;
 	private final Browser browser;
 	private final Platform os;
 	private final WikiTemplate template;
@@ -56,7 +57,7 @@ public abstract class KnowWEUITest {
 
 	/**
 	 * In order to test locally set the following dev mode parameters
-	 * -Dknowwe.devMode="true"
+	 * -Dknowwe.testMode="true"
 	 * -Dknowwe.haddock.url="your-haddock-URL"
 	 * -Dknowwe.standard.url="your-standardTemplate-URL"
 	 */
@@ -64,9 +65,12 @@ public abstract class KnowWEUITest {
 		this.browser = browser;
 		this.os = os;
 		this.template = template;
-		devMode = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
-		knowWeUrl = UITestUtils.getKnowWEUrl(getTemplate(), getArticleName(), devMode);
-		driver = UITestUtils.setUp(browser, os, template, getArticleName(), devMode);
+		// for backwards compatibility, use knowwwe.testMode instead
+		boolean devMode = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
+		testMode = devMode ? TestMode.local : TestMode.valueOf(System.getProperty("knowwe.testMode", "saucelabs"));
+
+		knowWeUrl = UITestUtils.getKnowWEUrl(getTemplate(), getArticleName());
+		driver = UITestUtils.setUp(browser, os, template, getArticleName(), testMode);
 	}
 
 	@After
