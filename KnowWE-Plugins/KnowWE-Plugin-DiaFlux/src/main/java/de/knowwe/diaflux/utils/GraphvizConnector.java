@@ -1,13 +1,13 @@
 package de.knowwe.diaflux.utils;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Files;
 
 /**
  * @author Adrian Müller
@@ -15,68 +15,35 @@ import com.denkbares.strings.Strings;
  */
 public class GraphvizConnector {
 
-	private static final File tmpUnpos = new File("./target/temp/unpositionedNodes");
-	private static final File tmpPos = new File("./target/temp/positionedNodes");
-	private static final File tmpDir = new File("./target/temp");
-
-	public GraphvizConnector() {
-		tmpDir.mkdirs();
-	}
-
-	private static void writeOut(String inFile) throws IOException {
-		tmpUnpos.createNewFile();
-		FileWriter fw = new FileWriter(tmpUnpos, false);
-		fw.write(inFile);
-		fw.flush();
-	}
 
 	public String execute(String dotInput) throws IOException {
 		String output;
+		File unpositionedNodes = File.createTempFile("unpositionedNodes", null);
+		File positionedNodes = File.createTempFile("positionedNodes", null);
+		Files.writeFile(unpositionedNodes, dotInput);
 		try {
-			try {
-				writeOut(dotInput);
-			}
-			catch (IOException e) {
-				throw new IOException("Writing unpositioned dot failed. " + e.getLocalizedMessage());
-			}
 			// add position attributes
-			try {
-				// -q suppresses warnings
-				// -o defines output file
-				// -Tdot defines output type
-				// last argument is the input file
-				Process p = Runtime.getRuntime().exec("dot -q -o " + tmpPos.getAbsolutePath()
-						+ " -Tdot " + tmpUnpos.getAbsolutePath());
-				p.waitFor();
-				if (p.getErrorStream().available() > 0) {
-					String err = IOUtils.toString(p.getErrorStream(), Charset.defaultCharset());
-					throw new IOException("Graphviz could not process dotfile: " + err);
-				}
+			// -q suppresses warnings
+			// -o defines output file
+			// -Tdot defines output type
+			// last argument is the input file
+			Process p = Runtime.getRuntime().exec("dot -q -o " + positionedNodes.getAbsolutePath()
+					+ " -Tdot " + unpositionedNodes.getAbsolutePath());
+			p.waitFor();
+			if (p.getErrorStream().available() > 0) {
+				String err = IOUtils.toString(p.getErrorStream(), Charset.defaultCharset());
+				throw new IOException("Graphviz could not process dotfile: " + err);
 			}
-			catch (IOException e) {
-				throw new IOException("Executing graphviz failed. " + e.getLocalizedMessage());
-			}
-			// catch errors
-			try {
-				output = Strings.readFile(tmpPos);
-			}
-			catch (IOException e) {
-				throw new IOException("Could not read from positioned dot file. " + e.getLocalizedMessage());
-			}
+			output = Strings.readFile(positionedNodes);
 		}
 		catch (InterruptedException e) {
 			throw new IOException("Graphviz has been interrupted: " + e.getLocalizedMessage());
 		}
 		finally {
-			tmpPos.delete();
-			tmpUnpos.delete();
+			positionedNodes.delete();
+			unpositionedNodes.delete();
 		}
 		return output;
 	}
 
-	@Override
-	protected void finalize() throws Throwable {
-		super.finalize();
-		tmpDir.delete();
-	}
 }
