@@ -19,16 +19,21 @@
 
 package de.knowwe.uitest;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -45,18 +50,24 @@ import static org.junit.Assert.*;
  * @author Jonas Müller
  * @created 06.10.16
  */
-public abstract class PanelUITest extends KnowWEUITest {
+@RunWith(Parameterized.class)
+public class PanelUITest extends KnowWEUITest {
 
-	protected final Dimension STANDARD_SIZE = new Dimension(1024, 768);
-	protected final Dimension MEDIUM_SIZE = new Dimension(768, 768);
-	protected final Dimension NARROW_SIZE = new Dimension(400, 768);
+	private final Dimension STANDARD_SIZE = new Dimension(1024, 768);
+	private final Dimension MEDIUM_SIZE = new Dimension(768, 768);
+	private final Dimension NARROW_SIZE = new Dimension(400, 768);
 
-	public PanelUITest() {
-		super();
+	public PanelUITest(UITestUtils.Browser browser, Platform os, WikiTemplate template) throws IOException, InterruptedException {
+		super(browser, os, template);
+	}
+
+	@Parameterized.Parameters(name="{index}: UITest-Panel-{2}-{0}-{1})")
+	public static Collection<Object[]> parameters() {
+		return UITestUtils.getTestParametersChromeAndFireFox();
 	}
 
 	@Override
-	public String getTestName() {
+	public String getArticleName() {
 		return "Panel";
 	}
 
@@ -201,16 +212,14 @@ public abstract class PanelUITest extends KnowWEUITest {
 
 	}
 
-	protected abstract void pressSidebarButton() throws InterruptedException;
-
-	protected void pressRightPanelButton() throws InterruptedException {
+	private void pressRightPanelButton() throws InterruptedException {
 		String idRightPanel = "rightPanel-toggle-button";
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id(idRightPanel)));
 		getDriver().findElement(By.id(idRightPanel)).click();
 		Thread.sleep(500); // Wait for Animation
 	}
 
-	protected boolean isSidebarVisible() throws InterruptedException {
+	private boolean isSidebarVisible() throws InterruptedException {
 		int x = getSidebar().getLocation().getX();
 		int width = getSidebar().getSize().getWidth();
 		int paddingLeft = Integer.parseInt(getSidebar().getCssValue("padding-left").replace("px", ""));
@@ -226,7 +235,7 @@ public abstract class PanelUITest extends KnowWEUITest {
 		}
 	}
 
-	protected boolean isRightPanelVisible() {
+	private boolean isRightPanelVisible() {
 		WebElement rightPanel;
 		try {
 			rightPanel = getRightPanel();
@@ -248,39 +257,21 @@ public abstract class PanelUITest extends KnowWEUITest {
 		}
 	}
 
-	protected abstract WebElement getSidebar();
-
-	protected abstract int getHeaderBottom();
-
-	protected abstract int getFooterTop();
-
-	protected WebElement getRightPanel() {
-		return getDriver().findElement(By.id("rightPanel"));
-	}
-
-	protected abstract boolean isPageAlignedLeft();
-
-	protected abstract boolean isPageAlignedLeftWithSidebar();
-
-	protected abstract boolean isPageAlignedRight();
-
-	protected abstract boolean isPageAlignedRightWithRightPanel();
-
-	protected void addWatchDummy() throws InterruptedException {
+	private void addWatchDummy() throws InterruptedException {
 		getRightPanel().findElement(By.className("addwatch")).click();
 		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfNestedElementLocatedBy(getRightPanel(), By.tagName("textarea")));
 		getRightPanel().findElement(By.tagName("textarea")).sendKeys("Test");
 		getRightPanel().findElement(By.tagName("textarea")).sendKeys(Keys.ENTER);
 	}
 
-	protected void clearWatches() {
+	private void clearWatches() {
 		List<WebElement> watchesContent = getDriver().findElements(By.className("watchlistentry"));
 		for (WebElement watchListEntry : watchesContent) {
 			getDriver().findElement(By.className("deletewatch")).click();
 		}
 	}
 
-	protected void scrollToBottom() {
+	private void scrollToBottom() {
 		JavascriptExecutor jse = (JavascriptExecutor) getDriver();
 		Long documentHeight = ((Long) jse.executeScript("return Math.max(" +
 				"document.body.scrollHeight, document.documentElement.scrollHeight," +
@@ -290,13 +281,251 @@ public abstract class PanelUITest extends KnowWEUITest {
 		scrollTo(0, Math.toIntExact(documentHeight));
 	}
 
-	protected void scrollToTop() {
+	private void scrollToTop() {
 		scrollTo(0, 0);
 	}
 
-	protected void scrollTo(int pixelX, int pixelY) {
+	private void scrollTo(int pixelX, int pixelY) {
 		JavascriptExecutor jse = (JavascriptExecutor) getDriver();
 		jse.executeScript("scroll(" + pixelX + ", " + pixelY + ");");
+	}
+
+	/**
+	 * Haddock-specific test
+	 */
+	@Test
+	public void testSidebarOnMediumWindow() throws InterruptedException {
+		if (!(getTemplate() instanceof HaddockTemplate)) return;
+
+		getDriver().manage().window().setSize(MEDIUM_SIZE);
+		Thread.sleep(500);
+
+		assertFalse(isSidebarVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRight());
+
+		pressSidebarButton();
+		assertTrue(isSidebarVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRight());
+
+		pressSidebarButton();
+		assertFalse(isSidebarVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRight());
+
+		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
+
+		assertTrue(isSidebarVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRight());
+	}
+
+	@Test
+	public void testSideBarOnNarrowWindow() throws InterruptedException {
+		if (!(getTemplate() instanceof HaddockTemplate)) return;
+
+		getDriver().manage().window().setSize(NARROW_SIZE);
+		Thread.sleep(500);
+
+		assertFalse(isSidebarVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRight());
+
+		pressSidebarButton();
+		assertTrue(isSidebarVisible());
+		int tolerance = UITestUtils.getWebOS(getDriver()) == UITestUtils.WebOS.windows ? 30 : 0; //Scrollbars
+		assertEquals("Sidebar should take complete window width on narrow window", getSidebar().getSize()
+				.getWidth(), getDriver().manage().window().getSize().getWidth(), tolerance);
+
+		pressSidebarButton();
+		assertFalse(isSidebarVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRight());
+
+		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
+
+		assertTrue(isSidebarVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRight());
+	}
+
+	@Test
+	public void testRightPanelOnNarrowWindow() throws InterruptedException {
+		if (!(getTemplate() instanceof HaddockTemplate)) return;
+
+		if (!isRightPanelVisible()) pressRightPanelButton();
+
+		getDriver().manage().window().setSize(NARROW_SIZE);
+		Thread.sleep(500);
+
+		assertTrue(isRightPanelVisible());
+		int rightPanelWidth = Integer.parseInt(getRightPanel().getCssValue("width").replaceAll("px", ""));
+		int windowWidth = getDriver().manage().window().getSize().getWidth();
+		int tolerance = UITestUtils.getWebOS(getDriver()) == UITestUtils.WebOS.windows ? 30 : 0; //Scrollbars
+		assertEquals("Right Panel should have full width", rightPanelWidth, windowWidth, tolerance);
+		assertTrue("Right Panel should be fixed", getRightPanel().getCssValue("position").equals("fixed"));
+		assertTrue("Right Panel should be on bottom of the page", Integer.parseInt(getRightPanel().getCssValue("bottom")
+				.replaceAll("px", "")) == 0);
+
+		for (int i = 0; i < 10; i++) {
+			addWatchDummy();
+			Thread.sleep(200);
+		}
+		scrollToBottom();
+
+		int watchesBottom = getRightPanel().getLocation().getY() + getRightPanel().getSize().getHeight();
+		// One pixel tolerance due to rounding differences
+		assertEquals("Right Panel should end exactly above footer", watchesBottom, getFooterTop(), 1);
+
+		scrollToTop();
+		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
+
+	}
+
+	@Test
+	public void testRightPanelCollapseWatchesOnNarrowWindow() throws InterruptedException {
+		if (!(getTemplate() instanceof HaddockTemplate)) return;
+
+		getDriver().manage().window().setSize(NARROW_SIZE);
+		Thread.sleep(500);
+
+		if (!isRightPanelVisible()) pressRightPanelButton();
+		assertTrue(isRightPanelVisible());
+		WebElement watches = getRightPanel().findElement(By.id("watches"));
+		WebElement watchesTitle = watches.findElement(By.className("title"));
+		watchesTitle.click();
+		Thread.sleep(500);
+		WebElement watchesContent = watches.findElement(By.className("right-panel-content"));
+		assertEquals("Watches shoud be collapsed", watchesContent.getCssValue("display"), "none");
+		watches.findElement(By.className("title")).click();
+		Thread.sleep(500);
+		assertThat(watchesContent.getCssValue("display"), is(not("none")));
+		pressRightPanelButton();
+		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
+
+	}
+
+
+
+	@Test
+	public void testSidebarAndRightPanelOnMediumWindow() throws InterruptedException {
+		if (!(getTemplate() instanceof HaddockTemplate)) return;
+
+		getDriver().manage().window().setSize(MEDIUM_SIZE);
+		Thread.sleep(500);
+
+		assertFalse(isSidebarVisible());
+		assertFalse(isRightPanelVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRight());
+
+		pressSidebarButton();
+		assertTrue(isSidebarVisible());
+		assertFalse(isRightPanelVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRight());
+
+		pressRightPanelButton();
+		assertTrue(isSidebarVisible());
+		assertTrue(isRightPanelVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRightWithRightPanel());
+
+		pressSidebarButton();
+		assertFalse(isSidebarVisible());
+		assertTrue(isRightPanelVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRightWithRightPanel());
+
+		pressSidebarButton();
+		assertTrue(isSidebarVisible());
+		assertTrue(isRightPanelVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRightWithRightPanel());
+
+		pressRightPanelButton();
+		assertTrue(isSidebarVisible());
+		assertFalse(isRightPanelVisible());
+		assertTrue(isPageAlignedLeftWithSidebar());
+		assertTrue(isPageAlignedRight());
+
+		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
+	}
+
+	@Test
+	public void testSidebarAndRightPanelOnSmallWindow() throws InterruptedException {
+		if (!(getTemplate() instanceof HaddockTemplate)) return;
+
+		getDriver().manage().window().setSize(NARROW_SIZE);
+		Thread.sleep(500);
+
+		assertFalse(isSidebarVisible());
+		assertFalse(isRightPanelVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRight());
+
+		pressRightPanelButton();
+		assertFalse(isSidebarVisible());
+		assertTrue(isRightPanelVisible());
+
+		pressSidebarButton();
+		assertTrue(isSidebarVisible());
+		assertFalse(isRightPanelVisible());
+
+		pressSidebarButton();
+		assertFalse(isSidebarVisible());
+		assertTrue(isRightPanelVisible());
+
+		pressRightPanelButton();
+		assertFalse(isSidebarVisible());
+		assertFalse(isRightPanelVisible());
+		assertTrue(isPageAlignedLeft());
+		assertTrue(isPageAlignedRight());
+
+		getDriver().manage().window().setSize(STANDARD_SIZE);
+		Thread.sleep(500);
+	}
+
+	private WebElement getRightPanel() {
+		return getTemplate().getRightPanel(getDriver());
+	}
+
+	private void pressSidebarButton()  {
+		getTemplate().pressSidebarButton(getDriver());
+	}
+
+	private WebElement getSidebar() {
+		return getTemplate().getSidebar(getDriver());
+	}
+
+	private int getHeaderBottom() {
+		return getTemplate().getHeaderBottom(getDriver());
+	}
+
+	private int getFooterTop() {
+		return getDriver().findElement(By.className("footer")).getLocation().getY();
+	}
+
+	private boolean isPageAlignedLeft() {
+		return getTemplate().isPageAlignedLeft(getDriver());
+	}
+
+	private boolean isPageAlignedLeftWithSidebar() {
+		return getTemplate().isPageAlignedLeftWithSidebar(getDriver());
+	}
+
+	private boolean isPageAlignedRight() {
+		return getTemplate().isPageAlignedRight(getDriver());
+	}
+
+	private boolean isPageAlignedRightWithRightPanel() {
+		return getTemplate().isPageAlignedRightWithRightPanel(getDriver());
 	}
 
 }

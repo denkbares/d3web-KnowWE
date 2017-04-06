@@ -20,10 +20,17 @@
 package de.knowwe.uitest;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.WebDriver;
 
 import static org.junit.Assert.assertEquals;
 
@@ -32,14 +39,22 @@ import static org.junit.Assert.assertEquals;
  * <p>
  * Created by Adrian Müller on 13.10.16.
  */
-public abstract class FormatterUITest extends KnowWEUITest {
+@RunWith(Parameterized.class)
+public class FormatterUITest extends KnowWEUITest {
 
-	public FormatterUITest() {
-		super();
+	private static final Map<UITestConfig, WebDriver> drivers = new HashMap<>();
+
+	public FormatterUITest(UITestUtils.Browser browser, Platform os, WikiTemplate template) throws IOException, InterruptedException {
+		super(browser, os, template);
+	}
+
+	@Parameterized.Parameters(name="{index}: UITest-Formatter-{2}-{0}-{1})")
+	public static Collection<Object[]> parameters() {
+		return UITestUtils.getTestParametersChromeAndFireFox();
 	}
 
 	@Override
-	public String getTestName() {
+	public String getArticleName() {
 		return "Formatter";
 	}
 

@@ -23,15 +23,18 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.uitest.UITestUtils.Browser;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -42,55 +45,62 @@ import static org.junit.Assert.assertFalse;
  */
 public abstract class KnowWEUITest {
 
+	private final RemoteWebDriver driver;
+	protected boolean devMode;
+	protected String knowWeUrl;
+	private final Browser browser;
+	private final Platform os;
+	private final WikiTemplate template;
+
+	public static final String RESOURCE_DIR = "src/test/resources/";
+
 	/**
 	 * In order to test locally set the following dev mode parameters
 	 * -Dknowwe.devMode="true"
 	 * -Dknowwe.haddock.url="your-haddock-URL"
 	 * -Dknowwe.standard.url="your-standardTemplate-URL"
 	 */
-	protected boolean devMode;
-	protected String knowWeUrl;
-
-	public KnowWEUITest() {
+	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template) throws IOException, InterruptedException {
+		this.browser = browser;
+		this.os = os;
+		this.template = template;
 		devMode = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
-		knowWeUrl = UITestUtils.getKnowWEUrl(getTemplate(), getTestName(), devMode);
+		knowWeUrl = UITestUtils.getKnowWEUrl(getTemplate(), getArticleName(), devMode);
+		driver = UITestUtils.setUp(browser, os, template, getArticleName(), devMode);
 	}
 
-	public static final String RESOURCE_DIR = "src/test/resources/";
+	@After
+	public void after() {
+		driver.quit();
+	}
 
-	protected abstract WikiTemplate getTemplate();
+	protected WikiTemplate getTemplate() {
+		return template;
+	}
 
-	protected abstract WebDriver getDriver();
+	public WebDriver getDriver() {
+		return driver;
+	}
 
-	/**
-	 * If you set DEV_MODE to true, you can test locally, which will be much faster
-	 * Don't commit this as true, because Jenkins build WILL fail!
-	 * <p>
-	 * To test locally, you also need to download the ChromeDriver from
-	 * https://sites.google.com/a/chromium.org/chromegetDriver()/downloads
-	 * and start it on your machine.
-	 * State of the page does not matter, it will be cleared for each new test.
-	 * <p>
-	 * In order to test locally set the following dev mode parameters
-	 * -Dknowwe.devMode="true"
-	 * -Dknowwe.url="your-URL"
-	 */
-	public abstract String getTestName();
+	public abstract String getArticleName();
 
 	protected void changeArticleText(String newText) {
 		try {
-			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
-		} catch (Exception e) {
+			waitUntilPresent(By.id("edit-source-button"));
+		}
+		catch (Exception e) {
 			someoneEditedPageWorkaround();
-			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+			waitUntilPresent(By.id("edit-source-button"));
 		}
 		getDriver().findElement(By.id("edit-source-button")).click();
+		newText = newText.replaceAll("(?i)(%%Package\\s+)",
+				"$1" + template + "-" + browser + "-" + os.toString().toLowerCase() + "-");
 		UITestUtils.enterArticleText(newText, getDriver(), getTemplate());
 	}
 
 	private void someoneEditedPageWorkaround() {
-		if (getTemplate() == WikiTemplate.haddock) {
-			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.className("error")));
+		if (getTemplate() instanceof HaddockTemplate) {
+			waitUntilPresent(By.className("error"));
 			Optional oops = getDriver().findElements(By.cssSelector("h4"))
 					.stream()
 					.filter(webElement -> Strings.containsIgnoreCase(webElement.getText(), "Oops!"))
@@ -98,12 +108,12 @@ public abstract class KnowWEUITest {
 			if (oops.isPresent()) {
 				getDriver().findElement(By.cssSelector("a.btn.btn-primary.btn-block")).click();
 			}
-		} else {
-			new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated(By.id("conflict")));
-			WebElement conflict = getDriver().findElement(By.id("conflict"));
-			conflict.findElement(By.cssSelector("a")).click();
 		}
-		new WebDriverWait(getDriver(), 10).until(ExpectedConditions.presenceOfElementLocated((By.name("ok"))));
+		else {
+			waitUntilPresent(By.id("conflict"));
+			getDriver().findElement(By.id("conflict")).findElement(By.cssSelector("a")).click();
+		}
+		waitUntilPresent((By.name("ok")));
 		getDriver().findElement(By.name("ok")).click();
 	}
 
@@ -147,7 +157,7 @@ public abstract class KnowWEUITest {
 
 	protected String readFile(String fileName) throws IOException {
 		return Strings.readFile(RESOURCE_DIR + fileName)
-				.replace("%%package systemtest", "%%package systemtest" + getTestName());
+				.replace("%%package systemtest", "%%package systemtest" + getArticleName());
 	}
 
 }

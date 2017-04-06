@@ -19,12 +19,37 @@
 
 package de.knowwe.uitest;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
 /**
- * Enumerating available JSPWiki templates
+ * Interface representing a WikiTemplate with some template specific methods.
  *
- * @author Jonas Müller
- * @created 06.10.16
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 24.03.17
  */
-public enum WikiTemplate {
-	standard, haddock
+public interface WikiTemplate {
+
+	default WebElement getRightPanel(WebDriver driver) {
+		return driver.findElement(By.id("rightPanel"));
+	}
+
+	void pressSidebarButton(WebDriver driver);
+
+	WebElement getSidebar(WebDriver driver);
+
+	int getHeaderBottom(WebDriver driver);
+
+	int getFooterTop(WebDriver driver);
+
+	boolean isPageAlignedLeft(WebDriver driver);
+
+	boolean isPageAlignedLeftWithSidebar(WebDriver driver);
+
+	boolean isPageAlignedRight(WebDriver driver);
+
+	boolean isPageAlignedRightWithRightPanel(WebDriver driver);
+
+	void login(WebDriver driver, UITestUtils.UseCase use, String username, String password);
 }

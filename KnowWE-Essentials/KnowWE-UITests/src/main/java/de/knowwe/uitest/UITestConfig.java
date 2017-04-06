@@ -20,7 +20,6 @@
 package de.knowwe.uitest;
 
 import org.openqa.selenium.Platform;
-import org.openqa.selenium.WebDriver;
 
 /**
  * Edit class text
@@ -30,10 +29,10 @@ import org.openqa.selenium.WebDriver;
  */
 public class UITestConfig {
 
-	private final String browser;
+	private final UITestUtils.Browser browser;
 	private final Platform os;
 
-	public UITestConfig(String browser, Platform os) {
+	public UITestConfig(UITestUtils.Browser browser, Platform os, WikiTemplate template) {
 		this.browser = browser;
 		this.os = os;
 	}
@@ -43,9 +42,10 @@ public class UITestConfig {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		UITestConfig config = (UITestConfig) o;
+		UITestConfig that = (UITestConfig) o;
 
-		return (browser != null ? browser.equals(config.browser) : config.browser == null) && os == config.os;
+		if (browser != null ? browser != that.browser : that.browser != null) return false;
+		return os == that.os;
 	}
 
 	@Override

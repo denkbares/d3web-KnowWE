@@ -19,12 +19,20 @@
 
 package de.knowwe.uitest;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import static junit.framework.TestCase.assertEquals;
@@ -35,15 +43,18 @@ import static junit.framework.TestCase.assertEquals;
  * @author Jonas Müller
  * @created 17.02.17
  */
-public abstract class BMIUITest extends KnowWEUITest {
+@RunWith(Parameterized.class)
+public class BMIUITest extends KnowWEUITest {
 
-	public BMIUITest() {
-		super();
+
+
+	public BMIUITest(UITestUtils.Browser browser, Platform os, WikiTemplate template) throws IOException, InterruptedException {
+		super(browser, os, template);
 	}
 
-	@Override
-	public String getTestName() {
-		return "Body-Mass-Index";
+	@Parameters(name="{index}: UITest-BMI-{2}-{0}-{1})")
+	public static Collection<Object[]> parameters() {
+		return UITestUtils.getTestParametersChromeAndFireFox();
 	}
 
 	@Rule
@@ -73,4 +84,8 @@ public abstract class BMIUITest extends KnowWEUITest {
 		assertEquals("bmi = 25", getDriver().findElement(By.className("ABSTRACTION")).getText());
 	}
 
+	@Override
+	public String getArticleName() {
+		return "BMI";
+	}
 }

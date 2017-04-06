@@ -21,16 +21,20 @@ package de.knowwe.uitest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -47,14 +51,21 @@ import static junit.framework.TestCase.assertEquals;
  * <p>
  * Test the Test Protocol for DiaFlux (System Test - Manual DiaFlux BMI)
  */
-public abstract class DiaFluxUITest extends KnowWEUITest {
+@RunWith(Parameterized.class)
+public class DiaFluxUITest extends KnowWEUITest {
 
-	public DiaFluxUITest() {
-		super();
+
+	public DiaFluxUITest(UITestUtils.Browser browser, Platform os, WikiTemplate template) throws IOException, InterruptedException {
+		super(browser, os, template);
+	}
+
+	@Parameterized.Parameters(name = "{index}: UITest-DiaFlux-{2}-{0}-{1})")
+	public static Collection<Object[]> parameters() {
+		return UITestUtils.getTestParametersChrome();
 	}
 
 	@Override
-	public String getTestName() {
+	public String getArticleName() {
 		return "DiaFlux";
 	}
 
@@ -470,7 +481,8 @@ public abstract class DiaFluxUITest extends KnowWEUITest {
 		Select ruleSelect = new Select(rule.findElement(By.tagName("select")));
 		try {
 			ruleSelect.selectByVisibleText(text);
-		} catch (NoSuchElementException e) {
+		}
+		catch (NoSuchElementException e) {
 			// selecting by text fails with chrome and special chars... try to match as good as possible
 			List<WebElement> options = ruleSelect.getOptions();
 			for (WebElement option : options) {
@@ -542,7 +554,8 @@ public abstract class DiaFluxUITest extends KnowWEUITest {
 			if (text[0].equalsIgnoreCase("formula")) {
 				select.selectByIndex(10);
 				getDriver().findElement(By.cssSelector(".selectedRule textarea")).sendKeys(text[1] + Keys.ENTER);
-			} else {
+			}
+			else {
 				switch (text[0]) {
 					case "[  ..  ]":
 						select.selectByValue("8");
@@ -559,7 +572,8 @@ public abstract class DiaFluxUITest extends KnowWEUITest {
 					inputs.get(0).sendKeys(text[1]);
 					if (text.length > 2) {
 						inputs.get(1).sendKeys(text[2] + Keys.ENTER);
-					} else {
+					}
+					else {
 						inputs.get(0).sendKeys(Keys.ENTER);
 					}
 				}
@@ -570,11 +584,12 @@ public abstract class DiaFluxUITest extends KnowWEUITest {
 	private void openVisualEditor(int nth) throws Exception {
 		int attempt = 0;
 		while (attempt < 5 && getDriver().getWindowHandles().size() == 1) {
+			attempt++;
 			try {
 				clickTool("type_DiaFlux", nth, "visual editor");
 				Thread.sleep(500);
-				attempt++;
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				if (attempt == 4) {
 					throw new Exception(e);
 				}
@@ -608,7 +623,7 @@ public abstract class DiaFluxUITest extends KnowWEUITest {
 	private void saveAndSwitchBack(String winHandleBefore) {
 		getDriver().findElement(By.id("saveClose")).click();
 		getDriver().switchTo().window(winHandleBefore);
-		String pageContentSelector = getTemplate() == WikiTemplate.haddock ? ".page-content" : "#pagecontent";
+		String pageContentSelector = getTemplate() instanceof HaddockTemplate ? ".page-content" : "#pagecontent";
 		UITestUtils.awaitRerender(getDriver(), By.cssSelector(pageContentSelector));
 	}
 
@@ -678,10 +693,12 @@ public abstract class DiaFluxUITest extends KnowWEUITest {
 				//actionSelect.findElement(By.xpath("//option[@value='" + 1 + "']")).click();
 				//actionSelect.findElements(By.tagName("option")).get(1).click();
 				getDriver().findElement(By.cssSelector(".ActionEditor textarea")).sendKeys(text[2] + Keys.ENTER);
-			} else if (text[1].startsWith("" + Keys.ARROW_DOWN)) {
+			}
+			else if (text[1].startsWith("" + Keys.ARROW_DOWN)) {
 				actionSelect.selectByIndex(text[1].length() - 1);
 				//actionSelect.sendKeys(text[1] + Keys.ENTER);
-			} else {
+			}
+			else {
 				actionSelect.selectByVisibleText(text[1]);
 				//actionSelect.findElement(By.xpath("//option[text()='" + text[1] + "']")).click();
 			}
