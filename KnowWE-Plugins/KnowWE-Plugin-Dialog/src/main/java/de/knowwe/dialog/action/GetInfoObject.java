@@ -14,9 +14,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
-import de.knowwe.dialog.SessionConstants;
-import de.knowwe.dialog.Utils;
-
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.d3web.core.knowledge.InfoStore;
@@ -53,6 +50,8 @@ import de.d3web.core.session.values.Unknown;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.dialog.SessionConstants;
+import de.knowwe.dialog.Utils;
 
 /**
  * A command that delivers all info objects for a given list of object identifiers.
@@ -306,7 +305,7 @@ public class GetInfoObject extends AbstractAction {
 		// append clickable images
 		try {
 			Class<?> imageMapUtilsClass = Class.forName("de.knowwe.imagemap.ImageMapUtils");
-			Method appendClickableImages = imageMapUtilsClass.getDeclaredMethod("appendClickableImages");
+			Method appendClickableImages = imageMapUtilsClass.getDeclaredMethod("appendClickableImages", TerminologyObject.class, Writer.class);
 			appendClickableImages.invoke(null, object, writer);
 		}
 		catch (ClassNotFoundException ignore) {
