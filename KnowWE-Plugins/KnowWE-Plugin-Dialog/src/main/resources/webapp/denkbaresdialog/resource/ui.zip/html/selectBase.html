@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html>
+<head>
+	<script src="../js/prototype.js" type="text/javascript"></script>
+	<script src="../js/scriptaculous/scriptaculous.js" type="text/javascript"></script>
+	<script src="../js/utils.js" type="text/javascript"></script>
+	<script src="../js/translate.js" type="text/javascript"></script>
+	<script src="../js/kbinfo.js" type="text/javascript"></script>
+	<script src="../js/selectkb.js" type="text/javascript"></script>
+	<script src="../js/lookandfeel.js" type="text/javascript"></script>
+	<script src="../js/sync.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="../css/lookandfeel.css"></link>
+	<link rel="stylesheet" type="text/css" href="../css/interview.css"></link>
+</head>
+
+<body onload="SelectKB.displayBases(); Sync.startCheckUpdateTask(); checkForErrors();">
+
+<div id=content>
+	<script>
+		document.writeln(LookAndFeel.renderSeparator(
+			Translate.get("select_title"),
+			"<span id=syncParent style='position: relative;' onmouseover='Element.show(\"syncInfo\");' onmouseout='Element.hide(\"syncInfo\");'>" +
+				"<div style='position: absolute; right: 0px; bottom: 0px; width: 0px; height: 0px;'>" +
+					"<div style='position: absolute; white-space: nowrap; right: 0px; top: 0px; display:none;' id=syncInfo>" +
+					"</div>" +
+				"</div>" +
+				LookAndFeel.renderButton("../image/sync.gif", Translate.get("use_button_sync"), null) +
+			"</span><select id='language-selector' onchange='Translate.changeLanguage();' style='display: none'></select>"
+		));
+		Sync.addInfoListener(function () {
+			var button = $("syncParent").select("button")[0];
+			if (Sync.isUpdateAvailable()) {
+				button.disabled = false;
+				button.onclick = function() {window.location.replace("../../../Resource/ui.zip/html/sync.html?lang="+Translate.getCurrentLanguage()); };
+				$("syncInfo").innerHTML = "<div class=tooltip><b>"+Translate.get("sync_overview_subtitle_update")+":</b><br>"+Sync.getUpdateDescription()+"</div>";
+			}
+			else {
+				button.disabled = true;
+				button.onclick = null;
+				$("syncInfo").innerHTML = "<div class=tooltip>"+Translate.get("sync_overview_no_update")+"</div>";
+			}
+		});
+		
+		
+		function checkForErrors() {
+		    var url = window.location.href;
+			var errorMessage = /[\?&]errorMessage=([^&]*)/i.exec(url)[1];
+			var errorDetails = /[\?&]errorDetails=([^&]*)/i.exec(url)[1];
+			if (errorMessage || errorDetails) {
+				CCMessage.error(
+						decodeURIComponent(errorMessage), 
+						decodeURIComponent(errorDetails));
+			}
+		}
+		
+	</script>
+	<div id=interview></div>
+	<div id=solutions></div>
+	<div id=bases>
+	<br><br><br>
+	loading list of knowledge bases...
+	</div>
+</div>
+
+</body>
+</html>

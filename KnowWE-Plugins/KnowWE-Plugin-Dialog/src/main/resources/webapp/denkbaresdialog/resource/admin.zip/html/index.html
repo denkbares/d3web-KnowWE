@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html>
+<head>
+	<title>KnowIt - Sync Server Administration</title>
+	<script src="../js/prototype.js" type="text/javascript"></script>
+	<script src="../js/admin.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="../css/admin.css">
+</head>
+
+<body>
+
+<h3>Patch einspielen</h3>
+
+<p>
+	Bitte wählen Sie die Datei, die als Version in das
+Synchronisations-Repository eingespielt werden soll
+	und wählen Sie anschlie�end "Einspielen".
+</p>
+<p>
+Mit der Auswahl von "Version aktivieren" veranlassen
+	Sie den Server dazu, die eingespielte Datei fär alle
+nachfolgenden Synchronisationen als die zu verwendende
+Version zu kennzeichnen.
+</p>
+
+<p>
+<label for="path">Lokale Datei:</label>
+<br>
+	<input id="path" name="path" type="text" size="70">
+</p>
+<p>
+	<input id="current" name="current" type="checkbox" checked>
+<label for="current">Version aktivieren</label>
+</p>
+
+
+<button onclick="addIt();">Einspielen</button>
+
+<script>
+function addIt() {
+	var path = $("path").value;
+	var current = $("current").checked;
+	Admin.addRepositoryFile(path, current);
+}
+</script>
+
+</body>
+</html>

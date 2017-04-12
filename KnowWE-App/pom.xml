@@ -205,6 +205,11 @@
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Dialog</artifactId>
+					<version>${knowwe.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-Rdf2GoSemanticCore</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
@@ -361,11 +366,6 @@
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-DenkbaresDialog</artifactId>
-					<version>${knowwe.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-EditMode</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
@@ -452,7 +452,6 @@
 				<closed-source-artifacts>
 					KnowWE-Plugin-Admin-Utils,
 					KnowWE-Plugin-AutoComplete,
-					KnowWE-Plugin-DenkbaresDialog,
 					KnowWE-Plugin-EditMode,
 					d3web-Plugin-ImageMap,
 					KnowWE-Plugin-ImageMap,
@@ -477,11 +476,6 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-AutoComplete</artifactId>
-					<version>${knowwe.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-DenkbaresDialog</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
 				<dependency>

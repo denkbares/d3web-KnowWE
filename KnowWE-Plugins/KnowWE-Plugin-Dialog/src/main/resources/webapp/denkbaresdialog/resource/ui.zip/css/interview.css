@@ -1,0 +1,9 @@
+input.error {
+	color: #b00;
+	background-image: url(../image/error.gif);
+	background-repeat: no-repeat;
+}
+
+input.answer {
+	padding-left: 20px;
+}

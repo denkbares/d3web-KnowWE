@@ -1,0 +1,24 @@
+.hover {
+	background-color: #ccc;
+	cursor: arrow;
+}
+
+.ok {
+	padding-left: 20px;
+	background-image: url(../image/activate.gif);
+	background-repeat: no-repeat;
+}
+
+.warn {
+	color: #880;
+	padding-left: 20px;
+	background-image: url(../image/warning.gif);
+	background-repeat: no-repeat;
+}
+
+.error {
+	color: #b00;
+	padding-left: 20px;
+	background-image: url(../image/error.gif);
+	background-repeat: no-repeat;
+}

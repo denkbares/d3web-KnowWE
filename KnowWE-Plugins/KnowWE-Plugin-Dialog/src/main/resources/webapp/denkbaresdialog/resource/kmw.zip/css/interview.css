@@ -1,0 +1,25 @@
+.error {
+	color: #b00;
+	padding-left: 20px;
+	background-image: url(../image/error.gif);
+	background-repeat: no-repeat;
+}
+#interview {
+	padding-top: 170px;	
+}
+
+.checkDone {
+	color: green;
+}
+
+.checkFailed {
+	color: red;
+}
+
+.checkTodo {
+	color: gray;
+}
+
+.checkActive {
+	color: black;
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html>
+<head>
+	<title>KnowIt - Sync Server Administration</title>
+	<script src="../js/prototype.js" type="text/javascript"></script>
+	<script src="../js/lookandfeel.js" type="text/javascript"></script>
+	<script src="../js/repository.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="../css/lookandfeel.css"></link>
+	<link rel="stylesheet" type="text/css" href="../css/upload.css"></link>
+</head>
+
+<body onload="Repository.updateRepository();">
+
+<div id=heading></div>
+<div id=versions></div>
+<div id=upload></div>
+
+<script>
+
+function showContents() {
+	$("heading").innerHTML = LookAndFeel.renderSeparator(
+		"Manage Versions",
+		LookAndFeel.renderButton("../image/back.gif", "Back to Repository", "window.location.replace(\"repository.html\");")
+	);
+	showVersions();
+	showUpload();
+}
+
+function showVersions() {
+	var html = "<table><tr><td style='vertical-align: top; padding-right: 50px;'>";
+	html += "<h3>Available Versions</h3>";
+	html += "<table><tr><th>Version</th><th>Created</th><th>Files</th><th>Comment</th></tr>";
+	for (var i=0; i<Repository.versionsets.length; i++) {
+		var set = Repository.versionsets[i];
+		html += 
+			"<tr" +
+			" onmouseover='Element.addClassName(this, \"hover\");'" +
+			" onmouseout='Element.removeClassName(this, \"hover\");'" +
+			" onclick='showVersionDetails(\"" + set.version + "\");'>" +
+			"<td>" + set.version + "</td>" +
+			"<td>" + LookAndFeel.dateToString(set.date) + "</td>" +
+			"<td>" + set.files.length + "</td>" +
+			"<td>" + (set.comment ? set.comment : "-") + "</td>" +
+			"</tr>";
+	}
+	html += "</table>";
+	html += "</td><td style='vertical-align: top; padding-right: 50px;'><div id=versiondetails></div></td></tr></table>";
+	$("versions").innerHTML = LookAndFeel.renderBox(html);
+}
+
+function showVersionDetails(version) {
+	var html = "<h3>Details for Version " + version + "</h3>";
+	html += "<p>" + Repository.getVersionDescription(version) + "</p>";
+	html += "<p>" + Repository.getVersionFiles(version) + "</p>";
+	var isUsed = Repository.aliases.any(function (alias) { return alias.version == version; });
+	html += "<p>" + LookAndFeel.renderButton("../image/remove.gif", "Delete", isUsed ? null : "deleteVersion(\""+version+"\");") + "</p>";
+	$("versiondetails").innerHTML = LookAndFeel.renderSection(html);
+}
+
+function showUpload() {
+	var html = "<h3>Upload new Version</h3>";
+	html += "<p>";
+	html += "Please define the base version and all changed files compared to " +
+			"this base version.";
+	html += "</p>";
+	html += "<table>";
+
+	// base version	
+	html += "<tr><th>Base Version</th><td><select class=selector id='field_base'>";
+	html += "<option value=''>no base version</option>";
+	// options for alias-Versions
+	html += "<optgroup label='---Configurations---'></optgroup>";
+	Repository.aliases.each(function (alias) {
+		html += "<option value='"+alias.version+"'>" + alias.version + " (" + alias.name + ")</option>";
+	});
+	// options for other-Versions
+	html += "<optgroup label='---Versions---'></optgroup>";
+	Repository.versionsets.each(function (set) {
+		html += "<option value='"+set.version+"'>" + set.version + " (" + set.comment + ")</option>";
+	});
+	html += "</select></td></tr>";
+
+	// version information
+	html += "<tr><td><div style='height: 10px;'></div></td></tr>";
+	html += "<tr><th>New Version</th>";
+	html += "<td><input type=text size=10 id='field_version'></input></td>";
+	html += "</tr>";
+	html += "<tr><th>Comment</th>";
+	html += "<td><input type=text size=80 id='field_comment'></input></td>";
+	html += "</tr>";
+	
+	// files	
+	html += "<tr><td><div style='height: 10px;'></div></td></tr>";
+	html += "<tr><td> </td></tr>";
+	html += "<tr><th>Files</th>";
+	html += "<td><div id=uploadfields>";
+	html += "<div>" + renderFileLine() + "</div>";
+	html += "</div></td>";
+	html += "</tr>";
+	
+	html += "</table>";
+	html += LookAndFeel.renderButton("../image/upload.gif", "Create Version", "submit();");
+	html += LookAndFeel.renderButton("../image/cancel.gif", "Cancel", "showContents();");
+	$("upload").innerHTML = LookAndFeel.renderBox(html);
+}
+
+function renderFileLine() {
+	return "<div class=fileline>" +
+		"<input type=text size=80 onchange='checkEmptyFileLine();' onkeyup='checkEmptyFileLine();'></input>" + 
+		LookAndFeel.renderButton("../image/remove.gif", "", "removeFileLine(this);") +  
+		"</div>";
+}
+
+function checkEmptyFileLine() {
+	var lastLine = $("uploadfields").lastChild;
+	if (!lastLine) {
+		addFileLine();
+	}
+	else if (Element.select(lastLine, "input")[0].value) {
+		addFileLine();
+	}
+}
+
+function addFileLine() {
+	var node = new Element("div");
+	$("uploadfields").appendChild(node);
+	node.innerHTML = renderFileLine();
+}
+
+function removeFileLine(button) {
+	Element.up(button, ".fileline").parentNode.remove();
+	checkEmptyFileLine();
+}
+
+Repository.addUpdateListener(showContents);
+
+function deleteVersion(version) {
+	var ok = confirm("Do you want to delete the version "+version+" from the repository?");
+	if (ok) {
+		Repository.deleteVersionSet(version);
+	}
+}
+
+function submit() {
+	var newVersion = $("field_version").value;
+	var comment = $("field_comment").value;
+	var baseVersion = $("field_base").value;
+	var fileInputs = Element.select($("uploadfields"), "input");
+	var path = "";
+	for (var i=0; i<fileInputs.length; i++) {
+		path += fileInputs[i].value + ";";
+	}
+	Repository.addVersionSet(newVersion, comment, path, baseVersion);
+}
+
+</script>
+
+</body>
+</html>

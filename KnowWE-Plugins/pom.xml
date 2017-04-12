@@ -33,6 +33,7 @@
 		<module>KnowWE-Plugin-Visualization</module>
 		<module>KnowWE-Plugin-OntoVis</module>
 		<module>KnowWE-Plugin-RightPanel</module>
+		<module>KnowWE-Plugin-Dialog</module>
 	</modules>
 
 </project>

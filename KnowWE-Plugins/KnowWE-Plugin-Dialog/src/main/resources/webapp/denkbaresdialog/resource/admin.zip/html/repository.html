@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html>
+<head>
+	<title>KnowIt - Sync Server Administration</title>
+	<script src="../js/prototype.js" type="text/javascript"></script>
+	<script src="../js/lookandfeel.js" type="text/javascript"></script>
+	<script src="../js/repository.js" type="text/javascript"></script>
+	<script src="../js/servers.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="../css/lookandfeel.css"></link>
+	<link rel="stylesheet" type="text/css" href="../css/repository.css"></link>
+</head>
+
+<body onload="Repository.updateRepository();">
+
+<div id=heading></div>
+<div id=aliases></div>
+<div id=servers></div>
+<div id=versions></div>
+
+<script>
+
+function showContents() {
+	Servers.checkUpdates();
+	$("heading").innerHTML = LookAndFeel.renderSeparator(
+		"Repository",
+		LookAndFeel.renderButton(null, "Manage Configurations", "alert(\"not available yet\");") +
+		LookAndFeel.renderButton(null, "Manage Servers", "alert(\"not available yet\");") +
+		LookAndFeel.renderButton("../image/upload.gif", "Manage Versions", "window.location.replace(\"upload.html\");")
+	);
+	showAliases();
+	showVersions();
+}
+
+Repository.addUpdateListener(showContents);
+
+function showAliases() {
+	var html = "";
+	html += "<h3>Repository Overview</h3>" + 
+			"<p>" + 
+			"On this page you can administrate the server repository, " + 
+			"that is used to update both servers and client systems. " + 
+			"There are a set of configurations available that serves " + 
+			"different steps of the life-cycle during the release " + 
+			"procedure (e.g. test phase and productive usage). " + 
+			"</p>";
+	html += "<table width='100%'><tr>";
+	for (var i=0; i<Repository.aliases.length; i++) {
+		html += "<td style='padding-right: 50px;'>";
+		html += LookAndFeel.renderSection("<h3>Configuration: " + Repository.aliases[i].name + "</h3>" +
+				"<p>" + Repository.getVersionDescription(Repository.aliases[i].version) + "</p>");
+		html += "</td>";
+	}
+	html += "</tr></table>";
+	$("aliases").innerHTML = LookAndFeel.renderBox(html);
+}
+
+function showServers() {
+	var html = "<h3>Managed Servers</h3>";
+	html += "<table><tr><th>Name</th><th>Configuration</th><th>Base URL</th><th>State</th></tr>";
+	for (var i=0; i<Servers.managedServers.length; i++) {
+		var server = Servers.managedServers[i];
+		var descr = Servers.getUpdateDescription(server);
+		var state = Servers.getUpdateState(server);
+		html += "<tr>";
+		html += "<td>" + server.name + "</td><td>" + server.alias + "</td><td>" + server.url + "</td><td><span title='" + (descr ? descr : "") + "'>" + state + "</span></td>";
+		html += "</tr>";
+	}
+	html += "</tr></table>";
+	$("servers").innerHTML = LookAndFeel.renderBox(html);
+}
+
+Servers.addListener(showServers);
+
+function showVersions() {
+	var html = "<table><tr><td style='vertical-align: top; padding-right: 50px;'>";
+	html += "<h3>Available Versions</h3>";
+	html += "<table><tr><th>Version</th><th>Created</th><th>Files</th><th>Comment</th></tr>";
+	for (var i=0; i<Repository.versionsets.length; i++) {
+		var set = Repository.versionsets[i];
+		html += 
+			"<tr" +
+			" onmouseover='Element.addClassName(this, \"hover\");'" +
+			" onmouseout='Element.removeClassName(this, \"hover\");'" +
+			" onclick='showVersionDetails(\"" + set.version + "\");'>" +
+			"<td>" + set.version + "</td>" +
+			"<td>" + LookAndFeel.dateToString(set.date) + "</td>" +
+			"<td>" + set.files.length + "</td>" +
+			"<td>" + (set.comment ? set.comment : "-") + "</td>" +
+			"</tr>";
+	}
+	html += "</table>";
+	html += "</td><td style='vertical-align: top; padding-right: 50px;'><div id=versiondetails></div></td></tr></table>";
+	$("versions").innerHTML = LookAndFeel.renderBox(html);
+}
+
+function showVersionDetails(version) {
+	var html = "<h3>Details for Version " + version + "</h3>";
+	html += "<p>" + Repository.getVersionDescription(version) + "</p>";
+	html += "<p>" + Repository.getVersionFiles(version) + "</p>";
+
+	for (var i=0; i<Repository.aliases.length; i++) {
+		var alias = Repository.aliases[i];
+		html += LookAndFeel.renderButton(
+			"../image/activate.gif", 
+			"use as '"+alias.name+"'", 
+			alias.version != version ? "Repository.setAlias(\""+alias.name+"\", \""+version+"\");" : null);
+	}
+	$("versiondetails").innerHTML = LookAndFeel.renderSection(html);
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html>
+<head>
+	<script src="../js/prototype.js" type="text/javascript"></script>
+	<script src="../js/scriptaculous/scriptaculous.js" type="text/javascript"></script>
+	<script src="../js/utils.js" type="text/javascript"></script>
+	<script src="../js/translate.js" type="text/javascript"></script>
+	<script src="../js/kbinfo.js" type="text/javascript"></script>
+	<script src="../js/selectkb.js" type="text/javascript"></script>
+	<script src="../js/lookandfeel.js" type="text/javascript"></script>
+	<script src="../js/sync.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="../css/lookandfeel.css"></link>
+	<link rel="stylesheet" type="text/css" href="../css/interview.css"></link>
+</head>
+
+<body>
+<div id=content>
+	
+	<div id=message></div>
+	
+	<script>
+		document.writeln(LookAndFeel.renderSeparator(
+				Translate.get("loading_title"),
+				""
+				));
+	
+		// check for redirect
+		var url = window.location.href;
+		var param = /[\?&]url=([^&]*)/i.exec(url);
+		var redirectUrl = param && param[1];
+		if (redirectUrl) setTimeout("window.location.href = decodeURIComponent('"+redirectUrl+"');", 100);
+	</script>
+	
+	<center>
+	<div style='position:relative; width:1px; height:1px;'>
+	<div style='position:absolute; left:-50px; top:50px;'>
+	<img src='../image/ajax-100.gif'></img>
+	</div>
+	</div>
+	</center>
+	
+</div>
+
+</body>
+</html>

@@ -1,0 +1,238 @@
+html {
+	background:transparent;
+	margin:0;
+	padding:0;
+	color:#000;
+	background:#fff url(../image/background.png) repeat-x fixed;
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+	color: #000;
+	font: 76%/1.5 "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Helvetica,Arial,sans-serif;
+	padding: 1em 0;
+}
+
+td, th {
+	text-align: left;
+	padding: 0px;
+	padding-right: 10px;
+	spacing: 0px;
+	margin: 0px;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	margin:0 0 0.5em;
+	color:#444;
+	font:normal 1em/1.2 Georgia,Times,serif;
+}
+h1 {font-size:2em;}
+h2 {font-size:1.5em;}
+h3 {font-size:1.2em;}
+p {margin:0 0 1em;}
+a:link {color:#8f1f08;}
+a:visited {color:#5f1406;}
+a:hover,
+a:focus,
+a:active {
+	color:#800000;
+	background-color:#e3e0d1;
+}
+
+.tooltip {
+	background-color: #ff9;
+	border: 1px solid black;
+	padding: 3px 5px 3px 5px;
+}
+
+/* Normal styling */
+.cb {
+	margin: 0.5em 0; 
+	display: block; 
+	clear: both;
+}
+/* Top corners and border */
+.bt {
+	height:17px;
+	margin:0 0 0 18px;
+	background:url(../image/box.png) no-repeat 100% 0;
+}
+.bt div {
+	position:relative;
+	left:-18px;
+	width:18px;
+	height:17px;
+	background:url(../image/box.png) no-repeat 0 0;
+	font-size:0;
+	line-height:0;
+}
+
+	/* Bottom corners and border */
+.bb {
+	height:14px;
+	margin:0 0 0 12px;
+	background:url(../image/box.png) no-repeat 100% 100%;
+}
+.bb div {
+	position:relative;
+	left:-12px;
+	width:12px;
+	height:14px;
+	background:url(../image/box.png) no-repeat 0 100%;
+	font-size:0;
+	line-height:0;
+}
+
+	/* Left border */
+.i1 {
+	padding:0 0 0 12px;
+	background:url(../image/box-borders.png) repeat-y 0 0;
+}
+	/* Right border */
+.i2 {
+	padding:0 12px 0 0;
+	background:url(../image/box-borders.png) repeat-y 100% 0;
+}
+	/* Wrapper for the content. Use it to set the background colour and insert some padding between the borders and the content. */
+.i3 {
+	display:block;
+	margin:0;
+	padding:1px 10px;
+	background:#fff;
+}
+	/* Make the content wrapper auto clearing so it will contain floats (see http://positioniseverything.net/easyclearing.html). */
+.i3:after {
+	content:"."; 
+	display:block; 
+	height:0; 
+	clear:both; 
+	visibility:hidden;
+}
+.i3 {display:inline-block;}
+.i3 {display:block;}
+/* Default CSS ends here */
+
+
+/* Styles for button */
+.button {
+	float:left;
+	margin-top:0;
+	color: #fff;
+	width: 150px;
+}
+.button .bt {
+	height:8px;
+	margin:0 0 0 9px;
+	background-image:url(../image/button.png);
+}
+.button .bt div {
+	left:-9px;
+	width:9px;
+	height:8px;
+	background-image:url(../image/button.png);
+}
+.button .bb {
+	height:8px;
+	margin:0 0 0 8px;
+	background-image:url(../image/button.png);
+}
+.button .bb div {
+	left:-8px;
+	width:8px;
+	height:8px;
+	background-image:url(../image/button.png);
+}
+.button .i1 {
+	padding:0 0 0 3px;
+	background-image:url(../image/button-borders.png);
+}
+.button .i2 {
+	padding:0 3px 0 0;
+	background-image:url(../image/button-borders.png);
+}
+.button .i3 {
+	padding:0 0.5em;
+	background:#3a3d40 url(../image/button.png) no-repeat -3px -8px;
+	font-weight:bold;
+	text-decoration:none;
+	text-align:center;
+}
+.button a:link,
+.button a:visited,
+.button a:hover {
+	border:none;
+	color:#fff;
+}
+
+/* Styles for in-box-section */
+.section {
+	display:block;
+	margin-top:0;
+}
+.section .bt {
+	height:8px;
+	margin:0 0 0 9px;
+	background-image:url(../image/section.png);
+}
+.section .bt div {
+	left:-9px;
+	width:9px;
+	height:8px;
+	background-image:url(../image/section.png);
+}
+.section .bb {
+	height:8px;
+	margin:0 0 0 8px;
+	background-image:url(../image/section.png);
+}
+.section .bb div {
+	left:-8px;
+	width:8px;
+	height:8px;
+	background-image:url(../image/section.png);
+}
+.section .i1 {
+	padding:0 0 0 4px;
+	background:url(../image/section-borders.png) repeat-y 0 0;
+}
+.section .i2 {
+	padding:0 4px 0 0;
+	background:url(../image/section-borders.png) repeat-y 100% 0;
+}
+.section .i3 {
+	padding:0 0.5em;
+	background:#fff;
+}
+.section a:link,
+.section a:visited,
+.section a:hover {
+	border:none;
+	color:#fff;
+}
+
+.sectionhover .bt, .sectionhover .bt div, .sectionhover .bb, .sectionhover .bb div {
+	background-image:url(../image/sectionhover.png);
+}
+.sectionhover .i1 {
+	background:url(../image/sectionhover-borders.png) repeat-y 0 0 !important;
+}
+.sectionhover .i2 {
+	background:url(../image/sectionhover-borders.png) repeat-y 100% 0 !important;
+}
+.sectionhover .i3 {
+	background:#fff;
+}
+
+.sectionactive .bt, .sectionactive .bt div, .sectionactive .bb, .sectionactive .bb div {
+	background-image:url(../image/sectionactive.png);
+}
+.sectionhover .i1 {
+	background:url(../image/sectionactive-borders.png) repeat-y 0 0 !important;
+}
+.sectionhover .i2 {
+	background:url(../image/sectionactive-borders.png) repeat-y 100% 0 !important;
+}
+.sectionactive .i3 {
+	background:#deebf7;
+}

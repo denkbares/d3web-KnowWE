@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN">
+<html>
+<head>
+	<script src="../js/prototype.js" type="text/javascript"></script>
+	<script src="../js/scriptaculous/scriptaculous.js" type="text/javascript"></script>
+	<script src="../js/utils.js" type="text/javascript"></script>
+	<script src="../js/translate.js" type="text/javascript"></script>
+	<script src="../js/kbinfo.js" type="text/javascript"></script>
+	<script src="../js/lookandfeel.js" type="text/javascript"></script>
+	<script src="../js/interview.js" type="text/javascript"></script>
+	<script src="../js/checklist.js" type="text/javascript"></script>
+	<script src="../js/sync.js" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="../css/lookandfeel.css"></link>
+	<link rel="stylesheet" type="text/css" href="../css/interview.css"></link>
+</head>
+
+<body onload="Translate.fillLanguageSelector(); Interview.displayNextQuestion(true); Sync.startCheckUpdateTask();">
+
+<div id="navigation-wrapper">
+<div id="navigation-top-left"></div>
+<div id="navigation-top-right"></div>
+<div id="navigation-button-interview">
+	<p>
+		<script>document.write(Translate.get("use_title"))</script>
+	</p>
+</div>
+<div id="navigation-languages"><script>document.write(LookAndFeel.renderLanguages())</script></div>
+<div id="navigation-button-sync" onmouseover="Element.show('syncInfo')" onmouseout="Element.hide('syncInfo')">
+	<p><script>document.write(Translate.get("use_button_sync"))</script></p>
+	<script>
+	Sync.addInfoListener(function () {
+		var button = $("navigation-button-sync");
+		if (Sync.isUpdateAvailable()) {
+			button.style.background = "url(../image/button-sync-on.png)";
+			button.style.color = "#fff";
+			button.style.cursor = "pointer";
+			button.onclick = function() {window.location.replace("../../../Resource/ui.zip/html/sync.html?lang="+Translate.getCurrentLanguage()); };
+			$("syncInfo").innerHTML = "<div class=tooltip><b>"+Translate.get("sync_overview_subtitle_update")+":</b><br>"+Sync.getUpdateDescription()+"</div>";
+		}
+		else {
+			button.onclick = null;
+			$("syncInfo").innerHTML = "<div class=tooltip>"+Translate.get("sync_overview_no_update")+"</div>";
+		}
+	});
+	</script>
+</div>
+<div id="navigation-button-separator"></div>
+<div id="navigation-button-new" onclick="Interview.startCase();">
+	<p><script>document.write(Translate.get("use_button_new"))</script></p>
+</div>
+<div id="navigation-bottom-left"></div>
+<div id="navigation-bottom-right"></div>
+</div>
+<div id="syncInfo"></div>
+
+<!-- script>
+	document.writeln(LookAndFeel.renderSeparator(
+		Translate.get("use_title"),
+		LookAndFeel.renderButton("../image/new.gif", Translate.get("use_button_new"), "Interview.startCase();") +
+		"<span id=syncParent style='position: relative;' onmouseover='Element.show(\"syncInfo\");' onmouseout='Element.hide(\"syncInfo\");'>" +
+			"<div style='position: absolute; right: 0px; bottom: 0px; width: 0px; height: 0px;'>" +
+				"<div style='position: absolute; white-space: nowrap; right: 0px; top: 0px; display:none;' id=syncInfo>" +
+				"</div>" +
+			"</div>" +
+			LookAndFeel.renderButton("../image/sync.gif", Translate.get("use_button_sync"), null) +
+		"</span>"
+	));
+	Sync.addInfoListener(function () {
+		var button = $("syncParent").select("button")[0];
+		if (Sync.isUpdateAvailable()) {
+			button.disabled = false;
+			button.onclick = function() {window.location.replace("../../../Resource/ui.zip/html/sync.html?lang="+Translate.getCurrentLanguage()); };
+			$("syncInfo").innerHTML = "<div class=tooltip><b>"+Translate.get("sync_overview_subtitle_update")+":</b><br>"+Sync.getUpdateDescription()+"</div>";
+		}
+		else {
+			button.disabled = true;
+			button.onclick = null;
+			$("syncInfo").innerHTML = "<div class=tooltip>"+Translate.get("sync_overview_no_update")+"</div>";
+		}
+	});
+</script-->
+
+<div id="interview" style="position: relative"></div>
+<div id="solutions" style="position: relative"></div>
+
+</body>
+</html>

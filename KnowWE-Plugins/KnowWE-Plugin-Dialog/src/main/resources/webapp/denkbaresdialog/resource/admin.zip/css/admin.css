@@ -1,0 +1,33 @@
+html {
+	background:transparent;
+	margin:20px;
+	padding:0;
+	color:#000;
+	background:#fff url(../image/background.png) repeat-x fixed;
+}
+
+body {
+	margin:0;
+	padding:0;
+	color:#000;
+	font:76%/1.5 "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Helvetica,Arial,sans-serif;
+	padding:1em 0;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	margin:0 0 0.5em;
+	color:#444;
+	font:normal 1em/1.2 Georgia,Times,serif;
+}
+h1 {font-size:2em;}
+h2 {font-size:1.5em;}
+h3 {font-size:1.2em;}
+p {margin:0 0 1em; max-width: 480px;}
+a:link {color:#8f1f08;}
+a:visited {color:#5f1406;}
+a:hover,
+a:focus,
+a:active {
+	color:#800000;
+	background-color:#e3e0d1;
+}
