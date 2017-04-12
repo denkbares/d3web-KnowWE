@@ -7,7 +7,7 @@
 	</requires>
 	
 	<runtime>
-		<library id="cc.knowwe.dialog" path="." type="code">
+		<library id="de.knowwe.dialog" path="." type="code">
 			<export prefix="*" />
 		</library>
 		<library id="webapp" path="webapp/" type="resources">
@@ -17,7 +17,7 @@
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
 		id="DialogProvider">
-		<parameter id="class" value="cc.knowwe.dialog.DialogProvider" />
+		<parameter id="class" value="de.knowwe.dialog.DialogProvider" />
 		<parameter id="name" value="DialogProvider" />
 		<parameter id="description"
 			value="Offer a button to run the knowledge base in the denkbares interview." />
@@ -29,7 +29,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler"
 		id="DialogTagHandler">
 		<parameter id="class"
-			value="cc.knowwe.dialog.DialogTagHandler" />
+			value="de.knowwe.dialog.DialogTagHandler" />
 		<parameter id="name" value="DialogTagHandler" />
 		<parameter id="description" value="TagHandler DialogTagHandler" />
 		<parameter id="version" value="1.0" />
@@ -39,7 +39,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="Init">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.Init" />
+			value="de.knowwe.dialog.action.Init" />
 		<parameter id="name" value="Init" />
 		<parameter id="description" value="Action to initialize the interview with an knowledge base out of the knowledge folder." />
 		<parameter id="version" value="1.0" />
@@ -49,7 +49,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="InitWiki">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.InitWiki" />
+			value="de.knowwe.dialog.action.InitWiki" />
 		<parameter id="name" value="InitWiki" />
 		<parameter id="description" value="Action to initilaize the interview from a wiki article." />
 		<parameter id="version" value="1.0" />
@@ -59,7 +59,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="Restart">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.Restart" />
+			value="de.knowwe.dialog.action.Restart" />
 		<parameter id="name" value="Restart" />
 		<parameter id="description" value="Action to restart a session." />
 		<parameter id="version" value="1.0" />
@@ -69,7 +69,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ExternalViewer">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.ExternalViewer" />
+			value="de.knowwe.dialog.action.ExternalViewer" />
 		<parameter id="name" value="ExternalViewer" />
 		<parameter id="description" value="Action to open a registered external viewer for a specified file." />
 		<parameter id="version" value="1.0" />
@@ -79,7 +79,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="ExitMobileApplication">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.ExitMobileApplication" />
+			value="de.knowwe.dialog.action.ExitMobileApplication" />
 		<parameter id="name" value="ExitMobileApplication" />
 		<parameter id="description" value="Action ExitMobileApplication" />
 		<parameter id="version" value="1.0" />
@@ -89,7 +89,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetAvailableKnowledgeBases">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.GetAvailableKnowledgeBases" />
+			value="de.knowwe.dialog.action.GetAvailableKnowledgeBases" />
 		<parameter id="name" value="GetAvailableKnowledgeBases" />
 		<parameter id="description" value="Action to access a list of available knowledge bases" />
 		<parameter id="version" value="1.0" />
@@ -99,7 +99,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetAlternativeTargets">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.GetAlternativeTargets" />
+			value="de.knowwe.dialog.action.GetAlternativeTargets" />
 		<parameter id="name" value="GetAlternativeTargets" />
 		<parameter id="description" value="Action to access a list of alternative targets" />
 		<parameter id="version" value="1.0" />
@@ -109,7 +109,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SelectAlternativeTarget">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.SelectAlternativeTarget" />
+			value="de.knowwe.dialog.action.SelectAlternativeTarget" />
 		<parameter id="name" value="SelectAlternativeTarget" />
 		<parameter id="description" value="Select an alternative target" />
 		<parameter id="version" value="1.0" />
@@ -119,7 +119,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetAvailableKnowledgeBaseFavIcon">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.GetAvailableKnowledgeBaseFavIcon" />
+			value="de.knowwe.dialog.action.GetAvailableKnowledgeBaseFavIcon" />
 		<parameter id="name" value="GetAvailableKnowledgeBaseFavIcon" />
 		<parameter id="description" value="Get favicon for a specific knowledge base" />
 		<parameter id="version" value="1.0" />
@@ -129,7 +129,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SelectAvailableKnowledgeBase">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.SelectAvailableKnowledgeBase" />
+			value="de.knowwe.dialog.action.SelectAvailableKnowledgeBase" />
 		<parameter id="name" value="SelectAvailableKnowledgeBase" />
 		<parameter id="description" value="Action to select one available knowledge base and start a case with it." />
 		<parameter id="version" value="1.0" />
@@ -139,7 +139,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetInfoObject">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.GetInfoObject" />
+			value="de.knowwe.dialog.action.GetInfoObject" />
 		<parameter id="name" value="GetInfoObject" />
 		<parameter id="description" value="Action GetInfoObject" />
 		<parameter id="version" value="1.0" />
@@ -149,7 +149,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetInterview">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.GetInterview" />
+			value="de.knowwe.dialog.action.GetInterview" />
 		<parameter id="name" value="GetInterview" />
 		<parameter id="description" value="Action GetInterview" />
 		<parameter id="version" value="1.0" />
@@ -159,7 +159,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="Multimedia">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.Multimedia" />
+			value="de.knowwe.dialog.action.Multimedia" />
 		<parameter id="name" value="Multimedia" />
 		<parameter id="description" value="Action Multimedia" />
 		<parameter id="version" value="1.0" />
@@ -169,7 +169,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="DownloadProtocol">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.DownloadProtocol" />
+			value="de.knowwe.dialog.action.DownloadProtocol" />
 		<parameter id="name" value="DownloadProtocol" />
 		<parameter id="description" value="Action to download the protocol" />
 		<parameter id="version" value="1.0" />
@@ -177,7 +177,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ResourceDD">
-		<parameter id="class" value="cc.knowwe.dialog.action.Resource" />
+		<parameter id="class" value="de.knowwe.dialog.action.Resource" />
 		<parameter id="name" value="Resource" />
 		<parameter id="description" value="Action Resource" />
 		<parameter id="version" value="1.0" />
@@ -187,7 +187,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetAnswer">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.SetAnswer" />
+			value="de.knowwe.dialog.action.SetAnswer" />
 		<parameter id="name" value="SetAnswer" />
 		<parameter id="description" value="Action SetAnswer" />
 		<parameter id="version" value="1.0" />
@@ -197,7 +197,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="RetractAnswer">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.RetractAnswer" />
+			value="de.knowwe.dialog.action.RetractAnswer" />
 		<parameter id="name" value="RetractAnswer" />
 		<parameter id="description" value="Action RetractAnswer" />
 		<parameter id="version" value="1.0" />
@@ -207,7 +207,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="StartCase">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.StartCase" />
+			value="de.knowwe.dialog.action.StartCase" />
 		<parameter id="name" value="StartCase" />
 		<parameter id="description" value="Action StartCase" />
 		<parameter id="version" value="1.0" />
@@ -217,7 +217,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetLanguages">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.GetLanguages" />
+			value="de.knowwe.dialog.action.GetLanguages" />
 		<parameter id="name" value="GetLanguages" />
 		<parameter id="description" value="Action GetLanguages" />
 		<parameter id="version" value="1.0" />
@@ -227,7 +227,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CancelUpdate">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.CancelUpdate" />
+			value="de.knowwe.dialog.action.sync.CancelUpdate" />
 		<parameter id="name" value="CancelUpdate" />
 		<parameter id="description" value="Action CancelUpdate" />
 		<parameter id="version" value="1.0" />
@@ -237,7 +237,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CheckProgress">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.CheckProgress" />
+			value="de.knowwe.dialog.action.sync.CheckProgress" />
 		<parameter id="name" value="CheckProgress" />
 		<parameter id="description" value="Action CheckProgress" />
 		<parameter id="version" value="1.0" />
@@ -247,7 +247,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CheckUpdates">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.CheckUpdates" />
+			value="de.knowwe.dialog.action.sync.CheckUpdates" />
 		<parameter id="name" value="CheckUpdates" />
 		<parameter id="description" value="Action CheckUpdates" />
 		<parameter id="version" value="1.0" />
@@ -257,7 +257,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="StartUpdate">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.StartUpdate" />
+			value="de.knowwe.dialog.action.sync.StartUpdate" />
 		<parameter id="name" value="StartUpdate" />
 		<parameter id="description" value="Action StartUpdate" />
 		<parameter id="version" value="1.0" />
@@ -267,7 +267,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="AddRepositoryFile">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.server.AddRepositoryFile" />
+			value="de.knowwe.dialog.action.sync.server.AddRepositoryFile" />
 		<parameter id="name" value="AddRepositoryFile" />
 		<parameter id="description" value="Action AddRepositoryFile" />
 		<parameter id="version" value="1.0" />
@@ -277,7 +277,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="AddVersionSet">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.server.AddVersionSet" />
+			value="de.knowwe.dialog.action.sync.server.AddVersionSet" />
 		<parameter id="name" value="AddVersionSet" />
 		<parameter id="description" value="Action AddVersionSet" />
 		<parameter id="version" value="1.0" />
@@ -287,7 +287,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="DeleteVersionSet">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.server.DeleteVersionSet" />
+			value="de.knowwe.dialog.action.sync.server.DeleteVersionSet" />
 		<parameter id="name" value="DeleteVersionSet" />
 		<parameter id="description" value="Action DeleteVersionSet" />
 		<parameter id="version" value="1.0" />
@@ -297,7 +297,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetRepositoryInfo">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.server.GetRepositoryInfo" />
+			value="de.knowwe.dialog.action.sync.server.GetRepositoryInfo" />
 		<parameter id="name" value="GetRepositoryInfo" />
 		<parameter id="description" value="Action GetRepositoryInfo" />
 		<parameter id="version" value="1.0" />
@@ -307,7 +307,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetUpdateFile">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.server.GetUpdateFile" />
+			value="de.knowwe.dialog.action.sync.server.GetUpdateFile" />
 		<parameter id="name" value="GetUpdateFile" />
 		<parameter id="description" value="Action GetUpdateFile" />
 		<parameter id="version" value="1.0" />
@@ -317,7 +317,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="GetUpdateInfo">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.server.GetUpdateInfo" />
+			value="de.knowwe.dialog.action.sync.server.GetUpdateInfo" />
 		<parameter id="name" value="GetUpdateInfo" />
 		<parameter id="description" value="Action GetUpdateInfo" />
 		<parameter id="version" value="1.0" />
@@ -327,7 +327,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="SetAlias">
 		<parameter id="class"
-			value="cc.knowwe.dialog.action.sync.server.SetAlias" />
+			value="de.knowwe.dialog.action.sync.server.SetAlias" />
 		<parameter id="name" value="SetAlias" />
 		<parameter id="description" value="Action SetAlias" />
 		<parameter id="version" value="1.0" />
