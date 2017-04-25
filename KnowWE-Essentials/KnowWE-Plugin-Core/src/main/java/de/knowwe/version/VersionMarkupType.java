@@ -59,7 +59,7 @@ public class VersionMarkupType extends DefaultMarkupType {
 				manifest = new Manifest(new FileInputStream(new File(manifestPath)));
 			}
 			catch (IOException e) {
-				Log.severe("Could not read manifest file", e);
+				Log.warning("Could not read manifest file, build info will not be displayed.");
 				return;
 			}
 
