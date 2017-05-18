@@ -65,9 +65,13 @@ String.I18N.PREFIX = "javascript.";
 
 <script src="<wiki:Link format='url' jsp='scripts/haddock.js'/>"></script>
 
+<%-- compatibility with electron, allows jQuery to be loaded on window instead of module --%>
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
 <wiki:IncludeResources type="script"/>
 
-
+<%-- compatibility with electron, allows jQuery to be loaded on window instead of module --%>
+<script>if (window.module) module = window.module;</script>
 
 <%-- COOKIE read client preferences --%>
 <%

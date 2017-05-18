@@ -56,7 +56,14 @@
 <%-- JAVASCRIPT --%>
 <script type="text/javascript" src="<wiki:Link format='url' jsp='scripts/mootools.js'/>"></script>
 <script type="text/javascript" src="<wiki:Link format='url' jsp='scripts/jspwiki-common.js'/>"></script>
+
+<%-- compatibility with electron, allows jQuery to be loaded on window instead of module --%>
+<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
 <wiki:IncludeResources type="script"/>
+
+<%-- compatibility with electron, allows jQuery to be loaded on window instead of module --%>
+<script>if (window.module) module = window.module;</script>
 
 <%-- COOKIE read client preferences --%>
 <%

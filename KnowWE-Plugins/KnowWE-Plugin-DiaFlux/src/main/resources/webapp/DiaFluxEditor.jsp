@@ -103,7 +103,7 @@
 
 	<title>Edit Flowchart: <%= title %>
 	</title>
-
+	<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 	<script src="cc/scriptaculous-js/lib/prototype.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/builder.js" type="text/javascript"></script>
 	<script src="cc/scriptaculous-js/src/effects.js" type="text/javascript"></script>
