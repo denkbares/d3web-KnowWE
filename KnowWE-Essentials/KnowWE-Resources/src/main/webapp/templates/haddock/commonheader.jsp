@@ -70,8 +70,8 @@ String.I18N.PREFIX = "javascript.";
 
 <wiki:IncludeResources type="script"/>
 
-<%-- compatibility with electron, allows jQuery to be loaded on window instead of module --%>
-<script>if (window.module) module = window.module;</script>
+<%-- compatibility with electron, allows jQuery to be loaded on window instead of module
+<script>if (window.module) module = window.module;</script> --%>
 
 <%-- COOKIE read client preferences --%>
 <%
