@@ -19,38 +19,38 @@
 
 // overwrite "Wiki.locatemenu" to correct bug
 // if menu ist relative to a non-document element
-Wiki.locatemenu = function(base, el) {
+Wiki.locatemenu = function (base, el) {
 	var win = {
-		'x' : window.getWidth(),
-		'y' : window.getHeight()
+		'x': window.getWidth(),
+		'y': window.getHeight()
 	}, scroll = {
-		'x' : window.getScrollLeft(),
-		'y' : window.getScrollTop()
+		'x': window.getScrollLeft(),
+		'y': window.getScrollTop()
 	}, corner = base.getPosition(), offset = {
-		'x' : base.offsetWidth - el.offsetWidth,
-		'y' : base.offsetHeight
+		'x': base.offsetWidth - el.offsetWidth,
+		'y': base.offsetHeight
 	}, popup = {
-		'x' : el.offsetWidth,
-		'y' : el.offsetHeight
+		'x': el.offsetWidth,
+		'y': el.offsetHeight
 	}, prop = {
-		'x' : 'left',
-		'y' : 'top'
+		'x': 'left',
+		'y': 'top'
 	}, parent = {
-		'x' : 0,
-		'y' : 0
+		'x': 0,
+		'y': 0
 	};
 
 	// some special treatment for search to avoid annoying menu position
-	if (base == jq$('#query')[0]) {
+	if (base === jq$('#query')[0]) {
 		parent = {
-			'x' : base.offsetWidth,
-			'y' : base.offsetHeight
+			'x': base.offsetWidth,
+			'y': base.offsetHeight
 		};
 	} else {
 		// search for parent defining it own coordinate system
-		for (var anchor = el.parentNode; anchor && anchor != document; anchor = anchor.parentNode) {
+		for (var anchor = el.parentNode; anchor && anchor !== document; anchor = anchor.parentNode) {
 			var cssPosition = anchor.getStyle('position');
-			if (cssPosition == 'absolute' || cssPosition == 'relative') {
+			if (cssPosition === 'absolute' || cssPosition === 'relative') {
 				parent = anchor.getPosition();
 				break;
 			}
@@ -75,7 +75,7 @@ if (SearchBox) {
 	SearchBox.ajaxQuickSearch_original = SearchBox.ajaxQuickSearch;
 	SearchBox.noSearchTargetText_original = null;
 
-	SearchBox.onPageLoadQuickSearch = function() {
+	SearchBox.onPageLoadQuickSearch = function () {
 		// call original first, doing lots of other stuff
 		SearchBox.onPageLoadQuickSearch_original();
 		// remove hover events
@@ -83,16 +83,16 @@ if (SearchBox) {
 			jq$(this.query.form).off("mouseout");
 			jq$(this.query.form).off("mouseover");
 			// and add focus events instead
-			jq$(this.query).blur(function() {
+			jq$(this.query).blur(function () {
 				this.hover.start(0);
-			}.bind(this)).focus(function() {
+			}.bind(this)).focus(function () {
 				Wiki.locatemenu(this.query, jq$("#searchboxMenu")[0]);
 				this.hover.start(0.9);
 			}.bind(this));
 		}
 	};
 
-	SearchBox.ajaxQuickSearch = function() {
+	SearchBox.ajaxQuickSearch = function () {
 		// capture original text before first search
 		if (!SearchBox.noSearchTargetText_original) {
 			SearchBox.noSearchTargetText_original = jq$('#searchTarget')[0].innerHTML;
@@ -100,7 +100,7 @@ if (SearchBox) {
 		SearchBox.ajaxQuickSearch_original();
 		// if search is empty, restore original text and relocate menu
 		var a = this.query.value.stripScripts();
-		if ((a == null) || (a.trim() == "") || (a == this.query.defaultValue)) {
+		if ((a === null) || (a.trim() === "") || (a === this.query.defaultValue)) {
 			jq$('#searchTarget')[0].innerHTML = SearchBox.noSearchTargetText_original;
 			Wiki.locatemenu(jq$("#query")[0], jq$("#searchboxMenu")[0]);
 		}
@@ -109,18 +109,22 @@ if (SearchBox) {
 
 var DenkbaresSkin = {};
 
+
+DenkbaresSkin.jspwikiSideBarButtonWasPressed = function () {
+	return JSON.parse(jq$.cookie("JSPWikiUserPrefs")).Sidebar === "";
+}
+
 // we set
-DenkbaresSkin.scrollTransitionDuration = {'transition' : 'left', '-webkit-transition' : 'left'};
-DenkbaresSkin.toggleTransitionDuration = {'transition' : 'left 400ms', '-webkit-transition' : 'left 400ms'};
-DenkbaresSkin.sideBarButtonWasPressed = false;
+DenkbaresSkin.scrollTransitionDuration = {'transition': 'left', '-webkit-transition': 'left'};
+DenkbaresSkin.toggleTransitionDuration = {'transition': 'left 400ms', '-webkit-transition': 'left 400ms'};
+DenkbaresSkin.sideBarButtonWasPressed = DenkbaresSkin.jspwikiSideBarButtonWasPressed();
 DenkbaresSkin.narrowPageWidth = 550;
 DenkbaresSkin.mediumPageWidth = 825;
-DenkbaresSkin.lastPageWidth;
 
 /**
  * Initialize cutting edge favorite scrolling
  */
-DenkbaresSkin.initFavoritesScroll = function() {
+DenkbaresSkin.initFavoritesScroll = function () {
 	// initialize some additional events
 	document.body.onclick = DenkbaresSkin.checkDocSizeScroll;
 };
@@ -129,10 +133,10 @@ DenkbaresSkin.initFavoritesScroll = function() {
  * Quick convenience function to be called every time the document size may have
  * changed. Unfortunately this cannot be traced by an event.
  */
-DenkbaresSkin.checkDocSizeScroll = function() {
+DenkbaresSkin.checkDocSizeScroll = function () {
 	// alert("check");
 	var docHeight = window.getScrollHeight();
-	if (DenkbaresSkin.docHeight == docHeight)
+	if (DenkbaresSkin.docHeight === docHeight)
 		return;
 	DenkbaresSkin.docHeight = docHeight;
 	DenkbaresSkin.scrollFavorites();
@@ -142,9 +146,9 @@ DenkbaresSkin.checkDocSizeScroll = function() {
 /**
  * if there is a TOC in the left menu, highlight the current visible chapter.
  */
-DenkbaresSkin.highlightActiveTOC = function() {
+DenkbaresSkin.highlightActiveTOC = function () {
 	var tocItems = jq$(".sidebar > .leftmenu > .toc li");
-	if (tocItems.length == 0) return;
+	if (tocItems.length === 0) return;
 
 	// find the first section that is visible on the screen, if there is no such section
 	// find the last section that is above the middle of the screen
@@ -182,7 +186,7 @@ DenkbaresSkin.highlightActiveTOC = function() {
  * Adapt the left menu favorites to the screen so that the display size is
  * optimally used.
  */
-DenkbaresSkin.scrollFavorites = function() {
+DenkbaresSkin.scrollFavorites = function () {
 	if (DenkbaresSkin.isSidebarShown() && jq$(window).width() >= DenkbaresSkin.narrowPageWidth) {
 		var sidebar = jq$('.sidebar');
 		var sidebarTop = 0
@@ -202,39 +206,39 @@ DenkbaresSkin.scrollFavorites = function() {
 		// when header is visible, place sidebar beneath it
 		if (window.pageYOffset <= jq$('.header').outerHeight()) {
 			sidebar.css({
-				position : "absolute",
-				top : "0"
+				position: "absolute",
+				top: "0"
 			});
 			// keep sidebar fixed on the left when header is not visible
 		} else if (sidebarTop - stickyMenuHeight < windowTop) {
 			sidebar.css({
-				position : 'fixed',
-				top : stickyMenuHeight + 'px'
+				position: 'fixed',
+				top: stickyMenuHeight + 'px'
 			});
 		}
 		// if footer is visible align bottom of sidebar with footer's top
 		if (limit - stickyMenuHeight < windowTop) {
 			var diff = limit - (windowTop);
 			sidebar.css({
-				position : 'fixed',
-				top : diff + 'px'
+				position: 'fixed',
+				top: diff + 'px'
 			})
 		}
 	} else {
 		jq$('.sidebar').css({
-			position : "absolute",
-			top : "0"
+			position: "absolute",
+			top: "0"
 		})
 	}
 };
 
-DenkbaresSkin.adjustSidebarVisibility = function() {
+DenkbaresSkin.adjustSidebarVisibility = function () {
 	var windowWidth = jq$(window).width();
 	if (DenkbaresSkin.sideBarButtonWasPressed) {
 		DenkbaresSkin.sideBarButtonWasPressed = !DenkbaresSkin.windowSizePassedThreshold(windowWidth);
 	}
 	if (!DenkbaresSkin.sideBarButtonWasPressed) {
-		if (windowWidth < DenkbaresSkin.mediumPageWidth) {
+		if (DenkbaresSkin.jspwikiSideBarButtonWasPressed() || windowWidth < DenkbaresSkin.mediumPageWidth) {
 			DenkbaresSkin.hideSidebar();
 		} else {
 			DenkbaresSkin.showSidebar();
@@ -243,7 +247,7 @@ DenkbaresSkin.adjustSidebarVisibility = function() {
 	DenkbaresSkin.lastPageWidth = windowWidth;
 }
 
-DenkbaresSkin.windowSizePassedThreshold = function(newWindowWidth) {
+DenkbaresSkin.windowSizePassedThreshold = function (newWindowWidth) {
 	if (DenkbaresSkin.lastPageWidth < DenkbaresSkin.narrowPageWidth
 		&& newWindowWidth > DenkbaresSkin.narrowPageWidth) {
 		return true;
@@ -256,6 +260,7 @@ DenkbaresSkin.windowSizePassedThreshold = function(newWindowWidth) {
 		&& newWindowWidth > DenkbaresSkin.mediumPageWidth) {
 		return true;
 	}
+	//noinspection RedundantIfStatementJS
 	if (DenkbaresSkin.lastPageWidth > DenkbaresSkin.mediumPageWidth
 		&& newWindowWidth < DenkbaresSkin.mediumPageWidth) {
 		return true;
@@ -263,22 +268,22 @@ DenkbaresSkin.windowSizePassedThreshold = function(newWindowWidth) {
 	return false;
 }
 
-DenkbaresSkin.initPageScroll = function() {
+DenkbaresSkin.initPageScroll = function () {
 	DenkbaresSkin.originalPageOffset = jq$(".page").offset().top;
 };
 
-DenkbaresSkin.adjustPageHeight = function() {
+DenkbaresSkin.adjustPageHeight = function () {
 	if (DenkbaresSkin.isSidebarShown()) {
 		jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
 	}
 }
 
-DenkbaresSkin.cleanTrail = function() {
+DenkbaresSkin.cleanTrail = function () {
 	var breadcrumbs = jq$('.breadcrumb');
-	if (breadcrumbs.length == 0)
+	if (breadcrumbs.length === 0)
 		return;
 	var crumbs = breadcrumbs.find('a.wikipage');
-	if (crumbs.length == 0)
+	if (crumbs.length === 0)
 		return;
 	var crumbsCheck = {};
 	// remove duplicate entries
@@ -300,25 +305,25 @@ DenkbaresSkin.cleanTrail = function() {
 	}
 };
 
-DenkbaresSkin.resizeFlows = function() {
-	jq$('.Flowchart').each(function() {
+DenkbaresSkin.resizeFlows = function () {
+	jq$('.Flowchart').each(function () {
 		var newWidth = jq$('.page-content').width();
 		newWidth = (Math.round(newWidth / 10) * 10) - 9;
 		jq$(this).css('min-width', newWidth);
 	});
 };
 
-DenkbaresSkin.showSidebar = function() {
+DenkbaresSkin.showSidebar = function () {
 	jq$('.content').addClass('active');
 	DenkbaresSkin.onShowSidebar();
 }
 
-DenkbaresSkin.hideSidebar = function() {
+DenkbaresSkin.hideSidebar = function () {
 	jq$('.content').removeClass('active');
 	DenkbaresSkin.onHideSidebar();
 }
 
-DenkbaresSkin.toggleSidebar = function() {
+DenkbaresSkin.toggleSidebar = function () {
 	if (DenkbaresSkin.isSidebarShown()) {
 		DenkbaresSkin.hideSidebar();
 	} else {
@@ -326,22 +331,22 @@ DenkbaresSkin.toggleSidebar = function() {
 	}
 }
 
-DenkbaresSkin.toggleFavorites = function() {
+DenkbaresSkin.toggleFavorites = function () {
 	DenkbaresSkin.toggleSidebar();
 }
 
-DenkbaresSkin.isSidebarShown = function() {
+DenkbaresSkin.isSidebarShown = function () {
 	return jq$('.content').hasClass('active');
 }
 
-DenkbaresSkin.onHideSidebar = function() {
+DenkbaresSkin.onHideSidebar = function () {
 	jq$('.sidebar').css('width', '275px');
 	jq$('.sidebar').css('left', '-275px');
 	jq$('.page').css('display', 'block');
 	jq$('.content').css('min-height', 'auto');
 }
 
-DenkbaresSkin.onShowSidebar = function() {
+DenkbaresSkin.onShowSidebar = function () {
 	DenkbaresSkin.scrollFavorites();
 	jq$('.sidebar').css('left', '0');
 	if (jq$(window).width() < DenkbaresSkin.narrowPageWidth) {
@@ -350,31 +355,28 @@ DenkbaresSkin.onShowSidebar = function() {
 		jq$('.content').css('min-height', jq$('.sidebar').outerHeight() + 'px');
 	} else {
 		jq$('.sidebar').css({
-			'width' : '275px'
+			'width': '275px'
 		});
 	}
 }
 
 // does not return "elastic scroll" values from OSX.
-DenkbaresSkin.scrollLeft = function() {
+DenkbaresSkin.scrollLeft = function () {
 	var maxScroll = jq$(document).width() - jq$(window).width();
-	var minScroll = 0;
 	return Math.min(Math.max(jq$(window).scrollLeft(), 0), maxScroll);
 };
 
-DenkbaresSkin.scrollTop = function() {
+DenkbaresSkin.scrollTop = function () {
 	var maxScroll = jq$(document).height() - jq$(window).height();
-	var minScroll = 0;
 	return Math.min(Math.max(jq$(window).scrollTop(), 0), maxScroll);
 };
 
-jq$(document).ready(function() {
+jq$(document).ready(function () {
 	DenkbaresSkin.cleanTrail();
-	DenkbaresSkin.sideBarButtonWasPressed = false;
 	DenkbaresSkin.lastPageWidth = jq$(window).width();
 
 	// workaround, because sometimes we are too early
-	window.setTimeout(function() {
+	window.setTimeout(function () {
 		DenkbaresSkin.initFavoritesScroll();
 		DenkbaresSkin.adjustSidebarVisibility();
 		DenkbaresSkin.adjustPageHeight();
@@ -386,7 +388,7 @@ jq$(document).ready(function() {
 
 	// add auto-resize to edit page
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
-		window.setTimeout(function() {
+		window.setTimeout(function () {
 			var editPanes = jq$('.editor');
 			for (var i = 0; i < editPanes.length; i++) {
 				jq$(editPanes[i]).trigger('autosize.resize');
@@ -399,7 +401,7 @@ jq$(document).ready(function() {
 
 	}
 
-	jq$('#menu').click(function() {
+	jq$('#menu').click(function () {
 		DenkbaresSkin.sideBarButtonWasPressed = true;
 		if (DenkbaresSkin.isSidebarShown()) {
 			DenkbaresSkin.onShowSidebar();
