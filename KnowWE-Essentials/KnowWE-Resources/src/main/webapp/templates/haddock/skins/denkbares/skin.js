@@ -273,9 +273,7 @@ DenkbaresSkin.initPageScroll = function () {
 };
 
 DenkbaresSkin.adjustPageHeight = function () {
-	if (DenkbaresSkin.isSidebarShown()) {
-		jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
-	}
+	jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
 }
 
 DenkbaresSkin.cleanTrail = function () {
@@ -374,6 +372,7 @@ DenkbaresSkin.scrollTop = function () {
 jq$(document).ready(function () {
 	DenkbaresSkin.cleanTrail();
 	DenkbaresSkin.lastPageWidth = jq$(window).width();
+	DenkbaresSkin.adjustPageHeight();
 
 	// workaround, because sometimes we are too early
 	window.setTimeout(function () {
