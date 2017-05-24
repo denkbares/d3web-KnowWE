@@ -740,12 +740,6 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.4</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
 			<version>1.1.2</version>

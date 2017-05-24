@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.wcohen.ss.Levenstein;
+import org.apache.commons.lang3.StringUtils;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -37,7 +37,7 @@ import de.knowwe.core.report.Message.Type;
 
 /**
  * A basic correction provider for d3web term references
- * 
+ *
  * @author Alex Legler
  * @created 04.03.2011
  */
@@ -76,13 +76,11 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 				termReference.getTermObjectClass(Sections.cast(section, Term.class)));
 
 		String originalText = section.getText();
-		Levenstein l = new Levenstein();
 
 		for (Identifier match : localTermMatches) {
-			double score = l.score(originalText, match.getLastPathElement());
-			if (score >= -threshold) {
-				suggestions.add(new DefaultSuggestion(match.getLastPathElement(),
-						(int) score));
+			double score = StringUtils.getLevenshteinDistance(originalText, match.getLastPathElement(), threshold);
+			if (score >= 0) {
+				suggestions.add(new DefaultSuggestion(match.getLastPathElement(), (int) score));
 			}
 		}
 

@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.wcohen.ss.Levenstein;
+import org.apache.commons.lang3.StringUtils;
 
 import com.denkbares.strings.Identifier;
 import de.d3web.we.object.AnswerReference;
@@ -37,7 +37,7 @@ import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * A Correction Provider for AnswerReference objects
- * 
+ *
  * @author Alex Legler
  * @created 04.03.2011
  */
@@ -63,7 +63,6 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 
 		String originalText = section.getText();
 		List<Suggestion> suggestions = new LinkedList<>();
-		Levenstein l = new Levenstein();
 
 		for (Identifier matchedIdentifier : allDefinedLocalTermsOfType) {
 
@@ -76,11 +75,9 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 				continue;
 			}
 
-			double score = l.score(originalText, matchedIdentifier.getLastPathElement());
-			if (score >= -threshold) {
-
-				suggestions.add(new DefaultSuggestion(
-						matchedIdentifier.getLastPathElement(), (int) score));
+			double score = StringUtils.getLevenshteinDistance(originalText, matchedIdentifier.getLastPathElement(), threshold);
+			if (score >= 0) {
+				suggestions.add(new DefaultSuggestion(matchedIdentifier.getLastPathElement(), (int) score));
 			}
 		}
 

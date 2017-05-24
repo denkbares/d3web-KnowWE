@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.wcohen.ss.Levenstein;
+import org.apache.commons.lang3.StringUtils;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -22,25 +22,28 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Suggestion> getSuggestions(TermCompiler compiler,
-			Section<?> section, int threshold) {
+										   Section<?> section, int threshold) {
 		Section<ResourceReference> ref = null;
 
 		if (!(section.get() instanceof ResourceReference)) {
 			section = Sections.successor(section, ResourceReference.class);
-			if (section == null)
+			if (section == null) {
 				return null;
-		} else {
+			}
+		}
+		else {
 			ref = (Section<ResourceReference>) section;
 		}
 
 		TerminologyManager terminologyManager = compiler
 				.getTerminologyManager();
 
-		if(terminologyManager == null) {
+		if (terminologyManager == null) {
 			// no terminology manager available, hence no completions are available
 			return null;
 		}
 
+		//noinspection ConstantConditions
 		Identifier originalTermIdentifier = ref.get().getTermIdentifier(ref);
 		if (terminologyManager.isDefinedTerm(originalTermIdentifier)) {
 			// no suggestions if term is correct
@@ -54,29 +57,29 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 
 		String originalText = originalTermIdentifier.toExternalForm();
 		List<Suggestion> suggestions = new LinkedList<>();
-		Levenstein l = new Levenstein();
 		for (Identifier match : localTermMatches) {
-			double score = l.score(originalText, match.toExternalForm());
-			if (score >= -threshold) {
+			double score = StringUtils.getLevenshteinDistance(originalText, match.toExternalForm(), threshold);
+			if (score >= 0) {
 				suggestions.add(new DefaultSuggestion(match
 						.getLastPathElement(), (int) score));
 			}/* infix test */
 			else if (match.getPathElementAt(0).equals(
 					originalTermIdentifier.getPathElementAt(0))
 					&& match.getLastPathElement().matches(
-							".*" + originalTermIdentifier.getLastPathElement()
-									+ ".*")) {
+					".*" + originalTermIdentifier.getLastPathElement()
+							+ ".*")) {
 
 				// prevent trivial infix matches
 				if (originalTermIdentifier.getLastPathElement().length() > 4) {
 					int infixScore = -1
 							* (match.getLastPathElement().length() - originalTermIdentifier
-									.getLastPathElement().length());
+							.getLastPathElement().length());
 					suggestions.add(new DefaultSuggestion(match
 							.getLastPathElement(), infixScore));
 
 				}
-			} else {
+			}
+			else {
 				/*
 				 * prefix+suffix match 
 				 */
@@ -100,11 +103,13 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 		 */
 		int prefixMatchLength = 0;
 		for (int i = 0; i < string1.length(); i++) {
-			if (i >= string2.length())
+			if (i >= string2.length()) {
 				break;
+			}
 			if (string1.charAt(i) == string2.charAt(i)) {
 				prefixMatchLength++;
-			} else {
+			}
+			else {
 				break;
 			}
 		}
@@ -114,21 +119,21 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 		 */
 		int suffixMatchLength = 0;
 		for (int i = 0; i < string1.length(); i++) {
-			if (string2.length() - 1 - i < 0)
+			if (string2.length() - 1 - i < 0) {
 				break;
+			}
 			if (string1.charAt(string1.length() - 1 - i) == string2
 					.charAt(string2.length() - 1 - i)) {
 				suffixMatchLength++;
-			} else {
+			}
+			else {
 				break;
 			}
 		}
 
 		int maxLength = Math.max(string1.length(), string2.length());
 
-		double score = (((double) (prefixMatchLength + suffixMatchLength)) / maxLength);
-
-		return score;
+		return (((double) (prefixMatchLength + suffixMatchLength)) / maxLength);
 	}
 
 }

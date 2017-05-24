@@ -45,7 +45,7 @@ public interface CorrectionProvider {
 	 * @created 20.02.2011
 	 * @param compiler The article the misspelled reference is in
 	 * @param section The section the misspelled reference is in
-	 * @param threshold The maximium Levenshtein distance suggestions can have. (KnowWE includes an implementation in secondstring/com.wcohen.ss.Levenstein)
+	 * @param threshold The maximium Levenshtein distance suggestions can have.
 	 * @return A list of {@link Suggestion} objects containing the found suggestions and their distances.
 	 */
 	List<Suggestion> getSuggestions(TermCompiler compiler, Section<?> section, int threshold);
