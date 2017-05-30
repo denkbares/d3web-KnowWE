@@ -48,6 +48,7 @@ import org.openrdf.query.BindingSet;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.MultiMaps;
 import com.denkbares.collections.SubSpanIterator;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.TupleQueryResult;
@@ -202,7 +203,7 @@ public class ResultTableModel implements Iterable<TableRow> {
 	 * @created 20.01.2014
 	 */
 	public static MultiMap<String, Message> checkEquality(Rdf2GoCore core, ResultTableModel expectedResultTable, ResultTableModel actualResultTable, boolean atLeast) {
-		MultiMap<String, Message> errorMessages = new DefaultMultiMap<>();
+		MultiMap<String, Message> errorMessages = new DefaultMultiMap<>(MultiMaps.linkedFactory(), MultiMaps.linkedFactory());
 
 		/*
 		 * 2. Compare all result rows (except for those with blank nodes)
