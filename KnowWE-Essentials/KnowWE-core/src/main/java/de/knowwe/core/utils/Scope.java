@@ -90,6 +90,7 @@ public class Scope {
 
 		@Override
 		public boolean equals(Object other) {
+			//noinspection SimplifiableIfStatement
 			if (!(other instanceof TypePath)) return false;
 			return Arrays.equals(typePath, ((TypePath) other).typePath);
 		}
@@ -108,12 +109,7 @@ public class Scope {
 	 * @param pathName the scope's pathname.
 	 */
 	public static Scope getScope(String pathName) {
-		Scope scope = CACHED_SCOPES.get(pathName);
-		if (scope == null) {
-			scope = new Scope(pathName);
-			CACHED_SCOPES.put(pathName, scope);
-		}
-		return scope;
+		return CACHED_SCOPES.computeIfAbsent(pathName, Scope::new);
 	}
 
 	/**
@@ -230,9 +226,9 @@ public class Scope {
 
 		// finally we try to match the name of the path item
 		// against the object type of the section
-		Type nodeType = typeElement;
-		Set<String> names = getCachedNamesOfType(nodeType);
+		Set<String> names = getCachedNamesOfType(typeElement);
 		boolean itemMatches = names.contains(scopeElement);
+		//noinspection SimplifiableIfStatement
 		if (itemMatches) {
 			// if this item has matched, we continue with the path and the
 			// father

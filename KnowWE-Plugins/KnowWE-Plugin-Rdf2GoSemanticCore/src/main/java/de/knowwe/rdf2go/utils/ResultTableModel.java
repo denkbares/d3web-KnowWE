@@ -46,25 +46,26 @@ import org.openrdf.model.Value;
 import org.openrdf.model.impl.LiteralImpl;
 import org.openrdf.query.BindingSet;
 
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.SubSpanIterator;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.utils.Pair;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class ResultTableModel implements Iterable<TableRow> {
+
+	public static final int MAX_DISPLAYED_FAILRUES = 20;
 
 	public Map<Value, Set<TableRow>> getData() {
 		if (groupedRows == null) {
 			Map<Value, Set<TableRow>> data = new LinkedHashMap<>();
 			for (TableRow row : rows) {
 				Value firstNode = row.getValue(variables.get(0));
-				Set<TableRow> nodeRows = data.get(firstNode);
-				if (nodeRows == null) {
-					nodeRows = new HashSet<>();
-					data.put(firstNode, nodeRows);
-				}
+				Set<TableRow> nodeRows = data.computeIfAbsent(firstNode, k -> new HashSet<>());
 				nodeRows.add(row);
 			}
 			groupedRows = data;
@@ -103,6 +104,7 @@ public class ResultTableModel implements Iterable<TableRow> {
 		return rows.contains(row);
 	}
 
+	@NotNull
 	@Override
 	public Iterator<TableRow> iterator() {
 		if (comparators.isEmpty()) {
@@ -112,7 +114,7 @@ public class ResultTableModel implements Iterable<TableRow> {
 			ArrayList<TableRow> tableRows = new ArrayList<>(rows);
 			Collections.reverse(comparators);
 			for (Comparator<TableRow> comparator : comparators) {
-				Collections.sort(tableRows, comparator);
+				tableRows.sort(comparator);
 			}
 			return tableRows.iterator();
 		}
@@ -139,7 +141,7 @@ public class ResultTableModel implements Iterable<TableRow> {
 	 * assumed to be the number of rows.
 	 *
 	 * @param start the first row to iterate
-	 * @param end the row to stop iteration before
+	 * @param end   the row to stop iteration before
 	 * @return an iterator for the sub-span of rows
 	 */
 	public Iterator<TableRow> iterator(int start, int end) {
@@ -193,22 +195,19 @@ public class ResultTableModel implements Iterable<TableRow> {
 	 * problem)
 	 *
 	 * @param expectedResultTable the expected data
-	 * @param actualResultTable the actual data
-	 * @param atLeast false: equality of data is required; true: expectedData SUBSET-OF actualData
-	 * is required
+	 * @param actualResultTable   the actual data
+	 * @param atLeast             false: equality of data is required; true: expectedData SUBSET-OF actualData
+	 *                            is required
 	 * @return if the expected data is equal to (or a subset of) the actual data
 	 * @created 20.01.2014
 	 */
-	public static List<Message> checkEquality(ResultTableModel expectedResultTable, ResultTableModel actualResultTable, boolean atLeast) {
-		List<Message> errorMessages = new ArrayList<>();
+	public static MultiMap<String, Message> checkEquality(Rdf2GoCore core, ResultTableModel expectedResultTable, ResultTableModel actualResultTable, boolean atLeast) {
+		MultiMap<String, Message> errorMessages = new DefaultMultiMap<>();
 
 		/*
 		 * 2. Compare all result rows (except for those with blank nodes)
 		 */
-		Iterator<TableRow> iterator = expectedResultTable.iterator();
-		while (iterator.hasNext()) {
-			TableRow expectedTableRow = iterator.next();
-
+		for (TableRow expectedTableRow : expectedResultTable) {
 			// found no easy way to retrieve and match statements with
 			// blanknodes, so for now we skip them from the check...
 			boolean containsBlankNode = false;
@@ -224,8 +223,7 @@ public class ResultTableModel implements Iterable<TableRow> {
 
 			boolean contained = actualResultTable.contains(expectedTableRow);
 			if (!contained) {
-				errorMessages.add(new Message(Type.ERROR, "result does not contain expected row: "
-						+ expectedTableRow));
+				errorMessages.put("expected rows missing", new Message(Type.ERROR, expectedTableRow.toString()));
 			}
 		}
 
@@ -248,27 +246,18 @@ public class ResultTableModel implements Iterable<TableRow> {
 		for (Value node : keySet) {
 			if (node != null && !(node instanceof BNode)) {
 				if (!expectedData.keySet().contains(node)) {
-					errorMessages.add(new Message(Type.ERROR, "node not contained: "
-							+ node));
+					errorMessages.put("expected nodes missing",
+							new Message(Type.ERROR, Rdf2GoUtils.reduceNamespace(core, node.toString())));
 					continue;
 				}
 
 				if (!(expectedData.get(node).size() == (actualData.get(node).size()))) {
-					errorMessages.add(new Message(Type.ERROR,
-							"number of result columns not matching for: " + node));
+					errorMessages.put("cases where number of result columns does not match",
+							new Message(Type.ERROR, Rdf2GoUtils.reduceNamespace(core, node.toString())));
 				}
 			}
 		}
 		return errorMessages;
-	}
-
-	public static String generateErrorsText(List<Message> errorMessages) {
-		StringBuilder buffy = new StringBuilder();
-		buffy.append("The following test failures occured:\n");
-		for (Message message : errorMessages) {
-			buffy.append(message.getText()).append("\n");
-		}
-		return buffy.toString();
 	}
 
 	public String toCSV() throws IOException {
@@ -311,6 +300,28 @@ public class ResultTableModel implements Iterable<TableRow> {
 			//  and return the parsed table
 			return new ResultTableModel(rows, variables);
 		}
+	}
+
+	public static String generateErrorsText(MultiMap<String, Message> failures) {
+		return generateErrorsText(failures, true);
+	}
+
+	public static String generateErrorsText(MultiMap<String, Message> failures, boolean full) {
+		StringBuilder buffy = new StringBuilder();
+		buffy.append("The following test failures occurred:\n");
+		for (String type : failures.keySet()) {
+			Set<Message> failuresOfType = failures.getValues(type);
+			buffy.append(failuresOfType.size()).append(" ").append(type).append(":\n");
+			int i = 0;
+			for (Message message : failuresOfType) {
+				if (!full && ++i > MAX_DISPLAYED_FAILRUES) {
+					buffy.append("* ... see expected and actual result linked below\n");
+					break;
+				}
+				buffy.append("* ").append(message.getText()).append("\n");
+			}
+		}
+		return buffy.toString();
 	}
 }
 

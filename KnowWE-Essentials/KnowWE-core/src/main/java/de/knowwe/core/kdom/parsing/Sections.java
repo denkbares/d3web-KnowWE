@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.jetbrains.annotations.NotNull;
+
+import com.denkbares.collections.CachedIterable;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
@@ -50,6 +53,16 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public static <T extends Type> Sections<T> $(Iterable<Section<? extends T>> sections) {
 		//noinspection unchecked
 		return new Sections(sections);
+	}
+
+	public static <T extends Type> Sections<T> $(Iterator<Section<? extends T>> sections) {
+		//noinspection unchecked
+		return new Sections(new CachedIterable<>(sections));
+	}
+
+	public static <T extends Type> Sections<T> $(ArticleManager manager) {
+		//noinspection unchecked
+		return new Sections(new CachedIterable<Section<RootType>>(manager.getArticles().stream().map(Article::getRootSection).iterator()));
 	}
 
 	public static Sections<RootType> $(Article article) {
@@ -122,6 +135,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return references(terminologyManager, identifier);
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Section<T>> iterator() {
 		return sections.iterator();

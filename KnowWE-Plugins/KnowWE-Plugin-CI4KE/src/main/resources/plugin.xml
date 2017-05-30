@@ -37,6 +37,17 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="de.knowwe.core.kdom.Article" />
 	</extension>
+
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
+		id="SectionRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.dashboard.rendering.SectionRenderer" />
+		<parameter id="name" value="SectionRenderer" />
+		<parameter id="description" value="ObjectRenderer for Sections" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.knowwe.core.kdom.parsing.Section" />
+	</extension>
 	
 	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
 		id="TermIdentifierRenderer">

@@ -19,12 +19,15 @@
 
 package de.knowwe.ontology.ci;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.denkbares.collections.MultiMap;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
+import de.d3web.testing.MessageObject;
 import de.d3web.testing.TestParameter.Mode;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
@@ -59,42 +62,41 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 	@Override
 	public Message execute(SparqlExpectedResultSection testObject, String[] args, String[]... ignores) throws InterruptedException {
 		Section<ExpectedSparqlResultTable> expectedResultTableSection = testObject.getSection();
-		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(
+		Section<DefaultMarkupType> expectedResultDefaultMarkup = Sections.ancestor(
 				expectedResultTableSection,
 				DefaultMarkupType.class);
-		String sparqlName = DefaultMarkupType.getAnnotation(defaultMarkup,
+		String actualSparqlName = DefaultMarkupType.getAnnotation(expectedResultDefaultMarkup,
 				ExpectedSparqlResultTableMarkup.SPARQL_ANNOTATION);
-		if (sparqlName == null) {
+		if (actualSparqlName == null) {
 			return new Message(
 					Type.FAILURE,
 					"No sparql query specified for test object, use annotation 'sparql' to set a sparql query to test against.");
 		}
 
-		Collection<Section<SparqlContentType>> querySections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(sparqlName);
-		if (querySections.size() > 1) {
+		Collection<Section<SparqlContentType>> actualSparqlSections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(actualSparqlName);
+		if (actualSparqlSections.size() > 1) {
 			return new Message(Message.Type.ERROR,
-					"Multiple sparql queries in the wiki with name: " + sparqlName);
+					"Multiple sparql queries in the wiki with name: " + actualSparqlName);
 		}
 
-		if (querySections.isEmpty()) {
+		if (actualSparqlSections.isEmpty()) {
 			return new Message(Message.Type.ERROR,
-					"No sparql query in the wiki found for name: " + sparqlName);
+					"No sparql query in the wiki found for name: " + actualSparqlName);
 		}
 
-		Section<SparqlContentType> querySection = querySections.iterator().next();
-		Rdf2GoCompiler compiler = Compilers.getCompiler(querySection, Rdf2GoCompiler.class);
+		Section<SparqlContentType> actualSparqlSection = actualSparqlSections.iterator().next();
+		Rdf2GoCompiler compiler = Compilers.getCompiler(actualSparqlSection, Rdf2GoCompiler.class);
 		assert compiler != null;
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 
 		if (core == null) {
 			return new Message(Message.Type.ERROR,
-					"No repository found for section: " + querySection);
+					"No repository found for section: " + actualSparqlSection);
 		}
 
-		String sparqlString = Rdf2GoUtils.createSparqlString(core,
-				querySection.getText());
+		String actualSparqlString = Rdf2GoUtils.createSparqlString(core, actualSparqlSection.getText());
 
-		ResultTableModel actualResultTable = new ResultTableModel(core.sparqlSelect(sparqlString));
+		ResultTableModel actualResultTable = new ResultTableModel(core.sparqlSelect(actualSparqlString));
 
 		List<String> variables = actualResultTable.getVariables();
 
@@ -109,11 +111,19 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 			}
 		}
 
-		List<Message> failures = ResultTableModel.checkEquality(expectedResultTable,
+		MultiMap<String, Message> failures = ResultTableModel.checkEquality(core, expectedResultTable,
 				actualResultTable, atLeastFlag);
 
 		if (!failures.isEmpty()) {
-			return new Message(Type.FAILURE, ResultTableModel.generateErrorsText(failures));
+			String expectedSparqlName = DefaultMarkupType.getAnnotation(expectedResultDefaultMarkup, ExpectedSparqlResultTableMarkup.NAME_ANNOTATION);
+			String errorsText = ResultTableModel.generateErrorsText(failures, false);
+			errorsText += "Expected result: " + expectedSparqlName + ", actual result: " + actualSparqlName;
+			Message message = new Message(Type.FAILURE, errorsText);
+			ArrayList<MessageObject> messageObjects = new ArrayList<>();
+			messageObjects.add(new MessageObject(actualSparqlName, Section.class));
+			messageObjects.add(new MessageObject(expectedSparqlName, Section.class));
+			message.setObjects(messageObjects);
+			return message;
 		}
 
 		return Message.SUCCESS;

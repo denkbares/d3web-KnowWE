@@ -26,16 +26,23 @@ import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.table.Table;
+import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
+import de.knowwe.kdom.table.TableRenderer;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 import de.knowwe.rdf2go.utils.SimpleTableRow;
 import de.knowwe.rdf2go.utils.TableRow;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author Jochen Reutelshöfer
@@ -45,6 +52,16 @@ public class ExpectedSparqlResultTable extends Table {
 
 	public ExpectedSparqlResultTable() {
 		this.injectTableCellContentChildtype(new ExpectedSparqlResultTableCellContent());
+		this.setRenderer(new TableRenderer() {
+			@Override
+			public void render(Section<?> sec, UserContext user, RenderResult string) {
+				List<Section<TableCellContent>> sections = $(sec).successor(TableCellContent.class).asList();
+				if (sections.isEmpty() || sections.size() == 1 && Strings.isBlank(sections.get(0).getText())) {
+					string.appendHtmlElement("span","Expecting no results for the linked SPARQL query", "class", "emptySparqlResult");
+				}
+				super.render(sec, user, string);
+			}
+		});
 	}
 
 	public static ResultTableModel getResultTableModel(Section<ExpectedSparqlResultTable> table, List<String> variables, Rdf2GoCompiler c) {
