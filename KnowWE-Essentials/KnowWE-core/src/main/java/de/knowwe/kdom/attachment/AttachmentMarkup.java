@@ -320,6 +320,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 		logLastRun(section);
 		cleanUpLastRuns();
+		Messages.clearMessages(section, AttachmentMarkup.class);
 
 		Section<AttachmentType> attachmentSection = Sections.successor(section, AttachmentType.class);
 		Section<URLType> urlSection = Sections.successor(section, URLType.class);
@@ -410,7 +411,6 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				}
 
 				Log.info("Updated attachment '" + path + "' with resource from URL " + url);
-				Messages.clearMessages(section, AttachmentMarkup.class);
 			}
 			catch (UnknownHostException e) {
 				Log.warning("Unable to reach " + url + " while trying to update attachment " + path);
