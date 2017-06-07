@@ -134,6 +134,9 @@ public class XMLSectionFinder implements SectionFinder {
 
 					// found single-tag
 					if (tagMatcher.group(4) != null) {
+						if (father.get() == type && father.getText().equals(tagMatcher.group())) {
+							continue;
+						}
 						result.add(makeSectionFinderResult(sectionStart, tagMatcher.end(),
 								parameterMap));
 						parameterMap = new HashMap<>();

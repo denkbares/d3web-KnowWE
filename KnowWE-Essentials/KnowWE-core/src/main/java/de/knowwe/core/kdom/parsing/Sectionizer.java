@@ -21,6 +21,7 @@
 package de.knowwe.core.kdom.parsing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.denkbares.utils.Log;
@@ -87,7 +88,7 @@ public class Sectionizer implements Parser {
 		return section;
 	}
 
-	public void splitToSections(String text, Section<?> father, ArrayList<Type> types, int posInTypes) {
+	public void splitToSections(String text, Section<?> parent, ArrayList<Type> types, int posInTypes) {
 
 		if (posInTypes > types.size()) return;
 
@@ -100,7 +101,7 @@ public class Sectionizer implements Parser {
 		if (type == null) throw new NullPointerException("children type list may not contain null");
 
 		if (!(type instanceof Sectionizable)) {
-			splitToSections(text, father, types, posInTypes);
+			splitToSections(text, parent, types, posInTypes);
 			return;
 		}
 
@@ -109,51 +110,54 @@ public class Sectionizer implements Parser {
 		SectionFinder finder = ((Sectionizable) type).getSectionFinder();
 		if (finder != null) {
 			try {
-				results = finder.lookForSections(text, father, type);
+				results = finder.lookForSections(text, parent, type);
 			}
 			catch (Exception e) {
 				Log.severe("Unexpected error while sectionizing", e);
 			}
 		}
 
+		if (results == null ) {
+			// recursive type, child is repeat of the parent, so just ignore it
+			results = Collections.emptyList();
+		}
+
 		int lastEnd = 0;
 		boolean createdSection = false;
-		if (results != null) {
-			for (SectionFinderResult result : results) {
-				if (result == null) {
-					continue;
-				}
-
-				if (result.getStart() < lastEnd || result.getStart() > result.getEnd()
-						|| result.getStart() < 0 || result.getEnd() > text.length()) {
-					Log.warning("Invalid SectionFinderResults for the Type '"
-							+ type.getName() + "' in parent section '" + father.getText() + "' in article '"
-							+ father.getTitle()	+ "'. Results: " + results + ". Result " + result + " will be skipped.");
-					continue;
-				}
-
-				if (lastEnd < result.getStart()) {
-					int newPosInTypes = type instanceof ExclusiveType ? types.size() : posInTypes;
-					splitToSections(text.substring(lastEnd, result.getStart()), father, types,
-							newPosInTypes);
-				}
-
-				Section<?> child = null;
-				String sectionText = text.substring(result.getStart(), result.getEnd());
-				for (SectionizerModule sModule : sectionizerModules) {
-					child = sModule.createSection(sectionText, type, father, result);
-					if (child != null) break;
-				}
-				if (child == null) {
-					defaultSectionizerModule.createSection(sectionText, type, father, result);
-				}
-				createdSection = true;
-				lastEnd = result.getEnd();
+		for (SectionFinderResult result : results) {
+			if (result == null) {
+				continue;
 			}
+
+			if (result.getStart() < lastEnd || result.getStart() > result.getEnd()
+					|| result.getStart() < 0 || result.getEnd() > text.length()) {
+				Log.warning("Invalid SectionFinderResults for the Type '"
+						+ type.getName() + "' in parent section '" + parent.getText() + "' in article '"
+						+ parent.getTitle() + "'. Results: " + results + ". Result " + result + " will be skipped.");
+				continue;
+			}
+
+			if (lastEnd < result.getStart()) {
+				int newPosInTypes = type instanceof ExclusiveType ? types.size() : posInTypes;
+				splitToSections(text.substring(lastEnd, result.getStart()), parent, types,
+						newPosInTypes);
+			}
+
+			Section<?> child = null;
+			String sectionText = text.substring(result.getStart(), result.getEnd());
+			for (SectionizerModule sModule : sectionizerModules) {
+				child = sModule.createSection(sectionText, type, parent, result);
+				if (child != null) break;
+			}
+			if (child == null) {
+				defaultSectionizerModule.createSection(sectionText, type, parent, result);
+			}
+			createdSection = true;
+			lastEnd = result.getEnd();
 		}
 		if (lastEnd < text.length()) {
 			int newPosInTypes = type instanceof ExclusiveType && createdSection ? types.size() : posInTypes;
-			splitToSections(text.substring(lastEnd, text.length()), father,
+			splitToSections(text.substring(lastEnd, text.length()), parent,
 					types, newPosInTypes);
 		}
 	}
