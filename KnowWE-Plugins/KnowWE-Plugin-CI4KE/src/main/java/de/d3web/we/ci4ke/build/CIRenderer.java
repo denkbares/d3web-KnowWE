@@ -171,7 +171,11 @@ public class CIRenderer {
 	 * @created 27.05.2010
 	 */
 	public void renderCurrentBuildStatus(RenderResult result) {
-		renderBuildStatus(Type.SUCCESS, true, Icon.BULB, result);
+		Type type = Type.ERROR;
+		if (dashboard != null && dashboard.getLatestBuild() != null) {
+			type = dashboard.getLatestBuild().getOverallResult();
+		}
+		renderBuildStatus(type, true, Icon.BULB, result);
 	}
 
 	/**
@@ -409,7 +413,6 @@ public class CIRenderer {
 				+ " title='%s'></i>";
 
 		if (showRunning) {
-
 			imgBulb = String.format(imgBulb, "fa-spin fa-refresh", "true", "Build running!");
 		}
 		else {
@@ -417,12 +420,15 @@ public class CIRenderer {
 				case SUCCESS:
 					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-ok", "false", "Build successful: " + Strings
 							.encodeHtml(dashboardName));
+					break;
 				case FAILURE:
 					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-error", "false", "Build failed: " + Strings
 							.encodeHtml(dashboardName));
+					break;
 				case ERROR:
 					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-gray", "false", "Build has errors: " + Strings
 							.encodeHtml(dashboardName));
+					break;
 			}
 		}
 

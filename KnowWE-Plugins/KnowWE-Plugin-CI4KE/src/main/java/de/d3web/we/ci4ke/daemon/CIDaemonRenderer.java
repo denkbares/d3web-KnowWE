@@ -18,22 +18,19 @@ public class CIDaemonRenderer implements Renderer {
 		String content = DefaultMarkupType.getContent(section);
 		String dashboardName = DefaultMarkupType.getAnnotation(section,
 				CIDashboardType.NAME_KEY);
-		renderDaemonContents(section,
-				dashboardName, string);
+		renderDaemonContents(section, dashboardName, string);
 		string.append(content);
 	}
 
 	public static void renderDaemonContents(Section<?> section, String dashboardName, RenderResult string) {
 
-		CIDashboard dashboard = CIDashboardManager.getDashboard(section.getArticleManager(),
-				dashboardName);
+		CIDashboard dashboard = CIDashboardManager.getDashboard(section.getArticleManager(), dashboardName);
 
 		if (dashboard == null) {
 			string.appendHtml("<span class='error'>");
 			string.append("The annotation @" + CIDashboardType.NAME_KEY
 					+ " has to specify an existing CI dashboard name.");
 			string.appendHtml("</span>");
-
 		}
 		else {
 			string.appendHtml("<a class=\"ci-daemon\" href=\""
