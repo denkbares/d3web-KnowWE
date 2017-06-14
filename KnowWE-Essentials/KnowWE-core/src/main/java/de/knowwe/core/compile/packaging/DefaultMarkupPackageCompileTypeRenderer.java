@@ -21,7 +21,7 @@ package de.knowwe.core.compile.packaging;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -172,18 +172,12 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 	private void renderDefectArticleNames(Set<Article> articles, RenderResult string) {
 		// print all articles out as links (ordered alphabetically, duplicates
 		// removed)
-		List<String> names = new ArrayList<>(articles.size());
-		for (Article article : articles) {
-			names.add(article.getTitle());
-		}
-		Collections.sort(names);
-
 		string.appendHtml("<ul>");
-		for (String name : names) {
+		articles.stream().sorted(Comparator.comparing(Article::getTitle)).forEach(article -> {
 			string.appendHtml("<li>");
-			string.appendHtmlElement("a", name, "href", KnowWEUtils.getURLLink(name));
+			string.appendHtmlElement("a", article.getTitle(), "href", KnowWEUtils.getURLLink(article));
 			string.append("\n");
-		}
+		});
 		string.appendHtml("</ul>");
 	}
 
