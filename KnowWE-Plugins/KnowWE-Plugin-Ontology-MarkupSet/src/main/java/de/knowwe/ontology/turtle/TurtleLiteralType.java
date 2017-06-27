@@ -18,16 +18,25 @@
  */
 package de.knowwe.ontology.turtle;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.XMLSchema;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.utils.Patterns;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
@@ -36,23 +45,20 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class TurtleLiteralType extends AbstractType implements NodeProvider<TurtleLiteralType> {
 
 	public static final String XSD_PATTERN = "(?:\\^\\^xsd:(\\w+))";
-	public static final String TRIPLE_QUOTED = "(?:\"\"\"(?:(?!\"\"\")\\w|\\W)+\"\"\")";
 	public static final String LANGUAGE_TAG = "(?:@\\w+)";
-	public static final String LITERAL_SUFFIX = "(?:" + LANGUAGE_TAG + "|" + XSD_PATTERN + ")";
+	public static final String LITERAL_SUFFIX = "^(?:" + LANGUAGE_TAG + "|" + XSD_PATTERN + ")";
 
-	/**
-	 * Either single quoted word and optionally xsd type or normal quote and mandatory xsd type.
-	 */
-	private static final String LITERAL_PATTERN = TRIPLE_QUOTED + LANGUAGE_TAG + "?|"
-			+ Patterns.SINGLE_QUOTED + LITERAL_SUFFIX + "?|" + Patterns.QUOTED + LITERAL_SUFFIX + "?";
+	private static final Pattern LITERAL_SUFFIX_PATTERN = Pattern.compile(LITERAL_SUFFIX);
 
 	public TurtleLiteralType() {
-		this.setSectionFinder(new RegexSectionFinder(
-				LITERAL_PATTERN));
+		this.setSectionFinder(new LiteralTypeFinder());
 		this.setRenderer(StyleRenderer.CONTENT);
-		this.addChildType(new LiteralPart());
 		this.addChildType(new XSDPart());
+		this.addChildType(new AnonymousType("XSDDeclaration",
+				new RegexSectionFinder("\\^\\^xsd:\\z"),
+				DelegateRenderer.getInstance()));
 		this.addChildType(new LanguageTagPart());
+		this.addChildType(new LiteralPart());
 	}
 
 	public org.openrdf.model.Literal getLiteral(Rdf2GoCore core, Section<TurtleLiteralType> section) {
@@ -77,10 +83,55 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		return core.createLiteral(literal, xsdType);
 	}
 
+	private static class LiteralTypeFinder implements SectionFinder {
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+			// try triple quotes
+			int firstIndex = text.indexOf("\"\"\"");
+			int lastIndex = text.lastIndexOf("\"\"\"");
+			boolean isTripleQuoted = true;
+			if (!validStartAndEnd(firstIndex, lastIndex)) {
+				isTripleQuoted = false;
+				// try normal double quotes
+				firstIndex = Strings.indexOf(text, "\"");
+				if (firstIndex >= 0) {
+					lastIndex = Strings.indexOf(text.substring(firstIndex + 1), "\"");
+				}
+			}
+			if (!validStartAndEnd(firstIndex, lastIndex)) {
+				// try single quotes
+				firstIndex = Strings.indexOf(text, "'");
+				if (firstIndex >= 0) {
+					lastIndex = Strings.indexOf(text.substring(firstIndex + 1), "'");
+				}
+			}
+			if (validStartAndEnd(firstIndex, lastIndex)) {
+				// triple quotes, check if there is also a language/xsd suffix
+				if (isTripleQuoted) { // move index after the quote
+					lastIndex += 3; // triple quotes, just add length
+				}
+				else {
+					lastIndex += firstIndex + 1 + 1; // normal or single quotes, add offset while searching + 1
+				}
+				Matcher matcher = LITERAL_SUFFIX_PATTERN.matcher(text.substring(lastIndex));
+				if (matcher.find()) {
+					lastIndex += matcher.end();
+				}
+				return Collections.singletonList(new SectionFinderResult(firstIndex, lastIndex));
+			}
+			return null;
+		}
+
+		private boolean validStartAndEnd(int firstIndex, int lastIndex) {
+			return firstIndex != lastIndex || firstIndex >= 0;
+		}
+	}
+
 	private static class LiteralPart extends AbstractType {
 
 		public LiteralPart() {
-			this.setSectionFinder(new RegexSectionFinder(TRIPLE_QUOTED + "|" + Patterns.SINGLE_QUOTED + "|" + Patterns.QUOTED));
+			this.setSectionFinder(AllTextFinder.getInstance());
 		}
 
 		public String getLiteral(Section<LiteralPart> section) {
@@ -91,7 +142,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	private static class LanguageTagPart extends AbstractType {
 
 		public LanguageTagPart() {
-			this.setSectionFinder(new RegexSectionFinder(LANGUAGE_TAG));
+			this.setSectionFinder(new RegexSectionFinder(LANGUAGE_TAG + "\\z"));
 		}
 
 		public String getTag(Section<LanguageTagPart> section) {
@@ -102,7 +153,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	private static class XSDPart extends AbstractType {
 
 		public XSDPart() {
-			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN), 1));
+			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN + "\\z"), 1));
 		}
 
 		public org.openrdf.model.URI getXSDType(Section<XSDPart> section) {
