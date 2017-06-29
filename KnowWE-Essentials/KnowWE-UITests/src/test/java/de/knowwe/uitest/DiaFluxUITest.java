@@ -43,6 +43,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.test.RetryRule;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -70,7 +71,7 @@ public class DiaFluxUITest extends KnowWEUITest {
 	}
 
 	@Rule
-	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
+	public RetryRule retry = new RetryRule(2);
 
 	@Test
 	public void addTerminology() throws IOException {

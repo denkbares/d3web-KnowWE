@@ -43,6 +43,12 @@
 		<dependency>
 			<groupId>com.denkbares</groupId>
 			<artifactId>denkbares-Utils</artifactId>
+			<version>${d3web.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.denkbares</groupId>
+			<artifactId>denkbares-TestUtils</artifactId>
+			<version>${d3web.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

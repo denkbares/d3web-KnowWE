@@ -24,9 +24,6 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -287,86 +284,4 @@ public class UITestUtils {
 		return WebOS.other;
 	}
 
-	/**
-	 * Rule allowing for retries if a test fails.
-	 */
-	public static class RetryRule implements TestRule {
-
-		private final int retryCount;
-
-		public RetryRule(int retryCount) {
-			this.retryCount = retryCount;
-		}
-
-		@Override
-		public Statement apply(Statement base, Description description) {
-			return statement(base, description);
-		}
-
-		private Statement statement(final Statement base, final Description description) {
-
-			return new Statement() {
-				@Override
-				public void evaluate() throws Throwable {
-					Throwable caughtThrowable = null;
-					for (int i = 0; i < retryCount; i++) {
-						try {
-							base.evaluate();
-							return;
-						}
-						catch (Throwable t) {
-							caughtThrowable = t;
-							Log.severe("Run " + (i + 1) + "/" + retryCount + " of '" + description.getDisplayName() + "' failed", t);
-						}
-					}
-					Log.severe("Giving up after " + retryCount + " failures of '" + description.getDisplayName() + "'");
-					if (caughtThrowable != null) {
-						throw caughtThrowable;
-					}
-				}
-			};
-		}
-	}
-
-	/**
-	 * Rule allowing for tests to run a defined number of times. Prints failures along the way.
-	 */
-	public static class RerunRule implements TestRule {
-
-		private final int rerunCount;
-		private int successes;
-
-		public RerunRule(int rerunCount) {
-			this.rerunCount = rerunCount;
-			this.successes = 0;
-		}
-
-		@Override
-		public Statement apply(Statement base, Description description) {
-			return statement(base, description);
-		}
-
-		private Statement statement(final Statement base, final Description description) {
-
-			return new Statement() {
-				@Override
-				public void evaluate() throws Throwable {
-					Throwable caughtThrowable = null;
-					for (int i = 0; i < rerunCount; i++) {
-						try {
-							base.evaluate();
-							successes++;
-							Log.severe("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' successful");
-						}
-						catch (Throwable throwable) {
-							caughtThrowable = throwable;
-							Log.severe("Run " + (i + 1) + "/" + rerunCount + " of '" + description.getDisplayName() + "' failed", throwable);
-						}
-					}
-					Log.severe("Final statistic for " + description.getDisplayName() + ": " + successes + "/" + rerunCount + " successes");
-					if (caughtThrowable != null) throw caughtThrowable;
-				}
-			};
-		}
-	}
 }

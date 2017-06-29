@@ -38,6 +38,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.denkbares.test.RetryRule;
+
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
@@ -72,7 +74,7 @@ public class PanelUITest extends KnowWEUITest {
 	}
 
 	@Rule
-	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
+	public RetryRule retry = new RetryRule(2);
 
 	@After
 	public void restoreDefault() throws InterruptedException {

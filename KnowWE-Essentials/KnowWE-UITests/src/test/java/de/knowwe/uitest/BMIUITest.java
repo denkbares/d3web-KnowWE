@@ -21,7 +21,6 @@ package de.knowwe.uitest;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Rule;
@@ -32,8 +31,9 @@ import org.junit.runners.Parameterized.Parameters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.Platform;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.denkbares.test.RetryRule;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -58,7 +58,7 @@ public class BMIUITest extends KnowWEUITest {
 	}
 
 	@Rule
-	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
+	public RetryRule retry = new RetryRule(2);
 
 	@Test
 	public void testBmi() throws Exception {

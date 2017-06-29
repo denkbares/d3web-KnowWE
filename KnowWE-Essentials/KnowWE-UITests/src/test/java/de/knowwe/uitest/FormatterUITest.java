@@ -32,6 +32,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 
+import com.denkbares.test.RetryRule;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -59,7 +61,7 @@ public class FormatterUITest extends KnowWEUITest {
 	}
 
 	@Rule
-	public UITestUtils.RetryRule retry = new UITestUtils.RetryRule(2);
+	public RetryRule retry = new RetryRule(2);
 
 	@Test
 	public void testSparqlFormatButton() throws InterruptedException, IOException {

@@ -66,6 +66,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.denkbares</groupId>
+			<artifactId>denkbares-TestUtils</artifactId>
+			<version>${denkbares.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.denkbares</groupId>
 			<artifactId>denkbares-Progress</artifactId>
 			<version>${denkbares.version}</version>
 		</dependency>
