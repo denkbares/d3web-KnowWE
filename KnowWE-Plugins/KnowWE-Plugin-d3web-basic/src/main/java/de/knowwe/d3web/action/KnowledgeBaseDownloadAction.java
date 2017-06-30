@@ -2,7 +2,6 @@ package de.knowwe.d3web.action;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Collection;
@@ -16,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Streams;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
@@ -83,6 +83,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 
 		// before writing, check if the user defined a desired filename
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(compileSection);
+		//noinspection ConstantConditions
 		String desiredFilename = base.getInfoStore().getValue(BasicProperties.FILENAME);
 		if (desiredFilename != null) {
 			filename = desiredFilename;
@@ -91,7 +92,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		// base
 		base.getInfoStore().addValue(BasicProperties.CREATED, new Date());
 
-		URL home = null;
+		URL home;
 		try {
 			home = saveKnowledge(web, base);
 		}
@@ -106,17 +107,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 		OutputStream outs = context.getOutputStream();
 
-		int bit;
-		try (InputStream in = home.openStream()) {
-			while ((bit = in.read()) >= 0) {
-				outs.write(bit);
-			}
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace(System.out);
-			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.valueOf(ioe));
-			Log.warning("Error while writing knowledge base", ioe);
-		}
+		Streams.stream(home.openStream(), outs);
 
 		outs.flush();
 		outs.close();
