@@ -1,20 +1,5 @@
 /*
- * Copyright (C) 2015 denkbares GmbH, Germany
- *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
+ * Copyright (C) 2017 denkbares GmbH. All rights reserved.
  */
 
 package de.knowwe.rdfs.vis.markup;
@@ -38,18 +23,15 @@ import de.knowwe.visualization.Config;
 import de.knowwe.visualization.dot.DOTRenderer;
 
 /**
- * Downloads a generated visualization file.
+ * Generates and provides PDF file of a %%OntoVis markup for download.
  *
  * @author Albrecht Striffler (denkbares GmbH)
- * @created 08.05.15
+ * @created 30.06.17
  */
-public abstract class OntoVisDownload extends AbstractAction {
-
-	protected abstract String getExtension();
+public class OntoVisPdfDownload extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-
 		ServletContext servletContext = context.getServletContext();
 		if (servletContext == null) return; // at wiki startup only
 
@@ -57,13 +39,16 @@ public abstract class OntoVisDownload extends AbstractAction {
 		Section<?> section = Sections.get(context.getParameter("SectionID"));
 		Config config = new Config(Sections.cast(section, DefaultMarkupType.class));
 		config.setCacheFileID(Utils.getFileID(section, context));
-		File svg = new File(DOTRenderer.getFilePath(config) + "." + getExtension());
-		String name = svg.getName();
+		File dotFile = new File(DOTRenderer.getFilePath(config) + ".dot");
+		String name = dotFile.getName().replace(".dot", "");
+
+		File pdf = File.createTempFile(name, "pdf");
+		DOTRenderer.convertDot(dotFile, pdf, DOTRenderer.getCommand(config, "pdf", dotFile, pdf));
 
 		context.setContentType("application/x-bin");
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + name + "\"");
+		context.setHeader("Content-Disposition", "attachment;filename=\"" + name + ".pdf\"");
 
-		InputStream fis = new FileInputStream(svg);
+		InputStream fis = new FileInputStream(pdf);
 		OutputStream ous = context.getOutputStream();
 
 		Streams.stream(fis, ous);

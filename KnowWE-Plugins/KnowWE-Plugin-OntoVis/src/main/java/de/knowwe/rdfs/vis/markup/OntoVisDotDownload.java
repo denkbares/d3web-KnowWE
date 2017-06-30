@@ -18,10 +18,11 @@
  */
 package de.knowwe.rdfs.vis.markup;
 
-public class OntoVisSVGDownload extends OntoVisDownload {
+public class OntoVisDotDownload extends OntoVisDownload {
 
 	@Override
 	protected String getExtension() {
-		return "svg";
+		return "dot";
 	}
+
 }

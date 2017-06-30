@@ -36,7 +36,7 @@ import de.knowwe.core.action.UserActionContext;
  * @author Max Matthe (denkbares GmbH)
  * @created 20.11.2013
  */
-public class OntoVisSVGD3Download extends AbstractAction {
+public class OntoVisSvgD3Download extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

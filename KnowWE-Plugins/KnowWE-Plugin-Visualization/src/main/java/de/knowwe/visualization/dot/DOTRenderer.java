@@ -682,7 +682,7 @@ public class DOTRenderer {
 		// create svg
 
 		try {
-			convertDot(svgFile, dotFile, getSVGCommand(config, dotFile, svgFile));
+			convertDot(svgFile, dotFile, getCommand(config, "svg", dotFile, svgFile));
 
 			// convertDot(png, dot, createPngCommand(dotApp, dot, png));
 
@@ -694,14 +694,15 @@ public class DOTRenderer {
 		return new File[] { dotFile, svgFile };
 	}
 
-	private static String[] getSVGCommand(Config config, File dot, File svg) {
+	public static String[] getCommand(Config config, String outputFormat, File dot, File output) {
 		String dotApp = config.getDotApp();
 		String layout = config.getLayout();
 		if (layout != null) {
-			return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath(), "-K" + layout.toLowerCase() };
+			return new String[] { dotApp, dot.getAbsolutePath(), "-T" + outputFormat, "-o", output.getAbsolutePath(), "-K" + layout
+					.toLowerCase() };
 		}
 		else {
-			return new String[] { dotApp, dot.getAbsolutePath(), "-Tsvg", "-o", svg.getAbsolutePath() };
+			return new String[] { dotApp, dot.getAbsolutePath(), "-T" + outputFormat, "-o", output.getAbsolutePath() };
 		}
 	}
 
@@ -804,8 +805,8 @@ public class DOTRenderer {
 		element.setAttribute(target);
 	}
 
-	private static void convertDot(File file, File dot, String... command) throws IOException {
-		FileUtils.checkWriteable(file);
+	public static void convertDot(File outputFile, File dot, String... command) throws IOException {
+		FileUtils.checkWriteable(outputFile);
 		FileUtils.checkReadable(dot);
 		try {
 			ProcessBuilder processBuilder = new ProcessBuilder(command);

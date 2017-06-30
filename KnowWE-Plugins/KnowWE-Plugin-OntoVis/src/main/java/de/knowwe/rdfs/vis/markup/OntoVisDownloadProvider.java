@@ -18,6 +18,8 @@
  */
 package de.knowwe.rdfs.vis.markup;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -27,10 +29,12 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 /**
- * @author Johanna Latt
- * @created 20.06.2012
+ * Provides different download tools fpr OntoVis markup.
+ *
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 13.12.2013
  */
-public class OntoVisSVGDownloadProvider implements ToolProvider {
+public class OntoVisDownloadProvider implements ToolProvider {
 
 	public static final String PARAM_FILENAME = "filename";
 
@@ -41,22 +45,23 @@ public class OntoVisSVGDownloadProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		// and provide both download and refresh as tools
-		Tool download = getDownloadTool(section, userContext);
-		return new Tool[] { download };
+		return new Tool[] {
+				getTool(section, "OntoVisDotDownload", "Download .dot", "Download the graph as an .dot-file"),
+				getTool(section, "OntoVisSvgDownload", "Download .svg", "Download the graph as an .svg-file"),
+				getTool(section, "OntoVisPdfDownload", "Download .pdf", "Download the graph as an .pdf-file")
+		};
 	}
 
-	protected Tool getDownloadTool(Section<?> section, UserContext userContext) {
-		// tool to provide download capability
-
-		String jsAction = "window.location='action/OntoVisSVGDownload" +
+	@NotNull
+	private Tool getTool(Section<?> section, String action, String title, String description) {
+		String jsAction = "window.location='action/" + action +
 				"?" + Attributes.TOPIC + "=" + section.getTitle() +
 				"&amp;" + Attributes.WEB + "=" + section.getWeb() +
 				"&amp;" + Attributes.SECTION_ID + "=" + section.getID() + "'";
 		return new DefaultTool(
 				Icon.DOWNLOAD,
-				"Download .svg",
-				"Download the graph as an .svg-file",
+				title,
+				description,
 				jsAction,
 				Tool.CATEGORY_DOWNLOAD);
 	}
