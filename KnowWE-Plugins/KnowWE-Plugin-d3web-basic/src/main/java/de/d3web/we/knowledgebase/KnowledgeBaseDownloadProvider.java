@@ -24,9 +24,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -82,7 +82,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web'";
 		return new DefaultTool(
 				Icon.DOWNLOAD,
-				"Download",
+				"Download as File",
 				"Download the entire knowledge base into a single file for deployment.",
 				jsAction,
 				Tool.CATEGORY_DOWNLOAD);
@@ -120,17 +120,17 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		String imageURL = "https://chart.googleapis.com/chart?cht=qr&amp;chs=200x200&amp;chl="
 				+ kbURL;
 		String id = section.getID();
-		String jsAction = "var node=jq$('#" + id + "')[0]; " +
-				"var visible = (node.firstChild.nodeName == 'IMG'); " +
-				"if (visible) node.firstChild.remove();" +
-				"else " +
-				"node.innerHTML='<img style=\\'float:left\\' " +
-				"src=\\'" + imageURL + "\\' />'+node.innerHTML;";
+		String jsAction = "var node=jq$('#" + id + "'); " +
+				"var qrCode = jq$('#" + id + "_qr_code'); " +
+				"if (qrCode.exists()) qrCode.remove();" +
+				"else node.prepend('<img id=\\'" + id + "_qr_code\\' style=\\'float:left\\' " +
+				"src=\\'" + imageURL + "\\' />');";
 		return new DefaultTool(
 				Icon.QRCODE,
-				"QR-Code",
+				"Download via QR-Code",
 				"Shows the QR-Code to download the knowledge base into mobile devices.",
 				jsAction,
+				Tool.ActionType.ONCLICK,
 				Tool.CATEGORY_DOWNLOAD);
 	}
 
