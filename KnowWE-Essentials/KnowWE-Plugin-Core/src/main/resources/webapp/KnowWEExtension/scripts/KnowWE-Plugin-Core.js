@@ -22,26 +22,6 @@ KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 
 KNOWWE.core.plugin.objectinfo = function () {
-	function highlighAnchor() {
-		var name = window.location.hash.substring(1);
-		var sectionId = name.substring(8);
-		// first, try to find section directly
-		var section = jq$('[sectionid="' + sectionId + '"]');
-		if (section.exists()) {
-			section.addClass('highlight');
-			return;
-		}
-		// section not found, try highlighting from anchor to anchor-end
-		var anchor = jq$('.anchor[name="' + name + '"]');
-		if (!anchor.exists()) return;
-		var endSelector = '.anchor,.anchor-end[name="' + name + '"]';
-		if (!anchor.nextAll(endSelector).exists()) return;
-		var next = anchor.next();
-		while (!next.is(endSelector)) {
-			next.addClass('highlight');
-			next = next.next();
-		}
-	}
 
 	return {
 
@@ -65,8 +45,31 @@ KNOWWE.core.plugin.objectinfo = function () {
 			});
 
 			// highlight section navigation via anchors
-			if (window.location.hash.startsWith("#section-")) {
-				highlighAnchor();
+			KNOWWE.core.plugin.objectinfo.highlighAnchor();
+		},
+
+		highlighAnchor: function () {
+			if (!window.location.hash.startsWith("#section-")) return;
+			jq$('.anchor-highlight').removeClass("highlight").removeClass("anchor-highlight");
+			var name = window.location.hash.substring(1);
+			var sectionId = name.substring(8);
+			// first, try to find section directly
+			var section = jq$('[sectionid="' + sectionId + '"]');
+			if (section.exists()) {
+				section.addClass('highlight');
+				section.addClass('anchor-highlight');
+				return;
+			}
+			// section not found, try highlighting from anchor to anchor-end
+			var anchor = jq$('.anchor[name="' + name + '"]');
+			if (!anchor.exists()) return;
+			var endSelector = '.anchor,.anchor-end[name="' + name + '"]';
+			if (!anchor.nextAll(endSelector).exists()) return;
+			var next = anchor.next();
+			while (!next.is(endSelector)) {
+				next.addClass('highlight');
+				next.addClass('anchor-highlight');
+				next = next.next();
 			}
 		},
 
@@ -1096,6 +1099,9 @@ KNOWWE.core.plugin.reloadNamespaceFile = function () {
 			KNOWWE.core.plugin.pagination.decorateTables();
 		});
 	}
+	jq$(window).on('hashchange', function () {
+		KNOWWE.core.plugin.objectinfo.highlighAnchor();
+	});
 }());
 
 KNOWWE.helper.observer.subscribe("afterRerender", function () {

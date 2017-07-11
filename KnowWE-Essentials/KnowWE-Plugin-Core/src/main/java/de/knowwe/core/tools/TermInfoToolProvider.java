@@ -73,7 +73,7 @@ public class TermInfoToolProvider implements ToolProvider {
 		Map<String, Section<?>> articles = new HashMap<>();
 		for (TermCompiler termCompiler : Compilers.getCompilers(section, TermCompiler.class)) {
 			TerminologyManager manager = termCompiler.getTerminologyManager();
-			if(manager == null) continue;
+			if (manager == null) continue;
 			Collection<Section<?>> definitions = manager.getTermDefiningSections(identifier);
 			for (Section<?> definition : definitions) {
 				Section<?> previewAncestor = PreviewManager.getInstance().getPreviewAncestor(definition);
@@ -90,9 +90,14 @@ public class TermInfoToolProvider implements ToolProvider {
 			sorted.add(0, home.getTitle());
 		}
 
-		// and remove the current article and restrict to max number of items
-		sorted.remove(userContext.getTitle());
+		// restrict to max number of items
 		if (sorted.size() > 5) sorted = sorted.subList(0, 5);
+
+		// remove or sort current page to bottom of list
+		if (sorted.remove(userContext.getTitle())
+				&& "termbrowser".equals(userContext.getParameter("location"))) {
+			sorted.add(userContext.getTitle());
+		}
 
 		// create tools for edit, rename and definitions
 		Tool[] tools = new Tool[sorted.size()];
@@ -108,12 +113,22 @@ public class TermInfoToolProvider implements ToolProvider {
 			else {
 				link = KnowWEUtils.getURLLink(definition);
 			}
-			String description = (home != null && title.equals(home.getTitle()))
-					? "Opens the home page for the specific object."
-					: "Opens the definition page for the specific object to show its usage inside this wiki.";
+			String description;
+			String titleText;
+
+			if (title.equals(userContext.getTitle())) {
+				titleText = "Highlight on this page";
+				description = "Highlights the occurrence of the term on this page";
+			}
+			else {
+				titleText = "Open '" + title + "'";
+				description = (home != null && title.equals(home.getTitle()))
+						? "Opens the home page for the specific object."
+						: "Opens the definition page for the specific object to show its usage inside this wiki.";
+			}
 			tools[index++] = new DefaultTool(
 					Icon.ARTICLE,
-					"Open '" + title + "'", description,
+					titleText, description,
 					link, Tool.ActionType.HREF, Tool.CATEGORY_INFO);
 		}
 		return tools;

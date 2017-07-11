@@ -114,9 +114,15 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 			toolMenuAction = specialAction;
 		}
 
+		var locationName = "default";
+		if (jq$(node).parents(".termbrowser").exists()) {
+			locationName = "termbrowser";
+		}
+
 		var params = {
 			action: toolMenuAction,
-			identifier: toolMenuIdentifier
+			identifier: toolMenuIdentifier,
+			location: locationName
 		};
 
 		var options = {
