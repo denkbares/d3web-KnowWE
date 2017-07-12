@@ -61,7 +61,8 @@ public class RegexSectionFinder implements SectionFinder {
 	}
 
 	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+	public List<SectionFinderResult>
+	lookForSections(String text, Section<?> father, Type type) {
 		ArrayList<SectionFinderResult> result = new ArrayList<>();
 		Matcher m = pattern.matcher(text);
 		/*

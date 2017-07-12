@@ -32,6 +32,11 @@ public class AnonymousType extends AbstractType {
 		this.name = name;
 	}
 
+	public AnonymousType(String name, SectionFinder sectionFinder) {
+		setSectionFinder(sectionFinder);
+		this.name = name;
+	}
+
 	public AnonymousType(String name, SectionFinder sectionFinder, Renderer renderer) {
 		setSectionFinder(sectionFinder);
 		setRenderer(renderer);
