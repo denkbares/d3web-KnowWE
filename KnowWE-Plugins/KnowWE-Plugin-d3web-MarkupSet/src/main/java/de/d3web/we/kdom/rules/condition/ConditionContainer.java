@@ -22,8 +22,6 @@ import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.rules.RuleContainerRenderer;
 import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.basicType.EndLineComment;
-import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * ConditionContainer of the Rule, instanciates the condition
@@ -36,9 +34,6 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class ConditionContainer extends AbstractType {
 
 	public ConditionContainer() {
-		EndLineComment comment = new EndLineComment();
-		comment.setRenderer(StyleRenderer.COMMENT);
-		this.addChildType(comment);
 		CompositeCondition compositeCondition = new CompositeCondition();
 		compositeCondition.setAllowedTerminalConditions(RuleType.getTerminalConditions());
 		this.addChildType(compositeCondition);

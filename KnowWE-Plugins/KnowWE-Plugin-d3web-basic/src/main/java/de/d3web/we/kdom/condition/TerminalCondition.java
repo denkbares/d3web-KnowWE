@@ -25,9 +25,11 @@ import java.util.List;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.EndLineComment;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * The TerminalCondition type of the CompositeCondition
@@ -55,12 +57,15 @@ public class TerminalCondition extends AbstractType {
     public TerminalCondition(String typeName, final String messageText) {
         this.setSectionFinder(new AllTextFinderTrimmed());
 
+		EndLineComment comment = new EndLineComment();
+		comment.setRenderer(StyleRenderer.COMMENT);
+		this.addChildType(0, comment);
+
 		// last: Anything left is an UnrecognizedTC throwing an error
         AnonymousType unrecognizedCond = new AnonymousType(typeName);
         unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
 		unrecognizedCond.addCompileScript((D3webHandler<TerminalCondition>) (compiler, s) ->
 						Messages.asList(Messages.syntaxError(messageText + s.getText())));
-
 		this.addChildType(unrecognizedCond);
 	}
 

@@ -42,9 +42,9 @@ public class RuleContentType extends AbstractType {
 	public RuleContentType() {
 		// take nearly all the text that is passed (kind of trimmed)
 		this.setSectionFinder(AllTextFinder.getInstance());
-		this.addChildType(new CommentLineType());
 		this.addChildType(new RuleType());
 
+		this.addChildType(new CommentLineType());
 		// everything that remains will be unrecognized syntax
 		this.addChildType(new UnrecognizedSyntaxType());
 	}

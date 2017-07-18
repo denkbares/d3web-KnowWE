@@ -46,8 +46,8 @@ public class CompositeCondition extends AbstractType {
 
 	protected final TerminalCondition terminalCondition = new TerminalCondition();
 
-	public static char BRACE_OPEN = '(';
-	public static char BRACE_CLOSED = ')';
+	public static final char BRACE_OPEN = '(';
+	public static final char BRACE_CLOSED = ')';
 
 	public CompositeCondition() {
 		this(new String[] {

@@ -22,6 +22,8 @@ package de.d3web.we.kdom.condition;
 
 import java.util.List;
 
+import com.denkbares.strings.StringFragment;
+import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.Condition;
@@ -35,8 +37,6 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.TextValue;
-import com.denkbares.strings.StringFragment;
-import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
 import de.d3web.we.object.QuestionReference;

@@ -26,13 +26,13 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.NoAnswerException;
 import de.d3web.core.inference.condition.UnknownAnswerException;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
-import com.denkbares.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.action.ContraIndicationAction;
 import de.d3web.we.kdom.action.InstantIndication;
