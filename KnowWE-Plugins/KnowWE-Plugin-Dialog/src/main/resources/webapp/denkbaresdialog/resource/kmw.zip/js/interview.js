@@ -1,13 +1,13 @@
-var Interview = { };
+var Interview = {};
 
 Interview.startCase = function () {
-	window.location = "/KnowWE/action/StartCase?KWikiWeb=default_web&lang="+Translate.getCurrentLanguage();
+	window.location = "/KnowWE/action/StartCase?KWikiWeb=default_web&lang=" + Translate.getCurrentLanguage();
 };
 
 Interview.answer = function (id, value) {
-	var qNode = jq$("#question_"+id)[0];
-	var cNode = jq$("choice_"+id+"_"+value)[0];
-	
+	var qNode = jq$("#question_" + id)[0];
+	var cNode = jq$("choice_" + id + "_" + value)[0];
+
 	// mark this question as answered
 	if (qNode) {
 		Element.addClassName(qNode, "answered");
@@ -16,32 +16,32 @@ Interview.answer = function (id, value) {
 	if (cNode) {
 		LookAndFeel.activateSection(cNode);
 	}
-	
+
 	var infoObject = KBInfo.getInfoObject[id];
-	var url = "/KnowWE/action/SetAnswer/"+(new Date().getTime())+"?"+id+"="+value;
+	var url = "/KnowWE/action/SetAnswer/" + (new Date().getTime()) + "?" + id + "=" + value;
 	new Ajax.Request(url, {
 		method: 'get',
-		onSuccess: function(transport) {
+		onSuccess: function (transport) {
 			Interview.displayNextQuestion();
 		},
-		onFailure: function() {
+		onFailure: function () {
 			CCMessage.warn('AJAX Verbindungs-Fehler', "");
 		},
-		onException: function(transport, exception) {
+		onException: function (transport, exception) {
 			CCMessage.warn('AJAX interner Fehler', exception);
 		}
-	}); 
+	});
 };
 
 Interview.displayNextQuestion = function (refreshAll) {
-	var url = "/KnowWE/action/GetInterview/"+(new Date().getTime());
+	var url = "/KnowWE/action/GetInterview/" + (new Date().getTime());
 	new Ajax.Request(url, {
 		method: 'get',
 		parameters: {
 			lang: Translate.getCurrentLanguage(),
 			history: refreshAll ? "true" : "false"
 		},
-		onSuccess: function(transport) {
+		onSuccess: function (transport) {
 			var xml = transport.responseXML;
 			// render questions of response
 			var his = xml.getElementsByTagName("history");
@@ -53,7 +53,7 @@ Interview.displayNextQuestion = function (refreshAll) {
 			if (refreshAll && his && his[0]) {
 				jq$("#interview")[0].innerHTML = "";
 				var infoObjects = KBInfo.parseInfoObjects(his[0]);
-				for (var i=0; i<infoObjects.length; i++) {
+				for (var i = 0; i < infoObjects.length; i++) {
 					var html = Interview.renderQuestion(infoObjects[i]);
 					LookAndFeel.appendChildDIV("interview", html);
 				}
@@ -61,12 +61,12 @@ Interview.displayNextQuestion = function (refreshAll) {
 			if (ask && ask[0]) {
 				// insert new question
 				var infoObjects = KBInfo.parseInfoObjects(ask[0]);
-				for (var i=0; i<infoObjects.length; i++) {
+				for (var i = 0; i < infoObjects.length; i++) {
 					var html = Interview.renderQuestion(infoObjects[i]);
 					node = LookAndFeel.appendChildDIV("interview", html);
 				}
 				// and remove all previously unanswered questions
-				for (var i=0; i<questions.length; i++) {
+				for (var i = 0; i < questions.length; i++) {
 					var question = questions[i];
 					if (!Element.hasClassName(question, "answered")) {
 						LookAndFeel.removeChildDIV(question);
@@ -81,7 +81,7 @@ Interview.displayNextQuestion = function (refreshAll) {
 			if (sol && sol[0] && !node) {
 				var infoObjects = KBInfo.parseInfoObjects(sol[0]);
 				jq$("#solutions")[0].innerHTML = LookAndFeel.renderSolutionSeparator();
-				for (var i=0; i<infoObjects.length; i++) {
+				for (var i = 0; i < infoObjects.length; i++) {
 					// hack: ignore exported flowchart context solutions
 					if (infoObjects[i].getName().indexOf("_KONTEXT_") >= 0) continue;
 					var html = Interview.renderSolution(infoObjects[i]);
@@ -109,13 +109,13 @@ Interview.displayNextQuestion = function (refreshAll) {
 				}
 			}
 		},
-		onFailure: function() {
+		onFailure: function () {
 			CCMessage.warn('AJAX Verbindungs-Fehler', "");
 		},
-		onException: function(transport, exception) {
+		onException: function (transport, exception) {
 			CCMessage.warn('AJAX interner Fehler', exception);
 		}
-	}); 
+	});
 };
 
 Interview._isImageLink = function (link) {
@@ -134,33 +134,33 @@ Interview._isImageLink = function (link) {
 
 Interview.renderSolution = function (infoObject) {
 	var html = "<div class=solution>\n";
-	
+
 	// heading: solution name
 	html += "\t<h3>";
 	html += (infoObject.getText()) ? infoObject.getText() : infoObject.getName();
 	html += "</h3>\n";
-	
+
 	// support knowledge
 	var info = infoObject.getInfo();
 	var multimedia = infoObject.getMultimedia();
 	var link = infoObject.getLink();
 	if (info || multimedia) html += "<p>";
 	if (multimedia) {
-		link = "../../../Multimedia/"+multimedia;
+		link = "../../../Multimedia/" + multimedia;
 	}
-	var isImage = link && link.match(/^.*\.(gif|jpg|jpeg|png|svg|tiff|tif|bmp)$/i); 
+	var isImage = link && link.match(/^.*\.(gif|jpg|jpeg|png|svg|tiff|tif|bmp)$/i);
 	if (link && isImage) {
 		html += LookAndFeel.renderImage(link, false, 80);
 	}
 	if (info) {
 		html += info + "\n";
 	}
-	if (info || multimedia) html += "</p>";	
+	if (info || multimedia) html += "</p>";
 
 	if (link && !isImage) {
 		html += "<p><a target=ExternalLink href='" + link + "'>" + link + "</a></p>";
 	}
-	
+
 	html += "\n</div>\n";
 	return LookAndFeel.renderBox(html);
 };
@@ -182,34 +182,34 @@ Interview.renderQuestion = function (infoObject) {
 	if (infoObject.getValues() && infoObject.getValues().length > 0) {
 		className += " answered";
 	}
-	var html = "<div id='question_" + infoObject.getID() + "' class='"+className+"'>\n";
-	
+	var html = "<div id='question_" + infoObject.getID() + "' class='" + className + "'>\n";
+
 	// heading: ask question
 	html += "\t<h3>";
 	html += (infoObject.getText()) ? infoObject.getText() : infoObject.getName();
 	html += "</h3>\n";
-	
+
 	// support knowledge
 	var info = infoObject.getInfo();
 	var multimedia = infoObject.getMultimedia();
 	var link = infoObject.getLink();
 	if (info || multimedia) html += "<p>";
 	if (multimedia) {
-		link = "../../../Multimedia/"+multimedia;
+		link = "../../../Multimedia/" + multimedia;
 	}
-	var isImage = link && link.match(/^.*\.(gif|jpg|jpeg|png|svg|tiff|tif|bmp)$/i); 
+	var isImage = link && link.match(/^.*\.(gif|jpg|jpeg|png|svg|tiff|tif|bmp)$/i);
 	if (link && isImage) {
 		html += LookAndFeel.renderImage(link, false, 80);
 	}
 	if (info) {
 		html += info + "\n";
 	}
-	if (info || multimedia) html += "</p>";	
+	if (info || multimedia) html += "</p>";
 
 	if (link && !isImage) {
 		html += "<p><a target=ExternalLink href='" + link + "'>" + link + "</a></p>";
 	}
-	
+
 	var choices = infoObject.getChoices();
 	// content: checklist question: render different user interface
 	if (choices && choices.length >= 2 && CheckList.isCheckChoice(choices[0])) {
@@ -218,7 +218,7 @@ Interview.renderQuestion = function (infoObject) {
 	// content: answer choice question
 	else {
 		html += "<p style='clear:both;'>";
-		for (var i=0; i<choices.length; i++) {
+		for (var i = 0; i < choices.length; i++) {
 			var image = null;
 			var text = choices[i].text ? choices[i].text : Translate.get("use_question_unknown");
 			var link = choices[i].link;
@@ -233,45 +233,45 @@ Interview.renderQuestion = function (infoObject) {
 			}
 			if (choices.length == 2) {
 				html += LookAndFeel.renderSection2Elements(
-				"<div id='choice_"+infoObject.getID()+"_"+choices[i].id+"'"+heightStyle+">" +
-				LookAndFeel.renderImage(image, "25%", 48) +
-				text +
-				"</div>",
-				" Interview.answer(\""+infoObject.getID()+"\", \""+choices[i].id+"\", this);",
-				active
-			);
+					"<div id='choice_" + infoObject.getID() + "_" + choices[i].id + "'" + heightStyle + ">" +
+					LookAndFeel.renderImage(image, "25%", 48) +
+					text +
+					"</div>",
+					" Interview.answer(\"" + infoObject.getID() + "\", \"" + choices[i].id + "\", this);",
+					active
+				);
 			} else {
 				html += LookAndFeel.renderSection(
-				"<div id='choice_"+infoObject.getID()+"_"+choices[i].id+"'"+heightStyle+">" +
-				LookAndFeel.renderImage(image, "25%", 48) +
-				text +
-				"</div>",
-				" Interview.answer(\""+infoObject.getID()+"\", \""+choices[i].id+"\", this);",
-				active
-			);
+					"<div id='choice_" + infoObject.getID() + "_" + choices[i].id + "'" + heightStyle + ">" +
+					LookAndFeel.renderImage(image, "25%", 48) +
+					text +
+					"</div>",
+					" Interview.answer(\"" + infoObject.getID() + "\", \"" + choices[i].id + "\", this);",
+					active
+				);
 			}
 		}
 		html += "</p>";
 	}
-	
+
 	// content: answer textual questions (text, num, ...)
-	if (infoObject.getType() == KBInfo.Question.TYPE_NUM 
-			|| infoObject.getType() == KBInfo.Question.TYPE_TEXT) {
+	if (infoObject.getType() == KBInfo.Question.TYPE_NUM
+		|| infoObject.getType() == KBInfo.Question.TYPE_TEXT) {
 		html += "<p><input type=text";
 		if (infoObject.getValues() && infoObject.getValues()[0]) {
-			html += " value='"+String.escapeQuotes(infoObject.getValues()[0])+"'";
+			html += " value='" + String.escapeQuotes(infoObject.getValues()[0]) + "'";
 		}
-		html += " onchange='Interview._typedAnswerChanged(\""+infoObject.getID()+"\", this);'";
-		html += " onkeyup='Interview._typedAnswerAction(\""+infoObject.getID()+"\", this, event);'";
+		html += " onchange='Interview._typedAnswerChanged(\"" + infoObject.getID() + "\", this);'";
+		html += " onkeyup='Interview._typedAnswerAction(\"" + infoObject.getID() + "\", this, event);'";
 		html += "></input>";
 		var min = infoObject.getMin();
 		var max = infoObject.getMax();
-		html += (min && max) ? "&nbsp;" + min + "&nbsp;..&nbsp;"  + max : "";
+		html += (min && max) ? "&nbsp;" + min + "&nbsp;..&nbsp;" + max : "";
 		var unit = infoObject.getUnit();
-		html += unit ? "&nbsp;"+unit : "";
+		html += unit ? "&nbsp;" + unit : "";
 		html += "</p>";
 	}
-	
+
 	html += "\n</div>\n";
 	return LookAndFeel.renderBox(html);
 };
@@ -281,7 +281,7 @@ Interview._typedAnswerAction = function (id, field, event) {
 	var code = (event.which) ? event.which : event.keyCode;
 	var valid = Interview._checkValidInput(id, field);
 	if (code == 13 && valid) {
-		// blur automaticall answers the question 
+		// blur automatically answers the question
 		// due to registered event handler
 		field.blur();
 	}
@@ -302,7 +302,11 @@ Interview._checkValidInput = function (id, field) {
 			if (isOK && question.getMin() && question.getMax()) {
 				var num = Number(field.value);
 				isOK = question.getMin() <= num && num <= question.getMax();
-		}
+			}
+		} else {
+			// no error, but also not a valid input
+			Element.removeClassName(field, "error");
+			return false;
 		}
 	}
 	if (isOK) {

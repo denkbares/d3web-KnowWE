@@ -484,7 +484,7 @@ Interview._typedAnswerChanged = function(id, field) {
 	Interview.answer(id, value, field);
 };
 
-Interview._checkValidInput = function(id, field) {
+Interview._checkValidInput = function (id, field) {
 	var question = KBInfo.getInfoObject(unescape(id));
 	var isOK = true;
 	if (question.getType() == KBInfo.Question.TYPE_NUM) {
@@ -494,6 +494,10 @@ Interview._checkValidInput = function(id, field) {
 				var num = Number(field.value);
 				isOK = question.getMin() <= num && num <= question.getMax();
 			}
+		} else {
+			// no error, but also not a valid input
+			Element.removeClassName(field, "error");
+			return false;
 		}
 	}
 	if (isOK) {
