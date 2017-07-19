@@ -63,6 +63,10 @@
 	border-radius: 4px;
 }
 
+.Node .comment {
+	min-width:	10px;
+}
+
 .Node .action {
 	background-color: #bcf; 
 	background: -moz-linear-gradient(bottom,#bcf,#eef);
