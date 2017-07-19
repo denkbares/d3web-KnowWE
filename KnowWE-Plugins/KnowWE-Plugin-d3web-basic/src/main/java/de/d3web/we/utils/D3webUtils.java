@@ -36,6 +36,10 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.denkbares.events.EventManager;
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.d3web.core.inference.LoopTerminator;
 import de.d3web.core.inference.LoopTerminator.LoopStatus;
 import de.d3web.core.inference.SessionTerminatedException;
@@ -55,10 +59,8 @@ import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.scoring.Score;
-import com.denkbares.strings.Identifier;
-import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.d3web.we.object.D3webTermDefinition;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
@@ -66,7 +68,6 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -118,6 +119,12 @@ public class D3webUtils {
 	}
 
 	public static D3webCompiler getCompiler(Section<?> section) {
+		if (section.get() instanceof KnowledgeBaseType) {
+			Section<PackageCompileType> packageCompileTypeSection = Sections.successor(section, PackageCompileType.class);
+			if (packageCompileTypeSection != null) {
+				section = packageCompileTypeSection;
+			}
+		}
 		if (section.get() instanceof TagHandlerType) {
 			return D3webUtils.getCompiler(section.getArticle());
 		}
