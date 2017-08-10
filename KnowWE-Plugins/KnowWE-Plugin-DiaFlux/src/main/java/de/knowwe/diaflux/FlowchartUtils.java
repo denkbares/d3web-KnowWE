@@ -92,21 +92,11 @@ public class FlowchartUtils {
 	}
 
 	private static HashMap<String, Object> getPropertyMapForFlow(String web, Flow flow) {
-		HashMap<String, Object> propertyMapForFlow = getFlowPropertyMapForWeb(web).get(flow);
-		if (propertyMapForFlow == null) {
-			propertyMapForFlow = new HashMap<>();
-			getFlowPropertyMapForWeb(web).put(flow, propertyMapForFlow);
-		}
-		return propertyMapForFlow;
+		return getFlowPropertyMapForWeb(web).computeIfAbsent(flow, k -> new HashMap<>());
 	}
 
 	private static WeakHashMap<Flow, HashMap<String, Object>> getFlowPropertyMapForWeb(String web) {
-		WeakHashMap<Flow, HashMap<String, Object>> webMap = flowPropertyStore.get(web);
-		if (webMap == null) {
-			webMap = new WeakHashMap<>();
-			flowPropertyStore.put(web, webMap);
-		}
-		return webMap;
+		return flowPropertyStore.computeIfAbsent(web, k -> new WeakHashMap<>());
 	}
 
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, boolean insertResources) {
