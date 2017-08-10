@@ -708,7 +708,7 @@ public class KnowWEUtils {
 	}
 
 	public static String getURLLinkToObjectInfoPage(Identifier identifier) {
-		return "javascript:KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(&quot;" + identifier.toExternalForm() + "&quot;);";
+		return "javascript:KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(&quot;" + Strings.unquote(identifier.toExternalForm()) + "&quot;);";
 	}
 
 	/**
@@ -827,7 +827,7 @@ public class KnowWEUtils {
 				// get the first that was saved before or equal to the given date
 				.filter(pageInfo -> pageInfo.getSaveDate().before(date) || pageInfo.getSaveDate().equals(date))
 				.findFirst()
-				.orElseGet(() -> null);
+				.orElse(null);
 	}
 
 	/**
