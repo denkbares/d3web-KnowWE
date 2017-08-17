@@ -70,7 +70,10 @@ public class VersionMarkupType extends DefaultMarkupType {
 				result.appendHtml("<span style='font-weight:bold'>Version:</span> ");
 			}
 
-			result.appendHtml("<span>" + attributes.getValue("Implementation-Version") + ",</span> ");
+			String version = attributes.getValue("Implementation-Version");
+			if (version != null) {
+				result.appendHtml("<span>" + version + ",</span> ");
+			}
 
 			if ("long".equals(type)) {
 				result.appendHtml("<br><span style='font-weight:bold'>Date:</span> ");
@@ -89,5 +92,4 @@ public class VersionMarkupType extends DefaultMarkupType {
 			result.appendHtml("</div>");
 		});
 	}
-
 }
