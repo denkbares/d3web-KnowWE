@@ -222,10 +222,12 @@ public class Environment {
 
 		setCompilationMode();
 
-		setLogLevels();
+		configureLogging();
 	}
 
-	private void setLogLevels() {
+	private void configureLogging() {
+
+		Log.setContextName("Context " + wikiConnector.getApplicationName() + ":");
 
 		ResourceBundle config = KnowWEUtils.getConfigBundle();
 		Collection<String> logLevelConfigs = getLogLevelConfigs(config);

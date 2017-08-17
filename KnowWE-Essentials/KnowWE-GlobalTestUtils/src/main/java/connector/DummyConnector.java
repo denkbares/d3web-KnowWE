@@ -176,6 +176,11 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public String getApplicationName() {
+		return "Dummy";
+	}
+
+	@Override
 	public String getKnowWEExtensionPath() {
 		if (knowweExtensionPath == null) {
 			return getApplicationRootPath() + File.separator + "KnowWEExtension";

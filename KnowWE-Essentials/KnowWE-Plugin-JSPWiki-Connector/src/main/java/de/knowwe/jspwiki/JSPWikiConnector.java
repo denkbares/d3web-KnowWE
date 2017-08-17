@@ -457,6 +457,11 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	public String getApplicationName() {
+		return engine.getWikiProperties().getProperty("jspwiki.applicationName");
+	}
+
+	@Override
 	public String getKnowWEExtensionPath() {
 		return KnowWEUtils.getRealPath(KnowWEUtils.getConfigBundle()
 				.getString("path_to_knowweextension"));

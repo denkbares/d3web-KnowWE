@@ -173,6 +173,11 @@ public interface WikiConnector {
 	String getBaseUrl();
 
 	/**
+	 * Returns the name of the currently running wiki.
+	 */
+	String getApplicationName();
+
+	/**
 	 * Returns the path to the KnowWEExtensionFolder of the wiki.
 	 *
 	 * @created 17.04.2012
