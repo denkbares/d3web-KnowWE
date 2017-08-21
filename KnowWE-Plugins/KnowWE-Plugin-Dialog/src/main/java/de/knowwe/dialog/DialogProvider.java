@@ -45,7 +45,7 @@ public class DialogProvider implements ToolProvider {
 				"&amp;lang=" + locale;
 		Tool run = new DefaultTool(
 				Icon.RUN,
-				"Run in dialog",
+				"Run in Dialog",
 				"Starts a new dialog with that knowledge base.",
 				"window.open('" + runURL + "');", Tool.CATEGORY_EXECUTE);
 		return new Tool[] { run };
