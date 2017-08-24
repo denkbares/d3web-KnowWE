@@ -116,10 +116,11 @@ public interface WikiConnector {
 	 * from the underlying wiki architecture.
 	 *
 	 * @param path the path of the attachment
-	 * @return the attachment of the specified path
+	 * @return the attachment of the specified path or null, if there is no such attachment
 	 * @throws IOException if the attachment cannot be accessed
 	 * @created 30.08.2011
 	 */
+	@Nullable
 	WikiAttachment getAttachment(String path) throws IOException;
 
 	/**
@@ -130,10 +131,11 @@ public interface WikiConnector {
 	 *
 	 * @param path    the path of the attachment
 	 * @param version the version of the attachment
-	 * @return the attachment of the specified path
+	 * @return the attachment of the specified path or null, if there is no such attachment
 	 * @throws IOException if the attachment cannot be accessed
 	 * @created 30.08.2011
 	 */
+	@Nullable
 	WikiAttachment getAttachment(String path, int version) throws IOException;
 
 	/**
