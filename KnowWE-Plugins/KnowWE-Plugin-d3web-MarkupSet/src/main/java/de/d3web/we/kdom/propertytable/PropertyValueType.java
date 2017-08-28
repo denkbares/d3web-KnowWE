@@ -31,6 +31,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.report.Messages;
+import de.knowwe.d3web.property.LocaleType;
 import de.knowwe.d3web.property.PropertyType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.table.TableCellContent;
@@ -57,8 +58,11 @@ public class PropertyValueType extends AbstractType {
 			}
 
 			Section<PropertyType> propType = Sections.successor(header, PropertyType.class);
+			Section<LocaleType> localeType = Sections.successor(header, LocaleType.class);
 
-			Property property = propType.get().getProperty(propType);
+			Locale locale = localeType != null ? localeType.get().getLocale(localeType) : null;
+			Property property = propType != null ? propType.get().getProperty(propType) : null;
+
 			if (property == null) {
 				// do nothing, results in an error for header
 				return Messages.noMessage();
@@ -92,13 +96,24 @@ public class PropertyValueType extends AbstractType {
 
 			// test if the property is already set for the ROOT language,
 			// because we are going to overwrite this
-			if (object.getInfoStore().contains(property, Locale.ROOT)) {
+			if (object.getInfoStore().contains(property, Locale.ROOT) && locale != null) {
 				return Messages.asList(Messages.objectAlreadyDefinedWarning("Property '"
 						+ property.getName() + "' for object '" + object.getName() + "'"));
 			}
 
-			//noinspection unchecked
-			object.getInfoStore().addValue(property, parsedValue);
+			if (object.getInfoStore().contains(property, locale)) {
+				//noinspection ConstantConditions
+				return Messages.asList(Messages.objectAlreadyDefinedWarning("Property '"
+						+ property.getName() + "' for object '" + object.getName() + "' with locale '" + locale.toString() + "'"));
+			}
+
+			if (locale != null) {
+				object.getInfoStore().addValue(property, locale, parsedValue);
+			}
+			else {
+				//noinspection unchecked
+				object.getInfoStore().addValue(property, parsedValue);
+			}
 			return Messages.noMessage();
 		});
 	}

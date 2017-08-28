@@ -29,7 +29,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 /**
  * Represents a java {@link Locale}. getLocale(...) returns a Locale
  * representing the text content of the Section.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 02.08.2011
  */
@@ -37,19 +37,13 @@ public class LocaleType extends AbstractType {
 
 	public LocaleType() {
 		this.setSectionFinder(new RegexSectionFinder(
-				Pattern.compile("^\\s*\\.\\s*(\\w{2}(?:\\.\\w{2})?)\\s*"), 1));
+				Pattern.compile("^\\s*\\.\\s*(\\w{2,}(?:[\\.-]\\w{2,})?)\\s*"), 1));
 		this.setRenderer(StyleRenderer.LOCALE);
 	}
 
 	public Locale getLocale(Section<LocaleType> s) {
 		String text = s.getText();
-		if (text.contains(".")) {
-			String[] split = text.split("\\.");
-			return new Locale(split[0], split[1]);
-		}
-		else {
-			return new Locale(text);
-		}
+		text = text.replace(".", "-");
+		return Locale.forLanguageTag(text);
 	}
-
 }

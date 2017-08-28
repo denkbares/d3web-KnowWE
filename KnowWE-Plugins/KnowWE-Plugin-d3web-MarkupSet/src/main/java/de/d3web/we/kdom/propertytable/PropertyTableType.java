@@ -18,12 +18,18 @@
  */
 package de.d3web.we.kdom.propertytable;
 
+import java.util.Locale;
+import java.util.regex.Pattern;
+
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Messages;
+import de.knowwe.d3web.property.LocaleType;
+import de.knowwe.d3web.property.PropertyDeclarationType;
 import de.knowwe.d3web.property.PropertyType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -48,11 +54,25 @@ public class PropertyTableType extends DefaultMarkupType {
 		PackageManager.addPackageAnnotation(MARKUP);
 
 		PropertyType propertyType = new PropertyType();
+		LocaleType localType = new LocaleType();
+
+		localType.setSectionFinder(new RegexSectionFinder(
+				Pattern.compile("\\s*\\.\\s*(\\w{2,}(?:[\\.-]\\w{2,})?)\\s*"), 1));
+
 		propertyType.setSectionFinder(new ConstraintSectionFinder(
-				AllTextFinder.getInstance(),
+				new RegexSectionFinder(Pattern.compile("^\\s*(" + PropertyDeclarationType.NAME + ")\\s*"), 1),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1)));
 
+		localType.addCompileScript((D3webHandler<LocaleType>) (compiler, section) -> {
+			Locale locale = section.get().getLocale(section);
+			if (locale == null) {
+				return Messages.asList(Messages.noSuchObjectError("Locale", section.getText()));
+			}
+			return Messages.noMessage();
+		});
+
 		propertyType.addCompileScript((D3webHandler<PropertyType>) (compiler, section) -> {
+			if (section.getText().isEmpty()) return Messages.noMessage();
 			Property<?> property = section.get().getProperty(section);
 			if (property == null) {
 				return Messages.asList(Messages.noSuchObjectError("Property", section.getText()));
@@ -65,6 +85,7 @@ public class PropertyTableType extends DefaultMarkupType {
 			return Messages.noMessage();
 		});
 
+		content.injectTableCellContentChildtype(localType);
 		content.injectTableCellContentChildtype(propertyType);
 
 		NamedObjectReference qRef = new NamedObjectReference();
@@ -73,11 +94,9 @@ public class PropertyTableType extends DefaultMarkupType {
 
 		content.injectTableCellContentChildtype(qRef);
 		content.injectTableCellContentChildtype(new PropertyValueType());
-
 	}
 
 	public PropertyTableType() {
 		super(MARKUP);
 	}
-
 }
