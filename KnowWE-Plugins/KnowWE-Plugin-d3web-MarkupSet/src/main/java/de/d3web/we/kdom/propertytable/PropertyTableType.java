@@ -22,14 +22,14 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Messages;
 import de.knowwe.d3web.property.LocaleType;
 import de.knowwe.d3web.property.PropertyDeclarationType;
+import de.knowwe.d3web.property.PropertyObjectReference;
 import de.knowwe.d3web.property.PropertyType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -88,8 +88,8 @@ public class PropertyTableType extends DefaultMarkupType {
 		content.injectTableCellContentChildtype(localType);
 		content.injectTableCellContentChildtype(propertyType);
 
-		NamedObjectReference qRef = new NamedObjectReference();
-		qRef.setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
+		PropertyObjectReference qRef = new PropertyObjectReference();
+		qRef.setSectionFinder(new ConstraintSectionFinder(AllTextFinderTrimmed.getInstance(),
 				new TableIndexConstraint(0, 1, 1, Integer.MAX_VALUE)));
 
 		content.injectTableCellContentChildtype(qRef);

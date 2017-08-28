@@ -18,20 +18,25 @@
  */
 package de.d3web.we.kdom.propertytable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
-import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.d3web.property.LocaleType;
+import de.knowwe.d3web.property.PropertyDeclarationHandler;
+import de.knowwe.d3web.property.PropertyObjectReference;
 import de.knowwe.d3web.property.PropertyType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.table.TableCellContent;
@@ -87,34 +92,37 @@ public class PropertyValueType extends AbstractType {
 
 			Section<TableCellContent> rowHeader = TableUtils.getRowHeader(section);
 
-			NamedObject object = NamedObjectReference.getObject(compiler,
-					Sections.successor(rowHeader, NamedObjectReference.class));
+			List<NamedObject> objects = PropertyDeclarationHandler.getNamedObjects(compiler, Sections.successor(rowHeader, PropertyObjectReference.class));
 
-			if (object == null) {
+			if (objects.isEmpty()) {
 				return Messages.noMessage();
 			}
 
-			// test if the property is already set for the ROOT language,
-			// because we are going to overwrite this
-			if (object.getInfoStore().contains(property, Locale.ROOT) && locale != null) {
-				return Messages.asList(Messages.objectAlreadyDefinedWarning("Property '"
-						+ property.getName() + "' for object '" + object.getName() + "'"));
-			}
+			Collection<Message> messages = new ArrayList<>();
+			for (NamedObject object : objects) {
 
-			if (object.getInfoStore().contains(property, locale)) {
-				//noinspection ConstantConditions
-				return Messages.asList(Messages.objectAlreadyDefinedWarning("Property '"
-						+ property.getName() + "' for object '" + object.getName() + "' with locale '" + locale.toString() + "'"));
-			}
+				// test if the property is already set for the ROOT language,
+				// because we are going to overwrite this
+				if (object.getInfoStore().contains(property, Locale.ROOT) && locale != null) {
+					messages.add(Messages.objectAlreadyDefinedWarning("Property '"
+							+ property.getName() + "' for object '" + object.getName() + "'"));
+				}
 
-			if (locale != null) {
-				object.getInfoStore().addValue(property, locale, parsedValue);
+				if (object.getInfoStore().contains(property, locale)) {
+					//noinspection ConstantConditions
+					messages.add(Messages.objectAlreadyDefinedWarning("Property '"
+							+ property.getName() + "' for object '" + object.getName() + "' with locale '" + locale.toString() + "'"));
+				}
+
+				if (locale != null) {
+					object.getInfoStore().addValue(property, locale, parsedValue);
+				}
+				else {
+					//noinspection unchecked
+					object.getInfoStore().addValue(property, parsedValue);
+				}
 			}
-			else {
-				//noinspection unchecked
-				object.getInfoStore().addValue(property, parsedValue);
-			}
-			return Messages.noMessage();
+			return messages;
 		});
 	}
 }
