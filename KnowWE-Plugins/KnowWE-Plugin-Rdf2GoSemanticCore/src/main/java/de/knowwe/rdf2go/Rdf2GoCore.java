@@ -210,8 +210,8 @@ public class Rdf2GoCore {
 
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<>(
-					MultiMaps.hashMinimizedFactory(),
-					MultiMaps.hashMinimizedFactory());
+					MultiMaps.minimizedFactory(),
+					MultiMaps.minimizedFactory());
 
 	/**
 	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value
