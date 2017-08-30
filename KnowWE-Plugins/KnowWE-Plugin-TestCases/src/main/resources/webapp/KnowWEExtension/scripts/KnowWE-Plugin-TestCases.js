@@ -324,8 +324,8 @@ jq$(document)
 			var wikiText = _EC.getWikiText(id);
 			if (!/%%TestCaseTable\s*\|/i.test(wikiText)) {
 				wikiText = "%%TestCaseTable\n\n" +
-							"|| Name || Time || Checks\n" +
-							"|       |       |\n" +
+					"|| Name || Time || Checks				|| My Question \n" +
+					"| Start |    0s | My Question = Answer | Answer" +
 							wikiText.substring(wikiText.indexOf("\n")).trim();
 			}
 			return wikiText;

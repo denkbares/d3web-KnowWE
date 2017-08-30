@@ -39,7 +39,7 @@ public class PropertyTableToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		return new Tool[] { new InstantEditTool(Icon.EDITTABLE, "Edit Table",
-				"Provides a spreadsheet like editor.", section, "KNOWWE.plugin.tableEditTool") };
+				"Provides a spreadsheet like editor.", section, "KNOWWE.plugin.propertyTable.editTool") };
 	}
 
 }

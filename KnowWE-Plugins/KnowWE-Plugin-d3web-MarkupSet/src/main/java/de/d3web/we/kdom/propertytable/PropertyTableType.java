@@ -49,6 +49,8 @@ public class PropertyTableType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("PropertyTable");
+		MARKUP.setCompletionDefaultContent("|| Name\t\t|| prompt\t\t|| description \n" +
+				"| Your Question\t| The Question Prompt\t| The Description of the Question ");
 		Table content = new Table();
 		MARKUP.addContentType(content);
 		PackageManager.addPackageAnnotation(MARKUP);

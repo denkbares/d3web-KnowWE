@@ -47,6 +47,8 @@ public class TestCaseTableType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(NAME, new AnnotationRenderer("Name: "));
 		MARKUP.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 		MARKUP.addAnnotationRenderer(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, new AnnotationRenderer("Prefix: "));
+		MARKUP.setCompletionDefaultContent("|| Name || Time || Checks\t\t|| My Question \n" +
+				"| Start |    0s | My Question = Answer\t| Answer ");
 	}
 
 	public TestCaseTableType() {
