@@ -35,7 +35,7 @@ public class RuleContainerFinder implements SectionFinder {
 		int start = Strings.indexOf(text, flags, startTokens);
 		List<SectionFinderResult> results = new ArrayList<>();
 		int end = start;
-		while (start != -1 && end != -1 && end != text.length()) {
+		while (start != -1 && end != text.length()) {
 			int startOffset = AllBeforeStringFinder.addTokenLengthToOffset(text, start, startTokens);
 			end = Strings.indexOf(text, startOffset, flags, endTokens);
 			if (end == -1) end = text.length();
