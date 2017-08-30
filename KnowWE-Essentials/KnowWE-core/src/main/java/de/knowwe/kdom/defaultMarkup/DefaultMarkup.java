@@ -47,6 +47,7 @@ public class DefaultMarkup implements Cloneable {
 	private String deprecatedAlternative = null;
 	private boolean isInline = false;
 	private String documentation = null;
+	private String completionDefaultContent = "";
 
 	public DefaultMarkup(String name) {
 		this.name = name;
@@ -60,6 +61,26 @@ public class DefaultMarkup implements Cloneable {
 		clone.isInline = this.isInline;
 		clone.documentation = this.documentation;
 		return clone;
+	}
+
+	/**
+	 * Returns the default content of the markup, which can be used to fill it in a bit when adding the via auto
+	 * completion.
+	 *
+	 * @return the default content of the markup
+	 */
+	public String getCompletionDefaultContent() {
+		return completionDefaultContent;
+	}
+
+	/**
+	 * Sets the default content of the markup, which can be used to fill it in a bit when adding the markup via auto
+	 * completion.
+	 *
+	 * @param completionDefaultContent the default content to be set
+	 */
+	public void setCompletionDefaultContent(String completionDefaultContent) {
+		this.completionDefaultContent = completionDefaultContent;
 	}
 
 	/**
@@ -356,7 +377,6 @@ public class DefaultMarkup implements Cloneable {
 			this.setSectionFinder(AllTextFinder.getInstance());
 			this.setRenderer((section, user, result) -> result.appendHtml(icon.toHtml()));
 		}
-
 	}
 
 	public class Annotation {
@@ -484,5 +504,4 @@ public class DefaultMarkup implements Cloneable {
 			return pattern;
 		}
 	}
-
 }
