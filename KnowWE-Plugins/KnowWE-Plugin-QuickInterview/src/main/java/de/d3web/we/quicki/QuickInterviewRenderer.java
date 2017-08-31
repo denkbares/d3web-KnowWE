@@ -105,14 +105,14 @@ public class QuickInterviewRenderer {
 					"This interview belongs to multiple knowledge bases, only " +
 							"the first knowledge base (lexicographically) will be used.",
 					"class", "warning");
-
 		}
 		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(section);
 
 		if (knowledgeBase == null) {
 			if (user.isRenderingPreview()) {
 				result.append("%%information Interview is not rendered in live preview. /%");
-			} else {
+			}
+			else {
 				result.appendHtmlElement(
 						"span",
 						"No knowledge base found for this interview.",
@@ -310,10 +310,21 @@ public class QuickInterviewRenderer {
 
 		boolean visible = isVisible(container);
 		boolean indicated = isThisOrFollowUpIndicated(container);
+		String cssClass = "";
+		String title = container.getInfoStore().getValue(MMInfo.DESCRIPTION);
+		if (title == null) {
+			title = "";
+		}
+		else {
+			cssClass = " tooltipster";
+			title = "title='" + title + "' ";
+		}
 		buffi.appendHtml("<div id='" + Strings.encodeHtml(id)
 				+ "' " + "class='questionnaire point"
 				+ (visible ? "Down" : "Right")
+				+ cssClass
 				+ (indicated ? " indicated" : "") + "' "
+				+ title
 				+ "style='margin-left: " + margin + "px;' >");
 
 		buffi.append(Strings.encodeHtml(getLabel(container)));
@@ -453,7 +464,6 @@ public class QuickInterviewRenderer {
 		else {
 			return null;
 		}
-
 	}
 
 	/**
@@ -692,7 +702,6 @@ public class QuickInterviewRenderer {
 			appendEnclosingTagOnClick("span", "" + label + "", cssclass,
 					jscall, null, null,
 					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
-
 		}
 
 		// also render the unknown alternative for choice questions
@@ -862,5 +871,4 @@ public class QuickInterviewRenderer {
 	private String getID() {
 		return "quicki" + counter++;
 	}
-
 }
