@@ -37,14 +37,11 @@ public class PropertyType extends AbstractType {
 
 	@SuppressWarnings("rawtypes")
 	public Property getProperty(Section<PropertyType> s) {
-		if (s.get() instanceof PropertyType) {
-			try {
-				return Property.getUntypedProperty(s.getText().trim());
-			}
-			catch (NoSuchElementException e) {
-			}
+		try {
+			return Property.getUntypedProperty(s.getText().trim());
 		}
-		return null;
+		catch (NoSuchElementException e) {
+			return null;
+		}
 	}
-
 }

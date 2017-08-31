@@ -21,6 +21,7 @@ package de.d3web.we.kdom.propertytable;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -77,7 +78,12 @@ public class PropertyTableType extends DefaultMarkupType {
 			if (section.getText().isEmpty()) return Messages.noMessage();
 			Property<?> property = section.get().getProperty(section);
 			if (property == null) {
-				return Messages.asList(Messages.noSuchObjectError("Property", section.getText()));
+				if (Strings.isBlank(section.getText())) {
+					return Messages.asList(Messages.error("No Property found"));
+				}
+				else {
+					return Messages.asList(Messages.noSuchObjectError("Property", section.getText()));
+				}
 			}
 			else if (!property.canParseValue()) {
 				return Messages.asList(Messages.error("Unable to parse values for property '"

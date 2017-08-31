@@ -65,7 +65,7 @@ public class PropertyValueType extends AbstractType {
 			Section<PropertyType> propType = Sections.successor(header, PropertyType.class);
 			Section<LocaleType> localeType = Sections.successor(header, LocaleType.class);
 
-			Locale locale = localeType != null ? localeType.get().getLocale(localeType) : null;
+			Locale locale = localeType != null ? localeType.get().getLocale(localeType) : Locale.ROOT;
 			Property property = propType != null ? propType.get().getProperty(propType) : null;
 
 			if (property == null) {
@@ -101,17 +101,9 @@ public class PropertyValueType extends AbstractType {
 			Collection<Message> messages = new ArrayList<>();
 			for (NamedObject object : objects) {
 
-				// test if the property is already set for the ROOT language,
-				// because we are going to overwrite this
-				if (object.getInfoStore().contains(property, Locale.ROOT) && locale != null) {
+				if (object.getInfoStore().contains(property, locale)) {
 					messages.add(Messages.objectAlreadyDefinedWarning("Property '"
 							+ property.getName() + "' for object '" + object.getName() + "'"));
-				}
-
-				if (object.getInfoStore().contains(property, locale)) {
-					//noinspection ConstantConditions
-					messages.add(Messages.objectAlreadyDefinedWarning("Property '"
-							+ property.getName() + "' for object '" + object.getName() + "' with locale '" + locale.toString() + "'"));
 				}
 
 				if (locale != null) {

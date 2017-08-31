@@ -34,9 +34,11 @@ jq$(document).ready(function () {
 	KNOWWE.plugin.propertyTable.editTool = KNOWWE.plugin.tableEditTool.create(
 		function (callback, prefix, spreadsheet, row, col) {
 			var ajaxFun, ajaxPrefix = prefix;
+			var scope;
 			if (row === 0) {
-				if (col === 0) {
-
+				if (col >= 0) {
+					ajaxFun = AutoComplete.sendCompletionAction
+					scope = 'PropertyTable'
 				}
 			}
 			else if (col === 0) {
@@ -45,7 +47,7 @@ jq$(document).ready(function () {
 			ajaxFun(function (byAjax) {
 				AutoComplete.unquoteTermIdentifiers(byAjax);
 				callback(byAjax);
-			}, ajaxPrefix);
+			}, ajaxPrefix, scope);
 		});
 
 	KNOWWE.plugin.propertyTable.editTool.getWikiText = function (id) {
