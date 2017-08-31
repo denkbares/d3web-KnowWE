@@ -59,8 +59,10 @@ public class PropertyTableType extends DefaultMarkupType {
 		PropertyType propertyType = new PropertyType();
 		LocaleType localType = new LocaleType();
 
-		localType.setSectionFinder(new RegexSectionFinder(
-				Pattern.compile("\\s*\\.\\s*(\\w{2,}(?:[\\.-]\\w{2,})?)\\s*"), 1));
+		localType.setSectionFinder(new ConstraintSectionFinder(
+				new RegexSectionFinder(
+						Pattern.compile("\\s*\\.\\s*(\\w{2,}(?:[\\.-]\\w{2,})?)\\s*"), 1),
+				new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1)));
 
 		propertyType.setSectionFinder(new ConstraintSectionFinder(
 				new RegexSectionFinder(Pattern.compile("^\\s*(" + PropertyDeclarationType.NAME + ")\\s*"), 1),
