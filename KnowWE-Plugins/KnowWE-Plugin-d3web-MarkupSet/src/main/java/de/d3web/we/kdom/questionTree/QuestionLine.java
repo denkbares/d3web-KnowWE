@@ -22,9 +22,8 @@ package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
 
-import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionDate;
-import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.KnowledgeBase;
+import de.d3web.core.knowledge.terminology.*;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
@@ -34,6 +33,7 @@ import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.object.AbortCheck;
 import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -107,6 +107,7 @@ public class QuestionLine extends AbstractType {
 			ConstraintSectionFinder f = new ConstraintSectionFinder(new AllTextFinderTrimmed());
 			f.addConstraint(SingleChildConstraint.getInstance());
 			this.setSectionFinder(f);
+			this.addCompileScript(Priority.HIGHER, new CreateQuestionHandler());
 			this.addCompileScript(IndicationHandler.getInstance());
 			this.addCompileScript(Priority.ABOVE_DEFAULT, new QuestionTreeQuestionRelationScript());
 		}
@@ -118,6 +119,73 @@ public class QuestionLine extends AbstractType {
 							s.getParent(), QuestionTypeDeclaration.class));
 		}
 
+	}
+
+	static class CreateQuestionHandler implements D3webHandler<QuestionDefinition> {
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public Collection<Message> create(D3webCompiler compiler,
+										  Section<QuestionDefinition> section) {
+
+			Identifier identifier = section.get().getTermIdentifier(section);
+			Class<?> termObjectClass = section.get().getTermObjectClass(section);
+			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
+			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
+					identifier);
+
+			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
+			if (abortCheck.hasErrors()) {
+				// we clear term objects from previous compilations that didn't have errors
+				section.get().storeTermObject(compiler, section, null);
+				return abortCheck.getErrors();
+			}
+
+			if (abortCheck.termExist()) {
+				section.get().storeTermObject(compiler, section, (Question) abortCheck.getNamedObject());
+			} else {
+				KnowledgeBase kb = getKnowledgeBase(compiler);
+
+				String name = section.get().getTermName(section);
+
+				QuestionDefinition.QuestionType questionType = section.get().getQuestionType(section);
+				if (questionType == null) {
+					return Messages.asList(Messages.objectCreationError(
+							"No type found for question '" + name + "'"));
+				}
+
+				Question question = null;
+				if (questionType == QuestionDefinition.QuestionType.OC) {
+					question = new QuestionOC(kb, name);
+				}
+				else if (questionType == QuestionDefinition.QuestionType.MC) {
+					question = new QuestionMC(kb, name);
+				}
+				else if (questionType == QuestionDefinition.QuestionType.NUM) {
+					question = new QuestionNum(kb, name);
+				}
+				else if (questionType == QuestionDefinition.QuestionType.YN) {
+					question = new QuestionYN(kb, name);
+				}
+				else if (questionType == QuestionDefinition.QuestionType.DATE) {
+					question = new QuestionDate(kb, name);
+				}
+				else if (questionType == QuestionDefinition.QuestionType.INFO) {
+					question = new QuestionZC(kb, name);
+				}
+				else if (questionType == QuestionDefinition.QuestionType.TEXT) {
+					question = new de.d3web.core.knowledge.terminology.QuestionText(kb, name);
+				}
+				else {
+					return Messages.asList(Messages.error(
+							"No valid question type found for question '" + identifier + "'"));
+				}
+				section.get().storeTermObject(compiler, section, question);
+			}
+
+			return Messages.noMessage();
+
+		}
 	}
 
 	/**

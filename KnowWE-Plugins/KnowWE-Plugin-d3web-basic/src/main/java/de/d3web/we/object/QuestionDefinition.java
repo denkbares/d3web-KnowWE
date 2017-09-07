@@ -56,7 +56,6 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	public QuestionDefinition() {
-		this.addCompileScript(Priority.HIGHER, new CreateQuestionHandler());
 		this.addCompileScript(Priority.LOW, new TerminologyLoopDetectionHandler<Question>());
 		this.addCompileScript(Priority.LOWER, new TerminologyLoopResolveHandler<Question>());
 		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
@@ -86,72 +85,5 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
-
-	static class CreateQuestionHandler implements D3webHandler<QuestionDefinition> {
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public Collection<Message> create(D3webCompiler compiler,
-										  Section<QuestionDefinition> section) {
-
-			Identifier identifier = section.get().getTermIdentifier(section);
-			Class<?> termObjectClass = section.get().getTermObjectClass(section);
-			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
-			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
-					identifier);
-
-			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
-			if (abortCheck.hasErrors()) {
-				// we clear term objects from previous compilations that didn't have errors
-				section.get().storeTermObject(compiler, section, null);
-				return abortCheck.getErrors();
-			}
-
-			if (abortCheck.termExist()) {
-				section.get().storeTermObject(compiler, section, (Question) abortCheck.getNamedObject());
-			} else {
-				KnowledgeBase kb = getKnowledgeBase(compiler);
-
-				String name = section.get().getTermName(section);
-
-				QuestionType questionType = section.get().getQuestionType(section);
-				if (questionType == null) {
-					return Messages.asList(Messages.objectCreationError(
-							"No type found for question '" + name + "'"));
-				}
-
-				Question question = null;
-				if (questionType == QuestionType.OC) {
-					question = new QuestionOC(kb, name);
-				}
-				else if (questionType == QuestionType.MC) {
-					question = new QuestionMC(kb, name);
-				}
-				else if (questionType == QuestionType.NUM) {
-					question = new QuestionNum(kb, name);
-				}
-				else if (questionType == QuestionType.YN) {
-					question = new QuestionYN(kb, name);
-				}
-				else if (questionType == QuestionType.DATE) {
-					question = new QuestionDate(kb, name);
-				}
-				else if (questionType == QuestionType.INFO) {
-					question = new QuestionZC(kb, name);
-				}
-				else if (questionType == QuestionType.TEXT) {
-					question = new QuestionText(kb, name);
-				}
-				else {
-					return Messages.asList(Messages.error(
-							"No valid question type found for question '" + identifier + "'"));
-				}
-				section.get().storeTermObject(compiler, section, question);
-			}
-
-			return Messages.noMessage();
-
-		}
-	}
 
 }

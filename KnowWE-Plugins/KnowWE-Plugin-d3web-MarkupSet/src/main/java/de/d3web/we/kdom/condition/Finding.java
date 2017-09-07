@@ -20,9 +20,6 @@
 
 package de.d3web.we.kdom.condition;
 
-import java.util.List;
-
-import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.CondNot;
@@ -39,13 +36,11 @@ import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.AnswerReference;
+import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.QuestionReference;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
-import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
@@ -96,15 +91,16 @@ public class Finding extends D3webCondition<Finding> {
 	@Override
 	protected Condition createCondition(D3webCompiler compiler, Section<Finding> section) {
 
-		Section<QuestionReference> qRef = Sections.child(section,
-				QuestionReference.class);
+		Section<D3webTerm> qRef = getQuestionSection(section);
 
-		Section<AnswerReference> aRef = Sections.successor(section, AnswerReference.class);
+		Section<D3webTerm> aRef = getAnswerSection(section);
 		if (qRef != null && aRef != null) {
-			Question question = qRef.get().getTermObject(compiler, qRef);
+			//noinspection unchecked
+			Question question = (Question) qRef.get().getTermObject(compiler, qRef);
 			Value value = null;
 			if (question instanceof QuestionChoice) {
-				Choice answer = aRef.get().getTermObject(compiler, aRef);
+				//noinspection unchecked
+				Choice answer = (Choice) aRef.get().getTermObject(compiler, aRef);
 				if (answer == null) {
 					return null;
 				}
@@ -140,36 +136,12 @@ public class Finding extends D3webCondition<Finding> {
 		return null;
 	}
 
-}
+	protected Section<D3webTerm> getQuestionSection(Section<Finding> section) {
+		return Sections.cast(Sections.child(section, QuestionReference.class), D3webTerm.class);
+	}
 
-class FindingFinder implements SectionFinder {
-
-	private final AllTextFinderTrimmed textFinder = new AllTextFinderTrimmed();
-
-	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		if (Strings.containsUnquoted(text, "=")) {
-
-			// if the value is a number this is not taken as a Finding (but left
-			// for NumericalFinding)
-			List<StringFragment> list = Strings.splitUnquoted(text, "=");
-			// Hotfix for AOB when there is nothing behind the "="
-			if (list.size() < 2) return null;
-			StringFragment answer = list.get(1);
-			boolean isNumber = false;
-			try {
-				//noinspection ResultOfMethodCallIgnored
-				Double.parseDouble(answer.getContent().trim());
-				isNumber = true;
-			}
-			catch (NumberFormatException ignored) {
-			}
-			// return it if answer is NOT a number
-			if (!isNumber) {
-				return textFinder.lookForSections(text, father, type);
-			}
-		}
-		return null;
+	protected Section<D3webTerm> getAnswerSection(Section<Finding> section) {
+		return Sections.cast(Sections.successor(section, AnswerReference.class), D3webTerm.class);
 	}
 
 }
