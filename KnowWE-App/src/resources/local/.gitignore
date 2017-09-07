@@ -1,4 +1,3 @@
 *
 !*.default
-!jspwiki-readonly.policy
-!jspwiki-authonly.policy
+!*.policy
