@@ -26,36 +26,10 @@
 //var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 
 
-/**
- * The KNOWWE global namespace object. If KNOWWE is already defined, the
- * existing KNOWWE object will not be overwritten so that defined namespaces are
- * preserved.
- */
-if (typeof KNOWWE == "undefined" || !KNOWWE) {
-	var KNOWWE = {};
-}
+KNOWWE = KNOWWE || {};
+KNOWWE.plugin = KNOWWE.plugin || {};
 
 var toSelect;
-/**
- * The KNOWWE.plugin global namespace object. If KNOWWE.plugin is already
- * defined, the existing KNOWWE.plugin object will not be overwritten so that
- * defined namespaces are preserved.
- */
-if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
-	KNOWWE.plugin = function () {
-		return {}
-	}
-}
-
-/**
- * The KNOWWE.plugin.quicki global namespace object. If KNOWWE.plugin.quicki is
- * already defined, the existing KNOWWE.plugin.quicki object will not be
- * overwritten so that defined namespaces are preserved.
- */
-KNOWWE.plugin.quicki = function () {
-	return {}
-}();
-
 
 /**
  * Namespace: KNOWWE.plugin.quicki The quick interview (quicki) namespace.
@@ -89,51 +63,51 @@ KNOWWE.plugin.quicki = function () {
 		initialize: function () {
 
 			// select all elements with class="answer"
-			jq$('.answer').click(function (event) {
+			jq$('.answer').unbind('click').click(function (event) {
 				KNOWWE.plugin.quicki.answerClicked(event);
 			});
 			// select all elements with class="answerClicked"
-			jq$('.answerClicked').click(function (event) {
+			jq$('.answerClicked').unbind('click').click(function (event) {
 				KNOWWE.plugin.quicki.answerClicked(event);
 			});
 
 			// select all elements with class="(.*)answerunknown(.*)"
 			// ---> class="answerunknown" and class="answerunknownClicked"
-			jq$('.answerunknown').click(function (event) {
+			jq$('.answerunknown').unbind('click').click(function (event) {
 				KNOWWE.plugin.quicki.answerUnknownClicked(event);
 			});
 
 			// select all elements with class="answerMC"
-			jq$('.answerMC').click(function (event) {
+			jq$('.answerMC').unbind('click').click(function (event) {
 				KNOWWE.plugin.quicki.answerMCCollect(event);
 			});
 			// select all elements with class="answerMCClicked"
-			jq$('.answerMCClicked').click(function (event) {
+			jq$('.answerMCClicked').unbind('click').click(function (event) {
 				KNOWWE.plugin.quicki.answerMCCollect(event);
 			});
 
 			// select all elements with class="(.*)questionnaire(.*)"
 			// ---> class="questionnaire" and class="emptyQuestionnaire"
-			jq$('.questionnaire').click(function (event) {
+			jq$('.questionnaire').unbind('click').click(function (event) {
 				KNOWWE.plugin.quicki.toggleQuestionnaireVisibility(event);
 			});
 
 			// add click-event for divs with class='num-ok' to submit numValues
 			// select all elements with class="num-ok"
-			jq$('.num-ok').click(function (event) {
+			jq$('.num-ok').unbind('click').click(function (event) {
 				KNOWWE.plugin.quicki.numAnswerClicked(event);
 			});
 			// select all elements with class="numinput"
-			jq$('.numinput').change(function (event) {
+			jq$('.numinput').unbind('change').change(function (event) {
 				KNOWWE.plugin.quicki.numAnswerClicked(event);
 			});
 			// select all elements with class="inputdate"
-			jq$('.inputdate').change(function (event) {
+			jq$('.inputdate').unbind('change').change(function (event) {
 				KNOWWE.plugin.quicki.dateAnswerClicked(event);
 			});
 
 			// select all elements with class="inputtextvalue"
-			jq$('.inputtextvalue').change(function (event) {
+			jq$('.inputtextvalue').unbind('change').change(function (event) {
 				KNOWWE.plugin.quicki.submitTextValue(event);
 			});
 
