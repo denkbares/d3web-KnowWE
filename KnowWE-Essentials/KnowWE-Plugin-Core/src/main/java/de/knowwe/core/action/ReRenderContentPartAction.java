@@ -70,6 +70,12 @@ public class ReRenderContentPartAction extends AbstractAction {
 			if (renderResult != null && context.getWriter() != null) {
 				context.setContentType("text/html; charset=UTF-8");
 				JSONObject response = new JSONObject();
+				int counter = -1;
+				String counterParam = context.getParameter("counter");
+				if (counterParam != null) {
+					counter = Integer.parseInt(counterParam);
+				}
+				response.put("counter", counter);
 				try {
 					response.put("html", renderResult);
 					response.put("status", KnowWEUtils.getOverallStatus(context));
