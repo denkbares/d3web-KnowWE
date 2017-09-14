@@ -85,28 +85,26 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		}
 
 		/* Rule rule = */
-		if(!conditions.isEmpty() && !actions.isEmpty()) {
-			RuleCreationUtil.createRules(conditions, actions);
-		}
+		RuleCreationUtil.createRules(conditions, actions);
 		throw CompilerMessage.info();
 	}
-
 
 	private List<PSAction> createAction(D3webCompiler compiler, Section<CellContent> contentCell) {
 		List<PSAction> result = new ArrayList<>();
 		List<Section<CellContentValue>> cells = Sections.successors(contentCell, CellContentValue.class);
 		for (Section<CellContentValue> valueSection : cells) {
-
+			PSAction action = null;
 			CellContentValue.CellType type = valueSection.get().getType(compiler, valueSection);
 			if (type == CellContentValue.CellType.ANSWER_REFERENCE) {
-				result.add(createActionSetValue(compiler, valueSection));
+				action = createActionSetValue(compiler, valueSection);
 			}
 			else if (type == CellContentValue.CellType.QUESTION_NUM_VALUE) {
-				result.add(createNumActionSetValue(compiler, valueSection));
+				action = createNumActionSetValue(compiler, valueSection);
 			}
 			else if (type == CellContentValue.CellType.SOLUTION_SCORE) {
-				result.add(createActionHeuristicPS(compiler, valueSection));
+				action = createActionHeuristicPS(compiler, valueSection);
 			}
+			if (action != null) result.add(action);
 		}
 		return result;
 	}
@@ -146,25 +144,17 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		List<Section<CellContentValue>> cells = Sections.successors(cell, CellContentValue.class);
 		for (Section<CellContentValue> valueSection : cells) {
 			CellContentValue.CellType type = valueSection.get().getType(compiler, valueSection);
+			Condition condition = null;
 			if (type == CellContentValue.CellType.ANSWER_REFERENCE) {
-				Condition condEqual = createCondEqual(compiler, valueSection);
-				if(condEqual != null) {
-					result.add(condEqual);
-				}
+				condition = createCondEqual(compiler, valueSection);
 			}
 			else if (type == CellContentValue.CellType.QUESTION_NUM_VALUE) {
-				Condition condNum = createCondNum(compiler, valueSection);
-				if(condNum != null) {
-					result.add(condNum);
-				}
+				condition = createCondNum(compiler, valueSection);
 			}
 			else if (type == CellContentValue.CellType.SOLUTION_STATE) {
-
-				Condition condDState = createCondDState(compiler, valueSection);
-				if(condDState != null) {
-					result.add(condDState);
-				}
+				condition = createCondDState(compiler, valueSection);
 			}
+			if (condition != null) result.add(condition);
 		}
 		return result;
 	}
