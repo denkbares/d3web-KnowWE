@@ -26,13 +26,19 @@ import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EndLineComment;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class RuleAction extends AbstractType {
 
 	public RuleAction() {
-		setSectionFinder(AllTextFinder.getInstance());
+		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		EndLineComment comment = new EndLineComment();
 		comment.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(comment);
@@ -40,5 +46,10 @@ public class RuleAction extends AbstractType {
 		for (Type action : actions) {
 			this.addChildType(action);
 		}
+		setRenderer((section, user, result) -> {
+			result.appendHtml("<div class='RuleAction'>");
+			DelegateRenderer.getInstance().render(section, user, result);
+			result.appendHtml("</div>");
+		});
 	}
 }

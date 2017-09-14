@@ -41,6 +41,7 @@ import de.d3web.we.kdom.rules.action.UnknownActionContainer;
 import de.d3web.we.kdom.rules.condition.ExceptionConditionContainer;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
@@ -55,9 +56,9 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class RuleCompileScript implements D3webCompileScript<RuleType> {
 
-	private static final String DEFAULT_RULE_STORE_KEY = "DEFAULT_RULE_STORE_KEY";
-	private static final String ELSE_RULE_STORE_KEY = "ELSE_RULE_STORE_KEY";
-	private static final String UNKNOWN_RULE_STORE_KEY = "UNKNOWN_RULE_STORE_KEY";
+	public static final String DEFAULT_RULE_STORE_KEY = "DEFAULT_RULE_STORE_KEY";
+	public static final String ELSE_RULE_STORE_KEY = "ELSE_RULE_STORE_KEY";
+	public static final String UNKNOWN_RULE_STORE_KEY = "UNKNOWN_RULE_STORE_KEY";
 
 	@Override
 	public void compile(D3webCompiler compiler, Section<RuleType> ruleSection) throws CompilerMessage {
@@ -102,7 +103,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 		createRules(compiler, ruleSection, ntUnknownCondition, null, unknownActions, UNKNOWN_RULE_STORE_KEY);
 	}
 
-	private void createRules(D3webCompiler compiler, Section<RuleType> ruleSection, Condition condition, Condition exceptCondition, Collection<RuleAction> thenAction, String key) {
+	public static void createRules(D3webCompiler compiler, Section<? extends Type> ruleSection, Condition condition, Condition exceptCondition, Collection<RuleAction> thenAction, String key) {
 		Collection<Rule> rules = new ArrayList<>(thenAction.size());
 		for (RuleAction action : thenAction) {
 			@SuppressWarnings("unchecked")
@@ -223,23 +224,13 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Collection<Rule> getRules(D3webCompiler compiler, Section<RuleType> section, String ruleStoreKey) {
+	public static Collection<Rule> getRules(D3webCompiler compiler, Section<? extends Type> section, String ruleStoreKey) {
 		Collection<Rule> rules = (Collection<Rule>) section.getObject(compiler, ruleStoreKey);
 		if (rules == null) {
 			return Collections.emptyList();
 		}
 		else {
 			return rules;
-		}
-	}
-
-	private static class RuleAction {
-		final PSAction action;
-		final Class psContext;
-
-		RuleAction(PSAction action, Class psContext) {
-			this.action = action;
-			this.psContext = psContext;
 		}
 	}
 

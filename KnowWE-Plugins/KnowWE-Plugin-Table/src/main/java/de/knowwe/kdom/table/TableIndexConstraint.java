@@ -20,9 +20,13 @@ package de.knowwe.kdom.table;
 
 import java.util.List;
 
+import com.denkbares.utils.Pair;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.jspwiki.types.TableRow;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 
 /**
@@ -40,6 +44,12 @@ public class TableIndexConstraint implements SectionFinderConstraint {
 	private int minRow;
 	private int maxRow;
 
+	private int minColumnFromLast;
+	private int maxColumnFromLast;
+
+	private int minRowFromLast;
+	private int maxRowFromLast;
+
 	/**
 	 * @param minColumn
 	 * @param maxColumn
@@ -54,7 +64,7 @@ public class TableIndexConstraint implements SectionFinderConstraint {
 	}
 
 	public TableIndexConstraint() {
-		this(0, Integer.MAX_VALUE, 0, Integer.MAX_VALUE);
+		// using setters
 	}
 
 	public void setColumnConstraints(int minColumn, int maxColumn) {
@@ -71,16 +81,69 @@ public class TableIndexConstraint implements SectionFinderConstraint {
 		this.maxRow = maxRow;
 	}
 
+	/**
+	 * Specify your accepted rows counting from last row backwards
+	 *
+	 * @param minRow starting range, offset counted from last
+	 * @param maxRow ending range, offset counted from last
+	 */
+	public void setRowConstraintsFromLast(int minRow, int maxRow) {
+		this.minRowFromLast = minRow;
+		this.maxRowFromLast = maxRow;
+	}
+
+	/**
+	 * Specify your accepted columns counting from last column backwards
+	 *
+	 * @param minColumn starting range, offset counted from last
+	 * @param maxColumn ending range, offset counted from last
+	 */
+	public void setColumnConstraintsFromLast(int minColumn, int maxColumn) {
+		this.minColumnFromLast = minColumn;
+		this.maxColumnFromLast = maxColumn;
+	}
+
 	public void setRowConstraints(int index) {
 		setRowConstraints(index, index);
 	}
 
 	@Override
 	public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
-		int column = TableUtils.getColumn(father);
-		int row = TableUtils.getRow(father);
-		if (column >= minColumn && column < maxColumn && row >= minRow && row < maxRow) return;
+		int currentColumn = TableUtils.getColumn(father);
+		int currentRow = TableUtils.getRow(father);
+		Pair<Integer, Integer> tableSize = determineTableSize(father);
+		if (columnRangeIsOk(currentColumn, tableSize) && rowRangeIsOk(currentRow, tableSize)) {
+			return;
+		}
+
 		found.clear();
+	}
+
+	private boolean columnRangeIsOk(int currentColumn, Pair<Integer, Integer> tableSize) {
+		int numberOfColumns = tableSize.getA();
+		// we support counting backwards from the end
+		return (currentColumn >= minColumn && currentColumn < maxColumn)
+				|| (currentColumn >= numberOfColumns - minColumnFromLast
+				&& currentColumn < numberOfColumns - maxColumnFromLast);
+	}
+
+	private boolean rowRangeIsOk(int currentRow, Pair<Integer, Integer> tableSize) {
+		int numberOfRows = tableSize.getB();
+		// we support counting backwards from the end
+		return (currentRow >= minRow && currentRow < maxRow)
+				|| (currentRow >= numberOfRows - minRowFromLast
+				&& currentRow < numberOfRows - maxRowFromLast);
+	}
+
+	private Pair<Integer, Integer> determineTableSize(Section<?> father) {
+		Section<Table> tableSection = Sections.ancestor(father, Table.class);
+		assert tableSection != null;
+		Article article = Article.createArticle("\n"+tableSection.getText(), "tmp", "tmp");
+		List<Section<TableRow>> lines = Sections.successors(article.getRootSection(), TableRow.class);
+		if(! lines.isEmpty()) {
+			return new Pair<>(Sections.successors(lines.iterator().next(), de.knowwe.jspwiki.types.TableCell.class).size(), lines.size());
+		}
+		return new Pair(0,0);
 	}
 
 }

@@ -24,7 +24,7 @@ import de.d3web.we.kdom.rules.RuleType;
 import de.knowwe.core.kdom.AbstractType;
 
 /**
- * ConditionContainer of the Rule, instanciates the condition
+ * ConditionContainer of the Rule, instantiates the condition
  * composite
  * 
  * 

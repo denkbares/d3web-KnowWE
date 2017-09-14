@@ -8,10 +8,7 @@ import java.util.regex.Pattern;
 
 import com.denkbares.strings.Strings;
 import de.d3web.abstraction.ActionSetQuestion;
-import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
-import de.d3web.core.inference.PSMethodRulebased;
-import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
 import de.d3web.core.inference.condition.CondKnown;
@@ -31,13 +28,12 @@ import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
-import de.d3web.core.manage.RuleFactory;
 import de.d3web.core.session.values.ChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.scoring.ActionHeuristicPS;
 import de.d3web.scoring.Score;
-import de.d3web.scoring.inference.PSMethodHeuristic;
 import de.d3web.we.kdom.condition.SolutionStateType;
+import de.d3web.we.kdom.rules.utils.RuleCreationUtil;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -90,29 +86,11 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 
 		/* Rule rule = */
 		if(!conditions.isEmpty() && !actions.isEmpty()) {
-			createRules(conditions, actions);
+			RuleCreationUtil.createRules(conditions, actions);
 		}
 		throw CompilerMessage.info();
 	}
 
-	private void createRules(List<Condition> conditions, List<PSAction> actions) {
-		for (PSAction action : actions) {
-			Condition condition = combineConditions(conditions);
-			Class<? extends PSMethodRulebased> psMethodContext;
-			if (action instanceof ActionSetQuestion) {
-				psMethodContext = PSMethodAbstraction.class;
-			}
-			else {
-				psMethodContext = PSMethodHeuristic.class;
-			}
-			RuleFactory.createRule(action, condition, null, psMethodContext);
-		}
-	}
-
-	private Condition combineConditions(List<Condition> conditions) {
-		if (conditions.size() == 1) return conditions.get(0);
-		return new CondAnd(conditions);
-	}
 
 	private List<PSAction> createAction(D3webCompiler compiler, Section<CellContent> contentCell) {
 		List<PSAction> result = new ArrayList<>();
@@ -175,10 +153,17 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 				}
 			}
 			else if (type == CellContentValue.CellType.QUESTION_NUM_VALUE) {
-				result.add(createCondNum(compiler, valueSection));
+				Condition condNum = createCondNum(compiler, valueSection);
+				if(condNum != null) {
+					result.add(condNum);
+				}
 			}
 			else if (type == CellContentValue.CellType.SOLUTION_STATE) {
-				result.add(createCondDState(compiler, valueSection));
+
+				Condition condDState = createCondDState(compiler, valueSection);
+				if(condDState != null) {
+					result.add(condDState);
+				}
 			}
 		}
 		return result;

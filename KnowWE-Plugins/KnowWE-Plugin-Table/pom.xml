@@ -44,5 +44,10 @@
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
 			<version>${knowwe.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
+			<version>12.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -21,7 +21,7 @@ public class SingleAction extends AbstractType {
 		t.setSectionFinder(new AllTextFinderTrimmed());
 	}
 
-	class SingleActionFinder implements SectionFinder {
+	static class SingleActionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

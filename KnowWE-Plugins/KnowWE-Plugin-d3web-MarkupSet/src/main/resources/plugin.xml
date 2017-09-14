@@ -63,6 +63,16 @@
 		<parameter id="css" value="KnowWE-Plugin-d3web-MarkupSet.css" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="RuleTableMarkup">
+		<parameter id="class" value="de.d3web.we.kdom.ruletable.RuleTableMarkup" />
+		<parameter id="name" value="RuleTableMarkup" />
+		<parameter id="description" value="Defines markup for a rule table." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="css" value="KnowWE-Plugin-d3web-MarkupSet.css" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="AbstractionCellContent">
 		<parameter id="class" value="de.d3web.we.kdom.abstractiontable.CellContent" />
 		<parameter id="name" value="QuestionTreeRootType" />
@@ -121,6 +131,16 @@
 		<parameter id="priority" value="4.55" />
 		<parameter id="compilepriority" value="0" />
 		<parameter id="scope" value="AbstractionTableMarkup/**/TableLine" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="RuleTableLineHandler">
+		<parameter id="class" value="de.d3web.we.kdom.ruletable.LineHandler" />
+		<parameter id="name" value="RuleTableLineHandler" />
+		<parameter id="description" value="Type RuleTableLineHandler" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4.55" />
+		<parameter id="compilepriority" value="200" />
+		<parameter id="scope" value="RuleTableMarkup/**/TableLine" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="AbstractionLineRenderer">

@@ -10,11 +10,11 @@
 	padding: 0 2px 0 2px;
 }
 
-.conditionTrue .IfCondition {
+.conditionTrue .IfCondition, .conditionTrue .RuleAction {
 	background-color: #CFFFCF;
 }
 
-.conditionFalse .IfCondition {
+.conditionFalse .IfCondition, .conditionFalse .RuleAction {
 	background-color: #FFCFCF;
 }
 
