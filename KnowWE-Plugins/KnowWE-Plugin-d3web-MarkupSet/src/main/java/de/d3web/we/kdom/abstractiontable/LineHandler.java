@@ -11,7 +11,6 @@ import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethodRulebased;
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -67,44 +66,47 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		Iterator<Section<CellContent>> cellIter = cells.iterator();
 
 		List<Condition> conditions = new ArrayList<>(cells.size());
-		PSAction action = null;
+		List<PSAction> actions = new ArrayList<>();
 
 		for (; cellIter.hasNext(); ) {
 			Section<CellContent> cell = cellIter.next();
 			if (cellIter.hasNext()) {
 				// it's a condition cell
-				Condition condition = createCondition(compiler, cell);
-				if (condition != null) conditions.add(condition);
+				conditions.addAll(createCondition(compiler, cell));
 			}
 			else {
 				// it's the action cell then
-				action = createAction(compiler, cell);
+				actions.addAll(createAction(compiler, cell));
 			}
 		}
 
-		if (action == null || conditions.isEmpty()) {
+		if (actions.isEmpty() || conditions.isEmpty()) {
 			int row = TableUtils.getRow(section);
 			String message = "Rule for row " + row + " was not created (no "
-					+ (action == null ? "action" : "conditions")
+					+ (actions.isEmpty() ? "action" : "conditions")
 					+ " found)";
 			throw CompilerMessage.error(message);
 		}
 
 		/* Rule rule = */
-		createRule(conditions, action);
+		if(!conditions.isEmpty() && !actions.isEmpty()) {
+			createRules(conditions, actions);
+		}
 		throw CompilerMessage.info();
 	}
 
-	private Rule createRule(List<Condition> conditions, PSAction action) {
-		Condition condition = combineConditions(conditions);
-		Class<? extends PSMethodRulebased> psMethodContext;
-		if (action instanceof ActionSetQuestion) {
-			psMethodContext = PSMethodAbstraction.class;
+	private void createRules(List<Condition> conditions, List<PSAction> actions) {
+		for (PSAction action : actions) {
+			Condition condition = combineConditions(conditions);
+			Class<? extends PSMethodRulebased> psMethodContext;
+			if (action instanceof ActionSetQuestion) {
+				psMethodContext = PSMethodAbstraction.class;
+			}
+			else {
+				psMethodContext = PSMethodHeuristic.class;
+			}
+			RuleFactory.createRule(action, condition, null, psMethodContext);
 		}
-		else {
-			psMethodContext = PSMethodHeuristic.class;
-		}
-		return RuleFactory.createRule(action, condition, null, psMethodContext);
 	}
 
 	private Condition combineConditions(List<Condition> conditions) {
@@ -112,23 +114,26 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		return new CondAnd(conditions);
 	}
 
-	private PSAction createAction(D3webCompiler compiler, Section<CellContent> contentCell) {
-		CellContent.CellType type = contentCell.get().getType(compiler, contentCell);
-		if (type == CellContent.CellType.ANSWER_REFERENCE) {
-			return createActionSetValue(compiler, contentCell);
+	private List<PSAction> createAction(D3webCompiler compiler, Section<CellContent> contentCell) {
+		List<PSAction> result = new ArrayList<>();
+		List<Section<CellContentValue>> cells = Sections.successors(contentCell, CellContentValue.class);
+		for (Section<CellContentValue> valueSection : cells) {
+
+			CellContentValue.CellType type = valueSection.get().getType(compiler, valueSection);
+			if (type == CellContentValue.CellType.ANSWER_REFERENCE) {
+				result.add(createActionSetValue(compiler, valueSection));
+			}
+			else if (type == CellContentValue.CellType.QUESTION_NUM_VALUE) {
+				result.add(createNumActionSetValue(compiler, valueSection));
+			}
+			else if (type == CellContentValue.CellType.SOLUTION_SCORE) {
+				result.add(createActionHeuristicPS(compiler, valueSection));
+			}
 		}
-		else if (type == CellContent.CellType.QUESTION_NUM_VALUE) {
-			return createNumActionSetValue(compiler, contentCell);
-		}
-		else if (type == CellContent.CellType.SOLUTION_SCORE) {
-			return createActionHeuristicPS(compiler, contentCell);
-		}
-		else {
-			return null;
-		}
+		return result;
 	}
 
-	private PSAction createActionHeuristicPS(D3webCompiler compiler, Section<CellContent> solutionScoreCell) {
+	private PSAction createActionHeuristicPS(D3webCompiler compiler, Section<CellContentValue> solutionScoreCell) {
 		String text = Strings.trim(solutionScoreCell.getText());
 		Score score = D3webUtils.getScoreForString(text.toUpperCase());
 		if (score == null) {
@@ -143,7 +148,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		return new ActionHeuristicPS(solution, score);
 	}
 
-	private PSAction createActionSetValue(D3webCompiler compiler, Section<CellContent> answerReference) {
+	private PSAction createActionSetValue(D3webCompiler compiler, Section<CellContentValue> answerReference) {
 		Choice choice = (Choice) answerReference.get().getTermObject(compiler, answerReference);
 		if (choice == null) return null;
 		Question question = getQuestion(compiler, answerReference);
@@ -153,45 +158,50 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		return action;
 	}
 
-	private PSAction createNumActionSetValue(D3webCompiler compiler, Section<CellContent> questionNumCell) {
+	private PSAction createNumActionSetValue(D3webCompiler compiler, Section<CellContentValue> questionNumCell) {
 		Question questionNum = getQuestion(compiler, questionNumCell);
 		return createNumActionSetValue(compiler, (QuestionNum) questionNum, questionNumCell);
 	}
 
-	private Condition createCondition(D3webCompiler compiler, Section<CellContent> cell) {
-		CellContent.CellType type = cell.get().getType(compiler, cell);
-		if (type == CellContent.CellType.ANSWER_REFERENCE) {
-			return createCondEqual(compiler, cell);
+	private List<Condition> createCondition(D3webCompiler compiler, Section<CellContent> cell) {
+		List<Condition> result = new ArrayList<>();
+		List<Section<CellContentValue>> cells = Sections.successors(cell, CellContentValue.class);
+		for (Section<CellContentValue> valueSection : cells) {
+			CellContentValue.CellType type = valueSection.get().getType(compiler, valueSection);
+			if (type == CellContentValue.CellType.ANSWER_REFERENCE) {
+				Condition condEqual = createCondEqual(compiler, valueSection);
+				if(condEqual != null) {
+					result.add(condEqual);
+				}
+			}
+			else if (type == CellContentValue.CellType.QUESTION_NUM_VALUE) {
+				result.add(createCondNum(compiler, valueSection));
+			}
+			else if (type == CellContentValue.CellType.SOLUTION_STATE) {
+				result.add(createCondDState(compiler, valueSection));
+			}
 		}
-		else if (type == CellContent.CellType.QUESTION_NUM_VALUE) {
-			return createCondNum(compiler, cell);
-		}
-		else if (type == CellContent.CellType.SOLUTION_STATE) {
-			return createCondDState(compiler, cell);
-		}
-		else {
-			return null;
-		}
+		return result;
 	}
 
-	private Condition createCondEqual(D3webCompiler compiler, Section<CellContent> answerReferenceCell) {
+	private Condition createCondEqual(D3webCompiler compiler, Section<CellContentValue> answerReferenceCell) {
 		Question question = getQuestion(compiler, answerReferenceCell);
-		if (answerReferenceCell.get(CellContent::isKnown)) {
+		if (answerReferenceCell.get(CellContentValue::isKnown)) {
 			return new CondKnown(question);
 		}
-		else if (answerReferenceCell.get(CellContent::isUnknown)) {
+		else if (answerReferenceCell.get(CellContentValue::isUnknown)) {
 			return new CondUnknown(question);
 		}
 		Choice choice = (Choice) answerReferenceCell.get().getTermObject(compiler, answerReferenceCell);
 		if (choice == null) return null;
 		CondEqual condEqual = new CondEqual(question, new ChoiceValue(choice));
-		if (answerReferenceCell.get(CellContent::isNegated)) {
+		if (answerReferenceCell.get(CellContentValue::isNegated)) {
 			return new CondNot(condEqual);
 		}
 		return condEqual;
 	}
 
-	private Condition createCondNum(D3webCompiler compiler, Section<CellContent> questionNumCell) {
+	private Condition createCondNum(D3webCompiler compiler, Section<CellContentValue> questionNumCell) {
 		Question question = getQuestion(compiler, questionNumCell);
 		String text = Strings.trim(questionNumCell.getText());
 		Condition condition = null;
@@ -203,10 +213,10 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 				condition = new CondNumIn((QuestionNum) question, interval);
 			}
 		}
-		else if (questionNumCell.get(CellContent::isKnown)) {
+		else if (questionNumCell.get(CellContentValue::isKnown)) {
 			condition = new CondKnown(question);
 		}
-		else if (questionNumCell.get(CellContent::isUnknown)) {
+		else if (questionNumCell.get(CellContentValue::isUnknown)) {
 			condition = new CondUnknown(question);
 		}
 		else {
@@ -222,7 +232,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		return condition;
 	}
 
-	private Condition createCondDState(D3webCompiler compiler, Section<CellContent> cellContent) {
+	private Condition createCondDState(D3webCompiler compiler, Section<CellContentValue> cellContent) {
 		Solution solution = getSolution(compiler, cellContent);
 		String state = Strings.trim(cellContent.getText());
 		Rating.State solutionState = SolutionStateType.getSolutionState(state);
@@ -235,16 +245,16 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 	}
 
 	private Solution getSolution(D3webCompiler compiler, Section<? extends Type> cellContent) {
-		Section<CellContent> columnHeader = TableUtils.getColumnHeader(cellContent, CellContent.class);
+		Section<CellContentValue> columnHeader = TableUtils.getColumnHeader(cellContent, CellContentValue.class);
 		return (Solution) columnHeader.get().getTermObject(compiler, columnHeader);
 	}
 
-	private Question getQuestion(D3webCompiler compiler, Section<CellContent> cellContent) {
-		Section<CellContent> columnHeader = TableUtils.getColumnHeader(cellContent, CellContent.class);
+	private Question getQuestion(D3webCompiler compiler, Section<CellContentValue> cellContent) {
+		Section<CellContentValue> columnHeader = TableUtils.getColumnHeader(cellContent, CellContentValue.class);
 		return (Question) columnHeader.get().getTermObject(compiler, columnHeader);
 	}
 
-	public ActionSetQuestion createNumActionSetValue(PackageCompiler compiler, QuestionNum questionNum, Section<CellContent> questionNumCell) {
+	public ActionSetQuestion createNumActionSetValue(PackageCompiler compiler, QuestionNum questionNum, Section<CellContentValue> questionNumCell) {
 		NumericalInterval interval = questionNum.getInfoStore().getValue(
 				BasicProperties.QUESTION_NUM_RANGE);
 		String text = Strings.trim(questionNumCell.getText());

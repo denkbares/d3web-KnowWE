@@ -60,7 +60,7 @@ public class QClassLine extends AbstractType {
 		// add prompt via '~'
 		this.addChildType(new ObjectDescription(MMInfo.PROMPT));
 
-		// finally the rest is QuestionniareDefinition
+		// finally the rest is QuestionnaireDefinition
 		this.addChildType(new QuestionTreeQuestionnaireDefinition());
 //		this.addCompileScript(new CreateSubQuestionnaireRelationHandler());
 
@@ -205,7 +205,7 @@ public class QClassLine extends AbstractType {
 			String originalText = s.getText();
 			String content = originalText.replace("#", "").trim();
 
-			Double d = null;
+			Double d;
 			try {
 				d = Double.parseDouble(content);
 				return d;
