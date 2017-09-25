@@ -26,13 +26,14 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.jspwiki.types.TableCell;
 import de.knowwe.jspwiki.types.TableRow;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 
 /**
  * A SectionFinderConstraint that allows to restrict types to certain ranges of
  * cell indices.
- * 
+ *
  * @author Reinhard Hatko
  * @created 11.06.2013
  */
@@ -138,12 +139,20 @@ public class TableIndexConstraint implements SectionFinderConstraint {
 	private Pair<Integer, Integer> determineTableSize(Section<?> father) {
 		Section<Table> tableSection = Sections.ancestor(father, Table.class);
 		assert tableSection != null;
-		Article article = Article.createArticle("\n"+tableSection.getText(), "tmp", "tmp");
-		List<Section<TableRow>> lines = Sections.successors(article.getRootSection(), TableRow.class);
-		if(! lines.isEmpty()) {
-			return new Pair<>(Sections.successors(lines.iterator().next(), de.knowwe.jspwiki.types.TableCell.class).size(), lines.size());
+		//noinspection unchecked
+		Pair<Integer, Integer> tableSize = (Pair<Integer, Integer>) tableSection.getObject("tableSize");
+		if (tableSize == null) {
+			Article article = Article.createArticle("\n" + tableSection.getText(), "tmp", "tmp");
+			List<Section<TableRow>> lines = Sections.successors(article.getRootSection(), TableRow.class);
+			if (lines.isEmpty()) {
+				tableSize = new Pair<>(0, 0);
+			}
+			else {
+				tableSize = new Pair<>(Sections.successors(lines.iterator()
+						.next(), TableCell.class).size(), lines.size());
+			}
+			tableSection.storeObject("tableSize", tableSize);
 		}
-		return new Pair(0,0);
+		return tableSize;
 	}
-
 }
