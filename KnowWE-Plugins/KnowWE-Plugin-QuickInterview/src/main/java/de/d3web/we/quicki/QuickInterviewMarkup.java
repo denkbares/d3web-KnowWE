@@ -53,6 +53,8 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 	public static final String UNKNOWN_KEY = "unknown";
 
+	public static final String LANGUAGE_KEY = "language";
+
 	public static final String ABSTRACTIONS_KEY = "abstractions";
 
 	public static final String ANSWERS_KEY = "answers";
@@ -65,6 +67,9 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		m = new DefaultMarkup(MARKUP_NAME);
 		m.addAnnotation(UNKNOWN_KEY, false, "true", "false");
 		m.addAnnotationRenderer(UNKNOWN_KEY, NothingRenderer.getInstance());
+
+		m.addAnnotation(LANGUAGE_KEY, false, Pattern.compile("[\\w_-]+"));
+		m.addAnnotationRenderer(LANGUAGE_KEY, NothingRenderer.getInstance());
 
 		m.addAnnotation(ABSTRACTIONS_KEY, false, "true", "false");
 		m.addAnnotationRenderer(ABSTRACTIONS_KEY, NothingRenderer.getInstance());
@@ -102,6 +107,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			String abstractions = DefaultMarkupType.getAnnotation(section,
 					ABSTRACTIONS_KEY);
 			String answers = DefaultMarkupType.getAnnotation(section, ANSWERS_KEY);
+			String language = DefaultMarkupType.getAnnotation(section, LANGUAGE_KEY);
 			Map<String, String> parameters = user.getParameters();
 			if (unknown != null) {
 				parameters.put(UNKNOWN_KEY, unknown);
@@ -111,6 +117,9 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			}
 			if (answers != null) {
 				parameters.put(ANSWERS_KEY, answers);
+			}
+			if (language != null) {
+				parameters.put(LANGUAGE_KEY, language);
 			}
 
 			String saveAnnotation = DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.SAVE_KEY);

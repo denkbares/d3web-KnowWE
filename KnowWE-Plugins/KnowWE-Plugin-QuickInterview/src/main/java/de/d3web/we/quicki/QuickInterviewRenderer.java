@@ -311,7 +311,7 @@ public class QuickInterviewRenderer {
 		boolean visible = isVisible(container);
 		boolean indicated = isThisOrFollowUpIndicated(container);
 		String cssClass = "";
-		String title = container.getInfoStore().getValue(MMInfo.DESCRIPTION);
+		String title = getDescription(container);
 		if (title == null) {
 			title = "";
 		}
@@ -340,6 +340,10 @@ public class QuickInterviewRenderer {
 					+ "px'>No elements defined!</div>");
 			buffi.appendHtml("</div>");
 		}
+	}
+
+	private String getDescription(NamedObject namedObject) {
+		return namedObject.getInfoStore().getValue(MMInfo.DESCRIPTION, getSelectedLanguage());
 	}
 
 	/**
@@ -376,7 +380,7 @@ public class QuickInterviewRenderer {
 		int w = 320 - d;
 		String divText = Strings.encodeHtml(getLabel(question));
 		String cssClass = "question";
-		String title = question.getInfoStore().getValue(MMInfo.DESCRIPTION);
+		String title = getDescription(question);
 		if (title == null) {
 			title = "";
 		}
@@ -507,7 +511,7 @@ public class QuickInterviewRenderer {
 			String label = getLabel(choice);
 			appendEnclosingTagOnClick("span", label, cssclass,
 					jscall, null, null,
-					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
+					getDescription(choice), sb);
 
 			// System.out.println(getEnclosingTagOnClick("div", "" +
 			// choice.getName() + " ",
@@ -597,7 +601,7 @@ public class QuickInterviewRenderer {
 
 	private String getUnit(Question q) {
 		String unit = "";
-		Object questionUnit = q.getInfoStore().getValue(MMInfo.UNIT);
+		Object questionUnit = q.getInfoStore().getValue(MMInfo.UNIT, getSelectedLanguage());
 		if (questionUnit != null) {
 			unit = questionUnit.toString();
 		}
@@ -701,7 +705,7 @@ public class QuickInterviewRenderer {
 			String label = getLabel(choice);
 			appendEnclosingTagOnClick("span", "" + label + "", cssclass,
 					jscall, null, null,
-					choice.getInfoStore().getValue(MMInfo.DESCRIPTION), sb);
+					getDescription(choice), sb);
 		}
 
 		// also render the unknown alternative for choice questions
@@ -750,7 +754,7 @@ public class QuickInterviewRenderer {
 		else if (value != null) {
 			cssclass = "answerunknown";
 		}
-		String prompt = MMInfo.getUnknownPrompt(q, (Locale) null);
+		String prompt = MMInfo.getUnknownPrompt(q, getSelectedLanguage());
 
 		if (!(q instanceof QuestionNum)) {
 			// separator already rendered in renderNumAnswers
@@ -860,12 +864,22 @@ public class QuickInterviewRenderer {
 	}
 
 	private String getLabel(NamedObject to) {
-		String prompt = to.getInfoStore().getValue(
-				MMInfo.PROMPT,
-				Environment.getInstance().getWikiConnector()
-						.getLocale(user.getRequest()));
+		String prompt = to.getInfoStore().getValue(MMInfo.PROMPT, getSelectedLanguage());
 		if (prompt != null) return prompt;
 		return to.getName();
+	}
+
+	private Locale getSelectedLanguage() {
+		Locale locale = null;
+		String language = config.get(QuickInterviewMarkup.LANGUAGE_KEY);
+		if (language != null) {
+			locale = Locale.forLanguageTag(language);
+		}
+		if (locale == null) {
+			locale = Environment.getInstance().getWikiConnector()
+					.getLocale(user.getRequest());
+		}
+		return locale;
 	}
 
 	private String getID() {
