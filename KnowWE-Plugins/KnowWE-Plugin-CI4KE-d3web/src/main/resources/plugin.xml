@@ -26,7 +26,19 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
+
+	<extension plugin-id="KnowWE-Plugin-CI4KE" point-id="ObjectNameRenderer"
+		id="RuleObjectRenderer">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.RuleObjectRenderer" />
+		<parameter id="name" value="RuleObjectRenderer" />
+		<parameter id="description" value="ObjectRenderer for Rules" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.d3web.core.inference.Rule" />
+	</extension>
+
+
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="TestObjectProvider"
 		id="WikiTestCaseProvider">
 		<parameter id="class"

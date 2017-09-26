@@ -502,6 +502,11 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>d3web-Plugin-Tests-ThrillSeeker</artifactId>
+					<version>${knowwe.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-CityVis</artifactId>
 					<version>${knowwe.version}</version>
 				</dependency>
