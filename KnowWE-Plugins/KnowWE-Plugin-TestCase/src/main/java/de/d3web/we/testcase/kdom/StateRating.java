@@ -36,7 +36,7 @@ public class StateRating extends AbstractType {
 		// this.setCustomRenderer(FontColorRenderer.getRenderer(FontColorRenderer.COLOR3));
 	}
 
-	class StateRatingSectionFinder implements SectionFinder {
+	static class StateRatingSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

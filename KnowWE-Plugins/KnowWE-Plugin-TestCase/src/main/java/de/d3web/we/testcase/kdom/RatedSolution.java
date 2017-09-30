@@ -42,7 +42,7 @@ public class RatedSolution extends AbstractType {
 		this.setSectionFinder(new RatedSolutionSectionFinder());
 	}
 
-	public class RatedSolutionSectionFinder implements SectionFinder {
+	public static class RatedSolutionSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
@@ -50,9 +50,7 @@ public class RatedSolution extends AbstractType {
 			List<SectionFinderResult> result = new ArrayList<>();
 			List<StringFragment> findings = Strings.splitUnquoted(text, ",");
 			for (StringFragment finding : findings) {
-				SectionFinderResult s =
-						new SectionFinderResult(finding.getStartTrimmed(),
-								finding.getEndTrimmed());
+				SectionFinderResult s = new SectionFinderResult(finding.getStartTrimmed(), finding.getEndTrimmed());
 				result.add(s);
 			}
 
@@ -60,7 +58,7 @@ public class RatedSolution extends AbstractType {
 		}
 	}
 
-	public class SolutionSectionFinder implements SectionFinder {
+	public static class SolutionSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
@@ -72,8 +70,7 @@ public class RatedSolution extends AbstractType {
 			int start = stringFragment.getStartTrimmed();
 			int end = stringFragment.getEndTrimmed();
 
-			SectionFinderResult s =
-					new SectionFinderResult(start, end);
+			SectionFinderResult s = new SectionFinderResult(start, end);
 			result.add(s);
 
 			return result;

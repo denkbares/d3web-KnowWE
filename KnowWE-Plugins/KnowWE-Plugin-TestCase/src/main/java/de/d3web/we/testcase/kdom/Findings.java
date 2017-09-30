@@ -38,7 +38,7 @@ public class Findings extends AbstractType {
 		this.setSectionFinder(new FindingsSectionFinder());
 	}
 
-	public class FindingsSectionFinder implements SectionFinder {
+	public static class FindingsSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

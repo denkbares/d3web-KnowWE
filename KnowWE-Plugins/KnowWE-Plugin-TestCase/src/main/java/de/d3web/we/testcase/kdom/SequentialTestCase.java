@@ -48,7 +48,7 @@ public class SequentialTestCase extends AbstractType {
 		this.addChildType(new RatedTestCases());
 	}
 
-	public class SequentialTestCaseSectionFinder implements SectionFinder {
+	public static class SequentialTestCaseSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

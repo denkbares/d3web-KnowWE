@@ -49,7 +49,7 @@ public class RatedTestCase extends AbstractType {
 		this.setSectionFinder(new RatedTestCaseSectionFinder());
 	}
 
-	public class RatedTestCaseSectionFinder implements SectionFinder {
+	public static class RatedTestCaseSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
@@ -58,9 +58,7 @@ public class RatedTestCase extends AbstractType {
 			List<StringFragment> cases = Strings.splitUnquoted(text, ";", false);
 			for (StringFragment string : cases) {
 				int indexOf = string.getStartTrimmed();
-				SectionFinderResult s =
-						new SectionFinderResult(indexOf, indexOf + string.lengthTrimmed()
-								+ 1);
+				SectionFinderResult s = new SectionFinderResult(indexOf, indexOf + string.lengthTrimmed() + 1);
 				result.add(s);
 			}
 

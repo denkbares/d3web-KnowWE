@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
@@ -55,9 +56,8 @@ import de.knowwe.testcases.TestCaseUtils;
 
 /**
  * TestsuiteContent
- * 
+ *
  * @author Sebastian Furth
- * 
  */
 public class TestCaseContent extends AbstractType {
 
@@ -67,7 +67,8 @@ public class TestCaseContent extends AbstractType {
 		this.addCompileScript(Priority.LOWEST, new TestSuiteSubTreeHandler());
 	}
 
-	public class TestSuiteSubTreeHandler implements D3webHandler<TestCaseContent> {
+	@SuppressWarnings("deprecation")
+	public static class TestSuiteSubTreeHandler implements D3webHandler<TestCaseContent> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<TestCaseContent> s) {
@@ -112,7 +113,7 @@ public class TestCaseContent extends AbstractType {
 					for (de.d3web.empiricaltesting.SequentialTestCase stc : testSuite.getRepository()) {
 						providers.add(new SingleTestCaseProvider(compiler, markupSection,
 								stc, s.getArticle().getTitle() + "/"
-										+ stc.getName()));
+								+ stc.getName()));
 					}
 					Section<DefaultMarkupType> defaultMarkupSection = Sections.ancestor(
 							s, DefaultMarkupType.class);
@@ -138,7 +139,7 @@ public class TestCaseContent extends AbstractType {
 				messages.add(Messages.error("There is no name for STC" + index));
 			}
 			else {
-				stc.setName(clean(stcName.getText().trim()));
+				stc.setName(clean(stcName.getText()));
 			}
 		}
 
@@ -150,7 +151,6 @@ public class TestCaseContent extends AbstractType {
 
 			// Process each RatedTestCase section
 			for (Section<RatedTestCase> rtcSection : rtcSections) {
-
 				int rtcIndex = rtcSections.indexOf(rtcSection);
 				de.d3web.empiricaltesting.RatedTestCase rtc = new de.d3web.empiricaltesting.RatedTestCase();
 				setTimeStamp(rtcSection, rtc);
@@ -188,7 +188,7 @@ public class TestCaseContent extends AbstractType {
 					// name in the KB
 					if (question == null) {
 						messages.add(Messages.noSuchObjectError(
-								clean(questionSection.getText().trim())));
+								clean(questionSection.getText())));
 					}
 					else {
 
@@ -201,13 +201,13 @@ public class TestCaseContent extends AbstractType {
 							if (valueSection == null) {
 								messages.add(Messages.error(
 										"The value has to be a number for Question: "
-												+ clean(questionSection.getText().trim())));
+												+ clean(questionSection.getText())));
 								continue;
 							}
 
 							try {
 
-								double value = Double.parseDouble(clean(valueSection.getText().trim()));
+								double value = Double.parseDouble(clean(valueSection.getText()));
 								rtc.addExpectedFinding(new de.d3web.empiricaltesting.Finding(
 										question,
 										new NumValue(value)));
@@ -215,7 +215,7 @@ public class TestCaseContent extends AbstractType {
 							catch (NumberFormatException e) {
 								messages.add(Messages.error(
 										"The value has to be a number for Question: "
-												+ clean(questionSection.getText().trim())));
+												+ clean(questionSection.getText())));
 							}
 						}
 						// If not, it is a QuestionChoice
@@ -229,15 +229,15 @@ public class TestCaseContent extends AbstractType {
 							if (valueSection == null) {
 								messages.add(Messages.error(
 										"There is no Value defined for Question: "
-												+ clean(questionSection.getText().trim())));
+												+ clean(questionSection.getText())));
 								return;
 							}
 
 							QuestionValue value = KnowledgeBaseUtils.findValue(question,
-									clean(valueSection.getText().trim()));
+									clean(valueSection.getText()));
 							if (value == null) {
 								messages.add(Messages.noSuchObjectError(
-										clean(valueSection.getText().trim())));
+										clean(valueSection.getText())));
 							}
 							else {
 								rtc.addExpectedFinding(new de.d3web.empiricaltesting.Finding(
@@ -258,7 +258,7 @@ public class TestCaseContent extends AbstractType {
 
 		/**
 		 * Sets the time of the RTC if a timestamp is supplied in the section.
-		 * 
+		 *
 		 * @created 18.07.2011
 		 */
 		private void setTimeStamp(Section<RatedTestCase> rtcSection, de.d3web.empiricaltesting.RatedTestCase rtc) {
@@ -300,7 +300,7 @@ public class TestCaseContent extends AbstractType {
 					// name in the KB
 					if (question == null) {
 						messages.add(Messages.noSuchObjectError(
-								clean(questionSection.getText().trim())));
+								clean(questionSection.getText())));
 					}
 					else {
 
@@ -312,7 +312,7 @@ public class TestCaseContent extends AbstractType {
 						if (valueSection == null) {
 							messages.add(Messages.error(
 									"There is no Value defined for Question: "
-											+ clean(questionSection.getText().trim())));
+											+ clean(questionSection.getText())));
 							return;
 						}
 
@@ -320,23 +320,23 @@ public class TestCaseContent extends AbstractType {
 						if (question instanceof QuestionNum) {
 
 							try {
-								double value = Double.parseDouble(clean(valueSection.getText().trim()));
+								double value = Double.parseDouble(clean(valueSection.getText()));
 								rtc.add(new de.d3web.empiricaltesting.Finding(question,
 										new NumValue(value)));
 							}
 							catch (NumberFormatException e) {
 								messages.add(Messages.error(
 										"The value has to be a number for Question: "
-												+ clean(questionSection.getText().trim())));
+												+ clean(questionSection.getText())));
 							}
 						}
 						// If not, it is a QuestionChoice
 						else {
 							QuestionValue value = KnowledgeBaseUtils.findValue(question,
-									clean(valueSection.getText().trim()));
+									clean(valueSection.getText()));
 							if (value == null) {
 								messages.add(Messages.noSuchObjectError(
-										clean(valueSection.getText().trim())));
+										clean(valueSection.getText())));
 							}
 							else {
 								rtc.add(new de.d3web.empiricaltesting.Finding(question, value));
@@ -362,22 +362,19 @@ public class TestCaseContent extends AbstractType {
 			// Process each RatedSolution section
 			for (Section<RatedSolution> ratedSolutionSection : ratedSolutionSections) {
 
-				Solution solution = null;
+				Solution solution;
 
 				// Get the SolutionReference section
-				Section<SolutionReference> solutionSection = Sections.successor(
-						ratedSolutionSection, SolutionReference.class);
+				Section<SolutionReference> solutionSection = Sections.successor(ratedSolutionSection, SolutionReference.class);
 
 				// Get the real Solution
 				if (solutionSection != null) {
-					solution = kb.getManager().searchSolution(
-							clean(solutionSection.getText().trim()));
+					solution = kb.getManager().searchSolution(clean(solutionSection.getText()));
 
 					// Create error message if there is no question with this
 					// name in the KB
 					if (solution == null) {
-						messages.add(Messages.noSuchObjectError(
-								clean(solutionSection.getText().trim())));
+						messages.add(Messages.noSuchObjectError(clean(solutionSection.getText())));
 						return;
 					}
 				}
@@ -396,11 +393,10 @@ public class TestCaseContent extends AbstractType {
 				// Create a real StateRating
 				if (stateSection != null) {
 					de.d3web.empiricaltesting.StateRating rating = new de.d3web.empiricaltesting.StateRating(
-							clean(stateSection.getText().trim()));
+							clean(stateSection.getText()));
 
 					// And finally create the RatedSolution
-					rtc.addExpected(new de.d3web.empiricaltesting.RatedSolution(solution,
-							rating));
+					rtc.addExpected(new de.d3web.empiricaltesting.RatedSolution(solution, rating));
 
 				}
 				else {
@@ -413,10 +409,7 @@ public class TestCaseContent extends AbstractType {
 		}
 
 		private String clean(String quotedString) {
-			if (quotedString.startsWith("\"") && quotedString.endsWith("\"")) {
-				return quotedString.substring(1, quotedString.length() - 1).trim();
-			}
-			return quotedString.trim();
+			return Strings.unquote(Strings.trim(quotedString));
 		}
 
 	}

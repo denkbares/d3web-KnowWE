@@ -38,7 +38,7 @@ public class RatedTestCases extends AbstractType {
 		this.setSectionFinder(new RatedTestCasesSectionFinder());
 	}
 
-	public class RatedTestCasesSectionFinder implements SectionFinder {
+	public static class RatedTestCasesSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

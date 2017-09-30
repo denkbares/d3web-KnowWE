@@ -35,10 +35,10 @@ public class SequentialTestCaseName extends AbstractType {
 	public SequentialTestCaseName() {
 		this.setSectionFinder(new SequentialTestCaseNameSectionFinder());
 		// Do not remove this, otherwise rendering brokes with quoted names
-		this.setRenderer(StyleRenderer.KEYWORDS);
+		this.setRenderer(StyleRenderer.COMMENT);
 	}
 
-	public class SequentialTestCaseNameSectionFinder implements SectionFinder {
+	public static class SequentialTestCaseNameSectionFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
