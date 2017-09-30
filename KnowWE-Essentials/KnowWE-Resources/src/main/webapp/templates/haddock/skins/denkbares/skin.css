@@ -567,6 +567,10 @@ td .information, td .warning, td .error {
 	border-bottom: 1px solid #ddd;
 }
 
+.editarea .wikitable > tbody > tr:last-child > td {
+	border-bottom: 1px solid #ddd;
+}
+
 .wikitable > thead > tr > th, .wikitable > tbody > tr > th,
 .wikitable > tfoot > tr > th, .wikitable > thead > tr:last-child > td,
 .wikitable > tbody > tr:last-child > td, .wikitable > tfoot > tr:last-child > td {
