@@ -27,7 +27,7 @@ KNOWWE.plugin.tableEditTool = function() {
 			var toolNameSpace = _EM.toolNameSpace[id];
 			if (!toolNameSpace) toolNameSpace = _IE.toolNameSpace[id];
 			originalWikiText[id] = toolNameSpace.getWikiText(id);
-			return "<div id='" + createRootID(id) + "' style='position: relative;'></div>";
+			return "<div id='" + createRootID(id) + "' style='position: relative; overflow: auto'></div>";
 		},
 
 		generateButtons : function(id) {
