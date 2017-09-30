@@ -55,6 +55,10 @@ public class PropertyValueType extends AbstractType {
 		setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
 
+		setRenderer((section, user, result) -> {
+			result.appendJSPWikiMarkup(section.getText());
+		});
+
 		addCompileScript((D3webHandler<Type>) (compiler, section) -> {
 			Section<TableCellContent> header = TableUtils.getColumnHeader(section);
 
