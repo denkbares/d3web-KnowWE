@@ -18,9 +18,12 @@
  */
 package de.knowwe.visualization.dot;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -160,6 +163,8 @@ public class DOTRenderer {
 		else {
 			dotSource += "overlap=" + config.getOverlap() + ";\n";
 		}
+		// adds the dotAddLine attributes, if any given
+		dotSource += config.getDotAddLine() != null ? config.getDotAddLine() : "";
 
 		// using rankSame constraints for custom layouting
 		String rankSameValue = config.getRankSame();
@@ -268,7 +273,8 @@ public class DOTRenderer {
 		}
 	}
 
-	private static Set<Edge> defineInverseProperties(SubGraphData data, MultiMap<String, String> inversePropertiesMap) {
+	private static Set<Edge> defineInverseProperties(SubGraphData data, MultiMap<String, String>
+			inversePropertiesMap) {
 		Set<Edge> edges = data.getAllEdges();
 		String relationURI, inverseURI, p1, p2;
 		Set<Edge> redundantEdges = new HashSet<>();
@@ -300,7 +306,8 @@ public class DOTRenderer {
 
 					// Check if this edge is the inverse we are looking for
 					if (e2.getRelationURI().equals(inverseURI) && s1.equals(o2) && o1.equals(s2)) {
-						// if so: change Predicate of first edge, change to bidirectional and add second (inverse) edge to redundant edges
+						// if so: change Predicate of first edge, change to bidirectional and add second (inverse)
+						// edge to redundant edges
 						p2 = e2.getPredicate();
 						e1.setPredicate(p1 + " | " + p2);
 						e1.setBidirectionalEdge(true);
@@ -340,12 +347,12 @@ public class DOTRenderer {
 
 						// check for same Source, Destination (swapped aswell!) and for being SubProperty
 						// mark e1 as SuperProperty if true, continue outer loop (break inner loop)
-						if ((s1.equals(s2) && o1.equals(o2)) || (s1.equals(o2) && o1.equals(s2)) && subProperties.contains(subURI)) {
+						if ((s1.equals(s2) && o1.equals(o2)) || (s1.equals(o2) && o1.equals(s2)) && subProperties
+								.contains(subURI)) {
 							e1.setSuperProperty(true);
 						}
 					}
 				}
-
 			}
 		}
 		return data;
@@ -415,7 +422,8 @@ public class DOTRenderer {
 		return dotSource.toString();
 	}
 
-	private static void appendNodeDefinitionLineToSource(SubGraphData data, Config config, StringBuilder dotSource, ConceptNode node) {
+	private static void appendNodeDefinitionLineToSource(SubGraphData data, Config config, StringBuilder dotSource,
+														 ConceptNode node) {
 		RenderingStyle style = node.getStyle();
 
 		// root is rendered highlighted
@@ -444,7 +452,8 @@ public class DOTRenderer {
 		dotSource.append("\"").append(node.getName()).append("\"").append(label);
 	}
 
-	private static String createHTMLTable(ConceptNode node, SubGraphData data, RenderingStyle.Fontstyle fontStyle, Config config) {
+	private static String createHTMLTable(ConceptNode node, SubGraphData data, RenderingStyle.Fontstyle fontStyle,
+										  Config config) {
 		final Map<ConceptNode, Set<Edge>> clusters = data.getClusters();
 		final Set<Edge> edges = clusters.get(node);
 		String label = node.getName();
@@ -539,7 +548,8 @@ public class DOTRenderer {
 	}
 
 	private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key) {
-//		private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key, boolean isBiDirectional) {
+//		private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key, boolean
+// isBiDirectional) {
 		String label = DOTRenderer.innerRelation(key.getPredicate(),
 				config.getRelationColors().get(key.getPredicate()),
 				key.isBidirectionalEdge());
@@ -591,7 +601,8 @@ public class DOTRenderer {
 	/**
 	 * @created 30.10.2012
 	 */
-	private static String setSizeAndRankDir(Config.RankDir rankDirSetting, String width, String height, String graphSize, int numberOfConcepts) {
+	private static String setSizeAndRankDir(Config.RankDir rankDirSetting, String width, String height, String
+			graphSize, int numberOfConcepts) {
 		String rankDir = rankDirSetting.name();
 		String size = "";
 		String ratio = "";
@@ -698,7 +709,8 @@ public class DOTRenderer {
 		String dotApp = config.getDotApp();
 		String layout = config.getLayout();
 		if (layout != null) {
-			return new String[] { dotApp, dot.getAbsolutePath(), "-T" + outputFormat, "-o", output.getAbsolutePath(), "-K" + layout
+			return new String[] { dotApp, dot.getAbsolutePath(), "-T" + outputFormat, "-o", output.getAbsolutePath(),
+					"-K" + layout
 					.toLowerCase() };
 		}
 		else {
@@ -706,7 +718,8 @@ public class DOTRenderer {
 		}
 	}
 
-	private static String createDotConceptLabel(RenderingStyle style, String targetURL, String targetLabel, boolean prepareLabel) {
+	private static String createDotConceptLabel(RenderingStyle style, String targetURL, String targetLabel, boolean
+			prepareLabel) {
 		String newLineLabelValue;
 		String url = "";
 		if (targetURL != null) {
@@ -755,7 +768,7 @@ public class DOTRenderer {
 			long start = System.currentTimeMillis();
 			while (!Utils.isFileClosed(svg)) {
 				if ((System.currentTimeMillis() - start) > TIMEOUT) {
-					Log.warning("Exceded timeout while waiting for SVG file to be closed.");
+					Log.warning("Exceeded timeout while waiting for SVG file to be closed.");
 					return;
 				}
 			}
@@ -767,6 +780,7 @@ public class DOTRenderer {
 			findAndAugmentElements(root);
 
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+			//noinspection ImplicitDefaultCharsetUsage
 			xmlOutputter.output(doc, new FileWriter(svg));
 			Log.finest("Finished augmenting SVG: " + svg.getAbsolutePath());
 		}
@@ -814,10 +828,12 @@ public class DOTRenderer {
 			process.waitFor();
 			int exitValue = process.exitValue();
 			if (exitValue != 0) {
+				DOTVisualizationRenderer.isValidGraph = false;
+				DOTVisualizationRenderer.invalidGraphError = getProcessErrorMessage(process.getErrorStream());
 				FileUtils.printStream(process.getErrorStream());
 				throw new IOException("Command could not successfully be executed: " + Strings.concat(" ", command));
 			}
-
+			DOTVisualizationRenderer.isValidGraph = true;
 		}
 		catch (InterruptedException e) {
 			//Thread was interrupted by GraphReRenderer
@@ -825,9 +841,25 @@ public class DOTRenderer {
 		}
 	}
 
+	private static String getProcessErrorMessage(InputStream inputStream) {
+		StringBuilder add = new StringBuilder();
+		try {
+			//noinspection ImplicitDefaultCharsetUsage
+			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				add.append(inputLine);
+			}
+			in.close();
+		}
+		catch (IOException e) {
+			Log.warning(e.getMessage());
+		}
+		return add.toString();
+	}
+
 	private static File createFile(String type, String path) {
 		String filename = path + "." + type;
 		return new File(filename);
 	}
-
 }
