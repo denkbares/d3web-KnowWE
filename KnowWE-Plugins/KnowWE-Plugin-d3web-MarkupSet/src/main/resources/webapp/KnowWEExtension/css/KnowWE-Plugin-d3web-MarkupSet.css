@@ -7,20 +7,70 @@
 }
 
 .d3webRule > span {
-	padding: 0 2px 0 2px;
+	line-height: 40px;
 }
 
-.conditionTrue .IfCondition, .conditionTrue .RuleAction {
+.Condition > span {
+	line-height: 40px;
+}
+
+.RuleAction {
+	display: inline-block;
+}
+
+/* -- IfCondition/Condition -- */
+
+.IfCondition {
+	background-color: inherit;
+	padding: 8px 0 8px 0;
+}
+
+/* - condition evaluation - */
+
+.conditionTrue {
 	background-color: #CFFFCF;
 }
 
-.conditionFalse .IfCondition, .conditionFalse .RuleAction {
+.conditionFalse {
 	background-color: #FFCFCF;
 }
 
-.conditionUnknown .IfCondition {
+.conditionUnknown {
 	background-color: #CFD5FF;
 }
+
+.conditionUndefined {
+	background-color: white;
+}
+
+/* - CompositeConditions - */
+
+/* always the outermost condition*/
+.CompositeCondition {
+	/*in some cases the padding would have been overwritten by its children*/
+	padding: 8px 0 8px 0 !important;
+}
+
+.BracedCondition {
+	padding: 4px 0 4px 0;
+}
+
+.Conjunction {
+	padding: 4px 0 4px 0;
+}
+
+.Disjunction {
+	padding: 4px 0 4px 0;
+}
+
+/* -- ThenAction -- */
+
+.ThenAction {
+	padding: 8px 0 8px 0;
+	background-color: inherit;
+}
+
+/* -- Exceptions -- */
 
 .exceptTrue .ExceptionCondition {
 	background-color: #CFFFCF;
@@ -32,10 +82,6 @@
 
 .exceptUnknown .ExceptionCondition {
 	background-color: #CFD5FF;
-}
-
-.defaultFired .ThenAction {
-	background-color: #CFFFCF;
 }
 
 .elseFired .ElseAction {

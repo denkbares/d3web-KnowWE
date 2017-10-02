@@ -20,17 +20,29 @@
 
 package de.d3web.we.kdom.rules.action;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import com.denkbares.strings.Strings;
+import de.d3web.core.inference.Rule;
+import de.d3web.core.inference.condition.Condition;
+import de.d3web.core.session.Session;
+import de.d3web.we.basic.SessionProvider;
+import de.d3web.we.kdom.action.D3webRuleAction;
+import de.d3web.we.kdom.rules.RuleCompileScript;
 import de.d3web.we.kdom.rules.RuleType;
+import de.d3web.we.kdom.ruletable.RuleTableMarkup;
+import de.d3web.we.knowledgebase.D3webCompiler;
+import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EndLineComment;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
@@ -48,8 +60,32 @@ public class RuleAction extends AbstractType {
 		}
 		setRenderer((section, user, result) -> {
 			result.appendHtml("<div class='RuleAction'>");
-			DelegateRenderer.getInstance().render(section, user, result);
+			ruleActionRenderer(section, user, result);
 			result.appendHtml("</div>");
 		});
+	}
+
+	private void ruleActionRenderer(Section<?> section, UserContext user, RenderResult result) {
+		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
+		Session session = null;
+
+		if (compiler != null) {
+			session = SessionProvider.getSession(user, D3webUtils.getKnowledgeBase(compiler));
+		}
+		List<String> classes = new ArrayList<>();
+		classes.add("RuleAction");
+		if (session != null) {
+			Section<D3webRuleAction> actionSection = Sections.successor(section, D3webRuleAction.class);
+			Collection<Rule> defaultRules = RuleCompileScript.getRules(compiler, actionSection, RuleCompileScript
+					.DEFAULT_RULE_STORE_KEY);
+			if (!defaultRules.isEmpty()) {
+				Rule defaultRule = defaultRules.iterator().next();
+				Condition condition = defaultRule.getCondition();
+				classes.add(RuleTableMarkup.evaluateSessionCondition(session, condition));
+			}
+		}
+		result.appendHtml("<span id='" + section.getID() + "' class='" + Strings.concat(" ", classes) + "'>");
+		DelegateRenderer.getInstance().render(section, user, result);
+		result.appendHtml("</span>");
 	}
 }

@@ -297,4 +297,30 @@
 		<parameter id="scope" value="Rule"/>
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="TerminalConditionHighlightRenderer">
+		<parameter id="class" value="de.d3web.we.kdom.condition.TerminalConditionHighlightRenderer"/>
+		<parameter id="name" value="TerminalConditionHighlightRenderer"/>
+		<parameter id="description" value="TerminalConditionHighlightRenderer"/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="5"/>
+		<parameter id="scope" value="Finding"/>
+		<parameter id="scope" value="SolutionStateCond"/>
+		<parameter id="scope" value="UserRatingConditionType"/>
+		<parameter id="scope" value="CondKnownUnknown"/>
+		<parameter id="scope" value="CondRegularExpression"/>
+		<parameter id="scope" value="CondUnknown"/>
+		<parameter id="scope" value="CondKnown"/>
+		<parameter id="scope" value="NumericalFinding"/>
+		<parameter id="scope" value="NumericalIntervallFinding"/>
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="CompositeConditionHighlightRenderer">
+		<parameter id="class" value="de.d3web.we.kdom.condition.CompositeConditionHighlightRenderer"/>
+		<parameter id="name" value="CompositeConditionHighlightRenderer"/>
+		<parameter id="description" value="CompositeConditionHighlightRenderer"/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="5"/>
+		<parameter id="scope" value="CompositeCondition"/>
+	</extension>
+
 </plugin>

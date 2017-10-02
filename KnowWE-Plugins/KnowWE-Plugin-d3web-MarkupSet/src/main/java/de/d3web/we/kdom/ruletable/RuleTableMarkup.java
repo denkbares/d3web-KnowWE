@@ -1,28 +1,20 @@
 package de.d3web.we.kdom.ruletable;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import com.denkbares.strings.Strings;
-import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.NoAnswerException;
 import de.d3web.core.inference.condition.UnknownAnswerException;
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionProvider;
-import de.d3web.we.kdom.action.D3webRuleAction;
-import de.d3web.we.kdom.rules.RuleCompileScript;
 import de.d3web.we.kdom.rules.action.RuleAction;
 import de.d3web.we.kdom.rules.condition.ConditionContainer;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -155,55 +147,21 @@ public class RuleTableMarkup extends DefaultMarkupType
 
 			List<String> classes = new ArrayList<>();
 			classes.add("d3webRule");
-			if (compiler != null) {
-				KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-				session = SessionProvider.getSession(user, kb);
-			}
-			if (session != null) {
-				// retrieve the section the rule has been stored for
-				Section<D3webRuleAction> actionSection = Sections.successor(sec, D3webRuleAction.class);
 
-				Collection<Rule> defaultRules = RuleCompileScript.getRules(compiler, actionSection, RuleCompileScript.DEFAULT_RULE_STORE_KEY);
-				if (!defaultRules.isEmpty()) {
-					Rule defaultRule = defaultRules.iterator().next();
-					if (defaultRule.hasFired(session)) classes.add("defaultFired");
-
-					Condition condition = defaultRule.getCondition();
-					Condition exception = defaultRule.getException();
-					try {
-						if (condition.eval(session)) {
-							classes.add("conditionTrue");
-						}
-						else {
-							classes.add("conditionFalse");
-						}
-
-					}
-					catch (UnknownAnswerException e) {
-						classes.add("conditionUnknown");
-					}
-					catch (NoAnswerException ignore) {
-					}
-					if (exception != null) {
-						try {
-							if (exception.eval(session)) {
-								classes.add("exceptTrue");
-							} else {
-								//classes.add("exceptFalse");
-							}
-						}
-						catch (UnknownAnswerException | NoAnswerException e) {
-							//classes.add("exceptUnknown");
-						}
-					}
-				}
-			}
 			string.appendHtml("<span id='" + sec.getID() + "' class='" + Strings.concat(" ", classes) + "'>");
 			DelegateRenderer.getInstance().render(sec, user, string);
 			string.appendHtml("</span>");
-
 		}
+	}
 
+	public static String evaluateSessionCondition(Session session, Condition condition) {
+		try {
+			return condition.eval(session) ? "conditionTrue" : "conditionFalse";
+		} catch (UnknownAnswerException e) {
+			return "conditionUnknown";
+		} catch (NoAnswerException ignore) {
+			return "conditionUndefined";
+		}
 	}
 
 
