@@ -43,7 +43,7 @@ public class TerminalConditionHighlightRenderer implements Renderer {
 			classes.add(RuleTableMarkup.evaluateSessionCondition(session, condition));
 		}
 
-		result.appendHtml("<span id='" + section.getID() + "' class='" + Strings.concat(" ", classes) + "'>");
+		result.appendHtml("<span class='" + Strings.concat(" ", classes) + "'>");
 		DelegateRenderer.getInstance().render(section, user, result);
 		result.appendHtml("</span>");
 	}

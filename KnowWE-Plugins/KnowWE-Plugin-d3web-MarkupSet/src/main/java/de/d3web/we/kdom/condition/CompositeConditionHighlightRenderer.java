@@ -79,7 +79,7 @@ public class CompositeConditionHighlightRenderer implements Renderer {
 				}
 			}
 		}
-		result.appendHtml("<span id='" + section.getID() + "' class='" + Strings.concat(" ", classes) + "'>");
+		result.appendHtml("<span class='" + Strings.concat(" ", classes) + "'>");
 		DelegateRenderer.getInstance().render(section, user, result);
 		result.appendHtml("</span>");
 	}
