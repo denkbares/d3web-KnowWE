@@ -19,15 +19,13 @@
 package de.knowwe.kdom.table;
 
 import java.util.List;
+import java.util.Scanner;
 
 import com.denkbares.utils.Pair;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.jspwiki.types.TableCell;
-import de.knowwe.jspwiki.types.TableRow;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 
 /**
@@ -142,15 +140,32 @@ public class TableIndexConstraint implements SectionFinderConstraint {
 		//noinspection unchecked
 		Pair<Integer, Integer> tableSize = (Pair<Integer, Integer>) tableSection.getObject("tableSize");
 		if (tableSize == null) {
-			Article article = Article.createArticle("\n" + tableSection.getText(), "tmp", "tmp");
-			List<Section<TableRow>> lines = Sections.successors(article.getRootSection(), TableRow.class);
-			if (lines.isEmpty()) {
-				tableSize = new Pair<>(0, 0);
+			String tableText = tableSection.getText();
+			int columns = 0;
+			int rows = 0;
+			boolean first = true;
+			Scanner scanner = new Scanner(tableText);
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				if (first) {
+					char[] charArray = line.toCharArray();
+					for (int i = 0; i < charArray.length; i++) {
+						char c = charArray[i];
+						if (c == '|') {
+							columns++;
+							// consume directly following |, which is not a new column but a bold column
+							if (i + 1 < charArray.length && charArray[i + 1] == '|') {
+								i++;
+							}
+						}
+					}
+					first = false;
+				}
+				if (line.startsWith("|")) {
+					rows++;
+				}
 			}
-			else {
-				tableSize = new Pair<>(Sections.successors(lines.iterator()
-						.next(), TableCell.class).size(), lines.size());
-			}
+			tableSize = new Pair<>(columns, rows);
 			tableSection.storeObject("tableSize", tableSize);
 		}
 		return tableSize;
