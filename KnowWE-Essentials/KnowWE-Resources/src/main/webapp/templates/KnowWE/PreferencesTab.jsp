@@ -106,31 +106,31 @@
   </td>
   </tr>
 
-  <tr>
-  <td><label for="prefSkin"><fmt:message key="prefs.user.skin"/></label></td>
-  <td>
-  <select id="prefSkin" name="prefSkin">
-    <c:forEach items="${skins}" var="i">
-      <option value='<c:out value='${i}'/>' <c:if test='${i == prefs.SkinName}'>selected="selected"</c:if> ><c:out value="${i}"/></option>
-    </c:forEach>
-  </select>
-  </td>
-  </tr>
+  <%--<tr>--%>
+  <%--<td><label for="prefSkin"><fmt:message key="prefs.user.skin"/></label></td>--%>
+  <%--<td>--%>
+  <%--<select id="prefSkin" name="prefSkin">--%>
+    <%--<c:forEach items="${skins}" var="i">--%>
+      <%--<option value='<c:out value='${i}'/>' <c:if test='${i == prefs.SkinName}'>selected="selected"</c:if> ><c:out value="${i}"/></option>--%>
+    <%--</c:forEach>--%>
+  <%--</select>--%>
+  <%--</td>--%>
+  <%--</tr>--%>
 
 
-  <c:if test='${not empty languages}'>
-  <c:set var="prefLanguage" ><c:out value="${prefs.Language}" default="<%=request.getLocale().toString()%>" /></c:set>
-  <tr>
-  <td><label for="prefLanguage"><fmt:message key="prefs.user.language"/></label></td>
-  <td>
-  <select id="prefLanguage" name="prefLanguage">
-    <c:forEach items='${languages}' var='lg'>
-      <option value="<c:out value='${lg.key}'/>" <c:if test='${fn:startsWith(prefLanguage,lg.key)}'>selected="selected"</c:if> ><c:out value="${lg.value}"/></option>
-    </c:forEach>
-  </select>
-  </td>
-  </tr>
-  </c:if>
+  <%--<c:if test='${not empty languages}'>--%>
+  <%--<c:set var="prefLanguage" ><c:out value="${prefs.Language}" default="<%=request.getLocale().toString()%>" /></c:set>--%>
+  <%--<tr>--%>
+  <%--<td><label for="prefLanguage"><fmt:message key="prefs.user.language"/></label></td>--%>
+  <%--<td>--%>
+  <%--<select id="prefLanguage" name="prefLanguage">--%>
+    <%--<c:forEach items='${languages}' var='lg'>--%>
+      <%--<option value="<c:out value='${lg.key}'/>" <c:if test='${fn:startsWith(prefLanguage,lg.key)}'>selected="selected"</c:if> ><c:out value="${lg.value}"/></option>--%>
+    <%--</c:forEach>--%>
+  <%--</select>--%>
+  <%--</td>--%>
+  <%--</tr>--%>
+  <%--</c:if>--%>
 
   <tr>
   <td><label for="prefOrientation"><fmt:message key="prefs.user.orientation"/></label></td>
