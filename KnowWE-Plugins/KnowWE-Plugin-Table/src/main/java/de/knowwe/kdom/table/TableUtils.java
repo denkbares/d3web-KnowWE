@@ -20,7 +20,9 @@
 
 package de.knowwe.kdom.table;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -30,6 +32,7 @@ public class TableUtils {
 
 	public static final String COLUMN_INDEX_KEY = "columnIndexKey";
 	public static final String COLUMN_HEADER_KEY = "columnHeaderKey";
+	public static final String ROW_NUMBERING_KEY = "rowNumbering";
 
 	/**
 	 * Checks whether the given Section is from the header of the table
@@ -45,10 +48,10 @@ public class TableUtils {
 		return headerLine == tableLine;
 	}
 
-	public static Section<?> getTableLine(Section<?> tableSection) {
-		return tableSection.get() instanceof TableLine
+	public static Section<TableLine> getTableLine(Section<?> tableSection) {
+		return Sections.cast(tableSection.get() instanceof TableLine
 				? tableSection
-				: Sections.ancestor(tableSection, TableLine.class);
+				: Sections.ancestor(tableSection, TableLine.class), TableLine.class);
 	}
 
 	/**
@@ -94,11 +97,25 @@ public class TableUtils {
 	 * @return the row of the section you are checking
 	 */
 	public static int getRow(Section<?> rowSection) {
-		Section<?> tableLine = getTableLine(rowSection);
+		Section<TableLine> tableLine = getTableLine(rowSection);
 		Section<Table> table = Sections.ancestor(tableLine, Table.class);
-		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
-		//noinspection SuspiciousMethodCalls
-		return lines.indexOf(tableLine);
+		if (table == null) return -1;
+		//noinspection unchecked
+		Map<String, Integer> rowNumbering = (Map<String, Integer>) table.getObject(ROW_NUMBERING_KEY);
+		if (rowNumbering == null || !rowNumbering.containsKey(tableLine.getID())) {
+			List<Section<TableLine>> lines = Sections.children(table, TableLine.class);
+			if (lines.size() > 10) {
+				rowNumbering = new HashMap<>(lines.size());
+				for (int i = 0; i < lines.size(); i++) {
+					Section<TableLine> line = lines.get(i);
+					rowNumbering.put(line.getID(), i);
+				}
+				table.storeObject(ROW_NUMBERING_KEY, rowNumbering);
+			} else {
+				return lines.indexOf(tableLine);
+			}
+		}
+		return rowNumbering.get(tableLine.getID());
 	}
 
 	/**
@@ -199,6 +216,5 @@ public class TableUtils {
 	public static Section<TableCellContent> getRowHeader(Section<?> cell) {
 		Section<TableLine> line = Sections.ancestor(cell, TableLine.class);
 		return Sections.successor(line, TableCellContent.class);
-
 	}
 }
