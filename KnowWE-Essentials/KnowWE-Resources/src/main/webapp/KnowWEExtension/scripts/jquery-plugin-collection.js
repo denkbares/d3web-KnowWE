@@ -46,6 +46,18 @@
 		}
 	};
 
+
+	jq$.fn.copyToClipboard = function(text) {
+		var $temp = jq$("<input>");
+		jq$("body").append($temp);
+		if (!text) {
+			text = jq$(this).text();
+		}
+		$temp.val(text).select();
+		document.execCommand("copy");
+		$temp.remove();
+	};
+
 	/**
 	 * Sets or reads the current caret or cursor/selection.
 	 *

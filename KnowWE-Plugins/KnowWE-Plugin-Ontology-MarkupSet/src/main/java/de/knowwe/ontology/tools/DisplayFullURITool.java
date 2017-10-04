@@ -38,24 +38,22 @@ import de.knowwe.util.Icon;
  * @created 03.02.15.
  */
 public class DisplayFullURITool implements ToolProvider {
-    @Override
-    public Tool[] getTools(Section<?> section, UserContext userContext) {
-        if (section.get() instanceof ResourceReference) {
-            final Section<? extends AbbreviatedResourceReference> abbRef = Sections.ancestor(section, AbbreviatedResourceReference.class);
-            final OntologyCompiler compiler = Compilers.getCompiler(abbRef, OntologyCompiler.class);
-            if (compiler != null) {
-                final URI resourceURI = abbRef.get().getResourceURI(compiler.getRdf2GoCore(), abbRef);
-                if (resourceURI != null) {
-                    final String fullURIText = resourceURI.toString();
-                    return new Tool[]{new DefaultTool(Icon.INFO, fullURIText, fullURIText, "alert('"+fullURIText+"');")};
-                }
-            }
-        }
-        return new Tool[0];
-    }
+	@Override
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
+		if (!(section.get() instanceof ResourceReference)) return new Tool[0];
+		Section<? extends AbbreviatedResourceReference> abbRef = Sections.ancestor(section, AbbreviatedResourceReference.class);
+		OntologyCompiler compiler = Compilers.getCompiler(abbRef, OntologyCompiler.class);
+		if (compiler == null) return new Tool[0];
+		URI resourceURI = abbRef.get().getResourceURI(compiler.getRdf2GoCore(), abbRef);
+		if (resourceURI == null) return new Tool[0];
+		String fullURIText = resourceURI.toString();
+		return new Tool[] { new DefaultTool(Icon.COPY_TO_CLIPBOARD, "Copy: " + fullURIText,
+				"Copies this URI to your clipboard: " + fullURIText,
+				"jq$(this).copyToClipboard('" + fullURIText + "');", Tool.ActionType.ONCLICK, null) };
+	}
 
-    @Override
-    public boolean hasTools(Section<?> section, UserContext userContext) {
-        return true;
-    }
+	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
 }
