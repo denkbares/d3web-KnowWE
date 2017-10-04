@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -48,7 +49,10 @@ import org.openrdf.rio.RDFFormat;
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.semanticcore.TupleQueryResult;
+import com.denkbares.semanticcore.utils.Sparqls;
+import com.denkbares.semanticcore.utils.Text;
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compilers;
@@ -103,12 +107,19 @@ public class Rdf2GoUtils {
 		return resultCollection;
 	}
 
+	private static final String SPARQL_LABEL = "<%1$s> rdfs:label ?rdfsLabel .\n" +
+			"OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel . }\n" +
+			"OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#altLabel> ?altLabel . }\n" +
+			"BIND ( IF ( BOUND (?prefLabel), ?prefLabel, \n" +
+			"     \t\tIF ( BOUND (?altLabel), ?altLabel, ?rdfsLabel ) )\n" +
+			"     \t AS ?label ) .";
+
 	/**
 	 * Returns a rdfs:label of the given concept in the given language, if existing.
 	 *
 	 * @param uri full uri of the concept to be labeled
 	 */
-	public static String getLabel(String uri, Rdf2GoCore repo, String languageTag) {
+	public static String getLabel(String uri, Rdf2GoCore repo, Locale... locales) {
 		try {
 			new java.net.URI(uri);
 		}
@@ -116,75 +127,39 @@ public class Rdf2GoUtils {
 			Log.severe(e.getMessage());
 			return uri;
 		}
-		return getLabel(new URIImpl(uri), repo, languageTag);
+		return getLabel(new URIImpl(uri), repo, locales);
 	}
 
 	/**
 	 * Returns a rdfs:label of the given concept in the given language, if existing.
 	 */
-	public static String getLabel(URI concept, Rdf2GoCore repo, String languageTag) {
+	public static String getLabel(URI concept, Rdf2GoCore repo, Locale... locales) {
 
 		// try to find language specific label
-		String label = getLanguageSpecificLabel(concept, repo, languageTag);
+		String labelQuery = String.format(SPARQL_LABEL, concept.stringValue());
 
-		// otherwise use standard label
-		if (label == null) {
+		String query = "SELECT ?label WHERE { "
+				+ labelQuery
+				+ "}";
+		TupleQueryResult resultTable = repo.sparqlSelect(query);
+		List<BindingSet> bindingSets = resultTable.getBindingSets();
 
-			String labelQuery = String.format(SPARQL_LABEL, concept.stringValue());
-
-			String query = "SELECT ?label WHERE { "
-					+ labelQuery
-					+ "}";
-			TupleQueryResult resultTable = repo.sparqlSelect(query);
-			List<BindingSet> bindingSets = resultTable.getBindingSets();
-			if (!bindingSets.isEmpty()) {
-				Value node = bindingSets.iterator().next().getValue("label");
-				label = node.stringValue();
-
+		Map<Locale, String> labels = new HashMap<>();
+		for (BindingSet bindingSet : bindingSets) {
+			Text label = Sparqls.asText(bindingSet.getBinding("label"));
+			if (locales.length == 0 && label.getLanguage() == Locale.ROOT) {
+				return label.getString();
 			}
+			labels.put(label.getLanguage(), label.getString());
 		}
-		// trim language tag if existing
-		if (label != null && label.contains("@")) {
-			if (label.lastIndexOf('@') == label.length() - 3) {
-				label = label.substring(0, label.length() - 3);
-			}
-		}
-		return label;
+		Locale bestLocale = Locales.findBestLocale(Arrays.asList(locales), labels.keySet());
+		return labels.get(bestLocale);
 	}
-
-	private static final String SPARQL_LABEL = "<%1$s> rdfs:label ?rdfsLabel .\n" +
-			"OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#prefLabel> ?prefLabel . }\n" +
-			"OPTIONAL { <%1$s> <http://www.w3.org/2004/02/skos/core#altLabel> ?prefLabel . }\n" +
-			"BIND ( IF ( BOUND (?prefLabel), ?prefLabel, \n" +
-			"     \t\tIF ( BOUND (?altLabel), ?altLabel, ?rdfsLabel ) )\n" +
-			"     \t AS ?label ) .";
 
 	private static final String SPARQL_LABEL_LANGUAGE_CONSTRAINTS = "" +
 			"FILTER(LANGMATCHES(LANG(?rdfsLabel), '%1$s')) . " +
 			"FILTER(LANGMATCHES(LANG(?prefLabel), '%1$s')) ." +
 			"FILTER(LANGMATCHES(LANG(?altLabel), '%1$s')) .";
-
-	private static String getLanguageSpecificLabel(URI concept, Rdf2GoCore repo, String languageTag) {
-		if (languageTag == null) return null;
-		String label = null;
-
-		String labelQuery = String.format(SPARQL_LABEL, concept.stringValue());
-
-		String languageFilter = String.format(SPARQL_LABEL_LANGUAGE_CONSTRAINTS, languageTag);
-		String query = "SELECT ?label WHERE { "
-				+ labelQuery + languageFilter
-				+ "}";
-		TupleQueryResult resultTable = repo.sparqlSelect(query);
-		List<BindingSet> bindingSets = resultTable.getBindingSets();
-		if (!bindingSets.isEmpty()) {
-			Value node = bindingSets.iterator().next().getValue("label");
-			label = node.stringValue();
-			if (label.charAt(label.length() - 3) == '@') {
-				label = label.substring(0, label.length() - 3);
-			}
-		}
-		return label;
-	}
 
 	public static Rdf2GoCore getRdf2GoCore(Section<?> section) {
 		if (section.get() instanceof DefaultMarkupType) {
@@ -322,7 +297,6 @@ public class Rdf2GoUtils {
 	 */
 	public static String parseKnownNamespacePrefix(Rdf2GoCore core, String string) {
 		if (core == null) return null;
-
 
 		if (string.startsWith(":")) {
 			if (core.getNamespacePrefixes().containsKey(":")) {
@@ -594,5 +568,4 @@ public class Rdf2GoUtils {
 			return PRIVATE_XSD_DATE_TIME_FORMAT.parse(dateTimeLiteral.stringValue());
 		}
 	}
-
 }
