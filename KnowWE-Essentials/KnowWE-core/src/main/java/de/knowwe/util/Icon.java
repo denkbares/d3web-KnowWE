@@ -80,7 +80,7 @@ public class Icon {
 	public static final Icon CALENDAR = new Icon("fa-calendar");
 	public static final Icon GLOBE = new Icon("fa-globe");
 	public static final Icon ORDERED_LIST = new Icon("fa-list-ol");
-^	public static final Icon COPY_TO_CLIPBOARD = new Icon("fa-clipboard");
+	public static final Icon COPY_TO_CLIPBOARD = new Icon("fa-clipboard");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-file-text-o");
