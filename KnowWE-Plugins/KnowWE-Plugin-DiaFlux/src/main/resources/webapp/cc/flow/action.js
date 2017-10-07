@@ -150,12 +150,12 @@ Action.prototype._extractInfoObjectName_deprecated = function(string) {
 		}
 	}
 	
-	// first try with quotes
+	// first try without quotes
 	var nameExpr = /^\s*(\w+)\s*=/i;
 	var result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return result[1];
-	
-	// second try without quotes
+
+	// second try with quotes
 	nameExpr = /^\s*"(.+)"\s*=/i;
 	result = nameExpr.exec(string);
 	if (result && result.length > 1 && result[1]) return result[1];
@@ -176,11 +176,16 @@ Action.prototype._extractInfoObjectName_deprecated = function(string) {
 	nameExpr = /^\s*(CALL)\[(.+)\(([^\(]+|"[^"]+(\\"[^"]+)*")\)\]\s*$/;
 	result = nameExpr.exec(string);
 	if (result && result.length > 3 && result[2]) return result[2];
-	
+
+	// try only ["] <no = > ["] =
+	nameExpr = /^\s*"?([^=]*)"?\s+=*/i;
+	result = nameExpr.exec(string);
+	if (result && result.length > 1 && result[1]) return result[1];
+
 	// last try only ["] <name> ["]
 	nameExpr = /^\s*"?(.*)"?\s*$/i;
 	result = nameExpr.exec(string);
-	if (result && result.length > 1 && result[1]) return result[1];	
+	if (result && result.length > 1 && result[1]) return result[1];
 
 	this.error = "The object's name can not be identified.";
 	return "";

@@ -129,8 +129,8 @@ Array.prototype.equals = function(other) {
 // ----
 
 var IdentifierUtils = {};
-
-IdentifierUtils.CONTROLCHARS_STRING = "\\\\()\\|&\"!=\\[\\]\\{\\}\\n\\r\\t ";
+// ()[]{}<>"'#=&|\*+-,.
+IdentifierUtils.CONTROLCHARS_STRING = "\\(\\)\\[\\]\\{\\}<>\"\'#=&|\\*\\+\\-,\\.\t\\n\\r";
 IdentifierUtils.QUOTED_STRING = "(?:\"(?:[^\"\\\\]|(?:(?:\\\\\\\\)*(?:\\\\\")*))*\")";
 IdentifierUtils.UNQUOTED_STRING = "(?:[^"+IdentifierUtils.CONTROLCHARS_STRING+"]+?)";
 IdentifierUtils.IDENTIFIER_STRING = "(?:" + IdentifierUtils.QUOTED_STRING + "|" + IdentifierUtils.UNQUOTED_STRING + ")"
