@@ -216,7 +216,18 @@
 	}
 
 	function decode(s) {
-		return config.raw ? s : decodeURIComponent(s);
+		if (config.raw) {
+			return s;
+		}
+		else {
+			try {
+				return decodeURIComponent(s);
+			}
+			catch(err) {
+				console.warn("Exception while decoding '" + s + "':", err);
+				return s;
+			}
+		}
 	}
 
 	function stringifyCookieValue(value) {
