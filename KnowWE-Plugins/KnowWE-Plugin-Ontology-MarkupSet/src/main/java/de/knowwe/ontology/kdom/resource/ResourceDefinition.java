@@ -41,7 +41,7 @@ public class ResourceDefinition extends SimpleDefinition {
 		super(OntologyCompiler.class, termClass);
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
-		this.addCompileScript(Priority.HIGHER, new OntologyCompileScript<ResourceDefinition>() {
+		this.addCompileScript(Priority.HIGHEST, new OntologyCompileScript<ResourceDefinition>() {
 
 			@Override
 			public void compile(OntologyCompiler compiler, Section<ResourceDefinition> section) throws CompilerMessage {

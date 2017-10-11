@@ -5,12 +5,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.openrdf.model.Value;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -21,6 +23,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
@@ -40,21 +43,63 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		this.setRenderer(StyleRenderer.Question);
 		//noinspection unchecked
 		this.removeCompileScript(OntologyCompiler.class, SimpleReferenceRegistrationScript.class);
-		this.addCompileScript(new LazyURIReferenceHandler());
+		this.addCompileScript(Priority.LOWER, new LazyIdentifierGenerator());
+		this.addCompileScript(Priority.LOWEST, new LazyURIReferenceHandler());
 	}
 
 	@Override
 	public Value getNode(Section<LazyURIReference> section, Rdf2GoCompiler compiler) {
+		Identifier identifier = getTermIdentifier(compiler, section);
+		return TurtleURI.getNodeForIdentifier(compiler.getRdf2GoCore(), identifier);
+	}
+
+	@NotNull
+	private Identifier getTermIdentifier(Rdf2GoCompiler compiler, Section<LazyURIReference> section) {
 		Identifier identifier = (Identifier) section.getObject(compiler, IDENTIFIER_KEY);
 		if (identifier == null) {
-			throw new IllegalStateException("Cannot get Node for section " + section + " before compilation");
+			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(compiler, section);
+
+			String termName = getTermName(section);
+			String message = null;
+
+			if (potentiallyMatchingIdentifiers.isEmpty()) {
+				message = "Resource '" + termName + "' not found.";
+			}
+			else {
+				if (potentiallyMatchingIdentifiers.size() == 1
+						|| isLnsOnly(compiler, potentiallyMatchingIdentifiers)) {
+					identifier = potentiallyMatchingIdentifiers.iterator().next();
+				}
+				else {
+					message = "Resource '" + termName + "' is ambiguous: "
+							+ Strings.concat(", ", potentiallyMatchingIdentifiers);
+				}
+			}
+			if (identifier == null) {
+				// as a fail save we use the lns
+				identifier = new Identifier("lns", termName);
+			}
+
+			if (message == null) {
+				Messages.clearMessages(compiler, section, this.getClass());
+			}
+			else {
+				Messages.storeMessage(compiler, section, this.getClass(), Messages.error(message));
+			}
+			section.storeObject(compiler, IDENTIFIER_KEY, identifier);
 		}
-		return TurtleURI.getNodeForIdentifier(compiler.getRdf2GoCore(), identifier);
+		return identifier;
+	}
+
+	private boolean isLnsOnly(Rdf2GoCompiler compiler, Collection<Identifier> potentiallyMatchingIdentifiers) {
+		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
+		return potentiallyMatchingIdentifiers.size() == 2
+				&& rdf2GoCore.getLocalNamespace().equals(compiler.getRdf2GoCore().getNamespaces().get(""));
 	}
 
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		// we dont want resource to be quoted by interface's default implementation
+		// we don't want resource to be quoted by interface's default implementation
 		return newIdentifier.getLastPathElement();
 	}
 
@@ -64,6 +109,9 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		// this should only fail if the section is compiled by different compilers and the lazy uri is resolved
 		// differently by the compilers
 		Map<Compiler, Object> objects = section.getObjects(IDENTIFIER_KEY);
+		if (objects == null) {
+			throw new IllegalStateException("Cannot get identifier for section " + section + " before compilation");
+		}
 		Set<Identifier> identifiers = new HashSet<>(objects.size());
 		for (Object identifier : objects.values()) {
 			if (identifier instanceof Identifier) {
@@ -93,52 +141,12 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 
 		@Override
 		public void compile(OntologyCompiler compiler, Section<LazyURIReference> section) throws CompilerMessage {
-			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(
-					compiler, section);
-
-			String termName = getTermName(section);
-			Identifier identifier = null;
-			String message = null;
-
-			if (potentiallyMatchingIdentifiers.isEmpty()) {
-				message = "Resource '" + termName
-						+ "' not found.";
-			}
-			else {
-				if (potentiallyMatchingIdentifiers.size() == 1
-						|| isLnsOnly(compiler, potentiallyMatchingIdentifiers)) {
-					identifier = potentiallyMatchingIdentifiers.iterator().next();
-				}
-				else {
-					message = "Resource '" + termName
-							+ "' is ambiguous: " + Strings.concat(", ", potentiallyMatchingIdentifiers);
-				}
-			}
-			if (identifier == null) {
-				// as a fail save we use the lns
-				identifier = new Identifier("lns", termName);
-			}
-			section.storeObject(compiler, IDENTIFIER_KEY, identifier);
 
 			TerminologyManager manager = compiler.getTerminologyManager();
 			// we always also register the section as a reference to the name to be able to update if new identifiers with
 			// the same name are registered
-			manager.registerTermReference(compiler, section, getTermObjectClass(section), new Identifier(termName));
-			manager.registerTermReference(compiler, section, getTermObjectClass(section), identifier);
-
-			if (message == null) {
-				// we overwrite existing messages
-				throw new CompilerMessage();
-			}
-			else {
-				throw CompilerMessage.error(message);
-			}
-		}
-
-		private boolean isLnsOnly(OntologyCompiler compiler, Collection<Identifier> potentiallyMatchingIdentifiers) {
-			Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
-			return potentiallyMatchingIdentifiers.size() == 2
-					&& rdf2GoCore.getLocalNamespace().equals(compiler.getRdf2GoCore().getNamespaces().get(""));
+			manager.registerTermReference(compiler, section, getTermObjectClass(section), new Identifier(getTermName(section)));
+			manager.registerTermReference(compiler, section, getTermObjectClass(section), getTermIdentifier(section));
 		}
 
 		@Override
@@ -151,4 +159,15 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 		}
 	}
 
+	private class LazyIdentifierGenerator extends OntologyCompileScript<LazyURIReference> {
+		@Override
+		public void compile(OntologyCompiler compiler, Section<LazyURIReference> section) throws CompilerMessage {
+			getTermIdentifier(compiler, section); // just make sure, that the identifier is there
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<LazyURIReference> section) {
+			// cleanup will be done by LazyURIReferenceHandler
+		}
+	}
 }

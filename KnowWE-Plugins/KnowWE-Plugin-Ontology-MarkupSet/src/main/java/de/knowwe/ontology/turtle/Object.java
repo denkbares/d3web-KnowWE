@@ -75,11 +75,11 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	private Type createObjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.successor(turtleURI, ResourceReference.class);
-		reference.addCompileScript(Priority.HIGH, new ObjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:instance" }));
+		reference.addCompileScript(Priority.HIGHEST, new ObjectPredicateKeywordDefinitionHandler(new String[] { "[\\w]*?:instance" }));
 		return turtleURI;
 	}
 
-	class ObjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
+	static class ObjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
 
 		public ObjectPredicateKeywordDefinitionHandler(String[] matchExpressions) {
 			super(matchExpressions);

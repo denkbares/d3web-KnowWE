@@ -19,14 +19,14 @@
 
 package de.knowwe.ontology.turtle;
 
+import java.util.List;
+
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
-
-import java.util.List;
 
 /**
  * @author Jochen Reutelshoefer (denkbares GmbH)
@@ -37,11 +37,11 @@ public class SubjectURIWithDefinition extends TurtleURI {
 
     public SubjectURIWithDefinition() {
         SimpleReference reference = Types.successor(this, ResourceReference.class);
-        reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[]{"^" + PredicateAType.a + "$", "[\\w]*?:?type", "[\\w]*?:?subClassOf",  "[\\w]*?:?isA", "[\\w]*?:?subPropertyOf"}));
+        reference.addCompileScript(Priority.HIGHEST, new SubjectPredicateKeywordDefinitionHandler(new String[] { "^" + PredicateAType.a + "$", "[\\w]*?:?type", "[\\w]*?:?subClassOf", "[\\w]*?:?isA", "[\\w]*?:?subPropertyOf" }));
 
     }
 
-    class SubjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
+    static class SubjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
 
         public SubjectPredicateKeywordDefinitionHandler(String[] matchExpressions) {
             super(matchExpressions);

@@ -54,14 +54,16 @@ public class LazyReferenceManager implements EventListener {
 	public synchronized void notify(Event event) {
 		if (event instanceof CompilerEvent) {
 			Compiler compiler = ((CompilerEvent) event).getCompiler();
-			cache.remove(compiler);
-			if (event instanceof TermDefinitionRegisteredEvent) {
-				TermDefinitionRegisteredEvent registeredEvent = (TermDefinitionRegisteredEvent) event;
-				compileLazyReferences((TermCompiler) compiler, registeredEvent.getIdentifier());
-			}
-			if (event instanceof TermDefinitionUnregisteredEvent) {
-				TermDefinitionUnregisteredEvent unregisteredEvent = (TermDefinitionUnregisteredEvent) event;
-				destroyLazyReferences((TermCompiler) compiler, unregisteredEvent.getIdentifier());
+			if (compiler instanceof TermCompiler) {
+				cache.remove(compiler);
+				if (event instanceof TermDefinitionRegisteredEvent) {
+					TermDefinitionRegisteredEvent registeredEvent = (TermDefinitionRegisteredEvent) event;
+					compileLazyReferences((TermCompiler) compiler, registeredEvent.getIdentifier());
+				}
+				if (event instanceof TermDefinitionUnregisteredEvent) {
+					TermDefinitionUnregisteredEvent unregisteredEvent = (TermDefinitionUnregisteredEvent) event;
+					destroyLazyReferences((TermCompiler) compiler, unregisteredEvent.getIdentifier());
+				}
 			}
 		}
 	}
@@ -109,13 +111,6 @@ public class LazyReferenceManager implements EventListener {
 	}
 
 	private void insertTerm(Map<String, Set<Identifier>> suffixMapping, Identifier identifier) {
-		String suffix = identifier.getPathElementAt(1);
-		Set<Identifier> suffixSet = suffixMapping.get(suffix);
-		if (suffixSet == null) {
-			suffixSet = new HashSet<>(4);
-			suffixMapping.put(suffix, suffixSet);
-		}
-		suffixSet.add(identifier);
+		suffixMapping.computeIfAbsent(identifier.getPathElementAt(1), k -> new HashSet<>(4)).add(identifier);
 	}
-
 }

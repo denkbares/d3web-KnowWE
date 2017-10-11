@@ -19,7 +19,9 @@
 
 package de.knowwe.ontology.kdom.table;
 
-import de.knowwe.core.compile.*;
+import java.util.List;
+
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
@@ -32,9 +34,10 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
-import de.knowwe.ontology.turtle.*;
-
-import java.util.List;
+import de.knowwe.ontology.turtle.Predicate;
+import de.knowwe.ontology.turtle.PredicateAType;
+import de.knowwe.ontology.turtle.PredicateKeywordDefinitionHandler;
+import de.knowwe.ontology.turtle.TurtleURI;
 
 /**
  * @author Jochen Reutelshoefer (denkbares GmbH)
@@ -45,12 +48,12 @@ public class TableSubjectURIWithDefinition  extends TurtleURI {
 
     public TableSubjectURIWithDefinition() {
         SimpleReference reference = Types.successor(this, ResourceReference.class);
-        reference.addCompileScript(Priority.HIGH, new SubjectPredicateKeywordDefinitionHandler(new String[]{"^" + PredicateAType.a + "$", "[\\w]*?:?type", "[\\w]*?:?subClassOf",  "[\\w]*?:?isA", "[\\w]*?:?subPropertyOf"}));
-        reference.addCompileScript(Priority.HIGH, new SubjectColumnHeaderDefinitionHandler());
+        reference.addCompileScript(Priority.HIGHEST, new SubjectPredicateKeywordDefinitionHandler(new String[] { "^" + PredicateAType.a + "$", "[\\w]*?:?type", "[\\w]*?:?subClassOf", "[\\w]*?:?isA", "[\\w]*?:?subPropertyOf" }));
+        reference.addCompileScript(Priority.HIGHEST, new SubjectColumnHeaderDefinitionHandler());
 
     }
 
-    class SubjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
+    static class SubjectPredicateKeywordDefinitionHandler extends PredicateKeywordDefinitionHandler {
 
         public SubjectPredicateKeywordDefinitionHandler(String[] matchExpressions) {
             super(matchExpressions);
@@ -67,7 +70,7 @@ public class TableSubjectURIWithDefinition  extends TurtleURI {
 	 * In the first row (subject row) the subjects can be defined to be instance of a class specified in the header cell of the first column.
 	 *
 	 */
-	private class SubjectColumnHeaderDefinitionHandler  extends OntologyCompileScript<SimpleReference> {
+	private static class SubjectColumnHeaderDefinitionHandler  extends OntologyCompileScript<SimpleReference> {
 
 		@Override
 		public void compile(OntologyCompiler compiler, Section<SimpleReference> section) throws CompilerMessage {

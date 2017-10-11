@@ -33,7 +33,7 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 public class AbbreviationReference extends SimpleReference {
 
 	public AbbreviationReference() {
-		super(OntologyCompiler.class, AbbreviationDefinition.class, Priority.HIGHER);
+		super(OntologyCompiler.class, AbbreviationDefinition.class, Priority.LOWEST);
 		this.setSectionFinder(new ConstraintSectionFinder(new RegexSectionFinder(Patterns.WORD),
 				AtMostOneFindingConstraint.getInstance()));
 		this.setRenderer(StyleRenderer.Questionaire);

@@ -19,6 +19,7 @@
 package de.knowwe.ontology.kdom.resource;
 
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
@@ -33,7 +34,7 @@ public class ResourceReference extends SimpleReference {
 	protected static final String IDENTIFIER_KEY = "identifierKey";
 
 	public ResourceReference(Class<?> termClass) {
-		super(OntologyCompiler.class, termClass);
+		super(OntologyCompiler.class, termClass, Priority.LOWEST);
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
 	}

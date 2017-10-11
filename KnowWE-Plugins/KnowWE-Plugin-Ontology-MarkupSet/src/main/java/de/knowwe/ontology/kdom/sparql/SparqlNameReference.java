@@ -21,6 +21,7 @@ package de.knowwe.ontology.kdom.sparql;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
@@ -44,7 +45,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class SparqlNameReference extends SimpleReference {
 
 	public SparqlNameReference() {
-		super(SparqlNameDefinition.TERM_COMPILER, SparqlNameDefinition.TERM_CLASS);
+		super(SparqlNameDefinition.TERM_COMPILER, SparqlNameDefinition.TERM_CLASS, Priority.LOWEST);
 		setSectionFinder(new RegexSectionFinder(".*"));
 		setRenderer(new ToolMenuDecoratingRenderer(StyleRenderer.CHOICE));
 	}
