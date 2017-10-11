@@ -182,8 +182,8 @@ public class ParallelScriptCompiler<C extends Compiler> {
 							cm.getMessages());
 				}
 				catch (Exception e) {
-					String msg = "Unexpected internal exception while compiling with script "
-							+ pair.getB() + ": " + e.getMessage();
+					String msg = "Unexpected internal exception while compiling.\nScript: "
+							+ pair.getB() + ", priority " + currentPriority.intValue() + ":\n" + e.getMessage();
 					Messages.storeMessage(pair.getA(), pair.getB().getClass(), Messages.error(msg));
 					Log.severe(msg, e);
 				}
