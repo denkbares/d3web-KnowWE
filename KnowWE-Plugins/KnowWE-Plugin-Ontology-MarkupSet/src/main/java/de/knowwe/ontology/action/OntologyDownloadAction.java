@@ -19,9 +19,12 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.ontology.tools.OntologyDownloadProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -41,11 +44,11 @@ public class OntologyDownloadAction extends AbstractAction {
 		Rdf2GoCore rdf2GoCore = null;
 		Section<?> section;
 		if (title == null) {
-			section = Sections.successor(Sections.get(secID), PackageCompileType.class);
+			section = $(Sections.get(secID)).successor(PackageCompileType.class).getFirst();
 		}
 		else {
 			Article article = KnowWEUtils.getArticleManager(context.getWeb()).getArticle(title);
-			section = Sections.successor(article, PackageCompileType.class);
+			section = $(article).successor(OntologyType.class).successor(PackageCompileType.class).getFirst();
 		}
 		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(section, Rdf2GoCompiler.class);
 		for (Rdf2GoCompiler compiler : compilers) {

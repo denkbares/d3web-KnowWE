@@ -68,7 +68,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 		String extension = syntax.getDefaultFileExtension();
 
 		List<Section<OntologyType>> ontologySections = Sections.successors(section.getArticle(), OntologyType.class);
-		String jsAction = "";
+		String jsAction;
 		//if there is only one ontology section on this article provide static URL access per article name
 		String identifierForThisOntology;
 		if (ontologySections.size() == 1) {
