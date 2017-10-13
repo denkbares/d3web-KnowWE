@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.denkbares.collections.MultiMap;
+import com.denkbares.semanticcore.CachedTupleQueryResult;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -94,9 +95,21 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 					"No repository found for section: " + actualSparqlSection);
 		}
 
+		String expectedSparqlName = DefaultMarkupType.getAnnotation(expectedResultDefaultMarkup, ExpectedSparqlResultTableMarkup.NAME_ANNOTATION);
 		String actualSparqlString = Rdf2GoUtils.createSparqlString(core, actualSparqlSection.getText());
-
-		ResultTableModel actualResultTable = new ResultTableModel(core.sparqlSelect(actualSparqlString));
+		CachedTupleQueryResult result;
+		try {
+			result = core.sparqlSelect(actualSparqlString);
+		}
+		catch (Exception e) {
+			Message message = new Message(Type.FAILURE, "Exception while executing SPARQL query: " + e.getMessage());
+			ArrayList<MessageObject> messageObjects = new ArrayList<>();
+			messageObjects.add(new MessageObject(actualSparqlName, Section.class));
+			messageObjects.add(new MessageObject(expectedSparqlName, Section.class));
+			message.setObjects(messageObjects);
+			return message;
+		}
+		ResultTableModel actualResultTable = new ResultTableModel(result);
 
 		List<String> variables = actualResultTable.getVariables();
 
@@ -115,7 +128,6 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 				actualResultTable, atLeastFlag);
 
 		if (!failures.isEmpty()) {
-			String expectedSparqlName = DefaultMarkupType.getAnnotation(expectedResultDefaultMarkup, ExpectedSparqlResultTableMarkup.NAME_ANNOTATION);
 			String errorsText = ResultTableModel.generateErrorsText(failures, false);
 			errorsText += "Expected result: " + expectedSparqlName + ", actual result: " + actualSparqlName;
 			Message message = new Message(Type.FAILURE, errorsText);
@@ -138,5 +150,4 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 	public String getDescription() {
 		return "Test a expected sparql result set against the result set of the actually executed sparql query.";
 	}
-
 }
