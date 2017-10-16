@@ -19,9 +19,14 @@
 
 package de.d3web.we.kdom.rules.utils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.instantedit.tools.InstantEditTool;
+import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
@@ -40,7 +45,28 @@ public class RuleEditToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		return new Tool[] { getRuleEditTool(section, userContext) };
+		return new Tool[] { getRuleEditTool(section, userContext), getDebuggingTool(section, userContext) };
+	}
+
+	private Tool getDebuggingTool(Section<?> section, UserContext userContext) {
+		boolean showDebugView = isRuleDebuggingActive(userContext);
+
+		if (showDebugView) {
+			return new DefaultTool(Icon.DEBUG, "Stop rule debugging",
+					"Switch back to more concise rendering of rules.",
+					"jq$.cookie('RuleDebugView', 'false'); window.location.reload()",
+					Tool.ActionType.ONCLICK,
+					Tool.CATEGORY_INFO);
+		}
+		else {
+			return new DefaultTool(
+					Icon.DEBUG,
+					"Rule debugging",
+					"Changes rendering of rules to better show the status of the different conditions and actions.",
+					"jq$.cookie('RuleDebugView', 'true'); window.location.reload()",
+					Tool.ActionType.ONCLICK,
+					Tool.CATEGORY_INFO);
+		}
 	}
 
 	protected Tool getRuleEditTool(Section<?> section, UserContext userContext) {
@@ -49,5 +75,9 @@ public class RuleEditToolProvider implements ToolProvider {
 				"Edit Rule",
 				"Edit this rule",
 				section, "KNOWWE.plugin.rule.editTool");
+	}
+
+	public static boolean isRuleDebuggingActive(UserContext user) {
+		return "true".equals(KnowWEUtils.getCookie("RuleDebugView", "false", user));
 	}
 }

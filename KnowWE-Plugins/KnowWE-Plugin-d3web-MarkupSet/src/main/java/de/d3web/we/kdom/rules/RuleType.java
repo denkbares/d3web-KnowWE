@@ -56,6 +56,7 @@ import de.d3web.we.kdom.rules.action.ThenActionContainer;
 import de.d3web.we.kdom.rules.action.UnknownActionContainer;
 import de.d3web.we.kdom.rules.condition.ExceptionConditionContainer;
 import de.d3web.we.kdom.rules.condition.IfConditionContainer;
+import de.d3web.we.kdom.rules.utils.RuleEditToolProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;

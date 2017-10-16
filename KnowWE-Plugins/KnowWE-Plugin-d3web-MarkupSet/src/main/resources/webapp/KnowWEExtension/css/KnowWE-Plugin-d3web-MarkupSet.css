@@ -6,11 +6,11 @@
 	background: #FFF6BF;
 }
 
-.d3webRule > span {
+.ruleDebugView .d3webRule > span {
 	line-height: 40px;
 }
 
-.Condition > span {
+.ruleDebugView .Condition > span {
 	line-height: 40px;
 }
 
@@ -22,6 +22,9 @@
 
 .IfCondition {
 	background-color: inherit;
+}
+
+.ruleDebugView .ruleDebug  .IfCondition {
 	padding: 8px 0 8px 0;
 }
 
@@ -40,34 +43,37 @@
 }
 
 .conditionUndefined {
-	background-color: white;
+	background-color: inherit;
 }
 
 /* - CompositeConditions - */
 
 /* always the outermost condition*/
-.CompositeCondition {
+.ruleDebugView .CompositeCondition {
 	/*in some cases the padding would have been overwritten by its children*/
 	padding: 8px 0 8px 0 !important;
 }
 
-.BracedCondition {
+.ruleDebugView .BracedCondition {
 	padding: 4px 0 4px 0;
 }
 
-.Conjunction {
+.ruleDebugView .Conjunction {
 	padding: 4px 0 4px 0;
 }
 
-.Disjunction {
+.ruleDebugView .Disjunction {
 	padding: 4px 0 4px 0;
 }
 
 /* -- ThenAction -- */
 
 .ThenAction {
-	padding: 8px 0 8px 0;
 	background-color: inherit;
+}
+
+.ruleDebugView .ThenAction {
+	padding: 8px 0 8px 0;
 }
 
 /* -- Exceptions -- */

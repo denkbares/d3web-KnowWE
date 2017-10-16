@@ -20,18 +20,20 @@
 
 package de.d3web.we.kdom.rules;
 
+import de.d3web.we.kdom.rules.utils.RuleEditToolProvider;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
+ * A markup to create a block for text-rules
+ * <p>
  * @author Jochen
- * 
- *         A markup to create a block for text-rules
  * @see RuleContentType
- * 
- * 
  */
 public class RulesMarkup extends DefaultMarkupType {
 
@@ -45,7 +47,18 @@ public class RulesMarkup extends DefaultMarkupType {
 
 	public RulesMarkup() {
 		super(m);
-		this.setRenderer(new DefaultMarkupRenderer(
-				"KnowWEExtension/d3web/icon/rule24.png"));
+		this.setRenderer(new DefaultMarkupRenderer("KnowWEExtension/d3web/icon/rule24.png") {
+			@Override
+			protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+				boolean ruleDebuggingActive = RuleEditToolProvider.isRuleDebuggingActive(user);
+				if (ruleDebuggingActive) {
+					string.appendHtml("<div class='ruleDebugView'>");
+				}
+				super.renderContents(section, user, string);
+				if (ruleDebuggingActive) {
+					string.appendHtml("</div>>");
+				}
+			}
+		});
 	}
 }
