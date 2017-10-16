@@ -156,7 +156,7 @@ public class RuleTableMarkup extends DefaultMarkupType
 
 	public static String evaluateSessionCondition(Session session, Condition condition) {
 		try {
-			return condition.eval(session) ? "conditionTrue" : "conditionFalse";
+			return condition != null && condition.eval(session) ? "conditionTrue" : "conditionFalse";
 		} catch (UnknownAnswerException e) {
 			return "conditionUnknown";
 		} catch (NoAnswerException ignore) {
