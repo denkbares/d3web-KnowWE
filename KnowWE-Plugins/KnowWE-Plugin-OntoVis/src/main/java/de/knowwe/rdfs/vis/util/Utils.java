@@ -531,13 +531,17 @@ public class Utils {
 		String fileID = "Visualization_" + section.getID();
 
 		if (conceptFromRequest != null) {
-			fileID += "_" + conceptFromRequest.replaceAll("\\W", "_");
+			fileID += "_" + conceptFromRequest.replaceAll("\\W", "_").replaceAll(":","");
 		}
 
 		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
 		if (compiler == null) return fileID;
 
-		return fileID + "_" + Integer.toHexString(compiler.hashCode());
+		String result = fileID + "_" + Integer.toHexString(compiler.hashCode());
+
+		// jspwiki rendering pipeline kills us for double underscores...
+		result = result.replaceAll("__", "_");
+		return result;
 	}
 
 	public static String findNewIDFromRenderResult(Sections.ReplaceResult rr) {
