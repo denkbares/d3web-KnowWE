@@ -261,7 +261,7 @@ public class Utils {
 			else {
 				label = Utils.getLabel(toURI, rdf2GoCore, config.getLanguage(), showLabels.split(","));
 			}
-			if (label != null && label.charAt(label.length() - 3) == '@') {
+			if (label != null && label.length() >= 3 && label.charAt(label.length() - 3) == '@') {
 				// do not show language tag of relation labels
 				label = label.substring(0, label.length() - 3);
 			}
