@@ -82,10 +82,10 @@ public class TableCell extends AbstractType {
 	 * @author smark, Sebastian Furth
 	 * @see SectionFinder
 	 */
-	public class TableCellSectionFinder implements SectionFinder {
+	public static class TableCellSectionFinder implements SectionFinder {
 
 		public static final String CELLSTART = "\\|{1,2}\\s*";
-		public static final String JSPLINK = "(\\[.+\\|?.*\\])";
+		public static final String JSPLINK = "(\\[[^]]+\\|?[^]]*\\])";
 		public static final String REGEX = CELLSTART + "(" + JSPLINK + "|"
 				+ Patterns.QUOTED + "|[^|]*)*";
 		private final Pattern pattern = Pattern.compile(REGEX);
