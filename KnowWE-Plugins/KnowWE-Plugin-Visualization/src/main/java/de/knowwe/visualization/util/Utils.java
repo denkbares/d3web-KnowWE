@@ -142,8 +142,8 @@ public class Utils {
 	}
 
 	public static String clean(String text, String lineBreak) {
-		String cleanText = StringEscapeUtils.escapeHtml(text);
-		cleanText = cleanText.replaceAll("\\r\\n|\\n", lineBreak);
+		//String cleanText = StringEscapeUtils.escapeHtml(text);
+		String cleanText = text.replaceAll("\\r\\n|\\n", lineBreak);
 		return cleanText.replaceAll("\"", "'");
 	}
 
