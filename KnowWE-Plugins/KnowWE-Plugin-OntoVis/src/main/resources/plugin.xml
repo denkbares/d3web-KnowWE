@@ -220,6 +220,8 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="50" />
 		<parameter id="scope" value="ResourceReference" />
+		<parameter id="scope" value="LazyURIReference"/>
+		<parameter id="scope" value="TurtleURI"/>
 	</extension>
 
 

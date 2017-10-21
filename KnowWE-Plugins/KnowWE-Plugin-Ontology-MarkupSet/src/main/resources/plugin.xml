@@ -221,6 +221,7 @@
         <parameter id="priority" value="5"/>
         <parameter id="scope" value="ResourceReference"/>
         <parameter id="scope" value="TurtleURI"/>
+		<parameter id="scope" value="LazyURIReference"/>
     </extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="DisplayFullURITool">
