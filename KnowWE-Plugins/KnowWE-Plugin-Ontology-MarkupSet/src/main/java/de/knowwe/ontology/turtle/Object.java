@@ -198,8 +198,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		else {
 			Section<TurtleSentence> sentence = Sections.ancestor(predSentenceSection,
 					TurtleSentence.class);
-			Section<Subject> subjectSection = Sections.successor(sentence,
-					Subject.class);
+			Section<Subject> subjectSection = findSubjectSection(sentence);
 			subject = subjectSection.get().getResource(subjectSection, core);
 
 			// check term definition
@@ -227,6 +226,11 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			result.addStatement(core.getRdf2GoCore().createStatement(subject, predicate, object));
 		}
 		return result;
+	}
+
+	public Section<Subject> findSubjectSection(Section<TurtleSentence> sentence) {
+		return Sections.successor(sentence,
+						Subject.class);
 	}
 
 	private boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {

@@ -38,7 +38,7 @@ public class PredicateSentence extends AbstractType {
 
 	}
 
-	class PredicateSentenceSectionFinder implements SectionFinder {
+	static class PredicateSentenceSectionFinder implements SectionFinder {
 
 
 		@Override

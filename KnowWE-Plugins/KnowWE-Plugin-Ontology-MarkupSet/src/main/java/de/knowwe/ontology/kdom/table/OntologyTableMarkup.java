@@ -18,20 +18,36 @@
  */
 package de.knowwe.ontology.kdom.table;
 
+import java.util.List;
+
+import org.openrdf.model.Statement;
+import org.openrdf.model.Value;
+
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableIndexConstraint;
+import de.knowwe.ontology.turtle.BlankNode;
 import de.knowwe.ontology.turtle.EncodedTurtleURI;
+import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
+import de.knowwe.ontology.turtle.PredicateObjectSentenceList;
+import de.knowwe.ontology.turtle.PredicateSentence;
 import de.knowwe.ontology.turtle.Subject;
+import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.ontology.turtle.TurtleURI;
+import de.knowwe.ontology.turtle.compile.StatementProvider;
+import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -84,18 +100,37 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		/*
 		Inner cell entries: cells 1-n,1-n
 		 */
-		ObjectList object = new ObjectList();
+		ObjectList object = new ObjectList(new OntologyTableTurtleObject());
 		// add aux-type to enable drop-area-rendering
 		OntologyTableCellEntry cellEntry = new OntologyTableCellEntry(object);
 		cellEntry.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
-		content.injectTableCellContentChildtype(cellEntry);
 
 	}
 
 	public OntologyTableMarkup() {
 		super(MARKUP);
+	}
+
+
+	static class OntologyTableTurtleObject extends Object {
+		@Override
+		public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCompiler core) {
+
+			StatementProviderResult result = new StatementProviderResult();
+
+			List<Section<StatementProvider>> bNodePOSentenceList = Sections.successors(section, StatementProvider.class);
+			for (Section<StatementProvider> statementProviderSection : bNodePOSentenceList) {
+				if(statementProviderSection.equals(section)) continue;
+				StatementProviderResult statements = statementProviderSection.get()
+						.getStatements(statementProviderSection, core);
+				for (Statement statement : statements.getStatements()) {
+					result.addStatement(statement);
+				}
+			}
+			return result;
+		}
 	}
 
 	static class BasicURIType extends AbstractType {

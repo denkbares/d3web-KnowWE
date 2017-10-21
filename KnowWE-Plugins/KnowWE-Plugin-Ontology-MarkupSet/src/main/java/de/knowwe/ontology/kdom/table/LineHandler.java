@@ -74,7 +74,13 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 				if (propertyReference != null) {
 					URI propertyUri = (URI) propertyReference.get().getNode(propertyReference, compiler);
 					Value objectNode = objectReference.get().getNode(objectReference, compiler);
+					// create 'simple' triple for each 'simple'
 					statements.add(core.createStatement((Resource) subjectNode, propertyUri, objectNode));
+
+					// check for more triples as BNodes
+					StatementProviderResult bNodeStatements = objectReference.get()
+							.getStatements(objectReference, compiler);
+					statements.addAll(bNodeStatements.getStatements());
 				}
             } else {
 				// TODO: clarify whenever this case can make sense...!?

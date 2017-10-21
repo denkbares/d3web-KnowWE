@@ -52,7 +52,7 @@ public class BlankNode extends AbstractType implements ResourceProvider<BlankNod
 
 	}
 
-	class MaskBracketsRenderer implements Renderer {
+	static class MaskBracketsRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {

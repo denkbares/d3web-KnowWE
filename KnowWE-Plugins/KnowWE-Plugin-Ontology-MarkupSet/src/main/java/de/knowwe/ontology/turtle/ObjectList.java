@@ -27,4 +27,9 @@ public class ObjectList extends AbstractType {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(new Object());
 	}
+
+	public ObjectList(Object child) {
+		this.setSectionFinder(new AllTextFinderTrimmed());
+		this.addChildType(child);
+	}
 }
