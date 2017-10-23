@@ -106,6 +106,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		cellEntry.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
+		content.injectTableCellContentChildtype(cellEntry);
 
 	}
 
