@@ -21,9 +21,7 @@ package de.knowwe.ontology.kdom.table;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.URIImpl;
 
@@ -38,9 +36,10 @@ import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.turtle.Object;
+import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -50,44 +49,53 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  */
 public class LineHandler extends OntologyCompileScript<TableLine> {
 
-    @Override
-    public void compile(OntologyCompiler compiler, Section<TableLine> section) throws CompilerMessage {
+	@Override
+	public void compile(OntologyCompiler compiler, Section<TableLine> section) throws CompilerMessage {
 
-        if (TableUtils.isHeaderRow(section)) {
-            Messages.clearMessages(compiler, section, getClass());
-            return;
-        }
+		if (TableUtils.isHeaderRow(section)) {
+			Messages.clearMessages(compiler, section, getClass());
+			return;
+		}
 
-        Rdf2GoCore core = compiler.getRdf2GoCore();
-        List<Statement> statements = new LinkedList<>();
-        Section<NodeProvider> subjectReference = findSubject(section);
-        if (subjectReference == null) {
-            // obviously no subject in this line, could be an empty table line
-            return;
-        }
+		Rdf2GoCore core = compiler.getRdf2GoCore();
+		List<Statement> statements = new LinkedList<>();
+		Section<NodeProvider> subjectReference = findSubject(section);
+		if (subjectReference == null) {
+			// obviously no subject in this line, could be an empty table line
+			return;
+		}
 		@SuppressWarnings("unchecked")
 		Value subjectNode = subjectReference.get().getNode(subjectReference, compiler);
-		List<Section<Object>> objects = findObjects(section);
-        for (Section<Object> objectReference : objects) {
-            if (Sections.ancestor(objectReference, TableCellContent.class) != null) {
-                Section<Predicate> propertyReference = TableUtils.getColumnHeader(objectReference, Predicate.class);
-				if (propertyReference != null) {
-					URI propertyUri = (URI) propertyReference.get().getNode(propertyReference, compiler);
-					Value objectNode = objectReference.get().getNode(objectReference, compiler);
-					// create 'simple' triple for each 'simple'
-					statements.add(core.createStatement((Resource) subjectNode, propertyUri, objectNode));
+		List<Section<OntologyTableCellEntry>> cells = Sections.successors(section, OntologyTableCellEntry.class);
+		for (Section<OntologyTableCellEntry> cell : cells) {
+			Section<ObjectList> objectList = Sections.child(cell, ObjectList.class);
+			List<Section<OntologyTableMarkup.OntologyTableTurtleObject>> cellEntries = Sections.children(objectList, OntologyTableMarkup.OntologyTableTurtleObject.class);
+			for (Section<OntologyTableMarkup.OntologyTableTurtleObject> objectReference : cellEntries) {
 
-					// check for more triples as BNodes
-					StatementProviderResult bNodeStatements = objectReference.get()
-							.getStatements(objectReference, compiler);
-					statements.addAll(bNodeStatements.getStatements());
+				if (Sections.ancestor(objectReference, TableCellContent.class) != null) {
+					Section<Predicate> propertyReference = TableUtils.getColumnHeader(objectReference, Predicate.class);
+					if (propertyReference != null) {
+						List<Section<StatementProvider>> statementProviders = Sections.successors(
+								section, StatementProvider.class);
+						for (Section<StatementProvider> statementSection : statementProviders) {
+
+							StatementProviderResult providerResult = statementSection.get().getStatements(
+									statementSection, compiler);
+							if (providerResult != null) {
+								compiler.getRdf2GoCore().addStatements(section, providerResult.getStatements());
+								Messages.storeMessages(section, this.getClass(), providerResult.getMessages());
+							}
+						}
+					}
 				}
-            } else {
-				// TODO: clarify whenever this case can make sense...!?
-                final StatementProviderResult statementProviderResult = objectReference.get().getStatements(objectReference, compiler);
-                statements.addAll(statementProviderResult.getStatements());
-            }
-        }
+				else {
+					// TODO: clarify whenever this case can make sense...!?
+					final StatementProviderResult statementProviderResult = objectReference.get()
+							.getStatements(objectReference, compiler);
+					statements.addAll(statementProviderResult.getStatements());
+				}
+			}
+		}
 
 		/*
 		Additionally handle header cell definition;
@@ -97,16 +105,19 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		Section<TableCellContent> cell = Sections.ancestor(subjectReference, TableCellContent.class);
 		Section<TableCellContent> rowHeaderCell = TableUtils.getColumnHeader(cell);
 		Section<OntologyTableMarkup.BasicURIType> colHeaderConcept = Sections.successor(rowHeaderCell, OntologyTableMarkup.BasicURIType.class);
-		if(colHeaderConcept != null) {
-			Section<NodeProvider> nodeProviderSection = Sections.$(colHeaderConcept).successor(NodeProvider.class).getFirst();
+		if (colHeaderConcept != null) {
+			Section<NodeProvider> nodeProviderSection = Sections.$(colHeaderConcept)
+					.successor(NodeProvider.class)
+					.getFirst();
 			@SuppressWarnings("unchecked")
 			Value headerClassResource = nodeProviderSection.get().getNode(nodeProviderSection, compiler);
 			Sections<DefaultMarkupType> markup = Sections.$(section).ancestor(DefaultMarkupType.class);
 			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);
-			if(typeRelationAnnotationValue != null) {
+			if (typeRelationAnnotationValue != null) {
 				org.openrdf.model.URI propertyUri = compiler.getRdf2GoCore().createURI(typeRelationAnnotationValue);
 				statements.add(core.createStatement(new URIImpl(subjectNode.stringValue()), propertyUri, headerClassResource));
-			} else {
+			}
+			else {
 				typeAnnotationMissing = new Message(Message.Type.ERROR, "If subject concepts should be defined as instance of the class given in the first column header, a type-relation has to be defined via the typeRelation-typeRelationAnnotationValue. Otherwise, leave the first cell header blank.");
 			}
 
@@ -117,24 +128,24 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		/*
 		Error message handling after committing statements
 		 */
-		if(typeAnnotationMissing != null) {
+		if (typeAnnotationMissing != null) {
 			throw new CompilerMessage(typeAnnotationMissing);
 		}
 
-    }
+	}
 
-    private List<Section<Object>> findObjects(Section<TableLine> section) {
-        return Sections.successors(section, Object.class);
-    }
+	private List<Section<ObjectList>> findObjects(Section<TableLine> section) {
+		return Sections.successors(section, ObjectList.class);
+	}
 
-    private Section<NodeProvider> findSubject(Section<TableLine> section) {
-        final Section<TableCellContent> firstCell = Sections.successor(section, TableCellContent.class);
-        return Sections.successor(firstCell, NodeProvider.class);
-    }
+	private Section<NodeProvider> findSubject(Section<TableLine> section) {
+		final Section<TableCellContent> firstCell = Sections.successor(section, TableCellContent.class);
+		return Sections.successor(firstCell, NodeProvider.class);
+	}
 
-    @Override
-    public void destroy(OntologyCompiler compiler, Section<TableLine> section) {
-        Rdf2GoCore core = compiler.getRdf2GoCore();
-        core.removeStatements(section);
-    }
+	@Override
+	public void destroy(OntologyCompiler compiler, Section<TableLine> section) {
+		Rdf2GoCore core = compiler.getRdf2GoCore();
+		core.removeStatements(section);
+	}
 }

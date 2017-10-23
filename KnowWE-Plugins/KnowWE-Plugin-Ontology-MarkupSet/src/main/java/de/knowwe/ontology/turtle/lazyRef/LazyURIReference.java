@@ -48,13 +48,13 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 	}
 
 	@Override
-	public Value getNode(Section<LazyURIReference> section, Rdf2GoCompiler compiler) {
+	public Value getNode(Section<? extends LazyURIReference> section, Rdf2GoCompiler compiler) {
 		Identifier identifier = getTermIdentifier(compiler, section);
 		return TurtleURI.getNodeForIdentifier(compiler.getRdf2GoCore(), identifier);
 	}
 
 	@NotNull
-	private Identifier getTermIdentifier(Rdf2GoCompiler compiler, Section<LazyURIReference> section) {
+	private Identifier getTermIdentifier(Rdf2GoCompiler compiler, Section<? extends LazyURIReference> section) {
 		Identifier identifier = (Identifier) section.getObject(compiler, IDENTIFIER_KEY);
 		if (identifier == null) {
 			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(compiler, section);

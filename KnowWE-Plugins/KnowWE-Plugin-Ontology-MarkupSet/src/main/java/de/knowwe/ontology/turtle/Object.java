@@ -21,6 +21,8 @@ package de.knowwe.ontology.turtle;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
 
 import com.denkbares.strings.Identifier;
@@ -54,7 +56,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	 * valid definition. With strict compilation mode off, triples are always
 	 * inserted into the triple store, not caring about type definitions.
 	 */
-	static boolean STRICT_COMPILATION = false;
+	public static boolean STRICT_COMPILATION = false;
 
 	public Object() {
 		this.setSectionFinder(
@@ -126,7 +128,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	}
 
 	@Override
-	public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCompiler core) {
+	public StatementProviderResult getStatements(Section<? extends Object> section, Rdf2GoCompiler core) {
 
 		StatementProviderResult result = new StatementProviderResult();
 		boolean termError = false;
@@ -152,10 +154,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle PREDICATE
 		 */
-		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section,
-				PredicateSentence.class);
-		Section<Predicate> predicateSection = Sections.child(predSentenceSection,
-				Predicate.class);
+
+		Section<Predicate> predicateSection = getPredicateSection(section);
 
 		if (predicateSection == null) {
 			result.addMessage(Messages.error("No predicate section found: " + section));
@@ -183,7 +183,26 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle SUBJECT
 		 */
-		org.openrdf.model.Resource subject;
+		org.openrdf.model.Resource subject = getSubject(core, result, termError, section);
+
+		// create statement if all nodes are present
+		if (object != null && predicate != null && subject != null) {
+			result.addStatement(core.getRdf2GoCore().createStatement(subject, predicate, object));
+		}
+		return result;
+	}
+
+	public Section<Predicate> getPredicateSection(Section<? extends Object> section) {
+		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section,
+				PredicateSentence.class);
+		return Sections.child(predSentenceSection,
+					Predicate.class);
+	}
+
+	public @Nullable Resource getSubject(Rdf2GoCompiler core, StatementProviderResult result, boolean termError, Section<? extends Object> section) {
+		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section,
+				PredicateSentence.class);
+		Resource subject;
 		// the subject can either be a normal turtle sentence subject
 		// OR a blank node
 		Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection,
@@ -220,20 +239,15 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 						+ "' is not a valid subject."));
 			}
 		}
-
-		// create statement if all nodes are present
-		if (object != null && predicate != null && subject != null) {
-			result.addStatement(core.getRdf2GoCore().createStatement(subject, predicate, object));
-		}
-		return result;
+		return subject;
 	}
 
-	public Section<Subject> findSubjectSection(Section<TurtleSentence> sentence) {
+	public Section<Subject> findSubjectSection(Section<?> sentence) {
 		return Sections.successor(sentence,
 						Subject.class);
 	}
 
-	private boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {
+	protected boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {
 		TermCompiler compiler = Compilers.getCompiler(turtleURITerm, TermCompiler.class);
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		Section<TermReference> term = Sections.successor(turtleURITerm, TermReference.class);
@@ -243,7 +257,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public Value getNode(Section<Object> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<? extends Object> section, Rdf2GoCompiler core) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
 		List<Section<NodeProvider>> nodeProviderSections = Sections.children(section,

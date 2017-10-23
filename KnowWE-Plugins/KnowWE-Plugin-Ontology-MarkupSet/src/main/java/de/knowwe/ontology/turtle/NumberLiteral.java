@@ -37,7 +37,7 @@ public class NumberLiteral extends de.knowwe.core.kdom.basicType.Number implemen
     }
 
     @Override
-    public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+    public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
         /*
         The SectionFinder already assures that it actually is a valid number
          */

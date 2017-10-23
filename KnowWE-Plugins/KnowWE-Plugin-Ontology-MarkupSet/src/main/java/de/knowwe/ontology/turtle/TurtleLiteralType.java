@@ -61,7 +61,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		this.addChildType(new LiteralPart());
 	}
 
-	public org.openrdf.model.Literal getLiteral(Rdf2GoCore core, Section<TurtleLiteralType> section) {
+	public org.openrdf.model.Literal getLiteral(Rdf2GoCore core, Section<? extends TurtleLiteralType> section) {
 		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
@@ -162,7 +162,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	}
 
 	@Override
-	public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
 		return getLiteral(core.getRdf2GoCore(), section);
 	}
 

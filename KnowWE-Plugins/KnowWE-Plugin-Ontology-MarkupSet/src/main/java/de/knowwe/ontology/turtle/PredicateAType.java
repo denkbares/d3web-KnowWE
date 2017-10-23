@@ -42,7 +42,7 @@ public class PredicateAType extends AbstractType implements NodeProvider<TurtleL
     }
 
     @Override
-    public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+    public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
         return org.openrdf.model.vocabulary.RDF.TYPE;
     }
 }

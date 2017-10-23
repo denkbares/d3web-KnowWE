@@ -63,12 +63,12 @@ public class BlankNode extends AbstractType implements ResourceProvider<BlankNod
 	}
 
 	@Override
-	public org.openrdf.model.Value getNode(Section<BlankNode> section, Rdf2GoCompiler core) {
+	public org.openrdf.model.Value getNode(Section<? extends BlankNode> section, Rdf2GoCompiler core) {
 		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 
 	@Override
-	public Resource getResource(Section<BlankNode> section, Rdf2GoCompiler core) {
+	public Resource getResource(Section<? extends BlankNode> section, Rdf2GoCompiler core) {
 		return (Resource) getNode(section, core);
 	}
 

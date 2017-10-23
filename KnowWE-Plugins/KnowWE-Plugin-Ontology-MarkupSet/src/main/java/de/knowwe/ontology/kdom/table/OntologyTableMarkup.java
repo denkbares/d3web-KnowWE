@@ -20,6 +20,8 @@ package de.knowwe.ontology.kdom.table;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.Value;
 
@@ -33,7 +35,10 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.Table;
+import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableIndexConstraint;
+import de.knowwe.kdom.table.TableLine;
+import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.ontology.turtle.BlankNode;
 import de.knowwe.ontology.turtle.EncodedTurtleURI;
 import de.knowwe.ontology.turtle.Object;
@@ -44,6 +49,7 @@ import de.knowwe.ontology.turtle.PredicateSentence;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.ontology.turtle.TurtleURI;
+import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
@@ -115,9 +121,11 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 	}
 
 
-	static class OntologyTableTurtleObject extends Object {
+	public static class OntologyTableTurtleObject extends Object {
+
+		/*
 		@Override
-		public StatementProviderResult getStatements(Section<Object> section, Rdf2GoCompiler core) {
+		public StatementProviderResult getStatements(Section<? extends Object> section, Rdf2GoCompiler core) {
 
 			StatementProviderResult result = new StatementProviderResult();
 
@@ -132,6 +140,52 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 			}
 			return result;
 		}
+		*/
+
+		@Override
+		public Section<Predicate> getPredicateSection(Section<? extends Object> section) {
+			return TableUtils.getColumnHeader(section, Predicate.class);
+		}
+
+		public Section<Subject> findSubjectSec(Section<?> object) {
+			Section<TableLine> line = Sections.ancestor(object, TableLine.class);
+			return findSubjectInLine(line);
+		}
+
+		private Section<Subject> findSubjectInLine(Section<TableLine> section) {
+			final Section<TableCellContent> firstCell = Sections.successor(section, TableCellContent.class);
+			return Sections.successor(firstCell, Subject.class);
+		}
+
+
+		@Override
+		public @Nullable Resource getSubject(Rdf2GoCompiler core, StatementProviderResult result, boolean termError, Section<? extends Object> section) {
+			Resource subject;
+
+				Section<Subject> subjectSection = findSubjectSec(section);
+				subject = subjectSection.get().getResource(subjectSection, core);
+
+				// check term definition
+				Section<TurtleURI> turtleURITermSubject = Sections.child(subjectSection,
+						TurtleURI.class);
+				if (turtleURITermSubject != null && Object.STRICT_COMPILATION) {
+					boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
+					if (!isDefined) {
+						// error message is already rendered by term reference
+						// renderer
+						// we do not insert statement in this case
+						subject = null;
+						termError = true;
+					}
+				}
+
+				if (subject == null && !termError) {
+					result.addMessage(Messages.error("'" + subjectSection.getText()
+							+ "' is not a valid subject."));
+				}
+			return subject;
+		}
+
 	}
 
 	static class BasicURIType extends AbstractType {

@@ -52,7 +52,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public Value getNode(Section<Subject> section, Rdf2GoCompiler compiler) {
+	public Value getNode(Section<? extends Subject> section, Rdf2GoCompiler compiler) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
 		Section<NodeProvider> nodeProviderChild = Sections.child(section,
@@ -64,7 +64,7 @@ public class Subject extends AbstractType implements ResourceProvider<Subject> {
 	}
 
 	@Override
-	public Resource getResource(Section<Subject> section, Rdf2GoCompiler core) {
+	public Resource getResource(Section<? extends Subject> section, Rdf2GoCompiler core) {
 		return (Resource) getNode(section, core);
 
 	}

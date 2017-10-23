@@ -76,7 +76,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 		// intialization is performed in init()
 	}
 
-	class ItemList extends AbstractType {
+	static class ItemList extends AbstractType {
 
 		public ItemList() {
 			this.setSectionFinder(new AllTextFinderTrimmed());
@@ -111,12 +111,12 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public Value getNode(Section<TurtleCollection> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
 		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 
 	@Override
-	public StatementProviderResult getStatements(Section<TurtleCollection> section, Rdf2GoCompiler core) {
+	public StatementProviderResult getStatements(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
 		StatementProviderResult result = new StatementProviderResult();
 		List<Section<CollectionItem>> listItems = new ArrayList<>();
 		Sections.successors(section,
@@ -135,7 +135,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	private void addListStatements(org.openrdf.model.Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCompiler core, Section<TurtleCollection> collectionSection) {
+	private void addListStatements(org.openrdf.model.Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCompiler core, Section<? extends TurtleCollection> collectionSection) {
 
 		Section<CollectionItem> dataSection = subList.get(0);
 
@@ -170,7 +170,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public org.openrdf.model.Resource getResource(Section<TurtleCollection> section, Rdf2GoCompiler core) {
+	public org.openrdf.model.Resource getResource(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
 		return new BNodeImpl(getNode(section, core).stringValue());
 	}
 

@@ -48,7 +48,7 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public org.openrdf.model.Value getNode(Section<Predicate> section, Rdf2GoCompiler core) {
+	public org.openrdf.model.Value getNode(Section<? extends Predicate> section, Rdf2GoCompiler core) {
 		// there should be exactly one NodeProvider successor
 		List<Section<?>> children = section.getChildren();
 		for (Section<?> child : children) {

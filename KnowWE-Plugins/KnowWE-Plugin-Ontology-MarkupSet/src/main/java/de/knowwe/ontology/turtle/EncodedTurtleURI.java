@@ -60,12 +60,12 @@ public class EncodedTurtleURI extends AbstractType implements NodeProvider<Encod
 		this.addChildType(new AnonymousType("LongEncodedTurtleURI", AllTextFinder.getInstance(), renderer));
 	}
 
-	private String getURI(Section<EncodedTurtleURI> section) {
+	private String getURI(Section<? extends EncodedTurtleURI> section) {
 		return section.getText().substring(1, section.getText().length() - 1);
 	}
 
 	@Override
-	public Value getNode(Section<EncodedTurtleURI> section, Rdf2GoCompiler core) {
+	public Value getNode(Section<? extends EncodedTurtleURI> section, Rdf2GoCompiler core) {
 		String uri = getURI(section);
 		return core.getRdf2GoCore().createURI(uri);
 	}

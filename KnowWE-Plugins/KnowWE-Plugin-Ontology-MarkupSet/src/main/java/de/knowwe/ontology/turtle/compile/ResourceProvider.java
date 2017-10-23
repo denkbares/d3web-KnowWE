@@ -8,5 +8,5 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public interface ResourceProvider<T extends Type> extends NodeProvider<T> {
 
-	Resource getResource(Section<T> section, Rdf2GoCompiler compiler);
+	Resource getResource(Section<?extends T> section, Rdf2GoCompiler compiler);
 }

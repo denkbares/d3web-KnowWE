@@ -6,5 +6,5 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public interface StatementProvider<T extends Type> extends Type {
 
-	StatementProviderResult getStatements(Section<T> section, Rdf2GoCompiler core);
+	StatementProviderResult getStatements(Section<? extends T> section, Rdf2GoCompiler core);
 }

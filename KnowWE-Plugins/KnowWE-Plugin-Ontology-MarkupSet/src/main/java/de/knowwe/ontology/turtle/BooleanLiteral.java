@@ -42,7 +42,7 @@ public class BooleanLiteral extends AbstractType implements NodeProvider<TurtleL
     }
 
     @Override
-    public Value getNode(Section<TurtleLiteralType> section, Rdf2GoCompiler core) {
+    public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
         return core.getRdf2GoCore().createLiteral(section.getText(), XMLSchema.BOOLEAN);
     }
 }
