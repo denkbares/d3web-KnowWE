@@ -18,9 +18,15 @@
  */
 package de.knowwe.include;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -51,6 +57,21 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 		// parse parameters
 		String frame = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_FRAME);
 		boolean isFramed = Strings.equalsIgnoreCase(frame, "show") || Strings.equalsIgnoreCase(frame, "true");
+
+		String urlPara = DefaultMarkupType.getAnnotation(section, IncludeMarkup.ANNOTATION_URL_PARA);
+		if(urlPara!= null) {
+			String url = "http://www.example.com/something.html?"+urlPara;
+			List<NameValuePair> params = null;
+			try {
+				params = URLEncodedUtils.parse(new URI(url), "UTF-8");
+			}
+			catch (URISyntaxException e) {
+				Log.severe("invalid uri", e);
+			}
+			for (NameValuePair param : params) {
+				user.getRequest().getSession().setAttribute(param.getName(), param.getValue());
+			}
+		}
 
 		result.appendHtmlTag("div", "id", section.getID(), "class", "IncludeMarkup"); // add marker for edit mode
 

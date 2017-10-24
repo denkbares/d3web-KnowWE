@@ -102,6 +102,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 	public static final String ANNOTATION_PROJECT = "project";
 	public static final String ANNOTATION_TITLE = "title";
 	public static final String ANNOTATION_VERSION = "version";
+	public static final String ANNOTATION_URL_PARA = "urlParameter";
 
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
@@ -111,6 +112,7 @@ public class IncludeMarkup extends DefaultMarkupType {
 		m.addAnnotation(ANNOTATION_FRAME, false, "hide", "show");
 		m.addAnnotation(ANNOTATION_ZOOM, false);
 		m.addAnnotation(ANNOTATION_TITLE, false);
+		m.addAnnotation(ANNOTATION_URL_PARA, false);
 		m.addAnnotation(ANNOTATION_PROJECT, false);
 		m.addAnnotation(ANNOTATION_AUTHOR, false);
 		m.addAnnotation(ANNOTATION_TEMPLATE, false);

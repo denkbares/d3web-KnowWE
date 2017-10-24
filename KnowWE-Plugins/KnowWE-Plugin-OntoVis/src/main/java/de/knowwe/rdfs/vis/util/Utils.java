@@ -495,10 +495,17 @@ public class Utils {
 	}
 
 	public static String getConceptFromRequest(UserContext user) {
+		String concept = null;
 		if (user != null) {
-			return user.getParameter("concept");
+			concept = user.getParameter("concept");
+			if (concept == null) {
+				Object object = user.getSession().getAttribute("concept");
+				if(object != null) {
+					concept = object.toString();
+				}
+			}
 		}
-		return null;
+		return concept;
 	}
 
 	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String relation) {
@@ -531,7 +538,7 @@ public class Utils {
 		String fileID = "Visualization_" + section.getID();
 
 		if (conceptFromRequest != null) {
-			fileID += "_" + conceptFromRequest.replaceAll("\\W", "_").replaceAll(":","");
+			fileID += "_" + conceptFromRequest.replaceAll("\\W", "_").replaceAll(":", "");
 		}
 
 		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
