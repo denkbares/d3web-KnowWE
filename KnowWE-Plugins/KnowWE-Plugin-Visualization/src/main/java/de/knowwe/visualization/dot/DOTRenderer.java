@@ -101,6 +101,15 @@ public class DOTRenderer {
 		if (!Strings.isBlank(style.getFillcolor())) {
 			result.append(" fillcolor=\"").append(style.getFillcolor()).append("\" ");
 		}
+		if (!Strings.isBlank(style.getFontcolor())) {
+			result.append(" fontcolor=\"").append(style.getFontcolor()).append("\" ");
+		}
+		if (!Strings.isBlank(style.getFontsize())) {
+			result.append(" fontsize=\"").append(style.getFontsize()).append("\" ");
+		}
+		if (style.getFontstyle() != RenderingStyle.Fontstyle.NORMAL) {
+			result.append(" fontstyle=\"").append(style.getFontstyle().name()).append("\" ");
+		}
 		return result.toString();
 	}
 
@@ -828,12 +837,11 @@ public class DOTRenderer {
 			process.waitFor();
 			int exitValue = process.exitValue();
 			if (exitValue != 0) {
-				DOTVisualizationRenderer.isValidGraph = false;
-				DOTVisualizationRenderer.invalidGraphError = getProcessErrorMessage(process.getErrorStream());
+				Config.GRAPH_HAS_ERRORS = true;
+				Config.GRAPH_ERROR_MESSAGE = getProcessErrorMessage(process.getErrorStream());
 				FileUtils.printStream(process.getErrorStream());
 				throw new IOException("Command could not successfully be executed: " + Strings.concat(" ", command));
 			}
-			DOTVisualizationRenderer.isValidGraph = true;
 		}
 		catch (InterruptedException e) {
 			//Thread was interrupted by GraphReRenderer

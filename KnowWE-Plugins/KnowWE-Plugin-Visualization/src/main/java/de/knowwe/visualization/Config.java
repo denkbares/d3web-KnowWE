@@ -80,12 +80,22 @@ public class Config {
 	public static final String LAYOUT = "layout";
 	public static final String OVERLAP = "overlap";
 	public static final String LINK_MODE = "linkMode";
+
+	public static final String CLASS_NODE_STYLE = "addClassNodeStyle";
+	public static final String INSTANCE_NODE_STYLE = "addInstanceNodeStyle";
+	public static final String PROPERTY_NODE_STYLE = "addPropertyNodeStyle";
+	public static final String BLANK_NODE_STYLE = "addBlankNodeStyle";
+	public static final String LITERAL_NODE_STYLE = "addLiteralNodeStyle";
+
+	public static boolean GRAPH_HAS_ERRORS = false;
+	public static String GRAPH_ERROR_MESSAGE = null;
+
 	private static final long DEFAULT_TIMEOUT = 20 * 1000; // 20 seconds
 	private final LinkMode linkMode = LinkMode.JUMP;
 	private final Collection<String> excludeNodes = new HashSet<>();
 	private final Collection<String> excludeRelations = new HashSet<>();
 	private final Collection<String> filterRelations = new HashSet<>();
-	private final String dotApp = "dot";
+	private final String dotApp = "D:\\Graphviz\\bin\\dot";
 	private String colors = null;
 	private Map<String, String> relationColors = new HashMap<>();
 	private Map<String, String> classColors = new HashMap<>();
@@ -120,7 +130,57 @@ public class Config {
 	private String overlap = null;
 	private String cacheDirectoryPath = null;
 
+	private String classNodeStyle = null;
+	private String instanceNodeStyle = null;
+	private String propertyNodeStyle = null;
+	private String blankNodeStyle = null;
+	private String literalNodeStyle = null;
+
 	public Config() {
+		// all graphs are initially assumed to be correct, until proven otherwise. Makes sure a new build of a
+		// visualization isn't falsely recognized as faulty.
+		GRAPH_HAS_ERRORS = false;
+		GRAPH_ERROR_MESSAGE = null;
+	}
+
+	public String getClassNodeStyle() {
+		return classNodeStyle;
+	}
+
+	public void setClassNodeStyle(String classNodeStyle) {
+		this.classNodeStyle = classNodeStyle;
+	}
+
+	public String getInstanceNodeStyle() {
+		return instanceNodeStyle;
+	}
+
+	public void setInstanceNodeStyle(String instanceNodeStyle) {
+		this.instanceNodeStyle = instanceNodeStyle;
+	}
+
+	public String getPropertyNodeStyle() {
+		return propertyNodeStyle;
+	}
+
+	public void setPropertyNodeStyle(String propertyNodeStyle) {
+		this.propertyNodeStyle = propertyNodeStyle;
+	}
+
+	public String getBlankNodeStyle() {
+		return blankNodeStyle;
+	}
+
+	public void setBlankNodeStyle(String blankNodeStyle) {
+		this.blankNodeStyle = blankNodeStyle;
+	}
+
+	public String getLiteralNodeStyle() {
+		return literalNodeStyle;
+	}
+
+	public void setLiteralNodeStyle(String literalNodeStyle) {
+		this.literalNodeStyle = literalNodeStyle;
 	}
 
 	public Config(Section<? extends DefaultMarkupType> section) {
@@ -192,14 +252,14 @@ public class Config {
 			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
 			Collection<Section<?>> sectionsOfPackages = packageManager.getSectionsOfPackage(section.getPackageNames()
 					.toArray(new String[0]));
-			List<Section<VisualizationConfigType>> configTypeSections = Sections.successors(sectionsOfPackages, VisualizationConfigType.class);
-
-
+			List<Section<VisualizationConfigType>> configTypeSections = Sections.successors(sectionsOfPackages,
+					VisualizationConfigType.class);
 
 			HashSet<String> names = new HashSet<>();
 			Collections.addAll(names, configNames);
 			for (Section<VisualizationConfigType> configTypeSection : configTypeSections) {
-				String name = DefaultMarkupType.getAnnotation(configTypeSection, VisualizationConfigType.ANNOTATION_NAME);
+				String name = DefaultMarkupType.getAnnotation(configTypeSection, VisualizationConfigType
+						.ANNOTATION_NAME);
 				if (names.contains(name)) {
 					configCount++;
 					readFromSection(configTypeSection);
@@ -208,7 +268,8 @@ public class Config {
 		}
 
 		if (configCount > 1) {
-			Messages.storeMessage(section, this.getClass(), Messages.warning("Multiple visualization configs having the same name found. This could lead to conflicts!"));
+			Messages.storeMessage(section, this.getClass(), Messages.warning("Multiple visualization configs having " +
+					"the same name found. This could lead to conflicts!"));
 		}
 
 		setColors(DefaultMarkupType.getAnnotation(section, COLORS));
@@ -240,9 +301,16 @@ public class Config {
 		setRankSame(DefaultMarkupType.getAnnotation(section, RANK_SAME));
 		parseAndSetEnum(section, OVERLAP, Overlap.class, this::setOverlap);
 		parseAndSetEnum(section, LAYOUT, Layout.class, this::setLayout);
+
+		setClassNodeStyle(DefaultMarkupType.getAnnotation(section, CLASS_NODE_STYLE));
+		setInstanceNodeStyle(DefaultMarkupType.getAnnotation(section, INSTANCE_NODE_STYLE));
+		setPropertyNodeStyle(DefaultMarkupType.getAnnotation(section, PROPERTY_NODE_STYLE));
+		setBlankNodeStyle(DefaultMarkupType.getAnnotation(section, BLANK_NODE_STYLE));
+		setLiteralNodeStyle(DefaultMarkupType.getAnnotation(section, LITERAL_NODE_STYLE));
 	}
 
-	private <E extends Enum<E>> void parseAndSetEnum(Section<? extends DefaultMarkupType> section, String annotationName, Class<E> enumType, Consumer<E> setter) {
+	private <E extends Enum<E>> void parseAndSetEnum(Section<? extends DefaultMarkupType> section, String
+			annotationName, Class<E> enumType, Consumer<E> setter) {
 		String annotation = DefaultMarkupType.getAnnotation(section, annotationName);
 		if (annotation != null) {
 			try {
@@ -256,7 +324,8 @@ public class Config {
 		}
 	}
 
-	private void parseAndSetBoolean(Section<? extends DefaultMarkupType> section, String annotationName, Consumer<Boolean> setter) {
+	private void parseAndSetBoolean(Section<? extends DefaultMarkupType> section, String annotationName,
+									Consumer<Boolean> setter) {
 		String annotation = DefaultMarkupType.getAnnotation(section, annotationName);
 		if (annotation != null) {
 			setter.accept(annotation.equalsIgnoreCase("true"));
@@ -287,19 +356,23 @@ public class Config {
 		this.layout = layout.toString();
 	}
 
-	private void parseAndSetInt(Section<? extends DefaultMarkupType> section, String annotationName, Consumer<Integer> setter) {
+	private void parseAndSetInt(Section<? extends DefaultMarkupType> section, String annotationName, Consumer<Integer>
+			setter) {
 		String annotation = DefaultMarkupType.getAnnotation(section, annotationName);
 		if (annotation != null) {
 			try {
 				setter.accept(Integer.parseInt(annotation));
 			}
 			catch (NumberFormatException e) {
-				Log.warning("Annotation '" + annotationName + "' expects an integer, '" + annotation + "' is not and integer.");
+				Log.warning("Annotation '" + annotationName + "' expects an integer, '" + annotation + "' is not and" +
+						" " +
+						"integer.");
 			}
 		}
 	}
 
-	private void parseAndSetCSV(Section<? extends DefaultMarkupType> section, String annotationName, Consumer<String[]> setter) {
+	private void parseAndSetCSV(Section<? extends DefaultMarkupType> section, String annotationName,
+								Consumer<String[]> setter) {
 		String[] annotations = DefaultMarkupType.getAnnotations(section, annotationName);
 		for (String annotation : annotations) {
 			for (String csv : annotation.split(",")) {

@@ -120,6 +120,21 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		markup.addAnnotationRenderer(Config.SHOW_LITERALS, NothingRenderer.getInstance());
 
 		markup.addAnnotation(AsynchronousRenderer.ASYNCHRONOUS, false);
+
+		markup.addAnnotation(Config.CLASS_NODE_STYLE, false);
+		markup.addAnnotationRenderer(Config.CLASS_NODE_STYLE, NothingRenderer.getInstance());
+
+		markup.addAnnotation(Config.INSTANCE_NODE_STYLE, false);
+		markup.addAnnotationRenderer(Config.INSTANCE_NODE_STYLE, NothingRenderer.getInstance());
+
+		markup.addAnnotation(Config.PROPERTY_NODE_STYLE, false);
+		markup.addAnnotationRenderer(Config.PROPERTY_NODE_STYLE, NothingRenderer.getInstance());
+
+		markup.addAnnotation(Config.BLANK_NODE_STYLE, false);
+		markup.addAnnotationRenderer(Config.BLANK_NODE_STYLE, NothingRenderer.getInstance());
+
+		markup.addAnnotation(Config.LITERAL_NODE_STYLE, false);
+		markup.addAnnotationRenderer(Config.LITERAL_NODE_STYLE, NothingRenderer.getInstance());
 		return markup;
 	}
 

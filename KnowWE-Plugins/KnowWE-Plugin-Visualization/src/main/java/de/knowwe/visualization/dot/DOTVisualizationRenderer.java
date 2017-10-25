@@ -40,9 +40,6 @@ public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
 	private String source = null;
 	private File[] createdFiles = new File[] {};
 
-	static boolean isValidGraph = true;
-	static String invalidGraphError = "";
-
 	public DOTVisualizationRenderer(SubGraphData data, Config config) {
 		this.data = data;
 		this.config = config;
@@ -66,12 +63,13 @@ public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
 					.append(" has to be installed on the server to generate the visualizations!")
 					.append("</div>");
 			return html.toString();
-		} else if (!isValidGraph) {
+		}
+		else if (Config.GRAPH_HAS_ERRORS) {
 			html.append("<div class='error'>")
-					.append("An unexpected error ocurred while rendering the dot-visualization. ")
+					.append("An unexpected error occurred while rendering the dot-visualization. ")
 					.append("Please verify the correctness of the dot-file syntax and try again.\n")
 					.append("<b>Error message:</b>\n")
-					.append(invalidGraphError)
+					.append(Config.GRAPH_ERROR_MESSAGE)
 					.append("</div>");
 			return html.toString();
 		}

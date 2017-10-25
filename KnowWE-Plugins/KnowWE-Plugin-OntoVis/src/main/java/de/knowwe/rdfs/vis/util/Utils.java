@@ -20,10 +20,13 @@ package de.knowwe.rdfs.vis.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,12 +93,12 @@ public class Utils {
 					return node.stringValue();
 				}
 			}
-
 		}
 		return label;
 	}
 
-	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, String languageTag, String... properties) {
+	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, String languageTag, String...
+			properties) {
 		if (languageTag == null) return null;
 
 		for (String property : properties) {
@@ -114,11 +117,13 @@ public class Utils {
 		return null;
 	}
 
-	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue) {
+	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider
+			uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue) {
 		return createValue(config, rdfRepository, uriProvider, section, data, toURI, insertNewValue, null);
 	}
 
-	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue, String clazz) {
+	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider
+			uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue, String clazz) {
 		ConceptNode visValue;
 
 		GraphDataBuilder.NODE_TYPE type;
@@ -136,7 +141,7 @@ public class Utils {
 			type = GraphDataBuilder.NODE_TYPE.LITERAL;
 			label = literalToLabel(toLiteral);
 
-			RenderingStyle style = Utils.getStyle(type);
+			RenderingStyle style = Utils.getStyle(type, config);
 			visValue = new ConceptNode(identifier, type, null, label, style);
 			if (insertNewValue) {
 				data.addConcept(visValue);
@@ -159,7 +164,7 @@ public class Utils {
 			if (visValue == null) {
 				type = GraphDataBuilder.NODE_TYPE.BLANKNODE;
 				label = getIdentifierBValue(bValue);
-				RenderingStyle style = Utils.getStyle(type);
+				RenderingStyle style = Utils.getStyle(type, config);
 
 				visValue = new ConceptNode(identifier, type, null, label, style);
 				if (insertNewValue) {
@@ -167,7 +172,6 @@ public class Utils {
 				}
 			}
 			return visValue;
-
 		}
 		catch (ClassCastException e) {
 			// do nothing as this is just a type check
@@ -196,7 +200,7 @@ public class Utils {
 				if (label == null) {
 					label = identifier;
 				}
-				RenderingStyle style = Utils.getStyle(type);
+				RenderingStyle style = Utils.getStyle(type, config);
 				Utils.setClassColorCoding(toURI, style, config, rdfRepository);
 				visValue = new ConceptNode(identifier, type, createConceptURL(identifier, config,
 						section,
@@ -210,10 +214,9 @@ public class Utils {
 					// we found a type-triple and add the clazz attribute to the already existing Value
 					visValue.setClazz(clazz);
 					// re-color according to newly found clazz
-					RenderingStyle style = Utils.getStyle(visValue.getType());
+					RenderingStyle style = Utils.getStyle(visValue.getType(), config);
 					Utils.setClassColorCoding(toURI, style, config, rdfRepository);
 					visValue.setStyle(style);
-
 				}
 			}
 			return visValue;
@@ -238,7 +241,9 @@ public class Utils {
 		else if (label.contains("^^")) {
 			if (label.contains("#")) {
 				String dataType = label.substring(label.lastIndexOf('#') + 1, label.length() - 1);
-				label = Strings.unquote(label.substring(0, label.indexOf("^^"))) + ("string".equals(dataType) ? "" : " (" + dataType + ")");
+				label = Strings.unquote(label.substring(0, label.indexOf("^^"))) + ("string".equals(dataType) ? "" :
+						"" +
+								" (" + dataType + ")");
 			}
 			else {
 				label = label.substring(0, label.indexOf("^^"));
@@ -277,7 +282,8 @@ public class Utils {
 		return bValue.toString();
 	}
 
-	private static RenderingStyle setClassColorCoding(Value node, RenderingStyle style, Config config, Rdf2GoCore rdfRepository) {
+	private static RenderingStyle setClassColorCoding(Value node, RenderingStyle style, Config config, Rdf2GoCore
+			rdfRepository) {
 		Map<String, String> classColorScheme = config.getClassColors();
 		if (classColorScheme != null && !classColorScheme.isEmpty()) {
 			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.stringValue());
@@ -307,19 +313,21 @@ public class Utils {
 				}
 				URI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
 				if (clazzToBeColored != null) {
-					String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored.toString()));
+					String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored
+							.toString()));
 					if (color != null) {
 						style.setFillcolor(color);
 					}
 				}
 			}
-
 		}
 		return style;
 	}
 
-	public static String createConceptURL(String to, Config config, Section<?> section, LinkToTermDefinitionProvider uriProvider, String uri) {
-		// TODO: 21.11.16 find better solution for this, after successor for deprecated LinkMode annotation has been found
+	public static String createConceptURL(String to, Config config, Section<?> section, LinkToTermDefinitionProvider
+			uriProvider, String uri) {
+		// TODO: 21.11.16 find better solution for this, after successor for deprecated LinkMode annotation has been
+		// found
 		if (section != null) {
 			final OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
 			final String shortURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri);
@@ -328,7 +336,6 @@ public class Utils {
 			if (identifierParts.length == 2) {
 				identifier = new Identifier(
 						identifierParts[0], Strings.decodeURL(identifierParts[1]));
-
 			}
 
 			final TerminologyManager terminologyManager = compiler.getTerminologyManager();
@@ -365,7 +372,6 @@ public class Utils {
 			else {
 				return namespace + ":" + urlDecode(name);
 			}
-
 		}
 		catch (ClassCastException e) {
 			return null;
@@ -401,7 +407,6 @@ public class Utils {
 		try {
 			URI uriValue = (URI) uri;
 			return getIdentifierURI(uriValue, repo);
-
 		}
 		catch (ClassCastException e) {
 			return null;
@@ -435,7 +440,8 @@ public class Utils {
 		return null;
 	}
 
-	public static Map<String, String> createColorCodings(Section<?> section, String relationName, Rdf2GoCore core, String entityName) {
+	public static Map<String, String> createColorCodings(Section<?> section, String relationName, Rdf2GoCore core,
+														 String entityName) {
 		Messages.clearMessages(section, Utils.class);
 
 		String query = "SELECT ?entity ?color WHERE {" +
@@ -464,34 +470,123 @@ public class Utils {
 		return null;
 	}
 
-	public static RenderingStyle getStyle(GraphDataBuilder.NODE_TYPE type) {
+	public static RenderingStyle getStyle(GraphDataBuilder.NODE_TYPE type, Config config) {
 		RenderingStyle style = new RenderingStyle();
 		style.setFontcolor("black");
-
-		if (type == GraphDataBuilder.NODE_TYPE.CLASS) {
-			style.setShape("box");
-			style.setStyle("bold");
+		try {
+			if (type == GraphDataBuilder.NODE_TYPE.CLASS) {
+				style.setShape("box");
+				style.setStyle("bold");
+				if (config.getClassNodeStyle() != null) {
+					makeRenderingStyle(style, config.getClassNodeStyle());
+				}
+			}
+			else if (type == GraphDataBuilder.NODE_TYPE.INSTANCE) {
+				style.setShape("box");
+				style.setStyle("rounded");
+				if (config.getInstanceNodeStyle() != null) {
+					makeRenderingStyle(style, config.getInstanceNodeStyle());
+				}
+			}
+			else if (type == GraphDataBuilder.NODE_TYPE.PROPERTY) {
+				style.setShape("hexagon");
+				if (config.getPropertyNodeStyle() != null) {
+					makeRenderingStyle(style, config.getPropertyNodeStyle());
+				}
+			}
+			else if (type == GraphDataBuilder.NODE_TYPE.BLANKNODE) {
+				style.setShape("diamond");
+				if (config.getBlankNodeStyle() != null) {
+					makeRenderingStyle(style, config.getBlankNodeStyle());
+				}
+			}
+			else if (type == GraphDataBuilder.NODE_TYPE.LITERAL) {
+				style.setShape("box");
+				style.setStyle("filled");
+				style.setFillcolor("lightgray");
+				if (config.getLiteralNodeStyle() != null) {
+					makeRenderingStyle(style, config.getLiteralNodeStyle());
+				}
+			}
+			else {
+				style.setShape("box");
+				style.setStyle("rounded");
+			}
 		}
-		else if (type == GraphDataBuilder.NODE_TYPE.INSTANCE) {
-			style.setShape("box");
-			style.setStyle("rounded");
-		}
-		else if (type == GraphDataBuilder.NODE_TYPE.PROPERTY) {
-			style.setShape("hexagon");
-		}
-		else if (type == GraphDataBuilder.NODE_TYPE.BLANKNODE) {
-			style.setShape("diamond");
-		}
-		else if (type == GraphDataBuilder.NODE_TYPE.LITERAL) {
-			style.setShape("box");
-			style.setStyle("filled");
-			style.setFillcolor("lightgray");
-		}
-		else {
-			style.setShape("box");
-			style.setStyle("rounded");
+		catch (Exception e) {
+			Config.GRAPH_HAS_ERRORS = true;
+			Config.GRAPH_ERROR_MESSAGE = e.getMessage();
 		}
 		return style;
+	}
+
+	private static void makeRenderingStyle(RenderingStyle renderingStyle, String s) throws Exception {
+		//splits the input string into each attribute allocation
+		List<String> styles = new ArrayList<>();
+		Matcher matcher = Pattern.compile("(([^\\s,]+)((\\s*)=(\\s*)\"(.+?)\"))").matcher(s);
+		while (matcher.find()) {
+			styles.add(matcher.group());
+		}
+
+		//String[] styles = s.split("(([^\\s,]+)((\\s*)=(\\s*)\"(.+?)\"))"); (([^\s,]+)((\s*)"([^"]+)"))
+
+		if (styles.isEmpty()) {
+			throw new Exception("\"" + s + "\" did not contain a valid attribute.");
+		}
+		else {
+			for (String style : styles) {
+				if (style.contains("shape")) {
+					renderingStyle.setShape(extractStyleProperty(style));
+				}
+				else if (style.contains("fontsize")) {
+					renderingStyle.setFontsize(extractStyleProperty(style));
+				}
+				else if (style.contains("fillcolor")) {
+					renderingStyle.setFillcolor(extractStyleProperty(style));
+				}
+				else if (style.contains("fontcolor")) {
+					renderingStyle.setFontcolor(extractStyleProperty(style));
+				}
+				else if (style.contains("fontstyle")) {
+					RenderingStyle.Fontstyle fontstyle;
+					switch (extractStyleProperty(style)) {
+						case "NORMAL":
+						case "normal":
+							fontstyle = RenderingStyle.Fontstyle.NORMAL;
+							break;
+						case "BOLD":
+						case "bold":
+							fontstyle = RenderingStyle.Fontstyle.BOLD;
+							break;
+						case "ITALIC":
+						case "italic":
+							fontstyle = RenderingStyle.Fontstyle.ITALIC;
+							break;
+						case "UNDERLINING":
+						case "underlining":
+							fontstyle = RenderingStyle.Fontstyle.UNDERLINING;
+							break;
+						default:
+							fontstyle = RenderingStyle.Fontstyle.NORMAL;
+							break;
+					}
+					renderingStyle.setFontstyle(fontstyle);
+				}
+				else if (style.contains("style") && !style.contains("fontstyle")) {
+					renderingStyle.addStyle(extractStyleProperty(style));
+				}
+				else {
+					throw new Exception("Attribute allocation '" + style + "' could not be resolved!");
+				}
+			}
+		}
+	}
+
+	private static String extractStyleProperty(String style) {
+		String property = style.substring(style.indexOf("\"") + 1, style.length() - 1);
+		property = property.contains("\"") ? property.substring(0, property.indexOf("\"")) : property;
+		property = property.replace(" ", "");
+		return property;
 	}
 
 	public static String getConceptFromRequest(UserContext user) {
@@ -508,7 +603,8 @@ public class Utils {
 		return concept;
 	}
 
-	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String relation) {
+	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String
+			relation) {
 		// is the node a literal ? edit: can a predicate node ever be a literal ??
 		Literal toLiteral = null;
 		try {
@@ -585,7 +681,6 @@ public class Utils {
 			if (!property.equals(subProperty)) {
 				subPropertiesMap.put(property, subProperty);
 			}
-
 		}
 		return subPropertiesMap;
 	}

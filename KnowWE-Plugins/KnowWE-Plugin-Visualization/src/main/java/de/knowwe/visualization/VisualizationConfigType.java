@@ -25,14 +25,12 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * @author: Johanna Latt
+ * @author Johanna Latt
  * @created 13.07.2014.
  */
 public class VisualizationConfigType extends DefaultMarkupType {
 
 	public static final String ANNOTATION_NAME = "name";
-
-
 
 	public VisualizationConfigType() {
 		applyMarkup(createMarkup());
@@ -43,7 +41,7 @@ public class VisualizationConfigType extends DefaultMarkupType {
 		return "VisualizationConfig";
 	}
 
-	public  DefaultMarkup createMarkup() {
+	public DefaultMarkup createMarkup() {
 		DefaultMarkup markup = new DefaultMarkup(getMarkupName());
 		markup.addAnnotation(ANNOTATION_NAME, true);
 		markup.addAnnotation(Config.COLORS, false);
@@ -71,6 +69,13 @@ public class VisualizationConfigType extends DefaultMarkupType {
 		markup.addAnnotation(Config.LAYOUT, false, Config.Layout.class);
 		markup.addAnnotation(Config.RANK_SAME, false);
 		markup.addAnnotation(Config.SHOW_LITERALS, false, Config.LiteralMode.class);
+
+		markup.addAnnotation(Config.CLASS_NODE_STYLE, false);
+		markup.addAnnotation(Config.INSTANCE_NODE_STYLE, false);
+		markup.addAnnotation(Config.PROPERTY_NODE_STYLE, false);
+		markup.addAnnotation(Config.BLANK_NODE_STYLE, false);
+		markup.addAnnotation(Config.LITERAL_NODE_STYLE, false);
+
 		return markup;
 	}
 }
