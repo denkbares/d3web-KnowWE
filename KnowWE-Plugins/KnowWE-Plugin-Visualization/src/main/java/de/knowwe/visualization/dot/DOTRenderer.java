@@ -101,14 +101,11 @@ public class DOTRenderer {
 		if (!Strings.isBlank(style.getFillcolor())) {
 			result.append(" fillcolor=\"").append(style.getFillcolor()).append("\" ");
 		}
-		if (!Strings.isBlank(style.getFontcolor())) {
+		if (!"black".equals(style.getFontcolor())) {
 			result.append(" fontcolor=\"").append(style.getFontcolor()).append("\" ");
 		}
-		if (!Strings.isBlank(style.getFontsize())) {
+		if (!"10".equals(style.getFontsize())) {
 			result.append(" fontsize=\"").append(style.getFontsize()).append("\" ");
-		}
-		if (style.getFontstyle() != RenderingStyle.Fontstyle.NORMAL) {
-			result.append(" fontstyle=\"").append(style.getFontstyle().name()).append("\" ");
 		}
 		return result.toString();
 	}
