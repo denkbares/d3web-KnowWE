@@ -95,7 +95,7 @@ public class Config {
 	private final Collection<String> excludeNodes = new HashSet<>();
 	private final Collection<String> excludeRelations = new HashSet<>();
 	private final Collection<String> filterRelations = new HashSet<>();
-	private final String dotApp = "D:\\Graphviz\\bin\\dot";
+	private final String dotApp = "dot";
 	private String colors = null;
 	private Map<String, String> relationColors = new HashMap<>();
 	private Map<String, String> classColors = new HashMap<>();
