@@ -30,10 +30,11 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class LazyURIReference extends SimpleReference implements NodeProvider<LazyURIReference> {
+public class LazyURIReference extends SimpleReference implements URIProvider<LazyURIReference> {
 
 	private static final String IDENTIFIER_KEY = "identifierKey";
 
@@ -51,6 +52,11 @@ public class LazyURIReference extends SimpleReference implements NodeProvider<La
 	public Value getNode(Section<? extends LazyURIReference> section, Rdf2GoCompiler compiler) {
 		Identifier identifier = getTermIdentifier(compiler, section);
 		return TurtleURI.getNodeForIdentifier(compiler.getRdf2GoCore(), identifier);
+	}
+
+	@Override
+	public org.openrdf.model.URI getURI(Section<LazyURIReference> section, Rdf2GoCompiler core) {
+		return (org.openrdf.model.URI) getNode(section, core);
 	}
 
 	@NotNull

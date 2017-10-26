@@ -516,6 +516,15 @@
         <parameter id="scope" value="root"/>
     </extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="HierarchyTableMarkup">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.HierarchyTableMarkup"/>
+		<parameter id="name" value="HierarchyTableMarkup"/>
+		<parameter id="description" value="Defines markup for ontology tables."/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="5"/>
+		<parameter id="scope" value="root"/>
+	</extension>
+
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyTableToolProvider">
         <parameter id="class" value="de.knowwe.ontology.kdom.table.OntologyTableToolProvider"/>
         <parameter id="name" value="OntologyTableToolProvider"/>
@@ -540,6 +549,16 @@
         <parameter id="compilepriority" value="300"/>
         <parameter id="scope" value="OntologyTableMarkup/**/TableLine"/>
     </extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="CompileScript" id="HierarchyLineHandler">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.HierarchyLineHandler"/>
+		<parameter id="name" value="HierarchyLineHandler"/>
+		<parameter id="description" value="Type HierarchyLineHandler"/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="4.55"/>
+		<parameter id="compilepriority" value="300"/>
+		<parameter id="scope" value="HierarchyTableMarkup/**/TableLine"/>
+	</extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="OntologyLineRenderer">
         <parameter id="class" value="de.knowwe.ontology.kdom.table.LineRenderer"/>

@@ -37,11 +37,12 @@ import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
-public class EncodedTurtleURI extends AbstractType implements NodeProvider<EncodedTurtleURI> {
+public class EncodedTurtleURI extends AbstractType implements URIProvider<EncodedTurtleURI> {
 
 	public EncodedTurtleURI() {
 		this.setSectionFinder(new ExpressionInBracketsFinder('<', '>'));
@@ -68,6 +69,11 @@ public class EncodedTurtleURI extends AbstractType implements NodeProvider<Encod
 	public Value getNode(Section<? extends EncodedTurtleURI> section, Rdf2GoCompiler core) {
 		String uri = getURI(section);
 		return core.getRdf2GoCore().createURI(uri);
+	}
+
+	@Override
+	public org.openrdf.model.URI getURI(Section<EncodedTurtleURI> section, Rdf2GoCompiler core) {
+		return (org.openrdf.model.URI) getNode(section, core);
 	}
 
 	private static class EncodedResourceReference extends ResourceReference {

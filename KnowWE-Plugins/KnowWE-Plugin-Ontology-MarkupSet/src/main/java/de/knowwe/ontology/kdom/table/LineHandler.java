@@ -120,7 +120,6 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 			else {
 				typeAnnotationMissing = new Message(Message.Type.ERROR, "If subject concepts should be defined as instance of the class given in the first column header, a type-relation has to be defined via the typeRelation-typeRelationAnnotationValue. Otherwise, leave the first cell header blank.");
 			}
-
 		}
 
 		core.addStatements(section, statements);
@@ -134,11 +133,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 
 	}
 
-	private List<Section<ObjectList>> findObjects(Section<TableLine> section) {
-		return Sections.successors(section, ObjectList.class);
-	}
-
-	private Section<NodeProvider> findSubject(Section<TableLine> section) {
+	protected Section<NodeProvider> findSubject(Section<TableLine> section) {
 		final Section<TableCellContent> firstCell = Sections.successor(section, TableCellContent.class);
 		return Sections.successor(firstCell, NodeProvider.class);
 	}

@@ -31,11 +31,12 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
-public class TurtleURI extends AbbreviatedResourceReference implements NodeProvider<TurtleURI> {
+public class TurtleURI extends AbbreviatedResourceReference implements URIProvider<TurtleURI> {
 
 	public TurtleURI() {
 
@@ -75,4 +76,8 @@ public class TurtleURI extends AbbreviatedResourceReference implements NodeProvi
 		return core.createURI(longURI);
 	}
 
+	@Override
+	public org.openrdf.model.URI getURI(Section<TurtleURI> section, Rdf2GoCompiler core) {
+		return (org.openrdf.model.URI) getNode(section, core);
+	}
 }

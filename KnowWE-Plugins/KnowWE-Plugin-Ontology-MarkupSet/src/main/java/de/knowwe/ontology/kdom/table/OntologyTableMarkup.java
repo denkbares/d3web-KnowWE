@@ -18,12 +18,8 @@
  */
 package de.knowwe.ontology.kdom.table;
 
-import java.util.List;
-
 import org.jetbrains.annotations.Nullable;
 import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.Value;
 
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
@@ -39,18 +35,12 @@ import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
-import de.knowwe.ontology.turtle.BlankNode;
 import de.knowwe.ontology.turtle.EncodedTurtleURI;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
-import de.knowwe.ontology.turtle.PredicateObjectSentenceList;
-import de.knowwe.ontology.turtle.PredicateSentence;
 import de.knowwe.ontology.turtle.Subject;
-import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.ontology.turtle.TurtleURI;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.ontology.turtle.compile.StatementProvider;
 import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
@@ -123,24 +113,6 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 
 	public static class OntologyTableTurtleObject extends Object {
 
-		/*
-		@Override
-		public StatementProviderResult getStatements(Section<? extends Object> section, Rdf2GoCompiler core) {
-
-			StatementProviderResult result = new StatementProviderResult();
-
-			List<Section<StatementProvider>> bNodePOSentenceList = Sections.successors(section, StatementProvider.class);
-			for (Section<StatementProvider> statementProviderSection : bNodePOSentenceList) {
-				if(statementProviderSection.equals(section)) continue;
-				StatementProviderResult statements = statementProviderSection.get()
-						.getStatements(statementProviderSection, core);
-				for (Statement statement : statements.getStatements()) {
-					result.addStatement(statement);
-				}
-			}
-			return result;
-		}
-		*/
 
 		@Override
 		public Section<Predicate> getPredicateSection(Section<? extends Object> section) {
@@ -153,8 +125,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		}
 
 		private Section<Subject> findSubjectInLine(Section<TableLine> section) {
-			final Section<TableCellContent> firstCell = Sections.successor(section, TableCellContent.class);
-			return Sections.successor(firstCell, Subject.class);
+			return Sections.successor(section, Subject.class);
 		}
 
 
@@ -185,7 +156,6 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 				}
 			return subject;
 		}
-
 	}
 
 	static class BasicURIType extends AbstractType {
@@ -195,5 +165,6 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 			this.addChildType(new TurtleURI());
 			this.addChildType(new LazyURIReference());
 		}
+
 	}
 }

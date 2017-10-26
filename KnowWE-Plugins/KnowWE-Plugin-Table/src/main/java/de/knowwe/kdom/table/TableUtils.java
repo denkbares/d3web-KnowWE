@@ -54,6 +54,19 @@ public class TableUtils {
 				: Sections.ancestor(tableSection, TableLine.class), TableLine.class);
 	}
 
+	public static Section<TableCellContent> getCell(Section<?> section, int x, int y) {
+		Section<Table> table = Sections.ancestor(section, Table.class);
+		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
+		if(lines.size() > y) {
+			Section<TableLine> lineY = lines.get(y);
+			List<Section<TableCellContent>> cells = Sections.successors(lineY, TableCellContent.class);
+			if(cells.size() > x) {
+				return cells.get(x);
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Returns the column of the table in which the current cell occurs.
 	 *

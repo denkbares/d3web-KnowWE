@@ -28,6 +28,8 @@ import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.ontology.compile.OntologyCompileScript;
@@ -61,7 +63,7 @@ public class TableSubjectURIWithDefinition  extends TurtleURI {
 
         @Override
         protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
-            final Section<OntologyTableMarkup> markupSection = Sections.ancestor(s, OntologyTableMarkup.class);
+            final Section<? extends DefaultMarkupType> markupSection = Sections.ancestor(s, DefaultMarkupType.class);
             return Sections.successors(markupSection, Predicate.class);
         }
     }
