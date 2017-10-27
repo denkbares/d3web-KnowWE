@@ -1,15 +1,14 @@
 package de.knowwe.ontology.kdom.table;
 
-import org.jetbrains.annotations.Nullable;
 import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
@@ -23,18 +22,13 @@ import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.turtle.EncodedTurtleURI;
-import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.ResourceProvider;
-import de.knowwe.ontology.turtle.compile.StatementProviderResult;
 import de.knowwe.ontology.turtle.compile.URIProvider;
-import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
@@ -50,7 +44,7 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 	public static class HierarchyLevelType extends AbstractType {
 
 		public HierarchyLevelType() {
-			this.setSectionFinder(new AllTextFinderTrimmed());
+			this.setSectionFinder(new AllTextFinder());
 			this.addCompileScript(new HierarchyCompileScript());
 		}
 
@@ -62,7 +56,7 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 				Section<URIProvider> propertyNodeProvider = Sections.successor(hierarchyProperty, URIProvider.class);
 
 				int row = TableUtils.getRow(Sections.ancestor(section, TableLine.class));
-				if(row == 1) {
+				if (row == 1) {
 					// no need to do something for first line
 					return;
 				}
@@ -70,24 +64,32 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 				Section<ResourceProvider> subjectNodeProvider = Sections.successor(localConceptCell, ResourceProvider.class);
 
 				Integer hierarchyLevel = getHierarchyLevel(section);
-				if(hierarchyLevel == null) {
+				if (hierarchyLevel == null) {
 					Messages.storeMessage(compiler, section, this.getClass(), Messages.error("No a valid hierarchy level (use integer or dashes to indicate level)"));
-				} else {
+				}
+				else {
 					Section<?> hierarchyLevelAbove = HierarchyTableUtils.findHierarchyLevelAbove(hierarchyLevel - 1, section);
-					Section<TableLine> line = Sections.ancestor(hierarchyLevelAbove, TableLine.class);
-					Section<TableCellContent> parentConcept = Sections.successors(line, TableCellContent.class)
-							.get(1);
-					Section<NodeProvider> parentNodeProvider = Sections.successor(parentConcept, NodeProvider.class);
-					Rdf2GoCore core = compiler.getRdf2GoCore();
-					assert subjectNodeProvider != null;
-					Resource subjectURI = subjectNodeProvider.get().getResource(subjectNodeProvider, compiler);
-					assert propertyNodeProvider != null;
-					URI predicateNode = propertyNodeProvider.get().getURI(propertyNodeProvider, compiler);
-					assert parentNodeProvider != null;
-					Value parentNode = parentNodeProvider.get().getNode(parentConcept, compiler);
-					core.addStatements(section, core.createStatement(subjectURI, predicateNode, parentNode));
+					if (hierarchyLevelAbove == null) {
+						Messages.storeMessage(compiler, section, this.getClass(), Messages.error("No a valid preceeding hierarchy level found (use integer or dashes to indicate level)"));
+					}
+					else {
+
+						Section<TableLine> line = Sections.ancestor(hierarchyLevelAbove, TableLine.class);
+						Section<TableCellContent> parentConcept = Sections.successors(line, TableCellContent.class)
+								.get(1);
+						Section<NodeProvider> parentNodeProvider = Sections.successor(parentConcept, NodeProvider.class);
+						Rdf2GoCore core = compiler.getRdf2GoCore();
+						assert subjectNodeProvider != null;
+						Resource subjectURI = subjectNodeProvider.get().getResource(subjectNodeProvider, compiler);
+						assert propertyNodeProvider != null;
+						URI predicateNode = propertyNodeProvider.get().getURI(propertyNodeProvider, compiler);
+						assert parentNodeProvider != null;
+						Value parentNode = parentNodeProvider.get().getNode(parentConcept, compiler);
+						core.addStatements(section, core.createStatement(subjectURI, predicateNode, parentNode));
+					}
 				}
 			}
+
 			@Override
 			public void destroy(OntologyCompiler compiler, Section<HierarchyLevelType> section) {
 				Rdf2GoCore core = compiler.getRdf2GoCore();
@@ -96,13 +98,17 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 		}
 
 		public static Integer getHierarchyLevel(Section<HierarchyLevelType> section) {
-			String text = section.getText();
-			if(text.matches("-*")) {
+			String text = section.getText().trim();
+			if (text.isEmpty()) {
+				return 0;
+			}
+			if (text.matches("-*")) {
 				return text.length();
 			}
 			try {
 				return Integer.parseInt(text);
-			} catch (NumberFormatException e) {
+			}
+			catch (NumberFormatException e) {
 				return null;
 			}
 		}
@@ -175,12 +181,10 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 				new TableIndexConstraint(2, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
 		content.injectTableCellContentChildtype(cellEntry);
 
-
 	}
 
 	public HierarchyTableMarkup() {
 		super(MARKUP);
 	}
-
 
 }

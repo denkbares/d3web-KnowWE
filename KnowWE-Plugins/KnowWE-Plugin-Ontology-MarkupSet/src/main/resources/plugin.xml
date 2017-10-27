@@ -525,7 +525,23 @@
 		<parameter id="scope" value="root"/>
 	</extension>
 
-    <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyTableToolProvider">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="HierarchyTableToolProvider">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.HierarchyTableToolProvider"/>
+		<parameter id="name" value="HierarchyTableToolProvider"/>
+		<parameter id="description" value="Offers a tool for a spreadsheet-like table editor."/>
+		<parameter id="version" value="1.0"/>
+		<parameter id="priority" value="3"/>
+		<parameter id="script" value="KnowWE-Plugin-InstantEdit.js"/>
+		<parameter id="script" value="KnowWE-Plugin-AutoComplete.js"/>
+		<parameter id="script" value="DefaultTableEditTool.js"/>
+		<parameter id="css" value="KnowWE-Plugin-InstantEdit.css"/>
+		<parameter id="css" value="KnowWE-Plugin-AutoComplete.css"/>
+		<parameter id="css" value="DefaultTableEditTool.css"/>
+		<parameter id="scope" value="HierarchyTableMarkup"/>
+	</extension>
+
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="OntologyTableToolProvider">
         <parameter id="class" value="de.knowwe.ontology.kdom.table.OntologyTableToolProvider"/>
         <parameter id="name" value="OntologyTableToolProvider"/>
         <parameter id="description" value="Offers a tool for a spreadsheet-like table editor."/>
