@@ -24,7 +24,7 @@
 	background-color: inherit;
 }
 
-.ruleDebugView .ruleDebug  .IfCondition {
+.ruleDebugView .ruleDebug .IfCondition {
 	padding: 8px 0 8px 0;
 }
 
@@ -102,3 +102,22 @@
 	background-color: transparent !important;
 }
 
+/* -- mouse-over border highlighting -- */
+
+/* borders have slightly different colors from their corresponding condition highlighters,
+to make the distinction between border and underlying color easier */
+
+.BracedCondition.conditionTrue.hoverIntent,
+.CompositeCondition.conditionTrue.hoverIntent {
+	border: 1px solid limegreen;
+}
+
+.BracedCondition.conditionFalse.hoverIntent,
+.CompositeCondition.conditionFalse.hoverIntent {
+	border: 1px solid indianred;
+}
+
+.BracedCondition.conditionUnknown.hoverIntent,
+.CompositeCondition.conditionUnknown.hoverIntent {
+	border: 1px solid cornflowerblue;
+}

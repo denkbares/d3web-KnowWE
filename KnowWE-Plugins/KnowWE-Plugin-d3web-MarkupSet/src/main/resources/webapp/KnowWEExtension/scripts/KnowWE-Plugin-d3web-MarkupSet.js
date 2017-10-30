@@ -4,6 +4,14 @@ KNOWWE.plugin.abstractionTable = {}
 KNOWWE.plugin.propertyTable = {}
 
 jq$(document).ready(function () {
+	// used to highlight CompositeCondition borders when hovering, see MarkupSet
+	jq$('.CompositeCondition, .BracedCondition').mouseover(function (e) {
+		e.stopPropagation();
+		jq$(this).addClass('hoverIntent');
+	}).mouseout(function (e) {
+		e.stopPropagation();
+		jq$(this).removeClass('hoverIntent');
+	});
 	// Prepare for instant table editor with custom auto-complete for abstraction table
 	KNOWWE.plugin.abstractionTable.editTool = KNOWWE.plugin.tableEditTool.create(
 		function (callback, prefix, spreadsheet, row, col) {
