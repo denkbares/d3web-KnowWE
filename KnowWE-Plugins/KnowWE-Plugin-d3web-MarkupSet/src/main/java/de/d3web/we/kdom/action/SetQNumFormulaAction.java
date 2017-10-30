@@ -23,6 +23,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
 
 /**
@@ -90,6 +91,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 		}
 		catch (Exception e) {
 			Log.severe("Unexpected error", e);
+			Messages.storeMessage(compiler, s, this.getClass(), Messages.error("Could not create FormulaNumberElement: "+e.getMessage()));
 		}
 
 		if (q != null && formular != null) {
