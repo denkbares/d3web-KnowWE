@@ -45,7 +45,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class TurtleLiteralType extends AbstractType implements NodeProvider<TurtleLiteralType> {
 
 	public static final String XSD_PATTERN = "(?:\\^\\^xsd:(\\w+))";
-	public static final String LANGUAGE_TAG = "(?:@\\w+)";
+	public static final String LANGUAGE_TAG = "(?:@\\w+(?:[-_]\\w+)?)";
 	public static final String LITERAL_SUFFIX = "^(?:" + LANGUAGE_TAG + "|" + XSD_PATTERN + ")";
 
 	private static final Pattern LITERAL_SUFFIX_PATTERN = Pattern.compile(LITERAL_SUFFIX);

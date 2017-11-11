@@ -34,7 +34,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class LiteralType extends AbstractType {
 
 	public static final String XSD_PATTERN = "(?:\\^\\^xsd:(\\w+))";
-	public static final String LANGUAGE_TAG = "(?:@\\w+)";
+	public static final String LANGUAGE_TAG = "(?:@\\w+(?:[-_]\\w+)?)";
 	public static final String LITERAL_SUFFIX = "(?:" + LANGUAGE_TAG + "|" + XSD_PATTERN + ")";
 
 	/**
