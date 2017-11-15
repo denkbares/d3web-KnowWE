@@ -29,17 +29,27 @@
 }
 
 /* - condition evaluation - */
+/* comments are excluded from rendering */
 
-.conditionTrue {
-	background-color: #CFFFCF;
+.conditionTrue > *:not(.comment),
+.CompositeCondition.conditionTrue,
+.TerminalCondition.conditionTrue,
+.RuleAction.conditionTrue {
+    background-color: #CFFFCF;
 }
 
-.conditionFalse {
-	background-color: #FFCFCF;
+.conditionFalse > *:not(.comment),
+.CompositeCondition.conditionFalse,
+.TerminalCondition.conditionFalse,
+.RuleAction.conditionFalse {
+    background-color: #FFCFCF;
 }
 
-.conditionUnknown {
-	background-color: #CFD5FF;
+.conditionUnknown > *:not(.comment),
+.CompositeCondition.conditionUnknown,
+.TerminalCondition.conditionUnknown,
+.RuleAction.conditionUnknown {
+    background-color: #CFD5FF;
 }
 
 .conditionUndefined {

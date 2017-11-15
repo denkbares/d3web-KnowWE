@@ -1,7 +1,9 @@
 package de.d3web.we.kdom.rules;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
@@ -39,6 +41,9 @@ public class RuleContainerFinder implements SectionFinder {
 			int startOffset = AllBeforeStringFinder.addTokenLengthToOffset(text, start, startTokens);
 			end = Strings.indexOf(text, startOffset, flags, endTokens);
 			if (end == -1) end = text.length();
+
+			end = separateRules(text, start, end);
+
 			Pair<Integer, Integer> trimmed = Strings.trim(text, start, end);
 			results.add(new SectionFinderResult(trimmed.getA(), trimmed.getB()));
 			start = Strings.indexOf(text, end, flags, startTokens);
@@ -46,4 +51,35 @@ public class RuleContainerFinder implements SectionFinder {
 		return results;
 	}
 
+	/**
+	 * @param text  String containing the Rules as text, as well as comments
+	 * @param start initial start index of the first rule
+	 * @param end   current end index of the rule
+	 * @return an unaltered index for {@code end} if no comment has been found between the rules, or a new index for
+	 * end marking the end of a rule before the next comment
+	 */
+	private int separateRules(String text, int start, int end) {
+		String toSplit = text.subSequence(start, end).toString();
+		List<String> splits = Arrays.asList(toSplit.split("\n"));
+		ListIterator<String> iterator = splits.listIterator(splits.size());
+		int nEnd = end;
+		while (iterator.hasPrevious()) {
+			String testForComment = iterator.previous();
+			if ("\r".equals(testForComment) || testForComment.startsWith("//")) {
+				// .split removes "\n" from each line, thus making them 1 char shorter than they should be
+				nEnd -= (testForComment.length() + 1);
+			}
+			else {
+				if (ruleLineContainsComment(testForComment)) {
+					nEnd -= (testForComment.length() - testForComment.indexOf("//")) + 1;
+				}
+				break;
+			}
+		}
+		return nEnd;
+	}
+
+	private boolean ruleLineContainsComment(String line) {
+		return (!line.startsWith("//") && line.contains("//"));
+	}
 }

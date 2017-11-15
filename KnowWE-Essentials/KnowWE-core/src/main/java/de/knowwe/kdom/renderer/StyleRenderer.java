@@ -40,7 +40,7 @@ public class StyleRenderer implements Renderer {
 	public static final StyleRenderer PROMPT = new StyleRenderer("color:rgb(0, 128, 0)",
 			MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 	public static final StyleRenderer NUMBER = new StyleRenderer("color:rgb(125, 80, 102)");
-	public static final StyleRenderer COMMENT = new StyleRenderer("color:rgb(160, 160, 160)",
+	public static final StyleRenderer COMMENT = new StyleRenderer("comment", "color:rgb(160, 160, 160)",
 			MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
 	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
