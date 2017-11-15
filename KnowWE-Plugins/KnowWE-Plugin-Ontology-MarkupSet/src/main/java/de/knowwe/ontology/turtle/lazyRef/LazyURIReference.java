@@ -2,6 +2,7 @@ package de.knowwe.ontology.turtle.lazyRef;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +30,6 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.turtle.TurtleURI;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
 import de.knowwe.ontology.turtle.compile.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -73,7 +73,7 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 			}
 			else {
 				if (potentiallyMatchingIdentifiers.size() == 1
-						|| isLnsOnly(compiler, potentiallyMatchingIdentifiers)) {
+						|| resolveToEqualNS(compiler, potentiallyMatchingIdentifiers)) {
 					identifier = potentiallyMatchingIdentifiers.iterator().next();
 				}
 				else {
@@ -97,10 +97,21 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 		return identifier;
 	}
 
-	private boolean isLnsOnly(Rdf2GoCompiler compiler, Collection<Identifier> potentiallyMatchingIdentifiers) {
+	private boolean resolveToEqualNS(Rdf2GoCompiler compiler, Collection<Identifier> potentiallyMatchingIdentifiers) {
 		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
-		return potentiallyMatchingIdentifiers.size() == 2
-				&& rdf2GoCore.getLocalNamespace().equals(compiler.getRdf2GoCore().getNamespaces().get(""));
+		if(potentiallyMatchingIdentifiers.size() == 2) {
+			String localNS = rdf2GoCore.getLocalNamespace();
+			String defaultNS = rdf2GoCore.getNamespaces().get("");
+			Iterator<Identifier> iterator = potentiallyMatchingIdentifiers.iterator();
+			Identifier firstIdentifier = iterator.next();
+			Identifier secondIdentifier = iterator.next();
+			String firstNS = firstIdentifier.getPathElementAt(0);
+			String secondNS = secondIdentifier.getPathElementAt(0);
+			if(rdf2GoCore.getNamespaces().get(firstNS).equals(rdf2GoCore.getNamespaces().get(secondNS))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
