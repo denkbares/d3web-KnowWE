@@ -578,10 +578,19 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="DashTreeItemPreviewRenderer">
 		<parameter id="class" value="de.knowwe.core.preview.DashTreePreviewRenderer" />
 		<parameter id="name" value="DashTreeItemPreviewRenderer" />
-		<parameter id="description" value="Renders a preview of a paricular dashtree item." />
+		<parameter id="description" value="Renders a preview of a particular dashtree item." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="DashSubtree" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="TablePreviewRenderer">
+		<parameter id="class" value="de.knowwe.kdom.table.TablePreviewRenderer" />
+		<parameter id="name" value="TablePreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a table item." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root/OntologyTableMarkup" />
 	</extension>
 
 	<!-- extensions for compilers -->
