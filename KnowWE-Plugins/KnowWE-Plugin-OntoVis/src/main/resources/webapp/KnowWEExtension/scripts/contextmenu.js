@@ -96,6 +96,7 @@ KNOWWE.plugin.visualization = {
 
 					_TM.decorateToolMenus(menudiv);
 					var decoratorSpan = jq$(menudiv).find(".toolsMenuDecorator");
+					decoratorSpan.css({top : mouseY, left : mouseX});
 					_TM.showToolPopupMenu(decoratorSpan);
 
 					jq$(document).click(function(e) {

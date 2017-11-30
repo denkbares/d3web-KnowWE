@@ -39,7 +39,7 @@
 		} else {
 			scale = "1.0";
 			var transform = this.css('transform');
-			if (transform != "none") {
+			if (transform !== "none" && transform !== "") {
 				scale = /^matrix\((\d+(\.\d+)?), .+$/.exec(transform)[1];
 			}
 			return parseFloat(scale);

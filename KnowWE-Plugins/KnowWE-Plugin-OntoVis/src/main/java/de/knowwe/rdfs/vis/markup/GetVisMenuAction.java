@@ -61,11 +61,15 @@ public class GetVisMenuAction extends GetToolMenuAction {
 		}
 
 		String[] identifierParts = conceptName.split(":");
+		if(identifierParts[0].isEmpty()) {
+			identifierParts = new String[] { identifierParts[1]};
+		}
 
+		Identifier termIdentifier = new Identifier(identifierParts);
 		Section<Term> termDefiningSection = null;
 		final Collection<TerminologyManager> terminologyManager = getTerminologyManager(visMarkupSection);
 		for (TerminologyManager manager : terminologyManager) {
-			Section<? extends Type> definition = manager.getTermDefiningSection(new Identifier(identifierParts));
+			Section<? extends Type> definition = manager.getTermDefiningSection(termIdentifier);
 			if (definition != null && definition.get() instanceof Term) {
 				termDefiningSection = Sections.cast(definition, Term.class);
 			}
