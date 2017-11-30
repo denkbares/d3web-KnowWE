@@ -60,6 +60,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		PreRenderWorker.getInstance().handlePreRendering(content, user, this);
 		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) content.getObject(getVisualizationRendererKey(user));
 		if (graphRenderer != null) string.appendHtml(graphRenderer.getHTMLIncludeSnipplet());
+		else string.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
 	}
 
 	private SubGraphData convertToGraph(CachedTupleQueryResult resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
