@@ -163,6 +163,7 @@ public class Utils {
 			visValue = data.getConcept(identifier);
 			if (visValue == null) {
 				type = GraphDataBuilder.NODE_TYPE.BLANKNODE;
+				// TODO: find way to retrieve the actual label of the bNode if existing (cannot be sparqled with bNode id)
 				label = getIdentifierBValue(bValue);
 				RenderingStyle style = Utils.getStyle(type, config);
 

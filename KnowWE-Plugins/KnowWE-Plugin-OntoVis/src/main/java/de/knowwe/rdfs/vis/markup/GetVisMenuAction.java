@@ -53,7 +53,7 @@ public class GetVisMenuAction extends GetToolMenuAction {
 
 		String conceptName = context.getParameter(CONCEPT_NAME);
 		if (conceptName == null) {
-			String message = "term name paraeter not found";
+			String message = "term name parameter not found";
 			Log.severe(message);
 			string.append(message);
 			writeResponse(context, null, string);
