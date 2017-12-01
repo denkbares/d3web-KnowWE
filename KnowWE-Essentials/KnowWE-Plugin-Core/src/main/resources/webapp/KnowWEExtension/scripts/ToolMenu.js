@@ -82,13 +82,11 @@ ToolMenu.prototype.showToolPopupMenu = function (node) {
 		if (scale == 1) scale = jq$(this).scale();
 	});
 
-	var topValue = node.style.top;
-	var leftValue = node.style.left;
 	var parent = new Element('div', {
 		'id': 'toolPopupMenuID',
 		'styles': {
-			'top': topValue,
-			'left': leftValue,
+			'top': jq$(node).offset().top + node.offsetHeight * scale + 'px',
+			'left': jq$(node).offset().left + node.offsetWidth * scale + 'px',
 			'z-index': '10000',
 			'position': 'absolute'
 		},
