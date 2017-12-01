@@ -47,6 +47,7 @@ KNOWWE.plugin.sparql.retry = function(id) {
 		function nodeExpand() {
 			var sectionID = jq$(jq$("tr[data-tt-id='" + this.id + "']").closest('.sparqlTable')[0]).attr('sparqlsectionid');
 			getNodeViaAjax(this.id, sectionID);
+			_TM.decorateToolMenus();
 		};
 
 		function nodeCollapse() {

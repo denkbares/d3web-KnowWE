@@ -85,8 +85,8 @@ ToolMenu.prototype.showToolPopupMenu = function (node) {
 	var parent = new Element('div', {
 		'id': 'toolPopupMenuID',
 		'styles': {
-			'top': jq$(node).offset().top + node.offsetHeight * scale + 'px',
-			'left': jq$(node).offset().left + node.offsetWidth * scale + 'px',
+			'top': (node !== null && node.style.top !== "") ? node.style.top : jq$(node).offset().top + node.offsetHeight * scale + 'px',
+			'left': (node !== null && node.style.left !== "") ? node.style.left : jq$(node).offset().left + node.offsetWidth * scale + 'px',
 			'z-index': '10000',
 			'position': 'absolute'
 		},
