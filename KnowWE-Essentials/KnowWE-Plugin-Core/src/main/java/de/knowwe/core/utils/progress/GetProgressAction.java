@@ -64,8 +64,7 @@ public class GetProgressAction extends AbstractAction {
 						LongOperationUtils.getRegistrationID(section, operation));
 				float currentProgress = listener.getProgress();
 				progress.put("progress", currentProgress);
-				String message = operation.renderMessage(context, currentProgress,
-						listener.getMessage());
+				String message = operation.renderMessage(context, currentProgress, listener.getMessage());
 				progress.put("message", message);
 				progress.put("error", listener.getError());
 				progress.put("running", listener.isRunning());
