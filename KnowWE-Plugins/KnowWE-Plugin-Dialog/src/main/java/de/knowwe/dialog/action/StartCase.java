@@ -7,19 +7,22 @@ package de.knowwe.dialog.action;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.servlet.http.HttpSession;
 
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
+import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.d3web.core.inference.PSMethod;
@@ -119,6 +123,13 @@ public class StartCase extends AbstractAction implements EventListener {
 	public void execute(UserActionContext context) throws IOException {
 
 		String language = context.getParameter(PARAM_LANGUAGE);
+		List<Locale> preferredLocales = new ArrayList<>();
+		if (language != null) {
+			preferredLocales.add(new Locale(language));
+		}
+		if (preferredLocales.isEmpty()) {
+			Collections.addAll(preferredLocales, KnowWEUtils.getBrowserLocales(context));
+		}
 		String protocolPath = context.getParameter(PARAM_PROTOCOL_PATH);
 
 		HttpSession httpSession = context.getSession();
@@ -141,7 +152,8 @@ public class StartCase extends AbstractAction implements EventListener {
 
 			// adapt language to one of the supported ones
 			// of the loaded knowledge base
-			Locale locale = findBestLocale(base, new Locale(language));
+			Locale locale = Locales.findBestLocale(preferredLocales, KnowledgeBaseUtils.getAvailableLocales(base));
+
 			if (!locale.getLanguage().isEmpty()) {
 				language = locale.getLanguage();
 			}
@@ -247,37 +259,6 @@ public class StartCase extends AbstractAction implements EventListener {
 		context.getSession().setAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE_PROVIDER, provider);
 		execute(context);
-	}
-
-	/**
-	 * Returns the best-Fit locale of the knowledge base in comparison to specified language.
-	 *
-	 * @param knowledgeBase the knowledge base to select a language from
-	 * @created 05.05.2011
-	 */
-	private Locale findBestLocale(KnowledgeBase knowledgeBase, Locale preferredLocale) {
-		Set<Locale> locales = KnowledgeBaseUtils.getAvailableLocales(knowledgeBase);
-		Locale locale = findLocale(preferredLocale, locales);
-		if (locale == null) locale = findLocale(Locale.getDefault(), locales);
-		if (locale == null) locale = findLocale(Locale.ENGLISH, locales);
-		if (locale == null) locale = findLocale(Locale.GERMAN, locales);
-		if (locale == null && !locales.isEmpty()) locale = locales.iterator().next();
-		if (locale != null) {
-			return locale;
-		}
-		else {
-			return preferredLocale;
-		}
-	}
-
-	private static Locale findLocale(Locale preferredLocale, Set<Locale> locales) {
-		String language = preferredLocale.getLanguage();
-		for (Locale locale : locales) {
-			if (locale.getLanguage().equalsIgnoreCase(language)) {
-				return locale;
-			}
-		}
-		return null;
 	}
 
 	public static class StartInfo {

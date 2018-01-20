@@ -5,7 +5,11 @@
 package de.knowwe.dialog.action;
 
 import java.io.IOException;
+import java.util.Set;
 
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -71,6 +75,18 @@ public class InitWiki extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		// remember user name
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
+		if (sectionId == null) {
+			String packageName = context.getParameter(Attributes.PACKAGE);
+			PackageManager packageManager = KnowWEUtils.getPackageManager(context.getArticleManager());
+			if (packageManager == null) {
+				throw new IOException("Package manager not found");
+			}
+			Set<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections(packageName);
+			if (compileSections.isEmpty()) {
+				throw new IOException("No knowledge base found for package '" + packageName + "'");
+			}
+			sectionId = compileSections.iterator().next().getID();
+		}
 
 		// using the StartCase command
 		StartCase cmd = (StartCase) Utils.getAction(StartCase.class.getSimpleName());
