@@ -25,6 +25,7 @@ public class Attributes {
 	public static final String TOPIC = "KWiki_Topic";
 	public static final String TITLE = TOPIC;
 	public static final String SECTION_ID = "SectionID";
+	public static final String PACKAGE = "package";
 	public static final String JSON_DATA = "data";
 	public static final String ENCODING = "KWiki_Encoding";
 	public static final String WEB = "KWikiWeb";
