@@ -22,9 +22,12 @@ import java.util.zip.ZipFile;
 
 import javax.servlet.http.HttpSession;
 
+import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.ValueObject;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.dialog.SessionConstants;
 import de.knowwe.dialog.Utils;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.denkbares.events.Event;
@@ -149,6 +152,7 @@ public class StartCase extends AbstractAction implements EventListener {
 			else {
 				loadCase(context, base, protocolPath);
 			}
+			answerURLParamQuestions(context, base);
 
 			// adapt language to one of the supported ones
 			// of the loaded knowledge base
@@ -170,6 +174,36 @@ public class StartCase extends AbstractAction implements EventListener {
 
 		// and redirect to interview
 		context.sendRedirect("Resource/ui.zip/html/index.html?" + PARAM_LANGUAGE + "=" + language);
+	}
+
+	private void answerURLParamQuestions(UserActionContext context, KnowledgeBase base) {
+		Session session = SessionProvider.getSession(context, base);
+		if (session == null) return;
+		int index = 1;
+		while (true) {
+			String objectName = context.getParameter("o" + index);
+			String valueString = context.getParameter("v" + index);
+			if (objectName == null || valueString == null) {
+				break;
+			}
+			objectName = Strings.decodeURL(objectName);
+			TerminologyObject valueObject = base.getManager().search(objectName);
+			if (!(valueObject instanceof ValueObject)) {
+				Log.warning("'" + objectName + "' is not valid value object.");
+				break;
+			}
+			valueString = Strings.decodeURL(valueString);
+			Value value;
+			try {
+				value = ValueUtils.createValue(valueObject, valueString);
+			}
+			catch (IllegalArgumentException e) {
+				Log.warning("'" + valueString + "' is not valid value.");
+				break;
+			}
+			session.getBlackboard().addValueFact(FactFactory.createUserEnteredFact(valueObject, value));
+			index++;
+		}
 	}
 
 	/**
