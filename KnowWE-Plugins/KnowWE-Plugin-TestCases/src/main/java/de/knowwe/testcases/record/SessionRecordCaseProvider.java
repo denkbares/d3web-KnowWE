@@ -61,7 +61,6 @@ public class SessionRecordCaseProvider extends AttachmentTestCaseProvider {
 						+ attachment.getFileName()
 						+ " has " + sessionRecords.size()
 						+ " cases. Only files with exactly one case are allowed."));
-				return;
 			}
 			else {
 				testCase = new SessionRecordWrapper(
