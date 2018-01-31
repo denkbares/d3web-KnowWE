@@ -32,7 +32,6 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
-import de.knowwe.ontology.kdom.resource.ResourceDefinition;
 import de.knowwe.ontology.turtle.compile.NodeProvider;
 
 /**
@@ -110,7 +109,6 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 			termClass = simpleDefinitionSection.get().getTermObjectClass(simpleDefinitionSection);
 		}
 		terminologyManager.registerTermDefinition(compiler, s, termClass, termIdentifier);
-		ResourceDefinition.registerCompatibilityIdentifier(compiler, s);
 	}
 
 	@Override
@@ -119,7 +117,6 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 		Class<?> termObjectClass = s.get().getTermObjectClass(s);
 		terminologyManager.unregisterTermDefinition(compiler, s,
 				termObjectClass, s.get().getTermIdentifier(s));
-		ResourceDefinition.unregisterCompatibilityIdentifier(compiler, s);
 	}
 
 }

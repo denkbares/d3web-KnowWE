@@ -28,6 +28,7 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
@@ -36,7 +37,6 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -201,35 +201,6 @@ public class TermRenamingAction extends AbstractAction {
 		}
 		catch (JSONException e) {
 			throw new IOException(e.getMessage());
-		}
-	}
-
-	private void renameTerms(
-			Map<String, Set<Section<? extends RenamableTerm>>> allTerms, Identifier term,
-			Identifier replacement, ArticleManager mgr, UserActionContext context,
-			Set<String> failures, Set<String> success) throws IOException {
-		mgr.open();
-		try {
-			for (String title : allTerms.keySet()) {
-				if (Environment.getInstance().getWikiConnector()
-						.userCanEditArticle(title, context.getRequest())) {
-					Map<String, String> nodesMap = new HashMap<>();
-					for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
-						nodesMap.put(
-								termSection.getID(),
-								termSection.get().getSectionTextAfterRename(termSection, term,
-										replacement));
-					}
-					Sections.replace(context, nodesMap).sendErrors(context);
-					success.add(title);
-				}
-				else {
-					failures.add(title);
-				}
-			}
-		}
-		finally {
-			mgr.commit();
 		}
 	}
 

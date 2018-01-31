@@ -20,10 +20,17 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.denkbares.strings.Identifier;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -72,4 +79,32 @@ public abstract class AbstractAction implements Action {
 	@Override
 	public abstract void execute(UserActionContext context) throws IOException;
 
+	protected void renameTerms(
+			Map<String, Set<Section<? extends RenamableTerm>>> allTerms, Identifier term,
+			Identifier replacement, ArticleManager mgr, UserActionContext context,
+			Set<String> failures, Set<String> success) throws IOException {
+		mgr.open();
+		try {
+			for (String title : allTerms.keySet()) {
+				if (Environment.getInstance().getWikiConnector()
+						.userCanEditArticle(title, context.getRequest())) {
+					Map<String, String> nodesMap = new HashMap<>();
+					for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
+						nodesMap.put(
+								termSection.getID(),
+								termSection.get().getSectionTextAfterRename(termSection, term,
+										replacement));
+					}
+					Sections.replace(context, nodesMap).sendErrors(context);
+					success.add(title);
+				}
+				else {
+					failures.add(title);
+				}
+			}
+		}
+		finally {
+			mgr.commit();
+		}
+	}
 }

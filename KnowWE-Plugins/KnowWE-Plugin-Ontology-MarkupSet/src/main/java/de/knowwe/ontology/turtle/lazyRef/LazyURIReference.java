@@ -162,7 +162,6 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 			TerminologyManager manager = compiler.getTerminologyManager();
 			// we always also register the section as a reference to the name to be able to update if new identifiers with
 			// the same name are registered
-			manager.registerTermReference(compiler, section, getTermObjectClass(section), new Identifier(getTermName(section)));
 			manager.registerTermReference(compiler, section, getTermObjectClass(section), getTermIdentifier(section));
 		}
 
