@@ -28,15 +28,11 @@ public class Multimedia extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String path = File.separatorChar + context.getPath().toLowerCase();
-		path = path.replace('/', File.separatorChar);
-		path = path.replace('\\', File.separatorChar);
-		if (path.startsWith("/")) path = path.substring(1);
 		KnowledgeBase kb = (KnowledgeBase) context.getSession().getAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE);
 
 		if (kb != null) {
-			Resource resource = kb.getResource(path);
+			Resource resource = kb.getResource(context.getPath());
 			deliverFile(context, resource);
 		}
 		else {
