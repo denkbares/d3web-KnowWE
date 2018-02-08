@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 denkbares GmbH
+ * Copyright (C) 2018 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -19,18 +19,16 @@
 
 package de.d3web.we.quicki;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.records.FactRecord;
+import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
 import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
-import de.d3web.core.session.blackboard.Blackboard;
-import de.d3web.core.session.blackboard.Fact;
-import de.d3web.core.session.blackboard.FactFactory;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
@@ -44,55 +42,57 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
- * @author Benedikt Kaemmerer
- * @created 28.11.2012
+ * @author Jonas Müller
+ * @created 05.02.18
  */
-
 public class QuickInterviewLoadAction extends AbstractAction {
-
 	/**
-	 * Loads a .xml file with quickinterview session information to restore a previous session.
+	 * Loads a .xml file with quickinterview session information from locally stored drive/attachments
 	 *
 	 * @param context UserActionContext with params
 	 */
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		Collection<SessionRecord> sessionRecords;
 
-		// get WikiConnector, KnowledgeBase and Session
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		boolean fromFile = Boolean.parseBoolean(context.getParameter("fromFile"));
+		if (fromFile) {
+			sessionRecords = getSessionRecordsFromFile(context);
+		} else {
+			sessionRecords = getSessionRecordsFromAttachments(context);
+		}
+		if (sessionRecords == null || sessionRecords.isEmpty()) return;
 
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		Section<?> section = Sections.get(sectionId);
-		if (section != null && KnowWEUtils.canView(section, context)) {
+		if (section == null || !KnowWEUtils.canView(section, context)) return;
 
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
-			if (kb == null) {
-				return;
-			}
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+		if (kb == null) return;
 
-			// deletes current Session and creates a new one, gets Blackboard
-			SessionProvider.removeSession(context, kb);
-			Session session = SessionProvider.createSession(context, kb);
-			if (session == null) return;
+		// deletes current Session and creates a new one, gets Blackboard
+		Session session = SessionConversionFactory.replayToSession(kb, sessionRecords.iterator().next());
+		if (session == null) return;
+		SessionProvider.setSession(context, session);
 
-			// writes information an Blackboard
-			Blackboard blackboard = session.getBlackboard();
-			List<WikiAttachment> attachments = wikiConnector
-					.getAttachments(context.getTitle());
-			for (WikiAttachment wikiAttachment : attachments) {
-				String fileName = wikiAttachment.getFileName();
-				if (fileName.startsWith(context.getParameter("loadname"))) {
-					SessionPersistenceManager manager = SessionPersistenceManager.getInstance();
-					Collection<SessionRecord> sessionRecords = manager.loadSessions(wikiAttachment.getInputStream());
-					for (SessionRecord rec : sessionRecords) {
-						List<FactRecord> valueFacts = rec.getValueFacts();
-						for (FactRecord factRecord : valueFacts) {
-							Fact fact = FactFactory.createUserEnteredFact(kb, factRecord.getObjectName(), factRecord.getValue());
-							blackboard.addValueFact(fact);
-						}
-					}
-				}
+	}
+
+	private Collection<SessionRecord> getSessionRecordsFromAttachments(UserActionContext context) throws IOException {
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		List<WikiAttachment> attachments = wikiConnector
+				.getAttachments(context.getTitle());
+		for (WikiAttachment wikiAttachment : attachments) {
+			String fileName = wikiAttachment.getFileName();
+			if (fileName.startsWith(context.getParameter("loadname"))) {
+				SessionPersistenceManager manager = SessionPersistenceManager.getInstance();
+				return manager.loadSessions(wikiAttachment.getInputStream());
 			}
 		}
+		return null;
+	}
+
+	private Collection<SessionRecord> getSessionRecordsFromFile(UserActionContext context) throws IOException {
+		return SessionPersistenceManager.getInstance()
+					.loadSessions(new ByteArrayInputStream(context.getParameter("data").getBytes("UTF-8")));
 	}
 }

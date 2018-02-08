@@ -55,7 +55,8 @@ public class Icon {
 	public static final Icon SEARCH = new Icon("fa-search");
 	public static final Icon DELETE = new Icon("fa-times-circle");
 	public static final Icon DOWNLOAD = new Icon("fa-download");
-	public static final Icon UPLOAD = new Icon("fa-upoload");
+	public static final Icon UPLOAD = new Icon("fa-upload");
+	public static final Icon ATTACHMENT = new Icon("fa-paperclip");
 	public static final Icon IMPORT = new Icon("fa-upload");
 	public static final Icon REFRESH = new Icon("fa-refresh");
 	public static final Icon QRCODE = new Icon("fa-qrcode");

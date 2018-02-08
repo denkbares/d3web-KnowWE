@@ -2,17 +2,17 @@ package de.d3web.we.quicki;
 
 /*
  * Copyright (C) 2012 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -47,7 +47,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class QuickInterviewMarkup extends DefaultMarkupType {
 
-	private static DefaultMarkup m = null;
+	private static final DefaultMarkup m;
 
 	public static final String MARKUP_NAME = "QuickInterview";
 
@@ -58,8 +58,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 	public static final String ABSTRACTIONS_KEY = "abstractions";
 
 	public static final String ANSWERS_KEY = "answers";
-
-	public static final String SAVE_KEY = "save";
 
 	public static final String INPUT_SIZE_KEY = "inputSize";
 
@@ -76,9 +74,6 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 
 		m.addAnnotation(ANSWERS_KEY);
 		m.addAnnotationRenderer(ANSWERS_KEY, NothingRenderer.getInstance());
-
-		m.addAnnotation(SAVE_KEY);
-		m.addAnnotationRenderer(SAVE_KEY, NothingRenderer.getInstance());
 
 		m.addAnnotation(INPUT_SIZE_KEY, false, Pattern.compile("\\d+"));
 		m.addAnnotationRenderer(INPUT_SIZE_KEY, NothingRenderer.getInstance());
@@ -122,20 +117,13 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 				parameters.put(LANGUAGE_KEY, language);
 			}
 
-			String saveAnnotation = DefaultMarkupType.getAnnotation(section, QuickInterviewMarkup.SAVE_KEY);
-			if ("true".equalsIgnoreCase(saveAnnotation)) {
-				string.appendHtml("<div id=\"sessionsave\"><form name=\"loadsave\"> "
-						+ "<select name=\"savedsessions\"  size=\"1\" width=\"30\"><option>-Load Session-</option>"
-						+ getSavedSessions(user)
-						+ "</select><input name=\"load\" type=\"button\" value=\"Load\" onclick=\"loadQuicki('"
-						+ section.getID()
-						+ "')\"/>"
-						+ "<input name=\"name\" type=\"text\" size=\"20\" maxlength=\"30\" />"
-						+ "<input name=\"save\" type=\"button\" value=\"Save\" onclick=\"saveQuicki()\"/></form></div>");
-			}
-
-			string.appendHtmlTag("div", "class", "quickinterview", "sectionId", section.getID(),
+			string.appendHtml("<input id=\"file-input\" type=\"file\" name=\"name\" style=\"display: none;\" onchange=\"KNOWWE.plugin.quicki.handleUploadFile(this.files, '" + section
+					.getID() + "')\" />");
+			string.appendHtml("<div style=\"display:none\" id=\"dialog-message\" title=\"Choose session\">" + getSavedSessions(user, section
+					.getID()) + "</div>");
+			string.appendHtmlTag("div", "class", "quickinterview dropzone", "sectionId", section.getID(),
 					"id", "quickinterview_" + section.getID());
+			appendDropIndicator(string, section.getID());
 			QuickInterviewRenderer.renderInterview(section, user, string);
 			string.appendHtmlTag("/div");
 
@@ -153,28 +141,45 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			}
 		}
 
+		private void appendDropIndicator(RenderResult string, String sectionId) {
+			string.appendHtml("<div style=\"display:none; z-index:1; border:5px dotted #162746; background:#eee; width:100%; height:98%; position:absolute; left:0; right:0;\" id=\"drop-indicator-" + sectionId + "\">");
+			string.appendHtml("<div style=\"position:absolute; left:45%; top: 40%; color: #162746; font-weight: bold\">Drop case here</div>");
+			string.appendHtml("</div>");
+		}
+
 		/**
 		 * Finds previously saved QuickInterview Sessions
 		 *
 		 * @return String with html code containing options of .xml files
 		 * @created 30.11.2012
 		 */
-		private static String getSavedSessions(UserContext user) {
+		private static String getSavedSessions(UserContext user, String sectionId) {
 			WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 			StringBuilder builder = new StringBuilder();
+			builder.append("<form id=\"")
+					.append(sectionId)
+					.append("-form\"action=\"\">");
 			try {
 				List<WikiAttachment> attachments = wikiConnector.getAttachments(user.getTitle());
+				int counter = 0;
 				for (WikiAttachment wikiAttachment : attachments) {
 					String fileName = wikiAttachment.getFileName();
 					if (fileName.endsWith("xml")) {
-						builder.append("<option value=\"").append(fileName).append("\">")
-								.append(fileName).append("</option>");
+						counter++;
+						String buttonId = "attachment-" + sectionId + "-" + counter;
+						builder.append("<input id=\"")
+								.append(buttonId)
+								.append("\" type=\"radio\" style=\"margin-right:10px\" name=\"quicki-session-record\" value=\"")
+								.append(fileName).append("\" /><label for=\"").append(buttonId).append("\">")
+								.append(fileName)
+								.append("</label><br>");
 					}
 				}
 			}
 			catch (IOException e) {
 				Log.warning("cannot read saved user session", e);
 			}
+			builder.append("</form>");
 			return builder.toString();
 		}
 

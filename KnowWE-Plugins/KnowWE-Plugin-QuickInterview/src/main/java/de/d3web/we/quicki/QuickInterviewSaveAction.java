@@ -20,10 +20,15 @@
 package de.d3web.we.quicki;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.denkbares.utils.Streams;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
@@ -70,22 +75,42 @@ public class QuickInterviewSaveAction extends AbstractAction {
 				return;
 			}
 			Session session = SessionProvider.getSession(context, kb);
-
+			boolean download = Boolean.parseBoolean(context.getParameter("download"));
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+			String filename = sdf.format(new Date()) + "-QuickInterview.xml";
+			File attachmentFile = new File(filename);
+			attachmentFile.createNewFile();
 			// create SessionRecord List
 			List<SessionRecord> srList = new ArrayList<>();
 			srList.add(SessionConversionFactory.copyToSessionRecord(session));
 
 			// store new Attachment with Session information
-			File attachmentFile = new File(context.getParameter("savename")
-					+ ".xml");
-			attachmentFile.createNewFile();
 			SessionPersistenceManager.getInstance().saveSessions(
 					attachmentFile, srList);
 
-			/* WikiAttachment attachment = */
-			wikiConnector.storeAttachment(
-					context.getTitle(), context.getUserName(), attachmentFile);
+			if (download) {
+				saveToFile(context, attachmentFile);
+			} else {
+				saveToAttachments(context, wikiConnector, attachmentFile, section);
+			}
 		}
+	}
+
+	private void saveToFile(UserActionContext context, File attachmentFile) throws IOException {
+		context.setContentType("application/xml");
+		context.setHeader("Content-Disposition", "attachment;filename=\"" + attachmentFile.getName() + "\"");
+		OutputStream os = context.getOutputStream();
+		Streams.stream(new FileInputStream(attachmentFile), os);
+
+		os.flush();
+		os.close();
+	}
+
+	private void saveToAttachments(UserActionContext context, WikiConnector wikiConnector, File attachmentFile, Section<?> section) throws IOException {
+		/* WikiAttachment attachment = */
+		if (!KnowWEUtils.canWrite(section, context)) return;
+		wikiConnector.storeAttachment(
+				context.getTitle(), context.getUserName(), attachmentFile);
 	}
 
 }

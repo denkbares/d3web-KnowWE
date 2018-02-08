@@ -44,6 +44,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="QuickInterviewSaveAction">
 		<parameter id="class" value="de.d3web.we.quicki.QuickInterviewSaveAction" />
 		<parameter id="name" value="QuickInterviewSaveAction" />
@@ -51,4 +52,14 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="QuickInterviewToolProvider">
+		<parameter id="class" value="de.d3web.we.quicki.QuickInterviewToolProvider" />
+		<parameter id="name" value="QuickInterviewToolProvider" />
+		<parameter id="description" value="Offers tools to download and upload XML representations of interviews" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="6" />
+		<parameter id="scope" value="QuickInterview" />
+	</extension>
+
 </plugin>

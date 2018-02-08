@@ -117,6 +117,8 @@ KNOWWE.plugin.quicki = function () {
 			 */
 			KNOWWE.plugin.quicki.restoreQuestionnaireVis();
 
+			KNOWWE.plugin.quicki.initDataDrop();
+
 		},
 
 		/**
@@ -645,6 +647,144 @@ KNOWWE.plugin.quicki = function () {
 			};
 			KNOWWE.core.util.updateProcessingState(1);
 			new _KA(options).send();
+		},
+
+		/**
+		 * Adds a representation of the interview to the attachments
+		 *
+		 * @param sectionId id of interview's section
+		 */
+		saveAsAttachment: function (sectionId) {
+			console.log("Saving to attachment");
+			var params = {
+				action: 'QuickInterviewSaveAction',
+				SectionID: sectionId,
+				download: false
+			}
+
+			var options = {
+				url: KNOWWE.core.util.getURL(params),
+				loader: true,
+				response: {
+					fn: function () {
+						window.location.reload()
+					},
+				}
+			}
+			new _KA(options).send();
+		},
+
+		initDataDrop: function () {
+			let dropzones = document.getElementsByClassName('dropzone');
+			if (typeof dropzones === 'undefined') return;
+			for (var dropzone in dropzones) {
+				if (!Number.isInteger(parseInt(dropzone))) continue;
+				dropzones[dropzone].addEventListener('dragover', KNOWWE.plugin.quicki.handleDragOver, false);
+				dropzones[dropzone].addEventListener('drop', KNOWWE.plugin.quicki.handleDrop, false);
+			}
+		},
+
+		handleDragOver: function (event) {
+			event.stopPropagation();
+			event.preventDefault();
+			jq$('#drop-indicator-' + sectionId(event)).show();
+			document.getElementById('drop-indicator-' + sectionId(event)).addEventListener('dragleave', KNOWWE.plugin.quicki.handleDragLeave, false);
+			event.dataTransfer.dropEffect = 'copy';
+		},
+
+		handleDragLeave: function (event) {
+			jq$('#drop-indicator-' + sectionId(event)).hide();
+		},
+
+		handleDrop: function (event) {
+			event.stopPropagation();
+			event.preventDefault();
+			jq$('#drop-indicator-' + sectionId(event)).hide();
+			const data = event.dataTransfer.files;
+
+			if (data.length !== 1) {
+				KNOWWE.notification.error(null, "Please drop only one file.");
+				return;
+			}
+			KNOWWE.plugin.quicki.handleUploadFile(data, sectionId(event));
+		},
+
+		/**
+		 * Initiates load dialogue to let user upload representation of a previously saved interview from their drive
+		 * @param sectionId id of interview's section
+		 */
+		loadFromFile: function () {
+			jq$('#file-input').trigger('click');
+		},
+
+		handleUploadFile: function (files, sectionId) {
+			const file = files[0];
+			if (file.type !== 'text/xml') {
+				KNOWWE.notification.error(null, "The given file could not be uploaded since it has the wrong format.");
+				return;
+			}
+			const reader = new FileReader();
+
+			reader.addEventListener("load", function () {
+				sendData = reader.result;
+
+				var params = {
+					action: "QuickInterviewLoadAction",
+					fromFile: true,
+					SectionID: sectionId
+				}
+
+				var options = {
+					url: KNOWWE.core.util.getURL(params),
+					loader: true,
+					data: sendData,
+					response: {
+						fn: function () {
+							window.location.reload();
+						}
+					}
+				}
+				new _KA(options).send();
+			});
+			reader.readAsText(file);
+		},
+
+		/**
+		 * Loads a representation of an interview that has previously added to the attachments
+		 *
+		 * @param sectionId id of interview's section
+		 */
+		loadFromAttachment: function (sectionId) {
+			jq$("#dialog-message").dialog({
+				modal: true,
+				minWidth: 400,
+				buttons: {
+					Load: function () {
+						var name = 'quicki-session-record';
+						var inputValue = jq$('input[name=' + name + ']:checked', '#' + sectionId + '-form').val();
+						var params = {
+							action: "QuickInterviewLoadAction",
+							fromFile: false,
+							SectionID: sectionId,
+							loadname: inputValue
+						}
+
+						var options = {
+							url: KNOWWE.core.util.getURL(params),
+							loader: true,
+							response: {
+								fn: function () {
+									window.location.reload();
+								}
+							}
+						}
+						new _KA(options).send();
+
+						jq$(this).dialog("close");
+					}
+				}
+			}).parent().find('.ui-dialog-titlebar-close').css('top', '.3em');
+			;
 		}
 	}
 }();
@@ -662,7 +802,7 @@ KNOWWE.plugin.quicki = function () {
 				var qid = null;
 				var caret = null;
 				jq$('.type_QuickInterview').rerender({
-					beforeReplace : function ($element) {
+					beforeReplace: function ($element) {
 						if (!$element) return;
 						var focusElement = jq$(document.activeElement);
 						var quickinterview = focusElement.parents('.type_QuickInterview');
