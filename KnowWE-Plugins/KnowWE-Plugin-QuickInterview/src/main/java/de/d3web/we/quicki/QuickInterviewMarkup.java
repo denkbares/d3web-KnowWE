@@ -158,7 +158,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 			StringBuilder builder = new StringBuilder();
 			builder.append("<form id=\"")
 					.append(sectionId)
-					.append("-form\"action=\"\">");
+					.append("-form\" action=\"\">");
 			try {
 				List<WikiAttachment> attachments = wikiConnector.getAttachments(user.getTitle());
 				int counter = 0;
