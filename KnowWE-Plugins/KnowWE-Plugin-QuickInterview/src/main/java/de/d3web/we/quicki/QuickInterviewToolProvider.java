@@ -46,7 +46,7 @@ public class QuickInterviewToolProvider implements ToolProvider {
 	}
 
 	private Tool getSaveAsFileTool(Section<?> section, UserContext userContext) {
-		String jsAction = "action/QuickInterviewSaveAction" + "?" + Attributes.SECTION_ID + "=" + section.getID() + "&download=true";
+		String jsAction = "action/QuickInterviewSaveAction" + "?" + Attributes.SECTION_ID + "=" + section.getID() + "&amp;download=true";
 		return new DefaultTool(Icon.DOWNLOAD, "Save as Download",
 				"Starts download of the interview as XML file to your local drive",
 				jsAction, Tool.ActionType.HREF, Tool.CATEGORY_DOWNLOAD);
