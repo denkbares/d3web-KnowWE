@@ -1,17 +1,88 @@
 var Interview = {};
 
-Interview.startCase = function() {
+Interview.startCase = function () {
 	window.location = "../../../Restart?KWikiWeb=default_web&lang=" + Translate.getCurrentLanguage();
 };
 
-Interview.downloadProtocol = function() {
+Interview.downloadProtocol = function () {
 	window.location = "../../../DownloadProtocol";
 };
+
+Interview.uploadProtocol = function (files) {
+	const file = files[0];
+	if (file.type !== 'text/xml') {
+		KNOWWE.notification.error(null, "The given file could not be uploaded since it has the wrong format.");
+		return;
+	}
+
+	const reader = new FileReader();
+
+	reader.addEventListener("load", function () {
+		sendData = reader.result;
+
+		const url = "../../../UploadProtocol";
+		new Ajax.Request(url, {
+			method: 'post',
+			postBody: 'xmlData=' + sendData,
+			onSuccess: function () {
+				window.location.reload();
+			},
+			onFailure: function(data) {
+				KNOWWE.notification.error(data.responseText);
+			}
+		});
+	});
+	reader.readAsText(file);
+};
+
+Interview.initDataDrop = function () {
+	let dropzone = document.getElementById('dropzone');
+	let interview = document.getElementById('interview');
+	let solutions = document.getElementById('solutions');
+	let dropIndicator = document.getElementById('dropIndicator');
+	Interview.addDropListeners([dropzone, interview, solutions, dropIndicator]);
+
+};
+
+Interview.addDropListeners = function (elements) {
+	for (let i in elements) {
+		if (!Number.isInteger(parseInt(i))) continue;
+		const el = elements[i];
+		el.addEventListener('dragover', Interview.handleDragOver, false);
+		el.addEventListener('drop', Interview.handleDrop, false);
+	}
+}
+
+Interview.handleDragOver = function (event) {
+	event.stopPropagation();
+	event.preventDefault();
+	let dropzone = document.getElementById('dropIndicator');
+	dropzone.addEventListener('dragleave', Interview.handleDragLeave, false);
+	dropzone.style.display = "block";
+	event.dataTransfer.dropEffect = 'copy';
+}
+
+Interview.handleDragLeave = function () {
+	let dropzone = document.getElementById('dropIndicator');
+	dropzone.style.display = "none";
+}
+
+Interview.handleDrop = function (event) {
+	Interview.handleDragLeave();
+	event.stopPropagation();
+	event.preventDefault();
+	const data = event.dataTransfer.files;
+	if (data.length !== 1) {
+		KNOWWE.notification.error(null, "Please drop only one file at a time.");
+		return;
+	}
+	Interview.uploadProtocol(data);
+}
 
 /**
  * Decides if a question should be answered or a given answer should be retracted.
  */
-Interview.dispatch = function(id, value) {
+Interview.dispatch = function (id, value) {
 
 	var cNode = $("choice_" + id + "_" + value);
 	if (cNode) {
@@ -30,7 +101,7 @@ Interview.dispatch = function(id, value) {
 	}
 };
 
-Interview.retract = function(id, value) {
+Interview.retract = function (id, value) {
 	var qNode = $$("'div[id=" + "\"question_" + id + "\"]'").last();
 	var cNode = $$("'div[id=" + "\"choice_" + id + "_" + value + "\"]'").last();
 
@@ -46,24 +117,24 @@ Interview.retract = function(id, value) {
 	var url = "../../../RetractAnswer/" + (new Date().getTime()) + "?" + encodeURIComponent(unescape(id)) + "=" + encodeURIComponent(unescape(value));
 	CCAjaxIndicator.show();
 	new Ajax.Request(url, {
-		method : 'get',
-		onSuccess : function(transport) {
+		method: 'get',
+		onSuccess: function (transport) {
 			//Interview.displayNextQuestion();
 			CCAjaxIndicator.hide();
 			Interview.loadNotifications();
 		},
-		onFailure : function() {
+		onFailure: function () {
 			CCAjaxIndicator.hide();
 			CCMessage.warn('AJAX Verbindungs-Fehler', "");
 		},
-		onException : function(transport, exception) {
+		onException: function (transport, exception) {
 			CCAjaxIndicator.hide();
 			CCMessage.warn('AJAX interner Fehler', exception);
 		}
 	});
 };
 
-Interview.answer = function(id, value) {
+Interview.answer = function (id, value) {
 	var qNode = $$("'div[id=" + "\"question_" + id + "\"]'").last();
 	var cNode = $$("'div[id=" + "\"choice_" + id + "_" + value + "\"]'").last();
 
@@ -86,24 +157,24 @@ Interview.answer = function(id, value) {
 	var url = "../../../SetAnswer/" + (new Date().getTime()) + "?" + encodeURIComponent(unescape(id)) + "=" + encodeURIComponent(unescape(value));
 	CCAjaxIndicator.show();
 	new Ajax.Request(url, {
-		method : 'get',
-		onSuccess : function(transport) {
+		method: 'get',
+		onSuccess: function (transport) {
 			Interview.displayNextQuestion();
 			CCAjaxIndicator.hide();
 			Interview.loadNotifications();
 		},
-		onFailure : function() {
+		onFailure: function () {
 			CCAjaxIndicator.hide();
 			CCMessage.warn('AJAX Verbindungs-Fehler', "");
 		},
-		onException : function(transport, exception) {
+		onException: function (transport, exception) {
 			CCAjaxIndicator.hide();
 			CCMessage.warn('AJAX interner Fehler', exception);
 		}
 	});
 };
 
-Interview.loadNotifications = function() {
+Interview.loadNotifications = function () {
 	if (KNOWWE && KNOWWE.notification) {
 		KNOWWE.notification.loadNotifications();
 	}
@@ -122,15 +193,15 @@ Interview.loadNotifications = function() {
 //	}
 
 
-Interview.displayNextQuestion = function(refreshAll) {
+Interview.displayNextQuestion = function (refreshAll) {
 	var url = "../../../GetInterview/" + (new Date().getTime());
 	new Ajax.Request(url, {
-		method : 'get',
-		parameters : {
-			lang : Translate.getCurrentLanguage(),
-			history : refreshAll ? "true" : "false"
+		method: 'get',
+		parameters: {
+			lang: Translate.getCurrentLanguage(),
+			history: refreshAll ? "true" : "false"
 		},
-		onSuccess : function(transport) {
+		onSuccess: function (transport) {
 			var xml = transport.responseXML;
 			// render questions of response
 			var his = xml.getElementsByTagName("history");
@@ -201,16 +272,16 @@ Interview.displayNextQuestion = function(refreshAll) {
 				}
 			}
 		},
-		onFailure : function() {
+		onFailure: function () {
 			CCMessage.warn('AJAX Verbindungs-Fehler', "");
 		},
-		onException : function(transport, exception) {
+		onException: function (transport, exception) {
 			CCMessage.warn('AJAX interner Fehler', exception);
 		}
 	});
 };
 
-Interview._isImageLink = function(link) {
+Interview._isImageLink = function (link) {
 	if (!link) return false;
 	link = link.toLowerCase().trim();
 	var result =
@@ -225,11 +296,11 @@ Interview._isImageLink = function(link) {
 	return result;
 };
 
-Interview._isMultiImageLink = function(link) {
+Interview._isMultiImageLink = function (link) {
 	return Interview._getImageLinks(link).length > 0
 };
 
-Interview._getImageLinks = function(link) {
+Interview._getImageLinks = function (link) {
 	var result = [];
 	var links = link ? link.split(";") : [];
 	for (var i = 0; i < links.length; i++) {
@@ -241,7 +312,7 @@ Interview._getImageLinks = function(link) {
 	return result;
 };
 
-Interview._makeUrlLink = function(linkOrPath) {
+Interview._makeUrlLink = function (linkOrPath) {
 	if (!linkOrPath) return null;
 	var hasParam = linkOrPath.indexOf('?') > 0;
 	linkOrPath += (hasParam ? "&" : "?") + "lang=" + Translate.getCurrentLanguage();
@@ -249,7 +320,7 @@ Interview._makeUrlLink = function(linkOrPath) {
 	return "../../../Multimedia/" + linkOrPath;
 };
 
-Interview.renderSolution = function(infoObject) {
+Interview.renderSolution = function (infoObject) {
 	var html = "<div class=solution>\n";
 
 	// heading: solution name
@@ -305,7 +376,7 @@ Interview.renderSolution = function(infoObject) {
 	return LookAndFeel.renderBox(html);
 };
 
-Interview.renderQuestion = function(infoObject) {
+Interview.renderQuestion = function (infoObject) {
 	var className = "question";
 	if (infoObject.getValues() && infoObject.getValues().length > 0) {
 		className += " answered";
@@ -452,22 +523,22 @@ Interview.renderQuestion = function(infoObject) {
 	return LookAndFeel.renderBox(html, "question-section question-type-" + infoObject.getType());
 };
 
-Interview._renderDescription = function(text) {
+Interview._renderDescription = function (text) {
 	return text.replace(/<\?\#([^>]+)>/gi,
 		"<a href='javascript:Interview._openViewer(&quot;$1&quot;);'>" +
 		"<span style='position:relative'><img style='position:absolute;top:-2px;' src='../image/help16.gif'></span>" +
 		"</a>");
 };
 
-Interview._openViewer = function(file) {
+Interview._openViewer = function (file) {
 	var url = "../../../ExternalViewer/" + file + "?" + (new Date().getTime());
 	new Ajax.Request(url, {
-		method : 'get',
-		parameters : {}
+		method: 'get',
+		parameters: {}
 	});
 };
 
-Interview._typedAnswerAction = function(id, field, event) {
+Interview._typedAnswerAction = function (id, field, event) {
 	if (!event) event = window.event;
 	var code = (event.which) ? event.which : event.keyCode;
 	var valid = Interview._checkValidInput(id, field);
@@ -478,7 +549,7 @@ Interview._typedAnswerAction = function(id, field, event) {
 	}
 };
 
-Interview._typedAnswerChanged = function(id, field) {
+Interview._typedAnswerChanged = function (id, field) {
 	if (!Interview._checkValidInput(id, field)) return;
 	var value = field.value;
 	Interview.answer(id, value, field);

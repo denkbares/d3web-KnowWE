@@ -741,6 +741,9 @@ KNOWWE.plugin.quicki = function () {
 					response: {
 						fn: function () {
 							window.location.reload();
+						},
+						onError: function (data) {
+							KNOWWE.notification.error(data.responseText);
 						}
 					}
 				}

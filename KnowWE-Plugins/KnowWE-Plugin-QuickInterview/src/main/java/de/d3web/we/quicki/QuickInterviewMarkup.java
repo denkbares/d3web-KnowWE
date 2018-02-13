@@ -142,8 +142,8 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 		}
 
 		private void appendDropIndicator(RenderResult string, String sectionId) {
-			string.appendHtml("<div style=\"display:none; z-index:1; border:5px dotted #162746; background:#eee; width:100%; height:98%; position:absolute; left:0; right:0;\" id=\"drop-indicator-" + sectionId + "\">");
-			string.appendHtml("<div style=\"position:absolute; left:45%; top: 40%; color: #162746; font-weight: bold\">Drop case here</div>");
+			string.appendHtml("<div style=\"display:none; z-index:1; border:5px dotted #162746; background:#eee; box-sizing: border-box; width:100%; height:100%; position:absolute; left:0; right:0;\" id=\"drop-indicator-" + sectionId + "\">");
+			string.appendHtml("<div style=\"position:relative; text-align:center; top: 40%; color: #162746; font-weight: bold\">Drop protocol here to load</div>");
 			string.appendHtml("</div>");
 		}
 

@@ -110,6 +110,7 @@ Translate.entries["de"] = {
 	use_button_new: "Neu",
 	use_button_sync: "Sync",
 	use_button_save: "Speichern",
+	use_button_load: "Laden",
 	use_question_unknown: "unbekannt",
 	
 	result_title: "L&ouml;sungen",
@@ -161,6 +162,7 @@ Translate.entries["en"] = {
 	use_button_new: "New",
 	use_button_sync: "Sync",
 	use_button_save: "Save",
+	use_button_load: "Load",
 	use_question_unknown: "unknown",
 	
 	result_title: "Solutions",

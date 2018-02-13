@@ -20,43 +20,33 @@
 	<link rel="stylesheet" type="text/css" href="../css/interview.css">
 </head>
 
-<body onload="Translate.fillLanguageSelector(); Interview.displayNextQuestion(true); Sync.startCheckUpdateTask(); KNOWWE.notification.loadNotifications();">
+<body style="width: 100vw; min-height: 100vh" id="dropzone" onload="Translate.fillLanguageSelector(); Interview.displayNextQuestion(true); Sync.startCheckUpdateTask(); KNOWWE.notification.loadNotifications();">
 
-<div id=content>
+<div id="content">
 	<script type="text/javascript">
 		document.writeln(LookAndFeel.renderSeparator(
 			Translate.get("use_title"),
-			"<span id='alternativeButton' style='display:none'>"+
+			"<span id='alternativeButton' style='display:none'>" +
 			LookAndFeel.renderButton("../image/new.gif", "Select Alternative", "SelectTarget.openSelection();") +
-			"</span>"+
+			"</span>" +
 			LookAndFeel.renderButton("../image/new.gif", Translate.get("use_button_new"), "Interview.startCase();") +
-			LookAndFeel.renderButton("../image/save.gif", Translate.get("use_button_save"), "Interview.downloadProtocol();")+
-			"<span id=syncParent style='position: relative;' onmouseover='Element.show(\"syncInfo\");' onmouseout='Element.hide(\"syncInfo\");'>" +
-				"<div style='position: absolute; right: 0px; bottom: 0px; width: 0px; height: 0px;'>" +
-					"<div style='position: absolute; white-space: nowrap; right: 0px; top: 0px; display:none;' id=syncInfo>" +
-					"</div>" +
-				"</div>" +
-				LookAndFeel.renderButton("../image/sync.gif", Translate.get("use_button_sync"), null) +
-			"</span><select id='language-selector' onchange='Translate.changeLanguage();' style='display: none'></select>"
+			LookAndFeel.renderButton("../image/upload.gif", Translate.get("use_button_load"), 'document.getElementById("file-input").click();') +
+			LookAndFeel.renderButton("../image/save.gif", Translate.get("use_button_save"), "Interview.downloadProtocol();") +
+			"<input id='file-input' type='file' name='name' style='display: none;' onchange='Interview.uploadProtocol(this.files)' />" +
+			"<select id='language-selector' onchange='Translate.changeLanguage();' style='display: none'></select>"
 		));
-		Sync.addInfoListener(function () {
-			var button = $("syncParent").select("button")[0];
-			if (Sync.isUpdateAvailable()) {
-				button.disabled = false;
-				button.onclick = function() {window.location.replace("../../../Resource/ui.zip/html/sync.html?lang="+Translate.getCurrentLanguage()); };
-				$("syncInfo").innerHTML = "<div class=tooltip><b>"+Translate.get("sync_overview_subtitle_update")+":</b><br>"+Sync.getUpdateDescription()+"</div>";
-			}
-			else {
-				button.disabled = true;
-				button.onclick = null;
-				$("syncInfo").innerHTML = "<div class=tooltip>"+Translate.get("sync_overview_no_update")+"</div>";
-			}
-		});
 	</script>
-
 	<div id="interview" style="position: relative"></div>
 	<div id="solutions" style="position: relative"></div>
+	<div id="dropIndicator" style="box-sizing: border-box; position: fixed; border: 5px dashed gray; width: 100vw; height: 100vh; top: 0; left: 0; background-color: rgba(255, 255, 255, 0.6); box-shadow: 2px 2px 30px gray;display: none">
+		<div style="position: relative; top: 45%; text-align: center; font-size: xx-large; color: grey">
+			Drop protocol here to load
+		</div>
+	</div>
 </div>
 
+<script type="text/javascript">
+	Interview.initDataDrop();
+</script>
 </body>
 </html>

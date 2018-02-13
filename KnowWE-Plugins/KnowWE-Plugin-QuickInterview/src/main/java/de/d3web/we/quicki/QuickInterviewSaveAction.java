@@ -69,7 +69,7 @@ public class QuickInterviewSaveAction extends AbstractAction {
 			Session session = SessionProvider.getSession(context, kb);
 			boolean download = Boolean.parseBoolean(context.getParameter("download"));
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-			String filename = sdf.format(new Date()) + "-QuickInterview.xml";
+			String filename = sdf.format(new Date()) + "-" + kb.getName() + ".xml";
 
 			// store new Attachment with Session information
 			if (download) {

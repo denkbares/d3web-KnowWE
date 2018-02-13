@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
@@ -71,7 +73,15 @@ public class QuickInterviewLoadAction extends AbstractAction {
 		if (kb == null) return;
 
 		// deletes current Session and creates a new one, gets Blackboard
-		Session session = SessionConversionFactory.replayToSession(kb, sessionRecords.iterator().next());
+		Session session;
+		try {
+			session = SessionConversionFactory.replayToSession(kb, sessionRecords.iterator().next());
+		} catch (NullPointerException e) {
+			context.getResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			context.getResponse().getWriter().write("Facts could not be set. The file seems to not match with this interview.");
+			context.getResponse().flushBuffer();
+			return;
+		}
 		if (session == null) return;
 		SessionProvider.setSession(context, session);
 
