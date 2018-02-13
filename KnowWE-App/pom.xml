@@ -591,11 +591,11 @@
 					<artifactId>denkbares-SemanticCore-Plugin-GraphDB-ClosedSource</artifactId>
 					<version>${denkbares.version}</version>
 				</dependency>
-				<!--<dependency>-->
-					<!--<groupId>com.denkbares</groupId>-->
-					<!--<artifactId>KnowWE-Plugin-ServiceMate</artifactId>-->
-					<!--<version>${denkbares.version}</version>-->
-				<!--</dependency>-->
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-ServiceMate</artifactId>
+					<version>${denkbares.version}</version>
+				</dependency>
 				<!--dependency>
 					<groupId>jspwiki.plugin</groupId>
 					<artifactId>ImageMapPlus</artifactId>
