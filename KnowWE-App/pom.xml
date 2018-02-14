@@ -592,9 +592,9 @@
 					<version>${denkbares.version}</version>
 				</dependency>
 				<dependency>
-					<groupId>com.denkbares</groupId>
+					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-ServiceMate</artifactId>
-					<version>${denkbares.version}</version>
+					<version>${knowwe.version}</version>
 				</dependency>
 				<!--dependency>
 					<groupId>jspwiki.plugin</groupId>
