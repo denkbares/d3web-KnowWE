@@ -505,14 +505,15 @@ public class SparqlResultRenderer {
 			return (o1, o2) -> {
 				Value concept1 = o1.getValue(result.getVariables().get(0));
 				Value concept2 = o2.getValue(result.getVariables().get(0));
-				if (result.getVariables().size() >= 3) {
-					Value tmp1 = o1.getValue(result.getVariables().get(2));
-					Value tmp2 = o2.getValue(result.getVariables().get(2));
-					if (tmp1 != null && tmp2 != null) {
-						concept1 = o1.getValue(result.getVariables().get(2));
-						concept2 = o2.getValue(result.getVariables().get(2));
-					}
-				}
+				// ToDo: Find Secure Way to sort by Label. The following Code is not Transitive!
+//				if (result.getVariables().size() >= 3) {
+//					Value tmp1 = o1.getValue(result.getVariables().get(2));
+//					Value tmp2 = o2.getValue(result.getVariables().get(2));
+//					if (tmp1 != null && tmp2 != null) {
+//						concept1 = tmp1;
+//						concept2 = tmp2;
+//					}
+//				}
 
 				return concept1.toString().compareTo(concept2.toString());
 			};
