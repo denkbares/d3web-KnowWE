@@ -26,6 +26,7 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -103,6 +104,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+
+import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class Rdf2GoCore {
 
@@ -1279,7 +1282,8 @@ public class Rdf2GoCore {
 	 * Observes the SPARQL task end cancels/stops it, if it takes to long. We normally use the
 	 * build-in sesame timeout to terminate queries that are too slow. In some cases though, these
 	 * timeouts do not work as desired (probably not well implemented by underlying repos) so we use
-	 * this kill switch to make sure the query is terminated after 150% of the intended timeout.
+	 * this kill switch to make sure the query is terminated after 150% of the intended timeout or at
+	 * most one minute later.
 	 */
 	private static class SparqlTaskReaper implements Runnable {
 
@@ -1292,15 +1296,17 @@ public class Rdf2GoCore {
 		@SuppressWarnings("ConstantConditions")
 		@Override
 		public void run() {
+			long timeOut = task.getTimeOutMillis();
 			try {
-				task.get((long) (task.getTimeOutMillis() * 1.5), TimeUnit.MILLISECONDS);
+				long killTimeOut = Math.min((long) (timeOut * 1.5), timeOut + Duration.of(1, MINUTES).toMillis());
+				task.get(killTimeOut, TimeUnit.MILLISECONDS);
 			}
 			catch (TimeoutException e) {
 
 				// we cancel the task
 				task.cancel(true);
 
-				sleep(task.getTimeOutMillis());
+				sleep(timeOut);
 
 				// if it has not died after the sleep, we kill it
 				// (not all repositories will react to cancel)
