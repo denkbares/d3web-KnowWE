@@ -618,6 +618,11 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-OntologyDebugger</artifactId>
+				<version>${knowwe.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Resources</artifactId>
 				<version>${knowwe.version}</version>
