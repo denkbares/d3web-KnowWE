@@ -18,44 +18,35 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>${knowwe.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Kernel</artifactId>
-			<version>${d3web.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Persistence</artifactId>
-			<version>${d3web.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-XCL</artifactId>
-			<version>${d3web.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>${knowwe.version}</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-SessionPersistence-Basic</artifactId>
-			<version>${d3web.version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -23,37 +23,30 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-TestingFramework</artifactId>
-			<version>${d3web.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.denkbares</groupId>
 			<artifactId>denkbares-SemanticCore</artifactId>
-			<version>${denkbares.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
-			<version>1.4</version>
 		</dependency>
 	</dependencies>
 </project>

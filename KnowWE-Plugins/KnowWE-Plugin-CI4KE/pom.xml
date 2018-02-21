@@ -30,55 +30,44 @@
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
-			<version>2.0.5</version>
 		</dependency>
 		<dependency>
 			<groupId>jrcs-diff</groupId>
 			<artifactId>jrcs-diff</artifactId>
-			<version>0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>${knowwe.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-TestingFramework</artifactId>
-			<version>${d3web.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.denkbares</groupId>
 			<artifactId>denkbares-Utils</artifactId>
-			<version>${denkbares.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-KDOMParseUtils</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-GlobalTestUtils</artifactId>
-			<version>${knowwe.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 	</dependencies>
 

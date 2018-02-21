@@ -13,7 +13,6 @@
 
 	<properties>
 		<skipTests>true</skipTests>
-		<selenium.version>3.3.1</selenium.version>
 	</properties>
 
 	<build>
@@ -43,37 +42,26 @@
 		<dependency>
 			<groupId>com.denkbares</groupId>
 			<artifactId>denkbares-Utils</artifactId>
-			<version>${d3web.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.denkbares</groupId>
 			<artifactId>denkbares-TestUtils</artifactId>
-			<version>${d3web.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-support</artifactId>
-			<version>${selenium.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-remote-driver</artifactId>
-			<version>${selenium.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
-			<version>${selenium.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-firefox-driver</artifactId>
-			<version>${selenium.version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -15,8 +15,6 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>${knowwe.version}</version>
-			<type>jar</type>
 		</dependency>
 	</dependencies>
 </project>

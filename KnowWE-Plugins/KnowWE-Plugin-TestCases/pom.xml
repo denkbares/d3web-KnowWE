@@ -28,27 +28,22 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-basic</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-TestCase</artifactId>
-			<version>${d3web.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-InstantEdit</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Table</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 	</dependencies>
 </project>

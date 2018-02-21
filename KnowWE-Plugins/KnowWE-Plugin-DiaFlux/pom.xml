@@ -29,60 +29,46 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
-			<version>${knowwe.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>catalina</artifactId>
-			<version>6.0.20</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>jrcs-diff</groupId>
 			<artifactId>jrcs-diff</artifactId>
-			<version>0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-DiaFlux</artifactId>
-			<version>${d3web.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
-			<version>${knowwe.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Include</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-GlobalTestUtils</artifactId>
-			<version>${knowwe.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
-			<version>1.3</version>
-			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-ext</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 	</dependencies>
 </project>

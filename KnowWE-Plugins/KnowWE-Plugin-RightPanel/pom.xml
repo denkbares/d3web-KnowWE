@@ -15,7 +15,6 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-Core</artifactId>
-			<version>${knowwe.version}</version>
 		</dependency>
 	</dependencies>
 </project>

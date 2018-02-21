@@ -19,19 +19,16 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-TestCase</artifactId>
 			<version>${knowwe.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-TestingFramework</artifactId>
 			<version>${d3web.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-Tests</artifactId>
 			<version>${d3web.version}</version>
-			<type>jar</type>
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
