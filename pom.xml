@@ -324,7 +324,7 @@
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>d3web-Plugin-AVL</artifactId>
-				<version>${d3web.version}</version>
+				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
@@ -459,7 +459,7 @@
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-SemanticServiceCore</artifactId>
-				<version>${knowwe.version}</version>
+				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
