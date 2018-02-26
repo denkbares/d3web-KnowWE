@@ -600,6 +600,17 @@
 		</profile>
 
 		<profile>
+			<id>ktm-knowwe</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares.ssp</groupId>
+					<artifactId>SemanticServiceCore-Plugin-KTM</artifactId>
+					<version>3.0-SNAPSHOT</version>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>claas</id>
 			<dependencies>
 				<dependency>
