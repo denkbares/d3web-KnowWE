@@ -97,7 +97,6 @@ class TermLog {
 			else if (multiDefinitionMode == MultiDefinitionMode.error) {
 				messages.add(Messages.error(getMultiDefinitionText(term)));
 			}
-
 		}
 		for (TermLogEntry termDefinition : termDefinitions) {
 			Messages.storeMessages(compiler, termDefinition.getSection(), this.getClass(), messages);
@@ -126,9 +125,11 @@ class TermLog {
 
 		Collection<Message> msgs = new ArrayList<>(2);
 		for (TermLogEntry termDefinition : termDefinitions) {
-			if (!termDefinition.getTermIdentifier()
-					.toExternalForm()
-					.equals(Identifier.matchCompatibilityForm(termIdentifier).toExternalForm())) {
+			String definitionIdentifier = Identifier.matchCompatibilityForm(termDefinition.getTermIdentifier())
+					.toExternalForm();
+			String termIdentifierExternalForm = Identifier.matchCompatibilityForm(termIdentifier).toExternalForm();
+			if (!definitionIdentifier.equals(termIdentifierExternalForm)
+					&& definitionIdentifier.toLowerCase().equals(termIdentifierExternalForm.toLowerCase())) {
 				msgs.add(Messages.ambiguousTermCaseWarning(getTermIdentifiers()));
 				break;
 			}
@@ -198,5 +199,4 @@ class TermLog {
 	public boolean isEmpty() {
 		return termDefinitions.isEmpty() && termReferences.isEmpty();
 	}
-
 }
