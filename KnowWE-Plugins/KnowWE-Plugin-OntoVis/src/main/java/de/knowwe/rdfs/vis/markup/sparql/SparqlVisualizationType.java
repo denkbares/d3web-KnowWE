@@ -18,6 +18,7 @@
  */
 package de.knowwe.rdfs.vis.markup.sparql;
 
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -47,6 +48,8 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 		DefaultMarkup markup = new DefaultMarkup(getMarkupName());
 		SparqlVisContentType sparqlContentType = new SparqlVisContentType();
 		markup.addContentType(sparqlContentType);
+
+		PackageManager.addPackageAnnotation(markup);
 
 		markup.addAnnotation(Config.SIZE, false);
 		markup.addAnnotationRenderer(Config.SIZE, NothingRenderer.getInstance());
