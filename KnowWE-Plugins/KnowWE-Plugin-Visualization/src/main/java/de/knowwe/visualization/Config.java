@@ -99,6 +99,7 @@ public class Config {
 	private String colors = null;
 	private Map<String, String> relationColors = new HashMap<>();
 	private Map<String, String> classColors = new HashMap<>();
+	private Map<String, String> individualColors = new HashMap<>();
 	private int successors = 1;
 	private int predecessors = 1;
 	private Collection<String> concepts = new HashSet<>();
@@ -447,6 +448,16 @@ public class Config {
 		// TODO: refactor this to be a map of color assignments
 		if (relationColors == null) return;
 		this.relationColors = relationColors;
+	}
+
+	public Map<String, String> getIndividualColors() {
+		return individualColors;
+	}
+
+	public void setIndividualColors(Map<String, String> individualColors) {
+		// TODO: refactor this to be a map of color assignments
+		if (individualColors == null) return;
+		this.individualColors = individualColors;
 	}
 
 	public Map<String, String> getClassColors() {

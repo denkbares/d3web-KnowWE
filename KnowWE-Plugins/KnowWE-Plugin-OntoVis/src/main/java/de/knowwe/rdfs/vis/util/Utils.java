@@ -285,9 +285,17 @@ public class Utils {
 
 	private static RenderingStyle setClassColorCoding(Value node, RenderingStyle style, Config config, Rdf2GoCore
 			rdfRepository) {
+		Map<String, String> individualColorsScheme = config.getIndividualColors();
+		String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.stringValue());
+		if(node instanceof URI) {
+			if(individualColorsScheme.containsKey(shortURI)) {
+				style.setFillcolor(individualColorsScheme.get(shortURI));
+			}
+		}
+
 		Map<String, String> classColorScheme = config.getClassColors();
 		if (classColorScheme != null && !classColorScheme.isEmpty()) {
-			String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.stringValue());
+
 			if (Rdf2GoUtils.isClass(rdfRepository, (URI) node)) {
 				String color = classColorScheme.get(shortURI);
 				if (color != null) {
@@ -295,14 +303,6 @@ public class Utils {
 				}
 			}
 			else {
-//				Collection<URI> classURIs = Rdf2GoUtils.getClasses(rdfRepository, (URI) value);
-//				for (URI classURI : classURIs) {
-//					String shortURIClass = Rdf2GoUtils.reduceNamespace(rdfRepository, classURI.stringValue());
-//					String color = findColor(shortURIClass, classColorScheme);
-//					if (color != null) {
-//						style.setFillcolor(color);
-//						break;
-//					}
 				// We fetch the class hierarchy of this concept
 				PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, (URI) node);
 				// we then remove from this hierarchy all classes that do not have a color assignment

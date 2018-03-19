@@ -147,6 +147,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		if (!Strings.isBlank(config.getColors())) {
 			config.setRelationColors(Utils.createColorCodings(section, config.getColors(), core, "rdf:Property"));
 			config.setClassColors(Utils.createColorCodings(section, config.getColors(), core, "rdfs:Class"));
+			config.setIndividualColors(Utils.createColorCodings(section, config.getColors(), core, "owl:Thing"));
 		}
 
 		LinkToTermDefinitionProvider uriProvider = new PackageCompileLinkToTermDefinitionProvider();
