@@ -60,7 +60,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 	}
 
 	public static String createCompositeEditModeAction(Section<? extends Term> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		Identifier termIdentifier = Identifier.matchCompatibilityForm(section.get().getTermIdentifier(section));
 		return createCompositeEditModeAction(termIdentifier);
 	}
 
