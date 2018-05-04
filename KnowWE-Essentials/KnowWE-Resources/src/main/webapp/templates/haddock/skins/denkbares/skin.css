@@ -43,20 +43,6 @@
 b.roundedCorners {
 }
 
-/* +++ 200 Generic stuff here +++ */
-/* refined global reset */
-/* inspired by http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/ and yui reset */
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	outline: none;
-	/* vertical-align:baseline; seems to give printing errors in FF */
-}
-
 /* remember to define focus styles! */
 :focus {
 	outline: 0;
@@ -74,10 +60,6 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 	empty-cells: show;
-}
-
-h1, h2, h3, h4, p, blockquote, label, ul, ol, dl, hr, .hr, .quote {
-	margin: 0.5em 0;
 }
 
 th, td {
@@ -123,39 +105,6 @@ div.pagename a:hover {
 	text-decoration: none;
 }
 
-#pagecontent h1, h2, h3, h4 {
-	margin: 1em 0 0.5em 0;
-	/*padding: 0.25em 0;*/
-	line-height: 1.2;
-}
-
-h2 {
-	font-size: 150%;
-}
-
-h2 .editsection, h2 .hashlink {
-	font-size: 67%;
-	padding-left: 1em;
-}
-
-h3 {
-	font-size: 132%;
-}
-
-h3 .editsection, h3 .hashlink {
-	font-size: 76%;
-	padding-left: 1em;
-}
-
-h4 {
-	font-size: 116%;
-}
-
-h4 .editsection, h4 .hashlink {
-	font-size: 86%;
-	padding-left: 1em;
-}
-
 a.editsection, a.hashlink {
 	font-weight: normal;
 	line-height: 1.2;
@@ -182,10 +131,6 @@ br {
 /* +++ 220 Lists and bullets +++ */
 ul ul, ol ol {
 	margin: 0;
-}
-
-.leftmenu ul, ol {
-	padding-left: 2em;
 }
 
 ul, ol {
@@ -797,10 +742,6 @@ a.tool:hover {
 #searchbarhelp {
 }
 
-#findSuggestionMenu {
-	top: 143px;
-}
-
 /* ie6 hack */
 * html #findSuggestionMenu {
 }
@@ -1149,8 +1090,18 @@ th.changenote, td.changenote {
 }
 
 #morebutton a:hover, a.action:hover, #sectiontoc a:hover
-.userbox a.action:hover, a.action.quick2bottom:hover, a.action.quick2top:hover {
+.userbox a.action:hover, a.action.quick2bottom:hover, a.action.quick2top:hover,
+.nav-pills a:hover {
 	background-color: #eee !important;
+}
+
+.navigation ul {
+	margin: 0;
+}
+
+.header > .navigation .nav > li > a > .badge {
+	background: rgba(255, 255, 255, 0.4);
+	color: #fff;
 }
 
 a.action.view,
@@ -1331,9 +1282,9 @@ body.view {
 .index {
 }
 
-.index .header {
+.index .header, .index .header:hover, .index .header:focus, .index .header.focus {
 	padding: 4px;
-	background: #f9f9f9;
+	background: #162746;
 	border: 1px solid #ddd;
 	text-align: center;
 	font-size: 1.4em;
@@ -2319,14 +2270,13 @@ a.action.quick2top:before {
 
 .stickyOn {
 	z-index: 2000;
-	width: 100% !important;
 }
 
 .backdrop, .slmbx .slmodal {
 	background: #000000;
 }
 
-.slmbx .viewport, .slmodal {
+.slmbx.active {
 	z-index: 1000;
 }
 
@@ -2385,7 +2335,7 @@ li.findpages .btn {
 	font-size: 85%;
 	overflow-x: hidden;
 	overflow-y: auto;
-	min-width: 235px;
+	min-width: 170px;
 }
 
 /* ie6 hack */
@@ -2428,6 +2378,14 @@ li.findpages .btn {
 
 #rightPanel {
 	border: none;
+	position: fixed;
+	transition: top .1s ease-in-out;
+}
+
+@media only screen and (min-width: 600px) {
+	#rightPanel.yoyo {
+		top: 0 !important;
+	}
 }
 
 #rightPanel .topbar {
@@ -2448,30 +2406,35 @@ li.findpages .btn {
 	display: none;
 }
 
-.sidebar {
-	width: 275px;
-	position: absolute;
-	float: none;
-	top: 0;
-	background: #e5e8ed;
-	min-height: 100vh;
-	transition: left .5s;
-	margin-left: 0;
-	z-index: 600;
+.content .sidebar {
+	/*width: 275px;*/
+	/*position: fixed;*/
+	/*float: none;*/
+	/*background: #e5e8ed;*/
+	/*transition: left .5s, top .1s ease-in-out;*/
+	/*margin-left: 0;*/
+	z-index: 501;
 }
 
+/*@media only screen and (max-width: 768px) {
+	.content.active .sidebar, .content.active:after {
+		margin-left: 0;
+	}
+}
+*/
 .content:after {
-	content: none;
+	/*width: 275px;*/
+	z-index: 500;
 }
 
 .content.active .page {
-	margin-left: 275px;
-	width: auto;
+	/*margin-left: 275px;
+	width: auto;*/
 }
 
 .page {
-	float: none;
-	transition: margin-left .5s;
+	/*float: none;
+	transition: margin-left .5s;*/
 }
 
 .edit .page {
@@ -2480,4 +2443,43 @@ li.findpages .btn {
 
 .resizer {
 	display: none;
+}
+
+.fixed-header > .header {
+	z-index: 1001;
+}
+
+@media only screen and (max-width: 768px) {
+	a.logo {
+		text-indent: initial;
+		margin-top: initial;
+		font-size: 2rem;
+		padding: 2px;
+	}
+}
+
+.topline {
+	min-height: 50px;
+}
+
+#rightPanel-toggle-button:before {
+	line-height: 1.428571429;
+}
+
+@media only screen and (min-width: 768px) {
+	.pagename {
+		font-size: 2.5em;
+	}
+}
+
+.edit-mode .fixed-header>.header {
+	position: absolute;
+}
+
+.dropdown-menu .form-control {
+	width: 100%;
+}
+
+.accordion, .tabbedAccordion {
+	border: none;
 }

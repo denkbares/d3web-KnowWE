@@ -97,7 +97,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 				var favToScroll = favHeight - wHeight;
 				var actionsBottom = $("actionsBottom");
 				var disableFixing = (actionsBottom == null
-				|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
+					|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
 				if (scrollY <= originY || disableFixing) {
 					// when reaching top of page or if page height is made by leftMenu
 					// align fav originally to page
@@ -118,7 +118,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 				if (!isOnBottom) {
 					// HaddockTemplate on the right
 					var sidebar = jq$('#rightPanel');
-					var sidebarTop = 0
+					/*var sidebarTop = 0
 					if (sidebar) {
 						sidebarTop = sidebar.offset().top;
 						var sidebarHeight = sidebar.outerHeight();
@@ -129,7 +129,6 @@ KNOWWE.core.plugin.rightPanel = function () {
 						footerTop = footer.offset().top;
 					}
 					var limit = footerTop - sidebarHeight;
-					var stickyMenuHeight = jq$('.sticky').outerHeight();
 					var windowTop = jq$(window).scrollTop();
 
 					// when header is visible, place sidebar beneath it
@@ -152,7 +151,11 @@ KNOWWE.core.plugin.rightPanel = function () {
 							position: 'fixed',
 							top: diff + 'px'
 						})
-					}
+					}*/
+					sidebar.css({
+						position: 'fixed',
+						top: jq$('.header').outerHeight() + 'px'
+					});
 				} else {
 					//Haddock Template on the bottom
 
@@ -213,9 +216,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 		if (KNOWWE.core.util.isKnowWETemplate()) {
 			theMaxWidth = theMaxWidth
 				- (jq$(".tabmenu a:last-child").first().offset().left
-				+ jq$(".tabmenu a:last-child").first().outerWidth()
-				+ jq$(KNOWWE.core.util.getActionsTopSelector()).outerWidth()
-				+ jq$("#rightPanel .ui-resizable-w").width() + 20)
+					+ jq$(".tabmenu a:last-child").first().outerWidth()
+					+ jq$(KNOWWE.core.util.getActionsTopSelector()).outerWidth()
+					+ jq$("#rightPanel .ui-resizable-w").width() + 20)
 		} else {
 			theMaxWidth /= 2;
 		}
@@ -266,7 +269,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 			}
 		}
 
-		initScrolling = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : jq$('.sticky').offset().top;
+		initScrolling = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : jq$('.navigation').offset().top;
 
 		//make sidebar resizable
 		makeRightPanelResizable();
@@ -517,6 +520,35 @@ KNOWWE.core.plugin.rightPanel = function () {
 		bindRightPanelToggleButton();
 	}
 
+	function yoyo() {
+
+		var scrollY, lastScrollY = 0, busy;
+		function update() {
+			scrollY = window.getScroll().y;
+			// Limit scroll top to counteract iOS / OSX bounce.
+			scrollY = scrollY.limit(0, window.getScrollSize().y - window.getSize().y);
+			if (Math.abs(lastScrollY - scrollY) > 5 /* minimum difference */) {
+				if (scrollY > lastScrollY && scrollY > jq$('.header').outerHeight()) {
+					jq$('#rightPanel').addClass("yoyo");
+				} else {
+					jq$('#rightPanel').removeClass("yoyo");
+				}
+
+				lastScrollY = scrollY;
+
+			}
+			busy = false;
+		}
+		function handleEvent() {
+			if (!busy) {
+				busy = true;
+				requestAnimationFrame(update);
+			}
+		}
+		window.addEvents({scroll: handleEvent, resize: handleEvent});
+		update(); //first run: set height of the spacer
+	}
+
 	function bindRightPanelToggleButton() {
 		jq$('#rightPanel-toggle-button').unbind('click').click(function () {
 			var $this = jq$(this);
@@ -546,6 +578,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 				initRightPanel(true);
 			}
 			initRightPanelToggleButton(isShown);
+			yoyo();
 		},
 
 		addToolToRightPanel: function (title, id, pluginDiv) {

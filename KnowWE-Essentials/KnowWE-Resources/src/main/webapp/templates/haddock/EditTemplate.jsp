@@ -18,50 +18,44 @@
   --%>
 
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<fmt:setLocale value="${prefs.Language}" />
+<fmt:setLocale value="${prefs.Language}"/>
 <fmt:setBundle basename="templates.default"/>
 <!doctype html>
 <html lang="en">
 <head>
 
-  <title>
-    <wiki:CheckRequestContext context="edit">
-      <fmt:message key="edit.title.edit">
-        <fmt:param><wiki:Variable var="ApplicationName" /></fmt:param>
-        <fmt:param><wiki:PageName /></fmt:param>
-      </fmt:message>
-    </wiki:CheckRequestContext>
-    <wiki:CheckRequestContext context="comment">
-      <fmt:message key="comment.title.comment">
-        <fmt:param><wiki:Variable var="ApplicationName" /></fmt:param>
-        <fmt:param><wiki:PageName /></fmt:param>
-      </fmt:message>
-    </wiki:CheckRequestContext>
-  </title>
-  <meta name="robots" content="noindex,follow" />
-  <wiki:Include page="commonheader.jsp"/>
+	<title>
+		<wiki:CheckRequestContext context="edit">
+			<fmt:message key="edit.title.edit">
+				<fmt:param><wiki:Variable var="ApplicationName"/></fmt:param>
+				<fmt:param><wiki:PageName/></fmt:param>
+			</fmt:message>
+		</wiki:CheckRequestContext>
+		<wiki:CheckRequestContext context="comment">
+			<fmt:message key="comment.title.comment">
+				<fmt:param><wiki:Variable var="ApplicationName"/></fmt:param>
+				<fmt:param><wiki:PageName/></fmt:param>
+			</fmt:message>
+		</wiki:CheckRequestContext>
+	</title>
+	<meta name="robots" content="noindex,follow"/>
+	<wiki:Include page="commonheader.jsp"/>
 </head>
 
-<body class="context-<wiki:Variable var='requestcontext' />" >
+<body class="context-<wiki:Variable var='requestcontext' />">
 
 <div class="container${prefs.Layout=='fluid' ? '-fluid' : ''} ${prefs.Orientation}">
 
-  <wiki:Include page="Header.jsp" />
-  <wiki:Include page="Nav.jsp" />
-
-  <c:set var="sidebar"><wiki:Variable var='sidebar' /></c:set><%-- page variable setting--%>
-  <c:set var="sidebar" value="${not sidebar ? prefs.Sidebar : sidebar }" />
-
-  <div class="content ${sidebar}" data-toggle="li#menu,.sidebar>.close" data-toggle-pref="Sidebar" >
-    <div class="page">
-      <wiki:Content/>
-      <wiki:Include page="PageInfo.jsp"/>
-    </div>
-    <wiki:Include page="Sidebar.jsp"/>
-  </div>
-  <wiki:Include page="Footer.jsp" />
+	<wiki:Include page="Header.jsp"/>
+	<div class="content active" data-toggle="li#menu,.sidebar>.close">
+		<div class="page">
+			<wiki:Content/>
+			<wiki:Include page="PageInfo.jsp"/>
+		</div>
+		<wiki:Include page="Sidebar.jsp"/>
+	</div>
+	<wiki:Include page="Footer.jsp"/>
 
 </div>
 

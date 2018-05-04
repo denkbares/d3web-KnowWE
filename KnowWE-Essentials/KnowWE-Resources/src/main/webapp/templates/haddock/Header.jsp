@@ -22,50 +22,64 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import="org.apache.wiki.*" %>
-<fmt:setLocale value="${prefs.Language}" />
+<fmt:setLocale value="${prefs.Language}"/>
 <fmt:setBundle basename="templates.default"/>
 <%
-  WikiContext c = WikiContext.findContext(pageContext);
+	WikiContext c = WikiContext.findContext(pageContext);
 %>
-<c:set var="frontpage" value="<%= c.getEngine().getFrontPage() %>" />
+<c:set var="frontpage" value="<%= c.getEngine().getFrontPage() %>"/>
 
-<c:set var="titlebox"><wiki:InsertPage page="TitleBox" /></c:set>
-<c:if test="${!empty titlebox}"><div class="titlebox alert">${titlebox}</div></c:if>
+<c:set var="titlebox"><wiki:InsertPage page="TitleBox"/></c:set>
+<c:if test="${!empty titlebox}">
+	<div class="titlebox alert">${titlebox}</div>
+</c:if>
 
 <div class="header">
 
-  <div class="topline">
+	<c:set var="titlebox"><wiki:InsertPage page="TitleBox"/></c:set>
+	<c:if test="${!empty titlebox}">
+		<div class="titlebox">${titlebox}</div>
+	</c:if>
 
-    <div class="cage pull-left">
-    <a class="logo pull-left"
-        href="<wiki:Link page='${frontpage}' format='url' />"
-       title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> ">KnowWE</a>
+	<div class="topline">
 
-        <wiki:PageExists page="HomeMenu">
-        <ul class="dropdown-menu" data-hover-parent=".cage"  style="color:black;">
-          <li class="logo-menu"><wiki:InsertPage page="HomeMenu" /></li>
-        </ul>
-        </wiki:PageExists>
-    </div>
+		<div class="cage pull-left">
+			<a class="logo pull-left"
+			   href="<wiki:Link page='${frontpage}' format='url' />"
+			   title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> ">KnowWE</a>
 
-    <wiki:Include page="UserBox.jsp" />
-    <wiki:Include page="SearchBox.jsp" />
+			<wiki:PageExists page="HomeMenu">
+				<ul class="dropdown-menu" data-hover-parent=".cage">
+					<li class="logo-menu"><wiki:InsertPage page="HomeMenu"/></li>
+				</ul>
+			</wiki:PageExists>
+		</div>
 
-    <div class="pagename" title="<wiki:PageName />">
-      <wiki:CheckRequestContext context='viewGroup|createGroup|editGroup'><span class="icon-group"></span></wiki:CheckRequestContext>
-      <wiki:PageType type="attachment"><span class="icon-paper-clip"></span></wiki:PageType>
-      <wiki:Link>
-        <c:choose>
-        <c:when test="${not empty fn:substringBefore(param.page,'_blogentry_')}">${fn:replace(fn:replace(param.page,'_blogentry_',' ['),'_','#')}]</c:when>
-        <c:when test="${not empty fn:substringBefore(param.page,'_comments_')}">${fn:replace(fn:replace(param.page,'_comments_',' ['),'_','#')}]</c:when>
-        <c:otherwise><wiki:PageName/></c:otherwise>
-        </c:choose>
-      </wiki:Link>
-    </div>
+		<wiki:Include page="UserBox.jsp"/>
+		<wiki:Include page="SearchBox.jsp"/>
 
-  </div>
-  <div class="breadcrumb">
-    <fmt:message key="header.yourtrail"/><wiki:Breadcrumbs separator="<span class='divider'></span>" />
-  </div>
+		<div class="pagename" title="<wiki:PageName />">
+			<wiki:CheckRequestContext context='viewGroup|createGroup|editGroup'><span
+					class="icon-group"></span></wiki:CheckRequestContext>
+			<wiki:PageType type="attachment"><span class="icon-paper-clip"></span></wiki:PageType>
+
+			<c:choose>
+				<c:when test="${not empty fn:substringBefore(param.page,'_blogentry_')}">
+					<wiki:Link>${fn:replace(fn:replace(param.page,'_blogentry_',' ['),'_','#')}]</wiki:Link>
+				</c:when>
+				<c:when test="${not empty fn:substringBefore(param.page,'_comments_')}">
+					<wiki:Link>${fn:replace(fn:replace(param.page,'_comments_',' ['),'_','#')}]</wiki:Link>
+				</c:when>
+				<c:otherwise><a href="#top"><wiki:PageName/></a></c:otherwise>
+			</c:choose>
+
+		</div>
+
+	</div>
+	<div class="breadcrumb">
+		<fmt:message key="header.yourtrail"/><wiki:Breadcrumbs separator="<span class='divider'></span>"/>
+	</div>
+
+	<wiki:Include page="Nav.jsp"/>
 
 </div>
