@@ -47,9 +47,15 @@
 	};
 
 
-	jq$.fn.copyToClipboard = function(text) {
+	jq$.fn.copyToClipboard = function (text) {
 		var $temp = jq$("<input>");
-		jq$("body").append($temp);
+		// in case we have a model dialog, we append to that one, otherwise the select() will not work
+		var $parent = jq$(".ui-dialog");
+		if (!$parent.exists()) {
+			// otherwise we can use body
+			$parent = jq$("body");
+		}
+		$parent.append($temp);
 		if (!text) {
 			text = jq$(this).text();
 		}
