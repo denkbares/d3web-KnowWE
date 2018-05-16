@@ -201,12 +201,28 @@
 		id="CIDaemonType">
 		<parameter id="class"
 			value="de.d3web.we.ci4ke.daemon.CIDaemonType" />
-		<parameter id="name" value="CIDashboardType" />
+		<parameter id="name" value="CIDaemonType" />
 		<parameter id="description" value="Type CIDaemonType" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
-	</extension>	
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+		id="CIDaemonInlineType">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.daemon.CIDaemonInlineType" />
+		<parameter id="name" value="CIDaemonInlineType" />
+		<parameter id="description" value="Type CIDaemonInlineType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="de.knowwe.jspwiki.types.ParagraphType"/>
+		<parameter id="scope" value="de.knowwe.jspwiki.types.ParagraphTypeForLists"/>
+		<parameter id="scope" value="de.knowwe.jspwiki.types.ParagraphType"/>
+		<parameter id="scope" value="de.knowwe.jspwiki.types.HeaderType"/>
+		<parameter id="scope" value="de.knowwe.jspwiki.types.HeaderType1"/>
+		<parameter id="scope" value="de.knowwe.jspwiki.types.HeaderType2"/>
+	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="TestDocumentationMarkup">

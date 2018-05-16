@@ -39,9 +39,13 @@ public class CIDaemonType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("CIDaemon");
-		MARKUP.addAnnotation(DASHBOARD_ARTICLE, false);
-		MARKUP.setAnnotationDeprecated(DASHBOARD_ARTICLE);
-		MARKUP.addAnnotation(CIDashboardType.NAME_KEY, true);
+		configureMarkup(MARKUP);
+	}
+
+	public static void configureMarkup(DefaultMarkup markup) {
+		markup.addAnnotation(DASHBOARD_ARTICLE, false);
+		markup.setAnnotationDeprecated(DASHBOARD_ARTICLE);
+		markup.addAnnotation(CIDashboardType.NAME_KEY, true);
 	}
 
 	public CIDaemonType() {
