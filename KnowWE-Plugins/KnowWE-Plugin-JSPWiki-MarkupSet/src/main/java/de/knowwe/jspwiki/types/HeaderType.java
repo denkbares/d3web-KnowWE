@@ -23,7 +23,6 @@ import java.util.regex.Pattern;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.LineBreak;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 
 /**
@@ -50,7 +49,6 @@ public class HeaderType extends AbstractType {
 		this.markerCount = count;
 		this.setSectionFinder(new RegexSectionFinder("^" + createMarker(count)
 				+ ".*?(?=^|\\z)", Pattern.MULTILINE + Pattern.DOTALL));
-		this.setRenderer(new AnchorRenderer("\n"));
 
 		addChildType(new BoldType());
 		addChildType(new ItalicType());
