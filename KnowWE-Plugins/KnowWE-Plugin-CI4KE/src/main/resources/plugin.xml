@@ -215,7 +215,7 @@
 		<parameter id="name" value="CIDaemonInlineType" />
 		<parameter id="description" value="Type CIDaemonInlineType" />
 		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
+		<parameter id="priority" value="4" />
 		<parameter id="scope" value="de.knowwe.jspwiki.types.ParagraphType"/>
 		<parameter id="scope" value="de.knowwe.jspwiki.types.ParagraphTypeForLists"/>
 		<parameter id="scope" value="de.knowwe.jspwiki.types.ParagraphType"/>
