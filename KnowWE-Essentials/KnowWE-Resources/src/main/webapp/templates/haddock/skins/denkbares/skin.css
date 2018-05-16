@@ -52,6 +52,7 @@ body {
 	color: black;
 	background: white;
 	margin: 0;
+	tab-size: 4;
 	/*font: 12px/1.5 "Lucida Grande", Arial, Helvetica, Sans-Serif;*/
 	/*font: 80%/140% Helvetica Neue, Verdana, Arial, Helvetica, sans-serif;*/
 }
