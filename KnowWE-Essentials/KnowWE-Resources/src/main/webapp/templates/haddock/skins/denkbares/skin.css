@@ -348,10 +348,10 @@ a.logo {
 	border: 0;
 	right: auto;
 	letter-spacing: 0;
-	font-family: 'Avenir', 'Helvetica', sans-serif;
+	font-family: 'HelveticaNeue', 'Helvetica Neue', 'Helvetica', sans-serif;
 	font-size: 28px;
 	padding-left: 0;
-	font-weight: bold;
+	font-weight: normal;
 }
 
 a.logo:hover {
@@ -2469,6 +2469,10 @@ li.findpages .btn {
 
 #rightPanel-toggle-button:before {
 	line-height: 1.428571429;
+}
+
+.pagename {
+	font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, sans-serif;
 }
 
 @media only screen and (min-width: 768px) {
