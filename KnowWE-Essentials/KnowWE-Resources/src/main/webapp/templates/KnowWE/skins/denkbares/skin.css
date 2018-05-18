@@ -1688,7 +1688,7 @@ table.calendar tr.weekdays {
 /* +++ 910 Accordion +++ */
 .accordion, .tabbedAccordion {
 	clear: both;
-	border: 1px solid #ddd;
+	border: none;
 	margin-bottom: 0.5em;
 }
 

@@ -578,7 +578,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 				initRightPanel(true);
 			}
 			initRightPanelToggleButton(isShown);
-			yoyo();
+			if (KNOWWE.core.util.isHaddockTemplate()) {
+				yoyo();
+			}
 		},
 
 		addToolToRightPanel: function (title, id, pluginDiv) {
