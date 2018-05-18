@@ -34,6 +34,7 @@
 		<module>KnowWE-Plugin-OntoVis</module>
 		<module>KnowWE-Plugin-RightPanel</module>
 		<module>KnowWE-Plugin-Dialog</module>
+		<module>KnowWE-Plugin-d3web-OntologyBridge</module>
 	</modules>
 
 </project>

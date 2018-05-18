@@ -1,0 +1,37 @@
+<?xml version="1.0" ?><!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-d3web-OntologyBridge" version="1.0">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Annotation" id="ImportOntology">
+		<parameter id="name" value="importOntology" />
+		<parameter id="class" value="de.knowwe.d3web.ontology.bridge.ImportOntologyAnnotationType" />
+		<parameter id="description" value="Allows to import an existing ontology by name
+			(set with @name annotation in the %%Ontology markup), to make it usable during d3web compilation." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="KnowledgeBaseType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Annotation" id="OntologyName">
+		<parameter id="name" value="name" />
+		<parameter id="description"
+			value="Allows to give an ontology a name that can be used by other markups to reference this ontology." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="OntologyType" />
+	</extension>
+
+</plugin>

@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -78,6 +78,7 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
 
 	public static final DefaultMarkup MARKUP;
+	public static final String COMPILER_PRIORITY = "compilerPriority";
 
 	static {
 		MARKUP = new DefaultMarkup("Ontology");
@@ -145,6 +146,19 @@ public class OntologyType extends DefaultMarkupType {
 		EventManager.getInstance().registerListener(OntologyExporter.getInstance());
 	}
 
+	public static int getCompilerPriority(Section<PackageCompileType> compileTypeSection) {
+		final Object priority = compileTypeSection.getObject(COMPILER_PRIORITY);
+		return priority == null ? 5 : (int) priority;
+	}
+
+	public static void setCompilerPriority(Section<PackageCompileType> compileTypeSection, int priority) {
+		compileTypeSection.storeObject(COMPILER_PRIORITY, priority);
+	}
+
+	public static void resetCompilerPriority(Section<PackageCompileType> compileTypeSection) {
+		compileTypeSection.removeObject(COMPILER_PRIORITY);
+	}
+
 	private static class OntologyCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
 
 		@Override
@@ -158,7 +172,7 @@ public class OntologyType extends DefaultMarkupType {
 			ReferenceValidationMode referenceValidationMode = getReferenceValidationMode(referenceValidationModeValue);
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
 					compiler.getPackageManager(), section, OntologyType.class, ruleSet, multiDefMode, referenceValidationMode);
-			compiler.getCompilerManager().addCompiler(5, ontologyCompiler);
+			compiler.getCompilerManager().addCompiler(getCompilerPriority(section), ontologyCompiler);
 
 			if (ruleSetValue != null && ruleSet == null) {
 				throw CompilerMessage.warning("The rule set \"" + ruleSetValue + "\" does not exist.");
@@ -199,7 +213,5 @@ public class OntologyType extends DefaultMarkupType {
 				}
 			}
 		}
-
 	}
-
 }
