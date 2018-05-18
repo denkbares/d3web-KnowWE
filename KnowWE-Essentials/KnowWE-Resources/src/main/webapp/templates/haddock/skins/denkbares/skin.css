@@ -2419,6 +2419,7 @@ li.findpages .btn {
 	/*transition: left .5s, top .1s ease-in-out;*/
 	/*margin-left: 0;*/
 	z-index: 501;
+	max-width: 300px;
 }
 
 /*@media only screen and (max-width: 768px) {
@@ -2428,19 +2429,19 @@ li.findpages .btn {
 }
 */
 .content:after {
-	/*width: 275px;*/
+	max-width: 300px;
 	z-index: 500;
 }
 
-.content.active .page {
-	/*margin-left: 275px;
-	width: auto;*/
+.page {
+	transition-property: width;
 }
 
-.page {
-	/*float: none;
-	transition: margin-left .5s;*/
+.content.active .page {
+	min-width: calc(100vw - 300px);
 }
+
+
 
 .edit .page {
 	transition: none;
