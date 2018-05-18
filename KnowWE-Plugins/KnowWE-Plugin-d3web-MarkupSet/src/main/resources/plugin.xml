@@ -303,7 +303,7 @@
 		<parameter id="description" value="TerminalConditionHighlightRenderer"/>
 		<parameter id="version" value="1.0"/>
 		<parameter id="priority" value="5"/>
-		<parameter id="scope" value="Finding"/>
+		<parameter id="scope" value="de.d3web.we.kdom.condition.Finding"/>
 		<parameter id="scope" value="SolutionStateCond"/>
 		<parameter id="scope" value="UserRatingConditionType"/>
 		<parameter id="scope" value="CondKnownUnknown"/>
