@@ -581,11 +581,11 @@
 		</profile>
 
 		<profile>
-			<id>kmw</id>
+			<id>cbx</id>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-KMW</artifactId>
+					<artifactId>KnowWE-Plugin-CBX</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>
