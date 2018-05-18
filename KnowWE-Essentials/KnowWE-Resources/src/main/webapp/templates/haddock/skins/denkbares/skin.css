@@ -2438,7 +2438,7 @@ li.findpages .btn {
 }
 
 .content.active .page {
-	min-width: calc(100vw - 300px);
+	min-width: calc(100% - 300px);
 }
 
 
