@@ -33,7 +33,7 @@
 
 <div class="cage pull-right userbox user-${loginstatus}">
 
-  <div data-click-parent=".userbox" class="btn"><span class="icon-user"></span><span class="caret"></span></div>
+  <div data-click-parent=".userbox" class="btn"><span class="icon-user"></span></div>
 
   <ul class="dropdown-menu pull-right">
 
