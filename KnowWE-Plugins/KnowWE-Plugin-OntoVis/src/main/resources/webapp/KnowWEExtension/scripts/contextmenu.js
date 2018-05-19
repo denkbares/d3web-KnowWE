@@ -17,23 +17,8 @@
  * site: http://www.fsf.org.
  */
 
-/**
- * The KNOWWE global namespace object. If KNOWWE is already defined, the
- * existing KNOWWE object will not be overwritten so that defined namespaces are
- * preserved.
- */
-if (typeof KNOWWE == "undefined" || !KNOWWE) {
-	var KNOWWE = {};
-}
-
-/**
- * The KNOWWE.core global namespace object. If KNOWWE.core is already defined,
- * the existing KNOWWE.core object will not be overwritten so that defined
- * namespaces are preserved.
- */
-if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
-	KNOWWE.plugin = {};
-}
+KNOWWE = KNOWWE || {};
+KNOWWE.plugin = KNOWWE.plugin || {};
 
 KNOWWE.plugin.visualization = {
 
@@ -61,13 +46,11 @@ KNOWWE.plugin.visualization = {
 			// menu deactivated for now, just go to definition...
 			//KNOWWE.plugin.visualization.goToDef(sectionID, conceptName);
 
-			var clickPosition = KNOWWE.plugin.visualization.getClickPosition(e, sectionID, scrollParent);
-
-			KNOWWE.plugin.visualization.fetchToolMenuHTML(clickPosition.x, clickPosition.y, conceptName, sectionID)
+			KNOWWE.plugin.visualization.fetchToolMenuHTML(e, conceptName, sectionID)
 		});
 	},
 
-	fetchToolMenuHTML : function(mouseX, mouseY, term, sectionID) {
+	fetchToolMenuHTML : function(event, term, sectionID) {
 		var params = {
 			action : 'GetVisMenuAction',
 			term : term,
@@ -86,23 +69,20 @@ KNOWWE.plugin.visualization = {
 						menudiv = jq$('<div/>', {
 							id : 'vismenu'
 						});
-						jq$("#content").append(menudiv);
+						jq$("#" + sectionID).append(menudiv);
 					}
 					menudiv.empty();
 					menudiv.append(htmlCode);
 
 					// show menu at the mouse position
-					menudiv.css({top : mouseY, left : mouseX, position : 'absolute', visibility : 'invisible'});
+					let rect = event.target.getBoundingClientRect();
+					menudiv.css({top : rect.bottom, left : rect.left, position : 'absolute', visibility : 'invisible'});
 
 					_TM.decorateToolMenus(menudiv);
-					var decoratorSpan = jq$(menudiv).find(".toolsMenuDecorator");
-					decoratorSpan.css({top : mouseY, left : mouseX});
-					_TM.showToolPopupMenu(decoratorSpan);
+					_TM.showToolPopupMenu(jq$(menudiv).find(".toolsMenuDecorator"));
 
 					jq$(document).click(function(e) {
-						var clickedElement = jq$(e.target);
-						var toolPopupMenu = jq$("#toolPopupMenuID");
-						toolPopupMenu.css({visibility : 'hidden'});
+						jq$("#toolPopupMenuID").css({visibility : 'hidden'});
 					});
 
 				}
@@ -143,7 +123,7 @@ KNOWWE.plugin.visualization = {
 	},
 
 	cleanStringFromTrailingLinebreaks : function(str) {
-		while (str.lastIndexOf('\r\n') == str.length - 2) {
+		while (str.lastIndexOf('\r\n') === str.length - 2) {
 			str = str.substring(0, str.length - 2);
 		}
 		return str;
@@ -153,47 +133,4 @@ KNOWWE.plugin.visualization = {
 		jq$('#vismenu').css({visibility : 'hidden'});
 	},
 
-	// Calculates the absolute click position of a click inside the svg-element (which
-	// requires the click-event for the relative click position, the parent of the svg
-	// with the overflow:scroll-attribute to eliminate scroll offsets if present and
-	// it requires the recursive calculation of the absolute svg-position within the
-	// whole document)
-	getClickPosition : function(e, id, scrollParent) {
-		// first we have to get the position of the click within the svg-element (e.page can
-		// only return the relative position in this case - because of the object tag)
-		var mouseX, mouseY;
-		var is_firefox = navigator.userAgent.indexOf('Firefox') > -1;
-		if (is_firefox) {
-			mouseX = e.pageX;
-			mouseY = e.pageY;
-		} else {
-			mouseX = e.pageX + document.body.scrollLeft + document.documentElement.scrollLeft;
-			mouseY = e.pageY + document.body.scrollTop + document.documentElement.scrollTop;
-		}
-		// substract the possible overflow scroll of the parent
-		mouseX -= scrollParent.scrollLeft();
-		mouseY -= scrollParent.scrollTop();
-
-		// we also have to get the position of the div the svg is in so we can add it
-		// to the relative click position within the svg
-		var svg = jq$("#content_" + id);
-		var svgPos = KNOWWE.plugin.visualization.getPosition(svg[0]);
-
-		// those two positions have to be added up to get the final result
-		mouseX += svgPos.x;
-		mouseY += svgPos.y;
-		return { x : mouseX, y : mouseY };
-	},
-
-	getPosition : function(element) {
-		var xPosition = 0;
-		var yPosition = 0;
-
-		while (element) {
-			xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-			yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-			element = element.offsetParent;
-		}
-		return { x : xPosition, y : yPosition };
-	}
 };
