@@ -6,10 +6,12 @@ package de.knowwe.d3web.ontology.bridge;
 
 import java.util.Arrays;
 
+import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -41,6 +43,9 @@ public class ImportOntologyAnnotationType extends AbstractType {
 				throw CompilerMessage.error("Ontology with name '" + section.getText() + "' could not be found.");
 			}
 			OntologyType.setCompilerPriority(ontologyCompileSection, 4);
+			Section<PackageCompileType> d3webCompileSection = $(section).ancestor(KnowledgeBaseType.class)
+					.successor(PackageCompileType.class).getFirst();
+			OntologyBridge.registerBridge(d3webCompileSection.getID(), ontologyCompileSection.getID());
 		}
 
 		private Section<PackageCompileType> getOntologyCompileSection(Section<ImportOntologyAnnotationType> section) {
@@ -57,6 +62,9 @@ public class ImportOntologyAnnotationType extends AbstractType {
 			Section<PackageCompileType> ontologyCompileSection = getOntologyCompileSection(section);
 			if (ontologyCompileSection == null) return;
 			OntologyType.resetCompilerPriority(ontologyCompileSection);
+			Section<PackageCompileType> d3webCompileSection = $(section).ancestor(KnowledgeBaseType.class)
+					.successor(PackageCompileType.class).getFirst();
+			OntologyBridge.unregisterBridge(d3webCompileSection.getID());
 		}
 	}
 }
