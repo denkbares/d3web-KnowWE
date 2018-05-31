@@ -649,6 +649,16 @@
 			</dependencies>
 		</profile>
 
+		<profile>
+			<id>kotlin</id>
+			<dependencies>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-Hello-Kotlin</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+
 	</profiles>
 
 	<dependencies>

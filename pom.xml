@@ -683,6 +683,11 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>de.uniwue.d3web</groupId>
+				<artifactId>KnowWE-Plugin-Hello-Kotlin</artifactId>
+				<version>${knowwe.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.jspwiki</groupId>
 				<artifactId>jspwiki-knowwe-war</artifactId>
 				<version>2.10.4-SNAPSHOT</version>
