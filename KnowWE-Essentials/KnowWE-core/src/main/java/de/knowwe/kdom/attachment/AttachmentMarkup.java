@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,8 @@ import java.util.regex.PatternSyntaxException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
+
+import javax.servlet.http.HttpServletResponse;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -192,6 +195,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	}
 
 	private static long timeSinceLastRun(Section<?> section) {
+		if (section == null) return Long.MAX_VALUE;
 		Long lastRun = LAST_RUNS.get(section.getID());
 		return lastRun == null ? Long.MAX_VALUE : System.currentTimeMillis() - lastRun;
 	}
@@ -324,7 +328,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 		Section<AttachmentType> attachmentSection = Sections.successor(section, AttachmentType.class);
 		Section<URLType> urlSection = Sections.successor(section, URLType.class);
-
+		Objects.requireNonNull(urlSection);
 		URL url = URLType.getURL(urlSection);
 		if (url == null || attachmentSection == null) {
 			return; // nothing to do, error will already be rendered from URLType
@@ -354,7 +358,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				}
 
 				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
+				int responseCode = connection.getResponseCode();
+				if (responseCode != HttpServletResponse.SC_OK) {
+					throw new IOException("Invalid response code, skipping update: " + responseCode);
+				}
 				if (url.getUserInfo() != null) {
 					String basicAuth = "Basic " + new String(Base64.getEncoder()
 							.encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
