@@ -360,7 +360,8 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 				int responseCode = connection.getResponseCode();
 				if (responseCode != HttpServletResponse.SC_OK) {
-					throw new IOException("Invalid response code, skipping update: " + responseCode);
+					Messages.storeMessage(section, AttachmentMarkup.class, Messages.error("Invalid response code, skipping update: " + responseCode));
+					return;
 				}
 				if (url.getUserInfo() != null) {
 					String basicAuth = "Basic " + new String(Base64.getEncoder()
