@@ -151,7 +151,7 @@ public class SparqlResultRenderer {
 		message = Strings.encodeHtml(message);
 		String query = section.get().getSparqlQuery(section, user);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(section);
-		if (query == null || core == null) {
+		if (query == null || core == null || Strings.trim(query).isEmpty()) {
 			result.append(message);
 			return;
 		}
