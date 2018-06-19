@@ -1,0 +1,143 @@
+/*
+ * Copyright (C) 2018 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+.dropzone.full-height > .drop-indicator {
+	display: none;
+	width: inherit;
+	height: 100vh;
+	background-color: rgba(255, 255, 255, 0.9);
+	z-index: 1000;
+	position: fixed;
+	top: 0;
+	border: none;
+}
+
+.dropzone.replace > .drop-indicator {
+	display: none;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(255, 255, 255, 0.9);
+	z-index: 2000;
+	position: absolute;
+	top: 0;
+	left: 0;
+	border: none;
+}
+
+.drop-indicator {
+	position: relative;
+	width: 100%;
+	height: 100px;
+	min-width: 60px;
+	min-height: 42px;
+	border: 3px dashed #192844;
+}
+
+.dropzone.full-height > .drop-indicator > .box-input {
+	width: 80%;
+	top: 25%;
+	height: 50%;
+	left: 10%;
+	position: absolute;
+	border: 3px dashed #192844;
+}
+
+.dropzone.replace > .drop-indicator > .box-input {
+	width: 100%;
+	top: 0;
+	height: 100%;
+	left: 0;
+	position: absolute;
+	border: 3px dashed #192844;
+}
+
+.dropzone.replace > .drop-indicator.dragover,
+.dropzone.full-height > .drop-indicator.dragover,
+.drop-indicator.dragover {
+	display: block;
+}
+
+.drop-indicator.dragover {
+	border: solid #192844;
+}
+
+.dropzone.full-height > .drop-indicator > .box-input.dragover,
+.dropzone.replace > .drop-indicator > .box-input.dragover {
+	border: dashed #192844;
+}
+
+.drop-indicator label.dragover {
+	color: #ccc;
+}
+
+.dropzone.full-height > .drop-indicator label.dragover,
+.dropzone.replace > .drop-indicator label.dragover {
+	color: #192844;
+}
+
+.dropzone.replace > .drop-indicator.uploaded,
+.dropzone.full-height > .drop-indicator.uploaded,
+.drop-indicator.uploaded {
+	display: block;
+}
+
+.drop-indicator.uploaded,
+.dropzone.full-height > .drop-indicator > .box-input.uploaded,
+.dropzone.replace > .drop-indicator > .box-input.uploaded{
+	border-color: #ccc;
+}
+
+.drop-indicator label.uploaded {
+	color: #192844;
+}
+
+.dropzone.full-height > .drop-indicator.uploading, .drop-indicator.uploading,
+.dropzone.replace > .drop-indicator.uploading, .drop-indicator.uploading {
+	display: block;
+}
+
+.drop-indicator.uploading,
+.dropzone.full-height > .drop-indicator > .box-input.uploading,
+.dropzone.replace > .drop-indicator > .box-input.uploading{
+	border: dashed #ccc;
+}
+
+.drop-indicator label.uploading {
+	color: #ccc;
+}
+
+.drop-indicator > :first-child:after {
+	bottom: 0;
+	left: 0;
+	border-width: 0 0 1px 1px
+}
+
+.drop-indicator label {
+	padding: 0;
+	width: 100%;
+	font-size: 2rem;
+	text-align: center;
+	margin: 0;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: #192844;
+	cursor: pointer;
+}

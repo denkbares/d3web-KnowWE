@@ -121,9 +121,9 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 					.getID() + "')\" />");
 			string.appendHtml("<div style=\"display:none\" id=\"dialog-message\" title=\"Choose session\">" + getSavedSessions(user, section
 					.getID()) + "</div>");
-			string.appendHtmlTag("div", "class", "quickinterview dropzone", "sectionId", section.getID(),
+			string.appendHtmlTag("div", "class", "quickinterview", "sectionId", section.getID(),
 					"id", "quickinterview_" + section.getID());
-			appendDropIndicator(string, section.getID());
+//			appendDropIndicator(string, section.getID());
 			QuickInterviewRenderer.renderInterview(section, user, string);
 			string.appendHtmlTag("/div");
 

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!--
+  ~ Copyright (C) 2018 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-DropZone" version="1.0">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DropAttachmentToExistingArticleAction">
+		<parameter id="class" value="de.knowwe.dropzone.action.DropAttachmentToExistingArticleAction" />
+		<parameter id="name" value="DropAttachmentToExistingArticleAction" />
+		<parameter id="description" value="Action that attaches a dropped file to an existing article" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-DropZone.js" />
+		<parameter id="css" value="KnowWE-Plugin-DropZone.css" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="DropAttachmentToNewArticleAction">
+		<parameter id="class" value="de.knowwe.dropzone.action.DropAttachmentToNewArticleAction" />
+		<parameter id="name" value="DropAttachmentToNewArticleAction" />
+		<parameter id="description"
+			value="Action that temporarily stores a dropped file upon article creation and moves it to the corresponding article after has been created" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="script" value="KnowWE-Plugin-DropZone.js" />
+		<parameter id="css" value="KnowWE-Plugin-DropZone.css" />
+	</extension>
+
+</plugin>

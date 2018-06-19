@@ -675,39 +675,28 @@ KNOWWE.plugin.quicki = function () {
 		},
 
 		initDataDrop: function () {
-			let dropzones = document.getElementsByClassName('dropzone');
-			if (typeof dropzones === 'undefined') return;
-			for (var dropzone in dropzones) {
-				if (!Number.isInteger(parseInt(dropzone))) continue;
-				dropzones[dropzone].addEventListener('dragover', KNOWWE.plugin.quicki.handleDragOver, false);
-				dropzones[dropzone].addEventListener('drop', KNOWWE.plugin.quicki.handleDrop, false);
-			}
+			KNOWWE.core.plugin.dropZone.addDropZoneTo('.quickinterview', "Drop protocol here", KNOWWE.plugin.quicki.handleDrop, null, "replace")
 		},
 
-		handleDragOver: function (event) {
-			event.stopPropagation();
-			event.preventDefault();
-			jq$('#drop-indicator-' + sectionId(event)).show();
-			document.getElementById('drop-indicator-' + sectionId(event)).addEventListener('dragleave', KNOWWE.plugin.quicki.handleDragLeave, false);
-			event.dataTransfer.dropEffect = 'copy';
-		},
-
-		handleDragLeave: function (event) {
-			jq$('#drop-indicator-' + sectionId(event)).hide();
+		resetDataDrop: function (element) {
+			KNOWWE.core.plugin.dropZone.resetDropZoneStyle(element, "Drop protocol here");
 		},
 
 		handleDrop: function (event) {
 			event.stopPropagation();
 			event.preventDefault();
-			jq$('#drop-indicator-' + sectionId(event)).hide();
+			KNOWWE.core.plugin.dropZone.setDropZoneStyleUploading(event.target);
 			const data = event.dataTransfer.files;
 
 			if (data.length !== 1) {
 				KNOWWE.notification.error(null, "Please drop only one file.");
+				KNOWWE.plugin.quicki.resetDataDrop(event.target);
 				return;
 			}
 			KNOWWE.plugin.quicki.handleUploadFile(data, sectionId(event));
 		},
+
+
 
 		/**
 		 * Initiates load dialogue to let user upload representation of a previously saved interview from their drive
@@ -721,6 +710,7 @@ KNOWWE.plugin.quicki = function () {
 			const file = files[0];
 			if (file.type !== 'text/xml') {
 				KNOWWE.notification.error(null, "The given file could not be uploaded since it has the wrong format.");
+				KNOWWE.plugin.quicki.resetDataDrop();
 				return;
 			}
 			const reader = new FileReader();
@@ -744,6 +734,7 @@ KNOWWE.plugin.quicki = function () {
 						},
 						onError: function (data) {
 							KNOWWE.notification.error(data.responseText);
+							KNOWWE.plugin.quicki.resetDataDrop();
 						}
 					}
 				}
