@@ -22,7 +22,6 @@ KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
 (function init() {
-
 	window.addEvent('domready', _KL.setup);
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
 		window.addEvent('domready', function () {
@@ -59,7 +58,7 @@ KNOWWE.core.plugin.dropZone = function () {
 		const ajaxData = new FormData(form);
 		const pageName = KNOWWE.helper.getPagename();
 		ajaxData.append('page', pageName);
-		ajaxData.append('nextpage', '/KnowWE/Upload.jsp?page=' + pageName);
+		ajaxData.append('nextpage', 'Upload.jsp?page=' + pageName);
 		ajaxData.append('action', 'upload');
 
 		let files = [];
@@ -146,7 +145,7 @@ KNOWWE.core.plugin.dropZone = function () {
 
 		},
 
-		addDropZoneTo(elementSelector, title, dropHandlerCallback, actionUrl = '/KnowWE/attach', mode = "full-height", multiple = true) {
+		addDropZoneTo(elementSelector, title, dropHandlerCallback, actionUrl = 'attach', mode = "full-height", multiple = true) {
 			const canWrite = jq$('#knowWEInfoCanWrite').attr('value');
 			if (!KNOWWE.core.util.isHaddockTemplate() || typeof canWrite === 'undefined' || canWrite !== 'true') return;
 
