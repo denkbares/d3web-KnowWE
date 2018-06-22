@@ -18,12 +18,16 @@
  */
 package de.knowwe.core.append;
 
+import java.io.IOException;
+
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 /**
@@ -40,6 +44,8 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		WikiConnector connector = Environment.getInstance().getWikiConnector();
 		Article article = KnowWEUtils.getArticle(web, title);
 		if (article == null) return; // Can happen in preview mode
+		if (article.getTitle().equals("LeftMenu")) return;
+		if (article.getTitle().equals("LeftMenuFooter")) return;
 		int version = connector.getVersion(title);
 		long modDate = connector.getLastModifiedDate(title, -1).getTime();
 		String userName = user.getUserName();
@@ -60,6 +66,18 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		html.appendHtml("<input type='hidden' id='knowWEInfoCanView' value='" + KnowWEUtils.canView(article, user) + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoTemplate' value='" + connector.getTemplate() + "'>");
 		html.appendHtml("</div>");
+		if (KnowWEUtils.canView(article, user)) {
+			html.appendHtml("<div type='hidden' style='display:none' id='knowWEInfoAttachments'>");
+			try {
+				for (WikiAttachment wikiAttachment : connector.getAttachments(article.getTitle())) {
+					html.appendHtmlElement("span", wikiAttachment.getFileName(), "class", "knowWEInfoAttachmentName");
+				}
+			}
+			catch (IOException e) {
+				Log.severe("Unable to retrieve attachments", e);
+			}
+			html.appendHtml("</div>");
+		}
 	}
 
 	@Override
