@@ -49,8 +49,8 @@ import de.knowwe.rdf2go.utils.TableRow;
 public class SparqlResultRenderer {
 
 	private static final String POINT_ID = "SparqlResultNodeRenderer";
-	private static final String MAGIC_TABLE = "magicTable";
-	private static final String TABLE_TREE = "tableTree";
+	private static final String RESULT_TABLE = "resultTable";
+	private static final String RESULT_TABLE_TREE = "resultTableTree";
 	private static final String USED_IDS = "usedIDs";
 
 	private static SparqlResultRenderer instance = null;
@@ -248,11 +248,12 @@ public class SparqlResultRenderer {
 		List<String> variables = qrt.getBindingNames();
 
 		// tree table init
-		String idVariable = null;
+		String childIdVariable = null;
+		String parentIdVariable = null;
 		if (isTree) {
 			if (qrt.getBindingNames().size() > 2) {
-				idVariable = qrt.getBindingNames().get(0);
-				qrt.getBindingNames().get(1);
+				childIdVariable = qrt.getBindingNames().get(0);
+				parentIdVariable = qrt.getBindingNames().get(1);
 			} else {
 				isTree = false;
 				renderResult.append("%%warning The renderResult table requires at least three columns to enable tree mode.\n");
@@ -300,8 +301,13 @@ public class SparqlResultRenderer {
 				iterator = table.iterator();
 			}
 		} else if (isTree) {
-			table = createMagicallySortedTable(table, renderResult, section);
-			iterator = table.iterator();
+			Stopwatch stopwatch = new Stopwatch();
+			// creating hierarchy order using PartialHierarchyTree
+			ResultTableHierarchy tree = new ResultTableHierarchy(table);
+			Log.info("Create hierarchical sparql result table in " + stopwatch.getDisplay());
+			section.storeObject(RESULT_TABLE, table);
+			section.storeObject(RESULT_TABLE_TREE, tree);
+			iterator = tree.getRoots().iterator();
 		} else {
 			iterator = table.iterator();
 		}
@@ -326,10 +332,11 @@ public class SparqlResultRenderer {
 					: "<tr class='" + Strings.concat(" ", classNames) + "'");
 
 			if (isTree) {
-				ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(TABLE_TREE);
-				Value value = row.getValue(idVariable);
-				String valueID = valueToID(value);
-				usedIDs.put(valueID, value);
+				ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(RESULT_TABLE_TREE);
+				Value childValue = row.getValue(childIdVariable);
+				Value parentValue = row.getValue(parentIdVariable);
+				String valueID = valueToID(childValue, parentValue == null ? "" : parentValue.stringValue());
+				usedIDs.put(valueID, childValue);
 
 				renderResult.append(" data-tt-id='sparql-id-").append(valueID).append("'");
 				if (!tree.getChildren(row).isEmpty()) {
@@ -373,7 +380,7 @@ public class SparqlResultRenderer {
 					break;
 				}
 			}
-			if (empty) return true;
+			return empty;
 		}
 		return false;
 	}
@@ -391,27 +398,10 @@ public class SparqlResultRenderer {
 		return RenderMode.HTML;
 	}
 
-	private ResultTableModel createMagicallySortedTable(ResultTableModel table, RenderResult renderResult, Section section) {
-		Stopwatch stopwatch = new Stopwatch();
-		// creating hierarchy order using PartialHierarchyTree
-		ResultTableHierarchy tree = new ResultTableHierarchy(table);
-		ResultTableModel result = new ResultTableModel(table.getVariables());
-
-		List<TableRow> rootLevelNodes = tree.getRoots();
-
-		for (TableRow row : rootLevelNodes) {
-			result.addTableRow(row);
-		}
-		Log.info("Create hierarchical sparql result table in " + stopwatch.getDisplay());
-		section.storeObject(MAGIC_TABLE, table);
-		section.storeObject(TABLE_TREE, tree);
-		return result;
-	}
-
 	public void getTreeChildren(Section<? extends SparqlType> section, String parentNodeID, UserActionContext user, RenderResult result) {
 		parentNodeID = parentNodeID.replace("sparql-id-", "");
-		ResultTableModel table = (ResultTableModel) section.getObject(MAGIC_TABLE);
-		ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(TABLE_TREE);
+		ResultTableModel table = (ResultTableModel) section.getObject(RESULT_TABLE);
+		ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(RESULT_TABLE_TREE);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
 		String query = section.get().getSparqlQuery(section, user);
 
@@ -430,10 +420,10 @@ public class SparqlResultRenderer {
 			Collection<TableRow> parents = table.findRowFor(usedIDs.get(parentNodeID));
 			for (TableRow parent : parents) {
 				for (TableRow child : tree.getChildren(parent)) {
-					Value value = child.getValue(qrt.getBindingNames().get(0));
-					String valueID = valueToID(value);
-					usedIDs.put(valueID, value);
-					result.appendHtml("<tr class='treetr' data-tt-id='sparql-id-").append(valueID).append("'");
+					Value childValue = child.getValue(qrt.getBindingNames().get(0));
+					String childId = valueToID(childValue, parentNodeID);
+					usedIDs.put(childId, childValue);
+					result.appendHtml("<tr class='treetr' data-tt-id='sparql-id-").append(childId).append("'");
 					result.append(" data-tt-parent-id='sparql-id-")
 							.append(parentNodeID).append("'");
 					if (!tree.getChildren(child).isEmpty()) {
@@ -520,9 +510,10 @@ public class SparqlResultRenderer {
 		}
 	}
 
-	private String valueToID(Value value) {
-		if (value == null) return null;
-		int code = value.toString().replaceAll("[\\s\"]+", "").hashCode();
+	private String valueToID(Value childValue, String parentValue) {
+		if (childValue == null) return null;
+		String valueString = childValue.stringValue() + parentValue;
+		int code = valueString.replaceAll("[\\s\"]+", "").hashCode();
 		return Integer.toString(code);
 	}
 
@@ -572,7 +563,6 @@ public class SparqlResultRenderer {
 		if (datatype != null) {
 			sb.append("^^");
 			sb.append(datatype);
-			sb.append("");
 		}
 
 		return sb.toString();
