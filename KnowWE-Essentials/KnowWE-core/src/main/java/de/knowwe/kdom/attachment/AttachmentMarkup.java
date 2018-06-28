@@ -358,17 +358,17 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				}
 
 				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				int responseCode = connection.getResponseCode();
-				if (responseCode != HttpServletResponse.SC_OK) {
-					Messages.storeMessage(section, AttachmentMarkup.class, Messages.error("Invalid response code, skipping update: " + responseCode));
-					return;
-				}
 				if (url.getUserInfo() != null) {
 					String basicAuth = "Basic " + new String(Base64.getEncoder()
 							.encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
 					connection.setRequestProperty("Authorization", basicAuth);
 				}
 
+				int responseCode = connection.getResponseCode();
+				if (responseCode != HttpServletResponse.SC_OK) {
+					Messages.storeMessage(section, AttachmentMarkup.class, Messages.error("Invalid response code, skipping update: " + responseCode));
+					return;
+				}
 				InputStream connectionStream = getAttachmentStream(section, connection);
 
 				// configure replacements, if applicable
