@@ -35,7 +35,6 @@ import org.json.JSONObject;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -82,21 +81,19 @@ import de.knowwe.util.Icon;
 public class PaginationRenderer implements Renderer {
 
 	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 10;
-	public static final String DEFAULT_COUNT_COOKIE_NAME = "PaginationDefaultCount";
-	public static final int MAX_DEFAULT_COUNT = 1000;
 	public static final String PAGINATION_COOKIE_PREFIX = "PaginationDecoratingRenderer-";
 	public static final Pattern PAGINATION_COOKIE_CLEANUP_PATTERN = Pattern.compile("^" + PAGINATION_COOKIE_PREFIX + "(.+)$");
 	private final Renderer decoratedRenderer;
 
 	public static final String UNKNOWN_RESULT_SIZE = "unknown";
-	public static final String STARTROW = "startRow";
-	private static final String STARTROW_DEFAULT = "1";
+	public static final String START_ROW = "startRow";
+	public static final String RESULT_SIZE = "resultsize";
 	public static final String COUNT = "count";
-	private static final String COUNT_DEFAULT = "20";
+	private static final String START_ROW_DEFAULT = "1";
 	public static final String SORTING = "sorting";
-	public static final String RESULTSIZE = "resultsize";
+	private static final int COUNT_DEFAULT = 20;
 	private static final String FILTER = "filter";
-	private static final String ACTIVEFILTERS = "filters";
+	private static final String ACTIVE_FILTERS = "filters";
 
 	public PaginationRenderer(Renderer decoratedRenderer) {
 		this.decoratedRenderer = decoratedRenderer;
@@ -312,19 +309,19 @@ public class PaginationRenderer implements Renderer {
 	public static int getStartRow(Section<?> sec, UserContext user) {
 		try {
 			JSONObject jsonObject = getJsonObject(sec, user);
-			if (jsonObject != null && jsonObject.has(STARTROW)) {
-				return jsonObject.getInt(STARTROW);
+			if (jsonObject != null && jsonObject.has(START_ROW)) {
+				return jsonObject.getInt(START_ROW);
 			}
 		}
 		catch (JSONException e) {
 			Log.warning("Exception while parsing start row", e);
 		}
-		return Integer.parseInt(STARTROW_DEFAULT);
+		return Integer.parseInt(START_ROW_DEFAULT);
 	}
 
 	private static String getResultSizeString(UserContext user) {
-		if (user.getRequest().getAttribute(RESULTSIZE) != null) {
-			return user.getRequest().getAttribute(RESULTSIZE).toString();
+		if (user.getRequest().getAttribute(RESULT_SIZE) != null) {
+			return user.getRequest().getAttribute(RESULT_SIZE).toString();
 		}
 		else {
 			return UNKNOWN_RESULT_SIZE;
@@ -346,22 +343,13 @@ public class PaginationRenderer implements Renderer {
 		try {
 			JSONObject jsonObject = getJsonObject(sec, user);
 			if (jsonObject != null && jsonObject.has(COUNT)) {
-				int count = jsonObject.getInt(COUNT);
-				if (user instanceof UserActionContext) {
-					int newDefault = count;
-					if (count > MAX_DEFAULT_COUNT) { // we don't want the default higher than 1000
-						newDefault = MAX_DEFAULT_COUNT;
-					}
-					((UserActionContext) user).getResponse()
-							.addCookie(new Cookie(DEFAULT_COUNT_COOKIE_NAME, Integer.toString(newDefault)));
-				}
-				return count;
+				return jsonObject.optInt(COUNT, COUNT_DEFAULT);
 			}
 		}
 		catch (JSONException e) {
 			Log.warning("Exception while parsing count", e);
 		}
-		return Integer.parseInt(KnowWEUtils.getCookie(DEFAULT_COUNT_COOKIE_NAME, COUNT_DEFAULT, user));
+		return COUNT_DEFAULT;
 	}
 
 	/**
@@ -437,8 +425,8 @@ public class PaginationRenderer implements Renderer {
 		Map<String, List<String>> activeFilters = new HashMap<>();
 		try {
 			JSONObject jsonObject = getJsonObject(sec, user);
-			if (jsonObject != null && jsonObject.has(ACTIVEFILTERS)) {
-				JSONObject json = jsonObject.getJSONObject(ACTIVEFILTERS);
+			if (jsonObject != null && jsonObject.has(ACTIVE_FILTERS)) {
+				JSONObject json = jsonObject.getJSONObject(ACTIVE_FILTERS);
 
 				Iterator iterator = json.keys();
 				while (iterator.hasNext()) {
@@ -480,7 +468,7 @@ public class PaginationRenderer implements Renderer {
 	 * @created 27.01.2014
 	 */
 	public static void setResultSize(UserContext context, int maxResult) {
-		context.getRequest().setAttribute(RESULTSIZE, Integer.toString(maxResult));
+		context.getRequest().setAttribute(RESULT_SIZE, Integer.toString(maxResult));
 	}
 
 	/**
