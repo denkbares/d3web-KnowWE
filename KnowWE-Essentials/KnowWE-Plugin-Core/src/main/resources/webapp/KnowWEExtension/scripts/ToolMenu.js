@@ -118,6 +118,9 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 	if (menuRect.top + menuRect.height > windowHeight) {
 		menu.css("height", windowHeight - menuRect.top + "px");
 	}
+	if (menuRect.top < 0) {
+		menu.css("height", menuRect.top + menuRect.height + "px");
+	}
 }
 ;
 
