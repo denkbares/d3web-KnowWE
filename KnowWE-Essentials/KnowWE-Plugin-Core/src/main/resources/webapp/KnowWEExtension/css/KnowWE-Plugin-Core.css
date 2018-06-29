@@ -111,12 +111,12 @@
 
 .defaultMarkupFrame .markupMenu {
 	display: none;
-	position: absolute;
+	position: relative;
 	border: 2px solid #DDD;
 	background-color: white;
-	right: 0px;
 	z-index: 750;
-	right: -1px;
+	overflow: scroll;
+	max-height: 70vh;
 }
 
 .defaultMarkupFrame .markupMenuItem {
@@ -255,7 +255,7 @@ span.markupMenuItem {
 }
 
 /*
- * make sure that in print-out all titles are visible, 
+ * make sure that in print-out all titles are visible,
  * but no menus
  */
 @media print {
@@ -362,12 +362,12 @@ span.markupMenuItem {
 }
 
 .toolMenuFrame .markupMenu {
-	position: absolute;
+	position: relative;
 	border: 2px solid #DDD;
 	background-color: white;
-	right: 0px;
 	z-index: 750;
-	right: -1px;
+	max-height: 70vh;
+	overflow: scroll;
 }
 
 .toolMenuFrame .markupMenuItem {

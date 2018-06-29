@@ -58,51 +58,68 @@ ToolMenu.prototype.selectTerm = function (element) {
 	selection.addRange(range);
 };
 
-ToolMenu.prototype.showToolPopupMenu = function (node) {
+ToolMenu.prototype.showToolPopupMenu = function ($node) {
 	// we hide all open tooltipster tool tips to reduce clutter
 	jq$('.tooltipstered').tooltipster('hide');
 
 	// hide tool menus opened for other terms
 	var lastMenuId = this.lastMenuId;
 	this.hideToolsPopupMenu();
-	var currentMenuId = jq$(node).attr('id');
-	if (lastMenuId == currentMenuId) return;
+	var currentMenuId = jq$($node).attr('id');
+	if (lastMenuId === currentMenuId) return;
 	this.lastMenuId = currentMenuId;
 
-	node.unbind('mouseleave').mouseleave(function (event) {
-		var rect = this.getBoundingClientRect();
-		if (event.clientY <= rect.bottom - 1) {
-			_TM.hideToolsPopupMenu();
-		}
-		jq$(this).unbind('mouseleave');
-	});
-	node = node[0];
-	var scale = 1;
-	jq$(node).parentsUntil('#pagecontent').each(function () {
-		if (scale == 1) scale = jq$(this).scale();
-	});
+	let node = $node[0];
+	let windowHeight = window.getHeight();
+	let windowWidth = window.getWidth();
+	let nodeRect = node.getBoundingClientRect();
+	let styles = {
+		'z-index': '10000',
+		'position': 'fixed'
+	};
+	if (nodeRect.top > windowHeight - nodeRect.top + nodeRect.height) {
+		// show above
+		styles.bottom = windowHeight - nodeRect.top - 1 + 'px';
+		$node.unbind('mouseleave').mouseleave(function (event) {
+			if (event.clientY >= nodeRect.top + 1) _TM.hideToolsPopupMenu();
+			jq$(this).unbind('mouseleave');
+		});
+	}
+	else {
+		// show below
+		styles.top = nodeRect.top + nodeRect.height + 'px';
+		$node.unbind('mouseleave').mouseleave(function (event) {
+			if (event.clientY <= nodeRect.bottom - 1) _TM.hideToolsPopupMenu();
+			jq$(this).unbind('mouseleave');
+		});
+	}
+	if (nodeRect.left > windowWidth - nodeRect.left + nodeRect.width) {
+		// expand to the left
+		styles.right = Math.max(0, windowWidth - nodeRect.left - nodeRect.width) + 'px';
+	}
+	else {
+		// expand to the right
+		styles.left = Math.max(0, nodeRect.left) + 'px';
+	}
 
-	var parent = new Element('div', {
+	let parent = new Element('div', {
 		'id': 'toolPopupMenuID',
-		'styles': {
-			'top': (node !== null && node.style.top !== "") ? node.style.top : jq$(node).offset().top + node.offsetHeight * scale + 'px',
-			'left': (node !== null && node.style.left !== "") ? node.style.left : jq$(node).offset().left + node.offsetWidth * scale + 'px',
-			'z-index': '10000',
-			'position': 'absolute'
-		},
+		'styles': styles,
 		'events': {
 			'mouseleave': _TM.hideToolsPopupMenu
 		}
 	});
+
 	document.body.appendChild(parent);
 	parent.innerHTML = "<div class='toolMenuFrame'>" + this.getToolMenuHtml(node) + "</div>";
 
-	// make sure to place menu on screen
-	// move to right if menu exceeds the left border
 	var menu = jq$(parent).find(".markupMenu");
-	var menuLeft = menu.offset().left;
-	if (menuLeft < 0) menu.css('right', menuLeft + 'px');
-};
+	let menuRect = menu[0].getBoundingClientRect();
+	if (menuRect.top + menuRect.height > windowHeight) {
+		menu.css("height", windowHeight - menuRect.top + "px");
+	}
+}
+;
 
 ToolMenu.prototype.getToolMenuHtml = function (node) {
 
@@ -161,17 +178,17 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function ($parent) {
 		var markup = jq$(this);
 		var header = markup.find('.headerMenu').first();
 		var menu = markup.find('.markupMenu').first();
-		if (menu.length == 0) {
+		if (menu.length === 0) {
 			header.find('.markupMenuIndicator').hide();
 		}
 
-		header.unbind('mouseout').on('mouseout', function (e) {
+		header.unbind('mouseout').on('mouseout', function () {
 			header.stop().animate({'max-width': 35, 'z-index': 1000, opacity: 0.3}, 200);
 			if (menu) {
 				menu.hide();
 				menu.css("margin-top", "");
 			}
-		}).unbind('mouseover').on('mouseover', function (e) {
+		}).unbind('mouseover').on('mouseover', function () {
 			header.stop().animate({'max-width': 250, 'z-index': 1500, opacity: 1}, 200);
 			if (menu) {
 				menu.show();
