@@ -53,9 +53,8 @@ KNOWWE.core.plugin.dropZone = function () {
 	function handleDropToExisting(event) {
 		event.stopPropagation();
 		event.preventDefault();
-		setUploadingStyle(event.target);
 		let form = jq$(event.target).closest('.dropzone').find('.drop-indicator').first();
-		const ajaxData = new FormData(form);
+		const ajaxData = new FormData();
 		const pageName = KNOWWE.helper.getPagename();
 		ajaxData.append('page', pageName);
 		ajaxData.append('nextpage', 'Upload.jsp?page=' + pageName);
@@ -67,8 +66,14 @@ KNOWWE.core.plugin.dropZone = function () {
 		}
 		const input = form.find('input[type="file"]').first();
 		if (files.length === 0) {
-			files.append(input.context.files); // Manually chosen files w/ file chooser
+			setClass(event.target, "uploading", "Not a valid attachment...");
+			setTimeout(function () {
+				resetStyle(event.target, "Drop attachment(s) here");
+			}, 1000);
+			return;
 		}
+
+		setUploadingStyle(event.target);
 		Array.prototype.forEach.call(files, function (file) {
 			ajaxData.append(input.attr('name'), file);
 		});
@@ -170,6 +175,7 @@ KNOWWE.core.plugin.dropZone = function () {
 			}
 
 			for (const i in element) {
+				if (!element.hasOwnProperty(i)) continue;
 				if (!Number.isInteger(parseInt(i))) continue;
 				element[i].addEventListener('dragover', handleDragOver);
 				element[i].addEventListener('drop', dropHandlerCallback);
