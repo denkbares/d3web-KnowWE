@@ -754,8 +754,13 @@ public class KnowWEUtils {
 				Matcher matcher = cookieNamePattern.matcher(name);
 				if (!matcher.find()) continue;
 				String sectionId = matcher.group(sectionIdGroup);
-				Section<?> section = Sections.get(sectionId);
-				if (section != null) continue;
+				try {
+					Section<?> section = Sections.get(sectionId);
+					if (section != null) continue;
+				}
+				catch (NumberFormatException ignore) {
+					// if the parse section id is not a valid section id, we also clean up the cookie
+				}
 				cookie.setMaxAge(0);
 				((UserActionContext) context).getResponse().addCookie(cookie);
 			}
@@ -850,7 +855,6 @@ public class KnowWEUtils {
 	public static String readFile(String fileName) {
 		try {
 			return Strings.readFile(fileName);
-
 		}
 		catch (IOException e) {
 			Log.severe("Unable to read File", e);
@@ -1081,5 +1085,4 @@ public class KnowWEUtils {
 		ArrayList<Locale> localList = Collections.list(localesEnum);
 		return localList.toArray(new Locale[localList.size()]);
 	}
-
 }
