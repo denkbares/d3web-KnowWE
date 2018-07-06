@@ -13,7 +13,7 @@
 		<d3web.version>12.0-SNAPSHOT</d3web.version>
 		<knowwe.version>12.0-SNAPSHOT</knowwe.version>
 		<ssp.version>3.0-SNAPSHOT</ssp.version>
-		<selenium.version>3.3.1</selenium.version>
+		<selenium.version>3.13.0</selenium.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.clover.encoding>UTF-8</maven.clover.encoding>
 		<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
@@ -211,7 +211,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>2.5</version>
+				<version>2.20.1</version>
 			</plugin>
 		</plugins>
 	</reporting>
