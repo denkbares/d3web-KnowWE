@@ -65,7 +65,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		}
 		if (compilingMarkupSection != null) {
 			Section<PackageCompileType> compileSection = Sections.successor(compilingMarkupSection, PackageCompileType.class);
-			if (getCompileSection() == compileSection) return true;
+			return getCompileSection() == compileSection;
 		}
 		return false;
 	}
@@ -97,7 +97,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		if (getPackageManager().hasChanged(packagesToCompile)) {
 			long start = System.currentTimeMillis();
 			compilePackages(packagesToCompile);
-			Log.info(toString() + " finished after "
+			Log.info(this + " finished after "
 					+ (System.currentTimeMillis() - start) + "ms");
 		}
 	}
@@ -106,8 +106,6 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	@Override
 	public String toString() {
-		String[] packagesToCompile = getCompileSection().get().getPackagesToCompile(
-				getCompileSection());
 		return this.getClass().getSimpleName() + " ("
 				+ compileSection.getTitle() + ")";
 	}
