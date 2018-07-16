@@ -524,6 +524,12 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>denkbares-SemanticCore-Plugin-GraphDB-ClosedSource</artifactId>
 				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>mate</id>
+			<dependencies>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-ServiceMate</artifactId>
