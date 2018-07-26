@@ -29,15 +29,15 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
 /**
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
  */
-KNOWWE.editCommons = function() {
+KNOWWE.editCommons = function () {
 
 	return {
 
-		mode : null,
+		mode: null,
 
-		wikiText : {},
+		wikiText: {},
 
-		wrapHTML : function(id, locked, html) {
+		wrapHTML: function (id, locked, html) {
 			var lockedHTML = "";
 			if (locked) {
 				lockedHTML = "<div class=\"error\">Another user has started to edit this page, but " + "hasn't yet saved it. You are allowed to further edit this page, but be " + "aware that the other user will not be pleased if you do so!</div>"
@@ -48,27 +48,27 @@ KNOWWE.editCommons = function() {
 			return openingDiv + lockedHTML + html + closingDiv;
 		},
 
-		encodeForHtml : function(text) {
+		encodeForHtml: function (text) {
 			if (text) return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			return "";
 		},
 
-		hideTools : function() {
+		hideTools: function () {
 			jq$('.markupTools').css("display", "none");
 		},
 
-		showAjaxLoader : function() {
+		showAjaxLoader: function () {
 			_KU.showProcessingIndicator();
 		},
 
-		hideAjaxLoader : function() {
+		hideAjaxLoader: function () {
 			_KU.hideProcessingIndicator();
 		},
 
-		errorMessageId : "defaultErrorMessageId",
+		errorMessageId: "defaultErrorMessageId",
 
 		// Maybe return given messages instead
-		onErrorBehavior : function(messageId) {
+		onErrorBehavior: function (messageId) {
 			if (!messageId) messageId = _EC.errorMessageId;
 			_EC.hideAjaxLoader();
 			var status = this.status;
@@ -93,17 +93,17 @@ KNOWWE.editCommons = function() {
 			}
 		},
 
-		executeIfPrivileged : function(grantedFN, forbiddenFN) {
+		executeIfPrivileged: function (grantedFN, forbiddenFN) {
 			var params = {
-				action : 'CheckCanEditPageAction'
+				action: 'CheckCanEditPageAction'
 			};
 
 			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				method : 'GET',
-				response : {
-					action : 'none',
-					fn : function() {
+				url: KNOWWE.core.util.getURL(params),
+				method: 'GET',
+				response: {
+					action: 'none',
+					fn: function () {
 						var canedit = JSON.parse(this.responseText).canedit;
 
 						if (canedit) {
@@ -112,36 +112,36 @@ KNOWWE.editCommons = function() {
 							forbiddenFN();
 						}
 					},
-					onError : _EC.onErrorBehavior
+					onError: _EC.onErrorBehavior
 				}
 			};
 			new _KA(options).send();
 		},
 
-		sendChanges : function(newWikiText, params, fn, async) {
+		sendChanges: function (newWikiText, params, fn, async) {
 			if (typeof async == "undefined") async = true;
 			_EC.showAjaxLoader();
 			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				data : newWikiText,
-				async : async,
-				response : {
-					action : 'none',
-					fn : function() {
+				url: KNOWWE.core.util.getURL(params),
+				data: newWikiText,
+				async: async,
+				response: {
+					action: 'none',
+					fn: function () {
 						// TODO: Remove?
 						window.onbeforeunload = null;
 						window.onunload = null;
 						if (fn) fn();
 						_EC.hideAjaxLoader();
 					},
-					onError : _EC.onErrorBehavior
+					onError: _EC.onErrorBehavior
 				}
 			};
 			new _KA(options).send();
 		},
 
-		registerSaveCancelEvents : function(element, saveFunction, cancelFunction, argument) {
-			jq$(element).keydown(function(event) {
+		registerSaveCancelEvents: function (element, saveFunction, cancelFunction, argument) {
+			jq$(element).keydown(function (event) {
 				event = _EC.toJQueryEvent(event);
 				if (_EC.isSaveKey(event)) {
 					event.stopPropagation();
@@ -156,7 +156,7 @@ KNOWWE.editCommons = function() {
 			});
 		},
 
-		isSaveKey : function(event) {
+		isSaveKey: function (event) {
 			event = _EC.toJQueryEvent(event);
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
 				if (event.which == 83) { // S
@@ -166,15 +166,15 @@ KNOWWE.editCommons = function() {
 			return false;
 		},
 
-		toJQueryEvent : function(event) {
+		toJQueryEvent: function (event) {
 			return jq$.event.fix(event.originalEvent || event.event || event);
 		},
 
-		isBlank : function(text) {
+		isBlank: function (text) {
 			return /^\s*$/.test(text);
 		},
 
-		isCancelKey : function(event) {
+		isCancelKey: function (event) {
 			event = _EC.toJQueryEvent(event);
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
 				// Q, but not with alt gr (= alt + ctrl)  to allow for @ in windows
@@ -188,7 +188,7 @@ KNOWWE.editCommons = function() {
 			return false;
 		},
 
-		isModifier : function(event) {
+		isModifier: function (event) {
 			event = _EC.toJQueryEvent(event);
 			return (!event.metaKey && event.ctrlKey && !event.altKey)
 				|| (!event.metaKey && !event.ctrlKey && event.altKey)
@@ -196,7 +196,7 @@ KNOWWE.editCommons = function() {
 
 		},
 
-		isDoubleModifier : function(event) {
+		isDoubleModifier: function (event) {
 			event = _EC.toJQueryEvent(event);
 			var mods = 0;
 			if (event.metaKey) mods++;
@@ -206,8 +206,30 @@ KNOWWE.editCommons = function() {
 			return mods == 2;
 
 		},
+		getWikiArticleText: function (articleName, actionName) {
+			if (actionName == null) actionName = "GetWikiArticleTextAction";
 
-		getWikiText : function(id, actionName) {
+			var params = {
+				action: actionName,
+				articleName: articleName
+			};
+
+			var options = {
+				url: KNOWWE.core.util.getURL(params),
+				async: false,
+				response: {
+					action: 'none',
+					onError: function () {
+						console.log("Article does not exist");
+					}
+				}
+			};
+			var ajaxCall = new _KA(options);
+			ajaxCall.send();
+			return JSON.parse(ajaxCall.getResponse()).text
+		},
+
+		getWikiText: function (id, actionName) {
 
 			var tempWikiText = _EC.wikiText[id];
 
@@ -216,18 +238,18 @@ KNOWWE.editCommons = function() {
 			if (actionName == null) actionName = 'GetWikiTextAction';
 
 			var params = {
-				action : actionName,
-				KdomNodeId : id
+				action: actionName,
+				KdomNodeId: id
 			};
 
 			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				async : false,
-				response : {
-					action : 'none',
+				url: KNOWWE.core.util.getURL(params),
+				async: false,
+				response: {
+					action: 'none',
 					// for FF 3.6 compatibility, we can't use the function fn
 					// in synchronous call (no onreadystatechange event fired)
-					onError : _EC.onErrorBehavior
+					onError: _EC.onErrorBehavior
 				}
 			};
 			var ajaxCall = new _KA(options);
@@ -236,7 +258,7 @@ KNOWWE.editCommons = function() {
 			return _EC.wikiText[id];
 		},
 
-		isKDomID : function(id) {
+		isKDomID: function (id) {
 			if (!id) {
 				return false;
 			}
@@ -246,7 +268,7 @@ KNOWWE.editCommons = function() {
 
 		},
 
-		isEmpty : function(str) {
+		isEmpty: function (str) {
 			return (!str || 0 === str.length);
 		}
 
@@ -254,23 +276,23 @@ KNOWWE.editCommons = function() {
 }();
 
 
-KNOWWE.editCommons.elements = function() {
+KNOWWE.editCommons.elements = function () {
 
 	return {
 
-		getSaveButton : function(jsFunction) {
+		getSaveButton: function (jsFunction) {
 			return "<a class=\"action save\" " + "onclick=\"" + jsFunction + "\"" + ">Save</a>";
 		},
 
-		getCancelButton : function(jsFunction) {
+		getCancelButton: function (jsFunction) {
 			return "<a class=\"action cancel\" onclick=\"" + jsFunction + "\"" + ">Cancel</a>";
 		},
 
-		getDeleteSectionButton : function(jsFunction) {
+		getDeleteSectionButton: function (jsFunction) {
 			return "<a class=\"action delete\" onclick=\"" + jsFunction + "\"" + ">Delete</a>";
 		},
 
-		getSaveCancelDeleteButtons : function(id, additionalButtonArray) {
+		getSaveCancelDeleteButtons: function (id, additionalButtonArray) {
 			var buttons = _EC.mode.getSaveCancelDeleteButtons(id, additionalButtonArray);
 			return _EC.mode.getButtonsTable(buttons);
 		}
@@ -302,7 +324,7 @@ KNOWWE.editCommons.elements = function() {
  * @param getMetaDataFun a function() that returns the meta-data of the widget as an object
  * @constructor
  */
-KNOWWE.editCommons.UndoSupport = function(restoreDataFun, getContentDataFun, getMetaDataFun) {
+KNOWWE.editCommons.UndoSupport = function (restoreDataFun, getContentDataFun, getMetaDataFun) {
 	this.restoreDataFun = restoreDataFun;
 	this.getContentDataFun = getContentDataFun;
 	this.getMetaDataFun = getMetaDataFun;
@@ -327,7 +349,7 @@ KNOWWE.editCommons.UndoSupport = function(restoreDataFun, getContentDataFun, get
  * @param combineId (optional) if specified, multiple recorded actions of the same combineId will be unified
  * into one undo/redo operation. This is often useful when performing minimal changes by keyboard.
  */
-KNOWWE.editCommons.UndoSupport.prototype.withUndo = function(name, action, combineId) {
+KNOWWE.editCommons.UndoSupport.prototype.withUndo = function (name, action, combineId) {
 	// check for nested undoable actions
 	if (this.recording) return action();
 
@@ -335,11 +357,11 @@ KNOWWE.editCommons.UndoSupport.prototype.withUndo = function(name, action, combi
 	if (this.currentIndex == -1) {
 		var meta = this.getMetaDataFun();
 		var content = this.getContentDataFun();
-		this.snaps.push({name : "", metaDataBefore : meta, metaDataAfter : meta, contentData : content});
+		this.snaps.push({name: "", metaDataBefore: meta, metaDataAfter: meta, contentData: content});
 		this.currentIndex = 0;
 	}
 
-	var snap = {name : name, combineId : combineId};
+	var snap = {name: name, combineId: combineId};
 	var lastSnap = this.snaps[this.currentIndex];
 	var canCombine = combineId && combineId == lastSnap.combineId;
 	try {
@@ -382,20 +404,20 @@ KNOWWE.editCommons.UndoSupport.prototype.withUndo = function(name, action, combi
  * @param combineId (optional) if specified, multiple recorded actions of the same combineId will be unified
  * into one undo/redo operation. This is often useful when performing minimal changes by keyboard.
  */
-KNOWWE.editCommons.UndoSupport.prototype.recordUndo = function(name, combineId) {
-	this.withUndo(name, function() {
+KNOWWE.editCommons.UndoSupport.prototype.recordUndo = function (name, combineId) {
+	this.withUndo(name, function () {
 	}, combineId);
 };
 
-KNOWWE.editCommons.UndoSupport.prototype.canUndo = function() {
+KNOWWE.editCommons.UndoSupport.prototype.canUndo = function () {
 	return this.currentIndex > 0;
 };
 
-KNOWWE.editCommons.UndoSupport.prototype.canRedo = function() {
+KNOWWE.editCommons.UndoSupport.prototype.canRedo = function () {
 	return this.currentIndex < this.snaps.length - 1;
 };
 
-KNOWWE.editCommons.UndoSupport.prototype.undo = function(count) {
+KNOWWE.editCommons.UndoSupport.prototype.undo = function (count) {
 	// check if undo is possible
 	if (this.recording) throw "Must not call undo during recording undoable action";
 	if (!this.canUndo()) return;
@@ -411,7 +433,7 @@ KNOWWE.editCommons.UndoSupport.prototype.undo = function(count) {
 		this.snaps[this.currentIndex + 1].metaDataBefore);
 };
 
-KNOWWE.editCommons.UndoSupport.prototype.redo = function(count) {
+KNOWWE.editCommons.UndoSupport.prototype.redo = function (count) {
 	// check if redo is possible
 	if (this.recording) throw "Must not call redo during recording undoable action";
 	if (!this.canRedo()) return;
@@ -427,18 +449,18 @@ KNOWWE.editCommons.UndoSupport.prototype.redo = function(count) {
 		this.snaps[this.currentIndex].metaDataAfter);
 };
 
-KNOWWE.editCommons.UndoSupport.prototype.getUndoNames = function(maxNames) {
-	var from = 1, to = this.currentIndex+1;
+KNOWWE.editCommons.UndoSupport.prototype.getUndoNames = function (maxNames) {
+	var from = 1, to = this.currentIndex + 1;
 	if (typeof maxNames !== 'undefined' && to - from > maxNames) from = to - maxNames;
-	return  jq$.map(this.snaps.slice(from, to), function(snap) {
+	return jq$.map(this.snaps.slice(from, to), function (snap) {
 		return snap.name;
 	}).reverse();
 };
 
-KNOWWE.editCommons.UndoSupport.prototype.getRedoNames = function(maxNames) {
-	var from = this.currentIndex + 1, to = this.snaps.length+1;
+KNOWWE.editCommons.UndoSupport.prototype.getRedoNames = function (maxNames) {
+	var from = this.currentIndex + 1, to = this.snaps.length + 1;
 	if (typeof maxNames !== 'undefined' && to - from > maxNames) to = from + maxNames;
-	return  jq$.map(this.snaps.slice(from, to), function(snap) {
+	return jq$.map(this.snaps.slice(from, to), function (snap) {
 		return snap.name;
 	});
 };
@@ -446,7 +468,7 @@ KNOWWE.editCommons.UndoSupport.prototype.getRedoNames = function(maxNames) {
 /**
  * Returns if the content of the supported editor has been changed since it's initial state.
  */
-KNOWWE.editCommons.UndoSupport.prototype.hasContentChanged = function() {
+KNOWWE.editCommons.UndoSupport.prototype.hasContentChanged = function () {
 	if (this.currentIndex <= 0) return false;
 	return this.snaps[0].contentData !== this.snaps[this.currentIndex].contentData;
 };

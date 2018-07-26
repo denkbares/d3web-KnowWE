@@ -23,7 +23,7 @@
  * preserved.
  */
 if (typeof KNOWWE == "undefined" || !KNOWWE) {
-    var KNOWWE = {};
+	var KNOWWE = {};
 }
 
 /**
@@ -32,256 +32,259 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
  * namespaces are preserved.
  */
 if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
-    KNOWWE.plugin = {};
+	KNOWWE.plugin = {};
 }
 
 
 /**
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
  */
-KNOWWE.plugin.instantEdit = function() {
- 
-    function enabledWarning() {
-        if (_IE.enabled) {
-            alert("You can only edit the page once at a time.")
-        }
-    }
-    
-    function bindUnloadFunctions(id) {
-        window.onbeforeunload = (function() {
-            var toolsUnloadCondition = _IE.toolNameSpace[id].unloadCondition;
-            if (toolsUnloadCondition != null && !toolsUnloadCondition(id)) {
-                return "edit.areyousure".localize();
-            }
-        }).bind(this);
+KNOWWE.plugin.instantEdit = function () {
 
-        window.onunload = (function() {
-            _IE.disable(id, false, null);
-        }).bind(this);
+	function enabledWarning() {
+		if (_IE.enabled) {
+			alert("You can only edit the page once at a time.")
+		}
 	}
 
-    return {
+	function bindUnloadFunctions(id) {
+		window.onbeforeunload = (function () {
+			var toolsUnloadCondition = _IE.toolNameSpace[id].unloadCondition;
+			if (toolsUnloadCondition != null && !toolsUnloadCondition(id)) {
+				return "edit.areyousure".localize();
+			}
+		}).bind(this);
 
-        toolNameSpace: {},
+		window.onunload = (function () {
+			_IE.disable(id, false, null);
+		}).bind(this);
+	}
 
-        enabled: false,
-        
-        enable: function(id, toolNameSpace) {
+	return {
 
-            if (_IE.enabled) {
-                enabledWarning();
-                return;
-            }
+		toolNameSpace: {},
+
+		enabled: false,
+
+		enable: function (id, toolNameSpace) {
+
+			if (_IE.enabled) {
+				enabledWarning();
+				return;
+			}
 			if (KNOWWE.helper.gup('version')) {
 				alert("Unable to edit while restoring versions.");
 				return;
 			}
 
-            _EC.showAjaxLoader(id);
-            
-            _EC.mode = _IE;
+			_EC.showAjaxLoader(id);
 
-            _IE.toolNameSpace[id] = toolNameSpace;
+			_EC.mode = _IE;
 
-            var params = {
-                action: 'InstantEditEnableAction',
-                KdomNodeId: id,
-                mode: toolNameSpace.mode
-            };
+			_IE.toolNameSpace[id] = toolNameSpace;
 
-            var options = {
-                url: KNOWWE.core.util.getURL(params),
-                response: {
-                    action: 'none',
-                    fn: function() {
-                        if (_IE.mutualExclusion && _IE.enabled) {
-                            enabledWarning();
-                            return;
-                        }
-                        _IE.enabled = true;
+			var params = {
+				action: 'InstantEditEnableAction',
+				KdomNodeId: id,
+				mode: toolNameSpace.mode
+			};
+
+			var options = {
+				url: KNOWWE.core.util.getURL(params),
+				response: {
+					action: 'none',
+					fn: function () {
+						if (_IE.mutualExclusion && _IE.enabled) {
+							enabledWarning();
+							return;
+						}
+						_IE.enabled = true;
 
 						var json = JSON.parse(this.responseText);
 						var locked = json.locked;
 						var html = toolNameSpace.generateHTML(id);
 						if (toolNameSpace.getChangeNoteField) {
 							html += toolNameSpace.getChangeNoteField();
-						} else{
+						} else {
 							html += _IE.getChangeNoteField();
 						}
-                        html += toolNameSpace.generateButtons(id);
-                        html = _EC.wrapHTML(id, locked, html);
+						html += toolNameSpace.generateButtons(id);
+						html = _EC.wrapHTML(id, locked, html);
 
-                        KNOWWE.core.util.replace(html);
+						KNOWWE.core.util.replace(html);
 
-                        toolNameSpace.postProcessHTML(id);
-                        bindUnloadFunctions(id);
-                        _EC.hideTools();
+						toolNameSpace.postProcessHTML(id);
+						bindUnloadFunctions(id);
+						_EC.hideTools();
 
 						var save = toolNameSpace.save ? toolNameSpace.save : _IE.save;
 						var cancel = toolNameSpace.cancel ? toolNameSpace.cancel : _IE.cancel;
 
-                        _EC.registerSaveCancelEvents(jq$('#' + id), save, cancel, id);
-                    },
+						_EC.registerSaveCancelEvents(jq$('#' + id), save, cancel, id);
+					},
 					onError: _EC.onErrorBehavior
 				}
-            };
-            new _KA(options).send();
+			};
+			new _KA(options).send();
 
-            _EC.hideAjaxLoader();
-        },
+			_EC.hideAjaxLoader();
+		},
 
 
-        disable: function(id, reload, fn) {
-        	if (!fn) fn = false; // prevents JS error in KnowWE helper
-            var params = {
-                action: 'InstantEditDisableAction',
-                KdomNodeId: id
-            };
+		disable: function (id, reload, fn) {
+			if (!fn) fn = false; // prevents JS error in KnowWE helper
+			var params = {
+				action: 'InstantEditDisableAction',
+				KdomNodeId: id
+			};
 
-            var options = {
-                url: KNOWWE.core.util.getURL(params),
-                async: false,
-                response: {
-                    action: 'none',
-                    onError: _EC.onErrorBehavior,
-                    fn: fn
-                }
-            };
-            new _KA(options).send();
+			var options = {
+				url: KNOWWE.core.util.getURL(params),
+				async: false,
+				response: {
+					action: 'none',
+					onError: _EC.onErrorBehavior,
+					fn: fn
+				}
+			};
+			new _KA(options).send();
 
-            if (reload) {
+			if (reload) {
 				KNOWWE.core.util.reloadPage();
 			}
 		},
-        
-        /**
+
+		/**
 		 * Save the changes to the article.
-		 * 
+		 *
 		 * @param id is the id of the DOM element
 		 * @param newWikiText is the optional new text for the section with the given id
 		 */
-        save: function(id, newWikiText) {
+		save: function (id, newWikiText) {
 
-            if (newWikiText == null) {
-                newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
-            }
-            
-            var params = {
-                action: 'InstantEditSaveAction',
-                KdomNodeId: id,
-                KWikiChangeNote: _EC.mode.getChangeNote(id)
-            };
+			if (newWikiText == null) {
+				newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
+			}
 
-            _EC.sendChanges(newWikiText, params, function(id) {
-                _IE.disable(id, true, null);
-            });
-        },
+			var params = {
+				action: 'InstantEditSaveAction',
+				KdomNodeId: id,
+				KWikiChangeNote: _EC.mode.getChangeNote(id)
+			};
 
-        /**
+			_EC.sendChanges(newWikiText, params, function (id) {
+				_IE.disable(id, true, null);
+			});
+		},
+
+		/**
 		 * Adds a new article with the given articleText. The title of the new
 		 * article is given by the current tools function getNewArticleTitle();
-		 * 
+		 *
 		 * @param id is the id of the source DOM element
 		 * @param title is the optional title of the added article
 		 * @param newWikiText is the optional new text of the new article
-         * @param redirect boolean, whether the user should be redirected to the newly created page after saving.
-		 * @param fn the callback called after saving...
+		 * @param parameters containing respective values for redirect, reload and a callback function
 		 */
-        add: function(id, title, newWikiText, redirect, fn) {
+		add: function (id, title, newWikiText, parameters = {redirect: false, reload: true, callback: null}) {
+			var redirect = parameters["redirect"];
+			var reload = parameters["reload"];
+			var fn = parameters["callback"];
 
-            _EC.showAjaxLoader(id);
+			_EC.showAjaxLoader(id);
 
-            if (newWikiText == null) {
-                newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
-            }
-            if (title == null) {
-                title = _IE.toolNameSpace[id].getNewArticleTitle(id);
-            }
+			if (newWikiText == null) {
+				newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
+			}
+			if (title == null) {
+				title = _IE.toolNameSpace[id].getNewArticleTitle(id);
+			}
 
-            var params = {
-                action: 'InstantEditAddArticleAction',
-                KdomNodeId: id,
-                KWiki_Topic: title
-            };
+			var params = {
+				action: 'InstantEditAddArticleAction',
+				KdomNodeId: id,
+				KWiki_Topic: title
+			};
 
-            _EC.sendChanges(newWikiText, params, function(id) {
-                if (fn) fn();
-                _IE.disable(id, !redirect, null);
-                if (redirect) {
-                    window.location.search = "?page=" + title;
-                }
-            });
+			_EC.sendChanges(newWikiText, params, function (id) {
+				if (fn) fn(title);
+				_IE.disable(id, reload, null);
+				if (redirect) {
+					window.location.search = "?page=" + title;
+				}
+			});
 
-        },
+		},
 
 
-        /**
+		/**
 		 * Cancel the instant edit action. Restore the original text.
-		 * 
+		 *
 		 * @param id is the id of the DOM element
 		 */
-        cancel: function(id) {
-        	_IE.toolNameSpace[id].unloadCondition = null;
-            _IE.disable(id, true, null);
-        },
+		cancel: function (id) {
+			_IE.toolNameSpace[id].unloadCondition = null;
+			_IE.disable(id, true, null);
+		},
 
-        deleteSection: function(id) {
-            var del = confirm("Do you really want to delete this content?");
-            if (del) {
-                _IE.save(id, "");
-            }
-        },
-        
-        deleteArticle : function(id) {
-        	var del = confirm("Do you really want to delete this content?");
-        	if (del) {
-        		var title = _IE.toolNameSpace[id].getCurrentArticleTitle(id); 	
-        		_IE.add(id, title, "");
-        	}
-        }, 
+		deleteSection: function (id) {
+			var del = confirm("Do you really want to delete this content?");
+			if (del) {
+				_IE.save(id, "");
+			}
+		},
 
-        disableDefaultEditTool: function() {
-            jq$('div.InstantEditTool').css("display", "none");
-        },
+		deleteArticle: function (id, title, hideConfirmDialogue) {
+			if (!hideConfirmDialogue) {
+				var del = confirm("Do you really want to delete this content?");
+			}
+			if (hideConfirmDialogue || del) {
+				if (title == null) title = _IE.toolNameSpace[id].getCurrentArticleTitle(id);
+				_IE.add(id, title, "");
+			}
+		},
 
-        enableDefaultEditTool: function() {
-            jq$('div.InstantEditTool').css("display", null);
-        }, 
-        
-        getSaveCancelDeleteButtons: function(id, additionalButtonArray) {        
-            var array = [];
-            array.push(_EC.elements.getSaveButton("_IE.save('" + id + "')"));
-            array.push(_EC.elements.getCancelButton("_IE.cancel('" + id + "')"));
-            array.push("&nbsp;");
-            array.push(_EC.elements.getDeleteSectionButton("_IE.deleteSection('" + id + "')"));
-            
-            // add additional buttons
-            if (additionalButtonArray) {
-                array.push("       ");
-                array = array.concat(additionalButtonArray);
-            }
-            return array;
-        },
-        
-        getButtonsTable: function(buttons) {
-            var table = "";
-            for (var i = 0; i < buttons.length; i++) {
-                table += "<p>" + buttons[i] + "</p>\n";
-            }
-            return "<div class='editbuttons'>" + table + "</div>";
-        },
-        
-        getChangeNoteField: function(){
+		disableDefaultEditTool: function () {
+			jq$('div.InstantEditTool').css("display", "none");
+		},
+
+		enableDefaultEditTool: function () {
+			jq$('div.InstantEditTool').css("display", null);
+		},
+
+		getSaveCancelDeleteButtons: function (id, additionalButtonArray) {
+			var array = [];
+			array.push(_EC.elements.getSaveButton("_IE.save('" + id + "')"));
+			array.push(_EC.elements.getCancelButton("_IE.cancel('" + id + "')"));
+			array.push("&nbsp;");
+			array.push(_EC.elements.getDeleteSectionButton("_IE.deleteSection('" + id + "')"));
+
+			// add additional buttons
+			if (additionalButtonArray) {
+				array.push("       ");
+				array = array.concat(additionalButtonArray);
+			}
+			return array;
+		},
+
+		getButtonsTable: function (buttons) {
+			var table = "";
+			for (var i = 0; i < buttons.length; i++) {
+				table += "<p>" + buttons[i] + "</p>\n";
+			}
+			return "<div class='editbuttons'>" + table + "</div>";
+		},
+
+		getChangeNoteField: function () {
 			return "<div class='changenotearea'><span>Change note: </span><input class='changenote' type='text' maxLength=100 size=100></div>";
 		},
-        
-        getChangeNote: function(id) {
-			return jq$('#' + id + ' .changenote').val();
-        }
-        
-    }
-}();
 
+		getChangeNote: function (id) {
+			return jq$('#' + id + ' .changenote').val();
+		}
+
+	}
+}();
 
 
 /**
@@ -289,7 +292,7 @@ KNOWWE.plugin.instantEdit = function() {
  */
 var _IE = KNOWWE.plugin.instantEdit;
 
-jq$(document).ready(function() {
+jq$(document).ready(function () {
 	_EC.executeIfPrivileged(_IE.enableDefaultEditTool, _IE.disableDefaultEditTool);
 });
 

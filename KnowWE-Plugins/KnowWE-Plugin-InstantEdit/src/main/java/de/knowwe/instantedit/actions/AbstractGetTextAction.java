@@ -17,31 +17,33 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.dropzone.action;
+package de.knowwe.instantedit.actions;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
-import de.knowwe.core.Environment;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.wikiConnector.WikiConnector;
-import de.knowwe.dropzone.util.DropZoneUtil;
 
 /**
  * @author Jonas Müller
- * @created 25.05.18
+ * @created 09.07.18
  */
-public class DropAttachmentToExistingArticleAction extends AbstractAction {
+public abstract class AbstractGetTextAction extends AbstractAction {
 
-	// TODO: Currently not used, Remove?
-	@Override
-	public void execute(UserActionContext context) throws IOException {
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
-		byte[] data = java.util.Base64.getDecoder().decode(context.getParameter("data"));
-		if (data == null) return;
-		InputStream stream = new ByteArrayInputStream(data);
-		wikiConnector.storeAttachment("Test title", DropZoneUtil.getEnrichedFileName(context, ""), context.getUserName(), stream);
+	protected static void writeJsonResponse(String text, UserActionContext context) throws IOException {
+		JSONObject response = new JSONObject();
+		try {
+			response.accumulate("text", text);
+			if (context.getWriter() != null) {
+				context.setContentType("text/html; charset=UTF-8");
+				response.write(context.getWriter());
+			}
+		}
+		catch (JSONException e) {
+			throw new IOException(e);
+		}
 	}
 }
