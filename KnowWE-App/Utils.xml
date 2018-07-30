@@ -35,7 +35,8 @@
 				<exclude name="KnowWE-Plugin-AugmentationEdit/**" />
 				<exclude name="KnowWE-Plugin-DenkbaresTmp/**" />
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
-				<exclude name="KnowWE-Plugin-ExperienceDatabase/**" />
+				<exclude name="KnowWE-Plugin-ExperienceDatabase/src/main/resources/webapp/templates/**" />
+				<exclude name="KnowWE-Plugin-ExperienceDatabase/src/main/resources/webapp/WEB-INF/**" />
 
 				<!-- for performance reasons... -->
 				<exclude name="KnowWE-Plugin-XSL/**" />
