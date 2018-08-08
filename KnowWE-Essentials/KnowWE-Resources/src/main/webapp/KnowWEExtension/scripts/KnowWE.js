@@ -246,9 +246,9 @@ KNOWWE.core.util = function () {
 		 * e.g.:
 		 * (start code)
 		 *  var params = {
-         *      renderer : 'KWiki_dpsSolutions',
-         *      KWikiWeb : 'default_web'
-         *  }
+		 *      renderer : 'KWiki_dpsSolutions',
+		 *      KWikiWeb : 'default_web'
+		 *  }
 		 * KNOWWE.util.getURL( params ) --> KnowWE.jsp?renderer=KWiki_dpsSolutions&KWikiWeb=default_web
 		 * (end)
 		 *
@@ -484,6 +484,19 @@ KNOWWE.core.util = function () {
 
 		getMorePopupSelector: function () {
 			return KNOWWE.core.util.isKnowWETemplate() ? '#morepopup' : '#more ul';
+		},
+		getEditButton: function () {
+			var pageActions;
+			var editAction;
+			if (KNOWWE.core.util.getTemplate() === 'KnowWE') {
+				pageActions = jq$('#actionsTop')[0].getElementsByTagName('ul')[0];
+				editAction = pageActions.getElementsByTagName('li')[0];
+
+			} else {
+				pageActions = jq$('.nav-pills:nth-child(2)')[0];
+				editAction = pageActions.children[2];
+			}
+			return jq$(editAction);
 		}
 	}
 }();
