@@ -99,25 +99,26 @@ KNOWWE.core.plugin.dropZone = function () {
 			processData: false,
 			success: function () {
 				setUploadedStyle(event.target);
-				if (event.reload) {
-					setTimeout(function () {
-						window.location.reload();
-					}, 1000);
-				} else {
+				if (!event.reload) {
 					setTimeout(function () {
 						resetStyle(event.target, "Drop attachment(s) here")
 					}, 1000)
 					if (event.callback) event.callback();
+				} else {
+					setTimeout(function () {
+						window.location.reload();
+					}, 1000);
 				}
 			},
 			error: function (data) {
 				KNOWWE.notification.error(data.responseText);
 				resetStyle(event.target, "Drop attachment(s) here");
 			}
-		});
+		});ihreih
 	}
 
 	function handleDropToExisting(event) {
+		event.reload = true;
 		const uploadData = prepareUploadData(event)
 		ajaxData(uploadData, event);
 	}
