@@ -496,7 +496,7 @@ KNOWWE.core.util = function () {
 				pageActions = jq$('.nav-pills:nth-child(2)')[0];
 				editAction = pageActions.children[2];
 			}
-			return jq$(editAction);
+			return editAction;
 		}
 	}
 }();
