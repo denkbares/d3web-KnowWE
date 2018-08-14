@@ -16,8 +16,7 @@ public class CIDaemonRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
 		String content = DefaultMarkupType.getContent(section);
-		String dashboardName = DefaultMarkupType.getAnnotation(section,
-				CIDashboardType.NAME_KEY);
+		String dashboardName = DefaultMarkupType.getAnnotation(section, CIDashboardType.NAME_KEY);
 		renderDaemonContents(section, dashboardName, string);
 		string.append(content);
 	}
