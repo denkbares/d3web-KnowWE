@@ -391,7 +391,7 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares</groupId>
+				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-d3web-OntologyBridge</artifactId>
 				<version>${knowwe.version}</version>
 			</dependency>
