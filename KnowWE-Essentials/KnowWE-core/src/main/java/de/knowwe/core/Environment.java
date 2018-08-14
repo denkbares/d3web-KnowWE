@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -30,19 +30,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.LogManager;
 
 import javax.servlet.ServletContext;
 
+import com.denkbares.collections.PriorityList;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
-import com.denkbares.collections.PriorityList;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.JPFPluginManager;
 import com.denkbares.plugin.Plugin;
@@ -70,9 +71,9 @@ import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
 
 /**
- * This is the core class of KnowWE. It manages the {@link ArticleManager} and provides methods to
- * access {@link Article}s and other Managers. Further it is connected to the used Wiki-engine,
- * holding an instance of {@link WikiConnector} and allows page saves.
+ * This is the core class of KnowWE. It manages the {@link ArticleManager} and provides methods to access {@link
+ * Article}s and other Managers. Further it is connected to the used Wiki-engine, holding an instance of {@link
+ * WikiConnector} and allows page saves.
  *
  * @author Jochen
  */
@@ -85,9 +86,8 @@ public class Environment {
 	private static boolean initialized = false;
 
 	/**
-	 * Stores additional renderer if renderer are plugged via the plugin framework The renderer
-	 * plugged with highest priority _might_ decided to look up in this list and call other
-	 * renderer.
+	 * Stores additional renderer if renderer are plugged via the plugin framework The renderer plugged with highest
+	 * priority _might_ decided to look up in this list and call other renderer.
 	 */
 	private final Map<Type, List<Renderer>> additionalRenderer = new HashMap<>();
 
@@ -186,9 +186,6 @@ public class Environment {
 			throw new IllegalStateException(msg, e);
 		}
 	}
-
-
-
 
 	private void initEventManager() {
 		// get all EventListeners
@@ -383,16 +380,15 @@ public class Environment {
 	}
 
 	/**
-	 * Initialize all types by decorating them. The method makes sure that each instance is
-	 * decorated only once. To do this a breath-first-search is used. Thus each item is initialized
-	 * with the shortest path towards it.
+	 * Initialize all types by decorating them. The method makes sure that each instance is decorated only once. To do
+	 * this a breath-first-search is used. Thus each item is initialized with the shortest path towards it.
 	 *
 	 * @created 24.10.2013
 	 */
 	private void decorateTypeTree() {
 
 		// check whether the priorities between plugged types lead to deterministic structure of the type tree
- 		Plugins.checkTypePriorityClarity();
+		Plugins.checkTypePriorityClarity();
 
 		// queue the queue of paths to be initialized
 		RootType root = RootType.getInstance();
@@ -400,7 +396,7 @@ public class Environment {
 		queue.add(new Type[] { root });
 
 		// queuedTypes the already queued instances
-		HashSet<Type> queuedTypes = new HashSet<>();
+		Set<Type> queuedTypes = Collections.newSetFromMap(new IdentityHashMap<>());
 		queuedTypes.add(root);
 
 		while (!queue.isEmpty()) {
@@ -422,8 +418,7 @@ public class Environment {
 			for (Type childType : type.getChildrenTypes()) {
 				// secure against malformed plugins
 				if (childType == null) {
-					throw new NullPointerException(
-							"type '" + type.getClass().getName() + "' contains 'null' as child");
+					throw new NullPointerException("type '" + type.getClass().getName() + "' contains 'null' as child");
 				}
 
 				// avoid multiple decoration in recursive type declarations
@@ -461,11 +456,11 @@ public class Environment {
 	}
 
 	/**
-	 * Returns from the prioritized list of plugged renderer for the given type the renderer
-	 * positioned next in the priority list after the given renderer. If the passed renderer is not
-	 * contained in the given list, the first renderer of the list is returned.
+	 * Returns from the prioritized list of plugged renderer for the given type the renderer positioned next in the
+	 * priority list after the given renderer. If the passed renderer is not contained in the given list, the first
+	 * renderer of the list is returned.
 	 *
-	 * @param type the type we want the next renderer for
+	 * @param type            the type we want the next renderer for
 	 * @param currentRenderer the current renderer
 	 * @return the next renderer
 	 * @created 04.11.2013
@@ -519,7 +514,7 @@ public class Environment {
 	/**
 	 * Returns the {@link Article} object for a given web and title
 	 *
-	 * @param web the web of the {@link Article}
+	 * @param web   the web of the {@link Article}
 	 * @param title the title of the {@link Article}
 	 */
 	public Article getArticle(String web, String title) {
