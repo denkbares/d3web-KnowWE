@@ -36,6 +36,7 @@ import de.d3web.core.session.ValueUtils;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;

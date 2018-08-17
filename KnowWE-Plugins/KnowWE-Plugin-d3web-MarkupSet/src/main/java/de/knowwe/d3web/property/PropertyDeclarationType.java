@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import de.d3web.we.kdom.rules.Indent;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.Patterns;
@@ -63,7 +64,7 @@ public class PropertyDeclarationType extends AbstractType {
 		this.addChildType(new PropertyObjectReference());
 
 		this.addChildType(new PropertyType());
-		this.addChildType(new LocaleType());
+		this.addChildType(new LocaleType("."));
 		this.addChildType(new PropertyContentType());
 		this.addChildType(new Indent());
 

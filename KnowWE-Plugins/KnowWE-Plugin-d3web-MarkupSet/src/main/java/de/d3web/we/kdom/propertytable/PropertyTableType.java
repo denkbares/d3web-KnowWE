@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,10 +25,10 @@ import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Messages;
-import de.knowwe.d3web.property.LocaleType;
 import de.knowwe.d3web.property.PropertyDeclarationType;
 import de.knowwe.d3web.property.PropertyObjectReference;
 import de.knowwe.d3web.property.PropertyType;
@@ -57,11 +57,9 @@ public class PropertyTableType extends DefaultMarkupType {
 		PackageManager.addPackageAnnotation(MARKUP);
 
 		PropertyType propertyType = new PropertyType();
-		LocaleType localType = new LocaleType();
+		LocaleType localType = new LocaleType(".");
 
-		localType.setSectionFinder(new ConstraintSectionFinder(
-				new RegexSectionFinder(
-						Pattern.compile("\\s*\\.\\s*(\\w{2,}(?:[\\.-]\\w{2,})?)\\s*"), 1),
+		localType.setSectionFinder(new ConstraintSectionFinder(localType.getSectionFinder(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1)));
 
 		propertyType.setSectionFinder(new ConstraintSectionFinder(
