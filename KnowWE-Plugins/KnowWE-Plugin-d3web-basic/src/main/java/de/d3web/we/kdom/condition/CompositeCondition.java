@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -36,9 +36,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 /**
- * This class defines a KDOM-Schema to parse composite conditions as known from
- * proposition logics, using 'AND', 'OR', 'NOT' as keywords and brackets '(' and
- * ')' for to express association boundaries
+ * This class defines a KDOM-Schema to parse composite conditions as known from proposition logics, using 'AND', 'OR',
+ * 'NOT' as keywords and brackets '(' and ')' for to express association boundaries
  *
  * @author Jochen
  */
@@ -50,12 +49,9 @@ public class CompositeCondition extends AbstractType {
 	public static final char BRACE_CLOSED = ')';
 
 	public CompositeCondition() {
-		this(new String[] {
-						"AND", "UND", "&" },
-				new String[] {
-						"OR", "ODER", "|" },
-				new String[] {
-						"NOT", "NICHT", "!" });
+		this(new String[] { "AND", "UND", "&" },
+				new String[] { "OR", "ODER", "|" },
+				new String[] { "NOT", "NICHT", "!" });
 	}
 
 	public CompositeCondition(String[] andKeys, String[] orKeys, String[] notKeys) {
@@ -98,14 +94,13 @@ public class CompositeCondition extends AbstractType {
 
 		// ... or finally a TerminalCondition which stops the recursive descent
 		this.addChildType(terminalCondition);
-
 	}
 
 	/**
 	 * Sets the set of terminalConditions for this CompositeCondition
 	 * <p>
-	 * Any terminal that is not accepted by one of these will be marked by an
-	 * UnrecognizedTerminalCondition causing an error
+	 * Any terminal that is not accepted by one of these will be marked by an UnrecognizedTerminalCondition causing an
+	 * error
 	 */
 	public void setAllowedTerminalConditions(List<Type> types) {
 		terminalCondition.setAllowedTerminalConditions(types);
@@ -207,5 +202,4 @@ public class CompositeCondition extends AbstractType {
 		}
 		return false;
 	}
-
 }
