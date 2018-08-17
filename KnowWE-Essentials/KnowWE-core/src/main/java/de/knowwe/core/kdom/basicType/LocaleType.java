@@ -34,7 +34,9 @@ public class LocaleType extends AbstractType {
 			//noinspection unchecked
 			Locale locale = getLocale((Section<LocaleType>) s);
 			if (locale == null) return null;
-			return locale.getDisplayName(Locale.ENGLISH) + "<br>" + locale.getDisplayName(locale);
+			return locale.getLanguage().equals(Locale.ENGLISH.getLanguage())
+					? locale.getDisplayName(Locale.ENGLISH)
+					: locale.getDisplayName(Locale.ENGLISH) + "<br>" + locale.getDisplayName(locale);
 		}));
 	}
 
