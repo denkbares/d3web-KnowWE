@@ -22,6 +22,10 @@ public class RuleContainerFinder implements SectionFinder {
 	private final String[] startTokens;
 	private final String[] endTokens;
 
+	public RuleContainerFinder(String startToken, String[] endTokens) {
+		this(new String[] { startToken }, endTokens);
+	}
+
 	public RuleContainerFinder(String[] startTokens, String[] endTokens) {
 		this.startTokens = startTokens;
 		this.endTokens = endTokens;
@@ -55,8 +59,8 @@ public class RuleContainerFinder implements SectionFinder {
 	 * @param text  String containing the Rules as text, as well as comments
 	 * @param start initial start index of the first rule
 	 * @param end   current end index of the rule
-	 * @return an unaltered index for {@code end} if no comment has been found between the rules, or a new index for
-	 * end marking the end of a rule before the next comment
+	 * @return an unaltered index for {@code end} if no comment has been found between the rules, or a new index for end
+	 * marking the end of a rule before the next comment
 	 */
 	private int separateRules(String text, int start, int end) {
 		String toSplit = text.subSequence(start, end).toString();
