@@ -11,6 +11,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.kdom.renderer.TooltipRenderer;
 
 /**
  * Represents a java {@link Locale}. getLocale(...) returns a Locale representing the text content of the Section.
@@ -29,7 +30,12 @@ public class LocaleType extends AbstractType {
 	public LocaleType(String prefix) {
 		Pattern pattern = Pattern.compile("^\\s*" + Pattern.quote(prefix) + "\\s*(" + LOCALE_REGEX + ")\\s*");
 		this.setSectionFinder(new RegexSectionFinder(pattern, 1));
-		this.setRenderer(StyleRenderer.LOCALE);
+		this.setRenderer(TooltipRenderer.create(StyleRenderer.LOCALE, (s, user) -> {
+			//noinspection unchecked
+			Locale locale = getLocale((Section<LocaleType>) s);
+			if (locale == null) return null;
+			return locale.getDisplayName(Locale.ENGLISH) + "<br>" + locale.getDisplayName(locale);
+		}));
 	}
 
 	public Locale getLocale(Section<LocaleType> s) {

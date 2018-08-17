@@ -19,6 +19,9 @@
 
 package de.knowwe.kdom.renderer;
 
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -27,8 +30,8 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 
 /**
- * Class for decorating a renderer with some tooltip. If the decorating renderer is null,
- * delegate-rendering of the sub-sections is used.
+ * Class for decorating a renderer with some tooltip. If the decorating renderer is null, delegate-rendering of the
+ * sub-sections is used.
  *
  * @author Volker Belli (denkbares GmbH)
  * @created 01.03.2014
@@ -43,6 +46,24 @@ public abstract class TooltipRenderer implements Renderer {
 
 	public TooltipRenderer(Renderer delegate) {
 		this.delegate = delegate;
+	}
+
+	public static TooltipRenderer create(Renderer delegate, Function<Section<?>, String> supplier) {
+		return create(delegate, (section, user) -> supplier.apply(section));
+	}
+
+	public static TooltipRenderer create(Renderer delegate, BiFunction<Section<?>, UserContext, String> supplier) {
+		return new TooltipRenderer(delegate) {
+			@Override
+			public boolean hasTooltip(Section<?> section, UserContext user) {
+				return getTooltip(section, user) != null;
+			}
+
+			@Override
+			public String getTooltip(Section<?> section, UserContext user) {
+				return supplier.apply(section, user);
+			}
+		};
 	}
 
 	@Override
