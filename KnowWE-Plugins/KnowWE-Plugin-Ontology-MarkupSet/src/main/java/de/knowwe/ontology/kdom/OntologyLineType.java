@@ -27,7 +27,7 @@ import de.knowwe.kdom.sectionFinder.LineSectionFinder;
 public class OntologyLineType extends AbstractType {
 
 	public OntologyLineType(Type... childrenTypes) {
-		this.setSectionFinder(new LineSectionFinder());
+		this.setSectionFinder(LineSectionFinder.getInstance());
 		this.addChildType(new LineEndComment());
 		this.addChildType(new LineBreak());
 		for (Type childType : childrenTypes) {

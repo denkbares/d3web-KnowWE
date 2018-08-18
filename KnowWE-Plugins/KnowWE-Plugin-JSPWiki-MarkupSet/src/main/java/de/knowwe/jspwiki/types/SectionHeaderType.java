@@ -35,7 +35,7 @@ public class SectionHeaderType extends AbstractType {
 	 * The SectionHeaderType takes the first line of each SectionType.
 	 */
 	public SectionHeaderType() {
-		this.setSectionFinder(new ConstraintSectionFinder(new LineSectionFinder(),
+		this.setSectionFinder(new ConstraintSectionFinder(LineSectionFinder.getInstance(),
 				AtMostOneFindingConstraint.getInstance()));
 	}
 }
