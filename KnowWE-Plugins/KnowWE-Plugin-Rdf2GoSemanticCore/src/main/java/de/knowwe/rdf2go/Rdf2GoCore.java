@@ -367,7 +367,7 @@ public class Rdf2GoCore {
 		String uriText = uri.toString();
 		int length = 0;
 		URI shortURI = uri;
-		for (Entry<String, String> entry : namespaces.entrySet()) {
+		for (Entry<String, String> entry : getNamespaces().entrySet()) {
 			String partURI = entry.getValue();
 			int partLength = partURI.length();
 			if (partLength > length && uriText.length() > partLength && uriText.startsWith(partURI)) {
