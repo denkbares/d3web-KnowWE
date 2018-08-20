@@ -165,7 +165,8 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Message error(Exception e) {
-		return error(e.getMessage());
+		String message = e.getMessage();
+		return error(Strings.isBlank(message) ? String.valueOf(e) : message);
 	}
 
 	/**

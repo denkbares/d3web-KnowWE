@@ -20,11 +20,10 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 
 /**
- * For the given {@link Section}s and {@link Compiler} it gets all {@link CompileScript}s and then
- * compiles all Sections in the order, given by Priority of the scripts and position in the KDOM
- * (Article). The ScriptCompiler acts like a set, so you can add combinations of Sections and
- * CompileScripts multiple times, but after the first time, it no longer has any effect and each
- * combination will only be compiled once to avoid loops.
+ * For the given {@link Section}s and {@link Compiler} it gets all {@link CompileScript}s and then compiles all Sections
+ * in the order, given by Priority of the scripts and position in the KDOM (Article). The ScriptCompiler acts like a
+ * set, so you can add combinations of Sections and CompileScripts multiple times, but after the first time, it no
+ * longer has any effect and each combination will only be compiled once to avoid loops.
  *
  * @param <C> the Compiler for which we want to compile
  * @author Albrecht Striffler (denkbares GmbH)
@@ -32,25 +31,20 @@ import de.knowwe.core.report.Messages;
  */
 public class ScriptCompiler<C extends Compiler> {
 
-	private final TreeMap<Priority, LinkedHashSet<CompilePair>> compileMap =
-			new TreeMap<Priority, LinkedHashSet<CompilePair>>();
-
-	private final Set<CompilePair> pairSet = new HashSet<CompilePair>();
-
-	private Priority currentPriority;
-
-	private Iterator<CompilePair> currentIterator = null;
-
-	private final Class<?>[] typeFilter;
+	private final TreeMap<Priority, LinkedHashSet<CompilePair>> compileMap = new TreeMap<>();
+	private final Set<CompilePair> pairSet = new HashSet<>();
 
 	private final C compiler;
-
 	private final ScriptManager<C> scriptManager;
+	private final Class<?>[] typeFilter;
+
+	private Priority currentPriority;
+	private Iterator<CompilePair> currentIterator = null;
 
 	@SuppressWarnings("unchecked")
 	public ScriptCompiler(C compiler, Class<?>... typeFilter) {
 		this.compiler = compiler;
-		scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
+		this.scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
 		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
 			compileMap.put(p, new LinkedHashSet<>());
@@ -59,16 +53,15 @@ public class ScriptCompiler<C extends Compiler> {
 	}
 
 	/**
-	 * Adds a single section to the iterator. Successors of the section are not added.<br/>
-	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is
-	 * given, all scripts available for the type of the section and the compiler are added.<p> You
-	 * can use this method while the article of this iterator is compiled. The iterator will
-	 * continue iterating over its sections in the correct order also considering the newly
-	 * added.<p> The ScriptCompiler acts like a set, so you can add combinations of Sections and
-	 * CompileScripts multiple times, but after the first time, it no longer has any effect and each
-	 * combination will only be compiled once to avoid loops.
+	 * Adds a single section to the iterator. Successors of the section are not added.<br/> Optionally you can add a
+	 * filter to only add scripts of the given classes. If no filter is given, all scripts available for the type of the
+	 * section and the compiler are added.<p> You can use this method while the article of this iterator is compiled.
+	 * The iterator will continue iterating over its sections in the correct order also considering the newly added.<p>
+	 * The ScriptCompiler acts like a set, so you can add combinations of Sections and CompileScripts multiple times,
+	 * but after the first time, it no longer has any effect and each combination will only be compiled once to avoid
+	 * loops.
 	 *
-	 * @param section the section you want to add
+	 * @param section      the section you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 27.07.2012
 	 */
@@ -79,8 +72,9 @@ public class ScriptCompiler<C extends Compiler> {
 			Priority priority = entry.getKey();
 			LinkedHashSet<CompilePair> compileSet = compileMap.get(priority);
 			for (CompileScript<C, Type> script : entry.getValue()) {
-				if (scriptFilter.length > 0 && !ArrayUtils.contains(scriptFilter, script.getClass()))
+				if (scriptFilter.length > 0 && !ArrayUtils.contains(scriptFilter, script.getClass())) {
 					continue;
+				}
 				CompilePair pair = new CompilePair(Sections.cast(section, Type.class), script);
 				// we only add pairs that are not already added before (e.g. during incremental compilation)
 				if (pairSet.add(pair)) {
@@ -94,16 +88,15 @@ public class ScriptCompiler<C extends Compiler> {
 	}
 
 	/**
-	 * Adds the given root section and all its successors to the iterator.<br/> You can use this
-	 * method while the article of this iterator is compiled. The iterator will continue iterating
-	 * over its sections in the correct order also considering the newly added.<p> Optionally you
-	 * can add a filter to only add scripts of the given classes. If no filter is given, all scripts
-	 * available for the type of the sections and the compiler are added.<p> The ScriptCompiler acts
-	 * like a set, so you can add combinations of Sections and CompileScripts multiple times, but
-	 * after the first time, it no longer has any effect and each combination will only be compiled
-	 * once to avoid loops.
+	 * Adds the given root section and all its successors to the iterator.<br/> You can use this method while the
+	 * article of this iterator is compiled. The iterator will continue iterating over its sections in the correct order
+	 * also considering the newly added.<p> Optionally you can add a filter to only add scripts of the given classes. If
+	 * no filter is given, all scripts available for the type of the sections and the compiler are added.<p> The
+	 * ScriptCompiler acts like a set, so you can add combinations of Sections and CompileScripts multiple times, but
+	 * after the first time, it no longer has any effect and each combination will only be compiled once to avoid
+	 * loops.
 	 *
-	 * @param section the section and its successors you want to add
+	 * @param section      the section and its successors you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
 	 */
 	public void addSubtree(Section<?> section, Class<?>... scriptFilter) {
@@ -141,22 +134,29 @@ public class ScriptCompiler<C extends Compiler> {
 	}
 
 	public void compile() {
+		Priority lastPriority = Priority.INIT;
 		while (hasNext()) {
+			// get next script and section, and update the current compile priority, if required
 			CompilePair pair = next();
+			if (currentPriority != lastPriority) {
+				compiler.getCompilerManager().setCurrentCompilePriority(compiler, currentPriority);
+			}
+
+			Section<Type> section = pair.getA();
+			CompileScript<C, Type> script = pair.getB();
 			try {
-				pair.getB().compile(compiler, pair.getA());
+				script.compile(compiler, section);
 			}
 			catch (CompilerMessage cm) {
-				Messages.storeMessages(compiler, pair.getA(), pair.getB().getClass(),
-						cm.getMessages());
+				Messages.storeMessages(compiler, section, script.getClass(), cm.getMessages());
 			}
 			catch (Exception e) {
-				String msg = "Unexpected internal exception while compiling with script "
-						+ pair.getB() + ": " + e.getMessage();
-				Messages.storeMessage(pair.getA(), pair.getB().getClass(), Messages.error(msg));
+				String msg = "Unexpected internal exception while compiling with script " + script + ": " + e;
+				Messages.storeMessage(section, script.getClass(), Messages.error(msg));
 				Log.severe(msg, e);
 			}
 		}
+		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -181,7 +181,5 @@ public class ScriptCompiler<C extends Compiler> {
 		public CompilePair(Section<Type> a, CompileScript<C, Type> b) {
 			super(a, b);
 		}
-
 	}
-
 }

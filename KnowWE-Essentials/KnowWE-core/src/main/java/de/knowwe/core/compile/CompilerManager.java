@@ -16,6 +16,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.jetbrains.annotations.NotNull;
+
+import com.denkbares.collections.CountingSet;
 import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
 import com.denkbares.events.EventManager;
@@ -27,22 +30,18 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 
 /**
- * This class represents the compile manager for a specific
- * {@link ArticleManager}. It is responsible to manage every compile process for
- * all articles and section of the {@link ArticleManager}. Therefore all compile
- * code has been removed out of sections and articles and placed here.
+ * This class represents the compile manager for a specific {@link ArticleManager}. It is responsible to manage every
+ * compile process for all articles and section of the {@link ArticleManager}. Therefore all compile code has been
+ * removed out of sections and articles and placed here.
  * <p/>
- * The compile manager holds a set of compilers. The compilers can be plugged
- * into the manager using the defined extension point. Each compiler may
- * implement its own compilation procedure. If the compiler uses the package
- * mechanism to define certain compiling bundles (such as d3web does for
- * knowledge bases or owl for triple stores) the compiler usually have multiple
- * subsequent compilers for each such individual bundle.
+ * The compile manager holds a set of compilers. The compilers can be plugged into the manager using the defined
+ * extension point. Each compiler may implement its own compilation procedure. If the compiler uses the package
+ * mechanism to define certain compiling bundles (such as d3web does for knowledge bases or owl for triple stores) the
+ * compiler usually have multiple subsequent compilers for each such individual bundle.
  * <p/>
- * To enhance performance, each compiler top level compiles individually, maybe
- * in parallel. Nevertheless, if the compilers have different priorities
- * (defined through the compiler's extension), they are ordered by these
- * priorities. Only compilers with same priority may compile in parallel.
+ * To enhance performance, each compiler top level compiles individually, maybe in parallel. Nevertheless, if the
+ * compilers have different priorities (defined through the compiler's extension), they are ordered by these priorities.
+ * Only compilers with same priority may compile in parallel.
  * <p/>
  */
 public class CompilerManager {
@@ -54,12 +53,14 @@ public class CompilerManager {
 	// just a fast cache for the contains() method
 	private final HashSet<Compiler> compilerCache;
 	private final ArticleManager articleManager;
+
 	private Iterator<Group<Double, Compiler>> running = null;
 	private final ExecutorService threadPool;
 	private final Object lock = new Object();
-	private final Object dummy = new Object();
 	private static final Map<Thread, Object> compileThreads = Collections.synchronizedMap(new WeakHashMap<>());
-	private static final ConcurrentHashMap<String, Object> currentlyCompiledArticles = new ConcurrentHashMap<>();
+	private static final Set<String> currentlyCompiledArticles = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private static final Map<Compiler, Priority> currentlyCompiledPriority = new ConcurrentHashMap<>();
+	private static final Set<Compiler> waitingCompilers = new CountingSet<>();
 
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
@@ -139,9 +140,8 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Starts the compilation based on a specified set of changing sections. The
-	 * method returns true if the compilation can be started. The method returns
-	 * false if the request is ignored, e.g. because of an already ongoing
+	 * Starts the compilation based on a specified set of changing sections. The method returns true if the compilation
+	 * can be started. The method returns false if the request is ignored, e.g. because of an already ongoing
 	 * compilation.
 	 *
 	 * @return if the compilation has been started
@@ -184,7 +184,7 @@ public class CompilerManager {
 		for (Section<?> section : sections) {
 			String title = section.getTitle();
 			if (title == null) continue;
-			currentlyCompiledArticles.put(title, dummy);
+			currentlyCompiledArticles.add(title);
 		}
 	}
 
@@ -203,6 +203,10 @@ public class CompilerManager {
 			// start all simultaneous compilers and
 			// observe the active ones until they all have terminated
 			final Set<Compiler> activeCompilers = new LinkedHashSet<>(simultaneousCompilers);
+
+			// before actually starting it, mark all of them as started, to enable "await-priority" functionality
+			// (we only store the simultaneously running ones and do not support waiting for other compiler priorities!)
+			simultaneousCompilers.forEach(compiler -> setCurrentCompilePriority(compiler, Priority.INIT));
 
 			for (final Compiler compiler : simultaneousCompilers) {
 				// wait until we are allowed to compile
@@ -229,11 +233,13 @@ public class CompilerManager {
 					finally {
 						// and notify that the compiler has finished
 						synchronized (lock) {
+							// 1- update all required compiler flags
 							activeCompilers.remove(compiler);
-							Log.fine(compiler.getClass().getSimpleName()
-									+ " finished after "
-									+ (System.currentTimeMillis() - startTime) + "ms");
+							Log.fine(compiler.getClass().getSimpleName() +
+									" finished after " + (System.currentTimeMillis() - startTime) + "ms");
+							clearCurrentCompilePriority(compiler);
 							// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
+							// always notify all, as the clear is usually a noop (if the compiler has cleared before)
 							lock.notifyAll();
 						}
 					}
@@ -252,6 +258,52 @@ public class CompilerManager {
 		}
 	}
 
+	public void setCurrentCompilePriority(@NotNull Compiler compiler, @NotNull Priority priority) {
+		synchronized (lock) {
+			Priority previous = currentlyCompiledPriority.put(compiler, priority);
+			if (previous == null || previous.intValue() != priority.intValue()) {
+				lock.notifyAll();
+			}
+		}
+	}
+
+	public void clearCurrentCompilePriority(@NotNull Compiler compiler) {
+		synchronized (lock) {
+			if (currentlyCompiledPriority.remove(compiler) != null) {
+				lock.notifyAll();
+			}
+		}
+	}
+
+	public void awaitCompilePriorityCompleted(@NotNull Compiler compiler, @NotNull Priority priority) throws InterruptedException {
+		synchronized (lock) {
+			try {
+				waitingCompilers.add(compiler);
+				while (true) {
+					// if the compiler is not in the map, it does not compile, so we do not wait
+					Priority current = currentlyCompiledPriority.get(compiler);
+					if (current == null) return;
+
+					// if current priority is exceeded (
+					if (current.intValue() > priority.intValue()) return;
+
+					// deadlock detection: if all remaining compilers are waiting, throw an error
+					// might be a bit to conservative, if a compiler uses multiple threads and only a subset of them is waiting, but we accept this for now
+					if (waitingCompilers.containsAll(currentlyCompiledPriority.keySet())) {
+						throw new InterruptedException("deadlock detected, terminate waiting for compiler: " +
+								compiler.getClass().getSimpleName() + " @priority: " + priority);
+					}
+
+					// otherwise wait for notification
+					lock.wait();
+				}
+			}
+			finally {
+				waitingCompilers.remove(compiler);
+			}
+		}
+	}
+
 	/**
 	 * Returns the unique id or count of the current compilation.
 	 *
@@ -262,9 +314,8 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Returns if this compiler manager is currently compiling any changes. You
-	 * may use {@link #awaitTermination()} or {@link #awaitTermination(long)} to
-	 * wait for the compilation to complete.
+	 * Returns if this compiler manager is currently compiling any changes. You may use {@link #awaitTermination()} or
+	 * {@link #awaitTermination(long)} to wait for the compilation to complete.
 	 *
 	 * @return if a compilation is ongoing
 	 * @created 30.10.2013
@@ -276,22 +327,21 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Returns if this compiler manager is currently compiling an article with the given title. You
-	 * may use {@link #awaitTermination()} or {@link #awaitTermination(long)} to
-	 * wait for the compilation to complete.
+	 * Returns if this compiler manager is currently compiling an article with the given title. You may use {@link
+	 * #awaitTermination()} or {@link #awaitTermination(long)} to wait for the compilation to complete.
 	 *
 	 * @return if a compilation is ongoing
 	 * @created 04.10.2016
 	 */
 	public boolean isCompiling(String title) {
 		synchronized (lock) {
-			return running != null && currentlyCompiledArticles.containsKey(title);
+			return running != null && currentlyCompiledArticles.contains(title);
 		}
 	}
 
 	/**
-	 * Returns the priority-sorted list of compilers that are currently defined
-	 * for the web this CompilerManager is created for.
+	 * Returns the priority-sorted list of compilers that are currently defined for the web this CompilerManager is
+	 * created for.
 	 *
 	 * @return the currently defined compilers
 	 * @created 31.10.2013
@@ -303,11 +353,9 @@ public class CompilerManager {
 	/**
 	 * Adds a new compiler with the specific priority.
 	 * <p/>
-	 * Please note that it is allowed that compilers are added and removed while
-	 * compiling the wiki. Usually a more prioritized compiler may add or remove
-	 * sub-sequential Compilers depending on specific markups, e.g. defining a
-	 * knowledge base or triple store for specific package combination to be
-	 * compiled.
+	 * Please note that it is allowed that compilers are added and removed while compiling the wiki. Usually a more
+	 * prioritized compiler may add or remove sub-sequential Compilers depending on specific markups, e.g. defining a
+	 * knowledge base or triple store for specific package combination to be compiled.
 	 *
 	 * @param priority the priority of the compiler
 	 * @param compiler the instance to be added
@@ -330,11 +378,9 @@ public class CompilerManager {
 	/**
 	 * Removes an existing compiler with the specific priority.
 	 * <p/>
-	 * Please not that it is allowed that compilers are added and removed while
-	 * compiling the wiki. Usually a more prioritized compiler may add or remove
-	 * sub-sequential Compilers depending on specific markups, e.g. defining a
-	 * knowledge base or triple store for specific package combination to be
-	 * compiled.
+	 * Please not that it is allowed that compilers are added and removed while compiling the wiki. Usually a more
+	 * prioritized compiler may add or remove sub-sequential Compilers depending on specific markups, e.g. defining a
+	 * knowledge base or triple store for specific package combination to be compiled.
 	 *
 	 * @param compiler the instance to be removed
 	 * @created 31.10.2013
@@ -361,9 +407,8 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Blocks until all compilers have completed after a compile request, or the
-	 * current thread is interrupted, whichever happens first. The method
-	 * returns immediately if the compilers are currently idle (not compiling).
+	 * Blocks until all compilers have completed after a compile request, or the current thread is interrupted,
+	 * whichever happens first. The method returns immediately if the compilers are currently idle (not compiling).
 	 *
 	 * @throws InterruptedException if interrupted while waiting
 	 * @see #compile
@@ -376,10 +421,9 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Blocks until all compilers have completed after a compile request, or the
-	 * timeout occurs, or the current thread is interrupted, whichever happens
-	 * first. The method returns immediately if the compilers are currently idle
-	 * (not compiling).
+	 * Blocks until all compilers have completed after a compile request, or the timeout occurs, or the current thread
+	 * is interrupted, whichever happens first. The method returns immediately if the compilers are currently idle (not
+	 * compiling).
 	 *
 	 * @param timeoutMilliSeconds the maximum time to wait
 	 * @return <tt>true</tt> if the compilation has finished and <tt>false</tt>
@@ -409,9 +453,8 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Convenience method which compiles the given sections. Since for now only
-	 * one compilation operation can happen at the same time, this methods wait
-	 * until the current operation finishes before it starts the next.
+	 * Convenience method which compiles the given sections. Since for now only one compilation operation can happen at
+	 * the same time, this methods wait until the current operation finishes before it starts the next.
 	 *
 	 * @created 16.11.2013
 	 */
@@ -425,5 +468,4 @@ public class CompilerManager {
 			}
 		}
 	}
-
 }

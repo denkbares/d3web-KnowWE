@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -21,6 +21,7 @@ package de.d3web.we.knowledgebase;
 import java.util.Collection;
 import java.util.List;
 
+import com.denkbares.events.EventManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.SessionFactory;
@@ -30,7 +31,6 @@ import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -79,11 +79,9 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	}
 
 	/**
-	 * FIXME: This method is currently only needed by the
-	 * AnnotationLoadKnowledgeBaseHandler where a knowledge base is loaded from
-	 * a file. The better way would be though to instead fill an existing
-	 * knowledge base with the contents read from the file. We should implement
-	 * this later and then remove this method.
+	 * FIXME: This method is currently only needed by the AnnotationLoadKnowledgeBaseHandler where a knowledge base is
+	 * loaded from a file. The better way would be though to instead fill an existing knowledge base with the contents
+	 * read from the file. We should implement this later and then remove this method.
 	 *
 	 * @created 06.01.2014
 	 */
@@ -113,8 +111,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		terminologyManager = new TerminologyManager();
 		Messages.clearMessages(this);
 		ScriptCompiler<D3webCompiler> scriptCompiler = new ScriptCompiler<>(this);
-		Collection<Section<?>> sectionsOfPackage = getPackageManager().getSectionsOfPackage(
-				packagesToCompile);
+		Collection<Section<?>> sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 		for (Section<?> section : sectionsOfPackage) {
 			// only compile the KnowledgeBaseType sections belonging to this compiler
 			if (!(section.get() instanceof KnowledgeBaseType)
@@ -131,5 +128,4 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 	}
-
 }

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -23,7 +23,9 @@ package de.knowwe.core.compile;
 import java.util.HashMap;
 import java.util.TreeSet;
 
-public class Priority implements Comparable<Priority> {
+import org.jetbrains.annotations.NotNull;
+
+public final class Priority implements Comparable<Priority> {
 
 	private static final TreeSet<Priority> registeredPrioritiesTree = new TreeSet<>();
 
@@ -49,6 +51,8 @@ public class Priority implements Comparable<Priority> {
 
 	public static final Priority LOWEST = new Priority(300);
 
+	public static final Priority DONE = new Priority(1000);
+
 	private final int value;
 
 	private Priority(int value) {
@@ -72,9 +76,8 @@ public class Priority implements Comparable<Priority> {
 
 	/**
 	 * Returns the next higher Priority or null, if there is no higher Priority.
-	 * 
-	 * If this method returns null, you may simply need to add a new higher
-	 * Priority in this class.
+	 * <p>
+	 * If this method returns null, you may simply need to add a new higher Priority in this class.
 	 */
 	public static Priority increment(Priority p) {
 		return getRegisteredPriorities().higher(p);
@@ -82,9 +85,8 @@ public class Priority implements Comparable<Priority> {
 
 	/**
 	 * Returns the next lower Priority or null if there is no lower Priority.
-	 * 
-	 * If this method returns null, you may simply need to add a new lower
-	 * Priority in this class.
+	 * <p>
+	 * If this method returns null, you may simply need to add a new lower Priority in this class.
 	 */
 	public static Priority decrement(Priority p) {
 		return getRegisteredPriorities().lower(p);
@@ -95,9 +97,8 @@ public class Priority implements Comparable<Priority> {
 	}
 
 	@Override
-	public int compareTo(Priority p) {
-		if (p == null) return -1;
-		return this.value < p.value ? 1 : (this.value == p.value ? 0 : -1);
+	public int compareTo(@NotNull Priority priority) {
+		return Integer.compare(priority.value, this.value);
 	}
 
 	@Override
@@ -111,8 +112,7 @@ public class Priority implements Comparable<Priority> {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		Priority other = (Priority) obj;
-		if (value != other.value) return false;
-		return true;
+		return value == other.value;
 	}
 
 	@Override
@@ -161,5 +161,4 @@ public class Priority implements Comparable<Priority> {
 	// return priorityMap;
 	//
 	// }
-
 }

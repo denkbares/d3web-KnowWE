@@ -22,10 +22,10 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 
 /**
- * For the given {@link de.knowwe.core.kdom.parsing.Section}s and {@link de.knowwe.core.compile.Compiler} it gets all {@link de.knowwe.core.compile.CompileScript}s and then
- * compiles all Sections in the order, given by Priority of the scripts and position in the KDOM
- * (Article). The ParallelScriptCompiler acts like a set, so you can add combinations of Sections and
- * CompileScripts multiple times, but after the first time, it no longer has any effect and each
+ * For the given {@link de.knowwe.core.kdom.parsing.Section}s and {@link de.knowwe.core.compile.Compiler} it gets all
+ * {@link de.knowwe.core.compile.CompileScript}s and then compiles all Sections in the order, given by Priority of the
+ * scripts and position in the KDOM (Article). The ParallelScriptCompiler acts like a set, so you can add combinations
+ * of Sections and CompileScripts multiple times, but after the first time, it no longer has any effect and each
  * combination will only be compiled once to avoid loops.
  * <p/>
  * The ParallelScriptCompiler compiles scripts of the same priority in parallel.
@@ -65,14 +65,13 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	}
 
 	/**
-	 * Adds a single section to the iterator. Successors of the section are not added.<br/>
-	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is
-	 * given, all scripts available for the type of the section and the compiler are added.<p> You
-	 * can use this method while the article of this iterator is compiled. The iterator will
-	 * continue iterating over its sections in the correct order also considering the newly
-	 * added.<p> The ScriptCompiler acts like a set, so you can add combinations of Sections and
-	 * CompileScripts multiple times, but after the first time, it no longer has any effect and each
-	 * combination will only be compiled once to avoid loops.
+	 * Adds a single section to the iterator. Successors of the section are not added.<br/> Optionally you can add a
+	 * filter to only add scripts of the given classes. If no filter is given, all scripts available for the type of the
+	 * section and the compiler are added.<p> You can use this method while the article of this iterator is compiled.
+	 * The iterator will continue iterating over its sections in the correct order also considering the newly added.<p>
+	 * The ScriptCompiler acts like a set, so you can add combinations of Sections and CompileScripts multiple times,
+	 * but after the first time, it no longer has any effect and each combination will only be compiled once to avoid
+	 * loops.
 	 *
 	 * @param section      the section you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
@@ -101,14 +100,13 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	}
 
 	/**
-	 * Adds the given root section and all its successors to the iterator.<br/> You can use this
-	 * method while the article of this iterator is compiled. The iterator will continue iterating
-	 * over its sections in the correct order also considering the newly added.<p> Optionally you
-	 * can add a filter to only add scripts of the given classes. If no filter is given, all scripts
-	 * available for the type of the sections and the compiler are added.<p> The ScriptCompiler acts
-	 * like a set, so you can add combinations of Sections and CompileScripts multiple times, but
-	 * after the first time, it no longer has any effect and each combination will only be compiled
-	 * once to avoid loops.
+	 * Adds the given root section and all its successors to the iterator.<br/> You can use this method while the
+	 * article of this iterator is compiled. The iterator will continue iterating over its sections in the correct order
+	 * also considering the newly added.<p> Optionally you can add a filter to only add scripts of the given classes. If
+	 * no filter is given, all scripts available for the type of the sections and the compiler are added.<p> The
+	 * ScriptCompiler acts like a set, so you can add combinations of Sections and CompileScripts multiple times, but
+	 * after the first time, it no longer has any effect and each combination will only be compiled once to avoid
+	 * loops.
 	 *
 	 * @param section      the section and its successors you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
@@ -170,25 +168,33 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	}
 
 	public void compile() {
+		Priority lastPriority = Priority.INIT;
 		while (true) {
+			// get next script and section, and update the current compile priority, if required
 			CompilePair pair = next();
 			if (pair == null) break;
+			if (currentPriority != lastPriority) {
+				compiler.getCompilerManager().setCurrentCompilePriority(compiler, currentPriority);
+			}
+
 			threadPool.execute(() -> {
+				Section<Type> section = pair.getA();
+				CompileScript<C, Type> script = pair.getB();
 				try {
-					pair.getB().compile(compiler, pair.getA());
+					script.compile(compiler, section);
 				}
 				catch (CompilerMessage cm) {
-					Messages.storeMessages(compiler, pair.getA(), pair.getB().getClass(),
-							cm.getMessages());
+					Messages.storeMessages(compiler, section, script.getClass(), cm.getMessages());
 				}
 				catch (Exception e) {
-					String msg = "Unexpected internal exception while compiling.\nScript: "
-							+ pair.getB() + ", priority " + currentPriority.intValue() + ":\n" + e.getMessage();
-					Messages.storeMessage(pair.getA(), pair.getB().getClass(), Messages.error(msg));
+					String msg = "Unexpected internal exception while compiling.\n" +
+							"Script: " + script + ", @priority " + currentPriority.intValue() + ":\n" + e.getMessage();
+					Messages.storeMessage(section, script.getClass(), Messages.error(msg));
 					Log.severe(msg, e);
 				}
 			});
 		}
+		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -216,7 +222,5 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		public CompilePair(Section<Type> a, CompileScript<C, Type> b) {
 			super(a, b);
 		}
-
 	}
-
 }
