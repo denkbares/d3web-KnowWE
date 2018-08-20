@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -58,13 +58,27 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		return compilerClass;
 	}
 
+	/**
+	 * Returns the terminology manager (of the specified compiler) that should be used for register term references.
+	 * Override this method to create a script that registers and validates the term references in an other terminology
+	 * manager than the compiling one.
+	 *
+	 * @param compiler the compiler that is compiling the term reference
+	 * @return the terminology manager to find the reference in
+	 */
+	protected TerminologyManager getTerminologyManager(C compiler) {
+		return compiler.getTerminologyManager();
+	}
+
 	@Override
 	public void compile(C compiler, Section<Term> section) throws CompilerMessage {
+		TerminologyManager manager = getTerminologyManager(compiler);
+		if (manager == null) return;
 
-		TerminologyManager tHandler = compiler.getTerminologyManager();
+		Class<?> termClass = section.get().getTermObjectClass(section);
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		tHandler.registerTermReference(compiler, section, section.get().getTermObjectClass(section), termIdentifier);
-		if (validate) throw new CompilerMessage(validateReference(compiler, section));
+		manager.registerTermReference(compiler, section, termClass, termIdentifier);
+		if (validate) CompilerMessage.throwMessages(validateReference(compiler, section));
 	}
 
 	/**
@@ -77,13 +91,15 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	 * @created 28.02.2012
 	 */
 	public Collection<Message> validateReference(C compiler, Section<Term> section) {
+		TerminologyManager manager = getTerminologyManager(compiler);
+		if (manager == null) return Messages.noMessage();
+
 		TermCompiler.ReferenceValidationMode validationMode = compiler.getReferenceValidationMode();
 		if (validationMode == TermCompiler.ReferenceValidationMode.ignore) {
 			return Messages.noMessage();
 		}
-		TerminologyManager tHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		if (!tHandler.isDefinedTerm(termIdentifier)) {
+		if (!manager.isDefinedTerm(termIdentifier)) {
 			return Messages.asList(getInvalidTermMessage(section, validationMode));
 		}
 		return Messages.noMessage();
@@ -98,8 +114,11 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 
 	@Override
 	public void destroy(C compiler, Section<Term> section) {
-		compiler.getTerminologyManager().unregisterTermReference(compiler,
-				section, section.get().getTermObjectClass(section),
-				section.get().getTermIdentifier(section));
+		TerminologyManager manager = getTerminologyManager(compiler);
+		if (manager == null) return;
+
+		Class<?> termClass = section.get().getTermObjectClass(section);
+		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		manager.unregisterTermReference(compiler, section, termClass, termIdentifier);
 	}
 }
