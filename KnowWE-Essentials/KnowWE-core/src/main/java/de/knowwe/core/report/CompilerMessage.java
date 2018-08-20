@@ -41,10 +41,16 @@ public final class CompilerMessage extends Exception {
 
 	private final Collection<Message> messages;
 
+	/**
+	 * Creates a new CompilerMessage exception based on the specified message instances.
+	 */
 	public CompilerMessage(Collection<Message> messages) {
 		this.messages = messages;
 	}
 
+	/**
+	 * Creates a new CompilerMessage exception based on the specified message instances.
+	 */
 	public CompilerMessage(Message... messages) {
 		this(Arrays.asList(messages));
 	}
