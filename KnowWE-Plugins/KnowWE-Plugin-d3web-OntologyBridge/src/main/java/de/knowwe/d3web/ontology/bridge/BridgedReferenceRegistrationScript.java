@@ -77,6 +77,7 @@ public class BridgedReferenceRegistrationScript extends SimpleReferenceRegistrat
 
 	@Override
 	protected TerminologyManager getTerminologyManager(D3webCompiler compiler) {
-		return OntologyBridge.getOntology(compiler).getTerminologyManager();
+		OntologyCompiler ontology = OntologyBridge.getOntology(compiler);
+		return (ontology == null) ? null : ontology.getTerminologyManager();
 	}
 }

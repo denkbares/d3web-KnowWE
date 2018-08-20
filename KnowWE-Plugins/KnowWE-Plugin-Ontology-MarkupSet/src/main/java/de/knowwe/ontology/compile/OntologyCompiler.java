@@ -30,6 +30,7 @@ import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
@@ -199,14 +200,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	static CommitType getCommitType(OntologyCompiler compiler) {
 		Section<OntologyType> ontologySection = Sections.ancestor(compiler.getCompileSection(), OntologyType.class);
 		String commitTypeString = DefaultMarkupType.getAnnotation(ontologySection, OntologyType.ANNOTATION_COMMIT);
-		CommitType commitType;
-		try {
-			commitType = CommitType.valueOf(commitTypeString);
-		}
-		catch (IllegalArgumentException | NullPointerException e) {
-			commitType = CommitType.onSave;
-		}
-		return commitType;
+		return Strings.parseEnum(commitTypeString, CommitType.onSave);
 	}
 
 	static String getCommitNotificationId(OntologyCompiler compiler) {
