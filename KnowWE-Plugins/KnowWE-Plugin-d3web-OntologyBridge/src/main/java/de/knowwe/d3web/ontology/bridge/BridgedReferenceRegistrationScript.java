@@ -9,7 +9,6 @@ import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.core.report.Messages;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -38,7 +37,7 @@ public class BridgedReferenceRegistrationScript extends SimpleReferenceRegistrat
 	public void compile(D3webCompiler compiler, Section<Term> section) throws CompilerMessage {
 		// apply some explicit error handling if the ontology is not properly linked
 		if (!OntologyBridge.hasOntology(compiler)) {
-			throw new CompilerMessage(Messages.error("No ontology linked to the given d3web compiler"));
+			throw CompilerMessage.error("No ontology linked to the given d3web compiler");
 		}
 		super.compile(compiler, section);
 	}
