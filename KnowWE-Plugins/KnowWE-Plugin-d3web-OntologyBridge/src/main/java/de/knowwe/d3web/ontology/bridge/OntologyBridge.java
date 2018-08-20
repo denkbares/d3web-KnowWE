@@ -38,23 +38,37 @@ public class OntologyBridge {
 	 * %%Ontology markup by the name specified by the @name annotation.
 	 *
 	 * @param section the section to get the bridged ontology for
-	 * @return the ontology compiler bridged for the given section.
+	 * @return the ontology compiler bridged for the given section
 	 */
 	public static OntologyCompiler getOntology(Section<?> section) {
 		return getOntology(D3webUtils.getCompiler(section));
 	}
 
 	/**
-	 * Provides an {@link OntologyCompiler} for the given {@link D3webCompiler}.
-	 * To import an ontology, use the @importOntology annotation in the %%KnowledgeBase markup to import an
-	 * %%Ontology markup by the name specified by the @name annotation.
+	 * Provides an {@link OntologyCompiler} for the given {@link D3webCompiler}. To import an ontology, use the
+	 * @importOntology annotation in the %%KnowledgeBase markup to import an %%Ontology markup by the name specified by
+	 * the @name annotation.
 	 *
 	 * @param d3webCompiler the compiler to get the bridged ontology for
-	 * @return the ontology compiler bridged for the given d3web compiler.
+	 * @return the ontology compiler bridged for the given d3web compiler
 	 */
 	public static OntologyCompiler getOntology(D3webCompiler d3webCompiler) {
 		String ontologyId = mapping.get(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) throw new IllegalArgumentException("No ontology linked to the given d3web compiler");
 		return Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class);
+	}
+
+	/**
+	 * Returns true if there is an imported {@link OntologyCompiler} bridged by the given {@link D3webCompiler}. To
+	 * import an ontology, use the @importOntology annotation in the %%KnowledgeBase markup to import an %%Ontology
+	 * markup by the name specified by the @name annotation.
+	 *
+	 * @param d3webCompiler the compiler to get the bridged ontology for
+	 * @return if there is an ontology compiler bridged for the given d3web compiler
+	 */
+	public static boolean hasOntology(D3webCompiler d3webCompiler) {
+		String ontologyId = mapping.get(d3webCompiler.getCompileSection().getID());
+		if (ontologyId == null) return false;
+		return Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class) != null;
 	}
 }
