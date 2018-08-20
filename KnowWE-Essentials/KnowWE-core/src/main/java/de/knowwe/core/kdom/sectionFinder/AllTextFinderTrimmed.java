@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -28,8 +28,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * This SectionFinder takes all the text given, but performing a trim()
- * operation cutting off whitespace characters.
+ * This SectionFinder takes all the text given, but performing a trim() operation cutting off whitespace characters.
  *
  * @author Jochen
  */
@@ -39,7 +38,8 @@ public class AllTextFinderTrimmed implements SectionFinder {
 	private final TrimType trimType;
 
 	public enum TrimType {
-		ALL,
+		SPACES,
+		SPACES_AND_LINE_BREAKS,
 		BLANK_LINES,
 		BLANK_LINES_AND_TRAILING_LINE_BREAK
 	}
@@ -50,13 +50,12 @@ public class AllTextFinderTrimmed implements SectionFinder {
 	}
 
 	public AllTextFinderTrimmed() {
-		this(TrimType.ALL);
+		this(TrimType.SPACES);
 	}
 
 	// for backwards compatibility
 	public AllTextFinderTrimmed(boolean trimBlankLinesAndTrailingLineBreakOnly) {
-		this(trimBlankLinesAndTrailingLineBreakOnly ? TrimType.BLANK_LINES_AND_TRAILING_LINE_BREAK : TrimType.ALL);
-
+		this(trimBlankLinesAndTrailingLineBreakOnly ? TrimType.BLANK_LINES_AND_TRAILING_LINE_BREAK : TrimType.SPACES);
 	}
 
 	public AllTextFinderTrimmed(TrimType type) {
@@ -68,23 +67,27 @@ public class AllTextFinderTrimmed implements SectionFinder {
 		List<SectionFinderResult> result = new ArrayList<>();
 
 		String trimmed;
-		if (trimType == TrimType.BLANK_LINES) {
-			trimmed = Strings.trimBlankLines(text);
-		}
-		else if (trimType == TrimType.BLANK_LINES_AND_TRAILING_LINE_BREAK) {
-			trimmed = Strings.trimBlankLinesAndTrailingLineBreak(text);
-		}
-		else {
-			trimmed = Strings.trim(text);
+		switch (trimType) {
+			case SPACES:
+				trimmed = Strings.trim(text);
+				break;
+			case SPACES_AND_LINE_BREAKS:
+				trimmed = Strings.trim(Strings.trimBlankLinesAndTrailingLineBreak(text));
+				break;
+			case BLANK_LINES:
+				trimmed = Strings.trimBlankLines(text);
+				break;
+			case BLANK_LINES_AND_TRAILING_LINE_BREAK:
+				trimmed = Strings.trimBlankLinesAndTrailingLineBreak(text);
+				break;
+			default:
+				throw new IllegalStateException();
 		}
 
 		if (trimmed.isEmpty()) return result;
-		int leadingSpaces = text.indexOf(trimmed);
-		int followingSpaces = text.length() - (trimmed.length() + leadingSpaces);
-
-		result.add(new SectionFinderResult(leadingSpaces, text.length()
-				- followingSpaces));
+		int start = text.indexOf(trimmed);
+		int end = start + trimmed.length();
+		result.add(new SectionFinderResult(start, end));
 		return result;
 	}
-
 }

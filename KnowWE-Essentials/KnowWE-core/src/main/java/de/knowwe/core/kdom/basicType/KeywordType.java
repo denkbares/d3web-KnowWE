@@ -24,6 +24,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 
@@ -95,6 +96,16 @@ public class KeywordType extends AbstractType {
 	public KeywordType(Pattern keyWordPattern, int group, boolean renderPlain) {
 		this.keyWord = keyWordPattern.pattern() + ".group(" + group + ")";
 		setSectionFinder(new RegexSectionFinder(keyWordPattern, group));
+		setRenderer(renderPlain ? PLAIN_RENDERER : DEFAULT_RENDERER);
+	}
+
+	public KeywordType(SectionFinder sectionFinder, String keyWord) {
+		this(sectionFinder, keyWord, false);
+	}
+
+	public KeywordType(SectionFinder sectionFinder, String keyWord, boolean renderPlain) {
+		super(sectionFinder);
+		this.keyWord = keyWord;
 		setRenderer(renderPlain ? PLAIN_RENDERER : DEFAULT_RENDERER);
 	}
 

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -24,22 +24,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.StringFragment;
 import de.knowwe.core.kdom.parsing.Section;
 
 public class SectionFinderResult implements Comparable<SectionFinderResult> {
 
-	protected int start = -1;
+	private int start;
+	private int end;
+	private Map<String, String> parameterMap = null;
 
-	protected int end = -1;
-
-	protected Map<String, String> parameterMap = null;
-
+	/**
+	 * Creates a new section finder result from the specified start index (inclusively) to the specified end index
+	 * (exclusively) with in the parents section text. The specified parameter map is stored "as is" for later usage.
+	 *
+	 * @param start the start index (inclusively)
+	 * @param end   the end index (exclusively)
+	 */
 	public SectionFinderResult(int start, int end, Map<String, String> parameterMap) {
 		this(start, end);
 		this.parameterMap = parameterMap;
 	}
 
+	/**
+	 * Creates a new section finder result from the specified start index (inclusively) to the specified end index
+	 * (exclusively) with in the parents section text.
+	 *
+	 * @param start the start index (inclusively)
+	 * @param end   the end index (exclusively)
+	 */
 	public SectionFinderResult(int start, int end) {
 		this.start = start;
 		this.end = end;
@@ -72,8 +86,8 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 		return result;
 	}
 
-	public static String getFoundText(SectionFinderResult result, Section<?> fatherSection) {
-		return fatherSection.getText().substring(result.start, result.end);
+	public String getFoundText(Section<?> fatherSection) {
+		return fatherSection.getText().substring(start, end);
 	}
 
 	public int getStart() {
@@ -92,26 +106,13 @@ public class SectionFinderResult implements Comparable<SectionFinderResult> {
 		this.end = end;
 	}
 
-	/**
-	 * If you overwrite this method to return true for your own
-	 * SectionFinderResult, the result will not be validated in the Sectionizer.
-	 * Use with care and only if you know what you are doing!
-	 *
-	 * @created 26.07.2010
-	 */
-	public boolean excludeFromValidating() {
-		return false;
-	}
-
 	@Override
-	public int compareTo(SectionFinderResult o) {
-		return Integer.valueOf(this.getStart())
-				.compareTo(o.getStart());
+	public int compareTo(@NotNull SectionFinderResult o) {
+		return Integer.compare(this.getStart(), o.getStart());
 	}
 
 	@Override
 	public String toString() {
 		return "[" + getStart() + ", " + getEnd() + "]";
 	}
-
 }
