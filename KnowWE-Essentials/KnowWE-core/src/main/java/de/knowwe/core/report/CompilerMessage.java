@@ -65,7 +65,7 @@ public final class CompilerMessage extends Exception {
 	 *
 	 * @param messages the messages to be thrown
 	 */
-	public static void throwMessages(Message... messages) throws CompilerMessage {
+	public static void throwIfPresent(Message... messages) throws CompilerMessage {
 		if (messages == null || messages.length == 0) return;
 		throw new CompilerMessage(messages);
 	}
@@ -76,7 +76,7 @@ public final class CompilerMessage extends Exception {
 	 *
 	 * @param messages the messages to be thrown
 	 */
-	public static void throwMessages(Collection<Message> messages) throws CompilerMessage {
+	public static void throwIfPresent(Collection<Message> messages) throws CompilerMessage {
 		if (messages == null || messages.isEmpty()) return;
 		throw new CompilerMessage(messages);
 	}
