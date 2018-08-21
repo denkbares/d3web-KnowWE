@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -97,8 +97,7 @@ public class QuickInterviewRenderer {
 	private final UserContext user;
 
 	public static void renderInterview(Section<?> section, UserContext user, RenderResult result) {
-		Collection<D3webCompiler> compilers = Compilers.getCompilers(section,
-				D3webCompiler.class);
+		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
 		if (compilers.size() > 1) {
 			result.appendHtmlElement(
 					"span",
@@ -113,9 +112,7 @@ public class QuickInterviewRenderer {
 				result.append("%%information Interview is not rendered in live preview. /%");
 			}
 			else {
-				result.appendHtmlElement(
-						"span",
-						"No knowledge base found for this interview.",
+				result.appendHtmlElement("span", "No knowledge base found for this interview.",
 						"class", "warning");
 			}
 			return;
@@ -158,9 +155,15 @@ public class QuickInterviewRenderer {
 		getInterviewPluginHeader(buffi);
 
 		// call method for getting interview elements recursively
-		// start with root QASet and go DFS strategy
-		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi,
-				processedTOs, -2);
+		// start with root QASets and go DFS strategy, and also
+		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, -2);
+		// for all loose containers, we add them only, of they are visible
+		for (QContainer container : kb.getManager().getQContainers()) {
+			if (container.getParents().length > 0) continue; // top level ones only
+			if (processedTOs.contains(container)) continue; // skip processed ones (e.g. root)
+			if (!isVisible(container)) continue; // do nor add collapsed ones
+			getInterviewElementsRenderingRecursively(container, buffi, processedTOs, -2);
+		}
 
 		// add pseudo element for correctly closing the plugin
 		buffi.appendHtml("<div class='invisible'>  </div></div>");
@@ -182,9 +185,8 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Assembles the HTML representation of QContainers and Questions, starting
-	 * from the root QASet of the KB, recursively, and writes them into the
-	 * given StringBuffer
+	 * Assembles the HTML representation of QContainers and Questions, starting from the root QASet of the KB,
+	 * recursively, and writes them into the given StringBuffer
 	 *
 	 * @param questionnaire the root container
 	 * @param buffer        the StringBuffer
@@ -192,9 +194,8 @@ public class QuickInterviewRenderer {
 	 * @param depth         recursion depth; used to calculate identation
 	 * @created 14.07.2010
 	 */
-	private void getInterviewElementsRenderingRecursively(
-			TerminologyObject questionnaire, RenderResult buffer,
-			Set<TerminologyObject> processedTOs, int depth) {
+	private void getInterviewElementsRenderingRecursively(TerminologyObject questionnaire, RenderResult buffer,
+														  Set<TerminologyObject> processedTOs, int depth) {
 
 		boolean visible = isVisible(questionnaire);
 
@@ -208,39 +209,33 @@ public class QuickInterviewRenderer {
 			}
 			else {
 				processedTOs.add(questionnaire);
-				getQuestionnaireRendering((QContainer) questionnaire, depth,
-						buffer, id);
+				getQuestionnaireRendering((QContainer) questionnaire, depth, buffer, id);
 			}
 		}
 
 		// group all following questionnaires/questions for easily hiding them
 		// blockwise later
-		buffer.appendHtml("<div id='group_" + id + "' style='display: "
-				+ (visible ? "block" : "none") + "' >");
+		buffer.appendHtml("<div id='group_" + id + "' style='display: " + (visible ? "block" : "none") + "' >");
 
 		depth++;
 
 		// process all children, depending on element type branch into
 		// corresponding recursion
 		for (TerminologyObject child : questionnaire.getChildren()) {
-
 			if (child instanceof QContainer) {
 				if (!processedTOs.contains(child)) {
-					getInterviewElementsRenderingRecursively(child, buffer,
-							processedTOs, depth);
+					getInterviewElementsRenderingRecursively(child, buffer, processedTOs, depth);
 				}
 			}
 			else if (child instanceof Question) {
-				getQuestionsRecursively((Question) child, buffer, processedTOs,
-						depth, questionnaire);
+				getQuestionsRecursively((Question) child, buffer, processedTOs, depth, questionnaire);
 			}
 		}
 		buffer.appendHtml("</div>"); // close the grouping div
 	}
 
 	/**
-	 * Recursively walks through the questions of the hierarchy and calls
-	 * methods for appending their rendering
+	 * Recursively walks through the questions of the hierarchy and calls methods for appending their rendering
 	 *
 	 * @param topQuestion  the root question
 	 * @param sb           the StringBuffer
@@ -277,8 +272,7 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Assembles an own div for indicating questions/questionnaires that have
-	 * already been answered
+	 * Assembles an own div for indicating questions/questionnaires that have already been answered
 	 *
 	 * @param element the element that was already been answered
 	 * @param sb      StringBuffer to append the div to
@@ -347,8 +341,8 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Assembles the HTML-string representation for one QA-Block, that is, one
-	 * question first, and the answers afterwards.
+	 * Assembles the HTML-string representation for one QA-Block, that is, one question first, and the answers
+	 * afterwards.
 	 *
 	 * @param question the question to be rendered
 	 * @param depth    the depth of the recursion - for calculating identation
@@ -670,8 +664,7 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Creates the HTML needed for displaying the answer alternatives of mc
-	 * choice answers.
+	 * Creates the HTML needed for displaying the answer alternatives of mc choice answers.
 	 *
 	 * @created 01.09.2010
 	 */
@@ -770,11 +763,9 @@ public class QuickInterviewRenderer {
 	 * @param tag         The String representation of the tag
 	 * @param text        The text to be placed inside the tag
 	 * @param cssclass    The css class to style the resulting tag
-	 * @param onclick     The String representation of the onclick action, i.e., a
-	 *                    JS call
+	 * @param onclick     The String representation of the onclick action, i.e., a JS call
 	 * @param onmouseover Something to happen regarding the onmouseover
-	 * @param id          The id of the object represented , i.e., answer alternative,
-	 *                    here
+	 * @param id          The id of the object represented , i.e., answer alternative, here
 	 * @created 22.07.2010
 	 */
 	private void appendEnclosingTagOnClick(String tag, String text,
@@ -803,13 +794,12 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Checks, whether an answer value was already processed in the current
-	 * session
+	 * Checks, whether an answer value was already processed in the current session
 	 *
 	 * @param sessionValue the sessionValue
 	 * @param value        the value to be checked
-	 * @return true if the given session value contains the checked value (MC
-	 * Questions) or if the session value equals the value
+	 * @return true if the given session value contains the checked value (MC Questions) or if the session value equals
+	 * the value
 	 * @created 27.08.2010
 	 */
 	private boolean isAnsweredinCase(Value sessionValue, Value value) {
