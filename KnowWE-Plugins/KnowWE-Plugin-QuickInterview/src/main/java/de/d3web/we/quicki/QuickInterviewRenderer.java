@@ -90,7 +90,7 @@ public class QuickInterviewRenderer {
 
 	private final Section<?> section;
 
-	private Map<String, String> config = null;
+	private final Map<String, String> config;
 
 	private int counter = 0;
 
@@ -99,25 +99,27 @@ public class QuickInterviewRenderer {
 	public static void renderInterview(Section<?> section, UserContext user, RenderResult result) {
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
 		if (compilers.size() > 1) {
-			result.appendHtmlElement(
-					"span",
-					"This interview belongs to multiple knowledge bases, only " +
-							"the first knowledge base (lexicographically) will be used.",
-					"class", "warning");
+			result.appendWarning("This interview belongs to multiple knowledge bases, " +
+					"only the first knowledge base (lexicographically) will be used.");
 		}
-		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(section);
 
+		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(section);
 		if (knowledgeBase == null) {
 			if (user.isRenderingPreview()) {
 				result.append("%%information Interview is not rendered in live preview. /%");
 			}
 			else {
-				result.appendHtmlElement("span", "No knowledge base found for this interview.",
-						"class", "warning");
+				result.appendWarning("No knowledge base found for this interview.");
 			}
 			return;
 		}
+
 		Session session = SessionProvider.getSession(user, knowledgeBase);
+		if (session == null) {
+			result.appendWarning("No session could be started.");
+			return;
+		}
+
 		if (SessionProvider.hasOutDatedSession(user, D3webUtils.getKnowledgeBase(section))) {
 			NotificationManager.addNotification(user,
 					new OutDatedSessionNotification(D3webUtils.getCompiler(section).getCompileSection().getID()));
@@ -260,13 +262,9 @@ public class QuickInterviewRenderer {
 		processedTOs.add(topQuestion);
 
 		if (topQuestion.getChildren().length > 0) {
-
-			depth++;
-
 			// we got follow-up questions, thus call recursively for children
 			for (TerminologyObject qchild : topQuestion.getChildren()) {
-				getQuestionsRecursively((Question) qchild, sb, processedTOs,
-						depth, parent);
+				getQuestionsRecursively((Question) qchild, sb, processedTOs, depth + 1, parent);
 			}
 		}
 	}
@@ -279,9 +277,7 @@ public class QuickInterviewRenderer {
 	 * @param depth   indicator for the indentation depth
 	 * @created 26.08.2010
 	 */
-	private void getAlreadyDefinedRendering(TerminologyObject element,
-											RenderResult sb, int depth) {
-
+	private void getAlreadyDefinedRendering(TerminologyObject element, RenderResult sb, int depth) {
 		int margin = 30 + depth * 20;
 		sb.appendHtml("<div "
 				+ "class='alreadyDefined' style='margin-left: " + margin
@@ -534,15 +530,13 @@ public class QuickInterviewRenderer {
 		}
 
 		String id = getID();
-		Double rangeMax = Double.MAX_VALUE;
-		Double rangeMin = Double.MIN_VALUE;
+		double rangeMax = Double.MAX_VALUE;
+		double rangeMin = Double.MIN_VALUE;
 
-		Object rangeValue = q.getInfoStore().getValue(
-				BasicProperties.QUESTION_NUM_RANGE);
+		NumericalInterval rangeValue = q.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE);
 		if (rangeValue != null) {
-			NumericalInterval range = (NumericalInterval) rangeValue;
-			rangeMax = range.getRight();
-			rangeMin = range.getLeft();
+			rangeMax = rangeValue.getRight();
+			rangeMin = rangeValue.getLeft();
 		}
 
 		// assemble the JS call
@@ -561,8 +555,7 @@ public class QuickInterviewRenderer {
 					+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 		}
 
-		NumericalInterval range = q.getInfoStore().getValue(
-				BasicProperties.QUESTION_NUM_RANGE);
+		NumericalInterval range = q.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE);
 		String rangeString = " ";
 		if (range != null) {
 			rangeString = "placeholder='" + trimPZ(range.getLeft()) + " - "
@@ -739,22 +732,15 @@ public class QuickInterviewRenderer {
 				+ "', " + "web:'" + web + "', " + "ns:'" + namespace + "', "
 				+ "type:'" + type + "', " + "qid:'"
 				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
-		String cssclass = "answerunknown";
 
-		if (isUnknown) {
-			cssclass = "answerunknownClicked";
-		}
-		else if (value != null) {
-			cssclass = "answerunknown";
-		}
+		String cssClass = isUnknown ? "answerunknownClicked" : "answerunknown";
 		String prompt = MMInfo.getUnknownPrompt(q, getSelectedLanguage());
 
 		if (!(q instanceof QuestionNum)) {
 			// separator already rendered in renderNumAnswers
 			renderChoiceSeparator(sb);
 		}
-		appendEnclosingTagOnClick("div", prompt, cssclass, jscall, null,
-				null, null, sb);
+		appendEnclosingTagOnClick("div", prompt, cssClass, jscall, null, null, null, sb);
 	}
 
 	/**

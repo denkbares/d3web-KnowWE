@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -156,13 +156,13 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends the section to this render result. The section is rendered by using the sections
-	 * defined renderer. The method is a common shortcut for <code>DelegateRenderer.getRenderer(section,
-	 * user).render(section, user, result)</code>. The method is null-secure for the section. If
-	 * null is specified as the section, nothing is rendered.
+	 * Appends the section to this render result. The section is rendered by using the sections defined renderer. The
+	 * method is a common shortcut for <code>DelegateRenderer.getRenderer(section, user).render(section, user,
+	 * result)</code>. The method is null-secure for the section. If null is specified as the section, nothing is
+	 * rendered.
 	 * <p>
-	 * This method additionally consider custom renderer that has previously been set to overwrite
-	 * the default rendering behaviour.
+	 * This method additionally consider custom renderer that has previously been set to overwrite the default rendering
+	 * behaviour.
 	 *
 	 * @param section the section to be rendered
 	 * @return this render result
@@ -205,8 +205,7 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends the specified string encoded as html entities, using {@link
-	 * Strings#encodeHtml(String)}.
+	 * Appends the specified string encoded as html entities, using {@link Strings#encodeHtml(String)}.
 	 *
 	 * @param text the text to be appended
 	 * @return a reference to this object.
@@ -424,13 +423,13 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends an opening and masked HTML element without having to fiddle with strings and quoting.
-	 * Just set tag name and the attributes. Attributes need to be given in pairs. First the name of
-	 * the attribute, second the content of the attribute.
+	 * Appends an opening and masked HTML element without having to fiddle with strings and quoting. Just set tag name
+	 * and the attributes. Attributes need to be given in pairs. First the name of the attribute, second the content of
+	 * the attribute.
 	 *
 	 * @param tag        the tag name of the HTML element
-	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
-	 *                   names and the even elements the attribute contents
+	 * @param attributes the attributes of the HTML element: the odd elements are the attribute names and the even
+	 *                   elements the attribute contents
 	 * @created 05.02.2013
 	 */
 	public void appendHtmlTag(String tag, String... attributes) {
@@ -438,14 +437,14 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends an opening and masked HTML element without having to fiddle with strings and quoting.
-	 * Just set tag name and the attributes. Attributes need to be given in pairs. First the name of
-	 * the attribute, second the content of the attribute.
+	 * Appends an opening and masked HTML element without having to fiddle with strings and quoting. Just set tag name
+	 * and the attributes. Attributes need to be given in pairs. First the name of the attribute, second the content of
+	 * the attribute.
 	 *
 	 * @param tag        the tag name of the HTML element
 	 * @param encode     decides whether the attributes will be html encoded or not
-	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
-	 *                   names and the even elements the attribute contents
+	 * @param attributes the attributes of the HTML element: the odd elements are the attribute names and the even
+	 *                   elements the attribute contents
 	 * @created 05.02.2013
 	 */
 	public RenderResult appendHtmlTag(String tag, boolean encode, String... attributes) {
@@ -470,14 +469,14 @@ public class RenderResult {
 	}
 
 	/**
-	 * Appends a complete and masked HTML element without having to fiddle with strings and quoting.
-	 * Just set tag name, content and the attributes. Attributes need to be given in pairs. First
-	 * the name of the attribute, second the content of the attribute.
+	 * Appends a complete and masked HTML element without having to fiddle with strings and quoting. Just set tag name,
+	 * content and the attributes. Attributes need to be given in pairs. First the name of the attribute, second the
+	 * content of the attribute.
 	 *
 	 * @param tag        the tag name of the HTML element
 	 * @param content    the content of the HTML element
-	 * @param attributes the attributes of the HTML element: the odd elements are the attribute
-	 *                   names and the even elements the attribute contents
+	 * @param attributes the attributes of the HTML element: the odd elements are the attribute names and the even
+	 *                   elements the attribute contents
 	 * @created 05.02.2013
 	 */
 	public RenderResult appendHtmlElement(String tag, String content, String... attributes) {
@@ -489,6 +488,16 @@ public class RenderResult {
 			append(content);
 			appendHtml("</" + tag + ">");
 		}
+		return this;
+	}
+
+	public RenderResult appendError(String message) {
+		appendHtmlElement("span", message, "class", "error");
+		return this;
+	}
+
+	public RenderResult appendWarning(String message) {
+		appendHtmlElement("span", message, "class", "warning");
 		return this;
 	}
 
