@@ -100,16 +100,16 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		}
 		Identifier termIdentifier = section.get().getTermIdentifier(section);
 		if (!manager.isDefinedTerm(termIdentifier)) {
-			return Messages.asList(getInvalidTermMessage(section, validationMode));
+			return Messages.asList(getInvalidTermMessage(section,
+					validationMode == TermCompiler.ReferenceValidationMode.warn ? Message.Type.WARNING : Message.Type.ERROR));
 		}
 		return Messages.noMessage();
 	}
 
-	private Message getInvalidTermMessage(Section<Term> section, TermCompiler.ReferenceValidationMode validationMode) {
+	protected Message getInvalidTermMessage(Section<Term> section, Message.Type messageType) {
 		return Messages.noSuchObjectError(
 				section.get().getTermObjectClass(section).getSimpleName(),
-				section.get().getTermName(section),
-				validationMode == TermCompiler.ReferenceValidationMode.warn ? Message.Type.WARNING : Message.Type.ERROR);
+				section.get().getTermName(section), messageType);
 	}
 
 	@Override

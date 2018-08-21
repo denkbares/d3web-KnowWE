@@ -41,9 +41,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.filter.SectionFilter;
 
 /**
- * Class providing utility methods for efficient and convenient access to sections and tree of typed
- * sections. It allows to search and iterate over special typed subclasses, x-path- (scope-)like
- * access to ancestors and so on.
+ * Class providing utility methods for efficient and convenient access to sections and tree of typed sections. It allows
+ * to search and iterate over special typed subclasses, x-path- (scope-)like access to ancestors and so on.
  */
 @SuppressWarnings("Convert2Diamond")
 public class Sections<T extends Type> implements Iterable<Section<T>> {
@@ -62,7 +61,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	public static <T extends Type> Sections<T> $(ArticleManager manager) {
 		//noinspection unchecked
-		return new Sections(new CachedIterable<Section<RootType>>(manager.getArticles().stream().map(Article::getRootSection).iterator()));
+		return new Sections(new CachedIterable<Section<RootType>>(manager.getArticles()
+				.stream()
+				.map(Article::getRootSection)
+				.iterator()));
 	}
 
 	public static Sections<RootType> $(Article article) {
@@ -112,6 +114,18 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the result returned by the mapper function for the first section
 	 */
 	public <R> R mapFirst(BiFunction<T, Section<T>, R> mapper) {
+		return map(mapper).findFirst().orElse(null);
+	}
+
+	/**
+	 * Maps the first available section to the result of the mapper function. If there is not section, <tt>null</tt> is
+	 * returned.
+	 *
+	 * @param mapper the function to map/convert the section to the result
+	 * @param <R>    the result type
+	 * @return the result returned by the mapper function for the first section
+	 */
+	public <R> R mapFirst(Function<Section<? super T>, ? extends R> mapper) {
 		return map(mapper).findFirst().orElse(null);
 	}
 
@@ -170,9 +184,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns the section at the specified index contained in this instance. If this instance has
-	 * less sections than the specified index requests, null is returned. If a negative index is
-	 * specified, an {@link java.lang.IndexOutOfBoundsException} is thrown.
+	 * Returns the section at the specified index contained in this instance. If this instance has less sections than
+	 * the specified index requests, null is returned. If a negative index is specified, an {@link
+	 * java.lang.IndexOutOfBoundsException} is thrown.
 	 *
 	 * @param index the index of the section to be returned.
 	 * @return the nth section
@@ -189,9 +203,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	/**
 	 * Returns a new Sections instance with the section at the specified index contained in this instance. If this
 	 * instance has less sections than the specified index requests, an empty Sections object is returned, but not
-	 * null!.
-	 * This empty Sections object will produce no further work or results.
-	 * If a negative index is specified, an {@link java.lang.IndexOutOfBoundsException} is thrown.
+	 * null!. This empty Sections object will produce no further work or results. If a negative index is specified, an
+	 * {@link java.lang.IndexOutOfBoundsException} is thrown.
 	 *
 	 * @param index the index of the section to be returned.
 	 * @return a Sections object with nth section or an empty Sections object, if this object has no nth entry.
@@ -215,8 +228,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a set of all contained sections of this instance. The order of the instances are
-	 * preserved by this method.
+	 * Returns a set of all contained sections of this instance. The order of the instances are preserved by this
+	 * method.
 	 *
 	 * @return a (linked) set of all sections contained
 	 */
@@ -244,24 +257,21 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing all successors of this object's sections that is
-	 * an instance the specified type. If any section of this object's sections matches the
-	 * specified class the section itself is contained. If any section of this instance is neither
-	 * of the specified type, nor does have a successor of the specified type, the section is not
-	 * considered in the resulting Sections objects.
+	 * Returns a new Sections instance containing all successors of this object's sections that is an instance the
+	 * specified type. If any section of this object's sections matches the specified class the section itself is
+	 * contained. If any section of this instance is neither of the specified type, nor does have a successor of the
+	 * specified type, the section is not considered in the resulting Sections objects.
 	 * <p/>
-	 * The successors will become truncated if they descent too far from the original sections of
-	 * this object. If maxDepth is '0' only the original sections will be contained. A value of '1'
-	 * allows only the original objects and their direct children, and so on. Any negative value
-	 * will be ignored, so all successors of any depth are allowed.
+	 * The successors will become truncated if they descent too far from the original sections of this object. If
+	 * maxDepth is '0' only the original sections will be contained. A value of '1' allows only the original objects and
+	 * their direct children, and so on. Any negative value will be ignored, so all successors of any depth are
+	 * allowed.
 	 * <p/>
-	 * Please note that there is no de-duplication. If a sections is contained, that is already a
-	 * successor of a defined section, the section and its successors may be contained duplicated in
-	 * the resulting sections.
+	 * Please note that there is no de-duplication. If a sections is contained, that is already a successor of a defined
+	 * section, the section and its successors may be contained duplicated in the resulting sections.
 	 * <p/>
-	 * If a successor is an instance of the specified class, but also have sub-successors of the
-	 * specified class, both, the successor and the sub-successors are contained in the returned
-	 * instance.
+	 * If a successor is an instance of the specified class, but also have sub-successors of the specified class, both,
+	 * the successor and the sub-successors are contained in the returned instance.
 	 *
 	 * @param maxDepth the maximum level to descent from the sections
 	 * @param clazz    the class to be matched by the successors
@@ -278,19 +288,16 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing all successors of this object's sections that is
-	 * an instance the specified type. If any section of this object's sections matches the
-	 * specified class the section itself is contained. If any section of this instance is neither
-	 * of the specified type, nor does have a successor of the specified type, the section is not
-	 * considered in the resulting Sections objects.
+	 * Returns a new Sections instance containing all successors of this object's sections that is an instance the
+	 * specified type. If any section of this object's sections matches the specified class the section itself is
+	 * contained. If any section of this instance is neither of the specified type, nor does have a successor of the
+	 * specified type, the section is not considered in the resulting Sections objects.
 	 * <p/>
-	 * Please note that there is no de-duplication. If a sections is contained, that is already a
-	 * successor of a defined section, the section and its successors may be contained duplicated in
-	 * the resulting sections.
+	 * Please note that there is no de-duplication. If a sections is contained, that is already a successor of a defined
+	 * section, the section and its successors may be contained duplicated in the resulting sections.
 	 * <p/>
-	 * If a successor is an instance of the specified class, but also have sub-successors of the
-	 * specified class, both, the successor and the sub-successors are contained in the returned
-	 * instance.
+	 * If a successor is an instance of the specified class, but also have sub-successors of the specified class, both,
+	 * the successor and the sub-successors are contained in the returned instance.
 	 *
 	 * @param clazz the class to be matched by the successors
 	 * @param <R>   the class to be matched by the successors
@@ -301,17 +308,15 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing all successors of this instance's sections. The
-	 * original sections are also still contained. The order of the resulting sections are defined
-	 * by the depth-first-search from each section of this Sections instance.
+	 * Returns a new Sections instance containing all successors of this instance's sections. The original sections are
+	 * also still contained. The order of the resulting sections are defined by the depth-first-search from each section
+	 * of this Sections instance.
 	 * <p/>
-	 * Please note that there is no de-duplication. If a sections is contained, that is already a
-	 * successor of a defined section, the section and its successors will be contained duplicated
-	 * in the resulting sections.
+	 * Please note that there is no de-duplication. If a sections is contained, that is already a successor of a defined
+	 * section, the section and its successors will be contained duplicated in the resulting sections.
 	 * <p/>
-	 * If a successor is an instance of the specified class, but also have sub-successors of the
-	 * specified class, both, the successor and the sub-successors are contained in the returned
-	 * instance.
+	 * If a successor is an instance of the specified class, but also have sub-successors of the specified class, both,
+	 * the successor and the sub-successors are contained in the returned instance.
 	 *
 	 * @return all successors for each section matching the type
 	 */
@@ -320,31 +325,28 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Casts the whole Sections to contain only elements of a particular type. Please note that the
-	 * elements are not casted immediately, but sequentially as they will be accessed. Therefore
-	 * this method does not throw a ClassCastException, but such an exception will be thrown during
-	 * iterating the sections.
+	 * Casts the whole Sections to contain only elements of a particular type. Please note that the elements are not
+	 * casted immediately, but sequentially as they will be accessed. Therefore this method does not throw a
+	 * ClassCastException, but such an exception will be thrown during iterating the sections.
 	 * <p/>
-	 * This method is similar to {@link #filter(Class)}, but while {@link #filter(Class)} will
-	 * remove all sections not being of the specified instance, this method will fail as soon as the
-	 * first of these sections is accessed.
+	 * This method is similar to {@link #filter(Class)}, but while {@link #filter(Class)} will remove all sections not
+	 * being of the specified instance, this method will fail as soon as the first of these sections is accessed.
 	 *
 	 * @param clazz the class the contained sections shall be type of
 	 * @param <R>   the type of the sections
-	 * @return a new Sections object with all the original sections, but granted that all returned
-	 * sections will be of the specified type
+	 * @return a new Sections object with all the original sections, but granted that all returned sections will be of
+	 * the specified type
 	 */
 	public <R extends Type> Sections<R> cast(Class<R> clazz) {
 		return map(this, (section) -> Sections.cast(section, clazz));
 	}
 
 	/**
-	 * Returns a new Sections containing only the sections of this sections object that are
-	 * instances of the specified type.
+	 * Returns a new Sections containing only the sections of this sections object that are instances of the specified
+	 * type.
 	 * <p/>
-	 * This method is similar to {@link #cast(Class)}, but while {@link #cast(Class)} will fail if a
-	 * section is not of the specified instance, this method will remove the failing sections
-	 * instead.
+	 * This method is similar to {@link #cast(Class)}, but while {@link #cast(Class)} will fail if a section is not of
+	 * the specified instance, this method will remove the failing sections instead.
 	 *
 	 * @param clazz the class to be matched by the sections
 	 * @param <R>   the class to be matched by the sections
@@ -356,8 +358,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections containing only the sections of this sections object that are accepted
-	 * by the specified filter.
+	 * Returns a new Sections containing only the sections of this sections object that are accepted by the specified
+	 * filter.
 	 *
 	 * @param filter the filter to select the sections
 	 * @return the sections matching the filter
@@ -367,10 +369,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing the closest ancestor of each of this instance's
-	 * sections that is an instance the specified type. If any section of this instance does not
-	 * have an ancestor of the specified type, the section is not considered in the resulting
-	 * Sections objects.
+	 * Returns a new Sections instance containing the closest ancestor of each of this instance's sections that is an
+	 * instance the specified type. If any section of this instance does not have an ancestor of the specified type, the
+	 * section is not considered in the resulting Sections objects.
 	 *
 	 * @param clazz the class to be matched by the ancestors
 	 * @param <R>   the class to be matched by the ancestors
@@ -381,9 +382,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing all children of each of this instance's sections.
-	 * If any section have no children, the section is not considered in the resulting Sections
-	 * objects.
+	 * Returns a new Sections instance containing all children of each of this instance's sections. If any section have
+	 * no children, the section is not considered in the resulting Sections objects.
 	 *
 	 * @return the children for each section
 	 */
@@ -392,8 +392,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing the parent of each of this instance's sections. If
-	 * any section have no parent, the section is not considered in the resulting Sections objects.
+	 * Returns a new Sections instance containing the parent of each of this instance's sections. If any section have no
+	 * parent, the section is not considered in the resulting Sections objects.
 	 *
 	 * @return the parents for each section matching the type
 	 */
@@ -402,9 +402,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing results of the mapping function for each section.
-	 * If the mapping function returns 'null' the section is ignored for the resulting Sections
-	 * instance).
+	 * Returns a new Sections instance containing results of the mapping function for each section. If the mapping
+	 * function returns 'null' the section is ignored for the resulting Sections instance).
 	 *
 	 * @param sections the sections to be filtered / mapped
 	 * @param mapping  the mapping function to map each section
@@ -449,8 +448,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections instance containing a number of sections for each section. If the
-	 * mapping function returns 'null' the section is ignored for the resulting Sections instance.
+	 * Returns a new Sections instance containing a number of sections for each section. If the mapping function returns
+	 * 'null' the section is ignored for the resulting Sections instance.
 	 *
 	 * @param sections the sections to be filtered / mapped
 	 * @param mapping  the mapping function to map each section
@@ -505,10 +504,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns whether the given section object is part of an article object that is still part of
-	 * the main ArticleManager of the wiki. This means, that the section is for example still
-	 * rendered and compiled.<p> Sections of outdated article objects (because of changes) are for
-	 * example not live.
+	 * Returns whether the given section object is part of an article object that is still part of the main
+	 * ArticleManager of the wiki. This means, that the section is for example still rendered and compiled.<p> Sections
+	 * of outdated article objects (because of changes) are for example not live.
 	 */
 	public static boolean isLive(Section<?> section) {
 		Article currentArticle = section.getArticleManager().getArticle(section.getTitle());
@@ -517,8 +515,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Creates a list of class names of the types of the sections on the path from the given section
-	 * to the root section.
+	 * Creates a list of class names of the types of the sections on the path from the given section to the root
+	 * section.
 	 *
 	 * @created 28.11.2012
 	 */
@@ -597,11 +595,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns the closest ancestor of the specified section matching the specified
-	 * class as its type. The ancestor must be a "real" ancestor, so the search for a matching type
-	 * starts at the specified sections parent. The specified class matches if the type object of a
-	 * section if an instance of the specified class or an instance of any sub-class of the
-	 * specified class or interface.
+	 * This method returns the closest ancestor of the specified section matching the specified class as its type. The
+	 * ancestor must be a "real" ancestor, so the search for a matching type starts at the specified sections parent.
+	 * The specified class matches if the type object of a section if an instance of the specified class or an instance
+	 * of any sub-class of the specified class or interface.
 	 * <p/>
 	 *
 	 * @param section the section to get the ancestor section for
@@ -667,11 +664,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns the first successor in depth-first-search of the specified section
-	 * matching the specified class as its type. The class matches if the type object of a section
-	 * is an instance of the specified class or an instance of any sub-class of the specified class
-	 * or interface. If the specified section matches the specified class the specified section is
-	 * returned.
+	 * This method returns the first successor in depth-first-search of the specified section matching the specified
+	 * class as its type. The class matches if the type object of a section is an instance of the specified class or an
+	 * instance of any sub-class of the specified class or interface. If the specified section matches the specified
+	 * class the specified section is returned.
 	 * <p/>
 	 *
 	 * @param section the section to get the successor sections for
@@ -695,9 +691,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns all the successors of the specified article matching the specified class
-	 * as their type. The class matches if the type object of a section if an instance of the
-	 * specified class or an instance of any sub-class of the specified class or interface.
+	 * This method returns all the successors of the specified article matching the specified class as their type. The
+	 * class matches if the type object of a section if an instance of the specified class or an instance of any
+	 * sub-class of the specified class or interface.
 	 * <p/>
 	 *
 	 * @param article the article to get the successor sections for
@@ -710,11 +706,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns all the successors of the specified section matching the specified class
-	 * as their type. The class matches if the type object of a section if an instance of the
-	 * specified class or an instance of any sub-class of the specified class or interface. If the
-	 * specified section matches the specified class the specified section is contained in the
-	 * returned list.
+	 * This method returns all the successors of the specified section matching the specified class as their type. The
+	 * class matches if the type object of a section if an instance of the specified class or an instance of any
+	 * sub-class of the specified class or interface. If the specified section matches the specified class the specified
+	 * section is contained in the returned list.
 	 * <p/>
 	 *
 	 * @param section the section to get the successor sections for
@@ -729,11 +724,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns all the successors of the specified sections matching the specified class
-	 * as their type. The class matches if the type object of a section if an instance of the
-	 * specified class or an instance of any sub-class of the specified class or interface. If any
-	 * of the specified sections matches the specified class the specified section contained in the
-	 * returned list.
+	 * This method returns all the successors of the specified sections matching the specified class as their type. The
+	 * class matches if the type object of a section if an instance of the specified class or an instance of any
+	 * sub-class of the specified class or interface. If any of the specified sections matches the specified class the
+	 * specified section contained in the returned list.
 	 *
 	 * @param sections the sections to get the successor sections for
 	 * @param clazz    the class of the successors to be matched
@@ -749,10 +743,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns the first successor in depth-first-search of the specified article
-	 * matching the specified class as its type. The class matches if the type object of a section
-	 * is an instance of the specified class or an instance of any sub-class of the specified class
-	 * or interface.
+	 * This method returns the first successor in depth-first-search of the specified article matching the specified
+	 * class as its type. The class matches if the type object of a section is an instance of the specified class or an
+	 * instance of any sub-class of the specified class or interface.
 	 * <p/>
 	 *
 	 * @param article the article to get the successor sections for
@@ -780,10 +773,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns the first successor in depth-first-search of the specified article
-	 * matching the specified type instance. The class matches if the type object of a section
-	 * equals specified instance. If the specified section matches the specified type instance the
-	 * specified section is returned.
+	 * This method returns the first successor in depth-first-search of the specified article matching the specified
+	 * type instance. The class matches if the type object of a section equals specified instance. If the specified
+	 * section matches the specified type instance the specified section is returned.
 	 * <p/>
 	 * <b>Note:</b><br> This method selects more specific sections than #successor(Article, Class)
 	 * will do.
@@ -798,10 +790,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns the first successor in depth-first-search of the specified section
-	 * matching the specified type instance. The class matches if the type object of a section
-	 * equals specified instance. If the specified section matches the specified type instance the
-	 * specified section is returned.
+	 * This method returns the first successor in depth-first-search of the specified section matching the specified
+	 * type instance. The class matches if the type object of a section equals specified instance. If the specified
+	 * section matches the specified type instance the specified section is returned.
 	 * <p/>
 	 * <b>Note:</b><br> This method selects more specific sections than #successor(Section, Class)
 	 * will do.
@@ -827,10 +818,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns a list of all successor in depth-first-search of the specified article
-	 * matching the specified type instance. The class matches if the type object of a section
-	 * equals specified instance. If the specified section matches the specified type instance the
-	 * specified section is contained in the returned list.
+	 * This method returns a list of all successor in depth-first-search of the specified article matching the specified
+	 * type instance. The class matches if the type object of a section equals specified instance. If the specified
+	 * section matches the specified type instance the specified section is contained in the returned list.
 	 * <p/>
 	 * <b>Note:</b><br> This method selects more specific sections than #successors(Article, Class)
 	 * will do.
@@ -845,10 +835,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This method returns a list of all successor in depth-first-search of the specified section
-	 * matching the specified type instance. The class matches if the type object of a section
-	 * equals specified instance. If the specified section matches the specified type instance the
-	 * specified section is contained in the returned list.
+	 * This method returns a list of all successor in depth-first-search of the specified section matching the specified
+	 * type instance. The class matches if the type object of a section equals specified instance. If the specified
+	 * section matches the specified type instance the specified section is contained in the returned list.
 	 * <p/>
 	 * <b>Note:</b><br> This method selects more specific sections than #successors(Section, Class)
 	 * will do.
@@ -879,10 +868,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Finds all successors of the specified section-type in the KDOM below the given Section. Note
-	 * that this method is more specific as calling <code>successors(Section, Class&lt;T&gt;,
-	 * List&lt;...&gt;)</code>, because it only collects sections that have the specified type
-	 * instance instead (or an equal instance) of the specified type class.
+	 * Finds all successors of the specified section-type in the KDOM below the given Section. Note that this method is
+	 * more specific as calling <code>successors(Section, Class&lt;T&gt;, List&lt;...&gt;)</code>, because it only
+	 * collects sections that have the specified type instance instead (or an equal instance) of the specified type
+	 * class.
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Type> void successors(Section<?> section, T typeInstance, List<Section<T>> found) {
@@ -924,8 +913,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns the section with the given id and casts it to the supplied class. For more
-	 * information see get(id) and cast(section, class);
+	 * Returns the section with the given id and casts it to the supplied class. For more information see get(id) and
+	 * cast(section, class);
 	 *
 	 * @param id        is the ID of the Section to be returned
 	 * @param typeClass the class to cast the generic section to
@@ -938,8 +927,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	/**
 	 * @param web            is the web in which the Section should be searched
 	 * @param title          is the title of the article in which the Section should be searched
-	 * @param positionInKDOM is the position of the Section in the Lists of children in the
-	 *                       ancestorOneOf of the given wanted Section
+	 * @param positionInKDOM is the position of the Section in the Lists of children in the ancestorOneOf of the given
+	 *                       wanted Section
 	 * @return the Section on the given position in the KDOM, if it exists
 	 * @created 11.12.2011
 	 */
@@ -949,8 +938,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	/**
 	 * @param article        is the article in which the Section should be searched
-	 * @param positionInKDOM is the position of the Section in the Lists of children in the
-	 *                       ancestorOneOf of the given wanted Section
+	 * @param positionInKDOM is the position of the Section in the Lists of children in the ancestorOneOf of the given
+	 *                       wanted Section
 	 * @return the Section on the given position in the KDOM, if it exists
 	 * @created 11.12.2011
 	 */
@@ -965,9 +954,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * This class contains some information about the replacement success or the errors occurred. It
-	 * also allows to send the detected error in a standardized manner to the http result of some
-	 * action user context.
+	 * This class contains some information about the replacement success or the errors occurred. It also allows to send
+	 * the detected error in a standardized manner to the http result of some action user context.
 	 *
 	 * @author Volker Belli (denkbares GmbH)
 	 * @created 17.12.2013
@@ -985,8 +973,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		}
 
 		/**
-		 * Returns a map mapping the old section ids to the section ids replacing the old sections.
-		 * The Map that provides for each changed Section a mapping from the old to the new id.
+		 * Returns a map mapping the old section ids to the section ids replacing the old sections. The Map that
+		 * provides for each changed Section a mapping from the old to the new id.
 		 *
 		 * @created 17.12.2013
 		 */
@@ -995,9 +983,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		}
 
 		/**
-		 * Sends the error occurred during the replacement to the user context's response. If there
-		 * were no errors, the method has no effect on the response. Therefore this method can be
-		 * called withot checking for errors first.
+		 * Sends the error occurred during the replacement to the user context's response. If there were no errors, the
+		 * method has no effect on the response. Therefore this method can be called withot checking for errors first.
 		 *
 		 * @param context the context to send the errors to
 		 * @return if there have been any errors sent
@@ -1009,17 +996,16 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Replaces a section with the specified text, but not in the KDOMs themselves. It collects the
-	 * texts deep through the KDOM and appends the new text (instead of the original text) for the
-	 * Sections with an ID in the sectionsMap. Finally the article is saved with this new content.
+	 * Replaces a section with the specified text, but not in the KDOMs themselves. It collects the texts deep through
+	 * the KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
+	 * Finally the article is saved with this new content.
 	 * <p/>
-	 * If working on an action the resulting object may be used to send the errors during
-	 * replacement back to the caller using {@link ReplaceResult#sendErrors(UserActionContext)}.
+	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
+	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
 	 *
 	 * @param context the user context to use for modifying the articles
 	 * @param text    the new text for the specified section
-	 * @return a result object containing some information about the replacement success or the
-	 * errors occurred
+	 * @return a result object containing some information about the replacement success or the errors occurred
 	 * @throws IOException if an io error occurred during replacing the sections
 	 */
 
@@ -1030,17 +1016,16 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Replaces Sections with the given texts, but not in the KDOMs themselves. It collects the
-	 * texts deep through the KDOM and appends the new text (instead of the original text) for the
-	 * Sections with an ID in the sectionsMap. Finally the article is saved with this new content.
+	 * Replaces Sections with the given texts, but not in the KDOMs themselves. It collects the texts deep through the
+	 * KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
+	 * Finally the article is saved with this new content.
 	 * <p/>
-	 * If working on an action the resulting object may be used to send the errors during
-	 * replacement back to the caller using {@link ReplaceResult#sendErrors(UserActionContext)}.
+	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
+	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
 	 *
 	 * @param context     the user context to use for modifying the articles
 	 * @param sectionsMap containing pairs of the section id and the new text for this section
-	 * @return a result object containing some information about the replacement success or the
-	 * errors occurred
+	 * @return a result object containing some information about the replacement success or the errors occurred
 	 * @throws IOException if an io error occurred during replacing the sections
 	 */
 	public static ReplaceResult replace(UserContext context, Map<String, String> sectionsMap) throws IOException {
@@ -1241,20 +1226,19 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Casts the specified section to a generic section of the specified object type's class. Before
-	 * the cast is done, it is checked if the section has the specified object type as its type. If
-	 * not, a {@link ClassCastException} is thrown (as usual).
+	 * Casts the specified section to a generic section of the specified object type's class. Before the cast is done,
+	 * it is checked if the section has the specified object type as its type. If not, a {@link ClassCastException} is
+	 * thrown (as usual).
 	 * <p/>
-	 * This method is required because it: <ol> <li>avoids a "unchecked cast" warning when compiling
-	 * the code <li>does a runtime type check whether the cast is valid (java itself is not capable
-	 * to do) </ol>
+	 * This method is required because it: <ol> <li>avoids a "unchecked cast" warning when compiling the code <li>does a
+	 * runtime type check whether the cast is valid (java itself is not capable to do) </ol>
 	 *
 	 * @param <T>       the class to cast the generic section to
 	 * @param section   the section to be casted
 	 * @param typeClass the class to cast the generic section to
 	 * @return the casted section
-	 * @throws ClassCastException if the type of the section is neither of the specified class, nor
-	 *                            a subclass of the specified class.
+	 * @throws ClassCastException if the type of the section is neither of the specified class, nor a subclass of the
+	 *                            specified class.
 	 * @created 28.02.2012
 	 */
 	@SuppressWarnings("unchecked")
@@ -1272,11 +1256,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Checks if the specified section is an instance of the specified type class (technically the
-	 * section has a section {@link Type} which is of the specified type or is a class inherits or
-	 * implements the specified type). The method returns true if (and only if) the method {@link
-	 * #cast(Section, Class)} would be successful and the specified section is not null. If the
-	 * specified section is null, false is returned.
+	 * Checks if the specified section is an instance of the specified type class (technically the section has a section
+	 * {@link Type} which is of the specified type or is a class inherits or implements the specified type). The method
+	 * returns true if (and only if) the method {@link #cast(Section, Class)} would be successful and the specified
+	 * section is not null. If the specified section is null, false is returned.
 	 *
 	 * @param section   the section to be checked
 	 * @param typeClass the class to check the section's type against
@@ -1294,9 +1277,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Checks if the specified section is an instance of the exactly the specified type class
-	 * (technically the section has a section {@link Type} which is identical to the specified
-	 * type). If the specified section is null, false is returned.
+	 * Checks if the specified section is an instance of the exactly the specified type class (technically the section
+	 * has a section {@link Type} which is identical to the specified type). If the specified section is null, false is
+	 * returned.
 	 *
 	 * @param section   the section to be checked
 	 * @param typeClass the class to check the section's type against
@@ -1314,8 +1297,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns the set of articles for a specified collection of sections. The Articles will remain
-	 * the order of the first appearance within the specified section collection.
+	 * Returns the set of articles for a specified collection of sections. The Articles will remain the order of the
+	 * first appearance within the specified section collection.
 	 *
 	 * @param sections the sections to get the articles for
 	 * @return the articles of the sections
