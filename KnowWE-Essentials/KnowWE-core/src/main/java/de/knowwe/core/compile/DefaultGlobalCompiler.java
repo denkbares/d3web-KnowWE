@@ -12,7 +12,7 @@ import de.knowwe.core.report.Messages;
 
 /**
  * Compiles all default stuff that happens globally and not in packages.
- * 
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.11.2013
  */
@@ -47,16 +47,20 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 	@Override
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
 
+		// call destroy for the incremental scripts
 		for (Section<?> section : removed) {
 			destroyScriptCompiler.addSubtree(section);
 		}
 		destroyScriptCompiler.destroy();
 
+		// assemble the compile scripts, and compile them
+		getCompilerManager().setCurrentCompilePriority(this, Priority.PREPARE);
 		for (Section<?> section : added) {
 			scriptCompiler.addSubtree(section);
 		}
 		scriptCompiler.compile();
 
+		// set new script compilers to prepare the next compile run
 		this.scriptCompiler = new ScriptCompiler<>(this);
 		this.destroyScriptCompiler = new ScriptCompiler<>(this);
 	}
@@ -100,8 +104,7 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 		}
 	}
 
-	public static abstract class DefaultGlobalHandler<T extends Type>
-			extends DefaultGlobalScript<T> {
+	public static abstract class DefaultGlobalHandler<T extends Type> extends DefaultGlobalScript<T> {
 
 		@Override
 		public Class<DefaultGlobalCompiler> getCompilerClass() {
@@ -113,7 +116,6 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<T> section) throws CompilerMessage {
 			Messages.storeMessages(section, getClass(), create(compiler, section));
-
 		}
 
 		@Override
@@ -131,5 +133,4 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 	public boolean isCompiling(Section<?> section) {
 		return true;
 	}
-
 }

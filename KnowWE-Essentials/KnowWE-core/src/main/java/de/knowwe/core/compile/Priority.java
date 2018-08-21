@@ -31,7 +31,11 @@ public final class Priority implements Comparable<Priority> {
 
 	private static final HashMap<Integer, Priority> registeredPrioritiesHash = new HashMap<>();
 
+	// creation of the compiler thread, start creating the artifacts (TerminologyManager, KnowledgeBase, Ontology, ...)
 	public static final Priority INIT = new Priority(-1000);
+
+	// compiler has created its artifacts (TerminologyManager, KnowledgeBase, Ontology, ...) and prepares the compile scripts
+	public static final Priority PREPARE = new Priority(-999);
 
 	public static final Priority HIGHEST = new Priority(-300);
 
@@ -59,11 +63,6 @@ public final class Priority implements Comparable<Priority> {
 		this.value = value;
 		registeredPrioritiesTree.add(this);
 		registeredPrioritiesHash.put(value, this);
-	}
-
-	// private to prevent usage
-	private Priority() {
-		this(0);
 	}
 
 	public int intValue() {
@@ -119,46 +118,4 @@ public final class Priority implements Comparable<Priority> {
 	public String toString() {
 		return String.valueOf(value);
 	}
-
-	// /**
-	// * Creates a Map of Lists with Sections that contain SubTreeHandlers with
-	// a
-	// * certain Priority. The Lists are mapped by this common Priority of the
-	// * SubTreeHandlers.
-	// * <p />
-	// * The Sections in each List of the returned Map occur in the same order
-	// as
-	// * they occur in the given List of Sections.
-	// * <p />
-	// * Sections may appear in multiple Lists, if they contain multiple
-	// * SubtreeHandlers with different Priorities.
-	// *
-	// * @param sections
-	// */
-	// public static TreeMap<Priority, List<Section<? extends
-	// Type>>> createPrioritySortedList(List<Section<? extends
-	// Type>> sections) {
-	//
-	// TreeMap<Priority, List<Section<? extends Type>>> priorityMap
-	// = new TreeMap<Priority, List<Section<? extends Type>>>();
-	//
-	// for (Section<? extends Type> section : sections) {
-	//
-	// for (Priority p : section.get().getSubtreeHandlers().keySet())
-	// {
-	//
-	// List<Section<? extends Type>> singlePrioList =
-	// priorityMap.get(p);
-	//
-	// if (singlePrioList == null) {
-	// singlePrioList = new ArrayList<Section<? extends Type>>();
-	// priorityMap.put(p, singlePrioList);
-	// }
-	// singlePrioList.add(section);
-	// }
-	// }
-	//
-	// return priorityMap;
-	//
-	// }
 }

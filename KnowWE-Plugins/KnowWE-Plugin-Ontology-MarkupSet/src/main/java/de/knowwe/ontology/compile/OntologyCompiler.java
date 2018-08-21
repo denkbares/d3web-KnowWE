@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -34,6 +34,7 @@ import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -117,9 +118,16 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	@Override
 	public TerminologyManager getTerminologyManager() {
 		if (terminologyManager == null) {
-			return new TerminologyManager();
+			createTerminologyManager();
 		}
 		return terminologyManager;
+	}
+
+	private void createTerminologyManager() {
+		this.terminologyManager = new TerminologyManager(true);
+		// register the lns abbreviation immediately as defined
+		this.terminologyManager.registerTermDefinition(this, getCompileSection(),
+				AbbreviationDefinition.class, new Identifier(Rdf2GoCore.LNS_ABBREVIATION));
 	}
 
 	@Override
@@ -151,13 +159,13 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 			this.rdf2GoCore = new Rdf2GoCore(ruleSet);
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
-
 		}
 		// an incremental compilation... just compile the added sections
 		else {
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
 
+		getCompilerManager().setCurrentCompilePriority(this, Priority.INIT);
 		compile(sectionsOfPackage);
 
 		boolean changed = false;
@@ -211,14 +219,6 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		boolean changed = compiler.rdf2GoCore.commit();
 		NotificationManager.removeGlobalNotification(getCommitNotificationId(compiler));
 		return changed;
-	}
-
-	private void createTerminologyManager() {
-		this.terminologyManager = new TerminologyManager(true);
-		// register the lns abbreviation immediately as defined
-		this.getTerminologyManager().registerTermDefinition(this,
-				this.getCompileSection(), AbbreviationDefinition.class,
-				new Identifier(Rdf2GoCore.LNS_ABBREVIATION));
 	}
 
 	/**

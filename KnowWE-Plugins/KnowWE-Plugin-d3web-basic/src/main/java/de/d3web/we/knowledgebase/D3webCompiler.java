@@ -26,6 +26,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.SessionFactory;
 import de.knowwe.core.compile.AbstractPackageCompiler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -110,6 +111,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 		terminologyManager = new TerminologyManager();
 		Messages.clearMessages(this);
+		getCompilerManager().setCurrentCompilePriority(this, Priority.PREPARE);
+
 		ScriptCompiler<D3webCompiler> scriptCompiler = new ScriptCompiler<>(this);
 		Collection<Section<?>> sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 		for (Section<?> section : sectionsOfPackage) {
