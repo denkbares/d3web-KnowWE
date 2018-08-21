@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import com.denkbares.strings.Strings;
+import de.d3web.core.knowledge.Indication;
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -158,13 +159,13 @@ public class QuickInterviewRenderer {
 
 		// call method for getting interview elements recursively
 		// start with root QASets and go DFS strategy, and also
-		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, -2);
+		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, false, -2);
 		// for all loose containers, we add them only, of they are visible
 		for (QContainer container : kb.getManager().getQContainers()) {
 			if (container.getParents().length > 0) continue; // top level ones only
-			if (processedTOs.contains(container)) continue; // skip processed ones (e.g. root)
-			if (!isVisible(container)) continue; // do nor add collapsed ones
-			getInterviewElementsRenderingRecursively(container, buffi, processedTOs, -2);
+			if (container == kb.getRootQASet()) continue; // skip root
+			if (!isVisible(container, false)) continue; // do not add collapsed ones
+			getInterviewElementsRenderingRecursively(container, buffi, processedTOs, false, -2);
 		}
 
 		// add pseudo element for correctly closing the plugin
@@ -197,11 +198,11 @@ public class QuickInterviewRenderer {
 	 * @created 14.07.2010
 	 */
 	private void getInterviewElementsRenderingRecursively(TerminologyObject questionnaire, RenderResult buffer,
-														  Set<TerminologyObject> processedTOs, int depth) {
+														  Set<TerminologyObject> processedTOs, boolean parentIndicated, int depth) {
 
-		boolean visible = isVisible(questionnaire);
-
+		boolean visible = isVisible(questionnaire, parentIndicated);
 		String id = getID();
+
 		// just do not display the rooty root
 		if (questionnaire != questionnaire.getKnowledgeBase().getRootQASet()) {
 
@@ -226,7 +227,9 @@ public class QuickInterviewRenderer {
 		for (TerminologyObject child : questionnaire.getChildren()) {
 			if (child instanceof QContainer) {
 				if (!processedTOs.contains(child)) {
-					getInterviewElementsRenderingRecursively(child, buffer, processedTOs, depth);
+					boolean ancestorIndicated = parentIndicated
+							| session.getBlackboard().getIndication((InterviewObject) questionnaire).isIndicated();
+					getInterviewElementsRenderingRecursively(child, buffer, processedTOs, ancestorIndicated, depth);
 				}
 			}
 			else if (child instanceof Question) {
@@ -298,8 +301,8 @@ public class QuickInterviewRenderer {
 
 		int margin = 10 + depth * 20; // calculate identation
 
-		boolean visible = isVisible(container);
-		boolean indicated = isThisOrFollowUpIndicated(container);
+		boolean visible = isVisible(container, true);
+		boolean indicated = isThisOrFollowUpIndicated(container, true);
 		String cssClass = "";
 		String title = getDescription(container);
 		if (title == null) {
@@ -353,7 +356,7 @@ public class QuickInterviewRenderer {
 		int d = 30 + depth * 20;
 
 		String qablockCSS = "qablock";
-		if (isAbstract(question) || !isVisible(question)) {
+		if (isAbstract(question) || !isVisible(question, true)) {
 			qablockCSS = "qablockHidden";
 			if (hideAbstractions()) {
 				// do not render anything in this case
@@ -805,10 +808,10 @@ public class QuickInterviewRenderer {
 	 * @return true, if the given TerminologyObject is indicated.
 	 * @created 30.10.2010
 	 */
-	private boolean isVisible(TerminologyObject to) {
+	private boolean isVisible(TerminologyObject to, boolean parentIndicated) {
 
 		if (to == to.getKnowledgeBase().getRootQASet()) return true;
-		if (isThisOrFollowUpIndicated(to)) return true;
+		if (isThisOrFollowUpIndicated(to, parentIndicated)) return true;
 		if (to instanceof Question) {
 			for (TerminologyObject parent : to.getParents()) {
 				if (parent instanceof QContainer) {
@@ -819,21 +822,20 @@ public class QuickInterviewRenderer {
 		return false;
 	}
 
-	private boolean isThisOrFollowUpIndicated(TerminologyObject to) {
-		Set<TerminologyObject> visited = new HashSet<>();
-		return isThisOrFollowUpIndicated(visited, to);
+	private boolean isThisOrFollowUpIndicated(TerminologyObject to, boolean parentIndicated) {
+		return isThisOrFollowUpIndicated(new HashSet<>(), to, parentIndicated);
 	}
 
-	private boolean isThisOrFollowUpIndicated(Set<TerminologyObject> visited, TerminologyObject to) {
+	private boolean isThisOrFollowUpIndicated(Set<TerminologyObject> visited, TerminologyObject to, boolean parentIndicated) {
 		if (visited.contains(to)) return false;
 		visited.add(to);
-		if (session.getBlackboard().getIndication((InterviewObject) to)
-				.isRelevant()) {
+		Indication indication = session.getBlackboard().getIndication((InterviewObject) to);
+		if (parentIndicated ? indication.isRelevant() : indication.isIndicated()) {
 			return true;
 		}
 		if (to.getChildren().length > 0) {
 			for (TerminologyObject child : to.getChildren()) {
-				if (isThisOrFollowUpIndicated(visited, child)) return true;
+				if (isThisOrFollowUpIndicated(visited, child, parentIndicated)) return true;
 			}
 		}
 		return false;
