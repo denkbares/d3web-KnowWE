@@ -36,11 +36,7 @@ import de.knowwe.core.user.UserContext;
 
 public class DelegateRenderer implements Renderer {
 
-	private static final DelegateRenderer instance;
-
-	static {
-		instance = new DelegateRenderer();
-	}
+	private static final DelegateRenderer instance = new DelegateRenderer();
 
 	public static DelegateRenderer getInstance() {
 		return instance;
