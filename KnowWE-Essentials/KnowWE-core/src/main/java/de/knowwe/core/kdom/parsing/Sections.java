@@ -114,7 +114,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the result returned by the mapper function for the first section
 	 */
 	public <R> R mapFirst(BiFunction<T, Section<T>, R> mapper) {
-		return map(mapper).findFirst().orElse(null);
+		// filter null after applying, as the findFirst creates a NullPointerException otherwise
+		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	/**
@@ -126,7 +127,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the result returned by the mapper function for the first section
 	 */
 	public <R> R mapFirst(Function<Section<? super T>, ? extends R> mapper) {
-		return map(mapper).findFirst().orElse(null);
+		// filter null after applying, as the findFirst creates a NullPointerException otherwise
+		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
 	public static Sections<? extends Type> definitions(TerminologyManager manager, Identifier identifier) {
