@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -49,13 +49,13 @@ import de.knowwe.core.report.Messages;
 
 /**
  * <p>
- * This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list
- * of children.
+ * This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list of
+ * children.
  * <p>
  * Further, it has a reference to its father and a positionOffset to its fathers text.
  * <p>
- * Further information can be attached to a node (TypeInformation), to connect the text-parts with external
- * resources, e.g. knowledge bases, OWL, User-feedback-DBs etc.
+ * Further information can be attached to a node (TypeInformation), to connect the text-parts with external resources,
+ * e.g. knowledge bases, OWL, User-feedback-DBs etc.
  *
  * @author Jochen
  */
@@ -103,8 +103,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	private Section<? extends Type> parent;
 
 	/**
-	 * the position the text of this node starts related to the text of the parent node. Thus: for first child always
-	 * 0,
+	 * the position the text of this node starts related to the text of the parent node. Thus: for first child always 0,
 	 * for 2nd firstChild.length() etc.
 	 */
 	private int offsetInParent = -1;
@@ -186,9 +185,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * If the compared Sections are from different articles, a value less than 0 will be returned, if the title of this
 	 * Section is lexicographically less than the title of the arguments Section, greater than 0 if the title of
-	 * arguments Section is lexicographically greater.<br/> If the Sections are from the same article, a value less
-	 * than 0 will be returned, if the Section is textually located above the argument Section, a value greater than 0,
-	 * if below.<br/> If a Sections is compared with itself, 0 will be returned.
+	 * arguments Section is lexicographically greater.<br/> If the Sections are from the same article, a value less than
+	 * 0 will be returned, if the Section is textually located above the argument Section, a value greater than 0, if
+	 * below.<br/> If a Sections is compared with itself, 0 will be returned.
 	 */
 	@Override
 	public int compareTo(@NotNull Section<? extends Type> section) {
@@ -312,7 +311,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public List<Section<? extends Type>> getChildren() {
 		if (children == null) return Collections.emptyList();
 		return Collections.unmodifiableList(children);
-
 	}
 
 	/**
@@ -550,16 +548,16 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some messages of the specified type has been
-	 * stored in that subtree for the given article.
+	 * Method that looks (recursively down) for this section whether some messages of the specified type has been stored
+	 * in that subtree for the given article.
 	 */
 	public boolean hasErrorInSubtree(Compiler compiler) {
 		return hasMessageInSubtree(compiler, Message.Type.ERROR);
 	}
 
 	/**
-	 * Method that looks (recursively down) for this section whether some errors has been stored in that subtree for
-	 * the given compiler or compiler independent.
+	 * Method that looks (recursively down) for this section whether some errors has been stored in that subtree for the
+	 * given compiler or compiler independent.
 	 */
 	public boolean hasMessageInSubtree(Compiler compiler, Message.Type type) {
 		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
@@ -681,8 +679,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * article gets an id. Since ids are created lazy while rendering and often the article is not rendered completely
 	 * again after changing just a few isolated spots in the article, those ids would otherwise be gone, although they
 	 * might stay the same and are still usable.<br/> We just look at the same spot/position in the KDOM. If we find a
-	 * Section and the Section also has the same type, we generate and register the id. Of course we will only catch
-	 * the right Sections if the KDOM has not changed in this part, but if the KDOM has changed, also the ids will have
+	 * Section and the Section also has the same type, we generate and register the id. Of course we will only catch the
+	 * right Sections if the KDOM has not changed in this part, but if the KDOM has changed, also the ids will have
 	 * changed and therefore we don't need them anyway. We only do this, to allow already rendered tools to still work,
 	 * if it is possible.
 	 *
@@ -727,14 +725,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * Has the same behavior as {@link #getObject(Compiler, String)}
-	 * with <tt>null</tt> as the {@link Compiler} argument. Use this if the
-	 * Object was stored the same way (<tt>null</tt> as the {@link Compiler}
-	 * argument or the method {@link #storeObject(String, Object)}.
+	 * Has the same behavior as {@link #getObject(Compiler, String)} with <tt>null</tt> as the {@link Compiler}
+	 * argument. Use this if the Object was stored the same way (<tt>null</tt> as the {@link Compiler} argument or the
+	 * method {@link #storeObject(String, Object)}.
 	 *
 	 * @param key is the key for which the object was stored
-	 * @return the previously stored Object for this key or <tt>null</tt>, if no
-	 * Object was stored
+	 * @return the previously stored Object for this key or <tt>null</tt>, if no Object was stored
 	 * @created 08.07.2011
 	 */
 	public Object getObject(String key) {
@@ -743,11 +739,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * All objects stored in this Section with the given <tt>key</tt>
-	 * are collected and returned. The {@link Map} stores them by the title of
-	 * the {@link Article} they were stored for. If an object was stored without
-	 * an argument {@link Article} (article independent), the returned
-	 * {@link Map} contains this object with <tt>null</tt> as the key.
+	 * All objects stored in this Section with the given <tt>key</tt> are collected and returned. The {@link Map} stores
+	 * them by the title of the {@link Article} they were stored for. If an object was stored without an argument {@link
+	 * Article} (article independent), the returned {@link Map} contains this object with <tt>null</tt> as the key.
 	 *
 	 * @param key is the key for which the objects were stored
 	 * @created 16.02.2012
@@ -781,13 +775,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Stores the given Object for the given key.<br/>
 	 * <b>Attention:</b> Be aware, that some times an Object should only be
-	 * stored in the context of a certain {@link Compiler}. Example: An Object
-	 * was created, because the Section was compiled for a certain
-	 * {@link Article}. If the Section however gets compiled again for another
-	 * {@link Article}, the Object would not be created or a different
-	 * {@link Object} would be created. In this case you have to use the method
-	 * {@link #storeObject(Compiler, String, Object)} to be able to
-	 * differentiate between the {@link Compiler}s.
+	 * stored in the context of a certain {@link Compiler}. Example: An Object was created, because the Section was
+	 * compiled for a certain {@link Article}. If the Section however gets compiled again for another {@link Article},
+	 * the Object would not be created or a different {@link Object} would be created. In this case you have to use the
+	 * method {@link #storeObject(Compiler, String, Object)} to be able to differentiate between the {@link Compiler}s.
 	 *
 	 * @param key    is the key for which the Object should be stored
 	 * @param object is the object to be stored
@@ -813,11 +804,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Stores the given Object for the given key and {@link Compiler}.
 	 * <b>Attention:</b> If the Object you want to store is independent from the
-	 * {@link Compiler} that will or has compiled this Section,
-	 * you can either set the {@link Compiler} argument to
+	 * {@link Compiler} that will or has compiled this Section, you can either set the {@link Compiler} argument to
 	 * <tt>null</tt> or use the method
-	 * {@link #storeObject(String, Object)} instead (same for
-	 * applies for retrieving the Object later via the getObject - methods).
+	 * {@link #storeObject(String, Object)} instead (same for applies for retrieving the Object later via the getObject
+	 * - methods).
 	 *
 	 * @param compiler the compiler to store the object for
 	 * @param key      the key to store the object for
@@ -836,9 +826,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * Removes the Object stored for the given key and {@link Compiler}.
 	 * <b>Attention:</b> If the Object you want to remove is independent from the
-	 * {@link Compiler} that will or has compiled this Section, you can either
-	 * set the {@link Compiler} argument to  <tt>null</tt> or use the method
-	 * {@link #removeObject(String)} instead.
+	 * {@link Compiler} that will or has compiled this Section, you can either set the {@link Compiler} argument to
+	 * <tt>null</tt> or use the method {@link #removeObject(String)} instead.
 	 *
 	 * @param compiler the compiler to store the object for
 	 * @param key      is the key for which the Object should be removed
@@ -868,5 +857,4 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public boolean isEmpty() {
 		return store == null;
 	}
-
 }

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -36,11 +36,9 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
- * This class describes a plain floating point number to be parsed out of some
- * wiki text. "plain" means that the number must be in Java-specific coding,
- * using a '.' to separate the digits and without any thousand-grouping
- * characters.
- * 
+ * This class describes a plain floating point number to be parsed out of some wiki text. "plain" means that the number
+ * must be in Java-specific coding, using a '.' to separate the digits and without any thousand-grouping characters.
+ *
  * @author Jochen Reutelshöfer, Volker Belli
  * @created 13.06.2011
  */
@@ -58,22 +56,21 @@ public class Number extends AbstractType {
 	}
 
 	/**
-	 * Returns the number parsed out of the sections text, or null if the number
-	 * is not a valid (and plain) floating point number.
-	 * 
-	 * @created 13.06.2011
+	 * Returns the number parsed out of the sections text, or null if the number is not a valid (and plain) floating
+	 * point number.
+	 *
 	 * @param section the section to parse the number from
 	 * @return the parsed number
+	 * @created 13.06.2011
 	 */
 	public static Double getNumber(Section<? extends Number> section) {
 		try {
-			return Double.parseDouble(section.getText().trim());
+			if (section != null) return Double.parseDouble(section.getText().trim());
 		}
-		catch (NumberFormatException e) {
-			return null;
+		catch (NumberFormatException ignore) {
 		}
+		return null;
 	}
-
 }
 
 // only one of them NumberFinder/NumberChecker makes sense to have for one
@@ -92,7 +89,6 @@ class NumberFinder implements SectionFinder {
 			return null;
 		}
 	}
-
 }
 
 class NumberChecker extends DefaultGlobalHandler<Number> {
@@ -109,5 +105,4 @@ class NumberChecker extends DefaultGlobalHandler<Number> {
 		}
 		return msgs;
 	}
-
 }
