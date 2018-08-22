@@ -40,7 +40,9 @@ import de.knowwe.core.report.Messages;
  */
 public class UnrecognizedSyntaxType extends AbstractType {
 
-	public UnrecognizedSyntaxType() {
+	private static final UnrecognizedSyntaxType instance = new UnrecognizedSyntaxType();
+
+	private UnrecognizedSyntaxType() {
 		this.setSectionFinder(new AllTextFinderTrimmed(AllTextFinderTrimmed.TrimType.SPACES_AND_LINE_BREAKS));
 		this.addCompileScript(new DefaultGlobalHandler<UnrecognizedSyntaxType>() {
 
@@ -51,5 +53,9 @@ public class UnrecognizedSyntaxType extends AbstractType {
 				return msgs;
 			}
 		});
+	}
+
+	public static UnrecognizedSyntaxType getInstance() {
+		return instance;
 	}
 }

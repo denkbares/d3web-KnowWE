@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -39,6 +39,8 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.util.Icon;
 
 public class DefaultMarkup implements Cloneable {
+
+	public static final String REGEX_SEPARATE_MULTIPLE = "[\\h\\s\\v,;]+";
 
 	private String name;
 	private Collection<Type> types = new ArrayList<>();
@@ -97,8 +99,7 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Sets some documentation text for this markup. Set the documentation to 'null' to
-	 * remove the documentation.
+	 * Sets some documentation text for this markup. Set the documentation to 'null' to remove the documentation.
 	 *
 	 * @param documentation the documentation to be set
 	 */
@@ -107,8 +108,7 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Returns the documentation of this markup instance. It returns 'null' if no specific documentation
-	 * is available.
+	 * Returns the documentation of this markup instance. It returns 'null' if no specific documentation is available.
 	 *
 	 * @return the documentation of this markup
 	 */
@@ -136,9 +136,8 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Adds a new annotation to the markup, where the name is a regular
-	 * expression. All annotations with names matching this expression will be
-	 * found and allowed.
+	 * Adds a new annotation to the markup, where the name is a regular expression. All annotations with names matching
+	 * this expression will be found and allowed.
 	 *
 	 * @param regex     the regex of the name of the annotations to be added
 	 * @param mandatory if the annotation is required for the markup
@@ -149,8 +148,7 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Adds a new annotation to the markup with a fixed list of possible values
-	 * (enumeration).
+	 * Adds a new annotation to the markup with a fixed list of possible values (enumeration).
 	 *
 	 * @param name       the name of the annotation to be added
 	 * @param mandatory  if the annotation is required for the markup
@@ -169,37 +167,34 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Adds a new annotation to the markup with a fixed list of possible values
-	 * (enumeration).
-	 *
-	 * @param name       the name of the annotation to be added
-	 * @param mandatory  if the annotation is required for the markup
-	 * @param enumValues the allowed values for the annotation
-	 * @deprecated use {@link #addAnnotation(String, boolean, Class)} instead
-	 */
-	public void addAnnotation(String name, boolean mandatory, Enum<?>... enumValues) {
-		String regex = "^(" + Strings.concat("|", enumValues) + ")$";
-		int flags = Pattern.CASE_INSENSITIVE;
-		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
-	}
-
-	/**
-	 * Adds a new annotation to the markup with a fixed list of possible values
-	 * (enumeration).
+	 * Adds a new annotation to the markup with a fixed list of possible values (enumeration).
 	 *
 	 * @param name      the name of the annotation to be added
 	 * @param mandatory if the annotation is required for the markup
 	 * @param enumClass the allowed values for the annotation
 	 */
 	public void addAnnotation(String name, boolean mandatory, Class<? extends Enum<?>> enumClass) {
-		Enum<?>[] enumConstants = enumClass.getEnumConstants();
-		//noinspection deprecation
-		addAnnotation(name, mandatory, enumConstants);
+		addAnnotation(name, mandatory, enumClass, false);
 	}
 
 	/**
-	 * Adds a new annotation to the markup with a pattern to specify the values
-	 * allowed for this annotation.
+	 * Adds a new annotation to the markup with a fixed list of possible values (enumeration).
+	 *
+	 * @param name      the name of the annotation to be added
+	 * @param mandatory if the annotation is required for the markup
+	 * @param enumClass the allowed values for the annotation
+	 * @param multiple  true if multiple values should be allowed, separated by white-spaces or "," or ";"
+	 */
+	public void addAnnotation(String name, boolean mandatory, Class<? extends Enum<?>> enumClass, boolean multiple) {
+		Enum<?>[] enumConstants = enumClass.getEnumConstants();
+		//noinspection deprecation
+		String regex = "(" + Strings.concat("|", enumConstants) + ")";
+		if (multiple) regex = regex + "(" + REGEX_SEPARATE_MULTIPLE + regex + ")*";
+		addAnnotation(name, mandatory, Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
+	}
+
+	/**
+	 * Adds a new annotation to the markup with a pattern to specify the values allowed for this annotation.
 	 *
 	 * @param name      the name of the annotation to be added
 	 * @param mandatory if the annotation is required for the markup
@@ -210,13 +205,11 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Adds a new annotation to the markup with a pattern to specify the values
-	 * allowed for this annotation.
+	 * Adds a new annotation to the markup with a pattern to specify the values allowed for this annotation.
 	 *
 	 * @param name      the name of the annotation to be added
 	 * @param mandatory if the annotation is required for the markup
-	 * @param isRegex   if the given name is a regex allowing a range of
-	 *                  annotations
+	 * @param isRegex   if the given name is a regex allowing a range of annotations
 	 * @param pattern   a regular expression to check the allowed values
 	 */
 	public void addAnnotation(String name, boolean mandatory, boolean isRegex, Pattern pattern) {
@@ -237,14 +230,13 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Returns an array of all annotations of a specific markup. If the markup
-	 * has no annotations defined, an empty array is returned.
+	 * Returns an array of all annotations of a specific markup. If the markup has no annotations defined, an empty
+	 * array is returned.
 	 *
 	 * @return the annotations of the markup
 	 */
 	public Annotation[] getAnnotations() {
-		return this.annotations.values().toArray(
-				new Annotation[this.annotations.size()]);
+		return this.annotations.values().toArray(new Annotation[0]);
 	}
 
 	/**
@@ -284,20 +276,18 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Return all {@link Type}s that may be accepted as the content text of the
-	 * mark-up. These types will be used to sectionize, parse and render the
-	 * mark-up's content text, if there is no other renderer/parser defined in
-	 * the parent's {@link DefaultMarkupType}.
+	 * Return all {@link Type}s that may be accepted as the content text of the mark-up. These types will be used to
+	 * sectionize, parse and render the mark-up's content text, if there is no other renderer/parser defined in the
+	 * parent's {@link DefaultMarkupType}.
 	 * <p>
-	 * The mark-up may also contain any other text. It will be recognized as
-	 * {@link PlainText}, such in any other section or wiki-page. It is in
-	 * responsibility of the {@link de.knowwe.core.compile.CompileScript} of the
-	 * {@link DefaultMarkupType} instance to check for non-allowed content.
+	 * The mark-up may also contain any other text. It will be recognized as {@link PlainText}, such in any other
+	 * section or wiki-page. It is in responsibility of the {@link de.knowwe.core.compile.CompileScript} of the {@link
+	 * DefaultMarkupType} instance to check for non-allowed content.
 	 *
 	 * @return the Types of this mark-up
 	 */
 	public Type[] getTypes() {
-		return this.types.toArray(new Type[this.types.size()]);
+		return this.types.toArray(new Type[0]);
 	}
 
 	public Set<String> getIgnoredAnnotations() {
@@ -315,8 +305,7 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Sets this markup as deprecated. Set the name for the alternative markup
-	 * replacing this deprecated one.
+	 * Sets this markup as deprecated. Set the name for the alternative markup replacing this deprecated one.
 	 *
 	 * @param alternative the alternative markup replacing this deprecated one
 	 * @created 26.02.2013
@@ -334,10 +323,9 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Returns if this markup shall be used as an inline markup, which means
-	 * that the markup is used in a line containing other wiki text. In this
-	 * case the markup still starts with a "%%" and is terminated either with
-	 * "%%" oder "/%" (sourrounded by white spaces).
+	 * Returns if this markup shall be used as an inline markup, which means that the markup is used in a line
+	 * containing other wiki text. In this case the markup still starts with a "%%" and is terminated either with "%%"
+	 * oder "/%" (sourrounded by white spaces).
 	 *
 	 * @return if the markup shall be used inline
 	 * @created 11.11.2013
@@ -347,10 +335,9 @@ public class DefaultMarkup implements Cloneable {
 	}
 
 	/**
-	 * Specifies if this markup shall be used as an inline markup, which means
-	 * that the markup is used in a line containing other wiki text. In this
-	 * case the markup still starts with a "%%" and is terminated either with
-	 * "%%" or "/%" (sourrounded by white spaces).
+	 * Specifies if this markup shall be used as an inline markup, which means that the markup is used in a line
+	 * containing other wiki text. In this case the markup still starts with a "%%" and is terminated either with "%%"
+	 * or "/%" (sourrounded by white spaces).
 	 *
 	 * @param isInline if the markup shall be used inline
 	 * @created 11.11.2013
@@ -379,7 +366,7 @@ public class DefaultMarkup implements Cloneable {
 		}
 	}
 
-	public class Annotation {
+	public static class Annotation {
 
 		private final String name;
 		private final boolean mandatory;
@@ -403,8 +390,8 @@ public class DefaultMarkup implements Cloneable {
 		}
 
 		/**
-		 * Returns the name of the annotation. The name is the text after the
-		 * &#64; that uniquely identify the annotation within a default mark-up.
+		 * Returns the name of the annotation. The name is the text after the &#64; that uniquely identify the
+		 * annotation within a default mark-up.
 		 *
 		 * @return the name of the annotation
 		 */
@@ -413,8 +400,8 @@ public class DefaultMarkup implements Cloneable {
 		}
 
 		/**
-		 * Returns the documentation of the annotation. Returns 'null' if no specific
-		 * documentation for that annotation is defined.
+		 * Returns the documentation of the annotation. Returns 'null' if no specific documentation for that annotation
+		 * is defined.
 		 *
 		 * @return the name of the annotation
 		 */
@@ -451,8 +438,7 @@ public class DefaultMarkup implements Cloneable {
 		}
 
 		/**
-		 * Returns whether this annotations is described with a regular
-		 * expression instead of name string.
+		 * Returns whether this annotations is described with a regular expression instead of name string.
 		 *
 		 * @return if the annotation is a regex
 		 * @created 05.06.2013
@@ -462,8 +448,7 @@ public class DefaultMarkup implements Cloneable {
 		}
 
 		/**
-		 * Checks if the content of an annotation matches the annotations
-		 * pattern.
+		 * Checks if the content of an annotation matches the annotations pattern.
 		 *
 		 * @param annotationContent the content string to be checked
 		 * @return whether the annotations pattern is matched
@@ -476,24 +461,22 @@ public class DefaultMarkup implements Cloneable {
 		}
 
 		/**
-		 * Return all {@link Type}s that may be accepted as the content text of
-		 * the annotation. These types will be used to sectionize (parse) and
-		 * render the annotations content text, if there is no other
-		 * renderer/parser defined in the parent's {@link DefaultMarkupType}.
+		 * Return all {@link Type}s that may be accepted as the content text of the annotation. These types will be used
+		 * to sectionize (parse) and render the annotations content text, if there is no other renderer/parser defined
+		 * in the parent's {@link DefaultMarkupType}.
 		 * <p>
-		 * The annotation may also contain any other text. It will be recognized
-		 * as {@link PlainText}, such in any other section or wiki-page. It is
-		 * in responsibility of the {@link de.knowwe.core.compile.CompileScript} of the
+		 * The annotation may also contain any other text. It will be recognized as {@link PlainText}, such in any other
+		 * section or wiki-page. It is in responsibility of the {@link de.knowwe.core.compile.CompileScript} of the
 		 * {@link DefaultMarkupType} instance to check for non-allowed content.
 		 *
 		 * @return the Types of this annotation
 		 */
 		public Type[] getContentTypes() {
-			return this.types.toArray(new Type[this.types.size()]);
+			return this.types.toArray(new Type[0]);
 		}
 
 		public Type[] getNameTypes() {
-			return this.nameTypes.toArray(new Type[this.nameTypes.size()]);
+			return this.nameTypes.toArray(new Type[0]);
 		}
 
 		public Renderer getRenderer() {
