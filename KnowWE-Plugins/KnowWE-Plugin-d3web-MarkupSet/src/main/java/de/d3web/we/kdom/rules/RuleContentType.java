@@ -46,7 +46,7 @@ public class RuleContentType extends AbstractType {
 
 		this.addChildType(new CommentLineType());
 		// everything that remains will be unrecognized syntax
-		this.addChildType(new UnrecognizedSyntaxType());
+		this.addChildType(UnrecognizedSyntaxType.getInstance());
 	}
 
 }
