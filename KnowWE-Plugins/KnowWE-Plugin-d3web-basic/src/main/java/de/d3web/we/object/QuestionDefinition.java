@@ -19,9 +19,6 @@
  */
 package de.d3web.we.object;
 
-import java.util.Collection;
-
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionMC;
@@ -30,16 +27,10 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.QuestionZC;
-import com.denkbares.strings.Identifier;
-import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**

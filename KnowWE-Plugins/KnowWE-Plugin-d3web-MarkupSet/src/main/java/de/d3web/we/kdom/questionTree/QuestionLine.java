@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -22,14 +22,20 @@ package de.d3web.we.kdom.questionTree;
 
 import java.util.Collection;
 
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.terminology.*;
+import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.QuestionDate;
+import de.d3web.core.knowledge.terminology.QuestionMC;
+import de.d3web.core.knowledge.terminology.QuestionNum;
+import de.d3web.core.knowledge.terminology.QuestionOC;
+import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval.IntervalException;
-import com.denkbares.strings.Identifier;
-import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.questionTree.indication.IndicationHandler;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -114,11 +120,8 @@ public class QuestionLine extends AbstractType {
 
 		@Override
 		public QuestionDefinition.QuestionType getQuestionType(Section<QuestionDefinition> s) {
-			return QuestionTypeDeclaration
-					.getQuestionType(Sections.successor(
-							s.getParent(), QuestionTypeDeclaration.class));
+			return QuestionTypeDeclaration.getQuestionType(Sections.successor(s.getParent(), QuestionTypeDeclaration.class));
 		}
-
 	}
 
 	static class CreateQuestionHandler implements D3webHandler<QuestionDefinition> {
@@ -143,7 +146,8 @@ public class QuestionLine extends AbstractType {
 
 			if (abortCheck.termExist()) {
 				section.get().storeTermObject(compiler, section, (Question) abortCheck.getNamedObject());
-			} else {
+			}
+			else {
 				KnowledgeBase kb = getKnowledgeBase(compiler);
 
 				String name = section.get().getTermName(section);
@@ -184,7 +188,6 @@ public class QuestionLine extends AbstractType {
 			}
 
 			return Messages.noMessage();
-
 		}
 	}
 
@@ -245,7 +248,6 @@ public class QuestionLine extends AbstractType {
 								D3webUtils.getD3webBundle()
 										.getString("KnowWE.questiontree.invalidinterval")));
 					}
-
 				}
 				return Messages.asList(Messages.objectCreationError(
 						D3webUtils.getD3webBundle()
@@ -270,7 +272,6 @@ public class QuestionLine extends AbstractType {
 				catch (Exception ignored) {
 
 				}
-
 			}
 
 			return null;
@@ -293,7 +294,6 @@ public class QuestionLine extends AbstractType {
 				catch (Exception ignored) {
 
 				}
-
 			}
 
 			return null;
@@ -337,19 +337,18 @@ public class QuestionLine extends AbstractType {
 					String unit = s.get().getUnit(s);
 					try {
 						PropertyDeclarationHandler.validateProperty(question, MMInfo.UNIT, unit);
-					} catch (IllegalArgumentException e) {
+					}
+					catch (IllegalArgumentException e) {
 						return Messages.asList(Messages.error(e.getMessage()));
 					}
 					question.getInfoStore().addValue(MMInfo.UNIT, unit);
 					return Messages.noMessage();
-
 				}
 				return Messages.asList(Messages.objectCreationError(
 						D3webUtils.getD3webBundle()
 								.getString("KnowWE.questiontree.unit")));
 			});
 		}
-
 	}
 
 	/**
@@ -376,7 +375,6 @@ public class QuestionLine extends AbstractType {
 						question.getInfoStore().addValue(BasicProperties.ABSTRACTION_QUESTION, Boolean.TRUE);
 						return;
 					}
-
 				}
 				throw new CompilerMessage(Messages.objectCreationError(
 						D3webUtils.getD3webBundle().getString("KnowWE.questiontree.abstractflag")));
