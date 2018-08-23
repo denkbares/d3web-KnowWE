@@ -20,7 +20,13 @@
 
 package de.knowwe.tagging;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -37,7 +43,8 @@ public class TagCloud extends AbstractHTMLTagHandler {
 	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
 		result.appendHtml("<p>");
 
-		Map<String, Integer> fontSizes = TaggingMangler.getInstance().getCloudList(8, 20);
+		Predicate<String> filter = getFilterPredicate(values);
+		Map<String, Integer> fontSizes = TaggingMangler.getInstance().getCloudList(filter, 8, 20);
 		fontSizes.keySet().stream().sorted(Strings.CASE_INSENSITIVE_ORDER).forEach(tag -> {
 			result.appendHtml(" <a href ='Wiki.jsp?page=TagSearch&tag=").append(Strings.encodeURL(tag))
 					.appendHtml("' style='font-size:").append(fontSizes.get(tag))
@@ -47,5 +54,28 @@ public class TagCloud extends AbstractHTMLTagHandler {
 		});
 
 		result.appendHtml("</p>");
+	}
+
+	@NotNull
+	private Predicate<String> getFilterPredicate(Map<String, String> values) {
+		String include = Strings.unquote(values.get("include"), '"', '\'');
+		String exclude = Strings.unquote(values.get("exclude"), '"', '\'');
+		List<Predicate<String>> filters = new ArrayList<>();
+		if (Strings.nonBlank(include)) filters.add(Pattern.compile(include).asPredicate());
+		if (Strings.nonBlank(exclude)) filters.add(Pattern.compile(exclude).asPredicate().negate());
+		return filters.stream().reduce(Predicate::and).orElse(page -> true);
+	}
+
+	@Override
+	public String getExampleString() {
+		return "[{KnowWEPlugin " + getTagName() +
+				" include='\u00ABpage-name-regex\u00BB'" +
+				" exclude='\u00ABpage-name-regex\u00BB'}]";
+	}
+
+	@Override
+	public String getDescription(UserContext user) {
+		return "Renders a tag cloud for the tags defined in this wiki. Optionally you may specify a regular expression " +
+				"what articles to be included or excluded in the tag cloud.";
 	}
 }

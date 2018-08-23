@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import com.denkbares.collections.CountingSet;
 import com.denkbares.strings.NumberAwareComparator;
@@ -202,7 +203,9 @@ public class TaggingMangler {
 	 * @return List of Strings with all existing, unique tags
 	 */
 	public Set<String> getAllTags() {
-		return new LinkedHashSet<>(getAllTagsWithDuplicates());
+		LinkedHashSet<String> result = new LinkedHashSet<>();
+		tagMap.values().forEach(result::addAll);
+		return result;
 	}
 
 	/**
@@ -212,10 +215,10 @@ public class TaggingMangler {
 	 * @param maxSize the maximum font size
 	 * @return the font size for the tags
 	 */
-	public Map<String, Integer> getCloudList(int minSize, int maxSize) {
+	public Map<String, Integer> getCloudList(Predicate<String> pageFilter, int minSize, int maxSize) {
 		Map<String, Integer> result = new HashMap<>();
 		float factor = Math.abs(maxSize - minSize);
-		getAllTagsWithWeight().forEach((tag, weight) ->
+		getAllTagsWithWeight(pageFilter).forEach((tag, weight) ->
 				result.put(tag, Math.round(Math.min(minSize, maxSize) + (weight * factor))));
 		return result;
 	}
@@ -223,26 +226,18 @@ public class TaggingMangler {
 	/**
 	 * returns a list of all existing tags with normalized weights
 	 */
-	public Map<String, Float> getAllTagsWithWeight() {
-		CountingSet<String> tags = new CountingSet<>(getAllTagsWithDuplicates());
-		float max = tags.stream().mapToInt(tags::getCount).max().orElse(0);
+	private Map<String, Float> getAllTagsWithWeight(Predicate<String> pageFilter) {
+		CountingSet<String> allTags = new CountingSet<>();
+		tagMap.forEach((page, pageTags) -> {
+			if (pageFilter.test(page)) allTags.addAll(pageTags);
+		});
+		float max = allTags.stream().mapToInt(allTags::getCount).max().orElse(0);
 
 		// remap the tags to the normalized value
 		HashMap<String, Float> weighted = new HashMap<>();
-		tags.toMap().forEach((tag, weight) ->
+		allTags.toMap().forEach((tag, weight) ->
 				weighted.put(tag, (max <= 1) ? 0.5f : ((weight - 1f) / (max - 1f))));
 		return weighted;
-	}
-
-	/**
-	 * Compiles a list containing all concatenated tag lists
-	 */
-	private List<String> getAllTagsWithDuplicates() {
-		List<String> result = new LinkedList<>();
-		for (String s : tagMap.keySet()) {
-			result.addAll(tagMap.get(s));
-		}
-		return result;
 	}
 
 	/**
@@ -341,7 +336,7 @@ public class TaggingMangler {
 	 * @return Wiki markup displaying the results
 	 */
 	public String getResultPanel(String queryString) {
-		if (Strings.isBlank(queryString)) {
+		if (Strings.nonBlank(queryString)) {
 			List<TaggingSearchResult> pages = searchPages(queryString);
 			pages.sort(Comparator.comparing(TaggingSearchResult::getPagename, NumberAwareComparator.CASE_INSENSITIVE));
 			return renderResults(pages, queryString);
