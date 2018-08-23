@@ -37,10 +37,8 @@ public class TagCloud extends AbstractHTMLTagHandler {
 	}
 
 	@Override
-	public void renderHTML(String web, String topic,
-			UserContext user, Map<String, String> values, RenderResult result) {
-		Map<String, Integer> weightedlist = TaggingMangler.getInstance().getCloudList(8,
-				20);
+	public void renderHTML(String web, String topic, UserContext user, Map<String, String> values, RenderResult result) {
+		Map<String, Integer> weightedlist = TaggingMangler.getInstance().getCloudList(8, 20);
 		result.appendHtml("<p>");
 		// TagSearch.jsp?query=test+auto&ok=Find!&start=0&maxitems=20
 		List<String> tlist = new ArrayList<>();
