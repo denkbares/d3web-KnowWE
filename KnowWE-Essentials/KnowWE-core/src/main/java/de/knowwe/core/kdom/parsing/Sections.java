@@ -49,12 +49,12 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	private final Iterable<Section<T>> sections;
 
-	public static <T extends Type> Sections<T> $(Iterable<Section<? extends T>> sections) {
+	public static <T extends Type> Sections<T> $(Iterable<? extends Section<? extends T>> sections) {
 		//noinspection unchecked
 		return new Sections(sections);
 	}
 
-	public static <T extends Type> Sections<T> $(Iterator<Section<? extends T>> sections) {
+	public static <T extends Type> Sections<T> $(Iterator<? extends Section<? extends T>> sections) {
 		//noinspection unchecked
 		return new Sections(new CachedIterable<>(sections));
 	}
