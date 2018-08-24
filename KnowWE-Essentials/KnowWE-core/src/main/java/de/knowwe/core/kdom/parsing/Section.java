@@ -626,6 +626,17 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
+	 * Returns the index of this section within the list of children of the parent section. The method returns -1 if the
+	 * section is not properly added to a parent section, or already disconnected from its parent section, or if it is
+	 * the root section.
+	 *
+	 * @return the index of this section in the parent's list of child sections
+	 */
+	public int getIndexInParent() {
+		return (parent == null) ? -1 : getIndex(this, parent.children);
+	}
+
+	/**
 	 * Calculates the index of a contained object without using the equals-method but using object identity instead.
 	 *
 	 * @param object the object to get the index for

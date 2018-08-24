@@ -129,7 +129,7 @@ public class TermInfoToolProvider implements ToolProvider {
 			tools[index++] = new DefaultTool(
 					Icon.ARTICLE,
 					titleText, description,
-					link, Tool.ActionType.HREF, Tool.CATEGORY_INFO);
+					link, Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE);
 		}
 		return tools;
 	}

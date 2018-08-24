@@ -56,7 +56,7 @@ public class AddToWatchesToolProvider implements ToolProvider {
 				"Add to watches",
 				"Add this term to the watches for debugging.",
 				createAddToWatchesAction(section),
-				Tool.CATEGORY_INFO);
+				Tool.CATEGORY_UTIL);
 	}
 
 	protected String createAddToWatchesAction(Section<? extends Term> section) {

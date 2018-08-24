@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -31,7 +31,6 @@ import java.util.Map.Entry;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -376,7 +375,6 @@ public class DefaultMarkupRenderer implements Renderer {
 		string.appendHtml("</div>"); // class=markupText
 		string.appendHtml("</div>"); // class=defaultMarkup
 		string.appendHtml("</div>");
-
 	}
 
 	protected void appendHeader(String title,
@@ -410,7 +408,6 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 
 		temp.appendHtml("</div>"); // class=markupHeaderFrame
-
 	}
 
 	protected void appendToolbar(ToolSet tools, UserContext user, RenderResult result) {
@@ -443,6 +440,17 @@ public class DefaultMarkupRenderer implements Renderer {
 		Collections.sort(levelOneCategories);
 
 		for (String category : levelOneCategories) {
+//			if (category.matches("..-\".*\"")) {
+//				String displayName = Strings.unquote(category.substring(3));
+//				result.appendHtml("<span class=\"markupMenuDivider\">&nbsp;<span class=\"categoryName\">")
+//						.append(displayName).appendHtml("</span></span>");
+//			}
+//			else
+			if (!category.equals(levelOneCategories.get(0))) {
+				String displayName = Strings.unquote(category);
+				result.appendHtml("<span class=\"markupMenuDivider\">&nbsp;</span>");
+			}
+
 			Map<String, List<Tool>> levelTwoTools = groupedTools.get(category);
 
 			List<String> levelTwoCategories = new ArrayList<>(levelTwoTools.keySet());
@@ -458,10 +466,6 @@ public class DefaultMarkupRenderer implements Renderer {
 						appendToolAsMenuItem(tool, result);
 					}
 				}
-			}
-
-			if (!category.equals(levelOneCategories.get(levelOneCategories.size() - 1))) {
-				result.appendHtml("<span class=\"markupMenuDivider\">&nbsp;</span>");
 			}
 		}
 
@@ -542,5 +546,4 @@ public class DefaultMarkupRenderer implements Renderer {
 	public void setListAnnotations(boolean listAnnotations) {
 		this.listAnnotations = listAnnotations;
 	}
-
 }

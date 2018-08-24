@@ -316,9 +316,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * <p/>
 	 * Please note that there is no de-duplication. If a sections is contained, that is already a successor of a defined
 	 * section, the section and its successors will be contained duplicated in the resulting sections.
-	 * <p/>
-	 * If a successor is an instance of the specified class, but also have sub-successors of the specified class, both,
-	 * the successor and the sub-successors are contained in the returned instance.
 	 *
 	 * @return all successors for each section matching the type
 	 */

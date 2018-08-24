@@ -58,7 +58,7 @@ public class ConceptVisTemplateToolProvider implements ToolProvider {
 				Icon.SHOWTRACE,
 //				derp
 				"Visualize with ConceptVis template '" + templateClass + "'", "Open ConceptVis template for class " + templateClass,
-				link, Tool.ActionType.HREF, Tool.CATEGORY_INFO) };
+				link, Tool.ActionType.HREF, Tool.CATEGORY_UTIL) };
 	}
 
 	@Override

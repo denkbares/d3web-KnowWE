@@ -63,7 +63,7 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 			tools.add(new DefaultTool(
 					Icon.SHOWTRACE,
 					"Visualize with SparqlVis template '" + templateClass + "'", "Open SparqlVis template for class " + templateClass,
-					link, Tool.ActionType.HREF, Tool.CATEGORY_INFO));
+					link, Tool.ActionType.HREF, Tool.CATEGORY_UTIL));
 		}
 		return tools.toArray(new Tool[tools.size()]);
 	}

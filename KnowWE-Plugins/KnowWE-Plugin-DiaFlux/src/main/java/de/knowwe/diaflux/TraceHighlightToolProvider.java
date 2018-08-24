@@ -54,7 +54,7 @@ public class TraceHighlightToolProvider implements ToolProvider {
 					"Highlights active nodes and edges in the flowchart.",
 					"jq$.cookie('DiaFluxHighlightTraces', 'false'); window.location.reload()",
 					Tool.ActionType.ONCLICK,
-					Tool.CATEGORY_INFO);
+					Tool.CATEGORY_UTIL);
 		}
 		else {
 			return new DefaultTool(
@@ -63,7 +63,7 @@ public class TraceHighlightToolProvider implements ToolProvider {
 					"Highlights active nodes and edges in the flowchart.",
 					"jq$.cookie('DiaFluxHighlightTraces', 'true'); window.location.reload()",
 					Tool.ActionType.ONCLICK,
-					Tool.CATEGORY_INFO);
+					Tool.CATEGORY_UTIL);
 		}
 	}
 }

@@ -71,7 +71,7 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 
 		return new DefaultToolSet(
 				new DefaultTool(Icon.OPENPAGE, "Open Page", "Opens page '" + targetSection.getTitle()
-						+ "'", "window.location ='" + link + "'", Tool.CATEGORY_INFO));
+						+ "'", "window.location ='" + link + "'", Tool.CATEGORY_NAVIGATE));
 	}
 
 	@Override

@@ -43,7 +43,7 @@ public class TestCasePlayerToolProvider implements ToolProvider {
 				+ section.getID()
 				+ "').find('select').find(':selected').attr('caselink');if (goToLink) window.location=goToLink;";
 		Tool goToTool = new DefaultTool(Icon.OPENTESTCASE,
-				"Open test case", "Opens the currently selected test case source", jsAction, Tool.CATEGORY_INFO);
+				"Open test case", "Opens the currently selected test case source", jsAction, Tool.CATEGORY_NAVIGATE);
 		return goToTool;
 	}
 

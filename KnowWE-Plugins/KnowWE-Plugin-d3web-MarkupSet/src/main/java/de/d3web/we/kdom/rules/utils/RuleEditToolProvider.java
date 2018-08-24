@@ -19,9 +19,6 @@
 
 package de.d3web.we.kdom.rules.utils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -56,7 +53,7 @@ public class RuleEditToolProvider implements ToolProvider {
 					"Switch back to more concise rendering of rules.",
 					"jq$.cookie('RuleDebugView', 'false'); window.location.reload()",
 					Tool.ActionType.ONCLICK,
-					Tool.CATEGORY_INFO);
+					Tool.CATEGORY_UTIL);
 		}
 		else {
 			return new DefaultTool(
@@ -65,7 +62,7 @@ public class RuleEditToolProvider implements ToolProvider {
 					"Changes rendering of rules to better show the status of the different conditions and actions.",
 					"jq$.cookie('RuleDebugView', 'true'); window.location.reload()",
 					Tool.ActionType.ONCLICK,
-					Tool.CATEGORY_INFO);
+					Tool.CATEGORY_UTIL);
 		}
 	}
 
