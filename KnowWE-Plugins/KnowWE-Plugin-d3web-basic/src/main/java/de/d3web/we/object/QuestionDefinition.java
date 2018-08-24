@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -43,7 +43,19 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public abstract class QuestionDefinition extends QASetDefinition<Question> {
 
 	public enum QuestionType {
-		OC, MC, YN, NUM, DATE, TEXT, INFO
+		OC(QuestionOC.class), MC(QuestionMC.class), YN(QuestionYN.class),
+		NUM(QuestionNum.class), DATE(QuestionDate.class), TEXT(QuestionText.class),
+		INFO(QuestionZC.class);
+
+		private final Class<? extends Question> questionClass;
+
+		QuestionType(Class<? extends Question> questionClass) {
+			this.questionClass = questionClass;
+		}
+
+		public Class<? extends Question> getQuestionClass() {
+			return questionClass;
+		}
 	}
 
 	public QuestionDefinition() {
@@ -55,26 +67,8 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	@Override
 	public final Class<?> getTermObjectClass(Section<? extends Term> section) {
 		QuestionType questionType = getQuestionType(Sections.cast(section, QuestionDefinition.class));
-		if (questionType == null) return Question.class;
-		switch (questionType) {
-			case DATE:
-				return QuestionDate.class;
-			case INFO:
-				return QuestionZC.class;
-			case MC:
-				return QuestionMC.class;
-			case NUM:
-				return QuestionNum.class;
-			case OC:
-				return QuestionOC.class;
-			case TEXT:
-				return QuestionText.class;
-			case YN:
-				return QuestionYN.class;
-		}
-		return Question.class;
+		return (questionType == null) ? Question.class : questionType.getQuestionClass();
 	}
 
 	public abstract QuestionType getQuestionType(Section<QuestionDefinition> s);
-
 }
