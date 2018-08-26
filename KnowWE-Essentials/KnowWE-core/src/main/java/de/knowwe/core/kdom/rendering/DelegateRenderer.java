@@ -51,8 +51,7 @@ public class DelegateRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user,
-			RenderResult builder) {
+	public void render(Section<?> section, UserContext user, RenderResult builder) {
 
 		boolean renderTypes = isRenderTypes(user.getParameters());
 		if (renderTypes) renderType(section, true, builder);
