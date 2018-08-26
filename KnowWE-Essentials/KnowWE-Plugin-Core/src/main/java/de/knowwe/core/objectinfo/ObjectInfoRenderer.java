@@ -152,7 +152,6 @@ public class ObjectInfoRenderer implements Renderer {
 			result.appendHtml("</div>");
 			result.appendHtml("<param class='" + clazz + "' sectionid='"
 					+ previewSection.getID() + "' />");
-
 		}
 	}
 
@@ -221,7 +220,6 @@ public class ObjectInfoRenderer implements Renderer {
 			}
 		}
 		renderSectionEnd(result);
-
 	}
 
 	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
@@ -427,9 +425,10 @@ public class ObjectInfoRenderer implements Renderer {
 		// result.append(" (").append(count).append(" occurences)");
 		// }
 
-		result.appendHtml("<div class='objectinfo preview defaultMarkupFrame ").append(cssClass).appendHtml("'>");
-		result.appendHtml("<div class='objectinfo type_")
-				.append(previewSection.get().getName()).appendHtml(" markupHeaderFrame headerMenu'>");
+		result.appendHtml("<div class='objectinfo preview defaultMarkupFrame" +
+				" type_").append(previewSection.get().getName())
+				.appendHtml(" ").append(cssClass).appendHtml("'>");
+		result.appendHtml("<div class='objectinfo markupHeaderFrame headerMenu'>");
 		result.appendHtml("<div class='markupHeader'>");
 		result.appendHtml(previewSection.getTitle());
 		result.appendHtml("</div>");
@@ -472,8 +471,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	/**
-	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the
-	 * number
+	 * Get a counting set of all markup names that surrounds the specified list of sections. The count is not the number
 	 * of sections contained in a specific markup, but it is the number of preview sections required to display these
 	 * sections (some preview sections may display multiple of the specified sections).
 	 *
@@ -519,7 +517,6 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("<div class=\"objectInfoPanel hidden\" style=\"display:none !important\">");
 		result.append(content);
 		result.appendHtml("</div>");
-
 	}
 
 	public static void renderPlainTextOccurrences(Identifier identifier, UserContext user, RenderResult result) {
@@ -607,7 +604,6 @@ public class ObjectInfoRenderer implements Renderer {
 			Log.severe("Exception while writing available terms to JSON", e);
 		}
 		return response;
-
 	}
 
 	public static Identifier getTermIdentifier(UserContext user, Section<?> section) {
@@ -642,5 +638,4 @@ public class ObjectInfoRenderer implements Renderer {
 		}
 		return termIdentifier;
 	}
-
 }
