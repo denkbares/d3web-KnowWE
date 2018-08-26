@@ -79,11 +79,7 @@ public class GenericHTMLRenderer implements Renderer {
 			string.append(" ").append(attr).appendHtml("=\"").append(value).appendHtml("\"");
 		}
 		string.appendHtml(">");
-		renderContent(sec, user, string);
+		delegate.render(sec, user, string);
 		string.appendHtml("</").append(tagName).appendHtml(">");
-	}
-
-	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
-		delegate.render(section, user, string);
 	}
 }
