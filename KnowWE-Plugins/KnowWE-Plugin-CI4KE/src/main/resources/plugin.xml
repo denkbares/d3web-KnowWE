@@ -222,6 +222,7 @@
 		<parameter id="scope" value="de.knowwe.jspwiki.types.HeaderType"/>
 		<parameter id="scope" value="de.knowwe.jspwiki.types.HeaderType1"/>
 		<parameter id="scope" value="de.knowwe.jspwiki.types.HeaderType2"/>
+		<parameter id="scope" value="de.knowwe.jspwiki.types.SectionHeaderType"/>
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"

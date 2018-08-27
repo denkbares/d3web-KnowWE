@@ -46,7 +46,13 @@ public class AdaptiveMarkupFinder implements SectionFinder {
 
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		String[] lines = father.getText().split("\\r?\\n");
+		// prepare father text to handle optional endign pattern well
+		String fatherText = father.getText();
+		if (fatherText.startsWith("[{") && text.endsWith("}]")) {
+			text = text.substring(0, text.length() - 2);
+		}
+
+		String[] lines = fatherText.split("\\r?\\n");
 		if (lines.length == 1) {
 			List<SectionFinderResult> results = singleLineFinder.lookForSections(text, father, type);
 			// if in a single line markup the content only consists

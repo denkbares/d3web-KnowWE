@@ -132,13 +132,12 @@ public class DefaultMarkupType extends AbstractType {
 					// --> anything in a single line (reluctant match)
 					"))";
 
-	private final static String SECTION_REGEXP_INLINE =
-			// Declaration
-			"%%$NAME$\\p{Blank}*" +
-					// single-line content with termination
-					// at least one non-whitespace character followed by any
-					// non-line-break item
-					"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?[%/]%)"; // CONTENT
+			// single-line content with termination
+			// at least one non-whitespace character followed by any
+			// non-line-break item
+	private static final String INLINE_CONTENT = "$NAME$\\p{Blank}*[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)";
+	private final static String SECTION_REGEXP_INLINE = "%%" + INLINE_CONTENT + "[%/]%" +
+			"|\\[\\{" + INLINE_CONTENT + "\\}\\]";
 
 	private DefaultMarkup markup;
 	private PackageManager packageManager;
