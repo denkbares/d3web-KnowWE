@@ -112,7 +112,9 @@
 .defaultMarkupFrame .markupMenu {
 	display: none;
 	position: relative;
-	border: 2px solid #DDD;
+	border: 2px solid #DDD; /*Template: Haddock*/
+	/*border: 1px solid #DDD; !*TODO: add for Template KnowWE*!*/
+	/*margin: -1px -2px -1px -1px; !*TODO: add for Template KnowWE*!*/
 	background-color: white;
 	z-index: 750;
 	overflow: auto;
@@ -288,7 +290,7 @@ span.markupMenuItem {
 	display: none;
 }
 
-.objectinfo.preview .type_CoveringList .relation, .objectinfo.preview .type_CoveringList .ellipse {
+.objectinfo.preview.type_CoveringList .relation, .objectinfo.preview.type_CoveringList .ellipse {
 	margin-left: 1em;
 }
 
