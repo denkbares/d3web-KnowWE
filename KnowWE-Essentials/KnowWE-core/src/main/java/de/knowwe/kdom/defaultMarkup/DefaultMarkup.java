@@ -29,8 +29,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -154,12 +155,27 @@ public class DefaultMarkup implements Cloneable {
 	 * @param mandatory  if the annotation is required for the markup
 	 * @param enumValues the allowed values for the annotation
 	 */
-	public void addAnnotation(String name, boolean mandatory,
-							  String... enumValues) {
-		String regex = "^(" + Strings.concat("|", enumValues)
-				+ ")$";
-		int flags = Pattern.CASE_INSENSITIVE;
-		addAnnotation(name, mandatory, Pattern.compile(regex, flags));
+	public void addAnnotation(String name, boolean mandatory, String... enumValues) {
+		addAnnotation(name, mandatory, false, enumValues);
+	}
+
+	/**
+	 * Adds a new annotation to the markup with a fixed list of possible values (enumeration).
+	 *
+	 * @param name       the name of the annotation to be added
+	 * @param mandatory  if the annotation is required for the markup
+	 * @param multiple   if multiple values are allowed, separated by white-spaces or ',' or ';'
+	 * @param enumValues the allowed values for the annotation
+	 */
+	public void addAnnotation(String name, boolean mandatory, boolean multiple, String... enumValues) {
+		addAnnotation(name, mandatory, multiple, Stream.of(enumValues));
+	}
+
+	private void addAnnotation(String name, boolean mandatory, boolean multiple, Stream<String> enumValues) {
+		String values = enumValues.map(Pattern::quote).collect(Collectors.joining("|"));
+		String regex = "(?<enum>" + values + ")";
+		if (multiple) regex = regex + "(" + REGEX_SEPARATE_MULTIPLE + "(" + values + "))*";
+		addAnnotation(name, mandatory, Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
 	}
 
 	public void addAnnotationIcon(String name, Icon icon) {
@@ -174,7 +190,7 @@ public class DefaultMarkup implements Cloneable {
 	 * @param enumClass the allowed values for the annotation
 	 */
 	public void addAnnotation(String name, boolean mandatory, Class<? extends Enum<?>> enumClass) {
-		addAnnotation(name, mandatory, enumClass, false);
+		addAnnotation(name, mandatory, false, enumClass);
 	}
 
 	/**
@@ -185,12 +201,8 @@ public class DefaultMarkup implements Cloneable {
 	 * @param enumClass the allowed values for the annotation
 	 * @param multiple  true if multiple values should be allowed, separated by white-spaces or "," or ";"
 	 */
-	public void addAnnotation(String name, boolean mandatory, Class<? extends Enum<?>> enumClass, boolean multiple) {
-		Enum<?>[] enumConstants = enumClass.getEnumConstants();
-		//noinspection deprecation
-		String regex = "(" + Strings.concat("|", enumConstants) + ")";
-		if (multiple) regex = regex + "(" + REGEX_SEPARATE_MULTIPLE + regex + ")*";
-		addAnnotation(name, mandatory, Pattern.compile(regex, Pattern.CASE_INSENSITIVE));
+	public void addAnnotation(String name, boolean mandatory, boolean multiple, Class<? extends Enum<?>> enumClass) {
+		addAnnotation(name, mandatory, multiple, Stream.of(enumClass.getEnumConstants()).map(Enum::name));
 	}
 
 	/**
