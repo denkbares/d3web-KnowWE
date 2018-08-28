@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2012 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -678,37 +678,39 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	private String conceptFilter(String variable, Collection<ConceptNode> conceptDeclarations) {
 		StringBuilder filter = new StringBuilder();
 		filter.append("FILTER (");
-		if (conceptDeclarations.isEmpty()) {
-			filter.append("true");
-		}
-		else {
-			final Iterator<ConceptNode> iterator = conceptDeclarations.iterator();
-			boolean firstIteration = true;
-			while (iterator.hasNext()) {
-				ConceptNode conceptDeclaration = iterator.next();
-				if (conceptDeclaration.getType() == NODE_TYPE.LITERAL) {
-					continue;
-				}
-				if (conceptDeclaration.getType() == NODE_TYPE.UNDEFINED) {
-					continue;
-				}
-				if (conceptDeclaration.getType() == NODE_TYPE.BLANKNODE) {
-					// TODO: find solution for this case
-					continue;
-				}
-				if (firstIteration) {
-					firstIteration = false;
-				}
-				else {
-					filter.append(" || ");
-				}
-				String concept = conceptDeclaration.getConceptUrl();
-				if (concept.matches("https?://.+")) {
-					concept = "<" + concept + ">";
-				}
-				filter.append(variable).append(" = ").append(concept);
+
+		final Iterator<ConceptNode> iterator = conceptDeclarations.iterator();
+		boolean firstIteration = true;
+		while (iterator.hasNext()) {
+			ConceptNode conceptDeclaration = iterator.next();
+			if (conceptDeclaration.getType() == NODE_TYPE.LITERAL) {
+				continue;
+			}
+			if (conceptDeclaration.getType() == NODE_TYPE.UNDEFINED) {
+				continue;
+			}
+			if (conceptDeclaration.getType() == NODE_TYPE.BLANKNODE) {
+				// TODO: find solution for this case
+				continue;
+			}
+			String concept = conceptDeclaration.getName();
+			if (concept.matches("^https?://.+")) {
+				concept = "<" + concept + ">";
+			}
+			else if (!concept.contains(":")) {
+				continue;
 			}
 
+			if (firstIteration) {
+				firstIteration = false;
+			}
+			else {
+				filter.append(" || ");
+			}
+			filter.append(variable).append(" = ").append(concept);
+		}
+		if (firstIteration) {
+			filter.append("true");
 		}
 
 		filter.append(")");
