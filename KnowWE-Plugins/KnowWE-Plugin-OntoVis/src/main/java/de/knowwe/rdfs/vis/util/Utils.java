@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -203,9 +203,8 @@ public class Utils {
 				}
 				RenderingStyle style = Utils.getStyle(type, config);
 				Utils.setClassColorCoding(toURI, style, config, rdfRepository);
-				visValue = new ConceptNode(identifier, type, createConceptURL(identifier, config,
-						section,
-						uriProvider, uri.toString()), label, clazz, style);
+				String conceptURL = createConceptURL(identifier, config, section, uriProvider, uri.toString());
+				visValue = new ConceptNode(identifier, type, conceptURL, label, clazz, style);
 				if (insertNewValue) {
 					data.addConcept(visValue);
 				}
@@ -287,8 +286,8 @@ public class Utils {
 			rdfRepository) {
 		Map<String, String> individualColorsScheme = config.getIndividualColors();
 		String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.stringValue());
-		if(node instanceof URI) {
-			if(individualColorsScheme.containsKey(shortURI)) {
+		if (node instanceof URI) {
+			if (individualColorsScheme.containsKey(shortURI)) {
 				style.setFillcolor(individualColorsScheme.get(shortURI));
 			}
 		}
@@ -325,10 +324,7 @@ public class Utils {
 		return style;
 	}
 
-	public static String createConceptURL(String to, Config config, Section<?> section, LinkToTermDefinitionProvider
-			uriProvider, String uri) {
-		// TODO: 21.11.16 find better solution for this, after successor for deprecated LinkMode annotation has been
-		// found
+	public static String createConceptURL(String to, Config config, Section<?> section, LinkToTermDefinitionProvider uriProvider, String uri) {
 		if (section != null) {
 			final OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
 			final String shortURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri);
@@ -349,15 +345,12 @@ public class Utils {
 			Section<?> anchorAncestor = PreviewManager.getInstance()
 					.getPreviewAncestor(termDefiningSection);
 			String url = KnowWEUtils.getURLLink(anchorAncestor);
-			if (url != null) {
-				if (!url.startsWith("http:")) {
-					url = Environment.getInstance().getWikiConnector().getBaseUrl() + url;
-				}
-				return url;
+			if (!url.startsWith("http:")) {
+				url = Environment.getInstance().getWikiConnector().getBaseUrl() + url;
 			}
+			return url;
 		}
-		return OntoGraphDataBuilder.createBaseURL() + "?" + (section == null ? "" : "page="
-				+ section.getTitle() + "&") + "concept=" + to;
+		return OntoGraphDataBuilder.createBaseURL() + "?concept=" + to;
 	}
 
 	public static String getIdentifierURI(Value uri, Rdf2GoCore repo) {
@@ -596,7 +589,7 @@ public class Utils {
 			concept = user.getParameter("concept");
 			if (concept == null) {
 				Object object = user.getSession().getAttribute("concept");
-				if(object != null) {
+				if (object != null) {
 					concept = object.toString();
 				}
 			}

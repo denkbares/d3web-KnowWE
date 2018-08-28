@@ -71,12 +71,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	private final Set<Value> literalsExpanded = new HashSet<>();
 	private final Map<Integer, String> propertyExcludeSPARQLFilterCache = new HashMap<>();
 	private final Set<Value> fringeValues = new HashSet<>();
-	private final String nodeFilterExpression = null;
 	private final List<OuterConceptCheck> outerConceptCalls = new ArrayList<>();
 	private final Set<OuterConceptCheck> checkedOuterConcepts = new HashSet<>();
 	private final List<String> succQueries = new ArrayList<>();
 	private final List<String> predQueries = new ArrayList<>();
-	private Rdf2GoCore rdf2GoCore = null;
+	private final Rdf2GoCore rdf2GoCore;
 	private int depth = 0;
 	private int height = 0;
 	private int addSuccessorsCalls = 0;
@@ -188,17 +187,14 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			Log.info("addOutgoingSuccessorCalls: " + addOutgoingSuccessorsCalls);
 			Log.info("addOutgoingPredecessorCalls: " + addOutgoingPredecessorsCalls);
 			Log.info("addOuterConceptCalls: " + addOuterConceptCalls);
-			Set<OuterConceptCheck> outerSet = new HashSet<>();
-			outerSet.addAll(checkedOuterConcepts);
+			Set<OuterConceptCheck> outerSet = new HashSet<>(checkedOuterConcepts);
 			Log.info("different outer-concepts: " + outerSet.size());
 
-			Set<String> predQuerySet = new HashSet<>();
-			predQuerySet.addAll(predQueries);
+			Set<String> predQuerySet = new HashSet<>(predQueries);
 			Log.info("number of pred-queries: " + predQueries.size());
 			Log.info("number of different pred-queries: " + predQuerySet.size());
 
-			Set<String> succQueriesSet = new HashSet<>();
-			succQueriesSet.addAll(succQueries);
+			Set<String> succQueriesSet = new HashSet<>(succQueries);
 			Log.info("number of succ-queries: " + succQueries.size());
 			Log.info("number of succ-different queries: " + succQueriesSet.size());
 
@@ -237,13 +233,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private void addLiterals(Value fringeNode) {
+		if (fringeNode instanceof BNode) return;
 		String propertyFilter = predicateFilter(Direction.Forward, "literal");
 		String query = "SELECT ?literal ?y WHERE { <" + fringeNode.stringValue() + "> ?y ?literal . FILTER isLiteral(?literal) . " + propertyFilter + " }";
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 
 		MultiMap<Value, BindingSet> literalsMap = new DefaultMultiMap<>();
-		Set<Text> literalsSet = new HashSet<>();
-		String language;
 
 		while (result != null && result.hasNext()) {
 			BindingSet row = result.next();
@@ -433,9 +428,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			TODO: this should be done _after_ the last concept node has been added to the graph
              */
 			if (depth == config.getSuccessors()) {
-				if (nodeType != NODE_TYPE.LITERAL) {
-					fringeValues.add(zURI);
-				}
+				fringeValues.add(zURI);
 				//addOutgoingEdgesSuccessors(zURI);
 				//addOutgoingEdgesPredecessors(zURI);
 				//if (!literalsExpanded.contains(zURI)) {
@@ -696,6 +689,9 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				if (conceptDeclaration.getType() == NODE_TYPE.LITERAL) {
 					continue;
 				}
+				if (conceptDeclaration.getType() == NODE_TYPE.UNDEFINED) {
+					continue;
+				}
 				if (conceptDeclaration.getType() == NODE_TYPE.BLANKNODE) {
 					// TODO: find solution for this case
 					continue;
@@ -706,7 +702,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				else {
 					filter.append(" || ");
 				}
-				String concept = conceptDeclaration.getName();
+				String concept = conceptDeclaration.getConceptUrl();
 				if (concept.matches("https?://.+")) {
 					concept = "<" + concept + ">";
 				}
@@ -874,12 +870,6 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			return false;
 		}
 
-		//noinspection SimplifiableIfStatement
-		if (nodeType == NODE_TYPE.LITERAL || isTypeRelation(y)) {
-			// only literals and type assertions are not filtered out
-			return false;
-		}
-
 		return isWhiteListMode() && !(filteredRelation(y));
 
 	}
@@ -912,16 +902,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			}
 		}
 
-		ConceptNode toValue;
-		ConceptNode fromValue;
-
-		toValue = Utils.createValue(this.getParameterMap(), this.rdf2GoCore, this.uriProvider, this.section, this.data, toURI, true);
-
+		ConceptNode toValue = Utils.createValue(this.getParameterMap(), this.rdf2GoCore, this.uriProvider, this.section, this.data, toURI, true);
+		ConceptNode fromValue = Utils.createValue(config, this.rdf2GoCore, this.uriProvider, this.section, this.data, fromURI, true, clazz);
+		if (toValue == null || fromValue == null) return;
 		toValue.setOuter(false);
-
-		fromValue = Utils.createValue(config, this.rdf2GoCore, this.uriProvider, this.section, this.data, fromURI, true, clazz);
-
-		if (fromValue != null) fromValue.setOuter(false);
+		fromValue.setOuter(false);
 
 		// look for label for the property
 		String relationLabel = Utils.fetchLabel(config, relationURI, rdf2GoCore);
@@ -1061,7 +1046,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 	enum Direction {Forward, Backward}
 
-	class OuterConceptCheck {
+	static class OuterConceptCheck {
 		private final Value fromURI;
 		private final Value toURI;
 		private final Value relationURI;
