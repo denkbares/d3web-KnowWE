@@ -366,7 +366,7 @@ public class Utils {
 					uri.stringValue());
 			String[] splitURI = reducedNamespace.split(":");
 			String namespace = splitURI[0];
-			String name = splitURI[1];
+			String name = splitURI.length > 1 ? splitURI[1] : "";
 			if (namespace.equals("lns")) {
 				return urlDecode(name);
 			}
