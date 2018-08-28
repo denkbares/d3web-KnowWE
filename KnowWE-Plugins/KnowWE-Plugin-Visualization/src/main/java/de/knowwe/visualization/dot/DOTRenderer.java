@@ -455,7 +455,7 @@ public class DOTRenderer {
 			}
 			label = DOTRenderer.createDotConceptLabel(style, node.getConceptUrl(), nodeLabel, true);
 		}
-		dotSource.append("\"").append(node.getName()).append("\"").append(label);
+		dotSource.append(Strings.quote(node.getName())).append(label);
 	}
 
 	private static String createHTMLTable(ConceptNode node, SubGraphData data, RenderingStyle.Fontstyle fontStyle,
