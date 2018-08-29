@@ -79,20 +79,20 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 								section, StatementProvider.class);
 						for (Section<StatementProvider> statementSection : statementProviders) {
 
-							StatementProviderResult providerResult = statementSection.get().getStatements(
-									statementSection, compiler);
-							if (providerResult != null) {
-								compiler.getRdf2GoCore().addStatements(section, providerResult.getStatements());
-								Messages.storeMessages(section, this.getClass(), providerResult.getMessages());
+							StatementProviderResult result =
+									statementSection.get().getStatementsSafe(statementSection, compiler);
+							if (result != null) {
+								compiler.getRdf2GoCore().addStatements(section, result.getStatements());
+								Messages.storeMessages(section, this.getClass(), result.getMessages());
 							}
 						}
 					}
 				}
 				else {
 					// TODO: clarify whenever this case can make sense...!?
-					final StatementProviderResult statementProviderResult = objectReference.get()
-							.getStatements(objectReference, compiler);
-					statements.addAll(statementProviderResult.getStatements());
+					final StatementProviderResult result =
+							objectReference.get().getStatementsSafe(objectReference, compiler);
+					statements.addAll(result.getStatements());
 				}
 			}
 		}
@@ -130,7 +130,6 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		if (typeAnnotationMissing != null) {
 			throw new CompilerMessage(typeAnnotationMissing);
 		}
-
 	}
 
 	protected Section<NodeProvider> findSubject(Section<TableLine> section) {

@@ -13,22 +13,16 @@ import de.knowwe.ontology.compile.OntologyHandler;
 
 public class TurtleCompileHandler<Z extends Type> extends OntologyHandler<Z> {
 
-
 	@Override
 	public Collection<Message> create(OntologyCompiler compiler, Section<Z> section) {
 		List<Message> messages = new ArrayList<>();
 
-		List<Section<StatementProvider>> statementProviders = Sections.successors(
-				section, StatementProvider.class);
-		for (Section<StatementProvider> statementSection : statementProviders) {
-
-			StatementProviderResult providerResult = statementSection.get().getStatements(
-					statementSection, compiler);
-			if (providerResult != null) {
-				compiler.getRdf2GoCore().addStatements(section, providerResult.getStatements());
-				messages.addAll(providerResult.getMessages());
+		for (Section<StatementProvider> statementSection : Sections.successors(section, StatementProvider.class)) {
+			StatementProviderResult result = statementSection.get().getStatementsSafe(statementSection, compiler);
+			if (result != null) {
+				compiler.getRdf2GoCore().addStatements(section, result.getStatements());
+				messages.addAll(result.getMessages());
 			}
-
 		}
 		return messages;
 	}

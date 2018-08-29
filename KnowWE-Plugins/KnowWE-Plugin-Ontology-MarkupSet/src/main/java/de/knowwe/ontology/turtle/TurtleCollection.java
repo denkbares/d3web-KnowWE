@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -21,6 +21,7 @@ package de.knowwe.ontology.turtle;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.BNodeImpl;
@@ -66,7 +67,6 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 		this.addChildType(closingBracket);
 
 		this.addChildType(new ItemList());
-
 	}
 
 	static final char OPEN_COLLECTION = '(';
@@ -107,7 +107,6 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 				});
 			}
 		}
-
 	}
 
 	@Override
@@ -115,21 +114,19 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 
+	@NotNull
 	@Override
 	public StatementProviderResult getStatements(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
-		StatementProviderResult result = new StatementProviderResult();
+		StatementProviderResult result = new StatementProviderResult(core);
 		List<Section<CollectionItem>> listItems = new ArrayList<>();
-		Sections.successors(section,
-				CollectionItem.class, 2, listItems);
+		Sections.successors(section, CollectionItem.class, 2, listItems);
 		org.openrdf.model.Resource listNode = getResource(section, core);
 		if (!listItems.isEmpty()) {
 			addListStatements(listNode, 0, listItems, result, core, section);
 		}
 		else {
-			result.addStatement(core.getRdf2GoCore().createStatement(listNode, org.openrdf.model.vocabulary.RDF.REST,
-					org.openrdf.model.vocabulary.RDF.NIL));
+			result.addStatement(listNode, org.openrdf.model.vocabulary.RDF.REST, org.openrdf.model.vocabulary.RDF.NIL);
 		}
-
 		return result;
 	}
 
@@ -153,7 +150,6 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 			// end of list and end of recursion
 			result.addStatement(core.getRdf2GoCore()
 					.createStatement(subject, org.openrdf.model.vocabulary.RDF.REST, org.openrdf.model.vocabulary.RDF.NIL));
-
 		}
 		else {
 			listIndex++;
@@ -166,12 +162,10 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 			addListStatements(nextListNode, listIndex,
 					nextSublist, result, core, collectionSection);
 		}
-
 	}
 
 	@Override
 	public org.openrdf.model.Resource getResource(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
 		return new BNodeImpl(getNode(section, core).stringValue());
 	}
-
 }

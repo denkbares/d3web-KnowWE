@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -21,6 +21,7 @@ package de.knowwe.ontology.turtle;
 import java.util.Collections;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
@@ -127,10 +128,11 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		}
 	}
 
+	@NotNull
 	@Override
 	public StatementProviderResult getStatements(Section<? extends Object> section, Rdf2GoCompiler core) {
 
-		StatementProviderResult result = new StatementProviderResult();
+		StatementProviderResult result = new StatementProviderResult(core);
 		boolean termError = false;
 		/*
 		 * Handle OBJECT
@@ -147,8 +149,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 		}
 		if (object == null && !termError) {
-			result.addMessage(Messages.error("'" + section.getText().replaceAll("\\s+", " ")
-					+ "' is not a valid object."));
+			result.error("'" + section.getText().replaceAll("\\s+", " ") + "' is not a valid object.");
 		}
 
 		/*
@@ -158,8 +159,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		Section<Predicate> predicateSection = getPredicateSection(section);
 
 		if (predicateSection == null) {
-			result.addMessage(Messages.error("No predicate section found: " + section));
-			return result;
+			return result.error("No predicate section found: " + section);
 		}
 
 		org.openrdf.model.URI predicate = predicateSection.get().getURI(predicateSection, core);
@@ -175,9 +175,9 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 				termError = true;
 			}
 		}
+
 		if (predicate == null && !termError) {
-			result.addMessage(Messages.error("'" + predicateSection.getText()
-					+ "' is not a valid predicate."));
+			result.error("'" + predicateSection.getText() + "' is not a valid predicate.");
 		}
 
 		/*
@@ -187,31 +187,29 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 		// create statement if all nodes are present
 		if (object != null && predicate != null && subject != null) {
-			result.addStatement(core.getRdf2GoCore().createStatement(subject, predicate, object));
+			result.addStatement(subject, predicate, object);
 		}
 		return result;
 	}
 
 	public Section<Predicate> getPredicateSection(Section<? extends Object> section) {
-		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section,
-				PredicateSentence.class);
-		return Sections.child(predSentenceSection,
-					Predicate.class);
+		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section, PredicateSentence.class);
+		assert predSentenceSection != null;
+		return Sections.child(predSentenceSection, Predicate.class);
 	}
 
 	public @Nullable Resource getSubject(Rdf2GoCompiler core, StatementProviderResult result, boolean termError, Section<? extends Object> section) {
-		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section,
-				PredicateSentence.class);
+		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section, PredicateSentence.class);
+		assert predSentenceSection != null;
+
 		Resource subject;
 		// the subject can either be a normal turtle sentence subject
 		// OR a blank node
-		Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection,
-				BlankNode.class);
+		Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection, BlankNode.class);
 		if (blankNodeSection != null) {
 			subject = blankNodeSection.get().getResource(blankNodeSection, core);
 			if (subject == null) {
-				result.addMessage(Messages.error("'" + blankNodeSection.getText()
-						+ "' is not a valid subject."));
+				result.addMessage(Messages.error("'" + blankNodeSection.getText() + "' is not a valid subject."));
 			}
 		}
 		else {
@@ -244,7 +242,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 	public Section<Subject> findSubjectSection(Section<?> sentence) {
 		return Sections.successor(sentence,
-						Subject.class);
+				Subject.class);
 	}
 
 	protected boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {
@@ -272,5 +270,4 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		}
 		return null;
 	}
-
 }
