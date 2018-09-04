@@ -19,6 +19,7 @@
 
 package de.knowwe.core.tools;
 
+import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -47,8 +48,10 @@ public class RenamingToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return section.get() instanceof Term
-				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null && KnowWEUtils.canWrite(section, userContext);
+		return section.get() instanceof RenamableTerm
+				&& ((RenamableTerm) section.get()).allowRename(Sections.cast(section, RenamableTerm.class))
+				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null
+				&& KnowWEUtils.canWrite(section, userContext);
 	}
 
 	protected Tool getRenamingTool(Section<? extends Term> section) {

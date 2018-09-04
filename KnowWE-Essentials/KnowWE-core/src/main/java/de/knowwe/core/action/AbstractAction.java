@@ -38,9 +38,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 /**
  * Abstract implementation of the Action Interface (KnowWEActions or Servlets).
  * <p/>
- * Please note that this standard implementation returns false for the
- * isAdminAction()-Method. If you want to implement an action which is only
- * executable for admins you should implement the Action Interface
+ * Please note that this standard implementation returns false for the isAdminAction()-Method. If you want to implement
+ * an action which is only executable for admins you should implement the Action Interface
  *
  * @author Sebastian Furth
  * @see Action
@@ -48,9 +47,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 public abstract class AbstractAction implements Action {
 
 	/**
-	 * Returns always false - which means that your action can be executed by
-	 * every user. If you want to implement a "AdminAction" you should consider
-	 * implementing the Action interface instead of extending AbstractAction.
+	 * Returns always false - which means that your action can be executed by every user. If you want to implement a
+	 * "AdminAction" you should consider implementing the Action interface instead of extending AbstractAction.
 	 */
 	@Override
 	public boolean isAdminAction() {
@@ -79,32 +77,4 @@ public abstract class AbstractAction implements Action {
 	@Override
 	public abstract void execute(UserActionContext context) throws IOException;
 
-	protected void renameTerms(
-			Map<String, Set<Section<? extends RenamableTerm>>> allTerms, Identifier term,
-			Identifier replacement, ArticleManager mgr, UserActionContext context,
-			Set<String> failures, Set<String> success) throws IOException {
-		mgr.open();
-		try {
-			for (String title : allTerms.keySet()) {
-				if (Environment.getInstance().getWikiConnector()
-						.userCanEditArticle(title, context.getRequest())) {
-					Map<String, String> nodesMap = new HashMap<>();
-					for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
-						nodesMap.put(
-								termSection.getID(),
-								termSection.get().getSectionTextAfterRename(termSection, term,
-										replacement));
-					}
-					Sections.replace(context, nodesMap).sendErrors(context);
-					success.add(title);
-				}
-				else {
-					failures.add(title);
-				}
-			}
-		}
-		finally {
-			mgr.commit();
-		}
-	}
 }

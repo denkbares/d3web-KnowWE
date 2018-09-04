@@ -20,9 +20,7 @@ package de.knowwe.core.objectinfo;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,11 +30,10 @@ import org.json.JSONObject;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.AbstractTermRenamingAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -48,7 +45,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Sebastian Furth
  * @created Dec 15, 2010
  */
-public class InlineTermRenamingAction extends AbstractAction {
+public class InlineTermRenamingAction extends AbstractTermRenamingAction {
 
 	public static final String TERMNAME = "termname";
 	public static final String REPLACEMENT = "termreplacement";
@@ -62,74 +59,22 @@ public class InlineTermRenamingAction extends AbstractAction {
 		String replacement = context.getParameter(REPLACEMENT);
 		String force = context.getParameter("force");
 
-		if (force.equals("false")
-				&& TermUtils.getTermIdentifiers(web).contains(new Identifier(replacement))) {
-			JSONObject response = new JSONObject();
-			try {
-				response.append("alreadyexists", "true");
-				boolean sameTerm = new Identifier(replacement).toExternalForm().equals(
-						new Identifier(term).toExternalForm());
-				response.append("same", String.valueOf(sameTerm));
-				response.write(context.getWriter());
-			}
-			catch (JSONException e) {
-				e.printStackTrace();
-			}
-			return;
-		}
-
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacmentIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
-		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<>();
-
-		Iterator<Article> iter = Environment.getInstance()
-				.getArticleManager(web).getArticles().iterator();
-		Article currentArticle;
-
-		while (iter.hasNext()) {
-			currentArticle = iter.next();
-			Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(
-					KnowWEUtils.getArticleManager(
-							currentArticle.getWeb()));
-			for (TerminologyManager terminologyManager : terminologyManagers) {
-
-				// terminologyManager = KnowWEUtils
-				// .getGlobalTerminologyManager(currentArticle.getWeb());
-				// Check if there is a TermDefinition
-				Collection<Section<?>> definingSections = terminologyManager
-						.getTermDefiningSections(termIdentifier);
-				for (Section<?> definition : definingSections) {
-					if (definition.get() instanceof RenamableTerm) {
-						getTermSet(definition.getTitle(), allTerms).add((Section<? extends RenamableTerm>) definition);
-					}
-				}
-
-				// Check if there are References
-				Collection<Section<?>> references = terminologyManager
-						.getTermReferenceSections(termIdentifier);
-				for (Section<?> reference : references) {
-					if (reference.get() instanceof RenamableTerm) {
-						getTermSet(reference.getTitle(), allTerms).add((Section<? extends RenamableTerm>) reference);
-					}
-				}
-			}
+		if (force.equals("false") && TermUtils.getTermIdentifiers(web).contains(replacmentIdentifier)) {
+			writeAlreadyExistsResponse(context, term, replacmentIdentifier);
+			return;
 		}
+
+		Collection<TerminologyManager> managers = KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(web));
+		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = getAllTermSections(managers, termIdentifier);
 
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 		Set<String> failures = new HashSet<>();
 		Set<String> success = new HashSet<>();
 		renameTerms(allTerms, termIdentifier, replacmentIdentifier, mgr, context, failures, success);
 		writeResponse(failures, success, termIdentifier, replacmentIdentifier, context);
-	}
-
-	private Set<Section<? extends RenamableTerm>> getTermSet(String title, Map<String, Set<Section<? extends RenamableTerm>>> allTerms) {
-		Set<Section<? extends RenamableTerm>> terms = allTerms.get(title);
-		if (terms == null) {
-			terms = new HashSet<>();
-			allTerms.put(title, terms);
-		}
-		return terms;
 	}
 
 	private void writeResponse(Set<String> failures, Set<String> success,
@@ -177,5 +122,4 @@ public class InlineTermRenamingAction extends AbstractAction {
 		elements[elements.length - 1] = text;
 		return new Identifier(elements);
 	}
-
 }
