@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -136,7 +136,6 @@ public class DOTRenderer {
 		return dir
 				+ "label = \"" + label
 				+ "\"" + buildRelation(arrowtail, color) + " ];\n";
-
 	}
 
 	/**
@@ -255,7 +254,7 @@ public class DOTRenderer {
 
 		if (!config.isShowRedundant()) {
 			//mark all the superProperties (sets superProperty attributes)
-			data = defineSuperProperties(data, data.getSubPropertiesMap());
+			defineSuperProperties(data, data.getSubPropertiesMap());
 
 			//receive all double edges
 			redundantEdges = getDoubleEdges(data.getAllEdges());
@@ -325,7 +324,7 @@ public class DOTRenderer {
 		return redundantEdges;
 	}
 
-	private static SubGraphData defineSuperProperties(SubGraphData data, MultiMap<String, String> subPropertiesMap) {
+	private static void defineSuperProperties(SubGraphData data, MultiMap<String, String> subPropertiesMap) {
 		Set<Edge> edges = data.getAllEdges();
 		String relationURI, subURI;
 		ConceptNode o1, o2, s1, s2;
@@ -344,7 +343,7 @@ public class DOTRenderer {
 
 				// Check edges once again for SubProperties, skip if it's the same edge
 				for (Edge e2 : edges
-						) {
+				) {
 					// skip if same edge
 					if (!e1.equals(e2)) {
 						s2 = e2.getSubject();
@@ -361,7 +360,6 @@ public class DOTRenderer {
 				}
 			}
 		}
-		return data;
 	}
 
 	private static Set<Edge> getRedundantSuperPropertyEdges(Set<Edge> edges) {
@@ -369,7 +367,7 @@ public class DOTRenderer {
 
 		// Checks if isSuperProperty and adds if true
 		for (Edge e : edges
-				) {
+		) {
 			if (e.isSuperProperty()) {
 				redundantSuperPropertyEdges.add(e);
 			}
@@ -597,13 +595,6 @@ public class DOTRenderer {
 				+ "\" style=\"" + style + "\" ];\n";
 	}
 
-	private static String insertPrefixed(String dotSource, Config config) {
-		String added = config.getDotAddLine();
-		if (added != null) dotSource += added;
-
-		return dotSource;
-	}
-
 	/**
 	 * @created 30.10.2012
 	 */
@@ -683,26 +674,20 @@ public class DOTRenderer {
 	 * @created 20.08.2012
 	 */
 	static File[] createAndWriteFiles(Config config, String dotSource) {
-		File dotFile = createFile("dot", getFilePath(config));
-		File svgFile = createFile("svg", getFilePath(config));
-		// File pngFile = createFile("png", filePath);
+		File dotFile = new File(getFilePath(config) + "." + "dot");
+		File svgFile = new File(getFilePath(config) + "." + "svg");
 
-		boolean dotFileDeleted = dotFile.delete();
-		boolean svgFileDeleted = svgFile.delete();
-		if (!svgFileDeleted) {
-			Log.warning("Could not delete file." + svgFile.getName());
+		if (dotFile.exists() && !dotFile.delete()) {
+			Log.warning("Could not delete file: " + svgFile.getName());
 		}
-		// pngFile.delete();
-
-		FileUtils.writeFile(dotFile, dotSource);
-
-		// create svg
+		if (svgFile.exists() && !svgFile.delete()) {
+			Log.warning("Could not delete file: " + svgFile.getName());
+		}
 
 		try {
+			// save dot as file and create svg
+			Strings.writeFile(dotFile, dotSource);
 			convertDot(svgFile, dotFile, getCommand(config, "svg", dotFile, svgFile));
-
-			// convertDot(png, dot, createPngCommand(dotApp, dot, png));
-
 			augmentSVG(svgFile);
 		}
 		catch (IOException e) {
@@ -717,15 +702,14 @@ public class DOTRenderer {
 		if (layout != null) {
 			return new String[] { dotApp, dot.getAbsolutePath(), "-T" + outputFormat, "-o", output.getAbsolutePath(),
 					"-K" + layout
-					.toLowerCase() };
+							.toLowerCase() };
 		}
 		else {
 			return new String[] { dotApp, dot.getAbsolutePath(), "-T" + outputFormat, "-o", output.getAbsolutePath() };
 		}
 	}
 
-	private static String createDotConceptLabel(RenderingStyle style, String targetURL, String targetLabel, boolean
-			prepareLabel) {
+	private static String createDotConceptLabel(RenderingStyle style, String targetURL, String targetLabel, boolean prepareLabel) {
 		String newLineLabelValue;
 		String url = "";
 		if (targetURL != null) {
@@ -806,7 +790,7 @@ public class DOTRenderer {
 		//noinspection WhileLoopReplaceableByForEach
 		while (iter.hasNext()) {
 			Element childElement = (Element) iter.next();
-			if (childElement.getName().equals("a")) {
+			if (Strings.equalsIgnoreCase("a", childElement.getName())) {
 				addTargetAttribute(childElement);
 			}
 			else {
@@ -861,10 +845,5 @@ public class DOTRenderer {
 			Log.warning(e.getMessage());
 		}
 		return add.toString();
-	}
-
-	private static File createFile(String type, String path) {
-		String filename = path + "." + type;
-		return new File(filename);
 	}
 }
