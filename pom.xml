@@ -32,14 +32,9 @@
 	<url>https://www.d3web.de/</url>
 
 	<issueManagement>
-		<system>Phabricator</system>
-		<url>https://dev.denkbares.com/</url>
+		<system>GitHub</system>
+		<url>https://github.com/denkbares/d3web-KnowWE/issues</url>
 	</issueManagement>
-
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>https://ci.denkbares.com/</url>
-	</ciManagement>
 
 	<licenses>
 		<license>
@@ -895,9 +890,9 @@
 			<releases>
 				<enabled>true</enabled>
 			</releases>
-			<id>des-repo-des</id>
+			<id>des-repo-public</id>
 			<name>Denkbares Public Repository</name>
-			<url>https://repo.denkbares.com/repo/</url>
+			<url>https://repo.denkbares.com/repo-public/</url>
 		</repository>
 	</repositories>
 
@@ -908,12 +903,27 @@
 		</pluginRepository>
 	</pluginRepositories>
 
-	<scm>
-		<connection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/KnowWE</connection>
-		<developerConnection>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/KnowWE
-		</developerConnection>
-		<url>scm:svn:https://isci.informatik.uni-wuerzburg.de/svn/d3web-KnowWE/trunk/KnowWE</url>
-	</scm>
+	<profiles>
+		<profile>
+			<id>des-repos</id>
+			<repositories>
+				<repository>
+					<snapshots>
+						<enabled>true</enabled>
+						<updatePolicy>interval:60</updatePolicy>
+						<checksumPolicy>ignore</checksumPolicy>
+					</snapshots>
+					<releases>
+						<enabled>true</enabled>
+						<updatePolicy>interval:60</updatePolicy>
+					</releases>
+					<id>des-repo-des</id>
+					<name>Denkbares Internal Repository</name>
+					<url>https://repo.denkbares.com/repo-des/</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
 
 	<distributionManagement>
 		<repository>
