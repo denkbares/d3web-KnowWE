@@ -37,6 +37,7 @@ public class NamespaceType extends DefaultMarkupType {
 		lineType.addChildType(new LineBreak());
 		lineType.addChildType(new NamespaceAbbreviationDefinition());
 		MARKUP.addContentType(lineType);
+		MARKUP.setTemplate("%%namespace \u00ABabbreviation\u00BB \u00ABexpanded-URI\u00BB\n");
 	}
 
 	public NamespaceType() {

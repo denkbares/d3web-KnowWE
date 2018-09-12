@@ -22,6 +22,7 @@ public class PackageMarkupType extends DefaultMarkupType {
 		packageTerm.addCompileScript(Priority.HIGHEST, new SetDefaultPackageHandler());
 		packageTerm.addCompileScript(Priority.LOWEST, new RemoveDefaultPackageHandler());
 		MARKUP.addContentType(packageTerm);
+		MARKUP.setTemplate("%%package \u00ABpackage-name\u00BB\n");
 	}
 
 	public PackageMarkupType() {
