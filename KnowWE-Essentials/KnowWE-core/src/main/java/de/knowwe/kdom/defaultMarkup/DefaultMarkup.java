@@ -47,9 +47,11 @@ public class DefaultMarkup implements Cloneable {
 	private Collection<Type> types = new ArrayList<>();
 	private Map<String, Annotation> annotations = new HashMap<>();
 	private final Set<String> ignoredAnnotations = new HashSet<>();
+
 	private String deprecatedAlternative = null;
 	private boolean isInline = false;
 	private String documentation = null;
+	private String template = null;
 	private String completionDefaultContent = "";
 
 	public DefaultMarkup(String name) {
@@ -115,6 +117,28 @@ public class DefaultMarkup implements Cloneable {
 	 */
 	public String getDocumentation() {
 		return documentation;
+	}
+
+	/**
+	 * Returns the template String for this markup. The template string ist some text that will be added as default
+	 * if the markup is added. It may contain some place-holder-variables to be specified by the user. These variables
+	 * must be quoted in «...» (Unicode: 0x00AB and 0x00BB).
+	 *
+	 * @return the default template String for the default markup
+	 */
+	public String getTemplate() {
+		return template;
+	}
+
+	/**
+	 * Sets the template String for this markup. The template string ist some text that will be added as default
+	 * if the markup is added. It may contain some place-holder-variables to be specified by the user. These variables
+	 * must be quoted in «...» (Unicode: 0x00AB and 0x00BB).
+	 *
+	 * @param template the template string to be set
+	 */
+	public void setTemplate(String template) {
+		this.template = template;
 	}
 
 	/**
