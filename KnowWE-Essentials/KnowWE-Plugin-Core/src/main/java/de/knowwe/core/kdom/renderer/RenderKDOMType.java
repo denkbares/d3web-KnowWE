@@ -37,12 +37,13 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class RenderKDOMType extends DefaultMarkupType {
 
-	private static final String ANNOTATION_HIDE_EMPTY = "hideBlank";
+	private static final String ANNOTATION_HIDE_BLANK = "hideBlank";
 	private static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup("RenderKDOM");
-		MARKUP.addAnnotation(ANNOTATION_HIDE_EMPTY, false, "yes", "no", "plain");
+		MARKUP.addAnnotation(ANNOTATION_HIDE_BLANK, false, "yes", "no", "plain");
+		MARKUP.setTemplate("%%RenderKDOM @hideBlank: plain\n");
 	}
 
 	public RenderKDOMType() {
@@ -55,7 +56,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 	 * markuo.
 	 */
 	public static Predicate<Section<?>> getSectionFilter(Section<RenderKDOMType> section) {
-		String hide = getAnnotation(section, ANNOTATION_HIDE_EMPTY);
+		String hide = getAnnotation(section, ANNOTATION_HIDE_BLANK);
 		if (hide == null || "no".equalsIgnoreCase(hide)) {
 			return s -> true;
 		}
