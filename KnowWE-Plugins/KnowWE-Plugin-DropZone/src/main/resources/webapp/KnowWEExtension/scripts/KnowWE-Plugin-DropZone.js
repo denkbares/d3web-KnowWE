@@ -114,7 +114,7 @@ KNOWWE.core.plugin.dropZone = function () {
 				KNOWWE.notification.error(data.responseText);
 				resetStyle(event.target, "Drop attachment(s) here");
 			}
-		});ihreih
+		});
 	}
 
 	function handleDropToExisting(event) {
