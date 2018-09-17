@@ -340,7 +340,8 @@ a.logo {
 	display: block;
 	width: 130px;
 	height: 47px;
-	overflow: hidden;
+	/*overflow: hidden;*/
+	white-space: nowrap;
 	margin-left: auto;
 	margin-right: auto;
 	background: none;

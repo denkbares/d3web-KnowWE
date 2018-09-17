@@ -21,7 +21,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ page import="org.apache.wiki.*" %>
+<%@ page import="org.apache.wiki.WikiContext" %>
 <fmt:setLocale value="${prefs.Language}"/>
 <fmt:setBundle basename="templates.default"/>
 <%
@@ -46,7 +46,8 @@
 		<div class="cage pull-left">
 			<a class="logo pull-left"
 			   href="<wiki:Link page='${frontpage}' format='url' />"
-			   title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> ">KnowWE</a>
+			   title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> "><wiki:Variable
+					var="ApplicationName" default="KnowWE"/></a>
 
 			<wiki:PageExists page="HomeMenu">
 				<ul class="dropdown-menu" data-hover-parent=".cage">
