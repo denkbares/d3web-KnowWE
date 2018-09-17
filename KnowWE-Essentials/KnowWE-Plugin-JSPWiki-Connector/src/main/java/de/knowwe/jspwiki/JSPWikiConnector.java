@@ -123,7 +123,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public @Nullable String getTemplate() {
-		return getEngine().getWikiProperties().getProperty("jspwiki.templateDir");
+		return getEngine().getTemplateDir();
 	}
 
 	@Override
@@ -453,12 +453,12 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getBaseUrl() {
-		return engine.getWikiProperties().getProperty("jspwiki.baseURL", engine.getBaseURL());
+		return engine.getBaseURL();
 	}
 
 	@Override
 	public String getApplicationName() {
-		return engine.getWikiProperties().getProperty("jspwiki.applicationName");
+		return engine.getApplicationName();
 	}
 
 	@Override
