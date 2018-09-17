@@ -679,9 +679,9 @@ a.tool:hover {
 }
 
 .editor {
-	font: 110% Monaco, "Courier New", Courier, monospace;
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 	padding: 4px;
-	width: 99%;
+	width: 100%;
 }
 
 #toctoc {

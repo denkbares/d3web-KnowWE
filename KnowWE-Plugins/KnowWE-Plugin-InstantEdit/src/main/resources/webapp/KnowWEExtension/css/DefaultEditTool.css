@@ -7,9 +7,9 @@
 }
 
 .defaultEditTool {
-	font-family: monospace;
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 	display: block;
-	border: 1px dashed black;
+	border: 1px solid #9ACBFB;
 	background-color: #F5FAFF;
 	padding: 5px;
 	margin-bottom: 8px;
