@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -538,7 +538,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				// don't call deleteArticle if the article is already deleted
 				articleManager.deleteArticle(articleToDelete);
 			}
-
 		}
 		else if (event instanceof WikiPageRenameEvent) {
 			WikiPageRenameEvent renameEvent = (WikiPageRenameEvent) event;
@@ -590,8 +589,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				if (!found) {
 					// obviously the plugin is not available in current
 					// installation
-					Log.warning("Found dependency to a css/js resource (" + resource
-							+ ") where the corresponding plugin is not available.");
+					Log.warning("Found dependency to a css/js resource (" + resource +
+							") where the corresponding plugin is not available. " +
+							"This can also happen, if the plugin.xml has the wrong plugin id " +
+							"(id other than the name of module it is in).");
 					continue;
 				}
 			}
