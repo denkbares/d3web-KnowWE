@@ -582,11 +582,11 @@ td.diffadd, td.diffrem, td.diff {
 }
 
 td.diffadd {
-	background: #9f9;
+	background: #dff0d8;
 }
 
 td.diffrem {
-	background: #f93;
+	background: #f2dede;
 }
 
 td.diff {
