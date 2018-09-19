@@ -151,7 +151,6 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		}
 		else {
 			timeDisplay = Stopwatch.getDisplay(since);
-
 		}
 		return timeDisplay;
 	}
@@ -183,7 +182,6 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 			performUpdate(section);
 		}
-
 	}
 
 	private static void logLastRun(Section<?> section) {
@@ -232,7 +230,6 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			section.storeObject(compiler, UPDATE_TASK_KEY, updateTask);
 
 			UPDATE_TIMER.scheduleAtFixedRate(updateTask, getInitialDelay(section, interval), interval);
-
 		}
 
 		@Override
@@ -262,9 +259,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 						getStartDelayFromAnnotation(section) :
 						// it did run before, delay for the rest of the interval
 						Math.max(0, interval - timeSinceLastRun);
-
 			}
-
 		}
 
 		private long getStartDelayFromAnnotation(Section<AttachmentMarkup> section) {
@@ -317,7 +312,6 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			if (timeInMillis < MIN_INTERVAL) timeInMillis = MIN_INTERVAL;
 			return timeInMillis;
 		}
-
 	}
 
 	static void performUpdate(Section<AttachmentMarkup> section) {
@@ -357,12 +351,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 					return;
 				}
 
-				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				if (url.getUserInfo() != null) {
-					String basicAuth = "Basic " + new String(Base64.getEncoder()
-							.encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
-					connection.setRequestProperty("Authorization", basicAuth);
-				}
+				final HttpURLConnection connection = openConnection(url);
 
 				int responseCode = connection.getResponseCode();
 				if (responseCode != HttpServletResponse.SC_OK) {
@@ -468,19 +457,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	}
 
 	private static State needsUpdate(Section<AttachmentType> attachmentSection, URL url) throws IOException {
-
 		WikiAttachment attachment = AttachmentType.getAttachment(attachmentSection);
-
 		if (attachment == null) return State.OUTDATED;
 
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-		if (url.getUserInfo() != null) {
-			String basicAuth = "Basic " + new String(Base64.getEncoder()
-					.encode(url.getUserInfo().getBytes(UTF_8)), UTF_8);
-			connection.setRequestProperty("Authorization", basicAuth);
-		}
-
+		HttpURLConnection connection = openConnection(url);
 		connection.setRequestMethod("HEAD");
 		connection.connect();
 
@@ -515,4 +495,41 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		return state;
 	}
 
+	/**
+	 * Opens the {@link HttpURLConnection} for the given URL.
+	 * <p>
+	 * If supplied, username and password will be sent as basic authorization credentials to the server.
+	 * Also, loading credentials from the environment is supported by prefixing either the user or password part
+	 * with <tt>env+</tt>.
+	 * Non-existing environment variables will result in an empty user or password.
+	 *
+	 * @param url URL to open the connection for
+	 * @return HttpURLConnection instance
+	 */
+	private static HttpURLConnection openConnection(URL url) throws IOException {
+		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+		if (url.getUserInfo() != null) {
+			final String[] parts = url.getUserInfo().split(":");
+			boolean envLoaded = false;
+
+			// iterate through user and password, load from env, or default to empty String
+			for (int i = 0; i <= 1; i++) {
+				if (parts[i] != null && parts[i].startsWith("env+")) {
+					final String envValue = System.getenv(parts[i].substring(4));
+					parts[i] = (envValue != null) ? envValue : "";
+					envLoaded = true;
+				}
+			}
+
+			// use env-loaded values instead of provided ones
+			final String basicAuth = envLoaded ? String.join(":", parts) : url.getUserInfo();
+
+			connection.setRequestProperty("Authorization", "Basic " +
+					new String(Base64.getEncoder().encode(basicAuth.getBytes(UTF_8)), UTF_8)
+			);
+		}
+
+		return connection;
+	}
 }
