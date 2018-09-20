@@ -108,6 +108,19 @@ public class Rdf2GoUtils {
 		return resultCollection;
 	}
 
+	public static boolean instanceOf(Rdf2GoCore core, URI resource, String classURI) {
+		if(resource == null) {
+			return false;
+		}
+		URI uri = new URIImpl(classURI);
+		return instanceOf(core, resource, uri);
+	}
+
+	public static boolean instanceOf(Rdf2GoCore core, URI resource, URI clazz) {
+		String query = "ASK { <" + resource.stringValue() + "> rdf:type <"+clazz+"> .}";
+		return core.sparqlAsk(query);
+	}
+
 	public static Collection<URI> getInstances(Rdf2GoCore core, String... classes) {
 		return getInstances(core, Arrays.stream(classes).map(classURIString -> new URIImpl(classURIString)).collect(Collectors.toList()).toArray(new URI[]{}));
 	}
