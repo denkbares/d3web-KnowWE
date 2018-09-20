@@ -102,16 +102,18 @@ KNOWWE.plugin.instantEdit = function () {
 
 						var json = JSON.parse(this.responseText);
 						var locked = json.locked;
-						var html = toolNameSpace.generateHTML(id);
-						if (toolNameSpace.getChangeNoteField) {
-							html += toolNameSpace.getChangeNoteField();
-						} else {
-							html += _IE.getChangeNoteField();
-						}
-						html += toolNameSpace.generateButtons(id);
-						html = _EC.wrapHTML(id, locked, html);
+						if (toolNameSpace.generateHTML) {
+							var html = toolNameSpace.generateHTML(id);
+							if (toolNameSpace.getChangeNoteField) {
+								html += toolNameSpace.getChangeNoteField();
+							} else {
+								html += _IE.getChangeNoteField();
+							}
+							html += toolNameSpace.generateButtons(id);
+							html = _EC.wrapHTML(id, locked, html);
 
-						KNOWWE.core.util.replace(html);
+							KNOWWE.core.util.replace(html);
+						}
 
 						toolNameSpace.postProcessHTML(id);
 						bindUnloadFunctions(id);
