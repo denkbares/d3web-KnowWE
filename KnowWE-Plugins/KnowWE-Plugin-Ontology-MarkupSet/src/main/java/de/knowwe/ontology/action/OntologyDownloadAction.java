@@ -41,6 +41,7 @@ public class OntologyDownloadAction extends AbstractAction {
 		String filename = context.getParameter(PARAM_FILENAME);
 		String secID = context.getParameter(Attributes.SECTION_ID);
 		String title = context.getParameter(OntologyDownloadProvider.TITLE);
+
 		Rdf2GoCore rdf2GoCore = null;
 		Section<?> section;
 		if (title == null) {
