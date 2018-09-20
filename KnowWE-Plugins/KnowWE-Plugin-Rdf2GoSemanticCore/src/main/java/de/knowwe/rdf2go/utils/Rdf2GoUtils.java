@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
@@ -102,6 +103,34 @@ public class Rdf2GoUtils {
 		for (BindingSet row : result) {
 			Value aClassNode = row.getValue("class");
 			URI uri = (URI) aClassNode;
+			resultCollection.add(uri);
+		}
+		return resultCollection;
+	}
+
+	public static Collection<URI> getInstances(Rdf2GoCore core, String... classes) {
+		return getInstances(core, Arrays.stream(classes).map(classURIString -> new URIImpl(classURIString)).collect(Collectors.toList()).toArray(new URI[]{}));
+	}
+
+	/**
+	 * Returns all instance of the given classes.
+	 *
+	 * @param core repository to scan for instances
+	 * @param classes classes that instances are detected of
+	 * @return all instances of all the given classes
+	 */
+	public static Collection<URI> getInstances(Rdf2GoCore core, URI... classes) {
+		String query = "SELECT ?instance WHERE { {?instance rdf:type <"+ classes[0] +"> .}";
+		for(int i = 1; i < classes.length; i++) {
+			query += "UNION ";
+			query += "{?instance rdf:type <"+ classes[i] +"> .}\n";
+		}
+		query += "}";
+		List<URI> resultCollection = new ArrayList<>();
+		TupleQueryResult result = core.sparqlSelect(query);
+		for (BindingSet row : result) {
+			Value instanceNode = row.getValue("instance");
+			URI uri = (URI) instanceNode;
 			resultCollection.add(uri);
 		}
 		return resultCollection;
