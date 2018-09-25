@@ -21,9 +21,11 @@ package de.knowwe.uitest;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
@@ -38,7 +40,6 @@ import de.knowwe.uitest.UITestUtils.Browser;
 import de.knowwe.uitest.UITestUtils.TestMode;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 /**
  * @author Jonas Müller
@@ -62,15 +63,24 @@ public abstract class KnowWEUITest {
 	 * -Dknowwe.standard.url="your-standardTemplate-URL"
 	 */
 	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template) throws IOException, InterruptedException {
+		this(browser, os, template, true, null);
+	}
+
+	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template, boolean login, Function<String, String> urlConstructor) throws IOException, InterruptedException {
 		this.browser = browser;
 		this.os = os;
 		this.template = template;
 		// for backwards compatibility, use knowwwe.testMode instead
 		boolean devMode = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
-		testMode = devMode ? TestMode.local : TestMode.valueOf(System.getProperty("knowwe.testMode", "saucelabs"));
+		testMode = devMode ? TestMode.local : TestMode.valueOf(System.getProperty("knowwe.testMode", "local"));
+		if (urlConstructor == null) {
+			urlConstructor = (String article) -> UITestUtils.getKnowWEUrl(getTemplate(), article);
+		}
 
-		knowWeUrl = UITestUtils.getKnowWEUrl(getTemplate(), getArticleName());
-		driver = UITestUtils.setUp(browser, os, template, getArticleName(), testMode);
+		knowWeUrl = urlConstructor.apply(getArticleName());
+
+		//driver.get(UITestUtils.getKnowWEUrl(template, "Main"));;
+		driver = UITestUtils.setUp(browser, os, template, getArticleName(), testMode, knowWeUrl, login, urlConstructor);
 	}
 
 	@After
@@ -89,6 +99,10 @@ public abstract class KnowWEUITest {
 	public abstract String getArticleName();
 
 	protected void changeArticleText(String newText) {
+		this.changeArticleText(newText, true);
+	}
+
+	protected void changeArticleText(String newText, boolean replacePackage) {
 		try {
 			waitUntilPresent(By.id("edit-source-button"));
 		}
@@ -97,8 +111,10 @@ public abstract class KnowWEUITest {
 			waitUntilPresent(By.id("edit-source-button"));
 		}
 		getDriver().findElement(By.id("edit-source-button")).click();
-		newText = newText.replaceAll("(?i)(%%Package\\s+)",
-				"$1" + template + "-" + browser + "-" + os.toString().toLowerCase() + "-");
+		if (replacePackage) {
+			newText = newText.replaceAll("(?i)(%%Package\\s+)",
+					"$1" + template + "-" + browser + "-" + os.toString().toLowerCase() + "-");
+		}
 		UITestUtils.enterArticleText(newText, getDriver(), getTemplate());
 	}
 
@@ -126,7 +142,7 @@ public abstract class KnowWEUITest {
 	}
 
 	protected void checkErrorsExist() {
-		assertFalse(getDriver().findElements(By.className("error")).isEmpty());
+		Assert.assertFalse(getDriver().findElements(By.className("error")).isEmpty());
 	}
 
 	protected WebElement find(By selector) {

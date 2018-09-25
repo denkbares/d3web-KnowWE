@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -94,7 +95,7 @@ public class UITestUtils {
 		LOGIN_PAGE, NORMAL_PAGE
 	}
 
-	public static void logIn(WebDriver driver, String username, String password, UseCase use, WikiTemplate template) throws InterruptedException {
+	public static void logIn(WebDriver driver, String username, String password, UseCase use, WikiTemplate template) {
 		template.login(driver, use, username, password);
 	}
 
@@ -158,7 +159,7 @@ public class UITestUtils {
 		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
 	}
 
-	public static RemoteWebDriver setUp(Browser browser, Platform os, WikiTemplate template, String articleName, TestMode testMode) throws IOException, InterruptedException {
+	public static RemoteWebDriver setUp(Browser browser, Platform os, WikiTemplate template, String articleName, TestMode testMode, String knowWEUrl, boolean login, Function<String, String> urlConstructor) throws IOException {
 
 		String testName = "UITest-" + articleName + "-" + template + "-" + browser + "-" + os.name().toLowerCase();
 
@@ -204,12 +205,12 @@ public class UITestUtils {
 			throw new IllegalArgumentException("TestMode " + testMode + " not yet supported.");
 		}
 		driver.manage().window().setSize(new Dimension(1024, 768));
-		driver.get(UITestUtils.getKnowWEUrl(template, "Main"));
-		if (!UITestUtils.isLoggedIn(driver, template)) {
-			driver.get(UITestUtils.getKnowWEUrl(template, "Login"));
+		driver.get(urlConstructor.apply("Main"));
+		if (login && !UITestUtils.isLoggedIn(driver, template)) {
+			driver.get(urlConstructor.apply("Login"));
 			UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", LOGIN_PAGE, template);
 		}
-		driver.get(getKnowWEUrl(template, testName));
+		driver.get(knowWEUrl);
 		if (!pageExists(template, driver)) {
 			createDummyPage(template, driver);
 		}
