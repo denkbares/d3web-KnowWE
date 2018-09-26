@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.time.Duration;
@@ -151,9 +150,54 @@ public class Rdf2GoCore {
 		});
 	}
 
-	public static Rdf2GoCore getInstance(Section<?> section) {
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
-		return getInstance(compiler);
+	/**
+	 * Initializes the Rdf2GoCore with the specified arguments. Please note
+	 * that the RuleSet argument only has an effect if OWLIM is used as underlying
+	 * implementation.
+	 *
+	 * @param lns       the uri used as local namespace
+	 * @param bns       the uri used as base namespace
+	 * @param reasoning the rule set (only relevant for OWLIM model)
+	 */
+	public Rdf2GoCore(String lns, String bns, RepositoryConfig reasoning) {
+
+		if (reasoning == null) {
+			reasoning = RepositoryConfigs.get(RdfConfig.class);
+		}
+		if (bns == null) {
+			bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
+		}
+		if (lns == null) {
+			String baseUrl;
+			try {
+				baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+				new URL(baseUrl); // check if we have a valid url or just context root
+			}
+			catch (Exception e) {
+				Log.warning("Invalid local namespace (lns), using fallback http://localhost:8080/KnowWE/");
+				baseUrl = "http://localhost:8080/KnowWE/";
+			}
+			lns = baseUrl + "Wiki.jsp?page=";
+		}
+		this.bns = bns;
+		this.lns = lns;
+		try {
+			semanticCore = SemanticCore.getOrCreateInstance(String.valueOf(coreId.incrementAndGet()), reasoning);
+			semanticCore.allocate(); // make sure the core does not shut down on its own...
+			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
+		}
+		catch (IOException e) {
+			Log.severe("Unable to create SemanticCore", e);
+			return;
+		}
+		this.ruleSet = reasoning;
+
+		insertCache = new HashSet<>();
+		removeCache = new HashSet<>();
+
+		// lock probably not necessary here, just to make sure...
+		this.namespaces = getSemanticCoreNameSpaces();
+		initDefaultNamespaces();
 	}
 
 	public static Rdf2GoCore getInstance(Rdf2GoCompiler compiler) {
@@ -257,53 +301,10 @@ public class Rdf2GoCore {
 		this(null, null, ruleSet);
 	}
 
-	/**
-	 * Initializes the Rdf2GoCore with the specified arguments. Please note
-	 * that the RuleSet argument only has an effect if OWLIM is used as underlying
-	 * implementation.
-	 *
-	 * @param lns       the uri used as local namespace
-	 * @param bns       the uri used as base namespace
-	 * @param reasoning the rule set (only relevant for OWLIM model)
-	 */
-	public Rdf2GoCore(String lns, String bns, RepositoryConfig reasoning) {
-
-		if (reasoning == null) {
-			reasoning = RepositoryConfigs.get(RdfConfig.class);
-		}
-		if (bns == null) {
-			bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
-		}
-		if (lns == null) {
-			String baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
-			try {
-				new URL(baseUrl); // check if we have a valid url or just context root
-			}
-			catch (MalformedURLException e) {
-				Log.warning("Invalid local namespace (lns), using fallback http://localhost:8080/KnowWE/");
-				baseUrl = "http://localhost:8080/KnowWE/";
-			}
-			lns = baseUrl + "Wiki.jsp?page=";
-		}
-		this.bns = bns;
-		this.lns = lns;
-		try {
-			semanticCore = SemanticCore.getOrCreateInstance(String.valueOf(coreId.incrementAndGet()), reasoning);
-			semanticCore.allocate(); // make sure the core does not shut down on its own...
-			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
-		}
-		catch (IOException e) {
-			Log.severe("Unable to create SemanticCore", e);
-			return;
-		}
-		this.ruleSet = reasoning;
-
-		insertCache = new HashSet<>();
-		removeCache = new HashSet<>();
-
-		// lock probably not necessary here, just to make sure...
-		this.namespaces = getSemanticCoreNameSpaces();
-		initDefaultNamespaces();
+	public static Rdf2GoCore getInstance(Section<?> section) {
+		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		if (compiler == null) return null;
+		return getInstance(compiler);
 	}
 
 	/**
@@ -331,7 +332,8 @@ public class Rdf2GoCore {
 				}
 				if ("lns".equals(abbreviation)) {
 					this.lns = namespace;
-				} else if ("ns".equals(abbreviation)) {
+				}
+				else if ("ns".equals(abbreviation)) {
 					this.bns = namespace;
 				}
 				namespaces = null; // clear caches namespaces, will be get created lazy if needed
