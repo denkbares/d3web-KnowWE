@@ -45,7 +45,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 	// with this line, we remove a hack of jspwiki-edit.js,
 	// that is no longer needed but instead messes with keydown
 	// events of tab (keycode == 9) in chrome/webkit
-	var $editor = jq$('.editor')[0];
+	const $editor = jq$('.editor')[0];
 	if ($editor) $editor.removeEvents('keydown');
 
 	event = jq$.event.fix(event);
@@ -64,10 +64,11 @@ TextArea.prototype.handleKeyDown = function (event) {
 			return;
 		}
 	}
-	var isAltOnly = !event.ctrlKey && !event.metaKey && event.altKey;
-	var isCmdOnly = (!event.ctrlKey && event.metaKey && !event.altKey)
+	const isAltOnly = !event.ctrlKey && !event.metaKey && event.altKey;
+	const isCmdOnly = (!event.ctrlKey && event.metaKey && !event.altKey)
 		|| (event.ctrlKey && !event.metaKey && !event.altKey);
-	var isLongerSelection = this.isLongerSelection();
+	const isLongerSelection = this.isLongerSelection();
+	const isCursorBeforeText = this.isCursorBeforeText();
 	if (event.which === 38 && isAltOnly) { // alt + UP
 		event.stopPropagation();
 		event.preventDefault();
@@ -116,7 +117,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// TAB + !SHIFT
-	if (event.which === 9 && !event.shiftKey && !(event.ctrlKey || event.altKey) && isLongerSelection) {
+	if (event.which === 9 && !event.shiftKey && !(event.ctrlKey || event.altKey) && (isLongerSelection || isCursorBeforeText)) {
 			event.stopPropagation();
 			event.preventDefault();
 			event.stopImmediatePropagation();
@@ -125,7 +126,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 			return;
 	}
 	// TAB + SHIFT
-	if (event.which === 9 && event.shiftKey && !(event.ctrlKey || event.altKey) && isLongerSelection) {
+	if (event.which === 9 && event.shiftKey && !(event.ctrlKey || event.altKey) && (isLongerSelection || isCursorBeforeText)) {
 			event.stopPropagation();
 			event.preventDefault();
 			this.snapshot();
@@ -395,10 +396,9 @@ TextArea.prototype.snapshot = function () {
 	});
 };
 TextArea.prototype.restoreSnapshot = function (shot) {
-	var area = this.area;
-	area.value = shot.text;
-	var sel = this.setSelection(shot.start, shot.end);
-	area.scrollTop = shot.scroll;
+	this.area.value = shot.text;
+	this.setSelection(shot.start, shot.end);
+	this.area.scrollTop = shot.scroll;
 };
 TextArea.prototype.getSelection = function () {
 	var b = this.getSelectionCoordinates();
@@ -494,4 +494,17 @@ TextArea.prototype.insertText = function (text) {
 TextArea.prototype.isSelectionAtStartOfLine = function () {
 	var a = this.getCursor();
 	return ((a <= 0) || (this.area.value.charAt(a - 1).match(/[\n\r]/)));
+};
+TextArea.prototype.isCursorBeforeText = function () {
+	var sel = this.getSelectionCoordinates();
+	if (sel.start !== sel.end) return false;
+	// look backwards from cursor
+	for (var index = sel.start - 1; index >= 0; index--) {
+		// if char before is return, no characters have been before the cursor
+		if (this.area.value.charAt(index).match(/[\n\r]/)) return true;
+		// if char before is not a white-space, there are characters before the cursor
+		if (this.area.value.charAt(index).match(/[^\s]/)) return false;
+	}
+	// if we reached the start of the text, no characters are before the cursor in the first line
+	return true;
 };
