@@ -435,6 +435,13 @@ a.footnote {
 	background-repeat: no-repeat;
 }
 
+.haddock .warning, .haddock .error {
+	padding: 5px 20px 5px 45px;
+}
+.haddock .diffnote, .haddock .information {
+	padding: 5px 20px 5px 15px;
+}
+
 td .information, td .warning, td .error {
 	margin: 0;
 }
