@@ -182,7 +182,7 @@ KNOWWE.plugin.hierarchy.object = function (id, hierarchy) {
 }
 
 KNOWWE.plugin.hierarchy.init = function () {
-	jq$(".wikitable.knowwetable").each(function () {
+	jq$(".type_ClassHierarchy .wikitable.knowwetable").each(function () {
 		jq$(this).agikiTreeTable({
 			expandable: true,
 			clickableNodeNames: true,
