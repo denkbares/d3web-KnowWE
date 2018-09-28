@@ -38,7 +38,7 @@
 			this.css('transform', 'scale(' + scale + ')');
 		} else {
 			scale = "1.0";
-			var transform = this.css('transform');
+			const transform = this.css('transform');
 			if (transform !== "none" && transform !== "") {
 				scale = /^matrix\((\d+(\.\d+)?), .+$/.exec(transform)[1];
 			}
@@ -48,9 +48,9 @@
 
 
 	jq$.fn.copyToClipboard = function (text) {
-		var $temp = jq$("<input>");
+		const $temp = jq$("<input>");
 		// in case we have a model dialog, we append to that one, otherwise the select() will not work
-		var $parent = jq$(".ui-dialog");
+		let $parent = jq$(".ui-dialog");
 		if (!$parent.exists()) {
 			// otherwise we can use body
 			$parent = jq$("body");
@@ -77,14 +77,14 @@
 	 * Copyright (c) 2007-2014 Josh Bush (digitalbush.com).
 	 */
 	$.fn.caret = function(begin, end) {
-		if (this.length == 0) return;
-		if (typeof begin == 'number') {
-			end = (typeof end == 'number') ? end : begin;
+		if (this.length === 0) return;
+		if (typeof begin === 'number') {
+			end = (typeof end === 'number') ? end : begin;
 			return this.each(function() {
 				if (this.setSelectionRange) {
 					this.setSelectionRange(begin, end);
 				} else if (this.createTextRange) {
-					var range = this.createTextRange();
+					const range = this.createTextRange();
 					range.collapse(true);
 					range.moveEnd('character', end);
 					range.moveStart('character', begin);
@@ -99,7 +99,7 @@
 				begin = this[0].selectionStart;
 				end = this[0].selectionEnd;
 			} else if (document.selection && document.selection.createRange) {
-				var range = document.selection.createRange();
+				let range = document.selection.createRange();
 				begin = 0 - range.duplicate().moveStart('character', -100000);
 				end = begin + range.text.length;
 			}
@@ -122,16 +122,16 @@
 		}
 
 		this.each(function(i) {
-			var $element = jq$(this);
+			let $element = jq$(this);
 
-			var id = $element.attr('sectionId');
+			let id = $element.attr('sectionId');
 			if (!id) id = $element.attr('id');
 
 			if (!options) options = {};
-			var currentCounter = jq$.rerenderCounter++;
-			var data = {
-				SectionID : id,
-				counter : currentCounter
+			const currentCounter = jq$.rerenderCounter++;
+			const data = {
+				SectionID: id,
+				counter: currentCounter
 			};
 			jq$.extend(data, options);
 			jq$.lastRerenderRequests[id] = currentCounter;
@@ -159,17 +159,17 @@
 				if (options.beforeReplace) {
 					options.beforeReplace.call(this, $element, data);
 				}
-				var parsed = JSON.parse(data);
+				const parsed = JSON.parse(data);
 				if (jq$.lastRerenderRequests[id] !== parsed.counter) {
 					// console.log("Skipping: " + parsed.counter);
 					return; // another render request was send already, abort this one.
 				}
-				var html = parsed.html;
+				const html = parsed.html;
 				if ($element.is('.ReRenderSectionMarker')) {
 					$element.children().remove();
 					$element.append(html);
 				} else {
-					var $newElement = jq$(html);
+					const $newElement = jq$(html);
 					$element.replaceWith($newElement);
 					$element = $newElement;
 				}
@@ -215,7 +215,7 @@
 	}
 }(function(jq$) {
 
-	var pluses = /\+/g;
+	const pluses = /\+/g;
 
 	function encode(s) {
 		return config.raw ? s : encodeURIComponent(s);
@@ -257,11 +257,11 @@
 	}
 
 	function read(s, converter) {
-		var value = config.raw ? s : parseCookieValue(s);
+		const value = config.raw ? s : parseCookieValue(s);
 		return jq$.isFunction(converter) ? converter(value) : value;
 	}
 
-	var config = jq$.cookie = function(key, value, options) {
+	let config = jq$.cookie = function(key, value, options) {
 
 		// Write
 
@@ -269,7 +269,8 @@
 			options = jq$.extend({}, config.defaults, options);
 
 			if (typeof options.expires === 'number') {
-				var days = options.expires, t = options.expires = new Date();
+				const days = options.expires;
+				let t = options.expires = new Date();
 				t.setTime(+t + days * 864e+5);
 			}
 
@@ -284,17 +285,19 @@
 
 		// Read
 
-		var result = key ? undefined : {};
+		let result = key ? undefined : {};
 
 		// To prevent the for loop in the first place assign an empty array
 		// in case there are no cookies at all. Also prevents odd result when
 		// calling jq$.cookie().
-		var cookies = document.cookie ? document.cookie.split('; ') : [];
+		const cookies = document.cookie ? document.cookie.split('; ') : [];
 
-		for (var i = 0, l = cookies.length; i < l; i++) {
-			var parts = cookies[i].split('=');
-			var name = decode(parts.shift());
-			var cookie = parts.join('=');
+		let i = 0;
+		const l = cookies.length;
+		for (; i < l; i++) {
+			const parts = cookies[i].split('=');
+			const name = decode(parts.shift());
+			let cookie = parts.join('=');
 
 			if (key && key === name) {
 				// If second argument (value) is a function it's a converter...
@@ -328,7 +331,7 @@
 
 (function(jq$) {
 	jq$.waitForFinalEvent = (function() {
-		var timers = {};
+		const timers = {};
 		return function(callback, ms, uniqueId) {
 			if (!uniqueId) {
 				uniqueId = "Don't call this twice without a uniqueId";
@@ -341,6 +344,7 @@
 	})();
 })(jQuery);
 
+// noinspection JSCommentMatchesSignature
 /**
  * Version 1.7.1
  *
@@ -389,15 +393,15 @@
 
 	jq$.fn.editable = function(target, options) {
 
-		if ('disable' == target) {
+		if ('disable' === target) {
 			jq$(this).data('disabled.editable', true);
 			return;
 		}
-		if ('enableCompositeEdit' == target) {
+		if ('enableCompositeEdit' === target) {
 			jq$(this).data('disabled.editable', false);
 			return;
 		}
-		if ('destroy' == target) {
+		if ('destroy' === target) {
 			jq$(this)
 				.unbind(jq$(this).data('event.editable'))
 				.removeData('disabled.editable')
@@ -405,50 +409,50 @@
 			return;
 		}
 
-		var settings = jq$.extend({}, jq$.fn.editable.defaults, {target : target}, options);
+		const settings = jq$.extend({}, jq$.fn.editable.defaults, {target: target}, options);
 
 		/* setup some functions */
-		var plugin = jq$.editable.types[settings.type].plugin || function() {
+		const plugin = jq$.editable.types[settings.type].plugin || function () {
 		};
-		var submit = jq$.editable.types[settings.type].submit || function() {
+		const submit = jq$.editable.types[settings.type].submit || function () {
 		};
-		var buttons = jq$.editable.types[settings.type].buttons
+		const buttons = jq$.editable.types[settings.type].buttons
 			|| jq$.editable.types['defaults'].buttons;
-		var content = jq$.editable.types[settings.type].content
+		const content = jq$.editable.types[settings.type].content
 			|| jq$.editable.types['defaults'].content;
-		var element = jq$.editable.types[settings.type].element
+		const element = jq$.editable.types[settings.type].element
 			|| jq$.editable.types['defaults'].element;
-		var reset = jq$.editable.types[settings.type].reset
+		const reset = jq$.editable.types[settings.type].reset
 			|| jq$.editable.types['defaults'].reset;
-		var callback = settings.callback || function() {
+		const callback = settings.callback || function () {
 		};
-		var onedit = settings.onedit || function() {
+		const onedit = settings.onedit || function () {
 		};
-		var onsubmit = settings.onsubmit || function() {
+		const onsubmit = settings.onsubmit || function () {
 		};
-		var onreset = settings.onreset || function() {
+		const onreset = settings.onreset || function () {
 		};
-		var afterreset = settings.afterreset || function() {
+		const afterreset = settings.afterreset || function () {
 		};
-		var onerror = settings.onerror || reset;
+		const onerror = settings.onerror || reset;
 
 		/* show tooltip */
 		if (settings.tooltip) {
 			jq$(this).attr('title', settings.tooltip);
 		}
 
-		settings.autowidth = 'auto' == settings.width;
-		settings.autoheight = 'auto' == settings.height;
+		settings.autowidth = 'auto' === settings.width;
+		settings.autoheight = 'auto' === settings.height;
 
 		return this.each(function() {
 
 			/* save this to self because this changes when scope changes */
-			var self = this;
+			const self = this;
 
 			/* inlined block elements lose their width and height after first edit */
 			/* save them for later use as workaround */
-			var savedwidth = jq$(self).width();
-			var savedheight = jq$(self).height();
+			const savedwidth = jq$(self).width();
+			const savedheight = jq$(self).height();
 
 			/* save so it can be later used by jq$.editable('destroy') */
 			jq$(this).data('event.editable', settings.event);
@@ -486,16 +490,16 @@
 
 				/* figure out how wide and tall we are, saved width and height */
 				/* are workaround for http://dev.jquery.com/ticket/2190 */
-				if (0 == jq$(self).width()) {
+				if (0 === jq$(self).width()) {
 					//jq$(self).css('visibility', 'hidden');
 					settings.width = savedwidth;
 					settings.height = savedheight;
 				} else {
-					if (settings.width != 'none') {
+					if (settings.width !== 'none') {
 						settings.width =
 							settings.autowidth ? jq$(self).width() : settings.width;
 					}
-					if (settings.height != 'none') {
+					if (settings.height !== 'none') {
 						settings.height =
 							settings.autoheight ? jq$(self).height() : settings.height;
 					}
@@ -503,7 +507,7 @@
 				//jq$(this).css('visibility', '');
 
 				/* remove placeholder text, replace is here because of IE */
-				if (jq$(this).html().toLowerCase().replace(/(;|")/g, '') ==
+				if (jq$(this).html().toLowerCase().replace(/(;|")/g, '') ===
 					settings.placeholder.toLowerCase().replace(/(;|")/g, '')) {
 					jq$(this).html('');
 				}
@@ -513,11 +517,11 @@
 				jq$(self).html('');
 
 				/* create the form object */
-				var form = jq$('<form />');
+				const form = jq$('<form />');
 
 				/* apply css or style or both */
 				if (settings.cssclass) {
-					if ('inherit' == settings.cssclass) {
+					if ('inherit' === settings.cssclass) {
 						form.attr('class', jq$(self).attr('class'));
 					} else {
 						form.attr('class', settings.cssclass);
@@ -525,7 +529,7 @@
 				}
 
 				if (settings.style) {
-					if ('inherit' == settings.style) {
+					if ('inherit' === settings.style) {
 						form.attr('style', jq$(self).attr('style'));
 						/* IE needs the second line or display wont be inherited */
 						form.css('display', jq$(self).css('display'));
@@ -535,18 +539,18 @@
 				}
 
 				/* add main input element to form and store it in input */
-				var input = element.apply(form, [settings, self]);
+				const input = element.apply(form, [settings, self]);
 
 				/* set input content via POST, GET, given data or existing value */
-				var input_content;
-
+				let input_content;
+				let t;
 				if (settings.loadurl) {
-					var t = setTimeout(function() {
+					t = setTimeout(function() {
 						input.disabled = true;
 						content.apply(form, [settings.loadtext, settings, self]);
 					}, 100);
 
-					var loaddata = {};
+					const loaddata = {};
 					loaddata[settings.id] = self.id;
 					if (jq$.isFunction(settings.loaddata)) {
 						jq$.extend(loaddata, settings.loaddata.apply(self, [self.revert, settings]));
@@ -595,7 +599,7 @@
 
 				/* discard changes if pressing esc */
 				input.keydown(function(e) {
-					if (e.keyCode == 27) {
+					if (e.keyCode === 27) {
 						e.preventDefault();
 						//self.reset();
 						reset.apply(form, [settings, self]);
@@ -604,15 +608,14 @@
 
 				/* discard, submit or nothing with changes when clicking outside */
 				/* do nothing is usable when navigating with tab */
-				var t;
-				if ('cancel' == settings.onblur) {
+				if ('cancel' === settings.onblur) {
 					input.blur(function(e) {
 						/* prevent canceling if submit was clicked */
 						t = setTimeout(function() {
 							reset.apply(form, [settings, self]);
 						}, 500);
 					});
-				} else if ('submit' == settings.onblur) {
+				} else if ('submit' === settings.onblur) {
 					input.blur(function(e) {
 						/* prevent double submit if submit was clicked */
 						t = setTimeout(function() {
@@ -647,7 +650,7 @@
 
 							/* check if given target is function */
 							if (jq$.isFunction(settings.target)) {
-								var str = settings.target.apply(self, [input.val(), settings]);
+								const str = settings.target.apply(self, [input.val(), settings]);
 								jq$(self).html(str);
 								self.editing = false;
 								callback.apply(self, [self.innerHTML, settings]);
@@ -657,7 +660,7 @@
 								}
 							} else {
 								/* add edited content and id of edited element to POST */
-								var submitdata = {};
+								const submitdata = {};
 								submitdata[settings.name] = input.val();
 								submitdata[settings.id] = self.id;
 								/* add extra data to be POST:ed */
@@ -668,7 +671,7 @@
 								}
 
 								/* quick and dirty PUT support */
-								if ('PUT' == settings.method) {
+								if ('PUT' === settings.method) {
 									submitdata['_method'] = 'put';
 								}
 
@@ -676,13 +679,13 @@
 								jq$(self).html(settings.indicator);
 
 								/* defaults for ajaxoptions */
-								var ajaxoptions = {
-									type : 'POST',
-									data : submitdata,
-									dataType : 'html',
-									url : settings.target,
-									success : function(result, status) {
-										if (ajaxoptions.dataType == 'html') {
+								const ajaxoptions = {
+									type: 'POST',
+									data: submitdata,
+									dataType: 'html',
+									url: settings.target,
+									success: function (result, status) {
+										if (ajaxoptions.dataType === 'html') {
 											jq$(self).html(result);
 										}
 										self.editing = false;
@@ -691,7 +694,7 @@
 											jq$(self).html(settings.placeholder);
 										}
 									},
-									error : function(xhr, status, error) {
+									error: function (xhr, status, error) {
 										onerror.apply(form, [settings, self, xhr]);
 									}
 								};
@@ -736,11 +739,12 @@
 	};
 
 
+	// noinspection JSUnusedGlobalSymbols
 	jq$.editable = {
 		types : {
 			defaults : {
 				element : function(settings, original) {
-					var input = jq$('<input type="hidden">');
+					const input = jq$('<input type="hidden">');
 					jq$(this).append(input);
 					return (input);
 				},
@@ -751,39 +755,42 @@
 					original.reset(this);
 				},
 				buttons : function(settings, original) {
-					var form = this;
+					const form = this;
 					if (settings.submit) {
 						/* if given html string use that */
+						let submit;
 						if (settings.submit.match(/>jq$/)) {
-							var submit = jq$(settings.submit).click(function() {
-								if (submit.attr("type") != "submit") {
+							submit = jq$(settings.submit).click(function() {
+								if (submit.attr("type") !== "submit") {
 									form.submit();
 								}
 							});
 							/* otherwise use button with given string as text */
 						} else {
-							var submit = jq$('<button type="submit" />');
+							submit = jq$('<button type="submit" />');
 							submit.html(settings.submit);
 						}
 						jq$(this).append(submit);
 					}
 					if (settings.cancel) {
 						/* if given html string use that */
+						let cancel;
 						if (settings.cancel.match(/>jq$/)) {
-							var cancel = jq$(settings.cancel);
+							cancel = jq$(settings.cancel);
 							/* otherwise use button with given string as text */
 						} else {
-							var cancel = jq$('<button type="cancel" />');
+							cancel = jq$('<button type="cancel" />');
 							cancel.html(settings.cancel);
 						}
 						jq$(this).append(cancel);
 
-						jq$(cancel).click(function(event) {
+						jq$(cancel).click(function() {
 							//original.reset();
+							let reset;
 							if (jq$.isFunction(jq$.editable.types[settings.type].reset)) {
-								var reset = jq$.editable.types[settings.type].reset;
+								reset = jq$.editable.types[settings.type].reset;
 							} else {
-								var reset = jq$.editable.types['defaults'].reset;
+								reset = jq$.editable.types['defaults'].reset;
 							}
 							reset.apply(form, [settings, original]);
 							return false;
@@ -793,11 +800,11 @@
 			},
 			text : {
 				element : function(settings, original) {
-					var input = jq$('<input />');
-					if (settings.width != 'none') {
+					const input = jq$('<input />');
+					if (settings.width !== 'none') {
 						input.width(settings.width);
 					}
-					if (settings.height != 'none') {
+					if (settings.height !== 'none') {
 						input.height(settings.height);
 					}
 					/* https://bugzilla.mozilla.org/show_bug.cgi?id=236791 */
@@ -809,15 +816,15 @@
 			},
 			textarea : {
 				element : function(settings, original) {
-					var textarea = jq$('<textarea />');
+					const textarea = jq$('<textarea />');
 					if (settings.rows) {
 						textarea.attr('rows', settings.rows);
-					} else if (settings.height != "none") {
+					} else if (settings.height !== "none") {
 						textarea.height(settings.height);
 					}
 					if (settings.cols) {
 						textarea.attr('cols', settings.cols);
-					} else if (settings.width != "none") {
+					} else if (settings.width !== "none") {
 						textarea.width(settings.width);
 					}
 					jq$(this).append(textarea);
@@ -826,32 +833,33 @@
 			},
 			select : {
 				element : function(settings, original) {
-					var select = jq$('<select />');
+					const select = jq$('<select />');
 					jq$(this).append(select);
 					return (select);
 				},
 				content : function(data, settings, original) {
 					/* If it is string assume it is json. */
-					if (String == data.constructor) {
+					let json;
+					if (String === data.constructor) {
 						eval('var json = ' + data);
 					} else {
 						/* Otherwise assume it is a hash already. */
-						var json = data;
+						json = data;
 					}
-					for (var key in json) {
+					for (let key in json) {
 						if (!json.hasOwnProperty(key)) {
 							continue;
 						}
-						if ('selected' == key) {
+						if ('selected' === key) {
 							continue;
 						}
-						var option = jq$('<option />').val(key).append(json[key]);
+						const option = jq$('<option />').val(key).append(json[key]);
 						jq$('select', this).append(option);
 					}
 					/* Loop option again to set selected. IE needed this... */
 					jq$('select', this).children().each(function() {
-						if (jq$(this).val() == json['selected'] ||
-							jq$(this).text() == jq$.trim(original.revert)) {
+						if (jq$(this).val() === json['selected'] ||
+							jq$(this).text() === jq$.trim(original.revert)) {
 							jq$(this).attr('selected', 'selected');
 						}
 					});
@@ -885,7 +893,7 @@
 })(jQuery);
 
 jQuery.fn.insertAt = function(index, element) {
-	var lastIndex = this.children().size();
+	const lastIndex = this.children().size();
 	if (index < 0) {
 		index = Math.max(0, lastIndex + 1 + index)
 	}
@@ -902,14 +910,13 @@ jQuery.fn.insertAt = function(index, element) {
  http://www.jacklmoore.com/autosize
  */
 (function($) {
-	var
-		defaults = {
-			className : 'autosizejs',
-			id : 'autosizejs',
-			append : '\n',
-			callback : false,
-			resizeDelay : 10,
-			placeholder : true
+	const defaults = {
+			className: 'autosizejs',
+			id: 'autosizejs',
+			append: '\n',
+			callback: false,
+			resizeDelay: 10,
+			placeholder: true
 		},
 
 		// border:0 is unnecessary, but avoids a bug in Firefox on OSX
@@ -926,12 +933,10 @@ jQuery.fn.insertAt = function(index, element) {
 			'wordSpacing',
 			'textIndent',
 			'whiteSpace'
-		],
-
-		// to keep track which textarea is being mirrored when adjust() is called.
-		mirrored,
-
-		// the mirror element, which is used to calculate what size the mirrored element should be.
+		];
+	let // to keep track which textarea is being mirrored when adjust() is called.
+		mirrored;
+	const // the mirror element, which is used to calculate what size the mirrored element should be.
 		mirror = $(copy).data('autosize', true)[0];
 
 	// test that line-height can be accurately copied.
@@ -953,23 +958,22 @@ jQuery.fn.insertAt = function(index, element) {
 		}
 
 		return this.each(function() {
-			var
-				ta = this,
-				$ta = $(ta),
-				maxHeight,
+			const ta = this,
+				$ta = $(ta);
+			let maxHeight,
 				minHeight,
-				boxOffset = 0,
-				callback = $.isFunction(options.callback),
+				boxOffset = 0;
+			const callback = $.isFunction(options.callback),
 				originalStyles = {
-					height : ta.style.height,
-					overflow : ta.style.overflow,
-					overflowY : ta.style.overflowY,
-					wordWrap : ta.style.wordWrap,
-					resize : ta.style.resize
-				},
-				timeout,
-				width = $ta.width(),
-				taResize = $ta.css('resize');
+					height: ta.style.height,
+					overflow: ta.style.overflow,
+					overflowY: ta.style.overflowY,
+					wordWrap: ta.style.wordWrap,
+					resize: ta.style.resize
+				};
+			let timeout,
+				width = $ta.width();
+			const taResize = $ta.css('resize');
 
 			if ($ta.data('autosize')) {
 				// exit if autosize has already been applied, or if the textarea is the mirror element.
@@ -999,8 +1003,8 @@ jQuery.fn.insertAt = function(index, element) {
 			// The mirror width must exactly match the textarea width, so using getBoundingClientRect because it doesn't round the sub-pixel value.
 			// window.getComputedStyle, getBoundingClientRect returning a width are unsupported, but also unneeded in IE8 and lower.
 			function setWidth() {
-				var width;
-				var style = window.getComputedStyle ? window.getComputedStyle(ta, null) : false;
+				let width;
+				const style = window.getComputedStyle ? window.getComputedStyle(ta, null) : false;
 
 				if (style) {
 
@@ -1021,7 +1025,7 @@ jQuery.fn.insertAt = function(index, element) {
 			}
 
 			function initMirror() {
-				var styles = {};
+				const styles = {};
 
 				mirrored = ta;
 				mirror.className = options.className;
@@ -1045,9 +1049,9 @@ jQuery.fn.insertAt = function(index, element) {
 				// When the textarea y-overflow is hidden, Chrome doesn't reflow the text to account for the space
 				// made available by removing the scrollbar. This workaround triggers the reflow for Chrome.
 				if (window.chrome) {
-					var width = ta.style.width;
+					const width = ta.style.width;
 					ta.style.width = '0px';
-					var ignore = ta.offsetWidth;
+					const ignore = ta.offsetWidth;
 					ta.style.width = width;
 				}
 			}
@@ -1055,7 +1059,7 @@ jQuery.fn.insertAt = function(index, element) {
 			// Using mainly bare JS in this function because it is going
 			// to fire very often while typing, and needs to very efficient.
 			function adjust() {
-				var height, original;
+				let height, original;
 
 				if (mirrored !== ta) {
 					initMirror();
@@ -1100,6 +1104,7 @@ jQuery.fn.insertAt = function(index, element) {
 					ta.style.height = height + 'px';
 
 					// Trigger a repaint for IE8 for when ta is nested 2 or more levels inside an inline-block
+					// noinspection SillyAssignmentJS
 					mirror.className = mirror.className;
 
 					if (callback) {
@@ -1112,7 +1117,7 @@ jQuery.fn.insertAt = function(index, element) {
 			function resize() {
 				clearTimeout(timeout);
 				timeout = setTimeout(function() {
-					var newWidth = $ta.width();
+					const newWidth = $ta.width();
 
 					if (newWidth !== width) {
 						width = newWidth;
@@ -1183,7 +1188,7 @@ jQuery.fn.insertAt = function(index, element) {
 
 	jq$.datepicker.setDefaults({dateFormat : "dd.mm.yy"});
 
-	var datepickerFunction = jq$.fn.datepicker;
+	const datepickerFunction = jq$.fn.datepicker;
 	jq$.fn.datepicker = function() {
 		this.attr('placeholder', "dd.mm.yyyy");
 		return datepickerFunction.apply(this, arguments);
