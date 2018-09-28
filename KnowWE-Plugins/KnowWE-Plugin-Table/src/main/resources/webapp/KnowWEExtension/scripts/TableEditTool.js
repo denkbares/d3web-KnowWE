@@ -1,20 +1,5 @@
-/**
- * The KNOWWE global namespace object. If KNOWWE is already defined, the
- * existing KNOWWE object will not be overwritten so that defined namespaces are
- * preserved.
- */
-if (typeof KNOWWE == "undefined" || !KNOWWE) {
-    var KNOWWE = {};
-}
-
-/**
- * The KNOWWE.core global namespace object. If KNOWWE.core is already defined,
- * the existing KNOWWE.core object will not be overwritten so that defined
- * namespaces are preserved.
- */
-if (typeof KNOWWE.table == "undefined" || !KNOWWE.table) {
-    KNOWWE.table = {};
-}
+KNOWWE = KNOWWE || {};
+KNOWWE.table = KNOWWE.table || {};
  
 
 /**
