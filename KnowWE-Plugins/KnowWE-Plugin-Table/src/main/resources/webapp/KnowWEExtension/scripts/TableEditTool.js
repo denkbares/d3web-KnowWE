@@ -12,25 +12,25 @@ KNOWWE.table.edit = {
 	 * returns an object with 2 members, 'row' and 'column'.
 	 */
 	getPositionInTable : function(el) {
-		var cell;
-		if (el.tagName == 'TH' || el.tagName == 'TD'){
+		let cell;
+		if (el.tagName === 'TH' || el.tagName === 'TD'){
 			cell = el;
 		} else {
 			cell = KNOWWE.table.edit.getParent(el, ['TH', 'TD']);
 		}
-		
-		var tr = cell.parentNode;
-		var result = {};
-		
-		for (var x = 0; x < tr.childNodes.length; x++){
-			if (tr.childNodes[x] == cell) {
+
+		const tr = cell.parentNode;
+		const result = {};
+
+		for (let x = 0; x < tr.childNodes.length; x++){
+			if (tr.childNodes[x] === cell) {
 				result.column = x;
 			}
 		}
-		
-		var table = tr.parentNode;
-		for (var y = 0; y < table.childNodes.length; y++){
-			if (table.childNodes[y] == tr){
+
+		const table = tr.parentNode;
+		for (let y = 0; y < table.childNodes.length; y++){
+			if (table.childNodes[y] === tr){
 				result.row = y;
 			}
 		}
@@ -45,18 +45,17 @@ KNOWWE.table.edit = {
 	getParent : function(el, tags) {
 		while (true) {
 			
-			for (var i = 0; i < tags.length; i++){
-				if (el.tagName == tags[i]) {
+			for (let i = 0; i < tags.length; i++){
+				if (el.tagName === tags[i]) {
 					return el;
 				}
 			}
 			
 			el = el.parentNode;
-			if (el.tagName == 'BODY') {
+			if (el.tagName === 'BODY') {
 				return null;
 			}
 		}
-		return el;
 	},
 	
 	/**
@@ -64,14 +63,14 @@ KNOWWE.table.edit = {
 	 * 
 	 */
 	getDefaultActions : function(el, rowNo, colNo, editor) {
-		var actions = [];
-		
-		if (rowNo == 0){
+		const actions = [];
+
+		if (rowNo === 0){
 			actions.push({name: 'Delete column', f: (function(){editor.delCol(el)}) });
 			actions.push({name: 'Add column left', f: (function(){editor.addCol(el, 0)})});
 			actions.push({name: 'Add column right', f: (function(){editor.addCol(el, 1)})});
 		}
-		if (colNo == 0){
+		if (colNo === 0){
 			actions.push({name: 'Delete row', f: (function(){editor.delRow(el)})});
 			actions.push({name: 'Add row above', f: (function(){editor.addRow(el, 0)})});
 			actions.push({name: 'Add row below', f: (function(){editor.addRow(el, 1)})});
@@ -84,9 +83,9 @@ KNOWWE.table.edit = {
 
 
 KNOWWE.table.edit.Editor = (function(editProvider) {
- 
-	var wikicode;
-	var areaId;
+
+	let wikicode;
+	let areaId;
 
 	function createTableID(id) {
 		return "defaultEditTable" + id;
@@ -96,34 +95,34 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 * Displays a action menu, when clicking the menu dropdown
 	 */
 	function showActionMenu(event, el){
-		
-		var divContext = document.createElement("div");
+
+		const divContext = document.createElement("div");
 		divContext.setAttribute("class", "actionMenu");
-		
-		var close = document.createElement('a');
+
+		const close = document.createElement('a');
 		close.appendChild(document.createTextNode('(x)'));
 		close.setAttribute('class', 'close');
 		close.onclick = function() {document.body.removeChild(divContext)};
 		divContext.appendChild(close);
 		
 		// document.body.scrollTop does not work in IE
-		var scrollTop = document.body.scrollTop ? document.body.scrollTop :
+		const scrollTop = document.body.scrollTop ? document.body.scrollTop :
 			document.documentElement.scrollTop;
-		var scrollLeft = document.body.scrollLeft ? document.body.scrollLeft :
+		const scrollLeft = document.body.scrollLeft ? document.body.scrollLeft :
 			document.documentElement.scrollLeft;
 
-		var left = event.clientX + scrollLeft;
+		const left = event.clientX + scrollLeft;
 		divContext.style.left = left + 'px';
-		var top = event.clientY + scrollTop;
+		const top = event.clientY + scrollTop;
 		divContext.style.top = top + 'px';
-		
-		var pos = KNOWWE.table.edit.getPositionInTable(el);
-		var actions = editProvider.getActions(el, pos.row, pos.column, editor);
-		
-		var actionList = document.createElement("ul");
+
+		const pos = KNOWWE.table.edit.getPositionInTable(el);
+		const actions = editProvider.getActions(el, pos.row, pos.column, editor);
+
+		const actionList = document.createElement("ul");
 		divContext.appendChild(actionList);
-		for (var i = 0; i < actions.length; i++){
-			var item = document.createElement('li');
+		for (let i = 0; i < actions.length; i++){
+			const item = document.createElement('li');
 			item.appendChild(document.createTextNode(actions[i].name));
 			item.onclick = (function(index){return (function(){actions[index].f();document.body.removeChild(divContext);})})(i);
 			actionList.appendChild(item);
@@ -137,9 +136,9 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 * removes all  menu drop downs from the cells
 	 */
 	function removeMenuHandlers(table) {
-		var handles = table.getElements('.menuSymbol');
-		
-		for (var i = 0; i < handles.length; i++){
+		const handles = table.getElements('.menuSymbol');
+
+		for (let i = 0; i < handles.length; i++){
 			handles[i].parentNode.removeChild(handles[i]);
 		}
 	}
@@ -156,25 +155,25 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 * adds the menu dropdowns to alls cells in first row / col
 	 */
 	function addMenuHandlers(table) {
-		var rows = table.getElements('tr');
-		var result = [];
-		
-		if (rows.length == 0)
+		const rows = table.getElements('tr');
+		const result = [];
+
+		if (rows.length === 0)
 			return;
 		
 		//all row headers
-		for (var colNo = 0; colNo < rows[0].childNodes.length; colNo++) {
+		for (let colNo = 0; colNo < rows[0].childNodes.length; colNo++) {
 			result.push(rows[0].childNodes[colNo]);
 		}
 
 		//all col headers
-		for (var rowNo = 1; rowNo < rows.length; rowNo++) {
+		for (let rowNo = 1; rowNo < rows.length; rowNo++) {
 			result.push(rows[rowNo].firstChild);
 		}
 
-		for (var i = 0; i < result.length; i++){
-			var span = document.createElement("span");
-			
+		for (let i = 0; i < result.length; i++){
+			const span = document.createElement("span");
+
 			span.setAttribute('class','menuSymbol');
 			span.onclick = (function(event){
 				showActionMenu(event, this);
@@ -191,13 +190,13 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 * Takes a line of wiki markup and returns a tr with all the cells
 	 */
 	function parseLine(wikiLine, row) {
-		
-		var regex = /(?:\|(?!\|)([^|\r\n]*))|(?:\|\|([^|\r\n]*))/g;
-		var result = document.createElement('tr');
-		var col = 0;
-		var cellType, cellValue;
-		var match;
-		
+
+		const regex = /(?:\|(?!\|)([^|\r\n]*))|(?:\|\|([^|\r\n]*))/g;
+		const result = document.createElement('tr');
+		let col = 0;
+		let cellType, cellValue;
+		let match;
+
 		while (match = regex.exec(wikiLine)) {
 				
 			if (match[1]) {
@@ -228,8 +227,8 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 * calls getDefaultValue(...) of the editprovider to get a value for the display component.
 	 */
 	function createNewCell(row, col) {
-		var value = editProvider.getDefaultValue(row, col);
-		return generateCell(row == 0 ? 'th' : 'td' , row, col, value)
+		const value = editProvider.getDefaultValue(row, col);
+		return generateCell(row === 0 ? 'th' : 'td' , row, col, value)
 	}
 
 	/**
@@ -242,7 +241,7 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 * 
 	 */
 	function generateCell(type, row, col, value) {
-		var cell = document.createElement(type);
+		const cell = document.createElement(type);
 		//TODO convert to appendchild
 		cell.innerHTML = editProvider.getDisplayComponent(row, col, value);
 		return cell;
@@ -252,38 +251,38 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
 	 * removes the surrounding defaultmarkup frame
 	 */
 	function removeDMFrame(editArea){
-		var dmFrame = editArea.parentNode;
-		
-		while (dmFrame.className.indexOf('defaultMarkupFrame') == -1) {
+		let dmFrame = editArea.parentNode;
+
+		while (dmFrame.className.indexOf('defaultMarkupFrame') === -1) {
 			dmFrame = dmFrame.parentNode;
 		}
-		
-		var dmParent = dmFrame.parentNode;
+
+		const dmParent = dmFrame.parentNode;
 		dmParent.insertBefore(editArea, dmFrame);
 		dmParent.removeChild(dmFrame);
 		
 	}
-	
 
-	var editor = {
-    	
+
+	let editor = {
+
     	/**
     	 * inserts a new column to the left (offset = 0) or right (offSet = 1)
-    	 * of the specified element el. 
+    	 * of the specified element el.
     	 */
     	addCol : function(el, offSet) {
-    		
-    		var colNo = KNOWWE.table.edit.getPositionInTable(el).column;
-    		colNo += offSet;
-    		
-    		var table = KNOWWE.table.edit.getParent(el, ['TABLE']);
-    		var trs = table.getElementsByTagName("tr");
 
-    		for (var rowNo = 0; rowNo < trs.length; rowNo++) {
-    					
-    			var newCell = createNewCell(rowNo, colNo);
+			let colNo = KNOWWE.table.edit.getPositionInTable(el).column;
+			colNo += offSet;
 
-    			if (colNo >= trs[rowNo].childNodes.length) {
+			const table = KNOWWE.table.edit.getParent(el, ['TABLE']);
+			const trs = table.getElementsByTagName("tr");
+
+			for (let rowNo = 0; rowNo < trs.length; rowNo++) {
+
+				const newCell = createNewCell(rowNo, colNo);
+
+				if (colNo >= trs[rowNo].childNodes.length) {
     				trs[rowNo].appendChild(newCell);
     			} else {
     				trs[rowNo].insertBefore(newCell, trs[rowNo].childNodes[colNo]);
@@ -291,50 +290,50 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
     		}
 
     		resetMenuHandlers(table);
-			
+
 			editProvider.columnAdded(colNo);
     	},
-    	
+
     	/**
     	 * Deletes the column, that contains element el.
     	 */
     	delCol : function(el) {
-    		
-    		var table = KNOWWE.table.edit.getParent(el, ['TABLE']);
-    		var trs = table.getElementsByTagName("tr");
-    		
-    		var nr = KNOWWE.table.edit.getPositionInTable(el).column;
-    		for (var i = 0; i < trs.length; i++) {
-    			if (nr < trs[i].childNodes.length) { 
+
+			const table = KNOWWE.table.edit.getParent(el, ['TABLE']);
+			const trs = table.getElementsByTagName("tr");
+
+			const nr = KNOWWE.table.edit.getPositionInTable(el).column;
+			for (let i = 0; i < trs.length; i++) {
+    			if (nr < trs[i].childNodes.length) {
     				trs[i].removeChild(trs[i].childNodes[nr]);
     			}
     		}
-    		
+
     		//restore handlers, if first column has been removed
-    		if (nr == 0)
+    		if (nr === 0)
     			KNOWWE.table.edit.resetMenuHandlers(table);
     	},
 
-    	
+
     	/**
     	 * insertes a new row above (offset = 0) or below(offSet = 1)
-    	 * of the specified element el. 
+    	 * of the specified element el.
     	 */
     	addRow : function(el, offSet) {
-    		var rowNo = KNOWWE.table.edit.getPositionInTable(el).row;
-    		rowNo += offSet;
+			let rowNo = KNOWWE.table.edit.getPositionInTable(el).row;
+			rowNo += offSet;
 
-    		var table = KNOWWE.table.edit.getParent(el, ['TABLE']);	
-    		var trs = table.getElementsByTagName("tr");
-    		
-    		var newtr = document.createElement("tr");
-    		
-    		//TODO Was, wenn die Tabelle nicht rechteckig ist? 
-    		for (var colNo = 0; colNo < trs[0].childNodes.length; colNo++) {
-    			var newtd = createNewCell(rowNo, colNo);
-    			newtr.appendChild(newtd);
+			const table = KNOWWE.table.edit.getParent(el, ['TABLE']);
+			const trs = table.getElementsByTagName("tr");
+
+			const newtr = document.createElement("tr");
+
+			//TODO Was, wenn die Tabelle nicht rechteckig ist?
+    		for (let colNo = 0; colNo < trs[0].childNodes.length; colNo++) {
+				const newtd = createNewCell(rowNo, colNo);
+				newtr.appendChild(newtd);
     		}
-    		
+
     		if (rowNo < trs.length) {
     			trs[0].parentNode.insertBefore(newtr, trs[rowNo]);
     		} else {
@@ -342,124 +341,124 @@ KNOWWE.table.edit.Editor = (function(editProvider) {
     		}
 
     		resetMenuHandlers(table);
-    		
+
     		editProvider.rowAdded(rowNo);
 
-    		
+
     	},
-    	
+
 
     	/**
     	 * Deletes the row, that contains element el
     	 * @param el
     	 */
     	delRow : function (el) {
-    		var tr = KNOWWE.table.edit.getParent(el, ['TR']);
-    		var first = KNOWWE.table.edit.getPositionInTable(el).row == 0;
-    		
-    		var table = tr.parentNode;
-    		table.removeChild(tr);
-    		
+			const tr = KNOWWE.table.edit.getParent(el, ['TR']);
+			const first = KNOWWE.table.edit.getPositionInTable(el).row === 0;
+
+			const table = tr.parentNode;
+			table.removeChild(tr);
+
     		if (first) {
     			resetMenuHandlers(table);
     		}
     	},
-    	
-    	
+
+
     	/////////InstantEdit Interface
     	/**
     	 * Parses the wikimarkup and creates the editable table
     	 */
 	    generateHTML : function(id) {
 			editProvider.prepare(id);
-			
+
 			wikicode = _EC.getWikiText(id);
 			areaId = id;
-			
-			var result = document.createElement('div')
-			
+
+			const result = document.createElement('div');
+
 //			var div = document.createElement('div')
 //			div.setAttribute('class', 'defaultEditTool');
-			
-			var table = document.createElement('table');
+
+			const table = document.createElement('table');
 			table.setAttribute('class','wikitable knowwetable');
 			table.setAttribute('id', createTableID(id));
 
-			var lines = wikicode.split(/\n/);
-			for (var i = 0; i < lines.length; i++) {
-				if (lines[i] =='') {
+			const lines = wikicode.split(/\n/);
+			for (let i = 0; i < lines.length; i++) {
+				if (lines[i] ==='') {
 					continue;
 				}
-				
+
 				table.appendChild(parseLine(lines[i], i));
-				
+
 			}
-			
+
 //			div.appendChild(table);
  			result.appendChild(table);
-			
+
 //			var buttons = document.createElement('div');
-//			buttons.innerHTML = KNOWWE.plugin.instantEdit.getSaveCancelDeleteButtons(id); 
+//			buttons.innerHTML = KNOWWE.plugin.instantEdit.getSaveCancelDeleteButtons(id);
 //			result.appendChild(buttons.firstChild);
-//			
+//
 			return result.innerHTML;
 	    },
-	    
+
 		/**
-		 * Binds event listeners 
+		 * Binds event listeners
 		 *
 		 */
 	    postProcessHTML : function(id) {
-			var editarea = jq$('#' + id)[0];
-			
+			const editarea = jq$('#' + id)[0];
+
 			removeDMFrame(editarea);
-			
+
 			addMenuHandlers(editarea.getElementsByTagName("table")[0]);
-			
+
 			editProvider.postProcess(id);
 	    },
-	    
+
 	    generateButtons : function(id) {
 	    	return _EC.elements.getSaveCancelDeleteButtons(id)
 	    },
-	    
+
 		/**
 		* returns true, if no changes have been made
 		**/
 	    unloadCondition : function(id) {
-	    	var wikiTable = KNOWWE.table.edit.createWikiMarkup(id);
-			return wikicode == wikiTable;
+			const wikiTable = KNOWWE.table.edit.createWikiMarkup(id);
+			return wikicode === wikiTable;
 	    },
-	    
+
 		/**
 		Erstellt aus dem HTML Code das WikiMarkup
 		**/
 	    generateWikiText : function(id) {
-	    	var wikiTable = '';
-	    	
-	    	var rows = document.getElementById(createTableID(id)).getElementsByTagName('tr');
-	    	var cols;
+			let wikiTable = '';
 
-	    	for (var rowNo = 0; rowNo < rows.length; rowNo++) {
+			const rows = document.getElementById(createTableID(id)).getElementsByTagName('tr');
+			let cols;
+
+			for (let rowNo = 0; rowNo < rows.length; rowNo++) {
 	    		cols = rows[rowNo].childNodes;
-	    		for (var colNo = 0; colNo < cols.length; colNo++) {
+	    		for (let colNo = 0; colNo < cols.length; colNo++) {
 	    			wikiTable += '|';
-	    			if (cols[colNo].tagName == 'TH')
+	    			if (cols[colNo].tagName === 'TH')
 	    				wikiTable += '|';
-	    			
-	    			var value = editProvider.getValue(cols[colNo].childNodes[0], rowNo, colNo);
-	    			
-	    			if (value == undefined || value == '') value = ' '; //separate cells
-	    			
+
+					let value = editProvider.getValue(cols[colNo].childNodes[0], rowNo, colNo);
+
+					if (value === undefined || value === '') value = ' '; //separate cells
+
 	    			wikiTable += value;
 	    		}
 	    		wikiTable += '\n';
 	    	}
-	    
+
 	    	return wikiTable;
 	    }
-    };	
-	
+    };
+
 	return editor;
 });
 
@@ -487,8 +486,8 @@ KNOWWE.table.edit.defaultProvider = {
 	 * 
 	 */
 	getDisplayComponent : function(row, col, value){
-		var result = '<input type="text" size="10"';
-		if (value != undefined){
+		let result = '<input type="text" size="10"';
+		if (value !== undefined){
 			result += 'value="' + value + '"';
 		}
 		result += '>';
