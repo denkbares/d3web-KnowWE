@@ -161,7 +161,7 @@ public class StyleRenderer implements Renderer {
 
 	public void renderText(String text, UserContext user, RenderResult string) {
 		renderOpeningTag(null, string);
-		string.append(text);
+		string.appendJSPWikiMarkup(text);
 		string.appendHtml("</span>");
 	}
 
