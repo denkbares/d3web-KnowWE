@@ -1,8 +1,8 @@
 KNOWWE.plugin.tableEditTool = function() {
 
-	var originalWikiText = {};
-	var spreadsheet = {};
-	var supportLinks = {};
+	const originalWikiText = {};
+	const spreadsheet = {};
+	const supportLinks = {};
 
 	function createRootID(id) {
 		return "tableEdit" + id;
@@ -24,7 +24,7 @@ KNOWWE.plugin.tableEditTool = function() {
 		},
 
 		generateHTML : function(id) {
-			var toolNameSpace = _EM.toolNameSpace[id];
+			let toolNameSpace = _EM.toolNameSpace[id];
 			if (!toolNameSpace) toolNameSpace = _IE.toolNameSpace[id];
 			originalWikiText[id] = toolNameSpace.getWikiText(id);
 			return "<div id='" + createRootID(id) + "' style='position: relative; overflow: auto'></div>";
@@ -54,28 +54,28 @@ KNOWWE.plugin.tableEditTool = function() {
 		},
 
 		handleEventInfo : function(id, eventInfo) {
-			var $td = jq$(eventInfo.target);
+			let $td = jq$(eventInfo.target);
 			if (!$td.is("td")) {
 				$td = $td.parents('td').first();
 			}
 			if (!$td.exists()) return;
-			var column = $td.index() + 1;
-			var $tr = $td.parents("tr");
-			var row = $tr.index() + 1;
+			const column = $td.index() + 1;
+			const $tr = $td.parents("tr");
+			const row = $tr.index() + 1;
 
-			var $newTable = spreadsheet[id].element.parent();
-			var $newTr = $newTable.find("tr:nth-of-type(" + row + ")");
+			const $newTable = spreadsheet[id].element.parent();
+			const $newTr = $newTable.find("tr:nth-of-type(" + row + ")");
 			if (!$newTr.exists()) return;
-			var $newTd = $newTr.find("td:nth-of-type(" + column + ")");
+			const $newTd = $newTr.find("td:nth-of-type(" + column + ")");
 			if (!$newTd.exists()) return;
-			var newRect = $newTd[0].getBoundingClientRect();
+			const newRect = $newTd[0].getBoundingClientRect();
 
-			var diffY = newRect.top - eventInfo.rect.top;
-			var diffX = newRect.left - eventInfo.rect.left;
+			const diffY = newRect.top - eventInfo.rect.top;
+			const diffX = newRect.left - eventInfo.rect.left;
 			jq$(window).scrollTop(jq$(window).scrollTop() + diffY);
 			jq$(window).scrollLeft(jq$(window).scrollLeft() + diffX);
 
-			var data = $newTd.data("cellInfo");
+			const data = $newTd.data("cellInfo");
 			data.spreadsheet.selectCell(data.row, data.col);
 
 		},
@@ -90,7 +90,7 @@ KNOWWE.plugin.tableEditTool = function() {
 			spreadsheet[id].setWikiMarkup(originalWikiText[id]);
 			originalWikiText[id] = spreadsheet[id].getWikiMarkup();
 
-			var root = spreadsheet[id].element.parent();
+			const root = spreadsheet[id].element.parent();
 			root.find("#table_insert_row_before").click(function(event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row);
 				event.preventDefault();
@@ -119,7 +119,7 @@ KNOWWE.plugin.tableEditTool = function() {
 
 			root.find("#toggle_header").click(function(event) {
 				if (!spreadsheet[id].selected) return;
-				var header = spreadsheet[id].getCell(spreadsheet[id].selected.row, spreadsheet[id].selected.col).hasClass("header");
+				let header = spreadsheet[id].getCell(spreadsheet[id].selected.row, spreadsheet[id].selected.col).hasClass("header");
 				spreadsheet[id].forEachSelected(function(cell, row, col) {
 					spreadsheet[id].setHeader(row, col, !header);
 				});
@@ -130,7 +130,7 @@ KNOWWE.plugin.tableEditTool = function() {
 
 		unloadCondition : function(id) {
 			return (!originalWikiText[id] && !spreadsheet[id])
-				|| originalWikiText[id] == spreadsheet[id].getWikiMarkup();
+				|| originalWikiText[id] === spreadsheet[id].getWikiMarkup();
 		},
 
 		generateWikiText : function(id) {
@@ -163,8 +163,8 @@ KNOWWE.plugin.tableEditTool = function() {
 		 * </ul>
 		 */
 		create : function(autoCompleteFun) {
-			var created = jq$.extend({}, KNOWWE.plugin.tableEditTool);
-			var super_postProcessHTML = created.postProcessHTML;
+			const created = jq$.extend({}, KNOWWE.plugin.tableEditTool);
+			const super_postProcessHTML = created.postProcessHTML;
 			created.postProcessHTML = function(id) {
 				super_postProcessHTML(id);
 				if (autoCompleteFun) {
@@ -185,15 +185,15 @@ function SpreadsheetModel(wikiText, supportLinks) {
 	if (wikiText) {
 		// prepend and append returns for easier regex
 		wikiText = ("\n" + wikiText + "\n");
-		var firstTableLine = wikiText.search(/\n[ \t]*\|/); // pipe is first char after return
-		if (firstTableLine == -1) {
+		let firstTableLine = wikiText.search(/\n[ \t]*\|/); // pipe is first char after return
+		if (firstTableLine === -1) {
 			firstTableLine = wikiText.indexOf("\n", wikiText.search(/\S/) + 1);
 		}
 		if (firstTableLine > 1) {
 			this.textBeforeTable = wikiText.substring(1, firstTableLine);
 			wikiText = "\n" + wikiText.substring(firstTableLine + 1);
 		}
-		var lastTableLineEnd = wikiText.search(/(\n([^\|][^\n]*)?)*$/);
+		const lastTableLineEnd = wikiText.search(/(\n([^\|][^\n]*)?)*$/);
 		if (lastTableLineEnd >= 0 && lastTableLineEnd < wikiText.length - 2) {
 			this.textAfterTable = wikiText.substring(lastTableLineEnd + 1, wikiText.length - 1);
 			wikiText = wikiText.substring(0, lastTableLineEnd + 1);
@@ -212,7 +212,7 @@ function SpreadsheetModel(wikiText, supportLinks) {
 		// replace "~" by entities
 		// handle multiple "~", odd, but like jsp-wiki does
 		// (by this code single "~" remain untouched!)
-		while (wikiText.search(/\~\~\~/) != -1) {
+		while (wikiText.search(/\~\~\~/) !== -1) {
 			wikiText = wikiText.replace(/\~\~\~/, "&#126;~~");
 		}
 		wikiText = wikiText.replace(/\~\~/g, "&#126;");
@@ -222,14 +222,14 @@ function SpreadsheetModel(wikiText, supportLinks) {
 
 		// replace in-link pipes and escapes-characters by html entity
 		if (supportLinks) {
-			var oldText;
+			let oldText;
 			do {
 				oldText = wikiText;
 				wikiText = wikiText.replace(/(\[[^\]]*)\|/g, "$1&#124;");	// "|"
 				wikiText = wikiText.replace(/(\[[^\]]*)\~/g, "$1&#126;");	// "~"
 				wikiText = wikiText.replace(/(\[[^\]]*)\\/g, "$1&#92;");	// "\"
 			}
-			while (oldText != wikiText);
+			while (oldText !== wikiText);
 		}
 
 		// replace remaining escaped "|" and "\" by html entity (outside links)
@@ -239,19 +239,19 @@ function SpreadsheetModel(wikiText, supportLinks) {
 
 		// and now parse the table structure,
 		// remaining | are now surely cell separators (!)
-		var lines = wikiText.match(/\n[ \t]*\|[^\n]*/g);
+		const lines = wikiText.match(/\n[ \t]*\|[^\n]*/g);
 		if (lines == null) return;
-		var row = 0;
-		for (var i = 0; i < lines.length; i++) {
-			var line = lines [i];
+		let row = 0;
+		for (let i = 0; i < lines.length; i++) {
+			let line = lines [i];
 			line = line.replace(/\n/g, "");
 			if (line.match(/^\s*$/g)) continue;
-			var cells = line.match(/\|\|?[^\|]*/g);
-			for (var col = 0; col < cells.length; col++) {
-				var cell = cells[col];
-				var text = "";
-				var header = false;
-				if (cell.charAt(1) == '|') {
+			const cells = line.match(/\|\|?[^\|]*/g);
+			for (let col = 0; col < cells.length; col++) {
+				const cell = cells[col];
+				let text = "";
+				let header = false;
+				if (cell.charAt(1) === '|') {
 					text = cell.substr(2);
 					header = true;
 				}
@@ -278,7 +278,7 @@ function SpreadsheetModel(wikiText, supportLinks) {
 
 SpreadsheetModel.prototype.setCell = function(row, col, text, isHeader) {
 	this.ensureSize(row + 1, col + 1);
-	var key = row + "_" + col;
+	const key = row + "_" + col;
 	this.cells[key] = {row : row, col : col, text : text, isHeader : isHeader};
 };
 
@@ -288,24 +288,24 @@ SpreadsheetModel.prototype.ensureSize = function(rowCount, colCount) {
 };
 
 SpreadsheetModel.prototype.getCellText = function(row, col) {
-	var key = row + "_" + col;
-	var data = this.cells[key];
+	const key = row + "_" + col;
+	const data = this.cells[key];
 	return data ? data.text : "";
 };
 
 SpreadsheetModel.prototype.isHeader = function(row, col) {
 	// use header attribute of the cell
-	var key = row + "_" + col;
-	var data = this.cells[key];
+	const key = row + "_" + col;
+	const data = this.cells[key];
 	if (data) return data.isHeader;
 	return false;
 };
 
 SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
-	var wikiText = this.textBeforeTable ? this.textBeforeTable : "";
-	for (var row = 0; row < this.height; row++) {
-		for (var col = 0; col < this.width; col++) {
-			var cellText = this.getCellText(row, col);
+	let wikiText = this.textBeforeTable ? this.textBeforeTable : "";
+	for (let row = 0; row < this.height; row++) {
+		for (let col = 0; col < this.width; col++) {
+			let cellText = this.getCellText(row, col);
 
 			// avoid conflicting with already coded entities
 			cellText = cellText.replace(/\&/g, "&amp;");
@@ -315,14 +315,14 @@ SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
 
 			// remain contents of links unchanged
 			if (supportLinks) {
-				var oldText;
+				let oldText;
 				// fix unclosed links by adding escape character
 				// and use html entities to prevent link treatment
 				do {
 					oldText = cellText;
 					cellText = cellText.replace(/^(.*)\[([^\]]*)$/g, "$1&#126;&#91;$2");
 				}
-				while (oldText != cellText);
+				while (oldText !== cellText);
 
 				// prevent inner-link-text to be escaped by using html entities
 				do {
@@ -331,7 +331,7 @@ SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
 					cellText = cellText.replace(/(\[[^\]]*)\~/g, "$1&#126;");	// "~"
 					cellText = cellText.replace(/(\[[^\]]*)\\/g, "$1&#92;");	// "\"
 				}
-				while (oldText != cellText);
+				while (oldText !== cellText);
 			}
 
 			// special handling: "~~|" will be recognized 
@@ -402,11 +402,11 @@ Spreadsheet.prototype.getWikiMarkup = function() {
 };
 
 Spreadsheet.prototype.getModel = function() {
-	var model = new SpreadsheetModel();
+	const model = new SpreadsheetModel();
 	this.element.find("tr").each(function(rowIndex) {
 		jq$(this).find("td").each(function(colIndex) {
-			var isHeader = jq$(this).hasClass("header");
-			var text = jq$(this).find("div > a").text();
+			const isHeader = jq$(this).hasClass("header");
+			const text = jq$(this).find("div > a").text();
 			model.setCell(rowIndex, colIndex, text, isHeader);
 		});
 	});
@@ -422,14 +422,15 @@ Spreadsheet.prototype.createTable = function(model) {
 	this.selectedRange = null;
 	this.copied = null;
 
-	var html = "";
+	let html = "";
 	html += "<table class='wikitable spreadsheet'>\n";
 	html += "</tr>\n";
-	for (var row = 0; row < this.size.rows; row++) {
+	let row, col, cell;
+	for (row = 0; row < this.size.rows; row++) {
 		html += "<tr>\n";
-		for (var col = 0; col < this.size.cols; col++) {
-			var isHeader = model.isHeader(row, col);
-			var text = _EC.encodeForHtml(model.getCellText(row, col));
+		for (col = 0; col < this.size.cols; col++) {
+			const isHeader = model.isHeader(row, col);
+			const text = _EC.encodeForHtml(model.getCellText(row, col));
 			html += "<";
 			html += isHeader ? "td class=header" : "td";
 			html += " id='" + this.getCellID(row, col) + "'><div><a href='#'>";
@@ -441,45 +442,45 @@ Spreadsheet.prototype.createTable = function(model) {
 	html += "</table>";
 	this.element.append(html);
 
-	for (var row = 0; row < this.size.rows; row++) {
-		for (var col = 0; col < this.size.cols; col++) {
-			var cell = this.getCell(row, col);
+	for (row = 0; row < this.size.rows; row++) {
+		for (col = 0; col < this.size.cols; col++) {
+			cell = this.getCell(row, col);
 			cell.data("cellInfo", {spreadsheet : this, row : row, col : col});
 		}
 	}
 
 	// add click event to select data
 	this.element.find(" tr > td").click(function(event) {
-		var cell = jq$(this);
-		var data = cell.data("cellInfo");
+		const cell = jq$(this);
+		const data = cell.data("cellInfo");
 		data.spreadsheet.selectCell(data.row, data.col, event.shiftKey || event.metaKey);
 		event.preventDefault();
 	});
 
 	// double click event to enter edit mode
 	this.element.find(" tr > td").dblclick(function(event) {
-		var cell = jq$(this);
-		var data = cell.data("cellInfo");
+		const cell = jq$(this);
+		const data = cell.data("cellInfo");
 		data.spreadsheet.editCell(data.row, data.col);
 		event.preventDefault();
 	});
 
 	// add keyboard event to select/edit data
 	this.element.find(" tr > td > div > a").keydown(function(event) {
-		var cell = jq$(this).parents(" tr > td");
-		var data = cell.data("cellInfo");
-		var multi = event.shiftKey;
-		var command = event.ctrlKey || event.metaKey;
-		var alt = event.altKey;
+		const cell = jq$(this).parents(" tr > td");
+		const data = cell.data("cellInfo");
+		const multi = event.shiftKey;
+		const command = event.ctrlKey || event.metaKey;
+		const alt = event.altKey;
 
 		// toplevel handle undo/redo
 		if (_EC.isModifier(event)) {
-			if (event.keyCode == 89 || (event.keyCode == 90 && event.shiftKey)) { // Y
+			if (event.keyCode === 89 || (event.keyCode === 90 && event.shiftKey)) { // Y
 				event.stop();
 				data.spreadsheet.redo();
 				return;
 			}
-			if (event.keyCode == 90) { // Z
+			if (event.keyCode === 90) { // Z
 				event.stop();
 				data.spreadsheet.snapshot();
 				data.spreadsheet.undo();
@@ -487,15 +488,14 @@ Spreadsheet.prototype.createTable = function(model) {
 			}
 		}
 		// otherwise handle event normally
-		var handled = data.spreadsheet.handleKeyDown(cell, event.keyCode, multi, command, alt);
+		const handled = data.spreadsheet.handleKeyDown(cell, event.keyCode, multi, command, alt);
 		if (handled) {
 			event.preventDefault();
 		}
 	});
 
 	this.element.find(" tr > td > div > a").blur(function(event) {
-		var cell = jq$(this).parents(" tr > *");
-		var data = cell.data("cellInfo");
+		const cell = jq$(this).parents(" tr > *");
 		cell.removeClass("selected");
 	});
 };
@@ -504,64 +504,65 @@ Spreadsheet.prototype.createTable = function(model) {
  * Handles key down event end returns boolean if the key was handled or not
  */
 Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, command, alt) {
-	var row = this.selected.row;
-	var col = this.selected.col;
+	const row = this.selected.row;
+	const col = this.selected.col;
+	let toCol, roRow;
 	// Backspace + ENTF
-	if (keyCode == 8 || keyCode == 46) {
+	if (keyCode === 8 || keyCode === 46) {
 		this.clearSelectedCells();
 	}
 	// return, or F2 (Excel Windows), or Ctrl+u (Excel Mac) 
-	else if (keyCode == 13 || keyCode == 113 || (keyCode == 85 && command)) {
+	else if (keyCode === 13 || keyCode === 113 || (keyCode === 85 && command)) {
 		this.editCell(row, col);
 	}
 	// Ctrl+Space for edit mode and auto-completion (if available)
-	else if (keyCode == 32 && command) {
+	else if (keyCode === 32 && command) {
 		this.editCell(row, col);
 		this.showAutoComplete(this.createCellAreaID(row, col));
 	}
 	// left
-	else if (keyCode == 37 && !alt) {
-		var toCol = command ? 0 : col - 1;
+	else if (keyCode === 37 && !alt) {
+		toCol = command ? 0 : col - 1;
 		if (toCol >= 0) this.selectCell(row, toCol, multiSelect);
 	}
 	// up
-	else if (keyCode == 38 && !alt) {
-		var toRow = command ? 0 : row - 1;
+	else if (keyCode === 38 && !alt) {
+		toRow = command ? 0 : row - 1;
 		if (toRow >= 0) this.selectCell(toRow, col, multiSelect);
 	}
 	// right
-	else if (keyCode == 39 && !alt) {
-		var toCol = command ? this.size.cols - 1 : col + 1;
+	else if (keyCode === 39 && !alt) {
+		toCol = command ? this.size.cols - 1 : col + 1;
 		if (toCol <= this.size.cols - 1) this.selectCell(row, toCol, multiSelect);
 	}
 	// down
-	else if (keyCode == 40 && !alt) {
-		var toRow = command ? this.size.rows - 1 : row + 1;
+	else if (keyCode === 40 && !alt) {
+		toRow = command ? this.size.rows - 1 : row + 1;
 		if (toRow <= this.size.rows - 1) this.selectCell(toRow, col, multiSelect);
 	}
 	// shift cells (command for not selecting full row/col)
 	// left + alt 
-	else if (keyCode == 37 && alt) {
+	else if (keyCode === 37 && alt) {
 		if (!command) this.extendSelection(true, false);
 		this.shiftSelectedCells(0, -1)
 	}
 	// up + alt
-	else if (keyCode == 38 && alt) {
+	else if (keyCode === 38 && alt) {
 		if (!command) this.extendSelection(false, true);
 		this.shiftSelectedCells(-1, 0)
 	}
 	// right + alt
-	else if (keyCode == 39 && alt) {
+	else if (keyCode === 39 && alt) {
 		if (!command) this.extendSelection(true, false);
 		this.shiftSelectedCells(0, 1)
 	}
 	// down + alt
-	else if (keyCode == 40 && alt) {
+	else if (keyCode === 40 && alt) {
 		if (!command) this.extendSelection(false, true);
 		this.shiftSelectedCells(1, 0)
 	}
 	// tab
-	else if (keyCode == 9 && !multiSelect) {
+	else if (keyCode === 9 && !multiSelect) {
 		if (col < this.size.cols - 1) {
 			this.selectCell(row, col + 1);
 		}
@@ -575,7 +576,7 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 		}
 	}
 	// backward tab
-	else if (keyCode == 9 && multiSelect) {
+	else if (keyCode === 9 && multiSelect) {
 		if (col > 0) {
 			this.selectCell(row, col - 1);
 		}
@@ -584,31 +585,31 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 		}
 	}
 	// cut + copy
-	else if ((keyCode == 88 || keyCode == 67) && command) {
-		this.copySelectedCells(keyCode == 88);
+	else if ((keyCode === 88 || keyCode === 67) && command) {
+		this.copySelectedCells(keyCode === 88);
 	}
 	// paste
-	else if (keyCode == 86 && command) {
+	else if (keyCode === 86 && command) {
 		this.pasteCopiedCells();
 	}
 	// save: 's'
-	else if (keyCode == 83 && command && this.saveFunction) {
+	else if (keyCode === 83 && command && this.saveFunction) {
 		this.stopEditCell();
 		return false;
 //		this.saveFunction();
 	}
 	// cancel: 'q'
-	else if (keyCode == 81 && command && this.cancelFunction) {
+	else if (keyCode === 81 && command && this.cancelFunction) {
 		this.stopEditCell(true);
 //		this.cancelFunction();
 		return false;
 	}
 	// delete line: command+'d' or alt+'d'
-	else if (keyCode == 68 && ((command && !alt) || (!command && alt))) {
+	else if (keyCode === 68 && ((command && !alt) || (!command && alt))) {
 		this.removeSelectedRows();
 	}
 	// ESC
-	else if (keyCode == 27) {
+	else if (keyCode === 27) {
 		this.uncopyCopiedCells();
 	}
 	// normal typing
@@ -641,12 +642,12 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	this.stopEditCell();
 	this.uncopyCopiedCells();
 	this.selectCell(row, col);
-	var contentElement = this.getSelectedCell().find("div > a");
-	var pos = contentElement.parent().parent().position();
-	var textAreaID = this.createCellAreaID(row, col);
-	var cellText = this.getCellText(row, col);
+	const contentElement = this.getSelectedCell().find("div > a");
+	const pos = contentElement.parent().parent().position();
+	const textAreaID = this.createCellAreaID(row, col);
+	let cellText = this.getCellText(row, col);
 	if (cellText.match(/^[ \t\u00A0\u200B]*$/g)) cellText = "";
-	var html = "";
+	let html = "";
 	html += "<div class='cellEdit' style='";
 	html += "left:" + (pos.left - 3) + "px;top:" + (pos.top - 3) + "px;";
 	html += "'>";
@@ -657,39 +658,39 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	html += "</textarea>";
 	html += "</div>";
 	this.element.prepend(html);
-	var editDiv = this.element.children("div");
-	var editArea = editDiv.children("textarea");
+	const editDiv = this.element.children("div");
+	const editArea = editDiv.children("textarea");
 	editArea.focus();
 	editArea.select();
 	jq$(editArea).autosize();
 	// then adding our key and event handling
-	var spreadsheet = this;
-	var closing = false; // flag to avoid multiple closing (detach forces focusout-event)
-	var keyDownFunction = function(event) {
+	const spreadsheet = this;
+	let closing = false; // flag to avoid multiple closing (detach forces focusout-event)
+	const keyDownFunction = function (event) {
 		if (closing) return;
-		var keyCode = event.which;
-		var command = event.ctrlKey || event.metaKey;
-		// ignore return key if auto-complete is on 
-		if ((keyCode == 13 || keyCode == 27) && spreadsheet.isAutoCompleteFocused(textAreaID)) return;
-		if ((keyCode == 13 && !event.altKey && !event.shiftKey) || (keyCode == 9 && !event.altKey)) {
+		const keyCode = event.which;
+		const command = event.ctrlKey || event.metaKey;
+		// ignore return key if auto-complete is on
+		if ((keyCode === 13 || keyCode === 27) && spreadsheet.isAutoCompleteFocused(textAreaID)) return;
+		if ((keyCode === 13 && !event.altKey && !event.shiftKey) || (keyCode === 9 && !event.altKey)) {
 			spreadsheet.setCellText(row, col, editArea.val());
 			spreadsheet.snapshot();
 
 		}
 		// save: 's'
-		else if (keyCode == 83 && command && spreadsheet.saveFunction) {
+		else if (keyCode === 83 && command && spreadsheet.saveFunction) {
 			spreadsheet.stopEditCell();
 			spreadsheet.saveFunction();
 			return;
 		}
 		// cancel: 'q'
-		else if (keyCode == 81 && command && spreadsheet.cancelFunction) {
+		else if (keyCode === 81 && command && spreadsheet.cancelFunction) {
 			spreadsheet.stopEditCell(true);
 			spreadsheet.cancelFunction();
 			return;
 		}
 		// ESC
-		else if (keyCode == 27) {
+		else if (keyCode === 27) {
 		}
 		else {
 			return;
@@ -699,10 +700,10 @@ Spreadsheet.prototype.editCell = function(row, col) {
 		editDiv.detach();
 		spreadsheet.selectCell(row, col);
 		// on tab or return, select next cell as well
-		if (keyCode == 9) {
+		if (keyCode === 9) {
 			spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), keyCode, event.shiftKey, false, false);
 		}
-		if (keyCode == 13) {
+		if (keyCode === 13) {
 			spreadsheet.handleKeyDown(spreadsheet.getSelectedCell(), 40, false, false, false);
 		}
 	};
@@ -722,7 +723,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 };
 
 Spreadsheet.prototype.isAutoCompleteFocused = function(id) {
-	if (typeof AutoComplete != "undefined") {
+	if (typeof AutoComplete !== "undefined") {
 		return jq$('#' + id)[0].autocompletion.hasFocus();
 	} else {
 		return false;
@@ -730,14 +731,14 @@ Spreadsheet.prototype.isAutoCompleteFocused = function(id) {
 };
 
 Spreadsheet.prototype.showAutoComplete = function(id) {
-	if (typeof AutoComplete != "undefined") {
+	if (typeof AutoComplete !== "undefined") {
 		jq$('#' + id)[0].autocompletion.requestFocus();
 		jq$('#' + id)[0].autocompletion.requestCompletions();
 	}
 };
 
 Spreadsheet.prototype.uninstallAutoComplete = function(id) {
-	if (typeof AutoComplete != "undefined") {
+	if (typeof AutoComplete !== "undefined") {
 		jq$('#' + id)[0].autocompletion.showCompletions(null);
 	}
 };
@@ -745,17 +746,17 @@ Spreadsheet.prototype.uninstallAutoComplete = function(id) {
 Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
 	// enable auto-completion if available
 	// but we require some special functionality because only editing part of table
-	var spreadsheet = this;
-	var completeFun = this.customAutoCompleteFunction
-		? jq$.proxy(function(callback, prefix) {
-		this.customAutoCompleteFunction(callback, prefix, spreadsheet, row, col);
-	}, this)
-		: function(callback, prefix) {
-		callback(spreadsheet.getColumnCellCompletionSuggestions(prefix, col));
-	};
-	var textarea = jq$('#' + textAreaID)[0];
+	const spreadsheet = this;
+	const completeFun = this.customAutoCompleteFunction
+		? jq$.proxy(function (callback, prefix) {
+			this.customAutoCompleteFunction(callback, prefix, spreadsheet, row, col);
+		}, this)
+		: function (callback, prefix) {
+			callback(spreadsheet.getColumnCellCompletionSuggestions(prefix, col));
+		};
+	const textarea = jq$('#' + textAreaID)[0];
 	new TextArea(textarea, true);
-	if (typeof AutoComplete != "undefined") {
+	if (typeof AutoComplete !== "undefined") {
 		new AutoComplete(textarea, completeFun);
 	}
 };
@@ -764,18 +765,18 @@ Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
  * creates completion suggestions according to the other cells of the same column.
  */
 Spreadsheet.prototype.getColumnCellCompletionSuggestions = function(prefix, col) {
-	var trimPrefix = prefix.trim();
-	var json = [];
-	var textCache = {};
-	for (var r = 0; r < this.size.rows; r++) {
+	const trimPrefix = prefix.trim();
+	const json = [];
+	const textCache = {};
+	for (let r = 0; r < this.size.rows; r++) {
 		// use each text once
-		var text = this.getCellText(r, col).trim();
+		const text = this.getCellText(r, col).trim();
 		if (textCache[text]) continue;
 		textCache[text] = "done";
 		// check if it can be used for completion
-		if (text.length == 0) continue;
+		if (text.length === 0) continue;
 		if (text.length < trimPrefix.length) continue;
-		if (text.substring(0, trimPrefix.length) != trimPrefix) continue;
+		if (text.substring(0, trimPrefix.length) !== trimPrefix) continue;
 		json.push({
 			insertText : text,
 			replaceLength : prefix.length
@@ -809,7 +810,7 @@ Spreadsheet.prototype.setAutoCompleteFunction = function(fun) {
 
 Spreadsheet.prototype.setCellText = function(row, col, text) {
 	this.stopEditCell();
-	var elem = this.getCell(row, col).find("div > a");
+	const elem = this.getCell(row, col).find("div > a");
 	if (!text || text.match(/^\s+$/g)) {
 		elem.html("&nbsp;"); // avoid cell collapsing
 	}
@@ -823,7 +824,7 @@ Spreadsheet.prototype.getCellTextTrimmed = function(row, col) {
 };
 
 Spreadsheet.prototype.getCellText = function(row, col) {
-	var elem = this.getCell(row, col).find("div > a");
+	const elem = this.getCell(row, col).find("div > a");
 	return elem.text();
 };
 
@@ -834,10 +835,10 @@ Spreadsheet.prototype.extendSelection = function(extendRows, extendCols) {
 	if (!this.selected) return;
 
 	// get the selected area
-	var r1 = this.selected.row;
-	var c1 = this.selected.col;
-	var r2 = this.selectedRange ? this.selectedRange.toRow : r1;
-	var c2 = this.selectedRange ? this.selectedRange.toCol : c1;
+	let r1 = this.selected.row;
+	let c1 = this.selected.col;
+	let r2 = this.selectedRange ? this.selectedRange.toRow : r1;
+	let c2 = this.selectedRange ? this.selectedRange.toCol : c1;
 
 	// extend selection
 	if (extendRows) {
@@ -859,11 +860,11 @@ Spreadsheet.prototype.extendSelection = function(extendRows, extendCols) {
  */
 Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
 	this.stopEditCell();
-	var cell = this.getSelectedCell();
+	let cell = this.getSelectedCell();
 	if (cell) {
 		cell.removeClass("selected");
 	}
-	if (row == undefined && col == undefined) {
+	if (row === undefined && col === undefined) {
 		this.selected = null;
 		if (cell) cell.find("div > a").blur();
 		return;
@@ -875,8 +876,8 @@ Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
 	// if multi-select is requested, select from previous selected cell to requested cell
 	if (multiSelect) {
 		if (!this.selectedRange) {
-			var toRow = this.selected.row;
-			var toCol = this.selected.col;
+			const toRow = this.selected.row;
+			const toCol = this.selected.col;
 			this.selectedRange = {toRow : toRow, toCol : toCol};
 		}
 	}
@@ -895,25 +896,26 @@ Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
 
 Spreadsheet.prototype.forEachSelected = function(fun) {
 	if (!this.selected) return;
+	let row, col;
 	if (!this.selectedRange) {
-		var row = this.selected.row;
-		var col = this.selected.col;
+		row = this.selected.row;
+		col = this.selected.col;
 		fun(this.getCell(row, col), row, col);
 		return;
 	}
-	var r1 = this.selected.row;
-	var c1 = this.selected.col;
-	var r2 = this.selectedRange.toRow;
-	var c2 = this.selectedRange.toCol;
-	for (var row = Math.min(r1, r2); row <= Math.max(r1, r2); row++) {
-		for (var col = Math.min(c1, c2); col <= Math.max(c1, c2); col++) {
+	const r1 = this.selected.row;
+	const c1 = this.selected.col;
+	const r2 = this.selectedRange.toRow;
+	const c2 = this.selectedRange.toCol;
+	for (row = Math.min(r1, r2); row <= Math.max(r1, r2); row++) {
+		for (col = Math.min(c1, c2); col <= Math.max(c1, c2); col++) {
 			fun(this.getCell(row, col), row, col);
 		}
 	}
 };
 
 Spreadsheet.prototype.clearSelectedCells = function() {
-	var sheet = this;
+	const sheet = this;
 	this.forEachSelected(function(cell, row, col) {
 		sheet.setCellText(row, col, "");
 	});
@@ -934,14 +936,14 @@ Spreadsheet.prototype.shiftSelectedCells = function(dRow, dCol, wrapAround) {
 	this.uncopyCopiedCells();
 
 	// get the selected area
-	var r1 = this.selected.row;
-	var c1 = this.selected.col;
-	var r2 = this.selectedRange.toRow;
-	var c2 = this.selectedRange.toCol;
-	var areaRow = Math.min(r1, r2);
-	var areaCol = Math.min(c1, c2);
-	var areaHeight = Math.abs(r1 - r2) + 1;
-	var areaWidth = Math.abs(c1 - c2) + 1;
+	const r1 = this.selected.row;
+	const c1 = this.selected.col;
+	const r2 = this.selectedRange.toRow;
+	const c2 = this.selectedRange.toCol;
+	let areaRow = Math.min(r1, r2);
+	let areaCol = Math.min(c1, c2);
+	let areaHeight = Math.abs(r1 - r2) + 1;
+	let areaWidth = Math.abs(c1 - c2) + 1;
 
 	// check wrap around
 	if (!wrapAround) {
@@ -959,7 +961,7 @@ Spreadsheet.prototype.shiftSelectedCells = function(dRow, dCol, wrapAround) {
 		}
 	}
 	// check if there is something to do at all
-	if (dRow == 0 && dCol == 0) return;
+	if (dRow === 0 && dCol === 0) return;
 
 	// extend the area by dRow and dCol
 	areaHeight += Math.abs(dRow);
@@ -970,23 +972,23 @@ Spreadsheet.prototype.shiftSelectedCells = function(dRow, dCol, wrapAround) {
 
 	// be careful if ranges overlapping
 	// therefore first copy to array
-	var data = [];
-	var index = 0;
-	for (var row = areaRow; row < areaRow + areaHeight; row++) {
-		for (var col = areaCol; col < areaCol + areaWidth; col++) {
-			var text = this.getCellText(row % this.size.rows, col % this.size.cols);
-			data[index++] = text;
+	const data = [];
+	let index = 0;
+	let row, col;
+	for (row = areaRow; row < areaRow + areaHeight; row++) {
+		for (col = areaCol; col < areaCol + areaWidth; col++) {
+			data[index++] = this.getCellText(row % this.size.rows, col % this.size.cols);
 		}
 	}
 	// and then insert copied texts ba shifting the coordinares
 	// flowing around the area borders
 	index = 0;
-	for (var row = areaRow; row < areaRow + areaHeight; row++) {
-		for (var col = areaCol; col < areaCol + areaWidth; col++) {
-			var text = data[index++];
+	for (row = areaRow; row < areaRow + areaHeight; row++) {
+		for (col = areaCol; col < areaCol + areaWidth; col++) {
+			const text = data[index++];
 			// let them flow inside the area
-			var toRow = (row - areaRow + dRow + areaHeight) % areaHeight + areaRow;
-			var toCol = (col - areaCol + dCol + areaWidth) % areaWidth + areaCol;
+			const toRow = (row - areaRow + dRow + areaHeight) % areaHeight + areaRow;
+			const toCol = (col - areaCol + dCol + areaWidth) % areaWidth + areaCol;
 			// and set to new position
 			this.setCellText(toRow % this.size.rows, toCol % this.size.cols, text);
 		}
@@ -1005,46 +1007,44 @@ Spreadsheet.prototype.pasteCopiedCells = function() {
 	if (!this.copied) return;
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
-	var r1 = this.selected.row;
-	var c1 = this.selected.col;
-	var r2 = this.selectedRange.toRow;
-	var c2 = this.selectedRange.toCol;
-	var destRow = Math.min(r1, r2);
-	var destCol = Math.min(c1, c2);
-	var destHeight = Math.abs(r1 - r2) + 1;
-	var destWidth = Math.abs(c1 - c2) + 1;
-	var srcRow = this.copied.row;
-	var srcCol = this.copied.col;
-	var srcHeight = this.copied.toRow - srcRow + 1;
-	var srcWidth = this.copied.toCol - srcCol + 1;
-	if (destHeight == 1 && destWidth == 1) {
+	const r1 = this.selected.row;
+	const c1 = this.selected.col;
+	const r2 = this.selectedRange.toRow;
+	const c2 = this.selectedRange.toCol;
+	const destRow = Math.min(r1, r2);
+	const destCol = Math.min(c1, c2);
+	let destHeight = Math.abs(r1 - r2) + 1;
+	let destWidth = Math.abs(c1 - c2) + 1;
+	const srcRow = this.copied.row;
+	const srcCol = this.copied.col;
+	const srcHeight = this.copied.toRow - srcRow + 1;
+	const srcWidth = this.copied.toCol - srcCol + 1;
+	if (destHeight === 1 && destWidth === 1) {
 		destHeight = srcHeight;
 		destWidth = srcWidth;
 		this.selectCell(Math.min(destRow + destHeight - 1, this.size.rows), Math.min(destCol + destWidth - 1, this.size.cols));
 		this.selectCell(destRow, destCol, true);
 	}
-	else if (destHeight != srcHeight || destWidth != srcWidth) {
+	else if (destHeight !== srcHeight || destWidth !== srcWidth) {
 		// beep();
 		return;
 	}
 
 	// be careful if ranges overlapping
-	var data = [];
-	var index = 0;
-	for (var row = srcRow; row < srcRow + srcHeight; row++) {
-		for (var col = srcCol; col < srcCol + srcWidth; col++) {
-			var text = this.getCellText(row, col);
-			data[index++] = text;
+	const data = [];
+	let index = 0;
+	for (row = srcRow; row < srcRow + srcHeight; row++) {
+		for (col = srcCol; col < srcCol + srcWidth; col++) {
+			data[index++] = this.getCellText(row, col);
 			if (this.copied.doCut) this.setCellText(row, col, "");
 		}
 	}
 	index = 0;
-	for (var row = destRow; row < destRow + destHeight; row++) {
-		for (var col = destCol; col < destCol + destWidth; col++) {
-			var text = data[index++];
+	for (row = destRow; row < destRow + destHeight; row++) {
+		for (col = destCol; col < destCol + destWidth; col++) {
 			if (row >= this.size.rows) continue;
 			if (col >= this.size.cols) continue;
-			this.setCellText(row, col, text);
+			this.setCellText(row, col, data[index++]);
 		}
 	}
 
@@ -1058,10 +1058,10 @@ Spreadsheet.prototype.copySelectedCells = function(doCut) {
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
 	this.uncopyCopiedCells();
-	var r1 = this.selected.row;
-	var c1 = this.selected.col;
-	var r2 = this.selectedRange.toRow;
-	var c2 = this.selectedRange.toCol;
+	const r1 = this.selected.row;
+	const c1 = this.selected.col;
+	const r2 = this.selectedRange.toRow;
+	const c2 = this.selectedRange.toCol;
 	this.copied = {
 		row : Math.min(r1, r2), col : Math.min(c1, c2),
 		toRow : Math.max(r1, r2), toCol : Math.max(c1, c2),
@@ -1081,8 +1081,8 @@ Spreadsheet.prototype.uncopyCopiedCells = function() {
 
 Spreadsheet.prototype.forEachCopied = function(fun) {
 	if (!this.copied) return;
-	for (var row = this.copied.row; row <= this.copied.toRow; row++) {
-		for (var col = this.copied.col; col <= this.copied.toCol; col++) {
+	for (let row = this.copied.row; row <= this.copied.toRow; row++) {
+		for (let col = this.copied.col; col <= this.copied.toCol; col++) {
 			fun(this.getCell(row, col), row, col);
 		}
 	}
@@ -1103,19 +1103,19 @@ Spreadsheet.prototype.getCellID = function(row, col) {
 
 Spreadsheet.prototype.addRow = function(row) {
 	this.stopEditCell();
-	var sr = this.selected ? this.selected.row : 0;
-	var sc = this.selected ? this.selected.col : 0;
+	let sr = this.selected ? this.selected.row : 0;
+	const sc = this.selected ? this.selected.col : 0;
 	if (sr >= row) sr++;
 	// copy model, adding empty row before "row"
-	var srcModel = this.getModel();
-	var destModel = new SpreadsheetModel();
-	var destRow = 0;
-	for (var srcRow = 0; srcRow < srcModel.height; srcRow++) {
-		if (srcRow == row) destRow++; // add line
-		var destCol = 0;
-		for (var srcCol = 0; srcCol < srcModel.width; srcCol++) {
-			var isHeader = srcModel.isHeader(srcRow, srcCol);
-			var text = srcModel.getCellText(srcRow, srcCol);
+	const srcModel = this.getModel();
+	const destModel = new SpreadsheetModel();
+	let destRow = 0;
+	for (let srcRow = 0; srcRow < srcModel.height; srcRow++) {
+		if (srcRow === row) destRow++; // add line
+		let destCol = 0;
+		for (let srcCol = 0; srcCol < srcModel.width; srcCol++) {
+			let isHeader = srcModel.isHeader(srcRow, srcCol);
+			const text = srcModel.getCellText(srcRow, srcCol);
 			destModel.setCell(destRow, destCol, text, isHeader);
 			destCol++;
 		}
@@ -1124,8 +1124,8 @@ Spreadsheet.prototype.addRow = function(row) {
 	// if we add last row, make sure that size increases
 	destModel.ensureSize(srcModel.height + 1, srcModel.width);
 	// copy format from selected row
-	for (var col = 0; col < destModel.width; col++) {
-		var isHeader = destModel.isHeader(sr, col);
+	for (let col = 0; col < destModel.width; col++) {
+		let isHeader = destModel.isHeader(sr, col);
 		destModel.setCell(row, col, "", isHeader);
 	}
 	// set new Model and restore selection
@@ -1139,41 +1139,41 @@ Spreadsheet.prototype.addRow = function(row) {
 Spreadsheet.prototype.removeSelectedRows = function() {
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
-	var r1 = this.selected.row;
-	var r2 = this.selectedRange.toRow;
-	var upperRow = Math.min(r1, r2);
-	var lowerRow = Math.max(r1, r2);
+	const r1 = this.selected.row;
+	const r2 = this.selectedRange.toRow;
+	const upperRow = Math.min(r1, r2);
+	const lowerRow = Math.max(r1, r2);
 	this.removeRow(upperRow, lowerRow);
 };
 
 Spreadsheet.prototype.removeSelectedCols = function() {
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
-	var c1 = this.selected.col;
-	var c2 = this.selectedRange.toCol;
-	var leftCol = Math.min(c1, c2);
-	var rightCol = Math.max(c1, c2);
+	const c1 = this.selected.col;
+	const c2 = this.selectedRange.toCol;
+	const leftCol = Math.min(c1, c2);
+	const rightCol = Math.max(c1, c2);
 	this.removeCol(leftCol, rightCol);
 };
 
 Spreadsheet.prototype.removeRow = function(upperRow, lowerRow) {
 	this.stopEditCell();
 	if (this.size.rows <= 1) return;
-	var sr = this.selected ? Math.min(this.selected.row, this.size.rows - 2) : 0;
-	var sc = this.selected ? this.selected.col : 0;
+	let sr = this.selected ? Math.min(this.selected.row, this.size.rows - 2) : 0;
+	const sc = this.selected ? this.selected.col : 0;
 	if (sr > upperRow) sr--;
 	// copy model, removing "row"
-	var srcModel = this.getModel();
-	var destModel = new SpreadsheetModel();
-	var destRow = 0;
-	for (var srcRow = 0; srcRow < srcModel.height; srcRow++) {
+	const srcModel = this.getModel();
+	const destModel = new SpreadsheetModel();
+	let destRow = 0;
+	for (let srcRow = 0; srcRow < srcModel.height; srcRow++) {
 		// ignore lines to delete
 		if (upperRow <= lowerRow && srcRow >= upperRow && srcRow <= lowerRow) continue;
-		if (!lowerRow && srcRow == upperRow) continue; // no range is  given, just single row
-		var destCol = 0;
-		for (var srcCol = 0; srcCol < srcModel.width; srcCol++) {
-			var isHeader = srcModel.isHeader(srcRow, srcCol);
-			var text = srcModel.getCellText(srcRow, srcCol);
+		if (!lowerRow && srcRow === upperRow) continue; // no range is  given, just single row
+		let destCol = 0;
+		for (let srcCol = 0; srcCol < srcModel.width; srcCol++) {
+			const isHeader = srcModel.isHeader(srcRow, srcCol);
+			const text = srcModel.getCellText(srcRow, srcCol);
 			destModel.setCell(destRow, destCol, text, isHeader);
 			destCol++;
 		}
@@ -1189,19 +1189,19 @@ Spreadsheet.prototype.removeRow = function(upperRow, lowerRow) {
 
 Spreadsheet.prototype.addCol = function(col) {
 	this.stopEditCell();
-	var sr = this.selected ? this.selected.row : 0;
-	var sc = this.selected ? this.selected.col : 0;
+	const sr = this.selected ? this.selected.row : 0;
+	let sc = this.selected ? this.selected.col : 0;
 	if (sc >= col) sc++;
 	// copy model, adding empty row before "row"
-	var srcModel = this.getModel();
-	var destModel = new SpreadsheetModel();
-	var destRow = 0;
-	for (var srcRow = 0; srcRow < srcModel.height; srcRow++) {
-		var destCol = 0;
-		for (var srcCol = 0; srcCol < srcModel.width; srcCol++) {
-			if (srcCol == col) destCol++; // add column
-			var isHeader = srcModel.isHeader(srcRow, srcCol);
-			var text = srcModel.getCellText(srcRow, srcCol);
+	const srcModel = this.getModel();
+	const destModel = new SpreadsheetModel();
+	let destRow = 0;
+	for (let srcRow = 0; srcRow < srcModel.height; srcRow++) {
+		let destCol = 0;
+		for (let srcCol = 0; srcCol < srcModel.width; srcCol++) {
+			if (srcCol === col) destCol++; // add column
+			let isHeader = srcModel.isHeader(srcRow, srcCol);
+			const text = srcModel.getCellText(srcRow, srcCol);
 			destModel.setCell(destRow, destCol, text, isHeader);
 			destCol++;
 		}
@@ -1210,8 +1210,8 @@ Spreadsheet.prototype.addCol = function(col) {
 	// if we add last column, make sure that size increases
 	destModel.ensureSize(srcModel.height, srcModel.width + 1);
 	// copy format from selected col
-	for (var row = 0; row < destModel.height; row++) {
-		var isHeader = destModel.isHeader(row, sc);
+	for (let row = 0; row < destModel.height; row++) {
+		let isHeader = destModel.isHeader(row, sc);
 		destModel.setCell(row, col, "", isHeader);
 	}
 	// set new Model and restore selection
@@ -1225,21 +1225,21 @@ Spreadsheet.prototype.addCol = function(col) {
 Spreadsheet.prototype.removeCol = function(leftCol, rightCol) {
 	this.stopEditCell();
 	if (this.size.cols <= 1) return;
-	var sr = this.selected ? this.selected.row : 0;
-	var sc = this.selected ? Math.min(this.selected.col, this.size.cols - 2) : 0;
+	const sr = this.selected ? this.selected.row : 0;
+	let sc = this.selected ? Math.min(this.selected.col, this.size.cols - 2) : 0;
 	if (sc > leftCol) sc--;
 	// copy model, removing "row"
-	var srcModel = this.getModel();
-	var destModel = new SpreadsheetModel();
-	var destRow = 0;
-	for (var srcRow = 0; srcRow < srcModel.height; srcRow++) {
-		var destCol = 0;
-		for (var srcCol = 0; srcCol < srcModel.width; srcCol++) {
+	const srcModel = this.getModel();
+	const destModel = new SpreadsheetModel();
+	let destRow = 0;
+	for (let srcRow = 0; srcRow < srcModel.height; srcRow++) {
+		let destCol = 0;
+		for (let srcCol = 0; srcCol < srcModel.width; srcCol++) {
 			// ignore cols to delete
 			if (leftCol <= rightCol && srcCol >= leftCol && srcCol <= rightCol) continue;
-			if (!rightCol && srcCol == leftCol) continue; // no range is  given, just single col
-			var isHeader = srcModel.isHeader(srcRow, srcCol);
-			var text = srcModel.getCellText(srcRow, srcCol);
+			if (!rightCol && srcCol === leftCol) continue; // no range is  given, just single col
+			const isHeader = srcModel.isHeader(srcRow, srcCol);
+			const text = srcModel.getCellText(srcRow, srcCol);
 			destModel.setCell(destRow, destCol, text, isHeader);
 			destCol++;
 		}
@@ -1255,11 +1255,11 @@ Spreadsheet.prototype.removeCol = function(leftCol, rightCol) {
 
 Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
 	this.stopEditCell();
-	var sr = this.selected ? this.selected.row : 0;
-	var sc = this.selected ? this.selected.col : 0;
-	var tr = this.selectedRange ? this.selectedRange.toRow : sr;
-	var tc = this.selectedRange ? this.selectedRange.toCol : sc;
-	var cell = this.getCell(row, col);
+	const sr = this.selected ? this.selected.row : 0;
+	const sc = this.selected ? this.selected.col : 0;
+	const tr = this.selectedRange ? this.selectedRange.toRow : sr;
+	const tc = this.selectedRange ? this.selectedRange.toCol : sc;
+	const cell = this.getCell(row, col);
 	if (isHeader) {
 		cell.addClass("header");
 	}
@@ -1271,8 +1271,8 @@ Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
 };
 
 Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
-	var model = this.getModel();
-	var undo = this.undoHistory, redo = this.redoHistory;
+	const model = this.getModel();
+	const undo = this.undoHistory, redo = this.redoHistory;
 	if (undo.length > 0 && Spreadsheet.areEqual(undo[undo.length - 1].model, model)) {
 		return;
 	}
@@ -1282,15 +1282,15 @@ Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
 	// if we have a redo history, we take the recent element back to the undo history,
 	// because it was the text fields original state before editing again
 	if (redo.length > 0) {
-		var shot = redo.pop();
+		const shot = redo.pop();
 		undo.push(shot);
 		this.redoHistory = [];
 	}
 
-	var snap = {
-		model : jq$.extend(true, {}, model),
-		selected : null,
-		selectedRange : null
+	const snap = {
+		model: jq$.extend(true, {}, model),
+		selected: null,
+		selectedRange: null
 	};
 	if (this.selected) snap.selected = jq$.extend(true, {}, this.selected);
 	if (this.selectedRange) snap.selectedRange = jq$.extend(true, {}, this.selectedRange);
@@ -1298,10 +1298,10 @@ Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
 };
 
 Spreadsheet.prototype.undo = function() {
-	var model = this.getModel();
+	const model = this.getModel();
 	while (true) {
-		if (this.undoHistory.length == 0) return;
-		var shot = this.undoHistory.pop();
+		if (this.undoHistory.length === 0) return;
+		let shot = this.undoHistory.pop();
 		this.redoHistory.push(shot);
 		if (!Spreadsheet.areEqual(shot.model, model)) break;
 	}
@@ -1309,10 +1309,10 @@ Spreadsheet.prototype.undo = function() {
 };
 
 Spreadsheet.prototype.redo = function() {
-	var model = this.getModel();
+	const model = this.getModel();
 	while (true) {
-		if (this.redoHistory.length == 0) return;
-		var shot = this.redoHistory.pop();
+		if (this.redoHistory.length === 0) return;
+		let shot = this.redoHistory.pop();
 		this.undoHistory.push(shot);
 		if (!Spreadsheet.areEqual(shot.model, model)) break;
 	}
@@ -1322,8 +1322,8 @@ Spreadsheet.prototype.redo = function() {
 Spreadsheet.prototype.restoreSnapshot = function(snapshot) {
 	this.uncopyCopiedCells();
 	this.setModel(snapshot.model);
-	var sel = snapshot.selected;
-	var range = snapshot.selectedRange;
+	const sel = snapshot.selected;
+	const range = snapshot.selectedRange;
 	if (sel) {
 		if (range) this.selectCell(range.toRow, range.toCol, false);
 		this.selectCell(sel.row, sel.col, range);
@@ -1331,12 +1331,13 @@ Spreadsheet.prototype.restoreSnapshot = function(snapshot) {
 };
 
 Spreadsheet.areEqual = function(x, y) {
-	for (var p in y) {
+	for (let p in y) {
+		if (!y.hasOwnProperty(p)) continue;
 		if (typeof(y[p]) !== typeof(x[p])) return false;
 		if ((y[p] === null) !== (x[p] === null)) return false;
 		switch (typeof(y[p])) {
 			case 'undefined':
-				if (typeof(x[p]) != 'undefined') return false;
+				if (typeof(x[p]) !== 'undefined') return false;
 				break;
 			case 'object':
 				if (y[p] !== null && x[p] !== null &&
@@ -1344,7 +1345,7 @@ Spreadsheet.areEqual = function(x, y) {
 					|| !Spreadsheet.areEqual(y[p], x[p]))) return false;
 				break;
 			case 'function':
-				if (p != 'equals' && y[p].toString() != x[p].toString()) return false;
+				if (p !== 'equals' && y[p].toString() !== x[p].toString()) return false;
 				break;
 			default:
 				if (y[p] !== x[p]) return false;
