@@ -103,7 +103,6 @@ KNOWWE.plugin.turtle.editTool.generateButtons = function (id) {
 
 KNOWWE.plugin.hierarchy = {};
 KNOWWE.plugin.hierarchy.declare = function (table) {
-	console.log(table);
 	jq$(table.rows).filter(function () {
 		return table.rows[0] !== this;
 	}).each(function () {
