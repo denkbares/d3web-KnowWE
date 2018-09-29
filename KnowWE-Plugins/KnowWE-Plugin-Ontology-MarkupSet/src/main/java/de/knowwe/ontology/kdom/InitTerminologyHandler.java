@@ -248,6 +248,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		compiler.getRdf2GoCore().addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 		compiler.getRdf2GoCore().addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
 		compiler.getRdf2GoCore().addNamespace("owl", "http://www.w3.org/2002/07/owl#");
+		compiler.getRdf2GoCore().addNamespace("skos", "http://www.w3.org/2004/02/skos/core#");
 		for (String resourceTerm : RESOURCE_TERMS) {
 			registerTerm(compiler, compiler.getRdf2GoCore(), section, resourceTerm, Resource.class);
 		}
