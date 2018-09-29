@@ -700,6 +700,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the list of all successor sections of the specified class
 	 * @created 09.12.2013
 	 */
+	@NotNull
 	public static <T extends Type> List<Section<T>> successors(Article article, Class<T> clazz) {
 		return successors(article.getRootSection(), clazz);
 	}
@@ -716,6 +717,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the list of all successor sections of the specified class
 	 * @created 09.12.2013
 	 */
+	@NotNull
 	public static <T extends Type> List<Section<T>> successors(Section<?> section, Class<T> clazz) {
 		List<Section<T>> result = new ArrayList<>();
 		successors(section, clazz, result);
@@ -733,6 +735,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the list of all successor sections of the specified class
 	 * @created 09.12.2013
 	 */
+	@NotNull
 	public static <T extends Type> List<Section<T>> successors(Collection<Section<?>> sections, Class<T> clazz) {
 		List<Section<T>> result = new ArrayList<>();
 		for (Section<?> section : sections) {
@@ -765,6 +768,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param clazz          Types to be searched
 	 * @created 08.01.2014
 	 */
+	@NotNull
 	public static <T extends Type> Collection<Section<T>> successors(ArticleManager articleManager, Class<T> clazz) {
 		return articleManager.getArticles().parallelStream()
 				.flatMap(article -> successors(article, clazz).stream())
@@ -829,6 +833,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the successor sections of the specified type instance
 	 * @created 09.12.2013
 	 */
+	@NotNull
 	public static <T extends Type> List<Section<T>> successors(Article article, T typeInstance) {
 		return successors(article.getRootSection(), typeInstance);
 	}
@@ -846,6 +851,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the successor sections of the specified type instance
 	 * @created 09.12.2013
 	 */
+	@NotNull
 	public static <T extends Type> List<Section<T>> successors(Section<?> section, T typeInstance) {
 		List<Section<T>> result = new LinkedList<>();
 		successors(section, typeInstance, result);
@@ -1005,10 +1011,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param context the user context to use for modifying the articles
 	 * @param text    the new text for the specified section
 	 * @return a result object containing some information about the replacement success or the errors occurred
-	 * @throws IOException if an io error occurred during replacing the sections
 	 */
 
-	public static ReplaceResult replace(UserContext context, String sectionID, String text) throws IOException {
+	public static ReplaceResult replace(UserContext context, String sectionID, String text) {
 		Map<String, String> map = new HashMap<>();
 		map.put(sectionID, text);
 		return replace(context, map);
@@ -1025,9 +1030,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param context     the user context to use for modifying the articles
 	 * @param sectionsMap containing pairs of the section id and the new text for this section
 	 * @return a result object containing some information about the replacement success or the errors occurred
-	 * @throws IOException if an io error occurred during replacing the sections
 	 */
-	public static ReplaceResult replace(UserContext context, Map<String, String> sectionsMap) throws IOException {
+	public static ReplaceResult replace(UserContext context, Map<String, String> sectionsMap) {
 
 		List<SectionInfo> sectionInfos = getSectionInfos(sectionsMap);
 		Map<String, Collection<String>> idsByTitle = getIdsByTitle(sectionsMap.keySet());
