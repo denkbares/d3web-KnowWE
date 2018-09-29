@@ -61,8 +61,12 @@ public class OntologyUtils {
 	public static final String ABBREVIATED_RESOURCE_PATTERN = "(?:" +
 			AbbreviationPrefixReference.ABBREVIATION_PREFIX_PATTERN + ")?" + RESOURCE_PATTERN;
 
-	public static final SectionFinder ABBREVIATED_RESOURCE_FINDER = new ConstraintSectionFinder(
+	public static final SectionFinder OPTIONAL_ABBREVIATED_NS_RESOURCE_FINDER = new ConstraintSectionFinder(
 			new RegexSectionFinder(ABBREVIATED_RESOURCE_PATTERN),
+			AtMostOneFindingConstraint.getInstance());
+
+	public static final SectionFinder ABBREVIATED_NS_RESOURCE_FINDER = new ConstraintSectionFinder(
+			new RegexSectionFinder(AbbreviationPrefixReference.ABBREVIATION_PREFIX_PATTERN + RESOURCE_PATTERN),
 			AtMostOneFindingConstraint.getInstance());
 
 	public static OntologyCompiler getOntologyCompiler(Section<?> section) {

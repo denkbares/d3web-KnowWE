@@ -48,7 +48,7 @@ public class RelationDefinition extends AbstractType {
 	private static class SubjectType extends AbstractType {
 
 		public SubjectType() {
-			this.setSectionFinder(OntologyUtils.ABBREVIATED_RESOURCE_FINDER);
+			this.setSectionFinder(OntologyUtils.OPTIONAL_ABBREVIATED_NS_RESOURCE_FINDER);
 			this.addChildType(new AbbreviatedResourceReference());
 		}
 	}
@@ -56,7 +56,7 @@ public class RelationDefinition extends AbstractType {
 	private static class PredicateType extends AbstractType {
 
 		public PredicateType() {
-			this.setSectionFinder(OntologyUtils.ABBREVIATED_RESOURCE_FINDER);
+			this.setSectionFinder(OntologyUtils.OPTIONAL_ABBREVIATED_NS_RESOURCE_FINDER);
 			this.addChildType(new AbbreviatedPropertyReference());
 		}
 	}
@@ -64,7 +64,7 @@ public class RelationDefinition extends AbstractType {
 	private static class ObjectType extends AbstractType {
 
 		public ObjectType() {
-			this.setSectionFinder(OntologyUtils.ABBREVIATED_RESOURCE_FINDER);
+			this.setSectionFinder(OntologyUtils.OPTIONAL_ABBREVIATED_NS_RESOURCE_FINDER);
 			this.addChildType(new AbbreviatedResourceReference());
 		}
 	}

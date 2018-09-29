@@ -48,10 +48,10 @@ public class PropertyAnnotationType extends AbstractType {
 
 	public PropertyAnnotationType() {
 		AbbreviatedPropertyDefinition propertyDefinition = new AbbreviatedPropertyDefinition();
-		propertyDefinition.setSectionFinder(OntologyUtils.ABBREVIATED_RESOURCE_FINDER);
+		propertyDefinition.setSectionFinder(OntologyUtils.OPTIONAL_ABBREVIATED_NS_RESOURCE_FINDER);
 		this.addChildType(propertyDefinition);
 		AbbreviatedResourceReference classReference = new AbbreviatedResourceReference();
-		classReference.setSectionFinder(OntologyUtils.ABBREVIATED_RESOURCE_FINDER);
+		classReference.setSectionFinder(OntologyUtils.OPTIONAL_ABBREVIATED_NS_RESOURCE_FINDER);
 		this.addChildType(classReference);
 		this.addCompileScript(Priority.HIGH, new PropertyAnnotationHandler());
 		this.setSectionFinder(new AllTextFinderTrimmed());
@@ -73,7 +73,7 @@ public class PropertyAnnotationType extends AbstractType {
 			Section<AbbreviatedPropertyDefinition> propertySection = Sections.child(
 					section, AbbreviatedPropertyDefinition.class);
 
-			if (propertySection.hasErrorInSubtree()) return Messages.noMessage();
+			if (propertySection == null || propertySection.hasErrorInSubtree()) return Messages.noMessage();
 
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 

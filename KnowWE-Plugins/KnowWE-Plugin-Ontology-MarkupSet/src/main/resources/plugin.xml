@@ -515,6 +515,15 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OntologyExcelTableMarkup">
+		<parameter id="class" value="de.knowwe.ontology.kdom.table.OntologyExcelTableMarkup" />
+		<parameter id="name" value="OntologyTableMarkup" />
+		<parameter id="description" value="Defines markup for ontology excel tables." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="HierarchyTableMarkup">
 		<parameter id="class" value="de.knowwe.ontology.kdom.table.HierarchyTableMarkup" />
 		<parameter id="name" value="HierarchyTableMarkup" />

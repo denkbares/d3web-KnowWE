@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -34,16 +34,16 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class LiteralType extends AbstractType {
 
 	public static final String XSD_PATTERN = "(?:\\^\\^xsd:(\\w+))";
-	public static final String LANGUAGE_TAG = "(?:@\\w+(?:[-_]\\w+)?)";
+	public static final String LANGUAGE_TAG = "(?:@(\\w+(?:[-_]\\w+)?))";
 	public static final String LITERAL_SUFFIX = "(?:" + LANGUAGE_TAG + "|" + XSD_PATTERN + ")";
 
 	/**
 	 * Either single quoted word and optionally xsd type or normal quote and
 	 * mandatory xsd type.
 	 */
-	private static final String LITERAL_PATTERN =
-			Patterns.SINGLE_QUOTED + LITERAL_SUFFIX + "?"
-					+ "|" + Patterns.QUOTED + LITERAL_SUFFIX;
+	public static final String LITERAL_PATTERN =
+			"(" + Patterns.SINGLE_QUOTED + ")" + LITERAL_SUFFIX + "?"
+					+ "|(" + Patterns.QUOTED + ")" + LITERAL_SUFFIX;
 
 	public LiteralType() {
 		this.setSectionFinder(new RegexSectionFinder(
@@ -58,10 +58,9 @@ public class LiteralType extends AbstractType {
 		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
-		Section<LanguageTagPart> langTagPartSection = Sections.child(section,
-				LanguageTagPart.class);
-		String literal = literalPartSection.get()
-				.getLiteral(literalPartSection);
+		Section<LanguageTagPart> langTagPartSection = Sections.child(section, LanguageTagPart.class);
+		if (literalPartSection == null) return null;
+		String literal = literalPartSection.get().getLiteral(literalPartSection);
 		if (langTagPartSection != null) {
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));
@@ -95,7 +94,7 @@ public class LiteralType extends AbstractType {
 		return XMLSchema.STRING;
 	}
 
-	private static class LiteralPart extends AbstractType {
+	public static class LiteralPart extends AbstractType {
 
 		public LiteralPart() {
 			this.setSectionFinder(new RegexSectionFinder(Patterns.SINGLE_QUOTED + "|"

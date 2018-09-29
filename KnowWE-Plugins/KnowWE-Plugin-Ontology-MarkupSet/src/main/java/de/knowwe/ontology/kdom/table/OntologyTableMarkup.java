@@ -51,7 +51,7 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
  */
 public class OntologyTableMarkup extends DefaultMarkupType {
 
-	private static DefaultMarkup MARKUP = null;
+	private static DefaultMarkup MARKUP;
 
 	public static final String ANNOTATION_TYPE_RELATION = "typeRelation";
 
