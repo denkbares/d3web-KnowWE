@@ -23,7 +23,7 @@ table.spreadsheet {
 	border-collapse: collapse;
 }
 
-table.spreadsheet tr td.header {
+table.spreadsheet tr td.table-header {
 	border: 1px solid #CCC;
 	background: #EEE;
 	text-align: center;
@@ -44,7 +44,7 @@ table.spreadsheet tr td.selected {
 	background-color: transparent;
 }
 
-table.spreadsheet tr td.selected.header {
+table.spreadsheet tr td.selected.table-header {
 	background-color: transparent;
 	background: #EEE;
 }

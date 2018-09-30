@@ -17,14 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-/**
- * The KNOWWE global namespace object. If KNOWWE is already defined, the
- * existing KNOWWE object will not be overwritten so that defined namespaces are
- * preserved.
- */
-if (typeof KNOWWE == "undefined" || !KNOWWE) {
-	var KNOWWE = {};
-}
+KNOWWE = KNOWWE || {};
 
 /**
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
@@ -36,6 +29,17 @@ KNOWWE.editCommons = function () {
 		mode: null,
 
 		wikiText: {},
+
+		appendToolBar : function(sectionId, content) {
+			const toolbar = new Element('div', {
+				'class' : 'edittoolbar'
+			});
+			toolbar.innerHTML = content;
+			const test = jq$(sectionId);
+			const editor = jq$('#' + sectionId);
+			editor.css('position', 'relative');
+			editor.append(toolbar);
+		},
 
 		wrapHTML: function (id, locked, html) {
 			var lockedHTML = "";

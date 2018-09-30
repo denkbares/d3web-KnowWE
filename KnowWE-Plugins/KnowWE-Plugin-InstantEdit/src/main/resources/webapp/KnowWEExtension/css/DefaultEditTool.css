@@ -25,6 +25,6 @@
 	-moz-transition: height 0.2s;
 }
 
-.editarea .wikitable .header > * {
+.editarea .wikitable .table-header > * {
 	padding: 0
 }

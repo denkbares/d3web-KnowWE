@@ -119,7 +119,7 @@ KNOWWE.plugin.tableEditTool = function() {
 
 			root.find("#toggle_header").click(function(event) {
 				if (!spreadsheet[id].selected) return;
-				let header = spreadsheet[id].getCell(spreadsheet[id].selected.row, spreadsheet[id].selected.col).hasClass("header");
+				let header = spreadsheet[id].getCell(spreadsheet[id].selected.row, spreadsheet[id].selected.col).hasClass("table-header");
 				spreadsheet[id].forEachSelected(function(cell, row, col) {
 					spreadsheet[id].setHeader(row, col, !header);
 				});
@@ -405,7 +405,7 @@ Spreadsheet.prototype.getModel = function() {
 	const model = new SpreadsheetModel();
 	this.element.find("tr").each(function(rowIndex) {
 		jq$(this).find("td").each(function(colIndex) {
-			const isHeader = jq$(this).hasClass("header");
+			const isHeader = jq$(this).hasClass("table-header");
 			const text = jq$(this).find("div > a").text();
 			model.setCell(rowIndex, colIndex, text, isHeader);
 		});
@@ -432,7 +432,7 @@ Spreadsheet.prototype.createTable = function(model) {
 			const isHeader = model.isHeader(row, col);
 			const text = _EC.encodeForHtml(model.getCellText(row, col));
 			html += "<";
-			html += isHeader ? "td class=header" : "td";
+			html += isHeader ? "td class=table-header" : "td";
 			html += " id='" + this.getCellID(row, col) + "'><div><a href='#'>";
 			html += text ? text : "&nbsp;";
 			html += "</a></div>";
@@ -1261,10 +1261,10 @@ Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
 	const tc = this.selectedRange ? this.selectedRange.toCol : sc;
 	const cell = this.getCell(row, col);
 	if (isHeader) {
-		cell.addClass("header");
+		cell.addClass("table-header");
 	}
 	else {
-		cell.removeClass("header");
+		cell.removeClass("table-header");
 	}
 	this.selectCell(tr, tc, false);
 	this.selectCell(sr, sc, true);
