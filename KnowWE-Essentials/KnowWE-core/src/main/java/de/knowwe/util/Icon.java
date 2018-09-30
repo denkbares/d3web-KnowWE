@@ -105,6 +105,7 @@ public class Icon {
 	public static final Icon SUGGESTED = new Icon("fa-circle-o");
 	public static final Icon EXCLUDED = new Icon("fa-ban");
 	public static final Icon ABSTRACT = new Icon("fa-asterisk");
+	public static final Icon PLUG =  new Icon("fal fa-plug");
 
 	public static final Icon LOW_PRIO = new Icon("fa-exclamation-circle knowwe-lowprio");
 	public static final Icon HIGH_PRIO = new Icon("fa-exclamation-circle knowwe-highprio");
