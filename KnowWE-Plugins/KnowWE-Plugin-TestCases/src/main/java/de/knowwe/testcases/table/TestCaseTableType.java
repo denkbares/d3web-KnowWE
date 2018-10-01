@@ -35,7 +35,7 @@ import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
  */
 public class TestCaseTableType extends DefaultMarkupType {
 
-	private static DefaultMarkup MARKUP = null;
+	private static final DefaultMarkup MARKUP;
 	public static String NAME = "name";
 
 	static {
@@ -47,7 +47,7 @@ public class TestCaseTableType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(NAME, new AnnotationRenderer("Name: "));
 		MARKUP.addAnnotation(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, false);
 		MARKUP.addAnnotationRenderer(PrefixedTestCaseProvider.PREFIX_ANNOTATION_NAME, new AnnotationRenderer("Prefix: "));
-		MARKUP.setCompletionDefaultContent("|| Name || Time || Checks\t\t|| My Question \n" +
+		MARKUP.setContentTemplate("|| Name || Time || Checks\t\t|| My Question \n" +
 				"| Start |    0s | My Question = Answer\t| Answer ");
 	}
 

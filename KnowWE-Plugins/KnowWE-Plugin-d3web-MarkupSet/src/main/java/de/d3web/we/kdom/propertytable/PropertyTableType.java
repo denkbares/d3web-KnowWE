@@ -46,11 +46,11 @@ import de.knowwe.kdom.table.TableIndexConstraint;
  */
 public class PropertyTableType extends DefaultMarkupType {
 
-	private static DefaultMarkup MARKUP = null;
+	private static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup("PropertyTable");
-		MARKUP.setCompletionDefaultContent("|| Name\t\t|| prompt\t\t|| description \n" +
+		MARKUP.setContentTemplate("|| Name\t\t|| prompt\t\t|| description \n" +
 				"| Your Question\t| The Question Prompt\t| The Description of the Question ");
 		Table content = new Table();
 		MARKUP.addContentType(content);

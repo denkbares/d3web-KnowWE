@@ -52,7 +52,7 @@ public class DefaultMarkup implements Cloneable {
 	private boolean isInline = false;
 	private String documentation = null;
 	private String template = null;
-	private String completionDefaultContent = "";
+	private String contentTemplate = "";
 
 	public DefaultMarkup(String name) {
 		this.name = name;
@@ -68,25 +68,6 @@ public class DefaultMarkup implements Cloneable {
 		return clone;
 	}
 
-	/**
-	 * Returns the default content of the markup, which can be used to fill it in a bit when adding the via auto
-	 * completion.
-	 *
-	 * @return the default content of the markup
-	 */
-	public String getCompletionDefaultContent() {
-		return completionDefaultContent;
-	}
-
-	/**
-	 * Sets the default content of the markup, which can be used to fill it in a bit when adding the markup via auto
-	 * completion.
-	 *
-	 * @param completionDefaultContent the default content to be set
-	 */
-	public void setCompletionDefaultContent(String completionDefaultContent) {
-		this.completionDefaultContent = completionDefaultContent;
-	}
 
 	/**
 	 * Returns the name of this markup.
@@ -139,6 +120,26 @@ public class DefaultMarkup implements Cloneable {
 	 */
 	public void setTemplate(String template) {
 		this.template = template;
+	}
+
+	/**
+	 * Returns the default content of the markup, which can be used to fill it in a bit when adding the via auto
+	 * completion.
+	 *
+	 * @return the default content of the markup
+	 */
+	public String getContentTemplate() {
+		return contentTemplate;
+	}
+
+	/**
+	 * Sets the default content of the markup, which can be used to fill it in a bit when adding the markup via auto
+	 * completion.
+	 *
+	 * @param completionDefaultContent the default content to be set
+	 */
+	public void setContentTemplate(String completionDefaultContent) {
+		this.contentTemplate = completionDefaultContent;
 	}
 
 	/**
