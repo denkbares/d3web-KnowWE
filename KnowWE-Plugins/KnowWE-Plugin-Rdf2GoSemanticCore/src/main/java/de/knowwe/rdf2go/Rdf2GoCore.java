@@ -72,6 +72,7 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 
+import com.denkbares.collections.Matrix;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.collections.N2MMap;
@@ -151,9 +152,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Initializes the Rdf2GoCore with the specified arguments. Please note
-	 * that the RuleSet argument only has an effect if OWLIM is used as underlying
-	 * implementation.
+	 * Initializes the Rdf2GoCore with the specified arguments. Please note that the RuleSet argument only has an effect
+	 * if OWLIM is used as underlying implementation.
 	 *
 	 * @param lns       the uri used as local namespace
 	 * @param bns       the uri used as base namespace
@@ -238,8 +238,8 @@ public class Rdf2GoCore {
 	/**
 	 * @return one global instance for all webs an compilers
 	 * @created 14.12.2013
-	 * @deprecated use {@link Rdf2GoCore#getInstance(Rdf2GoCompiler)} instead. Using the global
-	 * instance will cause problems with different webs or different article managers
+	 * @deprecated use {@link Rdf2GoCore#getInstance(Rdf2GoCompiler)} instead. Using the global instance will cause
+	 * problems with different webs or different article managers
 	 */
 	@Deprecated
 	public static Rdf2GoCore getInstance() {
@@ -261,8 +261,7 @@ public class Rdf2GoCore {
 					MultiMaps.minimizedFactory());
 
 	/**
-	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value
-	 * is the full namespace, e.g. rdf and
+	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value is the full namespace, e.g. rdf and
 	 * http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	 */
 	private Map<String, String> namespaces = new HashMap<>();
@@ -270,8 +269,7 @@ public class Rdf2GoCore {
 	private final Object nsMutext = new Object();
 
 	/**
-	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in
-	 * Turtle and SPARQL
+	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in Turtle and SPARQL
 	 */
 	private volatile Map<String, String> namespacePrefixes = new HashMap<>();
 
@@ -284,16 +282,15 @@ public class Rdf2GoCore {
 	private SemanticCore semanticCore;
 
 	/**
-	 * Initializes the Rdf2GoCore with the default settings specified
-	 * in the "owlim.ttl" file.
+	 * Initializes the Rdf2GoCore with the default settings specified in the "owlim.ttl" file.
 	 */
 	public Rdf2GoCore() {
 		this(null);
 	}
 
 	/**
-	 * Initializes the Rdf2GoCore with the specified {@link RuleSet}. Please note
-	 * that this only has an effect if OWLIM is used as underlying implementation.
+	 * Initializes the Rdf2GoCore with the specified {@link RuleSet}. Please note that this only has an effect if OWLIM
+	 * is used as underlying implementation.
 	 *
 	 * @param ruleSet specifies the reasoning profile.
 	 */
@@ -346,8 +343,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * De-resolves a specified uri to a short uri name. If there is no matching
-	 * namespace, the full uri is returned.
+	 * De-resolves a specified uri to a short uri name. If there is no matching namespace, the full uri is returned.
 	 *
 	 * @param uri the uri to be de-resolved
 	 * @return the short uri name
@@ -358,8 +354,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * De-resolves a specified uri to a short uri name. If there is no matching
-	 * namespace, the full uri is returned.
+	 * De-resolves a specified uri to a short uri name. If there is no matching namespace, the full uri is returned.
 	 *
 	 * @param uri the uri to be de-resolved
 	 * @return the short uri name
@@ -382,9 +377,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Returns the terminology manager's identifier for the specified uri. The
-	 * uri's identifier is usually based on the short version of the uri, if
-	 * there is any.
+	 * Returns the terminology manager's identifier for the specified uri. The uri's identifier is usually based on the
+	 * short version of the uri, if there is any.
 	 *
 	 * @param uri the uri to create the identifier for
 	 * @return the identifier for the specified uri
@@ -395,9 +389,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Returns the terminology manager's identifier for the specified uri. The
-	 * uri's identifier is usually based on the short version of the uri, if
-	 * there is any.
+	 * Returns the terminology manager's identifier for the specified uri. The uri's identifier is usually based on the
+	 * short version of the uri, if there is any.
 	 *
 	 * @param uri the uri to create the identifier for
 	 * @return the identifier for the specified uri
@@ -408,14 +401,11 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
-	 * triple store.
+	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the triple store.
 	 * <p>
-	 * You can remove the {@link Statement}s using the method
-	 * {@link Rdf2GoCore#removeStatements(Section)}.
+	 * You can remove the {@link Statement}s using the method {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param source     the {@link StatementSource} for which the {@link Statement}s are added and
-	 *                   cached
+	 * @param source     the {@link StatementSource} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(StatementSource source, Statement... statements) {
@@ -423,14 +413,11 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the
-	 * triple store.
+	 * Adds the given {@link Statement}s for the given {@link SectionSource} to the triple store.
 	 * <p>
-	 * You can remove the {@link Statement}s using the method
-	 * {@link Rdf2GoCore#removeStatements(Section)}.
+	 * You can remove the {@link Statement}s using the method {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
-	 * @param source     the {@link StatementSource} for which the {@link Statement}s are added and
-	 *                   cached
+	 * @param source     the {@link StatementSource} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
 	 */
 	public void addStatements(StatementSource source, Collection<Statement> statements) {
@@ -445,11 +432,9 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Adds the given {@link Statement}s for the given {@link Section} to the
-	 * triple store.
+	 * Adds the given {@link Statement}s for the given {@link Section} to the triple store.
 	 * <p>
-	 * You can remove the {@link Statement}s using the method
-	 * {@link Rdf2GoCore#removeStatements(Section)}.
+	 * You can remove the {@link Statement}s using the method {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
 	 * @param section    the {@link Section} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
@@ -460,11 +445,9 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Adds the given {@link Statement}s for the given {@link Section} to the
-	 * triple store.
+	 * Adds the given {@link Statement}s for the given {@link Section} to the triple store.
 	 * <p>
-	 * You can remove the {@link Statement}s using the method
-	 * {@link Rdf2GoCore#removeStatements(Section)}.
+	 * You can remove the {@link Statement}s using the method {@link Rdf2GoCore#removeStatements(Section)}.
 	 *
 	 * @param section    the {@link Section} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
@@ -478,10 +461,9 @@ public class Rdf2GoCore {
 	 * Adds the given {@link Statement}s directly to the triple store.
 	 * <p>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
-	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
-	 * {@link Statement}s in case they are not longer valid. You can remove
-	 * these {@link Statement}s with the method
-	 * {@link Rdf2GoCore#removeStatements(Collection)}.
+	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right {@link Statement}s in case they are not
+	 * longer valid. You can remove these {@link Statement}s with the method {@link
+	 * Rdf2GoCore#removeStatements(Collection)}.
 	 *
 	 * @param statements the statements you want to add to the triple store
 	 * @created 13.06.2012
@@ -494,10 +476,9 @@ public class Rdf2GoCore {
 	 * Adds the given {@link Statement}s directly to the triple store.
 	 * <p>
 	 * <b>Attention</b>: The added {@link Statement}s are not cached in the
-	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right
-	 * {@link Statement}s in case they are not longer valid. You can remove
-	 * these {@link Statement}s with the method
-	 * {@link Rdf2GoCore#removeStatements(Collection)}.
+	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right {@link Statement}s in case they are not
+	 * longer valid. You can remove these {@link Statement}s with the method {@link
+	 * Rdf2GoCore#removeStatements(Collection)}.
 	 *
 	 * @param statements the statements you want to add to the triple store
 	 * @created 13.06.2012
@@ -507,10 +488,9 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Commit is automatically called every time an article has finished
-	 * compiling. When commit is called, all {@link Statement}s that were cached
-	 * to be removed from the triple store are removed and all {@link Statement}
-	 * s that were cached to be added to the triple store are added.
+	 * Commit is automatically called every time an article has finished compiling. When commit is called, all {@link
+	 * Statement}s that were cached to be removed from the triple store are removed and all {@link Statement} s that
+	 * were cached to be added to the triple store are added.
 	 *
 	 * @return true, if the underlying model was changed due to the commit, false if it was not changed
 	 * @created 12.06.2012
@@ -523,14 +503,17 @@ public class Rdf2GoCore {
 
 				int removeSize = removeCache.size();
 				int insertSize = insertCache.size();
-				boolean verboseLog = removeSize + insertSize < 50 && !Log.logger()
-						.isLoggable(Level.FINE);
 
-				if (removeSize > 0 || insertSize > 0) {
-					synchronized (resultCache) {
-						resultCache.clear();
-						resultCacheSize = 0;
-					}
+				// return immediately if no changes are recorded yet
+				if (removeSize == 0 && insertSize == 0) return false;
+
+				// verbose log if only a few changes are recorded
+				boolean verboseLog = (removeSize + insertSize < 50) && !Log.logger().isLoggable(Level.FINE);
+
+				// clear result cache if there are any changes
+				synchronized (resultCache) {
+					resultCache.clear();
+					resultCacheSize = 0;
 				}
 
 				/*
@@ -564,14 +547,14 @@ public class Rdf2GoCore {
 				Fire events
 				 */
 				if (!removeCache.isEmpty()) {
-					EventManager.getInstance()
-							.fireEvent(new RemoveStatementsEvent(Collections.unmodifiableCollection(removeCache), this));
+					EventManager.getInstance().fireEvent(new RemoveStatementsEvent(
+							Collections.unmodifiableCollection(removeCache), this));
 					removedStatements = true;
 				}
 				if (!insertCache.isEmpty()) {
-					EventManager.getInstance()
-							.fireEvent(new InsertStatementsEvent(Collections.unmodifiableCollection(removeCache), Collections
-									.unmodifiableCollection(insertCache), this));
+					EventManager.getInstance().fireEvent(new InsertStatementsEvent(
+							Collections.unmodifiableCollection(removeCache),
+							Collections.unmodifiableCollection(insertCache), this));
 					insertedStatements = true;
 				}
 				if (removedStatements || insertedStatements) {
@@ -582,10 +565,8 @@ public class Rdf2GoCore {
 				Logging
 				 */
 				if (verboseLog) {
-					logStatements(removeCache, connectionStart,
-							"Removed statements:\n");
-					logStatements(insertCache, connectionStart,
-							"Inserted statements:\n");
+					logStatements(removeCache, connectionStart, "Removed statements:\n");
+					logStatements(insertCache, connectionStart, "Inserted statements:\n");
 				}
 				else {
 					Log.info("Removed " + removeSize + " statements from and added "
@@ -799,8 +780,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and
-	 * SPARQL.<br>
+	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and SPARQL.<br>
 	 * <b>Example:</b> rdf: -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
 	 * <p>
 	 * Although this map seems trivial, it is helpful for optimization reasons.
@@ -847,8 +827,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Returns the set of statements that have been created from the given section during the
-	 * compile process
+	 * Returns the set of statements that have been created from the given section during the compile process
 	 */
 	public Set<Statement> getStatementsFromCache(Section<?> source) {
 		synchronized (statementMutex) {
@@ -914,8 +893,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Removes the specified statements if they have been added to this core and if they are added
-	 * without specifying a specific source like a compiler or a section.
+	 * Removes the specified statements if they have been added to this core and if they are added without specifying a
+	 * specific source like a compiler or a section.
 	 *
 	 * @param statements the statements to be removed
 	 * @created 13.06.2012
@@ -950,12 +929,11 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Removes all {@link Statement}s that were added and cached for the given
-	 * {@link Section}.
+	 * Removes all {@link Statement}s that were added and cached for the given {@link Section}.
 	 * <p>
 	 * <b>Attention</b>: This method only removes {@link Statement}s that were
-	 * added (and cached) in connection with a {@link Section} using methods
-	 * like {@link Rdf2GoCore#addStatements(Section, Collection)}.
+	 * added (and cached) in connection with a {@link Section} using methods like {@link
+	 * Rdf2GoCore#addStatements(Section, Collection)}.
 	 *
 	 * @param section the {@link Section} for which the {@link Statement}s should be removed
 	 * @created 06.12.2010
@@ -965,9 +943,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Returns the articles the statement has been created on. The method may
-	 * return an empty list if the statement has not been added by a markup and
-	 * cannot be associated to an article.
+	 * Returns the articles the statement has been created on. The method may return an empty list if the statement has
+	 * not been added by a markup and cannot be associated to an article.
 	 *
 	 * @param statement the statement to get the articles for
 	 * @return the articles that defines that statement
@@ -986,10 +963,9 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Returns the article the statement has been created on. The method may
-	 * return null if the statement has not been added by a markup and cannot be
-	 * associated to an article. If there are multiple articles defining that
-	 * statement one of the articles are returned.
+	 * Returns the article the statement has been created on. The method may return null if the statement has not been
+	 * added by a markup and cannot be associated to an article. If there are multiple articles defining that statement
+	 * one of the articles are returned.
 	 *
 	 * @param statement the statement to get the article for
 	 * @return the article that defines that statement
@@ -1004,8 +980,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Clears any cached result for the given sparql query. This way, if the query is executed
-	 * again, it has to be calculated anew.
+	 * Clears any cached result for the given sparql query. This way, if the query is executed again, it has to be
+	 * calculated anew.
 	 *
 	 * @param query the query for which the cached result should be removed
 	 * @return true if a result was cached, false if not
@@ -1068,9 +1044,9 @@ public class Rdf2GoCore {
 //	}
 
 	/**
-	 * Performs a SPARQL select query with the given parameters. Be aware that, in case of an
-	 * uncached query, the timeout only effects the process of creating the iterator. Retrieving
-	 * elements from the iterator might again take a long time not covered by the timeout.
+	 * Performs a SPARQL select query with the given parameters. Be aware that, in case of an uncached query, the
+	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again take
+	 * a long time not covered by the timeout.
 	 *
 	 * @param query         the SPARQL query to perform
 	 * @param cached        sets whether the SPARQL query is to be cached or not
@@ -1082,9 +1058,9 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Performs a SPARQL ask query with the given parameters. Be aware that, in case of an uncached
-	 * query, the timeout only effects the process of creating the iterator. Retrieving elements
-	 * from the iterator might again take a long time not covered by the timeout.
+	 * Performs a SPARQL ask query with the given parameters. Be aware that, in case of an uncached query, the timeout
+	 * only effects the process of creating the iterator. Retrieving elements from the iterator might again take a long
+	 * time not covered by the timeout.
 	 *
 	 * @param query         the SPARQL query to perform
 	 * @param cached        sets whether the SPARQL query is to be cached or not
@@ -1281,11 +1257,10 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Observes the SPARQL task end cancels/stops it, if it takes to long. We normally use the
-	 * build-in sesame timeout to terminate queries that are too slow. In some cases though, these
-	 * timeouts do not work as desired (probably not well implemented by underlying repos) so we use
-	 * this kill switch to make sure the query is terminated after 150% of the intended timeout or at
-	 * most one minute later.
+	 * Observes the SPARQL task end cancels/stops it, if it takes to long. We normally use the build-in sesame timeout
+	 * to terminate queries that are too slow. In some cases though, these timeouts do not work as desired (probably not
+	 * well implemented by underlying repos) so we use this kill switch to make sure the query is terminated after 150%
+	 * of the intended timeout or at most one minute later.
 	 */
 	private static class SparqlTaskReaper implements Runnable {
 
@@ -1479,8 +1454,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Writes the current repository model to the given writer in RDF/XML
-	 * format.
+	 * Writes the current repository model to the given writer in RDF/XML format.
 	 *
 	 * @param out the target to write the model to
 	 * @created 03.02.2012
@@ -1490,8 +1464,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Writes the current repository model to the given writer in the specified
-	 * syntax.
+	 * Writes the current repository model to the given writer in the specified syntax.
 	 *
 	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
@@ -1507,8 +1480,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Writes the current repository model to the given writer in the specified
-	 * syntax.
+	 * Writes the current repository model to the given writer in the specified syntax.
 	 *
 	 * @param out    the target to write the model to
 	 * @param syntax the syntax of the target file
@@ -1524,8 +1496,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Returns true if this instance is empty. An instance is empty, if the
-	 * method commit hasn't been called yet.
+	 * Returns true if this instance is empty. An instance is empty, if the method commit hasn't been called yet.
 	 *
 	 * @return true if instance is empty, else false.
 	 * @created 19.04.2013
@@ -1558,5 +1529,53 @@ public class Rdf2GoCore {
 
 	public RepositoryConfig getRuleSet() {
 		return ruleSet;
+	}
+
+	/**
+	 * Executes the query and dumps the result to the console.
+	 */
+	@SuppressWarnings("UseOfSystemOutOrSystemErr")
+	public void dump(String query) {
+		Matrix<String> matrix = new Matrix<>();
+		try (CachedTupleQueryResult result = sparqlSelect(query)) {
+			// prepare headings and column length
+			List<String> names = result.getBindingNames();
+			List<Integer> lengths = new ArrayList<>(names.size());
+			for (int col = 0; col < names.size(); col++) {
+				String value = String.valueOf(names.get(col));
+				matrix.set(0, col, value);
+				lengths.add(col, value.length());
+			}
+
+			// prepare values and update column lengths
+			int row = 1;
+			while (result.hasNext()) {
+				BindingSet bindings = result.next();
+				for (int col = 0; col < names.size(); col++) {
+					Value value = bindings.getValue(names.get(col));
+					if (value instanceof URI) value = toShortURI((URI) value);
+					String text = (value == null) ? "null" : value.stringValue();
+					matrix.set(row, col, text);
+					lengths.set(col, Math.max(lengths.get(col), text.length()));
+				}
+				row++;
+			}
+
+			// dump the matrix
+			System.out.println();
+			for (row = 0; row < matrix.getRowSize(); row++) {
+				for (int col = 0; col < matrix.getColSize(); col++) {
+					if (col > 0) System.out.print(" | ");
+					String value = matrix.get(row, col);
+					System.out.print(value);
+					System.out.print(Strings.nTimes(' ', lengths.get(col) - value.length()));
+				}
+				System.out.println();
+				if (row == 0) {
+					int len = lengths.stream().mapToInt(x -> x + 3).sum() - 3;
+					System.out.println(Strings.nTimes('=', len));
+				}
+			}
+		}
 	}
 }
