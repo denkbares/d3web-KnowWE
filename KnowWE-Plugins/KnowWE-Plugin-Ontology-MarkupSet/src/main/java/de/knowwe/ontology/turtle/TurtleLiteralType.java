@@ -38,7 +38,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 

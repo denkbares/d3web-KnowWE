@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.AnonymousType;
-import de.knowwe.ontology.turtle.compile.ResourceProvider;
+import de.knowwe.ontology.compile.provider.ResourceProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class BlankNode extends AbstractType implements ResourceProvider<BlankNode> {

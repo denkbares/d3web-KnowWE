@@ -38,9 +38,9 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.ontology.turtle.compile.StatementProvider;
-import de.knowwe.ontology.turtle.compile.StatementProviderResult;
+import de.knowwe.ontology.compile.provider.NodeProvider;
+import de.knowwe.ontology.compile.provider.StatementProvider;
+import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**

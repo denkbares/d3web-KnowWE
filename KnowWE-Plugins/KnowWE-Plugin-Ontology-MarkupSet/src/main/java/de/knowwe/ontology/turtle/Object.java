@@ -43,9 +43,9 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.ontology.turtle.compile.StatementProvider;
-import de.knowwe.ontology.turtle.compile.StatementProviderResult;
+import de.knowwe.ontology.compile.provider.NodeProvider;
+import de.knowwe.ontology.compile.provider.StatementProvider;
+import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 

@@ -30,7 +30,7 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.turtle.TurtleURI;
-import de.knowwe.ontology.turtle.compile.URIProvider;
+import de.knowwe.ontology.compile.provider.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 

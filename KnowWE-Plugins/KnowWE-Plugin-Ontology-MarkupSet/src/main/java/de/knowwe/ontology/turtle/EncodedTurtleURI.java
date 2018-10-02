@@ -36,8 +36,7 @@ import de.knowwe.ontology.kdom.namespace.AbbreviationReference;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.ontology.turtle.compile.URIProvider;
+import de.knowwe.ontology.compile.provider.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;

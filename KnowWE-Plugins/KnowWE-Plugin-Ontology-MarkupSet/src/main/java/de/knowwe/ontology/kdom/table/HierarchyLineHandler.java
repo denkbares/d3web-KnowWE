@@ -6,7 +6,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 
 /**
  * @author Jochen Reutelshoefer (denkbares GmbH)

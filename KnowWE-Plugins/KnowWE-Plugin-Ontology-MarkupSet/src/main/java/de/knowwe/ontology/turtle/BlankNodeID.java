@@ -29,7 +29,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class BlankNodeID extends AbstractType implements NodeProvider<BlankNodeID> {

@@ -32,7 +32,7 @@ import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 
 /**
  * @author Jochen Reutelshofer (denkbares GmbH)

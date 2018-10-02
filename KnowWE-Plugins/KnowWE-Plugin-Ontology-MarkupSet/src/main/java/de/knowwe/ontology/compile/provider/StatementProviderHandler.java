@@ -1,4 +1,8 @@
-package de.knowwe.ontology.turtle.compile;
+/*
+ * Copyright (C) 2018 denkbares GmbH. All rights reserved.
+ */
+
+package de.knowwe.ontology.compile.provider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,18 +15,17 @@ import de.knowwe.core.report.Message;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 
-public class TurtleCompileHandler<Z extends Type> extends OntologyHandler<Z> {
+public class StatementProviderHandler<Z extends Type> extends OntologyHandler<Z> {
 
 	@Override
 	public Collection<Message> create(OntologyCompiler compiler, Section<Z> section) {
 		List<Message> messages = new ArrayList<>();
 
 		for (Section<StatementProvider> statementSection : Sections.successors(section, StatementProvider.class)) {
+			//noinspection unchecked
 			StatementProviderResult result = statementSection.get().getStatementsSafe(statementSection, compiler);
-			if (result != null) {
-				compiler.getRdf2GoCore().addStatements(section, result.getStatements());
-				messages.addAll(result.getMessages());
-			}
+			compiler.getRdf2GoCore().addStatements(section, result.getStatements());
+			messages.addAll(result.getMessages());
 		}
 		return messages;
 	}

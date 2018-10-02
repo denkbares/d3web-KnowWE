@@ -31,7 +31,6 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.Table;
-import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
@@ -41,7 +40,7 @@ import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleURI;
-import de.knowwe.ontology.turtle.compile.StatementProviderResult;
+import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 

@@ -37,10 +37,10 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.ontology.turtle.TurtleCollection.ItemList.CollectionItem;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.ontology.turtle.compile.ResourceProvider;
-import de.knowwe.ontology.turtle.compile.StatementProvider;
-import de.knowwe.ontology.turtle.compile.StatementProviderResult;
+import de.knowwe.ontology.compile.provider.NodeProvider;
+import de.knowwe.ontology.compile.provider.ResourceProvider;
+import de.knowwe.ontology.compile.provider.StatementProvider;
+import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class TurtleCollection extends AbstractType implements ResourceProvider<TurtleCollection>, StatementProvider<TurtleCollection> {

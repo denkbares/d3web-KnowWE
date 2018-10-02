@@ -1,4 +1,8 @@
-package de.knowwe.ontology.turtle.compile;
+/*
+ * Copyright (C) 2018 denkbares GmbH. All rights reserved.
+ */
+
+package de.knowwe.ontology.compile.provider;
 
 import org.openrdf.model.Value;
 

@@ -36,7 +36,7 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableRenderer;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 import de.knowwe.rdf2go.utils.SimpleTableRow;

@@ -25,7 +25,7 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.OneOfStringFinderExact;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**

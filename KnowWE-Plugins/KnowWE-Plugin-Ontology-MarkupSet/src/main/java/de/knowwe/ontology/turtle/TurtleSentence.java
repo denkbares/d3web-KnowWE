@@ -25,7 +25,7 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.kdom.sectionFinder.SplitSectionFinderUnquoted;
-import de.knowwe.ontology.turtle.compile.TurtleCompileHandler;
+import de.knowwe.ontology.compile.provider.StatementProviderHandler;
 
 public class TurtleSentence extends AbstractType {
 
@@ -45,7 +45,7 @@ public class TurtleSentence extends AbstractType {
 		this.addChildType(new TurtleSPOSentence());
 
 		// create triples for each sentence
-		this.addCompileScript(Priority.HIGH, new TurtleCompileHandler<>());
+		this.addCompileScript(Priority.HIGH, new StatementProviderHandler<>());
 
 	}
 

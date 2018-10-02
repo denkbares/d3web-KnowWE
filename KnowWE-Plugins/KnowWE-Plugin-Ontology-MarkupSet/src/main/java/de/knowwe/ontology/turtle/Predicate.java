@@ -26,8 +26,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.kdom.renderer.CompositeRenderer;
 import de.knowwe.ontology.edit.DropTargetRenderer;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.ontology.turtle.compile.URIProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
+import de.knowwe.ontology.compile.provider.URIProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 

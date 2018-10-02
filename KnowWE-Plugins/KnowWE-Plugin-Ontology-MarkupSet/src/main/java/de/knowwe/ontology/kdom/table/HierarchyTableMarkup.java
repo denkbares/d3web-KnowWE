@@ -26,9 +26,9 @@ import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleURI;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
-import de.knowwe.ontology.turtle.compile.ResourceProvider;
-import de.knowwe.ontology.turtle.compile.URIProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
+import de.knowwe.ontology.compile.provider.ResourceProvider;
+import de.knowwe.ontology.compile.provider.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**

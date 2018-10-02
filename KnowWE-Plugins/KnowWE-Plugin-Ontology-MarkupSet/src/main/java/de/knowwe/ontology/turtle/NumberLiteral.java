@@ -23,7 +23,7 @@ import org.openrdf.model.Value;
 import org.openrdf.model.vocabulary.XMLSchema;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.ontology.turtle.compile.NodeProvider;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
