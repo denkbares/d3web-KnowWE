@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -24,8 +24,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.model.Statement;
+import org.jetbrains.annotations.Nullable;
 import org.openrdf.model.Resource;
+import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 
 import de.knowwe.core.compile.Compilers;
@@ -42,6 +43,7 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
+import de.knowwe.ontology.kdom.namespace.Namespace;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.PredicateSentence;
 import de.knowwe.ontology.turtle.Subject;
@@ -50,7 +52,6 @@ import de.knowwe.ontology.turtle.TurtleSentence;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
- * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 28.02.2013
  */
@@ -86,6 +87,35 @@ public class OntologyUtils {
 	}
 
 	/**
+	 * Returns the default namespace of the ontology of the given section. If the section is used in
+	 * multiple ontologies or if there are multiple default namespaces, a random default namespace will be used.
+	 *
+	 * @param section a section that is compiled in an ontology that provides a default namespace
+	 * @return the default namespace or null, if there is no default namespace
+	 */
+	@Nullable
+	public static Namespace getDefaultNamespace(Section<?> section) {
+		Collection<OntologyCompiler> compilers = Compilers.getCompilers(section, OntologyCompiler.class);
+		for (OntologyCompiler compiler : compilers) {
+			Namespace namespace = getDefaultNamespace(compiler);
+			if (namespace != null) return namespace;
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the default namespace of the ontology of the given ontology compiler. If there are multiple default
+	 * namespaces, a random default namespace will be used.
+	 *
+	 * @param compiler the compiler to get the default namespace from
+	 * @return the default namespace or null, if there is no default namespace
+	 */
+	@Nullable
+	public static Namespace getDefaultNamespace(OntologyCompiler compiler) {
+		return OntologyType.getDefaultNamespace(compiler);
+	}
+
+	/**
 	 * Adds the specified statements to the the specified wiki page. As a result
 	 * a new wiki page content is returned with the statements included in some
 	 * turtle markup.
@@ -98,18 +128,18 @@ public class OntologyUtils {
 	 * <p>
 	 * If the article is null, the text for an article to be created is
 	 * returned.
-	 * 
-	 * @created 23.11.2013
-	 * @param compiler the compiler to be used to compile the modified turtle contents
-	 * @param article the article to integrate the statements into
+	 *
+	 * @param compiler    the compiler to be used to compile the modified turtle contents
+	 * @param article     the article to integrate the statements into
 	 * @param compactMode specifies if the created markup shall be kept compact
-	 *        or more structured using line breaks and intends.
-	 * @param statements the statements to be integrated
+	 *                    or more structured using line breaks and intends.
+	 * @param statements  the statements to be integrated
 	 * @return the article's content, extended with the statements
+	 * @created 23.11.2013
 	 */
 	public static String addTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, Statement... statements) {
 		return modifyTurtle(compiler, article, compactMode,
-				Arrays.asList(statements), Collections.<Statement> emptyList());
+				Arrays.asList(statements), Collections.emptyList());
 	}
 
 	/**
@@ -131,14 +161,14 @@ public class OntologyUtils {
 	 * <p>
 	 * If the article is null, the text for an article to be created is
 	 * returned.
-	 * 
-	 * @created 23.11.2013
-	 * @param article the article to integrate the statements into
-	 * @param compactMode specifies if the created markup shall be kept compact
-	 *        or more structured using line breaks and intends.
-	 * @param statementsToAdd the statements to be integrated
+	 *
+	 * @param article            the article to integrate the statements into
+	 * @param compactMode        specifies if the created markup shall be kept compact
+	 *                           or more structured using line breaks and intends.
+	 * @param statementsToAdd    the statements to be integrated
 	 * @param statementsToRemove the statements to be deleted from the article
 	 * @return the article's content, extended with the statements
+	 * @created 23.11.2013
 	 */
 	public static String modifyTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, Statement[] statementsToAdd, Statement[] statementsToRemove) {
 		return modifyTurtle(compiler, article, compactMode,
@@ -164,14 +194,14 @@ public class OntologyUtils {
 	 * <p>
 	 * If the article is null, the text for an article to be created is
 	 * returned.
-	 * 
-	 * @created 23.11.2013
-	 * @param article the article to integrate the statements into
-	 * @param compactMode specifies if the created markup shall be kept compact
-	 *        or more structured using line breaks and intends.
-	 * @param statementsToAdd the statements to be integrated
+	 *
+	 * @param article            the article to integrate the statements into
+	 * @param compactMode        specifies if the created markup shall be kept compact
+	 *                           or more structured using line breaks and intends.
+	 * @param statementsToAdd    the statements to be integrated
 	 * @param statementsToRemove the statements to be deleted from the article
 	 * @return the article's content, extended with the statements
+	 * @created 23.11.2013
 	 */
 	public static String modifyTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, List<Statement> statementsToAdd, List<Statement> statementsToRemove) {
 		ArticleTurtleModifier writer = new ArticleTurtleModifier(compiler, article, compactMode);
@@ -184,12 +214,12 @@ public class OntologyUtils {
 	 * Returns the first turtle predicate sentence of the specified article that
 	 * is a predicate sentence for the specified subject and the specified
 	 * predicate. If there is no such sentence, null is returned.
-	 * 
-	 * @created 24.11.2013
-	 * @param article the article to be checked for the sentence
-	 * @param subject the subject to search for
+	 *
+	 * @param article   the article to be checked for the sentence
+	 * @param subject   the subject to search for
 	 * @param predicate the predicate to search for
 	 * @return the sentence for the subject and predicate
+	 * @created 24.11.2013
 	 */
 	public static Section<PredicateSentence> findSentence(Article article, Resource subject, URI predicate) {
 		List<Section<PredicateSentence>> sentences = findSentences(article, subject, predicate);
@@ -201,12 +231,12 @@ public class OntologyUtils {
 	 * Returns the all turtle predicate sentences of the specified article that
 	 * are predicate sentences for the specified subject and the specified
 	 * predicate. If there is no such sentences, an empty list is returned.
-	 * 
-	 * @created 24.11.2013
-	 * @param article the article to be checked for the sentence
-	 * @param subject the subject to search for
+	 *
+	 * @param article   the article to be checked for the sentence
+	 * @param subject   the subject to search for
 	 * @param predicate the predicate to search for
 	 * @return the predicate sentences for the subject and predicate
+	 * @created 24.11.2013
 	 */
 	public static List<Section<PredicateSentence>> findSentences(Article article, Resource subject, URI predicate) {
 		List<Section<PredicateSentence>> result = new LinkedList<>();
@@ -233,11 +263,11 @@ public class OntologyUtils {
 	 * Returns the first turtle sentence of the specified article that is a
 	 * sentence for the specified subject. If there is no such sentence, null is
 	 * returned.
-	 * 
-	 * @created 24.11.2013
+	 *
 	 * @param article the article to be checked for the sentence
 	 * @param subject the subject to search for
 	 * @return the sentence for the subject and predicate
+	 * @created 24.11.2013
 	 */
 	public static Section<TurtleSentence> findSentence(Article article, Resource subject) {
 		List<Section<TurtleSentence>> sentences = findSentences(article, subject);
@@ -249,11 +279,11 @@ public class OntologyUtils {
 	 * Returns the all turtle sentences of the specified article that are
 	 * sentences for the specified subject. If there is no such sentences, an
 	 * empty list is returned.
-	 * 
-	 * @created 24.11.2013
+	 *
 	 * @param article the article to be checked for the sentence
 	 * @param subject the subject to search for
 	 * @return the predicate sentences for the subject and predicate
+	 * @created 24.11.2013
 	 */
 	public static List<Section<TurtleSentence>> findSentences(Article article, Resource subject) {
 		List<Section<TurtleSentence>> result = new LinkedList<>();

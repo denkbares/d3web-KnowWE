@@ -21,6 +21,8 @@ package de.knowwe.ontology.compile;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
@@ -45,6 +47,7 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.CompileMarkupPackageRegistrationScript;
@@ -53,6 +56,9 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationScr
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.kdom.InitTerminologyHandler;
+import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
+import de.knowwe.ontology.kdom.namespace.Namespace;
+import de.knowwe.ontology.kdom.namespace.NamespaceAbbreviationDefinition;
 import de.knowwe.util.Icon;
 
 import static java.util.stream.Collectors.toList;
@@ -76,6 +82,7 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String ANNOTATION_EXPORT = "export";
 	public static final String ANNOTATION_EXPORT_DELAY = "exportDelay";
 	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
+	public static final String ANNOTATION_DEFAULT_NAMESPACE = "defaultNamespace";
 
 	public static final DefaultMarkup MARKUP;
 	public static final String COMPILER_PRIORITY = "compilerPriority";
@@ -89,7 +96,7 @@ public class OntologyType extends DefaultMarkupType {
 		MARKUP.addAnnotationIcon(ANNOTATION_IMPORT, Icon.FILE_XML.addTitle("Import"));
 
 		MARKUP.addAnnotation(ANNOTATION_EXPORT, false);
-		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT, Icon.GLOBE.addTitle("Export"));
+		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT, Icon.ATTACHMENT.addTitle("Export"));
 
 		MARKUP.addAnnotation(ANNOTATION_EXPORT_DELAY, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
 		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT_DELAY, Icon.CLOCK.addTitle("Time to wait for additional changes to the ontology before starting a new export"));
@@ -109,6 +116,13 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE, false, ReferenceValidationMode.class);
 		MARKUP.addAnnotationIcon(ANNOTATION_REFERENCE_VALIDATION_MODE, Icon.ORDERED_LIST.addTitle("Reference-validation-mode"));
+
+		MARKUP.addAnnotation(ANNOTATION_DEFAULT_NAMESPACE, false);
+		MARKUP.addAnnotationIcon(ANNOTATION_DEFAULT_NAMESPACE, Icon.GLOBE.addTitle("Default Namespace"));
+		MARKUP.getAnnotation(ANNOTATION_DEFAULT_NAMESPACE)
+				.setDocumentation("Allows to define a default namespace that will be used " +
+						"by other markups, if no specific namespace is given.");
+		MARKUP.addAnnotationContentType(ANNOTATION_DEFAULT_NAMESPACE, new NamespaceAbbreviationDefinition());
 
 		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new AttachmentType(false));
 		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class);
@@ -144,6 +158,25 @@ public class OntologyType extends DefaultMarkupType {
 		addCompileScript(new CompileMarkupPackageRegistrationScript());
 
 		EventManager.getInstance().registerListener(OntologyExporter.getInstance());
+	}
+
+	/**
+	 * Returns the default namespace of the ontology of the given ontology compiler. If there are multiple default
+	 * namespaces, a random default namespace will be used.
+	 *
+	 * @param compiler the compiler to get the default namespace from
+	 * @return the default namespace or null, if there is no default namespace
+	 */
+	@Nullable
+	public static Namespace getDefaultNamespace(OntologyCompiler compiler) {
+		Section<OntologyType> ontologyTypeSection = Sections.ancestor(compiler.getCompileSection(), OntologyType.class);
+		if (ontologyTypeSection == null) return null;
+		Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
+		if (annotationContentSection == null) return null;
+		Section<AbbreviationDefinition> abbreviationDefinition = Sections.child(annotationContentSection, AbbreviationDefinition.class);
+		if (abbreviationDefinition == null) return null;
+		String abbreviation = abbreviationDefinition.get().getTermName(abbreviationDefinition);
+		return new Namespace(abbreviation, compiler.getRdf2GoCore().getNamespaces().get(abbreviation));
 	}
 
 	public static int getCompilerPriority(Section<PackageCompileType> compileTypeSection) {
