@@ -51,7 +51,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 		String turtleURIText = section.getText();
 		Section<ResourceReference> ref = Sections.successor(section, ResourceReference.class);
 		if (ref != null) {
-			Identifier identifier = ref.get().getTermIdentifier(ref);
+			Identifier identifier = ref.get().getTermIdentifier(compiler, ref);
 			return getNodeForIdentifier(core, identifier);
 		}
 		else {

@@ -21,6 +21,7 @@ package de.knowwe.diaflux.type;
 import de.d3web.diaFlux.flow.StartNode;
 import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -40,7 +41,7 @@ public class StartNodeReference extends SimpleReference {
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 		Section<FlowchartReference> ref = Sections.successor(section.getParent(),
 				FlowchartReference.class);
 		return new Identifier(ref.get().getTermName(ref), getTermName(section));

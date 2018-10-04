@@ -28,6 +28,7 @@ import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -65,7 +66,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	@Override
-	public final Class<?> getTermObjectClass(Section<? extends Term> section) {
+	public final Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
 		QuestionType questionType = getQuestionType(Sections.cast(section, QuestionDefinition.class));
 		return (questionType == null) ? Question.class : questionType.getQuestionClass();
 	}

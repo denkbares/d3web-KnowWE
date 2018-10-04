@@ -75,7 +75,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 		Collection<Message> msgs = new ArrayList<>();
 
 		// we collect all children lists given for the current definition by getting all definitions
-		Identifier parentIdentifier = parentSection.get().getTermIdentifier(parentSection);
+		Identifier parentIdentifier = parentSection.get().getTermIdentifier(compiler, parentSection);
 		Collection<Section<?>> parentDefiningSections = compiler.getTerminologyManager()
 				.getTermDefiningSections(parentIdentifier);
 		LinkedList<LinkedHashSet<Identifier>> childrenSets = new LinkedList<>();
@@ -88,7 +88,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 			for (Section<DashTreeElement> childrenDashtreeElement : childrenDashtreeElements) {
 				Section<TermDefinition> childDefiningSection = Sections.successor(childrenDashtreeElement, TermDefinition.class);
 				if (childDefiningSection == null) continue;
-				childrenSet.add(childDefiningSection.get().getTermIdentifier(childDefiningSection));
+				childrenSet.add(childDefiningSection.get().getTermIdentifier(compiler, childDefiningSection));
 			}
 			if (childrenSet.isEmpty()) continue;
 			if (childrenSet.size() == 1) {

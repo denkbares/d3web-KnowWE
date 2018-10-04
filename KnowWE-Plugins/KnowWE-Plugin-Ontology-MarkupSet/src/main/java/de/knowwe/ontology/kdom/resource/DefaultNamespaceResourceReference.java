@@ -7,6 +7,7 @@ package de.knowwe.ontology.kdom.resource;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -30,7 +31,7 @@ public class DefaultNamespaceResourceReference extends SimpleReference {
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 		return DefaultNamespaceResourceDefinition.getDefaultNamespaceTermIdentifier(section);
 	}
 

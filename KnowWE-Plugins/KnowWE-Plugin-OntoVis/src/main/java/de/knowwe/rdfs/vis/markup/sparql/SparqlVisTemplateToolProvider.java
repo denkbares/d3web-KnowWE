@@ -78,7 +78,7 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 				.getOntologyCompiler(section);
 		if (compiler == null) return null;
 		if (section.get() instanceof Term) {
-			Identifier termIdentifier = ((Term) section.get()).getTermIdentifier((Section<? extends Term>) section);
+			Identifier termIdentifier = ((Term) section.get()).getTermIdentifier(compiler, (Section<? extends Term>) section);
 			Rdf2GoCore core = compiler.getRdf2GoCore();
 			return core.createURI(Rdf2GoUtils.expandNamespace(core, termIdentifier.getPathElementAt(0)), termIdentifier.getPathElementAt(1));
 		}

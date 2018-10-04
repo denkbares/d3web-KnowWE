@@ -21,19 +21,20 @@ package de.d3web.we.object;
 
 import java.util.Collection;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
-import com.denkbares.strings.Identifier;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -61,7 +62,7 @@ public abstract class SolutionDefinition
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
 		return Solution.class;
 	}
 
@@ -121,9 +122,9 @@ public abstract class SolutionDefinition
 		public Collection<Message> create(D3webCompiler compiler,
 										  Section<SolutionDefinition> section) {
 
-			Identifier termIdentifier = section.get().getTermIdentifier(section);
+			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 			String name = section.get().getTermName(section);
-			Class<?> termObjectClass = section.get().getTermObjectClass(section);
+			Class<?> termObjectClass = section.get().getTermObjectClass(compiler, section);
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
 					termIdentifier);

@@ -71,7 +71,7 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 
 		Identifier termIdentifier;
 		try {
-			termIdentifier = s.get().getTermIdentifier(s);
+			termIdentifier = s.get().getTermIdentifier(compiler, s);
 		}
 		catch (IllegalStateException e) {
 			// in case of LazyURIReferences we just abort, they can never be definitions
@@ -106,7 +106,7 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 		Section<?> section = terminologyManager.getTermDefiningSection(termIdentifier);
 		if (section != null && section.get() instanceof SimpleDefinition) {
 			Section<SimpleDefinition> simpleDefinitionSection = Sections.cast(section, SimpleDefinition.class);
-			termClass = simpleDefinitionSection.get().getTermObjectClass(simpleDefinitionSection);
+			termClass = simpleDefinitionSection.get().getTermObjectClass(compiler, simpleDefinitionSection);
 		}
 		terminologyManager.registerTermDefinition(compiler, s, termClass, termIdentifier);
 	}
@@ -114,9 +114,9 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 	@Override
 	public void destroy(OntologyCompiler compiler, Section<SimpleReference> s) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
-		Class<?> termObjectClass = s.get().getTermObjectClass(s);
+		Class<?> termObjectClass = s.get().getTermObjectClass(compiler, s);
 		terminologyManager.unregisterTermDefinition(compiler, s,
-				termObjectClass, s.get().getTermIdentifier(s));
+				termObjectClass, s.get().getTermIdentifier(compiler, s));
 	}
 
 }

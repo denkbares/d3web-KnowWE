@@ -9,6 +9,7 @@ import org.openrdf.model.URI;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,7 +43,7 @@ public class ClazzLine extends AbstractType {
 		Section<ResourceDefinition> resourceDefinitionSection = Sections.successor(section, ResourceDefinition.class);
 		assert resourceDefinitionSection != null;
 		return resourceDefinitionSection.get()
-				.getTermIdentifier(resourceDefinitionSection);
+				.getTermIdentifier(compiler, resourceDefinitionSection);
 	}
 
 	@NotNull
@@ -64,7 +65,7 @@ public class ClazzLine extends AbstractType {
 		}
 
 		@Override
-		public Identifier getTermIdentifier(Section<? extends Term> section) {
+		public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 			Identifier identifier = (Identifier) section.getObject(IDENTIFIER_KEY);
 			if (identifier == null) {
 				Section<ClassHierarchyTreeMarkupType> markup = Sections.ancestor(section, ClassHierarchyTreeMarkupType.class);

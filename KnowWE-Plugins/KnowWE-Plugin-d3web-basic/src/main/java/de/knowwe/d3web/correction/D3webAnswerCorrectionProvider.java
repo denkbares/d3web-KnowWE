@@ -59,7 +59,7 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 		Section<AnswerReference> refSec = ((Section<AnswerReference>) section);
 
 		Collection<Identifier> allDefinedLocalTermsOfType = terminologyHandler.getAllDefinedTermsOfType(
-				termReference.getTermObjectClass(refSec));
+				termReference.getTermObjectClass(compiler, refSec));
 
 		String originalText = section.getText();
 		List<Suggestion> suggestions = new LinkedList<>();
@@ -68,10 +68,10 @@ public class D3webAnswerCorrectionProvider implements CorrectionProvider {
 
 			AnswerReference answerReference = (AnswerReference) termReference;
 			Section<QuestionReference> questionSection = answerReference.getQuestionSection((Section<? extends AnswerReference>) section);
-			Identifier question = questionSection.get().getTermIdentifier(questionSection);
+			Identifier question = questionSection.get().getTermIdentifier(compiler, questionSection);
 			// Special case: AnswerReference: Also check that the defining
 			// Question matches
-			if (!(refSec.get().getTermIdentifier(refSec).startsWith(question))) {
+			if (!(refSec.get().getTermIdentifier(compiler, refSec).startsWith(question))) {
 				continue;
 			}
 

@@ -44,7 +44,7 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 		}
 
 		//noinspection ConstantConditions
-		Identifier originalTermIdentifier = ref.get().getTermIdentifier(ref);
+		Identifier originalTermIdentifier = ref.get().getTermIdentifier(compiler, ref);
 		if (terminologyManager.isDefinedTerm(originalTermIdentifier)) {
 			// no suggestions if term is correct
 			return null;
@@ -53,7 +53,7 @@ public class URITermCorrectionProvider implements CorrectionProvider {
 
 		Collection<Identifier> localTermMatches = terminologyManager
 				.getAllDefinedTermsOfType(termReference
-						.getTermObjectClass(Sections.cast(section, Term.class)));
+						.getTermObjectClass(compiler, Sections.cast(section, Term.class)));
 
 		String originalText = originalTermIdentifier.toExternalForm();
 		List<Suggestion> suggestions = new LinkedList<>();

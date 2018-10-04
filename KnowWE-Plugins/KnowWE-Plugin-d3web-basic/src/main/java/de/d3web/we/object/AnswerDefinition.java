@@ -22,15 +22,16 @@ package de.d3web.we.object;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionYN;
-import com.denkbares.strings.Identifier;
-import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -65,13 +66,13 @@ public abstract class AnswerDefinition
 	public abstract Section<? extends QuestionDefinition> getQuestionSection(Section<? extends AnswerDefinition> s);
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> s) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> s) {
 		if (s.get() instanceof AnswerDefinition) {
 			Section<AnswerDefinition> answerSection = Sections.cast(s, AnswerDefinition.class);
 			Section<? extends QuestionDefinition> questionSection = answerSection.get().getQuestionSection(
 					answerSection);
 			Identifier questionIdentifier = questionSection.get().getTermIdentifier(
-					questionSection);
+					compiler, questionSection);
 
 			return questionIdentifier.append(new Identifier(answerSection.get().getTermName(
 					answerSection)));
@@ -82,7 +83,7 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
 		return Choice.class;
 	}
 
@@ -111,8 +112,8 @@ public abstract class AnswerDefinition
 
 			// storing the current question needs to happen first, so the method
 			// getUniqueTermIdentifier() can use the right question.
-			Identifier termIdentifier = section.get().getTermIdentifier(section);
-			Class<?> termObjectClass = section.get().getTermObjectClass(section);
+			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
+			Class<?> termObjectClass = section.get().getTermObjectClass(compiler, section);
 
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,

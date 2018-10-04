@@ -24,6 +24,7 @@ import de.d3web.diaFlux.flow.EndNode;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -66,7 +67,7 @@ public class ExitType extends AbstractXMLType {
 		}
 
 		@Override
-		public Identifier getTermIdentifier(Section<? extends Term> section) {
+		public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 			Section<FlowchartType> flowchart = Sections.ancestor(section,
 					FlowchartType.class);
 			String flowchartName = FlowchartType.getFlowchartName(flowchart);

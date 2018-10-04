@@ -26,6 +26,7 @@ import de.d3web.core.manage.NamedObjectFinderManager;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.CompileScript;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -49,7 +50,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
 		return NamedObject.class;
 	}
 
@@ -67,7 +68,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 	public static Collection<NamedObject> getTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<NamedObject>> section) {
 		if (section == null) return null;
 
-		String termIdentifier = section.get().getTermIdentifier(section).toString();
+		String termIdentifier = section.get().getTermIdentifier(compiler, section).toString();
 
 		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(compiler);
 

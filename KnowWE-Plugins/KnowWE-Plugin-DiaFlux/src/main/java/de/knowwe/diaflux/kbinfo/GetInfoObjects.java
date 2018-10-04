@@ -163,7 +163,7 @@ public class GetInfoObjects extends AbstractAction {
 			}
 			if (definitionCompiler == null) continue;
 			Identifier identifier = section.get().getTermIdentifier(section);
-			Class<?> termObjectClass = section.get().getTermObjectClass(section);
+			Class<?> termObjectClass = section.get().getTermObjectClass(definitionCompiler, section);
 			// append if TerminologyObject
 			if (section.get() instanceof D3webTermDefinition
 					&& (Solution.class.isAssignableFrom(termObjectClass)

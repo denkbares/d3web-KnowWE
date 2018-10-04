@@ -60,7 +60,8 @@ public class AddToWatchesToolProvider implements ToolProvider {
 	}
 
 	protected String createAddToWatchesAction(Section<? extends Term> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(Sections.cast(section, Term.class));
+		Identifier termIdentifier = section.get()
+				.getTermIdentifier(Sections.cast(section, Term.class));
 		return "KNOWWE.core.plugin.rightPanel.watches.addToWatches('" + Strings.encodeHtml(termIdentifier.toExternalForm()) + "')";
 	}
 }

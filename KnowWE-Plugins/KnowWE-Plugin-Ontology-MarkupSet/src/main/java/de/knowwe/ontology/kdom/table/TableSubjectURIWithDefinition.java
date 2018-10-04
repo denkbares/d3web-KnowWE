@@ -28,7 +28,6 @@ import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
@@ -86,13 +85,13 @@ public class TableSubjectURIWithDefinition  extends TurtleURI {
 			}
 			Class<?> termClass = Resource.class;
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			terminologyManager.registerTermDefinition(compiler, section, termClass, section.get().getTermIdentifier(section));
+			terminologyManager.registerTermDefinition(compiler, section, termClass, section.get().getTermIdentifier(compiler, section));
 		}
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<SimpleReference> s) {
 			compiler.getTerminologyManager().unregisterTermDefinition(compiler, s,
-					s.get().getTermObjectClass(s), s.get().getTermIdentifier(s));
+					s.get().getTermObjectClass(compiler, s), s.get().getTermIdentifier(compiler, s));
 		}
 	}
 }

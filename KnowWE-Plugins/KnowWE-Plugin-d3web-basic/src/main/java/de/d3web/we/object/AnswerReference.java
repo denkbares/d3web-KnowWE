@@ -20,13 +20,14 @@
 
 package de.d3web.we.object;
 
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import com.denkbares.strings.Identifier;
-import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -62,7 +63,7 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> s) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> s) {
 		if (s.get() instanceof AnswerReference) {
 			Section<AnswerReference> answerSection = Sections.cast(s, AnswerReference.class);
 			Section<? extends QuestionReference> questionSection = answerSection.get().getQuestionSection(
@@ -70,7 +71,7 @@ public abstract class AnswerReference
 			Identifier questionIdentifier = questionSection == null
 					? new Identifier("")
 					: questionSection.get().getTermIdentifier(
-					questionSection);
+					compiler, questionSection);
 
 			return questionIdentifier.append(new Identifier(answerSection.get().getTermName(
 					answerSection)));
@@ -81,7 +82,7 @@ public abstract class AnswerReference
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
 		return Choice.class;
 	}
 

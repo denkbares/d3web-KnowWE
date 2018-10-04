@@ -22,10 +22,11 @@ package de.knowwe.diaflux.type;
 
 import java.util.Map;
 
-import de.d3web.core.session.SessionFactory;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
+import de.d3web.core.session.SessionFactory;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
@@ -71,10 +72,10 @@ public class FlowchartType extends AbstractXMLType {
 		return Strings.decodeHtml(definition.getText());
 	}
 
-	public static Identifier getFlowchartTermIdentifier(Section<FlowchartType> sec) {
+	public static Identifier getFlowchartTermIdentifier(TermCompiler compiler, Section<FlowchartType> sec) {
 		Section<FlowchartTermDef> definition = Sections.successor(sec, FlowchartTermDef.class);
 		if (definition == null) return null;
-		return definition.get().getTermIdentifier(definition);
+		return definition.get().getTermIdentifier(compiler, definition);
 	}
 
 	public static boolean isAutoStart(Section<FlowchartType> sec) {

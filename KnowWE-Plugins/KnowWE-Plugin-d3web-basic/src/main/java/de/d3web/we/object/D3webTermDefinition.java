@@ -24,15 +24,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
-import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -77,14 +78,14 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		}
 		else {
 			for (NamedObject termObject : termObjectsIgnoreTermObjectClass) {
-				if (section.get().getTermObjectClass(section).isAssignableFrom(
+				if (section.get().getTermObjectClass(compiler, section).isAssignableFrom(
 						termObject.getClass())) {
 					// other object already exist, we return it in the check
 					check.setNamedObject(termObject);
 				}
 				else {
 					// return addition error if one of them has another type
-					msgs.add(Messages.error("The term '" + section.get().getTermIdentifier(section)
+					msgs.add(Messages.error("The term '" + section.get().getTermIdentifier(compiler, section)
 							+ "' is already occupied by an object of the type '"
 							+ termObject.getClass().getSimpleName() + "' (probably by the system)"));
 					break;
@@ -96,14 +97,15 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		return check;
 	}
 
-	private <TermObject extends NamedObject> Collection<NamedObject> getAllTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
+	private <T extends NamedObject> Collection<NamedObject> getAllTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<T>> section) {
 		Set<NamedObject> foundTermObjects = new HashSet<>();
 		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		Collection<Section<?>> termDefiningSections = terminologyHandler.getTermDefiningSections(termIdentifier);
 		for (Section<?> potentialDefSection : termDefiningSections) {
 			if (!(section.get() instanceof D3webTermDefinition)) continue;
 			Section<D3webTermDefinition> termDefiningSection = Sections.cast(potentialDefSection, D3webTermDefinition.class);
+			//noinspection unchecked
 			NamedObject namedObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
 			if (namedObject instanceof TerminologyObject) {
 				if (((TerminologyObject) namedObject).getKnowledgeBase() != compiler.getKnowledgeBase()) continue;
@@ -120,6 +122,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	@Override
 	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		assert section.get() instanceof D3webTermDefinition;
+		//noinspection unchecked
 		return (TermObject) section.getObject(compiler, TERM_OBJECT_STORE_KEY);
 	}
 
@@ -127,4 +130,11 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		section.storeObject(compiler, TERM_OBJECT_STORE_KEY, object);
 	}
 
+	/*
+	 * Override {@link Term#getTermIdentifier(TermCompiler, Section} instead
+	 */
+	@Override
+	public final Identifier getTermIdentifier(Section<? extends Term> section) {
+		return D3webTerm.super.getTermIdentifier(section);
+	}
 }

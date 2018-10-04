@@ -65,7 +65,7 @@ public class NumericalIntervallFinding extends D3webCondition<NumericalFinding> 
 
 		if (!(q instanceof QuestionNum)) {
 			Messages.storeMessage(compiler, s, this.getClass(), Messages.error(
-					"The question '" + qRef.get().getTermIdentifier(qRef) + "' must be numerical."));
+					"The question '" + qRef.get().getTermIdentifier(compiler, qRef) + "' must be numerical."));
 		}
 		else if (number1 != null && number2 != null && q != null && q instanceof QuestionNum) {
 			Messages.clearMessages(compiler, s, this.getClass());

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -54,7 +55,7 @@ public class DefaultNamespaceResourceDefinition extends SimpleDefinition {
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 		return getDefaultNamespaceTermIdentifier(section);
 	}
 

@@ -21,10 +21,12 @@ package de.d3web.we.object;
 
 import java.util.Collection;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -45,12 +47,12 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 	@Override
 	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
-				.getTermDefiningSections(section.get().getTermIdentifier(section));
+				.getTermDefiningSections(section.get().getTermIdentifier(compiler, section));
 		for (Section<?> potentiallyDefiningSection : termDefiningSections) {
 			if (!(potentiallyDefiningSection.get() instanceof D3webTermDefinition)) continue;
 			Section<D3webTermDefinition> termDefiningSection = Sections.cast(potentiallyDefiningSection, D3webTermDefinition.class);
 			NamedObject termObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
-			if (section.get().getTermObjectClass(section).isInstance(termObject)) return (TermObject) termObject;
+			if (section.get().getTermObjectClass(compiler, section).isInstance(termObject)) return (TermObject) termObject;
 		}
 		return null;
 	}
@@ -63,7 +65,6 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 	 * QuestionReference.getObject(...) -> Question).
 	 * 
 	 * @created 21.03.2012
-	 * @param <TermObject>
 	 * @param compiler the compiler for which we want the object
 	 * @param section the referencing section
 	 * @return the NamedObject referenced by the section
@@ -72,6 +73,14 @@ public abstract class D3webTermReference<TermObject extends NamedObject>
 			TermObject getObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
 		if (section == null) return null;
 		return section.get().getTermObject(compiler, section);
+	}
+
+	/*
+	 * Override {@link Term#getTermIdentifier(TermCompiler, Section} instead
+	 */
+	@Override
+	public final Identifier getTermIdentifier(Section<? extends Term> section) {
+		return D3webTerm.super.getTermIdentifier(section);
 	}
 
 }

@@ -119,7 +119,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 			// If termIdentifier is null, obviously section chose not to define
 			// a term, however so we can ignore this case
-			Identifier termIdentifier = s.get().getTermIdentifier(s);
+			Identifier termIdentifier = s.get().getTermIdentifier(compiler, s);
 			if (termIdentifier != null) {
 				compiler.getTerminologyManager()
 						.registerTermDefinition(compiler, s, de.knowwe.ontology.kdom.resource.Resource.class,
@@ -249,7 +249,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		TermCompiler compiler = Compilers.getCompiler(turtleURITerm, TermCompiler.class);
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		Section<TermReference> term = Sections.successor(turtleURITerm, TermReference.class);
-		return terminologyManager.isDefinedTerm(term.get().getTermIdentifier(term));
+		return terminologyManager.isDefinedTerm(term.get().getTermIdentifier(compiler, term));
 	}
 
 	@Override

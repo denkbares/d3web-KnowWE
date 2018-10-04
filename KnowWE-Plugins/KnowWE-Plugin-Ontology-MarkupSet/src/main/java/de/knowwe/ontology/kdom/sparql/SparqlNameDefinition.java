@@ -21,6 +21,7 @@ package de.knowwe.ontology.kdom.sparql;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -52,7 +53,7 @@ public class SparqlNameDefinition extends SimpleDefinition {
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 		return new Identifier(TERM_PREFIX, getTermName(section));
 	}
 

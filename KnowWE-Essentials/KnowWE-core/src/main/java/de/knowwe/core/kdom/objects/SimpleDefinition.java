@@ -52,7 +52,7 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
 		return termObjectClass;
 	}
 
@@ -75,13 +75,13 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 			if (!verifyDefinition(compiler, section)) return;
 
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Identifier termIdentifier = section.get().getTermIdentifier(section);
+			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 			if (termIdentifier == null) {
 				throw new CompilerMessage(new Message(Message.Type.ERROR, "Could not determine TermIdentifier"));
 			}
 
 			terminologyManager.registerTermDefinition(compiler,
-					section, section.get().getTermObjectClass(section),
+					section, section.get().getTermObjectClass(compiler, section),
 					termIdentifier);
 
 			if (compiler instanceof IncrementalCompiler) {
@@ -97,14 +97,14 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 		@Override
 		public void destroy(C compiler, Section<SimpleDefinition> section) {
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Identifier termIdentifier = section.get().getTermIdentifier(section);
+			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 			if (termIdentifier == null) {
 				// we assume that also nothing could have been registered without an Identifier -> ergo nothing to unregister
 				return;
 				//throw new CompilerMessage(new Message(Message.Type.ERROR, "Could not determine TermIdentifier"));
 			}
 			terminologyManager.unregisterTermDefinition(compiler,
-					section, section.get().getTermObjectClass(section),
+					section, section.get().getTermObjectClass(compiler, section),
 					termIdentifier);
 
 			if (compiler instanceof IncrementalCompiler) {
@@ -116,6 +116,14 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 			}
 		}
 
+	}
+
+	/*
+	 * Override {@link Term#getTermIdentifier(TermCompiler, Section} instead
+	 */
+	@Override
+	public final Identifier getTermIdentifier(Section<? extends Term> section) {
+		return TermDefinition.super.getTermIdentifier(section);
 	}
 
 	protected boolean verifyDefinition(Compiler compiler, Section<SimpleDefinition> section) {

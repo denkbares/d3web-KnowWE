@@ -58,7 +58,7 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 		Term termReference = (Term) section.get();
 
 		List<Suggestion> suggestions = new LinkedList<>();
-		Identifier termIdentifier = termReference.getTermIdentifier(Sections.cast(section,
+		Identifier termIdentifier = termReference.getTermIdentifier(compiler, Sections.cast(section,
 				Term.class));
 		Collection<Identifier> otherCaseVersions = terminologyHandler.getAllTermsEqualIgnoreCase(
 				termIdentifier);
@@ -73,7 +73,7 @@ public class D3webCorrectionProvider implements CorrectionProvider {
 		}
 
 		Collection<Identifier> localTermMatches = terminologyHandler.getAllDefinedTermsOfType(
-				termReference.getTermObjectClass(Sections.cast(section, Term.class)));
+				termReference.getTermObjectClass(compiler, Sections.cast(section, Term.class)));
 
 		String originalText = section.getText();
 

@@ -131,8 +131,8 @@ public class QuestionLine extends AbstractType {
 		public Collection<Message> create(D3webCompiler compiler,
 										  Section<QuestionDefinition> section) {
 
-			Identifier identifier = section.get().getTermIdentifier(section);
-			Class<?> termObjectClass = section.get().getTermObjectClass(section);
+			Identifier identifier = section.get().getTermIdentifier(compiler, section);
+			Class<?> termObjectClass = section.get().getTermObjectClass(compiler, section);
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
 					identifier);
@@ -436,7 +436,7 @@ public class QuestionLine extends AbstractType {
 			TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 			Section<QuestionDefinition> thisQuestionDef = section.get().getQuestionDefinition(
 					section);
-			Identifier termIdentifier = thisQuestionDef.get().getTermIdentifier(thisQuestionDef);
+			Identifier termIdentifier = thisQuestionDef.get().getTermIdentifier(compiler, thisQuestionDef);
 			Section<?> termDefiningSection =
 					terminologyHandler.getTermDefiningSection(termIdentifier);
 			if (termDefiningSection != null
@@ -453,7 +453,7 @@ public class QuestionLine extends AbstractType {
 						: thisQuestionType.toString().toLowerCase();
 				if (actualQuestionType != thisQuestionType) {
 					String questionText = actualQuestionDef.get().getTermIdentifier(
-							actualQuestionDef).toString();
+							compiler, actualQuestionDef).toString();
 					questionText = Strings.trimQuotes(questionText);
 					String warningText = "The question '" + questionText + "' is already defined with the type '"
 							+ actualTypeString + "'. This type definition '" + thisTypeString + "' will be ignored.";

@@ -56,16 +56,16 @@ public class TermInfoToolProvider implements ToolProvider {
 		return true;
 	}
 
-	private Identifier getIdentifier(Section<?> section) {
+	private Identifier getIdentifier(TermCompiler compiler, Section<?> section) {
 		if (section.get() instanceof Term) {
-			return ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class));
+			return ((Term) section.get()).getTermIdentifier(compiler, Sections.cast(section, Term.class));
 		}
 		return null;
 	}
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Identifier identifier = getIdentifier(section);
+		Identifier identifier = getIdentifier(null, section);
 		if (identifier == null) return ToolUtils.emptyToolArray();
 		Section<? extends Term> term = Sections.cast(section, Term.class);
 
@@ -74,7 +74,8 @@ public class TermInfoToolProvider implements ToolProvider {
 		for (TermCompiler termCompiler : Compilers.getCompilers(section, TermCompiler.class)) {
 			TerminologyManager manager = termCompiler.getTerminologyManager();
 			if (manager == null) continue;
-			Collection<Section<?>> definitions = manager.getTermDefiningSections(identifier);
+
+			Collection<Section<?>> definitions = manager.getTermDefiningSections(getIdentifier(termCompiler, section));
 			for (Section<?> definition : definitions) {
 				Section<?> previewAncestor = PreviewManager.getInstance().getPreviewAncestor(definition);
 				articles.put(definition.getTitle(), previewAncestor == null ? definition : previewAncestor);
@@ -179,11 +180,6 @@ public class TermInfoToolProvider implements ToolProvider {
 		return null;
 	}
 
-	public static String createObjectInfoJSAction(Section<? extends Term> section) {
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
-		return createObjectInfoPageJSAction(termIdentifier);
-	}
-
 	public static String createObjectInfoPageJSAction(Identifier termIdentifier) {
 		String lastPathElementExternalForm = new Identifier(termIdentifier.getLastPathElement()).toExternalForm();
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
@@ -203,5 +199,4 @@ public class TermInfoToolProvider implements ToolProvider {
 		string = string.replace("\n", "\\n").replace("\r", "\\r");
 		return string;
 	}
-
 }

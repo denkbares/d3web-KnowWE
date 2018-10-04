@@ -21,12 +21,13 @@ package de.d3web.we.object;
 
 import java.util.Collection;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.Question;
-import com.denkbares.strings.Identifier;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
@@ -60,7 +61,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 			for (D3webCompiler compiler : compilers) {
 				TerminologyManager tm = compiler.getTerminologyManager();
 				Section<Term> cast = Sections.cast(section, Term.class);
-				Identifier termIdentifier = cast.get().getTermIdentifier(cast);
+				Identifier termIdentifier = cast.get().getTermIdentifier(compiler, cast);
 				if (tm.hasTermOfClass(termIdentifier, Question.class)) {
 					delegate = new ValueTooltipRenderer(StyleRenderer.Question);
 					break;
@@ -82,7 +83,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
 		return QASet.class;
 	}
 

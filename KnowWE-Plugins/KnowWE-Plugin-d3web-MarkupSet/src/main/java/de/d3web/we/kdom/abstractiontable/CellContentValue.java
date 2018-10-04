@@ -1,5 +1,7 @@
 package de.d3web.we.kdom.abstractiontable;
 
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
@@ -9,14 +11,13 @@ import de.d3web.core.knowledge.terminology.QuestionYN;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.values.Unknown;
-import com.denkbares.strings.Identifier;
-import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.ValueTooltipRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -53,7 +54,7 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 		KnowWEUtils.storeObject(compiler, section, CELL_CONTENT_TYPE_KEY, tpye);
 	}
 
-	public CellType getType(D3webCompiler compiler, Section<? extends Term> section) {
+	public CellType getType(TermCompiler compiler, Section<? extends Term> section) {
 		CellType type = (CellType) KnowWEUtils.getStoredObject(compiler, section, CELL_CONTENT_TYPE_KEY);
 		if (type == null) type = CellType.NONE;
 		return type;
@@ -76,20 +77,14 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(Section<? extends Term> section) {
-		D3webCompiler compiler = D3webUtils.getCompiler(section);
+	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
 		if (compiler == null) return NamedObject.class;
 		return getTermObjectClass(compiler, section);
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
-		D3webCompiler compiler = D3webUtils.getCompiler(section);
-		if (compiler == null) return D3webTerm.super.getTermIdentifier(section);
-		return getTermIdentifier(compiler, section);
-	}
-
-	public Identifier getTermIdentifier(D3webCompiler compiler, Section<? extends Term> section) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
+		if (compiler == null) return new Identifier(getTermName(section));
 		CellType type = getType(compiler, section);
 		if (type == CellType.ANSWER_REFERENCE) {
 			Section<CellContentValue> headerContent = TableUtils.getColumnHeader(section, CellContentValue.class);

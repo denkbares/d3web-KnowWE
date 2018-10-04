@@ -79,12 +79,12 @@ public class FlowchartXMLHeadType extends XMLHead {
 		public Collection<Message> create(D3webCompiler compiler, Section<FlowchartTermDef> s) {
 			Collection<Message> messages = new ArrayList<>(1);
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			Identifier termIdentifier = s.get().getTermIdentifier(s);
+			Identifier termIdentifier = s.get().getTermIdentifier(compiler, s);
 			if (terminologyManager.isDefinedTerm(termIdentifier)) {
 				messages.add(Messages.objectAlreadyDefinedError(termIdentifier.toString(), s));
 			}
 			terminologyManager.registerTermDefinition(compiler, s,
-					s.get().getTermObjectClass(s), termIdentifier);
+					s.get().getTermObjectClass(compiler, s), termIdentifier);
 			return messages;
 		}
 

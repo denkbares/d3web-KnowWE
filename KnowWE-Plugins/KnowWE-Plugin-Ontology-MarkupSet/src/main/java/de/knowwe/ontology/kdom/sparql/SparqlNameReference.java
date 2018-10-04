@@ -20,8 +20,8 @@
 package de.knowwe.ontology.kdom.sparql;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.Term;
@@ -29,6 +29,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
@@ -51,7 +52,7 @@ public class SparqlNameReference extends SimpleReference {
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 		return new Identifier(SparqlNameDefinition.TERM_PREFIX, getTermName(section));
 	}
 
@@ -59,13 +60,13 @@ public class SparqlNameReference extends SimpleReference {
 	 * Returns the actual sparql section that is referenced by the section. If the section cannot be found, null is
 	 * returned.
 	 *
-	 * @param section the referencing section contain the reference name
+	 * @param compiler the compiler for which the section is retrieved
+	 * @param section  the referencing section contain the reference name
 	 * @return the actual sparql section to be executed
 	 */
-	public Section<SparqlMarkupType> getReferencedSection(Section<? extends SparqlNameReference> section) {
-		Identifier identifier = getTermIdentifier(section);
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+	public Section<SparqlMarkupType> getReferencedSection(Rdf2GoCompiler compiler, Section<? extends SparqlNameReference> section) {
 		if (compiler == null) return null;
+		Identifier identifier = getTermIdentifier(compiler, section);
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		Section<?> sparqlSection = terminologyManager.getTermDefiningSection(identifier);
 		if (sparqlSection == null) {
@@ -81,15 +82,15 @@ public class SparqlNameReference extends SimpleReference {
 	 * there is no such query, because the reference is not found of does not contain a valid sparql
 	 * query, null is returned.
 	 *
-	 * @param section the referencing section contain the reference name
+	 * @param compiler the compiler for which the query is retrieved
+	 * @param section  the referencing section contain the reference name
 	 * @return the actual sparql query to be executed
 	 */
-	public String getQuery(Section<? extends SparqlNameReference> section) {
-		Section<SparqlMarkupType> referencedSection = getReferencedSection(section);
+	public String getQuery(OntologyCompiler compiler, Section<? extends SparqlNameReference> section) {
+		Section<SparqlMarkupType> referencedSection = getReferencedSection(compiler, section);
 		if (referencedSection == null) return null;
 		Section<SparqlContentType> content = $(referencedSection).successor(SparqlContentType.class).getFirst();
 		if (content == null) return null;
 		return content.getText();
 	}
-
 }

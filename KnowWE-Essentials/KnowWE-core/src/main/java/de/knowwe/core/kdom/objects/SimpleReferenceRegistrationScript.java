@@ -75,8 +75,8 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		TerminologyManager manager = getTerminologyManager(compiler);
 		if (manager == null) return;
 
-		Class<?> termClass = section.get().getTermObjectClass(section);
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		Class<?> termClass = section.get().getTermObjectClass(compiler, section);
+		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		manager.registerTermReference(compiler, section, termClass, termIdentifier);
 		if (validate) CompilerMessage.throwIfPresent(validateReference(compiler, section));
 	}
@@ -98,17 +98,17 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		if (validationMode == TermCompiler.ReferenceValidationMode.ignore) {
 			return Messages.noMessage();
 		}
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		if (!manager.isDefinedTerm(termIdentifier)) {
-			return Messages.asList(getInvalidTermMessage(section,
+			return Messages.asList(getInvalidTermMessage(compiler, section,
 					validationMode == TermCompiler.ReferenceValidationMode.warn ? Message.Type.WARNING : Message.Type.ERROR));
 		}
 		return Messages.noMessage();
 	}
 
-	protected Message getInvalidTermMessage(Section<Term> section, Message.Type messageType) {
+	protected Message getInvalidTermMessage(C compiler, Section<Term> section, Message.Type messageType) {
 		return Messages.noSuchObjectError(
-				section.get().getTermObjectClass(section).getSimpleName(),
+				section.get().getTermObjectClass(compiler, section).getSimpleName(),
 				section.get().getTermName(section), messageType);
 	}
 
@@ -117,8 +117,8 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		TerminologyManager manager = getTerminologyManager(compiler);
 		if (manager == null) return;
 
-		Class<?> termClass = section.get().getTermObjectClass(section);
-		Identifier termIdentifier = section.get().getTermIdentifier(section);
+		Class<?> termClass = section.get().getTermObjectClass(compiler, section);
+		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		manager.unregisterTermReference(compiler, section, termClass, termIdentifier);
 	}
 }

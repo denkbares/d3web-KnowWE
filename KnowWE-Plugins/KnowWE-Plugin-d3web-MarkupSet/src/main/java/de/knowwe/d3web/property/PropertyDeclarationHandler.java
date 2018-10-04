@@ -65,7 +65,7 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		List<NamedObject> objects = getNamedObjects(compiler, namendObjectSection);
 		if (objects.isEmpty()) {
 			return Messages.asList(Messages.error("No matching object(s) found for reference '"
-					+ namendObjectSection.get().getTermIdentifier(namendObjectSection) + "'"));
+					+ namendObjectSection.get().getTermIdentifier(compiler, namendObjectSection) + "'"));
 		}
 
 		// get Property

@@ -121,7 +121,7 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 	}
 
 	@Override
-	public Identifier getTermIdentifier(Section<? extends Term> section) {
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 		// we just return the first identifier we can find
 		// this should only fail if the section is compiled by different compilers and the lazy uri is resolved
 		// differently by the compilers
@@ -162,16 +162,16 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 			TerminologyManager manager = compiler.getTerminologyManager();
 			// we always also register the section as a reference to the name to be able to update if new identifiers with
 			// the same name are registered
-			manager.registerTermReference(compiler, section, getTermObjectClass(section), getTermIdentifier(section));
+			manager.registerTermReference(compiler, section, getTermObjectClass(compiler, section), getTermIdentifier(compiler, section));
 		}
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<LazyURIReference> section) {
 			Identifier identifier = (Identifier) section.removeObject(compiler, IDENTIFIER_KEY);
 			compiler.getTerminologyManager().unregisterTermReference(compiler,
-					section, getTermObjectClass(section), identifier);
+					section, getTermObjectClass(compiler, section), identifier);
 			compiler.getTerminologyManager().unregisterTermReference(compiler,
-					section, getTermObjectClass(section), new Identifier(getTermName(section)));
+					section, getTermObjectClass(compiler, section), new Identifier(getTermName(section)));
 		}
 	}
 

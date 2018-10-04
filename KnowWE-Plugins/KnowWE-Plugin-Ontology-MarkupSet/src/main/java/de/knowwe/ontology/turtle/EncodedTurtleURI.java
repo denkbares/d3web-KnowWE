@@ -25,6 +25,7 @@ import org.openrdf.model.Value;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -87,7 +88,7 @@ public class EncodedTurtleURI extends AbstractType implements URIProvider<Encode
 		}
 
 		@Override
-		public Identifier getTermIdentifier(Section<? extends Term> section) {
+		public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 			Identifier identifier = (Identifier) section.getObject(IDENTIFIER_KEY);
 			if (identifier == null) {
 				String abbreviation = $(section).ancestor(EncodedTurtleURI.class)
