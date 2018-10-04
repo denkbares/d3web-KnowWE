@@ -72,6 +72,16 @@ public class StatementProviderResult {
 		return this;
 	}
 
+	public StatementProviderResult addStatement(String subject, java.net.URI predicate, java.net.URI object) {
+		addStatement(core.createURI(subject), core.createURI(predicate), core.createURI(object));
+		return this;
+	}
+
+	public StatementProviderResult addStatement(URI subject, java.net.URI predicate, java.net.URI object) {
+		addStatement(subject, core.createURI(predicate), core.createURI(object));
+		return this;
+	}
+
 	public StatementProviderResult addLiteralStatement(java.net.URI subject, java.net.URI predicate, String literal) {
 		addStatement(core.createURI(subject), core.createURI(predicate), core.createLiteral(literal));
 		return this;
@@ -116,6 +126,7 @@ public class StatementProviderResult {
 		addStatement(core.createURI(subject), core.createURI(predicate), core.createURI(object));
 		return this;
 	}
+
 	public StatementProviderResult addResourceStatement(java.net.URI subject, java.net.URI predicate, URI object) {
 		addStatement(core.createURI(subject), core.createURI(predicate), object);
 		return this;
@@ -140,4 +151,5 @@ public class StatementProviderResult {
 		addStatement(core.createURI(subject), core.createURI(predicate), core.createURI(object));
 		return this;
 	}
+
 }
