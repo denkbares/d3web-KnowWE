@@ -19,14 +19,12 @@
 package de.knowwe.ontology.kdom.resource;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -39,16 +37,6 @@ public class ResourceDefinition extends SimpleDefinition {
 		super(OntologyCompiler.class, termClass);
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
-		this.addCompileScript(Priority.HIGHEST, new OntologyCompileScript<ResourceDefinition>() {
-
-			@Override
-			public void compile(OntologyCompiler compiler, Section<ResourceDefinition> section) {
-			}
-
-			@Override
-			public void destroy(OntologyCompiler compiler, Section<ResourceDefinition> section) {
-			}
-		});
 	}
 
 	@Override
