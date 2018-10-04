@@ -68,16 +68,14 @@ public class OntoVisTest {
 	public static void setUp() throws IOException, RDFParseException, RepositoryException {
 		InitPluginManager.init();
 
-		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
-				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", RepositoryConfigs.find("OWL2_RL_OPTIMIZED"));
+		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=", RepositoryConfigs.find("OWL2_RL_OPTIMIZED"));
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		rdfRepository.addNamespace("owl", "http://www.w3.org/2002/07/owl#");
 		rdfRepository.addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 		rdfRepository.addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
 		rdfRepository.addNamespace("si", "http://www.example.org/ontology#");
 
-		rdfRepository2 = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=",
-				"http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#", RepositoryConfigs.find("OWL2_RL_OPTIMIZED"));
+		rdfRepository2 = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=", RepositoryConfigs.find("OWL2_RL_OPTIMIZED"));
 		rdfRepository2.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		rdfRepository2.addNamespace("owl", "http://www.w3.org/2002/07/owl#");
 		rdfRepository2.addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");

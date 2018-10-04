@@ -156,16 +156,12 @@ public class Rdf2GoCore {
 	 * if OWLIM is used as underlying implementation.
 	 *
 	 * @param lns       the uri used as local namespace
-	 * @param bns       the uri used as base namespace
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
-	public Rdf2GoCore(String lns, String bns, RepositoryConfig reasoning) {
+	public Rdf2GoCore(String lns, RepositoryConfig reasoning) {
 
 		if (reasoning == null) {
 			reasoning = RepositoryConfigs.get(RdfConfig.class);
-		}
-		if (bns == null) {
-			bns = "http://ki.informatik.uni-wuerzburg.de/d3web/we/knowwe.owl#";
 		}
 		if (lns == null) {
 			String baseUrl;
@@ -179,7 +175,6 @@ public class Rdf2GoCore {
 			}
 			lns = baseUrl + "Wiki.jsp?page=";
 		}
-		this.bns = bns;
 		this.lns = lns;
 		try {
 			semanticCore = SemanticCore.getOrCreateInstance(String.valueOf(coreId.incrementAndGet()), reasoning);
@@ -249,8 +244,6 @@ public class Rdf2GoCore {
 		return globaleInstance;
 	}
 
-	private String bns;
-
 	private String lns;
 
 	private RepositoryConfig ruleSet;
@@ -295,7 +288,7 @@ public class Rdf2GoCore {
 	 * @param ruleSet specifies the reasoning profile.
 	 */
 	public Rdf2GoCore(RepositoryConfig ruleSet) {
-		this(null, null, ruleSet);
+		this(null, ruleSet);
 	}
 
 	public static Rdf2GoCore getInstance(Section<?> section) {
@@ -329,9 +322,6 @@ public class Rdf2GoCore {
 				}
 				if ("lns".equals(abbreviation)) {
 					this.lns = namespace;
-				}
-				else if ("ns".equals(abbreviation)) {
-					this.bns = namespace;
 				}
 				namespaces = null; // clear caches namespaces, will be get created lazy if needed
 				namespacePrefixes = null;
@@ -718,10 +708,23 @@ public class Rdf2GoCore {
 		return getValueFactory().createStatement(subject, predicate, object);
 	}
 
+	/**
+	 * Creates a URI for normal URI string (e.g. http://example.org#myConcept) or an abbreviated URI (e.g.
+	 * ex:myConcept).
+	 *
+	 * @param value the string to create an URI from
+	 * @return the URI for the given string
+	 */
 	public URI createURI(String value) {
 		return getValueFactory().createURI(Rdf2GoUtils.expandNamespace(this, value));
 	}
 
+	/**
+	 * Transforms an java.net.URI into an URI usable in the Rdf2GoCore.
+	 *
+	 * @param uri the java.net.URI to transform
+	 * @return the URI usable for the Rdf2GoCore
+	 */
 	public URI createURI(java.net.URI uri) {
 		return createURI(uri.toString());
 	}
@@ -735,10 +738,6 @@ public class Rdf2GoCore {
 		String fullNs = getNamespaces().get(ns);
 
 		return createURI((fullNs == null ? ns : fullNs) + Strings.encodeURL(value));
-	}
-
-	public String getBaseNamespace() {
-		return bns;
 	}
 
 	public String getLocalNamespace() {
@@ -843,7 +842,6 @@ public class Rdf2GoCore {
 	 * sets the default namespaces
 	 */
 	private void initDefaultNamespaces() {
-		addNamespace("ns", bns);
 		addNamespace(LNS_ABBREVIATION, lns);
 		addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		addNamespace("owl", "http://www.w3.org/2002/07/owl#");
@@ -1411,7 +1409,7 @@ public class Rdf2GoCore {
 					try {
 						resultCacheSize -= next.getValue().getSize();
 					}
-					catch (Exception e) {
+					catch (Exception ignore) {
 						// nothing to do, cache size wasn't increase either
 					}
 				}
@@ -1447,7 +1445,7 @@ public class Rdf2GoCore {
 		try {
 			statementVerbalization = URLDecoder.decode(statementVerbalization, "UTF-8");
 		}
-		catch (Exception e) {
+		catch (Exception ignore) {
 			// may happen, just ignore...
 		}
 		return statementVerbalization;
