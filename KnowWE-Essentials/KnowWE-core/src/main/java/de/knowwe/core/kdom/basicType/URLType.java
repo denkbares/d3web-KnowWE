@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.Collection;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -60,10 +61,16 @@ public class URLType extends AbstractType {
 	}
 
 	public static URL getURL(Section<URLType> urlSection) {
+		String url = Strings.trim(urlSection.getText());
 		try {
-			return new URL(Strings.trim(urlSection.getText()));
+			return new URL(url);
 		}
 		catch (MalformedURLException e) {
+			try {
+				return new URL(Environment.getInstance().getWikiConnector().getBaseUrl() + url);
+			}
+			catch (MalformedURLException ignore) {
+			}
 			return null;
 		}
 	}
