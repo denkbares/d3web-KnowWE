@@ -453,7 +453,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String getBaseUrl() {
-		return engine.getBaseURL();
+		return engine.getWikiProperties().getProperty("jspwiki.baseURL", engine.getBaseURL());
 	}
 
 	@Override
