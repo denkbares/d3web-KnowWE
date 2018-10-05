@@ -565,7 +565,7 @@
 			<id>cbx</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.denkbares</groupId>
+					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-CBX</artifactId>
 				</dependency>
 				<dependency>

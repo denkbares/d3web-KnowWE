@@ -383,10 +383,6 @@
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
-			</dependency>
-			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
 				<version>${knowwe.version}</version>
 			</dependency>
@@ -396,9 +392,9 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares</groupId>
+				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-CBX</artifactId>
-				<version>${knowwe.version}</version>
+				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
