@@ -32,7 +32,7 @@ public class DefaultNamespaceResourceReference extends SimpleReference {
 
 	@Override
 	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
-		return DefaultNamespaceResourceDefinition.getDefaultNamespaceTermIdentifier(section);
+		return DefaultNamespaceResourceDefinition.getDefaultNamespaceTermIdentifier(compiler, section);
 	}
 
 	@Override

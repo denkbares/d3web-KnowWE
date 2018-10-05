@@ -4,8 +4,6 @@
 
 package de.knowwe.ontology.kdom.resource;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -36,18 +34,15 @@ public class DefaultNamespaceResourceDefinition extends SimpleDefinition {
 		this.setRenderer(StyleRenderer.Question);
 	}
 
-	@NotNull
-	public static Identifier getDefaultNamespaceTermIdentifier(Section<? extends Term> section) {
+	public static Identifier getDefaultNamespaceTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
 		Identifier identifier = (Identifier) section.getObject(IDENTIFIER_KEY);
 		if (identifier == null) {
-			Namespace defaultNamespace = OntologyUtils.getDefaultNamespace(section);
-			String abbreviation;
-			if (defaultNamespace == null) {
-				abbreviation = "lns";
+			Namespace defaultNamespace = null;
+			if (compiler instanceof OntologyCompiler) {
+				defaultNamespace = OntologyUtils.getDefaultNamespace((OntologyCompiler) compiler);
 			}
-			else {
-				abbreviation = defaultNamespace.getAbbreviation();
-			}
+
+			String abbreviation = defaultNamespace == null ? "lns" : defaultNamespace.getAbbreviation();
 			identifier = new Identifier(abbreviation, section.get().getTermName(section));
 			section.storeObject(IDENTIFIER_KEY, identifier);
 		}
@@ -56,7 +51,7 @@ public class DefaultNamespaceResourceDefinition extends SimpleDefinition {
 
 	@Override
 	public Identifier getTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {
-		return getDefaultNamespaceTermIdentifier(section);
+		return getDefaultNamespaceTermIdentifier(compiler, section);
 	}
 
 	@Override
