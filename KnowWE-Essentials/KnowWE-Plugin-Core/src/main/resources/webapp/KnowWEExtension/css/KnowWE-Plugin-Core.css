@@ -311,7 +311,7 @@ span.markupMenuItem {
 
 .toolMenuDecorated {
 	position: relative;
-	white-space: nowrap;
+	white-space: normal;
 }
 
 .toolsMenuDecorator {
