@@ -1530,9 +1530,13 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Executes the query and dumps the result to the console.
+	 * Executes the sparql query, and dumps the result to the console, as a human-readable ascii formatted table. The
+	 * bound variables are in the title of the table, the column widths are adjusted to the content of each column. URI
+	 * references are abbreviated as the namespace is known to this core.
+	 *
+	 * @param query the sparql query to be executed
 	 */
-	@SuppressWarnings("UseOfSystemOutOrSystemErr")
+	@SuppressWarnings({ "UseOfSystemOutOrSystemErr", "unused" })
 	public void dump(String query) {
 		Matrix<String> matrix = new Matrix<>();
 		try (CachedTupleQueryResult result = sparqlSelect(query)) {
