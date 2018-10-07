@@ -451,7 +451,7 @@ public class SparqlResultRenderer {
 		}
 	}
 
-	private static class ResultTableHierarchy {
+	public static class ResultTableHierarchy {
 
 		private final ResultTableModel data;
 		private final List<TableRow> roots = new LinkedList<>();
