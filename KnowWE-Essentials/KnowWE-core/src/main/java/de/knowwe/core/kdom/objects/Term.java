@@ -36,6 +36,17 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public interface Term extends Type {
 
+	String IDENTIFIER_KEY = "identifierKey";
+
+	static Identifier getCachedIdentifier(TermCompiler compiler, Section<? extends Term> section) {
+		return (Identifier) section.getObject(compiler, IDENTIFIER_KEY);
+	}
+
+	static Identifier cacheIdentifier(TermCompiler compiler, Section<? extends Term> section, Identifier identifier) {
+		section.storeObject(compiler, IDENTIFIER_KEY, identifier);
+		return identifier;
+	}
+
 	/**
 	 * Defines the class for which the Term should be registered. Can be dependent on given {@link TermCompiler}, which
 	 * can be null, so there should also be a fall back term class.
