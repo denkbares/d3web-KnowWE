@@ -49,12 +49,6 @@ public class TableIndexConstraint implements SectionFinderConstraint {
 	private int minRowFromLast;
 	private int maxRowFromLast;
 
-	/**
-	 * @param minColumn
-	 * @param maxColumn
-	 * @param minRow
-	 * @param maxRow
-	 */
 	public TableIndexConstraint(int minColumn, int maxColumn, int minRow, int maxRow) {
 		this.minColumn = minColumn;
 		this.maxColumn = maxColumn;

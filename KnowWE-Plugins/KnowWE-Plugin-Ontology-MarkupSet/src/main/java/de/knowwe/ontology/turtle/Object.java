@@ -130,14 +130,14 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 	@NotNull
 	@Override
-	public StatementProviderResult getStatements(Section<? extends Object> section, Rdf2GoCompiler core) {
+	public StatementProviderResult getStatements(Section<? extends Object> section, Rdf2GoCompiler compiler) {
 
-		StatementProviderResult result = new StatementProviderResult(core);
+		StatementProviderResult result = new StatementProviderResult(compiler);
 		boolean termError = false;
 		/*
 		 * Handle OBJECT
 		 */
-		Value object = section.get().getNode(section, core);
+		Value object = section.get().getNode(section, compiler);
 		Section<TurtleURI> turtleURITermObject = Sections.child(section, TurtleURI.class);
 		if (turtleURITermObject != null && STRICT_COMPILATION) {
 			boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
@@ -162,7 +162,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			return result.error("No predicate section found: " + section);
 		}
 
-		org.openrdf.model.URI predicate = predicateSection.get().getURI(predicateSection, core);
+		org.openrdf.model.URI predicate = predicateSection.get().getURI(predicateSection, compiler);
 
 		// check term definition
 		Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);
@@ -183,7 +183,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle SUBJECT
 		 */
-		org.openrdf.model.Resource subject = getSubject(core, result, termError, section);
+		org.openrdf.model.Resource subject = getSubject(compiler, result, termError, section);
 
 		// create statement if all nodes are present
 		if (object != null && predicate != null && subject != null) {

@@ -7,6 +7,7 @@ package de.knowwe.ontology.compile.provider;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -124,6 +125,11 @@ public class StatementProviderResult {
 
 	public StatementProviderResult addLiteralStatement(URI subject, java.net.URI predicate, String literal) {
 		addStatement(subject, core.createURI(predicate), core.createLiteral(literal));
+		return this;
+	}
+
+	public StatementProviderResult addLiteralStatement(URI subject, java.net.URI predicate, Literal literal) {
+		addStatement(subject, core.createURI(predicate), literal);
 		return this;
 	}
 

@@ -116,13 +116,13 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 	@NotNull
 	@Override
-	public StatementProviderResult getStatements(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
-		StatementProviderResult result = new StatementProviderResult(core);
+	public StatementProviderResult getStatements(Section<? extends TurtleCollection> section, Rdf2GoCompiler compiler) {
+		StatementProviderResult result = new StatementProviderResult(compiler);
 		List<Section<CollectionItem>> listItems = new ArrayList<>();
 		Sections.successors(section, CollectionItem.class, 2, listItems);
-		org.openrdf.model.Resource listNode = getResource(section, core);
+		org.openrdf.model.Resource listNode = getResource(section, compiler);
 		if (!listItems.isEmpty()) {
-			addListStatements(listNode, 0, listItems, result, core, section);
+			addListStatements(listNode, 0, listItems, result, compiler, section);
 		}
 		else {
 			result.addStatement(listNode, org.openrdf.model.vocabulary.RDF.REST, org.openrdf.model.vocabulary.RDF.NIL);

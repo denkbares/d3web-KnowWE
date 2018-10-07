@@ -14,15 +14,15 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 public interface StatementProvider<T extends Type> extends Type {
 
 	@NotNull
-	StatementProviderResult getStatements(Section<? extends T> section, Rdf2GoCompiler core) throws CompilerMessage;
+	StatementProviderResult getStatements(Section<? extends T> section, Rdf2GoCompiler compiler) throws CompilerMessage;
 
 	@NotNull
-	default StatementProviderResult getStatementsSafe(Section<? extends T> section, Rdf2GoCompiler core) {
+	default StatementProviderResult getStatementsSafe(Section<? extends T> section, Rdf2GoCompiler compiler) {
 		try {
-			return getStatements(section, core);
+			return getStatements(section, compiler);
 		}
 		catch (CompilerMessage e) {
-			StatementProviderResult result = new StatementProviderResult(core);
+			StatementProviderResult result = new StatementProviderResult(compiler);
 			e.getMessages().forEach(result::addMessage);
 			return result;
 		}

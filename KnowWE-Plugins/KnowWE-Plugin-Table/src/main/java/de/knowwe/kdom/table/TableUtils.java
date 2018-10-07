@@ -28,6 +28,8 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 public class TableUtils {
 
 	public static final String COLUMN_INDEX_KEY = "columnIndexKey";
@@ -202,7 +204,7 @@ public class TableUtils {
 		@SuppressWarnings("unchecked")
 		Sections<TableCell> headerCell = (Sections<TableCell>) tableCell.getObject(COLUMN_HEADER_KEY);
 		if (headerCell == null) {
-			headerCell = new Sections<>(columnSection)
+			headerCell = $(columnSection)
 					.ancestor(Table.class)
 					.successor(TableLine.class)
 					.first()
