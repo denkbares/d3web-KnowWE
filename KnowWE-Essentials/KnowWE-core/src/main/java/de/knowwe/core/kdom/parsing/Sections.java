@@ -76,7 +76,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	public Sections(Section<T> section) {
-		this(Collections.singletonList(section));
+		this((section == null) ? Collections.emptyList() : Collections.singletonList(section));
 	}
 
 	public Sections(Iterable<Section<T>> sections) {
