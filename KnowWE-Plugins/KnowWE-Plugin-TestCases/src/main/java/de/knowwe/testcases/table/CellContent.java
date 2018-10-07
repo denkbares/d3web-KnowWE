@@ -93,7 +93,7 @@ public class CellContent extends AbstractType {
 				headerText = headerText.substring(2);
 			}
 
-			boolean columnOk = columns == null || ArrayUtils.contains(columns, column);
+			boolean columnOk = columns == null || columns.length == 0 || ArrayUtils.contains(columns, column);
 			return headerText.trim().equalsIgnoreCase(name) && columnOk;
 		}
 
