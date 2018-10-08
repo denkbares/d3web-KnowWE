@@ -71,19 +71,7 @@ public class OntologyUtils {
 			AtMostOneFindingConstraint.getInstance());
 
 	public static OntologyCompiler getOntologyCompiler(Section<?> section) {
-		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
-		if (compiler == null && section.get() instanceof OntologyType) {
-			Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(
-					section, DefaultMarkupPackageCompileType.class);
-			Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(
-					compileSection);
-			for (PackageCompiler packageCompiler : packageCompilers) {
-				if (packageCompiler instanceof OntologyCompiler) {
-					return (OntologyCompiler) packageCompiler;
-				}
-			}
-		}
-		return compiler;
+		return Compilers.getCompiler(section, OntologyCompiler.class);
 	}
 
 	/**

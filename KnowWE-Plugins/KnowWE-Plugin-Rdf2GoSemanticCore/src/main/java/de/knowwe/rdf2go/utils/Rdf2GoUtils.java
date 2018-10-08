@@ -122,7 +122,7 @@ public class Rdf2GoUtils {
 	}
 
 	public static Collection<URI> getInstances(Rdf2GoCore core, String... classes) {
-		return getInstances(core, Arrays.stream(classes).map(classURIString -> new URIImpl(classURIString)).collect(Collectors.toList()).toArray(new URI[]{}));
+		return getInstances(core, Arrays.stream(classes).map(URIImpl::new).collect(Collectors.toList()).toArray(new URI[]{}));
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class Rdf2GoUtils {
 	}
 
 	public static Statement[] toArray(Collection<Statement> statements) {
-		return statements.toArray(new Statement[statements.size()]);
+		return statements.toArray(new Statement[0]);
 	}
 
 	public static String getLocalName(Value o) {
@@ -493,7 +493,7 @@ public class Rdf2GoUtils {
 			int start = matcher.start(1);
 			int end = matcher.end(2);
 			String nsLong = nameSpaces.get(matcher.group(2));
-			newSparqlString.append(sparqlString.substring(lastEnd, start));
+			newSparqlString.append(sparqlString, lastEnd, start);
 			newSparqlString.append(nsLong);
 			lastEnd = end + 1;
 		}
