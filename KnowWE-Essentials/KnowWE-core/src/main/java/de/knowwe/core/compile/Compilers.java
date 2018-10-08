@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -20,6 +20,7 @@ package de.knowwe.core.compile;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +28,7 @@ import java.util.Set;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
@@ -59,7 +61,8 @@ public class Compilers {
 			for (CompileScript<C, T> compileScript : scriptList) {
 				try {
 					compileScript.compile(compiler, section);
-				} catch (CompilerMessage cm) {
+				}
+				catch (CompilerMessage cm) {
 					Messages.storeMessages(compiler, section, compileScript.getClass(),
 							cm.getMessages());
 				}
@@ -85,7 +88,8 @@ public class Compilers {
 				if (!(compileScript instanceof DestroyScript)) continue;
 				try {
 					((DestroyScript<C, T>) compileScript).destroy(compiler, section);
-				} catch (Exception e) {
+				}
+				catch (Exception e) {
 					String msg = "Unexpected internal exception while destroying with script "
 							+ section;
 					Log.severe(msg, e);
@@ -129,7 +133,8 @@ public class Compilers {
 		Collection<C> compilers = getCompilers(section, compilerClass, true);
 		if (compilers.isEmpty()) {
 			return null;
-		} else {
+		}
+		else {
 			return compilers.iterator().next();
 		}
 	}
@@ -146,7 +151,8 @@ public class Compilers {
 		Collection<C> compilers = getCompilers(manager, compilerClass, true);
 		if (compilers.isEmpty()) {
 			return null;
-		} else {
+		}
+		else {
 			return compilers.iterator().next();
 		}
 	}
@@ -174,7 +180,19 @@ public class Compilers {
 			if (compilerClass.isAssignableFrom(compiler.getClass())
 					&& compiler.isCompiling(section)) {
 				compilers.add(compilerClass.cast(compiler));
-				if (firstOnly) break;
+			}
+		}
+		// if we only want one compiler but there are multiple, make sure to check if the section is an ancestor
+		// to a package compile section... if yes, we want the associated compiler
+		if (firstOnly && compilers.size() > 1) {
+			Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(section, DefaultMarkupPackageCompileType.class);
+			if (compileSection != null) {
+				Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
+				for (PackageCompiler packageCompiler : packageCompilers) {
+					if (compilerClass.isAssignableFrom(packageCompiler.getClass())) {
+						return Collections.singletonList(compilerClass.cast(packageCompiler));
+					}
+				}
 			}
 		}
 		return compilers;
@@ -280,7 +298,8 @@ public class Compilers {
 	public static void awaitTermination(CompilerManager manager) {
 		try {
 			manager.awaitTermination();
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e) {
 			Log.warning("Interrupted while waiting for compiler to finish", e);
 		}
 	}
