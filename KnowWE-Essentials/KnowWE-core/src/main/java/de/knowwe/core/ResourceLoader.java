@@ -161,6 +161,7 @@ public class ResourceLoader {
 		addFirst("jquery-plugin-collection.js", Type.script);
 		addFirst("jquery-tooltipster.js", Type.script);
 		addFirst("jquery-treeTable.js", Type.script);
+		addFirst("polyfill-promises.min.js", Type.script);
 		addFirst("jquery-ui.min.js", Type.script);
 		addFirst("jquery-2.1.0.min.js", Type.script);
 	}
