@@ -185,8 +185,8 @@ public class SparqlResultRenderer {
 		if (start > 0) start++;
 		while (end < queryLine.length() && queryLine.charAt(end) != ' ') end++;
 		String queryContextPrefix = "..." + queryLine.substring(start, columnNumber);
-		String charAtException = queryLine.substring(columnNumber, columnNumber + 1);
-		String queryContextSuffix = queryLine.substring(columnNumber + 1, end) + "...";
+		String charAtException = columnNumber >= queryLine.length() ? "<EOL>" : queryLine.substring(columnNumber, columnNumber + 1);
+		String queryContextSuffix = columnNumber >= queryLine.length() ? "" : queryLine.substring(columnNumber + 1, end) + "...";
 
 		Scanner scanner = new Scanner(message);
 		boolean first = true;
