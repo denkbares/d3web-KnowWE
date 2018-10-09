@@ -189,4 +189,13 @@ KNOWWE.plugin.hierarchy.init = function () {
 			article: jq$(this.id).closest(".defaultMarkupFrame").attr("id")
 		});
 	});
+
+	jq$(".type_HierarchyTable .wikitable.knowwetable").each(function () {
+		jq$(this).agikiTreeTable({
+			expandable: true,
+			clickableNodeNames: true,
+			persist: true,
+			article: jq$(this.id).closest(".defaultMarkupFrame").attr("id")
+		});
+	});
 }
