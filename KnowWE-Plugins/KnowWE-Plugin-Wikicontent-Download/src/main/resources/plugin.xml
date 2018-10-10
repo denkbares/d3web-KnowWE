@@ -24,7 +24,7 @@
 			value="Offers a download button to download the wiki as a zip file." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="KnowledgeBase" />
+		<parameter id="scope" value="Administration" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"

@@ -14,7 +14,28 @@
             <export prefix="*" />
         </library>
     </runtime>
-	
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AdministrationToolProvider">
+		<parameter id="class" value="de.knowwe.jspwiki.AdministrationToolProvider" />
+		<parameter id="name" value="AdministrationToolProvider" />
+		<parameter id="description" value="Offers quick access to set activationstatus = on." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="Administration" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+			id="AdministrationMarkup">
+		<parameter id="class" value="de.knowwe.jspwiki.AdministrationMarkup" />
+		<parameter id="name" value="AdministrationMarkup" />
+		<parameter id="description" value="Markup for administration" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="css" value="KnowWE-Plugin-JSPWiki-Connector.css" />
+		<parameter id="script" value="KnowWE-Plugin-JSPWiki-Connector.js" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="ReadOnlyMarkup">
 		<parameter id="class" value="de.knowwe.jspwiki.ReadOnlyMarkup" />
@@ -35,6 +56,17 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
+	</extension>
+
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
+			id="ReadOnlyActionCheckbox">
+		<parameter id="class"
+				value="de.knowwe.jspwiki.ReadOnlyActionCheckbox" />
+		<parameter id="name" value="ReadOnlyActionCheckbox" />
+		<parameter id="description" value="Action ReadOnlyActionCheckbox" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
 	</extension>
 	
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"

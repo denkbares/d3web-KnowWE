@@ -13,9 +13,15 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
 
 KNOWWE.plugin.jspwikiConnector = {};
 
-KNOWWE.plugin.jspwikiConnector.setReadOnly = function(checkbox) {
+KNOWWE.plugin.jspwikiConnector.setReadOnlyCheckbox = function(checkbox){
+	var boxActivated = jq$(checkbox).prop('checked');
 
-	var readonly = jq$(checkbox).prop('checked');
+	KNOWWE.plugin.jspwikiConnector.setReadOnly(!boxActivated);
+};
+
+KNOWWE.plugin.jspwikiConnector.setReadOnly = function(active){
+
+	var readonly = !active;
 	var params = {
 		action : 'ReadOnlyAction',
 		readonly : readonly
@@ -32,6 +38,7 @@ KNOWWE.plugin.jspwikiConnector.setReadOnly = function(checkbox) {
 				} else {
 					jq$('.readOnlyMessage').css('display', 'none');
 				}
+				location.reload();
 			},
 			onError : _EC.onErrorBehavior
 		}
@@ -41,12 +48,14 @@ KNOWWE.plugin.jspwikiConnector.setReadOnly = function(checkbox) {
 
 KNOWWE.plugin.jspwikiConnector.enableEditButtons = function() {
 	jq$('#actionsTop').find('.edit').parent().show();
+	jq$('#edit').show();
 	_IE.enableDefaultEditTool();
 	_EM.changeActionMenu();
 };
 
 KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
 	jq$('#actionsTop').find('.edit').parent().hide();
+	jq$('#edit').hide();
 	_IE.disableDefaultEditTool();
 };
 
