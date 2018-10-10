@@ -37,19 +37,20 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class RulesMarkup extends DefaultMarkupType {
 
-	private static DefaultMarkup m = null;
+	private static final DefaultMarkup MARKUP;
 
 	static {
-		m = new DefaultMarkup("Rule");
-		m.addContentType(new RuleContentType());
-		PackageManager.addPackageAnnotation(m);
+		MARKUP = new DefaultMarkup("Rule");
+		MARKUP.addContentType(new RuleContentType());
+		PackageManager.addPackageAnnotation(MARKUP);
 	}
 
 	public RulesMarkup() {
-		super(m);
+		super(MARKUP);
 		this.setRenderer(new DefaultMarkupRenderer("KnowWEExtension/d3web/icon/rule24.png") {
 			@Override
 			protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+				string.append("[Label|SSM Wiring]");
 				boolean ruleDebuggingActive = RuleEditToolProvider.isRuleDebuggingActive(user);
 				if (ruleDebuggingActive) {
 					string.appendHtml("<div class='ruleDebugView'>");
