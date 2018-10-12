@@ -173,7 +173,7 @@ public class OntologyType extends DefaultMarkupType {
 		if (ontologyTypeSection == null) return null;
 		Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
 		if (annotationContentSection == null) return null;
-		Section<AbbreviationDefinition> abbreviationDefinition = Sections.child(annotationContentSection, AbbreviationDefinition.class);
+		Section<AbbreviationDefinition> abbreviationDefinition = Sections.successor(annotationContentSection, AbbreviationDefinition.class);
 		if (abbreviationDefinition == null) return null;
 		String abbreviation = abbreviationDefinition.get().getTermName(abbreviationDefinition);
 		return new Namespace(abbreviation, compiler.getRdf2GoCore().getNamespaces().get(abbreviation));
