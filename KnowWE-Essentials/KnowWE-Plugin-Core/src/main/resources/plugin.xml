@@ -121,6 +121,7 @@
 		<parameter id="scope" value="CellContent" />
 		<parameter id="scope" value="TSMElementName" />
 		<parameter id="scope" value="TSMElementLocation" />
+		<parameter id="scope" value="TSMId" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="TagHandlerType">
