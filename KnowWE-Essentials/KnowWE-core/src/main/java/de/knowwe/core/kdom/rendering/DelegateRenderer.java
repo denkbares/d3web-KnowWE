@@ -51,10 +51,10 @@ public class DelegateRenderer implements Renderer {
 	}
 
 	@Override
-	public void render(Section<?> section, UserContext user, RenderResult builder) {
+	public void render(Section<?> section, UserContext user, RenderResult result) {
 
 		boolean renderTypes = isRenderTypes(user.getParameters());
-		if (renderTypes) renderType(section, true, builder);
+		if (renderTypes) renderType(section, true, result);
 
 		try {
 			List<Section<?>> subSections = section.getChildren();
@@ -68,12 +68,12 @@ public class DelegateRenderer implements Renderer {
 				// // otherwise use section's renderer instead
 				// renderer.render(article, section, user, builder);
 				// }
-				renderAnchor(section, builder);
-				builder.append(section.getText());
+				renderAnchor(section, result);
+				result.append(section.getText());
 			}
 			else {
 				for (Section<?> subSection : subSections) {
-					renderSubSection(subSection, user, builder);
+					renderSubSection(subSection, user, result);
 				}
 			}
 		}
@@ -81,12 +81,12 @@ public class DelegateRenderer implements Renderer {
 			// wow, that was evil!
 			// now we log instead AND report the error to the user
 			Log.warning("Internal error while rendering section", e);
-			builder.appendHtml("<span class='warning'>");
-			builder.append("internal error while rendering section: " + e);
-			builder.appendHtml("</span>");
+			result.appendHtml("<span class='warning'>");
+			result.append("internal error while rendering section: " + e);
+			result.appendHtml("</span>");
 		}
 
-		if (renderTypes) renderType(section, false, builder);
+		if (renderTypes) renderType(section, false, result);
 	}
 
 	public void renderSubSection(Section<?> subSection, UserContext user, RenderResult builder) {
