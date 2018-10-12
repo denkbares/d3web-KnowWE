@@ -261,4 +261,11 @@
 		<parameter-def id="version" />
 	</extension-point>
 
+	<extension-point id="CredentialProvider">
+		<parameter-def id="class" />
+		<parameter-def id="name" />
+		<parameter-def id="description" />
+		<parameter-def id="version" />
+		<parameter-def id="priority" type="number" />
+	</extension-point>
 </plugin>

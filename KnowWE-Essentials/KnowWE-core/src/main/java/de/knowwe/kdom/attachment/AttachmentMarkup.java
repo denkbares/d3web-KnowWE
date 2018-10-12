@@ -73,6 +73,8 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.util.CredentialProvider;
+import de.knowwe.util.CredentialProviders;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -528,6 +530,16 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			connection.setRequestProperty("Authorization", "Basic " +
 					new String(Base64.getEncoder().encode(basicAuth.getBytes(UTF_8)), UTF_8)
 			);
+		}
+		else {
+			final String username = CredentialProviders.get(url.toString(), CredentialProvider.Credential.USERNAME);
+
+			if (username != null) {
+				final String password = CredentialProviders.get(url.toString(), CredentialProvider.Credential.PASSWORD);
+				connection.setRequestProperty("Authorization", "Basic " +
+						new String(Base64.getEncoder().encode((username + ":" + password).getBytes(UTF_8)), UTF_8)
+				);
+			}
 		}
 
 		return connection;

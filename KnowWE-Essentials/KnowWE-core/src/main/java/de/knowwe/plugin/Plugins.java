@@ -49,6 +49,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup.Annotation;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.defaultMarkup.UnknownAnnotationType;
+import de.knowwe.util.CredentialProvider;
 
 /**
  * Provides utilities methods for Plugins used in KnowWE
@@ -78,6 +79,7 @@ public class Plugins {
 	public static final String EXTENDED_POINT_Compiler = "Compiler";
 	public static final String EXTENDED_POINT_StatusProvider = "StatusProvider";
 	public static final String EXTENDED_POINT_IncludeExporter = "IncludeExporter";
+	public static final String EXTENDED_POINT_CredentialProvider = "CredentialProvider";
 
 	private static <T> List<T> getSingletons(String point, Class<T> clazz) {
 		PluginManager pm = PluginManager.getInstance();
@@ -324,6 +326,21 @@ public class Plugins {
 	 */
 	public static List<Annotation> getAnnotations() {
 		return getSingletons(EXTENDED_POINT_Annotation, Annotation.class);
+	}
+
+	/**
+	 * Returns a priority list of credential providers
+	 *
+	 * @return priority list of credential providers
+	 */
+	public static PriorityList<Double, CredentialProvider> getCredentialProviders() {
+		PluginManager pm = PluginManager.getInstance();
+		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_CredentialProvider);
+		PriorityList<Double, CredentialProvider> result = new PriorityList<>(5d);
+		for (Extension e : extensions) {
+			result.add(e.getPriority(), (CredentialProvider) e.getSingleton());
+		}
+		return result;
 	}
 
 	/**
