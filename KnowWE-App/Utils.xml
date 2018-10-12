@@ -56,5 +56,12 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
+		<copy todir="${basedir}/target/KnowWE-App-12.0-SNAPSHOT">
+			<fileset dir="${basedir}/../../SemanticServicePlatform/">
+				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
+				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
+			</fileset>
+			<cutdirsmapper dirs="5" />
+		</copy>
 	</target>
 </project>
