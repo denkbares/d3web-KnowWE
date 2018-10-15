@@ -79,12 +79,11 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 								section, StatementProvider.class);
 						for (Section<StatementProvider> statementSection : statementProviders) {
 
+							//noinspection unchecked
 							StatementProviderResult result =
 									statementSection.get().getStatementsSafe(statementSection, compiler);
-							if (result != null) {
-								compiler.getRdf2GoCore().addStatements(section, result.getStatements());
-								Messages.storeMessages(section, this.getClass(), result.getMessages());
-							}
+							compiler.getRdf2GoCore().addStatements(section, result.getStatements());
+							Messages.storeMessages(section, this.getClass(), result.getMessages());
 						}
 					}
 				}
