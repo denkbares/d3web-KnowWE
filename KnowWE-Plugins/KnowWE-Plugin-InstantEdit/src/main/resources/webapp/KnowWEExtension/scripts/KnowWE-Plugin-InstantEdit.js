@@ -23,7 +23,7 @@ KNOWWE.plugin = KNOWWE.plugin || {};
 /**
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
  */
-KNOWWE.plugin.instantEdit = function() {
+KNOWWE.plugin.instantEdit = function () {
 
 	function enabledWarning() {
 		if (_IE.enabled) {
@@ -32,14 +32,14 @@ KNOWWE.plugin.instantEdit = function() {
 	}
 
 	function bindUnloadFunctions(id) {
-		window.onbeforeunload = (function() {
-			var toolsUnloadCondition = _IE.toolNameSpace[id].unloadCondition;
+		window.onbeforeunload = (function () {
+			const toolsUnloadCondition = _IE.toolNameSpace[id].unloadCondition;
 			if (toolsUnloadCondition != null && !toolsUnloadCondition(id)) {
 				return "edit.areyousure".localize();
 			}
 		}).bind(this);
 
-		window.onunload = (function() {
+		window.onunload = (function () {
 			_IE.disable(id, false, null);
 		}).bind(this);
 	}
@@ -50,7 +50,7 @@ KNOWWE.plugin.instantEdit = function() {
 
 		enabled: false,
 
-		enable: function(id, toolNameSpace) {
+		enable: function (id, toolNameSpace) {
 
 			if (_IE.enabled) {
 				enabledWarning();
@@ -67,35 +67,30 @@ KNOWWE.plugin.instantEdit = function() {
 
 			_IE.toolNameSpace[id] = toolNameSpace;
 
-			var params = {
+			const params = {
 				action: 'InstantEditEnableAction',
 				KdomNodeId: id,
 				mode: toolNameSpace.mode
 			};
 
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				response: {
 					action: 'none',
-					fn: function() {
+					fn: function () {
 						if (_IE.mutualExclusion && _IE.enabled) {
 							enabledWarning();
 							return;
 						}
 						_IE.enabled = true;
 
-						var json = JSON.parse(this.responseText);
-						var locked = json.locked;
+						const json = JSON.parse(this.responseText);
+						const locked = json.locked;
 						if (toolNameSpace.generateHTML) {
-							var html = toolNameSpace.generateHTML(id);
+							let html = toolNameSpace.generateHTML(id);
 							const $section = jq$('#' + id);
-							if (toolNameSpace.replaceHTML) {
-								toolNameSpace.replaceHTML($section, html);
-							}
-							else {
-								html = _EC.wrapHTML(id, locked, html);
-								$section.replaceWith(html);
-							}
+							html = _EC.wrapHTML(id, locked, html);
+							$section.replaceWith(html);
 						}
 						if (toolNameSpace.generateButtons) {
 							_EC.appendToolBar(id, toolNameSpace.generateButtons(id));
@@ -105,8 +100,8 @@ KNOWWE.plugin.instantEdit = function() {
 						bindUnloadFunctions(id);
 						_EC.hideTools();
 
-						var save = toolNameSpace.save ? toolNameSpace.save: _IE.save;
-						var cancel = toolNameSpace.cancel ? toolNameSpace.cancel: _IE.cancel;
+						const save = toolNameSpace.save ? toolNameSpace.save : _IE.save;
+						const cancel = toolNameSpace.cancel ? toolNameSpace.cancel : _IE.cancel;
 
 						_EC.registerSaveCancelEvents(jq$('#' + id), save, cancel, id);
 					},
@@ -119,14 +114,14 @@ KNOWWE.plugin.instantEdit = function() {
 		},
 
 
-		disable: function(id, reload, fn) {
+		disable: function (id, reload, fn) {
 			if (!fn) fn = false; // prevents JS error in KnowWE helper
-			var params = {
+			const params = {
 				action: 'InstantEditDisableAction',
 				KdomNodeId: id
 			};
 
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				async: false,
 				response: {
@@ -148,19 +143,19 @@ KNOWWE.plugin.instantEdit = function() {
 		 * @param id is the id of the DOM element
 		 * @param newWikiText is the optional new text for the section with the given id
 		 */
-		save: function(id, newWikiText) {
+		save: function (id, newWikiText) {
 
 			if (newWikiText == null) {
 				newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
 			}
 
-			var params = {
+			const params = {
 				action: 'InstantEditSaveAction',
 				KdomNodeId: id,
 				KWikiChangeNote: _EC.mode.getChangeNote(id)
 			};
 
-			_EC.sendChanges(newWikiText, params, function(id) {
+			_EC.sendChanges(newWikiText, params, function (id) {
 				_IE.disable(id, true, null);
 			});
 		},
@@ -174,10 +169,10 @@ KNOWWE.plugin.instantEdit = function() {
 		 * @param newWikiText is the optional new text of the new article
 		 * @param parameters containing respective values for redirect, reload and a callback function
 		 */
-		add: function(id, title, newWikiText, parameters = {redirect: false, reload: true, callback: null}) {
-			var redirect = parameters["redirect"];
-			var reload = parameters["reload"];
-			var fn = parameters["callback"];
+		add: function (id, title, newWikiText, parameters = {redirect: false, reload: true, callback: null}) {
+			const redirect = parameters["redirect"];
+			const reload = parameters["reload"];
+			const fn = parameters["callback"];
 
 			_EC.showAjaxLoader(id);
 
@@ -188,13 +183,13 @@ KNOWWE.plugin.instantEdit = function() {
 				title = _IE.toolNameSpace[id].getNewArticleTitle(id);
 			}
 
-			var params = {
+			const params = {
 				action: 'InstantEditAddArticleAction',
 				KdomNodeId: id,
 				KWiki_Topic: title
 			};
 
-			_EC.sendChanges(newWikiText, params, function(id) {
+			_EC.sendChanges(newWikiText, params, function (id) {
 				if (fn) fn(title);
 				_IE.disable(id, reload, null);
 				if (redirect) {
@@ -210,19 +205,19 @@ KNOWWE.plugin.instantEdit = function() {
 		 *
 		 * @param id is the id of the DOM element
 		 */
-		cancel: function(id) {
+		cancel: function (id) {
 			_IE.toolNameSpace[id].unloadCondition = null;
 			_IE.disable(id, true, null);
 		},
 
-		deleteSection: function(id) {
-			var del = confirm("Do you really want to delete this content?");
+		deleteSection: function (id) {
+			const del = confirm("Do you really want to delete this content?");
 			if (del) {
 				_IE.save(id, "");
 			}
 		},
 
-		deleteArticle: function(id, title, hideConfirmDialogue) {
+		deleteArticle: function (id, title, hideConfirmDialogue) {
 			if (!hideConfirmDialogue) {
 				var del = confirm("Do you really want to delete this content?");
 			}
@@ -232,16 +227,16 @@ KNOWWE.plugin.instantEdit = function() {
 			}
 		},
 
-		disableDefaultEditTool: function() {
+		disableDefaultEditTool: function () {
 			jq$('div.InstantEditTool').css("display", "none");
 		},
 
-		enableDefaultEditTool: function() {
+		enableDefaultEditTool: function () {
 			jq$('div.InstantEditTool').css("display", null);
 		},
 
-		getSaveCancelDeleteButtons: function(id, additionalButtonArray) {
-			var array = [];
+		getSaveCancelDeleteButtons: function (id, additionalButtonArray) {
+			let array = [];
 			array.push(_EC.elements.getSaveButton("_IE.save('" + id + "')"));
 			array.push(_EC.elements.getCancelButton("_IE.cancel('" + id + "')"));
 			array.push(_EC.elements.getDeleteSectionButton("_IE.deleteSection('" + id + "')"));
@@ -253,19 +248,19 @@ KNOWWE.plugin.instantEdit = function() {
 			return array;
 		},
 
-		getButtonsTable: function(buttons) {
-			var table = "";
-			for (var i = 0; i < buttons.length; i++) {
+		getButtonsTable: function (buttons) {
+			let table = "";
+			for (let i = 0; i < buttons.length; i++) {
 				table += "<p>" + buttons[i] + "</p>\n";
 			}
 			return "<div class='editbuttons'>" + table + "</div>";
 		},
 
-		getChangeNoteField: function() {
+		getChangeNoteField: function () {
 			return "<div class='changenotearea'><span>Change note: </span><input class='changenote' type='text' maxLength=100 size=100></div>";
 		},
 
-		getChangeNote: function(id) {
+		getChangeNote: function (id) {
 			return jq$('#' + id + ' .changenote').val();
 		}
 
@@ -278,7 +273,7 @@ KNOWWE.plugin.instantEdit = function() {
  */
 var _IE = KNOWWE.plugin.instantEdit;
 
-jq$(document).ready(function() {
+jq$(document).ready(function () {
 	_EC.executeIfPrivileged(_IE.enableDefaultEditTool, _IE.disableDefaultEditTool);
 });
 

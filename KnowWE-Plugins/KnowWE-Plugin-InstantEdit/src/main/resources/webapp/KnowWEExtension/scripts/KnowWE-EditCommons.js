@@ -35,19 +35,18 @@ KNOWWE.editCommons = function () {
 				'class' : 'edittoolbar'
 			});
 			toolbar.innerHTML = content;
-			const test = jq$(sectionId);
 			const editor = jq$('#' + sectionId);
 			editor.css('position', 'relative');
 			editor.append(toolbar);
 		},
 
 		wrapHTML: function (id, locked, html) {
-			var lockedHTML = "";
+			let lockedHTML = "";
 			if (locked) {
 				lockedHTML = "<div class=\"error\">Another user has started to edit this page, but " + "hasn't yet saved it. You are allowed to further edit this page, but be " + "aware that the other user will not be pleased if you do so!</div>"
 			}
-			var openingDiv = "<div id='" + id + "' class='editarea'>";
-			var closingDiv = "</div>\n";
+			let openingDiv = "<div id='" + id + "' class='editarea'>";
+			let closingDiv = "</div>\n";
 
 			return openingDiv + lockedHTML + html + closingDiv;
 		},
@@ -75,7 +74,7 @@ KNOWWE.editCommons = function () {
 		onErrorBehavior: function (messageId) {
 			if (!messageId) messageId = _EC.errorMessageId;
 			_EC.hideAjaxLoader();
-			var status = this.status;
+			const status = this.status;
 			if (status == null) return;
 			KNOWWE.notification.removeNotification(messageId);
 			switch (status) {
@@ -98,17 +97,17 @@ KNOWWE.editCommons = function () {
 		},
 
 		executeIfPrivileged: function (grantedFN, forbiddenFN) {
-			var params = {
+			const params = {
 				action: 'CheckCanEditPageAction'
 			};
 
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				method: 'GET',
 				response: {
 					action: 'none',
 					fn: function () {
-						var canedit = JSON.parse(this.responseText).canedit;
+						const canedit = JSON.parse(this.responseText).canedit;
 
 						if (canedit) {
 							grantedFN();
@@ -123,9 +122,9 @@ KNOWWE.editCommons = function () {
 		},
 
 		sendChanges: function (newWikiText, params, fn, async) {
-			if (typeof async == "undefined") async = true;
+			if (typeof async === "undefined") async = true;
 			_EC.showAjaxLoader();
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				data: newWikiText,
 				async: async,
@@ -163,7 +162,7 @@ KNOWWE.editCommons = function () {
 		isSaveKey: function (event) {
 			event = _EC.toJQueryEvent(event);
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
-				if (event.which == 83) { // S
+				if (event.which === 83) { // S
 					return true;
 				}
 			}
@@ -182,10 +181,10 @@ KNOWWE.editCommons = function () {
 			event = _EC.toJQueryEvent(event);
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
 				// Q, but not with alt gr (= alt + ctrl)  to allow for @ in windows
-				if (event.which == 81 && (!event.altKey || !event.ctrlKey)) {
+				if (event.which === 81 && (!event.altKey || !event.ctrlKey)) {
 					return true
 				}
-				if (event.which == 27) { // ESC
+				if (event.which === 27) { // ESC
 					return true;
 				}
 			}
@@ -202,23 +201,23 @@ KNOWWE.editCommons = function () {
 
 		isDoubleModifier: function (event) {
 			event = _EC.toJQueryEvent(event);
-			var mods = 0;
+			let mods = 0;
 			if (event.metaKey) mods++;
 			if (event.ctrlKey) mods++;
 			if (event.altKey) mods++;
 			if (event.shiftKey) mods++;
-			return mods == 2;
+			return mods === 2;
 
 		},
 		getWikiArticleText: function (articleName, actionName) {
 			if (actionName == null) actionName = "GetWikiArticleTextAction";
 
-			var params = {
+			const params = {
 				action: actionName,
 				articleName: articleName
 			};
 
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				async: false,
 				response: {
@@ -228,25 +227,25 @@ KNOWWE.editCommons = function () {
 					}
 				}
 			};
-			var ajaxCall = new _KA(options);
+			const ajaxCall = new _KA(options);
 			ajaxCall.send();
 			return JSON.parse(ajaxCall.getResponse()).text
 		},
 
 		getWikiText: function (id, actionName) {
 
-			var tempWikiText = _EC.wikiText[id];
+			const tempWikiText = _EC.wikiText[id];
 
 			if (tempWikiText != null) return tempWikiText;
 
 			if (actionName == null) actionName = 'GetWikiTextAction';
 
-			var params = {
+			const params = {
 				action: actionName,
 				KdomNodeId: id
 			};
 
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				async: false,
 				response: {
@@ -256,7 +255,7 @@ KNOWWE.editCommons = function () {
 					onError: _EC.onErrorBehavior
 				}
 			};
-			var ajaxCall = new _KA(options);
+			const ajaxCall = new _KA(options);
 			ajaxCall.send();
 			_EC.wikiText[id] = JSON.parse(ajaxCall.getResponse()).text;
 			return _EC.wikiText[id];
@@ -267,7 +266,7 @@ KNOWWE.editCommons = function () {
 				return false;
 			}
 			// TODO: Check RegExp
-			var validID = new RegExp("^[0123456789abcdef]{1,8}$");
+			const validID = new RegExp("^[0123456789abcdef]{1,8}$");
 			return validID.test(id);
 
 		},
@@ -297,7 +296,7 @@ KNOWWE.editCommons.elements = function () {
 		},
 
 		getSaveCancelDeleteButtons: function (id, additionalButtonArray) {
-			var buttons = _EC.mode.getSaveCancelDeleteButtons(id, additionalButtonArray);
+			const buttons = _EC.mode.getSaveCancelDeleteButtons(id, additionalButtonArray);
 			return _EC.mode.getButtonsTable(buttons);
 		}
 
@@ -358,16 +357,16 @@ KNOWWE.editCommons.UndoSupport.prototype.withUndo = function (name, action, comb
 	if (this.recording) return action();
 
 	// if called the first time, make an initial snapshot
-	if (this.currentIndex == -1) {
-		var meta = this.getMetaDataFun();
-		var content = this.getContentDataFun();
+	if (this.currentIndex === -1) {
+		const meta = this.getMetaDataFun();
+		const content = this.getContentDataFun();
 		this.snaps.push({name: "", metaDataBefore: meta, metaDataAfter: meta, contentData: content});
 		this.currentIndex = 0;
 	}
 
-	var snap = {name: name, combineId: combineId};
-	var lastSnap = this.snaps[this.currentIndex];
-	var canCombine = combineId && combineId == lastSnap.combineId;
+	const snap = {name: name, combineId: combineId};
+	const lastSnap = this.snaps[this.currentIndex];
+	let canCombine = combineId && combineId === lastSnap.combineId;
 	try {
 		this.recording = true;
 		// metadata before operation if only required if we will not combine
@@ -379,7 +378,7 @@ KNOWWE.editCommons.UndoSupport.prototype.withUndo = function (name, action, comb
 		snap.metaDataAfter = this.getMetaDataFun();
 		snap.contentData = this.getContentDataFun();
 		// if nothing has changed, ignore this snapshot, only perform if there are changes
-		if (lastSnap.contentData != snap.contentData) {
+		if (lastSnap.contentData !== snap.contentData) {
 			// remove future redo actions
 			this.snaps.splice(this.currentIndex + 1, this.snaps.length - (this.currentIndex + 1));
 			// update the snaps list
@@ -454,7 +453,8 @@ KNOWWE.editCommons.UndoSupport.prototype.redo = function (count) {
 };
 
 KNOWWE.editCommons.UndoSupport.prototype.getUndoNames = function (maxNames) {
-	var from = 1, to = this.currentIndex + 1;
+	let from = 1;
+	const to = this.currentIndex + 1;
 	if (typeof maxNames !== 'undefined' && to - from > maxNames) from = to - maxNames;
 	return jq$.map(this.snaps.slice(from, to), function (snap) {
 		return snap.name;
@@ -462,7 +462,8 @@ KNOWWE.editCommons.UndoSupport.prototype.getUndoNames = function (maxNames) {
 };
 
 KNOWWE.editCommons.UndoSupport.prototype.getRedoNames = function (maxNames) {
-	var from = this.currentIndex + 1, to = this.snaps.length + 1;
+	const from = this.currentIndex + 1;
+	let to = this.snaps.length + 1;
 	if (typeof maxNames !== 'undefined' && to - from > maxNames) to = from + maxNames;
 	return jq$.map(this.snaps.slice(from, to), function (snap) {
 		return snap.name;

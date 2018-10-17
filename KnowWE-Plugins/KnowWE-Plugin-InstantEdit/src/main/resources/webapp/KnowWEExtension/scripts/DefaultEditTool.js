@@ -17,8 +17,8 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    },
 	    
 	    postProcessHTML : function(id) {
-	    	var textarea = jq$('#' + createTextAreaID(id))[0];
-	    	if (typeof AutoComplete != "undefined") {	    		
+			let textarea = jq$('#' + createTextAreaID(id))[0];
+			if (typeof AutoComplete !== "undefined") {
 	    		new AutoComplete(textarea);
 	    	}
 	    	new TextArea(textarea);
@@ -35,9 +35,9 @@ KNOWWE.plugin.defaultEditTool = function() {
 	    },
 	    
 	    unloadCondition : function(id) {
-	    	var textArea = jq$('#' + createTextAreaID(id))[0];
+			let textArea = jq$('#' + createTextAreaID(id))[0];
 			if (textArea) {
-	    		return textArea.defaultValue == textArea.value;
+	    		return textArea.defaultValue === textArea.value;
 	    	}
 	    	return true;
 	    },
