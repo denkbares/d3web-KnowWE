@@ -20,17 +20,10 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.denkbares.strings.Identifier;
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -55,7 +48,7 @@ public abstract class AbstractAction implements Action {
 		return false;
 	}
 
-	public Section<?> getSection(UserActionContext context) throws IOException {
+	public static Section<?> getSection(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		if (sectionId == null) sectionId = context.getParameter("KdomNodeId"); // compatibility
 		if (sectionId == null) {
