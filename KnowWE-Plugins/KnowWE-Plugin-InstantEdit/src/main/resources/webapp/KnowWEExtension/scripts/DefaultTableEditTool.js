@@ -9,7 +9,7 @@ KNOWWE.plugin.tableEditTool = function() {
 	}
 
 	function createButton(image, ext) {
-		return "<a id='" + image + "' class='action'>" +
+		return "<a class='" + image + " action narrow'>" +
 			"<img src='KnowWEExtension/images/table/" + image + "." + ext + "'></a>";
 	}
 
@@ -90,34 +90,34 @@ KNOWWE.plugin.tableEditTool = function() {
 			spreadsheet[id].setWikiMarkup(originalWikiText[id]);
 			originalWikiText[id] = spreadsheet[id].getWikiMarkup();
 
-			const root = spreadsheet[id].element.parent();
-			root.find("#table_insert_row_before").click(function(event) {
+			const $root = jq$(spreadsheet[id].element).parents('.editarea');
+			$root.find(".table_insert_row_before").click(function(event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row);
 				event.preventDefault();
 			});
-			root.find("#table_insert_row_after").click(function(event) {
+			$root.find(".table_insert_row_after").click(function(event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row + 1);
 				event.preventDefault();
 			});
-			root.find("#table_delete_row").click(function(event) {
+			$root.find(".table_delete_row").click(function(event) {
 				spreadsheet[id].removeSelectedRows();
 				event.preventDefault();
 			});
 
-			root.find("#table_insert_col_before").click(function(event) {
+			$root.find(".table_insert_col_before").click(function(event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addCol(spreadsheet[id].selected.col);
 				event.preventDefault();
 			});
-			root.find("#table_insert_col_after").click(function(event) {
+			$root.find(".table_insert_col_after").click(function(event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addCol(spreadsheet[id].selected.col + 1);
 				event.preventDefault();
 			});
-			root.find("#table_delete_col").click(function(event) {
+			$root.find(".table_delete_col").click(function(event) {
 				spreadsheet[id].removeSelectedCols();
 				event.preventDefault();
 			});
 
-			root.find("#toggle_header").click(function(event) {
+			$root.find(".toggle_header").click(function(event) {
 				if (!spreadsheet[id].selected) return;
 				let header = spreadsheet[id].getCell(spreadsheet[id].selected.row, spreadsheet[id].selected.col).hasClass("table-header");
 				spreadsheet[id].forEachSelected(function(cell, row, col) {
@@ -476,12 +476,12 @@ Spreadsheet.prototype.createTable = function(model) {
 		// toplevel handle undo/redo
 		if (_EC.isModifier(event)) {
 			if (event.keyCode === 89 || (event.keyCode === 90 && event.shiftKey)) { // Y
-				event.stop();
+				jq$(event).stop();
 				data.spreadsheet.redo();
 				return;
 			}
 			if (event.keyCode === 90) { // Z
-				event.stop();
+				jq$(event).stop();
 				data.spreadsheet.snapshot();
 				data.spreadsheet.undo();
 				return;
@@ -1299,9 +1299,10 @@ Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
 
 Spreadsheet.prototype.undo = function() {
 	const model = this.getModel();
+	let shot;
 	while (true) {
 		if (this.undoHistory.length === 0) return;
-		let shot = this.undoHistory.pop();
+		shot = this.undoHistory.pop();
 		this.redoHistory.push(shot);
 		if (!Spreadsheet.areEqual(shot.model, model)) break;
 	}
@@ -1310,9 +1311,10 @@ Spreadsheet.prototype.undo = function() {
 
 Spreadsheet.prototype.redo = function() {
 	const model = this.getModel();
+	let shot;
 	while (true) {
 		if (this.redoHistory.length === 0) return;
-		let shot = this.redoHistory.pop();
+		shot = this.redoHistory.pop();
 		this.undoHistory.push(shot);
 		if (!Spreadsheet.areEqual(shot.model, model)) break;
 	}
