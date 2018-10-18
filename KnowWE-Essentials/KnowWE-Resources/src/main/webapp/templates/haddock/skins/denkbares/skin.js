@@ -20,7 +20,7 @@
 // overwrite "Wiki.locatemenu" to correct bug
 // if menu ist relative to a non-document element
 Wiki.locatemenu = function (base, el) {
-	var win = {
+	const win = {
 		'x': window.getWidth(),
 		'y': window.getHeight()
 	}, scroll = {
@@ -35,7 +35,8 @@ Wiki.locatemenu = function (base, el) {
 	}, prop = {
 		'x': 'left',
 		'y': 'top'
-	}, parent = {
+	};
+	let parent = {
 		'x': 0,
 		'y': 0
 	};
@@ -48,8 +49,8 @@ Wiki.locatemenu = function (base, el) {
 		};
 	} else {
 		// search for parent defining it own coordinate system
-		for (var anchor = el.parentNode; anchor && anchor !== document; anchor = anchor.parentNode) {
-			var cssPosition = anchor.getStyle('position');
+		for (let anchor = el.parentNode; anchor && anchor !== document; anchor = anchor.parentNode) {
+			const cssPosition = anchor.getStyle('position');
 			if (cssPosition === 'absolute' || cssPosition === 'relative') {
 				parent = anchor.getPosition();
 				break;
@@ -57,9 +58,9 @@ Wiki.locatemenu = function (base, el) {
 		}
 	}
 
-	for (var z in prop) {
+	for (let z in prop) {
 		// top-left corner of base
-		var pos = corner[z] + offset[z] - parent[z];
+		let pos = corner[z] + offset[z] - parent[z];
 		if ((pos + popup[z] - scroll[z]) > win[z])
 			pos = win[z] - popup[z] + scroll[z];
 		el.setStyle(prop[z], pos);
@@ -99,7 +100,7 @@ if (SearchBox) {
 		}
 		SearchBox.ajaxQuickSearch_original();
 		// if search is empty, restore original text and relocate menu
-		var a = this.query.value.stripScripts();
+		const a = this.query.value.stripScripts();
 		if ((a === null) || (a.trim() === "") || (a === this.query.defaultValue)) {
 			jq$('#searchTarget')[0].innerHTML = SearchBox.noSearchTargetText_original;
 			Wiki.locatemenu(jq$("#query")[0], jq$("#searchboxMenu")[0]);
@@ -107,7 +108,7 @@ if (SearchBox) {
 	}
 }
 
-var DenkbaresSkin = {};
+const DenkbaresSkin = {};
 
 
 // we set
@@ -128,7 +129,7 @@ DenkbaresSkin.initFavoritesScroll = function () {
  */
 DenkbaresSkin.checkDocSizeScroll = function () {
 	// alert("check");
-	var docHeight = window.getScrollHeight();
+	const docHeight = window.getScrollHeight();
 	if (DenkbaresSkin.docHeight === docHeight)
 		return;
 	DenkbaresSkin.docHeight = docHeight;
@@ -139,21 +140,21 @@ DenkbaresSkin.checkDocSizeScroll = function () {
  * if there is a TOC in the left menu, highlight the current visible chapter.
  */
 DenkbaresSkin.highlightActiveTOC = function () {
-	var tocItems = jq$(".sidebar > .leftmenu > .toc li");
+	const tocItems = jq$(".sidebar > .leftmenu > .toc li");
 	if (tocItems.length === 0) return;
 
 	// find the first section that is visible on the screen, if there is no such section
 	// find the last section that is above the middle of the screen
-	var sections = Wiki.getSections();
-	var index = -1;
-	var top = window.getScrollTop();
-	var height = jq$(window).height();
-	var middle = top + height / 2;
-	var bottom = top + height;
-	for (var i = 0; i <= sections.length; i++) {
+	const sections = Wiki.getSections();
+	let index = -1;
+	const top = window.getScrollTop();
+	const height = jq$(window).height();
+	const middle = top + height / 2;
+	const bottom = top + height;
+	for (let i = 0; i <= sections.length; i++) {
 		// get position of the section
 		// (and add position for below document end at last element)
-		var pos = (i < sections.length)
+		const pos = (i < sections.length)
 			? jq$(sections[i]).offset().top
 			: jq$(document).height() + height;
 
@@ -180,20 +181,20 @@ DenkbaresSkin.initPageScroll = function () {
 
 DenkbaresSkin.adjustPageHeight = function () {
 	jq$('.page').css('min-height', jq$('.sidebar').outerHeight());
-}
+};
 
 DenkbaresSkin.cleanTrail = function () {
-	var breadcrumbs = jq$('.breadcrumb');
+	const breadcrumbs = jq$('.breadcrumb');
 	if (breadcrumbs.length === 0)
 		return;
-	var crumbs = breadcrumbs.find('a.wikipage');
+	const crumbs = breadcrumbs.find('a.wikipage');
 	if (crumbs.length === 0)
 		return;
-	var crumbsCheck = {};
+	const crumbsCheck = {};
 	// remove duplicate entries
-	for (var i = crumbs.length - 1; i >= 0; i--) {
-		var crumb = crumbs[i];
-		var crumbText = jq$(crumb).text();
+	for (let i = crumbs.length - 1; i >= 0; i--) {
+		const crumb = crumbs[i];
+		const crumbText = jq$(crumb).text();
 		if (crumbsCheck[crumbText]) {
 			if (jq$(crumb).prev().hasClass('divider')) {
 				jq$(crumb).prev().remove();
@@ -203,7 +204,7 @@ DenkbaresSkin.cleanTrail = function () {
 			crumbsCheck[crumbText] = true;
 		}
 	}
-	var firstRemainingCrumb = jq$('.breadcrumb a.wikipage')[0];
+	const firstRemainingCrumb = jq$('.breadcrumb a.wikipage')[0];
 	if (jq$(firstRemainingCrumb).prev().hasClass('divider')) {
 		jq$(firstRemainingCrumb).prev().remove();
 	}
@@ -211,7 +212,7 @@ DenkbaresSkin.cleanTrail = function () {
 
 DenkbaresSkin.resizeFlows = function () {
 	jq$('.Flowchart').each(function () {
-		var newWidth = jq$('.page-content').width();
+		let newWidth = jq$('.page-content').width();
 		newWidth = (Math.round(newWidth / 10) * 10) - 9;
 		jq$(this).css('min-width', newWidth);
 	});
@@ -219,11 +220,11 @@ DenkbaresSkin.resizeFlows = function () {
 
 DenkbaresSkin.showSidebar = function () {
 	jq$('.content').addClass('active');
-}
+};
 
 DenkbaresSkin.hideSidebar = function () {
 	jq$('.content').removeClass('active');
-}
+};
 
 DenkbaresSkin.toggleSidebar = function () {
 	if (DenkbaresSkin.isSidebarShown()) {
@@ -231,24 +232,24 @@ DenkbaresSkin.toggleSidebar = function () {
 	} else {
 		DenkbaresSkin.showSidebar();
 	}
-}
+};
 
 DenkbaresSkin.toggleFavorites = function () {
 	DenkbaresSkin.toggleSidebar();
-}
+};
 
 DenkbaresSkin.isSidebarShown = function () {
 	return jq$('.content').hasClass('active');
-}
+};
 
 // does not return "elastic scroll" values from OSX.
 DenkbaresSkin.scrollLeft = function () {
-	var maxScroll = jq$(document).width() - jq$(window).width();
+	const maxScroll = jq$(document).width() - jq$(window).width();
 	return Math.min(Math.max(jq$(window).scrollLeft(), 0), maxScroll);
 };
 
 DenkbaresSkin.scrollTop = function () {
-	var maxScroll = jq$(document).height() - jq$(window).height();
+	const maxScroll = jq$(document).height() - jq$(window).height();
 	return Math.min(Math.max(jq$(window).scrollTop(), 0), maxScroll);
 };
 
@@ -262,11 +263,11 @@ jq$(document).ready(function () {
 	// add auto-resize to edit page
 	if (KNOWWE.helper.loadCheck(['Edit.jsp'])) {
 		window.setTimeout(function () {
-			var editPanes = jq$('.editor');
-			for (var i = 0; i < editPanes.length; i++) {
+			const editPanes = jq$('.editor');
+			for (let i = 0; i < editPanes.length; i++) {
 				jq$(editPanes[i]).trigger('autosize.resize');
 			}
-			var ajaxpreview = jq$('.ajaxpreview');
+			const ajaxpreview = jq$('.ajaxpreview');
 			if (ajaxpreview) {
 				ajaxpreview.height(jq$(editPanes[0]).height());
 			}
