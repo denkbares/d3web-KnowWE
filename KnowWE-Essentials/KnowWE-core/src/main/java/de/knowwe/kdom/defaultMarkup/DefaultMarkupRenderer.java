@@ -293,7 +293,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		// only skip them if they are plain text and empty
 		if (!isEmptyPlainText(first)) first = null;
 		if (!isEmptyPlainText(last)) last = null;
-		boolean listOpen = false;
+		boolean hasAnnotations = false;
 		boolean skipNext = false;
 		for (Section<?> subsec : subSections) {
 			if (subsec == first) continue;
@@ -305,27 +305,44 @@ public class DefaultMarkupRenderer implements Renderer {
 			de.knowwe.core.kdom.Type type = subsec.get();
 			Renderer renderer = type.getRenderer();
 			if (type instanceof AnnotationType) {
-				if (listAnnotations) {
-					if (!listOpen) {
-						result.appendHtml("\n\n<ul class='defaultMarkupAnnotations' style='white-space:normal'>");
-						listOpen = true;
+				if (!hasAnnotations) {
+					if (listAnnotations) {
+						result.appendHtml("\n\n<ul class='markupAnnotations' style='white-space:normal'>");
 					}
-					result.appendHtml("<li>");
+					else {
+						result.appendHtml("<div class='markupAnnotations'>");
+					}
+					hasAnnotations = true;
+				}
+				if (listAnnotations) {
+					result.appendHtml("<li class='markupAnnotation'>");
 					renderer.render(subsec, user, result);
 					result.appendHtml("</li>");
 					continue;
 				}
+				else {
+					result.appendHtml("<span class='markupAnnotation'>");
+					renderer.render(subsec, user, result);
+					result.appendHtml("</span>");
+				}
 				// if we add a "NothingRenderer" to an Annotation, the following PlainText Section
 				// containing the line break between two Annotations will still be rendered, causing
 				// vertical spaces at the end of the DefaultMarkup. Because of this, we skip here.
-				else if (renderer instanceof NothingRenderer) {
+				if (renderer instanceof NothingRenderer) {
 					skipNext = true;
 				}
 			}
-			renderer.render(subsec, user, result);
+			else {
+				renderer.render(subsec, user, result);
+			}
 		}
-		if (listOpen) {
-			result.appendHtml("</ul>");
+		if (hasAnnotations) {
+			if (listAnnotations) {
+				result.appendHtml("</ul>");
+			}
+			else {
+				result.appendHtml("</div>");
+			}
 		}
 	}
 
