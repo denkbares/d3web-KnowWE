@@ -41,6 +41,7 @@ TextArea.replaceSelection = function (a, g) {
 TextArea.prototype.isLongerSelection = function () {
 	return this.getSelection().length > 0 && this.getSelection().indexOf('\n') >= 0;
 };
+// noinspection JSUnusedGlobalSymbols
 TextArea.prototype.handleKeyDown = function (event) {
 	// with this line, we remove a hack of jspwiki-edit.js,
 	// that is no longer needed but instead messes with keydown
@@ -118,20 +119,20 @@ TextArea.prototype.handleKeyDown = function (event) {
 	}
 	// TAB + !SHIFT
 	if (event.which === 9 && !event.shiftKey && !(event.ctrlKey || event.altKey) && (isLongerSelection || isCursorBeforeText)) {
-			event.stopPropagation();
-			event.preventDefault();
-			event.stopImmediatePropagation();
-			this.snapshot();
-			this.moveLines("tab");
-			return;
+		event.stopPropagation();
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		this.snapshot();
+		this.moveLines("tab");
+		return;
 	}
 	// TAB + SHIFT
 	if (event.which === 9 && event.shiftKey && !(event.ctrlKey || event.altKey) && (isLongerSelection || isCursorBeforeText)) {
-			event.stopPropagation();
-			event.preventDefault();
-			this.snapshot();
-			this.moveLines("tabShift");
-			return;
+		event.stopPropagation();
+		event.preventDefault();
+		this.snapshot();
+		this.moveLines("tabShift");
+		return;
 	}
 	// TAB + !SHIFT + ALT|CTRL + selection length = 0
 	if (event.which === 9 && !event.shiftKey && (event.ctrlKey || event.altKey)) {
@@ -169,7 +170,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		this.snapshot();
 		// late processing the intend, after events have completed
 		// to avoid conflict with e.g. auto-complete
-		var intend = this.getIntend();
+		const intend = this.getIntend();
 		setTimeout(jq$.proxy(function () {
 			if (!this.isSelectionAtStartOfLine()) return;
 			this.insertText(intend);
@@ -189,17 +190,18 @@ TextArea.prototype.handleKeyDown = function (event) {
 TextArea.prototype.onSave = function () {
 };
 
+// noinspection JSUnusedGlobalSymbols
 TextArea.prototype.onCancel = function () {
 };
 
 TextArea.prototype.moveLines = function (direction) {
-	var area = this.area;
-	var originalSelection = this.getSelectionCoordinates();
+	const area = this.area;
+	const originalSelection = this.getSelectionCoordinates();
 	this.extendSelectionToFullLines(area);
-	var lines = this.getSelection();
+	let lines = this.getSelection();
 
 	// make sure that we have a "\n" at the end (can happen in last line)
-	var missingLF = lines.charCodeAt(lines.length - 1) !== 10;
+	const missingLF = lines.charCodeAt(lines.length - 1) !== 10;
 	if (missingLF) {
 		// add a line break
 		lines = lines + "\n";
@@ -210,12 +212,12 @@ TextArea.prototype.moveLines = function (direction) {
 		return;
 	}
 
-	var insertionPos = this.getCursor(area);
-	var newStart = insertionPos;
-	var newEnd = -1;
+	let insertionPos = this.getCursor(area);
+	let newStart = insertionPos;
+	let newEnd = -1;
 
-	var text = area.value;
-	var splitLines = lines.split("\n");
+	const text = area.value;
+	const splitLines = lines.split("\n");
 	if (direction === "up") {
 		insertionPos = text.substring(0, newStart - 1).lastIndexOf('\n') + 1;
 		newStart = insertionPos;
@@ -234,7 +236,7 @@ TextArea.prototype.moveLines = function (direction) {
 	}
 	else if (direction === "minusRight") {
 		lines = "";
-		for (var line = 0; line < splitLines.length - 1; line++) {
+		for (let line = 0; line < splitLines.length - 1; line++) {
 			lines = lines + "-" + splitLines[line] + "\n";
 		}
 	}
@@ -337,54 +339,56 @@ TextArea.prototype.moveLines = function (direction) {
 	this.setSelection(newStart, newEnd);
 };
 TextArea.prototype.getLinesLimits = function () {
-	var area = this.area;
-	var text = area.value;
-	var sel = this.getSelectionCoordinates();
-	var sel1 = Math.min(sel.start, sel.end);
-	var sel2 = Math.max(sel.start, sel.end);
+	const area = this.area;
+	const text = area.value;
+	const sel = this.getSelectionCoordinates();
+	const sel1 = Math.min(sel.start, sel.end);
+	let sel2 = Math.max(sel.start, sel.end);
 	if (sel2 > sel1 && text.charCodeAt(sel2 - 1) === 10) sel2--;
-	var start = text.substring(0, sel1).lastIndexOf("\n") + 1;
-	var end = text.substring(sel2).indexOf("\n");
+	const start = text.substring(0, sel1).lastIndexOf("\n") + 1;
+	let end = text.substring(sel2).indexOf("\n");
 	if (end === -1) end = text.length;
 	else end += 1 + sel2;
 
 	return {start: start, end: end}
 };
 TextArea.prototype.extendSelectionToFullLines = function () {
-	var linesLimits = this.getLinesLimits();
+	const linesLimits = this.getLinesLimits();
 	this.setSelection(linesLimits.start, linesLimits.end);
 };
 TextArea.prototype.undo = function () {
-	var area = this.area;
+	const area = this.area;
+	let shot;
 	while (true) {
 		if (area.undoHistory.length === 0) return;
-		var shot = area.undoHistory.pop();
+		shot = area.undoHistory.pop();
 		area.redoHistory.push(shot);
 		if (shot.text !== area.value) break;
 	}
 	this.restoreSnapshot(shot);
 };
 TextArea.prototype.redo = function () {
-	var area = this.area;
+	const area = this.area;
+	let shot;
 	while (true) {
 		if (area.redoHistory.length === 0) return;
-		var shot = area.redoHistory.pop();
+		shot = area.redoHistory.pop();
 		area.undoHistory.push(shot);
 		if (shot.text !== area.value) break;
 	}
 	this.restoreSnapshot(shot);
 };
 TextArea.prototype.snapshot = function () {
-	var area = this.area;
-	var text = area.value;
+	const area = this.area;
+	const text = area.value;
 	// avoid duplicate entries
 	if (area.undoHistory.length > 0 && area.undoHistory[area.undoHistory.length - 1].text === text) return;
 	if (area.redoHistory.length > 0 && area.redoHistory[area.redoHistory.length - 1].text === text) return;
-	var sel = this.getSelectionCoordinates();
+	const sel = this.getSelectionCoordinates();
 	// if we have a redo history, we take the recent element back to the undo history,
 	// because it was the text fields original state before editing again
 	if (area.redoHistory.length > 0) {
-		var shot = area.redoHistory.pop();
+		const shot = area.redoHistory.pop();
 		area.undoHistory.push(shot);
 		area.redoHistory = [];
 	}
@@ -401,20 +405,20 @@ TextArea.prototype.restoreSnapshot = function (shot) {
 	this.area.scrollTop = shot.scroll;
 };
 TextArea.prototype.getSelection = function () {
-	var b = this.getSelectionCoordinates();
+	const b = this.getSelectionCoordinates();
 	return this.area.value.substring(b.start, b.end);
 };
 TextArea.prototype.setSelection = function (f, a) {
-	var area = this.area;
+	const area = this.area;
 	if (!a) {
 		a = f
 	}
 	if (area.setSelectionRange !== undefined) {
 		area.setSelectionRange(f, a)
 	} else {
-		var c = area.value, d = c.substr(f, a - f).replace(/\r/g, "").length;
+		const c = area.value, d = c.substr(f, a - f).replace(/\r/g, "").length;
 		f = c.substr(0, f).replace(/\r/g, "").length;
-		var b = area.createTextRange();
+		const b = area.createTextRange();
 		b.collapse(true);
 		b.moveEnd("character", f + d);
 		b.moveStart("character", f);
@@ -429,20 +433,20 @@ TextArea.prototype.getCursor = function () {
 };
 
 TextArea.prototype.getIntend = function () {
-	var area = this.area;
-	var text = area.value.substring(0, this.getCursor(area));
-	var pos = text.lastIndexOf("\n") + 1;
-	var intend = "";
+	const area = this.area;
+	const text = area.value.substring(0, this.getCursor(area));
+	let pos = text.lastIndexOf("\n") + 1;
+	let intend = "";
 	while (pos < text.length) {
-		var c = text.charAt(pos++);
+		const c = text.charAt(pos++);
 		if (c === '\t' || c === ' ') intend += c;
 		else break;
 	}
 	return intend;
 };
 TextArea.prototype.getSelectionCoordinates = function () {
-	var area = this.area;
-	var f = area, e = {
+	const f = this.area;
+	let e = {
 		start: 0,
 		end: 0,
 		thin: true
@@ -453,11 +457,11 @@ TextArea.prototype.getSelectionCoordinates = function () {
 			end: f.selectionEnd
 		}
 	} else {
-		var a = document.selection.createRange();
+		let a = document.selection.createRange();
 		if (!a || a.parentElement() !== f) {
 			return e
 		}
-		var c = a.duplicate(), b = f.value, d = b.length
+		const c = a.duplicate(), b = f.value, d = b.length
 			- b.match(/[\n\r]*$/)[0].length;
 		c.moveToElementText(f);
 		c.setEndPoint("StartToEnd", a);
@@ -469,15 +473,15 @@ TextArea.prototype.getSelectionCoordinates = function () {
 	return e
 };
 TextArea.prototype.replaceSelection = function (g) {
-	var h = g.replace(/\r/g, ""), d = this.area, c = d.scrollTop;
+	const h = g.replace(/\r/g, ""), d = this.area, c = d.scrollTop;
 	if (d.selectionStart !== undefined) {
-		var b = d.selectionStart, e = d.selectionEnd, i = d.value;
+		const b = d.selectionStart, e = d.selectionEnd, i = d.value;
 		d.value = i.substr(0, b) + h + i.substr(e);
 		d.selectionStart = b;
 		d.selectionEnd = b + h.length;
 	} else {
 		d.focus();
-		var f = document.selection.createRange();
+		const f = document.selection.createRange();
 		f.text = h;
 		f.collapse(true);
 		f.moveStart("character", -h.length);
@@ -492,14 +496,14 @@ TextArea.prototype.insertText = function (text) {
 	this.setSelection(this.getSelectionCoordinates().end);
 };
 TextArea.prototype.isSelectionAtStartOfLine = function () {
-	var a = this.getCursor();
+	const a = this.getCursor();
 	return ((a <= 0) || (this.area.value.charAt(a - 1).match(/[\n\r]/)));
 };
 TextArea.prototype.isCursorBeforeText = function () {
-	var sel = this.getSelectionCoordinates();
+	const sel = this.getSelectionCoordinates();
 	if (sel.start !== sel.end) return false;
 	// look backwards from cursor
-	for (var index = sel.start - 1; index >= 0; index--) {
+	for (let index = sel.start - 1; index >= 0; index--) {
 		// if char before is return, no characters have been before the cursor
 		if (this.area.value.charAt(index).match(/[\n\r]/)) return true;
 		// if char before is not a white-space, there are characters before the cursor
