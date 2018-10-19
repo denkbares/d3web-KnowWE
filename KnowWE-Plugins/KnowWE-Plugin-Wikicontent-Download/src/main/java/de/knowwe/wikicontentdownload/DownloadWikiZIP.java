@@ -59,7 +59,7 @@ public class DownloadWikiZIP extends AbstractAction {
 
 		if (!context.userIsAdmin()) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN,
-					"Administration access required to download wiki content.");
+					"AdministrationMarkup access required to download wiki content.");
 			return;
 		}
 
