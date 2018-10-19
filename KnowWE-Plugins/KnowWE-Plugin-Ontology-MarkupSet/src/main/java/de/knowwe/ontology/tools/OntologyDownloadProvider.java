@@ -6,7 +6,8 @@ package de.knowwe.ontology.tools;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFParserRegistry;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
@@ -39,11 +40,11 @@ public class OntologyDownloadProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<Tool> tools = new LinkedList<>();
-		for (RDFFormat syntax : RDFFormat.values()) {
+		for (RDFFormat syntax : RDFParserRegistry.getInstance().getKeys()) {
 			Tool tool = getDownloadTool(section, syntax);
 			if (tool != null) tools.add(tool);
 		}
-		return tools.toArray(new Tool[tools.size()]);
+		return tools.toArray(new Tool[0]);
 	}
 
 	protected Tool getDownloadTool(Section<?> section, RDFFormat syntax) {
@@ -79,7 +80,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 		}
 		jsAction = "action/OntologyDownloadAction" +
 				"?" + identifierForThisOntology +
-				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + syntax.getName() +
+				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + syntax.getDefaultMIMEType() +
 				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + "." + extension + "";
 		// assemble download tool
 		return new DefaultTool(

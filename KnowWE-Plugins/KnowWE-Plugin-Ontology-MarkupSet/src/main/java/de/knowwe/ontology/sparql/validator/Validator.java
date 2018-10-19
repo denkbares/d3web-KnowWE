@@ -18,8 +18,8 @@
  */
 package de.knowwe.ontology.sparql.validator;
 
-import org.openrdf.query.MalformedQueryException;
-import org.openrdf.query.parser.sparql.SPARQLParser;
+import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.eclipse.rdf4j.query.parser.sparql.SPARQLParser;
 
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;

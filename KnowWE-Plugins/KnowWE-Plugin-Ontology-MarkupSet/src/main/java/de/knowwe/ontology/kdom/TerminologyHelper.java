@@ -20,7 +20,7 @@ package de.knowwe.ontology.kdom;
 
 import java.util.Iterator;
 
-import org.openrdf.query.BindingSet;
+import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.terminology.TerminologyManager;

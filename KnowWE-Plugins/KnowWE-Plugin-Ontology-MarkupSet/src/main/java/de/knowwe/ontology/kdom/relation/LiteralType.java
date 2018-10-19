@@ -20,7 +20,7 @@ package de.knowwe.ontology.kdom.relation;
 
 import java.util.regex.Pattern;
 
-import org.openrdf.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
@@ -54,7 +54,7 @@ public class LiteralType extends AbstractType {
 		this.addChildType(new LanguageTagPart());
 	}
 
-	public org.openrdf.model.Literal getLiteral(Rdf2GoCore core, Section<LiteralType> section) {
+	public org.eclipse.rdf4j.model.Literal getLiteral(Rdf2GoCore core, Section<LiteralType> section) {
 		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
@@ -65,7 +65,7 @@ public class LiteralType extends AbstractType {
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));
 		}
-		org.openrdf.model.URI xsdType = null;
+		org.eclipse.rdf4j.model.URI xsdType = null;
 		if (xsdPartSection != null) {
 			xsdType = xsdPartSection.get().getXSDType(xsdPartSection);
 		}
@@ -75,7 +75,7 @@ public class LiteralType extends AbstractType {
 		return core.createLiteral(literal, xsdType);
 	}
 
-	private org.openrdf.model.URI deriveTypeFromLiteral(String literal) {
+	private org.eclipse.rdf4j.model.URI deriveTypeFromLiteral(String literal) {
 		try {
 			Integer.parseInt(literal);
 			return XMLSchema.INTEGER;
@@ -124,8 +124,8 @@ public class LiteralType extends AbstractType {
 			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN), 1));
 		}
 
-		public org.openrdf.model.URI getXSDType(Section<XSDPart> section) {
-			return new org.openrdf.model.impl.URIImpl(XMLSchema.NAMESPACE + section.getText());
+		public org.eclipse.rdf4j.model.URI getXSDType(Section<XSDPart> section) {
+			return new org.eclipse.rdf4j.model.impl.URIImpl(XMLSchema.NAMESPACE + section.getText());
 		}
 	}
 

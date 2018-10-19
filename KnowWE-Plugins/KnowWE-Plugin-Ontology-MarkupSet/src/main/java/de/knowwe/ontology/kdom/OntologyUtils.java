@@ -25,9 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.URI;
 
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;

@@ -37,15 +37,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.openrdf.model.BNode;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.model.vocabulary.XMLSchema;
-import org.openrdf.query.BindingSet;
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyTree;
@@ -520,11 +521,11 @@ public class Rdf2GoUtils {
 	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
-	public static void addStatement(Rdf2GoCore core, org.openrdf.model.Resource subject, URI predicate, String object, Collection<Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, org.eclipse.rdf4j.model.Resource subject, URI predicate, String object, Collection<Statement> statements) {
 		addStatement(core, subject, predicate, core.createlocalURI(object), statements);
 	}
 
-	public static void addStatement(Rdf2GoCore core, org.openrdf.model.Resource subject, URI predicate, Value object, Collection<Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, org.eclipse.rdf4j.model.Resource subject, URI predicate, Value object, Collection<Statement> statements) {
 		statements.add(core.createStatement(subject, predicate, object));
 	}
 
@@ -537,8 +538,7 @@ public class Rdf2GoUtils {
 	}
 
 	public static RDFFormat syntaxForFileName(String fileName) {
-		//noinspection deprecation backwards compatibility
-		return RDFFormat.forFileName(fileName, RDFFormat.RDFXML);
+		return Rio.getParserFormatForFileName(fileName).orElse(RDFFormat.RDFXML);
 	}
 
 	/**
@@ -593,11 +593,11 @@ public class Rdf2GoUtils {
 		return doubleValue.toString();
 	}
 
-	public static org.openrdf.model.Literal createDoubleLiteral(Rdf2GoCore core, double d) {
+	public static org.eclipse.rdf4j.model.Literal createDoubleLiteral(Rdf2GoCore core, double d) {
 		return core.createDatatypeLiteral(getDoubleAsString(d), XMLSchema.DOUBLE);
 	}
 
-	public static org.openrdf.model.Literal createDateTimeLiteral(Rdf2GoCore core, Date date) {
+	public static org.eclipse.rdf4j.model.Literal createDateTimeLiteral(Rdf2GoCore core, Date date) {
 		String dateTimeString;
 		synchronized (PRIVATE_XSD_DATE_TIME_FORMAT) {
 			dateTimeString = PRIVATE_XSD_DATE_TIME_FORMAT.format(date);

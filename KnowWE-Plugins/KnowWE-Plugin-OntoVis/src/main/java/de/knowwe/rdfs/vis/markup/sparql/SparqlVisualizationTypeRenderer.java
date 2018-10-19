@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.BindingSet;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
@@ -115,10 +115,10 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 	private String determineClassType(Rdf2GoCore rdfRepository, String variable, BindingSet row, Value fromURI) {
 		// try to determine the clazz/type of the source concept
 		String clazz = null;
-		if (fromURI instanceof org.openrdf.model.URI) {
+		if (fromURI instanceof org.eclipse.rdf4j.model.URI) {
 			URIImpl uriInstance = new URIImpl(fromURI
 					.stringValue());
-			org.openrdf.model.URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdfRepository, uriInstance);
+			org.eclipse.rdf4j.model.URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdfRepository, uriInstance);
 			if (mostSpecificClass != null) {
 				clazz = Rdf2GoUtils.reduceNamespace(rdfRepository, mostSpecificClass.getNamespace()) + mostSpecificClass
 						.getLocalName();

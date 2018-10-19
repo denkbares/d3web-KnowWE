@@ -54,7 +54,7 @@ public class AbbreviatedResourceReference extends AbstractType {
 				.getAbbreviation(abbreviationPrefixSection);
 	}
 
-	public org.openrdf.model.URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
+	public org.eclipse.rdf4j.model.URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
 		if (core == null) return null;
 
 		String propertyAbbreviation = getAbbreviation(section);
@@ -65,7 +65,7 @@ public class AbbreviatedResourceReference extends AbstractType {
 		return core.createURI(propertyAbbreviation, property);
 	}
 
-	public org.openrdf.model.URI getShortURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
+	public org.eclipse.rdf4j.model.URI getShortURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
 		return core.toShortURI(getResourceURI(core, section));
 	}
 

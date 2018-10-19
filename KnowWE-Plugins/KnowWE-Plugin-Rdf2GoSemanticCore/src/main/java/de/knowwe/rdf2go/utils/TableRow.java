@@ -21,7 +21,7 @@ package de.knowwe.rdf2go.utils;
 
 import java.util.List;
 
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 public interface TableRow {
 

@@ -21,9 +21,9 @@ package de.knowwe.ontology.kdom.table;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.model.Statement;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.URIImpl;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -113,7 +113,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 			Sections<DefaultMarkupType> markup = Sections.$(section).ancestor(DefaultMarkupType.class);
 			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);
 			if (typeRelationAnnotationValue != null) {
-				org.openrdf.model.URI propertyUri = compiler.getRdf2GoCore().createURI(typeRelationAnnotationValue);
+				org.eclipse.rdf4j.model.URI propertyUri = compiler.getRdf2GoCore().createURI(typeRelationAnnotationValue);
 				statements.add(core.createStatement(new URIImpl(subjectNode.stringValue()), propertyUri, headerClassResource));
 			}
 			else {

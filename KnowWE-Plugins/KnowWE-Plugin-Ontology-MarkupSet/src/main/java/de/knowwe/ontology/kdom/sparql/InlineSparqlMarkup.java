@@ -3,8 +3,8 @@ package de.knowwe.ontology.kdom.sparql;
 import java.util.Iterator;
 import java.util.List;
 
-import org.openrdf.model.Value;
-import org.openrdf.query.BindingSet;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.strings.Identifier;

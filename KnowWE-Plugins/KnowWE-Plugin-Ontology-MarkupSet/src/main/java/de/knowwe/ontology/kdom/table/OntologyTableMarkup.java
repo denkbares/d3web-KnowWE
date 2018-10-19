@@ -19,7 +19,7 @@
 package de.knowwe.ontology.kdom.table;
 
 import org.jetbrains.annotations.Nullable;
-import org.openrdf.model.Resource;
+import org.eclipse.rdf4j.model.Resource;
 
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;

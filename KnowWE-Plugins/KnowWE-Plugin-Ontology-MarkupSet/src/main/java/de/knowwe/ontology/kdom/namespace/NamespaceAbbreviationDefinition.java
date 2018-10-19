@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.openrdf.model.impl.URIImpl;
-import org.openrdf.repository.RepositoryException;
+import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.utils.Log;

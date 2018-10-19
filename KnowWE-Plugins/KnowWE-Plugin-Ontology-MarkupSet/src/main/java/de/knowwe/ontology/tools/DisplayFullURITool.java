@@ -19,7 +19,7 @@
 
 package de.knowwe.ontology.tools;
 
-import org.openrdf.model.URI;
+import org.eclipse.rdf4j.model.URI;
 
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;

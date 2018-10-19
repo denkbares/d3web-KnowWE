@@ -19,8 +19,8 @@
 
 package de.knowwe.ontology.turtle;
 
-import org.openrdf.model.Value;
-import org.openrdf.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.ontology.compile.provider.NodeProvider;
@@ -51,7 +51,7 @@ public class NumberLiteral extends de.knowwe.core.kdom.basicType.Number implemen
             // nothing to do
         }
 
-        org.openrdf.model.URI dataType = XMLSchema.DOUBLE;
+        org.eclipse.rdf4j.model.URI dataType = XMLSchema.DOUBLE;
         if (isInteger) {
             dataType = XMLSchema.INTEGER;
         }

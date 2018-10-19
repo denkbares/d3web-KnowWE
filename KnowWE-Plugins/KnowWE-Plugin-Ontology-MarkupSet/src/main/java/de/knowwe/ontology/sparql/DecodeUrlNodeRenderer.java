@@ -2,7 +2,7 @@ package de.knowwe.ontology.sparql;
 
 import java.net.URLDecoder;
 
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;

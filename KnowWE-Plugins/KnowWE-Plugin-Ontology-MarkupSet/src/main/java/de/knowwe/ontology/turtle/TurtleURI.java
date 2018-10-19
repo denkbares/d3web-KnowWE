@@ -18,8 +18,8 @@
  */
 package de.knowwe.ontology.turtle;
 
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -76,7 +76,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 	}
 
 	@Override
-	public org.openrdf.model.URI getURI(Section<TurtleURI> section, Rdf2GoCompiler core) {
-		return (org.openrdf.model.URI) getNode(section, core);
+	public org.eclipse.rdf4j.model.URI getURI(Section<TurtleURI> section, Rdf2GoCompiler core) {
+		return (org.eclipse.rdf4j.model.URI) getNode(section, core);
 	}
 }

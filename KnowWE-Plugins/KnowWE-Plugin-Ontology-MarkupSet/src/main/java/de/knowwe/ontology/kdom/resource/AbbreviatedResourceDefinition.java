@@ -18,7 +18,7 @@
  */
 package de.knowwe.ontology.kdom.resource;
 
-import org.openrdf.model.URI;
+import org.eclipse.rdf4j.model.URI;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;

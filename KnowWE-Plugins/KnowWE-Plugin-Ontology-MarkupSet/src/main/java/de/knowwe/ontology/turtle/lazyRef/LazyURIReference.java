@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -55,8 +55,8 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 	}
 
 	@Override
-	public org.openrdf.model.URI getURI(Section<LazyURIReference> section, Rdf2GoCompiler core) {
-		return (org.openrdf.model.URI) getNode(section, core);
+	public org.eclipse.rdf4j.model.URI getURI(Section<LazyURIReference> section, Rdf2GoCompiler core) {
+		return (org.eclipse.rdf4j.model.URI) getNode(section, core);
 	}
 
 	@NotNull

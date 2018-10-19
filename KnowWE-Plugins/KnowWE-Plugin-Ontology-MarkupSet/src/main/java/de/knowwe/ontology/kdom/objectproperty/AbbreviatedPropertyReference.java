@@ -38,7 +38,7 @@ public class AbbreviatedPropertyReference extends AbbreviatedResourceReference {
 		return super.getResource(section);
 	}
 
-	public org.openrdf.model.URI getPropertyURI(Rdf2GoCore core, Section<? extends AbbreviatedPropertyReference> section) {
+	public org.eclipse.rdf4j.model.URI getPropertyURI(Rdf2GoCore core, Section<? extends AbbreviatedPropertyReference> section) {
 		return super.getResourceURI(core, section);
 	}
 

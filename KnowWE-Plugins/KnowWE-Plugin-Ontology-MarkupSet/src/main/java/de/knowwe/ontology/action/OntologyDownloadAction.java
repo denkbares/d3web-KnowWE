@@ -5,15 +5,17 @@ package de.knowwe.ontology.action;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Collection;
+import java.nio.charset.StandardCharsets;
 
-import org.openrdf.rio.RDFFormat;
+import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,7 +44,6 @@ public class OntologyDownloadAction extends AbstractAction {
 		String secID = context.getParameter(Attributes.SECTION_ID);
 		String title = context.getParameter(OntologyDownloadProvider.TITLE);
 
-		Rdf2GoCore rdf2GoCore = null;
 		Section<?> section;
 		if (title == null) {
 			section = $(Sections.get(secID)).successor(PackageCompileType.class).getFirst();
@@ -51,18 +52,15 @@ public class OntologyDownloadAction extends AbstractAction {
 			Article article = KnowWEUtils.getArticleManager(context.getWeb()).getArticle(title);
 			section = $(article).successor(OntologyType.class).successor(PackageCompileType.class).getFirst();
 		}
-		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(section, Rdf2GoCompiler.class);
-		for (Rdf2GoCompiler compiler : compilers) {
-			if (compiler instanceof PackageCompiler) {
-				PackageCompiler packageCompiler = (PackageCompiler) compiler;
-				if (packageCompiler.getCompileSection() == section) {
-					rdf2GoCore = compiler.getRdf2GoCore();
-					break;
-				}
-			}
+		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		if (compiler == null) {
+			context.sendError(HttpServletResponse.SC_NOT_FOUND, "No compiler found");
+			return;
 		}
 
-		RDFFormat syntax = RDFFormat.valueOf(context.getParameter(PARAM_SYNTAX));
+		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
+
+		RDFFormat syntax = Rio.getParserFormatForMIMEType(context.getParameter(PARAM_SYNTAX)).orElse(RDFFormat.RDFXML);
 		String mimeType = syntax.getDefaultMIMEType() + "; charset=UTF-8";
 		context.setContentType(mimeType);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
@@ -70,10 +68,10 @@ public class OntologyDownloadAction extends AbstractAction {
 		StringWriter writer = new StringWriter();
 		rdf2GoCore.writeModel(writer, syntax);
 		String content = writer.toString();
-		byte[] contentBytes = content.getBytes("UTF-8");
+		byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
 		context.setContentLength(contentBytes.length);
 
-		context.getWriter().write(new String(contentBytes, "UTF-8"));
+		context.getWriter().write(new String(contentBytes, StandardCharsets.UTF_8));
 	}
 
 }

@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.openrdf.model.Resource;
-import org.openrdf.model.Value;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -162,7 +162,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			return result.error("No predicate section found: " + section);
 		}
 
-		org.openrdf.model.URI predicate = predicateSection.get().getURI(predicateSection, compiler);
+		org.eclipse.rdf4j.model.URI predicate = predicateSection.get().getURI(predicateSection, compiler);
 
 		// check term definition
 		Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);
@@ -183,7 +183,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		/*
 		 * Handle SUBJECT
 		 */
-		org.openrdf.model.Resource subject = getSubject(compiler, result, termError, section);
+		org.eclipse.rdf4j.model.Resource subject = getSubject(compiler, result, termError, section);
 
 		// create statement if all nodes are present
 		if (object != null && predicate != null && subject != null) {

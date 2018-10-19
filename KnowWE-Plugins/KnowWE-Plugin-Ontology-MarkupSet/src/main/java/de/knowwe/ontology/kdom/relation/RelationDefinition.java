@@ -96,7 +96,7 @@ public class RelationDefinition extends AbstractType {
 			Section<AbbreviatedResourceReference> abbrSubjectSection = Sections.successor(
 					subjectSection, AbbreviatedResourceReference.class);
 
-			org.openrdf.model.URI subjectURI = abbrSubjectSection.get().getResourceURI(core, abbrSubjectSection);
+			org.eclipse.rdf4j.model.URI subjectURI = abbrSubjectSection.get().getResourceURI(core, abbrSubjectSection);
 
 			Section<PredicateType> predicateSection = Sections.child(section,
 					PredicateType.class);
@@ -107,7 +107,7 @@ public class RelationDefinition extends AbstractType {
 			Section<AbbreviatedPropertyReference> abbrObjPropSection = Sections.successor(
 					predicateSection, AbbreviatedPropertyReference.class);
 
-			org.openrdf.model.URI predicatedURI = abbrObjPropSection.get().getPropertyURI(core, abbrObjPropSection);
+			org.eclipse.rdf4j.model.URI predicatedURI = abbrObjPropSection.get().getPropertyURI(core, abbrObjPropSection);
 
 			Section<ObjectType> objectSection = Sections.child(section,
 					ObjectType.class);
@@ -115,14 +115,14 @@ public class RelationDefinition extends AbstractType {
 			if (objectSection == null) {
 				Section<LiteralType> literalSection = Sections.child(section,
 						LiteralType.class);
-				org.openrdf.model.Literal literal = literalSection.get().getLiteral(core, literalSection);
+				org.eclipse.rdf4j.model.Literal literal = literalSection.get().getLiteral(core, literalSection);
 				core.addStatements(section,
 						core.createStatement(subjectURI, predicatedURI, literal));
 			}
 			else {
 				Section<AbbreviatedResourceReference> abbrObjectSection = Sections.successor(
 						objectSection, AbbreviatedResourceReference.class);
-				org.openrdf.model.URI objectURI = abbrObjectSection.get().getResourceURI(core, abbrObjectSection);
+				org.eclipse.rdf4j.model.URI objectURI = abbrObjectSection.get().getResourceURI(core, abbrObjectSection);
 
 				core.addStatements(section,
 						core.createStatement(subjectURI, predicatedURI, objectURI));

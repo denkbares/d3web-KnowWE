@@ -14,12 +14,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.openrdf.model.Literal;
-import org.openrdf.model.URI;
-import org.openrdf.model.Value;
-import org.openrdf.query.Binding;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.MalformedQueryException;
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.Binding;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.MalformedQueryException;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
@@ -78,7 +78,8 @@ public class SparqlResultRenderer {
 		for (SparqlResultNodeRenderer sparqlResultNodeRenderer : nodeRenderer) {
 			if (sparqlResultNodeRenderer instanceof ReduceNamespaceNodeRenderer) {
 				rnnRenderer = (ReduceNamespaceNodeRenderer) sparqlResultNodeRenderer;
-			} else if (sparqlResultNodeRenderer instanceof TrimNamespaceNodeRenderer) {
+			}
+			else if (sparqlResultNodeRenderer instanceof TrimNamespaceNodeRenderer) {
 				containsBoth = true;
 			}
 		}
@@ -115,7 +116,8 @@ public class SparqlResultRenderer {
 			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
 					.sparqlSelect(query, true, opts.getTimeout());
 			qrt = section.get().postProcessResult(qrt, user, opts);
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			handleRuntimeException(section, user, result, e);
 		}
 		if (qrt != null) {
@@ -138,7 +140,8 @@ public class SparqlResultRenderer {
 	private static void appendMessage(Section<? extends SparqlType> section, RuntimeException e, UserContext user, RenderResult result) {
 		if (e.getCause() instanceof MalformedQueryException) {
 			appendMalformedQueryMessage(section, e.getMessage(), user, result);
-		} else {
+		}
+		else {
 			String message = e.getMessage();
 			if (message == null) message = "RuntimeException without message.";
 			message = Strings.trimRight(message);
@@ -199,7 +202,8 @@ public class SparqlResultRenderer {
 							.append("'").append(charAtException).append("' ")
 							.append("at line ").append(lineNumber + 1)
 							.append(", column ").append(columnNumber + 1).append(".");
-				} else {
+				}
+				else {
 					result.append(line);
 				}
 				result.append(" Context: ").append(queryContextPrefix);
@@ -207,7 +211,8 @@ public class SparqlResultRenderer {
 				result.append(queryContextSuffix);
 				result.append(".\n");
 				first = false;
-			} else {
+			}
+			else {
 				result.append(line).append("\n");
 			}
 		}
@@ -223,7 +228,8 @@ public class SparqlResultRenderer {
 		Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
-		} catch (Throwable e) {
+		}
+		catch (Throwable e) {
 			String message = "Exception while rendering SPARQL result";
 			Log.severe(message, e);
 			return new SparqlRenderResult(new RenderResult(user).appendException(e).toStringRaw());
@@ -254,7 +260,8 @@ public class SparqlResultRenderer {
 			if (qrt.getBindingNames().size() > 2) {
 				childIdVariable = qrt.getBindingNames().get(0);
 				parentIdVariable = qrt.getBindingNames().get(1);
-			} else {
+			}
+			else {
 				isTree = false;
 				renderResult.append("%%warning The renderResult table requires at least three columns to enable tree mode.\n");
 			}
@@ -297,10 +304,12 @@ public class SparqlResultRenderer {
 			int count = PaginationRenderer.getCount(section, user);
 			if (count != Integer.MAX_VALUE) {
 				iterator = table.iterator(startRow - 1, startRow + count - 1);
-			} else {
+			}
+			else {
 				iterator = table.iterator();
 			}
-		} else if (isTree) {
+		}
+		else if (isTree) {
 			Stopwatch stopwatch = new Stopwatch();
 			// creating hierarchy order using PartialHierarchyTree
 			ResultTableHierarchy tree = new ResultTableHierarchy(table);
@@ -308,7 +317,8 @@ public class SparqlResultRenderer {
 			section.storeObject(RESULT_TABLE, table);
 			section.storeObject(RESULT_TABLE_TREE, tree);
 			iterator = tree.getRoots().iterator();
-		} else {
+		}
+		else {
 			iterator = table.iterator();
 		}
 
@@ -391,7 +401,8 @@ public class SparqlResultRenderer {
 		if (annotation != null) {
 			try {
 				return RenderMode.valueOf(annotation);
-			} catch (IllegalArgumentException e) {
+			}
+			catch (IllegalArgumentException e) {
 				Log.severe("Invalid render mode: " + annotation, e);
 			}
 		}
@@ -410,7 +421,8 @@ public class SparqlResultRenderer {
 			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
 					.sparqlSelect(query, true, opts.getTimeout());
 			qrt = section.get().postProcessResult(qrt, user, opts);
-		} catch (RuntimeException e) {
+		}
+		catch (RuntimeException e) {
 			handleRuntimeException(section, user, result, e);
 		}
 
@@ -483,7 +495,8 @@ public class SparqlResultRenderer {
 				Collection<TableRow> parents = data.findRowFor(parentId);
 				if (parents.isEmpty()) {
 					roots.add(tableRow);
-				} else {
+				}
+				else {
 					for (TableRow parent : parents) {
 						children.put(parent, tableRow);
 					}
@@ -524,7 +537,8 @@ public class SparqlResultRenderer {
 		String rendered;
 		if (rawOutput && node instanceof Literal) {
 			rendered = renderLiteral((Literal) node);
-		} else {
+		}
+		else {
 			rendered = node.stringValue();
 		}
 		if (!rawOutput) {
@@ -553,13 +567,12 @@ public class SparqlResultRenderer {
 		sb.append(node.getLabel());
 		sb.append('"');
 
-		String language = node.getLanguage();
-		if (language != null) {
+		node.getLanguage().ifPresent(language -> {
 			sb.append('@');
 			sb.append(language);
-		}
+		});
 
-		URI datatype = node.getDatatype();
+		IRI datatype = node.getDatatype();
 		if (datatype != null) {
 			sb.append("^^");
 			sb.append(datatype);

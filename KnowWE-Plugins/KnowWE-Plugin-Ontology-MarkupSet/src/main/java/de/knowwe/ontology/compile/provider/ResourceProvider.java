@@ -4,7 +4,7 @@
 
 package de.knowwe.ontology.compile.provider;
 
-import org.openrdf.model.Resource;
+import org.eclipse.rdf4j.model.Resource;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;

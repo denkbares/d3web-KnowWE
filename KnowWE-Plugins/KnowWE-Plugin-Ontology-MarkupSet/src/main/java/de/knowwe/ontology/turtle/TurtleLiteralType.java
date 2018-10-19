@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.openrdf.model.Value;
-import org.openrdf.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
@@ -61,7 +61,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		this.addChildType(new LiteralPart());
 	}
 
-	public org.openrdf.model.Literal getLiteral(Rdf2GoCore core, Section<? extends TurtleLiteralType> section) {
+	public org.eclipse.rdf4j.model.Literal getLiteral(Rdf2GoCore core, Section<? extends TurtleLiteralType> section) {
 		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
@@ -72,7 +72,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));
 		}
-		org.openrdf.model.URI xsdType = null;
+		org.eclipse.rdf4j.model.URI xsdType = null;
 		if (xsdPartSection != null) {
 			xsdType = xsdPartSection.get().getXSDType(xsdPartSection);
 		}
@@ -156,8 +156,8 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN + "\\z"), 1));
 		}
 
-		public org.openrdf.model.URI getXSDType(Section<XSDPart> section) {
-			return new org.openrdf.model.impl.URIImpl(XMLSchema.NAMESPACE + section.getText());
+		public org.eclipse.rdf4j.model.URI getXSDType(Section<XSDPart> section) {
+			return new org.eclipse.rdf4j.model.impl.URIImpl(XMLSchema.NAMESPACE + section.getText());
 		}
 	}
 

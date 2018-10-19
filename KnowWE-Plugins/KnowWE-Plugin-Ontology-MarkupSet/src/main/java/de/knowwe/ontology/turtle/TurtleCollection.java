@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
-import org.openrdf.model.BNode;
-import org.openrdf.model.Value;
-import org.openrdf.model.impl.BNodeImpl;
+import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.BNodeImpl;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
@@ -120,19 +120,19 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 		StatementProviderResult result = new StatementProviderResult(compiler);
 		List<Section<CollectionItem>> listItems = new ArrayList<>();
 		Sections.successors(section, CollectionItem.class, 2, listItems);
-		org.openrdf.model.Resource listNode = getResource(section, compiler);
+		org.eclipse.rdf4j.model.Resource listNode = getResource(section, compiler);
 		if (!listItems.isEmpty()) {
 			addListStatements(listNode, 0, listItems, result, compiler, section);
 		}
 		else {
-			result.addStatement(listNode, org.openrdf.model.vocabulary.RDF.REST, org.openrdf.model.vocabulary.RDF.NIL);
+			result.addStatement(listNode, org.eclipse.rdf4j.model.vocabulary.RDF.REST, org.eclipse.rdf4j.model.vocabulary.RDF.NIL);
 		}
 		return result;
 	}
 
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	private void addListStatements(org.openrdf.model.Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCompiler core, Section<? extends TurtleCollection> collectionSection) {
+	private void addListStatements(org.eclipse.rdf4j.model.Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCompiler core, Section<? extends TurtleCollection> collectionSection) {
 
 		Section<CollectionItem> dataSection = subList.get(0);
 
@@ -141,7 +141,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 				NodeProvider.class);
 
 		// add data triple
-		result.addStatement(core.getRdf2GoCore().createStatement(subject, org.openrdf.model.vocabulary.RDF.FIRST,
+		result.addStatement(core.getRdf2GoCore().createStatement(subject, org.eclipse.rdf4j.model.vocabulary.RDF.FIRST,
 				dataNodeSection.get().getNode(dataNodeSection, core)));
 
 		// go on to next list element
@@ -149,7 +149,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 		if (nextSublist.isEmpty()) {
 			// end of list and end of recursion
 			result.addStatement(core.getRdf2GoCore()
-					.createStatement(subject, org.openrdf.model.vocabulary.RDF.REST, org.openrdf.model.vocabulary.RDF.NIL));
+					.createStatement(subject, org.eclipse.rdf4j.model.vocabulary.RDF.REST, org.eclipse.rdf4j.model.vocabulary.RDF.NIL));
 		}
 		else {
 			listIndex++;
@@ -157,7 +157,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 					.createBlankNode(collectionSection.getID()
 							+ "_" + listIndex);
 			result.addStatement(core.getRdf2GoCore()
-					.createStatement(subject, org.openrdf.model.vocabulary.RDF.REST, nextListNode));
+					.createStatement(subject, org.eclipse.rdf4j.model.vocabulary.RDF.REST, nextListNode));
 
 			addListStatements(nextListNode, listIndex,
 					nextSublist, result, core, collectionSection);
@@ -165,7 +165,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public org.openrdf.model.Resource getResource(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
+	public org.eclipse.rdf4j.model.Resource getResource(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
 		return new BNodeImpl(getNode(section, core).stringValue());
 	}
 }

@@ -13,9 +13,9 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.openrdf.model.Literal;
-import org.openrdf.model.Statement;
-import org.openrdf.model.URI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.URI;
 
 import com.denkbares.strings.QuoteSet;
 import com.denkbares.strings.Strings;
@@ -232,8 +232,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private Literal getLiteralFromCell(Rdf2GoCore core, XSSFRow row, ObjectConfig config, Literal literal) {
 			XSSFCell cell = row.getCell(config.objectColumn - 1);
 			if (cell == null) return null;
-			if (literal.getLanguage() != null) {
-				literal = core.createLanguageTaggedLiteral(cell.getStringCellValue(), literal.getLanguage());
+			if (literal.getLanguage().isPresent()) {
+				literal = core.createLanguageTaggedLiteral(cell.getStringCellValue(), literal.getLanguage().get());
 			}
 			else if (literal.getDatatype() != null) {
 				literal = core.createDatatypeLiteral(cell.getStringCellValue(), literal.getDatatype());

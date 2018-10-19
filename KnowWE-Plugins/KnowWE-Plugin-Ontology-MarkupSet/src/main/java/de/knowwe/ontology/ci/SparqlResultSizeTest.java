@@ -20,7 +20,7 @@ package de.knowwe.ontology.ci;
 
 import java.util.Iterator;
 
-import org.openrdf.query.BindingSet;
+import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.testing.AbstractTest;
