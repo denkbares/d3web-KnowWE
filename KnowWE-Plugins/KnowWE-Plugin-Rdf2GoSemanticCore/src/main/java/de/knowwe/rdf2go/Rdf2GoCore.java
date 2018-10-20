@@ -1536,21 +1536,14 @@ public class Rdf2GoCore {
 	 *
 	 * @param query the sparql query to be executed
 	 */
-	@SuppressWarnings({ "UseOfSystemOutOrSystemErr", "unused" })
 	public void dump(String query) {
 		Matrix<String> matrix = new Matrix<>();
 		try (CachedTupleQueryResult result = sparqlSelect(query)) {
 			// prepare headings and column length
 			List<String> names = result.getBindingNames();
-			List<Integer> lengths = new ArrayList<>(names.size());
-			for (int col = 0; col < names.size(); col++) {
-				String value = String.valueOf(names.get(col));
-				matrix.set(0, col, value);
-				lengths.add(col, value.length());
-			}
 
 			// prepare values and update column lengths
-			int row = 1;
+			int row = 0;
 			while (result.hasNext()) {
 				BindingSet bindings = result.next();
 				for (int col = 0; col < names.size(); col++) {
@@ -1558,26 +1551,12 @@ public class Rdf2GoCore {
 					if (value instanceof URI) value = toShortURI((URI) value);
 					String text = (value == null) ? "null" : value.stringValue();
 					matrix.set(row, col, text);
-					lengths.set(col, Math.max(lengths.get(col), text.length()));
 				}
 				row++;
 			}
 
 			// dump the matrix
-			System.out.println();
-			for (row = 0; row < matrix.getRowSize(); row++) {
-				for (int col = 0; col < matrix.getColSize(); col++) {
-					if (col > 0) System.out.print(" | ");
-					String value = matrix.get(row, col);
-					System.out.print(value);
-					System.out.print(Strings.nTimes(' ', lengths.get(col) - value.length()));
-				}
-				System.out.println();
-				if (row == 0) {
-					int len = lengths.stream().mapToInt(x -> x + 3).sum() - 3;
-					System.out.println(Strings.nTimes('=', len));
-				}
-			}
+			matrix.dumpTable(names);
 		}
 	}
 }
