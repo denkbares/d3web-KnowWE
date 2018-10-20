@@ -28,13 +28,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
@@ -232,8 +233,10 @@ public class Utils {
 
 	@NotNull
 	private static String literalToLabel(Literal toLiteral) {
-		String label;
-		label = toLiteral.toString();
+		if (toLiteral.getDatatype().equals(XMLSchema.STRING)) {
+			return toLiteral.stringValue();
+		}
+		String label = toLiteral.toString();
 		if (label.contains("@")) {
 			String lang = label.substring(label.indexOf('@') + 1);
 			label = label.substring(0, label.indexOf('@')) + " (" + lang + ")";
@@ -242,14 +245,13 @@ public class Utils {
 			if (label.contains("#")) {
 				String dataType = label.substring(label.lastIndexOf('#') + 1, label.length() - 1);
 				label = Strings.unquote(label.substring(0, label.indexOf("^^"))) + ("string".equals(dataType) ? "" :
-						"" +
-								" (" + dataType + ")");
+						" (" + dataType + ")");
 			}
 			else {
 				label = label.substring(0, label.indexOf("^^"));
 			}
 		}
-		else {
+		else if (!Strings.isQuoted(label, '"')) {
 			label = Strings.quote(label);
 		}
 		return label;
