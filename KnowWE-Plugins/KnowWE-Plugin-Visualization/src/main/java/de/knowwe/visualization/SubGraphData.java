@@ -134,14 +134,10 @@ public class SubGraphData {
 
 	public void removeEdge(Edge e) {
 		final Set<Edge> defaultLevelEdges = clusters.get(ConceptNode.DEFAULT_CLUSTER_NODE);
-		if (defaultLevelEdges.contains(e)) {
-			defaultLevelEdges.remove(e);
-		}
+		defaultLevelEdges.remove(e);
 		final Set<Edge> cluster = clusters.get(e.getSubject());
 		if (cluster != null) {
-			if (cluster.contains(e)) {
-				cluster.remove(e);
-			}
+			cluster.remove(e);
 		}
 	}
 
