@@ -138,7 +138,7 @@ public class SparqlResultRenderer {
 	}
 
 	private static void appendMessage(Section<? extends SparqlType> section, RuntimeException e, UserContext user, RenderResult result) {
-		if (e.getCause() instanceof MalformedQueryException) {
+		if (e instanceof MalformedQueryException || e.getCause() instanceof MalformedQueryException) {
 			appendMalformedQueryMessage(section, e.getMessage(), user, result);
 		}
 		else {
