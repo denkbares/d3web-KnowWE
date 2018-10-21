@@ -1271,7 +1271,7 @@ public class Rdf2GoCore {
 		@SuppressWarnings("ConstantConditions")
 		@Override
 		public void run() {
-			long timeOut = task.getTimeOutMillis();
+			long timeOut = (int) Math.min(task.getTimeOutMillis(), Integer.MAX_VALUE);
 			try {
 				long killTimeOut = Math.min((long) (timeOut * 1.5), timeOut + Duration.of(1, MINUTES).toMillis());
 				task.get(killTimeOut, TimeUnit.MILLISECONDS);
@@ -1330,7 +1330,7 @@ public class Rdf2GoCore {
 			}
 			else if (type == SparqlType.SELECT) {
 
-				int timeOutSeconds = (int) (timeOutMillis / 1000);
+				int timeOutSeconds = (int) Math.min(timeOutMillis / 1000, Integer.MAX_VALUE);
 				try (RepositoryConnection connection = semanticCore.getConnection()) {
 					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, this.query);
 					tupleQuery.setMaxExecutionTime(timeOutSeconds);
