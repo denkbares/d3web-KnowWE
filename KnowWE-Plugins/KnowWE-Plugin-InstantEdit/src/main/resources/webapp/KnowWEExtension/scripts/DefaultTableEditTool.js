@@ -1,4 +1,4 @@
-KNOWWE.plugin.tableEditTool = function() {
+KNOWWE.plugin.tableEditTool = function () {
 
 	const originalWikiText = {};
 	const spreadsheet = {};
@@ -15,22 +15,26 @@ KNOWWE.plugin.tableEditTool = function() {
 
 	return {
 
-		supportLinks : function(id, support) {
+		getSpreadSheet: function (id) {
+			return spreadsheet[id];
+		},
+
+		supportLinks: function (id, support) {
 			supportLinks[id] = support;
 		},
 
-		getWikiText : function(id) {
+		getWikiText: function (id) {
 			return _EC.getWikiText(id);
 		},
 
-		generateHTML : function(id) {
+		generateHTML: function (id) {
 			let toolNameSpace = _EM.toolNameSpace[id];
 			if (!toolNameSpace) toolNameSpace = _IE.toolNameSpace[id];
 			originalWikiText[id] = toolNameSpace.getWikiText(id);
 			return "<div id='" + createRootID(id) + "' style='position: relative; overflow: auto'></div>";
 		},
 
-		generateButtons : function(id) {
+		generateButtons: function (id) {
 			return _EC.elements.getSaveCancelDeleteButtons(id, [
 				createButton("table_insert_col_before", "gif"),
 				createButton("table_insert_col_after", "gif"),
@@ -41,19 +45,19 @@ KNOWWE.plugin.tableEditTool = function() {
 				createButton("toggle_header", "png")]);
 		},
 
-		getEventInfo : function($event) {
+		getEventInfo: function ($event) {
 			return {
-				target : $event.target,
-				rect : $event.target.getBoundingClientRect(),
-				clientX : $event.clientX,
-				clientY : $event.clientY,
-				pageX : $event.pageX,
-				pageY : $event.pageY
+				target: $event.target,
+				rect: $event.target.getBoundingClientRect(),
+				clientX: $event.clientX,
+				clientY: $event.clientY,
+				pageX: $event.pageX,
+				pageY: $event.pageY
 
 			};
 		},
 
-		handleEventInfo : function(id, eventInfo) {
+		handleEventInfo: function (id, eventInfo) {
 			let $td = jq$(eventInfo.target);
 			if (!$td.is("td")) {
 				$td = $td.parents('td').first();
@@ -80,10 +84,10 @@ KNOWWE.plugin.tableEditTool = function() {
 
 		},
 
-		postProcessHTML : function(id) {
-			spreadsheet[id] = new Spreadsheet(createRootID(id), function() {
+		postProcessHTML: function (id) {
+			spreadsheet[id] = new Spreadsheet(createRootID(id), function () {
 				_IE.save(id)
-			}, function() {
+			}, function () {
 				_IE.cancel(id)
 			});
 			spreadsheet[id].setSupportLinks(supportLinks[id] == null ? true : supportLinks[id]);
@@ -91,36 +95,36 @@ KNOWWE.plugin.tableEditTool = function() {
 			originalWikiText[id] = spreadsheet[id].getWikiMarkup();
 
 			const $root = jq$(spreadsheet[id].element).parents('.editarea');
-			$root.find(".table_insert_row_before").click(function(event) {
+			$root.find(".table_insert_row_before").click(function (event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row);
 				event.preventDefault();
 			});
-			$root.find(".table_insert_row_after").click(function(event) {
+			$root.find(".table_insert_row_after").click(function (event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addRow(spreadsheet[id].selected.row + 1);
 				event.preventDefault();
 			});
-			$root.find(".table_delete_row").click(function(event) {
+			$root.find(".table_delete_row").click(function (event) {
 				spreadsheet[id].removeSelectedRows();
 				event.preventDefault();
 			});
 
-			$root.find(".table_insert_col_before").click(function(event) {
+			$root.find(".table_insert_col_before").click(function (event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addCol(spreadsheet[id].selected.col);
 				event.preventDefault();
 			});
-			$root.find(".table_insert_col_after").click(function(event) {
+			$root.find(".table_insert_col_after").click(function (event) {
 				if (spreadsheet[id].selected) spreadsheet[id].addCol(spreadsheet[id].selected.col + 1);
 				event.preventDefault();
 			});
-			$root.find(".table_delete_col").click(function(event) {
+			$root.find(".table_delete_col").click(function (event) {
 				spreadsheet[id].removeSelectedCols();
 				event.preventDefault();
 			});
 
-			$root.find(".toggle_header").click(function(event) {
+			$root.find(".toggle_header").click(function (event) {
 				if (!spreadsheet[id].selected) return;
 				let header = spreadsheet[id].getCell(spreadsheet[id].selected.row, spreadsheet[id].selected.col).hasClass("table-header");
-				spreadsheet[id].forEachSelected(function(cell, row, col) {
+				spreadsheet[id].forEachSelected(function (cell, row, col) {
 					spreadsheet[id].setHeader(row, col, !header);
 				});
 				spreadsheet[id].snapshot();
@@ -128,12 +132,12 @@ KNOWWE.plugin.tableEditTool = function() {
 			});
 		},
 
-		unloadCondition : function(id) {
+		unloadCondition: function (id) {
 			return (!originalWikiText[id] && !spreadsheet[id])
 				|| originalWikiText[id] === spreadsheet[id].getWikiMarkup();
 		},
 
-		generateWikiText : function(id) {
+		generateWikiText: function (id) {
 			spreadsheet[id].stopEditCell();
 			return spreadsheet[id].getWikiMarkup();
 		},
@@ -162,10 +166,10 @@ KNOWWE.plugin.tableEditTool = function() {
 		 * <li>cursorPosition: (optional) where shall the cursor be positioned, relative to the start of the inserted text
 		 * </ul>
 		 */
-		create : function(autoCompleteFun) {
+		create: function (autoCompleteFun) {
 			const created = jq$.extend({}, KNOWWE.plugin.tableEditTool);
 			const super_postProcessHTML = created.postProcessHTML;
-			created.postProcessHTML = function(id) {
+			created.postProcessHTML = function (id) {
 				super_postProcessHTML(id);
 				if (autoCompleteFun) {
 					spreadsheet[id].setAutoCompleteFunction(autoCompleteFun);
@@ -276,24 +280,45 @@ function SpreadsheetModel(wikiText, supportLinks) {
 	}
 }
 
-SpreadsheetModel.prototype.setCell = function(row, col, text, isHeader) {
+SpreadsheetModel.prototype.setCell = function (row, col, text, isHeader) {
 	this.ensureSize(row + 1, col + 1);
 	const key = row + "_" + col;
-	this.cells[key] = {row : row, col : col, text : text, isHeader : isHeader};
+	this.cells[key] = {row: row, col: col, text: text, isHeader: isHeader};
 };
 
-SpreadsheetModel.prototype.ensureSize = function(rowCount, colCount) {
+SpreadsheetModel.prototype.ensureSize = function (rowCount, colCount) {
 	this.height = Math.max(this.height, rowCount);
 	this.width = Math.max(this.width, colCount);
 };
 
-SpreadsheetModel.prototype.getCellText = function(row, col) {
+SpreadsheetModel.prototype.getCellText = function (row, col) {
 	const key = row + "_" + col;
 	const data = this.cells[key];
 	return data ? data.text : "";
 };
 
-SpreadsheetModel.prototype.isHeader = function(row, col) {
+SpreadsheetModel.prototype.getColumnNumbersWithHeader = function (columnHeader, ignoreCase) {
+	let columns = [];
+	if (ignoreCase) columnHeader = columnHeader.toLowerCase();
+	for (let col = 0; col < this.width; col++) {
+		let headerText = this.cells["0_" + col].text;
+		if (headerText === columnHeader || ignoreCase && headerText.toLowerCase() === columnHeader) {
+			columns.push(col);
+		}
+	}
+	return columns;
+}
+
+SpreadsheetModel.prototype.getCellTextsOfColumn = function (col, offSet) {
+	let texts = [];
+	offSet = offSet || 0;
+	for (let row = offSet; row < this.height; row++) {
+		texts.push(this.cells[row + "_" + col].text);
+	}
+	return texts;
+};
+
+SpreadsheetModel.prototype.isHeader = function (row, col) {
 	// use header attribute of the cell
 	const key = row + "_" + col;
 	const data = this.cells[key];
@@ -301,7 +326,7 @@ SpreadsheetModel.prototype.isHeader = function(row, col) {
 	return false;
 };
 
-SpreadsheetModel.prototype.toWikiMarkup = function(supportLinks) {
+SpreadsheetModel.prototype.toWikiMarkup = function (supportLinks) {
 	let wikiText = this.textBeforeTable ? this.textBeforeTable : "";
 	for (let row = 0; row < this.height; row++) {
 		for (let col = 0; col < this.width; col++) {
@@ -380,16 +405,17 @@ function Spreadsheet(elementID, saveFun, cancelFun) {
 	this.createTable();
 	this.selectCell(0, 0);
 }
-Spreadsheet.prototype.setWikiMarkup = function(wikiText) {
+
+Spreadsheet.prototype.setWikiMarkup = function (wikiText) {
 	this.setModel(new SpreadsheetModel(wikiText, this.supportLinks));
 	this.snapshot();
 };
 
-Spreadsheet.prototype.setSupportLinks = function(support) {
+Spreadsheet.prototype.setSupportLinks = function (support) {
 	this.supportLinks = support;
 };
 
-Spreadsheet.prototype.setModel = function(model) {
+Spreadsheet.prototype.setModel = function (model) {
 	this.element.html("");
 	this.createTable(model);
 	this.selectCell(0, 0);
@@ -397,14 +423,14 @@ Spreadsheet.prototype.setModel = function(model) {
 	this.textAfterTable = model.textAfterTable;
 };
 
-Spreadsheet.prototype.getWikiMarkup = function() {
+Spreadsheet.prototype.getWikiMarkup = function () {
 	return this.getModel().toWikiMarkup(this.supportLinks);
 };
 
-Spreadsheet.prototype.getModel = function() {
+Spreadsheet.prototype.getModel = function () {
 	const model = new SpreadsheetModel();
-	this.element.find("tr").each(function(rowIndex) {
-		jq$(this).find("td").each(function(colIndex) {
+	this.element.find("tr").each(function (rowIndex) {
+		jq$(this).find("td").each(function (colIndex) {
 			const isHeader = jq$(this).hasClass("table-header");
 			const text = jq$(this).find("div > a").text();
 			model.setCell(rowIndex, colIndex, text, isHeader);
@@ -415,9 +441,9 @@ Spreadsheet.prototype.getModel = function() {
 	return model;
 };
 
-Spreadsheet.prototype.createTable = function(model) {
+Spreadsheet.prototype.createTable = function (model) {
 	if (!model) model = new SpreadsheetModel();
-	this.size = {rows : model.height, cols : model.width};
+	this.size = {rows: model.height, cols: model.width};
 	this.selected = null;
 	this.selectedRange = null;
 	this.copied = null;
@@ -445,12 +471,12 @@ Spreadsheet.prototype.createTable = function(model) {
 	for (row = 0; row < this.size.rows; row++) {
 		for (col = 0; col < this.size.cols; col++) {
 			cell = this.getCell(row, col);
-			cell.data("cellInfo", {spreadsheet : this, row : row, col : col});
+			cell.data("cellInfo", {spreadsheet: this, row: row, col: col});
 		}
 	}
 
 	// add click event to select data
-	this.element.find(" tr > td").click(function(event) {
+	this.element.find(" tr > td").click(function (event) {
 		const cell = jq$(this);
 		const data = cell.data("cellInfo");
 		data.spreadsheet.selectCell(data.row, data.col, event.shiftKey || event.metaKey);
@@ -458,7 +484,7 @@ Spreadsheet.prototype.createTable = function(model) {
 	});
 
 	// double click event to enter edit mode
-	this.element.find(" tr > td").dblclick(function(event) {
+	this.element.find(" tr > td").dblclick(function (event) {
 		const cell = jq$(this);
 		const data = cell.data("cellInfo");
 		data.spreadsheet.editCell(data.row, data.col);
@@ -466,7 +492,7 @@ Spreadsheet.prototype.createTable = function(model) {
 	});
 
 	// add keyboard event to select/edit data
-	this.element.find(" tr > td > div > a").keydown(function(event) {
+	this.element.find(" tr > td > div > a").keydown(function (event) {
 		const cell = jq$(this).parents(" tr > td");
 		const data = cell.data("cellInfo");
 		const multi = event.shiftKey;
@@ -494,7 +520,7 @@ Spreadsheet.prototype.createTable = function(model) {
 		}
 	});
 
-	this.element.find(" tr > td > div > a").blur(function(event) {
+	this.element.find(" tr > td > div > a").blur(function (event) {
 		const cell = jq$(this).parents(" tr > *");
 		cell.removeClass("selected");
 	});
@@ -503,7 +529,7 @@ Spreadsheet.prototype.createTable = function(model) {
 /**
  * Handles key down event end returns boolean if the key was handled or not
  */
-Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, command, alt) {
+Spreadsheet.prototype.handleKeyDown = function (cell, keyCode, multiSelect, command, alt) {
 	const row = this.selected.row;
 	const col = this.selected.col;
 	let toCol, roRow;
@@ -615,8 +641,8 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	// normal typing
 	else if (!command &&
 		((keyCode >= 32 && keyCode <= 90)
-		|| (keyCode >= 96 && keyCode <= 106)
-		|| (keyCode >= 186 && keyCode <= 222))) {
+			|| (keyCode >= 96 && keyCode <= 106)
+			|| (keyCode >= 186 && keyCode <= 222))) {
 		this.editCell(row, col);
 		// return false to use first key pressed as input
 		return false;
@@ -628,17 +654,17 @@ Spreadsheet.prototype.handleKeyDown = function(cell, keyCode, multiSelect, comma
 	return true;
 };
 
-Spreadsheet.prototype.stopEditCell = function(cancel) {
+Spreadsheet.prototype.stopEditCell = function (cancel) {
 	if (this.stopEditCellFunction) {
 		this.stopEditCellFunction(cancel);
 	}
 };
 
-Spreadsheet.prototype.createCellAreaID = function(row, col) {
+Spreadsheet.prototype.createCellAreaID = function (row, col) {
 	return "cellEditArea_" + this.elementID + "_" + row + col;
 };
 
-Spreadsheet.prototype.editCell = function(row, col) {
+Spreadsheet.prototype.editCell = function (row, col) {
 	this.stopEditCell();
 	this.uncopyCopiedCells();
 	this.selectCell(row, col);
@@ -708,7 +734,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 		}
 	};
 	editArea.keydown(keyDownFunction);
-	this.stopEditCellFunction = function(cancel) {
+	this.stopEditCellFunction = function (cancel) {
 		if (closing) return;
 		closing = true;
 		spreadsheet.uninstallAutoComplete(textAreaID);
@@ -722,7 +748,7 @@ Spreadsheet.prototype.editCell = function(row, col) {
 	this.installAutoComplete(textAreaID, row, col);
 };
 
-Spreadsheet.prototype.isAutoCompleteFocused = function(id) {
+Spreadsheet.prototype.isAutoCompleteFocused = function (id) {
 	if (typeof AutoComplete !== "undefined") {
 		return jq$('#' + id)[0].autocompletion.hasFocus();
 	} else {
@@ -730,20 +756,20 @@ Spreadsheet.prototype.isAutoCompleteFocused = function(id) {
 	}
 };
 
-Spreadsheet.prototype.showAutoComplete = function(id) {
+Spreadsheet.prototype.showAutoComplete = function (id) {
 	if (typeof AutoComplete !== "undefined") {
 		jq$('#' + id)[0].autocompletion.requestFocus();
 		jq$('#' + id)[0].autocompletion.requestCompletions();
 	}
 };
 
-Spreadsheet.prototype.uninstallAutoComplete = function(id) {
+Spreadsheet.prototype.uninstallAutoComplete = function (id) {
 	if (typeof AutoComplete !== "undefined") {
 		jq$('#' + id)[0].autocompletion.showCompletions(null);
 	}
 };
 
-Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
+Spreadsheet.prototype.installAutoComplete = function (textAreaID, row, col) {
 	// enable auto-completion if available
 	// but we require some special functionality because only editing part of table
 	const spreadsheet = this;
@@ -764,7 +790,7 @@ Spreadsheet.prototype.installAutoComplete = function(textAreaID, row, col) {
 /**
  * creates completion suggestions according to the other cells of the same column.
  */
-Spreadsheet.prototype.getColumnCellCompletionSuggestions = function(prefix, col) {
+Spreadsheet.prototype.getColumnCellCompletionSuggestions = function (prefix, col) {
 	const trimPrefix = prefix.trim();
 	const json = [];
 	const textCache = {};
@@ -778,8 +804,8 @@ Spreadsheet.prototype.getColumnCellCompletionSuggestions = function(prefix, col)
 		if (text.length < trimPrefix.length) continue;
 		if (text.substring(0, trimPrefix.length) !== trimPrefix) continue;
 		json.push({
-			insertText : text,
-			replaceLength : prefix.length
+			insertText: text,
+			replaceLength: prefix.length
 		});
 	}
 	return json;
@@ -804,11 +830,11 @@ Spreadsheet.prototype.getColumnCellCompletionSuggestions = function(prefix, col)
  * <li>cursorPosition: (optional) where shall the cursor be positioned, relative to the start of the inserted text
  * </ul>
  */
-Spreadsheet.prototype.setAutoCompleteFunction = function(fun) {
+Spreadsheet.prototype.setAutoCompleteFunction = function (fun) {
 	this.customAutoCompleteFunction = fun;
 };
 
-Spreadsheet.prototype.setCellText = function(row, col, text) {
+Spreadsheet.prototype.setCellText = function (row, col, text) {
 	this.stopEditCell();
 	const elem = this.getCell(row, col).find("div > a");
 	if (!text || text.match(/^\s+$/g)) {
@@ -819,11 +845,11 @@ Spreadsheet.prototype.setCellText = function(row, col, text) {
 	}
 };
 
-Spreadsheet.prototype.getCellTextTrimmed = function(row, col) {
+Spreadsheet.prototype.getCellTextTrimmed = function (row, col) {
 	return jq$.trim(this.getCellText(row, col).replace(/\\u00A0/g, " "));
 };
 
-Spreadsheet.prototype.getCellText = function(row, col) {
+Spreadsheet.prototype.getCellText = function (row, col) {
 	const elem = this.getCell(row, col).find("div > a");
 	return elem.text();
 };
@@ -831,7 +857,7 @@ Spreadsheet.prototype.getCellText = function(row, col) {
 /**
  * Extends the selection to complete rows / cols including the selected cells.
  */
-Spreadsheet.prototype.extendSelection = function(extendRows, extendCols) {
+Spreadsheet.prototype.extendSelection = function (extendRows, extendCols) {
 	if (!this.selected) return;
 
 	// get the selected area
@@ -858,7 +884,7 @@ Spreadsheet.prototype.extendSelection = function(extendRows, extendCols) {
  * Selects the specified cell. Use this method without arguments
  * to deselect all cells.
  */
-Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
+Spreadsheet.prototype.selectCell = function (row, col, multiSelect) {
 	this.stopEditCell();
 	let cell = this.getSelectedCell();
 	if (cell) {
@@ -870,7 +896,7 @@ Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
 		return;
 	}
 	// deselect multi-selected cells
-	this.forEachSelected(function(cell) {
+	this.forEachSelected(function (cell) {
 		cell.removeClass("multiSelected");
 	});
 	// if multi-select is requested, select from previous selected cell to requested cell
@@ -878,23 +904,23 @@ Spreadsheet.prototype.selectCell = function(row, col, multiSelect) {
 		if (!this.selectedRange) {
 			const toRow = this.selected.row;
 			const toCol = this.selected.col;
-			this.selectedRange = {toRow : toRow, toCol : toCol};
+			this.selectedRange = {toRow: toRow, toCol: toCol};
 		}
 	}
 	else {
 		this.selectedRange = null;
 	}
 	// do normal selection as well
-	this.selected = {row : row, col : col};
+	this.selected = {row: row, col: col};
 	cell = this.getSelectedCell();
 	cell.addClass("selected");
-	this.forEachSelected(function(cell) {
+	this.forEachSelected(function (cell) {
 		cell.addClass("multiSelected");
 	});
 	cell.find("div > a").focus();
 };
 
-Spreadsheet.prototype.forEachSelected = function(fun) {
+Spreadsheet.prototype.forEachSelected = function (fun) {
 	if (!this.selected) return;
 	let row, col;
 	if (!this.selectedRange) {
@@ -914,9 +940,9 @@ Spreadsheet.prototype.forEachSelected = function(fun) {
 	}
 };
 
-Spreadsheet.prototype.clearSelectedCells = function() {
+Spreadsheet.prototype.clearSelectedCells = function () {
 	const sheet = this;
-	this.forEachSelected(function(cell, row, col) {
+	this.forEachSelected(function (cell, row, col) {
 		sheet.setCellText(row, col, "");
 	});
 	this.snapshot();
@@ -929,7 +955,7 @@ Spreadsheet.prototype.clearSelectedCells = function() {
  * wrapAround you can specify if the shift stops at the end of the table borders
  * or wraps around these border.
  */
-Spreadsheet.prototype.shiftSelectedCells = function(dRow, dCol, wrapAround) {
+Spreadsheet.prototype.shiftSelectedCells = function (dRow, dCol, wrapAround) {
 	// prepare selection
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
@@ -1003,7 +1029,7 @@ Spreadsheet.prototype.shiftSelectedCells = function(dRow, dCol, wrapAround) {
 	this.snapshot();
 };
 
-Spreadsheet.prototype.pasteCopiedCells = function() {
+Spreadsheet.prototype.pasteCopiedCells = function () {
 	if (!this.copied) return;
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
@@ -1054,7 +1080,7 @@ Spreadsheet.prototype.pasteCopiedCells = function() {
 	this.snapshot();
 };
 
-Spreadsheet.prototype.copySelectedCells = function(doCut) {
+Spreadsheet.prototype.copySelectedCells = function (doCut) {
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
 	this.uncopyCopiedCells();
@@ -1063,23 +1089,23 @@ Spreadsheet.prototype.copySelectedCells = function(doCut) {
 	const r2 = this.selectedRange.toRow;
 	const c2 = this.selectedRange.toCol;
 	this.copied = {
-		row : Math.min(r1, r2), col : Math.min(c1, c2),
-		toRow : Math.max(r1, r2), toCol : Math.max(c1, c2),
-		doCut : doCut
+		row: Math.min(r1, r2), col: Math.min(c1, c2),
+		toRow: Math.max(r1, r2), toCol: Math.max(c1, c2),
+		doCut: doCut
 	};
-	this.forEachCopied(function(cell) {
+	this.forEachCopied(function (cell) {
 		cell.addClass("copied");
 	});
 };
 
-Spreadsheet.prototype.uncopyCopiedCells = function() {
-	this.forEachCopied(function(cell) {
+Spreadsheet.prototype.uncopyCopiedCells = function () {
+	this.forEachCopied(function (cell) {
 		cell.removeClass("copied");
 	});
 	this.copied = null;
 };
 
-Spreadsheet.prototype.forEachCopied = function(fun) {
+Spreadsheet.prototype.forEachCopied = function (fun) {
 	if (!this.copied) return;
 	for (let row = this.copied.row; row <= this.copied.toRow; row++) {
 		for (let col = this.copied.col; col <= this.copied.toCol; col++) {
@@ -1088,20 +1114,20 @@ Spreadsheet.prototype.forEachCopied = function(fun) {
 	}
 };
 
-Spreadsheet.prototype.getSelectedCell = function() {
+Spreadsheet.prototype.getSelectedCell = function () {
 	if (!this.selected) return null;
 	return this.getCell(this.selected.row, this.selected.col);
 };
 
-Spreadsheet.prototype.getCell = function(row, col) {
+Spreadsheet.prototype.getCell = function (row, col) {
 	return this.element.find("#" + this.getCellID(row, col));
 };
 
-Spreadsheet.prototype.getCellID = function(row, col) {
+Spreadsheet.prototype.getCellID = function (row, col) {
 	return "cell_" + row + "_" + col;
 };
 
-Spreadsheet.prototype.addRow = function(row) {
+Spreadsheet.prototype.addRow = function (row) {
 	this.stopEditCell();
 	let sr = this.selected ? this.selected.row : 0;
 	const sc = this.selected ? this.selected.col : 0;
@@ -1136,7 +1162,7 @@ Spreadsheet.prototype.addRow = function(row) {
 	this.snapshot();
 };
 
-Spreadsheet.prototype.removeSelectedRows = function() {
+Spreadsheet.prototype.removeSelectedRows = function () {
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
 	const r1 = this.selected.row;
@@ -1146,7 +1172,7 @@ Spreadsheet.prototype.removeSelectedRows = function() {
 	this.removeRow(upperRow, lowerRow);
 };
 
-Spreadsheet.prototype.removeSelectedCols = function() {
+Spreadsheet.prototype.removeSelectedCols = function () {
 	if (!this.selected) return;
 	if (!this.selectedRange) this.selectCell(this.selected.row, this.selected.col, true);
 	const c1 = this.selected.col;
@@ -1156,7 +1182,7 @@ Spreadsheet.prototype.removeSelectedCols = function() {
 	this.removeCol(leftCol, rightCol);
 };
 
-Spreadsheet.prototype.removeRow = function(upperRow, lowerRow) {
+Spreadsheet.prototype.removeRow = function (upperRow, lowerRow) {
 	this.stopEditCell();
 	if (this.size.rows <= 1) return;
 	let sr = this.selected ? Math.min(this.selected.row, this.size.rows - 2) : 0;
@@ -1187,7 +1213,7 @@ Spreadsheet.prototype.removeRow = function(upperRow, lowerRow) {
 	this.snapshot();
 };
 
-Spreadsheet.prototype.addCol = function(col) {
+Spreadsheet.prototype.addCol = function (col) {
 	this.stopEditCell();
 	const sr = this.selected ? this.selected.row : 0;
 	let sc = this.selected ? this.selected.col : 0;
@@ -1222,7 +1248,7 @@ Spreadsheet.prototype.addCol = function(col) {
 	this.snapshot();
 };
 
-Spreadsheet.prototype.removeCol = function(leftCol, rightCol) {
+Spreadsheet.prototype.removeCol = function (leftCol, rightCol) {
 	this.stopEditCell();
 	if (this.size.cols <= 1) return;
 	const sr = this.selected ? this.selected.row : 0;
@@ -1253,7 +1279,7 @@ Spreadsheet.prototype.removeCol = function(leftCol, rightCol) {
 	this.snapshot();
 };
 
-Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
+Spreadsheet.prototype.setHeader = function (row, col, isHeader) {
 	this.stopEditCell();
 	const sr = this.selected ? this.selected.row : 0;
 	const sc = this.selected ? this.selected.col : 0;
@@ -1270,7 +1296,7 @@ Spreadsheet.prototype.setHeader = function(row, col, isHeader) {
 	this.selectCell(sr, sc, true);
 };
 
-Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
+Spreadsheet.prototype.snapshot = function (row, col, isHeader) {
 	const model = this.getModel();
 	const undo = this.undoHistory, redo = this.redoHistory;
 	if (undo.length > 0 && Spreadsheet.areEqual(undo[undo.length - 1].model, model)) {
@@ -1297,7 +1323,7 @@ Spreadsheet.prototype.snapshot = function(row, col, isHeader) {
 	this.undoHistory.push(snap);
 };
 
-Spreadsheet.prototype.undo = function() {
+Spreadsheet.prototype.undo = function () {
 	const model = this.getModel();
 	let shot;
 	while (true) {
@@ -1309,7 +1335,7 @@ Spreadsheet.prototype.undo = function() {
 	this.restoreSnapshot(shot);
 };
 
-Spreadsheet.prototype.redo = function() {
+Spreadsheet.prototype.redo = function () {
 	const model = this.getModel();
 	let shot;
 	while (true) {
@@ -1321,7 +1347,7 @@ Spreadsheet.prototype.redo = function() {
 	this.restoreSnapshot(shot);
 };
 
-Spreadsheet.prototype.restoreSnapshot = function(snapshot) {
+Spreadsheet.prototype.restoreSnapshot = function (snapshot) {
 	this.uncopyCopiedCells();
 	this.setModel(snapshot.model);
 	const sel = snapshot.selected;
@@ -1332,7 +1358,7 @@ Spreadsheet.prototype.restoreSnapshot = function(snapshot) {
 	}
 };
 
-Spreadsheet.areEqual = function(x, y) {
+Spreadsheet.areEqual = function (x, y) {
 	for (let p in y) {
 		if (!y.hasOwnProperty(p)) continue;
 		if (typeof(y[p]) !== typeof(x[p])) return false;
@@ -1344,7 +1370,7 @@ Spreadsheet.areEqual = function(x, y) {
 			case 'object':
 				if (y[p] !== null && x[p] !== null &&
 					(y[p].constructor.toString() !== x[p].constructor.toString()
-					|| !Spreadsheet.areEqual(y[p], x[p]))) return false;
+						|| !Spreadsheet.areEqual(y[p], x[p]))) return false;
 				break;
 			case 'function':
 				if (p !== 'equals' && y[p].toString() !== x[p].toString()) return false;
