@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -23,9 +23,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,6 +77,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  */
 public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> {
 
+	private static final Map<String, TermCache> importCache = new HashMap<>();
 	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
 	private static final String[] RESOURCE_TERMS = new String[] {
@@ -359,12 +364,9 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		RDFFormat syntax = Rdf2GoUtils.syntaxForFileName(fileName);
 		Future<?> mainReadFuture = executorService.submit(() -> readFrom(compiler, section, core, attachment, syntax));
 		if (!silent) {
-			// we need rdfs reasoning for the SPARQLs to work
-			Rdf2GoCore dummy = new Rdf2GoCore(RepositoryConfigs.find("RDFS"));
-			readFrom(compiler, section, dummy, attachment, syntax);
-			// register the terminology imported in the empty dummy repository
-			registerTerminology(compiler, dummy, importSection);
-			dummy.destroy();
+			Rdf2GoCore dummyCore = getDummyCore(compiler, section, attachment, syntax);
+			// register the terminology imported in the cached empty dummy repository
+			registerTerminology(compiler, dummyCore, importSection);
 		}
 		try {
 			mainReadFuture.get();
@@ -375,6 +377,67 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 		long duration = System.currentTimeMillis() - start;
 		if (duration > TimeUnit.SECONDS.toMillis(1)) {
 			Log.info("Loaded ontology from attachment " + path + " in " + duration + "ms");
+		}
+	}
+
+	private Rdf2GoCore getDummyCore(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, WikiAttachment attachment, RDFFormat syntax) {
+		// we need rdfs reasoning for the SPARQLs to work
+		TermCache cache;
+		String key = attachment.getPath() + "_" + attachment.getDate();
+		synchronized (importCache) {
+			cache = importCache.computeIfAbsent(key, k -> {
+				Rdf2GoCore dummy = new Rdf2GoCore(RepositoryConfigs.find("RDFS"));
+				readFrom(compiler, section, dummy, attachment, syntax);
+				return new TermCache(dummy, attachment.getPath(), attachment.getDate());
+			});
+			cache.referencingSections.add(section.getID());
+			importCache.values().removeIf(rCache -> {
+				boolean remove = noLongerReferenced(rCache) || attachmentOutDated(rCache);
+				// if we remove, make sure to properly destroy to allow gc and free up memory
+				if (remove) {
+					rCache.core.destroy();
+				}
+				return remove;
+			});
+		}
+		return cache.core;
+	}
+
+	private boolean attachmentOutDated(TermCache rCache) {
+		try {
+			WikiAttachment rAttachment = Environment.getInstance()
+					.getWikiConnector()
+					.getAttachment(rCache.annotationPath);
+			// remove if attachment no longer exists
+			if (rAttachment == null) {
+				return true;
+			}
+			// or date has changed
+			else if (!rAttachment.getDate().equals(rCache.lastModified)) {
+				return true;
+			}
+		}
+		catch (IOException ignore) {
+			// or exception occurs.
+			return true;
+		}
+		return false;
+	}
+
+	private boolean noLongerReferenced(TermCache rCache) {
+		return rCache.referencingSections.stream().noneMatch(sectionId -> Sections.get(sectionId) != null);
+	}
+
+	private static class TermCache {
+		Set<String> referencingSections = new HashSet<>();
+		Rdf2GoCore core;
+		String annotationPath;
+		Date lastModified;
+
+		public TermCache(Rdf2GoCore core, String annotationPath, Date lastModified) {
+			this.core = core;
+			this.annotationPath = annotationPath;
+			this.lastModified = lastModified;
 		}
 	}
 
