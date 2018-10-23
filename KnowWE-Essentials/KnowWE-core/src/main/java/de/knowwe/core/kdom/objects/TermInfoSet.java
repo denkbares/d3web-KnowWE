@@ -93,6 +93,11 @@ public class TermInfoSet implements Collection<TermInfo> {
 			TermInfo other = (TermInfo) obj;
 			return (key.equals(other.getKey()));
 		}
+
+		@Override
+		public String toString() {
+			return identifier.toExternalForm();
+		}
 	}
 
 	private final Map<String, DefaultTermInfo> result = new HashMap<>();
