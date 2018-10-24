@@ -573,16 +573,21 @@ public final class Messages {
 	 * @param messages is the Collection of messages you want so store
 	 */
 	public static void storeMessages(Compiler compiler, Section<?> section, Class<?> source, Collection<Message> messages) {
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
-		synchronized (section) {
-			Map<String, Collection<Message>> messagesMap = getMessagesMap(compiler, section);
-			String key = source.getName();
-			// we have messages to store
-			if (messages != null && !messages.isEmpty()) {
+		Map<String, Collection<Message>> messagesMap = getMessagesMap(compiler, section);
+		String key = source.getName();
+		// we have messages to store
+		if (messages != null && !messages.isEmpty()) {
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (section) {
 				// create map if not already present
 				if (messagesMap == null) {
-					messagesMap = new HashMap<>(4);
-					KnowWEUtils.storeObject(compiler, section, MESSAGE_KEY, messagesMap);
+					// we have to get the map again, in case the map was created and stored before synchronizing in another thread
+					messagesMap = getMessagesMap(compiler, section);
+					if (messagesMap == null) {
+						// still null? ok, let's create and store
+						messagesMap = new HashMap<>(4);
+						KnowWEUtils.storeObject(compiler, section, MESSAGE_KEY, messagesMap);
+					}
 				}
 				// store messages in map
 				messagesMap.put(key, Collections.unmodifiableCollection(messages));
@@ -591,10 +596,13 @@ public final class Messages {
 					sectionsWithMessages.put(message.getType(), section);
 				}
 			}
-			// we have no messages, which means that we want to delete existing messages
-			else {
-				// if no message map is present, we don't need do anything
-				if (messagesMap == null) return;
+		}
+		// we have no messages, which means that we want to delete existing messages
+		else {
+			// if no message map is present, we don't need do anything
+			if (messagesMap == null) return;
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (section) {
 				Collection<Message> removedMessages = messagesMap.remove(key);
 				// we did not remove anything, no cleanup needed
 				if (removedMessages == null || removedMessages.isEmpty()) return;

@@ -776,11 +776,13 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * <tt>null</tt>, if no Object was stored
 	 * @created 08.07.2011
 	 */
-	public synchronized Object getObject(Compiler compiler, String key) {
+	public Object getObject(Compiler compiler, String key) {
 		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
 		Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
 		if (storeForArticle == null) return null;
-		return storeForArticle.get(key);
+		synchronized (this) {
+			return storeForArticle.get(key);
+		}
 	}
 
 	/**
@@ -855,7 +857,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
 		if (store == null) return null;
-		return store.get(compiler);
+		synchronized (this) {
+			return store.get(compiler);
+		}
 	}
 
 	private void putStoreForCompiler(Compiler compiler, Map<String, Object> storeForCompiler) {
