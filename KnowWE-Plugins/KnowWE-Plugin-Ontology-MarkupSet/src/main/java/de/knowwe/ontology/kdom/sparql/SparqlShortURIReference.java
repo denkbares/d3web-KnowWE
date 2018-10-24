@@ -18,8 +18,13 @@
  */
 package de.knowwe.ontology.kdom.sparql;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
+import de.knowwe.kdom.sectionFinder.FilterSectionFinder;
 import de.knowwe.ontology.turtle.TurtleURI;
 
 /**
@@ -30,7 +35,13 @@ import de.knowwe.ontology.turtle.TurtleURI;
 public class SparqlShortURIReference extends AbstractType {
 
 	public SparqlShortURIReference() {
-		this.setSectionFinder(new RegexSectionFinder("\\w+:[\\w_\\-%]+"));
+		this.setSectionFinder(new FilterSectionFinder(new RegexSectionFinder("\\w+:[\\w_\\-%]+")) {
+			@Override
+			protected boolean filter(SectionFinderResult match, Section<?> father) {
+				// check whether the match is in open quotes
+				return Strings.countUnescapedQuotes(father.getText().substring(0, match.getStart()), '"') % 2 == 0;
+			}
+		});
 		this.addChildType(new TurtleURI());
 	}
 

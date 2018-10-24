@@ -33,7 +33,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  */
 public abstract class ConditionalSectionFinder implements SectionFinder {
 
-	SectionFinder finder = null;
+	private SectionFinder finder = null;
 
 	public ConditionalSectionFinder(SectionFinder internalFinder) {
 		this.finder = internalFinder;
