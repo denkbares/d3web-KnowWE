@@ -1,7 +1,6 @@
 package de.knowwe.core.compile;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +40,6 @@ public class ParallelScriptCompiler<C extends Compiler> {
 			new TreeMap<>();
 
 	private final Set<CompilePair> pairSet = new HashSet<>();
-	private final Set<String> sectionsWithMessage = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	private Priority currentPriority;
 
@@ -171,14 +168,6 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	}
 
 	public void compile() {
-		for (String sectionId : sectionsWithMessage) {
-			// to avoid clearing for every script and section,
-			// we remember the sections that got messages and only clear them
-			Section<?> section = Sections.get(sectionId);
-			if (section == null) continue;
-			Messages.clearMessages(section, getClass());
-		}
-		sectionsWithMessage.clear();
 		Priority lastPriority = Priority.INIT;
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
@@ -199,9 +188,9 @@ public class ParallelScriptCompiler<C extends Compiler> {
 				}
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while compiling.\n" +
-							"Script: " + script + ", @priority " + currentPriority.intValue() + ":\n" + e.getMessage();
-					Messages.storeMessage(section, getClass(), Messages.error(msg));
-					sectionsWithMessage.add(section.getID());
+							"Script: " + script + ", @priority " + currentPriority.intValue() + ":\n"
+							+ e.getClass().getSimpleName() + ": " + e.getMessage();
+					Messages.storeMessage(compiler, section, ParallelScriptCompiler.class, Messages.error(msg));
 					Log.severe(msg, e);
 				}
 			});
