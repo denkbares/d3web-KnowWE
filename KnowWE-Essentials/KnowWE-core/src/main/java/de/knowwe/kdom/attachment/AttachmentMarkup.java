@@ -532,10 +532,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			);
 		}
 		else {
-			final String username = CredentialProviders.get(url.toString(), CredentialProvider.Credential.USERNAME);
+			final String username = CredentialProviders.match(url.toString(), CredentialProvider.Credential.USERNAME);
 
 			if (username != null) {
-				final String password = CredentialProviders.get(url.toString(), CredentialProvider.Credential.PASSWORD);
+				final String password = CredentialProviders.match(url.toString(), CredentialProvider.Credential.PASSWORD);
 				connection.setRequestProperty("Authorization", "Basic " +
 						new String(Base64.getEncoder().encode((username + ":" + password).getBytes(UTF_8)), UTF_8)
 				);
