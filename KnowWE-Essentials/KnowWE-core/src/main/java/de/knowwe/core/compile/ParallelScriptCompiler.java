@@ -1,6 +1,7 @@
 package de.knowwe.core.compile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -22,8 +24,8 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 
 /**
- * For the given {@link de.knowwe.core.kdom.parsing.Section}s and {@link de.knowwe.core.compile.Compiler} it gets all
- * {@link de.knowwe.core.compile.CompileScript}s and then compiles all Sections in the order, given by Priority of the
+ * For the given {@link Section}s and {@link Compiler} it gets all
+ * {@link CompileScript}s and then compiles all Sections in the order, given by Priority of the
  * scripts and position in the KDOM (Article). The ParallelScriptCompiler acts like a set, so you can add combinations
  * of Sections and CompileScripts multiple times, but after the first time, it no longer has any effect and each
  * combination will only be compiled once to avoid loops.
@@ -40,6 +42,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 			new TreeMap<>();
 
 	private final Set<CompilePair> pairSet = new HashSet<>();
+	private final Set<String> sectionsWithMessage = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	private Priority currentPriority;
 
@@ -168,6 +171,14 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	}
 
 	public void compile() {
+		for (String sectionId : sectionsWithMessage) {
+			// to avoid clearing for every script and section,
+			// we remember the sections that got messages and only clear them
+			Section<?> section = Sections.get(sectionId);
+			if (section == null) continue;
+			Messages.clearMessages(section, getClass());
+		}
+		sectionsWithMessage.clear();
 		Priority lastPriority = Priority.INIT;
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
@@ -189,7 +200,8 @@ public class ParallelScriptCompiler<C extends Compiler> {
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while compiling.\n" +
 							"Script: " + script + ", @priority " + currentPriority.intValue() + ":\n" + e.getMessage();
-					Messages.storeMessage(section, script.getClass(), Messages.error(msg));
+					Messages.storeMessage(section, getClass(), Messages.error(msg));
+					sectionsWithMessage.add(section.getID());
 					Log.severe(msg, e);
 				}
 			});
