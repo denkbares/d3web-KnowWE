@@ -19,6 +19,15 @@ public interface CredentialProvider {
 	 */
 	String get(String key, Credential credential);
 
+	/**
+	 * Tries to match a specified credential stored under a matching regex key
+	 *
+	 * @param key        Key of the credential entry, could be a URL
+	 * @param credential Credential to return
+	 * @return Matching credential, or null if no matching credential can be found
+	 */
+	String match(String key, Credential credential);
+
 	enum Credential {
 		USERNAME,
 		PASSWORD

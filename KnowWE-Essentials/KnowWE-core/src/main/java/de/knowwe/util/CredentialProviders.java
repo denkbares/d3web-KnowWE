@@ -27,4 +27,20 @@ public class CredentialProviders {
 
 		return null;
 	}
+
+	public static String match(String key, CredentialProvider.Credential credential) {
+		final Iterator<PriorityList.Group<Double, CredentialProvider>> iterator = providers.groupIterator();
+
+		while (iterator.hasNext()) {
+			final PriorityList.Group<Double, CredentialProvider> group = iterator.next();
+
+			for (CredentialProvider provider : group) {
+				final String cred = provider.match(key, credential);
+
+				if (cred != null) return cred;
+			}
+		}
+
+		return null;
+	}
 }
