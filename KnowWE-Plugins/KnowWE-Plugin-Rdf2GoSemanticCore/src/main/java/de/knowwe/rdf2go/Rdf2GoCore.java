@@ -53,6 +53,7 @@ import java.util.logging.Level;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -714,9 +715,32 @@ public class Rdf2GoCore {
 	 *
 	 * @param value the string to create an URI from
 	 * @return the URI for the given string
+	 * @deprecated use {@link Rdf2GoCore#createIRI(String)} instead
 	 */
 	public URI createURI(String value) {
-		return getValueFactory().createURI(Rdf2GoUtils.expandNamespace(this, value));
+		return createIRI(value);
+	}
+
+	/**
+	 * Creates a IRI for normal IRI string (e.g. http://example.org#myConcept) or an abbreviated IRI (e.g.
+	 * ex:myConcept).
+	 *
+	 * @param value the string to create an URI from
+	 * @return the URI for the given string
+	 */
+	public IRI createIRI(String value) {
+		return getValueFactory().createIRI(Rdf2GoUtils.expandNamespace(this, value));
+	}
+
+	/**
+	 * Transforms an java.net.URI into an URI usable in the Rdf2GoCore.
+	 *
+	 * @param uri the java.net.URI to transform
+	 * @return the URI usable for the Rdf2GoCore
+	 * @deprecated  use {@link Rdf2GoCore#createIRI(java.net.URI)} instead
+	 */
+	public URI createURI(java.net.URI uri) {
+		return createURI(uri.toString());
 	}
 
 	/**
@@ -725,8 +749,8 @@ public class Rdf2GoCore {
 	 * @param uri the java.net.URI to transform
 	 * @return the URI usable for the Rdf2GoCore
 	 */
-	public URI createURI(java.net.URI uri) {
-		return createURI(uri.toString());
+	public IRI createIRI(java.net.URI uri) {
+		return createIRI(uri.toString());
 	}
 
 	private ValueFactory getValueFactory() {
