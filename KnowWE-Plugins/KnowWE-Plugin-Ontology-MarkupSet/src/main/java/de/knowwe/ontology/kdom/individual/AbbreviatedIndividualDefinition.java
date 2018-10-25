@@ -48,7 +48,7 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 					Section<AbbreviatedResourceReference> resourceSection = Sections.child(
 							contentTypeSection, AbbreviatedResourceReference.class);
 					if (resourceSection.hasErrorInSubtree()) return Messages.noMessage();
-					URI typeURI = resourceSection.get().getResourceURI(core, resourceSection);
+					URI typeURI = resourceSection.get().getResourceIRI(core, resourceSection);
 					core.addStatements(section,
 							core.createStatement(resourceURI, RDF.TYPE, typeURI));
 				}

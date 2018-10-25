@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
 import com.denkbares.strings.Strings;
@@ -72,7 +74,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));
 		}
-		org.eclipse.rdf4j.model.URI xsdType = null;
+		IRI xsdType = null;
 		if (xsdPartSection != null) {
 			xsdType = xsdPartSection.get().getXSDType(xsdPartSection);
 		}
@@ -156,8 +158,8 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN + "\\z"), 1));
 		}
 
-		public org.eclipse.rdf4j.model.URI getXSDType(Section<XSDPart> section) {
-			return new org.eclipse.rdf4j.model.impl.URIImpl(XMLSchema.NAMESPACE + section.getText());
+		public IRI getXSDType(Section<XSDPart> section) {
+			return SimpleValueFactory.getInstance().createIRI(XMLSchema.NAMESPACE + section.getText());
 		}
 	}
 

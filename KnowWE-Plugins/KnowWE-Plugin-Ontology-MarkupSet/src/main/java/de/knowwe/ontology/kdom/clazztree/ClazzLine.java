@@ -118,18 +118,18 @@ public class ClazzLine extends AbstractType {
 
 					Collection<Statement> statements = new ArrayList<>();
 
-					statements.add(core.createStatement(clazzNode, core.createURI(Rdf2GoUtils.expandNamespace(core, "rdf:type")), core
-							.createURI(Rdf2GoUtils.expandNamespace(core, "owl:Class"))));
+					statements.add(core.createStatement(clazzNode, core.createIRI(Rdf2GoUtils.expandNamespace(core, "rdf:type")), core
+							.createIRI(Rdf2GoUtils.expandNamespace(core, "owl:Class"))));
 
 					// add label
 					if (labelSection != null) {
-						statements.add(core.createStatement(clazzNode, core.createURI("http://www.w3.org/2004/02/skos/core#prefLabel"), core
+						statements.add(core.createStatement(clazzNode, core.createIRI("http://www.w3.org/2004/02/skos/core#prefLabel"), core
 								.createLiteral(Strings.unquote(labelSection.getText()))));
 					}
 
 					// add description
 					if (descriptionSection != null) {
-						statements.add(core.createStatement(clazzNode, core.createURI(Rdf2GoUtils.expandNamespace(core, "rdfs:comment")), core
+						statements.add(core.createStatement(clazzNode, core.createIRI(Rdf2GoUtils.expandNamespace(core, "rdfs:comment")), core
 								.createLiteral(Strings
 										.unquote(descriptionSection.getText()))));
 					}

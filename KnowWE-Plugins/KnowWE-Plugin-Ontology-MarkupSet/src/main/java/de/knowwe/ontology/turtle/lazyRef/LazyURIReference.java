@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.jetbrains.annotations.NotNull;
 import org.eclipse.rdf4j.model.Value;
 
@@ -55,8 +56,8 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 	}
 
 	@Override
-	public org.eclipse.rdf4j.model.URI getURI(Section<LazyURIReference> section, Rdf2GoCompiler core) {
-		return (org.eclipse.rdf4j.model.URI) getNode(section, core);
+	public IRI getIRI(Section<LazyURIReference> section, Rdf2GoCompiler core) {
+		return (IRI) getNode(section, core);
 	}
 
 	@NotNull
@@ -107,9 +108,7 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 			Identifier secondIdentifier = iterator.next();
 			String firstNS = firstIdentifier.getPathElementAt(0);
 			String secondNS = secondIdentifier.getPathElementAt(0);
-			if(rdf2GoCore.getNamespaces().get(firstNS).equals(rdf2GoCore.getNamespaces().get(secondNS))) {
-				return true;
-			}
+			return rdf2GoCore.getNamespaces().get(firstNS).equals(rdf2GoCore.getNamespaces().get(secondNS));
 		}
 		return false;
 	}

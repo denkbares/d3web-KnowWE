@@ -18,8 +18,6 @@
  */
 package de.knowwe.rdfs.vis.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,8 +27,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -119,24 +117,24 @@ public class Utils {
 	}
 
 	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider
-			uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue) {
-		return createValue(config, rdfRepository, uriProvider, section, data, toURI, insertNewValue, null);
+			uriProvider, Section<?> section, SubGraphData data, Value toIRI, boolean insertNewValue) {
+		return createValue(config, rdfRepository, uriProvider, section, data, toIRI, insertNewValue, null);
 	}
 
 	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider
-			uriProvider, Section<?> section, SubGraphData data, Value toURI, boolean insertNewValue, String clazz) {
+			uriProvider, Section<?> section, SubGraphData data, Value toIRI, boolean insertNewValue, String clazz) {
 		ConceptNode visValue;
 
 		GraphDataBuilder.NODE_TYPE type;
 		Literal toLiteral;
-		String label = null;
+		String label;
 		String identifier;
 
 		/*
 		1. case: Value is Literal
 		 */
 		try {
-			toLiteral = (Literal) toURI;
+			toLiteral = (Literal) toIRI;
 			//add a key to identifier to have distinguish between concepts and literals, e.g., <lns:Q> and "Q"
 			identifier = getIdentifierLiteral(toLiteral);
 			type = GraphDataBuilder.NODE_TYPE.LITERAL;
@@ -149,7 +147,7 @@ public class Utils {
 			}
 			return visValue;
 		}
-		catch (ClassCastException e) {
+		catch (ClassCastException ignore) {
 			// do nothing as this is just a type check
 		}
 
@@ -158,7 +156,7 @@ public class Utils {
 		 */
 		BNode bValue;
 		try {
-			bValue = (BNode) toURI;
+			bValue = (BNode) toIRI;
 			identifier = getIdentifierBValue(bValue);
 
 			visValue = data.getConcept(identifier);
@@ -175,17 +173,17 @@ public class Utils {
 			}
 			return visValue;
 		}
-		catch (ClassCastException e) {
+		catch (ClassCastException ignore) {
 			// do nothing as this is just a type check
 		}
 
 
 		/*
-		3. case: Value is URI-Resource
+		3. case: Value is IRI-Resource
 		 */
 		try {
-			URI uri = (URI) toURI;
-			identifier = getConceptName(toURI, rdfRepository);
+			IRI uri = (IRI) toIRI;
+			identifier = getConceptName(toIRI, rdfRepository);
 			visValue = data.getConcept(identifier);
 
 			if (visValue == null) {
@@ -197,13 +195,13 @@ public class Utils {
 				if (Rdf2GoUtils.isProperty(rdfRepository, uri)) {
 					type = GraphDataBuilder.NODE_TYPE.PROPERTY;
 				}
-				label = fetchLabel(config, toURI, rdfRepository);
+				label = fetchLabel(config, toIRI, rdfRepository);
 
 				if (label == null) {
 					label = identifier;
 				}
 				RenderingStyle style = Utils.getStyle(type, config);
-				Utils.setClassColorCoding(toURI, style, config, rdfRepository);
+				Utils.setClassColorCoding(toIRI, style, config, rdfRepository);
 				String conceptURL = createConceptURL(identifier, config, section, uriProvider, uri.toString());
 				visValue = new ConceptNode(identifier, type, conceptURL, label, clazz, style);
 				if (insertNewValue) {
@@ -216,13 +214,13 @@ public class Utils {
 					visValue.setClazz(clazz);
 					// re-color according to newly found clazz
 					RenderingStyle style = Utils.getStyle(visValue.getType(), config);
-					Utils.setClassColorCoding(toURI, style, config, rdfRepository);
+					Utils.setClassColorCoding(toIRI, style, config, rdfRepository);
 					visValue.setStyle(style);
 				}
 			}
 			return visValue;
 		}
-		catch (ClassCastException e) {
+		catch (ClassCastException ignore) {
 			// do nothing as this is just a type check
 		}
 
@@ -258,15 +256,15 @@ public class Utils {
 	}
 
 	@Nullable
-	public static String fetchLabel(Config config, Value toURI, Rdf2GoCore rdf2GoCore) {
+	public static String fetchLabel(Config config, Value toIRI, Rdf2GoCore rdf2GoCore) {
 		String showLabels = config.getShowLabels();
 		String label = null;
 		if (!Strings.isBlank(showLabels) && !"false".equals(showLabels.toLowerCase())) {
 			if ("true".equals(showLabels.toLowerCase())) {
-				label = Utils.getRDFSLabel(toURI, rdf2GoCore, config.getLanguage());
+				label = Utils.getRDFSLabel(toIRI, rdf2GoCore, config.getLanguage());
 			}
 			else {
-				label = Utils.getLabel(toURI, rdf2GoCore, config.getLanguage(), showLabels.split(","));
+				label = Utils.getLabel(toIRI, rdf2GoCore, config.getLanguage(), showLabels.split(","));
 			}
 			if (label != null && label.length() >= 3 && label.charAt(label.length() - 3) == '@') {
 				// do not show language tag of relation labels
@@ -287,33 +285,33 @@ public class Utils {
 	private static RenderingStyle setClassColorCoding(Value node, RenderingStyle style, Config config, Rdf2GoCore
 			rdfRepository) {
 		Map<String, String> individualColorsScheme = config.getIndividualColors();
-		String shortURI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.stringValue());
-		if (node instanceof URI) {
-			if (individualColorsScheme.containsKey(shortURI)) {
-				style.setFillcolor(individualColorsScheme.get(shortURI));
+		String shortIRI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.stringValue());
+		if (node instanceof IRI) {
+			if (individualColorsScheme.containsKey(shortIRI)) {
+				style.setFillcolor(individualColorsScheme.get(shortIRI));
 			}
 		}
 
 		Map<String, String> classColorScheme = config.getClassColors();
 		if (classColorScheme != null && !classColorScheme.isEmpty()) {
 
-			if (Rdf2GoUtils.isClass(rdfRepository, (URI) node)) {
-				String color = classColorScheme.get(shortURI);
+			if (Rdf2GoUtils.isClass(rdfRepository, (IRI) node)) {
+				String color = classColorScheme.get(shortIRI);
 				if (color != null) {
 					style.setFillcolor(color);
 				}
 			}
 			else {
 				// We fetch the class hierarchy of this concept
-				PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, (URI) node);
+				PartialHierarchyTree<IRI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, (IRI) node);
 				// we then remove from this hierarchy all classes that do not have a color assignment
-				List<URI> allClasses = classHierarchy.getNodesDFSOrder();
-				for (URI clazz : allClasses) {
+				List<IRI> allClasses = classHierarchy.getNodesDFSOrder();
+				for (IRI clazz : allClasses) {
 					if (!classColorScheme.containsKey(Rdf2GoUtils.reduceNamespace(rdfRepository, clazz.toString()))) {
 						classHierarchy.remove(clazz);
 					}
 				}
-				URI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
+				IRI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
 				if (clazzToBeColored != null) {
 					String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored
 							.toString()));
@@ -329,9 +327,9 @@ public class Utils {
 	public static String createConceptURL(String to, Config config, Section<?> section, LinkToTermDefinitionProvider uriProvider, String uri) {
 		if (section != null) {
 			final OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
-			final String shortURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri);
-			Identifier identifier = new Identifier(shortURI);
-			String[] identifierParts = shortURI.split(":");
+			final String shortIRI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri);
+			Identifier identifier = new Identifier(shortIRI);
+			String[] identifierParts = shortIRI.split(":");
 			if (identifierParts.length == 2) {
 				identifier = new Identifier(
 						identifierParts[0], Strings.decodeURL(identifierParts[1]));
@@ -355,18 +353,18 @@ public class Utils {
 		return OntoGraphDataBuilder.createBaseURL() + "?concept=" + to;
 	}
 
-	public static String getIdentifierURI(Value uri, Rdf2GoCore repo) {
+	public static String getIdentifierIRI(Value uri, Rdf2GoCore repo) {
 		try {
 			String reducedNamespace = Rdf2GoUtils.reduceNamespace(repo,
 					uri.stringValue());
-			String[] splitURI = reducedNamespace.split(":");
-			String namespace = splitURI[0];
-			String name = splitURI.length > 1 ? splitURI[1] : "";
+			String[] splitIRI = reducedNamespace.split(":");
+			String namespace = splitIRI[0];
+			String name = splitIRI.length > 1 ? splitIRI[1] : "";
 			if (namespace.equals("lns")) {
-				return urlDecode(name);
+				return Strings.decodeURL(name);
 			}
 			else {
-				return namespace + ":" + urlDecode(name);
+				return namespace + ":" + Strings.decodeURL(name);
 			}
 		}
 		catch (ClassCastException e) {
@@ -398,42 +396,32 @@ public class Utils {
 		}
 
 		/*
-		handle URI
+		handle IRI
 		 */
 		try {
-			URI uriValue = (URI) uri;
-			return getIdentifierURI(uriValue, repo);
+			IRI uriValue = (IRI) uri;
+			return getIdentifierIRI(uriValue, repo);
 		}
 		catch (ClassCastException e) {
 			return null;
 		}
 	}
 
-	public static GraphDataBuilder.NODE_TYPE getConceptType(Value conceptURI, Rdf2GoCore rdfRepository) {
-		if (Utils.isLiteral(conceptURI)) {
+	public static GraphDataBuilder.NODE_TYPE getConceptType(Value conceptIRI, Rdf2GoCore rdfRepository) {
+		if (Utils.isLiteral(conceptIRI)) {
 			return GraphDataBuilder.NODE_TYPE.LITERAL;
 		}
-		if (Utils.isBlankNode(conceptURI)) {
+		if (Utils.isBlankNode(conceptIRI)) {
 			return GraphDataBuilder.NODE_TYPE.BLANKNODE;
 		}
 
 		GraphDataBuilder.NODE_TYPE result = GraphDataBuilder.NODE_TYPE.UNDEFINED;
 
-		if (Rdf2GoUtils.isClass(rdfRepository, (URI) conceptURI)) return GraphDataBuilder.NODE_TYPE.CLASS;
+		if (Rdf2GoUtils.isClass(rdfRepository, (IRI) conceptIRI)) return GraphDataBuilder.NODE_TYPE.CLASS;
 
-		if (Rdf2GoUtils.isProperty(rdfRepository, (URI) conceptURI)) return GraphDataBuilder.NODE_TYPE.PROPERTY;
+		if (Rdf2GoUtils.isProperty(rdfRepository, (IRI) conceptIRI)) return GraphDataBuilder.NODE_TYPE.PROPERTY;
 
 		return result;
-	}
-
-	public static String urlDecode(String name) {
-		try {
-			return URLDecoder.decode(name, "UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	public static Map<String, String> createColorCodings(Section<?> section, String relationName, Rdf2GoCore core,
@@ -454,8 +442,8 @@ public class Utils {
 			for (BindingSet row : resultTable) {
 				Value entity = row.getValue("entity");
 				String color = row.getValue("color").stringValue();
-				String shortURI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
-				colorCodings.put(shortURI, color);
+				String shortIRI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
+				colorCodings.put(shortIRI, color);
 			}
 			return colorCodings;
 		}
@@ -599,14 +587,14 @@ public class Utils {
 		return concept;
 	}
 
-	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationURI, String
+	public static String createRelationLabel(Config config, Rdf2GoCore rdfRepository, Value relationIRI, String
 			relation) {
 		// is the node a literal ? edit: can a predicate node ever be a literal ??
 		Literal toLiteral = null;
 		try {
-			toLiteral = (Literal) relationURI;
+			toLiteral = (Literal) relationIRI;
 		}
-		catch (ClassCastException e) {
+		catch (ClassCastException ignore) {
 			// do nothing
 		}
 
@@ -615,9 +603,9 @@ public class Utils {
 			relationName = literalToLabel(toLiteral);
 		}
 		else {
-			// if it is no literal look for label for the URI
+			// if it is no literal look for label for the IRI
 			String relationLabel = Utils.fetchLabel(config,
-					relationURI, rdfRepository);
+					relationIRI, rdfRepository);
 			if (relationLabel != null) {
 				relationName = relationLabel;
 			}

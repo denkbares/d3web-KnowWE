@@ -20,6 +20,8 @@ package de.knowwe.ontology.turtle;
 
 import java.util.List;
 
+import org.eclipse.rdf4j.model.IRI;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -64,7 +66,7 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 	}
 
 	@Override
-	public org.eclipse.rdf4j.model.URI getURI(Section<Predicate> section, Rdf2GoCompiler core) {
-		return (org.eclipse.rdf4j.model.URI) getNode(section, core);
+	public IRI getIRI(Section<Predicate> section, Rdf2GoCompiler core) {
+		return (IRI) getNode(section, core);
 	}
 }

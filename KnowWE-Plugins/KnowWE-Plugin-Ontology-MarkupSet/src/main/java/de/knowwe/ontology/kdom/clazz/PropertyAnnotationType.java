@@ -93,7 +93,7 @@ public class PropertyAnnotationType extends AbstractType {
 				if (rangeSection.hasErrorInSubtree()) return Messages.noMessage();
 				String rangeAbbreviation = rangeSection.get().getAbbreviation(rangeSection);
 				String range = rangeSection.get().getResource(rangeSection);
-				URI rangeURI = core.createURI(rangeAbbreviation, range);
+				URI rangeURI = core.createIRI(rangeAbbreviation, range);
 				core.addStatements(section, core.createStatement(propertyURI, RDFS.RANGE, rangeURI));
 
 				if (rangeAbbreviation.equalsIgnoreCase(XMLSchema.PREFIX)) {

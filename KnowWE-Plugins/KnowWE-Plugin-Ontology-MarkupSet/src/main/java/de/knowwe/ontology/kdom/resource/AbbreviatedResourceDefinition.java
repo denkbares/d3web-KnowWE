@@ -59,7 +59,7 @@ public class AbbreviatedResourceDefinition extends AbstractType {
 	public URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceDefinition> section) {
 		String propertyAbbreviation = getAbbreviation(section);
 		String property = getResource(section);
-		return core.createURI(propertyAbbreviation, property);
+		return core.createIRI(propertyAbbreviation, property);
 	}
 
 }

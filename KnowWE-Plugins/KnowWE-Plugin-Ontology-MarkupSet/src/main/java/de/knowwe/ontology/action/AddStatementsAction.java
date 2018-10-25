@@ -122,7 +122,7 @@ public class AddStatementsAction extends AbstractAction {
 			JSONObject stmt = array.getJSONObject(i);
 			statements[i] = new StatementImpl(
 					core.createResource(stmt.getString("subject")),
-					core.createURI(stmt.getString("predicate")),
+					core.createIRI(stmt.getString("predicate")),
 					core.createNode(stmt.getString("object")));
 		}
 		return statements;

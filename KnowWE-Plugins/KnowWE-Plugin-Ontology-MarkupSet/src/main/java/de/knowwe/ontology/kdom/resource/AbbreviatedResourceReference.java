@@ -18,6 +18,8 @@
  */
 package de.knowwe.ontology.kdom.resource;
 
+import org.eclipse.rdf4j.model.IRI;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -54,7 +56,7 @@ public class AbbreviatedResourceReference extends AbstractType {
 				.getAbbreviation(abbreviationPrefixSection);
 	}
 
-	public org.eclipse.rdf4j.model.URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
+	public IRI getResourceIRI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
 		if (core == null) return null;
 
 		String propertyAbbreviation = getAbbreviation(section);
@@ -62,11 +64,11 @@ public class AbbreviatedResourceReference extends AbstractType {
 		if (property == null) {
 			return null;
 		}
-		return core.createURI(propertyAbbreviation, property);
+		return core.createIRI(propertyAbbreviation, property);
 	}
 
-	public org.eclipse.rdf4j.model.URI getShortURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
-		return core.toShortURI(getResourceURI(core, section));
+	public IRI getShortIRI(Rdf2GoCore core, Section<? extends AbbreviatedResourceReference> section) {
+		return core.toShortIRI(getResourceIRI(core, section));
 	}
 
 }

@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.rdf4j.model.impl.URIImpl;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 import com.denkbares.strings.Identifier;
@@ -91,7 +90,7 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 			String namespace = section.get().getNamespace(section);
 			List<Message> messages = new LinkedList<>();
 			try {
-				new URIImpl(namespace);
+				compiler.getRdf2GoCore().createIRI(namespace);
 			}
 			catch (IllegalArgumentException e) {
 				Message message = new Message(Message.Type.ERROR, "'" + namespace + "' is not a valid URI");

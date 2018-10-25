@@ -245,7 +245,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private URI getUriFromConfig(Rdf2GoCore core, Section<AbbreviatedResourceReference> resource) {
 			URI uri = null;
 			if (resource != null) {
-				uri = resource.get().getResourceURI(core, resource);
+				uri = resource.get().getResourceIRI(core, resource);
 			}
 			return uri;
 		}
@@ -253,7 +253,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private URI getUriFromCell(Rdf2GoCore core, XSSFRow row, int subjectColumn) {
 			XSSFCell cell = row.getCell(subjectColumn - 1);
 			if (cell == null) return null;
-			return core.createURI(cell.getStringCellValue());
+			return core.createIRI(cell.getStringCellValue());
 		}
 
 		@NotNull

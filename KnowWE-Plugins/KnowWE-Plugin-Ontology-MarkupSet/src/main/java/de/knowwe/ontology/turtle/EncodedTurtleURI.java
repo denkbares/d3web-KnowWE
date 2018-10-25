@@ -20,6 +20,7 @@ package de.knowwe.ontology.turtle;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Identifier;
@@ -68,12 +69,12 @@ public class EncodedTurtleURI extends AbstractType implements URIProvider<Encode
 	@Override
 	public Value getNode(Section<? extends EncodedTurtleURI> section, Rdf2GoCompiler core) {
 		String uri = getURI(section);
-		return core.getRdf2GoCore().createURI(uri);
+		return core.getRdf2GoCore().createIRI(uri);
 	}
 
 	@Override
-	public org.eclipse.rdf4j.model.URI getURI(Section<EncodedTurtleURI> section, Rdf2GoCompiler core) {
-		return (org.eclipse.rdf4j.model.URI) getNode(section, core);
+	public IRI getIRI(Section<EncodedTurtleURI> section, Rdf2GoCompiler core) {
+		return (IRI) getNode(section, core);
 	}
 
 	private static class EncodedResourceReference extends ResourceReference {

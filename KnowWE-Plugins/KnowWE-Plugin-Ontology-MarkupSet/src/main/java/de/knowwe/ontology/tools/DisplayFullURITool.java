@@ -44,7 +44,7 @@ public class DisplayFullURITool implements ToolProvider {
 		Section<? extends AbbreviatedResourceReference> abbRef = Sections.ancestor(section, AbbreviatedResourceReference.class);
 		OntologyCompiler compiler = Compilers.getCompiler(abbRef, OntologyCompiler.class);
 		if (compiler == null) return new Tool[0];
-		URI resourceURI = abbRef.get().getResourceURI(compiler.getRdf2GoCore(), abbRef);
+		URI resourceURI = abbRef.get().getResourceIRI(compiler.getRdf2GoCore(), abbRef);
 		if (resourceURI == null) return new Tool[0];
 		String fullURIText = resourceURI.toString();
 		return new Tool[] { new DefaultTool(Icon.COPY_TO_CLIPBOARD, "Copy: " + fullURIText,

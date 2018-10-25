@@ -20,6 +20,9 @@ package de.knowwe.ontology.kdom.relation;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
 import com.denkbares.strings.Strings;
@@ -54,7 +57,7 @@ public class LiteralType extends AbstractType {
 		this.addChildType(new LanguageTagPart());
 	}
 
-	public org.eclipse.rdf4j.model.Literal getLiteral(Rdf2GoCore core, Section<LiteralType> section) {
+	public Literal getLiteral(Rdf2GoCore core, Section<LiteralType> section) {
 		Section<LiteralPart> literalPartSection = Sections.child(section,
 				LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
@@ -65,7 +68,7 @@ public class LiteralType extends AbstractType {
 			return core.createLanguageTaggedLiteral(literal,
 					langTagPartSection.get().getTag(langTagPartSection));
 		}
-		org.eclipse.rdf4j.model.URI xsdType = null;
+		IRI xsdType = null;
 		if (xsdPartSection != null) {
 			xsdType = xsdPartSection.get().getXSDType(xsdPartSection);
 		}
@@ -75,19 +78,19 @@ public class LiteralType extends AbstractType {
 		return core.createLiteral(literal, xsdType);
 	}
 
-	private org.eclipse.rdf4j.model.URI deriveTypeFromLiteral(String literal) {
+	private IRI deriveTypeFromLiteral(String literal) {
 		try {
 			Integer.parseInt(literal);
 			return XMLSchema.INTEGER;
 		}
-		catch (NumberFormatException e) {
+		catch (NumberFormatException ignore) {
 			// do nothing;
 		}
 		try {
 			Double.parseDouble(literal);
 			return XMLSchema.DOUBLE;
 		}
-		catch (NumberFormatException e) {
+		catch (NumberFormatException ignore) {
 			// do nothing;
 		}
 		// we don't know, just use string
@@ -124,8 +127,8 @@ public class LiteralType extends AbstractType {
 			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN), 1));
 		}
 
-		public org.eclipse.rdf4j.model.URI getXSDType(Section<XSDPart> section) {
-			return new org.eclipse.rdf4j.model.impl.URIImpl(XMLSchema.NAMESPACE + section.getText());
+		public IRI getXSDType(Section<XSDPart> section) {
+			return SimpleValueFactory.getInstance().createIRI(XMLSchema.NAMESPACE + section.getText());
 		}
 	}
 

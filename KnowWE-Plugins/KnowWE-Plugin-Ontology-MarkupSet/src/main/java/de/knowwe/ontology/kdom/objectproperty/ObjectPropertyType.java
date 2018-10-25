@@ -76,7 +76,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 			String namespace = core.getNamespaces().get(section.get().getAbbreviation(section));
 			if (namespace == null) return Messages.noMessage();
 			String property = section.get().getResource(section);
-			URI propertyURI = core.createURI(namespace, property);
+			URI propertyURI = core.createIRI(namespace, property);
 			core.addStatements(section, core.createStatement(propertyURI, RDF.TYPE, RDF.PROPERTY));
 
 			/*
@@ -122,7 +122,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 					Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 					URI propertyURI = propertySec.get().getResourceURI(core, propertySec);
 
-					URI objectURI = section.get().getResourceURI(core, section);
+					URI objectURI = section.get().getResourceIRI(core, section);
 
 					URI predicateURI = RDFS.RANGE;
 					if (kind == DomainRange.DOMAIN) {

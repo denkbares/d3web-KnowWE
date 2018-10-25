@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -36,11 +36,11 @@ import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.turtle.ObjectList;
-import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.ontology.compile.provider.StatementProvider;
 import de.knowwe.ontology.compile.provider.StatementProviderResult;
+import de.knowwe.ontology.turtle.ObjectList;
+import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
@@ -113,8 +113,9 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 			Sections<DefaultMarkupType> markup = Sections.$(section).ancestor(DefaultMarkupType.class);
 			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);
 			if (typeRelationAnnotationValue != null) {
-				org.eclipse.rdf4j.model.URI propertyUri = compiler.getRdf2GoCore().createURI(typeRelationAnnotationValue);
-				statements.add(core.createStatement(new URIImpl(subjectNode.stringValue()), propertyUri, headerClassResource));
+				org.eclipse.rdf4j.model.URI propertyUri = compiler.getRdf2GoCore()
+						.createIRI(typeRelationAnnotationValue);
+				statements.add(core.createStatement(compiler.getRdf2GoCore().createIRI(subjectNode.stringValue()), propertyUri, headerClassResource));
 			}
 			else {
 				typeAnnotationMissing = new Message(Message.Type.ERROR, "If subject concepts should be defined as instance of the class given in the first column header, a type-relation has to be defined via the typeRelation-typeRelationAnnotationValue. Otherwise, leave the first cell header blank.");

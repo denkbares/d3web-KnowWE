@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -38,11 +38,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.BNode;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -87,64 +86,67 @@ public class Rdf2GoUtils {
 		return getRdf2GoCore(defaultMarkup);
 	}
 
-	public static boolean isClass(Rdf2GoCore core, URI resource) {
+	public static boolean isClass(Rdf2GoCore core, IRI resource) {
 		String query = "ASK { <" + resource.stringValue() + "> rdf:type rdfs:Class .}";
 		return core.sparqlAsk(query);
 	}
 
-	public static boolean isProperty(Rdf2GoCore core, URI resource) {
+	public static boolean isProperty(Rdf2GoCore core, IRI resource) {
 		String query = "ASK { <" + resource.stringValue() + "> rdf:type rdf:Property .}";
 		return core.sparqlAsk(query);
 	}
 
-	public static Collection<URI> getClasses(Rdf2GoCore core, URI instance) {
+	public static Collection<IRI> getClasses(Rdf2GoCore core, IRI instance) {
 		String query = "SELECT ?class WHERE { <" + instance.stringValue() + "> rdf:type ?class .}";
-		List<URI> resultCollection = new ArrayList<>();
+		List<IRI> resultCollection = new ArrayList<>();
 		TupleQueryResult result = core.sparqlSelect(query);
 		for (BindingSet row : result) {
 			Value aClassNode = row.getValue("class");
-			URI uri = (URI) aClassNode;
+			IRI uri = (IRI) aClassNode;
 			resultCollection.add(uri);
 		}
 		return resultCollection;
 	}
 
-	public static boolean instanceOf(Rdf2GoCore core, URI resource, String classURI) {
-		if(resource == null) {
+	public static boolean instanceOf(Rdf2GoCore core, IRI resource, String classURI) {
+		if (resource == null) {
 			return false;
 		}
-		URI uri = new URIImpl(classURI);
+		IRI uri = core.createIRI(classURI);
 		return instanceOf(core, resource, uri);
 	}
 
-	public static boolean instanceOf(Rdf2GoCore core, URI resource, URI clazz) {
-		String query = "ASK { <" + resource.stringValue() + "> rdf:type <"+clazz+"> .}";
+	public static boolean instanceOf(Rdf2GoCore core, IRI resource, IRI clazz) {
+		String query = "ASK { <" + resource.stringValue() + "> rdf:type <" + clazz + "> .}";
 		return core.sparqlAsk(query);
 	}
 
-	public static Collection<URI> getInstances(Rdf2GoCore core, String... classes) {
-		return getInstances(core, Arrays.stream(classes).map(URIImpl::new).collect(Collectors.toList()).toArray(new URI[]{}));
+	public static Collection<IRI> getInstances(Rdf2GoCore core, String... classes) {
+		return getInstances(core, Arrays.stream(classes)
+				.map(core::createIRI)
+				.collect(Collectors.toList())
+				.toArray(new IRI[] {}));
 	}
 
 	/**
 	 * Returns all instance of the given classes.
 	 *
-	 * @param core repository to scan for instances
+	 * @param core    repository to scan for instances
 	 * @param classes classes that instances are detected of
 	 * @return all instances of all the given classes
 	 */
-	public static Collection<URI> getInstances(Rdf2GoCore core, URI... classes) {
-		String query = "SELECT ?instance WHERE { {?instance rdf:type <"+ classes[0] +"> .}";
-		for(int i = 1; i < classes.length; i++) {
+	public static Collection<IRI> getInstances(Rdf2GoCore core, IRI... classes) {
+		String query = "SELECT ?instance WHERE { {?instance rdf:type <" + classes[0] + "> .}";
+		for (int i = 1; i < classes.length; i++) {
 			query += "UNION ";
-			query += "{?instance rdf:type <"+ classes[i] +"> .}\n";
+			query += "{?instance rdf:type <" + classes[i] + "> .}\n";
 		}
 		query += "}";
-		List<URI> resultCollection = new ArrayList<>();
+		List<IRI> resultCollection = new ArrayList<>();
 		TupleQueryResult result = core.sparqlSelect(query);
 		for (BindingSet row : result) {
 			Value instanceNode = row.getValue("instance");
-			URI uri = (URI) instanceNode;
+			IRI uri = (IRI) instanceNode;
 			resultCollection.add(uri);
 		}
 		return resultCollection;
@@ -170,13 +172,13 @@ public class Rdf2GoUtils {
 			Log.severe(e.getMessage());
 			return uri;
 		}
-		return getLabel(new URIImpl(uri), repo, locales);
+		return getLabel(repo.createIRI(uri), repo, locales);
 	}
 
 	/**
 	 * Returns a rdfs:label of the given concept in the given language, if existing.
 	 */
-	public static String getLabel(URI concept, Rdf2GoCore repo, Locale... locales) {
+	public static String getLabel(IRI concept, Rdf2GoCore repo, Locale... locales) {
 
 		// try to find language specific label
 		String labelQuery = String.format(SPARQL_LABEL, concept.stringValue());
@@ -381,7 +383,7 @@ public class Rdf2GoUtils {
 	 * @param concept the concept for which the class tree should be generated
 	 * @return the tree of all classes that the concept belongs to
 	 */
-	public static PartialHierarchyTree<URI> getClassHierarchy(Rdf2GoCore core, URI concept) {
+	public static PartialHierarchyTree<IRI> getClassHierarchy(Rdf2GoCore core, IRI concept) {
 		return getClassHierarchy(core, concept, "rdfs:subClassOf", "rdf:type");
 	}
 
@@ -391,7 +393,7 @@ public class Rdf2GoUtils {
 	 * depth) in the tree of all classes of the concept. If there are multiple deepest classes with
 	 * same depth, the result is one of those (randomly).
 	 */
-	public static URI findMostSpecificClass(Rdf2GoCore core, URI concept) {
+	public static IRI findMostSpecificClass(Rdf2GoCore core, IRI concept) {
 		return findMostSpecificClass(getClassHierarchy(core, concept));
 	}
 
@@ -401,11 +403,11 @@ public class Rdf2GoUtils {
 	 * hierarchy. If there are multiple deepest classes with same depth, the result is one of those
 	 * (randomly).
 	 */
-	public static URI findMostSpecificClass(PartialHierarchyTree<URI> classHierarchy) {
-		final Set<PartialHierarchyTree.Node<URI>> nodes = classHierarchy.getNodes();
+	public static IRI findMostSpecificClass(PartialHierarchyTree<IRI> classHierarchy) {
+		final Set<PartialHierarchyTree.Node<IRI>> nodes = classHierarchy.getNodes();
 		int maxDepth = 0;
-		PartialHierarchyTree.Node<URI> deepestLeaf = classHierarchy.getRoot();
-		for (PartialHierarchyTree.Node<URI> node : nodes) {
+		PartialHierarchyTree.Node<IRI> deepestLeaf = classHierarchy.getRoot();
+		for (PartialHierarchyTree.Node<IRI> node : nodes) {
 			int depth = getDepth(node);
 			if (depth >= maxDepth) {
 				maxDepth = depth;
@@ -415,7 +417,7 @@ public class Rdf2GoUtils {
 		return deepestLeaf.getData();
 	}
 
-	private static int getDepth(PartialHierarchyTree.Node<URI> node) {
+	private static int getDepth(PartialHierarchyTree.Node<IRI> node) {
 		int depth = 0;
 		while (node.getParent() != null) {
 			depth++;
@@ -432,11 +434,11 @@ public class Rdf2GoUtils {
 	 * @param typeRelation     the property defining an instanceof relation (usally rdf:type)
 	 * @return the tree of all classes that the concept belongs to
 	 * @see de.knowwe.rdf2go.utils.Rdf2GoUtils#getClassHierarchy(de.knowwe.rdf2go.Rdf2GoCore,
-	 * URI, String, String)
+	 * IRI, String, String)
 	 */
-	public static PartialHierarchyTree<URI> getClassHierarchy(Rdf2GoCore core, URI concept, String subClassRelation, String typeRelation) {
+	public static PartialHierarchyTree<IRI> getClassHierarchy(Rdf2GoCore core, IRI concept, String subClassRelation, String typeRelation) {
 		final SubClassHierarchy subClassHierarchy = new SubClassHierarchy(core, subClassRelation);
-		PartialHierarchyTree<URI> tree = new PartialHierarchyTree<>(subClassHierarchy);
+		PartialHierarchyTree<IRI> tree = new PartialHierarchyTree<>(subClassHierarchy);
 
         /*
 		build up tree of classes
@@ -446,13 +448,13 @@ public class Rdf2GoUtils {
 		for (BindingSet queryRow : queryResultTable.getBindingSets()) {
 			Value c = queryRow.getValue("c");
 			if (c instanceof BNode) continue;
-			URI classUri = (URI) c;
+			IRI classUri = (IRI) c;
 			tree.insertNode(classUri);
 		}
 		return tree;
 	}
 
-	private static class SubClassHierarchy implements PartialHierarchy<URI> {
+	private static class SubClassHierarchy implements PartialHierarchy<IRI> {
 		private final Rdf2GoCore core;
 		private final String subClassRelation;
 
@@ -462,7 +464,7 @@ public class Rdf2GoUtils {
 		}
 
 		@Override
-		public boolean isSuccessorOf(URI node1, URI node2) {
+		public boolean isSuccessorOf(IRI node1, IRI node2) {
 			return core.sparqlAsk("ASK { <" + node1.stringValue() + "> " + subClassRelation + " <" + node2.stringValue() + "> }");
 		}
 	}
@@ -506,7 +508,7 @@ public class Rdf2GoUtils {
 	}
 
 	public static void addStringLiteral(Rdf2GoCore core, String subject, String predicate, String literalText, Collection<Statement> statements) {
-		addStatement(core, core.createlocalURI(subject), core.createlocalURI(predicate), core.createLiteral(literalText), statements);
+		addStatement(core, core.createlocalIRI(subject), core.createlocalIRI(predicate), core.createLiteral(literalText), statements);
 	}
 
 	/**
@@ -514,18 +516,18 @@ public class Rdf2GoUtils {
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
-		addStatement(core, core.createlocalURI(subject), core.createlocalURI(predicate), object, statements);
+		addStatement(core, core.createlocalIRI(subject), core.createlocalIRI(predicate), object, statements);
 	}
 
 	/**
 	 * Creates a statement and adds it to the list of statements. Additionally, in case of RDF
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
-	public static void addStatement(Rdf2GoCore core, org.eclipse.rdf4j.model.Resource subject, URI predicate, String object, Collection<Statement> statements) {
-		addStatement(core, subject, predicate, core.createlocalURI(object), statements);
+	public static void addStatement(Rdf2GoCore core, org.eclipse.rdf4j.model.Resource subject, IRI predicate, String object, Collection<Statement> statements) {
+		addStatement(core, subject, predicate, core.createlocalIRI(object), statements);
 	}
 
-	public static void addStatement(Rdf2GoCore core, org.eclipse.rdf4j.model.Resource subject, URI predicate, Value object, Collection<Statement> statements) {
+	public static void addStatement(Rdf2GoCore core, org.eclipse.rdf4j.model.Resource subject, IRI predicate, Value object, Collection<Statement> statements) {
 		statements.add(core.createStatement(subject, predicate, object));
 	}
 

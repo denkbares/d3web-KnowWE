@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.turtle;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 
@@ -56,7 +57,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 		}
 		else {
 			String uri = Rdf2GoUtils.expandNamespace(core, turtleURIText);
-			return core.createURI(uri);
+			return core.createIRI(uri);
 		}
 	}
 
@@ -72,11 +73,11 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 			shortURI = Strings.encodeURL(identifier.toExternalForm());
 		}
 		String longURI = Rdf2GoUtils.expandNamespace(core, shortURI);
-		return core.createURI(longURI);
+		return core.createIRI(longURI);
 	}
 
 	@Override
-	public org.eclipse.rdf4j.model.URI getURI(Section<TurtleURI> section, Rdf2GoCompiler core) {
-		return (org.eclipse.rdf4j.model.URI) getNode(section, core);
+	public IRI getIRI(Section<TurtleURI> section, Rdf2GoCompiler core) {
+		return (IRI) getNode(section, core);
 	}
 }

@@ -60,7 +60,6 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.impl.LiteralImpl;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
@@ -340,27 +339,27 @@ public class Rdf2GoCore {
 	 * @return the short uri name
 	 * @created 13.11.2013
 	 */
-	public URI toShortURI(java.net.URI uri) {
-		return toShortURI(new org.eclipse.rdf4j.model.impl.URIImpl(uri.toString()));
+	public IRI toShortIRI(java.net.URI uri) {
+		return toShortIRI(getValueFactory().createIRI(uri.toString()));
 	}
 
 	/**
 	 * De-resolves a specified uri to a short uri name. If there is no matching namespace, the full uri is returned.
 	 *
-	 * @param uri the uri to be de-resolved
+	 * @param iri the uri to be de-resolved
 	 * @return the short uri name
 	 * @created 13.11.2013
 	 */
-	public URI toShortURI(URI uri) {
-		String uriText = uri.toString();
+	public IRI toShortIRI(IRI iri) {
+		String uriText = iri.toString();
 		int length = 0;
-		URI shortURI = uri;
+		IRI shortURI = iri;
 		for (Entry<String, String> entry : getNamespaces().entrySet()) {
 			String partURI = entry.getValue();
 			int partLength = partURI.length();
 			if (partLength > length && uriText.length() > partLength && uriText.startsWith(partURI)) {
 				String shortText = entry.getKey() + ":" + uriText.substring(partLength);
-				shortURI = new ShortURIImpl(shortText, uri);
+				shortURI = new ShortIRI(shortText);
 				length = partLength;
 			}
 		}
@@ -375,8 +374,8 @@ public class Rdf2GoCore {
 	 * @return the identifier for the specified uri
 	 * @created 13.11.2013
 	 */
-	public Identifier toIdentifier(URI uri) {
-		return ShortURIImpl.toIdentifier(toShortURI(uri));
+	public Identifier toIdentifier(IRI uri) {
+		return ShortIRI.toIdentifier(toShortIRI(uri));
 	}
 
 	/**
@@ -388,7 +387,7 @@ public class Rdf2GoCore {
 	 * @created 13.11.2013
 	 */
 	public Identifier toIdentifier(java.net.URI uri) {
-		return ShortURIImpl.toIdentifier(toShortURI(uri));
+		return ShortIRI.toIdentifier(toShortIRI(uri));
 	}
 
 	/**
@@ -624,16 +623,8 @@ public class Rdf2GoCore {
 		return createDatatypeLiteral(String.valueOf(doubleValue), XMLSchema.DOUBLE);
 	}
 
-	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(String literal, String datatype) {
-		return createDatatypeLiteral(literal, createURI(datatype));
-	}
-
-	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(String literal, URI datatype) {
+	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(String literal, IRI datatype) {
 		return getValueFactory().createLiteral(literal, datatype);
-	}
-
-	public org.eclipse.rdf4j.model.Literal createLanguageTaggedLiteral(String text) {
-		return new LiteralImpl(text);
 	}
 
 	public org.eclipse.rdf4j.model.Literal createLanguageTaggedLiteral(String text, String tag) {
@@ -644,7 +635,7 @@ public class Rdf2GoCore {
 		return getValueFactory().createLiteral(text);
 	}
 
-	public org.eclipse.rdf4j.model.Literal createLiteral(String literal, URI datatypeURI) {
+	public org.eclipse.rdf4j.model.Literal createLiteral(String literal, IRI datatypeURI) {
 		return getValueFactory().createLiteral(literal, datatypeURI);
 	}
 
@@ -653,7 +644,7 @@ public class Rdf2GoCore {
 		if (index > 0) {
 			String literal = unquoteTurtleLiteral(uriOrLiteral.substring(0, index));
 			String datatype = uriOrLiteral.substring(index + 2);
-			return getValueFactory().createLiteral(literal, getValueFactory().createURI(datatype));
+			return getValueFactory().createLiteral(literal, getValueFactory().createIRI(datatype));
 		}
 		index = Strings.indexOfUnquoted(uriOrLiteral, "@");
 		if (index > 0) {
@@ -673,7 +664,7 @@ public class Rdf2GoCore {
 	public Resource createResource(String uri) {
 		// create blank node or uri,
 		// at the moment we only support uris
-		return createURI(uri);
+		return createIRI(uri);
 	}
 
 	public Resource createResource(java.net.URI uri) {
@@ -701,24 +692,16 @@ public class Rdf2GoCore {
 	 * @param name the relative uri (or simple name) to create a lns-uri for
 	 * @return an uri of the local namespace
 	 */
-	public URI createlocalURI(String name) {
-		return createURI(lns, name);
+	public IRI createlocalIRI(String name) {
+		return createIRI(lns, name);
 	}
 
 	public Statement createStatement(Resource subject, URI predicate, Value object) {
 		return getValueFactory().createStatement(subject, predicate, object);
 	}
 
-	/**
-	 * Creates a URI for normal URI string (e.g. http://example.org#myConcept) or an abbreviated URI (e.g.
-	 * ex:myConcept).
-	 *
-	 * @param value the string to create an URI from
-	 * @return the URI for the given string
-	 * @deprecated use {@link Rdf2GoCore#createIRI(String)} instead
-	 */
-	public URI createURI(String value) {
-		return createIRI(value);
+	public Statement createStatement(Resource subject, IRI predicate, Value object) {
+		return getValueFactory().createStatement(subject, predicate, object);
 	}
 
 	/**
@@ -737,17 +720,6 @@ public class Rdf2GoCore {
 	 *
 	 * @param uri the java.net.URI to transform
 	 * @return the URI usable for the Rdf2GoCore
-	 * @deprecated  use {@link Rdf2GoCore#createIRI(java.net.URI)} instead
-	 */
-	public URI createURI(java.net.URI uri) {
-		return createURI(uri.toString());
-	}
-
-	/**
-	 * Transforms an java.net.URI into an URI usable in the Rdf2GoCore.
-	 *
-	 * @param uri the java.net.URI to transform
-	 * @return the URI usable for the Rdf2GoCore
 	 */
 	public IRI createIRI(java.net.URI uri) {
 		return createIRI(uri.toString());
@@ -757,11 +729,11 @@ public class Rdf2GoCore {
 		return semanticCore.getValueFactory();
 	}
 
-	public URI createURI(String ns, String value) {
+	public IRI createIRI(String ns, String value) {
 		// in case ns is just the abbreviation
 		String fullNs = getNamespaces().get(ns);
 
-		return createURI((fullNs == null ? ns : fullNs) + Strings.encodeURL(value));
+		return createIRI((fullNs == null ? ns : fullNs) + Strings.encodeURL(value));
 	}
 
 	public String getLocalNamespace() {
@@ -1572,7 +1544,7 @@ public class Rdf2GoCore {
 				BindingSet bindings = result.next();
 				for (int col = 0; col < names.size(); col++) {
 					Value value = bindings.getValue(names.get(col));
-					if (value instanceof URI) value = toShortURI((URI) value);
+					if (value instanceof IRI) value = toShortIRI((IRI) value);
 					String text = (value == null) ? "null" : value.stringValue();
 					matrix.set(row, col, text);
 				}

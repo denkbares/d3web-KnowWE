@@ -24,7 +24,7 @@ import java.util.List;
 import connector.DummyConnector;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
@@ -93,7 +93,7 @@ public class ExpectedSparqlResultTable extends Table {
 			if (value instanceof URI && compatibilityMode) {
 				String valueString = value.stringValue();
 				if (valueString.startsWith(DummyConnector.BASE_URL)) {
-					value = new URIImpl(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
+					value = SimpleValueFactory.getInstance().createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
 				}
 			}
 			if (value != null) row.addValue(variable, value);

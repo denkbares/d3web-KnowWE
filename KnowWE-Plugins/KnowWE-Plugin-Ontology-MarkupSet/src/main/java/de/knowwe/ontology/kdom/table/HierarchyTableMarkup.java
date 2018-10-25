@@ -82,7 +82,7 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 						assert subjectNodeProvider != null;
 						Resource subjectURI = subjectNodeProvider.get().getResource(subjectNodeProvider, compiler);
 						assert propertyNodeProvider != null;
-						URI predicateNode = propertyNodeProvider.get().getURI(propertyNodeProvider, compiler);
+						URI predicateNode = propertyNodeProvider.get().getIRI(propertyNodeProvider, compiler);
 						assert parentNodeProvider != null;
 						Value parentNode = parentNodeProvider.get().getNode(parentConcept, compiler);
 						core.addStatements(section, core.createStatement(subjectURI, predicateNode, parentNode));

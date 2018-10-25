@@ -1,15 +1,14 @@
 package de.knowwe.rdfs.vis.markup;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.IRI;
 
 import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -38,21 +37,15 @@ public class ConceptVisTemplateToolProvider implements ToolProvider {
 		String templateClass = DefaultMarkupType.getAnnotation(templateSection, ConceptVisualizationType.VIS_TEMPLATE_CLASS);
 		if (templateClass == null) return new Tool[] {};
 
-		URI uri = getURI(section);
+		IRI uri = getIRI(section);
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
 		if (compiler == null || uri == null) return new Tool[] {};
 
-		String reducedConceptURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri.toString());
+		String reducedConceptIRI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri.toString());
 		String link = KnowWEUtils.getURLLink(templateSection.getTitle());
 
-		try {
-			String conceptParameterAppendix = "&concept=" + URLEncoder.encode(reducedConceptURI, "UTF-8");
-			link += conceptParameterAppendix;
-		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
+		link += "&concept=" + Strings.encodeURL(reducedConceptIRI);
 
 		return new Tool[] { new DefaultTool(
 				Icon.SHOWTRACE,
@@ -66,14 +59,14 @@ public class ConceptVisTemplateToolProvider implements ToolProvider {
 		return findApplicableTemplate(section) != null;
 	}
 
-	private URI getURI(Section<?> section) {
+	private IRI getIRI(Section<?> section) {
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
 		if (compiler == null) return null;
 		if (section.get() instanceof Term) {
-			Identifier termIdentifier = ((Term) section.get()).getTermIdentifier(compiler, (Section<? extends Term>) section);
+			Identifier termIdentifier = ((Term) section.get()).getTermIdentifier(compiler, Sections.cast(section, Term.class));
 			Rdf2GoCore core = compiler.getRdf2GoCore();
-			return core.createURI(Rdf2GoUtils.expandNamespace(core, termIdentifier.getPathElementAt(0)), termIdentifier.getPathElementAt(1));
+			return core.createIRI(Rdf2GoUtils.expandNamespace(core, termIdentifier.getPathElementAt(0)), termIdentifier.getPathElementAt(1));
 		}
 		return null;
 	}
@@ -82,12 +75,12 @@ public class ConceptVisTemplateToolProvider implements ToolProvider {
 		Map<String, Section<ConceptVisualizationType>> templates = getClassVisTemplates(section);
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
-		URI uri = getURI(section);
+		IRI uri = getIRI(section);
 		if (uri == null || compiler == null) return null;
-		PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
-		for (URI clazzURI : classHierarchy.getNodesDFSOrder()) {
+		PartialHierarchyTree<IRI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
+		for (IRI clazzIRI : classHierarchy.getNodesDFSOrder()) {
 			Section<ConceptVisualizationType> conceptVisualizationTypeSection = templates.get(Rdf2GoUtils.reduceNamespace(compiler
-					.getRdf2GoCore(), clazzURI.toString()));
+					.getRdf2GoCore(), clazzIRI.toString()));
 			if (conceptVisualizationTypeSection != null) {
 				// found applicable template
 				return conceptVisualizationTypeSection;

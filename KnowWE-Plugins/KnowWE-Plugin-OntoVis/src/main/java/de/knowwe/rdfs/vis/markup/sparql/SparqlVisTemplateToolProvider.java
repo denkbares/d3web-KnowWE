@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.IRI;
 
 import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.strings.Identifier;
@@ -44,16 +44,16 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 			String templateClass = DefaultMarkupType.getAnnotation(templateSection, SparqlVisualizationType.VIS_TEMPLATE_CLASS);
 			if (templateClass == null) return new Tool[] {};
 
-			URI uri = getURI(section);
+			IRI uri = getIRI(section);
 			OntologyCompiler compiler = OntologyUtils
 					.getOntologyCompiler(section);
 			if (compiler == null || uri == null) return new Tool[] {};
 
-			String reducedConceptURI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri.toString());
+			String reducedConceptIRI = Rdf2GoUtils.reduceNamespace(compiler.getRdf2GoCore(), uri.toString());
 			String link = KnowWEUtils.getURLLink(templateSection.getTitle());
 
 			try {
-				String conceptParameterAppendix = "&concept=" + URLEncoder.encode(reducedConceptURI, "UTF-8");
+				String conceptParameterAppendix = "&concept=" + URLEncoder.encode(reducedConceptIRI, "UTF-8");
 				link += conceptParameterAppendix;
 			}
 			catch (UnsupportedEncodingException e) {
@@ -73,14 +73,14 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 		return findApplicableTemplate(section) != null;
 	}
 
-	private URI getURI(Section<?> section) {
+	private IRI getIRI(Section<?> section) {
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
 		if (compiler == null) return null;
 		if (section.get() instanceof Term) {
-			Identifier termIdentifier = ((Term) section.get()).getTermIdentifier(compiler, (Section<? extends Term>) section);
+			Identifier termIdentifier = ((Term) section.get()).getTermIdentifier(compiler, Sections.cast(section, Term.class));
 			Rdf2GoCore core = compiler.getRdf2GoCore();
-			return core.createURI(Rdf2GoUtils.expandNamespace(core, termIdentifier.getPathElementAt(0)), termIdentifier.getPathElementAt(1));
+			return core.createIRI(Rdf2GoUtils.expandNamespace(core, termIdentifier.getPathElementAt(0)), termIdentifier.getPathElementAt(1));
 		}
 		return null;
 	}
@@ -89,13 +89,13 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 		Map<String, Section<SparqlVisualizationType>> templates = getClassVisTemplates(section);
 		OntologyCompiler compiler = OntologyUtils
 				.getOntologyCompiler(section);
-		URI uri = getURI(section);
+		IRI uri = getIRI(section);
 		if (uri == null || compiler == null) return null;
-		PartialHierarchyTree<URI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
+		PartialHierarchyTree<IRI> classHierarchy = Rdf2GoUtils.getClassHierarchy(compiler.getRdf2GoCore(), uri);
 		List<Section<SparqlVisualizationType>> possibleVisTemplate = new ArrayList<>();
-		for (URI clazzURI : classHierarchy.getNodesDFSOrder()) {
+		for (IRI clazzIRI : classHierarchy.getNodesDFSOrder()) {
 			Section<SparqlVisualizationType> sparqlVisualizationTypeSection = templates.get(Rdf2GoUtils.reduceNamespace(compiler
-					.getRdf2GoCore(), clazzURI.toString()));
+					.getRdf2GoCore(), clazzIRI.toString()));
 			if (sparqlVisualizationTypeSection != null) {
 				// found applicable template
 				possibleVisTemplate.add(sparqlVisualizationTypeSection);

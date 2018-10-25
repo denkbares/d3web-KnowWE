@@ -19,6 +19,7 @@
 
 package de.knowwe.ontology.turtle;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
@@ -47,11 +48,11 @@ public class NumberLiteral extends de.knowwe.core.kdom.basicType.Number implemen
             Integer.parseInt(text);
             isInteger = true;
 
-        } catch (Exception e) {
+        } catch (Exception ignore) {
             // nothing to do
         }
 
-        org.eclipse.rdf4j.model.URI dataType = XMLSchema.DOUBLE;
+        IRI dataType = XMLSchema.DOUBLE;
         if (isInteger) {
             dataType = XMLSchema.INTEGER;
         }

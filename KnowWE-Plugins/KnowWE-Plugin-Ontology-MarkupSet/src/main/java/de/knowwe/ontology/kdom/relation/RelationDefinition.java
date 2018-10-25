@@ -96,7 +96,7 @@ public class RelationDefinition extends AbstractType {
 			Section<AbbreviatedResourceReference> abbrSubjectSection = Sections.successor(
 					subjectSection, AbbreviatedResourceReference.class);
 
-			org.eclipse.rdf4j.model.URI subjectURI = abbrSubjectSection.get().getResourceURI(core, abbrSubjectSection);
+			org.eclipse.rdf4j.model.URI subjectURI = abbrSubjectSection.get().getResourceIRI(core, abbrSubjectSection);
 
 			Section<PredicateType> predicateSection = Sections.child(section,
 					PredicateType.class);
@@ -122,7 +122,7 @@ public class RelationDefinition extends AbstractType {
 			else {
 				Section<AbbreviatedResourceReference> abbrObjectSection = Sections.successor(
 						objectSection, AbbreviatedResourceReference.class);
-				org.eclipse.rdf4j.model.URI objectURI = abbrObjectSection.get().getResourceURI(core, abbrObjectSection);
+				org.eclipse.rdf4j.model.URI objectURI = abbrObjectSection.get().getResourceIRI(core, abbrObjectSection);
 
 				core.addStatements(section,
 						core.createStatement(subjectURI, predicatedURI, objectURI));

@@ -162,7 +162,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			return result.error("No predicate section found: " + section);
 		}
 
-		org.eclipse.rdf4j.model.URI predicate = predicateSection.get().getURI(predicateSection, compiler);
+		org.eclipse.rdf4j.model.URI predicate = predicateSection.get().getIRI(predicateSection, compiler);
 
 		// check term definition
 		Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);

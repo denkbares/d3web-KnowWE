@@ -30,9 +30,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.BNode;
-import org.eclipse.rdf4j.model.URI;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.collections.DefaultMultiMap;
@@ -121,7 +121,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		Stopwatch stopwatch = new Stopwatch();
 
-		List<URI> mainConceptURIs = new ArrayList<>();
+		List<IRI> mainConceptIRIs = new ArrayList<>();
 		final List<String> mainConcepts = getMainConcepts();
 		for (String name : mainConcepts) {
 			String concept = name.trim();
@@ -135,23 +135,23 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				conceptNameEncoded = Strings.encodeURL(concept);
 				url = rdf2GoCore.getLocalNamespace() + conceptNameEncoded;
 			}
-			URI conceptURI = new URIImpl(url);
-			mainConceptURIs.add(conceptURI);
+			IRI conceptIRI = SimpleValueFactory.getInstance().createIRI(url);
+			mainConceptIRIs.add(conceptIRI);
 
 			if (isTimeOut(stopwatch, timeOutMillis)) return;
 		}
 
-		for (URI conceptURI : mainConceptURIs) {
+		for (IRI conceptIRI : mainConceptIRIs) {
 			// if requested, the predecessor are added to the source
 			if (config.getPredecessors() > 0) {
-				addPredecessors(conceptURI);
+				addPredecessors(conceptIRI);
 			}
-			insertMainConcept(conceptURI);
+			insertMainConcept(conceptIRI);
 			// if requested, the successors are added to the source
 			if (config.getSuccessors() > 0) {
-				addSuccessors(conceptURI, null, null);
+				addSuccessors(conceptIRI, null, null);
 			}
-			addType(conceptURI);
+			addType(conceptIRI);
 
 			if (isTimeOut(stopwatch, timeOutMillis)) return;
 		}
@@ -222,9 +222,9 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
 		while (result != null && result.hasNext()) {
 			BindingSet row = result.next();
-			Value yURI = row.getValue("pred");
-			Value zURI = row.getValue("class");
-			addConcept(node, zURI, yURI);
+			Value yIRI = row.getValue("pred");
+			Value zIRI = row.getValue("class");
+			addConcept(node, zIRI, yIRI);
 
 			// currently we use the first type found
 			// TODO: detect (one) most specific type from all types
@@ -242,8 +242,8 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		while (result != null && result.hasNext()) {
 			BindingSet row = result.next();
-			Value predURI = row.getValue("y");
-			literalsMap.put(predURI, row);
+			Value predIRI = row.getValue("y");
+			literalsMap.put(predIRI, row);
 		}
 
 		// Check every key in the multimap for values having the chosen language
@@ -296,26 +296,26 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	}
 
 	private void filterAndAddBindingSets(Value fringeNode, Set<BindingSet> set, String language) {
-		Value predURI;
+		Value predIRI;
 		Value objectLiteral;
 		Text literal;
 		String l;
 
 		for (BindingSet b : set) {
-			predURI = b.getValue("y");
+			predIRI = b.getValue("y");
 			objectLiteral = b.getValue("literal");
 			literal = Sparqls.asText(b, "literal");
 			l = literal.getLanguage().toString();
 
 			// if literal language is same as asked language or given language is unspecified: add values
 			if ((l.equals(language) && !excludedRelation(objectLiteral.stringValue())) || language == null) {
-				addConcept(fringeNode, objectLiteral, predURI);
+				addConcept(fringeNode, objectLiteral, predIRI);
 			}
 		}
 	}
 
-	private void insertMainConcept(Value conceptURI) {
-		ConceptNode conceptValue = Utils.createValue(config, rdf2GoCore, uriProvider, section, data, conceptURI, true);
+	private void insertMainConcept(Value conceptIRI) {
+		ConceptNode conceptValue = Utils.createValue(config, rdf2GoCore, uriProvider, section, data, conceptIRI, true);
 		conceptValue.setRoot(true);
 		data.addConcept(conceptValue);
 	}
@@ -389,12 +389,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		while (result != null && result.hasNext()) {
 			count++;
 			BindingSet row = result.next();
-			Value yURI = row.getValue("y");
-			String y = getConceptName(yURI);
+			Value yIRI = row.getValue("y");
+			String y = getConceptName(yIRI);
 
-			Value zURI = row.getValue("z");
-			String z = getConceptName(zURI);
-			NODE_TYPE nodeType = Utils.getConceptType(zURI, rdf2GoCore);
+			Value zIRI = row.getValue("z");
+			String z = getConceptName(zIRI);
+			NODE_TYPE nodeType = Utils.getConceptType(zIRI, rdf2GoCore);
 
 			// check blank node sequence case
 			final Value previousBlankValue = row.getValue(previousBlankValueSparqlVariableName);
@@ -417,23 +417,23 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 			if (checkTripleFilters(query, y, z, nodeType, mode)) continue;
 
-			addConcept(conceptToBeExpanded, zURI, yURI);
+			addConcept(conceptToBeExpanded, zIRI, yIRI);
 
 			depth++;
 			if (depth < config.getSuccessors() || nodeType == NODE_TYPE.BLANKNODE) {
-				addSuccessors(zURI, conceptToBeExpanded, yURI);
+				addSuccessors(zIRI, conceptToBeExpanded, yIRI);
 			}
 
             /*
 			TODO: this should be done _after_ the last concept node has been added to the graph
              */
 			if (depth == config.getSuccessors()) {
-				fringeValues.add(zURI);
-				//addOutgoingEdgesSuccessors(zURI);
-				//addOutgoingEdgesPredecessors(zURI);
-				//if (!literalsExpanded.contains(zURI)) {
+				fringeValues.add(zIRI);
+				//addOutgoingEdgesSuccessors(zIRI);
+				//addOutgoingEdgesPredecessors(zIRI);
+				//if (!literalsExpanded.contains(zIRI)) {
 				// add literals
-				//    addSuccessors(zURI, conceptToBeExpanded, yURI, ExpandMode.LiteralsOnly, Direction.Forward);
+				//    addSuccessors(zIRI, conceptToBeExpanded, yIRI, ExpandMode.LiteralsOnly, Direction.Forward);
 				//}
 			}
 
@@ -505,12 +505,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		while (result.hasNext()) {
 			count++;
 			BindingSet row = result.next();
-			Value xURI = row.getValue("x");
-			String x = getConceptName(xURI);
-			NODE_TYPE nodeType = Utils.getConceptType(xURI, rdf2GoCore);
+			Value xIRI = row.getValue("x");
+			String x = getConceptName(xIRI);
+			NODE_TYPE nodeType = Utils.getConceptType(xIRI, rdf2GoCore);
 
-			Value yURI = row.getValue("y");
-			String y = getConceptName(yURI);
+			Value yIRI = row.getValue("y");
+			String y = getConceptName(yIRI);
 
 			// check blank node sequence case
 			final Value previousBlankValue = row.getValue(previousBlankValueSparqlVariableName);
@@ -527,13 +527,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 			height++;
 			if (height < config.getPredecessors() || nodeType == NODE_TYPE.BLANKNODE) {
-				addPredecessors(xURI, conceptToBeExpanded, yURI, Direction.Backward);
-				if (!literalsExpanded.contains(xURI) &&
+				addPredecessors(xIRI, conceptToBeExpanded, yIRI, Direction.Backward);
+				if (!literalsExpanded.contains(xIRI) &&
 						Config.LiteralMode.OFF != config.getLiteralMode()) {
 					// add literals for x
-					addSuccessors(xURI, conceptToBeExpanded, yURI, ExpandMode.LiteralsOnly, Direction.Backward);
+					addSuccessors(xIRI, conceptToBeExpanded, yIRI, ExpandMode.LiteralsOnly, Direction.Backward);
 				}
-
 			}
 
             /*
@@ -541,18 +540,18 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
              */
 			if (height == config.getPredecessors()) {
 				if (nodeType != NODE_TYPE.LITERAL) {
-					fringeValues.add(xURI);
+					fringeValues.add(xIRI);
 				}
-				//addOutgoingEdgesPredecessors(xURI);
-				//addOutgoingEdgesSuccessors(xURI);
-				//if (!literalsExpanded.contains(xURI)) {
-				//    addSuccessors(xURI, conceptToBeExpanded, yURI, ExpandMode.LiteralsOnly, Direction.Backward);
+				//addOutgoingEdgesPredecessors(xIRI);
+				//addOutgoingEdgesSuccessors(xIRI);
+				//if (!literalsExpanded.contains(xIRI)) {
+				//    addSuccessors(xIRI, conceptToBeExpanded, yIRI, ExpandMode.LiteralsOnly, Direction.Backward);
 				//}
 			}
 
 			height--;
 
-			addConcept(xURI, conceptToBeExpanded, yURI);
+			addConcept(xIRI, conceptToBeExpanded, yIRI);
 		}
 		if (DEBUG_MODE) {
 			predQueries.add(query);
@@ -568,12 +567,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	 * - no new nodes are added to visualization (except for indicating existence of outgoing edges)
 	 * - adds all/new edges between this node and already existing nodes
 	 */
-	private void addOutgoingEdgesSuccessors(Value conceptURI) {
-		if (Utils.isLiteral(conceptURI)) return;
+	private void addOutgoingEdgesSuccessors(Value conceptIRI) {
+		if (Utils.isLiteral(conceptIRI)) return;
 		/*
 		TODO: handle outgoing edges to blank nodes !
          */
-		if (Utils.isBlankNode(conceptURI)) return;
+		if (Utils.isBlankNode(conceptIRI)) return;
 
 		String conceptFilter = "Filter(true)";
 		if (!config.isShowOutgoingEdges()) {
@@ -585,7 +584,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		addOutgoingSuccessorsCalls++;
 
 		String query = "SELECT ?y ?z WHERE { <"
-				+ conceptURI.stringValue()
+				+ conceptIRI.stringValue()
 				+ "> ?y ?z. " + predicateFilter(Direction.Forward, "z") + " " + conceptFilter + "}";
 		Iterator<BindingSet> result =
 				rdf2GoCore.sparqlSelectIt(
@@ -594,20 +593,20 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		while (result.hasNext()) {
 			count++;
 			BindingSet row = result.next();
-			Value yURI = row.getValue("y");
-			String y = getConceptName(yURI);
+			Value yIRI = row.getValue("y");
+			String y = getConceptName(yIRI);
 
-			Value zURI = row.getValue("z");
-			String z = getConceptName(zURI);
-			NODE_TYPE nodeType = Utils.getConceptType(zURI, rdf2GoCore);
+			Value zIRI = row.getValue("z");
+			String z = getConceptName(zIRI);
+			NODE_TYPE nodeType = Utils.getConceptType(zIRI, rdf2GoCore);
 
-			final OuterConceptCheck check = new OuterConceptCheck(conceptURI, zURI, yURI, false);
+			final OuterConceptCheck check = new OuterConceptCheck(conceptIRI, zIRI, yIRI, false);
 
 			if (checkTripleFilters(query, y, z, nodeType)) continue;
 
 			outerConceptCalls.add(check);
 			if (!checkedOuterConcepts.contains(check)) {
-				addOuterConcept(conceptURI, zURI, yURI, false);
+				addOuterConcept(conceptIRI, zIRI, yIRI, false);
 			}
 		}
 
@@ -624,12 +623,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	 * - no new nodes are added to visualization (except for indicating existence of outgoing edges)
 	 * - adds all/new edges between this node and already existing nodes
 	 */
-	private void addOutgoingEdgesPredecessors(Value conceptURI) {
-		if (Utils.isLiteral(conceptURI)) return;
+	private void addOutgoingEdgesPredecessors(Value conceptIRI) {
+		if (Utils.isLiteral(conceptIRI)) return;
 		 /*
 		TODO: handle outgoing edges to blank nodes !
          */
-		if (Utils.isBlankNode(conceptURI)) return;
+		if (Utils.isBlankNode(conceptIRI)) return;
 
 		addOutgoingPredecessorsCalls++;
 
@@ -643,7 +642,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		}
 
 		String query = "SELECT ?x ?y WHERE { ?x ?y <"
-				+ conceptURI.stringValue()
+				+ conceptIRI.stringValue()
 				+ "> . " + predicateFilter(Direction.Backward, null) + " " + conceptFilter + "}";
 		TupleQueryResult resultTable = rdf2GoCore.sparqlSelect(
 				query);
@@ -653,19 +652,19 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		while (result.hasNext()) {
 			count++;
 			BindingSet row = result.next();
-			Value xURI = row.getValue("x");
-			String x = getConceptName(xURI);
-			NODE_TYPE nodeType = Utils.getConceptType(xURI, rdf2GoCore);
+			Value xIRI = row.getValue("x");
+			String x = getConceptName(xIRI);
+			NODE_TYPE nodeType = Utils.getConceptType(xIRI, rdf2GoCore);
 
-			Value yURI = row.getValue("y");
-			String y = getConceptName(yURI);
-			final OuterConceptCheck check = new OuterConceptCheck(xURI, conceptURI, yURI, true);
+			Value yIRI = row.getValue("y");
+			String y = getConceptName(yIRI);
+			final OuterConceptCheck check = new OuterConceptCheck(xIRI, conceptIRI, yIRI, true);
 
 			if (checkTripleFilters(query, y, x, nodeType)) continue;
 
 			outerConceptCalls.add(check);
 			if (!checkedOuterConcepts.contains(check)) {
-				addOuterConcept(xURI, conceptURI, yURI, true);
+				addOuterConcept(xIRI, conceptIRI, yIRI, true);
 			}
 		}
 		if (DEBUG_MODE) {
@@ -741,9 +740,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			}
 			this.propertyExcludeSPARQLFilterCache.put(filterHashcode, createExcludeFilter());
 			return propertyExcludeSPARQLFilterCache.get(filterHashcode);
-
 		}
-
 	}
 
 	private String createExclusiveFilter(Direction dir, String objectVariable) {
@@ -873,15 +870,14 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		}
 
 		return isWhiteListMode() && !(filteredRelation(y));
-
 	}
 
 	private boolean isWhiteListMode() {
 		return !getFilteredRelations().isEmpty();
 	}
 
-	private void addConcept(Value fromURI, Value toURI, Value relationURI) {
-		String relation = getConceptName(relationURI);
+	private void addConcept(Value fromIRI, Value toIRI, Value relationIRI) {
+		String relation = getConceptName(relationIRI);
 
         /*
 		cluster change
@@ -892,37 +888,36 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
             no matter what class this type relation goes to, we look for a representative/meaningful class-uri to display
              */
 			try {
-				final URI uri = (URI) fromURI;
-				final URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdf2GoCore, uri);
+				final IRI uri = (IRI) fromIRI;
+				final IRI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdf2GoCore, uri);
 				clazz = null;
 				if (mostSpecificClass != null) {
 					clazz = getConceptName(mostSpecificClass);
 				}
 			}
-			catch (ClassCastException e) {
-				// is not an URI but a BValue probably
+			catch (ClassCastException ignore) {
+				// is not an IRI but a BValue probably
 			}
 		}
 
-		ConceptNode toValue = Utils.createValue(this.getParameterMap(), this.rdf2GoCore, this.uriProvider, this.section, this.data, toURI, true);
-		ConceptNode fromValue = Utils.createValue(config, this.rdf2GoCore, this.uriProvider, this.section, this.data, fromURI, true, clazz);
+		ConceptNode toValue = Utils.createValue(this.getParameterMap(), this.rdf2GoCore, this.uriProvider, this.section, this.data, toIRI, true);
+		ConceptNode fromValue = Utils.createValue(config, this.rdf2GoCore, this.uriProvider, this.section, this.data, fromIRI, true, clazz);
 		if (toValue == null || fromValue == null) return;
 		toValue.setOuter(false);
 		fromValue.setOuter(false);
 
 		// look for label for the property
-		String relationLabel = Utils.fetchLabel(config, relationURI, rdf2GoCore);
+		String relationLabel = Utils.fetchLabel(config, relationIRI, rdf2GoCore);
 		if (relationLabel != null) {
 			relation = relationLabel;
 		}
 
 		if (Strings.isBlank(clazz)) {
 			// classes are rendered as cluster labels - so no extra edge is required
-			Edge edge = new Edge(fromValue, relation, relationURI.stringValue(), toValue);
+			Edge edge = new Edge(fromValue, relation, relationIRI.stringValue(), toValue);
 
 			addEdge(edge);
 		}
-
 	}
 
 	private boolean isTypeRelation(String relation) {
@@ -937,9 +932,9 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	 * - EXCEPT for datatype property edges which are always added to the visualization
 	 * - if the node is already part of the visualization the respective edge is added
 	 */
-	private void addOuterConcept(Value fromURI, Value toURI, Value relationURI, boolean predecessor) {
-		String to = getConceptName(toURI);
-		String relation = getConceptName(relationURI);
+	private void addOuterConcept(Value fromIRI, Value toIRI, Value relationIRI, boolean predecessor) {
+		String to = getConceptName(toIRI);
+		String relation = getConceptName(relationIRI);
 
 		// TODO: implement rendering of literal nodes
 		if (to == null) {
@@ -954,12 +949,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		 */
 		String clazz = null;
 		if (isTypeRelation(relation)) {
-			clazz = getConceptName(toURI);
+			clazz = getConceptName(toIRI);
 		}
 
-		ConceptNode toValue = Utils.createValue(this.getParameterMap(), this.rdf2GoCore, this.uriProvider, this.section, this.data, toURI, false);
+		ConceptNode toValue = Utils.createValue(this.getParameterMap(), this.rdf2GoCore, this.uriProvider, this.section, this.data, toIRI, false);
 
-		ConceptNode fromValue = Utils.createValue(this.getParameterMap(), this.rdf2GoCore, this.uriProvider, this.section, this.data, fromURI, false, clazz);
+		ConceptNode fromValue = Utils.createValue(this.getParameterMap(), this.rdf2GoCore, this.uriProvider, this.section, this.data, fromIRI, false, clazz);
 
 		ConceptNode current;
 		if (predecessor) {
@@ -971,11 +966,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			current = toValue;
 		}
 
-		this.checkedOuterConcepts.add(new OuterConceptCheck(fromURI, toURI, relationURI, predecessor));
+		this.checkedOuterConcepts.add(new OuterConceptCheck(fromIRI, toIRI, relationIRI, predecessor));
 
 		boolean nodeIsNew = !data.getConceptDeclarations().contains(current);
 
-		Edge edge = new Edge(fromValue, relation, relationURI.stringValue(), toValue);
+		Edge edge = new Edge(fromValue, relation, relationIRI.stringValue(), toValue);
 
 		boolean edgeIsNew = !data.getAllEdges().contains(edge);
 
@@ -1008,7 +1003,6 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				if (!isTypeRelation(relation)) { // cluster change
 					addEdge(edge);
 				}
-
 			}
 			else {
 				// exception for labels:
@@ -1049,15 +1043,15 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 	enum Direction {Forward, Backward}
 
 	static class OuterConceptCheck {
-		private final Value fromURI;
-		private final Value toURI;
-		private final Value relationURI;
+		private final Value fromIRI;
+		private final Value toIRI;
+		private final Value relationIRI;
 		private final boolean predecessor;
 
-		OuterConceptCheck(Value fromURI, Value toURI, Value relationURI, boolean predecessor) {
-			this.fromURI = fromURI;
-			this.toURI = toURI;
-			this.relationURI = relationURI;
+		OuterConceptCheck(Value fromIRI, Value toIRI, Value relationIRI, boolean predecessor) {
+			this.fromIRI = fromIRI;
+			this.toIRI = toIRI;
+			this.relationIRI = relationIRI;
 			this.predecessor = predecessor;
 		}
 
@@ -1069,25 +1063,24 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			OuterConceptCheck that = (OuterConceptCheck) o;
 
 			if (predecessor != that.predecessor) return false;
-			if (!fromURI.equals(that.fromURI)) return false;
+			if (!fromIRI.equals(that.fromIRI)) return false;
 			//noinspection SimplifiableIfStatement
-			if (!relationURI.equals(that.relationURI)) return false;
-			return toURI.equals(that.toURI);
-
+			if (!relationIRI.equals(that.relationIRI)) return false;
+			return toIRI.equals(that.toIRI);
 		}
 
 		@Override
 		public int hashCode() {
-			int result = fromURI.hashCode();
-			result = 31 * result + toURI.hashCode();
-			result = 31 * result + relationURI.hashCode();
+			int result = fromIRI.hashCode();
+			result = 31 * result + toIRI.hashCode();
+			result = 31 * result + relationIRI.hashCode();
 			result = 31 * result + (predecessor ? 1 : 0);
 			return result;
 		}
 
 		@Override
 		public String toString() {
-			return fromURI + " " + relationURI + " " + toURI + " (forward: " + predecessor + ")";
+			return fromIRI + " " + relationIRI + " " + toIRI + " (forward: " + predecessor + ")";
 		}
 	}
 }
