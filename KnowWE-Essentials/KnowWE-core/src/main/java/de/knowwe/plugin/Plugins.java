@@ -60,6 +60,7 @@ public class Plugins {
 
 	public static final String SCOPE_ROOT = "root";
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
+	public static final String EXTENDED_PLUGIN_ID_SEMANTIC_CORE = "denkbares-SemanticCore-Plugin-ExtensionPoints";
 	public static final String EXTENDED_POINT_KnowWEAction = "Action";
 	public static final String EXTENDED_POINT_Type = "Type";
 	public static final String EXTENDED_POINT_CompileScript = "CompileScript";

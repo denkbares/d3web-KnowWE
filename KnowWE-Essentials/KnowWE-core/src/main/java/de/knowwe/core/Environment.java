@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -189,9 +190,12 @@ public class Environment {
 
 	private void initEventManager() {
 		// get all EventListeners
-		Extension[] exts = PluginManager.getInstance().getExtensions(
+		List<Extension> exts = new ArrayList<>(Arrays.asList(PluginManager.getInstance().getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID,
-				Plugins.EXTENDED_POINT_EventListener);
+				Plugins.EXTENDED_POINT_EventListener)));
+		Collections.addAll(exts, PluginManager.getInstance().getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID_SEMANTIC_CORE,
+				Plugins.EXTENDED_POINT_EventListener));
 		for (Extension extension : exts) {
 			Object o = extension.getSingleton();
 			if (o instanceof EventListener) {
