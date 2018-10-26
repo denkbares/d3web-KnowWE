@@ -31,7 +31,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
- * This test can search articles (specified by a regexp pattern) for a keyword.
+ * This test can search articles (specified by a regex pattern) for a keyword.
  * 
  * @author Marc-Oliver Ochlast/ Jochen Reutelshoefer (denkbares GmbH)
  * @created 26.11.2010
@@ -65,7 +65,7 @@ public class ArticleContainsTest extends AbstractTest<Article> {
 		}
 		if (contains) {
 			String message = "Forbidden text found in article.";
-			return new Message(Message.Type.FAILURE, message);
+			return new Message(Message.Type.WARNING, message);
 		}
 		else {
 			return new Message(Message.Type.SUCCESS, null);

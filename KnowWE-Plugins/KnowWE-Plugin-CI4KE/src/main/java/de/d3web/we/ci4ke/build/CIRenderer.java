@@ -421,6 +421,10 @@ public class CIRenderer {
 					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-ok", "false", "Build successful: " + Strings
 							.encodeHtml(dashboardName));
 					break;
+				case WARNING:
+					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-warning", "false", "Build has warning: " + Strings
+							.encodeHtml(dashboardName));
+					break;
 				case FAILURE:
 					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-error", "false", "Build failed: " + Strings
 							.encodeHtml(dashboardName));
