@@ -37,8 +37,7 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<Section<SparqlVisualizationType>> templateSections = findApplicableTemplate(section);
-		assert templateSections != null;
-		if (templateSections.isEmpty()) return new Tool[] {};
+		if (templateSections == null || templateSections.isEmpty()) return new Tool[] {};
 		List<Tool> tools = new ArrayList<>();
 		for (Section<SparqlVisualizationType> templateSection : templateSections) {
 			String templateClass = DefaultMarkupType.getAnnotation(templateSection, SparqlVisualizationType.VIS_TEMPLATE_CLASS);
