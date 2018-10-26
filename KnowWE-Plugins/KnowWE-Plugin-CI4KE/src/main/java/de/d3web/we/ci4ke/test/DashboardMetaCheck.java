@@ -31,17 +31,20 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
         Set<String> failedTests = new HashSet<>();
         for (Section<CIDashboardType> successor : successors) {
             CIDashboard dashboard = CIDashboardManager.getDashboard(successor);
-            if (dashboard == null)
+            if (dashboard == null )
                 continue;
             Message.Type overallResult = dashboard.getLatestBuild().getOverallResult();
+            String test = overallResult.name();
             if (overallResult != Message.Type.SUCCESS)
             {
-                //String message = String.format("Dashboard: %s failed tests:", dashboard.getDashboardName());
                 for (TestResult result : dashboard.getLatestBuild().getResults()) {
-                    if (!result.isSuccessful())
-                        failedTests.add(result.getTestName());
+                    if (result.getTestName() != this.getName()) {
+                        if (!result.isSuccessful())
+                            failedTests.add(result.getTestName());
+                    }
                 }
-                return createDashboardError(dashboard.getDashboardName(), failedTests);
+                if (failedTests.size() > 0)
+                    return createDashboardError(dashboard.getDashboardName(), failedTests);
             }
         }
         return new Message(Message.Type.SUCCESS, null);
