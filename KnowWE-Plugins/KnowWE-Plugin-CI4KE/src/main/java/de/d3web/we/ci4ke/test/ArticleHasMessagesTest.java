@@ -49,6 +49,7 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 	public Message execute(Article moni, String[] args2, String[]... ignores) throws InterruptedException {
 
 		boolean hasError = false;
+		boolean hasWarning  = false;
 		StringBuilder buffer = new StringBuilder();
 
 		Collection<de.knowwe.core.report.Message> messages = new LinkedList<>();
@@ -67,15 +68,18 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 				.append(moni.getTitle())
 				.append("'");
 		if (!messages.isEmpty()) {
-			// This finds only messages, that are explicitly stored
-			// as Message.ERROR, because the Type Message.UNKNOWN_ERROR
-			// is not public!
-			hasError = true;
+			for (de.knowwe.core.report.Message message : messages){
+				if (message.getType() == Type.ERROR){
+					hasError = true;
+					break;
+				}
+				if (message.getType() == Type.WARNING){
+					hasWarning = true;
+				}
+			}
 			CountingSet<de.knowwe.core.report.Message> msgSet =
 					new CountingSet<>();
-			for (de.knowwe.core.report.Message message : messages) {
-				msgSet.add(message);
-			}
+			msgSet.addAll(messages);
 			for (de.knowwe.core.report.Message message : msgSet) {
 				buffer.append("\n* ").append(message.getVerbalization());
 				int count = msgSet.getCount(message);
@@ -85,6 +89,11 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 		if (hasError) {
 			return new Message(
 					Message.Type.FAILURE, buffer.toString(),
+					new MessageObject(moni.getTitle(), Article.class));
+		}
+		if (hasWarning) {
+			return new Message(
+					Message.Type.WARNING, buffer.toString(),
 					new MessageObject(moni.getTitle(), Article.class));
 		}
 		else {

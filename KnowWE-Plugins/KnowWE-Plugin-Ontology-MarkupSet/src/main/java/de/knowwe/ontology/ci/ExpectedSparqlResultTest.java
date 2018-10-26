@@ -51,6 +51,8 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 	public static final String AT_LEAST = "atLeast";
 	public static final String EQUAL = "equal";
 
+	public static final String WARNING = "warning";
+
 	public ExpectedSparqlResultTest() {
 		String[] comparators = new String[] {
 				EQUAL, AT_LEAST };
@@ -58,10 +60,25 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		this.addParameter("comparator", Mode.Optional,
 				"how to compare the result data against the expected table data: equal/atleast",
 				comparators);
+		this.addParameter("warning", Mode.Optional, "show warning instead of failure if this test fails", WARNING);
 	}
 
 	@Override
 	public Message execute(SparqlExpectedResultSection testObject, String[] args, String[]... ignores) throws InterruptedException {
+		boolean atLeastFlag = false;
+
+		Message.Type messageTypeTestFailed = Message.Type.FAILURE;
+		if (args.length > 1 && WARNING.equalsIgnoreCase(args[1])){
+			messageTypeTestFailed = Message.Type.WARNING;
+		}
+
+		if (args.length > 0) {
+			String arg0 = args[0];
+			if (arg0.equalsIgnoreCase(AT_LEAST)) {
+				atLeastFlag = true;
+			}
+		}
+
 		Section<ExpectedSparqlResultTable> expectedResultTableSection = testObject.getSection();
 		Section<DefaultMarkupType> expectedResultDefaultMarkup = Sections.ancestor(
 				expectedResultTableSection,
@@ -70,7 +87,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 				ExpectedSparqlResultTableMarkup.SPARQL_ANNOTATION);
 		if (actualSparqlName == null) {
 			return new Message(
-					Type.FAILURE,
+					messageTypeTestFailed,
 					"No sparql query specified for test object, use annotation 'sparql' to set a sparql query to test against.");
 		}
 
@@ -102,7 +119,7 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 			result = core.sparqlSelect(actualSparqlString);
 		}
 		catch (Exception e) {
-			Message message = new Message(Type.FAILURE, "Exception while executing SPARQL query: " + e.getMessage());
+			Message message = new Message(messageTypeTestFailed, "Exception while executing SPARQL query: " + e.getMessage());
 			ArrayList<MessageObject> messageObjects = new ArrayList<>();
 			messageObjects.add(new MessageObject(actualSparqlName, Section.class));
 			messageObjects.add(new MessageObject(expectedSparqlName, Section.class));
@@ -116,21 +133,13 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(
 				expectedResultTableSection, variables, compiler);
 
-		boolean atLeastFlag = false;
-		if (args.length > 0) {
-			String arg0 = args[0];
-			if (arg0.equalsIgnoreCase(AT_LEAST)) {
-				atLeastFlag = true;
-			}
-		}
-
 		MultiMap<String, Message> failures = ResultTableModel.checkEquality(core, expectedResultTable,
 				actualResultTable, atLeastFlag);
 
 		if (!failures.isEmpty()) {
 			String errorsText = ResultTableModel.generateErrorsText(failures, false);
 			errorsText += "Expected result: " + expectedSparqlName + ", actual result: " + actualSparqlName;
-			Message message = new Message(Type.FAILURE, errorsText);
+			Message message = new Message(messageTypeTestFailed, errorsText);
 			ArrayList<MessageObject> messageObjects = new ArrayList<>();
 			messageObjects.add(new MessageObject(actualSparqlName, Section.class));
 			messageObjects.add(new MessageObject(expectedSparqlName, Section.class));

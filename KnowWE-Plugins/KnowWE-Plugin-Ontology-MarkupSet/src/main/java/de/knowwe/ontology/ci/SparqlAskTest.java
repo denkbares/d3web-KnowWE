@@ -33,10 +33,13 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  */
 public class SparqlAskTest extends AbstractTest<SparqlQuerySection> {
 
+	public static final String WARNING = "warning";
+
 	public SparqlAskTest() {
 		this.addParameter("expected value",
 				TestParameter.Mode.Mandatory,
 				"expected boolean value to compare with", "true", "false");
+		this.addParameter("warning", TestParameter.Mode.Optional, "show warning instead of failure if this test fails", WARNING);
 	}
 
 	@Override
@@ -52,6 +55,11 @@ public class SparqlAskTest extends AbstractTest<SparqlQuerySection> {
 	@Override
 	public Message execute(SparqlQuerySection query, String[] args, String[]... ignores) throws InterruptedException {
 		Boolean expectedTruthValue = Boolean.parseBoolean(args[0]);
+		Message.Type messageTypeTestFailed = Message.Type.FAILURE;
+		if (args.length > 1 && args[1] != null && WARNING.equalsIgnoreCase(args[1])){
+			messageTypeTestFailed = Message.Type.WARNING;
+		}
+
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(query.getSection());
 
 		if (core == null) {
@@ -67,7 +75,7 @@ public class SparqlAskTest extends AbstractTest<SparqlQuerySection> {
 		if (expectedTruthValue.equals(result)) {
 			return new Message(Message.Type.SUCCESS);
 		} else {
-			return new Message(Message.Type.FAILURE,
+			return new Message(messageTypeTestFailed,
 					"Sparql ASK expected  " + expectedTruthValue + " but was: " + result);
 		}
 	}

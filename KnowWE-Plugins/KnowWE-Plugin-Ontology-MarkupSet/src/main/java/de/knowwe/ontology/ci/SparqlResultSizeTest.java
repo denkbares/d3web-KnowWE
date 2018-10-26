@@ -45,6 +45,8 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 	public static final String SMALLER_THAN = "<";
 	public static final String EQUAL = "=";
 
+	public static final String WARNING = "warning";
+
 	public SparqlResultSizeTest() {
 		String[] comparators = new String[] {
 				EQUAL, SMALLER_THAN, GREATER_THAN };
@@ -54,6 +56,7 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 		this.addParameter("expected size", de.d3web.testing.TestParameter.Type.Number,
 				Mode.Mandatory,
 				"expected size to compare with");
+		this.addParameter("warning", Mode.Optional, "show warning instead of failure if this test fails", WARNING);
 	}
 
 	@Override
@@ -70,6 +73,12 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 	public Message execute(SparqlQuerySection query, String[] args, String[]... ignores) throws InterruptedException {
 		String comparator = args[0];
 		double number = Double.parseDouble(args[1]);
+
+		Message.Type messageTypeTestFailed = Message.Type.FAILURE;
+		if (args.length > 2 && args[2] != null && WARNING.equalsIgnoreCase(args[2])){
+			messageTypeTestFailed = Message.Type.WARNING;
+		}
+
 
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(query.getSection());
 
@@ -98,7 +107,8 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 				return new Message(Message.Type.SUCCESS);
 			}
 			else {
-				return new Message(Message.Type.FAILURE,
+
+				return new Message(messageTypeTestFailed,
 						"Result size should be greater than " + (int) number + " but was: " + count);
 			}
 		}
@@ -108,7 +118,7 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 				return new Message(Message.Type.SUCCESS);
 			}
 			else {
-				return new Message(Message.Type.FAILURE,
+				return new Message(messageTypeTestFailed,
 						"Result size should be smaller than " + (int) number + " but was: " + count);
 			}
 		}
@@ -118,7 +128,7 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 				return new Message(Message.Type.SUCCESS);
 			}
 			else {
-				return new Message(Message.Type.FAILURE,
+				return new Message(messageTypeTestFailed,
 						"Result size should be " + (int) number + " but was: " + count);
 			}
 		}
