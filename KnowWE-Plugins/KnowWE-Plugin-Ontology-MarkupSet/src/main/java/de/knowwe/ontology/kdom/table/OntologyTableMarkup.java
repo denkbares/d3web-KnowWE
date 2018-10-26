@@ -50,7 +50,7 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
  */
 public class OntologyTableMarkup extends DefaultMarkupType {
 
-	private static DefaultMarkup MARKUP;
+	private static final DefaultMarkup MARKUP;
 
 	public static final String ANNOTATION_TYPE_RELATION = "typeRelation";
 
@@ -157,7 +157,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		}
 	}
 
-	static class BasicURIType extends AbstractType {
+	public static class BasicURIType extends AbstractType {
 		public BasicURIType() {
 			this.setSectionFinder( new AllTextFinderTrimmed());
 			this.addChildType(new EncodedTurtleURI());
