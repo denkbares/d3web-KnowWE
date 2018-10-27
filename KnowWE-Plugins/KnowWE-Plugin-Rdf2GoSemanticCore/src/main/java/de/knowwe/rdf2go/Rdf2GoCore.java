@@ -72,7 +72,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParseException;
 
-import com.denkbares.collections.Matrix;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.collections.N2MMap;
@@ -1532,27 +1531,8 @@ public class Rdf2GoCore {
 	 *
 	 * @param query the sparql query to be executed
 	 */
+	@SuppressWarnings("unused")
 	public void dump(String query) {
-		Matrix<String> matrix = new Matrix<>();
-		try (CachedTupleQueryResult result = sparqlSelect(query)) {
-			// prepare headings and column length
-			List<String> names = result.getBindingNames();
-
-			// prepare values and update column lengths
-			int row = 0;
-			while (result.hasNext()) {
-				BindingSet bindings = result.next();
-				for (int col = 0; col < names.size(); col++) {
-					Value value = bindings.getValue(names.get(col));
-					if (value instanceof IRI) value = toShortIRI((IRI) value);
-					String text = (value == null) ? "null" : value.stringValue();
-					matrix.set(row, col, text);
-				}
-				row++;
-			}
-
-			// dump the matrix
-			matrix.dumpTable(names);
-		}
+		semanticCore.dump(query);
 	}
 }
