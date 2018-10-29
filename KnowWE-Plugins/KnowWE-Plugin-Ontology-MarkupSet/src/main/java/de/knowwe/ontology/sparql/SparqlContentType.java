@@ -90,6 +90,9 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	private Color checkColor(Section<DefaultMarkupType> markupSection, String logLevel, Color none) {
 		String logLevelString = DefaultMarkupType.getAnnotation(markupSection,
 				logLevel);
+		if(logLevelString == null){
+			return none;
+		}
 		switch (logLevelString.toLowerCase()){
 			case  "warning":
 				return Color.WARNING;
