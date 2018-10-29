@@ -25,6 +25,7 @@ import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -83,6 +84,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 			html += "<th>Length</th>";
 			html += "<th>Offset</th>";
 			html += "<th>Children</th>";
+			html += "<th>Renderer</th>";
 			html += "<th>Text</th>";
 			html += "</tr>";
 
@@ -117,6 +119,9 @@ public class RenderKDOMType extends DefaultMarkupType {
 			string.appendHtml("<td>" + s.getText().length() + "</td>");
 			string.appendHtml("<td>" + s.getOffsetInParent() + "</td>");
 			string.appendHtml("<td>" + s.getChildren().size() + "</td>");
+			Class renderer = s.get().getRenderer().getClass();
+			String rendererEntry = (renderer.equals(DelegateRenderer.class))?"":renderer.getSimpleName();
+			string.appendHtml("<td>" + rendererEntry + "</td>");
 
 			string.appendHtml("<td><div class='table_text'><div class='kdom_source'>");
 			string.append(Strings.encodeHtml(s.getText()) + "&#8203;");
