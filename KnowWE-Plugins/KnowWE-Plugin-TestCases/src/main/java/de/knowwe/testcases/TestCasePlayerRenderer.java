@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.Cookie;
 
+import com.denkbares.strings.Strings;
+import com.denkbares.strings.Strings.Encoding;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyManager;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -46,8 +48,6 @@ import de.d3web.core.session.Value;
 import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.values.DateValue;
 import de.d3web.core.utilities.NamedObjectComparator;
-import com.denkbares.strings.Strings;
-import com.denkbares.strings.Strings.Encoding;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.DescribedTestCase;
@@ -71,8 +71,8 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
 import de.knowwe.testcases.table.KnowWEConditionCheck;
+import de.knowwe.util.Color;
 import de.knowwe.util.Icon;
-import de.knowwe.util.IconColor;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -128,15 +128,15 @@ public class TestCasePlayerRenderer implements Renderer {
 				"display:inline-block; vertical-align:middle; text-align:center; padding: 0 12px 0 8px");
 		string.appendHtmlTag("span", "style", "position:relative; top:-1px;");
 		if (failureCount == 0) {
-			string.appendHtml(Icon.BULB.addColor(IconColor.OK).addTitle("No check failures").toHtml());
+			string.appendHtml(Icon.BULB.addColor(Color.OK).addTitle("No check failures").toHtml());
 		}
 		else if (failureCount == 1) {
-			string.appendHtml(Icon.BULB.addColor(IconColor.ERROR)
+			string.appendHtml(Icon.BULB.addColor(Color.ERROR)
 					.addTitle("There is one failed check failure")
 					.toHtml());
 		}
 		else {
-			string.appendHtml(Icon.BULB.addColor(IconColor.ERROR)
+			string.appendHtml(Icon.BULB.addColor(Color.ERROR)
 					.addTitle("There are " + failureCount + " failed checks")
 					.toHtml());
 		}
@@ -729,7 +729,7 @@ public class TestCasePlayerRenderer implements Renderer {
 			builder.appendHtml(icon.toHtml());
 		}
 		else {
-			builder.appendHtml(icon.addColor(IconColor.DISABLED).toHtml());
+			builder.appendHtml(icon.addColor(Color.DISABLED).toHtml());
 
 		}
 		if (enabled) {

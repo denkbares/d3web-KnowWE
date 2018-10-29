@@ -16,8 +16,8 @@ import de.d3web.we.object.ValueTooltipRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.tools.CompositeEditToolProvider;
+import de.knowwe.util.Color;
 import de.knowwe.util.Icon;
-import de.knowwe.util.IconColor;
 
 public class SolutionPanelUtils {
 
@@ -107,13 +107,13 @@ public class SolutionPanelUtils {
 					"value in calculation, please reload later", content);
 		}
 		else if (solutionRating.hasState(State.ESTABLISHED)) {
-			appendImage(Icon.ESTABLISHED.addColor(IconColor.OK), "Established", content);
+			appendImage(Icon.ESTABLISHED.addColor(Color.OK), "Established", content);
 		}
 		else if (solutionRating.hasState(State.SUGGESTED)) {
-			appendImage(Icon.SUGGESTED.addColor(IconColor.YELLOW), "Suggested", content);
+			appendImage(Icon.SUGGESTED.addColor(Color.YELLOW), "Suggested", content);
 		}
 		else if (solutionRating.hasState(State.EXCLUDED)) {
-			appendImage(Icon.EXCLUDED.addColor(IconColor.RED), "Excluded", content);
+			appendImage(Icon.EXCLUDED.addColor(Color.RED), "Excluded", content);
 		}
 	}
 
