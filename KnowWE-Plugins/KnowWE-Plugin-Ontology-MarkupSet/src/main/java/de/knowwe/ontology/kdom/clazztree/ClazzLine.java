@@ -146,7 +146,7 @@ public class ClazzLine extends AbstractType {
 								.getNodeForIdentifier(core, parentIdentifier)));
 
 					}
-					core.addStatements(statements);
+					core.addStatements(section, statements);
 				}
 			}
 		});
