@@ -58,19 +58,15 @@ import de.knowwe.util.CredentialProvider;
  */
 public class Plugins {
 
-	public static final String SCOPE_ROOT = "root";
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
-	public static final String EXTENDED_PLUGIN_ID_SEMANTIC_CORE = "denkbares-SemanticCore-Plugin-ExtensionPoints";
 	public static final String EXTENDED_POINT_KnowWEAction = "Action";
 	public static final String EXTENDED_POINT_Type = "Type";
 	public static final String EXTENDED_POINT_CompileScript = "CompileScript";
-	public static final String EXTENDED_POINT_SubtreeHandler = "SubtreeHandler";
 	public static final String EXTENDED_POINT_ToolProvider = "ToolProvider";
 	public static final String EXTENDED_POINT_TagHandler = "TagHandler";
 	public static final String EXTENDED_POINT_PageAppendHandler = "PageAppendHandler";
 	public static final String EXTENDED_POINT_Instantiation = "Instantiation";
 	public static final String EXTENDED_POINT_SectionizerModule = "SectionizerModule";
-	public static final String EXTENDED_POINT_SemanticCore = "SemanticCoreImpl";
 	public static final String EXTENDED_POINT_EventListener = "EventListener";
 	public static final String EXTENDED_POINT_Terminology = "Terminology";
 	public static final String EXTENDED_POINT_IncrementalCompileScript = "IncrementalCompileScript";
@@ -396,7 +392,6 @@ public class Plugins {
 		for (String filename : jsFiles) {
 			ResourceLoader.getInstance().add(filename, ResourceLoader.Type.script);
 		}
-
 	}
 
 	private static void addScripts(Extension[] extensions, PriorityList<Double, String> filesCollector) {
@@ -424,5 +419,4 @@ public class Plugins {
 			}
 		}
 	}
-
 }

@@ -39,7 +39,6 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.logging.LogManager;
-import java.util.stream.Stream;
 
 import javax.servlet.ServletContext;
 
@@ -101,7 +100,7 @@ public class Environment {
 	/**
 	 * This is the link to the connected Wiki-engine. Allows saving pages etc.
 	 */
-	private WikiConnector wikiConnector;
+	private final WikiConnector wikiConnector;
 
 	/**
 	 * Holding the default tag handlers of KnowWE
@@ -194,12 +193,6 @@ public class Environment {
 		List<Extension> extensions = new ArrayList<>(Arrays.asList(PluginManager.getInstance().getExtensions(
 				Plugins.EXTENDED_PLUGIN_ID,
 				Plugins.EXTENDED_POINT_EventListener)));
-		if (Stream.of(PluginManager.getInstance().getPlugins())
-				.anyMatch(p -> p.getPluginID().equals(Plugins.EXTENDED_PLUGIN_ID_SEMANTIC_CORE))) {
-			Collections.addAll(extensions, PluginManager.getInstance().getExtensions(
-					Plugins.EXTENDED_PLUGIN_ID_SEMANTIC_CORE,
-					Plugins.EXTENDED_POINT_EventListener));
-		}
 		for (Extension extension : extensions) {
 			Object o = extension.getSingleton();
 			if (o instanceof EventListener) {
