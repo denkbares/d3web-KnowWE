@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -21,12 +20,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.servlet.http.HttpSession;
-
-import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.ValueObject;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.dialog.SessionConstants;
-import de.knowwe.dialog.Utils;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -41,6 +34,8 @@ import de.d3web.core.inference.PSMethodInit;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.d3web.core.knowledge.TerminologyManager;
+import de.d3web.core.knowledge.TerminologyObject;
+import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.records.SessionConversionFactory;
@@ -60,6 +55,9 @@ import de.d3web.we.basic.SessionCreatedEvent;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.dialog.SessionConstants;
+import de.knowwe.dialog.Utils;
 
 /**
  * Command to start a new case of a specified knowledge base.
@@ -256,7 +254,7 @@ public class StartCase extends AbstractAction implements EventListener {
 			records = SessionPersistenceManager.getInstance().loadSessions(file);
 		}
 
-		Session session = SessionConversionFactory.copyToSession(
+		Session session = SessionConversionFactory.replayToSession(
 				knowledgebase, records.iterator().next());
 		wrapFormStrategy(session);
 		// set the session in the provider
