@@ -32,6 +32,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.util.Color;
 
 public class SparqlMarkupType extends DefaultMarkupType {
 
@@ -45,9 +46,11 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String RENDER_QUERY = "showQuery";
 	public static final String RENDER_MODE = "renderMode";
 	public static final String TIMEOUT = "timeout";
+	public static final String LOG_LEVEL = "logLevel";
 	private static DefaultMarkup m = null;
 
 	public static final String MARKUP_NAME = "Sparql";
+
 
 	static {
 		m = new DefaultMarkup(MARKUP_NAME);
@@ -59,6 +62,9 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		m.addAnnotationRenderer(RENDER_QUERY,  NothingRenderer.getInstance());
 		m.addAnnotation(ZEBRAMODE, false, "true", "false");
 		m.addAnnotationRenderer(ZEBRAMODE, NothingRenderer.getInstance());
+		m.addAnnotation(LOG_LEVEL, false, Color.WARNING.name(),
+				Color.ERROR.name());
+		m.addAnnotationRenderer(LOG_LEVEL, NothingRenderer.getInstance());
 		m.addAnnotation(TREE, false, "true", "false");
 		m.addAnnotationRenderer(TREE, NothingRenderer.getInstance());
 		m.addAnnotation(SORTING, false, "true", "false");

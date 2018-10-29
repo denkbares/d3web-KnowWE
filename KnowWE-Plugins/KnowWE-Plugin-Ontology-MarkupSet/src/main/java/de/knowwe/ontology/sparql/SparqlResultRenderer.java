@@ -45,6 +45,7 @@ import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.ResultTableModel;
 import de.knowwe.rdf2go.utils.TableRow;
+import de.knowwe.util.Color;
 
 public class SparqlResultRenderer {
 
@@ -104,7 +105,6 @@ public class SparqlResultRenderer {
 
 		String query = section.get().getSparqlQuery(section, user);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
-
 		result.appendHtml("<div class='sparqlTable' sparqlSectionId='" + opts.getId() + "' id='sparqlTable_" + opts
 				.getId() + "'>");
 		if (opts.isBorder()) result.appendHtml("<div class='border'>");
@@ -248,6 +248,7 @@ public class SparqlResultRenderer {
 		boolean rawOutput = opts.isRawOutput();
 		boolean isTree = opts.isTree();
 		boolean isNavigation = opts.isNavigation();
+		Color color = opts.getColor();
 
 		String tableID = UUID.randomUUID().toString();
 
@@ -274,11 +275,15 @@ public class SparqlResultRenderer {
 		}
 
 		renderResult.appendHtmlTag("div", "style", "overflow-x: auto");
+		boolean hasColor = color != Color.NONE;
 		renderResult.appendHtml("<table id='").append(tableID).appendHtml("'")
 				.append(isTree
-						? " class='sparqltable sparqltreetable'"
-						: " class='sparqltable'")
+						? " class='sparqltable sparqltreetable"
+						: " class='sparqltable")
+				.append(hasColor ? " logLevel" : "")
+				.append("'")
 				.append(opts.isSorting() ? " sortable='multi'" : "")
+				.append(hasColor ? " style='border-color:"+color.getColorValue()+"'"  : "")
 				.append(">");
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 		int column = 0;

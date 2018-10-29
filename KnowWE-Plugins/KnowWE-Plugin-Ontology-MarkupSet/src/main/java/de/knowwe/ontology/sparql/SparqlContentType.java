@@ -36,6 +36,7 @@ import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import de.knowwe.util.Color;
 
 public class SparqlContentType extends AbstractType implements SparqlType {
 
@@ -80,8 +81,23 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 				SparqlMarkupType.TREE)));
 		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER, true));
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
+		renderOpts.setColor(checkColor(markupSection, SparqlMarkupType.LOG_LEVEL, Color.NONE));
+
 
 		renderOpts.setTimeout(getTimeout(markupSection));
+	}
+
+	private Color checkColor(Section<DefaultMarkupType> markupSection, String logLevel, Color none) {
+		String logLevelString = DefaultMarkupType.getAnnotation(markupSection,
+				logLevel);
+		switch (logLevelString.toLowerCase()){
+			case  "warning":
+				return Color.WARNING;
+			case "error":
+				return Color.ERROR;
+			default:
+				return none;
+		}
 	}
 
 	public static boolean isConstructQuery(Section<?> section) {

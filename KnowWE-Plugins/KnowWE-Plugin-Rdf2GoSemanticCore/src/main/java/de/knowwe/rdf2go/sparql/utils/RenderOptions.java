@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.util.Color;
 
 public class RenderOptions {
 
@@ -20,6 +21,7 @@ public class RenderOptions {
 	boolean showAll;
 	private boolean tree = false;
 	private long timeout = 10000;
+	private Color color;
 
 	public RenderOptions(String id) {
 		this.zebraMode = true;
@@ -30,6 +32,7 @@ public class RenderOptions {
 		sortingOrder = new LinkedHashMap<>();
 		this.id = id;
 		showAll = false;
+ 		color = Color.NONE;
 	}
 
 	public String getId() {
@@ -130,5 +133,13 @@ public class RenderOptions {
 
 	public long getTimeout() {
 		return timeout;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
 	}
 }
