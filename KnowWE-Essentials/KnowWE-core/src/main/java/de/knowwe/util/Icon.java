@@ -192,8 +192,8 @@ public class Icon {
 		return new Icon(cssClass + " " + Strings.concat(" ", classes), style, title, id);
 	}
 
-	public Icon addColor(IconColor color) {
-		return new Icon(cssClass + " " + color, style, title, id);
+	public Icon addColor(Color color) {
+		return new Icon(cssClass + " " + color.getCssClassName(), style, title, id);
 	}
 
 	public Icon addTitle(String title) {
