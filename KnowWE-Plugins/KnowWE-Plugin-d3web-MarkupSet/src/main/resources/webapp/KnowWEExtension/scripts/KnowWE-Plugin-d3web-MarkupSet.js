@@ -1,4 +1,4 @@
-KNOWWE = KNOWWE || {};
+KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.plugin = KNOWWE.plugin || {}
 KNOWWE.plugin.abstractionTable = {}
 KNOWWE.plugin.propertyTable = {}

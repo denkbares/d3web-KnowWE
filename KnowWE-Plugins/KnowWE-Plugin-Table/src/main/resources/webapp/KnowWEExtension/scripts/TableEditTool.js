@@ -1,4 +1,4 @@
-KNOWWE = KNOWWE || {};
+KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.table = KNOWWE.table || {};
  
 

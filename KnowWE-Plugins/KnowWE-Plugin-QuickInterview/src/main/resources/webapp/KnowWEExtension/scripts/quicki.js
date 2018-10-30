@@ -26,7 +26,7 @@
 //var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
 
 
-KNOWWE = KNOWWE || {};
+KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.plugin = KNOWWE.plugin || {};
 
 var toSelect;

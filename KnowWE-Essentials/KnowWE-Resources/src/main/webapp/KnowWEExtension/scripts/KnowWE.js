@@ -734,15 +734,6 @@ KNOWWE.core.rerendercontent = function () {
 }();
 
 /**
- * Namespace: KNOWWE.plugin
- * The KNOWWE plugin namespace.
- * Initialized empty to ensure existence.
- */
-KNOWWE.plugin = function () {
-	return {}
-}();
-
-/**
  * Aliases for some often used namespaced function to reduce typing.
  */
 /* Alias KNOWWE event. */

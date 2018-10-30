@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-KNOWWE = KNOWWE || {};
+KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 

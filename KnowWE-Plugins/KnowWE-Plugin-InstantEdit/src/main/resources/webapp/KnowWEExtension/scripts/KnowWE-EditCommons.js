@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-KNOWWE = KNOWWE || {};
+KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 
 /**
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
