@@ -330,7 +330,7 @@ public class Rdf2GoCore {
 					for (Namespace namespace : namespaces) {
 						connection.setNamespace(namespace.getPrefix(), namespace.getName());
 						if ("lns".equals(namespace.getPrefix())) {
-							this.lns = namespace.getPrefix();
+							this.lns = namespace.getName();
 						}
 					}
 				}
