@@ -60,6 +60,7 @@ import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleNamespace;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
@@ -314,19 +315,32 @@ public class Rdf2GoCore {
 	 * @param namespace    the namespace (URL)
 	 */
 	public void addNamespace(String abbreviation, String namespace) {
+		addNamespaces(new SimpleNamespace(abbreviation, namespace));
+	}
+
+	/**
+	 * Add namespaces to the model.
+	 *
+	 * @param namespaces the namespaces to add (URL)
+	 */
+	public void addNamespaces(Namespace... namespaces) {
 		synchronized (nsMutext) {
 			try {
 				try (RepositoryConnection connection = semanticCore.getConnection()) {
-					connection.setNamespace(abbreviation, namespace);
+					for (Namespace namespace : namespaces) {
+						connection.setNamespace(namespace.getPrefix(), namespace.getName());
+						if ("lns".equals(namespace.getPrefix())) {
+							this.lns = namespace.getPrefix();
+						}
+					}
 				}
-				if ("lns".equals(abbreviation)) {
-					this.lns = namespace;
-				}
-				namespaces = null; // clear caches namespaces, will be get created lazy if needed
-				namespacePrefixes = null;
 			}
 			catch (RepositoryException e) {
 				Log.severe("Exception while adding namespace", e);
+			}
+			finally {
+				this.namespaces = null; // clear caches namespaces, will be get created lazy if needed
+				this.namespacePrefixes = null;
 			}
 		}
 	}
@@ -693,7 +707,7 @@ public class Rdf2GoCore {
 	 * @param name the relative uri (or simple name) to create a lns-uri for
 	 * @return an uri of the local namespace
 	 */
-	public IRI createlocalIRI(String name) {
+	public IRI createLocalIRI(String name) {
 		return createIRI(lns, name);
 	}
 
@@ -839,13 +853,13 @@ public class Rdf2GoCore {
 	 * sets the default namespaces
 	 */
 	private void initDefaultNamespaces() {
-		addNamespace(LNS_ABBREVIATION, lns);
-		addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-		addNamespace("owl", "http://www.w3.org/2002/07/owl#");
-		addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
-		addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
-		addNamespace("fn", "http://www.w3.org/2005/xpath-functions#");
-		addNamespace("onto", "http://www.ontotext.com/");
+		addNamespaces(new SimpleNamespace(LNS_ABBREVIATION, lns),
+				new SimpleNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+				new SimpleNamespace("owl", "http://www.w3.org/2002/07/owl#"),
+				new SimpleNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"),
+				new SimpleNamespace("xsd", "http://www.w3.org/2001/XMLSchema#"),
+				new SimpleNamespace("fn", "http://www.w3.org/2005/xpath-functions#"),
+				new SimpleNamespace("onto", "http://www.ontotext.com/"));
 	}
 
 	private void logStatements(Set<Statement> statements, long start, String caption) {
