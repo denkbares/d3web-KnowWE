@@ -508,7 +508,7 @@ public class Rdf2GoUtils {
 	}
 
 	public static void addStringLiteral(Rdf2GoCore core, String subject, String predicate, String literalText, Collection<Statement> statements) {
-		addStatement(core, core.createlocalIRI(subject), core.createlocalIRI(predicate), core.createLiteral(literalText), statements);
+		addStatement(core, core.createLocalIRI(subject), core.createLocalIRI(predicate), core.createLiteral(literalText), statements);
 	}
 
 	/**
@@ -516,7 +516,7 @@ public class Rdf2GoUtils {
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, String subject, String predicate, String object, Collection<Statement> statements) {
-		addStatement(core, core.createlocalIRI(subject), core.createlocalIRI(predicate), object, statements);
+		addStatement(core, core.createLocalIRI(subject), core.createLocalIRI(predicate), object, statements);
 	}
 
 	/**
@@ -524,7 +524,7 @@ public class Rdf2GoUtils {
 	 * reasoning, the rdfs label of the object is created and added.
 	 */
 	public static void addStatement(Rdf2GoCore core, org.eclipse.rdf4j.model.Resource subject, IRI predicate, String object, Collection<Statement> statements) {
-		addStatement(core, subject, predicate, core.createlocalIRI(object), statements);
+		addStatement(core, subject, predicate, core.createLocalIRI(object), statements);
 	}
 
 	public static void addStatement(Rdf2GoCore core, org.eclipse.rdf4j.model.Resource subject, IRI predicate, Value object, Collection<Statement> statements) {

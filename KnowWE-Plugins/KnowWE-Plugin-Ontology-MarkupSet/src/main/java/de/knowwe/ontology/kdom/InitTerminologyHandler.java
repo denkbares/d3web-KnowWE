@@ -36,6 +36,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.rdf4j.model.Namespace;
+import org.eclipse.rdf4j.model.impl.SimpleNamespace;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.jetbrains.annotations.NotNull;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -249,11 +252,12 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	private void registerBaseTerminology(OntologyCompiler compiler, Section<PackageCompileType> section) {
-		compiler.getRdf2GoCore().addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-		compiler.getRdf2GoCore().addNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
-		compiler.getRdf2GoCore().addNamespace("xsd", "http://www.w3.org/2001/XMLSchema#");
-		compiler.getRdf2GoCore().addNamespace("owl", "http://www.w3.org/2002/07/owl#");
-		compiler.getRdf2GoCore().addNamespace("skos", "http://www.w3.org/2004/02/skos/core#");
+		compiler.getRdf2GoCore()
+				.addNamespaces(new SimpleNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+						new SimpleNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"),
+						new SimpleNamespace("xsd", "http://www.w3.org/2001/XMLSchema#"),
+						new SimpleNamespace("owl", "http://www.w3.org/2002/07/owl#"),
+						new SimpleNamespace("skos", "http://www.w3.org/2004/02/skos/core#"));
 		for (String resourceTerm : RESOURCE_TERMS) {
 			registerTerm(compiler, compiler.getRdf2GoCore(), section, resourceTerm, Resource.class);
 		}
