@@ -19,10 +19,12 @@
 
 package de.knowwe.tools;
 
-import de.knowwe.core.Attributes;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.util.Icon;
+
+import static de.knowwe.core.Attributes.SECTION_ID;
+import static de.knowwe.core.Attributes.TOPIC;
 
 /**
  * A tool causing the given action being called asynchronously passing the given section id, waits for action completion and triggers a page reload.
@@ -32,9 +34,24 @@ import de.knowwe.util.Icon;
  */
 public class AsynchronousActionTool extends DefaultTool {
 
-	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section) {
-		super(icon, title, description, "jq$.ajax({url : 'action/"+action.getSimpleName()+"', cache : false, data: { "+ Attributes.SECTION_ID+" : '"
-				+ section.getID() + "'}, success : function() {window.location.reload()} })", Tool.ActionType.ONCLICK, null);
-	}
+    public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section) {
+        this(icon, title, description, action, section, null);
+    }
 
+    public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, String currentPageTitle) {
+        super(icon, title, description,
+                "jq$.ajax({url : 'action/" + action.getSimpleName() + "', " +
+                        "cache : false, " +
+                        createData(section.getID(), currentPageTitle) +
+                        "success : function() {window.location.reload()} })",
+                Tool.ActionType.ONCLICK, null);
+    }
+
+    private static String createData(String sectionId, String currentPageTitle) {
+        String topic = "";
+        if (currentPageTitle != null) {
+            topic = "'," + TOPIC + " : '" + currentPageTitle;
+        }
+        return "data: { " + SECTION_ID + " : '" + sectionId + topic + "'}, ";
+    }
 }
