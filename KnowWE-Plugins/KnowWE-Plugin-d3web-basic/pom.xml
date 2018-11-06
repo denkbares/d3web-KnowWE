@@ -48,5 +48,9 @@
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-SessionPersistence-Basic</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+		</dependency>
 	</dependencies>
 </project>

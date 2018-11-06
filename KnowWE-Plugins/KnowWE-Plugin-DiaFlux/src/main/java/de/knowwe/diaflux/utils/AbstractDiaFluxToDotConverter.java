@@ -1,8 +1,8 @@
 package de.knowwe.diaflux.utils;
 
 import java.awt.*;
-
-import sun.font.FontDesignMetrics;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 
 /**
  * @author Adrian Müller
@@ -10,7 +10,10 @@ import sun.font.FontDesignMetrics;
  */
 public abstract class AbstractDiaFluxToDotConverter extends AbstractDiaFluxConverter {
 
-	private final FontMetrics metrics = FontDesignMetrics.getMetrics(new Font("Helvetica", Font.PLAIN, 16));
+	private final AffineTransform affinetransform = new AffineTransform();
+	private final FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
+	private final Font font = new Font("Helvetica", Font.PLAIN, 16);
+
 	private final int FONT_HEIGHT = 16;
 	private final int MAX_NODE_WIDTH = 240;
 	private final int MIN_NODE_WIDTH = 104;
@@ -42,13 +45,13 @@ public abstract class AbstractDiaFluxToDotConverter extends AbstractDiaFluxConve
 				value = "ask";
 			}
 			// width little gif in background (-> 21)
-			text_width = metrics.stringWidth(object) + 21;
+			text_width = getTextWidth(object) + 21;
 			if (text_width > MAX_NODE_WIDTH) {
 				lines += text_width / MAX_NODE_WIDTH;
 				text_width = MAX_NODE_WIDTH;
 			}
 			lines++;
-			int value_text_width = metrics.stringWidth(value);
+			int value_text_width =  getTextWidth(value);
 			if (value_text_width > MAX_NODE_WIDTH) {
 				lines += value_text_width / MAX_NODE_WIDTH;
 				value_text_width = MAX_NODE_WIDTH;
@@ -60,7 +63,7 @@ public abstract class AbstractDiaFluxToDotConverter extends AbstractDiaFluxConve
 			text_height = lines * FONT_HEIGHT + 5;
 		}
 		else {
-			text_width = metrics.stringWidth(label);
+			text_width =  getTextWidth(label);
 			if (text_width > MAX_NODE_WIDTH) {
 				lines += text_width / MAX_NODE_WIDTH;
 				text_width = MAX_NODE_WIDTH;
@@ -81,4 +84,7 @@ public abstract class AbstractDiaFluxToDotConverter extends AbstractDiaFluxConve
 				.append(text_height / 72d);
 	}
 
+	private int getTextWidth(String object) {
+		return (int)(font.getStringBounds(object, frc).getWidth());
+	}
 }

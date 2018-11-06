@@ -865,6 +865,11 @@
 				<artifactId>httpclient</artifactId>
 				<version>4.5.2</version>
 			</dependency>
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>activation</artifactId>
+				<version>1.1.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
