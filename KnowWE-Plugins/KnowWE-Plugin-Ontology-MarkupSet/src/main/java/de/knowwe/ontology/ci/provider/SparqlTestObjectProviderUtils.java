@@ -52,8 +52,13 @@ public class SparqlTestObjectProviderUtils {
 	}
 
 	public static String getName(Section<?> section) {
-		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(section,
-				DefaultMarkupType.class);
+		Section<DefaultMarkupType> defaultMarkup;
+		if(section.get() instanceof  DefaultMarkupType) {
+			defaultMarkup = Sections.cast(section, DefaultMarkupType.class);
+		} else {
+			defaultMarkup = Sections.ancestor(section, DefaultMarkupType.class);
+		}
+
 		if (defaultMarkup == null) return null;
 		return DefaultMarkupType.getAnnotation(defaultMarkup, SparqlMarkupType.NAME);
 	}
