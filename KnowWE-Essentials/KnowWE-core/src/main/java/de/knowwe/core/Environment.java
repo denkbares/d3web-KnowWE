@@ -225,7 +225,7 @@ public class Environment {
 
 	private void configureLogging() {
 
-		Log.setContextName("Context " + wikiConnector.getApplicationName() + ":");
+		Log.setContextName(wikiConnector.getApplicationName());
 
 		ResourceBundle config = KnowWEUtils.getConfigBundle();
 		Collection<String> logLevelConfigs = getLogLevelConfigs(config);
