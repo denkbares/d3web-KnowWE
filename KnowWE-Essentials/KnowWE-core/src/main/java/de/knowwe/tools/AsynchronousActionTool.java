@@ -40,11 +40,21 @@ public class AsynchronousActionTool extends DefaultTool {
 
     public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, String currentPageTitle) {
         super(icon, title, description,
-                "jq$.ajax({url : 'action/" + action.getSimpleName() + "', " +
-                        "cache : false, " +
-                        createData(section.getID(), currentPageTitle) +
-                        "success : function() {window.location.reload()} })",
+                buildJsAction(action, section, currentPageTitle, "window.location.reload()"),
                 Tool.ActionType.ONCLICK, null);
+    }
+
+    public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, String currentPageTitle, String redirectPage) {
+        super(icon, title, description,
+                buildJsAction(action, section, currentPageTitle, "window.location='Wiki.jsp?page=" + redirectPage + "'"),
+                Tool.ActionType.ONCLICK, null);
+    }
+
+    private static String buildJsAction(Class<? extends Action> action, Section<?> section, String currentPageTitle, String successFunction) {
+        return "jq$.ajax({url : 'action/" + action.getSimpleName() + "', " +
+                "cache : false, " +
+                createData(section.getID(), currentPageTitle) +
+                "success : function() {" + successFunction + "} })";
     }
 
     private static String createData(String sectionId, String currentPageTitle) {
