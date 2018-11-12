@@ -288,8 +288,7 @@ public class SparqlResultRenderer {
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 		int column = 0;
 		for (String var : variables) {
-			// ignore first two columns if we are in tree mode
-			if (isTree && column++ < 2) {
+			if(isSkipped(isTree, column++, var)) {
 				continue;
 			}
 			renderResult.appendHtml("<th>");
@@ -362,8 +361,7 @@ public class SparqlResultRenderer {
 
 			column = 0;
 			for (String var : variables) {
-				// ignore first two columns if we are in tree mode
-				if (isTree && column++ < 2) {
+				if(isSkipped(isTree, column++, var)) {
 					continue;
 				}
 
@@ -381,6 +379,19 @@ public class SparqlResultRenderer {
 		renderResult.appendHtml("</table>");
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());
+	}
+
+	private boolean isSkipped(boolean isTree, int column, String var) {
+		boolean skip = false;
+		// ignore first two columns if we are in tree mode
+		if (isTree && column < 2) {
+			skip = true;
+		}
+		// ignore column 'sortValue', which should be hidden
+		if (isTree && var.equals(ResultTableHierarchy.SORT_VALUE)) {
+			skip = true;
+		}
+		return skip;
 	}
 
 	private boolean isEmpty(CachedTupleQueryResult qrt) {
@@ -419,6 +430,7 @@ public class SparqlResultRenderer {
 		ResultTableModel table = (ResultTableModel) section.getObject(RESULT_TABLE);
 		ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(RESULT_TABLE_TREE);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
+		boolean isTree = opts.isTree();
 		String query = section.get().getSparqlQuery(section, user);
 
 		CachedTupleQueryResult qrt = null;
@@ -449,8 +461,7 @@ public class SparqlResultRenderer {
 					result.append(">");
 					int column = 0;
 					for (String var : variables) {
-						// ignore first two columns
-						if (column++ < 2) {
+						if(isSkipped(isTree, column++, var)) {
 							continue;
 						}
 
@@ -474,6 +485,7 @@ public class SparqlResultRenderer {
 		private final List<TableRow> roots = new LinkedList<>();
 		private final MultiMap<TableRow, TableRow> children = new DefaultMultiMap<>();
 		private final Comparator<TableRow> comparator;
+		public static final String SORT_VALUE = "sortValue";
 
 		public ResultTableHierarchy(ResultTableModel data) {
 			this.data = data;
@@ -511,19 +523,18 @@ public class SparqlResultRenderer {
 
 		private static Comparator<TableRow> getComparator(final ResultTableModel result) {
 			return (o1, o2) -> {
-				Value concept1 = o1.getValue(result.getVariables().get(0));
-				Value concept2 = o2.getValue(result.getVariables().get(0));
-				// ToDo: Find Secure Way to sort by Label. The following Code is not Transitive!
-//				if (result.getVariables().size() >= 3) {
-//					Value tmp1 = o1.getValue(result.getVariables().get(2));
-//					Value tmp2 = o2.getValue(result.getVariables().get(2));
-//					if (tmp1 != null && tmp2 != null) {
-//						concept1 = tmp1;
-//						concept2 = tmp2;
-//					}
-//				}
+				// we sort by the column 'sortValue' if existing
+				// otherwise we sort by URI
+				Value sortValue1 = o1.getValue(SORT_VALUE);
+				Value sortValue2 = o2.getValue(SORT_VALUE);
+				if(sortValue1 == null) {
+					sortValue1 = o1.getValue(result.getVariables().get(0));
+				}
+				if(sortValue2 == null) {
+					sortValue2 = o2.getValue(result.getVariables().get(0));
 
-				return concept1.toString().compareTo(concept2.toString());
+				}
+				return sortValue1.toString().compareTo(sortValue2.toString());
 			};
 		}
 	}
