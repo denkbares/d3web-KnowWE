@@ -14,6 +14,7 @@
 		<knowwe.version>12.0-SNAPSHOT</knowwe.version>
 		<ssp.version>3.0-SNAPSHOT</ssp.version>
 		<selenium.version>3.13.0</selenium.version>
+		<tomcat.version>9.0.13</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.clover.encoding>UTF-8</maven.clover.encoding>
 		<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
@@ -711,28 +712,28 @@
 
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
-				<artifactId>annotations-api</artifactId>
-				<version>6.0.20</version>
+				<artifactId>tomcat-annotations-api</artifactId>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
-				<artifactId>el-api</artifactId>
-				<version>6.0.20</version>
+				<artifactId>tomcat-el-api</artifactId>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
-				<artifactId>jasper</artifactId>
-				<version>6.0.20</version>
+				<artifactId>tomcat-jasper</artifactId>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
-				<artifactId>jsp-api</artifactId>
-				<version>6.0.20</version>
+				<artifactId>tomcat-jsp-api</artifactId>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>6.0.20</version>
+				<artifactId>tomcat-servlet-api</artifactId>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -756,8 +757,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat</groupId>
-				<artifactId>catalina</artifactId>
-				<version>6.0.20</version>
+				<artifactId>tomcat-catalina</artifactId>
+				<version>${tomcat.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jdom</groupId>

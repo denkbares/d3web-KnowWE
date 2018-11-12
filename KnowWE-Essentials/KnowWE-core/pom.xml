@@ -37,7 +37,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
-			<artifactId>jsp-api</artifactId>
+			<artifactId>tomcat-jsp-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

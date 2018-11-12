@@ -682,27 +682,27 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
-			<artifactId>annotations-api</artifactId>
+			<artifactId>tomcat-annotations-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
-			<artifactId>el-api</artifactId>
+			<artifactId>tomcat-el-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
-			<artifactId>jasper</artifactId>
+			<artifactId>tomcat-jasper</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
-			<artifactId>jsp-api</artifactId>
+			<artifactId>tomcat-jsp-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
-			<artifactId>servlet-api</artifactId>
+			<artifactId>tomcat-servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
