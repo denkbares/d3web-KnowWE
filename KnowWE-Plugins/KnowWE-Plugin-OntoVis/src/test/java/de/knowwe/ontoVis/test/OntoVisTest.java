@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import connector.DummyConnector;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.eclipse.rdf4j.model.Value;
@@ -41,6 +42,7 @@ import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import de.knowwe.core.Environment;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -67,7 +69,7 @@ public class OntoVisTest {
 	@BeforeClass
 	public static void setUp() throws IOException, RDFParseException, RepositoryException {
 		InitPluginManager.init();
-
+		Environment.initInstance(new DummyConnector());
 		rdfRepository = new Rdf2GoCore("http://localhost:8080/KnowWE/Wiki.jsp?page=", RepositoryConfigs.find("OWL2_RL_OPTIMIZED"));
 		rdfRepository.addNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 		rdfRepository.addNamespace("owl", "http://www.w3.org/2002/07/owl#");
