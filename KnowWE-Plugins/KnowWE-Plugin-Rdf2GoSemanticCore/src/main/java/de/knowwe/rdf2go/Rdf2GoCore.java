@@ -102,6 +102,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -163,10 +164,11 @@ public class Rdf2GoCore {
 		if (reasoning == null) {
 			reasoning = RepositoryConfigs.get(RdfConfig.class);
 		}
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		if (lns == null) {
 			String baseUrl;
 			try {
-				baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
+				baseUrl = wikiConnector.getBaseUrl();
 				new URL(baseUrl); // check if we have a valid url or just context root
 			}
 			catch (Exception e) {
@@ -177,7 +179,7 @@ public class Rdf2GoCore {
 		}
 		this.lns = lns;
 		try {
-			semanticCore = SemanticCore.getOrCreateInstance(String.valueOf(coreId.incrementAndGet()), reasoning);
+			semanticCore = SemanticCore.getOrCreateInstance(wikiConnector.getApplicationName() + "-" + String.valueOf(coreId.incrementAndGet()), reasoning);
 			semanticCore.allocate(); // make sure the core does not shut down on its own...
 			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
 		}
