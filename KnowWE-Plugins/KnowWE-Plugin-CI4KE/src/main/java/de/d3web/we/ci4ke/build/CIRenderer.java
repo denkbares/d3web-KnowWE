@@ -220,7 +220,7 @@ public class CIRenderer {
 
 	private MultiMap<String, TestResult> getTestGroups(List<TestResult> testResults) {
 		MultiMap<String, TestResult> groups = new DefaultMultiMap<>(
-				MultiMaps.<String>linkedFactory(), MultiMaps.<TestResult>linkedFactory());
+				MultiMaps.linkedFactory(), MultiMaps.<TestResult>linkedFactory());
 		String currentGroup = null;
 		for (TestResult testResult : testResults) {
 			if (TestGroup.TEST_GROUP_NAME.equals(testResult.getTestName())) {
@@ -231,6 +231,10 @@ public class CIRenderer {
 			}
 		}
 		return groups;
+	}
+
+	public static String getTitleHtml(String title) {
+		return "<span class='ci-test-title' title='" + title + "'>";
 	}
 
 	private void appendTestResult(String web, TestResult testResult, RenderResult renderResult) {
@@ -248,16 +252,16 @@ public class CIRenderer {
 		// render buttons
 		openCollapse(type, renderResult);
 
-		if (test instanceof ResultRenderer){
+		if (test instanceof ResultRenderer) {
 			((ResultRenderer) test).renderResult(testResult, renderResult);
-		}else {
+		} else {
 			String title = "";
 			if (test != null) {
 				title = test.getDescription().replace("'", "&#39;");
 			}
 
 			// render test name
-			renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
+			renderResult.appendHtml(getTitleHtml(title));
 			renderResult.append(name);
 
 			// render test configuration (if exists)
@@ -317,35 +321,53 @@ public class CIRenderer {
 		renderResult.appendHtml("</div>");
 	}
 
-	private void appendMessage(String web, TestResult testResult, RenderResult renderResult) {
-		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
-		int successes = testResult.getSuccessfullyTestedObjects();
-		for (String testObjectName : testObjectNames) {
-			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
-			if (message == null) continue;
-			Type messageType = message.getType();
-			Test<?> test = TestManager.findTest(testResult.getTestName());
-			Class<?> testObjectClass = null;
-			if (test != null) {
-				testObjectClass = test.getTestObjectClass();
-			}
-			else {
-				Log.warning("No class found for test: " + testResult.getTestName());
-			}
-			renderResult.appendHtml("<p></p>");
-			renderResult.append("__" + messageType + "__: ");
-			appendMessageText(web, message, renderResult);
-			renderResult.appendHtml("<br>\n");
-			if (!message.getText().contains(testObjectName)) {
-				renderResult.appendHtml("(test object: ");
-				renderObjectName(web, testObjectName, testObjectClass, renderResult);
-				renderResult.appendHtml(")<br>\n");
-			}
-		}
-		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");
+
+	public static void renderResultMessageDefault(String web, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
+		Class<?> testObjectClass = renderResultMessageHeader(web, message, testResult, renderResult);
+		appendMessageText(web, message, renderResult);
+		renderResultMessageFooter(web, testObjectName, testObjectClass, message, renderResult);
 	}
 
-	private void appendMessageText(String web, Message message, RenderResult result) {
+	public static Class<?> renderResultMessageHeader(String web, Message message, TestResult testResult, RenderResult renderResult) {
+		Message.Type messageType = message.getType();
+		Test<?> test = TestManager.findTest(testResult.getTestName());
+		Class<?> testObjectClass = null;
+		if (test != null) {
+			testObjectClass = test.getTestObjectClass();
+		}
+		else {
+			Log.warning("No class found for test: " + testResult.getTestName());
+		}
+		renderResult.appendHtml("<p></p>");
+		renderResult.append("__" + messageType + "__: ");
+		return testObjectClass;
+	}
+
+	public static void renderResultMessageFooter(String web, String testObjectName, Class<?> testObjectClass, Message message, RenderResult renderResult) {
+		renderResult.appendHtml("<br>\n");
+		if (!message.getText().contains(testObjectName)) {
+			renderResult.appendHtml("(test object: ");
+			renderObjectName(web, testObjectName, testObjectClass, renderResult);
+			renderResult.appendHtml(")<br>\n");
+		}
+	}
+
+	public static void renderObjectName(String web, String objectName, Class<?> objectClass, RenderResult result) {
+		if (objectClass == null) {
+			// the case on old build version with outdated test names
+			result.append(objectName);
+			return;
+		}
+		ObjectNameRenderer objectRenderer = ObjectNameRendererManager.getObjectNameRenderer(objectClass);
+		if (objectRenderer == null) {
+			Log.warning("No renderer found for " + objectClass);
+			result.append(objectName);
+			return;
+		}
+		objectRenderer.render(web, objectName, result);
+	}
+
+	static void appendMessageText(String web, Message message, RenderResult result) {
 		String text = message.getText();
 		if (text == null) text = "";
 		ArrayList<MessageObject> objects = new ArrayList<>(message.getObjects());
@@ -355,8 +377,7 @@ public class CIRenderer {
 		int i = 0;
 		for (MessageObject object : objects) {
 			RenderResult temp = new RenderResult(result);
-			renderObjectName(web,
-					object.getObjectName(), object.geObjectClass(), temp);
+			renderObjectName(web, object.getObjectName(), object.geObjectClass(), temp);
 			String renderedObjectName = temp.toStringRaw();
 			targets[i] = object.getObjectName();
 			replacements[i] = renderedObjectName;
@@ -372,19 +393,39 @@ public class CIRenderer {
 		result.appendJSPWikiMarkup(text);
 	}
 
-	public void renderObjectName(String web, String objectName, Class<?> objectClass, RenderResult result) {
-		if (objectClass == null) {
-			// the case on old build version with outdated test names
-			result.append(objectName);
-			return;
+	static class SizeComparator implements Comparator<MessageObject> {
+
+		@Override
+		public int compare(MessageObject o1, MessageObject o2) {
+			if (o1 == o2) return 0;
+			if (o1 == null) return -1;
+			if (o2 == null) return 1;
+			String objectName1 = o1.getObjectName();
+			String objectName2 = o2.getObjectName();
+			//noinspection StringEquality
+			if (objectName1 == objectName2) return 0; // if both are null
+			if (objectName1 == null) return -1;
+			if (objectName2 == null) return 1;
+			return -(new Integer(objectName1.length()).compareTo(objectName2.length()));
 		}
-		ObjectNameRenderer objectRenderer = ObjectNameRendererManager.getObjectNameRenderer(objectClass);
-		if (objectRenderer == null) {
-			Log.warning("No renderer found for " + objectClass);
-			result.append(objectName);
-			return;
+	}
+
+	private void appendMessage(String web, TestResult testResult, RenderResult renderResult) {
+		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
+		int successes = testResult.getSuccessfullyTestedObjects();
+		for (String testObjectName : testObjectNames) {
+			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
+			if (message == null) continue;
+
+			Test<?> test = TestManager.findTest(testResult.getTestName());
+
+			if (test instanceof ResultRenderer) {
+				((ResultRenderer) test).renderResultMessage(web, testObjectName, message, testResult, renderResult);
+			} else {
+				renderResultMessageDefault(web, testObjectName, message, testResult, renderResult);
+			}
 		}
-		objectRenderer.render(web, objectName, result);
+		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");
 	}
 
 	private void apppendBuildHeadline(BuildResult build, RenderResult buffy) {
@@ -525,22 +566,5 @@ public class CIRenderer {
 		}
 
 		result.appendHtml(imgForecast);
-	}
-
-	private static class SizeComparator implements Comparator<MessageObject> {
-
-		@Override
-		public int compare(MessageObject o1, MessageObject o2) {
-			if (o1 == o2) return 0;
-			if (o1 == null) return -1;
-			if (o2 == null) return 1;
-			String objectName1 = o1.getObjectName();
-			String objectName2 = o2.getObjectName();
-			//noinspection StringEquality
-			if (objectName1 == objectName2) return 0; // if both are null
-			if (objectName1 == null) return -1;
-			if (objectName2 == null) return 1;
-			return -(new Integer(objectName1.length()).compareTo(objectName2.length()));
-		}
 	}
 }
