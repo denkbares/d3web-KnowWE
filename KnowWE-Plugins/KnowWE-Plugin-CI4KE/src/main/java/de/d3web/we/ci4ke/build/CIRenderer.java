@@ -44,6 +44,7 @@ import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
+import de.d3web.we.ci4ke.test.ResultRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.util.Icon;
@@ -243,35 +244,40 @@ public class CIRenderer {
 		String text = (summary == null) ? null : summary.getText();
 
 		Test<?> test = TestManager.findTest(name);
-		String title = "";
-		if (test != null) {
-			title = test.getDescription().replace("'", "&#39;");
-		}
 
 		// render buttons
 		openCollapse(type, renderResult);
 
-		// render test name
-		renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
-		renderResult.append(name);
-
-		// render test configuration (if exists)
-		String[] config = testResult.getConfiguration();
-		boolean hasConfig = config != null && !(config.length == 0);
-		boolean hasText = !Strings.isBlank(text);
-		if (hasConfig || hasText) {
-			renderResult.appendHtml("<span class='ci-configuration'>");
-			if (hasConfig) {
-				renderResult.append("( ")
-						.appendJSPWikiMarkup(TestParser.concatParameters(config))
-						.append(" )");
+		if (test instanceof ResultRenderer){
+			((ResultRenderer) test).renderResult(testResult, renderResult);
+		}else {
+			String title = "";
+			if (test != null) {
+				title = test.getDescription().replace("'", "&#39;");
 			}
-			if (hasText) {
-				renderResult.appendHtml(": ").appendJSPWikiMarkup(text);
+
+			// render test name
+			renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
+			renderResult.append(name);
+
+			// render test configuration (if exists)
+			String[] config = testResult.getConfiguration();
+			boolean hasConfig = config != null && !(config.length == 0);
+			boolean hasText = !Strings.isBlank(text);
+			if (hasConfig || hasText) {
+				renderResult.appendHtml("<span class='ci-configuration'>");
+				if (hasConfig) {
+					renderResult.append("( ")
+							.appendJSPWikiMarkup(TestParser.concatParameters(config))
+							.append(" )");
+				}
+				if (hasText) {
+					renderResult.appendHtml(": ").appendJSPWikiMarkup(text);
+				}
+				renderResult.appendHtml("</span>");
 			}
 			renderResult.appendHtml("</span>");
 		}
-		renderResult.appendHtml("</span>");
 
 		// render test-message (if exists)
 		openMessageBlock(type, renderResult);

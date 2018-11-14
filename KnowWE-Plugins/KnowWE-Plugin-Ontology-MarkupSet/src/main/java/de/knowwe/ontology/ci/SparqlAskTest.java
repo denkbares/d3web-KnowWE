@@ -20,10 +20,22 @@
 package de.knowwe.ontology.ci;
 
 
+import java.util.Collection;
+
+import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter;
+import de.d3web.testing.TestParser;
+import de.d3web.testing.TestResult;
+import de.d3web.we.ci4ke.test.ResultRenderer;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.ci.provider.SparqlQuerySection;
+import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
+import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -31,7 +43,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshoefer (denkbares GmbH)
  * @created 01.03.16.
  */
-public class SparqlAskTest extends AbstractTest<SparqlQuerySection> {
+public class SparqlAskTest extends AbstractTest<SparqlQuerySection> implements ResultRenderer{
 
 	public static final String WARNING = "warning";
 
@@ -80,4 +92,45 @@ public class SparqlAskTest extends AbstractTest<SparqlQuerySection> {
 		}
 	}
 
+	@Override
+	public void renderResult(TestResult testResult, RenderResult renderResult) {
+
+		// prepare some information
+		Message summary = testResult.getSummary();
+		String text = (summary == null) ? null : summary.getText();
+		String[] config = testResult.getConfiguration();
+		boolean hasConfig = config != null && !(config.length == 0);
+		boolean hasText = !Strings.isBlank(text);
+
+		String name = "";
+
+		String title = this.getDescription().replace("'", "&#39;");
+
+		if (hasConfig || hasText) {
+			if (hasConfig) {
+				Collection<Section<SparqlMarkupType>> testObj = SparqlTestObjectProviderUtils.getSparqlQuerySection(config[0]);
+
+				if (!testObj.isEmpty() && Sections.ancestor(testObj.iterator().next(), SparqlMarkupType.class) != null) {
+					Section<SparqlMarkupType> markup = Sections.ancestor(testObj.iterator()
+							.next(), SparqlMarkupType.class);
+					assert(markup != null);
+					name = "(" + "<a href = '" + KnowWEUtils.getURLLink(markup) + "'>" + config[0] + "</a> " + TestParser
+							.concatParameters(1, config) + ")";
+				}
+				else {
+					name = "(" + TestParser.concatParameters(config) + " )";
+				}
+			}
+			if (hasText) {
+				name = name + ": " + text;
+			}
+		}
+		else {
+			name = testResult.getTestName();
+		}
+
+		renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
+		renderResult.appendHtml(name);
+		renderResult.appendHtml("</span>");
+	}
 }
