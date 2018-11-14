@@ -43,7 +43,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshoefer (denkbares GmbH)
  * @created 01.03.16.
  */
-public class SparqlAskTest extends AbstractTest<SparqlQuerySection> implements ResultRenderer{
+public class SparqlAskTest extends SparqlTests<SparqlQuerySection>{
 
 	public static final String WARNING = "warning";
 
@@ -90,47 +90,5 @@ public class SparqlAskTest extends AbstractTest<SparqlQuerySection> implements R
 			return new Message(messageTypeTestFailed,
 					"Sparql ASK expected  " + expectedTruthValue + " but was: " + result);
 		}
-	}
-
-	@Override
-	public void renderResult(TestResult testResult, RenderResult renderResult) {
-
-		// prepare some information
-		Message summary = testResult.getSummary();
-		String text = (summary == null) ? null : summary.getText();
-		String[] config = testResult.getConfiguration();
-		boolean hasConfig = config != null && !(config.length == 0);
-		boolean hasText = !Strings.isBlank(text);
-
-		String name = "";
-
-		String title = this.getDescription().replace("'", "&#39;");
-
-		if (hasConfig || hasText) {
-			if (hasConfig) {
-				Collection<Section<SparqlMarkupType>> testObj = SparqlTestObjectProviderUtils.getSparqlQuerySection(config[0]);
-
-				if (!testObj.isEmpty() && Sections.ancestor(testObj.iterator().next(), SparqlMarkupType.class) != null) {
-					Section<SparqlMarkupType> markup = Sections.ancestor(testObj.iterator()
-							.next(), SparqlMarkupType.class);
-					assert(markup != null);
-					name = "(" + "<a href = '" + KnowWEUtils.getURLLink(markup) + "'>" + config[0] + "</a> " + TestParser
-							.concatParameters(1, config) + ")";
-				}
-				else {
-					name = "(" + TestParser.concatParameters(config) + " )";
-				}
-			}
-			if (hasText) {
-				name = name + ": " + text;
-			}
-		}
-		else {
-			name = testResult.getTestName();
-		}
-
-		renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
-		renderResult.appendHtml(name);
-		renderResult.appendHtml("</span>");
 	}
 }

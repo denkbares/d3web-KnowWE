@@ -51,7 +51,7 @@ import de.knowwe.rdf2go.utils.ResultTableModel;
  * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
-public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultSection> implements ResultRenderer {
+public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSection> {
 
 	public static final String AT_LEAST = "atLeast";
 	public static final String EQUAL = "equal";
@@ -167,7 +167,6 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 
 	@Override
 	public void renderResult(TestResult testResult, RenderResult renderResult) {
-
 		// prepare some information
 		Message summary = testResult.getSummary();
 		String text = (summary == null) ? null : summary.getText();
@@ -175,38 +174,45 @@ public class ExpectedSparqlResultTest extends AbstractTest<SparqlExpectedResultS
 		boolean hasConfig = config != null && !(config.length == 0);
 		boolean hasText = !Strings.isBlank(text);
 
-		String name = "";
+		String className = "";
+		if (this.getName() != null){
+			className = this.getName() + ":";
+		}
+		String name;
+		String additionalInfo = "";
 
-		String title = this.getDescription().replace("'", "&#39;");
+			String title = this.getDescription().replace("'", "&#39;");
 
-		if (hasConfig || hasText) {
-			if (hasConfig) {
-				Collection<Section<ExpectedSparqlResultTable>> testObj = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(config[0]);
+			if (hasConfig || hasText) {
+				if (hasConfig) {
+					Collection<Section<ExpectedSparqlResultTable>> testObj = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(config[0]);
 
-				if (!testObj.isEmpty() && Sections.ancestor(testObj.iterator()
-						.next(), ExpectedSparqlResultTableMarkup.class) != null) {
-					Section<ExpectedSparqlResultTableMarkup> markup = Sections.ancestor(testObj.iterator()
-							.next(), ExpectedSparqlResultTableMarkup.class);
-					assert(markup != null);
-					name = "Check SPARQL: " + "<a href = '" + KnowWEUtils.getURLLink(markup) + "'>" + config[0] + "</a> (" + TestParser
-							.concatParameters(1, config) + ")";
-				}
-				else {
-					name = "(" + TestParser.concatParameters(config) + " )";
+					if (!testObj.isEmpty() && Sections.ancestor(testObj.iterator()
+							.next(), ExpectedSparqlResultTableMarkup.class) != null) {
+						Section<ExpectedSparqlResultTableMarkup> markup = Sections.ancestor(testObj.iterator()
+								.next(), ExpectedSparqlResultTableMarkup.class);
+						assert(markup != null);
+						name = className;
+						additionalInfo = "(<a href = '" + KnowWEUtils.getURLLink(markup) + "'>" + config[0] + "</a> " + TestParser.concatParameters(1, config) + ")";
+					}
+					else {
+						name = className;
+						additionalInfo = "(" + TestParser.concatParameters(config) + ")";
+					}
+				} else {
+					name = className;
+					additionalInfo = text;
 				}
 			}
-			/*
-			if (hasText) {
-				name = name + ": " + text;
+			else {
+				name = testResult.getTestName();
 			}
-			*/
-		}
-		else {
-			name = testResult.getTestName();
-		}
 
 		renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
 		renderResult.appendHtml(name);
+		renderResult.appendHtml("<span class='ci-configuration'>" + additionalInfo + "</span>");
 		renderResult.appendHtml("</span>");
 	}
+
+
 }

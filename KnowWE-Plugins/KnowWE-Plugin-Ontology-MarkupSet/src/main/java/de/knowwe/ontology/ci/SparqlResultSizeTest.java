@@ -18,15 +18,26 @@
  */
 package de.knowwe.ontology.ci;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
+import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter.Mode;
+import de.d3web.testing.TestParser;
+import de.d3web.testing.TestResult;
+import de.d3web.we.ci4ke.test.ResultRenderer;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.ci.provider.SparqlQuerySection;
+import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
+import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -38,7 +49,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshöfer
  * @created 08.01.2014
  */
-public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
+public class SparqlResultSizeTest extends SparqlTests<SparqlQuerySection>{
 
 
 	public static final String GREATER_THAN = ">";
@@ -137,5 +148,4 @@ public class SparqlResultSizeTest extends AbstractTest<SparqlQuerySection> {
 				"Unknown error in test (invalid comparator?)");
 
 	}
-
 }
