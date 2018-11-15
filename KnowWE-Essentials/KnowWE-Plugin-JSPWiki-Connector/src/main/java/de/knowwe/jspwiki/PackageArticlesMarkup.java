@@ -22,11 +22,24 @@ public class PackageArticlesMarkup extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
 
+	public static final String ANNOTATION_EXCLUDE = "exclude";
+
+	public static final String ANNOTATION_TEMPLATE = "template";
+
 	static {
 		MARKUP = new DefaultMarkup("PackageArticles");
 		PackageManager.addPackageAnnotation(MARKUP);
-		MARKUP.addAnnotation("template");
-		MARKUP.addAnnotation("exclude");
+		MARKUP.addAnnotation(ANNOTATION_TEMPLATE);
+		MARKUP.addAnnotation(ANNOTATION_EXCLUDE);
+		MARKUP.getAnnotation(ANNOTATION_TEMPLATE)
+				.setDocumentation("Set a template how each Link-Label should be adapted, e.g.\n"
+						+ "@template: * link.replace(\"Prefix\", \"Other Prefix\")");
+		MARKUP.getAnnotation(ANNOTATION_EXCLUDE).setDocumentation("Specify a regex regarding the article names to " +
+				"exclude from this list, even if they are part of the package.");
+		MARKUP.setTemplate("%%PackageArticles \n" +
+				"@package: \u00ABpackage-name\u00BB\n" +
+				"@exclude: \u00ABarticle-name-regex\u00BB\n" +
+				"%");
 	}
 
 	public PackageArticlesMarkup() {
@@ -39,7 +52,7 @@ public class PackageArticlesMarkup extends DefaultMarkupType {
 			string.append("\n");
 
 			//annotation template
-			String template = DefaultMarkupType.getAnnotation(section, "template");
+			String template = DefaultMarkupType.getAnnotation(section, ANNOTATION_TEMPLATE);
 			TemplateResult templateResult = new TemplateResult(template).invoke();
 			String prefix = templateResult.getPrefix();
 			String suffix = templateResult.getSuffix();
@@ -52,7 +65,7 @@ public class PackageArticlesMarkup extends DefaultMarkupType {
 			final String newStringFinal = newString;
 
 			//annotation exclude
-			String exclude = DefaultMarkupType.getAnnotation(section, "exclude");
+			String exclude = DefaultMarkupType.getAnnotation(section, ANNOTATION_EXCLUDE);
 			String[] excludeRegex = splitUnquotedToArray(exclude, ",");
 			for (int i = 0; i < excludeRegex.length; i++) {
 				excludeRegex[i] = unquote(trim(excludeRegex[i]));
