@@ -245,42 +245,16 @@ public class CIRenderer {
 		// prepare some information
 		Message summary = testResult.getSummary();
 		Type type = (summary == null) ? Type.ERROR : summary.getType();
-		String text = (summary == null) ? null : summary.getText();
-
 		Test<?> test = TestManager.findTest(name);
 
 		// render buttons
 		openCollapse(type, renderResult);
 
+		// render title with configuration
 		if (test instanceof ResultRenderer) {
 			((ResultRenderer) test).renderResult(testResult, renderResult);
 		} else {
-			String title = "";
-			if (test != null) {
-				title = test.getDescription().replace("'", "&#39;");
-			}
-
-			// render test name
-			renderResult.appendHtml(getTitleHtml(title));
-			renderResult.append(name);
-
-			// render test configuration (if exists)
-			String[] config = testResult.getConfiguration();
-			boolean hasConfig = config != null && !(config.length == 0);
-			boolean hasText = !Strings.isBlank(text);
-			if (hasConfig || hasText) {
-				renderResult.appendHtml("<span class='ci-configuration'>");
-				if (hasConfig) {
-					renderResult.append("( ")
-							.appendJSPWikiMarkup(TestParser.concatParameters(config))
-							.append(" )");
-				}
-				if (hasText) {
-					renderResult.appendHtml(": ").appendJSPWikiMarkup(text);
-				}
-				renderResult.appendHtml("</span>");
-			}
-			renderResult.appendHtml("</span>");
+			renderResultTitle(testResult, renderResult);
 		}
 
 		// render test-message (if exists)
@@ -321,6 +295,35 @@ public class CIRenderer {
 		renderResult.appendHtml("</div>");
 	}
 
+	public static void renderResultTitle(TestResult testResult, RenderResult renderResult) {
+		String name = testResult.getTestName();
+		Test<?> test = TestManager.findTest(name);
+		Message summary = testResult.getSummary();
+		String text = (summary == null) ? null : summary.getText();
+		String title = test != null ? test.getDescription().replace("'", "&#39;") : "";
+
+		// render test name
+		renderResult.appendHtml(getTitleHtml(title));
+		renderResult.append(name);
+
+		// render test configuration (if exists)
+		String[] config = testResult.getConfiguration();
+		boolean hasConfig = config != null && !(config.length == 0);
+		boolean hasText = !Strings.isBlank(text);
+		if (hasConfig || hasText) {
+			renderResult.appendHtml("<span class='ci-configuration'>");
+			if (hasConfig) {
+				renderResult.append("( ")
+						.appendJSPWikiMarkup(TestParser.concatParameters(config))
+						.append(" )");
+			}
+			if (hasText) {
+				renderResult.appendHtml(": ").appendJSPWikiMarkup(text);
+			}
+			renderResult.appendHtml("</span>");
+		}
+		renderResult.appendHtml("</span>");
+	}
 
 	public static void renderResultMessageDefault(String web, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
 		Class<?> testObjectClass = renderResultMessageHeader(web, message, testResult, renderResult);

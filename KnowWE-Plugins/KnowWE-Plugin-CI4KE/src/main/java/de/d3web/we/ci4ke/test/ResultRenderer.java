@@ -10,7 +10,9 @@ import de.knowwe.core.kdom.rendering.RenderResult;
  * @created 07.11.2018
  */
 public interface ResultRenderer  {
-	void renderResult(TestResult testResult, RenderResult renderResult);
+	default void renderResult(TestResult testResult, RenderResult renderResult) {
+		CIRenderer.renderResultTitle(testResult, renderResult);
+	}
 
 	default void renderResultMessage(String web, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
 		CIRenderer.renderResultMessageDefault(web, testObjectName, message, testResult, renderResult);
