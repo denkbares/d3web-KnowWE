@@ -17,14 +17,14 @@
  * site: http://www.fsf.org.
  */
 
-KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
+KNOWWE = typeof KNOWWE === "undefined" ? {}: KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
 (function init() {
 	window.addEvent('domready', _KL.setup);
 	if (window.location.search !== "?page=Create%20new%20EDB%20entry") if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-		window.addEvent('domready', function () {
+		window.addEvent('domready', function() {
 			KNOWWE.core.plugin.dropZone.initAttachToExisting();
 		});
 	}
@@ -34,7 +34,7 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 /**
  * Namespace: KNOWWE.core.plugin.dropZone for debugging d3web expressions in KnowWE
  */
-KNOWWE.core.plugin.dropZone = function () {
+KNOWWE.core.plugin.dropZone = function() {
 
 	function handleDragOver(event) {
 		event.stopPropagation();
@@ -71,7 +71,7 @@ KNOWWE.core.plugin.dropZone = function () {
 				files.append(input.context.files); // Manually chosen files w/ file chooser
 			} else {
 				setClass(event.target, "uploading", "Not a valid attachment...");
-				setTimeout(function () {
+				setTimeout(function() {
 					resetStyle(event.target, "Drop attachment(s) here");
 				}, 1000);
 				return null;
@@ -79,7 +79,7 @@ KNOWWE.core.plugin.dropZone = function () {
 		}
 
 		setUploadingStyle(event.target);
-		Array.prototype.forEach.call(files, function (file) {
+		Array.prototype.forEach.call(files, function(file) {
 			ajaxData.append(input.attr('name'), file);
 		});
 
@@ -97,20 +97,20 @@ KNOWWE.core.plugin.dropZone = function () {
 			cache: false,
 			contentType: false,
 			processData: false,
-			success: function () {
+			success: function() {
 				setUploadedStyle(event.target);
 				if (!event.reload) {
-					setTimeout(function () {
+					setTimeout(function() {
 						resetStyle(event.target, "Drop attachment(s) here")
 					}, 1000)
 					if (event.callback) event.callback();
 				} else {
-					setTimeout(function () {
+					setTimeout(function() {
 						window.location.reload();
 					}, 1000);
 				}
 			},
-			error: function (data) {
+			error: function(data) {
 				KNOWWE.notification.error(data.responseText);
 				resetStyle(event.target, "Drop attachment(s) here");
 			}
@@ -159,7 +159,7 @@ KNOWWE.core.plugin.dropZone = function () {
 			'<form class="drop-indicator" method="post" action=' + actionUrl + ' enctype="multipart/form-data">' +
 			'  <div class="box-input">' +
 			'    <input style="display: none" class="box__file" type="file" name="files" id="file" ' +
-			(multiple ? 'data-multiple-caption="{count} files selected" multiple' : '') + ' />' +
+			(multiple ? 'data-multiple-caption="{count} files selected" multiple': '') + ' />' +
 			'    <label for="file"><span class="box__dragndrop"/>' + title + '</span></label>' +
 			'  </div>' +
 			'</form>';
@@ -177,44 +177,45 @@ KNOWWE.core.plugin.dropZone = function () {
 
 	return {
 
-		prepareUploadData(event, name) {
+		prepareUploadData: function(event, name) {
 			return prepareUploadData(event, name);
 		},
 
-		uploadData(data, event) {
+		uploadData: function(data, event) {
 			ajaxData(data, event)
 		},
 
-		setDropZoneStyleUploading(element) {
+		setDropZoneStyleUploading: function(element) {
 			setUploadingStyle(element);
 		},
 
-		setDropZoneStyleUploaded(element) {
+		setDropZoneStyleUploaded: function(element) {
 			setUploadedStyle(element)
 		},
 
-		resetDropZoneStyle(element, title) {
+		resetDropZoneStyle: function(element, title) {
 			resetStyle(element, title);
 		},
 
-		initAttachToExisting: function () {
+		initAttachToExisting: function() {
 			KNOWWE.core.plugin.dropZone.addDropZoneTo('div.page', "Drop attachment(s)", handleDropToExisting)
 		},
 
-		addDropZoneTo(elementSelector, title, dropHandlerCallback, actionUrl = 'attach', mode = "full-height", multiple = true) {
+		addDropZoneTo: function(elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
+			if (!actionUrl) actionUrl = 'attach';
+			if (!mode) mode = "full-height";
+			if (typeof multiple === "undefined") multiple = true;
 			const canWrite = jq$('#knowWEInfoCanWrite').attr('value');
 			if (!KNOWWE.core.util.isHaddockTemplate() || typeof canWrite === 'undefined' || canWrite !== 'true') return;
 
-			const element = jq$(elementSelector);
-			attachDropZoneToElement(element, actionUrl, multiple, title, mode);
+			const elements = jq$(elementSelector);
+			attachDropZoneToElement(elements, actionUrl, multiple, title, mode);
 
-			for (const i in element) {
-				if (!element.hasOwnProperty(i)) continue;
-				if (!Number.isInteger(parseInt(i))) continue;
-				element[i].addEventListener('dragover', handleDragOver);
-				element[i].addEventListener('drop', dropHandlerCallback);
-			}
-			element.find('input').first().on('change', dropHandlerCallback);
+			elements.each(function() {
+				this.addEventListener('dragover', handleDragOver);
+				this.addEventListener('drop', dropHandlerCallback);
+			});
+			elements.find('input').first().on('change', dropHandlerCallback);
 		}
 	}
 

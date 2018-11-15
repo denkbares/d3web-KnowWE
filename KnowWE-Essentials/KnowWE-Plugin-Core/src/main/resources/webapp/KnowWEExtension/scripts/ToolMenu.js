@@ -218,7 +218,7 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function ($parent) {
 
 var _TM = new ToolMenu();
 
-jq$(document).ready(function () {
+jq$(window).ready(function () {
 	_TM.animateDefaultMarkupMenu();
 	_TM.decorateToolMenus();
 });

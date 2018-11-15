@@ -169,7 +169,10 @@ KNOWWE.plugin.instantEdit = function () {
 		 * @param newWikiText is the optional new text of the new article
 		 * @param parameters containing respective values for redirect, reload and a callback function
 		 */
-		add: function (id, title, newWikiText, parameters = {redirect: false, reload: true, callback: null}) {
+		add: function (id, title, newWikiText, parameters) {
+			if (!parameters) {
+				parameters =  {redirect: false, reload: true, callback: null};
+			}
 			const redirect = parameters["redirect"];
 			const reload = parameters["reload"];
 			const fn = parameters["callback"];

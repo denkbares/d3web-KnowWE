@@ -45,12 +45,10 @@ Interview.initDataDrop = function () {
 };
 
 Interview.addDropListeners = function (elements) {
-	for (let i in elements) {
-		if (!Number.isInteger(parseInt(i))) continue;
-		const el = elements[i];
-		el.addEventListener('dragover', Interview.handleDragOver, false);
-		el.addEventListener('drop', Interview.handleDrop, false);
-	}
+	elements.each(function() {
+		this.addEventListener('dragover', Interview.handleDragOver, false);
+		this.addEventListener('drop', Interview.handleDrop, false);
+	});
 }
 
 Interview.handleDragOver = function (event) {
