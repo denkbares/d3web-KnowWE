@@ -21,6 +21,7 @@ package de.knowwe.ontology.turtle;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.eclipse.rdf4j.model.Resource;
@@ -65,6 +66,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 						SectionFinderResult.resultList(Strings.splitUnquoted(text, ",", false, TurtleMarkup.TURTLE_QUOTES)));
 		this.addChildType(new BlankNode());
 		this.addChildType(new BlankNodeID());
+		this.addChildType(new ShowOtherExistingValuesWildCard());
 		this.addChildType(TurtleCollection.getInstance());
 		this.addChildType(new TurtleLiteralType());
 		this.addChildType(new BooleanLiteral());
@@ -138,6 +140,17 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		 * Handle OBJECT
 		 */
 		Value object = section.get().getNode(section, compiler);
+
+		/*
+		By convention for RDF.NIL as object, we do not create something
+		 */
+		if(object.stringValue().equals(RDF.NIL.toString())) {
+			return result;
+		}
+
+		/*
+		check whether object is defined
+		 */
 		Section<TurtleURI> turtleURITermObject = Sections.child(section, TurtleURI.class);
 		if (turtleURITermObject != null && STRICT_COMPILATION) {
 			boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
@@ -213,9 +226,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 		}
 		else {
-			Section<TurtleSentence> sentence = Sections.ancestor(predSentenceSection,
-					TurtleSentence.class);
-			Section<Subject> subjectSection = findSubjectSection(sentence);
+
+			Section<Subject> subjectSection = findSubjectSection(predSentenceSection);
 			subject = subjectSection.get().getResource(subjectSection, core);
 
 			// check term definition
@@ -240,8 +252,12 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		return subject;
 	}
 
-	public Section<Subject> findSubjectSection(Section<?> sentence) {
-		return Sections.successor(sentence,
+	public Section<Subject> findSubjectSection(Section<?> section) {
+		if(! (section.get() instanceof TurtleSentence)) {
+			section = Sections.ancestor(section,
+					TurtleSentence.class);
+		}
+		return Sections.successor(section,
 				Subject.class);
 	}
 

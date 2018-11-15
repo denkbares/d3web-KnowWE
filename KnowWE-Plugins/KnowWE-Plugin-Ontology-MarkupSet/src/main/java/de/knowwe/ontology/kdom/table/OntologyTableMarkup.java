@@ -118,7 +118,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 			return TableUtils.getColumnHeader(section, Predicate.class);
 		}
 
-		public Section<Subject> findSubjectSec(Section<?> object) {
+		public Section<Subject> findSubjectSecTable(Section<?> object) {
 			Section<TableLine> line = Sections.ancestor(object, TableLine.class);
 			return findSubjectInLine(line);
 		}
@@ -127,12 +127,16 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 			return Sections.successor(section, Subject.class);
 		}
 
+		@Override
+		public Section<Subject> findSubjectSection(Section<?> section) {
+			return findSubjectSecTable(section);
+		}
 
 		@Override
 		public @Nullable Resource getSubject(Rdf2GoCompiler core, StatementProviderResult result, boolean termError, Section<? extends Object> section) {
 			Resource subject;
 
-				Section<Subject> subjectSection = findSubjectSec(section);
+				Section<Subject> subjectSection = findSubjectSecTable(section);
 				subject = subjectSection.get().getResource(subjectSection, core);
 
 				// check term definition
