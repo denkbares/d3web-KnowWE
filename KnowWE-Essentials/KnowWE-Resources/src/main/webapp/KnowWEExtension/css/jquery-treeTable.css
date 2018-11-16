@@ -16,7 +16,7 @@ table.treetable * {
 .table_text .kdom_source {
 	display: inline;
 	background-color: lightgray;
-	white-space: pre-wrap;
+	white-space: pre;
 }
 
 table.treetable td {
