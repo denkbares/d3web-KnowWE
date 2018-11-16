@@ -444,6 +444,15 @@ span.markupMenuItem {
 	margin-bottom: -4px;
 }
 
+
+.type_RenderKDOM .markupText {
+	overflow-x: scroll;
+}
+
+.type_RenderKDOM td {
+	white-space: pre;
+}
+
 /* ################################################## */
 /* ------------Packaging Styles----------------- */
 /* ################################################## */
