@@ -446,7 +446,7 @@ span.markupMenuItem {
 
 
 .type_RenderKDOM .markupText {
-	overflow-x: scroll;
+	overflow-x: auto;
 }
 
 .type_RenderKDOM td {
