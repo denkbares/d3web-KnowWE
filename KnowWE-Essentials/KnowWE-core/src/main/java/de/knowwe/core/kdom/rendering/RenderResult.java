@@ -432,8 +432,8 @@ public class RenderResult {
 	 *                   elements the attribute contents
 	 * @created 05.02.2013
 	 */
-	public void appendHtmlTag(String tag, String... attributes) {
-		appendHtmlTag(tag, true, attributes);
+	public RenderResult appendHtmlTag(String tag, String... attributes) {
+		return appendHtmlTag(tag, true, attributes);
 	}
 
 	/**
