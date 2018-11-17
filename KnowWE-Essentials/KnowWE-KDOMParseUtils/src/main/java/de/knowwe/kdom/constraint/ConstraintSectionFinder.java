@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
- * An abstract SectionFnder class that allows for the use of so called
+ * An abstract SectionFinder class that allows for the use of so called
  * SectionFinderConstraints This simplifies the implementation of certain
  * SectionFinders. E.g., if only the first occurrence of some text-entity should
  * be allocated for a type, then the 'AtMostOneFindingConstraint' can be
@@ -74,9 +74,6 @@ public class ConstraintSectionFinder implements SectionFinder {
 	 * Delegates the lookForSection-task to the actual implementation
 	 * 
 	 * @created 20.07.2010
-	 * @param text
-	 * @param father
-	 * @return
 	 */
 
 	private void applyConstraints(List<SectionFinderResult> results, Section<?> father, Class<? extends Type> ob, String text) {
