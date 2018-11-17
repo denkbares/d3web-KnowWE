@@ -117,12 +117,8 @@ public class CompositeCondition extends AbstractType {
 	 * returns the disjuncts of a disjunction
 	 */
 	public List<Section<? extends NonTerminalCondition>> getDisjuncts(Section<? extends CompositeCondition> c) {
-
-		List<Section<? extends NonTerminalCondition>> result = new ArrayList<>();
 		List<Section<Disjunct>> childrenOfType = Sections.children(c, Disjunct.class);
-
-		result.addAll(childrenOfType);
-		return result;
+		return new ArrayList<>(childrenOfType);
 	}
 
 	/**
@@ -136,12 +132,8 @@ public class CompositeCondition extends AbstractType {
 	 * returns the conjuncts of a conjunction
 	 */
 	public List<Section<? extends NonTerminalCondition>> getConjuncts(Section<? extends CompositeCondition> c) {
-
-		List<Section<? extends NonTerminalCondition>> result = new ArrayList<>();
 		List<Section<Conjunct>> childrenOfType = Sections.children(c, Conjunct.class);
-
-		result.addAll(childrenOfType);
-		return result;
+		return new ArrayList<>(childrenOfType);
 	}
 
 	/**
@@ -196,9 +188,7 @@ public class CompositeCondition extends AbstractType {
 				// attempts to find the last line break
 				lineBreak = matcher.start();
 			}
-			if (lineBreak > start) {
-				return true;
-			}
+			return lineBreak > start;
 		}
 		return false;
 	}

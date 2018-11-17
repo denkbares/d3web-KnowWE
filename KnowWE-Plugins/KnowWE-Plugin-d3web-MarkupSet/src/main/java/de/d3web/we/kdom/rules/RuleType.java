@@ -56,7 +56,6 @@ import de.d3web.we.kdom.rules.action.ThenActionContainer;
 import de.d3web.we.kdom.rules.action.UnknownActionContainer;
 import de.d3web.we.kdom.rules.condition.ExceptionConditionContainer;
 import de.d3web.we.kdom.rules.condition.IfConditionContainer;
-import de.d3web.we.kdom.rules.utils.RuleEditToolProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
@@ -189,18 +188,18 @@ public class RuleType extends AbstractType {
 	}
 
 	public static List<Type> getTerminalConditions() {
-		List<Type> termConds = new ArrayList<>();
+		List<Type> termConditions = new ArrayList<>();
 		// add all the various allowed TerminalConditions here
-		termConds.add(new SolutionStateCond());
-		termConds.add(new UserRatingConditionType());
-		termConds.add(new CondKnownUnknown());
-		termConds.add(new CondRegularExpression());
-		termConds.add(new Finding());
-		termConds.add(new CondUnknown());
-		termConds.add(new CondKnown());
-		termConds.add(new NumericalFinding());
-		termConds.add(new NumericalIntervallFinding());
-		return termConds;
+		termConditions.add(new SolutionStateCond());
+		termConditions.add(new UserRatingConditionType());
+		termConditions.add(new CondKnownUnknown());
+		termConditions.add(new CondRegularExpression());
+		termConditions.add(new Finding());
+		termConditions.add(new CondUnknown());
+		termConditions.add(new CondKnown());
+		termConditions.add(new NumericalFinding());
+		termConditions.add(new NumericalIntervallFinding());
+		return termConditions;
 	}
 
 	public static List<Type> getActions() {

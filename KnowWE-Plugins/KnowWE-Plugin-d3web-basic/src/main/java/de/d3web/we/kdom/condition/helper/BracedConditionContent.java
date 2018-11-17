@@ -23,7 +23,7 @@ public class BracedConditionContent extends NonTerminalCondition {
 		this.setSectionFinder(new BracedConditionContentFinder());
 	}
 
-	class BracedConditionContentFinder implements SectionFinder {
+	static class BracedConditionContentFinder implements SectionFinder {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {

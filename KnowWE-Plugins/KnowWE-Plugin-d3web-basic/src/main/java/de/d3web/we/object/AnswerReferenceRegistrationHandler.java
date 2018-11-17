@@ -45,7 +45,7 @@ public class AnswerReferenceRegistrationHandler extends SimpleReferenceRegistrat
 			NumericalInterval range = question.getInfoStore().getValue(
 					BasicProperties.QUESTION_NUM_RANGE);
 			try {
-				Double value = Double.parseDouble(section.getText());
+				double value = Double.parseDouble(section.getText());
 				if (range == null || range.contains(value)) {
 					return Messages.noMessage();
 				}
