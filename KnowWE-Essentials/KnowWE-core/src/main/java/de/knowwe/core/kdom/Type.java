@@ -101,11 +101,11 @@ public interface Type {
 	 * of the passed class, if such is existing.
 	 * 
 	 * @created 27.08.2013
-	 * @param classToBeReplaced class to determine what type should be replaced
+	 * @param typeToBeReplace class to determine what type should be replaced
 	 * @param newType type to be inserted
-	 * @return true if a replacement has been made
+	 * @return the replaced type or null, if the type to replace was not found
 	 */
-	boolean replaceChildType(Class<? extends Type> typeToBeReplace, Type newType);
+	Type replaceChildType(Class<? extends Type> typeToBeReplace, Type newType);
 
 	/**
 	 * Clears the list of children for this type.
@@ -122,8 +122,6 @@ public interface Type {
 	/**
 	 * A (priority-ordered) list of the types, which are allowed as children of
 	 * nodes of this type
-	 * 
-	 * @return
 	 */
 	List<Type> getChildrenTypes();
 

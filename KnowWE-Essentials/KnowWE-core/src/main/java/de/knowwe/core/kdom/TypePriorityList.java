@@ -33,8 +33,6 @@ import com.denkbares.collections.PriorityList;
  */
 public class TypePriorityList {
 
-    // TODO: shouldn't we use de.d3web.collections.PriorityList here ??
-
 	public static double DEFAULT_PRIORITY = 5;
 
 	/**
@@ -71,7 +69,6 @@ public class TypePriorityList {
 	 * Returns the final (at the point of execution) total order of the types.
 	 * 
 	 * @created 27.08.2013
-	 * @return
 	 */
 	public List<Type> getTypes() {
 		return Collections.unmodifiableList(types);
@@ -104,24 +101,23 @@ public class TypePriorityList {
 	 * (which is 5).
 	 * 
 	 * @created 27.08.2013
-	 * @param t the type to add
+	 * @param type the type to add
 	 */
-	public void addType(Type t) {
-		addType(DEFAULT_PRIORITY, t);
+	public void addType(Type type) {
+		addType(DEFAULT_PRIORITY, type);
 	}
 
 	/**
 	 * Adds the given type at the end of the (current) priority chain.
 	 * 
 	 * @created 27.08.2013
-	 * @param t
 	 */
-	public void addLast(Type t) {
+	public void addLast(Type type) {
 		if (types.isEmpty()) {
-			types.add(t);
+			types.add(type);
 		}
 		else {
-			types.add(types.getHighestPriority() + 1, t);
+			types.add(types.getHighestPriority() + 1, type);
 		}
 	}
 
@@ -130,14 +126,12 @@ public class TypePriorityList {
 	 * the given class c is assignable from this type.
 	 * 
 	 * @created 27.08.2013
-	 * @param c
-	 * @return
 	 */
-	public Type removeType(Class<? extends Type> c) {
+	public Type removeType(Class<? extends Type> typeClass) {
 		Iterator<Type> iterator = types.iterator();
 		while (iterator.hasNext()) {
 			Type type = iterator.next();
-			if (c.isAssignableFrom(type.getClass())) {
+			if (typeClass.isAssignableFrom(type.getClass())) {
 				iterator.remove();
 				return type;
 			}

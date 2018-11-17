@@ -1,6 +1,5 @@
 package de.knowwe.core.kdom;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import de.knowwe.core.kdom.rendering.Renderer;
 
@@ -91,59 +91,88 @@ public class Types {
 	/**
 	 * Injects a given renderer to all the types of the collection matching the specified type.
 	 *
-	 * @param set      the types to match against
+	 * @param types    the types to match against
 	 * @param clazz    the class of the type to set the renderer for
 	 * @param renderer the renderer to be set
 	 * @created 15.04.2011
 	 */
-	public static void injectRendererToType(Collection<Type> set, Class<? extends AbstractType> clazz, Renderer renderer) {
-		for (Type t : set) {
-			if (clazz.isInstance(t)) {
-				clazz.cast(t).setRenderer(renderer);
+	public static void injectRendererToType(Collection<Type> types, Class<? extends AbstractType> clazz, Renderer renderer) {
+		for (Type type : types) {
+			if (clazz.isInstance(type)) {
+				clazz.cast(type).setRenderer(renderer);
 			}
 		}
+	}
+
+	public static boolean replaceType(Type typeHierarchy, Class<? extends Type> typeToReplace, Type newType) {
+		return replaceType(typeHierarchy, typeToReplace, newType, false);
 	}
 
 	/**
 	 * Replaces the FIRST occurrence of the target class type with the new type
 	 *
-	 * @param typeHierarchy the root of the hierarchy
+	 * @param typeHierarchy         the root of the hierarchy
+	 * @param transferSectionFinder set this to true, if the SectionFinder of the replaced type should be transferred to
+	 *                              the new type
 	 * @created 02.07.2013
 	 */
-	public static boolean replaceType(Type typeHierarchy, Class<? extends Type> c, Type newType) {
-		List<Type> childrenTypes = typeHierarchy.getChildrenTypes();
-		int index = -1;
-		boolean found = false;
-		for (Type child : childrenTypes) {
-			if (c.isInstance(child)) {
-				index = childrenTypes.indexOf(child);
-				// we only replace first occurrence
-				found = true;
-				break;
-			}
-
-		}
-		if (index != -1) {
-			// some overhead to actually replace type in children list
-			List<Type> listCopy = new ArrayList<>();
-			listCopy.addAll(childrenTypes);
-			listCopy.add(index, newType);
-			listCopy.remove(index + 1);
-			typeHierarchy.clearChildrenTypes();
-			for (Type type : listCopy) {
-				typeHierarchy.addChildType(type);
-			}
+	public static boolean replaceType(Type typeHierarchy, Class<? extends Type> typeToReplace, Type newType, boolean transferSectionFinder) {
+		Type replacedType = typeHierarchy.replaceChildType(typeToReplace, newType);
+		if (replacedType != null) {
+			handleTransfer(transferSectionFinder, replacedType, newType);
+			return true;
 		}
 		else {
-
-			for (Type child : childrenTypes) {
-				if (replaceType(child, c, newType)) {
-					found = true;
-					break;
+			for (Type childrenType : typeHierarchy.getChildrenTypes()) {
+				if (replaceType(childrenType, typeToReplace, newType, transferSectionFinder)) {
+					return true;
 				}
 			}
 		}
-		return found;
+		return false;
+	}
+
+	private static void handleTransfer(boolean transferSectionFinder, Type replacedType, Type newType) {
+		if (transferSectionFinder) {
+			if (!(replacedType instanceof AbstractType && newType instanceof AbstractType)) {
+				throw new IllegalArgumentException("Expecting " + AbstractType.class.getSimpleName() + "s if section finder is to be transferred");
+			}
+			((AbstractType) newType).setSectionFinder(((AbstractType) replacedType).getSectionFinder());
+		}
+	}
+
+	/**
+	 * Replaces all occurrence of the target class type with the new type
+	 *
+	 * @param typeHierarchy the root of the hierarchy
+	 * @created 02.07.2013
+	 */
+	public static boolean replaceTypes(Type typeHierarchy, Class<? extends Type> typeToReplace, Type newType) {
+		return replaceTypes(typeHierarchy, typeToReplace, () -> newType, false);
+	}
+
+	/**
+	 * Replaces all occurrence of the target class type with the new type
+	 *
+	 * @param typeHierarchy         the root of the hierarchy
+	 * @param transferSectionFinder set this to true, if the SectionFinder of the replaced type should be transferred to
+	 *                              the new type
+	 * @created 02.07.2013
+	 */
+	public static boolean replaceTypes(Type typeHierarchy, Class<? extends Type> typeToReplace, Supplier<Type> typeSupplier, boolean transferSectionFinder) {
+		return replaceTypes(typeHierarchy, typeToReplace, typeSupplier, new HashSet<>(), transferSectionFinder);
+	}
+
+	private static boolean replaceTypes(Type typeHierarchy, Class<? extends Type> typeToReplace, Supplier<Type> typeSupplier, Set<Type> visited, boolean transferSectionFinder) {
+		if (!visited.add(typeHierarchy)) return false;
+		boolean replaced = false;
+		for (Type childrenType : typeHierarchy.getChildrenTypes()) {
+			replaced |= replaceTypes(childrenType, typeToReplace, typeSupplier, visited, transferSectionFinder);
+		}
+		Type newType = typeSupplier.get();
+		Type replacedType = typeHierarchy.replaceChildType(typeToReplace, newType);
+		if (replacedType != null) handleTransfer(transferSectionFinder, replacedType, newType);
+		return replacedType != null || replaced;
 	}
 
 	/**
