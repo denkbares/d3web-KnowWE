@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 public class NoChildrenOfOtherTypesConstraint implements SectionFinderConstraint {
 
-	private static NoChildrenOfOtherTypesConstraint instance = new NoChildrenOfOtherTypesConstraint();
+	private static final NoChildrenOfOtherTypesConstraint instance = new NoChildrenOfOtherTypesConstraint();
 
 	public static NoChildrenOfOtherTypesConstraint getInstance() {
 		return instance;
