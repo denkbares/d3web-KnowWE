@@ -24,6 +24,7 @@ public class Attributes {
 
 	public static final String TOPIC = "KWiki_Topic";
 	public static final String TITLE = TOPIC;
+	public static final String REDIRECT_PAGE = "RedirectPage";
 	public static final String SECTION_ID = "SectionID";
 	public static final String PACKAGE = "package";
 	public static final String JSON_DATA = "data";
