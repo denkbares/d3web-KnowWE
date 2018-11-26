@@ -60,8 +60,17 @@ public class CompositeEditToolProvider implements ToolProvider {
 	}
 
 	public static String createCompositeEditModeAction(Section<? extends Term> section) {
-		Identifier termIdentifier = Identifier.matchCompatibilityForm(section.get().getTermIdentifier(section));
+		Identifier termIdentifier = matchCompatibilityForm(section.get().getTermIdentifier(section));
 		return createCompositeEditModeAction(termIdentifier);
+	}
+
+	/**
+	 * This method is still missplaced, these issues should be handled in OntologyMarkupSet
+	 */
+	public static Identifier matchCompatibilityForm(Identifier termIdentifier) {
+		return (termIdentifier.countPathElements() == 2 && termIdentifier.getPathElementAt(0).isEmpty())
+				? new Identifier(termIdentifier.isCaseSensitive(), "lns", termIdentifier.getLastPathElement())
+				: termIdentifier;
 	}
 
 	public static String createCompositeEditModeAction(Identifier termIdentifier) {

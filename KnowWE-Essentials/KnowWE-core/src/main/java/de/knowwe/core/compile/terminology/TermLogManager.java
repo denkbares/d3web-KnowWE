@@ -41,20 +41,13 @@ class TermLogManager {
 	}
 
 	public TermLog getLog(Identifier termIdentifier) {
-		Identifier term = Identifier.matchCompatibilityForm(termIdentifier);
-		term.setCaseSensitive(caseSensitive);
-		TermLog termLog = termLogs.get(term);
-		if (termLog == null && term.countPathElements() == 1) {
-			term = new Identifier(term.isCaseSensitive(), "lns", term.getLastPathElement());
-			return termLogs.get(term);
-		}
-		return termLog;
+		termIdentifier.setCaseSensitive(caseSensitive);
+		return termLogs.get(termIdentifier);
 	}
 
 	public void putLog(Identifier termIdentifier, TermLog termLog) {
-		Identifier term = Identifier.matchCompatibilityForm(termIdentifier);
-		term.setCaseSensitive(caseSensitive);
-		termLogs.put(term, termLog);
+		termIdentifier.setCaseSensitive(caseSensitive);
+		termLogs.put(termIdentifier, termLog);
 	}
 
 	public Set<Entry<Identifier, TermLog>> entrySet() {
