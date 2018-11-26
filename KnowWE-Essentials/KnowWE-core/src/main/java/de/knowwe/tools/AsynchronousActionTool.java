@@ -20,16 +20,15 @@
 package de.knowwe.tools;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
-
+import com.denkbares.strings.Strings;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.util.Icon;
 
-import static de.knowwe.core.Attributes.SECTION_ID;
-import static de.knowwe.core.Attributes.TOPIC;
+import static de.knowwe.core.Attributes.*;
 
 /**
  * A tool causing the given action being called asynchronously passing the given section id, waits for action completion
@@ -56,7 +55,8 @@ public class AsynchronousActionTool extends DefaultTool {
 
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, String redirectPage, String category) {
 		super(icon, title, description,
-				buildJsAction(action, section, "window.location='Wiki.jsp?page=" + redirectPage + "'", Collections.emptyMap()),
+				buildJsAction(action, section, "window.location='Wiki.jsp?page=" + redirectPage + "'",
+						new HashMap<>(Collections.singletonMap(REDIRECT_PAGE, redirectPage))),
 				Tool.ActionType.ONCLICK, category);
 	}
 
@@ -68,12 +68,18 @@ public class AsynchronousActionTool extends DefaultTool {
 	}
 
 	private static String createData(Section<?> section, Map<String, String> params) {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put(SECTION_ID, section.getID());
-		jsonObject.put(TOPIC, section.getTitle());
-		for (Map.Entry<String, String> stringStringEntry : params.entrySet()) {
-			jsonObject.put(stringStringEntry.getKey(), stringStringEntry.getValue());
+		params.put(SECTION_ID, section.getID());
+		params.put(TITLE, section.getTitle());
+		// we create the JSON manually, because we need single quotes
+		StringBuilder builder = new StringBuilder("{");
+		for (Map.Entry<String, String> entry : params.entrySet()) {
+			builder.append("")
+					.append(Strings.quote(entry.getKey(), '\''))
+					.append(":")
+					.append(Strings.quote(entry.getValue(), '\''))
+					.append(",");
 		}
-		return jsonObject.toString();
+		builder.append("}");
+		return builder.toString();
 	}
 }
