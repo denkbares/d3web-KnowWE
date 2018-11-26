@@ -48,6 +48,7 @@ public class ResourceReference extends SimpleReference {
 					AbbreviatedResourceReference.class);
 			assert abbResDef != null;
 			String abbreviation = abbResDef.get().getAbbreviation(abbResDef);
+			if (abbreviation.isEmpty()) abbreviation = "lns";
 			identifier = new Identifier(abbreviation, getTermName(section));
 			section.storeObject(IDENTIFIER_KEY, identifier);
 		}
