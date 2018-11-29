@@ -33,6 +33,7 @@ import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
 
 /**
  * A covering-list markup parser
@@ -51,19 +52,20 @@ public class CoveringList extends AbstractType {
 		this.addChildType(new ListSolutionType());
 
 		// cut the optional closing }
-		this.addChildType(new AnonymousType("closing-bracket", new StringSectionFinderUnquoted("}"), StyleRenderer.COMMENT));
+		this.addChildType(new AnonymousType("opening", new StringSectionFinderUnquoted("{"), StyleRenderer.COMMENT));
+		this.addChildType(new AnonymousType("closing", new StringSectionFinderUnquoted("}"), StyleRenderer.COMMENT));
 
 		// allow for comment lines
 		this.addChildType(new CommentLineType());
 
 		// split by search for commas
-		this.addChildType(new AnonymousType("comma", new StringSectionFinderUnquoted(","), StyleRenderer.COMMENT));
+		this.addChildType(new AnonymousType("comma", new UnquotedExpressionFinder(","), StyleRenderer.COMMENT));
 
 		// the rest is CoveringRelations
 		this.addChildType(new CoveringRelation());
 
 		// anything left is comment
-		AnonymousType residue = new AnonymousType("derRest");
+		AnonymousType residue = new AnonymousType("remaining");
 		residue.setSectionFinder(new AllTextFinderTrimmed());
 		residue.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(residue);

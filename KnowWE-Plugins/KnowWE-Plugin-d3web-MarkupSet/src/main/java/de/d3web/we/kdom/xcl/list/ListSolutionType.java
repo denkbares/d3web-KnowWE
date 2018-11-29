@@ -33,13 +33,17 @@ import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.LeftOfTokenFinder;
+import de.knowwe.core.kdom.sectionFinder.MultiSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.kdom.AnonymousType;
+import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
+import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.LineSectionFinderNonBlankTrimmed;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
+import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
 
 /**
  * A type for the head of a covering-list defining the solution that is described by that list. The solution is created
@@ -50,9 +54,12 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 public class ListSolutionType extends AbstractType {
 
 	public ListSolutionType() {
-		// this section finder takes all content until the opening bracket "{",
+		// this section finder takes all content until the opening (unquoted) bracket "{",
 		// or the first line if there is no such bracket
-		this.setSectionFinder(new RegexSectionFinder("\\A\\s*([^\\n\\r]*([^{}]*\\{)?)"));
+		this.setSectionFinder(new ConstraintSectionFinder(new MultiSectionFinder(
+				new LeftOfTokenFinder("{", false),
+				LineSectionFinderNonBlankTrimmed.getInstance()),
+				AtMostOneFindingConstraint.getInstance()));
 		this.addCompileScript(Priority.HIGH, new XCLModelCreator());
 
 		// cut indent
@@ -64,7 +71,7 @@ public class ListSolutionType extends AbstractType {
 
 		// split multiple solutions by comma and/or semicolon
 		this.addChildType(new AnonymousType("split",
-				new StringSectionFinderUnquoted(",", ";"), StyleRenderer.COMMENT));
+				new UnquotedExpressionFinder(","), StyleRenderer.COMMENT));
 
 		// and take the remaining ranges as solution definitions,
 		// but also split multiple lines into individual solutions
