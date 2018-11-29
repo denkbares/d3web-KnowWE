@@ -16,7 +16,7 @@ public class CoveringListPreviewRenderer extends AbstractPreviewRenderer {
 	@Override
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
 
-		Section<ListSolutionType> self = Sections.child(section, ListSolutionType.class);
+		Section<XCLHeader> self = Sections.child(section, XCLHeader.class);
 		result.append(self, user);
 		StyleRenderer.COMMENT.renderText(" {", user, result);
 

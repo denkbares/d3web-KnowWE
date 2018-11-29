@@ -49,7 +49,7 @@ public class CoveringList extends AbstractType {
 		this.setSectionFinder(AllTextFinder.getInstance());
 		this.setRenderer(new ReRenderSectionMarkerRenderer(this::renderWithId));
 
-		this.addChildType(new ListSolutionType());
+		this.addChildType(new XCLHeader());
 
 		// cut the optional closing }
 		this.addChildType(new AnonymousType("opening", new StringSectionFinderUnquoted("{"), StyleRenderer.COMMENT));

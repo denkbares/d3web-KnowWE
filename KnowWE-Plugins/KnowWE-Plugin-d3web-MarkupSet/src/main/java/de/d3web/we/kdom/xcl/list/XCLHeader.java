@@ -37,9 +37,9 @@ import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
  *
  * @author Jochen Reutelshöfer
  */
-public class ListSolutionType extends AbstractType {
+public class XCLHeader extends AbstractType {
 
-	public ListSolutionType() {
+	public XCLHeader() {
 		// this section finder takes all content until the opening (unquoted) bracket "{",
 		// or the first line if there is no such bracket
 		this.setSectionFinder(new ConstraintSectionFinder(new MultiSectionFinder(
@@ -57,6 +57,6 @@ public class ListSolutionType extends AbstractType {
 
 		// and take the remaining ranges as solution definitions,
 		// but also split multiple lines into individual solutions
-		this.addChildType(new XCListSolutionDefinition(LineSectionFinderNonBlankTrimmed.getInstance()));
+		this.addChildType(new XCLSolutionDefinition(LineSectionFinderNonBlankTrimmed.getInstance()));
 	}
 }

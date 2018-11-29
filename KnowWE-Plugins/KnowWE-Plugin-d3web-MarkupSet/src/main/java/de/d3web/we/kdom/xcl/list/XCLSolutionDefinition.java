@@ -35,9 +35,9 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
-public class XCListSolutionDefinition extends SolutionDefinition {
+public class XCLSolutionDefinition extends SolutionDefinition {
 
-	public XCListSolutionDefinition(SectionFinder finder) {
+	public XCLSolutionDefinition(SectionFinder finder) {
 		super(Priority.HIGHER);
 		this.setSectionFinder(finder);
 		this.addCompileScript(Priority.HIGH, new XCLModelCreator());
@@ -48,9 +48,9 @@ public class XCListSolutionDefinition extends SolutionDefinition {
 	 *
 	 * @author Jochen Reutelshöfer
 	 */
-	private static class XCLModelCreator implements D3webCompileScript<XCListSolutionDefinition> {
+	private static class XCLModelCreator implements D3webCompileScript<XCLSolutionDefinition> {
 		@Override
-		public void compile(D3webCompiler compiler, Section<XCListSolutionDefinition> definition) throws CompilerMessage {
+		public void compile(D3webCompiler compiler, Section<XCLSolutionDefinition> definition) throws CompilerMessage {
 
 			// prepare sections and solution
 			Section<CoveringListMarkup> markup = Sections.ancestor(definition, CoveringListMarkup.class);

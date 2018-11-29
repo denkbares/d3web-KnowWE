@@ -99,7 +99,7 @@ class CoveringRelation extends AbstractType {
 
 		private List<Section<SolutionDefinition>> getCorrespondingSolutionDefinitions(Section<CoveringRelation> relation) {
 			return $(relation).ancestor(CoveringList.class)
-					.successor(ListSolutionType.class)
+					.successor(XCLHeader.class)
 					.successor(SolutionDefinition.class)
 					.asList();
 		}
