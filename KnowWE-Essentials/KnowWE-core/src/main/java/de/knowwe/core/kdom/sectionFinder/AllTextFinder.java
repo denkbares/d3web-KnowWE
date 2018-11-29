@@ -30,15 +30,11 @@ import de.knowwe.core.kdom.parsing.Section;
  *
  * @author Jochen
  */
-public class AllTextFinder implements SectionFinder {
+public final class AllTextFinder implements SectionFinder {
 
 	private static final AllTextFinder instance = new AllTextFinder();
 
-	/**
-	 * @deprecated use {@link AllTextFinder#getInstance()} instead
-	 */
-	@Deprecated
-	public AllTextFinder() {
+	private AllTextFinder() {
 	}
 
 	public static AllTextFinder getInstance() {
@@ -48,8 +44,7 @@ public class AllTextFinder implements SectionFinder {
 	@Override
 	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 		if (!text.isEmpty()) {
-			return SectionFinderResult.singleItemList(new SectionFinderResult(0,
-					text.length()));
+			return SectionFinderResult.singleItemList(new SectionFinderResult(0, text.length()));
 		}
 		return null;
 	}

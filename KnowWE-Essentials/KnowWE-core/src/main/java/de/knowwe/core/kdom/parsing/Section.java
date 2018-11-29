@@ -251,6 +251,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * @return the text of this Section/Node
 	 */
+	@NotNull
 	public String getText() {
 		if (text == null) {
 			return getArticle().getText().substring(getOffsetInArticle(), getOffsetInArticle() + textLength);
