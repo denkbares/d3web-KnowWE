@@ -44,7 +44,7 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 	public static class HierarchyLevelType extends AbstractType {
 
 		public HierarchyLevelType() {
-			this.setSectionFinder(new AllTextFinder());
+			this.setSectionFinder(AllTextFinder.getInstance());
 			this.addCompileScript(new HierarchyCompileScript());
 		}
 
