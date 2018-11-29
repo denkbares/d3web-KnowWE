@@ -33,12 +33,6 @@
 			<version>2.0.5</version>
 		</dependency>
 		<dependency>
-			<groupId>jrcs-diff</groupId>
-			<artifactId>jrcs-diff</artifactId>
-			<version>0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-core</artifactId>
 			<version>${knowwe.version}</version>

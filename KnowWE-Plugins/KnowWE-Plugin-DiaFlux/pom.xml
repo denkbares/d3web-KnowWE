@@ -38,12 +38,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>jrcs-diff</groupId>
-			<artifactId>jrcs-diff</artifactId>
-			<version>0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>d3web-Plugin-DiaFlux</artifactId>
 			<version>${d3web.version}</version>
