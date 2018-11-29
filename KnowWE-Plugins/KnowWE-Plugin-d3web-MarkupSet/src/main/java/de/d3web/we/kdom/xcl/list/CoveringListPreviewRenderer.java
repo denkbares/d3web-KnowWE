@@ -9,6 +9,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.preview.AbstractPreviewRenderer;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class CoveringListPreviewRenderer extends AbstractPreviewRenderer {
 
@@ -17,10 +18,10 @@ public class CoveringListPreviewRenderer extends AbstractPreviewRenderer {
 
 		Section<ListSolutionType> self = Sections.child(section, ListSolutionType.class);
 		result.append(self, user);
+		StyleRenderer.COMMENT.renderText(" {", user, result);
 
 		boolean skipped = false;
-		for (Section<CoveringRelation> relation : Sections.children(section,
-				CoveringRelation.class)) {
+		for (Section<CoveringRelation> relation : Sections.children(section, CoveringRelation.class)) {
 			List<Section<?>> all = Sections.successors(relation);
 			if (Collections.disjoint(all, relevantSubSections)) {
 				skipped = true;
@@ -38,7 +39,7 @@ public class CoveringListPreviewRenderer extends AbstractPreviewRenderer {
 		if (skipped) {
 			renderEllipse(result);
 		}
-		result.append("}");
+		StyleRenderer.COMMENT.renderText("}", user, result);
 	}
 
 	private void renderEllipse(RenderResult result) {
