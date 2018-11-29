@@ -13,7 +13,7 @@ public class LineSectionFinderNonBlankTrimmed extends SplittingSectionFinder {
 	private static final LineSectionFinderNonBlankTrimmed instance = new LineSectionFinderNonBlankTrimmed();
 
 	private LineSectionFinderNonBlankTrimmed() {
-		super("[\\s\\h\\v]*\\n[\\s\\h\\v]*");
+		super("[\\s\\h\\v]*\\n[\\s\\h\\v]*|\\A[\\s\\h\\v]+|[\\s\\h\\v]+\\z");
 	}
 
 	/**
