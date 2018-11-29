@@ -439,15 +439,13 @@ public class D3webUtils {
 
 	public static ResourceBundle getD3webBundle(HttpServletRequest request) {
 		if (request == null) return D3webUtils.getD3webBundle();
-		Locale.setDefault(Environment.getInstance().getWikiConnector()
-				.getLocale(request));
+		Locale.setDefault(Environment.getInstance().getWikiConnector().getLocale(request));
 		return D3webUtils.getD3webBundle();
 	}
 
 	public static ResourceBundle getD3webBundle(UserContext user) {
 		if (user == null) return getD3webBundle();
-		Locale.setDefault(Environment.getInstance().getWikiConnector()
-				.getLocale(user.getRequest()));
+		Locale.setDefault(Environment.getInstance().getWikiConnector().getLocale(user.getRequest()));
 		return getD3webBundle();
 	}
 

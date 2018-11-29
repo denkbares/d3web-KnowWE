@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2011 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -20,15 +20,16 @@ package de.d3web.we.kdom.xcl.settings;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
+import com.denkbares.plugin.Plugin;
+import com.denkbares.plugin.PluginManager;
 import de.d3web.core.inference.PSConfig;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.plugin.Autodetect;
-import com.denkbares.plugin.Plugin;
 import de.d3web.plugin.PluginConfig;
 import de.d3web.plugin.PluginEntry;
-import com.denkbares.plugin.PluginManager;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
@@ -44,7 +45,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * This MarkUp offers some annotations to configure the XCL problem solver.
- * 
+ *
  * @author Sebastian Furth (denkbares GmbH)
  * @created Jan 24, 2011
  */
@@ -54,24 +55,22 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 	public static final String SUGGESTED_THRESHOLD = "suggestedThreshold";
 	public static final String MIN_SUPPORT = "minSupport";
 
-	private static DefaultMarkup m = null;
+	private static final DefaultMarkup MARKUP;
 
 	static {
-		m = new DefaultMarkup("CoveringListSettings");
-		m.addAnnotation(ESTABLISHED_THRESHOLD, false);
-		m.addAnnotation(SUGGESTED_THRESHOLD, false);
-		m.addAnnotation(MIN_SUPPORT, false);
-		PackageManager.addPackageAnnotation(m);
+		MARKUP = new DefaultMarkup("CoveringListSettings");
+		MARKUP.addAnnotation(ESTABLISHED_THRESHOLD, false);
+		MARKUP.addAnnotation(SUGGESTED_THRESHOLD, false);
+		MARKUP.addAnnotation(MIN_SUPPORT, false);
+		PackageManager.addPackageAnnotation(MARKUP);
 	}
 
-
-
 	public CoveringListSettingsMarkup() {
-		super(m);
+		super(MARKUP);
 		this.addCompileScript(Priority.HIGHEST, new CoveringListSettingsHandler());
 	}
 
-	public class CoveringListSettingsHandler implements D3webHandler<CoveringListSettingsMarkup> {
+	public static class CoveringListSettingsHandler implements D3webHandler<CoveringListSettingsMarkup> {
 
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<CoveringListSettingsMarkup> s) {
@@ -79,61 +78,28 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 			// Get KnowledgeBase
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 			if (kb == null) {
-				return Messages.asList(Messages.error(
-						"No knowledgebase available."));
-			}
-
-			// Get PSConfig
-			PSConfig config = getPSConfig(kb);
-			PSMethodXCL psMethod;
-			if (config.getPsMethod() instanceof PSMethodXCL) {
-				psMethod = (PSMethodXCL) config.getPsMethod();
-			}
-			else {
-				return Messages.asList(Messages.error(
-						"Internal error. Wrong PSMethod in PSConfig."));
+				return Messages.asList(Messages.error("No knowledgebase available."));
 			}
 
 			// Get ScoreAlgorithms
-			ScoreAlgorithm algorithm = psMethod.getScoreAlgorithm();
+			ScoreAlgorithm algorithm = ((PSMethodXCL) getPSConfig(kb).getPsMethod()).getScoreAlgorithm();
 			if (algorithm == null) {
-				return Messages.asList(Messages.error(
-						"Internal error. No Score-Algorithm present."));
+				return Messages.asList(Messages.error("Internal error. No Score-Algorithm present."));
 			}
 
+			// Default established threshold, suggested threshold, and min support
 			Collection<Message> m = new LinkedList<>();
-
-			// Default established threshold
-			Double establishedThreshold = getValueFromAnnotation(s,
-					CoveringListSettingsMarkup.ESTABLISHED_THRESHOLD, m);
-			if (!establishedThreshold.equals(Double.NaN)) {
-				algorithm.setDefaultEstablishedThreshold(establishedThreshold);
-			}
-
-			// Default suggested threshold
-			Double suggestedThreshold = getValueFromAnnotation(s,
-					CoveringListSettingsMarkup.SUGGESTED_THRESHOLD, m);
-			if (!suggestedThreshold.equals(Double.NaN)) {
-				algorithm.setDefaultSuggestedThreshold(suggestedThreshold);
-			}
-
-			// Minimum support
-			Double minSupport = getValueFromAnnotation(s, CoveringListSettingsMarkup.MIN_SUPPORT, m);
-			if (!minSupport.equals(Double.NaN)) {
-				algorithm.setDefaultMinSupport(minSupport);
-			}
-
+			getValueFromAnnotation(s, CoveringListSettingsMarkup.ESTABLISHED_THRESHOLD, m).ifPresent(algorithm::setDefaultEstablishedThreshold);
+			getValueFromAnnotation(s, CoveringListSettingsMarkup.SUGGESTED_THRESHOLD, m).ifPresent(algorithm::setDefaultSuggestedThreshold);
+			getValueFromAnnotation(s, CoveringListSettingsMarkup.MIN_SUPPORT, m).ifPresent(algorithm::setDefaultMinSupport);
 			return m;
 		}
 
 		private PSConfig getPSConfig(KnowledgeBase kb) {
-			// Search for an existing PSConfig
+			// Search for an existing PSConfig, but only with PSMethod XCL
 			for (PSConfig psConfig : kb.getPsConfigs()) {
 				PSMethod psm = psConfig.getPsMethod();
-				if (psm == null) {
-					continue;
-				}
-				if (psm.getClass().equals(PSMethodXCL.class)) {
+				if (psm instanceof PSMethodXCL) {
 					return psConfig;
 				}
 			}
@@ -159,19 +125,17 @@ public class CoveringListSettingsMarkup extends DefaultMarkupType {
 			return config;
 		}
 
-		private double getValueFromAnnotation(Section<CoveringListSettingsMarkup> markup, String annotation, Collection<Message> messages) {
-			double value = Double.NaN;
+		private Optional<Double> getValueFromAnnotation(Section<CoveringListSettingsMarkup> markup, String annotation, Collection<Message> messages) {
 			String stringValue = DefaultMarkupType.getAnnotation(markup, annotation);
 			if (stringValue != null) {
 				try {
-					value = Double.parseDouble(stringValue);
+					return Optional.of(Double.parseDouble(stringValue));
 				}
 				catch (NumberFormatException e) {
 					messages.add(Messages.invalidNumberError(annotation));
 				}
 			}
-			return value;
+			return Optional.empty();
 		}
-
 	}
 }
