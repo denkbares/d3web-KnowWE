@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -30,8 +30,10 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
- * This SectionFinder finds the _all_ unquoted occurrence of the 'symbol' in the
- * text and creates a section from it.
+ * This SectionFinder finds the _all_ unquoted occurrence of the 'symbol' in the text and creates a section from it.
+ * <p>
+ * NOTE: this section finder finds ALL occurrences of the specified string. If only ONE (first or last) occurrences
+ * should be found, use {@link UnquotedExpressionFinder} instead.
  *
  * @author Jochen
  */
@@ -70,5 +72,4 @@ public class UnquotedExpressionFinder implements SectionFinder {
 
 		return result;
 	}
-
 }

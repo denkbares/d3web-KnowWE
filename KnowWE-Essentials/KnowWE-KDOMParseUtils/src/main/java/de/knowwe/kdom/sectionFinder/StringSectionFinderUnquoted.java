@@ -27,7 +27,10 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
  * Simple SectionFinder that identifies the first (or last if flagged) occurrence of a specific String that is
- * _unquoted_ in the text, i.e., there is not an odd number of quotes '"' before it {@link SplitUtility}
+ * _unquoted_ in the text, i.e., there is not an odd number of quotes '"' before it.
+ * <p>
+ * NOTE: this section finder only finds ONE occurrence of the specified string. If multiple occurrences should be found,
+ * use {@link UnquotedExpressionFinder} instead.
  *
  * @author Jochen
  */
