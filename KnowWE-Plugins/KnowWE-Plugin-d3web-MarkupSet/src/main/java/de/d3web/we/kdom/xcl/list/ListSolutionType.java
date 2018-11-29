@@ -20,26 +20,12 @@
 
 package de.d3web.we.kdom.xcl.list;
 
-import java.util.Collection;
-import java.util.Optional;
-
-import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.object.SolutionDefinition;
-import de.d3web.we.reviseHandler.D3webHandler;
-import de.d3web.xcl.XCLModel;
-import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.LeftOfTokenFinder;
 import de.knowwe.core.kdom.sectionFinder.MultiSectionFinder;
-import de.knowwe.core.report.Message;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.LineSectionFinderNonBlankTrimmed;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
@@ -60,10 +46,6 @@ public class ListSolutionType extends AbstractType {
 				new LeftOfTokenFinder("{", false),
 				LineSectionFinderNonBlankTrimmed.getInstance()),
 				AtMostOneFindingConstraint.getInstance()));
-		this.addCompileScript(Priority.HIGH, new XCLModelCreator());
-
-		// cut indent
-		// addChildType(new Indent());
 
 		// cut the optional '{'
 		this.addChildType(new AnonymousType("bracket",
@@ -76,63 +58,5 @@ public class ListSolutionType extends AbstractType {
 		// and take the remaining ranges as solution definitions,
 		// but also split multiple lines into individual solutions
 		this.addChildType(new XCListSolutionDefinition(LineSectionFinderNonBlankTrimmed.getInstance()));
-	}
-
-	/**
-	 * This handler creates the solution in the KB and also a covering-model
-	 *
-	 * @author Jochen Reutelshöfer
-	 */
-	static class XCLModelCreator implements D3webHandler<ListSolutionType> {
-
-		@Override
-		public Collection<Message> create(D3webCompiler article, Section<ListSolutionType> s) {
-
-			Section<SolutionDefinition> solutionDef = Sections.successor(s, SolutionDefinition.class);
-			Solution solution = solutionDef.get().getTermObject(article, solutionDef);
-			Section<CoveringListMarkup> markup = Sections.ancestor(s, CoveringListMarkup.class);
-
-			if (solution != null) {
-				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
-
-				// create it lazy if not already exists
-				if (xclModel == null) {
-					xclModel = new XCLModel(solution);
-					solution.getKnowledgeStore().addKnowledge(XCLModel.KNOWLEDGE_KIND, xclModel);
-				}
-
-				// initialize xcl model parameters
-				String otherQuestions = DefaultMarkupType.getAnnotation(markup, CoveringListMarkup.OTHER_QUESTIONS);
-				if (otherQuestions != null) {
-					boolean considerOnlyRelevantRelations = CoveringListMarkup.OTHER_QUESTIONS_IGNORE.equalsIgnoreCase(otherQuestions);
-					xclModel.setConsiderOnlyRelevantRelations(considerOnlyRelevantRelations);
-				}
-
-				// handle ESTABLISHED_THRESHOLD, SUGGESTED_THRESHOLD, and MIN_SUPPORT
-				asDouble(markup, CoveringListMarkup.ESTABLISHED_THRESHOLD).ifPresent(xclModel::setEstablishedThreshold);
-				asDouble(markup, CoveringListMarkup.SUGGESTED_THRESHOLD).ifPresent(xclModel::setSuggestedThreshold);
-				asDouble(markup, CoveringListMarkup.MIN_SUPPORT).ifPresent(xclModel::setMinSupport);
-
-				// set description
-				String description = DefaultMarkupType.getAnnotation(markup, CoveringListMarkup.DESCRIPTION);
-				if (description != null) {
-					xclModel.getSolution().getInfoStore().addValue(MMInfo.DESCRIPTION, description);
-				}
-			}
-			return null;
-		}
-
-		private Optional<Double> asDouble(Section<CoveringListMarkup> markup, String annotationName) {
-			Section<?> annotation = DefaultMarkupType.getAnnotationContentSection(markup, annotationName);
-			if (annotation != null) {
-				String text = annotation.getText();
-				try {
-					return Optional.of(Double.parseDouble(text));
-				}
-				catch (NumberFormatException ignore) {
-				}
-			}
-			return Optional.empty();
-		}
 	}
 }
