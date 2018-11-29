@@ -25,7 +25,6 @@ import de.d3web.we.reviseHandler.D3webHandler;
 import de.d3web.we.utils.D3webUtils;
 import de.d3web.we.utils.XCLRelationWeight;
 import de.d3web.xcl.XCLModel;
-import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
@@ -54,11 +53,11 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Volker Belli (denkbares GmbH)
  * @created 28.11.2018
  */
-class CoveringRelation extends AbstractType {
+class XCLRelation extends AbstractType {
 
 	private static final String RELATION_STORE_KEY = "xcl.relation";
 
-	public CoveringRelation() {
+	public XCLRelation() {
 
 		this.setSectionFinder(new ConditionalSectionFinder(new AllTextFinderTrimmed()) {
 
@@ -95,16 +94,16 @@ class CoveringRelation extends AbstractType {
 	 *
 	 * @author Jochen
 	 */
-	static class CreateXCLRelationHandler implements D3webHandler<CoveringRelation> {
+	static class CreateXCLRelationHandler implements D3webHandler<XCLRelation> {
 
-		private List<Section<SolutionDefinition>> getCorrespondingSolutionDefinitions(Section<CoveringRelation> relation) {
+		private List<Section<SolutionDefinition>> getCorrespondingSolutionDefinitions(Section<XCLRelation> relation) {
 			return $(relation).ancestor(CoveringList.class)
 					.successor(XCLHeader.class)
 					.successor(SolutionDefinition.class)
 					.asList();
 		}
 
-		private List<XCLModel> getCorrespondingXCLModels(D3webCompiler compiler, Section<CoveringRelation> relation) {
+		private List<XCLModel> getCorrespondingXCLModels(D3webCompiler compiler, Section<XCLRelation> relation) {
 			List<XCLModel> models = new ArrayList<>();
 			for (Section<SolutionDefinition> solutionDef : getCorrespondingSolutionDefinitions(relation)) {
 				// process if no solution has been created
@@ -119,7 +118,7 @@ class CoveringRelation extends AbstractType {
 		}
 
 		@Override
-		public Collection<Message> create(D3webCompiler compiler, Section<CoveringRelation> section)  {
+		public Collection<Message> create(D3webCompiler compiler, Section<XCLRelation> section)  {
 
 			Section<CompositeCondition> cond = Sections.successor(section, CompositeCondition.class);
 			if (cond == null) {
@@ -154,7 +153,7 @@ class CoveringRelation extends AbstractType {
 					}
 				}
 			}
-			XCLRelation relation = new XCLRelation(condition, w, type);
+			de.d3web.xcl.XCLRelation relation = new de.d3web.xcl.XCLRelation(condition, w, type);
 			KnowWEUtils.storeObject(compiler, section, RELATION_STORE_KEY, relation);
 
 			// get the models to add the relation to
@@ -173,9 +172,9 @@ class CoveringRelation extends AbstractType {
 		}
 
 		@Override
-		public void destroy(D3webCompiler compiler, Section<CoveringRelation> section) {
+		public void destroy(D3webCompiler compiler, Section<XCLRelation> section) {
 			// do nothing if no relation has been created (and therefore not added at all)
-			XCLRelation rel = (XCLRelation) section.getObject(compiler, RELATION_STORE_KEY);
+			de.d3web.xcl.XCLRelation rel = (de.d3web.xcl.XCLRelation) section.getObject(compiler, RELATION_STORE_KEY);
 			if (rel == null) return;
 
 			// otherwise remove relation from each xcl model
@@ -198,7 +197,7 @@ class CoveringRelation extends AbstractType {
 
 			// get the relation, but use plain rendering if there is no compiler configured, or no relation created
 			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
-			XCLRelation relation = (XCLRelation) KnowWEUtils.getStoredObject(compiler, sec, RELATION_STORE_KEY);
+			de.d3web.xcl.XCLRelation relation = (de.d3web.xcl.XCLRelation) KnowWEUtils.getStoredObject(compiler, sec, RELATION_STORE_KEY);
 			if (relation == null) {
 				DelegateRenderer.getInstance().render(sec, user, string);
 				return;
@@ -217,7 +216,7 @@ class CoveringRelation extends AbstractType {
 			string.appendHtml("</span>");
 		}
 
-		private Boolean evalRelation(UserContext user, D3webCompiler compiler, XCLRelation relation) {
+		private Boolean evalRelation(UserContext user, D3webCompiler compiler, de.d3web.xcl.XCLRelation relation) {
 			// check if there is a session available
 			if (compiler == null) return null;
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);

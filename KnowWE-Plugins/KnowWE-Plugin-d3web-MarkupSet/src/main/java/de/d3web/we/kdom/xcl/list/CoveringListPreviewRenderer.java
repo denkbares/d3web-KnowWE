@@ -21,7 +21,7 @@ public class CoveringListPreviewRenderer extends AbstractPreviewRenderer {
 		StyleRenderer.COMMENT.renderText(" {", user, result);
 
 		boolean skipped = false;
-		for (Section<CoveringRelation> relation : Sections.children(section, CoveringRelation.class)) {
+		for (Section<XCLRelation> relation : Sections.children(section, XCLRelation.class)) {
 			List<Section<?>> all = Sections.successors(relation);
 			if (Collections.disjoint(all, relevantSubSections)) {
 				skipped = true;

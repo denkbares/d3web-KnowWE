@@ -62,7 +62,7 @@ public class CoveringList extends AbstractType {
 		this.addChildType(new AnonymousType("comma", new UnquotedExpressionFinder(","), StyleRenderer.COMMENT));
 
 		// the rest is CoveringRelations
-		this.addChildType(new CoveringRelation());
+		this.addChildType(new XCLRelation());
 
 		// anything left is comment
 		AnonymousType residue = new AnonymousType("remaining");
