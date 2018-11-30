@@ -22,17 +22,23 @@ import java.util.List;
 
 import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-
+import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Message;
+import de.knowwe.ontology.compile.OntologyCompileScript;
+import de.knowwe.ontology.compile.OntologyCompiler;
 
 public class PredicateSentence extends AbstractType {
 
 	public PredicateSentence() {
 		this.setSectionFinder(new PredicateSentenceSectionFinder());
+		this.addCompileScript(Priority.LOW, new ObjectExistingChecker());
 		this.addChildType(new Predicate());
 		this.addChildType(new ObjectList());
 
@@ -48,5 +54,19 @@ public class PredicateSentence extends AbstractType {
 			return SectionFinderResult.resultList(sentences);
 		}
 
+	}
+
+	private static class ObjectExistingChecker extends OntologyCompileScript<PredicateObjectSentenceList> {
+		@Override
+		public void compile(OntologyCompiler compiler, Section<PredicateObjectSentenceList> section) throws CompilerMessage {
+			if(Sections.successors(section, Object.class).isEmpty()) {
+				throw new CompilerMessage(new Message(Message.Type.ERROR, "No objects found in this turtle predicate sentence."));
+			}
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<PredicateObjectSentenceList> section) {
+			// nothing to do
+		}
 	}
 }
