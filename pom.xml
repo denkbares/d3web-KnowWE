@@ -690,6 +690,11 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-KONAP</artifactId>
+				<version>${knowwe.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.apache.jspwiki</groupId>
 				<artifactId>jspwiki-knowwe-war</artifactId>
 				<version>2.10.4-SNAPSHOT</version>
