@@ -19,6 +19,7 @@
 package de.knowwe.ontology.turtle;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
@@ -51,7 +52,9 @@ public class PredicateSentence extends AbstractType {
 		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
 			List<StringFragment> sentences = Strings.splitUnquoted(text, ";", true,
 					TurtleMarkup.TURTLE_QUOTES);
-			return SectionFinderResult.resultList(sentences);
+			final List<SectionFinderResult> sectionFinderResults = SectionFinderResult.resultList(sentences);
+			// filter out matches of length 0
+			return sectionFinderResults.stream().filter(finding -> finding.getStart() != finding.getEnd()).collect(Collectors.toList());
 		}
 
 	}
