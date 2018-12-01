@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
@@ -122,10 +124,8 @@ public class TermInfoToolProvider implements ToolProvider {
 				description = "Highlights the occurrence of the term on this page";
 			}
 			else {
-				titleText = "Open '" + title + "'";
-				description = (home != null && title.equals(home.getTitle()))
-						? "Opens the home page for the specific object."
-						: "Opens the definition page for the specific object to show its usage inside this wiki.";
+				titleText = getTitle(title);
+				description = getDescription(home, title);
 			}
 			tools[index++] = new DefaultTool(
 					Icon.ARTICLE,
@@ -133,6 +133,18 @@ public class TermInfoToolProvider implements ToolProvider {
 					link, Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE);
 		}
 		return tools;
+	}
+
+	@NotNull
+	public String getDescription(Article home, String title) {
+		return (home != null && title.equals(home.getTitle()))
+				? "Opens the home page for the specific object."
+				: "Opens the definition page for the specific object to show its usage inside this wiki.";
+	}
+
+	@NotNull
+	protected String getTitle(String title) {
+		return "Open '" + title + "'";
 	}
 
 	private Article getHomeArticle(ArticleManager manager, Identifier identifier) {
