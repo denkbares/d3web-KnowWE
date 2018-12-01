@@ -83,20 +83,27 @@ public class ExpectedSparqlResultTable extends Table {
 			"rawtypes", "unchecked" })
 	private static SimpleTableRow createResultRow(Section<TableLine> line, List<String> variables, Rdf2GoCompiler core) {
 		List<Section<NodeProvider>> nodeProviders = Sections.successors(line, NodeProvider.class);
+		List<Section<TableCellContent>> cells = Sections.successors(line, TableCellContent.class);
 		SimpleTableRow row = new SimpleTableRow();
 		boolean compatibilityMode = isCompatibilityMode();
 		String currentBaseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
 		int column = 0;
-		for (Section<NodeProvider> section : nodeProviders) {
+		for (Section<TableCellContent> cell : cells) {
 			String variable = variables.get(column);
-			Value value = section.get().getNode(section, core);
-			if (value instanceof URI && compatibilityMode) {
-				String valueString = value.stringValue();
-				if (valueString.startsWith(DummyConnector.BASE_URL)) {
-					value = SimpleValueFactory.getInstance().createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
-				}
+			final Section<NodeProvider> nodeProvider = Sections.successor(cell, NodeProvider.class);
+			if(nodeProvider == null) {
+				row.addValue(variable, null);
 			}
-			if (value != null) row.addValue(variable, value);
+			if(nodeProvider != null) {
+				Value value = nodeProvider.get().getNode(nodeProvider, core);
+				if (value instanceof URI && compatibilityMode) {
+					String valueString = value.stringValue();
+					if (valueString.startsWith(DummyConnector.BASE_URL)) {
+						value = SimpleValueFactory.getInstance().createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
+					}
+				}
+				if (value != null) row.addValue(variable, value);
+			}
 			column++;
 		}
 		return row;

@@ -50,7 +50,8 @@ public class SimpleTableRow implements TableRow {
 		final int prime = 31;
 		int result = 1;
 		for (Value value : values.values()) {
-			result = prime * result + value.hashCode();
+			final int valueHashCode = value != null?value.hashCode():0;
+			result = prime * result + valueHashCode;
 		}
 		return result;
 	}
@@ -66,7 +67,15 @@ public class SimpleTableRow implements TableRow {
 
 		Set<String> variables = values.keySet();
 		for (String variable : variables) {
-			if (!other.getValue(variable).equals(values.get(variable))) {
+			final Value valueOther = other.getValue(variable);
+			final Value value = values.get(variable);
+			if(value == null && valueOther == null) {
+				return true;
+			}
+			if(value == null || valueOther == null) {
+				return false;
+			}
+			if (!valueOther.equals(value)) {
 				return false;
 			}
 		}
