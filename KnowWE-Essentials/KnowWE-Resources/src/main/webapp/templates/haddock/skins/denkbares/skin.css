@@ -1493,7 +1493,14 @@ table.calendar tr.weekdays {
 }
 
 tr.visible {
-	display: grid;
+	/* will destroy %%TodoList as it corrupts the table layout */
+	/*display: grid;*/
+}
+
+/* Override haddoch style to also highlight zebra table cells */
+.wikitable > tbody > tr > td.highlight {
+	background: #ff0;
+	color: #000;
 }
 
 /* +++ 900 "Special-effects" JavaScript styles +++ */
