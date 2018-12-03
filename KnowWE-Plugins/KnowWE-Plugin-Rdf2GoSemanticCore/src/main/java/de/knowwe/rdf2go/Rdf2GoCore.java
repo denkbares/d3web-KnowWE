@@ -36,6 +36,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -88,6 +89,7 @@ import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.d3web.core.inference.RuleSet;
@@ -179,7 +181,8 @@ public class Rdf2GoCore {
 		}
 		this.lns = lns;
 		try {
-			semanticCore = SemanticCore.getOrCreateInstance(wikiConnector.getApplicationName() + "-" + String.valueOf(coreId.incrementAndGet()), reasoning);
+			semanticCore = SemanticCore.getOrCreateInstance(wikiConnector.getApplicationName() + "-" + String.valueOf(coreId
+					.incrementAndGet()), reasoning);
 			semanticCore.allocate(); // make sure the core does not shut down on its own...
 			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
 		}
@@ -481,10 +484,9 @@ public class Rdf2GoCore {
 	 * Adds the given {@link Statement}s directly to the triple store.
 	 * <p>
 	 * <b>Attention</b>: DO NOT USE THIS METHOD FOR STANDARD MARKUP IMPLEMENTATION !
-	 * The added {@link Statement}s are not cached in the
-	 * {@link Rdf2GoCore}, so you are yourself responsible to remove the right {@link Statement}s in case they are not
-	 * longer valid. You can remove these {@link Statement}s with the method {@link
-	 * Rdf2GoCore#removeStatements(Collection)}.
+	 * The added {@link Statement}s are not cached in the {@link Rdf2GoCore}, so you are yourself responsible to remove
+	 * the right {@link Statement}s in case they are not longer valid. You can remove these {@link Statement}s with the
+	 * method {@link Rdf2GoCore#removeStatements(Collection)}.
 	 *
 	 * @param statements the statements you want to add to the triple store
 	 * @created 13.06.2012
@@ -646,6 +648,14 @@ public class Rdf2GoCore {
 
 	public org.eclipse.rdf4j.model.Literal createLanguageTaggedLiteral(String text, String tag) {
 		return getValueFactory().createLiteral(text, tag);
+	}
+
+	public org.eclipse.rdf4j.model.Literal createLanguageTaggedLiteral(String text, Locale tag) {
+		if (Locales.isEmpty(tag)) return createLiteral(text);
+		String lang = tag.toLanguageTag();
+		String country = tag.getCountry();
+		if (Strings.nonBlank(country)) lang += "-" + country.toLowerCase();
+		return getValueFactory().createLiteral(text, lang);
 	}
 
 	public org.eclipse.rdf4j.model.Literal createLiteral(String text) {
