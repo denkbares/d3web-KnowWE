@@ -46,20 +46,23 @@ public class StyleRenderer implements Renderer {
 	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
 	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
 
+	public static final StyleRenderer CHOICE_NO_TOOLS = new StyleRenderer("color:rgb(40, 40, 160)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 	public static final StyleRenderer QUESTION_NO_TOOLS = new StyleRenderer("color:rgb(0, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer QUESTIONAIRE_NO_TOOLS = new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer SOLUTION_NO_TOOLS = new StyleRenderer("color:rgb(150, 110, 120)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 
 	public static final AnnotationRenderer ANNOTATION = new AnnotationRenderer();
 
 	public static final String CLICKABLE_TERM_CLASS = "clickable-term";
 
 	public static final Renderer CHOICE = new ToolMenuDecoratingRenderer(
-			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(40, 40, 160)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, CHOICE_NO_TOOLS.getCssStyle(), MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer SOLUTION = new ToolMenuDecoratingRenderer(
-			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(150, 110, 120)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, SOLUTION_NO_TOOLS.getCssStyle(), MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer Question = new ToolMenuDecoratingRenderer(
 			new StyleRenderer(CLICKABLE_TERM_CLASS, QUESTION_NO_TOOLS.getCssStyle(), MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 	public static final Renderer Questionaire = new ToolMenuDecoratingRenderer(
-			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			new StyleRenderer(CLICKABLE_TERM_CLASS, QUESTIONAIRE_NO_TOOLS.getCssStyle(), MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
 	public static final Renderer Flowchart = new ToolMenuDecoratingRenderer(
 			new StyleRenderer(CLICKABLE_TERM_CLASS, "color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
