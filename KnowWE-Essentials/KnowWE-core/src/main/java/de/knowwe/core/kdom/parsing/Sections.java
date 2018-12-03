@@ -711,6 +711,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * sub-class of the specified class or interface. If the specified section matches the specified class the specified
 	 * section is contained in the returned list.
 	 * <p/>
+	 * If a section within the sub-tree matches the specified class, and some of its sub-sections will also match
+	 * the class, both are contained in the returned list.
 	 *
 	 * @param section the section to get the successor sections for
 	 * @param clazz   the class of the successors to be matched
