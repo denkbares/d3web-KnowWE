@@ -19,6 +19,8 @@
  */
 package de.d3web.we.object;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -43,7 +45,7 @@ public class SolutionReference extends D3webTermReference<Solution> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return Solution.class;
 	}
 
