@@ -31,15 +31,15 @@ import de.d3web.xcl.XCLModel;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.sectionFinder.LineSectionFinderNonBlankTrimmed;
 
 public class XCLSolutionDefinition extends SolutionDefinition {
 
-	public XCLSolutionDefinition(SectionFinder finder) {
+	public XCLSolutionDefinition() {
 		super(Priority.HIGHER);
-		this.setSectionFinder(finder);
+		this.setSectionFinder(LineSectionFinderNonBlankTrimmed.getInstance());
 		this.addCompileScript(Priority.HIGH, new XCLModelCreator());
 	}
 
@@ -53,7 +53,7 @@ public class XCLSolutionDefinition extends SolutionDefinition {
 		public void compile(D3webCompiler compiler, Section<XCLSolutionDefinition> definition) throws CompilerMessage {
 
 			// prepare sections and solution
-			Section<CoveringListMarkup> markup = Sections.ancestor(definition, CoveringListMarkup.class);
+			Section<DefaultMarkupType> markup = Sections.ancestor(definition, DefaultMarkupType.class);
 			Solution solution = definition.get().getTermObject(compiler, definition);
 			if (solution == null) {
 				throw CompilerMessage.warning("Cannot create XCL model, solution is not available.");
@@ -82,7 +82,7 @@ public class XCLSolutionDefinition extends SolutionDefinition {
 			}
 		}
 
-		private Optional<Double> asDouble(Section<CoveringListMarkup> markup, String annotationName) {
+		private Optional<Double> asDouble(Section<DefaultMarkupType> markup, String annotationName) {
 			Section<?> annotation = DefaultMarkupType.getAnnotationContentSection(markup, annotationName);
 			if (annotation != null) {
 				String text = annotation.getText();

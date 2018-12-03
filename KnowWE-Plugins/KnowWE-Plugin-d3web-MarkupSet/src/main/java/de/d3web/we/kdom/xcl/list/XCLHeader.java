@@ -21,6 +21,7 @@
 package de.d3web.we.kdom.xcl.list;
 
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
 import de.knowwe.core.kdom.sectionFinder.LeftOfTokenFinder;
 import de.knowwe.core.kdom.sectionFinder.MultiSectionFinder;
 import de.knowwe.kdom.AnonymousType;
@@ -48,15 +49,16 @@ public class XCLHeader extends AbstractType {
 				AtMostOneFindingConstraint.getInstance()));
 
 		// cut the optional '{'
-		this.addChildType(new AnonymousType("bracket",
+		this.addChildType(3.0, new AnonymousType("bracket",
 				new StringSectionFinderUnquoted("{"), StyleRenderer.COMMENT));
 
 		// split multiple solutions by comma and/or semicolon
-		this.addChildType(new AnonymousType("split",
+		this.addChildType(3.0, new AnonymousType("split",
 				new UnquotedExpressionFinder(","), StyleRenderer.COMMENT));
 
 		// and take the remaining ranges as solution definitions,
 		// but also split multiple lines into individual solutions
-		this.addChildType(new XCLSolutionDefinition(LineSectionFinderNonBlankTrimmed.getInstance()));
+		this.addChildType(new XCLSolutionDefinition());
+		this.addChildType(9.0, UnrecognizedSyntaxType.getInstance());
 	}
 }
