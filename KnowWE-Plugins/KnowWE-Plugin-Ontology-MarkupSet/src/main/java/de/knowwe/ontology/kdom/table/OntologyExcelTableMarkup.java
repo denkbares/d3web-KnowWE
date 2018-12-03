@@ -69,7 +69,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_CONFIG, true);
 		MARKUP.addAnnotationContentType(ANNOTATION_CONFIG, new ConfigAnnotationType());
 		String documentation = "Some examples:\n"
-				+ "@readLines: Sheet 1-3, Rows 5+, Subject Column 1, Predicate skos:prefLabel, Object \"Column 3\"@en"
+				+ "@readLines: Sheet 1-3, Rows 5+, Subject Column 1, Predicate skos:prefLabel, Object \"Column 3\"@en\n"
 				+ "@readLines: Sheet 4, Rows 5-120, Subject Column 1, Predicate rdf:type, Object Column 2";
 		MARKUP.getAnnotation(ANNOTATION_CONFIG).setDocumentation(documentation);
 		MARKUP.addAnnotation(ANNOTATION_XLSX, true);
