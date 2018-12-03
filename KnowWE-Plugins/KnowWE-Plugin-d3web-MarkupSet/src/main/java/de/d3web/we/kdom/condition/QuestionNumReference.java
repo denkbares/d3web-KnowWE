@@ -2,6 +2,8 @@ package de.d3web.we.kdom.condition;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -21,7 +23,7 @@ public class QuestionNumReference extends QuestionReference {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return QuestionNum.class;
 	}
 

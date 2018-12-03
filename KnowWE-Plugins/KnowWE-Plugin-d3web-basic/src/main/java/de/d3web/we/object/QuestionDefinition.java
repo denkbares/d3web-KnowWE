@@ -19,6 +19,8 @@
  */
 package de.d3web.we.object;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.QuestionMC;
@@ -66,7 +68,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	}
 
 	@Override
-	public final Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public final Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		QuestionType questionType = getQuestionType(Sections.cast(section, QuestionDefinition.class));
 		return (questionType == null) ? Question.class : questionType.getQuestionClass();
 	}

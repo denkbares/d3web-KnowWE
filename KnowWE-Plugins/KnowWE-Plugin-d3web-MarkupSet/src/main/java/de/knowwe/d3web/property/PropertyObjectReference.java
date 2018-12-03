@@ -20,6 +20,8 @@ package de.knowwe.d3web.property;
 
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.knowledgebase.D3webCompileScript;
@@ -127,7 +129,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return NamedObject.class;
 	}
 

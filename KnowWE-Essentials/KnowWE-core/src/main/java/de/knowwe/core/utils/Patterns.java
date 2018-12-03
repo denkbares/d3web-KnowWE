@@ -27,7 +27,7 @@ package de.knowwe.core.utils;
 public final class Patterns {
 
 	/**
-	 * RegEx for one german word. \w and all umlauts. no whitespace. Possesive Quantifier -> No Backtracking
+	 * RegEx for one german word. \w and all umlauts. no whitespace. Possessive Quantifier -> No Backtracking
 	 */
 	public static final String WORD = "[\\wÄÖÜäöüß_-]++";
 

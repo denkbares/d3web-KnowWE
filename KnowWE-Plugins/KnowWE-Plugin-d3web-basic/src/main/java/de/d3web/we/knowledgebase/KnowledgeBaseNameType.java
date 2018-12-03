@@ -1,5 +1,7 @@
 package de.d3web.we.knowledgebase;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -43,7 +45,7 @@ public class KnowledgeBaseNameType extends AbstractType implements D3webTerm<Kno
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return KnowledgeBase.class;
 	}
 

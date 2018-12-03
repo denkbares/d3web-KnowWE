@@ -22,6 +22,8 @@ package de.d3web.we.object;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -83,7 +85,7 @@ public abstract class AnswerDefinition
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return Choice.class;
 	}
 

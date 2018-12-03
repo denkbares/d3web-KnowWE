@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.kdom.objects;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Priority;
@@ -53,7 +55,7 @@ public abstract class SimpleReference extends AbstractType implements TermRefere
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return termObjectClass;
 	}
 

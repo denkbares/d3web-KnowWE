@@ -20,6 +20,8 @@ package de.knowwe.core.kdom.objects;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
@@ -52,7 +54,7 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return termObjectClass;
 	}
 

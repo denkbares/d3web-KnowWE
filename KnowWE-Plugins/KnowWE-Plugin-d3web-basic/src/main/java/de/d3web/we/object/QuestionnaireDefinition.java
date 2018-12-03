@@ -21,6 +21,8 @@ package de.d3web.we.object;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -53,7 +55,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 	}
 
 	@Override
-	public Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section) {
+	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return QContainer.class;
 	}
 

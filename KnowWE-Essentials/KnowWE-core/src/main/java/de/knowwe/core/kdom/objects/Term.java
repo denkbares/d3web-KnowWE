@@ -56,7 +56,7 @@ public interface Term extends Type {
 	 * @return the class of this {@link Term}
 	 * @created 28.03.2013
 	 */
-	Class<?> getTermObjectClass(TermCompiler compiler, Section<? extends Term> section);
+	Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section);
 
 	/**
 	 * Defines the {@link Identifier} which can be used to register this {@link Term}. {@link Identifier} need to be
