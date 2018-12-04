@@ -39,11 +39,13 @@ TextArea.replaceSelection = function (a, g) {
 	return new TextArea(a).replaceSelection(g);
 };
 
-TextArea.focusNextTextArea = function (currentOrNull) {
+TextArea.focusNextTextArea = function (currentOrNull, backwards) {
 	// if no other completion section is available, but there are more edit areas, proceed to the next area
 	const areas = jq$('.ui-wiki-content-edit-area');
 	const index = areas.index(currentOrNull);
-	const next = areas.get((index + 1) % areas.length);
+	const next = backwards
+		? areas.get((index >= 1 ? index : areas.length) - 1)
+		: areas.get((index + 1) % areas.length);
 	if (!next) return null;
 	next.focus();
 	return next;
