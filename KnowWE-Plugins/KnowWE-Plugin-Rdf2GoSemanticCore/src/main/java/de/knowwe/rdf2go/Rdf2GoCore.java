@@ -765,7 +765,7 @@ public class Rdf2GoCore {
 		// in case ns is just the abbreviation
 		String fullNs = getNamespaces().get(ns);
 
-		return createIRI((fullNs == null ? ns : fullNs) + Strings.encodeURL(value));
+		return createIRI((fullNs == null ? ns+":" : fullNs) + Strings.encodeURL(value));
 	}
 
 	public String getLocalNamespace() {
