@@ -174,8 +174,6 @@ public class Environment {
 			// decorate types in breast-first-search
 			decorateTypeTree();
 
-			// initSuccessorType();
-
 			initInstantiations();
 			Plugins.initJS();
 			Plugins.initCSS();
@@ -325,7 +323,7 @@ public class Environment {
 		// code won't be reached ;-)
 		if (libDir.exists()) {
 			List<File> pluginFiles = getPluginFiles(libDir);
-			JPFPluginManager.init(pluginFiles.toArray(new File[pluginFiles.size()]));
+			JPFPluginManager.init(pluginFiles.toArray(new File[0]));
 			extractPluginResources();
 		}
 	}
@@ -563,9 +561,8 @@ public class Environment {
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
 		//noinspection deprecation
-		return KnowWEUtils.getTerminologyManager(master == null
+		return KnowWEUtils.getTerminologyManager((master == null)
 				? null
-				: KnowWEUtils.getArticleManager(
-				defaultWeb).getArticle(master));
+				: KnowWEUtils.getArticleManager(defaultWeb).getArticle(master));
 	}
 }
