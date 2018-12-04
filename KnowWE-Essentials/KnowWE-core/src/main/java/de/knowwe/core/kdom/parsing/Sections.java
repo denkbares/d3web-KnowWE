@@ -167,6 +167,19 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Returns the last section of this instance. If this instance is empty, null is returned.
+	 *
+	 * @return the last section
+	 */
+	public Section<T> getLast() {
+		Section<T> last = null;
+		for (Section<T> section : this) {
+			last = section;
+		}
+		return last;
+	}
+
+	/**
 	 * Returns a new Section instance with the first result of this instance. If this instance is empty, a new empty
 	 * instance is returned, producing no further work.
 	 *
@@ -174,6 +187,17 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 */
 	public Sections<T> first() {
 		return nth(0);
+	}
+
+	/**
+	 * Returns a new Section instance with the last result of this instance. If this instance is empty, a new empty
+	 * instance is returned, producing no further work.
+	 *
+	 * @return a Sections object with the last section of this instance
+	 */
+	public Sections<T> last() {
+		Section<T> nth = getLast();
+		return new Sections<>(nth == null ? Collections.emptyList() : Collections.singletonList(nth));
 	}
 
 	/**
@@ -711,8 +735,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * sub-class of the specified class or interface. If the specified section matches the specified class the specified
 	 * section is contained in the returned list.
 	 * <p/>
-	 * If a section within the sub-tree matches the specified class, and some of its sub-sections will also match
-	 * the class, both are contained in the returned list.
+	 * If a section within the sub-tree matches the specified class, and some of its sub-sections will also match the
+	 * class, both are contained in the returned list.
 	 *
 	 * @param section the section to get the successor sections for
 	 * @param clazz   the class of the successors to be matched
