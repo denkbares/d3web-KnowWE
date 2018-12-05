@@ -49,6 +49,12 @@ public class AsynchronousActionTool extends DefaultTool {
 				Tool.ActionType.ONCLICK, null);
 	}
 
+	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, Map<String, String> params, String category) {
+		super(icon, title, description,
+				buildJsAction(action, section, "window.location.reload()", params),
+				Tool.ActionType.ONCLICK, category);
+	}
+
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, String redirectPage) {
 		this(icon, title, description, action, section, redirectPage, null);
 	}
