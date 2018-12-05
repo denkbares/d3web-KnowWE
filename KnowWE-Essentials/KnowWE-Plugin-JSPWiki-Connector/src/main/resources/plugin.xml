@@ -16,10 +16,10 @@
     </runtime>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-			id="PackageArticlesMarkup">
-		<parameter id="class" value="de.knowwe.jspwiki.PackageArticlesMarkup" />
-		<parameter id="name" value="PackageArticlesMarkup" />
-		<parameter id="description" value="Markup to show list of articles which use the given package" />
+			id="LinkArticlesMarkup">
+		<parameter id="class" value="de.knowwe.jspwiki.LinkArticlesMarkup" />
+		<parameter id="name" value="LinkArticlesMarkup" />
+		<parameter id="description" value="Markup to show list of articles" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
