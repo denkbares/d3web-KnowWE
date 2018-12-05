@@ -116,15 +116,14 @@ public class Plugins {
 		Extension[] extensions = pm.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_Compiler);
 		PriorityList<Double, Compiler> result = new PriorityList<>(5d);
 		for (Extension e : extensions) {
-			result.add(e.getPriority(),
-					Compiler.class.cast(e.getSingleton()));
+			result.add(e.getPriority(), (Compiler) e.getSingleton());
 		}
 		return result;
 	}
 
 	/**
-	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually be
-	 * clicking on pre-generated links on the wiki pages.
+	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually be clicking on pre-generated
+	 * links on the wiki pages.
 	 */
 	public static List<Action> getKnowWEAction() {
 		return getSingletons(EXTENDED_POINT_KnowWEAction, Action.class);
@@ -169,24 +168,21 @@ public class Plugins {
 	}
 
 	/**
-	 * Checks whether the priorities between plugged types is deterministic.
-	 * Scans through all type extensions for extensions that have equal scope AND equal priority.
-	 * If such case is found a warning is logged.
-	 * The scope 'root' is omitted from the test.
+	 * Checks whether the priorities between plugged types is deterministic. Scans through all type extensions for
+	 * extensions that have equal scope AND equal priority. If such case is found a warning is logged. The scope 'root'
+	 * is omitted from the test.
 	 * <p>
 	 * <p>
 	 * Explanation: This will to problems if the SectionFinders of these types are not disjoint, for instance both using
-	 * AllTextFinder().
-	 * That case can lead to indeterministic parsing results when KnowWE is launched with slightly different
-	 * configurations!
+	 * AllTextFinder(). That case can lead to indeterministic parsing results when KnowWE is launched with slightly
+	 * different configurations!
 	 * <p>
 	 * Action to take: If the warning appears, it is recommend to adjust the priority of the types to make them distinct
-	 * according to the
-	 * intended order. However, if the SectionFinders are disjoint in their acceptance behaviour there is no danger.
+	 * according to the intended order. However, if the SectionFinders are disjoint in their acceptance behaviour there
+	 * is no danger.
 	 * <p>
 	 * Note: This test is incomplete as using Path expression with wildcards, scopes can overlap even though their
-	 * string
-	 * respresentation is not equal.
+	 * string respresentation is not equal.
 	 */
 	public static void checkTypePriorityClarity() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -203,14 +199,17 @@ public class Plugins {
 		for (Pair<String, Double> pair : map.keySet()) {
 			Set<Extension> setOfTypesWithEqualScopeAndPriority = map.getValues(pair);
 			if (setOfTypesWithEqualScopeAndPriority.size() > 1) {
-				String message = "Found types with equal scope AND priority. " +
-						"This is a plugin configuration error and can produce nondeterministic behavior!" +
-						"Scope is: " + pair.getA() + ", priority is: " + pair
-						.getB() + ". The types are:\n";
+				StringBuilder message = new StringBuilder();
+				message.append("Found types with equal scope AND priority. ")
+						.append("\nThis is a plugin configuration error and can produce nondeterministic behavior! ")
+						.append("\nScope: ").append(pair.getA()).append(". ")
+						.append("\nPriority: ").append(pair.getB()).append(". ")
+						.append("\nTypes:\n");
 				for (Extension extension : setOfTypesWithEqualScopeAndPriority) {
-					message += "Id: " + extension.getID() + " - Name: " + extension.getName() + "\n";
+					message.append("\n\tId: ").append(extension.getID())
+							.append(" - Name: ").append(extension.getName());
 				}
-				Log.severe(message.substring(0, message.length() - 1));
+				Log.severe(message.toString());
 			}
 		}
 	}
@@ -292,9 +291,8 @@ public class Plugins {
 	/**
 	 * Returns a List of all plugged TagHandlers
 	 * <p>
-	 * COMMENT: Alternatively, those tag-handlers can also be introduced separately using the
-	 * "taghandler.text" file. There the class of the tag-handler is listed and will be loaded on
-	 * KnowWE initialization.
+	 * COMMENT: Alternatively, those tag-handlers can also be introduced separately using the "taghandler.text" file.
+	 * There the class of the tag-handler is listed and will be loaded on KnowWE initialization.
 	 *
 	 * @return List of TagHandlers
 	 */
@@ -305,9 +303,8 @@ public class Plugins {
 	/**
 	 * Returns a list of all plugged PageAppendHandlers.
 	 * <p>
-	 * These handlers allow a module to append some content to the wiki-page content. There are 2
-	 * kinds of appendHandlers one append content at top of the page, the other appends at the
-	 * bottom
+	 * These handlers allow a module to append some content to the wiki-page content. There are 2 kinds of
+	 * appendHandlers one append content at top of the page, the other appends at the bottom
 	 *
 	 * @return List of PageAppendHandlers
 	 */

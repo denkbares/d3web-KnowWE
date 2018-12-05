@@ -28,7 +28,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 
 /**
- * A renderer that encapsulates the content in arbitrary HTML content. Useful for testing.
+ * A renderer that encapsulates the content in arbitrary HTML content.
  *
  * @author Alex Legler
  */

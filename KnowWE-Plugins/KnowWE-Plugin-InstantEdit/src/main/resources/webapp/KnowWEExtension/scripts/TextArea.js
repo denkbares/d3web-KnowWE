@@ -3,6 +3,7 @@ function TextArea(area) {
 		return area.textarea;
 	}
 	this.area = jq$(area)[0];
+	this.area.addClass('ui-wiki-content-edit-area');
 	area.textarea = this;
 	this.area.undoHistory = [];
 	this.area.redoHistory = [];
@@ -38,6 +39,18 @@ TextArea.replaceSelection = function (a, g) {
 	return new TextArea(a).replaceSelection(g);
 };
 
+TextArea.focusNextTextArea = function (currentOrNull, backwards) {
+	// if no other completion section is available, but there are more edit areas, proceed to the next area
+	const areas = jq$('.ui-wiki-content-edit-area');
+	const index = areas.index(currentOrNull);
+	const next = backwards
+		? areas.get((index >= 1 ? index : areas.length) - 1)
+		: areas.get((index + 1) % areas.length);
+	if (!next) return null;
+	next.focus();
+	return next;
+}
+
 TextArea.prototype.isLongerSelection = function () {
 	return this.getSelection().length > 0 && this.getSelection().indexOf('\n') >= 0;
 };
@@ -70,7 +83,9 @@ TextArea.prototype.handleKeyDown = function (event) {
 		|| (event.ctrlKey && !event.metaKey && !event.altKey);
 	const isLongerSelection = this.isLongerSelection();
 	const isCursorBeforeText = this.isCursorBeforeText();
-	if (event.which === 38 && isAltOnly) { // alt + UP
+	const isSingleLine = this.area.rows === 1;
+
+	if (event.which === 38 && isAltOnly && !isSingleLine) { // alt + UP
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -78,7 +93,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// alt + DOWN
-	if (event.which === 40 && isAltOnly) { // alt + DOWN
+	if (event.which === 40 && isAltOnly && !isSingleLine) { // alt + DOWN
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -86,7 +101,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// - + selection length > 0
-	if ((event.which === 189 || event.which === 173) && isLongerSelection) {
+	if ((event.which === 189 || event.which === 173) && isLongerSelection && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -94,7 +109,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// cmd + 7
-	if (event.which === 55 && isCmdOnly && isLongerSelection) {
+	if (event.which === 55 && isCmdOnly && isLongerSelection && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -102,7 +117,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// # + selection length > 0
-	if ((event.which === 191 || event.which === 163 || event.which === 220) && isLongerSelection) {
+	if ((event.which === 191 || event.which === 163 || event.which === 220) && isLongerSelection && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -110,7 +125,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// * + selection length > 0
-	if ((event.which === 187 || event.which === 171 || event.which === 221) && event.shiftKey && isLongerSelection) {
+	if ((event.which === 187 || event.which === 171 || event.which === 221) && event.shiftKey && isLongerSelection && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -118,7 +133,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// TAB + !SHIFT
-	if (event.which === 9 && !event.shiftKey && !(event.ctrlKey || event.altKey) && (isLongerSelection || isCursorBeforeText)) {
+	if (event.which === 9 && !event.shiftKey && !(event.ctrlKey || event.altKey) && (isLongerSelection || isCursorBeforeText) && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		event.stopImmediatePropagation();
@@ -127,7 +142,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// TAB + SHIFT
-	if (event.which === 9 && event.shiftKey && !(event.ctrlKey || event.altKey) && (isLongerSelection || isCursorBeforeText)) {
+	if (event.which === 9 && event.shiftKey && !(event.ctrlKey || event.altKey) && (isLongerSelection || isCursorBeforeText) && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -135,7 +150,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// TAB + !SHIFT + ALT|CTRL + selection length = 0
-	if (event.which === 9 && !event.shiftKey && (event.ctrlKey || event.altKey)) {
+	if (event.which === 9 && !event.shiftKey && (event.ctrlKey || event.altKey) && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		event.stopImmediatePropagation();
@@ -143,7 +158,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// SPACE + selection length > 0 + !SHIFT
-	if (event.which === 32 && isLongerSelection && !event.shiftKey) {
+	if (event.which === 32 && isLongerSelection && !event.shiftKey && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -151,7 +166,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// SPACE + selection length > 0 + SHIFT
-	if (event.which === 32 && isLongerSelection && event.shiftKey) {
+	if (event.which === 32 && isLongerSelection && event.shiftKey && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();
@@ -159,7 +174,7 @@ TextArea.prototype.handleKeyDown = function (event) {
 		return;
 	}
 	// alt + D, cmd + D
-	if (event.which === 68 && (isAltOnly || isCmdOnly)) {
+	if (event.which === 68 && (isAltOnly || isCmdOnly) && !isSingleLine) {
 		event.stopPropagation();
 		event.preventDefault();
 		this.snapshot();

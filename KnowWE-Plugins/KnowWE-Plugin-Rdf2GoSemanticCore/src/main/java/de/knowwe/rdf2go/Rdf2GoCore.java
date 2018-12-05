@@ -88,6 +88,7 @@ import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
+import com.denkbares.semanticcore.utils.Text;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
@@ -658,6 +659,10 @@ public class Rdf2GoCore {
 		return getValueFactory().createLiteral(text, lang);
 	}
 
+	public org.eclipse.rdf4j.model.Literal createLanguageTaggedLiteral(Text text) {
+		return createLanguageTaggedLiteral(text.getString(), text.getLanguage());
+	}
+
 	public org.eclipse.rdf4j.model.Literal createLiteral(String text) {
 		return getValueFactory().createLiteral(text);
 	}
@@ -760,7 +765,7 @@ public class Rdf2GoCore {
 		// in case ns is just the abbreviation
 		String fullNs = getNamespaces().get(ns);
 
-		return createIRI((fullNs == null ? ns : fullNs) + Strings.encodeURL(value));
+		return createIRI((fullNs == null ? ns+":" : fullNs) + Strings.encodeURL(value));
 	}
 
 	public String getLocalNamespace() {
