@@ -477,6 +477,8 @@ public class Rdf2GoCore {
 	 * @param statements the statements you want to add to the triple store
 	 * @created 13.06.2012
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated
 	public void addStatements(Statement... statements) {
 		addStatements(Arrays.asList(statements));
 	}
@@ -492,6 +494,7 @@ public class Rdf2GoCore {
 	 * @param statements the statements you want to add to the triple store
 	 * @created 13.06.2012
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated
 	public void addStatements(Collection<Statement> statements) {
 		addStatements((StatementSource) null, statements);
@@ -725,9 +728,10 @@ public class Rdf2GoCore {
 	 * @return an uri of the local namespace
 	 */
 	public IRI createLocalIRI(String name) {
-		return createIRI(lns, name);
+		return createIRI(lns + Strings.encodeURL(name));
 	}
 
+	@SuppressWarnings("deprecation")
 	public Statement createStatement(Resource subject, URI predicate, Value object) {
 		return getValueFactory().createStatement(subject, predicate, object);
 	}
@@ -761,11 +765,13 @@ public class Rdf2GoCore {
 		return semanticCore.getValueFactory();
 	}
 
-	public IRI createIRI(String ns, String value) {
+	public IRI createIRI(String abbreviatedNamespace, String value) {
 		// in case ns is just the abbreviation
-		String fullNs = getNamespaces().get(ns);
-
-		return createIRI((fullNs == null ? ns+":" : fullNs) + Strings.encodeURL(value));
+		String fullNamespace = getNamespaces().get(abbreviatedNamespace);
+		if (fullNamespace == null) {
+			throw new IllegalArgumentException("Invalid abbreviated namespace: " + abbreviatedNamespace);
+		}
+		return createIRI(fullNamespace + Strings.encodeURL(value));
 	}
 
 	public String getLocalNamespace() {
