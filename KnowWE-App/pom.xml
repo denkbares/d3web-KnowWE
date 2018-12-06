@@ -556,11 +556,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Flash</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>jspwiki.aFlashPlugin</groupId>
-					<artifactId>aFlashPlugin</artifactId>
+					<artifactId>KnowWE-Plugin-d3web-Homepage</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>

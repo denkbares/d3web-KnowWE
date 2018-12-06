@@ -1,0 +1,21 @@
+<?xml version="1.0" ?><!--
+  ~ Copyright (C) 2018 denkbares GmbH. All rights reserved.
+  -->
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0"
+	"http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="KnowWE-Plugin-d3web-Homepage" version="0.0.1">
+
+	<requires>
+		<import plugin-id="KnowWEExtensionPoints" />
+	</requires>
+
+	<runtime>
+		<library id="de.d3web" path="." type="code">
+			<export prefix="*" />
+		</library>
+		<library id="webapp" path="webapp/" type="resources">
+			<export prefix="*" />
+		</library>
+	</runtime>
+
+</plugin>

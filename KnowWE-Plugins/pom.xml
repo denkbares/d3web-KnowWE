@@ -42,6 +42,7 @@
 		<module>KnowWE-Plugin-Dialog</module>
 		<module>KnowWE-Plugin-d3web-OntologyBridge</module>
 		<module>KnowWE-Plugin-DropZone</module>
+		<module>KnowWE-Plugin-d3web-Homepage</module>
 	</modules>
 
 </project>

@@ -1,0 +1,95 @@
+/*
+ * Copyright (C) 2018 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+/* General */
+a, .pagename a, .icon-search, .icon-user {
+	color: #0165a3;
+}
+
+a:hover, .pagename a:hover, .icon-search:hover, .icon-user:hover {
+	color: #444444;
+}
+
+.btn-primary, .userbox .btn-primary {
+	background-color: #0165a3;
+}
+
+.content:after {
+	background-color: #f8f9fb;
+}
+
+/* Header, Footer */
+.header, .footer {
+	background-color: white;
+	color: black
+}
+
+.header, .breadcrumb {
+	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.075);
+}
+
+.footer {
+	background-color: #0165a3;
+	color: white;
+}
+
+.header > .navigation {
+	background-color: rgba(195, 195, 195, 0.1);
+}
+
+.header > .navigation .nav > li > a > .badge {
+	background: rgba(0, 0, 0, 0.4);
+}
+
+.topline {
+	min-height: 72px;
+}
+
+a.logo {
+	margin-top: 8px;
+	margin-left: 20px;
+	height: 60px;
+	width: 50px;
+}
+
+a.logo.pull-left {
+	/* Hides the text. */
+	text-indent: 150%;
+	white-space: nowrap;
+	overflow: hidden;
+	/* Shows image */
+	background: url("d3web-logo.png") no-repeat;
+	background-size: contain;
+}
+
+.breadcrumb {
+	margin-top: 5px;
+	color: black;
+}
+
+@media only screen and (max-width: 768px) {
+	a.logo {
+		height: 30px;
+		width: 25px;
+	}
+	
+	.topline {
+		min-height: 42px;
+	}
+}
