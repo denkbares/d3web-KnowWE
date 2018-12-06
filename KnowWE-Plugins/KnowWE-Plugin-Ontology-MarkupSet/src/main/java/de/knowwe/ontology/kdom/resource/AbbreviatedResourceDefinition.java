@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.kdom.resource;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.URI;
 
 import de.knowwe.core.kdom.AbstractType;
@@ -56,7 +57,7 @@ public class AbbreviatedResourceDefinition extends AbstractType {
 				: abbreviationPrefixSection.get().getAbbreviation(abbreviationPrefixSection);
 	}
 
-	public URI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceDefinition> section) {
+	public IRI getResourceURI(Rdf2GoCore core, Section<? extends AbbreviatedResourceDefinition> section) {
 		String propertyAbbreviation = getAbbreviation(section);
 		String property = getResource(section);
 		return core.createIRI(propertyAbbreviation, property);

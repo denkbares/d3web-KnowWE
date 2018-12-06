@@ -3,6 +3,7 @@ package de.knowwe.ontology.kdom.individual;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.URI;
@@ -33,7 +34,7 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
-			URI resourceURI = section.get().getResourceURI(core, section);
+			IRI resourceURI = section.get().getResourceURI(core, section);
 
 			Section<DefaultMarkupType> individualMarkup = Sections.ancestor(section,
 					DefaultMarkupType.class);

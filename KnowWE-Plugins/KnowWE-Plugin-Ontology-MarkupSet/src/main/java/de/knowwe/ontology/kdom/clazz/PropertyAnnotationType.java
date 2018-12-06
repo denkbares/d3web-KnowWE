@@ -21,6 +21,7 @@ package de.knowwe.ontology.kdom.clazz;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -77,14 +78,14 @@ public class PropertyAnnotationType extends AbstractType {
 
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
-			URI propertyURI = propertySection.get().getPropertyURI(core, propertySection);
+			IRI propertyURI = propertySection.get().getPropertyURI(core, propertySection);
 
 			Section<AbbreviatedResourceReference> rangeSection = Sections.child(section,
 					AbbreviatedResourceReference.class);
 
 			for (Section<AbbreviatedClassDefinition> classSection : classSections) {
 				if (classSection.hasErrorInSubtree()) continue;
-				URI classNameURI = classSection.get().getClassNameURI(core, classSection);
+				IRI classNameURI = classSection.get().getClassNameURI(core, classSection);
 				core.addStatements(section,
 						core.createStatement(propertyURI, RDFS.DOMAIN, classNameURI));
 			}
@@ -93,7 +94,7 @@ public class PropertyAnnotationType extends AbstractType {
 				if (rangeSection.hasErrorInSubtree()) return Messages.noMessage();
 				String rangeAbbreviation = rangeSection.get().getAbbreviation(rangeSection);
 				String range = rangeSection.get().getResource(rangeSection);
-				URI rangeURI = core.createIRI(rangeAbbreviation, range);
+				IRI rangeURI = core.createIRI(rangeAbbreviation, range);
 				core.addStatements(section, core.createStatement(propertyURI, RDFS.RANGE, rangeURI));
 
 				if (rangeAbbreviation.equalsIgnoreCase(XMLSchema.PREFIX)) {

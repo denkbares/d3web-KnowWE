@@ -20,6 +20,9 @@ package de.knowwe.ontology.kdom.clazz;
 
 import java.util.Collection;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Statement;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
@@ -39,7 +42,7 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 		this.addCompileScript(new AbbreviatedClassHandler());
 	}
 
-	public org.eclipse.rdf4j.model.URI getClassNameURI(Rdf2GoCore core, Section<AbbreviatedClassDefinition> section) {
+	public IRI getClassNameURI(Rdf2GoCore core, Section<AbbreviatedClassDefinition> section) {
 		return super.getResourceURI(core, section);
 	}
 
@@ -50,9 +53,9 @@ public class AbbreviatedClassDefinition extends AbbreviatedResourceDefinition {
 
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 
-			org.eclipse.rdf4j.model.URI classNameURI = getClassNameURI(core, section);
+			IRI classNameURI = getClassNameURI(core, section);
 
-			org.eclipse.rdf4j.model.Statement classStatement = core.createStatement(classNameURI, TYPE, CLASS);
+			Statement classStatement = core.createStatement(classNameURI, TYPE, CLASS);
 			core.addStatements(section, classStatement);
 
 			return Messages.noMessage();

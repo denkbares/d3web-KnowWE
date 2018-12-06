@@ -19,7 +19,9 @@
 package de.knowwe.ontology.kdom.objectproperty;
 
 import java.util.Collection;
+import java.util.Map;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
@@ -73,10 +75,10 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		@Override
 		public Collection<Message> create(OntologyCompiler compiler, Section<AbbreviatedPropertyDefinition> section) {
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
-			String namespace = core.getNamespaces().get(section.get().getAbbreviation(section));
-			if (namespace == null) return Messages.noMessage();
+			String abbreviation = section.get().getAbbreviation(section);
+			if (!core.getNamespaces().containsKey(abbreviation)) return Messages.noMessage();
 			String property = section.get().getResource(section);
-			URI propertyURI = core.createIRI(namespace, property);
+			IRI propertyURI = core.createIRI(abbreviation, property);
 			core.addStatements(section, core.createStatement(propertyURI, RDF.TYPE, RDF.PROPERTY));
 
 			/*
@@ -120,11 +122,11 @@ public class ObjectPropertyType extends DefaultMarkupType {
 					Section<AbbreviatedPropertyDefinition> propertySec = Sections.successor(
 							defaultMarkup, AbbreviatedPropertyDefinition.class);
 					Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
-					URI propertyURI = propertySec.get().getResourceURI(core, propertySec);
+					IRI propertyURI = propertySec.get().getResourceURI(core, propertySec);
 
-					URI objectURI = section.get().getResourceIRI(core, section);
+					IRI objectURI = section.get().getResourceIRI(core, section);
 
-					URI predicateURI = RDFS.RANGE;
+					IRI predicateURI = RDFS.RANGE;
 					if (kind == DomainRange.DOMAIN) {
 						predicateURI = RDFS.DOMAIN;
 					}

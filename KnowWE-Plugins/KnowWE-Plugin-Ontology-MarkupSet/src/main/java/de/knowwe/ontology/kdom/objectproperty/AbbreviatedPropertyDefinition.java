@@ -18,6 +18,7 @@
  */
 package de.knowwe.ontology.kdom.objectproperty;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.URI;
 
 import de.knowwe.core.kdom.Types;
@@ -40,7 +41,7 @@ public class AbbreviatedPropertyDefinition extends AbbreviatedResourceDefinition
 		return super.getResource(section);
 	}
 
-	public URI getPropertyURI(Rdf2GoCore core, Section<? extends AbbreviatedPropertyDefinition> section) {
+	public IRI getPropertyURI(Rdf2GoCore core, Section<? extends AbbreviatedPropertyDefinition> section) {
 		return super.getResourceURI(core, section);
 	}
 
