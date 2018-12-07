@@ -551,19 +551,19 @@
 			</dependencies>
 		</profile>
 
-		<profile>
-			<id>d3web-homepage</id>
-			<dependencies>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-Flash</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>jspwiki.aFlashPlugin</groupId>
-					<artifactId>aFlashPlugin</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
+		<!--<profile>-->
+			<!--<id>d3web-homepage</id>-->
+			<!--<dependencies>-->
+				<!--<dependency>-->
+					<!--<groupId>de.uniwue.d3web</groupId>-->
+					<!--<artifactId>KnowWE-Plugin-Flash</artifactId>-->
+				<!--</dependency>-->
+				<!--<dependency>-->
+					<!--<groupId>jspwiki.aFlashPlugin</groupId>-->
+					<!--<artifactId>aFlashPlugin</artifactId>-->
+				<!--</dependency>-->
+			<!--</dependencies>-->
+		<!--</profile>-->
 
 		<profile>
 			<id>cbx</id>
