@@ -56,7 +56,11 @@ public class TurtleMarkup extends DefaultMarkupType {
 	}
 
 	public TurtleMarkup() {
-		super(MARKUP);
+		this(MARKUP);
+	}
+
+	public TurtleMarkup(DefaultMarkup markup) {
+		super(markup);
 	}
 
 	private static class TurtlePrefixType extends AbstractType {
