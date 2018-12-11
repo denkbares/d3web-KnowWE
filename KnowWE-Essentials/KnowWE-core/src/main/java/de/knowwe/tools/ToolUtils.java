@@ -35,6 +35,7 @@ public class ToolUtils {
 		List<Tool> result = new LinkedList<>();
 		for (Extension match : extensions.getMatches(section)) {
 			ToolProvider provider = (ToolProvider) match.getSingleton();
+			if (!provider.hasTools(section, userContext)) continue;
 			try {
 				Tool[] tools = provider.getTools(section, userContext);
 				if (tools != null) {
