@@ -19,7 +19,7 @@ public class RefreshToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return false;
+		return true;
 	}
 
 	protected Tool getRefreshTool(Section<?> section, UserContext userContext) {
