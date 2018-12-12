@@ -235,7 +235,7 @@ public class RootTypeExportAction extends AbstractAction {
 		writeDot(dot);
 		// create svg
 		String command;
-		if (OS.getCurrentOS() == OS.WINDOWS) {
+		if (OS.WINDOWS.isCurrentOS()) {
 			command = DOT_INSTALLATION + " \"" + dot.getAbsolutePath() +
 					"\" -Tsvg -o \"" + svg.getAbsolutePath() + "\"";
 		}

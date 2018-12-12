@@ -162,13 +162,9 @@ public class Utils {
 		return var;
 	}
 
-	public static boolean isWindows() {
-		return OS.getCurrentOS() == OS.WINDOWS;
-
-	}
-
 	public static boolean isFileClosed(File file) {
-		if (isWindows()) {
+
+		if (OS.WINDOWS.isCurrentOS()) {
 			return isFileClosedWindows(file);
 		}
 		else {
