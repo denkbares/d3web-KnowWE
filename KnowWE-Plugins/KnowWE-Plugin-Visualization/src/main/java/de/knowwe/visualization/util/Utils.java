@@ -30,6 +30,8 @@ import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.denkbares.utils.OS;
+
 /**
  * @author Jochen Reutelshöfer
  * @created 29.11.2012
@@ -161,26 +163,7 @@ public class Utils {
 	}
 
 	public static boolean isWindows() {
-		return getOS().contains("win");
-
-	}
-
-	protected static String getOS() {
-		return System.getProperty("os.name").toLowerCase();
-	}
-
-	public static boolean isMac() {
-		return getOS().contains("mac");
-
-	}
-
-	public static boolean isUnix() {
-		return getOS().contains("nix") || getOS().contains("nux") || getOS().indexOf("aix") > 0;
-
-	}
-
-	public static boolean isSolaris() {
-		return getOS().contains("sunos");
+		return OS.getCurrentOS() == OS.WINDOWS;
 
 	}
 

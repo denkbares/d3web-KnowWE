@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import com.denkbares.utils.OS;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.RootType;
@@ -62,7 +63,6 @@ public class RootTypeExportAction extends AbstractAction {
 	private static final String KNOWWEEXTENSION_FOLDER = "KnowWEExtension";
 	private String path;
 	private static String FILE_SEPARATOR = System.getProperty("file.separator");
-	private static String OS = System.getProperty("os.name").toLowerCase();
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -235,7 +235,7 @@ public class RootTypeExportAction extends AbstractAction {
 		writeDot(dot);
 		// create svg
 		String command;
-		if (OS.startsWith("windows")) {
+		if (OS.getCurrentOS() == OS.WINDOWS) {
 			command = DOT_INSTALLATION + " \"" + dot.getAbsolutePath() +
 					"\" -Tsvg -o \"" + svg.getAbsolutePath() + "\"";
 		}
