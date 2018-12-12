@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -152,7 +153,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			// fill variable URIs and Literals from excel
 			for (XSSFSheet sheet : getSheets(xlsx, config)) {
 				// config indexes are 1-based indexes, so subtract 1 to get to 0-based indexes for poi
-				for (int i = config.startRow - 1; i < Math.min(config.endRow, sheet.getLastRowNum()) - 1; i++) {
+				for (int i = config.startRow - 1; i <= Math.min(config.endRow -1, sheet.getLastRowNum()); i++) {
 					XSSFRow row = sheet.getRow(i);
 
 					// subject
@@ -233,10 +234,10 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			XSSFCell cell = row.getCell(config.objectColumn - 1);
 			if (cell == null) return null;
 			if (literal.getLanguage().isPresent()) {
-				literal = core.createLanguageTaggedLiteral(cell.getStringCellValue(), literal.getLanguage().get());
+				literal = core.createLanguageTaggedLiteral(getCellValue(cell), literal.getLanguage().get());
 			}
 			else if (literal.getDatatype() != null) {
-				literal = core.createDatatypeLiteral(cell.getStringCellValue(), literal.getDatatype());
+				literal = core.createDatatypeLiteral(getCellValue(cell), literal.getDatatype());
 			}
 			return literal;
 		}
@@ -253,7 +254,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private URI getUriFromCell(Rdf2GoCore core, XSSFRow row, int subjectColumn) {
 			XSSFCell cell = row.getCell(subjectColumn - 1);
 			if (cell == null) return null;
-			return core.createIRI(cell.getStringCellValue());
+			return core.createIRI(getCellValue(cell));
 		}
 
 		@NotNull
@@ -274,6 +275,29 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 		private Config getConfig(Section<ConfigAnnotationType> section) {
 			return (Config) section.getObject(CONFIG_KEY);
+		}
+	}
+
+	private static String getCellValue(XSSFCell cell){
+		switch (cell.getCellType()){
+			case XSSFCell.CELL_TYPE_STRING:
+				return cell.getStringCellValue();
+
+			case XSSFCell.CELL_TYPE_NUMERIC:
+				if(DateUtil.isCellDateFormatted(cell)){
+					return cell.getDateCellValue().toString();
+				} else {
+					return Double.toString(cell.getNumericCellValue());
+				}
+
+			case XSSFCell.CELL_TYPE_BOOLEAN:
+				return Boolean.toString(cell.getBooleanCellValue());
+
+			case XSSFCell.CELL_TYPE_FORMULA:
+				return cell.getCellFormula();
+
+			default:
+				return cell.toString();
 		}
 	}
 
@@ -369,6 +393,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		}
 
 	}
+
+
 
 	private static class RowsType extends AbstractType {
 
