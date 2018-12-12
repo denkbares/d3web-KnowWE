@@ -64,7 +64,7 @@ public class GoToPlayerToolProvider implements ToolProvider {
 				}
 			}
 		}
-		return null;
+		return new Tool[0];
 	}
 
 	@Override
