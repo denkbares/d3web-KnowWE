@@ -186,10 +186,6 @@
 					<artifactId>KnowWE-Plugin-Rdf2GoSemanticCore</artifactId>
 				</dependency>
 				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>denkbares-SemanticCore-Plugin-Jena</artifactId>
-				</dependency>
-				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-OntoVis</artifactId>
 				</dependency>
