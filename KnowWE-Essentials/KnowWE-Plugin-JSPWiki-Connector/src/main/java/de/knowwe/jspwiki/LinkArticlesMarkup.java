@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,12 +14,9 @@ import java.util.function.Predicate;
 
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.RootType;
-import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.core.utils.Scope;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -32,10 +30,10 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
 
+	public static final String ANNOTATION_ARTICLE = "article";
 	public static final String ANNOTATION_EXCLUDE = "exclude";
 	public static final String ANNOTATION_TEMPLATE = "template";
 	public static final String ANNOTATION_MARKUP = "markup";
-	public static final String ANNOTATION_TITLES = "titles";
 
 	static {
 		MARKUP = new DefaultMarkup("LinkArticles");
@@ -43,22 +41,22 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_TEMPLATE);
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDE);
 		MARKUP.addAnnotation(ANNOTATION_MARKUP);
-		MARKUP.addAnnotation(ANNOTATION_TITLES);
+		MARKUP.addAnnotation(ANNOTATION_ARTICLE);
 		MARKUP.getAnnotation("package")
 				.setDocumentation("Specify a package name to show all articles which use this package.");
-		MARKUP.getAnnotation(ANNOTATION_TEMPLATE)
-				.setDocumentation("Set a template how each Link-Label should be adapted, e.g.\n"
-						+ "@template: * link.replace(\"Prefix\", \"Other Prefix\")");
+		MARKUP.getAnnotation(ANNOTATION_ARTICLE)
+				.setDocumentation("Specify a regex regarding the article names to show in this list.");
 		MARKUP.getAnnotation(ANNOTATION_EXCLUDE).setDocumentation("Specify a regex regarding the article names to " +
 				"exclude from this list, even if they are part of the package, the markup or the mentioned titles.");
 		MARKUP.getAnnotation(ANNOTATION_MARKUP)
 				.setDocumentation("Specify the name of a markup to show all articles it's used in.");
-		MARKUP.getAnnotation(ANNOTATION_TITLES)
-				.setDocumentation("Specify a regex regarding the article names to show in this list.");
+		MARKUP.getAnnotation(ANNOTATION_TEMPLATE)
+				.setDocumentation("Set a template how each Link-Label should be adapted, e.g.\n"
+						+ "@template: * link.replace(\"Prefix\", \"Other Prefix\")");
 		MARKUP.setTemplate("%%LinkArticles \n" +
 				"@package: \u00ABpackage-name\u00BB\n" +
 				"@markup: \u00ABmarkup-name\u00BB\n" +
-				"@titles: \u00ABarticle-name-regex\u00BB\n" +
+				"@article: \u00ABarticle-name-regex\u00BB\n" +
 				"@exclude: \u00ABarticle-name-regex\u00BB\n" +
 				"%");
 	}
@@ -107,10 +105,10 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			handleAnnotationMarkup(section, errorMessages, shownSections);
 
 			//handle annotaion titles
-			handleAnnotationTitles(section, errorMessages, shownSections, excludeRegexes);
+			handleAnnotationArticle(section, errorMessages, shownSections, excludeRegexes);
 
 			//add messages to site
-			if (!errorMessages.isEmpty() ) {
+			if (!errorMessages.isEmpty()) {
 				string.appendHtml("<span class=\"error\" style=\"white-space: pre-wrap;\">");
 				for (String message : errorMessages) {
 					string.appendHtml(message + "<br>");
@@ -135,12 +133,11 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		});
 	}
 
-	private void handleAnnotationTitles(Section<?> section, Set<String> errorMessages, Set<String> shownSections, List<String> excludeRegexes) {
-		String[] titleAnnotations = DefaultMarkupType.getAnnotations(section, ANNOTATION_TITLES);
-
+	private void handleAnnotationArticle(Section<?> section, Set<String> errorMessages, Set<String> shownSections, List<String> excludeRegexes) {
+		String[] titleAnnotations = DefaultMarkupType.getAnnotations(section, ANNOTATION_ARTICLE);
+		// TODO: is not specified, use all articles?
 		if (titleAnnotations.length > 0) {
 			Collection<Article> articles = KnowWEUtils.getArticleManager(section.getWeb()).getArticles();
-
 			for (String title : titleAnnotations) {
 				AtomicInteger itemCount = new AtomicInteger(0);
 				articles.stream()
@@ -168,26 +165,20 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 	private void handleAnnotationMarkup(Section<?> section, Set<String> errorMessages, Set<String> shownSections) {
 		String[] markupAnnotations = DefaultMarkupType.getAnnotations(section, ANNOTATION_MARKUP);
 		if (markupAnnotations.length > 0) {
+			boolean hasAny = false;
 			for (String markup : markupAnnotations) {
-				AtomicInteger itemCount = new AtomicInteger(0);
-				//Collection for Markups
-				Collection<Type> markups = Types.getAllChildrenTypesRecursive(RootType.getInstance());
-				markups.stream()
-						.filter(t -> t instanceof DefaultMarkupType)
-						.filter(t -> t.getName().equalsIgnoreCase(markup) || t.getClass().getSimpleName().equalsIgnoreCase(markup))
-						.forEach(t -> Sections.$(KnowWEUtils.getArticleManager(section.getWeb()))
-								.successor(t.getClass())
-								.stream()
-								.forEach(s -> {
-									assert s.getTitle() != null;
-									if (!section.getArticle().getTitle().equalsIgnoreCase(s.getTitle())) {
-										shownSections.add(s.getTitle());
-									}
-									itemCount.getAndIncrement();
-								}));
+				Scope scope = Scope.getScope(markup);
+				for (Article article : KnowWEUtils.getArticleManager(section.getWeb()).getArticles()) {
+					for (Section<?> sec : scope.getMatchingSuccessors(article.getRootSection())) {
+						// skip link to the rendered article (do not link itself)
+						if (Objects.equals(section.getArticle(), sec.getArticle())) continue;
+						shownSections.add(section.getTitle());
+						hasAny = true;
+					}
+				}
 
 				//test if found any Sections for this markup
-				if (itemCount.get() == 0) {
+				if (!hasAny) {
 					errorMessages.add("unable to find markups: " + markup);
 				}
 			}
