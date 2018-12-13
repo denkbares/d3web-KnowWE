@@ -19,6 +19,7 @@
  */
 package de.knowwe.rdf2go.utils;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -295,6 +296,17 @@ public class Rdf2GoUtils {
 			string = string.replace(core.getLocalNamespace(), Rdf2GoCore.LNS_ABBREVIATION + ":");
 		}
 		return string;
+	}
+
+	/**
+	 * Reduces to full URI prefix to the abbreviation of the URI.
+	 *
+	 * @param uri the URI where the namespace needs to be reduced
+	 * @return the string with the prefix instead of the full namespace
+	 * @created 12.12.2018
+	 */
+	public static String reduceNamespace(Rdf2GoCore core, URI uri) {
+		return reduceNamespace(core, uri.toString());
 	}
 
 	/**
