@@ -172,7 +172,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 					for (Section<?> sec : scope.getMatchingSuccessors(article.getRootSection())) {
 						// skip link to the rendered article (do not link itself)
 						if (Objects.equals(section.getArticle(), sec.getArticle())) continue;
-						shownSections.add(section.getTitle());
+						shownSections.add(sec.getTitle());
 						hasAny = true;
 					}
 				}
