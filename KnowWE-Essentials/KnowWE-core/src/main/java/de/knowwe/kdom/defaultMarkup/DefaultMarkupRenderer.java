@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.denkbares.collections.DefaultMultiMap;
+import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
@@ -182,20 +185,29 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		for (Type type : types) {
 			Collection<String> messages = getMessageStrings(rootSection, type, context);
-
-			// only if there are such messages
-			if (messages.isEmpty()) continue;
-			String clazz = type.toString().toLowerCase();
-			if (messages.size() == 1) {
-				clazz += " singleLine";
-			}
-			string.appendHtml("<span class='" + clazz
-					+ "' style='white-space: pre-wrap;'>");
-			for (String messageString : messages) {
-				string.append(messageString).append("\n");
-			}
-			string.appendHtml("</span>");
+			renderMessageBlock(string, type, messages);
 		}
+	}
+
+	public static void renderMessageBlock(RenderResult out, Collection<Message> messages) {
+		MultiMap<Type, String> groups = messages.stream().collect(MultiMaps.toMultiMap(
+				Message::getType, Message::getVerbalization, DefaultMultiMap::newLinked));
+		groups.toMap().forEach((type, msgs) -> renderMessageBlock(out, type, msgs));
+	}
+
+	private static void renderMessageBlock(RenderResult out, Type type, Collection<String> messages) {
+		// only if there are such messages
+		if (messages.isEmpty()) return;
+		String clazz = type.toString().toLowerCase();
+		if (messages.size() == 1) {
+			clazz += " singleLine";
+		}
+		out.appendHtml("<span class='" + clazz
+				+ "' style='white-space: pre-wrap;'>");
+		for (String messageString : messages) {
+			out.append(messageString).append("\n");
+		}
+		out.appendHtml("</span>");
 	}
 
 	public static Collection<String> getMessageStrings(Section<?> rootSection, Type type, UserContext context) {

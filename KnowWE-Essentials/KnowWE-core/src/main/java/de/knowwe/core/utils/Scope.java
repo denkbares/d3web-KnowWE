@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -17,37 +19,34 @@ import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * A scope is an selector of a specific subset of KDOM nodes. It's selection is
- * based on the type of the KDOM nodes itself as well as on the type of the KDOM
- * node's anchestors. It can be compared a little bit to the css selectors.
+ * A scope is an selector of a specific subset of KDOM nodes. It's selection is based on the type of the KDOM nodes
+ * itself as well as on the type of the KDOM node's anchestors. It can be compared a little bit to the css selectors.
  * <p>
- * The scope is a path of those KDOM node types that should be matched/selected.
- * The path can be relative (anywhere in the KDOM tree) or root based. Specific
- * path wildcards as "*" and "**" are allowed.
+ * The scope is a path of those KDOM node types that should be matched/selected. The path can be relative (anywhere in
+ * the KDOM tree) or root based. Specific path wildcards as "*" and "**" are allowed.
  * <p>
  * <b>Synopsis:</b><br>
  * <ul>
  * <li>The elements within the path are separated by "/".
  * <li>If the scope starts with "/" it must match its path from the KDOM root.
  * <li>Each of the path entries name a KDOM node, either by naming the "name" of
- * the Type (see {@link Type#getName()} or its simple class name or the simple
- * class name of any of it's super-classes or interfaces.
+ * the Type (see {@link Type#getName()} or its simple class name or the simple class name of any of it's super-classes
+ * or interfaces.
  * <li>For default markups the name of the markup section can be used. For it's
- * annotations the annotation name can be used. For a default markup content
- * section "content" can be used. (e.g. "solution/package" matches the package
- * declaration of the solution markup).
+ * annotations the annotation name can be used. For a default markup content section "content" can be used. (e.g.
+ * "solution/package" matches the package declaration of the solution markup).
  * <li>The matching is done case insensitive.
  * <li>If you specify a "*" wildcard as a path entry (".../ * /...") any section
  * is matched to it.
  * <li>If you specify a "**" wildcard as a path entry (".../ ** /...") , any
- * sub-path is matched to it. Especially also the empty sub-path is matched. (If
- * you want to have at least one section in between, use ".../ ** / * /...".)
+ * sub-path is matched to it. Especially also the empty sub-path is matched. (If you want to have at least one section
+ * in between, use ".../ ** / * /...".)
  * <li>If a path element start with an "%%", it only matches a default markup
  * with the specified markup name
  * <li>If a path element start with an "@", it only matches a annotation of a
  * default markup with the specified annotation name
  * </ul>
- * 
+ *
  * @author volker_belli
  * @created 23.09.2010
  */
@@ -104,9 +103,9 @@ public class Scope {
 
 	/**
 	 * Returns the appropriate Scope for the specified scope's pathname.
-	 * 
-	 * @created 23.09.2010
+	 *
 	 * @param pathName the scope's pathname.
+	 * @created 23.09.2010
 	 */
 	public static Scope getScope(String pathName) {
 		return CACHED_SCOPES.computeIfAbsent(pathName, Scope::new);
@@ -114,9 +113,9 @@ public class Scope {
 
 	/**
 	 * Creates a new Scope for the specified scope's pathname.
-	 * 
-	 * @created 23.09.2010
+	 *
 	 * @param pathName the scope's pathname.
+	 * @created 23.09.2010
 	 */
 	private Scope(String pathName) {
 		pathName = pathName.trim();
@@ -136,9 +135,9 @@ public class Scope {
 
 	/**
 	 * Returns whether the given {@link Section} matches this {@link Scope}.
-	 * 
-	 * @created 23.09.2010
+	 *
 	 * @param section is the {@link Section} to be checked
+	 * @created 23.09.2010
 	 */
 	public boolean matches(Section<?> section) {
 		return matches(getTypePath(section));
@@ -149,17 +148,16 @@ public class Scope {
 	}
 
 	/**
-	 * Returns a list of the top-most successors that matches this scope. If a
-	 * successor section matches it will be part of the returned list but no of
-	 * its successors will be included.
+	 * Returns a list of the top-most successors that matches this scope. If a successor section matches it will be part
+	 * of the returned list but no of its successors will be included.
 	 * <p>
-	 * If the specified root section matches the scope, a list of only the root
-	 * section will be returned.
-	 * 
-	 * @created 26.08.2013
+	 * If the specified root section matches the scope, a list of only the root section will be returned.
+	 *
 	 * @param root the root section to start the search for
 	 * @return the matching successors sections
+	 * @created 26.08.2013
 	 */
+	@NotNull
 	public List<Section<?>> getMatchingSuccessors(Section<?> root) {
 		List<Section<?>> result = new LinkedList<>();
 		getMatchingSuccessors(root, result);
@@ -178,12 +176,11 @@ public class Scope {
 	}
 
 	/**
-	 * Returns whether the given path of types matches this scope. The order of
-	 * the path should always be parents {@link Type} before children
-	 * {@link Type}.
-	 * 
-	 * @created 23.09.2010
+	 * Returns whether the given path of types matches this scope. The order of the path should always be parents {@link
+	 * Type} before children {@link Type}.
+	 *
 	 * @param typePath is the typePath to be checked
+	 * @created 23.09.2010
 	 */
 	public boolean matches(TypePath typePath) {
 		Type[] path = typePath.typePath;
@@ -212,10 +209,10 @@ public class Scope {
 		// (so we check as empty path and recursively with the parent section)
 		if (scopeElement.equals(WILDCARD_PATH)) {
 			return
-			// empty wildcard, so check this section with next position
-			matches(typePath, typePathPosition, scopeElementPosition - 1) ||
-					// consume the father and check again with the same path
-					matches(typePath, typePathPosition - 1, scopeElementPosition);
+					// empty wildcard, so check this section with next position
+					matches(typePath, typePathPosition, scopeElementPosition - 1) ||
+							// consume the father and check again with the same path
+							matches(typePath, typePathPosition - 1, scopeElementPosition);
 		}
 
 		Type typeElement = typePath[typePathPosition];

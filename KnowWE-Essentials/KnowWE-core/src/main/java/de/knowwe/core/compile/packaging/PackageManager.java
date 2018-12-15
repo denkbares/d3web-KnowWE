@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -48,14 +48,12 @@ public class PackageManager {// implements EventListener {
 	public final Compiler compiler;
 
 	/**
-	 * For each article title, you get all default packages used in this
-	 * article.
+	 * For each article title, you get all default packages used in this article.
 	 */
 	private final Map<String, HashSet<String>> articleToDefaultPackages = new HashMap<>();
 
 	/**
-	 * For each packageName, you get all Sections in the wiki belonging to this
-	 * packageName.
+	 * For each packageName, you get all Sections in the wiki belonging to this packageName.
 	 */
 	private final Map<String, TreeSet<Section<?>>> packageToSectionsOfPackage = new HashMap<>();
 
@@ -140,6 +138,10 @@ public class PackageManager {// implements EventListener {
 		section.addPackageName(packageName);
 	}
 
+	public boolean hasPackage(String packageName) {
+		return packageToSectionsOfPackage.containsKey(packageName);
+	}
+
 	private void addSectionToChangedPackagesAsAdded(Section<?> section, String packageName) {
 		Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
 		if (pair == null) {
@@ -164,8 +166,7 @@ public class PackageManager {// implements EventListener {
 	 * Removes the given Section from the package with the given name.
 	 *
 	 * @param section     is the Section to remove
-	 * @param packageName is the name of the package from which the section is
-	 *                    removed
+	 * @param packageName is the name of the package from which the section is removed
 	 * @return whether the Section was removed
 	 * @created 28.12.2010
 	 */
@@ -199,8 +200,7 @@ public class PackageManager {// implements EventListener {
 	}
 
 	/**
-	 * Returns an unmodifiable view on the sections of the given packages at the
-	 * time of calling this method.
+	 * Returns an unmodifiable view on the sections of the given packages at the time of calling this method.
 	 *
 	 * @param packageNames the package names to get the sections for
 	 * @return the sections of the given packages
@@ -225,8 +225,8 @@ public class PackageManager {// implements EventListener {
 	}
 
 	/**
-	 * Returns all sections added to the given packages since the changes were
-	 * last cleared with {@link #clearChangedPackages()}
+	 * Returns all sections added to the given packages since the changes were last cleared with {@link
+	 * #clearChangedPackages()}
 	 *
 	 * @param packageNames the package to return the added sections for
 	 * @return the sections last added to the given packages
@@ -244,8 +244,8 @@ public class PackageManager {// implements EventListener {
 	}
 
 	/**
-	 * Returns all sections removed from the given packages since the changes
-	 * were last cleared with {@link #clearChangedPackages()}
+	 * Returns all sections removed from the given packages since the changes were last cleared with {@link
+	 * #clearChangedPackages()}
 	 *
 	 * @param packageNames the package to return the removed sections for
 	 * @return the sections last removed to the given packages
@@ -311,8 +311,7 @@ public class PackageManager {// implements EventListener {
 	}
 
 	/**
-	 * Returns all the Sections of type {@link PackageCompileType}, that have a
-	 * package the given Section is part of.
+	 * Returns all the Sections of type {@link PackageCompileType}, that have a package the given Section is part of.
 	 *
 	 * @param section the Section we want the compile Sections for
 	 * @return a Set of Sections compiling the given Section
@@ -327,11 +326,11 @@ public class PackageManager {// implements EventListener {
 	}
 
 	/**
-	 * Returns the Sections of type {@link PackageCompileType}, that represent the compiler compiling the given package.
+	 * Returns the Sections of type {@link PackageCompileType}, that represent the compiler compiling the given
+	 * package.
 	 *
 	 * @param packageName is the name of the package
-	 * @return a Set of titles of articles compiling the package with the given
-	 * name.
+	 * @return a Set of titles of articles compiling the package with the given name.
 	 * @created 28.08.2010
 	 */
 	public Set<Section<? extends PackageCompileType>> getCompileSections(String packageName) {
@@ -383,5 +382,4 @@ public class PackageManager {// implements EventListener {
 		}
 		return titles;
 	}
-
 }
