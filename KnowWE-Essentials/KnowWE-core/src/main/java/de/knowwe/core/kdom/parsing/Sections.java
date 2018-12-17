@@ -36,6 +36,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.filter.SectionFilter;
@@ -90,6 +91,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>    the result type
 	 * @return a java stream with the results of the mapper function
 	 */
+	@NotNull
 	public <R> Stream<R> map(BiFunction<T, Section<T>, R> mapper) {
 		return stream().map(s -> s.get(mapper));
 	}
@@ -101,6 +103,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>    the result type
 	 * @return a java stream with the results of the mapper function
 	 */
+	@NotNull
 	public <R> Stream<R> map(Function<Section<? super T>, ? extends R> mapper) {
 		return stream().map(mapper);
 	}
@@ -131,21 +134,31 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
+	@NotNull
 	public static Sections<? extends Type> definitions(TerminologyManager manager, Identifier identifier) {
 		//noinspection unchecked
 		return new Sections(manager.getTermDefiningSections(identifier));
 	}
 
+	@NotNull
 	public static Sections<? extends Type> definitions(TermCompiler compiler, Identifier identifier) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		return definitions(terminologyManager, identifier);
 	}
 
+	@NotNull
+	public static Sections<? extends Type> definitions(TermCompiler compiler, Section<? extends Term> term) {
+		Identifier identifier = term.get().getTermIdentifier(compiler, term);
+		return definitions(compiler, identifier);
+	}
+
+	@NotNull
 	public static Sections<? extends Type> references(TerminologyManager manager, Identifier identifier) {
 		//noinspection unchecked
 		return new Sections(manager.getTermReferenceSections(identifier));
 	}
 
+	@NotNull
 	public static Sections<? extends Type> references(TermCompiler compiler, Identifier identifier) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		return references(terminologyManager, identifier);
@@ -185,6 +198,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return a Sections object with the first section of this instance
 	 */
+	@NotNull
 	public Sections<T> first() {
 		return nth(0);
 	}
@@ -195,6 +209,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return a Sections object with the last section of this instance
 	 */
+	@NotNull
 	public Sections<T> last() {
 		Section<T> nth = getLast();
 		return new Sections<>(nth == null ? Collections.emptyList() : Collections.singletonList(nth));
@@ -245,6 +260,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return a list of all sections contained
 	 */
+	@NotNull
 	public List<Section<T>> asList() {
 		List<Section<T>> result = new ArrayList<>();
 		for (Section<T> section : this) {
@@ -259,6 +275,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return a (linked) set of all sections contained
 	 */
+	@NotNull
 	public Set<Section<T>> asSet() {
 		Set<Section<T>> result = new LinkedHashSet<>();
 		for (Section<T> section : this) {
@@ -268,6 +285,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	@Override
+	@NotNull
 	public Spliterator<Section<T>> spliterator() {
 		return Spliterators.spliteratorUnknownSize(iterator(),
 				Spliterator.ORDERED | Spliterator.NONNULL | Spliterator.IMMUTABLE);
@@ -278,6 +296,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return a stream of all contained sections
 	 */
+	@NotNull
 	public Stream<Section<T>> stream() {
 		return StreamSupport.stream(spliterator(), false);
 	}
@@ -304,6 +323,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>      the class to be matched by the successors
 	 * @return all successors for each section matching the type
 	 */
+	@NotNull
 	public <R extends Type> Sections<R> successor(int maxDepth, Class<R> clazz) {
 		return new Sections<R>(() -> {
 			KDOMIterator depthFirst = KDOMIterator.depthFirst(
@@ -329,6 +349,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>   the class to be matched by the successors
 	 * @return all successors for each section matching the type
 	 */
+	@NotNull
 	public <R extends Type> Sections<R> successor(Class<R> clazz) {
 		return successor(-1, clazz);
 	}
@@ -343,6 +364,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return all successors for each section matching the type
 	 */
+	@NotNull
 	public Sections<Type> successor() {
 		return successor(Type.class);
 	}
@@ -360,6 +382,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return a new Sections object with all the original sections, but granted that all returned sections will be of
 	 * the specified type
 	 */
+	@NotNull
 	public <R extends Type> Sections<R> cast(Class<R> clazz) {
 		return map(this, (section) -> Sections.cast(section, clazz));
 	}
@@ -376,6 +399,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the sections matching the filter class
 	 * @see #cast(Class)
 	 */
+	@NotNull
 	public <R extends Type> Sections<R> filter(Class<R> clazz) {
 		return new Sections<>(FilterTypeIterable.create(sections, clazz));
 	}
@@ -387,6 +411,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param filter the filter to select the sections
 	 * @return the sections matching the filter
 	 */
+	@NotNull
 	public Sections<T> filter(SectionFilter filter) {
 		return new Sections<>(() -> SectionFilter.filter(sections.iterator(), filter));
 	}
@@ -400,6 +425,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>   the class to be matched by the ancestors
 	 * @return the closest ancestor for each section matching the type
 	 */
+	@NotNull
 	public <R extends Type> Sections<R> ancestor(Class<R> clazz) {
 		return mapNotNull(this, (section) -> Sections.ancestor(section, clazz));
 	}
@@ -410,6 +436,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return the children for each section
 	 */
+	@NotNull
 	public Sections<Type> children() {
 		return Sections.flatMap(this, Section::getChildren);
 	}
@@ -420,6 +447,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return the parents for each section matching the type
 	 */
+	@NotNull
 	public Sections<?> parent() {
 		return mapNotNull(this, Section::getParent);
 	}
