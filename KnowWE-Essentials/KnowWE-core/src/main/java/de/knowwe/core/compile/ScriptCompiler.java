@@ -152,7 +152,7 @@ public class ScriptCompiler<C extends Compiler> {
 			}
 			catch (Exception e) {
 				String msg = "Unexpected internal exception while compiling with script " + script + ": " + e;
-				Messages.storeMessage(section, script.getClass(), Messages.error(msg));
+				Messages.storeMessage(compiler, section, script.getClass(), Messages.error(msg));
 				Log.severe(msg, e);
 			}
 		}
