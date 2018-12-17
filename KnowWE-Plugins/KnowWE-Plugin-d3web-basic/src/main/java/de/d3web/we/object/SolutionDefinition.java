@@ -26,26 +26,17 @@ import org.jetbrains.annotations.Nullable;
 import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.terminology.Rating;
-import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
-import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -74,55 +65,8 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 	}
 
 	public void setRenderer(Renderer renderer, boolean decorate) {
-		if (decorate) renderer = new ValueTooltipRenderer(new SolutionIDHighlightingRenderer(renderer));
+		if (decorate) renderer = new ValueTooltipRenderer(new SolutionHighlightingRenderer(renderer));
 		setRenderer(renderer);
-	}
-
-	/**
-	 * @author Johannes Dienst
-	 * <p/>
-	 * Highlights the Solutions in CoveringList according to state. Also Includes the ObjectInfoLinkRenderer.
-	 */
-	private class SolutionIDHighlightingRenderer implements Renderer {
-
-		private final Renderer innerRenderer;
-
-		private SolutionIDHighlightingRenderer(Renderer innerRenderer) {
-			this.innerRenderer = innerRenderer;
-		}
-
-		@Override
-		public void render(Section<?> sec, UserContext user, RenderResult string) {
-
-			// determine color to highlight
-			Rating.State state = getState(sec, user);
-			String color = (state == State.ESTABLISHED) ? StyleRenderer.CONDITION_FULLFILLED :
-					(state == State.EXCLUDED) ? StyleRenderer.CONDITION_FALSE : null;
-
-			if (color != null) {
-				string.appendHtml("<span style='background-color:").append(color).appendHtml(";'>");
-			}
-			innerRenderer.render(sec, user, string);
-			if (color != null) {
-				string.appendHtml("</span>");
-			}
-		}
-
-		private Rating.State getState(Section<?> sec, UserContext user) {
-			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
-			if (compiler != null) {
-				KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-				Session session = SessionProvider.getSession(user, kb);
-
-				if (session != null) {
-					Solution solution = getTermObject(compiler, Sections.cast(sec, SolutionDefinition.class));
-					if (solution != null) {
-						return session.getBlackboard().getRating(solution).getState();
-					}
-				}
-			}
-			return State.UNCLEAR;
-		}
 	}
 
 	private static class CreateSolutionHandler implements D3webHandler<SolutionDefinition> {
