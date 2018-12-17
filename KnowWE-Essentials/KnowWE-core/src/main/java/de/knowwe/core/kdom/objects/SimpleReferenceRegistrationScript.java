@@ -78,7 +78,14 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		Class<?> termClass = section.get().getTermObjectClass(compiler, section);
 		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		manager.registerTermReference(compiler, section, termClass, termIdentifier);
-		if (validate) CompilerMessage.throwIfPresent(validateReference(compiler, section));
+		if (validate) {
+			Collection<Message> messages = validateReference(compiler, section);
+			if (messages.isEmpty()) {
+				Messages.clearMessages(compiler, section, getClass());
+			} else {
+				throw new CompilerMessage(messages);
+			}
+		}
 	}
 
 	/**
