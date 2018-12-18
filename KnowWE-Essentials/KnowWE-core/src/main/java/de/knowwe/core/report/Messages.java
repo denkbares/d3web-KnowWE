@@ -130,15 +130,29 @@ public final class Messages {
 	}
 
 	/**
-	 * Clears all {@link Message}s for the given article and subtree.
+	 * Clears all {@link Message}s for the given compiler and subtree.
 	 *
-	 * @param compiler is the article you want to clear the message for
+	 * @param compiler is the compiler you want to clear the message for
 	 * @param sec      is the root of the subtree you want to clear the message for
 	 */
 	public static void clearMessagesRecursively(Compiler compiler, Section<?> sec) {
 		clearMessages(compiler, sec);
 		for (Section<?> child : sec.getChildren()) {
 			clearMessagesRecursively(compiler, child);
+		}
+	}
+
+	/**
+	 * Clears all {@link Message}s for the given compiler and subtree.
+	 *
+	 * @param compiler is the compiler you want to clear the message for
+	 * @param sec      is the root of the subtree you want to clear the message for
+	 * @param source   is the source you want to clear the messages for
+	 */
+	public static void clearMessagesRecursively(Compiler compiler, Section<?> sec, Class<?> source) {
+		clearMessages(compiler, sec, source);
+		for (Section<?> child : sec.getChildren()) {
+			clearMessagesRecursively(compiler, child, source);
 		}
 	}
 
