@@ -98,6 +98,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 			split.addChildType(new SheetType());
 			split.addChildType(new RowsType());
+			split.addChildType(new SkipType());
 			split.addChildType(new XlsxSubjectType());
 			split.addChildType(new XlsxPredicateType());
 			split.addChildType(new XlsxObjectType());
@@ -180,10 +181,21 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 							}
 						}
 
+						//cell which is tested when using skipRowType
+						String skipTestCell = null;
+						if (config.skipColumn != -1){
+							skipTestCell = getCellValue(row.getCell(config.skipColumn-1));
+						}
+
 						// create and add statements
 						Statement statement = null;
 						if (literal != null) {
-							statement = core.createStatement(subjectURI, predicateURI, literal);
+							if (config.skipPattern != null && skipTestCell != null && skipTestCell.matches(config.skipPattern)){
+								continue;
+							}
+							else {
+								statement = core.createStatement(subjectURI, predicateURI, literal);
+							}
 						}
 						else if (objectURI != null) {
 							statement = core.createStatement(subjectURI, predicateURI, objectURI);
@@ -278,26 +290,34 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		}
 	}
 
+	/**
+	 * returns the value of a XSSFCell as String no matter what Type the cell is, null if the given cell is null
+	 */
 	private static String getCellValue(XSSFCell cell){
-		switch (cell.getCellType()){
-			case XSSFCell.CELL_TYPE_STRING:
-				return cell.getStringCellValue();
+		if (cell != null) {
+			switch (cell.getCellType()) {
+				case XSSFCell.CELL_TYPE_STRING:
+					return cell.getStringCellValue();
 
-			case XSSFCell.CELL_TYPE_NUMERIC:
-				if(DateUtil.isCellDateFormatted(cell)){
-					return cell.getDateCellValue().toString();
-				} else {
-					return Double.toString(cell.getNumericCellValue());
-				}
+				case XSSFCell.CELL_TYPE_NUMERIC:
+					if (DateUtil.isCellDateFormatted(cell)) {
+						return cell.getDateCellValue().toString();
+					}
+					else {
+						return Double.toString(cell.getNumericCellValue());
+					}
 
-			case XSSFCell.CELL_TYPE_BOOLEAN:
-				return Boolean.toString(cell.getBooleanCellValue());
+				case XSSFCell.CELL_TYPE_BOOLEAN:
+					return Boolean.toString(cell.getBooleanCellValue());
 
-			case XSSFCell.CELL_TYPE_FORMULA:
-				return cell.getCellFormula();
+				case XSSFCell.CELL_TYPE_FORMULA:
+					return cell.getCellFormula();
 
-			default:
-				return cell.toString();
+				default:
+					return cell.toString();
+			}
+		} else {
+			return null;
 		}
 	}
 
@@ -308,10 +328,21 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Config config = new Config();
 			addSheets(section, config);
 			addRows(section, config);
+			skipRows(section, config);
 			addSubject(section, config);
 			addPredicate(section, config);
 			addObjects(section, config);
 			section.storeObject(CONFIG_KEY, config);
+		}
+
+		private void skipRows(Section<ConfigAnnotationType> section, Config config) throws CompilerMessage {
+			Section<SkipType> rows = Sections.successor(section, SkipType.class);
+			if (rows == null){
+				config.skipPattern = null;
+			}
+			else{
+				rows.get().skipRows(rows, config);
+			}
 		}
 
 		private void addRows(Section<ConfigAnnotationType> section, Config config) throws CompilerMessage {
@@ -394,6 +425,36 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 	}
 
+	private static class SkipType extends  AbstractType {
+		private static final String COLUMN_PATTERN = "(\\d+)";	//"(\\d+)(\\+)?(?:-(\\d+))?";
+		private static final String MATCHING_PATTERN = "(?:matching):?\\s*(\"?.*\"?)";
+
+		public SkipType() {
+
+			setSectionFinder(new RegexSectionFinder("\\s*(?:skip column):?\\s*(" + COLUMN_PATTERN +")\\s*(" +
+					MATCHING_PATTERN +")\\s*",
+					Pattern.CASE_INSENSITIVE, 0));
+
+
+		}
+
+		public void skipRows(Section<SkipType> section, Config config) throws CompilerMessage {
+			Pattern columnPattern = Pattern.compile(COLUMN_PATTERN);
+			Matcher columnMatcher = columnPattern.matcher(section.getText());
+
+
+			Pattern matchingPattern = Pattern.compile(MATCHING_PATTERN);
+			Matcher matchingMatcher = matchingPattern.matcher(section.getText());
+
+			if (columnMatcher.find()) {
+				config.skipColumn = Integer.parseInt(columnMatcher.group(1));
+			}
+			if (matchingMatcher.find()) {
+				config.skipPattern = Strings.unquote(matchingMatcher.group(1));
+			}
+
+		}
+	}
 
 
 	private static class RowsType extends AbstractType {
@@ -426,6 +487,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			}
 		}
 	}
+
+
 
 	private static class XlsxSubjectType extends AbstractType {
 
@@ -536,6 +599,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		public int endRow;
 		public int subjectColumn;
 		public int predicateColumn;
+		public String skipPattern;
+		public int skipColumn = -1;
 		public Section<AbbreviatedResourceReference> subject;
 		public Section<AbbreviatedResourceReference> predicate;
 		public List<ObjectConfig> objectConfigs = new ArrayList<>();
