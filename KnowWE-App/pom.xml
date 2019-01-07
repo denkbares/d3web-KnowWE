@@ -360,12 +360,10 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Ontology-TermBrowser</artifactId>
-					<version>12.0-SNAPSHOT</version>
 				</dependency>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DropZone</artifactId>
-					<version>12.0-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 		</profile>
