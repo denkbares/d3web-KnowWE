@@ -44,6 +44,7 @@ public class VersionMarkupType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Version");
+		MARKUP.setInline(true);
 		MARKUP.addAnnotation("type", false, "short", "long");
 	}
 
