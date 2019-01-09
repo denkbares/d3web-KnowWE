@@ -112,35 +112,34 @@ public class DefaultMarkupType extends AbstractType {
 
 	private final static String SECTION_REGEXP_BLOCK =
 			// Declaration
-			"^\\p{Blank}*%%$NAME$\\p{Blank}*" +
+			"^\\h*%%$NAME$\\h*" +
 					"(?:" +
 					// multi-line content with termination starts with an
 					// empty rest of the line (only comment is allowed)
 					// and followed by any text terminated by "/%" or a
 					// single "%" in a line with no other content
-					"(?:[:=]?\\p{Blank}*(?://[^$]*?)?$" +
+					"(?:[:=]?\\h*(?://[^$]*?)?$" +
 					// only comment allowed before end-of-line
 					"(.*?)" + // CONTENT --> anything in multiple lines
 					// (reluctant match)
-					"^\\p{Blank}*/?%\\s*?(^|\\z)" + // "/%" or "%" in a line
+					"^\\h*/?%\\s*?(^|\\z)" + // "/%" or "%" in a line
 					")" +
 					// or single-line content with termination
 					"|(?:" +
 					// at least one non-whitespace character followed by any
 					// non-line-break item
-					"[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?(^|\\z))" + // CONTENT
+					"[:=\\h]\\h*([^/][^$]*?(^|\\z))" + // CONTENT
 					// --> anything in a single line (reluctant match)
 					"))";
 
 			// single-line content with termination
 			// at least one non-whitespace character followed by any
 			// non-line-break item
-	private static final String INLINE_CONTENT = "$NAME$\\p{Blank}*[:=\\p{Blank}]\\p{Blank}*([^/][^$]*?)";
-	private final static String SECTION_REGEXP_INLINE = "%%" + INLINE_CONTENT + "[%/]%" +
+	private static final String INLINE_CONTENT = "$NAME$\\h*[:=\\h]\\h*([^/][^$]*?)";
+	private final static String SECTION_REGEXP_INLINE = "%%" + INLINE_CONTENT + "[%/]%|%%$NAME$\\h+[%/]%" +
 			"|\\[\\{" + INLINE_CONTENT + "\\}\\]";
 
 	private DefaultMarkup markup;
-	private PackageManager packageManager;
 
 	public DefaultMarkupType(DefaultMarkup markup) {
 		applyMarkup(markup);

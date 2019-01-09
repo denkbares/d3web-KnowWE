@@ -35,7 +35,7 @@ public class AdaptiveMarkupFinder implements SectionFinder {
 	}
 
 	private Pattern getSingleLinePattern() {
-		String regexp = getContentRegexp().replace("$LINESTART$", "(?:^|\\p{Space})");
+		String regexp = getContentRegexp().replace("$LINESTART$", "(?:^|\\h)");
 		return Pattern.compile(regexp, flags);
 	}
 

@@ -61,13 +61,13 @@ public class ContentType extends AbstractType {
 				Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL;
 
 		private final static String START_TAG =
-				"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=]?\\p{Space}*?(?:\\r?\\n)?+";
+				"^\\p{Blank}*%%$NAME$\\p{Blank}*[:=]?\\h*?(?:\\r?\\n)?+";
 
 		private final static String CONTENT =
-				"(?:(?!$LINESTART$\\p{Space}*@$IGNORES$\\w+).)*?";
+				"(?:(?!$LINESTART$\\h*@$IGNORES$\\w+).)*?";
 
 		private final static String END_TAG =
-				"(?:^\\p{Blank}*[/%]?%\\p{Blank}*$|\\z|$LINESTART$\\p{Space}*@$IGNORES$\\w+$INLINEENDTAG$)";
+				"(?:^\\p{Blank}*[/%]?%\\p{Blank}*$|\\z|$LINESTART$\\h*@$IGNORES$\\w+$INLINEENDTAG$)";
 
 		private final static String REGEX_TEMPLATE = START_TAG + "(" + CONTENT + ")" + END_TAG;
 
@@ -79,7 +79,7 @@ public class ContentType extends AbstractType {
 
 			String regex = REGEX_TEMPLATE;
 			if (markup.isInline()) {
-				regex = regex.replace("$INLINEENDTAG$", "|%%|/%").replace("$LINESTART$", "^|");
+				regex = regex.replace("$INLINEENDTAG$", "|\\h*%%|\\h*/%").replace("$LINESTART$", "^|");
 			}
 			else {
 				regex = regex.replace("$INLINEENDTAG$", "");
