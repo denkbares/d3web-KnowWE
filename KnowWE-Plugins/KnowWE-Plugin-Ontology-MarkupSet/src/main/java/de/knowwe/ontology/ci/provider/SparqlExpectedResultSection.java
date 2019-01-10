@@ -19,8 +19,7 @@
 package de.knowwe.ontology.ci.provider;
 
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.ontology.ci.ExpectedSparqlResultTable;
-
+import de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup;
 
 /**
  * 
@@ -29,13 +28,13 @@ import de.knowwe.ontology.ci.ExpectedSparqlResultTable;
  */
 public class SparqlExpectedResultSection {
 
-	private final Section<ExpectedSparqlResultTable> section;
+	private final Section<ExpectedSparqlResultTableMarkup> section;
 
-	public Section<ExpectedSparqlResultTable> getSection() {
-		return section;
+	public SparqlExpectedResultSection(Section<ExpectedSparqlResultTableMarkup> section) {
+		this.section = section;
 	}
 
-	public SparqlExpectedResultSection(Section<ExpectedSparqlResultTable> section) {
-		this.section = section;
+	public Section<ExpectedSparqlResultTableMarkup> getSection() {
+		return section;
 	}
 }

@@ -79,16 +79,10 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 			}
 		}
 
-		Section<ExpectedSparqlResultTable> expectedResultTableSection = testObject.getSection();
-		Section<DefaultMarkupType> expectedResultDefaultMarkup = Sections.ancestor(
-				expectedResultTableSection,
-				DefaultMarkupType.class);
-		String actualSparqlName = DefaultMarkupType.getAnnotation(expectedResultDefaultMarkup,
-				ExpectedSparqlResultTableMarkup.SPARQL_ANNOTATION);
+		Section<ExpectedSparqlResultTableMarkup> expectedResultTableMarkup = testObject.getSection();
+		String actualSparqlName = DefaultMarkupType.getAnnotation(expectedResultTableMarkup, ExpectedSparqlResultTableMarkup.SPARQL_ANNOTATION);
 		if (actualSparqlName == null) {
-			return new Message(
-					messageTypeTestFailed,
-					"No sparql query specified for test object, use annotation 'sparql' to set a sparql query to test against.");
+			return new Message(messageTypeTestFailed, "No sparql query specified for test object, use annotation 'sparql' to set a sparql query to test against.");
 		}
 
 		Collection<Section<SparqlContentType>> actualSparqlSections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(actualSparqlName);
@@ -112,7 +106,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 					"No repository found for section: " + actualSparqlSection);
 		}
 
-		String expectedSparqlName = DefaultMarkupType.getAnnotation(expectedResultDefaultMarkup, ExpectedSparqlResultTableMarkup.NAME_ANNOTATION);
+		String expectedSparqlName = DefaultMarkupType.getAnnotation(expectedResultTableMarkup, ExpectedSparqlResultTableMarkup.NAME_ANNOTATION);
 		String actualSparqlString = Rdf2GoUtils.createSparqlString(core, actualSparqlSection.getText());
 		CachedTupleQueryResult result;
 		try {
@@ -127,11 +121,10 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 
 		List<String> variables = actualResultTable.getVariables();
 
-		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(
-				expectedResultTableSection, variables, compiler);
+		Section<ExpectedSparqlResultTable> expectedTable = Sections.successor(expectedResultTableMarkup, ExpectedSparqlResultTable.class);
+		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(expectedTable, variables, compiler);
 
-		MultiMap<String, Message> failures = ResultTableModel.checkEquality(core, expectedResultTable,
-				actualResultTable, atLeastFlag);
+		MultiMap<String, Message> failures = ResultTableModel.checkEquality(core, expectedResultTable, actualResultTable, atLeastFlag);
 
 		if (!failures.isEmpty()) {
 			String errorsText = ResultTableModel.generateErrorsText(failures, false);
@@ -163,12 +156,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 
 	@Override
 	protected @Nullable Section<?> getLinkTarget(String sectionName) {
-		Section<ExpectedSparqlResultTableMarkup> expectedMarkupSection = null;
-		Collection<Section<ExpectedSparqlResultTable>> expectedTableSections = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(sectionName);
-		if (!expectedTableSections.isEmpty()) {
-			expectedMarkupSection = Sections.ancestor(expectedTableSections.iterator()
-					.next(), ExpectedSparqlResultTableMarkup.class);
-		}
-		return expectedMarkupSection;
+		Collection<Section<ExpectedSparqlResultTableMarkup>> expectedQueryResultSection = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(sectionName);
+		return expectedQueryResultSection.iterator().next();
 	}
 }

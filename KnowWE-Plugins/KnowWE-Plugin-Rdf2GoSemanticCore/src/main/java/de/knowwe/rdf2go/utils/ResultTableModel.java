@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2013 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -40,11 +40,11 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import org.jetbrains.annotations.NotNull;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.LiteralImpl;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
@@ -224,7 +224,9 @@ public class ResultTableModel implements Iterable<TableRow> {
 
 			boolean contained = actualResultTable.contains(expectedTableRow);
 			if (!contained) {
-				errorMessages.put("expected rows missing", new Message(Type.ERROR, expectedTableRow.toString()));
+				if (!isOutdatedExpectedTableWithOneEmptyCell(expectedResultTable, expectedTableRow)) {
+					errorMessages.put("expected rows missing", new Message(Type.ERROR, expectedTableRow.toString()));
+				}
 			}
 		}
 
@@ -259,6 +261,22 @@ public class ResultTableModel implements Iterable<TableRow> {
 			}
 		}
 		return errorMessages;
+	}
+
+	/**
+	 * Originally, to check an empty actual result, we had to define an expected result table with one empty cell, like
+	 * <pre>
+	 * %%ExpectedSparqlResult
+	 * |
+	 * %
+	 * </pre>
+	 * Since we now also check empty cells in the result, this is no longer a "clean" empty table. It is now possible
+	 * to just have an %%ExpectedSparqlResult without a table, but to give backwards compatibility, we still handle
+	 * expected tables with one empty cell as effectively an empty expected table.
+	 */
+	private static boolean isOutdatedExpectedTableWithOneEmptyCell(ResultTableModel expectedResultTable, TableRow expectedTableRow) {
+		return expectedResultTable.getSize() == 1 && expectedTableRow.getVariables()
+				.size() == 1 && expectedTableRow.getValue(expectedTableRow.getVariables().get(0)) == null;
 	}
 
 	public String toCSV() throws IOException {

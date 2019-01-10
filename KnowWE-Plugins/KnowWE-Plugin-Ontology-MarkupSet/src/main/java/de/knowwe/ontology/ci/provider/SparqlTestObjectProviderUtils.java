@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.ontology.ci.ExpectedSparqlResultTable;
+import de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.ontology.sparql.SparqlMarkupType;
 
@@ -47,8 +47,8 @@ public class SparqlTestObjectProviderUtils {
 		return getSectionsForNameGlobal(sectionName, SparqlMarkupType.class);
 	}
 
-	public static Collection<Section<ExpectedSparqlResultTable>> getExpectedQueryResultSection(String sectionName) {
-		return getSectionsForNameGlobal(sectionName, ExpectedSparqlResultTable.class);
+	public static Collection<Section<ExpectedSparqlResultTableMarkup>> getExpectedQueryResultSection(String sectionName) {
+		return getSectionsForNameGlobal(sectionName, ExpectedSparqlResultTableMarkup.class);
 	}
 
 	public static String getName(Section<?> section) {
