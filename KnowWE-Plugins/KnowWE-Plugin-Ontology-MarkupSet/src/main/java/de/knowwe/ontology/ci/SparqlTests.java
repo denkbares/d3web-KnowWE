@@ -2,6 +2,8 @@ package de.knowwe.ontology.ci;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
@@ -19,7 +21,6 @@ import de.knowwe.ontology.sparql.SparqlMarkupType;
  * @created 14.11.2018
  */
 public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRenderer {
-	static String checkSparql = "Check SPARQL: ";
 
 	@Override
 	public void renderResult(TestResult testResult, RenderResult renderResult) {
@@ -32,7 +33,7 @@ public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRe
 		boolean hasText = !Strings.isBlank(text);
 
 		String className = "";
-		if (this.getName() != null){
+		if (this.getName() != null) {
 			className = this.getName() + ":";
 		}
 
@@ -42,19 +43,20 @@ public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRe
 		String title = this.getDescription().replace("'", "&#39;");
 
 		if (hasConfig || hasText) {
+			name = className;
 			if (hasConfig) {
-				Collection<Section<SparqlMarkupType>> testObj = SparqlTestObjectProviderUtils.getSparqlQuerySection(config[0]);
 
-				if (!testObj.isEmpty()) {
-					name = className;
-					additionalInfo = "(<a href = '" + KnowWEUtils.getURLLink(testObj.iterator().next()) + "'>" + config[0] + "</a> " + TestParser.concatParameters(1, config) + ")";
+				Section<?> sparqlMarkupSection = getLinkTarget(config[0]);
+
+				if (sparqlMarkupSection != null) {
+					additionalInfo = "(<a href = '" + KnowWEUtils.getURLLink(sparqlMarkupSection) + "'>" + config[0] + "</a> "
+							+ TestParser.concatParameters(1, config) + ")";
 				}
 				else {
-					name = className;
 					additionalInfo = "(" + TestParser.concatParameters(config) + ")";
 				}
-			} else {
-				name = className;
+			}
+			else {
 				additionalInfo = text;
 			}
 		}
@@ -66,5 +68,15 @@ public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRe
 		renderResult.appendHtml(name);
 		renderResult.appendHtml("<span class='ci-configuration'>" + additionalInfo + "</span>");
 		renderResult.appendHtml("</span>");
+	}
+
+	@Nullable
+	protected Section<?> getLinkTarget(String sectionName) {
+		Section<SparqlMarkupType> sparqlMarkupSection = null;
+		Collection<Section<SparqlMarkupType>> sparqlMarkupSections = SparqlTestObjectProviderUtils.getSparqlQuerySection(sectionName);
+		if (!sparqlMarkupSections.isEmpty()) {
+			sparqlMarkupSection = sparqlMarkupSections.iterator().next();
+		}
+		return sparqlMarkupSection;
 	}
 }

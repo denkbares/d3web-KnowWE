@@ -23,21 +23,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
-import com.denkbares.strings.Strings;
-import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.MessageObject;
 import de.d3web.testing.TestParameter.Mode;
-import de.d3web.testing.TestParser;
-import de.d3web.testing.TestResult;
-import de.d3web.we.ci4ke.test.ResultRenderer;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.ci.provider.SparqlExpectedResultSection;
 import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
@@ -125,10 +120,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 		}
 		catch (Exception e) {
 			Message message = new Message(messageTypeTestFailed, "Exception while executing SPARQL query: " + e.getMessage());
-			ArrayList<MessageObject> messageObjects = new ArrayList<>();
-			messageObjects.add(new MessageObject(actualSparqlName, Section.class));
-			messageObjects.add(new MessageObject(expectedSparqlName, Section.class));
-			message.setObjects(messageObjects);
+			appendMessageObjects(actualSparqlName, expectedSparqlName, message);
 			return message;
 		}
 		ResultTableModel actualResultTable = new ResultTableModel(result);
@@ -145,14 +137,18 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 			String errorsText = ResultTableModel.generateErrorsText(failures, false);
 			errorsText += "Expected result: " + expectedSparqlName + ", actual result: " + actualSparqlName;
 			Message message = new Message(messageTypeTestFailed, errorsText);
-			ArrayList<MessageObject> messageObjects = new ArrayList<>();
-			messageObjects.add(new MessageObject(actualSparqlName, Section.class));
-			messageObjects.add(new MessageObject(expectedSparqlName, Section.class));
-			message.setObjects(messageObjects);
+			appendMessageObjects(actualSparqlName, expectedSparqlName, message);
 			return message;
 		}
 
 		return Message.SUCCESS;
+	}
+
+	private void appendMessageObjects(String actualSparqlName, String expectedSparqlName, Message message) {
+		ArrayList<MessageObject> messageObjects = new ArrayList<>();
+		messageObjects.add(new MessageObject(actualSparqlName, Section.class));
+		messageObjects.add(new MessageObject(expectedSparqlName, Section.class));
+		message.setObjects(messageObjects);
 	}
 
 	@Override
@@ -166,53 +162,13 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 	}
 
 	@Override
-	public void renderResult(TestResult testResult, RenderResult renderResult) {
-		// prepare some information
-		Message summary = testResult.getSummary();
-		String text = (summary == null) ? null : summary.getText();
-		String[] config = testResult.getConfiguration();
-		boolean hasConfig = config != null && !(config.length == 0);
-		boolean hasText = !Strings.isBlank(text);
-
-		String className = "";
-		if (this.getName() != null){
-			className = this.getName() + ":";
+	protected @Nullable Section<?> getLinkTarget(String sectionName) {
+		Section<ExpectedSparqlResultTableMarkup> expectedMarkupSection = null;
+		Collection<Section<ExpectedSparqlResultTable>> expectedTableSections = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(sectionName);
+		if (!expectedTableSections.isEmpty()) {
+			expectedMarkupSection = Sections.ancestor(expectedTableSections.iterator()
+					.next(), ExpectedSparqlResultTableMarkup.class);
 		}
-		String name;
-		String additionalInfo = "";
-
-			String title = this.getDescription().replace("'", "&#39;");
-
-			if (hasConfig || hasText) {
-				if (hasConfig) {
-					Collection<Section<ExpectedSparqlResultTable>> testObj = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(config[0]);
-
-					if (!testObj.isEmpty() && Sections.ancestor(testObj.iterator()
-							.next(), ExpectedSparqlResultTableMarkup.class) != null) {
-						Section<ExpectedSparqlResultTableMarkup> markup = Sections.ancestor(testObj.iterator()
-								.next(), ExpectedSparqlResultTableMarkup.class);
-						assert(markup != null);
-						name = className;
-						additionalInfo = "(<a href = '" + KnowWEUtils.getURLLink(markup) + "'>" + config[0] + "</a> " + TestParser.concatParameters(1, config) + ")";
-					}
-					else {
-						name = className;
-						additionalInfo = "(" + TestParser.concatParameters(config) + ")";
-					}
-				} else {
-					name = className;
-					additionalInfo = text;
-				}
-			}
-			else {
-				name = testResult.getTestName();
-			}
-
-		renderResult.appendHtml("<span class='ci-test-title' title='" + title + "'>");
-		renderResult.appendHtml(name);
-		renderResult.appendHtml("<span class='ci-configuration'>" + additionalInfo + "</span>");
-		renderResult.appendHtml("</span>");
+		return expectedMarkupSection;
 	}
-
-
 }
