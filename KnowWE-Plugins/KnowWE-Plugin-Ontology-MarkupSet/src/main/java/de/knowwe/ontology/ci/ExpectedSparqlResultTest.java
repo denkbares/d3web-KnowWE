@@ -157,6 +157,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 	@Override
 	protected @Nullable Section<?> getLinkTarget(String sectionName) {
 		Collection<Section<ExpectedSparqlResultTableMarkup>> expectedQueryResultSection = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(sectionName);
+		if (expectedQueryResultSection.isEmpty()) return null;
 		return expectedQueryResultSection.iterator().next();
 	}
 }
