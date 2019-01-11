@@ -33,6 +33,7 @@
 				<include name="*/src/main/resources/webapp/" />
 
 				<exclude name="**/*.ts"/>
+				<exclude name="**/*.tsx"/>
 				<exclude name="KnowWE-Plugin-AugmentationEdit/**" />
 				<exclude name="KnowWE-Plugin-DenkbaresTmp/**" />
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
