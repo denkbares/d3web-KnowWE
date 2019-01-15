@@ -765,7 +765,6 @@ var _KU = KNOWWE.core.util;
 
 	window.addEvent('domready', function () {
 		jq$('body').addClass(KNOWWE.core.util.getTemplate());
-		console.log(KNOWWE.core.util.isAdmin());
 		if (KNOWWE.core.util.isAdmin() == "true") {
 			jq$('body').addClass("admin");
 		} else {
