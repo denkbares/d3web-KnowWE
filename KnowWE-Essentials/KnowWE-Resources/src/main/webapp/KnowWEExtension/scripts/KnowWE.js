@@ -442,6 +442,10 @@ KNOWWE.core.util = function () {
 			return jq$('#knowWEInfoTemplate').val();
 		},
 
+		isAdmin: function () {
+			return jq$('#knowWEInfoAdmin').val();
+		},
+
 		isKnowWETemplate: function () {
 			return KNOWWE.core.util.getTemplate() === "KnowWE";
 		},
@@ -761,6 +765,13 @@ var _KU = KNOWWE.core.util;
 
 	window.addEvent('domready', function () {
 		jq$('body').addClass(KNOWWE.core.util.getTemplate());
+		console.log(KNOWWE.core.util.isAdmin());
+		if (KNOWWE.core.util.isAdmin() == "true") {
+			jq$('body').addClass("admin");
+		} else {
+			jq$('body').addClass("noneAdmin");
+
+		}
 	});
 
 	if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
