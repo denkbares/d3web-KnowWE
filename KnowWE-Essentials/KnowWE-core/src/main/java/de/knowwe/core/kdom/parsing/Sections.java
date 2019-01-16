@@ -69,7 +69,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	public static Sections<RootType> $(Article article) {
-		return new Sections<>(article.getRootSection());
+		return new Sections<>((article == null) ? null : article.getRootSection());
 	}
 
 	public static <T extends Type> Sections<T> $(Section<T> section) {

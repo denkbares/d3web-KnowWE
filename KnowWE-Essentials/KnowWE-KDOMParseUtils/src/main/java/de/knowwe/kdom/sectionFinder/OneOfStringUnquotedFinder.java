@@ -39,7 +39,7 @@ public class OneOfStringUnquotedFinder implements SectionFinder {
 
 	private final MultiSectionFinder msf;
 
-	public OneOfStringUnquotedFinder(String[] values) {
+	public OneOfStringUnquotedFinder(String... values) {
 		msf = new MultiSectionFinder();
 		for (int i = 0; i < values.length; i++) {
 			msf.addSectionFinder(new UnquotedExpressionFinder(values[i]));

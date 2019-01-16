@@ -104,9 +104,13 @@ public class KeywordType extends AbstractType {
 	}
 
 	public KeywordType(SectionFinder sectionFinder, String keyWord, boolean renderPlain) {
+		this(sectionFinder, keyWord, renderPlain ? PLAIN_RENDERER : DEFAULT_RENDERER);
+	}
+
+	public KeywordType(SectionFinder sectionFinder, String keyWord, Renderer renderer) {
 		super(sectionFinder);
 		this.keyWord = keyWord;
-		setRenderer(renderPlain ? PLAIN_RENDERER : DEFAULT_RENDERER);
+		setRenderer(renderer);
 	}
 
 	@Override
