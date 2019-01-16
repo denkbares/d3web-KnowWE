@@ -316,7 +316,7 @@ td.diff {
 	border:none;
 }
 a.action.more, a.action.sectiontoc {
-	background:#3f464a url(images/arrdown.gif) 95% center no-repeat;*/
+	background:#3f464a url(images/arrdown.gif) 95% center no-repeat;
 }
 
 a.tool {
@@ -333,7 +333,7 @@ a.tool:hover {
 	border:4px solid #fc3;
 }
 #tools h4 {
-	color:#black;
+	color:black;
 	font-weight:bold;
 	border-color:#ffff99;
 }
