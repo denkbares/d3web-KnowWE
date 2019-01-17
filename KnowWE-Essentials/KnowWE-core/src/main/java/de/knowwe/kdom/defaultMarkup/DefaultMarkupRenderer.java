@@ -28,12 +28,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -54,8 +56,6 @@ import de.knowwe.core.utils.progress.ProgressRenderer;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
-
-import static java.util.stream.Collectors.toList;
 
 public class DefaultMarkupRenderer implements Renderer {
 
@@ -222,19 +222,9 @@ public class DefaultMarkupRenderer implements Renderer {
 				String message = KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization());
 				// if we have multiple other article compilers
 				Collection<Compiler> compilers = entry.getValue();
-				boolean multiCompiled = isMultiCompiled(compilers, rootSection);
-				List<String> compilerVerbalizations = compilers.stream().map(compiler -> {
-					if (compiler instanceof PackageCompiler) {
-						return ((PackageCompiler) compiler).getCompileSection().getTitle();
-					}
-					else {
-						return compiler.toString();
-					}
-				}).collect(toList());
-				if (multiCompiled) {
-					message += " (compiled in ";
-					message += Strings.concat(", ", compilerVerbalizations);
-					message += ")";
+				if (isMultiCompiled(compilers, rootSection)) {
+					message += compilers.stream().map(DefaultMarkupRenderer::getCompilerName)
+							.collect(Collectors.joining(", ", " (compiled in ", ")"));
 				}
 				messages.add(message);
 			}
@@ -245,6 +235,15 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 
 		return messages;
+	}
+
+	private static String getCompilerName(Compiler compiler) {
+		if (compiler instanceof PackageCompiler) {
+			return ((PackageCompiler) compiler).getCompileSection().getTitle();
+		}
+		else {
+			return compiler.toString();
+		}
 	}
 
 	/**
@@ -270,16 +269,14 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	private static boolean isMultiCompiled(Collection<Compiler> compilers, Section<?> rootSection) {
 		compilers.remove(null);
-		boolean moreThanOne = compilers.size() > 1;
-		if (compilers.size() == 1) {
-			Compiler compiler = compilers.iterator().next();
-			Collection<? extends Compiler> allCompilers = Compilers.getCompilers(rootSection, compiler.getClass());
-			if (allCompilers.size() > 1) {
-				// only one compiler produced the message, but there is more than one compiler compiling
-				moreThanOne = true;
-			}
-		}
-		return moreThanOne;
+		if (compilers.size() > 1) return true;
+		if (compilers.isEmpty()) return false;
+
+		// if only one compiler produced the message, and the compiler a not a singleton one,
+		// return true if multiple ones of the same class are applied to the section
+		Compiler compiler = compilers.iterator().next();
+		if (Environment.getInstance().isGlobalCompiler(compiler)) return false;
+		return Compilers.getCompilers(rootSection, compiler.getClass()).size() > 1;
 	}
 
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, RenderResult string) {

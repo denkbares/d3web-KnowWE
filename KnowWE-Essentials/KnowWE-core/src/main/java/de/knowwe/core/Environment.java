@@ -200,18 +200,28 @@ public class Environment {
 	}
 
 	private void initCompilers() {
-		CompilerManager defaultCompilerManager = Compilers.getCompilerManager(DEFAULT_WEB);
-		defaultCompilerManager.addCompiler(2, new PackageRegistrationCompiler());
-		defaultCompilerManager.addCompiler(4, new DefaultGlobalCompiler());
+		CompilerManager compilerManager = Compilers.getCompilerManager(DEFAULT_WEB);
+		compilerManager.addCompiler(2, new PackageRegistrationCompiler());
+		compilerManager.addCompiler(4, new DefaultGlobalCompiler());
 
-		List<PriorityList.Group<Double, Compiler>> priorityGroups = Plugins.getCompilers()
-				.getPriorityGroups();
-		for (PriorityList.Group<Double, Compiler> priorityGroup : priorityGroups) {
+		for (PriorityList.Group<Double, Compiler> priorityGroup : Plugins.getCompilers().getPriorityGroups()) {
 			List<Compiler> compilers = priorityGroup.getElements();
 			for (Compiler compiler : compilers) {
-				defaultCompilerManager.addCompiler(priorityGroup.getPriority(), compiler);
+				compilerManager.addCompiler(priorityGroup.getPriority(), compiler);
 			}
 		}
+	}
+
+	/**
+	 * Returns true if the specified compiler is a global singleton compiler, that is instantiated (once) for the whole
+	 * wiki, and not manually instantiated within the wiki articles.
+	 *
+	 * @param compiler the compiler to be checked
+	 * @return true if the compiler is a wiki-wide (global) singleton compiler
+	 */
+	public boolean isGlobalCompiler(Compiler compiler) {
+		// check for PackageRegistrationCompiler is redundant as being subclass of DefaultGlobalCompiler
+		return (compiler instanceof DefaultGlobalCompiler) || Plugins.getCompilers().contains(compiler);
 	}
 
 	private void initProperties() {
