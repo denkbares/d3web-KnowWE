@@ -36,7 +36,7 @@ public class AnnotationType extends AbstractType {
 
 	private final DefaultMarkup.Annotation annotation;
 
-	private static final String REGEX = "$LINESTART$\\s*(@$NAME$[:=\\s].*?)\\s*?(?=$LINESTART$\\s*@|^/?%|%%|/%|\\z)";
+	private static final String REGEX = "$LINESTART$\\s*(@$NAME$[:=\\s].*?)\\s*?(?=$LINESTART$\\s*@|^/?%|$LINESTART$%%|$LINESTART$/%|\\z)";
 
 	private static final int FLAGS = Pattern.CASE_INSENSITIVE | Pattern.MULTILINE
 			| Pattern.DOTALL;
@@ -73,7 +73,7 @@ public class AnnotationType extends AbstractType {
 		return annotation;
 	}
 
-	private class CheckContentExistsHandler extends DefaultGlobalScript<AnnotationType> {
+	private static class CheckContentExistsHandler extends DefaultGlobalScript<AnnotationType> {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AnnotationType> section) {
