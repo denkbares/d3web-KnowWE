@@ -20,6 +20,7 @@
 		<copy todir="${basedir}/target/KnowWE-App-12.1-SNAPSHOT">
 			<fileset dir="${basedir}/../KnowWE-Plugins/">
 				<include name="*/src/main/resources/webapp/" />
+				<exclude name="KnowWE-Plugin-d3web-Homepage/**" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
