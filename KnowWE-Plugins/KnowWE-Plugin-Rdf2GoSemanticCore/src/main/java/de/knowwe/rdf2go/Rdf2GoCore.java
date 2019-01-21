@@ -26,6 +26,8 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -644,6 +646,16 @@ public class Rdf2GoCore {
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(double doubleValue) {
 		return createDatatypeLiteral(String.valueOf(doubleValue), XMLSchema.DOUBLE);
+	}
+
+	/**
+	 * Creates a xsd:dateTime datatype literal with the specified dateTime value.
+	 *
+	 * @param dateValue the value of the literal
+	 * @return a datatype literal for the specified value
+	 */
+	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(LocalDate dateValue) {
+		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE), XMLSchema.DATETIME);
 	}
 
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(String literal, IRI datatype) {
