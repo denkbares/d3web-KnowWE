@@ -434,6 +434,19 @@ public class KnowWEUtils {
 	/**
 	 * Returns if the user has the write access rights to the specified article.
 	 *
+	 * @param articleTitle the title of the article to check the access rights for
+	 * @param user    the user context
+	 * @return true if the user has the write access rights to the article
+	 * @created 29.11.2013
+	 */
+	public static boolean canWrite(String articleTitle, UserContext user) {
+		return Environment.getInstance().getWikiConnector().userCanEditArticle(
+				articleTitle, user.getRequest());
+	}
+
+	/**
+	 * Returns if the user has the write access rights to the specified article.
+	 *
 	 * @param article the article to check the access rights for
 	 * @param user    the user context
 	 * @return true if the user has the write access rights to the article
