@@ -163,4 +163,8 @@ public class StatementProviderResult {
 		return this;
 	}
 
+	public StatementProviderResult addStatement(java.net.URI subject, java.net.URI predicate, java.net.URI object) {
+		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createIRI(object));
+		return this;
+	}
 }
