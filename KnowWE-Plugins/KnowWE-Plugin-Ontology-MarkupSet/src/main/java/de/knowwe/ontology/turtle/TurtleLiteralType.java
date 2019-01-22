@@ -96,16 +96,16 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			if (!validStartAndEnd(firstIndex, lastIndex)) {
 				isTripleQuoted = false;
 				// try normal double quotes
-				firstIndex = Strings.indexOf(text, "\"");
+				firstIndex = Strings.indexOfUnquoted(text, "\"");
 				if (firstIndex >= 0) {
-					lastIndex = Strings.indexOf(text, firstIndex + 1, Strings.UNQUOTED, "\"") - 1;
+					lastIndex = Strings.indexOf(text, firstIndex + 1, Strings.UNQUOTED, "\"");
 				}
 			}
 			if (!validStartAndEnd(firstIndex, lastIndex)) {
 				// try single quotes
-				firstIndex = Strings.indexOf(text, "'");
+				firstIndex = Strings.indexOfUnquoted(text, "'");
 				if (firstIndex >= 0) {
-					lastIndex = Strings.indexOf(text, firstIndex + 1, Strings.UNQUOTED, "'") - 1;
+					lastIndex = Strings.indexOf(text, firstIndex + 1, Strings.UNQUOTED, "'");
 				}
 			}
 			if (validStartAndEnd(firstIndex, lastIndex)) {
@@ -114,7 +114,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 					lastIndex += 3; // triple quotes, just add length
 				}
 				else {
-					lastIndex += firstIndex + 1 + 1; // normal or single quotes, add offset while searching + 1
+					lastIndex += firstIndex + 1; // normal or single quotes, add offset while searching + 1
 				}
 				Matcher matcher = LITERAL_SUFFIX_PATTERN.matcher(text.substring(lastIndex));
 				if (matcher.find()) {
