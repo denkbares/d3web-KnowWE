@@ -31,6 +31,7 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -73,7 +74,13 @@ public class TermInfoToolProvider implements ToolProvider {
 
 		// get sorted list of all defining articles
 		Map<String, Section<?>> articles = new HashMap<>();
-		for (TermCompiler termCompiler : Compilers.getCompilers(section, TermCompiler.class)) {
+		List<TermCompiler> compilers = new ArrayList<>(Compilers.getCompilers(section, TermCompiler.class));
+		compilers.sort((o1, o2) -> {
+			if (o1 instanceof PackageCompiler && o2 instanceof PackageCompiler) return 0;
+			if (o1 instanceof PackageCompiler) return -1;
+			return 1;
+		});
+		for (TermCompiler termCompiler : compilers) {
 			TerminologyManager manager = termCompiler.getTerminologyManager();
 			if (manager == null) continue;
 
