@@ -98,14 +98,14 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 				// try normal double quotes
 				firstIndex = Strings.indexOf(text, "\"");
 				if (firstIndex >= 0) {
-					lastIndex = Strings.indexOf(text.substring(firstIndex + 1), "\"");
+					lastIndex = Strings.indexOf(text, firstIndex + 1, Strings.UNQUOTED, "\"") - 1;
 				}
 			}
 			if (!validStartAndEnd(firstIndex, lastIndex)) {
 				// try single quotes
 				firstIndex = Strings.indexOf(text, "'");
 				if (firstIndex >= 0) {
-					lastIndex = Strings.indexOf(text.substring(firstIndex + 1), "'");
+					lastIndex = Strings.indexOf(text, firstIndex + 1, Strings.UNQUOTED, "'") - 1;
 				}
 			}
 			if (validStartAndEnd(firstIndex, lastIndex)) {
