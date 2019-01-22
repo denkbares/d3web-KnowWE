@@ -169,6 +169,7 @@ public class OntologyType extends DefaultMarkupType {
 	 */
 	@Nullable
 	public static Namespace getDefaultNamespace(OntologyCompiler compiler) {
+		if (compiler == null) return null;
 		Section<OntologyType> ontologyTypeSection = Sections.ancestor(compiler.getCompileSection(), OntologyType.class);
 		if (ontologyTypeSection == null) return null;
 		Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
