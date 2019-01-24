@@ -36,12 +36,12 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
- * @author Jochen Reutelshoefer (denkbares GmbH)
- * @created 14.11.18.
- * <p>
  * Implements a '?' as an object term in a turtle sentence or a ontology turtle table, which serves as a query and shows
  * the existing values from the ontology for the given subject and predicate concepts connected with this object term.
  * For literals, you an specify a language and the values are filtered for this language, if possible.
+ *
+ * @author Jochen Reutelshoefer (denkbares GmbH)
+ * @created 14.11.18.
  */
 public class ShowOtherExistingValuesWildCard extends AbstractType implements NodeProvider<ShowOtherExistingValuesWildCard> {
 
@@ -76,11 +76,30 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 	}
 
 	private static class ShowExistingValuesWildCardRenderer implements Renderer {
+		private static String getLanguageTag(String literal) {
+			if (literal.length() > 3 && literal.charAt(literal.length() - 3) == '@') {
+				return literal.substring(literal.length() - 2);
+			}
+			return null;
+		}
+
+		@NotNull
+		public Set<Locale> getAllLocalesWithValues(Collection<Value> valuesToShow) {
+			Set<Locale> locales = new HashSet<>();
+			for (Value value : valuesToShow) {
+				String valueString = value.toString();
+				if (getLanguageTag(valueString) != null) {
+					locales.add(Locale.forLanguageTag(Objects.requireNonNull(getLanguageTag(valueString))));
+				}
+			}
+			return locales;
+		}
+
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 			if (!(section.get() instanceof ShowOtherExistingValuesWildCard)) {
-				throw new IllegalArgumentException("Renderer only for " + ShowOtherExistingValuesWildCard.class.getSimpleName() + " but not for " + ((Type) section
-						.get()).getClass().getSimpleName());
+				throw new IllegalArgumentException("Renderer only for " + ShowOtherExistingValuesWildCard.class.getSimpleName() + " but not for " + section
+						.get().getClass().getSimpleName());
 			}
 
 			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
@@ -158,25 +177,6 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 				first = false;
 			}
 				StyleRenderer.CONTENT.renderText(")", user, result);
-		}
-
-		@NotNull
-		public Set<Locale> getAllLocalesWithValues(Collection<Value> valuesToShow) {
-			Set<Locale> locales = new HashSet<>();
-			for (Value value : valuesToShow) {
-				String valueString = value.toString();
-				if (getLanguageTag(valueString) != null) {
-					locales.add(Locale.forLanguageTag(Objects.requireNonNull(getLanguageTag(valueString))));
-				}
-			}
-			return locales;
-		}
-
-		private static String getLanguageTag(String literal) {
-			if (literal.length() > 3 && literal.charAt(literal.length() - 3) == '@') {
-				return literal.substring(literal.length() - 2, literal.length());
-			}
-			return null;
 		}
 
 		private Collection<Value> filterValuesToShow(Collection<Value> values, Section<Object> objectSection, OntologyCompiler core) {
