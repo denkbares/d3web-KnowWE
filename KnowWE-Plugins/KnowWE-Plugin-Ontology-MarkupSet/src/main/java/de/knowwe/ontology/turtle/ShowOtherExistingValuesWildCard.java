@@ -45,7 +45,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  */
 public class ShowOtherExistingValuesWildCard extends AbstractType implements NodeProvider<ShowOtherExistingValuesWildCard> {
 
-	public static final String SYMBOL = "\\?(@\\w\\w)?";
+	private static final String SYMBOL = "\\?(@\\w\\w)?";
 
 	public ShowOtherExistingValuesWildCard() {
 		this.setSectionFinder((text, father, type) -> {
@@ -98,21 +98,18 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 			if (!(section.get() instanceof ShowOtherExistingValuesWildCard)) {
-				throw new IllegalArgumentException("Renderer only for " + ShowOtherExistingValuesWildCard.class.getSimpleName() + " but not for " + section
-						.get().getClass().getSimpleName());
+				throw new IllegalArgumentException("Renderer only for " + ShowOtherExistingValuesWildCard.class.getSimpleName() +
+						" but not for " + section.get().getClass().getSimpleName());
 			}
 
 			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
 			if (compiler == null) return;
 			Rdf2GoCore core = compiler.getRdf2GoCore();
-
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 
 			Section<Object> objectSection = Sections.ancestor(section, Object.class);
-
 			assert objectSection != null;
-			Section<Subject> subjectSection = objectSection.get().findSubjectSection(objectSection);
-			Resource subjectResource = subjectSection.get().getResource(subjectSection, compiler);
+			Resource subjectResource = objectSection.get().findSubject(compiler, objectSection);
 			Section<Predicate> predicateSection = objectSection.get().getPredicateSection(objectSection);
 			IRI predicate = predicateSection.get().getIRI(predicateSection, compiler);
 			String var = "var";
@@ -134,8 +131,8 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 			StyleRenderer.CONTENT.renderText("(", user, result);
 			boolean first = true;
 			for (Value value : valuesToShow) {
-				if(!first) {
-					StyleRenderer.CONTENT.renderText(", " , user, result);
+				if (!first) {
+					StyleRenderer.CONTENT.renderText(", ", user, result);
 				}
 				if (value instanceof Literal) {
 					// handle literal values
@@ -176,13 +173,14 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 				}
 				first = false;
 			}
-				StyleRenderer.CONTENT.renderText(")", user, result);
+			StyleRenderer.CONTENT.renderText(")", user, result);
 		}
 
 		private Collection<Value> filterValuesToShow(Collection<Value> values, Section<Object> objectSection, OntologyCompiler core) {
 			Section<ObjectList> objectListSection = Sections.ancestor(objectSection, ObjectList.class);
 			Collection<Value> result = new HashSet<>(values);
 			List<Section<NodeProvider>> otherValueSections = Sections.successors(objectListSection, NodeProvider.class);
+			//noinspection unchecked
 			otherValueSections.stream().map(section -> section.get().getNode(section, core)).forEach(result::remove);
 			return result;
 		}

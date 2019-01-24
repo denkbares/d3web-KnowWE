@@ -21,49 +21,37 @@ package de.knowwe.ontology.turtle;
 import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.SimpleReference;
-import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.ontology.compile.provider.StatementProvider;
 import de.knowwe.ontology.compile.provider.StatementProviderResult;
+import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class Object extends AbstractType implements NodeProvider<Object>, StatementProvider<Object> {
 
-	/*
-	 * With strict compilation mode on, triples are not inserted into the
-	 * repository when corresponding terms have errors, i.e., do not have a
-	 * valid definition. With strict compilation mode off, triples are always
-	 * inserted into the triple store, not caring about type definitions.
-	 */
-	public static boolean STRICT_COMPILATION = false;
-
 	public Object() {
-		this.setSectionFinder(
-				(text, father, type) ->
-						SectionFinderResult.resultList(Strings.splitUnquoted(text, ",", false, TurtleMarkup.TURTLE_QUOTES)));
+		this.setSectionFinder((text, father, type) -> SectionFinderResult.resultList(
+				Strings.splitUnquoted(text, ",", false, TurtleMarkup.TURTLE_QUOTES)));
 		this.addChildType(new BlankNode());
 		this.addChildType(new BlankNodeID());
 		this.addChildType(new ShowOtherExistingValuesWildCard());
@@ -76,7 +64,6 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		this.addChildType(new LazyURIReference());
 	}
 
-	@SuppressWarnings("unchecked")
 	private Type createObjectURIWithDefinition() {
 		TurtleURI turtleURI = new TurtleURI();
 		SimpleReference reference = Types.successor(turtleURI, ResourceReference.class);
@@ -91,15 +78,10 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		}
 
 		@Override
-		protected List<Section<Predicate>> getPredicates(Section<SimpleReference> s) {
+		protected List<Section<Predicate>> getPredicates(Section<SimpleReference> reference) {
 			// find the one predicate relevant for this turtle object
-			Section<PredicateSentence> predSentence = Sections.ancestor(s,
-					PredicateSentence.class);
-			if (predSentence != null) {
-				return Sections.children(predSentence, Predicate.class);
-			}
-
-			return Collections.emptyList();
+			Section<PredicateSentence> sentence = Sections.ancestor(reference, PredicateSentence.class);
+			return (sentence != null) ? Sections.children(sentence, Predicate.class) : Collections.emptyList();
 		}
 
 		@Override
@@ -109,7 +91,6 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			boolean hasInstancePredicate = false;
 			for (Section<Predicate> section : predicates) {
 				for (String exp : matchExpressions) {
-
 					if (section.getText().matches(exp)) {
 						hasInstancePredicate = true;
 					}
@@ -123,9 +104,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			// a term, however so we can ignore this case
 			Identifier termIdentifier = s.get().getTermIdentifier(compiler, s);
 			if (termIdentifier != null) {
-				compiler.getTerminologyManager()
-						.registerTermDefinition(compiler, s, de.knowwe.ontology.kdom.resource.Resource.class,
-								termIdentifier);
+				compiler.getTerminologyManager().registerTermDefinition(
+						compiler, s, de.knowwe.ontology.kdom.resource.Resource.class, termIdentifier);
 			}
 		}
 	}
@@ -140,63 +120,36 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		 * Handle OBJECT
 		 */
 		Value object = section.get().getNode(section, compiler);
+		if (object == null) {
+			result.error("'" + section.getText() + "' is not a valid value.");
+		}
 
 		/*
-		By convention for RDF.NIL as object, we do not create something
+		 * By convention for RDF.NIL as object, we do not create something
 		 */
-		if(object.stringValue().equals(RDF.NIL.toString())) {
+		if (object != null && object.stringValue().equals(RDF.NIL.toString())) {
 			return result;
-		}
-
-		/*
-		check whether object is defined
-		 */
-		Section<TurtleURI> turtleURITermObject = Sections.child(section, TurtleURI.class);
-		if (turtleURITermObject != null && STRICT_COMPILATION) {
-			boolean isDefined = checkTurtleURIDefinition(turtleURITermObject);
-			if (!isDefined) {
-				// error message is already rendered by term reference renderer
-				// we do not insert statement in this case
-				object = null;
-				termError = true;
-			}
-		}
-		if (object == null && !termError) {
-			result.error("'" + section.getText().replaceAll("\\s+", " ") + "' is not a valid object.");
 		}
 
 		/*
 		 * Handle PREDICATE
 		 */
-
 		Section<Predicate> predicateSection = getPredicateSection(section);
-
 		if (predicateSection == null) {
 			return result.error("No predicate section found: " + section);
 		}
 
-		org.eclipse.rdf4j.model.URI predicate = predicateSection.get().getIRI(predicateSection, compiler);
+		IRI predicate = predicateSection.get().getIRI(predicateSection, compiler);
 
 		// check term definition
-		Section<TurtleURI> turtleURITerm = Sections.successor(predicateSection, TurtleURI.class);
-		if (turtleURITerm != null && STRICT_COMPILATION) {
-			boolean isDefined = checkTurtleURIDefinition(turtleURITerm);
-			if (!isDefined) {
-				// error message is already rendered by term reference renderer
-				// we do not insert statement in this case
-				predicate = null;
-				termError = true;
-			}
-		}
-
-		if (predicate == null && !termError) {
+		if (predicate == null) {
 			result.error("'" + predicateSection.getText() + "' is not a valid predicate.");
 		}
 
 		/*
 		 * Handle SUBJECT
 		 */
-		org.eclipse.rdf4j.model.Resource subject = getSubject(compiler, result, termError, section);
+		org.eclipse.rdf4j.model.Resource subject = findSubject(compiler, result, section);
 
 		// create statement if all nodes are present
 		if (object != null && predicate != null && subject != null) {
@@ -211,7 +164,8 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		return Sections.child(predSentenceSection, Predicate.class);
 	}
 
-	public @Nullable Resource getSubject(Rdf2GoCompiler core, StatementProviderResult result, boolean termError, Section<? extends Object> section) {
+	@Nullable
+	protected Resource findSubject(Rdf2GoCompiler core, StatementProviderResult result, Section<? extends Object> section) {
 		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section, PredicateSentence.class);
 		assert predSentenceSection != null;
 
@@ -226,63 +180,31 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			}
 		}
 		else {
-
-			Section<Subject> subjectSection = findSubjectSection(predSentenceSection);
-			subject = subjectSection.get().getResource(subjectSection, core);
-
-			// check term definition
-			Section<TurtleURI> turtleURITermSubject = Sections.child(subjectSection,
-					TurtleURI.class);
-			if (turtleURITermSubject != null && STRICT_COMPILATION) {
-				boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
-				if (!isDefined) {
-					// error message is already rendered by term reference
-					// renderer
-					// we do not insert statement in this case
-					subject = null;
-					termError = true;
-				}
-			}
-
-			if (subject == null && !termError) {
-				result.addMessage(Messages.error("'" + subjectSection.getText()
-						+ "' is not a valid subject."));
-			}
+			subject = findSubject(core, predSentenceSection);
 		}
 		return subject;
 	}
 
-	public Section<Subject> findSubjectSection(Section<?> section) {
-		if(! (section.get() instanceof TurtleSentence)) {
-			section = Sections.ancestor(section,
-					TurtleSentence.class);
+	public Resource findSubject(Rdf2GoCompiler compiler, Section<?> section) {
+		if (!(section.get() instanceof TurtleSentence)) {
+			section = Sections.ancestor(section, TurtleSentence.class);
 		}
-		return Sections.successor(section,
-				Subject.class);
-	}
-
-	protected boolean checkTurtleURIDefinition(Section<TurtleURI> turtleURITerm) {
-		TermCompiler compiler = Compilers.getCompiler(turtleURITerm, TermCompiler.class);
-		TerminologyManager terminologyManager = compiler.getTerminologyManager();
-		Section<TermReference> term = Sections.successor(turtleURITerm, TermReference.class);
-		return terminologyManager.isDefinedTerm(term.get().getTermIdentifier(compiler, term));
+		Section<Subject> subject = Sections.successor(section, Subject.class);
+		if (subject == null) return null;
+		return subject.get().getResource(subject, compiler);
 	}
 
 	@Override
-	@SuppressWarnings({
-			"rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Value getNode(Section<? extends Object> section, Rdf2GoCompiler core) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
-		List<Section<NodeProvider>> nodeProviderSections = Sections.children(section,
-				NodeProvider.class);
-		if (nodeProviderSections != null) {
-			if (nodeProviderSections.size() == 1) {
+		List<Section<NodeProvider>> nodeProviderSections = Sections.children(section, NodeProvider.class);
 
-				Section<NodeProvider> nodeProvider = nodeProviderSections.get(0);
-				return nodeProvider.get().getNode(nodeProvider, core);
-			}
-			// if there are more NodeProvider we return null to force an error
+		// if there are more NodeProvider we return null to force an error
+		if (nodeProviderSections != null && nodeProviderSections.size() == 1) {
+			Section<NodeProvider> nodeProvider = nodeProviderSections.get(0);
+			return nodeProvider.get().getNode(nodeProvider, core);
 		}
 		return null;
 	}

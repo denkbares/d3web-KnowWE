@@ -38,6 +38,7 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.Table;
+import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
@@ -51,6 +52,8 @@ import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
  * @author Sebastian Furth (denkbares GmbH)
  * @created 27.04.15
@@ -63,14 +66,19 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("OntologyTable");
-		Table content = new Table();
-		MARKUP.addContentType(content);
+		MARKUP.addContentType(createContentTable());
 		PackageManager.addPackageAnnotation(MARKUP);
 
 		MARKUP.addAnnotation(ANNOTATION_TYPE_RELATION, false);
 		MARKUP.addAnnotationContentType(ANNOTATION_TYPE_RELATION, new TurtleURI());
+	}
 
+	public OntologyTableMarkup() {
+		super(MARKUP);
+	}
 
+	public static Table createContentTable() {
+		Table table = new Table();
 		/*
 		Cell 0,0
 		 */
@@ -78,7 +86,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		cell00.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(0, 1, 0, 1)));
-		content.injectTableCellContentChildtype(cell00);
+		table.injectTableCellContentChildtype(cell00);
 
 		/*
 		First column: cells 0, 1-n
@@ -87,7 +95,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		resource.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(0, 1, 1, Integer.MAX_VALUE)));
-		content.injectTableCellContentChildtype(resource);
+		table.injectTableCellContentChildtype(resource);
 
 		/*
 		Header Row: cells 1-n, 0
@@ -96,8 +104,8 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		TableIndexConstraint constraint = new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1);
 		Predicate property = new Predicate();
 		property.setSectionFinder(new ConstraintSectionFinder(new AllTextFinderTrimmed(), constraint));
-		content.injectTableCellContentChildtype(new ColumnLocale(constraint));
-		content.injectTableCellContentChildtype(property);
+		table.injectTableCellContentChildtype(new ColumnLocale(constraint));
+		table.injectTableCellContentChildtype(property);
 
 		/*
 		Inner cell entries: cells 1-n,1-n
@@ -108,11 +116,9 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		cellEntry.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
-		content.injectTableCellContentChildtype(cellEntry);
-	}
+		table.injectTableCellContentChildtype(cellEntry);
 
-	public OntologyTableMarkup() {
-		super(MARKUP);
+		return table;
 	}
 
 	private static class ColumnLocale extends AbstractType {
@@ -139,34 +145,19 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		}
 
 		@Override
-		public Section<Subject> findSubjectSection(Section<?> section) {
-			return findSubjectSecTable(section);
+		public Resource findSubject(Rdf2GoCompiler compiler, Section<?> section) {
+			Section<Subject> subjectSection = findSubjectSecTable(section);
+			return subjectSection.get().getResource(subjectSection, compiler);
 		}
 
 		@Override
-		public @Nullable Resource getSubject(Rdf2GoCompiler core, StatementProviderResult result, boolean termError, Section<? extends Object> section) {
-			Resource subject;
-
-			Section<Subject> subjectSection = findSubjectSecTable(section);
-			subject = subjectSection.get().getResource(subjectSection, core);
-
-			// check term definition
-			Section<TurtleURI> turtleURITermSubject = Sections.child(subjectSection,
-					TurtleURI.class);
-			if (turtleURITermSubject != null && Object.STRICT_COMPILATION) {
-				boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
-				if (!isDefined) {
-					// error message is already rendered by term reference
-					// renderer
-					// we do not insert statement in this case
-					subject = null;
-					termError = true;
-				}
-			}
-
-			if (subject == null && !termError) {
-				result.addMessage(Messages.error("'" + subjectSection.getText()
-						+ "' is not a valid subject."));
+		@Nullable
+		public Resource findSubject(Rdf2GoCompiler core, StatementProviderResult result, Section<? extends Object> section) {
+			Resource subject = findSubject(core, section);
+			if (subject == null) {
+				Section<TableCellContent> subjectCell = $(section).ancestor(TableLine.class)
+						.successor(TableCellContent.class).getFirst();
+				result.addMessage(Messages.error("'" + subjectCell.getText() + "' is not a valid subject."));
 			}
 			return subject;
 		}
