@@ -114,7 +114,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 					lastIndex += 3; // triple quotes, just add length
 				}
 				else {
-					lastIndex += firstIndex + 1; // normal or single quotes, add offset while searching + 1
+					lastIndex += 1; // normal or single quotes, add offset while searching + 1
 				}
 				Matcher matcher = LITERAL_SUFFIX_PATTERN.matcher(text.substring(lastIndex));
 				if (matcher.find()) {
