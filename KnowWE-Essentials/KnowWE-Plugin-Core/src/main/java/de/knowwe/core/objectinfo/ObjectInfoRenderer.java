@@ -90,13 +90,11 @@ public class ObjectInfoRenderer implements Renderer {
 
 		Section<ObjectInfoType> tagNameSection = Sections.successor(
 				section, ObjectInfoType.class);
-		String sectionID = section.getID();
 		ToolSet tools = ToolUtils.getTools(tagNameSection, userContext);
 
 		// RenderResult jspMasked = new RenderResult(result);
-		String cssClassName = "type_" + section.get().getName();
-		defaultMarkupRenderer.renderDefaultMarkupStyled("ObjectInfo", content.toStringRaw(),
-				sectionID, cssClassName, tools, userContext, result);
+		defaultMarkupRenderer.renderDefaultMarkupStyled("ObjectInfo",
+				content.toStringRaw(), section, tools, userContext, result);
 		// result.appendJSPWikiMarkup(jspMasked);
 	}
 

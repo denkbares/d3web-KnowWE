@@ -81,44 +81,17 @@ public class DefaultMarkupRenderer implements Renderer {
 		return iconPath;
 	}
 
-	@Override
-	public void render(Section<?> section, UserContext user, RenderResult result) {
-		String id = section.getID();
-		ToolSet tools = getTools(section, user);
+	private static boolean isMultiCompiled(Collection<Compiler> compilers, Section<?> rootSection) {
+		compilers.remove(null);
+		if (compilers.size() > 1) return true;
+		if (compilers.isEmpty()) return false;
 
-		// add an anchor to enable direct link to the section
-		RenderResult markupTitle = new RenderResult(result);
-		KnowWEUtils.renderAnchor(section, markupTitle);
-
-		// render markup title
-		renderTitle(section, user, markupTitle);
-
-		// create content
-		RenderResult content = new RenderResult(result);
-
-		// render messages and content
-		if (section.get() instanceof DefaultMarkupType) {
-			// only render messages if this is a DefaultMarkupType section (can be other e.g. in %%Include)
-			renderMessages(section, content, user);
-		}
-		renderProgress(section, user, tools, content);
-		int validLength = content.length();
-		try {
-			renderContents(section, user, content);
-		}
-		catch (Throwable e) {
-			content.delete(validLength, content.length());
-			content.appendHtmlElement("span", "Error while rendering content, if the problem persists, "
-					+ "please contact your administrator.\n"
-					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error");
-			Log.severe("Exception while rendering content of " + section.get().getName(), e);
-		}
-
-		String cssClassName = "type_" + section.get().getName();
-
-		renderDefaultMarkupStyled(
-				markupTitle.toStringRaw(), content.toStringRaw(),
-				id, cssClassName, tools, user, result);
+		// if only one compiler produced the message, and the compiler a not a singleton one,
+		// return true if multiple ones of the same class are applied to the section
+		Compiler compiler = compilers.iterator().next();
+		//noinspection SimplifiableIfStatement
+		if (Environment.getInstance().isGlobalCompiler(compiler)) return false;
+		return Compilers.getCompilers(rootSection, compiler.getClass()).size() > 1;
 	}
 
 	protected ToolSet getTools(Section<?> section, UserContext user) {
@@ -267,16 +240,41 @@ public class DefaultMarkupRenderer implements Renderer {
 						"This section does not belong to a package that is used to compile knowledge."));
 	}
 
-	private static boolean isMultiCompiled(Collection<Compiler> compilers, Section<?> rootSection) {
-		compilers.remove(null);
-		if (compilers.size() > 1) return true;
-		if (compilers.isEmpty()) return false;
+	@Override
+	public void render(Section<?> section, UserContext user, RenderResult result) {
+		ToolSet tools = getTools(section, user);
 
-		// if only one compiler produced the message, and the compiler a not a singleton one,
-		// return true if multiple ones of the same class are applied to the section
-		Compiler compiler = compilers.iterator().next();
-		if (Environment.getInstance().isGlobalCompiler(compiler)) return false;
-		return Compilers.getCompilers(rootSection, compiler.getClass()).size() > 1;
+		// add an anchor to enable direct link to the section
+		RenderResult markupTitle = new RenderResult(result);
+		KnowWEUtils.renderAnchor(section, markupTitle);
+
+		// render markup title
+		renderTitle(section, user, markupTitle);
+
+		// create content
+		RenderResult content = new RenderResult(result);
+
+		// render messages and content
+		if (section.get() instanceof DefaultMarkupType) {
+			// only render messages if this is a DefaultMarkupType section (can be other e.g. in %%Include)
+			renderMessages(section, content, user);
+		}
+		renderProgress(section, user, tools, content);
+		int validLength = content.length();
+		try {
+			renderContents(section, user, content);
+		}
+		catch (Throwable e) {
+			content.delete(validLength, content.length());
+			content.appendHtmlElement("span", "Error while rendering content, if the problem persists, "
+					+ "please contact your administrator.\n"
+					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error");
+			Log.severe("Exception while rendering content of " + section.get().getName(), e);
+		}
+
+		renderDefaultMarkupStyled(
+				markupTitle.toStringRaw(), content.toStringRaw(),
+				section, tools, user, result);
 	}
 
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, RenderResult string) {
@@ -361,15 +359,16 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public void renderDefaultMarkupStyled(String title,
 										  String content,
-										  String sectionID,
-										  String cssClassName,
+										  Section<?> section,
 										  ToolSet tools,
 										  UserContext user,
 										  RenderResult string) {
 
-		String cssClass = "defaultMarkupFrame toolMenuParent";
-		if (cssClassName != null) cssClass += " " + cssClassName;
-		string.appendHtml("<div id=\"" + sectionID + "\" class='" + cssClass + "'>\n");
+		String sectionID = section.getID();
+		string.appendHtmlTag("div",
+				"id", sectionID, "class",
+				"defaultMarkupFrame toolMenuParent type_" + section.get().getName(),
+				"data-name", section.get().getName());
 
 		appendHeader(title, sectionID, tools, user, string);
 

@@ -83,14 +83,12 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		Section<TagHandlerTypeContent> tagNameSection = Sections.successor(
 				section, TagHandlerTypeContent.class);
-		String sectionID = section.getID();
 		ToolSet tools = ToolUtils.getTools(tagNameSection, userContext);
 
 		RenderResult jspMasked = new RenderResult(result);
-		String cssClassName = "type_" + section.get().getName();
 		defaultMarkupRenderer.renderDefaultMarkupStyled("ObjectInfo",
 				content.toStringRaw(),
-				sectionID, cssClassName, tools, userContext, result);
+				section, tools, userContext, result);
 		result.appendJSPWikiMarkup(jspMasked);
 	}
 
