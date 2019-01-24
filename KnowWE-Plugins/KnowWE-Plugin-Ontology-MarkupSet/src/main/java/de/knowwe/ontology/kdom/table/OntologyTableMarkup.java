@@ -18,14 +18,21 @@
  */
 package de.knowwe.ontology.kdom.table;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Locale;
+
+import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -34,13 +41,13 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
+import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.ontology.turtle.EncodedTurtleURI;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleURI;
-import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 
@@ -53,7 +60,6 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 	private static final DefaultMarkup MARKUP;
 
 	public static final String ANNOTATION_TYPE_RELATION = "typeRelation";
-
 
 	static {
 		MARKUP = new DefaultMarkup("OntologyTable");
@@ -85,11 +91,12 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 
 		/*
 		Header Row: cells 1-n, 0
+		in Addition the cell header may allow to specify a default language-tag
 		 */
+		TableIndexConstraint constraint = new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1);
 		Predicate property = new Predicate();
-		property.setSectionFinder(new ConstraintSectionFinder(
-				new AllTextFinderTrimmed(),
-				new TableIndexConstraint(1, Integer.MAX_VALUE, 0, 1)));
+		property.setSectionFinder(new ConstraintSectionFinder(new AllTextFinderTrimmed(), constraint));
+		content.injectTableCellContentChildtype(new ColumnLocale(constraint));
 		content.injectTableCellContentChildtype(property);
 
 		/*
@@ -102,16 +109,20 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
 		content.injectTableCellContentChildtype(cellEntry);
-
 	}
 
 	public OntologyTableMarkup() {
 		super(MARKUP);
 	}
 
+	private static class ColumnLocale extends AbstractType {
+		public ColumnLocale(TableIndexConstraint constraint) {
+			setSectionFinder(new ConstraintSectionFinder(new RegexSectionFinder("(?i)@[a-z\\-_]+\\s*$"), constraint));
+			addChildType(new LocaleType("@"));
+		}
+	}
 
 	public static class OntologyTableTurtleObject extends Object {
-
 
 		@Override
 		public Section<Predicate> getPredicateSection(Section<? extends Object> section) {
@@ -136,38 +147,59 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		public @Nullable Resource getSubject(Rdf2GoCompiler core, StatementProviderResult result, boolean termError, Section<? extends Object> section) {
 			Resource subject;
 
-				Section<Subject> subjectSection = findSubjectSecTable(section);
-				subject = subjectSection.get().getResource(subjectSection, core);
+			Section<Subject> subjectSection = findSubjectSecTable(section);
+			subject = subjectSection.get().getResource(subjectSection, core);
 
-				// check term definition
-				Section<TurtleURI> turtleURITermSubject = Sections.child(subjectSection,
-						TurtleURI.class);
-				if (turtleURITermSubject != null && Object.STRICT_COMPILATION) {
-					boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
-					if (!isDefined) {
-						// error message is already rendered by term reference
-						// renderer
-						// we do not insert statement in this case
-						subject = null;
-						termError = true;
-					}
+			// check term definition
+			Section<TurtleURI> turtleURITermSubject = Sections.child(subjectSection,
+					TurtleURI.class);
+			if (turtleURITermSubject != null && Object.STRICT_COMPILATION) {
+				boolean isDefined = checkTurtleURIDefinition(turtleURITermSubject);
+				if (!isDefined) {
+					// error message is already rendered by term reference
+					// renderer
+					// we do not insert statement in this case
+					subject = null;
+					termError = true;
 				}
+			}
 
-				if (subject == null && !termError) {
-					result.addMessage(Messages.error("'" + subjectSection.getText()
-							+ "' is not a valid subject."));
-				}
+			if (subject == null && !termError) {
+				result.addMessage(Messages.error("'" + subjectSection.getText()
+						+ "' is not a valid subject."));
+			}
 			return subject;
+		}
+
+		@Override
+		public Value getNode(Section<? extends Object> section, Rdf2GoCompiler core) {
+			// we get the node from the object,
+			// but if the value is a string literal, without a tagged language,
+			// we apply a potentially available column lanuage
+			Value value = super.getNode(section, core);
+			if (!(value instanceof Literal)) return value;
+
+			// according to specification, a non-language tagged literal string value always returns XMLSchema#STRING
+			Literal literal = (Literal) value;
+			if (!XMLSchema.STRING.equals(literal.getDatatype())) return value;
+
+			// check if there is a column locale specified in the header
+			Section<LocaleType> locale = TableUtils.getColumnHeader(section, LocaleType.class);
+			if (locale == null) return value;
+
+			// create a new string literal that adds the column language
+			String text = literal.stringValue();
+			Locale lang = locale.get().getLocale(locale);
+			return core.getRdf2GoCore().createLanguageTaggedLiteral(text, lang);
 		}
 	}
 
 	public static class BasicURIType extends AbstractType {
 		public BasicURIType() {
-			this.setSectionFinder( new AllTextFinderTrimmed());
+			this.setSectionFinder(new AllTextFinderTrimmed());
 			this.addChildType(new EncodedTurtleURI());
 			this.addChildType(new TurtleURI());
 			this.addChildType(new LazyURIReference());
 		}
-
 	}
 }
