@@ -461,7 +461,7 @@ td .information, td .warning, td .error {
 .defaultMarkup .markupText .error.singleLine,
 .defaultMarkup .markupText .warning.singleLine,
 .defaultMarkup .markupText .information.singleLine {
-	padding-top: 13px;
+	/*padding-top: 13px;*/
 	min-height: 24px;
 }
 
