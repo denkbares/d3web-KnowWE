@@ -21,7 +21,7 @@ import de.knowwe.kdom.renderer.TooltipRenderer;
  */
 public class LocaleType extends AbstractType {
 
-	private static final String LOCALE_REGEX = "\\w{2,}(?:[.-_]\\w{2,})?";
+	private static final String LOCALE_REGEX = "\\w{2,}(?:[.\\-_]\\w{2,})?";
 
 	public LocaleType() {
 		this("");
