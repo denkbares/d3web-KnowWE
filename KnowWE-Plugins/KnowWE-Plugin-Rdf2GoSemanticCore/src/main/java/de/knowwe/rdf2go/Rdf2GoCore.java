@@ -667,11 +667,7 @@ public class Rdf2GoCore {
 	}
 
 	public org.eclipse.rdf4j.model.Literal createLanguageTaggedLiteral(String text, Locale tag) {
-		if (Locales.isEmpty(tag)) return createLiteral(text);
-		String lang = tag.toLanguageTag();
-		String country = tag.getCountry();
-		if (Strings.nonBlank(country)) lang += "-" + country.toLowerCase();
-		return getValueFactory().createLiteral(text, lang);
+		return Locales.isEmpty(tag) ? createLiteral(text) : createLanguageTaggedLiteral(text, tag.toLanguageTag());
 	}
 
 	public org.eclipse.rdf4j.model.Literal createLanguageTaggedLiteral(Text text) {
