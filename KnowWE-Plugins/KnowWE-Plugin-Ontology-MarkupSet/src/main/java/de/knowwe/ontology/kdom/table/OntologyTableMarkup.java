@@ -193,6 +193,8 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 			Section<LocaleType> locale = TableUtils.getColumnHeader(section, LocaleType.class);
 			Locale lang = locale.get().getLocale(locale);
 			String text = Strings.unquote(section.getText());
+			// unescape jspwiki text (forced returns and escaped characters) and create the literal
+			text = text.replace("\\\\", "\n").replaceAll("~(.)", "$1");
 			return core.getRdf2GoCore().createLanguageTaggedLiteral(text, lang);
 		}
 
