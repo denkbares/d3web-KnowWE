@@ -37,13 +37,13 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.Table;
-import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
@@ -58,8 +58,6 @@ import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-
-import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -169,9 +167,11 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		public Resource findSubject(Rdf2GoCompiler core, StatementProviderResult result, Section<? extends Object> section) {
 			Resource subject = findSubject(core, section);
 			if (subject == null) {
-				Section<TableCellContent> subjectCell = $(section).ancestor(TableLine.class)
-						.successor(TableCellContent.class).getFirst();
-				result.addMessage(Messages.error("'" + subjectCell.getText() + "' is not a valid subject."));
+				Section<Subject> subjectSection = findSubjectSecTable(section);
+				// add error message, but only if there is not already an error message in the subject itself
+				if (Messages.getMessagesFromSubtree(core, subjectSection, Message.Type.ERROR).isEmpty()) {
+					result.addMessage(Messages.error("'" + subjectSection.getText() + "' is not a valid subject."));
+				}
 			}
 			return subject;
 		}
