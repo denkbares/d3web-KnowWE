@@ -18,23 +18,28 @@
  */
 package de.knowwe.ontology.kdom.table;
 
+import java.util.List;
 import java.util.Locale;
 
-import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.basicType.LocaleType;
+import de.knowwe.core.kdom.basicType.UnrecognizedSyntaxType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.kdom.constraint.SectionFinderConstraint;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.Table;
@@ -42,12 +47,14 @@ import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.ontology.turtle.EncodedTurtleURI;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
 import de.knowwe.ontology.turtle.Predicate;
 import de.knowwe.ontology.turtle.Subject;
+import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
@@ -110,9 +117,9 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		/*
 		Inner cell entries: cells 1-n,1-n
 		 */
-		ObjectList object = new ObjectList(new OntologyTableTurtleObject());
+		// use
 		// add aux-type to enable drop-area-rendering
-		OntologyTableCellEntry cellEntry = new OntologyTableCellEntry(object);
+		OntologyTableCellEntry cellEntry = new OntologyTableCellEntry(new ObjectList(new OntologyTableTurtleObject()));
 		cellEntry.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
@@ -125,10 +132,17 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		public ColumnLocale(TableIndexConstraint constraint) {
 			setSectionFinder(new ConstraintSectionFinder(new RegexSectionFinder("(?i)@[a-z\\-_]+\\s*$"), constraint));
 			addChildType(new LocaleType("@"));
+			addChildType(new KeywordType("@"));
+			addChildType(UnrecognizedSyntaxType.getInstance());
 		}
 	}
 
 	public static class OntologyTableTurtleObject extends Object {
+
+		public OntologyTableTurtleObject() {
+			// add a type that consumes the cell content as a string literal, but only if the header is language-tagged
+			addChildType(4, new UnquotedStringLiteral());
+		}
 
 		@Override
 		public Section<Predicate> getPredicateSection(Section<? extends Object> section) {
@@ -161,27 +175,31 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 			}
 			return subject;
 		}
+	}
+
+	/**
+	 * High-priority node provider, that matches the whole cell content, potentially quoted, but only for cells in
+	 * columns with a language-tagged header. It over-rules the other cell types, and always returns tagged string
+	 * literals.
+	 */
+	private static class UnquotedStringLiteral extends AbstractType implements NodeProvider<TurtleLiteralType>, SectionFinderConstraint {
+
+		public UnquotedStringLiteral() {
+			setSectionFinder(new ConstraintSectionFinder(AllTextFinderTrimmed.getInstance(), this));
+		}
 
 		@Override
-		public Value getNode(Section<? extends Object> section, Rdf2GoCompiler core) {
-			// we get the node from the object,
-			// but if the value is a string literal, without a tagged language,
-			// we apply a potentially available column lanuage
-			Value value = super.getNode(section, core);
-			if (!(value instanceof Literal)) return value;
-
-			// according to specification, a non-language tagged literal string value always returns XMLSchema#STRING
-			Literal literal = (Literal) value;
-			if (!XMLSchema.STRING.equals(literal.getDatatype())) return value;
-
-			// check if there is a column locale specified in the header
+		public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
 			Section<LocaleType> locale = TableUtils.getColumnHeader(section, LocaleType.class);
-			if (locale == null) return value;
-
-			// create a new string literal that adds the column language
-			String text = literal.stringValue();
 			Locale lang = locale.get().getLocale(locale);
+			String text = Strings.unquote(section.getText());
 			return core.getRdf2GoCore().createLanguageTaggedLiteral(text, lang);
+		}
+
+		@Override
+		public <T extends Type> void filterCorrectResults(List<SectionFinderResult> found, Section<?> father, Class<T> type, String text) {
+			// if the cell's header is not language tagged, do not accept (clear) the match
+			if (TableUtils.getColumnHeader(father, LocaleType.class) == null) found.clear();
 		}
 	}
 
