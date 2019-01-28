@@ -17,14 +17,14 @@
  * site: http://www.fsf.org.
  */
 
-KNOWWE = typeof KNOWWE === "undefined" ? {}: KNOWWE;
+KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
 (function init() {
 	window.addEvent('domready', _KL.setup);
 	if (window.location.search !== "?page=Create%20new%20EDB%20entry") if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-		window.addEvent('domready', function() {
+		window.addEvent('domready', function () {
 			KNOWWE.core.plugin.dropZone.initAttachToExisting();
 		});
 	}
@@ -34,9 +34,10 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 /**
  * Namespace: KNOWWE.core.plugin.dropZone for debugging d3web expressions in KnowWE
  */
-KNOWWE.core.plugin.dropZone = function() {
+KNOWWE.core.plugin.dropZone = function () {
 
 	function handleDragOver(event) {
+		if (!isEventWithFiles(event)) return;
 		event.stopPropagation();
 		event.preventDefault();
 		setDragOverStyle(event.target);
@@ -52,6 +53,7 @@ KNOWWE.core.plugin.dropZone = function() {
 	}
 
 	function prepareUploadData(event, pageName) {
+		if (!isEventWithFiles(event)) return;
 		event.stopPropagation();
 		event.preventDefault();
 		let form = jq$(event.target).closest('.dropzone').find('.drop-indicator').first();
@@ -71,7 +73,7 @@ KNOWWE.core.plugin.dropZone = function() {
 				files.append(input.context.files); // Manually chosen files w/ file chooser
 			} else {
 				setClass(event.target, "uploading", "Not a valid attachment...");
-				setTimeout(function() {
+				setTimeout(function () {
 					resetStyle(event.target, "Drop attachment(s) here");
 				}, 1000);
 				return null;
@@ -79,7 +81,7 @@ KNOWWE.core.plugin.dropZone = function() {
 		}
 
 		setUploadingStyle(event.target);
-		Array.prototype.forEach.call(files, function(file) {
+		Array.prototype.forEach.call(files, function (file) {
 			ajaxData.append(input.attr('name'), file);
 		});
 
@@ -87,6 +89,11 @@ KNOWWE.core.plugin.dropZone = function() {
 			form: form,
 			ajaxData: ajaxData
 		}
+	}
+
+	function isEventWithFiles(event) {
+		var temp = (event.originalEvent || event).dataTransfer;
+		return temp && (temp = temp.types) && (temp.indexOf('Files') !== -1);
 	}
 
 	function ajaxData(uploadData, event) {
@@ -97,20 +104,20 @@ KNOWWE.core.plugin.dropZone = function() {
 			cache: false,
 			contentType: false,
 			processData: false,
-			success: function() {
+			success: function () {
 				setUploadedStyle(event.target);
 				if (!event.reload) {
-					setTimeout(function() {
+					setTimeout(function () {
 						resetStyle(event.target, "Drop attachment(s) here")
 					}, 1000)
 					if (event.callback) event.callback();
 				} else {
-					setTimeout(function() {
+					setTimeout(function () {
 						window.location.reload();
 					}, 1000);
 				}
 			},
-			error: function(data) {
+			error: function (data) {
 				KNOWWE.notification.error(data.responseText);
 				resetStyle(event.target, "Drop attachment(s) here");
 			}
@@ -118,6 +125,7 @@ KNOWWE.core.plugin.dropZone = function() {
 	}
 
 	function handleDropToExisting(event) {
+		if (!isEventWithFiles(event)) return;
 		event.reload = true;
 		const uploadData = prepareUploadData(event)
 		ajaxData(uploadData, event);
@@ -159,7 +167,7 @@ KNOWWE.core.plugin.dropZone = function() {
 			'<form class="drop-indicator" method="post" action=' + actionUrl + ' enctype="multipart/form-data">' +
 			'  <div class="box-input">' +
 			'    <input style="display: none" class="box__file" type="file" name="files" id="file" ' +
-			(multiple ? 'data-multiple-caption="{count} files selected" multiple': '') + ' />' +
+			(multiple ? 'data-multiple-caption="{count} files selected" multiple' : '') + ' />' +
 			'    <label for="file"><span class="box__dragndrop"/>' + title + '</span></label>' +
 			'  </div>' +
 			'</form>';
@@ -177,31 +185,31 @@ KNOWWE.core.plugin.dropZone = function() {
 
 	return {
 
-		prepareUploadData: function(event, name) {
+		prepareUploadData: function (event, name) {
 			return prepareUploadData(event, name);
 		},
 
-		uploadData: function(data, event) {
+		uploadData: function (data, event) {
 			ajaxData(data, event)
 		},
 
-		setDropZoneStyleUploading: function(element) {
+		setDropZoneStyleUploading: function (element) {
 			setUploadingStyle(element);
 		},
 
-		setDropZoneStyleUploaded: function(element) {
+		setDropZoneStyleUploaded: function (element) {
 			setUploadedStyle(element)
 		},
 
-		resetDropZoneStyle: function(element, title) {
+		resetDropZoneStyle: function (element, title) {
 			resetStyle(element, title);
 		},
 
-		initAttachToExisting: function() {
+		initAttachToExisting: function () {
 			KNOWWE.core.plugin.dropZone.addDropZoneTo('div.page', "Drop attachment(s)", handleDropToExisting)
 		},
 
-		addDropZoneTo: function(elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
+		addDropZoneTo: function (elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
 			if (!actionUrl) actionUrl = 'attach';
 			if (!mode) mode = "full-height";
 			if (typeof multiple === "undefined") multiple = true;
@@ -211,7 +219,7 @@ KNOWWE.core.plugin.dropZone = function() {
 			const elements = jq$(elementSelector);
 			attachDropZoneToElement(elements, actionUrl, multiple, title, mode);
 
-			elements.each(function() {
+			elements.each(function () {
 				this.addEventListener('dragover', handleDragOver);
 				this.addEventListener('drop', dropHandlerCallback);
 			});
