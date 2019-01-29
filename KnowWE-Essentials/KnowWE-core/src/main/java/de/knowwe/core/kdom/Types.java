@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -102,6 +103,21 @@ public class Types {
 				clazz.cast(type).setRenderer(renderer);
 			}
 		}
+	}
+
+
+	/**
+	 * Adds the given child type <tt>childTypeToAdd</tt> to the first successor of the given <tt>hierarchy</tt> with the
+	 * type <tt>parentTypeClass</tt>.
+	 *
+	 * @param type       the type hierarchy in which we want to add the ne child type for one of its successors
+	 * @param parentTypeClass the class of the type where the new child type should be added to
+	 * @param childTypeToAdd  the new type to be added as a child
+	 */
+	public static void injectChildTypeToSuccessor(Type type, Class<? extends Type> parentTypeClass, Type childTypeToAdd) {
+		Type successor = successor(type, parentTypeClass);
+		Objects.requireNonNull(successor);
+		successor.addChildType(childTypeToAdd);
 	}
 
 	public static boolean replaceType(Type typeHierarchy, Class<? extends Type> typeToReplace, Type newType) {
@@ -265,4 +281,5 @@ public class Types {
 		return !AbstractType.class.isAssignableFrom(clazz)
 				|| type.getPotentialSuccessorTypes().contains(clazz);
 	}
+
 }
