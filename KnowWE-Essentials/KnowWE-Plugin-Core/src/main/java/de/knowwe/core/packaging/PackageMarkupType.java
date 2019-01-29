@@ -33,7 +33,7 @@ public class PackageMarkupType extends DefaultMarkupType {
 				DefaultMarkupPackageRegistrationScript.class);
 	}
 
-	private static class SetDefaultPackageHandler extends PackageRegistrationScript<PackageTerm> {
+	public static class SetDefaultPackageHandler extends PackageRegistrationScript<PackageTerm> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
@@ -50,7 +50,7 @@ public class PackageMarkupType extends DefaultMarkupType {
 		}
 	}
 
-	private static class RemoveDefaultPackageHandler extends PackageRegistrationScript<PackageTerm> {
+	public static class RemoveDefaultPackageHandler extends PackageRegistrationScript<PackageTerm> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
