@@ -232,12 +232,13 @@ public class DefaultMarkupRenderer implements Renderer {
 				// ignore markups that don't have package compile scripts
 				.filter(sm -> PackageCompiler.class.isAssignableFrom(sm.getCompilerClass()))
 				// check if the script manager has script for the type of this section or any sub type
-				.filter(sm -> sm.hasScriptsForSubtree(rootSection.get()))
 				// get all remaining managers for which there is currently no compiler
-				.filter(sm -> Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
+				.filter(sm -> sm.hasScriptsForSubtree(rootSection.get())
+						&& Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
 				.findAny()
 				.ifPresent(scriptManager -> messages.add(
-						"This section does not belong to a package that is used to compile knowledge."));
+						"This section has " + scriptManager.getCompilerClass().getSimpleName() + " knowledge, "
+								+ " but does not belong to package compiled by one."));
 	}
 
 	@Override
