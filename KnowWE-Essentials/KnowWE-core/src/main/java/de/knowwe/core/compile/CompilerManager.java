@@ -276,12 +276,15 @@ public class CompilerManager {
 	}
 
 	public void awaitCompilePriorityCompleted(@NotNull Compiler compiler, @NotNull Priority priority) throws InterruptedException {
+		// if the compiler is not in the map, it does not compile, so we do not wait... no need to lock
+		if (!currentlyCompiledPriority.containsKey(compiler)) return;
+
 		synchronized (lock) {
 			try {
 				waitingCompilers.add(compiler);
 				while (true) {
-					// if the compiler is not in the map, it does not compile, so we do not wait
 					Priority current = currentlyCompiledPriority.get(compiler);
+					// if the compiler is not in the map, it does not compile, so we do not wait
 					if (current == null) return;
 
 					// if current priority is exceeded (
