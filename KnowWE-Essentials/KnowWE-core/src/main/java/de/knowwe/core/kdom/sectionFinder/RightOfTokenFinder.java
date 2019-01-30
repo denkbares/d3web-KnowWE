@@ -38,7 +38,7 @@ public class RightOfTokenFinder implements SectionFinder {
 	}
 
 	/**
-	 * Creates a new section finder that takes all the (trimmed) text, on the left side of a specified (unquoted) token.
+	 * Creates a new section finder that takes all the (trimmed) text, on the right side of a specified (unquoted) token.
 	 * The token is defined as a literal string (NOT a regular expression). If the token is not found at all, no match
 	 * is created.
 	 *
