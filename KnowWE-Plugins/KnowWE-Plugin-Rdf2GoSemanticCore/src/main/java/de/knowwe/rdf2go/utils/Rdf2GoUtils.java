@@ -36,7 +36,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
@@ -51,6 +50,7 @@ import org.eclipse.rdf4j.rio.Rio;
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.semanticcore.TupleQueryResult;
+import com.denkbares.semanticcore.utils.RDFUtils;
 import com.denkbares.semanticcore.utils.Sparqls;
 import com.denkbares.semanticcore.utils.Text;
 import com.denkbares.strings.Identifier;
@@ -109,40 +109,23 @@ public class Rdf2GoUtils {
 		return resultCollection;
 	}
 
-	public static boolean instanceOf(Rdf2GoCore core, IRI resource, String classURI) {
+	public static boolean instanceOf(Rdf2GoCore core, URI resource, URI classURI) {
 		if (resource == null) {
 			return false;
 		}
-		IRI uri = core.createIRI(classURI);
-		return instanceOf(core, resource, uri);
-	}
-
-	public static boolean instanceOf(Rdf2GoCore core, IRI resource, IRI clazz) {
-		String query = "ASK { <" + resource.stringValue() + "> rdf:type <" + clazz + "> .}";
+		String query = "ASK { <" + resource + "> rdf:type <" + core.createIRI(classURI) + "> .}";
 		return core.sparqlAsk(query);
-	}
-
-	public static Collection<IRI> getInstances(Rdf2GoCore core, String... classes) {
-		return getInstances(core, Arrays.stream(classes)
-				.map(core::createIRI)
-				.collect(Collectors.toList())
-				.toArray(new IRI[] {}));
 	}
 
 	/**
 	 * Returns all instance of the given classes.
 	 *
-	 * @param core    repository to scan for instances
-	 * @param classes classes that instances are detected of
+	 * @param core repository to scan for instances
+	 * @param uris classes that instances are detected of
 	 * @return all instances of all the given classes
 	 */
-	public static Collection<IRI> getInstances(Rdf2GoCore core, IRI... classes) {
-		String query = "SELECT ?instance WHERE { {?instance rdf:type <" + classes[0] + "> .}";
-		for (int i = 1; i < classes.length; i++) {
-			query += "UNION ";
-			query += "{?instance rdf:type <" + classes[i] + "> .}\n";
-		}
-		query += "}";
+	public static Collection<IRI> getInstances(Rdf2GoCore core, List<URI> uris) {
+		String query = RDFUtils.createQueryForGetInstances(uris);
 		List<IRI> resultCollection = new ArrayList<>();
 		TupleQueryResult result = core.sparqlSelect(query);
 		for (BindingSet row : result) {
