@@ -7,9 +7,11 @@ package de.knowwe.d3web.ontology.bridge;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.compile.OntologyCompiler;
@@ -46,16 +48,42 @@ public class OntologyBridge {
 
 	/**
 	 * Provides an {@link OntologyCompiler} for the given {@link D3webCompiler}. To import an ontology, use the
-	 * @importOntology annotation in the %%KnowledgeBase markup to import an %%Ontology markup by the name specified by
+	 * <tt>importOntology</tt> annotation in the %%KnowledgeBase markup to import an %%Ontology markup by the name
+	 * specified by
 	 * the @name annotation.
 	 *
 	 * @param d3webCompiler the compiler to get the bridged ontology for
 	 * @return the ontology compiler bridged for the given d3web compiler
+	 * the @name annotation.
 	 */
 	public static OntologyCompiler getOntology(D3webCompiler d3webCompiler) {
+		return getOntology(d3webCompiler, Priority.ABOVE_DEFAULT);
+	}
+
+	/**
+	 * Provides an {@link OntologyCompiler} for the given {@link D3webCompiler}. To import an ontology, use the
+	 * <tt>importOntology</tt> annotation in the %%KnowledgeBase markup to import an %%Ontology markup by the name
+	 * specified by
+	 * the @name annotation.
+	 *
+	 * @param d3webCompiler   the compiler to get the bridged ontology for
+	 * @param priorityToAwait if the bridged compiler is currently compiling, we wait until the given priority is done
+	 *                        in the compiler
+	 * @return the ontology compiler bridged for the given d3web compiler
+	 * the @name annotation.
+	 */
+	public static OntologyCompiler getOntology(D3webCompiler d3webCompiler, Priority priorityToAwait) {
 		String ontologyId = mapping.get(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) throw new IllegalArgumentException("No ontology linked to the given d3web compiler");
-		return Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class);
+		OntologyCompiler compiler = Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class);
+		if (compiler == null) return null;
+		try {
+			compiler.getCompilerManager().awaitCompilePriorityCompleted(compiler, priorityToAwait);
+		}
+		catch (InterruptedException e) {
+			Log.severe("Interrupted while waiting", e);
+		}
+		return compiler;
 	}
 
 	/**

@@ -10,7 +10,6 @@ import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
 
 /**
@@ -64,13 +63,7 @@ public class BridgedReferenceRegistrationScript extends SimpleReferenceRegistrat
 			throw CompilerMessage.error("No ontology linked to the given d3web compiler");
 		}
 		if (definitionPriority != null) {
-			try {
-				OntologyCompiler ontology = OntologyBridge.getOntology(compiler);
-				compiler.getCompilerManager().awaitCompilePriorityCompleted(ontology, definitionPriority);
-			}
-			catch (InterruptedException e) {
-				throw new CompilerMessage(Messages.error(e));
-			}
+			OntologyBridge.getOntology(compiler, definitionPriority);
 		}
 		super.compile(compiler, section);
 	}
