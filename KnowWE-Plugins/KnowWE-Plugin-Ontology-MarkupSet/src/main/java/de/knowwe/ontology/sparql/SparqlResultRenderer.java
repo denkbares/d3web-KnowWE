@@ -26,6 +26,7 @@ import com.denkbares.collections.MultiMap;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.utils.Sparqls;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
@@ -534,7 +535,23 @@ public class SparqlResultRenderer {
 					sortValue2 = o2.getValue(result.getVariables().get(0));
 
 				}
-				return sortValue1.toString().compareTo(sortValue2.toString());
+
+				// TODO : is there a better way to sort integer literals?
+				final String sortString1 = sortValue1.toString();
+				final String sortString2 = sortValue2.toString();
+				final String xmlInt = "<http://www.w3.org/2001/XMLSchema#integer>";
+				final String numRegex = "\"(\\d+)\".*$";
+				if(sortString1.endsWith(xmlInt) && sortString2.endsWith(xmlInt)) {
+					Pattern p = Pattern.compile(numRegex);
+					final Matcher matcher = p.matcher(sortString1);
+					matcher.find();
+					final String intValueString1 = matcher.group(1);
+					final Matcher matcher2 = p.matcher(sortString2);
+					matcher2.find();
+					final String intValueString2 = matcher2.group(1);
+					return Integer.valueOf(intValueString1).compareTo(Integer.valueOf(intValueString2));
+				}
+				return sortString1.compareTo(sortString2);
 			};
 		}
 	}
