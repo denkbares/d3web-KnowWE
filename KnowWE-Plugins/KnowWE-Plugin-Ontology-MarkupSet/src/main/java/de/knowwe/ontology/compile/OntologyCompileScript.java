@@ -20,6 +20,8 @@ package de.knowwe.ontology.compile;
 
 import de.knowwe.core.compile.packaging.PackageCompileScript;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
  * 
@@ -31,6 +33,12 @@ public abstract class OntologyCompileScript<T extends Type> implements PackageCo
 	@Override
 	public Class<OntologyCompiler> getCompilerClass() {
 		return OntologyCompiler.class;
+	}
+
+	@Override
+	public void destroy(OntologyCompiler compiler, Section<T> section) {
+		Rdf2GoCore core = compiler.getRdf2GoCore();
+		core.removeStatements(section);
 	}
 
 }
