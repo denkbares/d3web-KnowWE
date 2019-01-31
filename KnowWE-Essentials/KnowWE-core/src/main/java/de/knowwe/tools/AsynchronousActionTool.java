@@ -40,7 +40,7 @@ import static de.knowwe.core.Attributes.*;
 public class AsynchronousActionTool extends DefaultTool {
 
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section) {
-		this(icon, title, description, action, section, Collections.emptyMap());
+		this(icon, title, description, action, section, new HashMap<>(4));
 	}
 
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, Map<String, String> params) {
@@ -79,7 +79,7 @@ public class AsynchronousActionTool extends DefaultTool {
 		// we create the JSON manually, because we need single quotes
 		StringBuilder builder = new StringBuilder("{");
 		for (Map.Entry<String, String> entry : params.entrySet()) {
-			builder.append("")
+			builder
 					.append(Strings.quote(entry.getKey(), '\''))
 					.append(":")
 					.append(Strings.quote(entry.getValue(), '\''))
