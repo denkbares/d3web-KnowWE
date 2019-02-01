@@ -605,7 +605,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	}
 
-};
+}
 ();
 
 KNOWWE.core.plugin.rightPanel.custom = function () {
