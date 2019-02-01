@@ -203,10 +203,10 @@ KNOWWE.core.plugin.rightPanel = function () {
 	function moveRightPanelToRight() {
 		isOnBottom = false;
 		rightPanel.css({
-			bottom: 'auto',
+			bottom: '0',
 			width: '300px',
 			right: '0'
-		})
+		});
 		rightPanelScroll();
 		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', 'auto');
 	}
@@ -328,7 +328,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		var scrollTop = jq$(window).scrollTop();
 		var width = isOnBottom ? '100%' : '300px';
 		var right = isOnBottom ? 'auto' : '-300px';
-		var position = isOnBottom ? 'fixed' : 'absolute'
+		var position = isOnBottom ? 'fixed' : 'absolute';
 		rightPanel = jq$('<div/>', {
 			'id': 'rightPanel',
 			'css': {
@@ -605,7 +605,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	}
 
-}
+};
 ();
 
 KNOWWE.core.plugin.rightPanel.custom = function () {

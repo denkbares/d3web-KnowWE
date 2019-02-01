@@ -40,6 +40,10 @@
 	background-color: #162746;
 }
 
+.footer {
+	z-index: 750;
+}
+
 b.roundedCorners {
 }
 
@@ -2405,6 +2409,8 @@ li.findpages .btn {
 	border: none;
 	position: fixed;
 	transition: top .1s ease-in-out;
+	background-color: #F9F9F9;
+	bottom: 0;
 }
 
 @media only screen and (min-width: 600px) {
