@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.utils.ResultTableModel;
 import de.d3web.testing.Message;
 import de.d3web.testing.MessageObject;
 import de.d3web.testing.TestParameter.Mode;
@@ -40,7 +41,6 @@ import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
-import de.knowwe.rdf2go.utils.ResultTableModel;
 
 /**
  * @author Jochen Reutelshöfer
@@ -124,7 +124,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 		Section<ExpectedSparqlResultTable> expectedTable = Sections.successor(expectedResultTableMarkup, ExpectedSparqlResultTable.class);
 		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(expectedTable, variables, compiler);
 
-		MultiMap<String, Message> failures = ResultTableModel.checkEquality(core, expectedResultTable, actualResultTable, atLeastFlag);
+		MultiMap<String, Message> failures = ResultTableModel.checkEquality(expectedResultTable, actualResultTable, atLeastFlag);
 
 		if (!failures.isEmpty()) {
 			String errorsText = ResultTableModel.generateErrorsText(failures, false);

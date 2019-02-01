@@ -2,7 +2,6 @@ package de.knowwe.ontology.sparql;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,7 +11,6 @@ import java.util.Scanner;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -21,12 +19,12 @@ import org.eclipse.rdf4j.query.Binding;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 
-import com.denkbares.collections.DefaultMultiMap;
-import com.denkbares.collections.MultiMap;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
-import com.denkbares.semanticcore.utils.Sparqls;
+import com.denkbares.semanticcore.utils.ResultTableHierarchy;
+import com.denkbares.semanticcore.utils.ResultTableModel;
+import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
@@ -44,8 +42,6 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
-import de.knowwe.rdf2go.utils.ResultTableModel;
-import de.knowwe.rdf2go.utils.TableRow;
 import de.knowwe.util.Color;
 
 public class SparqlResultRenderer {
@@ -284,12 +280,12 @@ public class SparqlResultRenderer {
 				.append(hasColor ? " logLevel" : "")
 				.append("'")
 				.append(opts.isSorting() ? " sortable='multi'" : "")
-				.append(hasColor ? " style='border-color:"+color.getColorValue()+"'"  : "")
+				.append(hasColor ? " style='border-color:" + color.getColorValue() + "'" : "")
 				.append(">");
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 		int column = 0;
 		for (String var : variables) {
-			if(isSkipped(isTree, column++, var)) {
+			if (isSkipped(isTree, column++, var)) {
 				continue;
 			}
 			renderResult.appendHtml("<th>");
@@ -362,7 +358,7 @@ public class SparqlResultRenderer {
 
 			column = 0;
 			for (String var : variables) {
-				if(isSkipped(isTree, column++, var)) {
+				if (isSkipped(isTree, column++, var)) {
 					continue;
 				}
 
@@ -462,7 +458,7 @@ public class SparqlResultRenderer {
 					result.append(">");
 					int column = 0;
 					for (String var : variables) {
-						if(isSkipped(isTree, column++, var)) {
+						if (isSkipped(isTree, column++, var)) {
 							continue;
 						}
 
@@ -477,82 +473,6 @@ public class SparqlResultRenderer {
 					result.appendHtml("</tr>");
 				}
 			}
-		}
-	}
-
-	public static class ResultTableHierarchy {
-
-		private final ResultTableModel data;
-		private final List<TableRow> roots = new LinkedList<>();
-		private final MultiMap<TableRow, TableRow> children = new DefaultMultiMap<>();
-		private final Comparator<TableRow> comparator;
-		public static final String SORT_VALUE = "sortValue";
-
-		public ResultTableHierarchy(ResultTableModel data) {
-			this.data = data;
-			this.comparator = getComparator(data);
-			init();
-		}
-
-		public List<TableRow> getRoots() {
-			return roots.stream()
-					.sorted(comparator)
-					.collect(Collectors.toList());
-		}
-
-		public List<TableRow> getChildren(TableRow row) {
-			return children.getValues(row).stream()
-					.sorted(comparator)
-					.collect(Collectors.toList());
-		}
-
-		private void init() {
-			for (TableRow tableRow : data) {
-				String parentColumn = data.getVariables().get(1);
-				Value parentId = tableRow.getValue(parentColumn);
-				Collection<TableRow> parents = data.findRowFor(parentId);
-				if (parents.isEmpty()) {
-					roots.add(tableRow);
-				}
-				else {
-					for (TableRow parent : parents) {
-						children.put(parent, tableRow);
-					}
-				}
-			}
-		}
-
-		private static Comparator<TableRow> getComparator(final ResultTableModel result) {
-			return (o1, o2) -> {
-				// we sort by the column 'sortValue' if existing
-				// otherwise we sort by URI
-				Value sortValue1 = o1.getValue(SORT_VALUE);
-				Value sortValue2 = o2.getValue(SORT_VALUE);
-				if(sortValue1 == null) {
-					sortValue1 = o1.getValue(result.getVariables().get(0));
-				}
-				if(sortValue2 == null) {
-					sortValue2 = o2.getValue(result.getVariables().get(0));
-
-				}
-
-				// TODO : is there a better way to sort integer literals?
-				final String sortString1 = sortValue1.toString();
-				final String sortString2 = sortValue2.toString();
-				final String xmlInt = "<http://www.w3.org/2001/XMLSchema#integer>";
-				final String numRegex = "\"(\\d+)\".*$";
-				if(sortString1.endsWith(xmlInt) && sortString2.endsWith(xmlInt)) {
-					Pattern p = Pattern.compile(numRegex);
-					final Matcher matcher = p.matcher(sortString1);
-					matcher.find();
-					final String intValueString1 = matcher.group(1);
-					final Matcher matcher2 = p.matcher(sortString2);
-					matcher2.find();
-					final String intValueString2 = matcher2.group(1);
-					return Integer.valueOf(intValueString1).compareTo(Integer.valueOf(intValueString2));
-				}
-				return sortString1.compareTo(sortString2);
-			};
 		}
 	}
 

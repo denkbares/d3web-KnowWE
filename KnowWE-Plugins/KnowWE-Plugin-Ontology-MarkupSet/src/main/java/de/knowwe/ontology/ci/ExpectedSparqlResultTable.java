@@ -27,6 +27,9 @@ import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
+import com.denkbares.semanticcore.utils.ResultTableModel;
+import com.denkbares.semanticcore.utils.SimpleTableRow;
+import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -39,9 +42,6 @@ import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableRenderer;
 import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
-import de.knowwe.rdf2go.utils.ResultTableModel;
-import de.knowwe.rdf2go.utils.SimpleTableRow;
-import de.knowwe.rdf2go.utils.TableRow;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -58,7 +58,7 @@ public class ExpectedSparqlResultTable extends Table {
 			public void render(Section<?> sec, UserContext user, RenderResult string) {
 				List<Section<TableCellContent>> sections = $(sec).successor(TableCellContent.class).asList();
 				if (sections.isEmpty() || sections.size() == 1 && Strings.isBlank(sections.get(0).getText())) {
-					string.appendHtmlElement("span","Expecting no results for the linked SPARQL query", "class", "emptySparqlResult");
+					string.appendHtmlElement("span", "Expecting no results for the linked SPARQL query", "class", "emptySparqlResult");
 				}
 				super.render(sec, user, string);
 			}
@@ -93,15 +93,16 @@ public class ExpectedSparqlResultTable extends Table {
 		for (Section<TableCellContent> cell : cells) {
 			String variable = variables.get(column);
 			final Section<NodeProvider> nodeProvider = Sections.successor(cell, NodeProvider.class);
-			if(nodeProvider == null) {
+			if (nodeProvider == null) {
 				row.addValue(variable, null);
 			}
-			if(nodeProvider != null) {
+			if (nodeProvider != null) {
 				Value value = nodeProvider.get().getNode(nodeProvider, core);
 				if (value instanceof URI && compatibilityMode) {
 					String valueString = value.stringValue();
 					if (valueString.startsWith(DummyConnector.BASE_URL)) {
-						value = SimpleValueFactory.getInstance().createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
+						value = SimpleValueFactory.getInstance()
+								.createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
 					}
 				}
 				if (value != null) row.addValue(variable, value);
