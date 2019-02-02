@@ -20,6 +20,8 @@ package de.knowwe.ontology.compile;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -67,6 +69,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private final String compilingArticle;
 	private final MultiDefinitionMode multiDefinitionMode;
 	private final ReferenceValidationMode referenceValidationMode;
+	private final Set<Priority> commitTracker = ConcurrentHashMap.newKeySet();
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
@@ -111,6 +114,19 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		if (rdf2GoCore == null) {
 			// in case the compiler doesn't have anything to compile...
 			return new Rdf2GoCore(RepositoryConfigs.get(RdfConfig.class));
+		}
+		// if we are currently in the process of compiling this ontology, we perform a commit
+		// on the Rdf2GoCore exactly once per priority (because the compile order is not stable inside
+		// on priority anyway)
+		Priority currentCompilePriority = getCompileSection()
+				.getArticleManager()
+				.getCompilerManager()
+				.getCurrentCompilePriority(this);
+		if (currentCompilePriority != null && !commitTracker.contains(currentCompilePriority)) {
+			synchronized (commitTracker) {
+				commitTracker.add(currentCompilePriority);
+				rdf2GoCore.commit();
+			}
 		}
 		return rdf2GoCore;
 	}
@@ -183,6 +199,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 		firstCompilation = false;
 		completeCompilation = false;
+		commitTracker.clear();
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this);
 		scriptCompiler = new ParallelScriptCompiler<>(this);
 	}
