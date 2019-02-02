@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.CountingSet;
 import com.denkbares.collections.PriorityList;
@@ -273,6 +274,16 @@ public class CompilerManager {
 				lock.notifyAll();
 			}
 		}
+	}
+
+	/**
+	 * Returns the compile priority the given Compiler currently operates in or <tt>null</tt>, if the compiler currently
+	 * is not compiling.
+	 * @param compiler the compiler for which to check the compilation priority
+	 */
+	@Nullable
+	public Priority getCurrentCompilePriority(@NotNull Compiler compiler) {
+		return currentlyCompiledPriority.get(compiler);
 	}
 
 	public void awaitCompilePriorityCompleted(@NotNull Compiler compiler, @NotNull Priority priority) throws InterruptedException {
