@@ -2,6 +2,7 @@ package de.knowwe.jspwiki;
 
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -131,6 +133,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			// and finally render messages and links
 			out.appendHtml("<div>\n");
 			DefaultMarkupRenderer.renderMessageBlock(out, messages);
+			sections.sort(Comparator.comparing(Section::getTitle, NumberAwareComparator.CASE_INSENSITIVE));
 			sections.forEach(sec -> templateResult.appendLink(out, sec));
 			out.appendHtml("</div>");
 		}
