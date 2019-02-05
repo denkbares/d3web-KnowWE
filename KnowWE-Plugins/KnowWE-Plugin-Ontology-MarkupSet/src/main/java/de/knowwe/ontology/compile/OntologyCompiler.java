@@ -33,6 +33,7 @@ import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
@@ -124,8 +125,11 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 				.getCurrentCompilePriority(this);
 		if (currentCompilePriority != null && !commitTracker.contains(currentCompilePriority)) {
 			synchronized (commitTracker) {
-				commitTracker.add(currentCompilePriority);
-				rdf2GoCore.commit();
+				if (!commitTracker.contains(currentCompilePriority)) {
+					commitTracker.add(currentCompilePriority);
+					rdf2GoCore.commit();
+					Log.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements.");
+				}
 			}
 		}
 		return rdf2GoCore;
