@@ -385,6 +385,16 @@ public interface WikiConnector {
 	void deleteAttachment(String title, String fileName, String user) throws IOException;
 
 	/**
+	 * Deletes the article with the given <tt>title</tt>. If the article is
+	 * versioned, all versions of the article are deleted.
+	 *
+	 * @param title    the title of the article the attachment is stored in
+	 * @param user     the user deleting the attachment
+	 * @throws IOException if the attachment cannot be deleted
+	 */
+	void deleteArticle(String title, String user) throws IOException;
+
+	/**
 	 * Removes the lock for the article.
 	 *
 	 * @param title the title of the article to be unlocked
@@ -408,6 +418,14 @@ public interface WikiConnector {
 	 * @param request the request of the user
 	 */
 	boolean userCanViewArticle(String title, HttpServletRequest request);
+
+	/**
+	 * Checks whether a user is allowed delete a given article
+	 *
+	 * @param title   the title of the article to check
+	 * @param request the request of the user
+	 */
+	boolean userCanDeleteArticle(String title, HttpServletRequest request);
 
 	/**
 	 * Checks whether the user is member of a given group.

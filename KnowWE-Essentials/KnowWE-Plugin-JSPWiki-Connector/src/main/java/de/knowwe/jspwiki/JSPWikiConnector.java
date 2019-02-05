@@ -718,6 +718,24 @@ public class JSPWikiConnector implements WikiConnector {
 		deleteAttachment(title, fileName, user, true);
 	}
 
+	@Override
+	public void deleteArticle(String title, String user) throws IOException {
+		PageManager pageManager = this.engine.getPageManager();
+		WikiPage page = new WikiPage(this.engine, title);
+		page.setAuthor(user);
+		try {
+			boolean wasLocked = isArticleLocked(title);
+			if(!wasLocked) lockArticle(title, user);
+
+			pageManager.deletePage(page);
+
+			if(!wasLocked) unlockArticle(title, user);
+		}
+		catch (ProviderException e) {
+			throw new IOException(e);
+		}
+	}
+
 	private void deleteAttachment(String title, String fileName, String user, boolean fireDeleteEvent) throws IOException {
 		String path = toPath(title, fileName);
 		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
@@ -776,6 +794,21 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public boolean userCanEditArticle(String title, HttpServletRequest request) {
 		if (ReadOnlyManager.isReadOnly()) return false;
+		return checkPermission(title, request, "edit");
+	}
+
+	@Override
+	public boolean userCanViewArticle(String title, HttpServletRequest request) {
+		return checkPermission(title, request, "view");
+	}
+
+	@Override
+	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
+		if (ReadOnlyManager.isReadOnly()) return false;
+		return checkPermission(title, request, "delete");
+	}
+
+	private boolean checkPermission(String title, HttpServletRequest request, String permission) {
 		WikiPage page = new WikiPage(engine, title);
 		WikiContext context = new WikiContext(this.engine, request,
 				this.engine.getPage(title));
@@ -784,7 +817,7 @@ public class JSPWikiConnector implements WikiConnector {
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (authmgr) {
 			PagePermission pp = PermissionFactory.getPagePermission(page,
-					"edit");
+					permission);
 			try {
 				return authmgr.checkPermission(context.getWikiSession(), pp);
 			}
@@ -793,20 +826,6 @@ public class JSPWikiConnector implements WikiConnector {
 				Log.severe("StackOverflowError while checking permissions on article '" + title + "': " + e.getMessage());
 				return false;
 			}
-		}
-	}
-
-	@Override
-	public boolean userCanViewArticle(String title, HttpServletRequest request) {
-		WikiPage page = new WikiPage(engine, title);
-		WikiContext context = new WikiContext(this.engine, request, this.engine
-				.getPage(title));
-
-		AuthorizationManager authmgr = engine.getAuthorizationManager();
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
-		synchronized (authmgr) {
-			PagePermission pp = PermissionFactory.getPagePermission(page, "view");
-			return authmgr.checkPermission(context.getWikiSession(), pp);
 		}
 	}
 

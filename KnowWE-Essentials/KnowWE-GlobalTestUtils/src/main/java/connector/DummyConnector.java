@@ -330,6 +330,14 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public void deleteArticle(String title, String user) throws IOException {
+		if(dummyPageProvider == null) {
+			throw new NullPointerException("PageProvider is null, so articles cannot be deleted");
+		}
+		dummyPageProvider.deletePage(title);
+	}
+
+	@Override
 	public void unlockArticle(String title, String user) {
 		locks.remove(title);
 	}
@@ -342,6 +350,12 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanViewArticle(String articlename, HttpServletRequest r) {
+		Log.warning("The used WikiConnector does not support rights managment");
+		return true;
+	}
+
+	@Override
+	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
 		Log.warning("The used WikiConnector does not support rights managment");
 		return true;
 	}

@@ -265,4 +265,8 @@ public class DummyPageProvider {
 	public Date getStartUpdate() {
 		return startupDate;
 	}
+
+	public void deletePage(String title){
+		articles.remove(title);
+	}
 }
