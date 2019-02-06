@@ -16,8 +16,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.types.LinkType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -104,112 +102,107 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 	public InlineSparqlMarkup() {
 		super(MARKUP);
-		this.setRenderer(new AsynchronousRenderer(new Renderer() {
+		this.setRenderer(new AsynchronousRenderer((section, user, result) -> {
+			String separator = DefaultMarkupType.getAnnotation(section, SEPARATOR);
+			String rowSeparator = DefaultMarkupType.getAnnotation(section, ROW_SEPARATOR);
+			String countString = DefaultMarkupType.getAnnotation(section, COUNT);
 
-			@Override
-			public void render(Section<?> section, UserContext user, RenderResult result) {
-				String separator = DefaultMarkupType.getAnnotation(section, SEPARATOR);
-				String rowSeparator = DefaultMarkupType.getAnnotation(section, ROW_SEPARATOR);
-				String countString = DefaultMarkupType.getAnnotation(section, COUNT);
+			boolean count = !(countString == null || countString.equals("false"));
 
-				boolean count = !(countString == null || countString.equals("false"));
-
-				if (separator == null) {
-					separator = ", ";
-				}
-				else {
-					separator = Strings.trim(separator);
-					separator = Strings.unquote(separator);
-				}
-				if (rowSeparator == null) {
-					rowSeparator = separator;
-				}
-				else {
-					rowSeparator = Strings.trim(rowSeparator);
-					rowSeparator = Strings.unquote(rowSeparator);
-				}
-
-				Section<SparqlNameReference> reference = Sections.successor(
-						DefaultMarkupType.getContentSection(section), SparqlNameReference.class);
-
-				Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
-				Section<SparqlMarkupType> referencedSection = reference == null ? null : reference.get()
-						.getReferencedSection(compiler, reference);
-
-				try {
-					if (referencedSection == null) {
-						throw new Exception("No query found.");
-					}
-					if (compiler == null) {
-						throw new Exception("No compiler found.");
-					}
-
-					Section<SparqlContentType> sparqlContent = $(referencedSection).successor(SparqlContentType.class)
-							.getFirst();
-					String query = sparqlContent.getText();
-					long timeout = SparqlContentType.getTimeout(referencedSection);
-					Rdf2GoCore core = compiler.getRdf2GoCore();
-					query = Rdf2GoUtils.createSparqlString(core, query);
-
-					// we add addtional info for testability
-					result.appendHtmlTag("span", "class", "inline-sparql", "name", reference.get(SparqlNameReference::getTermName));
-
-					TupleQueryResult resultTable = core.sparqlSelect(query, true, timeout);
-
-					Iterator<BindingSet> rowIterator = resultTable.iterator();
-					List<String> variables = resultTable.getBindingNames();
-
-					RenderResult line = new RenderResult(result);
-					String cell;
-
-					int lines = 0;
-					BindingSet row = null;
-					while (rowIterator.hasNext()) {
-						row = rowIterator.next();
-						lines++;
-						if (count) continue;
-						for (Iterator<String> variableIterator = variables.iterator(); variableIterator
-								.hasNext(); ) {
-							String variable = variableIterator.next();
-							Value node = row.getValue(variable);
-							if (node == null) continue;
-							cell = node.toString();
-							cell = Rdf2GoUtils.trimDataType(core, cell);
-							cell = Rdf2GoUtils.trimNamespace(core, cell);
-							line.appendJSPWikiMarkup(cell);
-							if (variableIterator.hasNext()) {
-								line.append(separator);
-							}
-						}
-						if (rowIterator.hasNext()) {
-							line.append(rowSeparator);
-						}
-					}
-					if (count) {
-						if (lines == 1) {
-							// special case for SPARQLs with GROUP_CONCAT... they often contain one empty result
-							boolean foundContent = false;
-							for (String variable : variables) {
-								Value node = row.getValue(variable);
-								if (node != null && !Strings.isBlank(node.toString())) {
-									foundContent = true;
-								}
-							}
-							if (!foundContent) lines = 0;
-						}
-
-						result.append(String.valueOf(lines));
-					}
-					else {
-						result.append(line);
-					}
-					result.appendHtmlTag("/span");
-				}
-				catch (Exception e) {
-					result.appendHtmlElement("span", e.getMessage());
-				}
+			if (separator == null) {
+				separator = ", ";
+			}
+			else {
+				separator = Strings.trim(separator);
+				separator = Strings.unquote(separator);
+			}
+			if (rowSeparator == null) {
+				rowSeparator = separator;
+			}
+			else {
+				rowSeparator = Strings.trim(rowSeparator);
+				rowSeparator = Strings.unquote(rowSeparator);
 			}
 
+			Section<SparqlNameReference> reference = Sections.successor(
+					DefaultMarkupType.getContentSection(section), SparqlNameReference.class);
+
+			Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+			Section<SparqlMarkupType> referencedSection = reference == null ? null : reference.get()
+					.getReferencedSection(compiler, reference);
+
+			try {
+				if (referencedSection == null) {
+					throw new Exception("No query found.");
+				}
+				if (compiler == null) {
+					throw new Exception("No compiler found.");
+				}
+
+				Section<SparqlContentType> sparqlContent = $(referencedSection).successor(SparqlContentType.class)
+						.getFirst();
+				String query = sparqlContent.getText();
+				long timeout = SparqlContentType.getTimeout(referencedSection);
+				Rdf2GoCore core = compiler.getRdf2GoCore();
+				query = Rdf2GoUtils.createSparqlString(core, query);
+
+				// we add addtional info for testability
+				result.appendHtmlTag("span", "class", "inline-sparql", "name", reference.get(SparqlNameReference::getTermName));
+
+				TupleQueryResult resultTable = core.sparqlSelect(query, true, timeout);
+
+				Iterator<BindingSet> rowIterator = resultTable.iterator();
+				List<String> variables = resultTable.getBindingNames();
+
+				RenderResult line = new RenderResult(result);
+				String cell;
+
+				int lines = 0;
+				BindingSet row = null;
+				while (rowIterator.hasNext()) {
+					row = rowIterator.next();
+					lines++;
+					if (count) continue;
+					for (Iterator<String> variableIterator = variables.iterator(); variableIterator
+							.hasNext(); ) {
+						String variable = variableIterator.next();
+						Value node = row.getValue(variable);
+						if (node == null) continue;
+						cell = node.toString();
+						cell = Rdf2GoUtils.trimDataType(core, cell);
+						cell = Rdf2GoUtils.trimNamespace(core, cell);
+						line.appendJSPWikiMarkup(cell);
+						if (variableIterator.hasNext()) {
+							line.append(separator);
+						}
+					}
+					if (rowIterator.hasNext()) {
+						line.append(rowSeparator);
+					}
+				}
+				if (count) {
+					if (lines == 1) {
+						// special case for SPARQLs with GROUP_CONCAT... they often contain one empty result
+						boolean foundContent = false;
+						for (String variable : variables) {
+							Value node = row.getValue(variable);
+							if (node != null && !Strings.isBlank(node.toString())) {
+								foundContent = true;
+							}
+						}
+						if (!foundContent) lines = 0;
+					}
+
+					result.append(String.valueOf(lines));
+				}
+				else {
+					result.append(line);
+				}
+				result.appendHtmlTag("/span");
+			}
+			catch (Exception e) {
+				result.appendHtmlElement("span", e.getMessage());
+			}
 		}, true));
 	}
 }
