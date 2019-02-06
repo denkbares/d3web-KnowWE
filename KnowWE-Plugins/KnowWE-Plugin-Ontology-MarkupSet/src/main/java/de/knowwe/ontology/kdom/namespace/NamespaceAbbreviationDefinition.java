@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -24,12 +24,9 @@ import java.util.List;
 
 import org.eclipse.rdf4j.repository.RepositoryException;
 
-import com.denkbares.strings.Identifier;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.terminology.RenamableTerm;
-import de.knowwe.core.kdom.objects.SimpleDefinition;
-import de.knowwe.core.kdom.objects.Term;
+import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -39,10 +36,9 @@ import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-public class NamespaceAbbreviationDefinition extends SimpleDefinition {
+public class NamespaceAbbreviationDefinition extends AbstractType {
 
 	public NamespaceAbbreviationDefinition() {
-		super(OntologyCompiler.class, NamespaceAbbreviationDefinition.class);
 		this.addCompileScript(Priority.HIGHEST, new NamespaceSubtreeHandler());
 		this.setSectionFinder(new RegexSectionFinder("\\s*\\S+?\\s\\S+"));
 		this.addChildType(new AbbreviationDefinition());
@@ -52,35 +48,11 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 		this.addChildType(new NamespaceDefinition());
 	}
 
-	@Override
-	public String getTermName(Section<? extends Term> section) {
-		Section<AbbreviationDefinition> abbreviation = Sections.child(section,
-				AbbreviationDefinition.class);
-		if (abbreviation == null) {
-			return section.getText();
-		}
-		String abbreviationName = abbreviation.get().getTermName(abbreviation);
-		return abbreviationName + " - " + getNamespace(section);
-	}
-
-	@Override
-	protected boolean verifyDefinition(de.knowwe.core.compile.Compiler compiler, Section<SimpleDefinition> section) {
-		Section<AbbreviationDefinition> abbreviation = Sections.child(section,
-				AbbreviationDefinition.class);
-		return abbreviation != null;
-	}
-
-	public String getNamespace(Section<? extends Term> section) {
+	public String getNamespace(Section<NamespaceAbbreviationDefinition> section) {
 		Section<NamespaceDefinition> namespace = Sections.child(section,
 				NamespaceDefinition.class);
 		assert namespace != null;
 		return namespace.getText();
-	}
-
-	@Override
-	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		// we dont want resource to be quoted by interface's default implementation
-		return newIdentifier.getLastPathElement();
 	}
 
 	private static class NamespaceSubtreeHandler extends OntologyHandler<NamespaceAbbreviationDefinition> {
@@ -102,7 +74,6 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 				Message message = new Message(Message.Type.ERROR, "Your namespace abbreviation is not valid");
 				messages.add(message);
 				return messages;
-
 			}
 			String abbreviationName = abbreviation.get().getTermName(abbreviation);
 			Rdf2GoCore.getInstance(compiler).addNamespace(abbreviationName, namespace);
@@ -122,6 +93,5 @@ public class NamespaceAbbreviationDefinition extends SimpleDefinition {
 				Log.severe("Unable to remove namespace", e);
 			}
 		}
-
 	}
 }
