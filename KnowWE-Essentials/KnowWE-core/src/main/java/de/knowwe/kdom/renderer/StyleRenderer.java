@@ -234,7 +234,8 @@ public class StyleRenderer implements Renderer {
 		return this.cssClass;
 	}
 
-	public void setMaskMode(MaskMode... maskMode) {
+	public StyleRenderer setMaskMode(MaskMode... maskMode) {
 		this.maskMode = maskMode;
+		return this;
 	}
 }
