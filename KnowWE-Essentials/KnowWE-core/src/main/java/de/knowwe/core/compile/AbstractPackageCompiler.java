@@ -92,12 +92,16 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	@Override
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
-		String[] packagesToCompile = getCompileSection().get().getPackagesToCompile(getCompileSection());
+		String[] packagesToCompile = getCompiledPackages();
 		if (getPackageManager().hasChanged(packagesToCompile)) {
 			long start = System.currentTimeMillis();
 			compilePackages(packagesToCompile);
 			Log.info(this + " finished after " + (System.currentTimeMillis() - start) + "ms");
 		}
+	}
+
+	public String[] getCompiledPackages() {
+		return getCompileSection().get().getPackagesToCompile(getCompileSection());
 	}
 
 	public abstract void compilePackages(String[] packagesToCompile);
