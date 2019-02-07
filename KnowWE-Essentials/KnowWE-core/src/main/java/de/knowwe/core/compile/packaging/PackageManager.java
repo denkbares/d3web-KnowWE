@@ -25,10 +25,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.denkbares.collections.ConcatenateCollection;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.Compiler;
@@ -50,22 +52,22 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * For each article title, you get all default packages used in this article.
 	 */
-	private final Map<String, HashSet<String>> articleToDefaultPackages = new HashMap<>();
+	private final Map<String, Set<String>> articleToDefaultPackages = new HashMap<>();
 
 	/**
 	 * For each packageName, you get all Sections in the wiki belonging to this packageName.
 	 */
-	private final Map<String, TreeSet<Section<?>>> packageToSectionsOfPackage = new HashMap<>();
+	private final Map<String, Set<Section<?>>> packageToSectionsOfPackage = new HashMap<>();
 
 	private final Set<Section<? extends PackageCompileType>> packageCompileSections = new HashSet<>();
 
 	/**
 	 * For each package, you get all articles compiling this package.
 	 */
-	private final Map<String, HashSet<Section<? extends PackageCompileType>>> packageToCompilingSections =
+	private final Map<String, Set<Section<? extends PackageCompileType>>> packageToCompilingSections =
 			new HashMap<>();
 
-	private final Map<String, Pair<TreeSet<Section<?>>, TreeSet<Section<?>>>> changedPackages =
+	private final Map<String, Pair<Set<Section<?>>, Set<Section<?>>>> changedPackages =
 			new HashMap<>();
 
 	public <C extends Compiler> PackageManager(C compiler) {
@@ -86,16 +88,11 @@ public class PackageManager {// implements EventListener {
 	}
 
 	public void addDefaultPackage(Article article, String defaultPackage) {
-		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
-		if (defaultPackages == null) {
-			defaultPackages = new HashSet<>(4);
-			articleToDefaultPackages.put(article.getTitle(), defaultPackages);
-		}
-		defaultPackages.add(defaultPackage);
+		articleToDefaultPackages.computeIfAbsent(article.getTitle(), k -> new HashSet<>(4)).add(defaultPackage);
 	}
 
 	public void removeDefaultPackage(Article article, String defaultPackage) {
-		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
+		Set<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
 		if (defaultPackages != null) {
 			defaultPackages.remove(defaultPackage);
 			if (defaultPackages.isEmpty()) {
@@ -105,7 +102,7 @@ public class PackageManager {// implements EventListener {
 	}
 
 	public String[] getDefaultPackages(Article article) {
-		HashSet<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
+		Set<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
 		if (defaultPackages == null) {
 			defaultPackages = new HashSet<>(4);
 			defaultPackages.add(DEFAULT_PACKAGE);
@@ -121,19 +118,13 @@ public class PackageManager {// implements EventListener {
 	 * @created 28.12.2010
 	 */
 	public void addSectionToPackage(Section<?> section, String packageName) {
-
 		if (isDisallowedPackageName(packageName)) {
 			Messages.storeMessage(section, this.getClass(), Messages.error("'"
 					+ packageName
 					+ "' is not allowed as a package name."));
 			return;
 		}
-		TreeSet<Section<?>> packageList = packageToSectionsOfPackage.get(packageName);
-		if (packageList == null) {
-			packageList = new TreeSet<>();
-			packageToSectionsOfPackage.put(packageName, packageList);
-		}
-		packageList.add(section);
+		packageToSectionsOfPackage.computeIfAbsent(packageName, k -> new TreeSet<>()).add(section);
 		addSectionToChangedPackagesAsAdded(section, packageName);
 		section.addPackageName(packageName);
 	}
@@ -143,23 +134,13 @@ public class PackageManager {// implements EventListener {
 	}
 
 	private void addSectionToChangedPackagesAsAdded(Section<?> section, String packageName) {
-		Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
-		if (pair == null) {
-			pair = new Pair<>(new TreeSet<>(), new TreeSet<>());
-			changedPackages.put(packageName, pair);
-		}
-		TreeSet<Section<?>> added = pair.getA();
-		added.add(section);
+		changedPackages.computeIfAbsent(packageName, s -> new Pair<>(new HashSet<>(), new HashSet<>()))
+				.getA().add(section);
 	}
 
 	private void addSectionToChangedPackagesAsRemoved(Section<?> section, String packageName) {
-		Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
-		if (pair == null) {
-			pair = new Pair<>(new TreeSet<>(), new TreeSet<>());
-			changedPackages.put(packageName, pair);
-		}
-		TreeSet<Section<?>> removed = pair.getB();
-		removed.add(section);
+		changedPackages.computeIfAbsent(packageName, s -> new Pair<>(new HashSet<>(), new HashSet<>()))
+				.getB().add(section);
 	}
 
 	/**
@@ -172,7 +153,7 @@ public class PackageManager {// implements EventListener {
 	 */
 	public boolean removeSectionFromPackage(Section<?> section, String packageName) {
 		if (!isDisallowedPackageName(packageName)) {
-			TreeSet<Section<?>> packageSet = packageToSectionsOfPackage.get(packageName);
+			Set<Section<?>> packageSet = packageToSectionsOfPackage.get(packageName);
 			if (packageSet != null) {
 				boolean removed = packageSet.remove(section);
 				if (removed) {
@@ -200,21 +181,23 @@ public class PackageManager {// implements EventListener {
 	}
 
 	/**
-	 * Returns an unmodifiable view on the sections of the given packages at the time of calling this method.
+	 * Returns an unmodifiable view on the sections of the given packages at the time of calling this method. The
+	 * sections don't have a particular order.
 	 *
 	 * @param packageNames the package names to get the sections for
 	 * @return the sections of the given packages
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getSectionsOfPackage(String... packageNames) {
-		TreeSet<Section<?>> sectionsOfPackage = new TreeSet<>();
+		List<Set<Section<?>>> sets = new ArrayList<>();
 		for (String packageName : packageNames) {
-			TreeSet<Section<?>> sections = packageToSectionsOfPackage.get(packageName);
+			Set<Section<?>> sections = packageToSectionsOfPackage.get(packageName);
 			if (sections != null) {
-				sectionsOfPackage.addAll(sections);
+				sets.add(sections);
 			}
 		}
-		return Collections.unmodifiableSet(sectionsOfPackage);
+		//noinspection unchecked
+		return new ConcatenateCollection(sets.toArray(new Set[0]));
 	}
 
 	public boolean hasChanged(String... packageNames) {
@@ -226,40 +209,42 @@ public class PackageManager {// implements EventListener {
 
 	/**
 	 * Returns all sections added to the given packages since the changes were last cleared with {@link
-	 * #clearChangedPackages()}
+	 * #clearChangedPackages()}. The sections don't have a particular order.
 	 *
 	 * @param packageNames the package to return the added sections for
 	 * @return the sections last added to the given packages
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getAddedSections(String... packageNames) {
-		TreeSet<Section<?>> addedSections = new TreeSet<>();
+		List<Set<Section<?>>> sets = new ArrayList<>();
 		for (String packageName : packageNames) {
-			Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
+			Pair<Set<Section<?>>, Set<Section<?>>> pair = changedPackages.get(packageName);
 			if (pair != null) {
-				addedSections.addAll(pair.getA());
+				sets.add(pair.getA());
 			}
 		}
-		return Collections.unmodifiableSet(addedSections);
+		//noinspection unchecked
+		return new ConcatenateCollection(sets.toArray(new Set[0]));
 	}
 
 	/**
 	 * Returns all sections removed from the given packages since the changes were last cleared with {@link
-	 * #clearChangedPackages()}
+	 * #clearChangedPackages()}. The sections don't have a particular order.
 	 *
 	 * @param packageNames the package to return the removed sections for
 	 * @return the sections last removed to the given packages
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getRemovedSections(String... packageNames) {
-		TreeSet<Section<?>> addedSections = new TreeSet<>();
+		List<Set<Section<?>>> sets = new ArrayList<>();
 		for (String packageName : packageNames) {
-			Pair<TreeSet<Section<?>>, TreeSet<Section<?>>> pair = changedPackages.get(packageName);
+			Pair<Set<Section<?>>, Set<Section<?>>> pair = changedPackages.get(packageName);
 			if (pair != null) {
-				addedSections.addAll(pair.getB());
+				sets.add(pair.getB());
 			}
 		}
-		return Collections.unmodifiableSet(addedSections);
+		//noinspection unchecked
+		return new ConcatenateCollection(sets.toArray(new Set[0]));
 	}
 
 	public void registerPackageCompileSection(Section<? extends PackageCompileType> section) {
@@ -269,12 +254,7 @@ public class PackageManager {// implements EventListener {
 		packageCompileSections.add(section);
 
 		for (String packageToCompile : packagesToCompile) {
-			HashSet<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageToCompile);
-			if (compilingSections == null) {
-				compilingSections = new HashSet<>();
-				packageToCompilingSections.put(packageToCompile, compilingSections);
-			}
-			compilingSections.add(section);
+			packageToCompilingSections.computeIfAbsent(packageToCompile, k -> new HashSet<>()).add(section);
 		}
 		EventManager.getInstance().fireEvent(new RegisteredPackageCompileSectionEvent(section));
 	}
@@ -287,7 +267,7 @@ public class PackageManager {// implements EventListener {
 			// PackageCompiler to reused = false for the given article
 			String[] packagesToCompile = section.get().getPackagesToCompile(section);
 			for (String packageToCompile : packagesToCompile) {
-				HashSet<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageToCompile);
+				Set<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageToCompile);
 				compilingSections.remove(section);
 				if (compilingSections.isEmpty()) {
 					packageToCompilingSections.remove(packageToCompile);
@@ -334,7 +314,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 28.08.2010
 	 */
 	public Set<Section<? extends PackageCompileType>> getCompileSections(String packageName) {
-		HashSet<Section<? extends PackageCompileType>> compilingSections =
+		Set<Section<? extends PackageCompileType>> compilingSections =
 				packageToCompilingSections.get(packageName);
 		return compilingSections == null
 				? Collections.emptySet()
