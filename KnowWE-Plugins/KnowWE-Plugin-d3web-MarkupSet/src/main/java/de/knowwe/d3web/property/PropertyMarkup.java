@@ -30,7 +30,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 public class PropertyMarkup extends DefaultMarkupType {
 
-	private static DefaultMarkup m = null;
+	private static final DefaultMarkup m;
 
 	static {
 		m = new DefaultMarkup("Property");

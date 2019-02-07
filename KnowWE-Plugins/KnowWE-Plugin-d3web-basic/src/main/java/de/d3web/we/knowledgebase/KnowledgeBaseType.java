@@ -106,7 +106,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 				DefaultMarkupPackageReferenceRegistrationScript.class);
 
 		this.setRenderer(new KnowledgeBaseTypeRenderer());
-		this.addCompileScript(Priority.HIGHER, (D3webCompileScript<KnowledgeBaseType>) (compiler, section) -> {
+		this.addCompileScript(Priority.HIGHEST, (D3webCompileScript<KnowledgeBaseType>) (compiler, section) -> {
 			// get required information
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 
@@ -134,8 +134,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 			if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
 			if (status != null) infoStore.addValue(BasicProperties.STATUS, status);
 			if (affiliation != null) {
-				infoStore.addValue(BasicProperties.AFFILIATION,
-						affiliation);
+				infoStore.addValue(BasicProperties.AFFILIATION, affiliation);
 			}
 		});
 
