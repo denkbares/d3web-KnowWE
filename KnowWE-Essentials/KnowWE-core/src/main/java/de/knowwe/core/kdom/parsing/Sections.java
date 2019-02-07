@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.CachedIterable;
 import com.denkbares.strings.Identifier;
@@ -129,6 +130,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>    the result type
 	 * @return the result returned by the mapper function for the first section
 	 */
+	@Nullable
 	public <R> R mapFirst(Function<Section<? super T>, ? extends R> mapper) {
 		// filter null after applying, as the findFirst creates a NullPointerException otherwise
 		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
