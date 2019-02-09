@@ -176,7 +176,7 @@ public final class Messages {
 	 * text.
 	 *
 	 * @param message is the text content of the created {@link Message}
-	 * @param e an exception going along with the message
+	 * @param e       an exception going along with the message
 	 * @created 01.12.2011
 	 */
 	public static Message error(String message, Exception e) {
@@ -489,7 +489,14 @@ public final class Messages {
 			name = "empty String";
 		}
 		name = Strings.trimQuotes(name);
-		return new Message(messageType, type + " '" + name + "' not found");
+		String message = type + " '" + name + "' not found";
+		switch (messageType) {
+			case WARNING:
+				return Messages.warning(message);
+			case INFO:
+				return Messages.info(message);
+		}
+		return Messages.error(message);
 	}
 
 	/**
