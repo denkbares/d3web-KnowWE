@@ -173,6 +173,18 @@ public final class Messages {
 
 	/**
 	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} ERROR with the given
+	 * text.
+	 *
+	 * @param message is the text content of the created {@link Message}
+	 * @param e an exception going along with the message
+	 * @created 01.12.2011
+	 */
+	public static Message error(String message, Exception e) {
+		return new Message(Message.Type.ERROR, message, e);
+	}
+
+	/**
+	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} ERROR with the given
 	 * exception.
 	 *
 	 * @param e the exception to take the message text from
@@ -487,7 +499,7 @@ public final class Messages {
 	 * @param message is the text content of the created {@link Message}
 	 * @created 01.12.2011
 	 */
-	public static Message notice(String message) {
+	public static Message info(String message) {
 		return new Message(Message.Type.INFO, message);
 	}
 

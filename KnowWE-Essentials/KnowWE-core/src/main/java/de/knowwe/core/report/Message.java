@@ -42,22 +42,31 @@ public final class Message implements Comparable<Message>, Serializable {
 	private final String text;
 	private final String details;
 
-	public Message(Type type, String text) {
+	/**
+	 * Please util class Messages to create new Messages.
+	 */
+	Message(Type type, String text) {
 		this(type, text, (String) null);
 	}
 
-	public Message(Type type, String text, String details) {
+	/**
+	 * Please util class Messages to create new Messages.
+	 */
+	Message(Type type, String text, String details) {
 		this.type = type;
 		this.text = text;
 		this.details = details;
 	}
 
-	public Message(Type type, String text, Throwable e) {
+	/**
+	 * Please util class Messages to create new Messages.
+	 */
+	Message(Type type, String text, Throwable e) {
 		this(type, text, Strings.getStackTrace(e));
 	}
 
 	/**
-	 * Returns the type of this message (error, warning or notice).
+	 * Returns the type of this message (error, warning or info).
 	 *
 	 * @created 01.12.2011
 	 */
