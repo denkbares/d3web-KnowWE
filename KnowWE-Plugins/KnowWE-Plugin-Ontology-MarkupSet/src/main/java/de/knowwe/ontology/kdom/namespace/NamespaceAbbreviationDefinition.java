@@ -31,6 +31,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
@@ -65,14 +66,12 @@ public class NamespaceAbbreviationDefinition extends AbstractType {
 				compiler.getRdf2GoCore().createIRI(namespace);
 			}
 			catch (IllegalArgumentException e) {
-				Message message = new Message(Message.Type.ERROR, "'" + namespace + "' is not a valid URI");
-				messages.add(message);
+				messages.add(Messages.error("'" + namespace + "' is not a valid URI"));
 			}
 			Section<AbbreviationDefinition> abbreviation = Sections.child(section,
 					AbbreviationDefinition.class);
 			if (abbreviation == null) {
-				Message message = new Message(Message.Type.ERROR, "Your namespace abbreviation is not valid");
-				messages.add(message);
+				messages.add(Messages.error("Your namespace abbreviation is not valid"));
 				return messages;
 			}
 			String abbreviationName = abbreviation.get().getTermName(abbreviation);

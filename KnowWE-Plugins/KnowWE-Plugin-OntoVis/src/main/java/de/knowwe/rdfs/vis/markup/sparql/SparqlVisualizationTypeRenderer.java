@@ -59,8 +59,12 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		}
 		PreRenderWorker.getInstance().handlePreRendering(content, user, this);
 		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) content.getObject(getVisualizationRendererKey(user));
-		if (graphRenderer != null) string.appendHtml(graphRenderer.getHTMLIncludeSnipplet());
-		else string.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
+		if (graphRenderer != null) {
+			string.appendHtml(graphRenderer.getHTMLIncludeSnipplet());
+		}
+		else {
+			string.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
+		}
 	}
 
 	private SubGraphData convertToGraph(CachedTupleQueryResult resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
@@ -75,10 +79,9 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		data = new SubGraphData(subPropertiesMap, inverseRelationsMap);
 		//data = new SubGraphData(Utils.getSubPropertyMap(rdfRepository), Utils.getInverseRelationsMap(rdfRepository));
 
-
 		List<String> variables = resultSet.getBindingNames();
 		if (variables.size() < 3) {
-			messages.add(new Message(Message.Type.ERROR, "A sparqlvis query requires exactly three variables!"));
+			messages.add(Messages.error("A sparqlvis query requires exactly three variables!"));
 			return null;
 		}
 
@@ -105,7 +108,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			data.addEdge(newLineRelationsKey);
 		}
 		if (data.getConceptDeclarations().isEmpty()) {
-			messages.add(new Message(Message.Type.ERROR, "The query produced an empty result set!"));
+			messages.add(Messages.error("The query produced an empty result set!"));
 			return null;
 		}
 

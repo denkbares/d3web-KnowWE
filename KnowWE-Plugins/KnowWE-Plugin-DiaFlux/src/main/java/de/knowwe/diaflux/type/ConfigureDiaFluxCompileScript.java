@@ -31,6 +31,7 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 import static de.d3web.diaFlux.inference.FluxSolver.SuggestMode;
@@ -57,7 +58,7 @@ public class ConfigureDiaFluxCompileScript implements D3webCompileScript<Knowled
 			solver.setSuggestMode(mode);
 		}
 		else {
-			throw new CompilerMessage(new Message(Message.Type.WARNING,
+			throw new CompilerMessage(Messages.warning(
 					"No DiaFlux problem solver available in knowledge base, the annotation will be ignored."));
 		}
 	}

@@ -14,6 +14,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
+import de.knowwe.core.report.Messages;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.util.Icon;
@@ -54,18 +55,18 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 			if (!file.delete()) file.deleteOnExit();
 			String msg = "Aborted execution due to io exception";
 			Log.warning(msg, e);
-			addMessage(new Message(Type.ERROR, msg, e));
+			addMessage(Messages.error(msg, e));
 		}
 		catch (InterruptedException e) {
 			String msg = "Operation canceled by user.";
 			Log.info(msg);
-			addMessage(new Message(Type.INFO, msg));
+			addMessage(Messages.info(msg));
 		}
 		catch (Exception e) {
 			if (!file.delete()) file.deleteOnExit();
 			String msg = "Aborted execution due to unexpected exception";
 			Log.warning(msg, e);
-			addMessage(new Message(Type.ERROR, msg + ": " + e, e));
+			addMessage(Messages.error(msg + ": " + e, e));
 		}
 		finally {
 			listener.updateProgress(1f, COMPLETE_MESSAGE);

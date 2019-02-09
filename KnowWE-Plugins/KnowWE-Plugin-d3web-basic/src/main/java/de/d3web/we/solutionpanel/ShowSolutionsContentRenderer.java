@@ -83,7 +83,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 				string.append("%%information Solutions are not rendered in live preview. /%");
 				//String msg = "Solutions are not rendered in preview mode";
 				//DefaultMarkupRenderer.renderMessagesOfType(Message.Type.INFO,
-				//		Messages.asList(Messages.notice(msg)), string);
+				//		Messages.asList(Messages.info(msg)), string);
 			} else {
 				String msg = "Unable to find knowledge base. Please either add to a package" +
 						" used for a knowledge base or specify a master article.";

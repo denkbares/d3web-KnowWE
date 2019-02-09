@@ -188,7 +188,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(s, tests);
 
-			if (trigger != null && trigger == CIBuildTriggers.onSave) {
+			if (trigger == CIBuildTriggers.onSave) {
 				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
 				CIHookManager.registerHook(ciHook);
 				// Store to be able to unregister in destroy method
@@ -206,15 +206,15 @@ public class CIDashboardType extends DefaultMarkupType {
 				for (int i = 0; i < arguments.length; i++) {
 					String messageText = message.getMessage(i);
 					if (message.hasError(i)) {
-						msgs.add(new Message(Message.Type.ERROR, messageText));
+						msgs.add(Messages.error(messageText));
 					}
 					else if (message.hasWarning(i)) {
-						msgs.add(new Message(Message.Type.WARNING, messageText));
+						msgs.add(Messages.warning( messageText));
 					}
 
 				}
 				if (arguments.length == 0 && message.getMessage(0) != null) {
-					msgs.add(new Message(Message.Type.ERROR, message.getMessage(0)));
+					msgs.add(Messages.error( message.getMessage(0)));
 				}
 			}
 			Messages.storeMessages(section, this.getClass(), msgs);

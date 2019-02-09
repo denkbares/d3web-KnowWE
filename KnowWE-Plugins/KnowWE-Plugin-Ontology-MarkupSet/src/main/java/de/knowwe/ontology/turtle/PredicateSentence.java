@@ -32,6 +32,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 
@@ -63,7 +64,7 @@ public class PredicateSentence extends AbstractType {
 		@Override
 		public void compile(OntologyCompiler compiler, Section<PredicateObjectSentenceList> section) throws CompilerMessage {
 			if(Sections.successors(section, Object.class).isEmpty()) {
-				throw new CompilerMessage(new Message(Message.Type.ERROR, "No objects found in this turtle predicate sentence."));
+				throw CompilerMessage.error( "No objects found in this turtle predicate sentence.");
 			}
 		}
 
