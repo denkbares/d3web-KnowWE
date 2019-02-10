@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -22,6 +22,7 @@ package de.knowwe.kdom.dashtree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -44,7 +45,6 @@ public class DashTreeUtils {
 	 * Returns a list of all successor DashTree elements of the given element.
 	 *
 	 * @param section a DashTreeElement or a sub-KDOM-node of a DashTreeElement
-	 * @return
 	 */
 	public static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<?> section) {
 		return findSuccessorDashtreeElements(section, -1);
@@ -58,7 +58,6 @@ public class DashTreeUtils {
 	 * Returns a list of all successor DashTree elements of the given element to the given depth
 	 *
 	 * @param section a DashTreeElement or a sub-KDOM-node of a DashTreeElement
-	 * @return
 	 */
 	private static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<?> section, int depth) {
 		Section<DashTreeElement> element;
@@ -102,7 +101,7 @@ public class DashTreeUtils {
 	public static List<Section<? extends DashTreeElement>> getAncestorDashTreeElements(Section<?> s) {
 		List<Section<? extends DashTreeElement>> ancestors = new ArrayList<>();
 		List<Section<?>> ancestorSubTrees = new ArrayList<>();
-		Section<?> ancestorSubtree = Sections.ancestor(s, DashSubtree.class).getParent();
+		Section<?> ancestorSubtree = Objects.requireNonNull(Sections.ancestor(s, DashSubtree.class)).getParent();
 		while (ancestorSubtree != null && ancestorSubtree.get() instanceof DashSubtree) {
 			ancestorSubTrees.add(ancestorSubtree);
 			ancestorSubtree = ancestorSubtree.getParent();
@@ -153,36 +152,32 @@ public class DashTreeUtils {
 
 	/**
 	 * Creates a String of the number of dashes specified.
-	 *
-	 * @param dashLevel
-	 * @return
 	 */
 	public static String createDashes(int dashLevel) {
 		String result = "";
-		for(int i = 0; i < dashLevel; i++) {
+		for (int i = 0; i < dashLevel; i++) {
 			result += "-";
 		}
-		return  result;
+		return result;
 	}
 
 	/**
 	 * Delivers the (dash-)level of the element by counting leading '-'
 	 *
 	 * @param s Only works for DashSubtree oder DashTreeElement sections
-	 * @return
 	 */
 	public static int getDashLevel(Section<?> s) {
 
 		if (s == null) return -1;
 
-		char key = '-';
+		char key;
 
 		if (s.get() instanceof DashSubtree) {
 			key = ((DashSubtree) s.get()).getKey();
 		}
 		else if (s.get() instanceof DashTreeElement) {
 			Section<DashSubtree> subtree = Sections.ancestor(s, DashSubtree.class);
-			key = subtree.get().getKey();
+			key = Objects.requireNonNull(subtree).get().getKey();
 		}
 		else {
 			throw new IllegalArgumentException("Only DashSubtree and DashTreeElement are allowed");

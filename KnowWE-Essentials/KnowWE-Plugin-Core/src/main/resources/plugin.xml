@@ -407,6 +407,8 @@
 		<parameter id="scope" value="TSMElementName" />
 		<parameter id="scope" value="SimpleReference" />
 		<parameter id="scope" value="SimpleDefinition" />
+		<parameter id="scope" value="TSMElementType" />
+		<parameter id="scope" value="TSMPrototypeDefinition" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KDOMRendererCollapseAllToolProvider">

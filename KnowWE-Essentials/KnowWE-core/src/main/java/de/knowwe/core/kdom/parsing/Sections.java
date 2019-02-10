@@ -117,6 +117,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>    the result type
 	 * @return the result returned by the mapper function for the first section
 	 */
+	@Nullable
 	public <R> R mapFirst(BiFunction<T, Section<T>, R> mapper) {
 		// filter null after applying, as the findFirst creates a NullPointerException otherwise
 		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
