@@ -43,7 +43,7 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
                             failedTests.add(result.getTestName());
                     }
                 }
-                if (failedTests.size() > 0)
+                if (!failedTests.isEmpty())
                     return createDashboardError(dashboard.getDashboardName(), failedTests);
             }
         }
