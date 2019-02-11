@@ -43,25 +43,28 @@ public final class Message implements Comparable<Message>, Serializable {
 	private final String details;
 
 	/**
-	 * Please util class Messages to create new Messages.
+	 * @deprecated Please util class Messages to create new Messages.
 	 */
-	Message(Type type, String text) {
+	@Deprecated
+	public Message(Type type, String text) {
 		this(type, text, (String) null);
 	}
 
 	/**
-	 * Please util class Messages to create new Messages.
+	 * @deprecated Please util class Messages to create new Messages.
 	 */
-	Message(Type type, String text, String details) {
+	@Deprecated
+	public Message(Type type, String text, String details) {
 		this.type = type;
 		this.text = text;
 		this.details = details;
 	}
 
 	/**
-	 * Please util class Messages to create new Messages.
+	 * @deprecated Please util class Messages to create new Messages.
 	 */
-	Message(Type type, String text, Throwable e) {
+	@Deprecated
+	public Message(Type type, String text, Throwable e) {
 		this(type, text, Strings.getStackTrace(e));
 	}
 

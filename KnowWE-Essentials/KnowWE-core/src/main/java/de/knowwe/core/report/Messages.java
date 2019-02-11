@@ -161,18 +161,19 @@ public final class Messages {
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} ERROR with the given
+	 * Creates and returns a {@link Message} of the {@link Type} ERROR with the given
 	 * text.
 	 *
 	 * @param message is the text content of the created {@link Message}
 	 * @created 01.12.2011
 	 */
 	public static Message error(String message) {
+		//noinspection deprecation
 		return new Message(Message.Type.ERROR, message);
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} ERROR with the given
+	 * Creates and returns a {@link Message} of the {@link Type} ERROR with the given
 	 * text.
 	 *
 	 * @param message is the text content of the created {@link Message}
@@ -180,11 +181,12 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Message error(String message, Exception e) {
+		//noinspection deprecation
 		return new Message(Message.Type.ERROR, message, e);
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} ERROR with the given
+	 * Creates and returns a {@link Message} of the {@link Type} ERROR with the given
 	 * exception.
 	 *
 	 * @param e the exception to take the message text from
@@ -197,7 +199,7 @@ public final class Messages {
 
 	/**
 	 * Filters the given Collection of {@link Message}s and returns a new Collection containing only {@link Message}s of
-	 * the {@link de.knowwe.core.report.Message.Type} ERROR.
+	 * the {@link Type} ERROR.
 	 *
 	 * @created 01.12.2011
 	 */
@@ -209,12 +211,12 @@ public final class Messages {
 
 	/**
 	 * Returns an unmodifiable {@link Map} with Collections of all {@link Message}s of the given {@link
-	 * de.knowwe.core.report.Message.Type}s stored for the given {@link Section}. The Collections are mapped by the
+	 * Type}s stored for the given {@link Section}. The Collections are mapped by the
 	 * {@link Compiler} the {@link Message}s were stored for. If {@link Message}s were stored without an argument {@link
 	 * Compiler} , the {@link Map} will contain this {@link Collection} with <tt>null</tt> as the <tt>key</tt>.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want (set to
+	 * @param types   is the {@link Type} of {@link Message} you want (set to
 	 *                <tt>null</tt> if you want all)
 	 * @created 16.02.2012
 	 */
@@ -271,11 +273,11 @@ public final class Messages {
 
 	/**
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
-	 * de.knowwe.core.report.Message.Type}s stored for this article and Section.
+	 * Type}s stored for this article and Section.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
 	 * @param section  is the {@link Section} the {@link Message}s are stored for
-	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want (set to
+	 * @param types    is the {@link Type} of {@link Message} you want (set to
 	 *                 <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
@@ -293,10 +295,10 @@ public final class Messages {
 
 	/**
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
-	 * de.knowwe.core.report.Message.Type}s stored for this article and Section.
+	 * Type}s stored for this article and Section.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want (set to
+	 * @param types   is the {@link Type} of {@link Message} you want (set to
 	 *                <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
@@ -306,12 +308,12 @@ public final class Messages {
 
 	/**
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
-	 * de.knowwe.core.report.Message.Type}s stored for this article, section, and source.
+	 * Type}s stored for this article, section, and source.
 	 *
 	 * @param compiler is the article the {@link Message}s are stored for
 	 * @param section  is the Section the {@link Message}s are stored for
 	 * @param source   is the source the {@link Message}s are stored for
-	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want (set to
+	 * @param types    is the {@link Type} of {@link Message} you want (set to
 	 *                 <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
@@ -328,11 +330,11 @@ public final class Messages {
 
 	/**
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
-	 * de.knowwe.core.report.Message.Type}s stored for this section and source, independently of any {@link Compiler}
+	 * Type}s stored for this section and source, independently of any {@link Compiler}
 	 *
 	 * @param section is the Section the {@link Message}s are stored for
 	 * @param source  is the source the {@link Message}s are stored for
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want (set to
+	 * @param types   is the {@link Type} of {@link Message} you want (set to
 	 *                <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
@@ -342,14 +344,14 @@ public final class Messages {
 
 	/**
 	 * Returns an unmodifiable {@link Map} with Collections of all {@link Message}s of the given {@link
-	 * de.knowwe.core.report.Message.Type}s stored in the KDOM subtree with the given {@link Section} as root. The
+	 * Type}s stored in the KDOM subtree with the given {@link Section} as root. The
 	 * Collections are mapped by the title of the {@link Article} the {@link Message}s were stored for. If {@link
 	 * Message}s were stored without an argument {@link Article}, the {@link Map} will contain this {@link Collection}
 	 * with <tt>null</tt> as the
 	 * <tt>key</tt>.
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want (set to
+	 * @param types   is the {@link Type} of {@link Message} you want (set to
 	 *                <tt>null</tt> if you want all)
 	 * @created 16.02.2012
 	 */
@@ -362,11 +364,7 @@ public final class Messages {
 	private static void getMessagesMapFromSubtree(Map<Compiler, Collection<Message>> allMessages, Section<?> section, Message.Type... types) {
 		Map<Compiler, Collection<Message>> messagesOfSectionByTitle = getMessagesMap(section, types);
 		for (Entry<Compiler, Collection<Message>> entry : messagesOfSectionByTitle.entrySet()) {
-			Collection<Message> allMsgsOfTitle = allMessages.get(entry.getKey());
-			if (allMsgsOfTitle == null) {
-				allMsgsOfTitle = new LinkedList<>();
-				allMessages.put(entry.getKey(), allMsgsOfTitle);
-			}
+			Collection<Message> allMsgsOfTitle = allMessages.computeIfAbsent(entry.getKey(), k -> new LinkedList<>());
 			allMsgsOfTitle.addAll(entry.getValue());
 		}
 		for (Section<?> child : section.getChildren()) {
@@ -376,11 +374,11 @@ public final class Messages {
 
 	/**
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
-	 * de.knowwe.core.report.Message.Type}s of the KDOM subtree with the given Section as root.
+	 * Type}s of the KDOM subtree with the given Section as root.
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
 	 * @param section  is the root of the KDOM subtree you want the messages from
-	 * @param types    is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want (set to
+	 * @param types    is the {@link Type} of {@link Message} you want (set to
 	 *                 <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Compiler compiler,
@@ -400,11 +398,11 @@ public final class Messages {
 
 	/**
 	 * Returns an unmodifiable Collection containing all {@link Message}s of the given {@link
-	 * de.knowwe.core.report.Message.Type}s of the KDOM subtree with the given Section as root, independently of any
+	 * Type}s of the KDOM subtree with the given Section as root, independently of any
 	 * compiler.
 	 *
 	 * @param section is the root of the KDOM subtree you want the messages from
-	 * @param types   is the {@link de.knowwe.core.report.Message.Type} of {@link Message} you want (set to
+	 * @param types   is the {@link Type} of {@link Message} you want (set to
 	 *                <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
@@ -446,7 +444,7 @@ public final class Messages {
 
 	/**
 	 * Filters the given Collection of {@link Message}s and returns a new Collection containing only {@link Message}s of
-	 * the {@link de.knowwe.core.report.Message.Type} INFO.
+	 * the {@link Type} INFO.
 	 *
 	 * @created 01.12.2011
 	 */
@@ -458,7 +456,7 @@ public final class Messages {
 
 	/**
 	 * Filters the given Collection of {@link Message}s and returns a new Collection containing only {@link Message}s of
-	 * the {@link de.knowwe.core.report.Message.Type} WARNING.
+	 * the {@link Type} WARNING.
 	 *
 	 * @created 01.12.2011
 	 */
@@ -500,13 +498,14 @@ public final class Messages {
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} INFO with the given
+	 * Creates and returns a {@link Message} of the {@link Type} INFO with the given
 	 * text.
 	 *
 	 * @param message is the text content of the created {@link Message}
 	 * @created 01.12.2011
 	 */
 	public static Message info(String message) {
+		//noinspection deprecation
 		return new Message(Message.Type.INFO, message);
 	}
 
@@ -722,13 +721,14 @@ public final class Messages {
 	}
 
 	/**
-	 * Creates and returns a {@link Message} of the {@link de.knowwe.core.report.Message.Type} WARNING with the given
+	 * Creates and returns a {@link Message} of the {@link Type} WARNING with the given
 	 * text.
 	 *
 	 * @param message is the text content of the created {@link Message}
 	 * @created 01.12.2011
 	 */
 	public static Message warning(String message) {
+		//noinspection deprecation
 		return new Message(Message.Type.WARNING, message);
 	}
 
