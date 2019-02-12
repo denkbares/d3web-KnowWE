@@ -95,6 +95,7 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.d3web.core.inference.RuleSet;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ServletContextEventListener;
@@ -1133,7 +1134,14 @@ public class Rdf2GoCore {
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
 			try {
-				return new SparqlCallable(completeQuery, type, Long.MAX_VALUE, true).call();
+				Stopwatch stopwatch = new Stopwatch();
+				Object result = new SparqlCallable(completeQuery, type, Long.MAX_VALUE, true).call();
+				if (stopwatch.getTime() > 10) {
+					Log.warning("Slow compile time SPARQL query detected. Query finished after "
+							+ stopwatch.getDisplay()
+							+ ": " + getReadableQuery(query, type) + "...");
+				}
+				return result;
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
