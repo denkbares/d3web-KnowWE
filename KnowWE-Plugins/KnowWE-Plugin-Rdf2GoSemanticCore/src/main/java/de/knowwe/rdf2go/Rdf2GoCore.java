@@ -526,12 +526,6 @@ public class Rdf2GoCore {
 				// verbose log if only a few changes are recorded
 				boolean verboseLog = (removeSize + insertSize < 50) && !Log.logger().isLoggable(Level.FINE);
 
-				// clear result cache if there are any changes
-				synchronized (resultCache) {
-					resultCache.clear();
-					resultCacheSize = 0;
-				}
-
 				/*
 				Hazard Filter:
 				Since removing statements is expansive, we do not remove statements
@@ -574,6 +568,11 @@ public class Rdf2GoCore {
 					insertedStatements = true;
 				}
 				if (removedStatements || insertedStatements) {
+					// clear result cache if there are any changes
+					synchronized (resultCache) {
+						resultCache.clear();
+						resultCacheSize = 0;
+					}
 					EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
 				}
 
