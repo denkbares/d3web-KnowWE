@@ -408,15 +408,25 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections containing only the sections of this sections object that are accepted by the specified
-	 * filter.
+	 * Checks if the specified section is an instance of the specified type class (technically the section has a section
+	 * {@link Type} which is of the specified type or is a class inherits or implements the specified type). The method
+	 * returns true if (and only if) the method {@link #cast(Section, Class)} would be successful and the specified
+	 * section is not null. If the specified section is null, false is returned.
 	 *
-	 * @param filter the filter to select the sections
-	 * @return the sections matching the filter
+	 * @param section   the section to be checked
+	 * @param typeClass the class to check the section's type against
+	 * @return if the section can be casted
+	 * @throws NullPointerException is the specified class is null, but the section isn't
+	 * @created 28.02.2012
 	 */
-	@NotNull
-	public Sections<T> filter(SectionFilter filter) {
-		return new Sections<>(() -> SectionFilter.filter(sections.iterator(), filter));
+	public static boolean hasType(Section<?> section, Class<?> typeClass) {
+		// first check null, because Class.isInstance differs from
+		// "instanceof"-operator for null objects
+		//noinspection SimplifiableIfStatement
+		if (section == null) return false;
+
+		// check the type of the section
+		return typeClass.isInstance(section.get());
 	}
 
 	/**
@@ -1316,27 +1326,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Checks if the specified section is an instance of the specified type class (technically the section has a section
-	 * {@link Type} which is of the specified type or is a class inherits or implements the specified type). The method
-	 * returns true if (and only if) the method {@link #cast(Section, Class)} would be successful and the specified
-	 * section is not null. If the specified section is null, false is returned.
-	 *
-	 * @param section   the section to be checked
-	 * @param typeClass the class to check the section's type against
-	 * @return if the section can be casted
-	 * @throws NullPointerException is the specified class is null, but the section isn't
-	 * @created 28.02.2012
-	 */
-	public static boolean hasType(Section<?> section, Class<?> typeClass) {
-		// first check null, because Class.isInstance differs from
-		// "instanceof"-operator for null objects
-		if (section == null) return false;
-
-		// check the type of the section
-		return typeClass.isInstance(section.get());
-	}
-
-	/**
 	 * Checks if the specified section is an instance of the exactly the specified type class (technically the section
 	 * has a section {@link Type} which is identical to the specified type). If the specified section is null, false is
 	 * returned.
@@ -1350,10 +1339,23 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public static boolean hasExactType(Section<?> section, Class<?> typeClass) {
 		// first check null, because Class.isInstance differs from
 		// "instanceof"-operator for null objects
+		//noinspection SimplifiableIfStatement
 		if (section == null) return false;
 
 		// check the type of the section
 		return typeClass.equals(section.get().getClass());
+	}
+
+	/**
+	 * Returns a new Sections containing only the sections of this sections object that are accepted by the specified
+	 * filter.
+	 *
+	 * @param filter the filter to select the sections
+	 * @return the sections matching the filter
+	 */
+	@NotNull
+	public Sections<T> filter(SectionFilter<T> filter) {
+		return new Sections<>(() -> SectionFilter.filter(sections.iterator(), filter));
 	}
 
 	/**
