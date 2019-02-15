@@ -94,7 +94,7 @@ public class OntologyBridge {
 	 * @return if there is an ontology compiler bridged for the given d3web compiler
 	 */
 	public static boolean hasOntology(D3webCompiler d3webCompiler) {
-		String ontologyId = mapping.getAnyKey(d3webCompiler.getCompileSection().getID());
+		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) return false;
 		return Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class) != null;
 	}
@@ -107,7 +107,7 @@ public class OntologyBridge {
 	 * @return the d3web compiler linking to the given ontology compiler
 	 */
 	public static D3webCompiler getCompiler(OntologyCompiler ontologyCompiler) {
-		String d3webId = mapping.getAnyValue(ontologyCompiler.getCompileSection().getID());
+		String d3webId = mapping.getAnyKey(ontologyCompiler.getCompileSection().getID());
 		if (d3webId == null) {
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler");
 		}
