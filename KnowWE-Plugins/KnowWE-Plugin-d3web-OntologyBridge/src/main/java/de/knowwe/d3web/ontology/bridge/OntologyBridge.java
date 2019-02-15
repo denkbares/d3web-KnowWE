@@ -4,9 +4,8 @@
 
 package de.knowwe.d3web.ontology.bridge;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.N2MMap;
 import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -24,14 +23,14 @@ import de.knowwe.ontology.compile.OntologyCompiler;
  */
 public class OntologyBridge {
 
-	private static final Map<String, String> mapping = new HashMap<>();
+	private static final MultiMap<String, String> mapping = new N2MMap<>();
 
 	public static void registerBridge(String d3webCompileSectionID, String ontologyCompileSectionID) {
 		mapping.put(d3webCompileSectionID, ontologyCompileSectionID);
 	}
 
 	public static void unregisterBridge(String d3webCompileSectionID) {
-		mapping.remove(d3webCompileSectionID);
+		mapping.removeKey(d3webCompileSectionID);
 	}
 
 	/**
@@ -73,7 +72,7 @@ public class OntologyBridge {
 	 * the @name annotation.
 	 */
 	public static OntologyCompiler getOntology(D3webCompiler d3webCompiler, Priority priorityToAwait) {
-		String ontologyId = mapping.get(d3webCompiler.getCompileSection().getID());
+		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) throw new IllegalArgumentException("No ontology linked to the given d3web compiler");
 		OntologyCompiler compiler = Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class);
 		if (compiler == null) return null;
@@ -95,8 +94,25 @@ public class OntologyBridge {
 	 * @return if there is an ontology compiler bridged for the given d3web compiler
 	 */
 	public static boolean hasOntology(D3webCompiler d3webCompiler) {
-		String ontologyId = mapping.get(d3webCompiler.getCompileSection().getID());
+		String ontologyId = mapping.getAnyKey(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) return false;
 		return Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class) != null;
+	}
+
+	/**
+	 * Provides the {@link D3webCompiler} that links to the given {@link OntologyCompiler}. This is the reverse of the
+	 * method {@link #getOntology(D3webCompiler)}.
+	 *
+	 * @param ontologyCompiler the ontology compiler for which to get the linking d3web compiler
+	 * @return the d3web compiler linking to the given ontology compiler
+	 */
+	public static D3webCompiler getCompiler(OntologyCompiler ontologyCompiler) {
+		String d3webId = mapping.getAnyValue(ontologyCompiler.getCompileSection().getID());
+		if (d3webId == null) {
+			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler");
+		}
+		D3webCompiler compiler = Compilers.getCompiler(Sections.get(d3webId), D3webCompiler.class);
+		if (compiler == null) return null;
+		return compiler;
 	}
 }
