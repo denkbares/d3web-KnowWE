@@ -49,6 +49,8 @@ import de.knowwe.kdom.filter.SectionFilter;
 @SuppressWarnings("Convert2Diamond")
 public class Sections<T extends Type> implements Iterable<Section<T>> {
 
+	private static final Sections<?> EMPTY = new Sections<>(Collections.emptyList());
+
 	private final Iterable<Section<T>> sections;
 
 	public static <T extends Type> Sections<T> $(Iterable<? extends Section<? extends T>> sections) {
@@ -83,6 +85,16 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	public Sections(Iterable<Section<T>> sections) {
 		this.sections = sections;
+	}
+
+	/**
+	 * Returns an empty Sections instance, containing no sections.
+	 *
+	 * @return an empty instance
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends Type> Sections<T> empty() {
+		return (Sections<T>) EMPTY;
 	}
 
 	/**
@@ -138,33 +150,39 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	@NotNull
-	public static Sections<? extends Type> definitions(TerminologyManager manager, Identifier identifier) {
+	public static Sections<? extends Type> definitions(TerminologyManager manager, @Nullable Identifier identifier) {
 		//noinspection unchecked
 		return new Sections(manager.getTermDefiningSections(identifier));
 	}
 
 	@NotNull
-	public static Sections<? extends Type> definitions(TermCompiler compiler, Identifier identifier) {
+	public static Sections<? extends Type> definitions(TermCompiler compiler, @Nullable Identifier identifier) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		return definitions(terminologyManager, identifier);
 	}
 
 	@NotNull
-	public static Sections<? extends Type> definitions(TermCompiler compiler, Section<? extends Term> term) {
-		Identifier identifier = term.get().getTermIdentifier(compiler, term);
-		return definitions(compiler, identifier);
+	public static Sections<? extends Type> definitions(TermCompiler compiler, @Nullable Section<? extends Term> term) {
+		if (term == null) return Sections.empty();
+		return definitions(compiler, term.get().getTermIdentifier(compiler, term));
 	}
 
 	@NotNull
-	public static Sections<? extends Type> references(TerminologyManager manager, Identifier identifier) {
+	public static Sections<? extends Type> references(TerminologyManager manager, @Nullable Identifier identifier) {
 		//noinspection unchecked
 		return new Sections(manager.getTermReferenceSections(identifier));
 	}
 
 	@NotNull
-	public static Sections<? extends Type> references(TermCompiler compiler, Identifier identifier) {
+	public static Sections<? extends Type> references(TermCompiler compiler, @Nullable Identifier identifier) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		return references(terminologyManager, identifier);
+	}
+
+	@NotNull
+	public static Sections<? extends Type> references(TermCompiler compiler, @Nullable Section<? extends Term> term) {
+		if (term == null) return Sections.empty();
+		return references(compiler, term.get().getTermIdentifier(compiler, term));
 	}
 
 	@NotNull
