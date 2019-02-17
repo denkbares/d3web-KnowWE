@@ -264,9 +264,9 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		public void appendLink(RenderResult out, Section<?> section) {
 			String title = section.getTitle();
 			if (title == null) return;
-			out.append(prefix).append("[").append(title.replace(oldString, newString))
-					.append("|").append(KnowWEUtils.getWikiLink(section)).append("]")
-					.append(suffix).append("\n");
+			out.append(prefix)
+					.appendHtmlTag("a", "href", KnowWEUtils.getURLLink(section))
+					.append(title.replace(oldString, newString)).appendHtmlTag("/a").append("\n");
 		}
 	}
 }
