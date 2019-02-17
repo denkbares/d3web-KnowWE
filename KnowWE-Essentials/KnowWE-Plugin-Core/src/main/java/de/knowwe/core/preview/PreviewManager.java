@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.denkbares.plugin.Extension;
@@ -78,9 +77,11 @@ public class PreviewManager {
 		while (previewSection != null) {
 			for (Scope scope : previewRenderers.keySet()) {
 				if (scope.matches(previewSection)) {
-					SortedMap<Integer, PreviewRenderer> priorityPreviewRendererMap = previewRenderers.get(scope);
-					PreviewRenderer previewRenderer = priorityPreviewRendererMap.get(priorityPreviewRendererMap.firstKey());
-					if (previewRenderer.matches(section)) return previewSection;
+					PreviewRenderer previewRenderer = previewRenderers.get(scope).firstEntry().getValue();
+					if (previewRenderer.matches(section) &&
+							previewRenderer.isPreviewAncestor(previewSection, section)) {
+						return previewSection;
+					}
 				}
 			}
 			previewSection = previewSection.getParent();
@@ -101,8 +102,7 @@ public class PreviewManager {
 		for (Scope scope : previewRenderers.keySet()) {
 			if (scope.matches(section)) {
 				// we found the closest section
-				SortedMap<Integer, PreviewRenderer> priorityPreviewRendererMap = previewRenderers.get(scope);
-				PreviewRenderer previewRenderer = priorityPreviewRendererMap.get(priorityPreviewRendererMap.firstKey());
+				PreviewRenderer previewRenderer = previewRenderers.get(scope).firstEntry().getValue();
 				if (previewRenderer.matches(section)) return previewRenderer;
 			}
 		}
@@ -149,7 +149,7 @@ public class PreviewManager {
 	 */
 	public Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
 		List<Section<?>> list = new ArrayList<>(items);
-		Collections.sort(list, KDOMPositionComparator.getInstance());
+		list.sort(KDOMPositionComparator.getInstance());
 		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<>();
 		for (Section<?> section : list) {
 			Section<?> previewSection = getPreviewAncestor(section);
@@ -160,14 +160,8 @@ public class PreviewManager {
 			}
 			// otherwise add section to preview group
 			// or create group if it is new
-			Collection<Section<?>> group = result.get(previewSection);
-			if (group == null) {
-				group = new LinkedList<>();
-				result.put(previewSection, group);
-			}
-			group.add(section);
+			result.computeIfAbsent(previewSection, k -> new LinkedList<>()).add(section);
 		}
 		return result;
 	}
-
 }

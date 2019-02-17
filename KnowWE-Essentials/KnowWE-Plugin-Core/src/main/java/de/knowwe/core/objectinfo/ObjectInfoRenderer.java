@@ -18,12 +18,9 @@
  */
 package de.knowwe.core.objectinfo;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +45,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.objects.TermInfo;
 import de.knowwe.core.kdom.objects.TermUtils;
-import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -361,26 +357,7 @@ public class ObjectInfoRenderer implements Renderer {
 	 * @created 16.08.2013
 	 */
 	private static Map<Section<?>, Collection<Section<?>>> groupByPreview(Collection<Section<?>> items) {
-		List<Section<?>> list = new ArrayList<>(items);
-		Collections.sort(list, KDOMPositionComparator.getInstance());
-		Map<Section<?>, Collection<Section<?>>> result = new LinkedHashMap<>();
-		for (Section<?> section : list) {
-			Section<?> previewSection = PreviewManager.getInstance().getPreviewAncestor(section);
-			// handle if the section has no preview renderer
-			if (previewSection == null) {
-				result.put(section, Collections.emptyList());
-				continue;
-			}
-			// otherwise add section to preview group
-			// or create group if it is new
-			Collection<Section<?>> group = result.get(previewSection);
-			if (group == null) {
-				group = new LinkedList<>();
-				result.put(previewSection, group);
-			}
-			group.add(section);
-		}
-		return result;
+		return PreviewManager.getInstance().groupByPreview(items);
 	}
 
 	public static void renderLinkToSection(Section<?> reference, RenderResult result) {
