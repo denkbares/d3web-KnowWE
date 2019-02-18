@@ -718,15 +718,53 @@ public class Rdf2GoCore {
 		turtle = turtle.trim();
 		int len = turtle.length();
 		if (turtle.startsWith("'''") && turtle.endsWith("'''") && len >= 6) {
-			return Strings.unquote(turtle.substring(2, len - 2), '\'');
+			return unescapeTurtleEscapeSequences(Strings.unquote(turtle.substring(2, len - 2), '\''));
 		}
 		if (turtle.startsWith("\"\"\"") && turtle.endsWith("\"\"\"") && len >= 6) {
-			return Strings.unquote(turtle.substring(2, len - 2), '"');
+			return unescapeTurtleEscapeSequences(Strings.unquote(turtle.substring(2, len - 2), '"'));
 		}
 		if (turtle.startsWith("'") && turtle.endsWith("'")) {
-			return Strings.unquote(turtle, '\'');
+			return unescapeTurtleEscapeSequences(Strings.unquote(turtle, '\''));
 		}
-		return Strings.unquote(turtle);
+		return unescapeTurtleEscapeSequences(Strings.unquote(turtle));
+	}
+
+	private static String unescapeTurtleEscapeSequences(String turtle) {
+		StringBuilder builder = new StringBuilder();
+		boolean escapeMode = false;
+		for (int i = 0; i < turtle.length(); i++) {
+			char current = turtle.charAt(i);
+			if (escapeMode) {
+				if (current == 't') {
+					builder.append('\t');
+				} else if (current == 'b') {
+					builder.append('\b');
+				} else if (current == 'n') {
+					builder.append('\n');
+				} else if (current == 'r') {
+					builder.append('\r');
+				} else if (current == 'f') {
+					builder.append('\f');
+				} else if (current == '"') {
+					builder.append('"');
+				}  else if (current == '\'') {
+					builder.append('\'');
+				} else if (current == '\\') {
+					builder.append('\\');
+				} else {
+					builder.append(current);
+				}
+				escapeMode = false;
+			} else {
+				if (current == '\\') {
+					escapeMode = true;
+				} else {
+					builder.append(current);
+				}
+			}
+		}
+
+		return builder.toString();
 	}
 
 	/**
