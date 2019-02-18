@@ -224,7 +224,6 @@
 	</extension>
 
 
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ClassType">
 		<parameter id="class" value="de.knowwe.ontology.kdom.clazz.ClassType" />
 		<parameter id="name" value="ClassType" />
@@ -638,6 +637,15 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="OntologyTablePreviewRenderer">
+		<parameter id="class" value="de.knowwe.kdom.table.TablePreviewRenderer" />
+		<parameter id="name" value="OntologyTablePreviewRenderer" />
+		<parameter id="description" value="Renders a preview of a table item." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root/OntologyTableMarkup" />
 	</extension>
 
 </plugin>
