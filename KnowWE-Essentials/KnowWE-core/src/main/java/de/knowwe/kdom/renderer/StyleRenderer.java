@@ -21,6 +21,7 @@
 package de.knowwe.kdom.renderer;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
@@ -213,16 +214,27 @@ public class StyleRenderer implements Renderer {
 		DelegateRenderer.getInstance().render(section, user, builder);
 		if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)
 				&& ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
-			string.appendJSPWikiMarkup(Strings.encodeHtml(builder.toStringRaw()));
+			string.appendJSPWikiMarkup(encodeHtml(builder));
 		}
 		else if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)) {
 			string.appendJSPWikiMarkup(builder);
 		}
 		else if (ArrayUtils.contains(maskMode, MaskMode.htmlEntities)) {
-			string.append(Strings.encodeHtml(builder.toStringRaw()));
+			string.append(encodeHtml(builder));
 		}
 		else {
 			string.append(builder);
+		}
+	}
+
+	@Nullable
+	private String encodeHtml(RenderResult builder) {
+		String text = builder.toStringRaw();
+		if (Strings.isQuoted(text)) {
+			return "\"" + Strings.encodeHtml(Strings.unquote(text)) + "\"";
+		}
+		else {
+			return Strings.encodeHtml(text);
 		}
 	}
 
