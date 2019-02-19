@@ -124,11 +124,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 		scriptCompiler.compile();
 
-		// we create one session to make sure knowledge created together with the session is available
-		// (avoids concurrent modification in multi threaded scenarios)
-
-		// this can cause significant overhead, so it is commented out for now... we should find a better/faster solution
-		// SessionFactory.createSession(knowledgeBase);
+		knowledgeBase.initPluggedPSMethods();
 
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 	}
