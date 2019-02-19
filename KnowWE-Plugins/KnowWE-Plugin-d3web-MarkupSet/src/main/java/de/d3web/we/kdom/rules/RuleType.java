@@ -119,14 +119,10 @@ public class RuleType extends AbstractType {
 		public void render(Section<?> sec, UserContext user, RenderResult string) {
 
 			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
-			Session session = null;
+			Session session = D3webUtils.getExistingSession(compiler, user);
 
 			List<String> classes = new ArrayList<>();
 			classes.add("d3webRule");
-			if (compiler != null) {
-				KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-				session = SessionProvider.getSession(user, kb);
-			}
 			if (session != null) {
 				Section<RuleType> ruleSection = Sections.cast(sec, RuleType.class);
 

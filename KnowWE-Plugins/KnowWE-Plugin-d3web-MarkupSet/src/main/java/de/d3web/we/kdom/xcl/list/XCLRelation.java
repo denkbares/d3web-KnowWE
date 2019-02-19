@@ -12,10 +12,8 @@ import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.NoAnswerException;
 import de.d3web.core.inference.condition.UnknownAnswerException;
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.kdom.rules.RuleType;
@@ -219,8 +217,7 @@ class XCLRelation extends AbstractType {
 		private Boolean evalRelation(UserContext user, D3webCompiler compiler, de.d3web.xcl.XCLRelation relation) {
 			// check if there is a session available
 			if (compiler == null) return null;
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-			Session session = SessionProvider.getSession(user, kb);
+			Session session = D3webUtils.getExistingSession(compiler, user);
 			if (session == null) return null;
 
 			// eval the relation to find the right rendering

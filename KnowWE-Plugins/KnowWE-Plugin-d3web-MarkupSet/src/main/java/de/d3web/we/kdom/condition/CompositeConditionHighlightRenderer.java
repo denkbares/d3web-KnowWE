@@ -6,7 +6,6 @@ import java.util.List;
 import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
 import de.d3web.we.kdom.rules.condition.ConditionContainer;
 import de.d3web.we.kdom.rules.condition.IfConditionContainer;
@@ -33,12 +32,8 @@ public class CompositeConditionHighlightRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
-		Session session = null;
-
+		Session session = D3webUtils.getExistingSession(compiler, user);
 		List<String> classes = new ArrayList<>();
-		if (compiler != null) {
-			session = SessionProvider.getSession(user, D3webUtils.getKnowledgeBase(compiler));
-		}
 		if (session != null) {
 			Section<CompositeCondition> sec = Sections.cast(section, CompositeCondition.class);
 			Section<? extends Type> parent = sec.getParent();

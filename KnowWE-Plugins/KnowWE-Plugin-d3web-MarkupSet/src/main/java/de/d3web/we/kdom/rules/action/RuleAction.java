@@ -28,7 +28,6 @@ import com.denkbares.strings.Strings;
 import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.action.D3webRuleAction;
 import de.d3web.we.kdom.rules.RuleCompileScript;
 import de.d3web.we.kdom.rules.RuleType;
@@ -67,11 +66,7 @@ public class RuleAction extends AbstractType {
 
 	private void ruleActionRenderer(Section<?> section, UserContext user, RenderResult result) {
 		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
-		Session session = null;
-
-		if (compiler != null) {
-			session = SessionProvider.getSession(user, D3webUtils.getKnowledgeBase(compiler));
-		}
+		Session session = D3webUtils.getExistingSession(compiler, user);
 		List<String> classes = new ArrayList<>();
 		classes.add("RuleAction");
 		if (session != null) {

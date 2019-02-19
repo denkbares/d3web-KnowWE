@@ -231,7 +231,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
 		if (kb == null) return null;
 
-		return SessionProvider.getSession(user, kb);
+		return SessionProvider.getExistingSession(user, kb);
 	}
 
 }

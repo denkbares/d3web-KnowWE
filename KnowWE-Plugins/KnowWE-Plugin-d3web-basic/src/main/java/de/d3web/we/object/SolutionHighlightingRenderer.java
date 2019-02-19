@@ -4,12 +4,10 @@
 
 package de.d3web.we.object;
 
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
@@ -55,8 +53,7 @@ public class SolutionHighlightingRenderer implements Renderer {
 	private Rating.State getState(Section<?> sec, UserContext user) {
 		D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
 		if (compiler != null) {
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-			Session session = SessionProvider.getSession(user, kb);
+			Session session = D3webUtils.getExistingSession(compiler, user);
 
 			if (session != null) {
 				Section<D3webTerm> term = Sections.cast(sec, D3webTerm.class);

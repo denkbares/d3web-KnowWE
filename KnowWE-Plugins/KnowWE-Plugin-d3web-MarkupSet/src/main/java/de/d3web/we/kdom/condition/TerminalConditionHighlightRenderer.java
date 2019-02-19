@@ -6,7 +6,6 @@ import java.util.List;
 import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.ruletable.RuleTableMarkup;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -29,14 +28,10 @@ public class TerminalConditionHighlightRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
-		Session session = null;
-
+		Session session = D3webUtils.getExistingSession(compiler, user);
 		List<String> classes = new ArrayList<>();
-		classes.add("TerminalCondition");
-		if (compiler != null) {
-			session = SessionProvider.getSession(user, D3webUtils.getKnowledgeBase(compiler));
-		}
 		if (session != null) {
+			classes.add("TerminalCondition");
 			//noinspection unchecked
 			Condition condition = Sections.cast(section, D3webCondition.class).get().createCondition(compiler,
 					section);

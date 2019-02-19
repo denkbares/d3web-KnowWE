@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -107,24 +107,27 @@ public class SessionProvider {
 		return provider;
 	}
 
+	/**
+	 * Return an existing session for the given user context and knowledge base. If, for the given knowledge base, we
+	 * don't yet have a session, we don't create one, but return null.
+	 *
+	 * @param context the user context for which we want the session
+	 * @param knowledgeBase the knowledgeBase for which we want a session
+	 * @return an existing session for the given context and knowledge base or null, if there is non
+	 */
+	public static Session getExistingSession(UserContext context, KnowledgeBase knowledgeBase) {
+		if (hasSession(context, knowledgeBase)) {
+			return getSession(context, knowledgeBase);
+		}
+		return null;
+	}
+
 	private Session createSessionInternally(UserContext context, KnowledgeBase kb) {
 		removeSessionInternally(context, kb, true);
 		Session session = SessionFactory.createSession(kb);
 		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session, context));
 		sessions.put(kb.getId(), session);
 		return session;
-	}
-
-	/**
-	 * Returns an existing {@link Session} for the provided knowledge base. If there exists no
-	 * session for this knowledge base null is returned.
-	 *
-	 * @param kb the underlying knowledge base
-	 * @return session for the specified knowledge base, if such a session already exists
-	 * @created 06.03.2012
-	 */
-	public Session getExistingSessionInternally(KnowledgeBase kb) {
-		return sessions.get(kb.getId());
 	}
 
 	/**
@@ -181,7 +184,7 @@ public class SessionProvider {
 	 * is accessible by using the id of the knowledge base.
 	 *
 	 * @param context the {@link UserContext} the session will belong to
-	 * @param kb The underlying knowledge base
+	 * @param kb      The underlying knowledge base
 	 * @return the created session
 	 * @created 06.03.2012
 	 */
@@ -205,7 +208,7 @@ public class SessionProvider {
 	 * Otherwise there is no place to store and retrieve the SessionProvider object.
 	 *
 	 * @param context UserContext of the current user.
-	 * @param base the underlying knowledge base
+	 * @param base    the underlying knowledge base
 	 * @return Session for the specified knowledge base
 	 * @created 07.03.2012
 	 */
@@ -227,7 +230,7 @@ public class SessionProvider {
 	 * Otherwise there is no place to store and retrieve the SessionProvider object.
 	 *
 	 * @param context UserContext of the current user.
-	 * @param base the underlying knowledge base
+	 * @param base    the underlying knowledge base
 	 * @return Session for the specified knowledge base
 	 * @created 05.10.2015
 	 */
@@ -275,7 +278,7 @@ public class SessionProvider {
 	 * terminated, so it cannot be used later accidentally.
 	 *
 	 * @param context the {@link UserContext} to which the session belongs
-	 * @param kb the underlying knowledge base
+	 * @param kb      the underlying knowledge base
 	 * @created 06.03.2012
 	 */
 	public static void removeSession(UserContext context, KnowledgeBase kb) {
@@ -286,10 +289,10 @@ public class SessionProvider {
 	 * Removes an existing {@link Session} for the provided knowledge base. If there exists no
 	 * session for this knowledge base ID this method will do nothing.
 	 *
-	 * @param context the {@link UserContext} to which the session belongs
-	 * @param kb the underlying knowledge base
+	 * @param context   the {@link UserContext} to which the session belongs
+	 * @param kb        the underlying knowledge base
 	 * @param terminate a boolean to decide whether the removed session should also be terminated or
-	 * not
+	 *                  not
 	 * @created 06.03.2012
 	 */
 	public static void removeSession(UserContext context, KnowledgeBase kb, boolean terminate) {

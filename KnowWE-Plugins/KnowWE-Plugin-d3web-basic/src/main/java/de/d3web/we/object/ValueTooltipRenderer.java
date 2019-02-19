@@ -157,7 +157,8 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 			NamedObject namedObject = sec.get().getTermObject(compiler, sec);
 			if (namedObject instanceof ValueObject) {
 				KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(compiler);
-				Session session = SessionProvider.getSession(user, knowledgeBase);
+				Session session = SessionProvider.getExistingSession(user, knowledgeBase);
+				if (session == null) continue;
 				Value value = D3webUtils.getValueNonBlocking(session, (ValueObject) namedObject);
 				if (value == null) continue;
 				String name = knowledgeBase.getName();
@@ -195,8 +196,8 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 		Collection<Fact> sourceFacts = ExplanationUtils.getSourceFactsNonBlocking(session, (TerminologyObject) namedObject);
 		List<Fact> filteredSourceFacts = sourceFacts.stream()
 				.filter(fact -> fact.getTerminologyObject() != namedObject)
+				.sorted(Comparator.comparing(Fact::getTerminologyObject, COMPARATOR))
 				.collect(toList());
-		filteredSourceFacts.sort(Comparator.comparing(Fact::getTerminologyObject, COMPARATOR));
 		if (!filteredSourceFacts.isEmpty()) {
 			builder.append("<p>The following input values were used to derive this value:");
 			builder.append("<ul>");
