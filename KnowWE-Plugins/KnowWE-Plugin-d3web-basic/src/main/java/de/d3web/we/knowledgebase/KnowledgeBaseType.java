@@ -36,6 +36,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.CompileMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationScript;
@@ -77,6 +78,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 	public static final String ANNOTATION_FILENAME = "filename";
 	public static final String ANNOTATION_STATUS = "status";
 	public static final String ANNOTATION_AFFILIATION = "affiliation";
+	public static final String ANNOTATION_CASE_SENSITIVE = "caseSensitive";
 
 	private static final DefaultMarkup MARKUP;
 
@@ -90,6 +92,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
+		MARKUP.addAnnotation(ANNOTATION_CASE_SENSITIVE, false, "true", "false");
 		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
 		compileType.addChildType(new KnowledgeBaseNameType());
 		compileType.addCompileScript(new D3webCompilerRegistrationScript());
@@ -146,8 +149,10 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+			String annotation = DefaultMarkupType.getAnnotation(Sections.ancestor(section, KnowledgeBaseType.class), ANNOTATION_CASE_SENSITIVE);
+			boolean caseSensitive = "true".equalsIgnoreCase(annotation);
 			compiler.getCompilerManager()
-					.addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseType.class));
+					.addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseType.class, caseSensitive));
 		}
 
 		@Override

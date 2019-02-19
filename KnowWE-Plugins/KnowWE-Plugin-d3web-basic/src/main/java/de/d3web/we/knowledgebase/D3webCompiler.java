@@ -49,12 +49,15 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private TerminologyManager terminologyManager;
 	private KnowledgeBase knowledgeBase;
 	private final Section<? extends PackageCompileType> compileSection;
+	private final boolean caseSensitive;
 
 	public D3webCompiler(PackageManager packageManager,
 						 Section<? extends PackageCompileType> compileSection,
-						 Class<? extends Type> compilingType) {
+						 Class<? extends Type> compilingType,
+						 boolean caseSensitive) {
 		super(packageManager, compileSection, compilingType);
 		this.compileSection = compileSection;
+		this.caseSensitive = caseSensitive;
 	}
 
 	@Override
@@ -108,7 +111,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		// the current compilation
 		EventManager.getInstance().fireEvent(new D3webCompilerStartEvent(this));
 
-		terminologyManager = new TerminologyManager();
+		terminologyManager = new TerminologyManager(caseSensitive);
 		Messages.clearMessages(this);
 		getCompilerManager().setCurrentCompilePriority(this, Priority.PREPARE);
 
