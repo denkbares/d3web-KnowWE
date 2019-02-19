@@ -82,7 +82,8 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 			Collection<Message> messages = validateReference(compiler, section);
 			if (messages.isEmpty()) {
 				Messages.clearMessages(compiler, section, getClass());
-			} else {
+			}
+			else {
 				throw new CompilerMessage(messages);
 			}
 		}
