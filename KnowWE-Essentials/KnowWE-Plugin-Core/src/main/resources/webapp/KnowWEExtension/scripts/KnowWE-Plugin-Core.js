@@ -98,7 +98,13 @@ KNOWWE.core.plugin.objectinfo = function () {
 					}
 					_TM.decorateToolMenus(root);
 					_TM.animateDefaultMarkupMenu(root);
-
+					/**
+					 * Trigger custome Event here to mount the React components so that the
+					 * Item can be renderd on the users side. This even will be triggered
+					 * multiple times since loadPreviews is called async. the react components
+					 * will handle changes so that only new items will be rendered.
+					 */
+					jq$("body").trigger("OpenCompositeEdit");
 				}
 			});
 		},
