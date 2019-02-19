@@ -24,7 +24,6 @@ import java.util.List;
 import com.denkbares.events.EventManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
-import de.d3web.core.session.SessionFactory;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.ScriptCompiler;
@@ -126,8 +125,10 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		scriptCompiler.compile();
 
 		// we create one session to make sure knowledge created together with the session is available
-		// (avoids concurrent modification in multithreaded scenarios)
-		SessionFactory.createSession(knowledgeBase);
+		// (avoids concurrent modification in multi threaded scenarios)
+
+		// this can cause significant overhead, so it is commented out for now... we should find a better/faster solution
+		// SessionFactory.createSession(knowledgeBase);
 
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 	}
