@@ -21,6 +21,7 @@
 package de.knowwe.kdom.dashtree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -60,6 +61,7 @@ public class DashTreeUtils {
 	 * @param section a DashTreeElement or a sub-KDOM-node of a DashTreeElement
 	 */
 	private static List<Section<DashTreeElement>> findSuccessorDashtreeElements(Section<?> section, int depth) {
+		if (section == null) return Collections.emptyList();
 		Section<DashTreeElement> element;
 		if (section.get() instanceof DashTreeElement) {
 			element = Sections.cast(section, DashTreeElement.class);
