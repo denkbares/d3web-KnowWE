@@ -33,7 +33,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  * This SectionFinder finds the _all_ unquoted occurrence of the 'symbol' in the text and creates a section from it.
  * <p>
  * NOTE: this section finder finds ALL occurrences of the specified string. If only ONE (first or last) occurrences
- * should be found, use {@link UnquotedExpressionFinder} instead.
+ * should be found, use {@link StringSectionFinderUnquoted} instead.
  *
  * @author Jochen
  */
