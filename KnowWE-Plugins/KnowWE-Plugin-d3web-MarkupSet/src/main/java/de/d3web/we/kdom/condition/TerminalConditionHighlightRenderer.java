@@ -30,8 +30,8 @@ public class TerminalConditionHighlightRenderer implements Renderer {
 		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
 		Session session = D3webUtils.getExistingSession(compiler, user);
 		List<String> classes = new ArrayList<>();
+		classes.add("TerminalCondition");
 		if (session != null) {
-			classes.add("TerminalCondition");
 			//noinspection unchecked
 			Condition condition = Sections.cast(section, D3webCondition.class).get().createCondition(compiler,
 					section);

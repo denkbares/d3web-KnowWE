@@ -19,6 +19,7 @@
 
 package de.knowwe.kdom.renderer;
 
+import java.util.ArrayList;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -138,13 +139,17 @@ public abstract class TooltipRenderer implements Renderer {
 		String toolTipAction = "action/RenderTooltipAction"
 				+ "?" + Attributes.SECTION_ID + "=" + section.getID();
 
-		string.appendHtml("<span class='tooltipster'");
+		ArrayList<String> attributes = new ArrayList<>();
+		attributes.add("class");
+		attributes.add("tooltipster");
 		int tooltipDelay = getTooltipDelay(section, user);
 		if (tooltipDelay >= 0) {
-			string.append(" delay='").append(tooltipDelay).append("'");
+			attributes.add("delay");
+			attributes.add(String.valueOf(tooltipDelay));
 		}
-		string.append(" data-tooltip-src='").append(toolTipAction).append("'");
-		string.appendHtml(">");
+		attributes.add("data-tooltip-src");
+		attributes.add(toolTipAction);
+		string.appendHtmlTag("span", attributes.toArray(new String[0]));
 	}
 
 	private void postRenderTooltip(RenderResult string) {

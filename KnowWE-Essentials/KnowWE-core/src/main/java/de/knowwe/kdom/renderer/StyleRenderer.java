@@ -185,10 +185,10 @@ public class StyleRenderer implements Renderer {
 		if (section != null) {
 			string.append(" sectionid='").append(section.getID()).append("'");
 		}
-		if (cssClass != null) {
+		if (!Strings.isBlank(cssClass)) {
 			string.append(" class='").append(cssClass).append("'");
 		}
-		if (cssStyle != null) {
+		if (!Strings.isBlank(cssStyle)) {
 			string.append(" style='").append(cssStyle).append("'");
 		}
 		string.appendHtml(">");

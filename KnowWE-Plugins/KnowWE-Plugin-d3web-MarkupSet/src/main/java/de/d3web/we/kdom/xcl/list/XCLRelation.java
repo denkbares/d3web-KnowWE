@@ -116,7 +116,7 @@ class XCLRelation extends AbstractType {
 		}
 
 		@Override
-		public Collection<Message> create(D3webCompiler compiler, Section<XCLRelation> section)  {
+		public Collection<Message> create(D3webCompiler compiler, Section<XCLRelation> section) {
 
 			Section<CompositeCondition> cond = Sections.successor(section, CompositeCondition.class);
 			if (cond == null) {
@@ -242,22 +242,16 @@ class XCLRelation extends AbstractType {
 
 			// TODO: simplify by directly render into the render-result string
 			// render the sub-sections
-			StringBuilder buffi = new StringBuilder();
-			List<Section<?>> children = relationSection.getChildren();
-			for (Section<?> s : children) {
-				buffi.append(this.renderRelationChild(s, user, color));
+			for (Section<?> section : relationSection.getChildren()) {
+				this.renderRelationChild(section, user, string, color);
 			}
-
-			// and append buffer content as html
-			string.appendHtml(buffi.toString());
 		}
 
 		/**
 		 * Renders the children of a CoveringRelation.
 		 */
-		private String renderRelationChild(Section<?> sec, UserContext user, String color) {
+		private void renderRelationChild(Section<?> sec, UserContext user, RenderResult buffi, String color) {
 
-			RenderResult buffi = new RenderResult(user);
 			Type type = sec.get();
 
 			if (type instanceof XCLRelationWeight) {
@@ -270,16 +264,12 @@ class XCLRelation extends AbstractType {
 				}
 			}
 			else if (type instanceof CompositeCondition) {
-				RenderResult temp = new RenderResult(buffi);
 				// we do not want masked JPSWiki markup
-				StyleRenderer.getRenderer(null, color).render(sec, user, temp);
-				buffi.append(KnowWEUtils.unmaskJSPWikiMarkup(temp.toStringRaw()));
+				StyleRenderer.getRenderer(null, color).render(sec, user, buffi);
 			}
 			else {
 				type.getRenderer().render(sec, user, buffi);
 			}
-
-			return buffi.toString();
 		}
 	}
 }
