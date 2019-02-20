@@ -29,6 +29,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.report.Messages;
 
 @FunctionalInterface
 public interface D3webHandler<T extends Type> extends D3webCompileScript<T> {
@@ -37,7 +38,8 @@ public interface D3webHandler<T extends Type> extends D3webCompileScript<T> {
 
 	@Override
 	default void compile(D3webCompiler compiler, Section<T> section) throws CompilerMessage {
-		throw new CompilerMessage(create(compiler, section));
+		Collection<Message> messages = create(compiler, section);
+		Messages.storeMessages(compiler, section, this.getClass(), messages);
 	}
 
 	default KnowledgeBase getKnowledgeBase(D3webCompiler compiler) {
