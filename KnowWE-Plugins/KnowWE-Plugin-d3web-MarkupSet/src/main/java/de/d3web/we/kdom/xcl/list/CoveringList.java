@@ -61,7 +61,7 @@ public class CoveringList extends AbstractType {
 		this.addChildType(new CommentLineType());
 
 		// split by search for commas
-		Pattern splitPattern = Pattern.compile("([\\h\\s\\v]+[,;][\\h\\s\\v]*)|([\\h\\s\\v]*[,;][\\h\\s\\v]+)}");
+		Pattern splitPattern = Pattern.compile("([\\h\\s\\v]+[,;][\\h\\s\\v]*)|([\\h\\s\\v]*[,;][\\h\\s\\v]+)");
 		this.addChildType(new AnonymousType("comma", new RegexSectionFinderUnquoted(splitPattern), StyleRenderer.COMMENT));
 
 		// the rest is CoveringRelations
