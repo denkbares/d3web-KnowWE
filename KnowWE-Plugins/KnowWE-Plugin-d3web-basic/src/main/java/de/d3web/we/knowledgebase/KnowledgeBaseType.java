@@ -78,9 +78,13 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 	public static final String ANNOTATION_FILENAME = "filename";
 	public static final String ANNOTATION_STATUS = "status";
 	public static final String ANNOTATION_AFFILIATION = "affiliation";
-	public static final String ANNOTATION_CASE_SENSITIVE = "caseSensitive";
+	public static final String ANNOTATION_TERM_MATCHING = "termMatching";
+
+	public static final String CASE_SENSITIVE = "case sensitive";
+	public static final String CASE_INSENSITIVE = "case insensitive";
 
 	private static final DefaultMarkup MARKUP;
+
 
 	static {
 		MARKUP = new DefaultMarkup("KnowledgeBase");
@@ -92,7 +96,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_FILENAME, false);
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
-		MARKUP.addAnnotation(ANNOTATION_CASE_SENSITIVE, false, "true", "false");
+		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
 		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
 		compileType.addChildType(new KnowledgeBaseNameType());
 		compileType.addCompileScript(new D3webCompilerRegistrationScript());
@@ -149,8 +153,8 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
-			String annotation = DefaultMarkupType.getAnnotation(Sections.ancestor(section, KnowledgeBaseType.class), ANNOTATION_CASE_SENSITIVE);
-			boolean caseSensitive = "true".equalsIgnoreCase(annotation);
+			String annotation = DefaultMarkupType.getAnnotation(Sections.ancestor(section, KnowledgeBaseType.class), ANNOTATION_TERM_MATCHING);
+			boolean caseSensitive = CASE_SENSITIVE.equalsIgnoreCase(annotation);
 			compiler.getCompilerManager()
 					.addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseType.class, caseSensitive));
 		}
