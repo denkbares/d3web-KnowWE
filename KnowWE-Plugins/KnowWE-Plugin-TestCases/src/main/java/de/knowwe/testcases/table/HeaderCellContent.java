@@ -18,12 +18,11 @@
  */
 package de.knowwe.testcases.table;
 
-import de.d3web.core.knowledge.terminology.Question;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
+import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.we.object.QuestionReference;
 import de.d3web.we.reviseHandler.D3webHandler;
-import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -35,7 +34,7 @@ import de.knowwe.kdom.table.TableUtils;
  * @author Reinhard Hatko
  * @created 21.01.2011
  */
-public class HeaderCellContent extends AbstractType implements RenamableTerm {
+public class HeaderCellContent extends AbstractType {
 
 	public HeaderCellContent() {
 		QuestionReference questionReference = new QuestionReference();
