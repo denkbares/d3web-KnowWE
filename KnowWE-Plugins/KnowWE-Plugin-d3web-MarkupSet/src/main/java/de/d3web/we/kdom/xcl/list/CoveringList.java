@@ -20,6 +20,8 @@
 
 package de.d3web.we.kdom.xcl.list;
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.CommentLineType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -27,13 +29,13 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.RegexSectionFinderUnquoted;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
-import de.knowwe.kdom.sectionFinder.UnquotedExpressionFinder;
 
 /**
  * A covering-list markup parser
@@ -59,7 +61,8 @@ public class CoveringList extends AbstractType {
 		this.addChildType(new CommentLineType());
 
 		// split by search for commas
-		this.addChildType(new AnonymousType("comma", new UnquotedExpressionFinder(","), StyleRenderer.COMMENT));
+		Pattern splitPattern = Pattern.compile("([\\h\\s\\v]+[,;][\\h\\s\\v]*)|([\\h\\s\\v]*[,;][\\h\\s\\v]+)}");
+		this.addChildType(new AnonymousType("comma", new RegexSectionFinderUnquoted(splitPattern), StyleRenderer.COMMENT));
 
 		// the rest is CoveringRelations
 		this.addChildType(new XCLRelation());
