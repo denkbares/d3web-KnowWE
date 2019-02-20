@@ -8,6 +8,7 @@ import com.denkbares.strings.Strings;
 import de.d3web.xcl.XCLRelationType;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
 
 /**
@@ -24,7 +25,8 @@ class XCLWeight extends AbstractType {
 	public static final char BOUNDS_CLOSE = ']';
 
 	public XCLWeight() {
-		this.setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE, 1));
+		setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE, 1));
+		setRenderer(new StyleRenderer("color: black", StyleRenderer.MaskMode.jspwikiMarkup));
 	}
 
 	/**
