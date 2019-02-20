@@ -21,6 +21,7 @@
 package de.knowwe.core.report;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import com.denkbares.strings.Strings;
 
@@ -55,6 +56,8 @@ public final class Message implements Comparable<Message>, Serializable {
 	 */
 	@Deprecated
 	public Message(Type type, String text, String details) {
+		Objects.requireNonNull(type);
+		Objects.requireNonNull(text);
 		this.type = type;
 		this.text = text;
 		this.details = details;
