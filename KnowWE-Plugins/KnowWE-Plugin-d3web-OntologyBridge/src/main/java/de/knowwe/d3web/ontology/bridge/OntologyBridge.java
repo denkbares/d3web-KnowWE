@@ -75,7 +75,7 @@ public class OntologyBridge {
 		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) throw new IllegalArgumentException("No ontology linked to the given d3web compiler");
 		OntologyCompiler compiler = Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class);
-		if (compiler == null) return null;
+		if (compiler == null) throw new IllegalStateException("Ontology compiler not yet available");
 		try {
 			compiler.getCompilerManager().awaitCompilePriorityCompleted(compiler, priorityToAwait);
 		}
