@@ -19,7 +19,7 @@
 package de.knowwe.core.compile.terminology;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -31,7 +31,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Stefan Plehn
  * @created 22.05.2013
  */
-public interface RenamableTerm extends Type {
+public interface RenamableTerm extends Term {
 
 	/**
 	 * Returns the new content text of the markup section. After renaming the returned text is replacing the original
@@ -48,7 +48,15 @@ public interface RenamableTerm extends Type {
 	 * @return the content text of the section, replacing the outdated section's text
 	 */
 	default String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
-		return TermUtils.quoteIfRequired(newIdentifier.getLastPathElement());
+		// we sometimes register multiple different identifiers to the same section
+		// so by default we only change the text of those sections, where the text actually matches the
+		// last element of the old identifier
+		if (section.getText().equals(oldIdentifier.getLastPathElement())) {
+			return TermUtils.quoteIfRequired(newIdentifier.getLastPathElement());
+		}
+		else {
+			return section.getText();
+		}
 	}
 
 	/**
