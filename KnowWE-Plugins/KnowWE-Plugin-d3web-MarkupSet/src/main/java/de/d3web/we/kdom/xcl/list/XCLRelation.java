@@ -69,7 +69,7 @@ class XCLRelation extends AbstractType {
 			}
 		});
 
-		this.addCompileScript(Priority.LOW, new CreateXCLRelationHandler());
+		this.addCompileScript(Priority.LOWEST, new CreateXCLRelationHandler());
 		this.setRenderer(new CoveringRelationRenderer());
 
 		// here also a comment might occur:
