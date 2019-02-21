@@ -35,7 +35,12 @@ public class ResourceReference extends SimpleReference {
 	protected static final String IDENTIFIER_KEY = "identifierKey";
 
 	public ResourceReference(Class<?> termClass) {
-		super(OntologyCompiler.class, termClass, Priority.LOWEST);
+		this(termClass, Priority.LOWEST);
+	}
+
+
+	public ResourceReference(Class<?> termClass, Priority prio) {
+		super(OntologyCompiler.class, termClass, prio);
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		this.setRenderer(StyleRenderer.Question);
 	}

@@ -20,23 +20,33 @@ package de.knowwe.ontology.kdom.resource;
 
 import org.eclipse.rdf4j.model.IRI;
 
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
+import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class AbbreviatedResourceReference extends AbstractType {
 
 	public AbbreviatedResourceReference() {
-		this(Resource.class);
+		this(Resource.class, Priority.LOWEST);
 	}
 
-	public AbbreviatedResourceReference(Class<?> termClass) {
+	public AbbreviatedResourceReference(Priority prio) {
+		this(Resource.class, prio);
+	}
+
+	public AbbreviatedResourceReference(Class<?> termClass, Priority prio) {
 		this.addChildType(new AbbreviationPrefixReference());
-		this.addChildType(new ResourceReference(termClass));
+		this.addChildType(new ResourceReference(termClass, prio));
 		this.setSectionFinder(new AllTextFinderTrimmed());
+	}
+
+	public AbbreviatedResourceReference(Class<Property> propertyClass) {
+		this(propertyClass, Priority.LOWEST);
 	}
 
 	public String getResource(Section<? extends AbbreviatedResourceReference> section) {
