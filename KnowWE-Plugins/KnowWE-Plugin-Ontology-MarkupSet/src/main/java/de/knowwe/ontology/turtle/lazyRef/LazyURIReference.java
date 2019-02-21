@@ -108,7 +108,8 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 			Identifier secondIdentifier = iterator.next();
 			String firstNS = firstIdentifier.getPathElementAt(0);
 			String secondNS = secondIdentifier.getPathElementAt(0);
-			return rdf2GoCore.getNamespaces().get(firstNS).equals(rdf2GoCore.getNamespaces().get(secondNS));
+			String full = rdf2GoCore.getNamespaces().get(firstNS);
+			return full != null && full.equals(rdf2GoCore.getNamespaces().get(secondNS));
 		}
 		return false;
 	}
