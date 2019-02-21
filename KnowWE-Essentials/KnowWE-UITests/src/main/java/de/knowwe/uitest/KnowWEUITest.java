@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -62,11 +63,11 @@ public abstract class KnowWEUITest {
 	 * -Dknowwe.haddock.url="your-haddock-URL"
 	 * -Dknowwe.standard.url="your-standardTemplate-URL"
 	 */
-	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template) throws IOException, InterruptedException {
+	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template) throws IOException {
 		this(browser, os, template, true, null);
 	}
 
-	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template, boolean login, Function<String, String> urlConstructor) throws IOException, InterruptedException {
+	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template, boolean login, Function<String, String> urlConstructor) throws IOException {
 		this.browser = browser;
 		this.os = os;
 		this.template = template;
@@ -172,7 +173,7 @@ public abstract class KnowWEUITest {
 	}
 
 	protected void moveMouseTo(By selector) {
-		new Actions(getDriver()).moveToElement(getDriver().findElement(selector));
+		new Actions(getDriver()).moveToElement(find(selector));
 	}
 
 	protected String readFile(String fileName) throws IOException {
@@ -180,4 +181,19 @@ public abstract class KnowWEUITest {
 				.replace("%%package systemtest", "%%package systemtest" + getArticleName());
 	}
 
+	protected void setContentByName(String name, String content) {
+		find(By.name(name)).click();
+		find(By.name(name)).clear();
+		find(By.name(name)).sendKeys(content);
+	}
+
+	protected boolean isAlertPresent() {
+		try {
+			getDriver().switchTo().alert();
+			return true;
+		}
+		catch (NoAlertPresentException e) {
+			return false;
+		}
+	}
 }
