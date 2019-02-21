@@ -43,6 +43,15 @@ public class QuestionReference extends D3webTermReference<Question> {
 	}
 
 	@Override
+	public Question getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<Question>> section) {
+		Question question = super.getTermObject(compiler, section);
+		if (question == null) {
+			question = compiler.getKnowledgeBase().getManager().searchQuestion(section.get().getTermName(section));
+		}
+		return question;
+	}
+
+	@Override
 	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return Question.class;
 	}
