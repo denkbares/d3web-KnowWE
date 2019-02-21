@@ -35,7 +35,7 @@ public class ResourceReference extends SimpleReference {
 	protected static final String IDENTIFIER_KEY = "identifierKey";
 
 	public ResourceReference(Class<?> termClass) {
-		this(termClass, Priority.LOWEST);
+		this(termClass, Priority.DEFAULT);
 	}
 
 
