@@ -122,8 +122,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Maps the first available section to the result of the mapper function. If there is not section, <tt>null</tt> is
-	 * returned.
+	 * Maps the available sections to the result of the mapper function, returning the first non-null value. If there is
+	 * no section, or all sections are mapped to <tt>null</tt> is returned.
 	 *
 	 * @param mapper the function to map/convert the section to the result
 	 * @param <R>    the result type
@@ -136,8 +136,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Maps the first available section to the result of the mapper function. If there is not section, <tt>null</tt> is
-	 * returned.
+	 * Maps the available sections to the result of the mapper function, returning the first non-null value. If there is
+	 * no section, or all sections are mapped to <tt>null</tt> is returned.
 	 *
 	 * @param mapper the function to map/convert the section to the result
 	 * @param <R>    the result type

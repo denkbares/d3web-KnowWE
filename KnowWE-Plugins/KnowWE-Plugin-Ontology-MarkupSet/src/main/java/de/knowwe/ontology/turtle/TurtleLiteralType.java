@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -28,6 +28,8 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
+import com.denkbares.semanticcore.utils.Text;
+import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
@@ -43,6 +45,8 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class TurtleLiteralType extends AbstractType implements NodeProvider<TurtleLiteralType> {
 
@@ -64,8 +68,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	}
 
 	public org.eclipse.rdf4j.model.Literal getLiteral(Rdf2GoCore core, Section<? extends TurtleLiteralType> section) {
-		Section<LiteralPart> literalPartSection = Sections.child(section,
-				LiteralPart.class);
+		Section<LiteralPart> literalPartSection = Sections.child(section, LiteralPart.class);
 		Section<XSDPart> xsdPartSection = Sections.child(section, XSDPart.class);
 		Section<LanguageTagPart> langTagPartSection = Sections.child(section, LanguageTagPart.class);
 		assert literalPartSection != null;
@@ -83,6 +86,12 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 			return core.createLiteral(literal);
 		}
 		return core.createLiteral(literal, xsdType);
+	}
+
+	public Text getTaggedText(Section<? extends TurtleLiteralType> section) {
+		String lang = $(section).successor(LanguageTagPart.class).mapFirst(LanguageTagPart::getTag);
+		String text = $(section).successor(LiteralPart.class).mapFirst(LiteralPart::getLiteral);
+		return Text.create(text, Locales.parseLocale(lang));
 	}
 
 	private static class LiteralTypeFinder implements SectionFinder {
@@ -167,5 +176,4 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
 		return getLiteral(core.getRdf2GoCore(), section);
 	}
-
 }
