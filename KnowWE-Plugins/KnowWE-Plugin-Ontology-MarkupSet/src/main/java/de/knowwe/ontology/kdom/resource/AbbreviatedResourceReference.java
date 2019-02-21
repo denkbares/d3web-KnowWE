@@ -26,13 +26,12 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
-import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class AbbreviatedResourceReference extends AbstractType {
 
 	public AbbreviatedResourceReference() {
-		this(Resource.class, Priority.LOWEST);
+		this(Resource.class);
 	}
 
 	public AbbreviatedResourceReference(Priority prio) {
@@ -45,8 +44,8 @@ public class AbbreviatedResourceReference extends AbstractType {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 	}
 
-	public AbbreviatedResourceReference(Class<Property> propertyClass) {
-		this(propertyClass, Priority.LOWEST);
+	public AbbreviatedResourceReference(Class<?> propertyClass) {
+		this(propertyClass, Priority.DEFAULT);
 	}
 
 	public String getResource(Section<? extends AbbreviatedResourceReference> section) {
