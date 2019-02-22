@@ -20,14 +20,18 @@
 package de.knowwe.uitest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
 import org.junit.Assert;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -55,7 +59,8 @@ public abstract class KnowWEUITest {
 	private final Platform os;
 	private final WikiTemplate template;
 
-	public static final String RESOURCE_DIR = "src/test/resources/";
+	private static final String RESOURCE_DIR = "src/test/resources/";
+	private static boolean acceptNextAlert = true;
 
 	/**
 	 * In order to test locally set the following dev mode parameters
@@ -150,6 +155,10 @@ public abstract class KnowWEUITest {
 		return getDriver().findElement(selector);
 	}
 
+	protected List<WebElement> findAll(By selector) {
+		return getDriver().findElements(selector);
+	}
+
 	protected void waitUntilPresent(By selector) {
 		await().until(ExpectedConditions.presenceOfElementLocated(selector));
 	}
@@ -172,8 +181,13 @@ public abstract class KnowWEUITest {
 		return await().until(ExpectedConditions.visibilityOfElementLocated(selector));
 	}
 
-	protected void moveMouseTo(By selector) {
-		new Actions(getDriver()).moveToElement(find(selector));
+	protected void hoverAndClickElement(WebElement element) {
+		new Actions(getDriver()).moveToElement(element).pause(1000).click().build().perform();
+	}
+
+	protected void scrollToElement(WebElement element) {
+		JavascriptExecutor js = (JavascriptExecutor) getDriver();
+		js.executeScript("arguments[0].scrollIntoView();", element);
 	}
 
 	protected String readFile(String fileName) throws IOException {
@@ -194,6 +208,43 @@ public abstract class KnowWEUITest {
 		}
 		catch (NoAlertPresentException e) {
 			return false;
+		}
+	}
+
+	protected boolean isElementPresent(By by) {
+		try {
+			getDriver().findElement(by);
+			return true;
+		}
+		catch (NoSuchElementException e) {
+			return false;
+		}
+	}
+
+	protected boolean isElementPresent(By by, WebElement parent) {
+		try {
+			parent.findElement(by);
+			return true;
+		}
+		catch (NoSuchElementException e) {
+			return false;
+		}
+	}
+
+	protected String closeAlertAndGetItsText() {
+		try {
+			Alert alert = getDriver().switchTo().alert();
+			String alertText = alert.getText();
+			if (acceptNextAlert) {
+				alert.accept();
+			}
+			else {
+				alert.dismiss();
+			}
+			return alertText;
+		}
+		finally {
+			acceptNextAlert = true;
 		}
 	}
 }
