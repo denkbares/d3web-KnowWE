@@ -149,6 +149,48 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
 	}
 
+	/**
+	 * Returns whether any elements of this Sections match the provided predicate.  May not evaluate the predicate on
+	 * all elements if not necessary for determining the result.  If the there are not elements in this Sections, {@code
+	 * false} is returned and the predicate is not evaluated.
+	 *
+	 * @param predicate predicate to apply to elements
+	 * @return {@code true} if any elements match the provided predicate
+	 */
+	public boolean anyMatch(SectionFilter<T> predicate) {
+		for (Section<T> section : this) {
+			if (predicate.accept(section)) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns whether all elements of this Sections match the provided predicate. May not evaluate the predicate on all
+	 * elements if not necessary for determining the result.  If the there are not elements in this Sections, {@code
+	 * true} is returned and the predicate is not evaluated.
+	 *
+	 * @param predicate predicate to apply to elements
+	 * @return {@code true} if either all elements match the provided predicate or the sections are empty
+	 */
+	public boolean allMatch(SectionFilter<T> predicate) {
+		for (Section<T> section : this) {
+			if (!predicate.accept(section)) return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns whether no elements of this Sections match the provided predicate. May not evaluate the predicate on all
+	 * elements if not necessary for determining the result.  If the there are not elements in this Sections, {@code
+	 * true} is returned and the predicate is not evaluated.
+	 *
+	 * @param predicate predicate to apply to elements
+	 * @return {@code true} if either no elements match the provided predicate or the sections are empty
+	 */
+	public boolean noneMatch(SectionFilter<T> predicate) {
+		return !anyMatch(predicate);
+	}
+
 	@NotNull
 	public static Sections<? extends Type> definitions(TerminologyManager manager, @Nullable Identifier identifier) {
 		//noinspection unchecked

@@ -31,7 +31,7 @@ import de.knowwe.kdom.filter.SectionFilter;
  * @author Volker Belli (denkbares GmbH)
  * @created 22.08.2014
  */
-public class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>>, SectionFilter<OT> {
+public final class FilterTypeIterator<OT extends Type> implements Iterator<Section<OT>>, SectionFilter<OT> {
 
 	private final Class<OT> clazz;
 	private final Iterator base;

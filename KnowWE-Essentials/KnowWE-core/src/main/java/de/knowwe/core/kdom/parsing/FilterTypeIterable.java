@@ -31,7 +31,7 @@ import de.knowwe.core.kdom.Type;
  * @author Volker Belli (denkbares GmbH)
  * @created 22.08.2014
  */
-public class FilterTypeIterable<OT extends Type> implements Iterable<Section<OT>> {
+public final class FilterTypeIterable<OT extends Type> implements Iterable<Section<OT>> {
 	private final Class<OT> clazz;
 	private final Iterable base;
 
