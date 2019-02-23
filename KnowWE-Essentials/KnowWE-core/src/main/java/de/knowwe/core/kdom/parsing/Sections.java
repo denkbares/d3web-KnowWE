@@ -79,6 +79,16 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return new Sections<>(section);
 	}
 
+	/**
+	 * Creates a new Sections instance from the elements of the stream, skipping all null values in the stream.
+	 *
+	 * @param sections the sections to create the instance from
+	 * @return a Sections instance with all non-null sections
+	 */
+	public static <T extends Type> Sections<T> $(Stream<Section<T>> sections) {
+		return $(sections.filter(Objects::nonNull).iterator());
+	}
+
 	public Sections(Section<T> section) {
 		this((section == null) ? Collections.emptyList() : Collections.singletonList(section));
 	}
