@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -20,11 +20,11 @@
 
 package de.knowwe.core.kdom;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.Environment.CompilationMode;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
@@ -32,9 +32,8 @@ import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.KDOMCreatedEvent;
 
 /**
- * This class is the representation of one wiki article in KnowWE. It is a Type
- * that always forms the root node and only the root node of each KDOM
- * document-parse-tree.
+ * This class is the representation of one wiki article in KnowWE. It is a Type that always forms the root node and only
+ * the root node of each KDOM document-parse-tree.
  *
  * @author Jochen
  */
@@ -93,7 +92,8 @@ public final class Article {
 		this.web = web;
 		this.text = text;
 		this.temporary = temporary;
-		this.lastVersion = Environment.isInitialized() && !temporary ? Environment.getInstance().getArticle(web, title) : null;
+		this.lastVersion = Environment.isInitialized() && !temporary ? Environment.getInstance()
+				.getArticle(web, title) : null;
 
 		this.fullParse = fullParse
 				|| lastVersion == null
@@ -111,9 +111,8 @@ public final class Article {
 	}
 
 	/**
-	 * Constructor to create an empty article. This constructor is intended to be used
-	 * in test scenarios. Under normally "user edits' an article" conditions, this
-	 * constructor shall not be used.
+	 * Constructor to create an empty article. This constructor is intended to be used in test scenarios. Under normally
+	 * "user edits' an article" conditions, this constructor shall not be used.
 	 */
 	private Article(String title, String web) {
 		this.title = title;
@@ -177,16 +176,15 @@ public final class Article {
 	}
 
 	/**
-	 * The last version is only available during the initialization of the
-	 * article
+	 * The last version is only available during the initialization of the article
 	 */
 	public Article getLastVersionOfArticle() {
 		return lastVersion;
 	}
 
 	/**
-	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS
-	 * ARTICLE! For the articles title, use getTitle() instead!
+	 * Returns the simple name of this class, NOT THE NAME (Title) OF THIS ARTICLE! For the articles title, use
+	 * getTitle() instead!
 	 */
 	public String getName() {
 		return this.getClass().getSimpleName();
@@ -214,7 +212,7 @@ public final class Article {
 
 	@Override
 	public String toString() {
-		return rootSection.getText();
+		return "Article: " + title + "\n----\n" + rootSection.getText();
 	}
 
 	public boolean isFullParse() {
@@ -262,5 +260,4 @@ public final class Article {
 	public boolean isTemporary() {
 		return temporary;
 	}
-
 }
