@@ -29,7 +29,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
-public class AnnotationContentType extends AbstractType {
+public final class AnnotationContentType extends AbstractType {
 
 	private final DefaultMarkup.Annotation annotation;
 
