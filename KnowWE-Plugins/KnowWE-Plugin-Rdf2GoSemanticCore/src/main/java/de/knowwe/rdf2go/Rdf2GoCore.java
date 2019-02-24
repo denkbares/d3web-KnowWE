@@ -156,6 +156,13 @@ public class Rdf2GoCore {
 			shutDownThreadPool.shutdown();
 			SemanticCore.shutDownRepositoryManager();
 		});
+		try {
+			Class.forName("com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl");
+			System.getProperties().setProperty("javax.xml.datatype.DatatypeFactory", "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl");
+		}
+		catch (ClassNotFoundException e) {
+			Log.warning("com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl not in class path, using fall back");
+		}
 	}
 
 	/**
@@ -737,28 +744,38 @@ public class Rdf2GoCore {
 			if (escapeMode) {
 				if (current == 't') {
 					builder.append('\t');
-				} else if (current == 'b') {
+				}
+				else if (current == 'b') {
 					builder.append('\b');
-				} else if (current == 'n') {
+				}
+				else if (current == 'n') {
 					builder.append('\n');
-				} else if (current == 'r') {
+				}
+				else if (current == 'r') {
 					builder.append('\r');
-				} else if (current == 'f') {
+				}
+				else if (current == 'f') {
 					builder.append('\f');
-				} else if (current == '"') {
+				}
+				else if (current == '"') {
 					builder.append('"');
-				}  else if (current == '\'') {
+				}
+				else if (current == '\'') {
 					builder.append('\'');
-				} else if (current == '\\') {
+				}
+				else if (current == '\\') {
 					builder.append('\\');
-				} else {
+				}
+				else {
 					builder.append(current);
 				}
 				escapeMode = false;
-			} else {
+			}
+			else {
 				if (current == '\\') {
 					escapeMode = true;
-				} else {
+				}
+				else {
 					builder.append(current);
 				}
 			}
