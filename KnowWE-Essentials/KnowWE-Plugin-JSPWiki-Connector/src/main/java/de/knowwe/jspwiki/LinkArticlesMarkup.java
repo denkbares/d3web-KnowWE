@@ -271,7 +271,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			out.append(prefix);
 			out.appendHtmlTag("a", "href", KnowWEUtils.getURLLink(section));
 			if (off) out.appendHtmlTag("span", "style", "color: #888; text-decoration: line-through");
-			out.append(title.replace(oldString, newString));
+			out.append(title.replaceAll(oldString, newString));
 			if (off) out.appendHtmlTag("/span");
 			out.appendHtmlTag("/a");
 
