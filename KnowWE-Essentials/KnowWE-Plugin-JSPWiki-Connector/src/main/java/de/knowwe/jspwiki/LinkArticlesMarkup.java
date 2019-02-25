@@ -31,6 +31,7 @@ import de.knowwe.core.utils.Scope;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.util.Icon;
 
 import static com.denkbares.strings.Strings.*;
 
@@ -117,7 +118,8 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			// prepare linked sections
 			List<Section<?>> sections = applyMarkup(articles).collect(Collectors.toList());
 			if (sections.isEmpty()) {
-				messages.add(Messages.warning("No matching article found."));
+				out.appendHtmlTag("span", "style", "color: #888")
+						.append("-- (no entries)").appendHtmlTag("/span");
 			}
 
 			// prepare template
@@ -264,9 +266,27 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		public void appendLink(RenderResult out, Section<?> section) {
 			String title = section.getTitle();
 			if (title == null) return;
-			out.append(prefix)
-					.appendHtmlTag("a", "href", KnowWEUtils.getURLLink(section))
-					.append(title.replace(oldString, newString)).appendHtmlTag("/a").append("\n");
+			boolean off = Strings.startsWithIgnoreCase(section.getText(), "%%off:");
+
+			out.append(prefix);
+			out.appendHtmlTag("a", "href", KnowWEUtils.getURLLink(section));
+			if (off) out.appendHtmlTag("span", "style", "color: #888; text-decoration: line-through");
+			out.append(title.replace(oldString, newString));
+			if (off) out.appendHtmlTag("/span");
+			out.appendHtmlTag("/a");
+
+			// render if the section is erroneous
+			int errors = DefaultMarkupRenderer.getMessageStrings(section, Message.Type.ERROR, null).size();
+			int warnings = errors > 0 ? 0 :
+					DefaultMarkupRenderer.getMessageStrings(section, Message.Type.WARNING, null).size();
+			if (errors > 0) {
+				out.append(" (").appendHtml(Icon.ERROR.toHtml()).append(" ").append(Strings.pluralOf(errors, "error")).append(")");
+			}
+			if (warnings > 0) {
+				out.append(" (").appendHtml(Icon.WARNING.toHtml()).append(" ").append(Strings.pluralOf(warnings, "warning")).append(")");
+			}
+
+			out.append("\n");
 		}
 	}
 }

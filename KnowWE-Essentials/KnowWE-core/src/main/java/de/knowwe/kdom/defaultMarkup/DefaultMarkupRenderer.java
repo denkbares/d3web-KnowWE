@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
@@ -183,7 +185,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		out.appendHtml("</span>");
 	}
 
-	public static Collection<String> getMessageStrings(Section<?> rootSection, Type type, UserContext context) {
+	public static Collection<String> getMessageStrings(Section<?> rootSection, Type type, @Nullable UserContext context) {
 		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages =
 				getMessageSectionsOfSubtree(rootSection, type);
 
@@ -222,7 +224,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	/**
 	 * We create an additional warning in case this section has package compile scripts but no compiler compiling them
 	 */
-	private static void checkNotCompiledWarning(Section<?> rootSection, Collection<String> messages, UserContext context) {
+	private static void checkNotCompiledWarning(Section<?> rootSection, Collection<String> messages, @Nullable UserContext context) {
 		// if there is a package annotation, a message will be produced there, no need to produce another one
 		if (DefaultMarkupType.getAnnotation(rootSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) != null) return;
 		if (context != null && context.isRenderingPreview()) return;
