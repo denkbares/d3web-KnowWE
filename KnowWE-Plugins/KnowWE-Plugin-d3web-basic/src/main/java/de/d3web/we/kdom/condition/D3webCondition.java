@@ -20,13 +20,10 @@
 package de.d3web.we.kdom.condition;
 
 import de.d3web.core.inference.condition.Condition;
-import de.d3web.we.knowledgebase.D3webCompileScript;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -34,27 +31,19 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author Jochen
  * @created 26.07.2010
  */
-public abstract class D3webCondition<T extends D3webCondition<T>>
-		extends AbstractType {
+public abstract class D3webCondition<T extends D3webCondition<T>> extends AbstractType {
 
 	private static final String COND_STORE_KEY = "cond-store-key";
 
-	public final Condition getCondition(PackageCompiler compiler, Section<? extends D3webCondition<?>> section) {
-		Condition condition = (Condition) KnowWEUtils.getStoredObject(compiler, section, COND_STORE_KEY);
-		if (condition == null) {
+	public final Condition getCondition(D3webCompiler compiler, Section<? extends D3webCondition<?>> section) {
+		StoredCondition condition = (StoredCondition) KnowWEUtils.getStoredObject(compiler, section, COND_STORE_KEY);
+		KnowledgeBase knowledgeBase = compiler.getKnowledgeBase();
+		if (condition == null || !condition.isValidFor(knowledgeBase)) {
 			//noinspection unchecked
-			condition = createCondition((D3webCompiler) compiler, (Section<T>) section);
+			condition = new StoredCondition(knowledgeBase, createCondition(compiler, (Section<T>) section));
 			KnowWEUtils.storeObject(compiler, section, COND_STORE_KEY, condition);
 		}
-		return condition;
-	}
-
-	public static Condition findCondition(D3webCompiler compiler, Section<?> parent) {
-		@SuppressWarnings("rawtypes")
-		Section<D3webCondition> section = Sections.successor(parent, D3webCondition.class);
-		@SuppressWarnings("unchecked")
-		Condition condition = section.get().getCondition(compiler, section);
-		return condition;
+		return condition.getCondition();
 	}
 
 	/**
@@ -67,4 +56,26 @@ public abstract class D3webCondition<T extends D3webCondition<T>>
 	 */
 	protected abstract Condition createCondition(D3webCompiler compiler, Section<T> section);
 
+	private static class StoredCondition {
+
+		private final Condition condition;
+		private final KnowledgeBase knowledgeBase;
+
+		public StoredCondition(KnowledgeBase knowledgeBase, Condition condition) {
+			this.condition = condition;
+			this.knowledgeBase = knowledgeBase;
+		}
+
+		/**
+		 * Returns true if the stored condition can be reused for the specified knowledge base.
+		 */
+		public boolean isValidFor(KnowledgeBase knowledgeBase) {
+			// we can only reuse conditions that are created for the identical knowledge base
+			return this.knowledgeBase == knowledgeBase;
+		}
+
+		public Condition getCondition() {
+			return condition;
+		}
+	}
 }
