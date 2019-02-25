@@ -329,6 +329,16 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Returns the number of sections that are in this sections instance.
+	 */
+	public int count() {
+		if (this.sections instanceof Collection) {
+			return ((Collection<Section<T>>) this.sections).size();
+		}
+		return (int) stream().count();
+	}
+
+	/**
 	 * Returns a list of all contained sections of this instance.
 	 *
 	 * @return a list of all sections contained
