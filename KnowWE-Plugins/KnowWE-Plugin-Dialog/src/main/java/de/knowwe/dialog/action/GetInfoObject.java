@@ -32,6 +32,7 @@ import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionYN;
+import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
@@ -56,8 +57,8 @@ import de.knowwe.dialog.Utils;
 /**
  * A command that delivers all info objects for a given list of object identifiers.
  * <p>
- * The ids in the list are separated by a comma. The info objects are delivered in the specified
- * language or any language if no entries are found for that language.
+ * The ids in the list are separated by a comma. The info objects are delivered in the specified language or any
+ * language if no entries are found for that language.
  *
  * @author Volker Belli
  */
@@ -122,14 +123,13 @@ public class GetInfoObject extends AbstractAction {
 			writer.append(" abstract='true'");
 		}
 		writer.append(" type='");
-		writer.append(
-				(object instanceof QuestionYN) ? "bool" :
-						(object instanceof QuestionOC) ? "oc" :
-								(object instanceof QuestionMC) ? "mc" :
-										(object instanceof QuestionDate) ? "date" :
-												(object instanceof QuestionNum) ? "num" :
-														(object instanceof QuestionText) ? "text" :
-																"???"
+		writer.append((object instanceof QuestionYN) ? "bool"
+				: (object instanceof QuestionOC) ? "oc"
+				: (object instanceof QuestionMC) ? "mc"
+				: (object instanceof QuestionDate) ? "date"
+				: (object instanceof QuestionNum) ? "num"
+				: (object instanceof QuestionText) ? "text"
+				: "???"
 		);
 		writer.append("'");
 		writer.append(">\n");
@@ -206,23 +206,9 @@ public class GetInfoObject extends AbstractAction {
 			}
 		}
 		// append choice unknown if visible
-		Boolean unknownVisible = object.getInfoStore().getValue(
-				BasicProperties.UNKNOWN_VISIBLE);
-		if (unknownVisible == null) {
-			unknownVisible = session.getKnowledgeBase().getInfoStore().getValue(
-					BasicProperties.UNKNOWN_VISIBLE);
-		}
-		if ((unknownVisible != null) && (unknownVisible)) {
+		if (BasicProperties.isUnknownVisible(object) || (object instanceof QuestionZC)) {
 			Unknown value = Unknown.getInstance();
-			String text = object.getInfoStore().getValue(
-					MMInfo.UNKNOWN_VERBALISATION);
-			if (text == null) {
-				text = session.getKnowledgeBase().getInfoStore().getValue(
-						MMInfo.UNKNOWN_VERBALISATION);
-			}
-			if (text == null) {
-				text = "";
-			}
+			String text = (object instanceof QuestionZC) ? "Next" : MMInfo.getUnknownPrompt(object);
 			writer.append("\t\t<choice id='").append(value.getId()).append("'>");
 			writer.append(encodeXML(text));
 			writer.append("</choice>\n");
