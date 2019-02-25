@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
+import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.d3web.core.knowledge.InfoStore;
@@ -208,7 +209,7 @@ public class GetInfoObject extends AbstractAction {
 		// append choice unknown if visible
 		if (BasicProperties.isUnknownVisible(object) || (object instanceof QuestionZC)) {
 			Unknown value = Unknown.getInstance();
-			String text = (object instanceof QuestionZC) ? "Next" : MMInfo.getUnknownPrompt(object);
+			String text = (object instanceof QuestionZC) ? getNextPrompt(locale) : MMInfo.getUnknownPrompt(object, locale);
 			writer.append("\t\t<choice id='").append(value.getId()).append("'>");
 			writer.append(encodeXML(text));
 			writer.append("</choice>\n");
@@ -229,6 +230,10 @@ public class GetInfoObject extends AbstractAction {
 			}
 		}
 		return false;
+	}
+
+	private String getNextPrompt(Locale locale) {
+		return Locales.hasSameLanguage(Locale.GERMAN, locale) ? "Weiter" : "Next";
 	}
 
 	private String getPrompt(Choice answer, Locale locale) {
