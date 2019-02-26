@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -38,9 +38,8 @@ import org.jetbrains.annotations.Nullable;
 import de.knowwe.core.user.UserContext;
 
 /**
- * This interface defines how KnowWE (and KnowWE-Plugins) can interact with the
- * underlying wiki engine. An implementation provides KnowWE access to
- * attachments file, page sources, user rights, edit locks and much more.
+ * This interface defines how KnowWE (and KnowWE-Plugins) can interact with the underlying wiki engine. An
+ * implementation provides KnowWE access to attachments file, page sources, user rights, edit locks and much more.
  * <p/>
  * To connect a wiki engine with KnowWE this interface needs to be implemented.
  *
@@ -67,8 +66,7 @@ public interface WikiConnector {
 	List<WikiAttachmentInfo> getAttachmentHistory(String path) throws IOException;
 
 	/**
-	 * Creates a new wiki page with given title and content and author in the
-	 * connected wiki.
+	 * Creates a new wiki page with given title and content and author in the connected wiki.
 	 *
 	 * @param title   the title of the new article
 	 * @param author  the author of the new article
@@ -84,14 +82,12 @@ public interface WikiConnector {
 	boolean doesArticleExist(String title);
 
 	/**
-	 * Returns all active users. Active users are users currently having an
-	 * active {@link HttpSession} in the wiki.
+	 * Returns all active users. Active users are users currently having an active {@link HttpSession} in the wiki.
 	 */
 	String[] getAllActiveUsers();
 
 	/**
-	 * Returns a map of all wiki articles with the titles as key and the article
-	 * contents as values.
+	 * Returns a map of all wiki articles with the titles as key and the article contents as values.
 	 *
 	 * @param web the web to check for the articles.
 	 */
@@ -110,10 +106,9 @@ public interface WikiConnector {
 	String getApplicationRootPath();
 
 	/**
-	 * Returns the {@link WikiAttachment} given by the supplied path. This
-	 * method returns null if the attachment does not exists. The method throws
-	 * an {@link IOException} if there are any problems to access the attachment
-	 * from the underlying wiki architecture.
+	 * Returns the {@link WikiAttachment} given by the supplied path. This method returns null if the attachment does
+	 * not exists. The method throws an {@link IOException} if there are any problems to access the attachment from the
+	 * underlying wiki architecture.
 	 *
 	 * @param path the path of the attachment
 	 * @return the attachment of the specified path or null, if there is no such attachment
@@ -124,10 +119,9 @@ public interface WikiConnector {
 	WikiAttachment getAttachment(String path) throws IOException;
 
 	/**
-	 * Returns the {@link WikiAttachment} given by the supplied path. This
-	 * method returns null if the attachment does not exists. The method throws
-	 * an {@link IOException} if there are any problems to access the attachment
-	 * from the underlying wiki architecture.
+	 * Returns the {@link WikiAttachment} given by the supplied path. This method returns null if the attachment does
+	 * not exists. The method throws an {@link IOException} if there are any problems to access the attachment from the
+	 * underlying wiki architecture.
 	 *
 	 * @param path    the path of the attachment
 	 * @param version the version of the attachment
@@ -139,9 +133,8 @@ public interface WikiConnector {
 	WikiAttachment getAttachment(String path, int version) throws IOException;
 
 	/**
-	 * Returns the all attachments of the article with the given title. The
-	 * method throws an {@link IOException} if there are any problems to access
-	 * the attachments from the underlying wiki architecture.
+	 * Returns the all attachments of the article with the given title. The method throws an {@link IOException} if
+	 * there are any problems to access the attachments from the underlying wiki architecture.
 	 *
 	 * @param title the title of the article to get the attachment from
 	 * @return the attachments of the specified article
@@ -150,9 +143,8 @@ public interface WikiConnector {
 	List<WikiAttachment> getAttachments(String title) throws IOException;
 
 	/**
-	 * Returns a collection of all attachments known to the wiki. The method
-	 * throws an {@link IOException} if there are any problems to access the
-	 * attachments from the underlying wiki architecture.
+	 * Returns a collection of all attachments known to the wiki. The method throws an {@link IOException} if there are
+	 * any problems to access the attachments from the underlying wiki architecture.
 	 *
 	 * @return the attachments of the wiki
 	 * @throws IOException if the attachments cannot be accessed
@@ -160,8 +152,8 @@ public interface WikiConnector {
 	Collection<WikiAttachment> getAttachments() throws IOException;
 
 	/**
-	 * Returns the author of the specified version of the given article (by
-	 * name) or null, if the article does not exist.
+	 * Returns the author of the specified version of the given article (by name) or null, if the article does not
+	 * exist.
 	 *
 	 * @param title   the title of the article which has to be selected
 	 * @param version the version number of which the author has to be returned
@@ -187,8 +179,8 @@ public interface WikiConnector {
 	String getKnowWEExtensionPath();
 
 	/**
-	 * Returns the Date when the specified version of the article was last
-	 * modified or <tt>null</tt>, if the article does not exist.
+	 * Returns the Date when the specified version of the article was last modified or <tt>null</tt>, if the article
+	 * does not exist.
 	 *
 	 * @param title   the name of the article
 	 * @param version the version of the article
@@ -209,8 +201,8 @@ public interface WikiConnector {
 	String getRealPath();
 
 	/**
-	 * Returns a path to safely store files to. The path must be outside the
-	 * webapps dir to prevent the files to be deleted during a wiki-redeploy
+	 * Returns a path to safely store files to. The path must be outside the webapps dir to prevent the files to be
+	 * deleted during a wiki-redeploy
 	 */
 	String getSavePath();
 
@@ -220,17 +212,15 @@ public interface WikiConnector {
 	ServletContext getServletContext();
 
 	/**
-	 * Returns the most current version number of the article with the given
-	 * title
+	 * Returns the most current version number of the article with the given title
 	 *
 	 * @param title the title of the article
 	 */
 	int getVersion(String title);
 
 	/**
-	 * Returns the given version of the content of the article with the given
-	 * title. If the article does not exist, <tt>null</tt> is returned. To get
-	 * the latest version, pass -1 as the version attribute.
+	 * Returns the given version of the content of the article with the given title. If the article does not exist,
+	 * <tt>null</tt> is returned. To get the latest version, pass -1 as the version attribute.
 	 *
 	 * @param title   the title of the article
 	 * @param version the version number of the article source to be retrieved
@@ -238,17 +228,16 @@ public interface WikiConnector {
 	String getArticleText(String title, int version);
 
 	/**
-	 * Returns the content of the article with the given
-	 * title from the underlying wiki. If the article does not exist, <tt>null</tt> is returned.
+	 * Returns the content of the article with the given title from the underlying wiki. If the article does not exist,
+	 * <tt>null</tt> is returned.
 	 *
 	 * @param title the title of the article
 	 */
 	String getArticleText(String title);
 
 	/**
-	 * Returns the change note of the given version of the article with the
-	 * given title. If the article or the version do not exist, <tt>null</tt> is
-	 * returned. To get the latest version, pass -1 as the version attribute.
+	 * Returns the change note of the given version of the article with the given title. If the article or the version
+	 * do not exist, <tt>null</tt> is returned. To get the latest version, pass -1 as the version attribute.
 	 *
 	 * @param title   the title of the article
 	 * @param version the version number of the article source to be retrieved
@@ -256,8 +245,7 @@ public interface WikiConnector {
 	String getChangeNote(String title, int version);
 
 	/**
-	 * Checks whether a article has a editing lock (due to another user who has
-	 * started to edit it)
+	 * Checks whether a article has a editing lock (due to another user who has started to edit it)
 	 *
 	 * @param title the title of the article to check the lock for
 	 */
@@ -272,8 +260,7 @@ public interface WikiConnector {
 	boolean isArticleLockedCurrentUser(String title, String user);
 
 	/**
-	 * Sets an editing lock on the article, denoting that the article is
-	 * currently edited by the given user.
+	 * Sets an editing lock on the article, denoting that the article is currently edited by the given user.
 	 *
 	 * @param title the title of the article to be locked
 	 * @param user  the user locking the article
@@ -281,8 +268,7 @@ public interface WikiConnector {
 	boolean lockArticle(String title, String user);
 
 	/**
-	 * Normalizes a string the same way as the wiki engine normalizes wiki text
-	 * before saving it to a file.
+	 * Normalizes a string the same way as the wiki engine normalizes wiki text before saving it to a file.
 	 *
 	 * @param string the string to be normalized
 	 * @return the normalized string
@@ -300,76 +286,62 @@ public interface WikiConnector {
 	String renderWikiSyntax(String articleText, HttpServletRequest request);
 
 	/**
-	 * Renders given wiki mark-up to html. Use only if no http request is
-	 * available.
+	 * Renders given wiki mark-up to html. Use only if no http request is available.
 	 *
 	 * @return the rendered article text
 	 */
 	String renderWikiSyntax(String articleText);
 
 	/**
-	 * Creates a new wiki attachment of the specified path and the specified
-	 * file content.
+	 * Creates a new wiki attachment of the specified path and the specified file content.
 	 * <p/>
-	 * If there is already an attachment with this path, a new version of the
-	 * attachment will be created. Otherwise a new attachment will be created.
-	 * In both cases you can use the returned {@link WikiAttachment} to access
-	 * the attachment.
+	 * If there is already an attachment with this path, a new version of the attachment will be created. Otherwise a
+	 * new attachment will be created. In both cases you can use the returned {@link WikiAttachment} to access the
+	 * attachment.
 	 *
-	 * @param title          the title of the article, for which this attachment should
-	 *                       be stored
+	 * @param title          the title of the article, for which this attachment should be stored
 	 * @param user           is the user wanting to store the attachment
 	 * @param attachmentFile the attachment to be stored
 	 * @return the newly created attachment
-	 * @throws IOException if the stream cannot be read of if the content cannot
-	 *                     be stored as an attachment
+	 * @throws IOException if the stream cannot be read of if the content cannot be stored as an attachment
 	 */
 	WikiAttachment storeAttachment(String title, String user, File attachmentFile) throws IOException;
 
 	/**
-	 * Creates a new wiki attachment of the specified path and the specified
-	 * content. Please note that the stream will not be closed by this method.
-	 * When the method return the stream has been fully read. It's in the
-	 * callers responsibility to close the stream afterwards.
+	 * Creates a new wiki attachment of the specified path and the specified content. Please note that the stream will
+	 * not be closed by this method. When the method return the stream has been fully read. It's in the callers
+	 * responsibility to close the stream afterwards.
 	 * <p/>
-	 * If there is already an attachment with this path, a new version of the
-	 * attachment will be created. Otherwise a new attachment will be created.
-	 * In both cases you can use the returned {@link WikiAttachment} to access
-	 * the attachment.
+	 * If there is already an attachment with this path, a new version of the attachment will be created. Otherwise a
+	 * new attachment will be created. In both cases you can use the returned {@link WikiAttachment} to access the
+	 * attachment.
 	 *
-	 * @param title    the title of the article, for which this attachment should
-	 *                 be stored
+	 * @param title    the title of the article, for which this attachment should be stored
 	 * @param filename the name for which the attachment should be stored
 	 * @param user     is the user wanting to store the attachment
 	 * @param stream   the stream for the content of the file
 	 * @return the newly created attachment
-	 * @throws IOException if the stream cannot be read of if the content cannot
-	 *                     be stored as an attachment
+	 * @throws IOException if the stream cannot be read of if the content cannot be stored as an attachment
 	 */
 	WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException;
 
 	/**
-	 * Creates a new wiki attachment of the specified path and the specified
-	 * content. Please note that the stream will not be closed by this method.
-	 * When the method return the stream has been fully read. It's in the
-	 * callers responsibility to close the stream afterwards.
+	 * Creates a new wiki attachment of the specified path and the specified content. Please note that the stream will
+	 * not be closed by this method. When the method return the stream has been fully read. It's in the callers
+	 * responsibility to close the stream afterwards.
 	 * <p/>
-	 * If there is already an attachment with this path and <tt>versioning</tt>
-	 * is set to true, a new version of the attachment will be created. If
+	 * If there is already an attachment with this path and <tt>versioning</tt> is set to true, a new version of the
+	 * attachment will be created. If
 	 * <tt>versioning</tt> is set to false, any previous versions (if there are
-	 * any) will be removed.
-	 * In all cases you can use the returned {@link WikiAttachment} to access
-	 * the attachment.
+	 * any) will be removed. In all cases you can use the returned {@link WikiAttachment} to access the attachment.
 	 *
-	 * @param title      the title of the article, for which this attachment should
-	 *                   be stored
+	 * @param title      the title of the article, for which this attachment should be stored
 	 * @param filename   the name for which the attachment should be stored
 	 * @param user       is the user wanting to store the attachment
 	 * @param stream     the stream for the content of the file
 	 * @param versioning decides whether the attachment should be stored with versioning
 	 * @return the newly created attachment
-	 * @throws IOException if the stream cannot be read of if the content cannot
-	 *                     be stored as an attachment
+	 * @throws IOException if the stream cannot be read of if the content cannot be stored as an attachment
 	 */
 	WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream, boolean versioning) throws IOException;
 
@@ -385,11 +357,11 @@ public interface WikiConnector {
 	void deleteAttachment(String title, String fileName, String user) throws IOException;
 
 	/**
-	 * Deletes the article with the given <tt>title</tt>. If the article is
-	 * versioned, all versions of the article are deleted.
+	 * Deletes the article with the given <tt>title</tt>. If the article is versioned, all versions of the article are
+	 * deleted.
 	 *
-	 * @param title    the title of the article the attachment is stored in
-	 * @param user     the user deleting the attachment
+	 * @param title the title of the article the attachment is stored in
+	 * @param user  the user deleting the attachment
 	 * @throws IOException if the attachment cannot be deleted
 	 */
 	void deleteArticle(String title, String user) throws IOException;
@@ -398,8 +370,7 @@ public interface WikiConnector {
 	 * Removes the lock for the article.
 	 *
 	 * @param title the title of the article to be unlocked
-	 * @param user  the user who's lock shall be removed, if null the most recent
-	 *              lock will be removed
+	 * @param user  the user who's lock shall be removed, if null the most recent lock will be removed
 	 */
 	void unlockArticle(String title, String user);
 
@@ -450,5 +421,16 @@ public interface WikiConnector {
 	 *
 	 * @return the current template of the wiki.
 	 */
-	@Nullable String getTemplate();
+	@Nullable
+	String getTemplate();
+
+	/**
+	 * Returns the property value of the specified propery, as definied in the wiki connector (for JSPWiki this are the
+	 * property value as defined in "jspwiki-custom.properties".
+	 *
+	 * @param property the property key to get the value for
+	 * @return the property value
+	 */
+	@Nullable
+	String getWikiProperty(String property);
 }

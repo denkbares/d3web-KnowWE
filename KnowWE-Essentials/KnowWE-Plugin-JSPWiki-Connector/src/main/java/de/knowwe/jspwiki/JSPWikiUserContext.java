@@ -92,6 +92,7 @@ public class JSPWikiUserContext extends AbstractUserContext {
 		this.allowAsynchronousRendering = isAsynchronousRenderingAllowed;
 	}
 
+	@Override
 	public boolean allowAsynchronousRendering() {
 		return allowAsynchronousRendering;
 	}

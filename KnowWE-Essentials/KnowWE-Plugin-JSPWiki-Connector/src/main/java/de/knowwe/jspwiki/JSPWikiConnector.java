@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -144,7 +144,6 @@ public class JSPWikiConnector implements WikiConnector {
 			if (reindex) {
 				reindex(title);
 			}
-
 		}
 		catch (ProviderException e) {
 			Log.severe(e.getMessage(), e);
@@ -215,7 +214,6 @@ public class JSPWikiConnector implements WikiConnector {
 			if (pageContent != null) {
 				result.put(wikiPage.getName(), pageContent);
 			}
-
 		}
 
 		return result;
@@ -267,7 +265,6 @@ public class JSPWikiConnector implements WikiConnector {
 			String message = "Cannot access attachments due to provider error.";
 			throw new IOException(message, e);
 		}
-
 	}
 
 	@Override
@@ -316,7 +313,6 @@ public class JSPWikiConnector implements WikiConnector {
 				if (!found) throw new IOException("ZipEntry '" + entry + "' not found.");
 				return new JSPWikiZipAttachment(entry, attachment, attachmentManager);
 			}
-
 		}
 		catch (ProviderException e) {
 			String message = "Cannot access attachments due to provider error.";
@@ -614,6 +610,8 @@ public class JSPWikiConnector implements WikiConnector {
 		return null;
 	}
 
+	@Override
+	@Nullable
 	public String getWikiProperty(String property) {
 		return (String) engine.getWikiProperties().get(property);
 	}
@@ -643,7 +641,6 @@ public class JSPWikiConnector implements WikiConnector {
 		WikiPage page = new WikiPage(engine, title);
 		PageLock lock = mgr.getCurrentLock(page);
 		return lock != null && lock.getLocker().equals(user);
-
 	}
 
 	@Override
@@ -725,11 +722,11 @@ public class JSPWikiConnector implements WikiConnector {
 		page.setAuthor(user);
 		try {
 			boolean wasLocked = isArticleLocked(title);
-			if(!wasLocked) lockArticle(title, user);
+			if (!wasLocked) lockArticle(title, user);
 
 			pageManager.deletePage(page);
 
-			if(!wasLocked) unlockArticle(title, user);
+			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
 			throw new IOException(e);
