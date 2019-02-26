@@ -181,8 +181,12 @@ public abstract class KnowWEUITest {
 		return await().until(ExpectedConditions.visibilityOfElementLocated(selector));
 	}
 
+	protected void hoverElement(WebElement element) {
+		new Actions(getDriver()).moveToElement(element).pause(2000).build().perform();
+	}
+
 	protected void hoverAndClickElement(WebElement element) {
-		new Actions(getDriver()).moveToElement(element).pause(1000).click().build().perform();
+		new Actions(getDriver()).moveToElement(element).pause(2000).click().build().perform();
 	}
 
 	protected void scrollToElement(WebElement element) {
@@ -199,10 +203,11 @@ public abstract class KnowWEUITest {
 				.replace("%%package systemtest", "%%package systemtest" + getArticleName());
 	}
 
-	protected void setContentByName(String name, String content) {
-		find(By.name(name)).click();
-		find(By.name(name)).clear();
-		find(By.name(name)).sendKeys(content);
+	protected void setContentByName(WebElement parent, String name, String content) {
+		WebElement element = parent.findElement(By.name(name));
+		element.click();
+		element.clear();
+		element.sendKeys(content);
 	}
 
 	protected boolean isAlertPresent() {
@@ -235,7 +240,7 @@ public abstract class KnowWEUITest {
 		}
 	}
 
-	protected String closeAlertAndGetItsText() {
+	protected String confirmAlertAndGetMsg() {
 		try {
 			Alert alert = getDriver().switchTo().alert();
 			String alertText = alert.getText();
