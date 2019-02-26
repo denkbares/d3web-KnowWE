@@ -2,6 +2,7 @@ package de.knowwe.d3web.action;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Collection;
@@ -105,12 +106,11 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		context.setContentType("application/x-bin");
 
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
-		OutputStream outs = context.getOutputStream();
-
-		Streams.stream(home.openStream(), outs);
-
-		outs.flush();
-		outs.close();
+		try (InputStream input = home.openStream()) {
+			try (OutputStream outs = context.getOutputStream()) {
+				Streams.stream(input, outs);
+			}
+		}
 	}
 
 	public URL saveKnowledge(String web, KnowledgeBase base) throws IOException {
