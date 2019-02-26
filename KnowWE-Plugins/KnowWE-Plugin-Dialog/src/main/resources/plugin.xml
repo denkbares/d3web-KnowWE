@@ -153,7 +153,7 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ResourceDD">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="Resource">
 		<parameter id="class" value="de.knowwe.dialog.action.Resource" />
 		<parameter id="name" value="Resource" />
 		<parameter id="description" value="Action Resource" />

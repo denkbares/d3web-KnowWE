@@ -119,7 +119,7 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 		PluginManager manager = PluginManager.getInstance();
 		Extension[] extensions = manager.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_ID);
 		for (Extension e : extensions) {
-			if (e.getName().equals(actionName)) return ((Action) e.getSingleton());
+			if (e.getID().equals(actionName)) return ((Action) e.getSingleton());
 		}
 		for (Extension e : extensions) {
 			if (e.getID().equals(actionName)) return ((Action) e.getSingleton());
