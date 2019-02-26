@@ -30,7 +30,6 @@ import com.denkbares.plugin.Extension;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.ScopeExtensions;
 
@@ -47,7 +46,7 @@ public class CorrectionToolProvider extends AbstractCorrectionToolProvider {
 			new ScopeExtensions("KnowWEExtensionPoints", "CorrectionProvider");
 
 	@Override
-	public boolean hasTools(Section<?> section, UserContext userContext) {
+	public boolean hasSuggestions(Section<?> section) {
 		Set<Suggestion> suggestions = getSuggestions(section, 1);
 		return !suggestions.isEmpty();
 	}

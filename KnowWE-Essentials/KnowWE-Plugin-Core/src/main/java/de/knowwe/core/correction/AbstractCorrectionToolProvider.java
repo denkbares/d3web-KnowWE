@@ -55,7 +55,7 @@ public abstract class AbstractCorrectionToolProvider implements ToolProvider {
 	}
 
 	@Override
-	public Tool[] getTools(Section<?> section, UserContext userContext) {
+	public final Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<Suggestion> suggestions = getSuggestions(section);
 		if (suggestions.isEmpty()) {
 			return ToolUtils.emptyToolArray();
@@ -88,9 +88,15 @@ public abstract class AbstractCorrectionToolProvider implements ToolProvider {
 			));
 		}
 
-		return tools.toArray(new Tool[tools.size()]);
+		return tools.toArray(new Tool[0]);
+	}
+
+	@Override
+	public final boolean hasTools(Section<?> section, UserContext userContext) {
+		return hasSuggestions(section);
 	}
 
 	protected abstract List<Suggestion> getSuggestions(Section<?> section);
 
+	protected abstract boolean hasSuggestions(Section<?> section);
 }
