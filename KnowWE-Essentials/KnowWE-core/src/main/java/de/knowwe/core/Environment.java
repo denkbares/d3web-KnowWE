@@ -70,6 +70,7 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.event.InitEvent;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
+import de.knowwe.tools.ToolUtils;
 
 /**
  * This is the core class of KnowWE. It manages the {@link ArticleManager} and provides methods to access {@link
@@ -175,6 +176,7 @@ public class Environment {
 			decorateTypeTree();
 
 			initInstantiations();
+			initBlockedTools();
 			Plugins.initJS();
 			Plugins.initCSS();
 		}
@@ -310,6 +312,13 @@ public class Environment {
 	private void initInstantiations() {
 		for (Instantiation inst : Plugins.getInstantiations()) {
 			inst.init(DEFAULT_WEB);
+		}
+	}
+
+	private void initBlockedTools() {
+		String sourceFolder = getWikiConnector().getWikiProperty("var.basedir");
+		if (sourceFolder != null) {
+			ToolUtils.initSettings(new File(sourceFolder, ToolUtils.SETTINGS_FILE));
 		}
 	}
 

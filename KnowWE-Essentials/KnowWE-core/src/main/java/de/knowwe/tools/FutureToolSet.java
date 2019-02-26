@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
@@ -20,6 +22,7 @@ public class FutureToolSet implements ToolSet {
 		this.userContext = userContext;
 	}
 
+	@NotNull
 	@Override
 	public Iterator<Tool> iterator() {
 		return getToolInstances().iterator();
@@ -28,13 +31,15 @@ public class FutureToolSet implements ToolSet {
 	@Override
 	public Tool[] getTools() {
 		List<Tool> result = getToolInstances();
-		return result.toArray(new Tool[result.size()]);
+		return result.toArray(new Tool[0]);
 	}
 
 	private List<Tool> getToolInstances() {
 		if (this.tools == null) {
-			this.tools = Collections.unmodifiableList(
-					ToolUtils.getToolInstances(section, userContext));
+			this.tools = Collections.unmodifiableList(ToolUtils.getToolInstances(section, userContext));
+			if (hasTools == null) {
+				hasTools = !tools.isEmpty();
+			}
 		}
 		return tools;
 	}
@@ -49,5 +54,4 @@ public class FutureToolSet implements ToolSet {
 		}
 		return hasTools;
 	}
-
 }
