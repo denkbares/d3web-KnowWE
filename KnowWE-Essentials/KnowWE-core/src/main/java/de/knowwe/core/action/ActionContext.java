@@ -121,9 +121,6 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 		for (Extension e : extensions) {
 			if (e.getID().equals(actionName)) return ((Action) e.getSingleton());
 		}
-		for (Extension e : extensions) {
-			if (e.getID().equals(actionName)) return ((Action) e.getSingleton());
-		}
 		Log.warning("Action: \"" + actionName + "\" not found, check plugin.xml.");
 		return null;
 	}
