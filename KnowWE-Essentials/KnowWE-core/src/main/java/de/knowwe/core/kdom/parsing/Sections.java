@@ -127,7 +127,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return a java stream with the results of the mapper function
 	 */
 	@NotNull
-	public <R> Stream<R> map(Function<Section<? super T>, ? extends R> mapper) {
+	public <R> Stream<R> map(Function<Section<T>, ? extends R> mapper) {
 		return stream().map(mapper);
 	}
 
@@ -154,7 +154,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the result returned by the mapper function for the first section
 	 */
 	@Nullable
-	public <R> R mapFirst(Function<Section<? super T>, ? extends R> mapper) {
+	public <R> R mapFirst(Function<Section<T>, ? extends R> mapper) {
 		// filter null after applying, as the findFirst creates a NullPointerException otherwise
 		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
 	}
