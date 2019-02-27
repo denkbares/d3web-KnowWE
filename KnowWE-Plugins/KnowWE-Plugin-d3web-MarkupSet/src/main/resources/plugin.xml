@@ -213,7 +213,7 @@
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="Resource">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ResourceType">
 		<parameter id="class" value="de.knowwe.d3web.resource.ResourceType" />
 		<parameter id="name" value="Resource" />
 		<parameter id="description" value="Adds a binary resource file to the knowledge base archive" />
