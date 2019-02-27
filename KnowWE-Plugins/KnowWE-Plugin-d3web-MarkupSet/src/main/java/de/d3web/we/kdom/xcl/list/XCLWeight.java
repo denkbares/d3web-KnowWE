@@ -19,7 +19,7 @@ import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
  * @author Volker Belli (denkbares GmbH)
  * @created 28.11.2018
  */
-class XCLWeight extends AbstractType {
+public class XCLWeight extends AbstractType {
 
 	public static final char BOUNDS_OPEN = '[';
 	public static final char BOUNDS_CLOSE = ']';
