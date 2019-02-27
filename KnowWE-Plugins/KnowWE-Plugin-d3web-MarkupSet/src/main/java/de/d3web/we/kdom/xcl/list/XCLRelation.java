@@ -51,7 +51,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Volker Belli (denkbares GmbH)
  * @created 28.11.2018
  */
-class XCLRelation extends AbstractType {
+public class XCLRelation extends AbstractType {
 
 	private static final String RELATION_STORE_KEY = "xcl.relation";
 
