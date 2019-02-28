@@ -18,6 +18,7 @@
  */
 package de.knowwe.core.user;
 
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -55,6 +57,13 @@ public interface UserContext {
 	 * @created 14.10.2010
 	 */
 	String getUserName();
+
+	/**
+	 * Returns the preferred locale to render contents for.
+	 */
+	default Locale getLocale() {
+		return Environment.getInstance().getWikiConnector().getLocale(getRequest());
+	}
 
 	/**
 	 * Returns the title of the article the user is currently visiting.
