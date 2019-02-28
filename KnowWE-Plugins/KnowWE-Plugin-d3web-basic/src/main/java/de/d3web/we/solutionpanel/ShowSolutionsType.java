@@ -45,6 +45,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	private static final String ONLY_DERIVATIONS = "only_derivations";
 	private static final String EXCEPT_DERIVATIONS = "except_derivations";
 	private static final String END_USER_MODE = "end_user_mode";
+	private static final String SHOW_DIGITS = "show_digits";
 
 	public enum BoolValue {
 		TRUE, FALSE
@@ -65,6 +66,13 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.class);
 		MARKUP.addAnnotation(ONLY_DERIVATIONS, false);
 		MARKUP.addAnnotation(EXCEPT_DERIVATIONS, false);
+		MARKUP.addAnnotation(SHOW_DIGITS, false);
+		MARKUP.setAnnotationDeprecated(SHOW_DIGITS);
+		MARKUP.getAnnotation(SHOW_DIGITS)
+				.setDocumentation("This annotation is <b>deprecated</b>! To influence the number " +
+						"of digits shown for abstract questions, " +
+						"please set the property 'digits' for the knowledge " +
+						"base or the specific question using the %%Property markup.");
 		MARKUP.addAnnotation(END_USER_MODE, false, BoolValue.class);
 
 		QuestionnaireReference qc = new QuestionnaireReference();
