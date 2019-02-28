@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 denkbares GmbH, Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -35,7 +35,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -60,7 +59,6 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				CIDashboardType.class));
 
 		string.append(renderDashboardContents(user, dashboard));
-
 	}
 
 	private static boolean isDashBoardModifiedAfterLatestBuild(Section<CIDashboardType> section) {
@@ -77,10 +75,11 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		try {
 			assert title != null;
-			if(title.contains("/")) {
+			if (title.contains("/")) {
 				// is a attached article
 				versionAtBuildDate = KnowWEUtils.getAttachmentVersionAtDate(title, buildDate);
-			} else {
+			}
+			else {
 				// normal article
 				versionAtBuildDate = KnowWEUtils.getArticleVersionAtDate(
 						title, buildDate);
@@ -96,12 +95,10 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 				section.getTitle(), versionAtBuildDate);
 
 		return !sourceTextAtBuildTime.contains(currentDashboardSourcetext);
-
 	}
 
 	/**
-	 * Renders out the content of a CIDashboard (build-history and rest-result
-	 * pane)
+	 * Renders out the content of a CIDashboard (build-history and rest-result pane)
 	 *
 	 * @param user      the current user context to render the dashboard for
 	 * @param dashboard the dashboard to be rendered
@@ -195,10 +192,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					"</a></div>");
 
 			warningString.append(")");
-
-			renderMessagesOfType(Message.Type.WARNING,
-					Messages.asList(Messages.warning(warningString.toStringRaw())),
-					string);
+			renderMessageOfType(string, Message.Type.WARNING, warningString.toStringRaw());
 		}
 	}
 
@@ -228,11 +222,9 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			errorText.appendHtml("Multiple dashboards with same name on the following articles: "
 					+ articleLinks
 					+ ". Make sure every dashboard has a wiki-wide unique name!");
-			Collection<Message> errorMsgs = Messages.asList(Messages.error(errorText.toStringRaw()));
-			renderMessagesOfType(Message.Type.ERROR, errorMsgs, string);
+			renderMessageOfType(string, Message.Type.ERROR, errorText.toStringRaw());
 			return false;
 		}
 		return true;
 	}
-
 }

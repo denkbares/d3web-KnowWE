@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -22,13 +22,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
@@ -62,7 +62,6 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Message.Type;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -123,11 +122,15 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderOverallStatus(ProviderTriple selectedTriple, UserContext user, RenderResult string) {
-		int failureCount = selectedTriple.getProvider().getDebugStatus(user).getFailureCount();
 		string.appendHtmlTag("div", "style",
 				"display:inline-block; vertical-align:middle; text-align:center; padding: 0 12px 0 8px");
 		string.appendHtmlTag("span", "style", "position:relative; top:-1px;");
-		if (failureCount == 0) {
+		int failureCount = selectedTriple == null ? -1
+				: selectedTriple.getProvider().getDebugStatus(user).getFailureCount();
+		if (failureCount == -1) {
+			string.appendHtml(Icon.BULB.addColor(Color.DISABLED).addTitle("No selection").toHtml());
+		}
+		else if (failureCount == 0) {
 			string.appendHtml(Icon.BULB.addColor(Color.OK).addTitle("No check failures").toHtml());
 		}
 		else if (failureCount == 1) {
@@ -152,8 +155,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		renderProviderMessages(provider, string);
 		Session session = provider.getActualSession(user);
 		if (session == null) {
-			DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING,
-					Collections.singletonList(Messages.warning("No knowledge base found.")), string);
+			DefaultMarkupRenderer.renderMessageOfType(string, Type.WARNING, "No knowledge base found.");
 		}
 		else {
 			TestCase testCase = provider.getTestCase();
@@ -167,10 +169,8 @@ public class TestCasePlayerRenderer implements Renderer {
 					renderTestCase(section, user, selectedTriple, string);
 				}
 				catch (IllegalArgumentException e) {
-					Message error = Messages.error("Test case not compatible to TestCasePlayer: "
-							+ e.getMessage());
-					DefaultMarkupRenderer.renderMessagesOfType(
-							Type.ERROR, Collections.singletonList(error), string);
+					DefaultMarkupRenderer.renderMessageOfType(string, Type.ERROR,
+							"Test case not compatible to TestCasePlayer: " + e.getMessage());
 				}
 			}
 			else {
@@ -187,9 +187,8 @@ public class TestCasePlayerRenderer implements Renderer {
 	}
 
 	private void renderNoProviderWarning(Section<TestCasePlayerType> playerSection, RenderResult string) {
-		String message = "No test cases found in the packages: " + Strings.concat(", ", de.knowwe.testcases.TestCaseUtils
-				.getTestCasePackages(playerSection));
-		DefaultMarkupRenderer.renderMessagesOfType(Type.WARNING, Collections.singletonList(Messages.warning(message)), string);
+		DefaultMarkupRenderer.renderMessageOfType(string, Type.WARNING, "No test cases found in the packages: " +
+				Strings.concat(", ", de.knowwe.testcases.TestCaseUtils.getTestCasePackages(playerSection)));
 	}
 
 	private void renderTestCase(Section<?> section, UserContext user, ProviderTriple selectedTriple, RenderResult string) {
@@ -277,7 +276,6 @@ public class TestCasePlayerRenderer implements Renderer {
 		PaginationRenderer.setResultSize(user, chronology.size());
 		boolean show = chronology.size() > PaginationRenderer.DEFAULT_SHOW_NAVIGATION_MAX_RESULTS;
 		PaginationRenderer.renderPagination(section, user, string, show);
-
 	}
 
 	private TerminologyObject renderHeader(Section<?> section, UserContext user, ProviderTriple selectedTriple, TableModel tableModel) {
@@ -480,7 +478,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		String js = "TestCasePlayer.send("
 				+ "'"
 				+ selectedTriple.getB().getID()
-				+ "', '" + String.valueOf(date.getTime())
+				+ "', '" + date.getTime()
 				+ "', '" + selectedTriple.getA().getName()
 				+ "', '" + selectedTriple.getC().getTitle() + "', this);";
 		result.appendHtml("<a onclick=\"" + js + "\" class='tooltipster'");
@@ -577,7 +575,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		List<TerminologyObject> objects = new LinkedList<>();
 		objects.addAll(manager.getQuestions());
 		objects.addAll(manager.getSolutions());
-		Collections.sort(objects, new NamedObjectComparator());
+		objects.sort(new NamedObjectComparator());
 		int max = 0;
 		for (TerminologyObject q : objects) {
 			if (!alreadyAddedQuestions.contains(q.getName())) {
@@ -658,8 +656,7 @@ public class TestCasePlayerRenderer implements Renderer {
 					attributes.add("selected");
 					selectedTriple = triple;
 				}
-				selectString.appendHtmlElement("option", displayedID,
-						attributes.toArray(new String[attributes.size()]));
+				selectString.appendHtmlElement("option", displayedID, attributes.toArray(new String[0]));
 			}
 		}
 		selectString.appendHtml("</select>");
@@ -667,10 +664,8 @@ public class TestCasePlayerRenderer implements Renderer {
 			string.append(selectString);
 		}
 		else {
-			Message notValidTestCaseError = Messages.warning(
+			DefaultMarkupRenderer.renderMessageOfType(string, Type.WARNING,
 					"There are testcase sections in the specified packages, but none of them generates a testcase.");
-			DefaultMarkupRenderer.renderMessagesOfType(
-					Type.WARNING, Collections.singletonList(notValidTestCaseError), string);
 		}
 		return selectedTriple;
 	}
@@ -683,12 +678,10 @@ public class TestCasePlayerRenderer implements Renderer {
 		final String selectedId = Strings.decodeURL(KnowWEUtils.getCookie(generateSelectedTestCaseCookieKey(section),
 				"", user), Encoding.ISO_8859_1);
 		boolean caseExists = providers.stream()
-				.filter(triple -> getTestCaseId(triple).equals(selectedId))
-				.findFirst()
-				.isPresent();
+				.anyMatch(triple -> getTestCaseId(triple).equals(selectedId));
 		if (Strings.isBlank(selectedId) || !caseExists) {
 			for (ProviderTriple provider : providers) {
-				if (provider.getProviderSection().getTitle().equals(section.getTitle())) {
+				if (Objects.equals(provider.getProviderSection().getTitle(), section.getTitle())) {
 					return getTestCaseId(provider);
 				}
 			}
@@ -703,7 +696,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		Section<TestCasePlayerType> testCasePlayerTypeSection = Sections.ancestor(
 				section, TestCasePlayerType.class);
 		for (Section<TestCasePlayerType> s : new TreeSet<>(sections)) {
-			if (testCasePlayerTypeSection.equals(s)) {
+			if (Objects.equals(testCasePlayerTypeSection, s)) {
 				break;
 			}
 			else {
@@ -730,7 +723,6 @@ public class TestCasePlayerRenderer implements Renderer {
 		}
 		else {
 			builder.appendHtml(icon.addColor(Color.DISABLED).toHtml());
-
 		}
 		if (enabled) {
 			builder.appendHtml("</a>");
