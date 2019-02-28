@@ -107,7 +107,7 @@ public class PackageManager {// implements EventListener {
 			defaultPackages = new HashSet<>(4);
 			defaultPackages.add(DEFAULT_PACKAGE);
 		}
-		return defaultPackages.toArray(new String[defaultPackages.size()]);
+		return defaultPackages.toArray(new String[0]);
 	}
 
 	/**

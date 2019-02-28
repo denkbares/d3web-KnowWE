@@ -290,6 +290,11 @@ public class DefaultMarkupRenderer implements Renderer {
 		string.appendHtml("</span>");
 	}
 
+	public static void renderMessageOfType(RenderResult result, Type type, String message) {
+		//noinspection deprecation
+		renderMessagesOfType(type, Messages.asList(new Message(type, message)), result);
+	}
+
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
 		List<Section<?>> subsecs = section.getChildren();
 		renderContentSections(subsecs, isListAnnotations(), user, string);

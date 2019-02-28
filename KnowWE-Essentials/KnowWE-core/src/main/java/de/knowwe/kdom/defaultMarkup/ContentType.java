@@ -33,7 +33,7 @@ import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
-public class ContentType extends AbstractType {
+public final class ContentType extends AbstractType {
 
 	private final DefaultMarkup markup;
 
