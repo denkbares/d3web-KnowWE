@@ -524,6 +524,17 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Checks whether any of the current sections has an ancestor section with a type being an instance of the given
+	 * class.
+	 *
+	 * @param clazz the class the ancestor is expected to have
+	 * @return true if we find an ancestor with the given type, false otherwise
+	 */
+	public boolean hasAncestor(Class<? extends Type> clazz) {
+		return !ancestor(clazz).isEmpty();
+	}
+
+	/**
 	 * Returns a new Sections instance containing all children of each of this instance's sections. If any section have
 	 * no children, the section is not considered in the resulting Sections objects.
 	 *
