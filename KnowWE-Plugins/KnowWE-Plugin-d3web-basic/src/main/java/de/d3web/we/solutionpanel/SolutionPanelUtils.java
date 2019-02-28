@@ -2,6 +2,7 @@ package de.d3web.we.solutionpanel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -12,6 +13,7 @@ import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
+import de.d3web.core.session.ValueUtils;
 import de.d3web.we.object.ValueTooltipRenderer;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -27,10 +29,7 @@ public class SolutionPanelUtils {
 	}
 
 	public static boolean isOrHasParent(String[] allowedParents, TerminologyObject object) {
-
-		if (object.getParents() == null) return false;
 		if (arrayIgnoreCaseContains(allowedParents, object.getName())) return true;
-
 		for (TerminologyObject parent : object.getParents()) {
 			if (arrayIgnoreCaseContains(allowedParents, parent.getName())) return true;
 			if (isOrHasParent(allowedParents, parent)) return true;
@@ -47,26 +46,15 @@ public class SolutionPanelUtils {
 		return false;
 	}
 
-	public static void renderSolution(Solution solution, Session session, boolean endUser, RenderResult content) {
+	public static void renderSolution(Solution solution, Session session, boolean endUser, Locale lang, RenderResult content) {
 
 		// fetch derivation state icon
 		Rating solutionRating = D3webUtils.getRatingNonBlocking(session, solution);
 		appendImage(solutionRating, content);
 
-		String link = solution.getInfoStore().getValue(MMInfo.LINK);
-		String prompt = solution.getInfoStore().getValue(MMInfo.PROMPT);
-		String description = solution.getInfoStore().getValue(MMInfo.DESCRIPTION);
-
-		String label;
-		if (prompt != null) {
-			label = prompt;
-		}
-		else if (description != null) {
-			label = description;
-		}
-		else {
-			label = solution.getName();
-		}
+		String[] link = MMInfo.getLinks(solution, lang);
+		String prompt = MMInfo.getPrompt(solution, lang);
+		String description = MMInfo.getDescription(solution, lang);
 
 		StringBuilder tooltip = new StringBuilder();
 		if (description != null) {
@@ -81,20 +69,20 @@ public class SolutionPanelUtils {
 			ValueTooltipRenderer.appendSourceFactsExplanation(solution, session, tooltip);
 		}
 
-		content.appendHtmlTag("span", "title", tooltip.toString(), "class", "SOLUTION-" + String.valueOf(solutionRating) + " tooltipster");
+		content.appendHtmlTag("span", "title", tooltip.toString(), "class", "SOLUTION-" + solutionRating + " tooltipster");
 		if (endUser) {
 			// show solution in end user mode
-			if (link != null) {
-				content.appendHtmlElement("a", label, "href", link);
+			if (link.length > 0) {
+				content.appendHtmlElement("a", prompt, "href", link[0]);
 			}
 			else {
-				content.append(label);
+				content.append(prompt);
 			}
 		}
 		else {
 			content.appendHtmlTag("a", false, "onclick",
 					CompositeEditToolProvider.createCompositeEditModeAction(new Identifier(solution.getName())));
-			content.append(label);
+			content.append(prompt);
 			content.appendHtmlTag("/a");
 		}
 		content.appendHtmlTag("/span");
@@ -122,7 +110,7 @@ public class SolutionPanelUtils {
 		content.appendHtml(icon.addTitle(title).addId("sstate-update").toHtml() + " ");
 	}
 
-	public static void renderAbstraction(Question question, Session session, int digits, RenderResult result) {
+	public static void renderAbstraction(Question question, Session session, Locale lang, RenderResult result) {
 		appendImage(Icon.ABSTRACT, "Abstraction", result);
 		Value value = D3webUtils.getValueNonBlocking(session, question);
 
@@ -152,9 +140,7 @@ public class SolutionPanelUtils {
 			result.appendHtml("<i style='color:grey'>value in calculation, please reload later</i>");
 		}
 		else {
-			result.append(question.getName()
-					+ " = "
-					+ ValueTooltipRenderer.formatValue(question, value, digits));
+			result.append(question.getName() + " = " + ValueUtils.getVerbalization(question, value, lang));
 		}
 
 		// add the unit name for num question, if available
@@ -165,5 +151,4 @@ public class SolutionPanelUtils {
 
 		result.appendHtml("</span>" + "\n");
 	}
-
 }

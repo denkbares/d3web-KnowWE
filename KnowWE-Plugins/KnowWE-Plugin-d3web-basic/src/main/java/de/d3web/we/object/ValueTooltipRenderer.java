@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 denkbares GmbH, Germany
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,27 +25,20 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
-import de.d3web.core.knowledge.terminology.QuestionDate;
-import de.d3web.core.knowledge.terminology.Rating;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.ValueUtils;
 import de.d3web.core.session.blackboard.Fact;
-import de.d3web.core.session.values.DateValue;
-import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
-import de.d3web.core.session.values.UndefinedValue;
-import de.d3web.core.session.values.Unknown;
 import de.d3web.core.utilities.ExplanationUtils;
 import de.d3web.core.utilities.TerminologyHierarchyComparator;
-import com.denkbares.strings.Identifier;
-import com.denkbares.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -77,50 +70,15 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 	}
 
 	/**
-	 * Renders the string representation of the specified value. For a {@link NumValue} the float is
-	 * truncated to its integer value, when possible.
+	 * Renders the string representation of the specified value. For a {@link NumValue} the float is truncated to its
+	 * integer value, when possible.
 	 *
 	 * @param value the specified value
 	 * @return A string representation of the specified value.
 	 * @created 19.10.2010
 	 */
-	public static String formatValue(ValueObject object, Value value, int digits) {
-		if (value instanceof NumValue) {
-			Double numValue = (Double) value.getValue();
-			// check, if we need to round the value
-
-			if (digits >= 0) {
-				double d = Math.pow(10, digits);
-				numValue = (Math.round(numValue * d) / d);
-			}
-			// cut an ending .0 when appropriate
-			if (Math.abs(numValue - Math.round(numValue)) > 0) {
-				return numValue.toString();
-			}
-			else {
-				return String.valueOf(Math.round(numValue));
-			}
-		}
-		else if (value instanceof MultipleChoiceValue) {
-			String mcText = value.toString();
-			// remove the brackets
-			return mcText.substring(1, mcText.length() - 1);
-		}
-		else if (value instanceof DateValue) {
-			return ValueUtils.getDateOrDurationVerbalization((QuestionDate) object, ((DateValue) value).getDate(), true);
-		}
-		else if (value instanceof Unknown) {
-			return "Unknown";
-		}
-		else if (value instanceof UndefinedValue) {
-			return "Undefined";
-		}
-		else if (value instanceof Rating) {
-			return Strings.capitalize(value.toString());
-		}
-		else {
-			return value.toString();
-		}
+	public static String formatValue(ValueObject object, Value value) {
+		return ValueUtils.getVerbalization(object, value, null);
 	}
 
 	@Override
@@ -189,7 +147,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 			builder.append(" in '").append(source).append("'");
 		}
 		builder.append(": ");
-		builder.append(formatValue(namedObject, value, -1));
+		builder.append(formatValue(namedObject, value));
 	}
 
 	public static void appendSourceFactsExplanation(NamedObject namedObject, Session session, StringBuilder builder) {
@@ -202,7 +160,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 			builder.append("<p>The following input values were used to derive this value:");
 			builder.append("<ul>");
 			for (Fact sourceFact : sourceFacts) {
-				String valueString = formatValue((ValueObject) namedObject, sourceFact.getValue(), -1);
+				String valueString = formatValue((ValueObject) namedObject, sourceFact.getValue());
 				Identifier identifier = new Identifier(sourceFact.getTerminologyObject().getName());
 				String urlLinkToTermDefinition = CompositeEditToolProvider.createCompositeEditModeAction(identifier);
 				builder.append("<li>")
@@ -216,5 +174,4 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 			builder.append("</ul>");
 		}
 	}
-
 }

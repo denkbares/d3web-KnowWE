@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -18,9 +18,8 @@
  */
 package de.d3web.we.solutionpanel;
 
+import com.denkbares.strings.Strings;
 import de.d3web.we.object.QuestionnaireReference;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -33,7 +32,7 @@ import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 
 /**
  * This type defines the possible annotations of the ShowSoltions markup.
- * 
+ *
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 22.10.2010
  */
@@ -45,7 +44,6 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	private static final String ANNOTATION_EXCLUDED = "show_excluded";
 	private static final String ONLY_DERIVATIONS = "only_derivations";
 	private static final String EXCEPT_DERIVATIONS = "except_derivations";
-	private static final String SHOW_DIGITS = "show_digits";
 	private static final String END_USER_MODE = "end_user_mode";
 
 	public enum BoolValue {
@@ -67,7 +65,6 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_ABSTRACTIONS, false, BoolValue.class);
 		MARKUP.addAnnotation(ONLY_DERIVATIONS, false);
 		MARKUP.addAnnotation(EXCEPT_DERIVATIONS, false);
-		MARKUP.addAnnotation(SHOW_DIGITS, false);
 		MARKUP.addAnnotation(END_USER_MODE, false, BoolValue.class);
 
 		QuestionnaireReference qc = new QuestionnaireReference();
@@ -75,7 +72,6 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, qc);
 
 		PackageManager.addPackageAnnotation(MARKUP);
-
 	}
 
 	public ShowSolutionsType() {
@@ -95,22 +91,11 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	}
 
 	public static String getPackageName(Section<ShowSolutionsType> section) {
-		String packageName = DefaultMarkupType.getAnnotation(section,
-				PackageManager.PACKAGE_ATTRIBUTE_NAME);
-		if (packageName != null) {
-			return packageName;
-		}
-		ArticleManager articleManager = section.getArticleManager();
-		if (articleManager == null) {
-			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
-		}
-		PackageManager packageManager = KnowWEUtils.getPackageManager(articleManager);
-		String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
-		for (String defaultPackage : defaultPackages) {
-			packageName = defaultPackage;
-			break;
-		}
-		return packageName;
+		String packageName = DefaultMarkupType.getAnnotation(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
+		if (Strings.nonBlank(packageName)) return packageName;
+
+		String[] packages = KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
+		return (packages.length == 0) ? null : packages[0];
 	}
 
 	public static String getMaster(Section<ShowSolutionsType> section) {
@@ -146,27 +131,13 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		return shouldShow(section, ANNOTATION_ABSTRACTIONS);
 	}
 
-	public static int numberOfShownDigits(Section<ShowSolutionsType> section) {
-		String val = DefaultMarkupType.getAnnotation(section, SHOW_DIGITS);
-		int iVal = 10;
-		try {
-			iVal = Integer.parseInt(val);
-		}
-		catch (NumberFormatException e) {
-			// TODO some error handling here
-		}
-		return iVal;
-	}
-
 	private static boolean shouldShow(Section<ShowSolutionsType> section, String annotation) {
 		String value = DefaultMarkupType.getAnnotation(section, annotation);
-		if (!MARKUP.getAnnotation(annotation).matches(value)) return false;
-		else return convert(BoolValue.valueOf(value.toUpperCase()));
+		if (!MARKUP.getAnnotation(annotation).matches(value)) {
+			return false;
+		}
+		else {
+			return Strings.parseEnum(value, BoolValue.FALSE) == BoolValue.TRUE;
+		}
 	}
-
-	private static boolean convert(BoolValue value) {
-		return value == BoolValue.TRUE;
-
-	}
-
 }

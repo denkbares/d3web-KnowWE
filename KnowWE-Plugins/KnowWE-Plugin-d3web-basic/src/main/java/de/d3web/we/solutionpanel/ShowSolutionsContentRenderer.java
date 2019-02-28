@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -19,12 +19,13 @@
 package de.d3web.we.solutionpanel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.denkbares.strings.NumberAwareComparator;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating.State;
@@ -34,22 +35,16 @@ import de.d3web.core.manage.SolutionComparator;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 
 /**
- * Displays a configurable pane presenting derived solutions and abstractions.
- * The following options are available:
+ * Displays a configurable pane presenting derived solutions and abstractions. The following options are available:
  * <ul>
  * <li>@show_established: true/false
  * <li>@show_suggested: true/false
@@ -75,28 +70,35 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		if (!text.isEmpty()) {
 			string.append(text + "\n");
 		}
-
-
-		Session session = getSessionFor(section, user);
-		if (session == null) {
-			if (user.isRenderingPreview()) {
-				string.append("%%information Solutions are not rendered in live preview. /%");
-				//String msg = "Solutions are not rendered in preview mode";
-				//DefaultMarkupRenderer.renderMessagesOfType(Message.Type.INFO,
-				//		Messages.asList(Messages.info(msg)), string);
-			} else {
-				String msg = "Unable to find knowledge base. Please either add to a package" +
-						" used for a knowledge base or specify a master article.";
-				DefaultMarkupRenderer.renderMessagesOfType(Message.Type.WARNING,
-						Messages.asList(Messages.warning(msg)), string);
-			}
-		}
-		else {
-
-			renderSolutions(section, session, string);
-			renderAbstractions(section, session, string);
-		}
+		renderObjects(section, user, string);
 		string.appendHtml("</span>");
+	}
+
+	private void renderObjects(Section<?> section, UserContext user, RenderResult string) {
+		if (user.isRenderingPreview()) {
+			string.append("%%information Solutions are not rendered in live preview. /%");
+			return;
+		}
+
+		KnowledgeBase base = getKnowledgebaseFor(section, user);
+		if (base == null) {
+			String msg = "Unable to find knowledge base. Please either add to a package" +
+					" used for a knowledge base or specify a master article.";
+			DefaultMarkupRenderer.renderMessageOfType(string, Message.Type.WARNING, msg);
+			return;
+		}
+
+		Session session = SessionProvider.getExistingSession(user, base);
+		boolean anyShown = false;
+		if (session != null) {
+			Locale lang = user.getLocale();
+			if (renderSolutions(section, session, lang, string)) anyShown = true;
+			if (renderAbstractions(section, session, lang, string)) anyShown = true;
+		}
+
+		if (!anyShown) {
+			string.appendHtml("<span style='color:#aaa;font-style:italic'>-- no entries --</span>");
+		}
 	}
 
 	private static Section<ShowSolutionsType> getShowSolutionsSection(Section<?> section) {
@@ -105,43 +107,39 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 	/**
 	 * Renders the derived abstractions when panel opted for it.
+	 *
+	 * @return true if any contents are rendered
 	 */
-	private void renderAbstractions(Section<?> section, Session session, RenderResult buffer) {
+	private boolean renderAbstractions(Section<?> section, Session session, Locale lang, RenderResult buffer) {
 		// Check, if the shown abstractions are limited to a number of
 		// questionnaires
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 		String[] allowedParents = ShowSolutionsType.getAllowedParents(parentSection);
 		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
 
-		if (ShowSolutionsType.shouldShowAbstractions(parentSection)) {
-			List<Question> abstractions = new ArrayList<>();
-			List<Question> questions = D3webUtils.getAnsweredQuestionsNonBlocking(session);
-			if (questions == null) {
-				renderPropagationError(buffer);
-				return;
-			}
-			for (Question question : questions) {
-				Boolean isAbstract = question.getInfoStore().getValue(
-						BasicProperties.ABSTRACTION_QUESTION);
-				if (isAbstract != null && isAbstract) {
-					if (SolutionPanelUtils.isShownObject(allowedParents, excludedParents, question)) {
-						abstractions.add(question);
-					}
-				}
-			}
-			Collections.sort(abstractions, new Comparator<Question>() {
+		if (!ShowSolutionsType.shouldShowAbstractions(parentSection)) return false;
 
-				@Override
-				public int compare(Question o1, Question o2) {
-					return o1.getName().compareTo(o2.getName());
+		List<Question> abstractions = new ArrayList<>();
+		List<Question> questions = D3webUtils.getAnsweredQuestionsNonBlocking(session);
+		if (questions == null) {
+			renderPropagationError(buffer);
+			return true;
+		}
+		for (Question question : questions) {
+			Boolean isAbstract = question.getInfoStore().getValue(
+					BasicProperties.ABSTRACTION_QUESTION);
+			if (isAbstract != null && isAbstract) {
+				if (SolutionPanelUtils.isShownObject(allowedParents, excludedParents, question)) {
+					abstractions.add(question);
 				}
-			});
-			int digits = ShowSolutionsType.numberOfShownDigits(getShowSolutionsSection(section));
-
-			for (Question question : abstractions) {
-				SolutionPanelUtils.renderAbstraction(question, session, digits, buffer);
 			}
 		}
+		abstractions.sort(Comparator.comparing(Question::getName, NumberAwareComparator.CASE_INSENSITIVE));
+		for (Question question : abstractions) {
+			SolutionPanelUtils.renderAbstraction(question, session, lang, buffer);
+		}
+
+		return !abstractions.isEmpty();
 	}
 
 	private void renderPropagationError(RenderResult buffer) {
@@ -151,8 +149,10 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 	/**
 	 * Renders the derived solutions when panel opted for it.
+	 *
+	 * @return if any contents are rendered
 	 */
-	private void renderSolutions(Section<?> section, final Session session, RenderResult content) {
+	private boolean renderSolutions(Section<?> section, final Session session, Locale lang, RenderResult content) {
 		Set<Solution> allSolutions = new TreeSet<>(new SolutionComparator(session));
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 
@@ -164,7 +164,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 					D3webUtils.getSolutionsNonBlocking(session, State.ESTABLISHED);
 			if (solutions == null) {
 				renderPropagationError(content);
-				return;
+				return true;
 			}
 			allSolutions.addAll(solutions);
 		}
@@ -172,7 +172,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.SUGGESTED);
 			if (solutions == null) {
 				renderPropagationError(content);
-				return;
+				return true;
 			}
 			allSolutions.addAll(solutions);
 		}
@@ -180,7 +180,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.EXCLUDED);
 			if (solutions == null) {
 				renderPropagationError(content);
-				return;
+				return true;
 			}
 			allSolutions.addAll(solutions);
 		}
@@ -204,34 +204,13 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 		// format the solutions
 		for (Solution solution : allSolutions) {
-			SolutionPanelUtils.renderSolution(solution, session, endUserMode, content);
+			SolutionPanelUtils.renderSolution(solution, session, endUserMode, lang, content);
 		}
 
+		return !allSolutions.isEmpty();
 	}
 
-	private Session getSessionFor(Section<?> section, UserContext user) {
-		String packageName = ShowSolutionsType.getPackageName(getShowSolutionsSection(section));
-		String masterArticleName = ShowSolutionsType.getMaster(getShowSolutionsSection(section));
-		String title = null;
-		if (masterArticleName == null) {
-			ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
-			PackageManager packageManager = KnowWEUtils.getPackageManager(articleManager);
-			Set<String> compilingArticles = packageManager.getCompilingArticles(packageName);
-
-			for (String compilingArticle : compilingArticles) {
-				title = compilingArticle;
-				break;
-			}
-		}
-		else {
-			title = masterArticleName;
-		}
-		if (title == null) return null;
-
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
-		if (kb == null) return null;
-
-		return SessionProvider.getExistingSession(user, kb);
+	private KnowledgeBase getKnowledgebaseFor(Section<?> section, UserContext user) {
+		return D3webUtils.getKnowledgeBase(section);
 	}
-
 }
