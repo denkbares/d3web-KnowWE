@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -58,8 +58,7 @@ public class AttachmentType extends AbstractType {
 	/**
 	 * Creates a new AttachmentType.
 	 *
-	 * @param generateMessages specifies whether the type should produces messages about the validity of the
-	 *                         attachment.
+	 * @param generateMessages specifies whether the type should produces messages about the validity of the attachment.
 	 *                         Set to false, if validity is checked independently by other types and scripts.
 	 */
 	public AttachmentType(boolean generateMessages) {
@@ -72,7 +71,6 @@ public class AttachmentType extends AbstractType {
 				section.storeObject(compiler, LISTENER_KEY, new AttachmentChangedListener(section));
 
 				if (generateMessages) handleMessages(section);
-
 			}
 
 			@Override
@@ -82,7 +80,6 @@ public class AttachmentType extends AbstractType {
 				AttachmentChangedListener listener = (AttachmentChangedListener) section.removeObject(compiler, LISTENER_KEY);
 				if (listener != null) listener.destroy();
 			}
-
 		});
 	}
 
@@ -118,7 +115,6 @@ public class AttachmentType extends AbstractType {
 	public static WikiAttachment getAttachment(Section<AttachmentType> section) throws IOException {
 		String path = getPath(section);
 		return Environment.getInstance().getWikiConnector().getAttachment(path);
-
 	}
 
 	public static String getPath(Section<AttachmentType> section) {
@@ -148,7 +144,6 @@ public class AttachmentType extends AbstractType {
 			AttachmentChangedListener that = (AttachmentChangedListener) o;
 
 			return section.getID().equals(that.section.getID());
-
 		}
 
 		@Override
@@ -186,7 +181,6 @@ public class AttachmentType extends AbstractType {
 					Article newArticle = Article.createArticle(article.getText(), article.getTitle(), web);
 					articleManager.registerArticle(newArticle);
 				}
-
 			}
 		}
 	}

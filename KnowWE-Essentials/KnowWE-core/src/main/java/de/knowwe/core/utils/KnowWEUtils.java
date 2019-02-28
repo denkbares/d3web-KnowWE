@@ -435,7 +435,7 @@ public class KnowWEUtils {
 	 * Returns if the user has the write access rights to the specified article.
 	 *
 	 * @param articleTitle the title of the article to check the access rights for
-	 * @param user    the user context
+	 * @param user         the user context
 	 * @return true if the user has the write access rights to the article
 	 * @created 29.11.2013
 	 */
@@ -663,6 +663,16 @@ public class KnowWEUtils {
 	 */
 	public static String getURLLink(Article article, String attachment) {
 		return "attach/" + article.getTitle() + "/" + attachment;
+	}
+
+	/**
+	 * Creates a &lt;a href="..."&gt; styled link to the specified attachment of the specified article.
+	 *
+	 * @param attachment the attachment to create the link for
+	 * @return the created link
+	 */
+	public static String getURLLink(WikiAttachment attachment) {
+		return "attach/" + attachment.getPath();
 	}
 
 	/**
