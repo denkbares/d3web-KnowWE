@@ -51,7 +51,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
  * <li>@show_excluded: true/false
  * <li>@show_abstractions: true/false
  * <li>@only_derivations: questionnaire name
- * <li>@show_digits: 0..NUMBER of fractional digits to be shown
  * <li>@master: Name of the article with the knowledge base
  * </ul>
  *
