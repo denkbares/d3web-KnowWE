@@ -30,6 +30,7 @@ import org.junit.Assert;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Platform;
@@ -159,8 +160,8 @@ public abstract class KnowWEUITest {
 		return getDriver().findElements(selector);
 	}
 
-	protected void waitUntilPresent(By selector) {
-		await().until(ExpectedConditions.presenceOfElementLocated(selector));
+	protected WebElement waitUntilPresent(By selector) {
+		return await().until(ExpectedConditions.presenceOfElementLocated(selector));
 	}
 
 	protected WebElement waitUntilClickable(By selector) {
@@ -182,11 +183,11 @@ public abstract class KnowWEUITest {
 	}
 
 	protected void hoverElement(WebElement element) {
-		new Actions(getDriver()).moveToElement(element).pause(2000).build().perform();
+		new Actions(getDriver()).moveToElement(element).pause(1000).build().perform();
 	}
 
 	protected void hoverAndClickElement(WebElement element) {
-		new Actions(getDriver()).moveToElement(element).pause(2000).click().build().perform();
+		new Actions(getDriver()).moveToElement(element).pause(1000).click().build().perform();
 	}
 
 	protected void scrollToElement(WebElement element) {
@@ -203,11 +204,20 @@ public abstract class KnowWEUITest {
 				.replace("%%package systemtest", "%%package systemtest" + getArticleName());
 	}
 
-	protected void setContentByName(WebElement parent, String name, String content) {
-		WebElement element = parent.findElement(By.name(name));
+	protected void setText(By by, String text, WebElement parent) {
+		WebElement element = parent.findElement(by);
 		element.click();
 		element.clear();
-		element.sendKeys(content);
+		element.sendKeys(Keys.chord(Keys.COMMAND, "a"));
+		element.sendKeys(text);
+	}
+
+	protected void setText(By by, String text) {
+		WebElement element = find(by);
+		element.click();
+		element.clear();
+		element.sendKeys(Keys.chord(Keys.COMMAND, "a"));
+		element.sendKeys(text);
 	}
 
 	protected boolean isAlertPresent() {
