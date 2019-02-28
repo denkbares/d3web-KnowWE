@@ -233,7 +233,7 @@ public class GetInfoObject extends AbstractAction {
 	}
 
 	private String getNextPrompt(Locale locale) {
-		return Locales.hasSameLanguage(Locale.GERMAN, locale) ? "Weiter" : "Next";
+		return Locales.isGerman(locale) ? "Weiter" : "Next";
 	}
 
 	private String getPrompt(Choice answer, Locale locale) {

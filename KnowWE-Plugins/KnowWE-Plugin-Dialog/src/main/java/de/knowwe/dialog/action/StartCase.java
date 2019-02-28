@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -34,8 +35,6 @@ import de.d3web.core.inference.PSMethodInit;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.d3web.core.knowledge.TerminologyManager;
-import de.d3web.core.knowledge.TerminologyObject;
-import de.d3web.core.knowledge.ValueObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.records.SessionConversionFactory;
@@ -91,8 +90,7 @@ public class StartCase extends AbstractAction implements EventListener {
 	}
 
 	/**
-	 * Defines a provider that is capable to deliver the knowledge base to be used for a new
-	 * session.
+	 * Defines a provider that is capable to deliver the knowledge base to be used for a new session.
 	 *
 	 * @author volker_belli
 	 * @created 22.09.2010
@@ -135,6 +133,7 @@ public class StartCase extends AbstractAction implements EventListener {
 
 		HttpSession httpSession = context.getSession();
 		StartInfo restart = (StartInfo) httpSession.getAttribute(PARAM_RESTART_SESSION);
+		if (restart == null) restart = parseURLParamQuestions(context);
 
 		// remove the attribute, the restart is only done once
 		httpSession.removeAttribute(PARAM_RESTART_SESSION);
@@ -150,7 +149,6 @@ public class StartCase extends AbstractAction implements EventListener {
 			else {
 				loadCase(context, base, protocolPath);
 			}
-			answerURLParamQuestions(context, base);
 
 			// adapt language to one of the supported ones
 			// of the loaded knowledge base
@@ -174,9 +172,8 @@ public class StartCase extends AbstractAction implements EventListener {
 		context.sendRedirect("Resource/ui.zip/html/index.html?" + PARAM_LANGUAGE + "=" + language);
 	}
 
-	private void answerURLParamQuestions(UserActionContext context, KnowledgeBase base) {
-		Session session = SessionProvider.getSession(context, base);
-		if (session == null) return;
+	private StartInfo parseURLParamQuestions(UserActionContext context) {
+		Map<String, String> answers = new LinkedHashMap<>();
 		int index = 1;
 		while (true) {
 			String objectName = context.getParameter("o" + index);
@@ -184,24 +181,10 @@ public class StartCase extends AbstractAction implements EventListener {
 			if (objectName == null || valueString == null) {
 				break;
 			}
-			objectName = Strings.decodeURL(objectName);
-			TerminologyObject valueObject = base.getManager().search(objectName);
-			if (!(valueObject instanceof ValueObject)) {
-				Log.warning("'" + objectName + "' is not valid value object.");
-				break;
-			}
-			valueString = Strings.decodeURL(valueString);
-			Value value;
-			try {
-				value = ValueUtils.createValue(valueObject, valueString);
-			}
-			catch (IllegalArgumentException e) {
-				Log.warning("'" + valueString + "' is not valid value.");
-				break;
-			}
-			session.getBlackboard().addValueFact(FactFactory.createUserEnteredFact(valueObject, value));
+			answers.put(Strings.decodeURL(objectName), Strings.decodeURL(valueString));
 			index++;
 		}
+		return new StartInfo(answers);
 	}
 
 	/**
@@ -279,8 +262,8 @@ public class StartCase extends AbstractAction implements EventListener {
 	}
 
 	/**
-	 * Initialize a new knowledge base provider and starts a case with that provider. The provider
-	 * is use in future for starting cases at this http session.
+	 * Initialize a new knowledge base provider and starts a case with that provider. The provider is use in future for
+	 * starting cases at this http session.
 	 *
 	 * @param context  the ActionContext to be used
 	 * @param provider the KnwoeldgeBaseProvider to be responsible to create the knowledge bases
@@ -302,7 +285,7 @@ public class StartCase extends AbstractAction implements EventListener {
 		}
 
 		public StartInfo(Map<String, String> answers) {
-			this(true, answers);
+			this(!answers.isEmpty(), answers);
 		}
 
 		private StartInfo(boolean forceRestart, Map<String, String> answers) {
