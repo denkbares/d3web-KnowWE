@@ -566,11 +566,15 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-OntologyBridge</artifactId>
 				</dependency>
+				<dependency>
+					<groupId>com.denkbares.ssp</groupId>
+					<artifactId>KnowWE-Plugin-ILME</artifactId>
+				</dependency>
 			</dependencies>
 		</profile>
 
 		<profile>
-			<id>avl</id>
+		<id>avl</id>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>

@@ -62,6 +62,7 @@
 			<fileset dir="${basedir}/../../SemanticServicePlatform/">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
+				<include name="KnowWE-Plugin-ILME/src/main/resources/webapp/" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
