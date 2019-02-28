@@ -20,15 +20,20 @@
 
 package de.d3web.we.quicki;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.function.Function;
 
+import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Functions;
 import de.d3web.core.knowledge.Indication;
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -44,6 +49,7 @@ import de.d3web.core.knowledge.terminology.QuestionMC;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
+import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
@@ -57,10 +63,11 @@ import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
+import de.d3web.interview.Interview;
+import de.d3web.interview.inference.PSMethodInterview;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -160,8 +167,22 @@ public class QuickInterviewRenderer {
 		// call method for getting interview elements recursively
 		// start with root QASets and go DFS strategy, and also
 		getInterviewElementsRenderingRecursively(kb.getRootQASet(), buffi, processedTOs, false, -2);
-		// for all loose containers, we add them only, of they are visible
-		for (QContainer container : kb.getManager().getQContainers()) {
+
+		// for all loose containers, we add them only, if they are visible
+		// and sort the one of the interview agenda to the front of the list
+
+		List<QContainer> containers = new ArrayList<>(kb.getManager().getQContainers());
+		PSMethodInterview psmi = session.getPSMethodInstance(PSMethodInterview.class);
+		if (psmi != null) {
+			Interview interview = session.getSessionObject(psmi);
+			List<InterviewObject> order = interview.getInterviewAgenda().getAllObjects();
+			Function<InterviewObject, Integer> toIndex = obj -> {
+				int i = order.indexOf(obj);
+				return i == -1 ? Integer.MAX_VALUE : i;
+			};
+			containers.sort(Comparator.comparing(Functions.cache(toIndex)));
+		}
+		for (QContainer container : containers) {
 			if (container.getParents().length > 0) continue; // top level ones only
 			if (container == kb.getRootQASet()) continue; // skip root
 			if (!isVisible(container, false)) continue; // do not add collapsed ones
@@ -574,10 +595,6 @@ public class QuickInterviewRenderer {
 		// print the units
 		appendUnit(q, sb);
 
-		if (Unknown.assignedTo(value) || !suppressUnknown(q)) {
-			sb.appendHtml("<div class='separator'></div>");
-		}
-
 		renderAnswerUnknown(q, "num", sb);
 
 		String errmsgid = id + "_errormsg";
@@ -610,8 +627,16 @@ public class QuickInterviewRenderer {
 	}
 
 	private boolean suppressUnknown(Question question) {
+		if (question instanceof QuestionZC) return false;
 		return !BasicProperties.isUnknownVisible(question)
 				|| (this.config.containsKey("unknown") && this.config.get("unknown").equals("false"));
+	}
+
+	private String getUnknownPrompt(Question question) {
+		if (question instanceof QuestionZC) {
+			return Locales.isGerman(getSelectedLanguage()) ? "Weiter" : "Next";
+		}
+		return MMInfo.getUnknownPrompt(question);
 	}
 
 	/**
@@ -721,25 +746,25 @@ public class QuickInterviewRenderer {
 	 *
 	 * @created 22.07.2010
 	 */
-	private void renderAnswerUnknown(Question q, String type, RenderResult sb) {
+	private void renderAnswerUnknown(Question question, String type, RenderResult sb) {
 
 		// if unknown should neither be displayed, not is selected
 		// render no answer unknown
-		Value value = D3webUtils.getValueNonBlocking(session, q);
+		Value value = D3webUtils.getValueNonBlocking(session, question);
 		boolean isUnknown = Unknown.assignedTo(value);
-		if (!isUnknown && suppressUnknown(q)) {
+		if (!isUnknown && suppressUnknown(question)) {
 			return;
 		}
 
 		String jscall = " rel=\"{oid: '" + Unknown.getInstance().getId()
 				+ "', " + "web:'" + web + "', " + "ns:'" + namespace + "', "
 				+ "type:'" + type + "', " + "qid:'"
-				+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
+				+ Strings.encodeURL(question.getName()) + "', " + "}\" ";
 
 		String cssClass = isUnknown ? "answerunknownClicked" : "answerunknown";
-		String prompt = MMInfo.getUnknownPrompt(q, getSelectedLanguage());
+		String prompt = getUnknownPrompt(question);
 
-		if (!(q instanceof QuestionNum)) {
+		if (!(question instanceof QuestionZC)) {
 			// separator already rendered in renderNumAnswers
 			renderChoiceSeparator(sb);
 		}
@@ -854,8 +879,7 @@ public class QuickInterviewRenderer {
 			locale = Locale.forLanguageTag(language);
 		}
 		if (locale == null) {
-			locale = Environment.getInstance().getWikiConnector()
-					.getLocale(user.getRequest());
+			locale = user.getLocale();
 		}
 		return locale;
 	}
