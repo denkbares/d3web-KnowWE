@@ -529,7 +529,7 @@ td .information, td .warning, td .error {
 .wikitable > thead > tr > th, .wikitable > tbody > tr > th,
 .wikitable > tfoot > tr > th, .wikitable > thead > tr > td,
 .wikitable > tbody > tr > td, .wikitable > tfoot > tr > td,
-.wikitable > tbody > tr > td, .wikitable > tfoot > tr > td{
+.wikitable > tbody > tr > td, .wikitable > tfoot > tr > td {
 	border-top: 0;
 	border-bottom: 1px solid #ddd;
 }
@@ -2468,7 +2468,6 @@ li.findpages .btn {
 }
 
 
-
 .edit .page {
 	transition: none;
 }
@@ -2479,6 +2478,10 @@ li.findpages .btn {
 
 .fixed-header > .header {
 	z-index: 1001;
+}
+
+.fixed-header > .header.scrolling-down {
+	transform: translate(0, -80px);
 }
 
 @media only screen and (max-width: 768px) {
@@ -2508,7 +2511,7 @@ li.findpages .btn {
 	}
 }
 
-.edit-mode .fixed-header>.header {
+.edit-mode .fixed-header > .header {
 	position: absolute;
 }
 
