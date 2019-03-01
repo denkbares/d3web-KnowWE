@@ -202,6 +202,11 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 	}
 
 	@Override
+	public void sendNavigate(String location) {
+		this.response.setHeader("x-redirect-page", location);
+	}
+
+	@Override
 	public void setHeader(String name, String value) throws IOException {
 		this.response.setHeader(name, value);
 	}

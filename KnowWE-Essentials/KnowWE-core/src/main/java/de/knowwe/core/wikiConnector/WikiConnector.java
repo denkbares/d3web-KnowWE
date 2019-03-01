@@ -367,6 +367,19 @@ public interface WikiConnector {
 	void deleteArticle(String title, String user) throws IOException;
 
 	/**
+	 * Renames the article page name from <tt>fromPage</tt> to a new name <tt>toPage</tt>. If
+	 * the new page name already exists it throws an exception. Also triggers the renaming of
+	 * the KnowWE article name.
+	 *
+	 * @param fromPage actual name of the page
+	 * @param toPage   new name of the page
+	 * @param request  the request of the user
+	 * @return the new page name
+	 * @throws IOException if the actual page not exists, the new page name already exists or can not be written
+	 */
+	String renamePage(String fromPage, String toPage, HttpServletRequest request) throws IOException;
+
+	/**
 	 * Removes the lock for the article.
 	 *
 	 * @param title the title of the article to be unlocked

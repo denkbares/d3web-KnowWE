@@ -763,6 +763,18 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
+	@Override
+	public String renamePage(String fromPage, String toPage, HttpServletRequest request) throws IOException {
+		WikiContext context = new WikiContext(this.engine, request,
+				this.engine.getPage(fromPage));
+		try {
+			return this.engine.renamePage(context, fromPage, toPage, true);
+		}
+		catch (WikiException e) {
+			throw new IOException(e);
+		}
+	}
+
 	public static String toPath(String articleTitle, String fileName) {
 		return articleTitle + "/" + fileName;
 	}

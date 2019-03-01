@@ -345,6 +345,14 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public String renamePage(String fromPage, String toPage, HttpServletRequest request) throws IOException {
+		if (dummyPageProvider == null) {
+			throw new NullPointerException("PageProvider is null, so articles cannot be deleted");
+		}
+		return dummyPageProvider.renameArticle(fromPage, toPage);
+	}
+
+	@Override
 	public void unlockArticle(String title, String user) {
 		locks.remove(title);
 	}

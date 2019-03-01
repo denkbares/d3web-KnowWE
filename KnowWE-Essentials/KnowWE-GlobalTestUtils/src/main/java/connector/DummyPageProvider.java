@@ -137,7 +137,7 @@ public class DummyPageProvider {
 	}
 
 	private Integer getVersion(String versionFileName) {
-		return Integer.parseInt(versionFileName.replaceAll("(?<=\\d++).*", ""));
+		return Integer.parseInt(versionFileName.replaceAll("(?<=\\d+).*", ""));
 	}
 
 	private boolean isArticleFile(File wikiFile) {
@@ -268,5 +268,12 @@ public class DummyPageProvider {
 
 	public void deletePage(String title){
 		articles.remove(title);
+	}
+
+	public String renameArticle(String fromPage, String toPage) {
+		String article = articles.get(fromPage);
+		articles.remove(fromPage);
+		articles.put(toPage, article);
+		return toPage;
 	}
 }

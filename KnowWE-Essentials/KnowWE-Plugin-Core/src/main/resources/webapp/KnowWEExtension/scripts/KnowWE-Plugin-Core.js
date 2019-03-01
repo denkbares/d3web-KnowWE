@@ -258,7 +258,7 @@ KNOWWE.plugin.renaming = function () {
 			KNOWWE.core.util.updateProcessingState(1);
 			jq$.ajax({
 				type: "post", url: KNOWWE.core.util.getURL(params),
-				success: function (data, text) {
+				success: function (data, text, request) {
 
 					var jsonResponse = JSON.parse(data);
 					var alreadyexists = jsonResponse.alreadyexists;
@@ -271,7 +271,7 @@ KNOWWE.plugin.renaming = function () {
 								renameTerms(oldValue, replacement, sectionId, true);
 							}
 							else {
-								KNOWWE.core.util.reloadPage();
+								KNOWWE.core.util.reloadPage(request);
 							}
 						}
 						else {
@@ -282,7 +282,7 @@ KNOWWE.plugin.renaming = function () {
 									+ encodeURIComponent(jsonResponse.newTermIdentifier);
 							}
 							else {
-								KNOWWE.core.util.reloadPage();
+								KNOWWE.core.util.reloadPage(request);
 							}
 						}
 					}

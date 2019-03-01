@@ -205,6 +205,12 @@ public class TestUserContext implements UserContext, UserActionContext {
 	}
 
 	@Override
+	public void sendNavigate(String location) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public void setHeader(String name, String value) throws IOException {
 		// TODO Auto-generated method stub
 

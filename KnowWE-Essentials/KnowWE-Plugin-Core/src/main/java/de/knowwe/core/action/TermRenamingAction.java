@@ -58,7 +58,7 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 	public static final String REPLACEMENT = "termreplacement";
 	public static final String SECTIONID = "sectionid";
 
-	private Identifier createReplacingIdentifier(Identifier oldIdentifier, String text) {
+	protected Identifier createReplacingIdentifier(Identifier oldIdentifier, String text) {
 		String[] pathElements = oldIdentifier.getPathElements();
 		pathElements[pathElements.length - 1] = text;
 		return new Identifier(pathElements);

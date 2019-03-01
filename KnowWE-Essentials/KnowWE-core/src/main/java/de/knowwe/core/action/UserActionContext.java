@@ -120,6 +120,14 @@ public interface UserActionContext extends UserContext {
 	void sendRedirect(String location) throws IOException;
 
 	/**
+	 * Sends a header <tt>x-redirect-header</tt> to get the possibility to navigate to another page after an AJAX call.
+	 * To use it in your success function, use KNOWWE.core.util.reload(jqXHR) with the jQuery XHR request.
+	 *
+	 * @param location navigates the user to the given location
+	 */
+	void sendNavigate(String location);
+
+	/**
 	 * Send an HTTP header with the response.
 	 *
 	 * @param name Header name

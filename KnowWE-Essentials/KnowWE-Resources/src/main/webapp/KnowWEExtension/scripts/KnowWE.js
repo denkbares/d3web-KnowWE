@@ -162,6 +162,26 @@ KNOWWE.core.util = function () {
 
 	var activityCounter = 0;
 
+	function reloadPageWithoutParam() {
+		// reload page. remove version attribute if there
+		var hrefSplit = window.location.href.split('?');
+		if (hrefSplit.length == 1) {
+			window.location.reload();
+			return;
+		}
+		var path = hrefSplit[0];
+		var args = hrefSplit[1].split('&');
+		var newLocation = path;
+		for (var i = 0; i < args.length; i++) {
+			if (args[i].indexOf('version=') == 0) continue;
+			newLocation += i == 0 ? '?' : '&';
+			newLocation += args[i];
+		}
+		window.location = newLocation;
+		window.location.reload(true);
+	}
+
+
 	return {
 
 		init: function () {
@@ -392,24 +412,21 @@ KNOWWE.core.util = function () {
 			}
 		},
 
-		reloadPage: function () {
-			// reload page. remove version attribute if there
-			var hrefSplit = window.location.href.split('?');
-			if (hrefSplit.length == 1) {
-				window.location.reload();
-				return;
+		reloadPage: function (jqXHR) {
+			if (jqXHR) {
+				let redirectPage = jqXHR.getResponseHeader('x-redirect-page');
+				if (redirectPage) {
+					let href = new URL(window.location)
+					href.searchParams.set('page', redirectPage)
+					window.location.replace(href)
+				} else {
+					reloadPageWithoutParam();
+				}
+			} else {
+				reloadPageWithoutParam();
 			}
-			var path = hrefSplit[0];
-			var args = hrefSplit[1].split('&');
-			var newLocation = path;
-			for (var i = 0; i < args.length; i++) {
-				if (args[i].indexOf('version=') == 0) continue;
-				newLocation += i == 0 ? '?' : '&';
-				newLocation += args[i];
-			}
-			window.location = newLocation;
-			window.location.reload(true);
 		},
+
 
 		isIE: function () {
 			var ua = window.navigator.userAgent;
