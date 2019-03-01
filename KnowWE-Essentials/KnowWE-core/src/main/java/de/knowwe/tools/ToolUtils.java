@@ -323,7 +323,7 @@ public class ToolUtils {
 					break;
 
 				default:
-					throw new IllegalArgumentException("unvalid entry in settings: " + key);
+					throw new IllegalArgumentException("invalid entry in settings: " + key);
 			}
 		}
 	}
