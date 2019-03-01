@@ -54,8 +54,8 @@ public class CoveringList extends AbstractType {
 		this.addChildType(new XCLHeader());
 
 		// cut the optional closing }
-		this.addChildType(new AnonymousType("opening", new StringSectionFinderUnquoted("{"), StyleRenderer.COMMENT));
-		this.addChildType(new AnonymousType("closing", new StringSectionFinderUnquoted("}"), StyleRenderer.COMMENT));
+		this.addChildType(new OpeningToken());
+		this.addChildType(new ClosingToken());
 
 		// allow for comment lines
 		this.addChildType(new CommentLineType());
@@ -72,6 +72,22 @@ public class CoveringList extends AbstractType {
 		residue.setSectionFinder(new AllTextFinderTrimmed());
 		residue.setRenderer(StyleRenderer.COMMENT);
 		this.addChildType(residue);
+	}
+
+	public static class OpeningToken extends AbstractType {
+
+		public OpeningToken() {
+			setSectionFinder(new StringSectionFinderUnquoted("{"));
+			setRenderer(StyleRenderer.COMMENT);
+		}
+	}
+
+	public static class ClosingToken extends AbstractType {
+
+		public ClosingToken() {
+			setSectionFinder(new StringSectionFinderUnquoted("}"));
+			setRenderer(StyleRenderer.COMMENT);
+		}
 	}
 
 	private void renderWithId(Section<?> section, UserContext user, RenderResult result) {
