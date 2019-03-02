@@ -8,12 +8,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class TermInfoSet implements Collection<TermInfo> {
@@ -22,7 +23,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 		private final Identifier identifier;
 		private final String key;
-		private final Collection<TerminologyManager> managers = new LinkedList<>();
+		private final Collection<TermCompiler> termCompilers = new LinkedList<>();
 
 		public DefaultTermInfo(Identifier identifier) {
 			this.identifier = identifier;
@@ -66,18 +67,19 @@ public class TermInfoSet implements Collection<TermInfo> {
 			return key;
 		}
 
-		public void addManager(TerminologyManager manager) {
-			managers.add(manager);
+		public void addManager(TermCompiler compiler) {
+			termCompilers.add(compiler);
 		}
 
 		@Override
-		public Collection<TerminologyManager> getManagers() {
-			return Collections.unmodifiableCollection(managers);
+		public Collection<TermCompiler> getTermCompilers() {
+			return Collections.unmodifiableCollection(termCompilers);
 		}
 
+		@NotNull
 		@Override
-		public Iterator<TerminologyManager> iterator() {
-			return managers.iterator();
+		public Iterator<TermCompiler> iterator() {
+			return termCompilers.iterator();
 		}
 
 		@Override
@@ -151,18 +153,21 @@ public class TermInfoSet implements Collection<TermInfo> {
 		return result.containsKey(termInfo.getKey());
 	}
 
+	@NotNull
 	@Override
 	public Iterator<TermInfo> iterator() {
 		return Collections.<TermInfo>unmodifiableCollection(result.values()).iterator();
 	}
 
+	@NotNull
 	@Override
 	public Object[] toArray() {
 		return result.values().toArray();
 	}
 
+	@NotNull
 	@Override
-	public <T> T[] toArray(T[] a) {
+	public <T> T[] toArray(@NotNull T[] a) {
 		return result.values().toArray(a);
 	}
 
@@ -172,32 +177,32 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	public void initTerm(String web, Identifier identifier) {
-		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(web));
-		for (TerminologyManager terminologyManager : terminologyManagers) {
+		Collection<TermCompiler> terminologyManagers = Compilers.getCompilers(KnowWEUtils.getArticleManager(web), TermCompiler.class);
+		for (TermCompiler terminologyManager : terminologyManagers) {
 			addTermManagerIfMatches(identifier, terminologyManager);
 		}
 
 	}
 
-	private void addTermManagerIfMatches(Identifier termIdentifier, TerminologyManager termManager) {
+	private void addTermManagerIfMatches(Identifier termIdentifier, TermCompiler termCompiler) {
 		Collection<Identifier> identifiers;
 		if (caseSensitive) {
 			identifiers = Collections.singletonList(termIdentifier);
 		}
-		else if (termManager.isUndefinedTerm(termIdentifier)) {
+		else if (termCompiler.getTerminologyManager().isUndefinedTerm(termIdentifier)) {
 			// getAllTermsEqualIgnoreCase does not return undefined terms
 			// so we just use the current identifier
 			identifiers = Collections.singletonList(termIdentifier);
 		}
 		else {
-			identifiers = termManager.getAllTermsEqualIgnoreCase(termIdentifier);
+			identifiers = termCompiler.getTerminologyManager().getAllTermsEqualIgnoreCase(termIdentifier);
 		}
 		for (Identifier identifier : identifiers) {
 			// check if class is matched
-			if (!isMatchingIdentifier(identifier, termManager)) continue;
+			if (!isMatchingIdentifier(identifier, termCompiler)) continue;
 
 			// add term manager
-			getTermInfoValid(identifier).addManager(termManager);
+			getTermInfoValid(identifier).addManager(termCompiler);
 		}
 	}
 
@@ -205,12 +210,12 @@ public class TermInfoSet implements Collection<TermInfo> {
 		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
 		Collection<TermCompiler> compilers = Compilers.getCompilers(articleManager, TermCompiler.class);
 		for (TermCompiler compiler : compilers) {
-			addAllMatchingTermInfos(compiler.getTerminologyManager());
+			addAllMatchingTermInfos(compiler);
 		}
 	}
 
-	private void addAllMatchingTermInfos(TerminologyManager termManager) {
-		for (Identifier identifier : termManager.getAllDefinedTerms()) {
+	private void addAllMatchingTermInfos(TermCompiler termManager) {
+		for (Identifier identifier : termManager.getTerminologyManager().getAllDefinedTerms()) {
 			if (!isMatchingIdentifier(identifier, termManager)) continue;
 
 			// add term manager
@@ -218,17 +223,17 @@ public class TermInfoSet implements Collection<TermInfo> {
 		}
 	}
 
-	private boolean isMatchingIdentifier(Identifier identifier, TerminologyManager termManager) {
+	private boolean isMatchingIdentifier(Identifier identifier, TermCompiler termManager) {
 
 		// check if class is matched
 		for (Class<?> clazz : allowedTermClasses) {
-			if (termManager.hasTermOfClass(identifier, clazz)) {
+			if (termManager.getTerminologyManager().hasTermOfClass(identifier, clazz)) {
 				return true;
 			}
 		}
 		// if the term has no definitions, there aren't any term classes either
 		// we still might want the references
-		return termManager.isUndefinedTerm(identifier);
+		return termManager.getTerminologyManager().isUndefinedTerm(identifier);
 
 	}
 
@@ -262,7 +267,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		for (Object object : c) {
 			if (!contains(object)) return false;
 		}
@@ -270,7 +275,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends TermInfo> c) {
+	public boolean addAll(@NotNull Collection<? extends TermInfo> c) {
 		boolean changed = false;
 		for (TermInfo termInfo : c) {
 			changed |= add(termInfo);
@@ -279,7 +284,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		boolean changed = false;
 		for (Object termInfo : c) {
 			changed |= remove(termInfo);
@@ -288,7 +293,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	@Override
-	public boolean retainAll(Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		List<String> keysToRemove = new LinkedList<>();
 		for (DefaultTermInfo termInfo : result.values()) {
 			if (!c.contains(termInfo)

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 
 /**
@@ -16,7 +17,7 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
  * @author Volker Belli (denkbares GmbH)
  * @created 25.08.2013
  */
-public interface TermInfo extends Iterable<TerminologyManager> {
+public interface TermInfo extends Iterable<TermCompiler> {
 
 	/**
 	 * Returns the identifier of this term info. According to the case
@@ -71,7 +72,7 @@ public interface TermInfo extends Iterable<TerminologyManager> {
 	 * @see #getIdentifier()
 	 * @see #isCaseSensitive()
 	 */
-	Collection<TerminologyManager> getManagers();
+	Collection<TermCompiler> getTermCompilers();
 
 	/**
 	 * Implementation to iterate through the {@link TermInfo}'s terminology
@@ -81,6 +82,6 @@ public interface TermInfo extends Iterable<TerminologyManager> {
 	 * @return an iterator to iterate through the terminology managers
 	 */
 	@Override
-	Iterator<TerminologyManager> iterator();
+	Iterator<TermCompiler> iterator();
 
 }

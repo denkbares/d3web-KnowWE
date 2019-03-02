@@ -38,6 +38,7 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.ArticleComparator;
@@ -270,8 +271,8 @@ public class ObjectInfoRenderer implements Renderer {
 		if (termInfo == null) {
 			return sections;
 		}
-		for (TerminologyManager termManager : termInfo) {
-			sections.addAll(termManager.getTermDefiningSections(termIdentifier));
+		for (TermCompiler termManager : termInfo) {
+			sections.addAll(termManager.getTerminologyManager().getTermDefiningSections(termIdentifier));
 		}
 		return sections;
 	}
@@ -282,8 +283,8 @@ public class ObjectInfoRenderer implements Renderer {
 		if (termInfo == null) {
 			return sections;
 		}
-		for (TerminologyManager termManager : termInfo) {
-			sections.addAll(termManager.getTermReferenceSections(termIdentifier));
+		for (TermCompiler termManager : termInfo) {
+			sections.addAll(termManager.getTerminologyManager().getTermReferenceSections(termIdentifier));
 		}
 		return sections;
 	}
