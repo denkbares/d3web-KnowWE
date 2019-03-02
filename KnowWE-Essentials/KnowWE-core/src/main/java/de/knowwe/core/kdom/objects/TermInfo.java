@@ -1,9 +1,12 @@
 package de.knowwe.core.kdom.objects;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 
@@ -62,17 +65,40 @@ public interface TermInfo extends Iterable<TermCompiler> {
 	String getKey();
 
 	/**
-	 * Returns a (unmodifiable) collection of all the terminology managers that
+	 * Returns a (unmodifiable) collection of all the TermCompilers that
 	 * are defining (and maybe referencing) the specific term identifier of this
 	 * {@link TermInfo}. Depending on the flag {@link #isCaseSensitive()} the
 	 * included terms are all identical or may be in different cases.
 	 * 
 	 * @created 26.08.2013
-	 * @return the {@link TerminologyManager} defining the specific term
+	 * @return the {@link TermCompiler} defining the specific term
 	 * @see #getIdentifier()
 	 * @see #isCaseSensitive()
 	 */
 	Collection<TermCompiler> getTermCompilers();
+
+	/**
+	 * Returns a (unmodifiable) collection of all the TermCompilers that
+	 * are defining (and maybe referencing) the specific term identifier of this
+	 * {@link TermInfo}. Depending on the flag {@link #isCaseSensitive()} the
+	 * included terms are all identical or may be in different cases.
+	 * This method allows to only return the compilers of a given type, if any are available.
+	 *
+	 * @created 26.08.2013
+	 * @param clazz the type of term compiler we want
+	 * @return the {@link TerminologyManager} defining the specific term
+	 * @see #getIdentifier()
+	 * @see #isCaseSensitive()
+	 */
+	default <T extends TermCompiler> Collection<T> getTermCompilers(Class<T> clazz) {
+		Collection<T> compilers = new ArrayList<>();
+		for (Compiler compiler : getTermCompilers()) {
+			if (clazz.isAssignableFrom(compiler.getClass())) {
+				compilers.add(clazz.cast(compiler));
+			}
+		}
+		return Collections.unmodifiableCollection(compilers);
+	}
 
 	/**
 	 * Implementation to iterate through the {@link TermInfo}'s terminology
