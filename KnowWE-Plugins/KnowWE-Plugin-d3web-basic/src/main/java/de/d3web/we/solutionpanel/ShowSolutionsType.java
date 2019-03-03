@@ -18,17 +18,25 @@
  */
 package de.d3web.we.solutionpanel;
 
+import java.util.Locale;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
 import de.d3web.we.object.QuestionnaireReference;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * This type defines the possible annotations of the ShowSoltions markup.
@@ -46,6 +54,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 	private static final String EXCEPT_DERIVATIONS = "except_derivations";
 	private static final String END_USER_MODE = "end_user_mode";
 	private static final String SHOW_DIGITS = "show_digits";
+	private static final String LANGUAGE = "language";
 
 	public enum BoolValue {
 		TRUE, FALSE
@@ -67,6 +76,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ONLY_DERIVATIONS, false);
 		MARKUP.addAnnotation(EXCEPT_DERIVATIONS, false);
 		MARKUP.addAnnotation(SHOW_DIGITS, false);
+		MARKUP.addAnnotation(LANGUAGE, false);
 		MARKUP.setAnnotationDeprecated(SHOW_DIGITS);
 		MARKUP.getAnnotation(SHOW_DIGITS)
 				.setDocumentation("This annotation is <b>deprecated</b>! To influence the number " +
@@ -78,7 +88,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		QuestionnaireReference qc = new QuestionnaireReference();
 		qc.setSectionFinder(new AllTextFinderTrimmed());
 		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, qc);
-
+		MARKUP.addAnnotationContentType(LANGUAGE, new LocaleType());
 		PackageManager.addPackageAnnotation(MARKUP);
 	}
 
@@ -147,5 +157,11 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		else {
 			return Strings.parseEnum(value, BoolValue.FALSE) == BoolValue.TRUE;
 		}
+	}
+
+	@NotNull
+	public static Locale getLanguage(Section<ShowSolutionsType> section, UserContext user) {
+		return $(getAnnotationContentSection(section, LANGUAGE))
+				.successor(LocaleType.class).map(LocaleType::getLocale).findFirst().orElseGet(user::getLocale);
 	}
 }

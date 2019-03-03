@@ -25,12 +25,14 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.denkbares.collections.MultiMap;
 import com.denkbares.strings.NumberAwareComparator;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating.State;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.manage.SolutionComparator;
 import de.d3web.core.session.Session;
 import de.d3web.we.basic.SessionProvider;
@@ -90,7 +92,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		Session session = SessionProvider.getExistingSession(user, base);
 		boolean anyShown = false;
 		if (session != null) {
-			Locale lang = user.getLocale();
+			Locale lang = ShowSolutionsType.getLanguage(getShowSolutionsSection(section), user);
 			if (renderSolutions(section, session, lang, string)) anyShown = true;
 			if (renderAbstractions(section, session, lang, string)) anyShown = true;
 		}
@@ -125,8 +127,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			return true;
 		}
 		for (Question question : questions) {
-			Boolean isAbstract = question.getInfoStore().getValue(
-					BasicProperties.ABSTRACTION_QUESTION);
+			Boolean isAbstract = question.getInfoStore().getValue(BasicProperties.ABSTRACTION_QUESTION);
 			if (isAbstract != null && isAbstract) {
 				if (SolutionPanelUtils.isShownObject(allowedParents, excludedParents, question)) {
 					abstractions.add(question);
@@ -187,23 +188,27 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		// filter unwanted solutions
 		String[] allowedParents = ShowSolutionsType.getAllowedParents(parentSection);
 		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
-		for (Solution solution : new ArrayList<>(allSolutions)) {
-			if (!SolutionPanelUtils.isShownObject(allowedParents, excludedParents, solution)) {
-				allSolutions.remove(solution);
-			}
-		}
+		allSolutions.removeIf(solution -> !SolutionPanelUtils.isShownObject(allowedParents, excludedParents, solution));
 
-		boolean endUserMode = false;
-		Section<ShowSolutionsType> markup = Sections.ancestor(section,
-				ShowSolutionsType.class);
-		String flagString = ShowSolutionsType.getEndUserModeFlag(markup);
-		if ("true".equalsIgnoreCase(flagString)) {
-			endUserMode = true;
-		}
+		Section<ShowSolutionsType> markup = Sections.ancestor(section, ShowSolutionsType.class);
+		boolean endUserMode = Boolean.valueOf(ShowSolutionsType.getEndUserModeFlag(markup));
 
-		// format the solutions
-		for (Solution solution : allSolutions) {
+		// format the solutions, as grouped items
+		MultiMap<Solution, Solution> groups = KnowledgeBaseUtils.groupSolutions(allSolutions);
+		for (Solution solution : groups.keySet()) {
 			SolutionPanelUtils.renderSolution(solution, session, endUserMode, lang, content);
+
+			// render the (remaining) children as a list
+			ArrayList<Solution> groupItems = new ArrayList<>(groups.getValues(solution));
+			groupItems.remove(solution);
+			if (groupItems.isEmpty()) continue;
+			content.appendHtml("<ul class='grouped-solutions'>");
+			for (Solution groupItem : groupItems) {
+				content.appendHtml("<li class='grouped-solution'>");
+				SolutionPanelUtils.renderSolution(groupItem, session, endUserMode, lang, content);
+				content.appendHtml("</li>");
+			}
+			content.appendHtml("</ul>");
 		}
 
 		return !allSolutions.isEmpty();
