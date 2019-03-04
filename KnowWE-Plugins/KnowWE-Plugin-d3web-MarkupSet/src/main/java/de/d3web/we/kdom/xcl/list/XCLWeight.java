@@ -51,7 +51,7 @@ public class XCLWeight extends AbstractType {
 	/**
 	 * Returns the weight of the relation, or Double.NaN if there is no weight specified explicitly.
 	 */
-	public double getXCLRealtionWeight(Section<XCLWeight> section) {
+	public double getXCLRelationWeight(Section<XCLWeight> section) {
 		String text = section.getText();
 		int start = text.indexOf(BOUNDS_OPEN);
 		int end = text.lastIndexOf(BOUNDS_CLOSE);
