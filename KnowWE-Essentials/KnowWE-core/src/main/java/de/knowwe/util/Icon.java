@@ -133,6 +133,14 @@ public class Icon {
 	public static final Icon FILE_CODE = new Icon("fa-file-code-o");
 	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
 
+	//PACKAGES
+	public static final Icon CUBE = new Icon("fa-cube");
+	public static final Icon CART_PLUS = new Icon("fa-cart-plus");
+	public static final Icon OBJECT_GROUP = new Icon("fa-object-group");
+	public static final Icon PLUS_SQUARE_O = new Icon("fa-plus-square-o");
+	public static final Icon OBJECT_UNGROUP = new Icon("fa-object-ungroup");
+	public static final Icon DIAMOND = new Icon("fa-diamond");
+
 	//SPINNING
 	public static final Icon LOADING = new Icon("fa-spin fa-refresh");
 	public static final Icon WAITING = new Icon(LOADING.getCssClass());
