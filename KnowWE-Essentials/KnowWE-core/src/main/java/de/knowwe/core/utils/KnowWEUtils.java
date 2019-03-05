@@ -1097,12 +1097,14 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Returns and array of locales based on sorted by preferred labels given by the browser.
+	 * Returns and array of locales based on sorted by preferred labels given by the browser. This array always contains
+	 * at least one element.
 	 */
 	public static Locale[] getBrowserLocales(UserContext context) {
 		Enumeration localesEnum = context.getRequest().getLocales();
 		@SuppressWarnings("unchecked")
 		ArrayList<Locale> localList = Collections.list(localesEnum);
+		if (localList.isEmpty()) return new Locale[] { Locale.ROOT };
 		return localList.toArray(new Locale[localList.size()]);
 	}
 }
