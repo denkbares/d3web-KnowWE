@@ -34,6 +34,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.CapabilityType;
@@ -184,7 +185,8 @@ public class UITestUtils {
 		RemoteWebDriver driver;
 		if (testMode == TestMode.local) {
 			if (browser == Browser.chrome) {
-				driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
+//				driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
+				driver = new ChromeDriver();
 			}
 			else //noinspection ConstantConditions
 				if (browser == Browser.firefox) {

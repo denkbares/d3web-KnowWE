@@ -29,6 +29,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
@@ -56,8 +57,8 @@ public abstract class KnowWEUITest {
 	private final TestMode testMode;
 	private final String knowWeUrl;
 	private final RemoteWebDriver driver;
-	private final Browser browser;
-	private final Platform os;
+	protected final Browser browser;
+	protected final Platform os;
 	private final WikiTemplate template;
 
 	private static final String RESOURCE_DIR = "src/test/resources/";
@@ -88,6 +89,11 @@ public abstract class KnowWEUITest {
 
 		//driver.get(UITestUtils.getKnowWEUrl(template, "Main"));;
 		driver = UITestUtils.setUp(browser, os, template, getArticleName(), testMode, knowWeUrl, login, urlConstructor);
+		for (Cookie cookie : getDriver().manage().getCookies()) {
+			if ("localhost".equals(cookie.getDomain())) {
+				getDriver().manage().deleteCookie(cookie);
+			}
+		}
 	}
 
 	@After
