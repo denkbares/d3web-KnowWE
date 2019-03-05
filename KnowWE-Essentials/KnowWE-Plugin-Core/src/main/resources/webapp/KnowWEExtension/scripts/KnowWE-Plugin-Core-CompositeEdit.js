@@ -615,6 +615,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 								jq$(this).mousedown(function(event) {
 									event.stopPropagation();
 								});
+								jq$("body").trigger("OpenCompositeEdit");
 							},
 							closeOnEscape : false,
 							dialogClass : "no-close",
