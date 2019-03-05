@@ -535,6 +535,17 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Checks whether any of the current sections has a successor section with a type being an instance of the given
+	 * class.
+	 *
+	 * @param clazz the class the successor is expected to have
+	 * @return true if we find a successor with the given type, false otherwise
+	 */
+	public boolean hasSuccessor(Class<? extends Type> clazz) {
+		return !successor(clazz).isEmpty();
+	}
+
+	/**
 	 * Returns a new Sections instance containing all children of each of this instance's sections. If any section have
 	 * no children, the section is not considered in the resulting Sections objects.
 	 *
