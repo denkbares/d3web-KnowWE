@@ -270,6 +270,7 @@ KNOWWE.plugin.renaming = function () {
 						if (alreadyexists == 'true') {
 							if (noForce == 'true') {
 								alert('A term with this name already exists!');
+								KNOWWE.core.util.reloadPage(request);
 							} else if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
 								renameTerms(oldValue, replacement, sectionId, true);
 							}
