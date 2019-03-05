@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -75,6 +78,7 @@ public interface TermInfo extends Iterable<TermCompiler> {
 	 * @see #getIdentifier()
 	 * @see #isCaseSensitive()
 	 */
+	@NotNull
 	Collection<TermCompiler> getTermCompilers();
 
 	/**
@@ -90,6 +94,7 @@ public interface TermInfo extends Iterable<TermCompiler> {
 	 * @see #getIdentifier()
 	 * @see #isCaseSensitive()
 	 */
+	@NotNull
 	default <T extends TermCompiler> Collection<T> getTermCompilers(Class<T> clazz) {
 		Collection<T> compilers = new ArrayList<>();
 		for (Compiler compiler : getTermCompilers()) {
@@ -98,6 +103,29 @@ public interface TermInfo extends Iterable<TermCompiler> {
 			}
 		}
 		return Collections.unmodifiableCollection(compilers);
+	}
+
+	/**
+	 * Returns a TermCompiler of the specified class that
+	 * is defining (and maybe referencing) the specific term identifier of this
+	 * {@link TermInfo}. Depending on the flag {@link #isCaseSensitive()} the
+	 * included terms are all identical or may be in different cases.
+	 * This method allows to only return the compilers of a given type, if any are available.
+	 *
+	 * @created 26.08.2013
+	 * @param clazz the type of term compiler we want
+	 * @return the {@link TerminologyManager} defining the specific term
+	 * @see #getIdentifier()
+	 * @see #isCaseSensitive()
+	 */
+	@Nullable
+	default <T extends TermCompiler> T getTermCompiler(Class<T> clazz) {
+		for (Compiler compiler : getTermCompilers()) {
+			if (clazz.isAssignableFrom(compiler.getClass())) {
+				return clazz.cast(compiler);
+			}
+		}
+		return null;
 	}
 
 	/**
