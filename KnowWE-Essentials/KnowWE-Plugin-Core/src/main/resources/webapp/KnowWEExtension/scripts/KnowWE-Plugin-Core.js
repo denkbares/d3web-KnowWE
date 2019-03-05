@@ -262,12 +262,15 @@ KNOWWE.plugin.renaming = function () {
 
 					var jsonResponse = JSON.parse(data);
 					var alreadyexists = jsonResponse.alreadyexists;
+					var noForce = jsonResponse.noForce;
 					var same = jsonResponse.same;
 					if (same == 'true') {
 						alert('The term has not changed.');
 					} else {
 						if (alreadyexists == 'true') {
-							if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
+							if (noForce == 'true') {
+								alert('A term with this name already exists!');
+							} else if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
 								renameTerms(oldValue, replacement, sectionId, true);
 							}
 							else {
