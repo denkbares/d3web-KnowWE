@@ -208,6 +208,7 @@ public class UITestUtils {
 		}
 		driver.manage().window().setSize(new Dimension(1024, 768));
 		driver.get(urlConstructor.apply("Main"));
+		driver.manage().deleteAllCookies();
 		if (login && !UITestUtils.isLoggedIn(driver, template)) {
 			driver.get(urlConstructor.apply("Login"));
 			UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", LOGIN_PAGE, template);

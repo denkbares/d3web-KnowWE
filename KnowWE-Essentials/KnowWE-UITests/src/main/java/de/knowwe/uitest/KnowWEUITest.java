@@ -29,7 +29,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
@@ -89,11 +88,6 @@ public abstract class KnowWEUITest {
 
 		//driver.get(UITestUtils.getKnowWEUrl(template, "Main"));;
 		driver = UITestUtils.setUp(browser, os, template, getArticleName(), testMode, knowWeUrl, login, urlConstructor);
-		for (Cookie cookie : getDriver().manage().getCookies()) {
-			if ("localhost".equals(cookie.getDomain())) {
-				getDriver().manage().deleteCookie(cookie);
-			}
-		}
 	}
 
 	@After
