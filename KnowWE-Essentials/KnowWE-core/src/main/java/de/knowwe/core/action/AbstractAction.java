@@ -23,6 +23,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -48,6 +50,7 @@ public abstract class AbstractAction implements Action {
 		return false;
 	}
 
+	@NotNull
 	public static Section<?> getSection(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		if (sectionId == null) sectionId = context.getParameter("KdomNodeId"); // compatibility
