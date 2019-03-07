@@ -783,7 +783,8 @@ Spreadsheet.prototype.installAutoComplete = function (textAreaID, row, col) {
 	const textarea = jq$('#' + textAreaID)[0];
 	new TextArea(textarea, true);
 	if (typeof AutoComplete !== "undefined") {
-		new AutoComplete(textarea, completeFun);
+		let autoComplete = new AutoComplete(textarea, completeFun);
+		autoComplete.allowAutoSelectNextTextArea = false;
 	}
 };
 
