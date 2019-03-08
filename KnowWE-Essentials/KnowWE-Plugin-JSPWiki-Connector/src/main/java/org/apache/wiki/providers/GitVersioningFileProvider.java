@@ -21,6 +21,8 @@ package org.apache.wiki.providers;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -30,10 +32,14 @@ import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.auth.NoSuchPrincipalException;
+import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.search.QueryItem;
 import org.apache.wiki.util.TextUtil;
+import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -93,73 +99,134 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	@Override
 	public String getProviderInfo() {
-		return null;
+		return GitVersioningFileProvider.class.getSimpleName();
 	}
 
 	@Override
 	public void putPageText(WikiPage page, String text) throws ProviderException {
-		super.putPageText(page, text);
 		File changedFile = findPage(page.getName());
-//		repository.
+		boolean addFile = !changedFile.exists();
+
+		super.putPageText(page, text);
+
+		Git git = new Git(repository);
+		try {
+			if (addFile) {
+				git.add().addFilepattern(changedFile.getName()).call();
+			}
+			CommitCommand commit = git
+					.commit()
+					.setOnly(changedFile.getName());
+			if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
+				commit.setMessage((String) page.getAttribute(WikiPage.CHANGENOTE));
+			}
+			else if (addFile) {
+				commit.setMessage("Added page");
+			}
+			else {
+				commit.setMessage("-");
+			}
+			addUserInfo(page, commit);
+			commit.call();
+		}
+		catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void addUserInfo(WikiPage page, CommitCommand commit) {
+		if (null != page.getAuthor() && !"".equals(page.getAuthor())) {
+			try {
+				UserProfile userProfile = m_engine.getUserManager()
+						.getUserDatabase()
+						.findByFullName(page.getAuthor());
+				commit.setCommitter(userProfile.getFullname(), userProfile.getEmail());
+			}
+			catch (NoSuchPrincipalException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
 	public boolean pageExists(String page) {
-		return false;
+		return super.pageExists(page);
 	}
 
 	@Override
 	public boolean pageExists(String page, int version) {
-		return false;
+		return super.pageExists(page, version);
 	}
 
 	@Override
 	public Collection findPages(QueryItem[] query) {
-		return null;
+		return super.findPages(query);
 	}
 
 	@Override
 	public WikiPage getPageInfo(String page, int version) throws ProviderException {
-		return null;
+		return super.getPageInfo(page, version);
 	}
 
 	@Override
 	public Collection getAllPages() throws ProviderException {
-		return null;
+		return super.getAllPages();
 	}
 
 	@Override
 	public Collection getAllChangedSince(Date date) {
-		return null;
+		return super.getAllChangedSince(date);
 	}
 
 	@Override
 	public int getPageCount() {
-		return 0;
+		return super.getPageCount();
 	}
 
 	@Override
 	public List getVersionHistory(String page) throws ProviderException {
-		return null;
+		return super.getVersionHistory(page);
 	}
 
 	@Override
 	public String getPageText(String page, int version) throws ProviderException {
-		return null;
+		return super.getPageText(page, version);
 	}
 
 	@Override
 	public void deleteVersion(String pageName, int version) throws ProviderException {
-
+		super.deleteVersion(pageName, version);
 	}
 
 	@Override
 	public void deletePage(String pageName) throws ProviderException {
-
+		super.deletePage(pageName);
 	}
 
 	@Override
 	public void movePage(String from, String to) throws ProviderException {
-
+		File fromFile = findPage(from);
+		File toFile = findPage(to);
+		try {
+			Files.move(fromFile.toPath(), toFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+			Git git = new Git(repository);
+			git.add().addFilepattern(toFile.getName()).call();
+			git.rm().addFilepattern(fromFile.getName()).call();
+			git.commit()
+					.setOnly(toFile.getName())
+					.setOnly(fromFile.getName())
+					.setMessage("renamed page " + from + " to " + to)
+					.call();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+			throw new ProviderException("");
+		}
+		catch (NoFilepatternException e) {
+			e.printStackTrace();
+		}
+		catch (GitAPIException e) {
+			e.printStackTrace();
+		}
 	}
 }
