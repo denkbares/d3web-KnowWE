@@ -18,13 +18,6 @@
  * site: http://www.fsf.org.
  */
 
-//var _KE = KNOWWE.helper.event;    /* Alias KNOWWE event. */
-//var _KA = KNOWWE.helper.ajax;     /* Alias KNOWWE ajax. */
-//var _KS = KNOWWE.helper.selector; /* Alias KNOWWE ElementSelector */
-//var _KL = KNOWWE.helper.logger;   /* Alias KNOWWE logger */
-//var _KN = KNOWWE.helper.element   /* Alias KNOWWE.helper.element */
-//var _KH = KNOWWE.helper.hash      /* Alias KNOWWE.helper.hash */
-
 
 KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.plugin = KNOWWE.plugin || {};
