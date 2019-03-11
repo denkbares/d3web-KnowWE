@@ -38,7 +38,11 @@ import de.knowwe.kdom.sectionFinder.LineSectionFinderNonBlankTrimmed;
 public class XCLSolutionDefinition extends SolutionDefinition {
 
 	public XCLSolutionDefinition() {
-		super(Priority.HIGHER);
+		this(Priority.HIGHER);
+	}
+
+	public XCLSolutionDefinition(Priority priority) {
+		super(priority);
 		this.setSectionFinder(LineSectionFinderNonBlankTrimmed.getInstance());
 		this.addCompileScript(Priority.HIGH, new XCLModelCreator());
 	}
