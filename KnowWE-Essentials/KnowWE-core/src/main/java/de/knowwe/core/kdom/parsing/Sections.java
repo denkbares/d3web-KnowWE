@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.CachedIterable;
+import com.denkbares.collections.ConcatenateIterable;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
@@ -223,6 +224,17 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public static Sections<? extends Type> references(TerminologyManager manager, @Nullable Identifier identifier) {
 		//noinspection unchecked
 		return new Sections(manager.getTermReferenceSections(identifier));
+	}
+
+	/**
+	 * Combines call for {@link #definitions(TermCompiler, Identifier)} and {@link #references(TermCompiler, Identifier)}
+	 */
+	@NotNull
+	public static Sections<? extends Type> registrations(TermCompiler compiler, @Nullable Section<? extends Term> term) {
+		if (term == null) return Sections.empty();
+		Identifier termIdentifier = term.get().getTermIdentifier(compiler, term);
+		//noinspection unchecked
+		return new Sections(new ConcatenateIterable<Section<?>>(definitions(compiler, termIdentifier), references(compiler, termIdentifier)));
 	}
 
 	@NotNull
