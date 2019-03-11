@@ -112,6 +112,8 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 				}
 			}
 
+			// if not available, create a new one and store it for later usage
+			section.get().storeTermObject(compiler, section, new Solution(kb, name));
 			return Messages.noMessage();
 		}
 	}
