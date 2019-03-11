@@ -52,12 +52,12 @@ KNOWWE.core = function () {
 		},
 
 		restoreThisVersion: function () {
-			var version = document.getElementById('version').value;
-			var params = {
+			const version = document.getElementById('version').value;
+			const params = {
 				restoreThisVersion: version,
 				action: 'RestoreAction'
 			};
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				loader: true,
 				response: {
@@ -108,7 +108,7 @@ KNOWWE.core.actions = function () {
 		 *     e - The occurred event.
 		 */
 		clearHTML: function (e) {
-			var el = KNOWWE.helper.event.target(e);
+			const el = KNOWWE.helper.event.target(e);
 			if (el.id) {
 				_KS(el.id)._clear();
 			}
@@ -120,26 +120,26 @@ KNOWWE.core.actions = function () {
 		 *     e - The occurred event.
 		 */
 		cellChanged: function (e) {
-			var el = KNOWWE.helper.event.target(e);
-			var rel = el.getAttribute('rel');
+			let el = KNOWWE.helper.event.target(e);
+			let rel = el.getAttribute('rel');
 
 			if (!rel) return;
 			rel = rel.parseToObject();
 
-			var nodeID = rel.id;
-			var topic = rel.title;
+			const nodeID = rel.id;
+			const topic = rel.title;
 
 			el = _KS('#' + nodeID);
 			if (el) {
-				var selectedOption = el.options[el.selectedIndex].value;
+				const selectedOption = el.options[el.selectedIndex].value;
 
-				var params = {
+				const params = {
 					action: 'ReplaceKDOMNodeAction',
 					TargetNamespace: nodeID,
 					KWikitext: selectedOption,
 					KWiki_Topic: topic
 				};
-				var options = {
+				const options = {
 					url: KNOWWE.helper.getURL(params),
 					response: {
 						action: none,
@@ -160,21 +160,21 @@ KNOWWE.core.actions = function () {
  */
 KNOWWE.core.util = function () {
 
-	var activityCounter = 0;
+	let activityCounter = 0;
 
 	function reloadPageWithoutParam() {
 		// reload page. remove version attribute if there
-		var hrefSplit = window.location.href.split('?');
-		if (hrefSplit.length == 1) {
+		const hrefSplit = window.location.href.split('?');
+		if (hrefSplit.length === 1) {
 			window.location.reload();
 			return;
 		}
-		var path = hrefSplit[0];
-		var args = hrefSplit[1].split('&');
-		var newLocation = path;
-		for (var i = 0; i < args.length; i++) {
-			if (args[i].indexOf('version=') == 0) continue;
-			newLocation += i == 0 ? '?' : '&';
+		const path = hrefSplit[0];
+		const args = hrefSplit[1].split('&');
+		let newLocation = path;
+		for (let i = 0; i < args.length; i++) {
+			if (args[i].indexOf('version=') === 0) continue;
+			newLocation += i === 0 ? '?' : '&';
 			newLocation += args[i];
 		}
 		window.location = newLocation;
@@ -182,6 +182,7 @@ KNOWWE.core.util = function () {
 	}
 
 
+	// noinspection JSUnusedGlobalSymbols
 	return {
 
 		init: function () {
@@ -196,7 +197,7 @@ KNOWWE.core.util = function () {
 		 */
 		updateProcessingState: function (delta) {
 			activityCounter += delta;
-			var indicator = jq$('#KnowWEProcessingIndicator');
+			const indicator = jq$('#KnowWEProcessingIndicator');
 			if (activityCounter > 0) {
 				// to reduce flicker, we wait a bit
 				window.setTimeout(function () {
@@ -233,29 +234,29 @@ KNOWWE.core.util = function () {
 		 *          functionality should be applied to.
 		 */
 		addCollabsiblePluginHeader: function (id) {
-			var selector = "div .panel";
+			let selector = "div .panel";
 			if (id) {
 				selector = id;
 			}
 
-			var panels = _KS(selector);
+			let panels = _KS(selector);
 			if (panels.length < 1) return;
 			if (!panels.length) panels = new Array(panels);
 
-			for (var i = 0; i < panels.length; i++) {
-				var span = new _KN('span');
+			for (let i = 0; i < panels.length; i++) {
+				const span = new _KN('span');
 				span._setText('- ');
 
-				var heading = panels[i].getElementsByTagName('h3')[0];
+				const heading = panels[i].getElementsByTagName('h3')[0];
 				if (!heading.innerHTML.startsWith('<span>')) {
 					span._injectTop(heading);
 				}
 				_KE.add('click', heading, function () {
-					var el = new _KN(this);
-					var style = el._next()._getStyle('display');
-					style = (style == 'block') ? 'none' : ((style == '') ? 'none' : 'block');
+					const el = new _KN(this);
+					let style = el._next()._getStyle('display');
+					style = (style === 'block') ? 'none' : ((style === '') ? 'none' : 'block');
 
-					el._getChildren()[0]._setText((style == 'block') ? '- ' : '+ ');
+					el._getChildren()[0]._setText((style === 'block') ? '- ' : '+ ');
 					el._next()._setStyle('display', style);
 				});
 			}
@@ -279,22 +280,22 @@ KNOWWE.core.util = function () {
 		 *     The URL containing the elements of the params array.
 		 */
 		getURL: function (params) {
-			var baseURL = 'KnowWE.jsp';
-			var tokens = [];
+			const baseURL = 'KnowWE.jsp';
+			const tokens = [];
 
 			if (!params && typeof params != 'object') return baseURL;
 
 			for (keys in params) {
-				var value = params[keys];
+				let value = params[keys];
 				if (typeof value != 'string') value = JSON.stringify(params[keys]);
 				tokens.push(keys + "=" + escape(encodeURIComponent(value)));
 			}
 
 			//parse the url to add special token like debug etc.
-			var p = document.location.search.replace('?', '').split('&');
-			for (var i = 0; i < p.length; i++) {
-				if (p[i].length == 0) continue;
-				var t = p[i].split('=');
+			const p = document.location.search.replace('?', '').split('&');
+			for (let i = 0; i < p.length; i++) {
+				if (p[i].length === 0) continue;
+				const t = p[i].split('=');
 				if (!KNOWWE.helper.containsArr(tokens, t[0])) {
 					tokens.push(t[0] + "=" + encodeURIComponent(t[1]));
 				}
@@ -313,9 +314,9 @@ KNOWWE.core.util = function () {
 		 */
 		getWindowParams: function (params) {
 			if (!params && typeof params != 'object') return '';
-			var tokens = [];
+			const tokens = [];
 			for (keys in params) {
-				if (keys == 'url') continue;
+				if (keys === 'url') continue;
 				tokens.push(keys + "=" + params[keys]);
 			}
 			return tokens.join(',');
@@ -342,12 +343,12 @@ KNOWWE.core.util = function () {
 		 *     htmlText - The html text of elements used for replacement.
 		 */
 		replace: function (htmlText) {
-			var newDOMwrapper = document.createElement("div");
+			const newDOMwrapper = document.createElement("div");
 			newDOMwrapper.innerHTML = htmlText;
 
-			var domChildNodes = newDOMwrapper.children;
+			const domChildNodes = newDOMwrapper.children;
 
-			for (var j = 0; j < domChildNodes.length; j++) {
+			for (let j = 0; j < domChildNodes.length; j++) {
 				var newDOM = domChildNodes[j];
 				oldDOM = document.getElementById(newDOM.id);
 				if (oldDOM) {
@@ -377,8 +378,8 @@ KNOWWE.core.util = function () {
 		 *     htmlText - The html text of the elements used for replacement.
 		 */
 		replaceElement: function (ids, htmlText) {
-			var domChildNodes = null;
-			var jsonArray = null;
+			let domChildNodes = null;
+			let jsonArray = null;
 			try {
 				jsonArray = JSON.parse(htmlText);
 				if (!jq$.isArray(jsonArray)) throw EventException;
@@ -388,22 +389,22 @@ KNOWWE.core.util = function () {
 				domChildNodes = temp.children;
 			}
 			// execute script tags that came in with the content
-			var evalAddedScripts = function (element) {
+			const evalAddedScripts = function (element) {
 				jq$(element).find('script').each(function () {
 					eval(this.innerHTML);
 				});
 			};
 
-			for (var j = ids.length - 1; j >= 0; j--) {
-				var oldDOM = jq$('#' + ids[j]);
-				var parent = oldDOM.parent();
+			for (let j = ids.length - 1; j >= 0; j--) {
+				const oldDOM = jq$('#' + ids[j]);
+				const parent = oldDOM.parent();
 				if (oldDOM) {
 					if (jsonArray) {
 						temp = document.createElement("div");
 						temp.innerHTML = jsonArray[j];
 						jq$(oldDOM).replaceWith(temp.children);
 					} else if (domChildNodes) {
-						var node = domChildNodes[j];
+						const node = domChildNodes[j];
 						jq$(oldDOM).replaceWith(domChildNodes[j]);
 					}
 					evalAddedScripts(parent);
@@ -429,21 +430,21 @@ KNOWWE.core.util = function () {
 
 
 		isIE: function () {
-			var ua = window.navigator.userAgent;
-			var msie = ua.indexOf('MSIE ');
+			const ua = window.navigator.userAgent;
+			const msie = ua.indexOf('MSIE ');
 			if (msie > 0) {
 				// IE 10 or older => return version number
 				return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
 			}
 
-			var trident = ua.indexOf('Trident/');
+			const trident = ua.indexOf('Trident/');
 			if (trident > 0) {
 				// IE 11 => return version number
-				var rv = ua.indexOf('rv:');
+				const rv = ua.indexOf('rv:');
 				return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
 			}
 
-			var edge = ua.indexOf('Edge/');
+			const edge = ua.indexOf('Edge/');
 			if (edge > 0) {
 				// IE 12 => return version number
 				return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
@@ -507,8 +508,8 @@ KNOWWE.core.util = function () {
 			return KNOWWE.core.util.isKnowWETemplate() ? '#morepopup' : '#more ul';
 		},
 		getEditButton: function () {
-			var pageActions;
-			var editAction;
+			let pageActions;
+			let editAction;
 			if (KNOWWE.core.util.getTemplate() === 'KnowWE') {
 				pageActions = jq$('#actionsTop')[0].getElementsByTagName('ul')[0];
 				editAction = pageActions.getElementsByTagName('li')[0];
@@ -540,8 +541,8 @@ KNOWWE.core.util.form = function () {
 		 */
 		getCursorPositionInTextArea: function (textarea) {
 			if (document.selection) {
-				var range = document.selection.createRange();
-				var stored_range = range.duplicate();
+				const range = document.selection.createRange();
+				const stored_range = range.duplicate();
 				stored_range.moveToElementText(textarea);
 				stored_range.setEndPoint('EndToEnd', range);
 				textarea.selectionStart = stored_range.text.length - range.text.length;
@@ -567,9 +568,9 @@ KNOWWE.core.util.form = function () {
 				element.focus();
 				sel = document.selection.createRange();
 				sel.text = value;
-			} else if (element.selectionStart || element.selectionStart == '0') {
-				var startPos = element.selectionStart;
-				var endPos = element.selectionEnd;
+			} else if (element.selectionStart || element.selectionStart === '0') {
+				const startPos = element.selectionStart;
+				const endPos = element.selectionEnd;
 				element.value = element.value.substring(0, startPos) + value
 					+ element.value.substring(endPos, element.value.length);
 				element.setSelectionRange(endPos + value.length, endPos + value.length);
@@ -589,18 +590,18 @@ KNOWWE.core.util.form = function () {
 		addFormHints: function (name) {
 			if (!_KS('#' + name)) return;
 
-			var els = document.getElementById(name + '-extend').getElementsByTagName("input");
-			for (var i = 0; i < els.length; i++) {
-				var tag = els[i].nextSibling.tagName;
+			const els = document.getElementById(name + '-extend').getElementsByTagName("input");
+			for (let i = 0; i < els.length; i++) {
+				const tag = els[i].nextSibling.tagName;
 				if (!tag) continue;
 
-				if (tag.toLowerCase() == 'span') {
+				if (tag.toLowerCase() === 'span') {
 					_KE.add('focus', els[i], function (e) {
-						var el = _KE.target(e);
+						const el = _KE.target(e);
 						el.nextSibling.style.display = "inline";
 					});
 					_KE.add('blur', els[i], function (e) {
-						var el = _KE.target(e);
+						const el = _KE.target(e);
 						el.nextSibling.style.display = "none";
 					});
 				}
@@ -611,13 +612,13 @@ KNOWWE.core.util.form = function () {
 		 * Shows a panel in certain plugin with additional options.
 		 */
 		showExtendedPanel: function () {
-			var el = this;
+			const el = this;
 
-			var nextEl = el._next();
-			var style = nextEl.style;
+			const nextEl = el._next();
+			const style = nextEl.style;
 			el.removeAttribute('class');
 
-			if (style['display'] == 'inline') {
+			if (style['display'] === 'inline') {
 				nextEl.style.setProperty('display', 'none', 'important');
 				//el.setAttribute('class', 'show extend pointer extend-panel-down');
 				el.setAttribute('class', 'show extend pointer extend-panel-right');
@@ -642,8 +643,8 @@ KNOWWE.core.rerendercontent = function () {
 		 */
 		init: function () {
 			KNOWWE.helper.observer.subscribe('update', function () {
-				var parameters = {reason: "updateEvent"};
-				if (typeof this == "object" && this != window) {
+				const parameters = {reason: "updateEvent"};
+				if (typeof this == "object" && this !== window) {
 					jq$.extend(parameters, this);
 				}
 				jq$('.ReRenderSectionMarker').rerender(parameters);
@@ -659,7 +660,7 @@ KNOWWE.core.rerendercontent = function () {
 		 *     topic - The name of the page that contains the node.
 		 */
 		updateNode: function (node, topic, ajaxToHTML) {
-			var params = {
+			const params = {
 				action: 'ReRenderContentPartAction',
 				KWikiWeb: 'default_web',
 				KdomNodeId: node,
@@ -667,34 +668,34 @@ KNOWWE.core.rerendercontent = function () {
 				ajaxToHTML: ajaxToHTML
 
 			};
-			var url = KNOWWE.core.util.getURL(params);
+			const url = KNOWWE.core.util.getURL(params);
 			KNOWWE.core.rerendercontent.execute(url, node, 'insert');
 		},
 		/**
 		 * Function: update
 		 */
 		update: function (elements, action, callback, indicateProcess) {
-			if (elements == undefined) elements = _KS('.ReRenderSectionMarker');
-			if (action == undefined) action = 'replace';
+			if (elements === undefined) elements = _KS('.ReRenderSectionMarker');
+			if (action === undefined) action = 'replace';
 			if (!callback && typeof this == "function") callback = this;
 
-			if (elements.length != 0) {
-				for (var i = 0; i < elements.length; i++) {
-					var rel = elements[i].getAttribute('rel');
+			if (elements.length !== 0) {
+				for (let i = 0; i < elements.length; i++) {
+					let rel = elements[i].getAttribute('rel');
 					if (!rel) continue;
 					rel = eval("(" + rel + ")");
 
-					var params = {
+					const params = {
 						action: 'ReRenderContentPartAction',
 						KWikiWeb: 'default_web',
 						SectionID: rel.id,
 						ajaxToHTML: "render",
-						inPre: KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') != document
+						inPre: KNOWWE.helper.tagParent(_KS('#' + rel.id), 'pre') !== document
 					};
 					if (this.wikiStatus) {
 						params.status = this.wikiStatus;
 					}
-					var url = KNOWWE.core.util.getURL(params);
+					const url = KNOWWE.core.util.getURL(params);
 					KNOWWE.core.rerendercontent.execute(url, rel.id, action, callback, indicateProcess);
 				}
 			}
@@ -708,9 +709,9 @@ KNOWWE.core.rerendercontent = function () {
 		 *     id - The id of the node that should be updated.
 		 */
 		execute: function (url, id, action, fn, indicateProcess) {
-			if (indicateProcess == undefined) indicateProcess = true;
-			var msgId = "executeAjax";
-			var options = {
+			if (indicateProcess === undefined) indicateProcess = true;
+			const msgId = "executeAjax";
+			const options = {
 				url: url,
 				response: {
 					ids: [id],
@@ -719,12 +720,11 @@ KNOWWE.core.rerendercontent = function () {
 						try {
 							KNOWWE.core.actions.init();
 							Collapsible.render(_KS('#page'), KNOWWE.helper.gup('page'));
-							if (typeof(fn) == "function") {
+							if (typeof (fn) == "function") {
 								fn();
 							}
 							jq$('#knowWEInfoStatus').val(JSON.parse(this.response).status);
-						}
-						catch (e) { /*ignore*/
+						} catch (e) { /*ignore*/
 						}
 						if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);
 						if (action) {
@@ -738,7 +738,7 @@ KNOWWE.core.rerendercontent = function () {
 
 					},
 					onError: function () {
-						if (this.status == 304) {
+						if (this.status === 304) {
 							// 304 means not change in status, so it is to be expected
 							KNOWWE.core.util.hideProcessingIndicator();
 							return;
@@ -758,19 +758,19 @@ KNOWWE.core.rerendercontent = function () {
  * Aliases for some often used namespaced function to reduce typing.
  */
 /* Alias KNOWWE event. */
-var _KE = KNOWWE.helper.event;
+const _KE = KNOWWE.helper.event;
 /* Alias KNOWWE ajax. */
-var _KA = KNOWWE.helper.ajax;
+const _KA = KNOWWE.helper.ajax;
 /* Alias KNOWWE ElementSelector */
-var _KS = KNOWWE.helper.selector;
+const _KS = KNOWWE.helper.selector;
 /* Alias KNOWWE logger */
-var _KL = KNOWWE.helper.logger;
+const _KL = KNOWWE.helper.logger;
 /* Alias KNOWWE.helper.element */
-var _KN = KNOWWE.helper.element;
+const _KN = KNOWWE.helper.element;
 /* Alias KNOWWE.helper.hash */
-var _KH = KNOWWE.helper.hash;
+const _KH = KNOWWE.helper.hash;
 /* Alias KNOWWE.core */
-var _KU = KNOWWE.core.util;
+const _KU = KNOWWE.core.util;
 
 
 /* ############################################################### */
@@ -782,7 +782,7 @@ var _KU = KNOWWE.core.util;
 
 	window.addEvent('domready', function () {
 		jq$('body').addClass(KNOWWE.core.util.getTemplate());
-		if (KNOWWE.core.util.isAdmin() == "true") {
+		if (KNOWWE.core.util.isAdmin() === "true") {
 			jq$('body').addClass("admin");
 		} else {
 			jq$('body').addClass("noneAdmin");
@@ -795,7 +795,7 @@ var _KU = KNOWWE.core.util;
 			KNOWWE.core.init();
 		});
 		jq$(window).focus(function () {
-			var message = null;
+			let message = null;
 			if (window.onbeforeunload) {
 				message = window.onbeforeunload();
 			}
@@ -807,7 +807,7 @@ var _KU = KNOWWE.core.util;
 		});
 		if (KNOWWE.core.util.isIE()) {
 			// the following lines are for IE compatibility, they trigger the change event if the user presses return
-			var ieInputCompatibility = function ($element) {
+			const ieInputCompatibility = function ($element) {
 				$element.find("input[type=text]").keyup(function (e) {
 					if (e.which === 13) {
 						jq$(this).trigger('change');
