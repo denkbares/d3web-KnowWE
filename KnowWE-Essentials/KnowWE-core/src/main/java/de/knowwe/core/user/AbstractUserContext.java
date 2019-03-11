@@ -57,7 +57,7 @@ public abstract class AbstractUserContext implements UserContext {
 	 */
 	@Override
 	public String getUserName() {
-		return this.getParameter(Attributes.USER);
+		return manager.getUserName();
 	}
 
 	@Override

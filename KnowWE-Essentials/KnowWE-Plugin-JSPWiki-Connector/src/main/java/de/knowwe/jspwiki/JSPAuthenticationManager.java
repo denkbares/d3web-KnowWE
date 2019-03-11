@@ -73,4 +73,8 @@ public class JSPAuthenticationManager implements AuthenticationManager {
 				.login(context.getWikiSession(), request, username, password);
 	}
 
+	@Override
+	public String getUserName() {
+		return context.getWikiSession().getUserPrincipal().getName();
+	}
 }

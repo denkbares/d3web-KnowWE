@@ -49,6 +49,11 @@ public interface AuthenticationManager {
 	 */
 	boolean userIsAuthenticated();
 
-	//TODO method for Login
+	/**
+	 * Returns name of the current user
+	 *
+ 	 * @return the name of the current user
+	 */
+	String getUserName();
 
 }
