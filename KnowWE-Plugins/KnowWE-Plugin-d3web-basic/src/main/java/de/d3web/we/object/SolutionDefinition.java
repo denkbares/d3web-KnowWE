@@ -71,11 +71,7 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 
 	@Override
 	public Solution getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<Solution>> section) {
-		Solution solution = super.getTermObject(compiler, section);
-		if (solution == null) {
-			solution = compiler.getKnowledgeBase().getManager().searchSolution(section.get().getTermName(section));
-		}
-		return solution;
+		return compiler.getKnowledgeBase().getManager().searchSolution(section.get().getTermName(section));
 	}
 
 	public static class CreateSolutionHandler implements D3webHandler<SolutionDefinition> {
@@ -116,8 +112,6 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 				}
 			}
 
-			// if not available, create a new one and store it for later usage
-			section.get().storeTermObject(compiler, section, new Solution(kb, name));
 			return Messages.noMessage();
 		}
 	}
