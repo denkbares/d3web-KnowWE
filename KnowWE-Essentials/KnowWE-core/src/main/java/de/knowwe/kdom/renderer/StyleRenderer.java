@@ -49,7 +49,7 @@ public class StyleRenderer implements Renderer {
 
 	public static final StyleRenderer CHOICE_NO_TOOLS = new StyleRenderer("color:rgb(40, 40, 160)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 	public static final StyleRenderer QUESTION_NO_TOOLS = new StyleRenderer("color:rgb(0, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-	public static final StyleRenderer QUESTIONAIRE_NO_TOOLS = new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer QUESTIONNAIRE_NO_TOOLS = new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 	public static final StyleRenderer SOLUTION_NO_TOOLS = new StyleRenderer("color:rgb(150, 110, 120)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 
 	public static final StyleRenderer FLOWCHART_NO_TOOLS = new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
@@ -63,7 +63,7 @@ public class StyleRenderer implements Renderer {
 	public static final Renderer CHOICE = CHOICE_NO_TOOLS.withToolMenu();
 	public static final Renderer SOLUTION = SOLUTION_NO_TOOLS.withToolMenu();
 	public static final Renderer Question = QUESTION_NO_TOOLS.withToolMenu();
-	public static final Renderer Questionaire = QUESTIONAIRE_NO_TOOLS.withToolMenu();
+	public static final Renderer Questionaire = QUESTIONNAIRE_NO_TOOLS.withToolMenu();
 
 	public static final Renderer Flowchart = FLOWCHART_NO_TOOLS.withToolMenu();
 	public static final Renderer FlowchartStart = FLOWCHART_START_NO_TOOLS.withToolMenu();
