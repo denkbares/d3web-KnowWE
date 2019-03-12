@@ -424,7 +424,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 			"class" : 'markupMenu'
 		});
 		var cancel = generateMarkUpmenuItem("_CE.cancelSection(\'" + sectionId + "\')", "Revert", "fa-undo");
-		var del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "fa-remove");
+		var del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "fa-times");
 		markupMenu.append(cancel);
 		markupMenu.append(del);
 		return markupMenu;

@@ -39,10 +39,11 @@ import de.knowwe.core.utils.Scope;
 import de.knowwe.jspwiki.types.HeaderType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.util.Icon;
 
 class IncludeRenderer extends DefaultMarkupRenderer {
 
-	private static final String HEADER_LINK_ICON = "<i class='fa fa-external-link-square include-sourceHeaderLink'></i>";
+	private static final Icon HEADER_LINK_ICON = Icon.EXTERNAL_LINK.addClasses("include-sourceHeaderLink");
 
 	public IncludeRenderer() {
 		setPreFormattedStyle(false);
@@ -195,7 +196,7 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 		RenderResult decorated = new RenderResult(result);
 		decorated.addCustomRenderer(Scope.getScope("HeaderType/LineBreak")::matches, (s, u, r) -> {
 			Section<HeaderType> header = Sections.cast(s.getParent(), HeaderType.class);
-			r.append(" [").appendHtml(HEADER_LINK_ICON)
+			r.append(" [").appendHtml(HEADER_LINK_ICON.toHtml())
 					.append("|").append(KnowWEUtils.getWikiLink(header)).append("]");
 			DelegateRenderer.getRenderer(s, u).render(s, u, r);
 		});

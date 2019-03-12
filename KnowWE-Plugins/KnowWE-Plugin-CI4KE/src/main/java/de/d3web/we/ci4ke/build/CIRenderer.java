@@ -463,7 +463,7 @@ public class CIRenderer {
 				+ " title='%s'></i>";
 
 		if (showRunning) {
-			imgBulb = String.format(imgBulb, "fa-spin fa-refresh", "true", "Build running!");
+			imgBulb = String.format(imgBulb, "fa-spin fa-sync", "true", "Build running!");
 		}
 		else {
 			switch (resultType) {
