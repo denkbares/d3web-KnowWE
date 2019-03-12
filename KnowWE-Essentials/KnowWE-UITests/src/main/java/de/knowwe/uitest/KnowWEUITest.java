@@ -30,7 +30,6 @@ import org.junit.Assert;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Platform;
@@ -208,7 +207,6 @@ public abstract class KnowWEUITest {
 		WebElement element = parent.findElement(by);
 		element.click();
 		element.clear();
-		element.sendKeys(Keys.chord(Keys.COMMAND, "a"));
 		element.sendKeys(text);
 	}
 
@@ -216,7 +214,6 @@ public abstract class KnowWEUITest {
 		WebElement element = find(by);
 		element.click();
 		element.clear();
-		element.sendKeys(Keys.chord(Keys.COMMAND, "a"));
 		element.sendKeys(text);
 	}
 
