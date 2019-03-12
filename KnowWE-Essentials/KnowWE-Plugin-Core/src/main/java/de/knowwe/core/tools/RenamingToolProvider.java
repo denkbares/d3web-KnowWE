@@ -55,7 +55,7 @@ public class RenamingToolProvider implements ToolProvider {
 	}
 
 	protected Tool getRenamingTool(Section<? extends Term> section) {
-		return new DefaultTool(
+		return new RenamingTool(
 				Icon.RENAME,
 				"Rename",
 				"Rename this term wiki wide.",
@@ -65,6 +65,13 @@ public class RenamingToolProvider implements ToolProvider {
 
 	protected String createRenamingAction(Section<? extends Term> section) {
 		return "KNOWWE.plugin.renaming.renameTerm('" + section.getID() + "')";
+	}
+
+	public static class RenamingTool extends DefaultTool {
+
+		public RenamingTool(Icon icon, String title, String description, String renamingAction, String categoryEdit) {
+			super(icon, title, description, renamingAction, categoryEdit);
+		}
 	}
 }
 
