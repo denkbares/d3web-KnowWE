@@ -232,7 +232,15 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	@NotNull
 	public static Sections<? extends Type> registrations(TermCompiler compiler, @Nullable Section<? extends Term> term) {
 		if (term == null) return Sections.empty();
-		Identifier termIdentifier = term.get().getTermIdentifier(compiler, term);
+		return registrations(compiler, term.get().getTermIdentifier(compiler, term));
+	}
+
+	/**
+	 * Combines call for {@link #definitions(TermCompiler, Identifier)} and {@link #references(TermCompiler, Identifier)}
+	 */
+	@NotNull
+	public static Sections<? extends Type> registrations(TermCompiler compiler, @Nullable Identifier termIdentifier) {
+		if (termIdentifier == null) return Sections.empty();
 		//noinspection unchecked
 		return new Sections(new ConcatenateIterable<Section<?>>(definitions(compiler, termIdentifier), references(compiler, termIdentifier)));
 	}
