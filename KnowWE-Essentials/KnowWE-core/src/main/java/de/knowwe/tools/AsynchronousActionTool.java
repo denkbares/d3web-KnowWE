@@ -67,10 +67,12 @@ public class AsynchronousActionTool extends DefaultTool {
 	}
 
 	private static String buildJsAction(Class<? extends Action> action, Section<?> section, String successFunction, Map<String, String> params) {
-		return "jq$.ajax({url : 'action/" + action.getSimpleName() + "', " +
+		return "KNOWWE.editCommons.showAjaxLoader(); " +
+				"jq$.ajax({url : 'action/" + action.getSimpleName() + "', " +
 				"cache : false, " +
 				"data : " + createData(section, params) + "," +
-				"success : function() {" + successFunction + "} })";
+				"success : function() {" + successFunction + "}," +
+				"error: function() {KNOWWE.editCommons.hideAjaxLoader();} })";
 	}
 
 	private static String createData(Section<?> section, Map<String, String> params) {
