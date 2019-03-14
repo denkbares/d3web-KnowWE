@@ -64,6 +64,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
+import org.jetbrains.annotations.NotNull;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 
@@ -231,7 +232,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			Iterable<RevCommit> commits = git
 					.log()
 					.add(git.getRepository().resolve(Constants.HEAD))
-//					.setRevFilter(filter)
+					.setRevFilter(filter)
 					.call();
 			ObjectReader objRedaer = repository.newObjectReader();
 			CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
@@ -246,13 +247,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 				System.out.println(commit.getParentCount());
 				System.out.println(fullMessage);
-				if (oldCommit == null) {
-					ObjectId resolve = repository.resolve(commit.getName() + "^");
-					oldCommit = resolve;
-					System.out.println(oldCommit);
-					System.out.println(commit.getTree().getName());
-//					oldCommit =commit.getTree();
-				}
+
 				if (oldCommit != null) {
 					newCommit = commit.getTree();
 					oldTreeParser.reset(objRedaer, oldCommit);
@@ -261,23 +256,26 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					diffFormatter.setRepository(repository);
 					List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
 					for (DiffEntry diff : diffs) {
-						diff.getOldPath();
+						String path = diff.getOldPath();
+						if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
+							path = diff.getNewPath();
+						}
+						WikiPage page = getWikiPage(fullMessage, author, modified, path);
+						pages.add(page);
 						System.out.println("commit rev: " + diff);
 					}
 				}
-
-				try (TreeWalk treeWalk = new TreeWalk(repository)) {
-					treeWalk.reset(commit.getTree());
-					treeWalk.setRecursive(true);
-					treeWalk.setFilter(TreeFilter.ANY_DIFF);
-					while (treeWalk.next()) {
-						String nameString = treeWalk.getPathString();
-						System.out.println(nameString);
-						WikiPage page = new WikiPage(m_engine, unmangleName(nameString));
-						page.setAttribute(WikiPage.CHANGENOTE, fullMessage);
-						page.setAuthor(author);
-						page.setLastModified(modified);
-						pages.add(page);
+				else {
+					try (TreeWalk treeWalk = new TreeWalk(repository)) {
+						treeWalk.reset(commit.getTree());
+						treeWalk.setRecursive(true);
+						treeWalk.setFilter(TreeFilter.ANY_DIFF);
+						while (treeWalk.next()) {
+							String nameString = treeWalk.getPathString();
+							System.out.println(nameString);
+							WikiPage page = getWikiPage(fullMessage, author, modified, nameString);
+							pages.add(page);
+						}
 					}
 				}
 
@@ -292,6 +290,14 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	@NotNull WikiPage getWikiPage(String fullMessage, String author, Date modified, String path) {
+		WikiPage page = new WikiPage(m_engine, unmangleName(path));
+		page.setAttribute(WikiPage.CHANGENOTE, fullMessage);
+		page.setAuthor(author);
+		page.setLastModified(modified);
+		return page;
 	}
 
 	@Override

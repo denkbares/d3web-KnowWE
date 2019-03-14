@@ -112,8 +112,14 @@ public class GitVersioningFileProviderTest {
 		fileProvider.putPageText(page2, "text of test page 2");
 
 		Collection allChangedSince = fileProvider.getAllChangedSince(Date.from(nowMinusOneHour));
-//		assertEquals(2, allChangedSince.size());
-		System.out.println(allChangedSince);
+		assertEquals(3, allChangedSince.size());
+		for (Object o : allChangedSince) {
+			WikiPage o1 = (WikiPage) o;
+			System.out.println(o1.getName());
+			System.out.println(o1.getAttribute(WikiPage.CHANGENOTE));
+			System.out.println(o1.getLastModified());
+		}
+
 
 		fileProvider.deletePage("test");
 		allChangedSince = fileProvider.getAllChangedSince(Date.from(nowMinusOneHour));
