@@ -21,19 +21,31 @@ package org.apache.wiki.providers;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.wiki.WikiEngine;
+import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
+import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.auth.NoSuchPrincipalException;
+import org.apache.wiki.auth.UserManager;
+import org.apache.wiki.auth.user.UserDatabase;
+import org.apache.wiki.auth.user.UserProfile;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.junit.AfterClass;
+import org.jetbrains.annotations.NotNull;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Josua Nürnberger
@@ -74,8 +86,86 @@ public class GitVersioningFileProviderTest {
 		assertTrue(repo.getObjectDatabase().exists());
 	}
 
-	@AfterClass
-	public static void tearDown() throws IOException {
+	@Test
+	public void testGetChangedSince() throws IOException, NoRequiredPropertyException, ProviderException, NoSuchPrincipalException {
+		final String author = "UnknownAuthor";
+		WikiEngine engine = getWikiEngineMock(author);
+
+		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
+		fileProvider.initialize(engine, properties);
+		Instant nowMinusOneHour = Instant.now();
+		nowMinusOneHour = nowMinusOneHour.minus(1, ChronoUnit.HOURS);
+
+		WikiPage page = new WikiPage(engine, "test");
+		page.setLastModified(new Date());
+		page.setAuthor("UnknownAuthor");
+		page.setAttribute(WikiPage.CHANGENOTE, "add test");
+		fileProvider.putPageText(page, "test file text");
+
+		page.setAttribute(WikiPage.CHANGENOTE, "changed test");
+		fileProvider.putPageText(page, "new text");
+
+		WikiPage page2 = new WikiPage(engine, "test2");
+		page2.setLastModified(new Date());
+		page2.setAuthor("UnknownAuthor");
+		page2.setAttribute(WikiPage.CHANGENOTE, "add test2");
+		fileProvider.putPageText(page2, "text of test page 2");
+
+		Collection allChangedSince = fileProvider.getAllChangedSince(Date.from(nowMinusOneHour));
+//		assertEquals(2, allChangedSince.size());
+		System.out.println(allChangedSince);
+
+		fileProvider.deletePage("test");
+		allChangedSince = fileProvider.getAllChangedSince(Date.from(nowMinusOneHour));
+//		assertEquals(3, allChangedSince.size());
+		System.out.println(allChangedSince);
+	}
+
+	@Test
+	public void testGetVersions() throws IOException, NoRequiredPropertyException, ProviderException, NoSuchPrincipalException {
+		final String author = "UnknownAuthor";
+		WikiEngine engine = getWikiEngineMock(author);
+
+		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
+		fileProvider.initialize(engine, properties);
+		Instant nowMinusOneHour = Instant.now();
+		nowMinusOneHour = nowMinusOneHour.minus(1, ChronoUnit.HOURS);
+
+		WikiPage page = new WikiPage(engine, "test");
+		page.setLastModified(new Date());
+		page.setAuthor("UnknownAuthor");
+		page.setAttribute(WikiPage.CHANGENOTE, "add test");
+		fileProvider.putPageText(page, "test file text");
+
+		WikiPage page2 = new WikiPage(engine, "test");
+		page2.setLastModified(new Date());
+		page2.setAuthor("UnknownAuthor");
+		page2.setAttribute(WikiPage.CHANGENOTE, "add test2");
+		fileProvider.putPageText(page2, "text of test page ");
+
+		Collection allChangedSince = fileProvider.getVersionHistory("test");
+		assertEquals(2, allChangedSince.size());
+
+		fileProvider.deletePage("test");
+		allChangedSince = fileProvider.getVersionHistory("test");
+		assertNull("deleted pages have no version log anymore", allChangedSince);
+	}
+
+	@NotNull WikiEngine getWikiEngineMock(String author) throws NoSuchPrincipalException {
+		WikiEngine engine = Mockito.mock(WikiEngine.class);
+		UserManager uMan = Mockito.mock(UserManager.class);
+		UserDatabase uDB = Mockito.mock(UserDatabase.class);
+		UserProfile uP = Mockito.mock(UserProfile.class);
+		when(engine.getUserManager()).thenReturn(uMan);
+		when(uMan.getUserDatabase()).thenReturn(uDB);
+		when(uDB.findByFullName(author)).thenReturn(uP);
+		when(uP.getFullname()).thenReturn(author);
+		when(uP.getEmail()).thenReturn(author + "@example.com");
+		return engine;
+	}
+
+	@After
+	public void tearDown() throws IOException {
 		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
 	}
 }

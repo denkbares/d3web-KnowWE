@@ -20,30 +20,52 @@
 package org.apache.wiki.providers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
-import org.apache.wiki.auth.NoSuchPrincipalException;
-import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.search.QueryItem;
+import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.AmbiguousObjectException;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
+import org.eclipse.jgit.errors.StopWalkException;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
+
+import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 
 /**
  * @author Josua Nürnberger
@@ -55,6 +77,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	protected Repository repository;
 	public static final String GIT_DIR = ".git";
 	public static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
+	private static final Logger logger = Logger.getLogger(GitVersioningFileProvider.class);
 
 	/**
 	 * {@inheritDoc}
@@ -64,7 +87,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	@Override
 	public void initialize(WikiEngine engine, Properties properties) throws NoRequiredPropertyException, IOException {
 		super.initialize(engine, properties);
-
+//TODO property exceptions
 		String filesystemPath = TextUtil.getCanonicalFilePathProperty(properties, JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR,
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 		File pageDir = new File(filesystemPath);
@@ -88,6 +111,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			}
 			else {
 				this.repository = FileRepositoryBuilder.create(gitDir);
+				this.repository.create();
 			}
 		}
 		else {
@@ -95,6 +119,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					.setGitDir(gitDir)
 					.build();
 		}
+	}
+
+	Repository getRepository() {
+		return this.repository;
 	}
 
 	@Override
@@ -126,25 +154,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			else {
 				commit.setMessage("-");
 			}
-			addUserInfo(page, commit);
+			addUserInfo(m_engine, page.getAuthor(), commit);
 			commit.call();
 		}
 		catch (GitAPIException e) {
 			e.printStackTrace();
-		}
-	}
-
-	private void addUserInfo(WikiPage page, CommitCommand commit) {
-		if (null != page.getAuthor() && !"".equals(page.getAuthor())) {
-			try {
-				UserProfile userProfile = m_engine.getUserManager()
-						.getUserDatabase()
-						.findByFullName(page.getAuthor());
-				commit.setCommitter(userProfile.getFullname(), userProfile.getEmail());
-			}
-			catch (NoSuchPrincipalException e) {
-				e.printStackTrace();
-			}
 		}
 	}
 
@@ -155,7 +169,19 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	@Override
 	public boolean pageExists(String page, int version) {
-		return super.pageExists(page, version);
+		if (pageExists(page)) {
+			try {
+				List<WikiPage> versionHistory = getVersionHistory(page);
+				return version == WikiPageProvider.LATEST_VERSION
+						|| (version > 0 && version <= versionHistory.size());
+			}
+			catch (ProviderException e) {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override
@@ -164,8 +190,22 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	@Override
-	public WikiPage getPageInfo(String page, int version) throws ProviderException {
-		return super.getPageInfo(page, version);
+	public WikiPage getPageInfo(String pageName, int version) throws ProviderException {
+		if (pageExists(pageName)) {
+			List<WikiPage> versionHistory = getVersionHistory(pageName);
+			if (version == WikiPageProvider.LATEST_VERSION) {
+				return versionHistory.get(versionHistory.size() - 1);
+			}
+			else if (version > 0 && version <= versionHistory.size()) {
+				return versionHistory.get(version - 1);
+			}
+			else {
+				throw new ProviderException("Version " + version + " of page " + pageName + " does not exist");
+			}
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
@@ -175,7 +215,83 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	@Override
 	public Collection getAllChangedSince(Date date) {
-		return super.getAllChangedSince(date);
+		RevFilter filter = new RevFilter() {
+			@Override
+			public boolean include(RevWalk walker, RevCommit cmit) throws StopWalkException {
+				return (1000l * cmit.getCommitTime()) >= date.getTime();
+			}
+
+			@Override
+			public RevFilter clone() {
+				return null;
+			}
+		};
+		Git git = new Git(repository);
+		try {
+			Iterable<RevCommit> commits = git
+					.log()
+					.add(git.getRepository().resolve(Constants.HEAD))
+//					.setRevFilter(filter)
+					.call();
+			ObjectReader objRedaer = repository.newObjectReader();
+			CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
+			ObjectId oldCommit = null;
+			CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
+			ObjectId newCommit = null;
+			List<WikiPage> pages = new ArrayList<>();
+			for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
+				String fullMessage = commit.getFullMessage();
+				String author = commit.getCommitterIdent().getName();
+				Date modified = new Date(1000l * commit.getCommitTime());
+
+				System.out.println(commit.getParentCount());
+				System.out.println(fullMessage);
+				if (oldCommit == null) {
+					ObjectId resolve = repository.resolve(commit.getName() + "^");
+					oldCommit = resolve;
+					System.out.println(oldCommit);
+					System.out.println(commit.getTree().getName());
+//					oldCommit =commit.getTree();
+				}
+				if (oldCommit != null) {
+					newCommit = commit.getTree();
+					oldTreeParser.reset(objRedaer, oldCommit);
+					newTreeParser.reset(objRedaer, newCommit);
+					DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+					diffFormatter.setRepository(repository);
+					List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
+					for (DiffEntry diff : diffs) {
+						diff.getOldPath();
+						System.out.println("commit rev: " + diff);
+					}
+				}
+
+				try (TreeWalk treeWalk = new TreeWalk(repository)) {
+					treeWalk.reset(commit.getTree());
+					treeWalk.setRecursive(true);
+					treeWalk.setFilter(TreeFilter.ANY_DIFF);
+					while (treeWalk.next()) {
+						String nameString = treeWalk.getPathString();
+						System.out.println(nameString);
+						WikiPage page = new WikiPage(m_engine, unmangleName(nameString));
+						page.setAttribute(WikiPage.CHANGENOTE, fullMessage);
+						page.setAuthor(author);
+						page.setLastModified(modified);
+						pages.add(page);
+					}
+				}
+
+				oldCommit = commit.getTree();
+			}
+			return pages;
+		}
+		catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -184,23 +300,127 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	@Override
-	public List getVersionHistory(String page) throws ProviderException {
-		return super.getVersionHistory(page);
+	public List<WikiPage> getVersionHistory(String pageName) throws ProviderException {
+		File page = findPage(pageName);
+		if (page.exists()) {
+			try {
+				List<WikiPage> pageVerions = new ArrayList<>();
+				Git git = new Git(repository);
+				List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
+				int versionNr = 1;
+				for (RevCommit revCommit : revCommits) {
+					WikiPage version = new WikiPage(m_engine, pageName);
+					version.setAuthor(revCommit.getCommitterIdent().getName());
+					version.setLastModified(new Date(1000l * revCommit.getCommitTime()));
+					version.setVersion(versionNr++);
+					version.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
+					pageVerions.add(version);
+				}
+				return pageVerions;
+			}
+			catch (IncorrectObjectTypeException e) {
+				e.printStackTrace();
+			}
+			catch (AmbiguousObjectException e) {
+				e.printStackTrace();
+			}
+			catch (MissingObjectException e) {
+				e.printStackTrace();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+			catch (NoHeadException e) {
+				e.printStackTrace();
+			}
+			catch (GitAPIException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 
 	@Override
-	public String getPageText(String page, int version) throws ProviderException {
-		return super.getPageText(page, version);
+	public String getPageText(String pageName, int version) throws ProviderException {
+		File page = findPage(pageName);
+		if (page.exists()) {
+			try {
+				Git git = new Git(repository);
+				List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
+				int versionNr = 1;
+				for (RevCommit revCommit : revCommits) {
+					if (version == versionNr) {
+						git.checkout()
+								.addPath(page.getName())
+								.setName(revCommit.getName())
+								.call();
+					}
+					version++;
+				}
+				try (InputStream in = new FileInputStream(page)) {
+					String pageContent = FileUtil.readContents(in, m_encoding);
+					return pageContent;
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			catch (IncorrectObjectTypeException e) {
+				e.printStackTrace();
+			}
+			catch (AmbiguousObjectException e) {
+				e.printStackTrace();
+			}
+			catch (MissingObjectException e) {
+				e.printStackTrace();
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+			catch (NoHeadException e) {
+				e.printStackTrace();
+			}
+			catch (GitAPIException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			logger.info("New file " + pageName);
+		}
+		return null;
+	}
+
+	protected Iterable<RevCommit> getRevCommits(File page, Git git) throws GitAPIException, IOException {
+		return git
+				.log()
+				.add(git.getRepository().resolve(Constants.HEAD))
+				.addPath(page.getName())
+				.call();
 	}
 
 	@Override
 	public void deleteVersion(String pageName, int version) throws ProviderException {
-		super.deleteVersion(pageName, version);
+		// Why delete version from git
 	}
 
 	@Override
 	public void deletePage(String pageName) throws ProviderException {
-		super.deletePage(pageName);
+		File page = findPage(pageName);
+		page.delete();
+		try {
+			Git git = new Git(repository);
+			git.rm().addFilepattern(page.getName()).call();
+			git.commit()
+					.setOnly(page.getName())
+					.setMessage("removed page")
+					.call();
+		}
+		catch (NoFilepatternException e) {
+			e.printStackTrace();
+		}
+		catch (GitAPIException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
