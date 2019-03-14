@@ -134,12 +134,12 @@ public class Icon {
 	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
 
 	//PACKAGES
-	public static final Icon CUBE = new Icon("fas fa-cube");
-	public static final Icon CART_PLUS = new Icon("fas fa-cart-plus");
+	public static final Icon LAYER_PLUS = new Icon("fal fa-layer-plus");
+	public static final Icon CART_PLUS = new Icon("fal fa-cart-plus");
 	public static final Icon OBJECT_GROUP = new Icon("fas fa-object-group");
-	public static final Icon PLUS_SQUARE_O = new Icon("far fa-plus-square");
+	public static final Icon PLUS_CIRCLE = new Icon("fal fa-plus-circle");
 	public static final Icon OBJECT_UNGROUP = new Icon("fas fa-object-ungroup");
-	public static final Icon DIAMOND = new Icon("fas fa-diamond");
+	public static final Icon PLUS_OCTAGON = new Icon("fal fa-plus-octagon");
 
 	//SPINNING
 	public static final Icon LOADING = new Icon("fas fa-spin fa-refresh");
