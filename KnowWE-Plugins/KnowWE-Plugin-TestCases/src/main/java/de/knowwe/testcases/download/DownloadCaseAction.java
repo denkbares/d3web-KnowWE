@@ -85,7 +85,7 @@ public class DownloadCaseAction extends AbstractAction {
 				response.accumulate(keyAndValues[i], keyAndValues[i + 1]);
 			}
 			if (context.getWriter() != null) {
-				context.setContentType("text/html; charset=UTF-8");
+				context.setContentType(HTML);
 				response.write(context.getWriter());
 			}
 		}

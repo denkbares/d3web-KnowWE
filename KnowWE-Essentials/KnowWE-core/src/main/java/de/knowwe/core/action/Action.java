@@ -35,12 +35,17 @@ import java.io.IOException;
  */
 public interface Action {
 
+	String XML = "application/xml; charset=UTF-8";
+	String HTML = "text/html; charset=UTF-8";
+	String JSON = "application/json; charset=UTF-8";
+	String PLAIN_TEXT = "text/plain; charset=UTF-8";
+	String BINARY = "application/x-bin";
+
 	/**
 	 * Executes the Action.
 	 *
 	 * @created Mar 9, 2011
-	 * @param context
-	 * @throws IOException
+	 * @param context the context for this action
 	 */
 	void execute(UserActionContext context) throws IOException;
 

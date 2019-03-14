@@ -60,7 +60,7 @@ public class DownloadFileAction extends AbstractAction {
 		File file = new File(filePath);
 		checkAllowed(file);
 		try {
-			context.setContentType("application/x-bin");
+			context.setContentType(BINARY);
 			context.setHeader("Content-Disposition", "attachment;filename=\"" + name + "\"");
 
 			FileInputStream in = new FileInputStream(file);

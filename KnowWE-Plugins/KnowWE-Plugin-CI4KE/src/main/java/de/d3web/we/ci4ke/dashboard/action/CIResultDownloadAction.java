@@ -87,7 +87,7 @@ public class CIResultDownloadAction extends AbstractAction {
 			String fileName = name + " " + latestBuild.getBuildNumber() + ".xml";
 			byte[] contentBytes = content.getBytes("UTF-8");
 			context.setContentLength(contentBytes.length);
-			context.setContentType("application/xml; charset=UTF-8");
+			context.setContentType(XML);
 			context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\".xml");
 			context.getWriter().write(new String(contentBytes, "UTF-8"));
 		}

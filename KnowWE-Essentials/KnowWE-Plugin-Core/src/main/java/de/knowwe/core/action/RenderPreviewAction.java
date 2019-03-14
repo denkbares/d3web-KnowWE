@@ -78,7 +78,7 @@ public class RenderPreviewAction extends AbstractAction {
 			context.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing data");
 		}
 		else {
-			context.setContentType("text/plain; charset=UTF-8");
+			context.setContentType(PLAIN_TEXT);
 			try {
 				result.write(context.getWriter());
 			}

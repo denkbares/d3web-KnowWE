@@ -120,7 +120,7 @@ public class CIAction extends AbstractAction {
 		temp.append(Environment.getInstance().getWikiConnector().renderWikiSyntax(
 				html.toStringRaw()));
 
-		context.setContentType("text/html; charset=UTF-8");
+		context.setContentType(HTML);
 		context.getWriter().write(temp.toString());
 	}
 }

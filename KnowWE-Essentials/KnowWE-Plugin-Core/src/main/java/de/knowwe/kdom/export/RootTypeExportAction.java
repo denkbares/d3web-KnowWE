@@ -67,7 +67,7 @@ public class RootTypeExportAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String filename = "RootType.svg";
-		context.setContentType("application/x-bin");
+		context.setContentType(BINARY);
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 		DOT_INSTALLATION = "dot";
 

@@ -23,7 +23,7 @@ public class CheckProgress extends AbstractAction {
 		writer.append(" state='").append(state).append("'");
 		writer.append(">");
 		writer.append("</progress>");
-		context.setContentType("text/xml");
+		context.setContentType(XML);
 	}
 
 }

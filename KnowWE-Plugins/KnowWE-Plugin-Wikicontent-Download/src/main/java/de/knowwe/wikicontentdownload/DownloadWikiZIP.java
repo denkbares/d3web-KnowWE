@@ -67,7 +67,7 @@ public class DownloadWikiZIP extends AbstractAction {
 		File wikiFolder = new File(con.getWikiProperty("var.basedir"));
 
 		String filename = wikiFolder.getName() + ".zip";
-		context.setContentType("application/x-bin");
+		context.setContentType(BINARY);
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 
 		boolean fingerprint = Boolean.valueOf(context.getParameter(PARAM_FINGERPRINT, "false"));

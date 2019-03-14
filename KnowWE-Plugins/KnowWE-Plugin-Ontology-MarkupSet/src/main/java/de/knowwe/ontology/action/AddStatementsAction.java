@@ -96,7 +96,7 @@ public class AddStatementsAction extends AbstractAction {
 			String newText = OntologyUtils.modifyTurtle(
 					compiler, article, compactMode, statementsToAdd, statementsToRemove);
 
-			context.setContentType("text/plain; charset=UTF-8");
+			context.setContentType(PLAIN_TEXT);
 			context.getWriter().append(newText);
 		}
 		catch (JSONException e) {

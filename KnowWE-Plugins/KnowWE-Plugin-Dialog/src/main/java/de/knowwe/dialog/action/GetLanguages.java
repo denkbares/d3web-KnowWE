@@ -39,7 +39,7 @@ public class GetLanguages extends AbstractAction {
 		// Get available languages
 		Set<Locale> locales = KnowledgeBaseUtils.getAvailableLocales(kb);
 
-		context.setContentType("application/xml; charset=UTF-8");
+		context.setContentType(XML);
 		Writer writer = context.getWriter();
 		writer.write("<languages>\n");
 		for (Locale l : locales) {

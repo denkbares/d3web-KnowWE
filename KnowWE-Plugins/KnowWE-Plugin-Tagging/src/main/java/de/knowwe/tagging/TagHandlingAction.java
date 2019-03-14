@@ -34,7 +34,7 @@ public class TagHandlingAction extends AbstractAction {
 
 		String result = perform(context);
 		if (result != null && context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
+			context.setContentType(HTML);
 			context.getWriter().write(result);
 		}
 

@@ -60,7 +60,7 @@ public abstract class OntoVisDownload extends AbstractAction {
 		File svg = new File(DOTRenderer.getFilePath(config) + "." + getExtension());
 		String name = svg.getName();
 
-		context.setContentType("application/x-bin");
+		context.setContentType(BINARY);
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + name + "\"");
 
 		InputStream fis = new FileInputStream(svg);

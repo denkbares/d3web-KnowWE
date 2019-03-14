@@ -91,7 +91,7 @@ public class ReplaceKDOMNodeAction extends AbstractAction {
 				context.sendError(403, "You do not have the permission to edit this page.");
 			}
 			else {
-				context.setContentType("text/html; charset=UTF-8");
+				context.setContentType(HTML);
 				context.getWriter().write(result);
 			}
 		}

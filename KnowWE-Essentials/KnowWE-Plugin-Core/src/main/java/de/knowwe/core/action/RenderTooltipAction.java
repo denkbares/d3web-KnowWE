@@ -54,7 +54,7 @@ public class RenderTooltipAction extends AbstractAction {
 		boolean hasTooltip = tooltipRenderer.hasTooltip(section, context);
 		if (hasTooltip) {
 			String tooltip = tooltipRenderer.getTooltip(section, context);
-			context.setContentType("text/html; charset=UTF-8");
+			context.setContentType(HTML);
 			context.getWriter().append(tooltip);
 		}
 	}

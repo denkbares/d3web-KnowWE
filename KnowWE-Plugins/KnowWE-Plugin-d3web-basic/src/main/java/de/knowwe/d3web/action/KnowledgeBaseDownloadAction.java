@@ -103,7 +103,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			return;
 		}
 
-		context.setContentType("application/x-bin");
+		context.setContentType(BINARY);
 
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 		try (InputStream input = home.openStream()) {

@@ -24,7 +24,7 @@ public class RuleFormatAction extends AbstractAction {
 		String formattedWikiText = new RuleFormatter(wikiText).format();
 
 		if (context.getWriter() != null) {
-			context.setContentType("application/json; charset=UTF-8");
+			context.setContentType(JSON);
 			JSONObject response = new JSONObject();
 			try {
 				response.put("wikiText", formattedWikiText);

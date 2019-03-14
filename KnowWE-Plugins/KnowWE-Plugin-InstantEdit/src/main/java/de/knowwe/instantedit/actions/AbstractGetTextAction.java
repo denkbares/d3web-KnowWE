@@ -38,7 +38,7 @@ public abstract class AbstractGetTextAction extends AbstractAction {
 		try {
 			response.accumulate("text", text);
 			if (context.getWriter() != null) {
-				context.setContentType("text/html; charset=UTF-8");
+				context.setContentType(HTML);
 				response.write(context.getWriter());
 			}
 		}

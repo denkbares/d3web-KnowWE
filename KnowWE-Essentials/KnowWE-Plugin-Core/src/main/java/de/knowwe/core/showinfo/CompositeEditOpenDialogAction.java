@@ -63,7 +63,7 @@ public class CompositeEditOpenDialogAction extends AbstractAction {
 			response.accumulate("result", toHtml(context, result));
 			response.accumulate("plainText", toHtml(context, plainText));
 			response.accumulate("canWriteAll", canWriteAllSections);
-			context.setContentType("text/html; charset=UTF-8");
+			context.setContentType(HTML);
 			response.write(context.getWriter());
 
 		}

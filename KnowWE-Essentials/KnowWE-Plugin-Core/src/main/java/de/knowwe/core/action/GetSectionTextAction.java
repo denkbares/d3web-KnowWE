@@ -78,7 +78,7 @@ public class GetSectionTextAction extends AbstractAction {
 		try {
 			Strings.writeFile(tempTextFile.getPath(), sectionText);
 
-			context.setContentType("application/x-bin");
+			context.setContentType(BINARY);
 			context.setHeader("Last-Modified", DateTimeFormatter.RFC_1123_DATE_TIME.withZone(ZoneOffset.UTC).format(lastModified));
 			context.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + ".txt\"");
 

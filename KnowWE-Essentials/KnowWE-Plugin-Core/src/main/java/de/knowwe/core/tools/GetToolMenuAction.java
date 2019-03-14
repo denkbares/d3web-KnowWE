@@ -67,7 +67,7 @@ public class GetToolMenuAction extends AbstractAction {
 			response.accumulate("menuHTML", string.toString());
 			response.accumulate("sectionId", section.getID());
 			if (context.getWriter() != null) {
-				context.setContentType("text/html; charset=UTF-8");
+				context.setContentType(HTML);
 				response.write(context.getWriter());
 			}
 		}

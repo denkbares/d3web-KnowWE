@@ -95,7 +95,7 @@ public class GetVisMenuAction extends GetToolMenuAction {
 	@Override
 	public void writeResponse(UserActionContext context, Section<? extends Type> section, RenderResult string) throws IOException {
 		if (context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
+			context.setContentType(HTML);
 			context.getWriter().write(string.toString());
 		}
 	}

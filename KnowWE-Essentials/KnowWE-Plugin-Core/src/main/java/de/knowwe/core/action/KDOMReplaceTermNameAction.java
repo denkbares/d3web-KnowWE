@@ -96,7 +96,7 @@ public class KDOMReplaceTermNameAction extends AbstractAction {
 		catch (InterruptedException e) {
 			throw new IOException(e.getMessage());
 		}
-		context.setContentType("text/html; charset=UTF-8");
+		context.setContentType(HTML);
 		context.getWriter().write("done");
 	}
 }

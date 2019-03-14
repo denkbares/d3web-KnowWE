@@ -77,7 +77,7 @@ public class InstantEditEnableAction extends AbstractAction {
 		}
 
 		if (context.getWriter() != null) {
-			context.setContentType("text/html; charset=UTF-8");
+			context.setContentType(HTML);
 			context.getWriter().write(result);
 		}
 	}

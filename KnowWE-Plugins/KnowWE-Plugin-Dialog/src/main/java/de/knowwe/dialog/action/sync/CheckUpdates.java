@@ -43,7 +43,7 @@ public class CheckUpdates extends AbstractAction {
 		}
 
 		writer.append("</updates>");
-		context.setContentType("text/xml");
+		context.setContentType(XML);
 	}
 
 }
