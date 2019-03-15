@@ -146,16 +146,15 @@ KNOWWE.core.plugin.objectinfo = function () {
 		renameTerm: function (forceRename) {
 			if (forceRename == null)
 				forceRename = false;
-			// TODO shouldn't these 3 be vars?
-			objectname = jq$('#objectinfo-target');
-			replacement = jq$('#objectinfo-replacement');
-			web = jq$('#objectinfo-web');
-			if (objectname && replacement && web) {
-				const changeNote = 'Renaming: "' + objectname.val() + '" -> "'
+			let objectName = jq$('#objectinfo-target');
+			let replacement = jq$('#objectinfo-replacement');
+			let web = jq$('#objectinfo-web');
+			if (objectName && replacement && web) {
+				const changeNote = 'Renaming: "' + objectName.val() + '" -> "'
 					+ replacement.val() + '"';
 				const params = {
 					action: jq$(replacement).attr('action'),
-					termname: objectname.val(),
+					termname: objectName.val(),
 					termreplacement: replacement.val(),
 					KWikiWeb: web.val(),
 					KWikiChangeNote: changeNote,
@@ -261,13 +260,13 @@ KNOWWE.plugin.renaming = function () {
 				success: function (data, text, request) {
 
 					const jsonResponse = JSON.parse(data);
-					const alreadyexists = jsonResponse.alreadyexists;
+					const alreadyExists = jsonResponse.alreadyexists;
 					const noForce = jsonResponse.noForce;
 					const same = jsonResponse.same;
 					if (same === 'true') {
 						alert('The term has not changed.');
 					} else {
-						if (alreadyexists === 'true') {
+						if (alreadyExists === 'true') {
 							if (noForce === 'true') {
 								alert('A term with this name already exists!');
 								KNOWWE.core.util.reloadPage(request);
@@ -982,10 +981,6 @@ KNOWWE.core.plugin.formatterAjax = function (id, actionClass) {
 }
 
 KNOWWE.core.plugin.reloadNamespaceFile = function () {
-
-	function doSomething() {
-
-	}
 
 	return {
 
