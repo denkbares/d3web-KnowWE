@@ -59,7 +59,7 @@ public class GetRenamingInfoAction extends AbstractAction {
 			json.write(context.getWriter());
 		}
 		catch (JSONException e) {
-			e.printStackTrace();
+			throw new IOException(e);
 		}
 
 	}
