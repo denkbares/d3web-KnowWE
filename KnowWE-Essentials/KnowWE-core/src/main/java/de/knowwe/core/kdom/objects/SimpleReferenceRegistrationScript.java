@@ -73,18 +73,18 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	@Override
 	public void compile(C compiler, Section<Term> section) throws CompilerMessage {
 		TerminologyManager manager = getTerminologyManager(compiler);
-		if (manager == null) return;
-
-		Class<?> termClass = section.get().getTermObjectClass(compiler, section);
-		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
-		manager.registerTermReference(compiler, section, termClass, termIdentifier);
-		if (validate) {
-			Collection<Message> messages = validateReference(compiler, section);
-			if (messages.isEmpty()) {
-				Messages.clearMessages(compiler, section, getClass());
-			}
-			else {
-				throw new CompilerMessage(messages);
+		if (manager != null) {
+			Class<?> termClass = section.get().getTermObjectClass(compiler, section);
+			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
+			manager.registerTermReference(compiler, section, termClass, termIdentifier);
+			if (validate) {
+				Collection<Message> messages = validateReference(compiler, section);
+				if (messages.isEmpty()) {
+					Messages.clearMessages(compiler, section, getClass());
+				}
+				else {
+					throw new CompilerMessage(messages);
+				}
 			}
 		}
 	}
@@ -123,10 +123,10 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	@Override
 	public void destroy(C compiler, Section<Term> section) {
 		TerminologyManager manager = getTerminologyManager(compiler);
-		if (manager == null) return;
-
-		Class<?> termClass = section.get().getTermObjectClass(compiler, section);
-		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
-		manager.unregisterTermReference(compiler, section, termClass, termIdentifier);
+		if (manager != null) {
+			Class<?> termClass = section.get().getTermObjectClass(compiler, section);
+			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
+			manager.unregisterTermReference(compiler, section, termClass, termIdentifier);
+		}
 	}
 }
