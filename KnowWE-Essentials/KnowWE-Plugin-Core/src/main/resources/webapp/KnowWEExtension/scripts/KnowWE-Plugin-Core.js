@@ -32,9 +32,9 @@ KNOWWE.core.plugin.objectinfo = function () {
 
 			// we have to suspend the enter event to prevent multiple
 			// confirm dialogs after when confirming the dialogs with enter...
-			var suspend = false;
+			let suspend = false;
 			jq$('#objectinfo-replacement').keyup(function (event) {
-				if (event.keyCode == 13 && !suspend) {
+				if (event.keyCode === 13 && !suspend) {
 					suspend = true;
 					if (confirm("Are you sure you want to rename this term?")) {
 						KNOWWE.core.plugin.objectinfo.renameFunction();
@@ -51,21 +51,21 @@ KNOWWE.core.plugin.objectinfo = function () {
 		highlighAnchor: function () {
 			if (!window.location.hash.startsWith("#section-")) return;
 			jq$('.anchor-highlight').removeClass("highlight").removeClass("anchor-highlight");
-			var name = window.location.hash.substring(1);
-			var sectionId = name.substring(8);
+			const name = window.location.hash.substring(1);
+			const sectionId = name.substring(8);
 			// first, try to find section directly
-			var section = jq$('[sectionid="' + sectionId + '"]');
+			const section = jq$('[sectionid="' + sectionId + '"]');
 			if (section.exists()) {
 				section.addClass('highlight');
 				section.addClass('anchor-highlight');
 				return;
 			}
 			// section not found, try highlighting from anchor to anchor-end
-			var anchor = jq$('.anchor[name="' + name + '"]');
+			const anchor = jq$('.anchor[name="' + name + '"]');
 			if (!anchor.exists()) return;
-			var endSelector = '.anchor,.anchor-end[name="' + name + '"]';
+			const endSelector = '.anchor,.anchor-end[name="' + name + '"]';
 			if (!anchor.nextAll(endSelector).exists()) return;
-			var next = anchor.next();
+			let next = anchor.next();
 			while (!next.is(endSelector)) {
 				next.addClass('highlight');
 				next.addClass('anchor-highlight');
@@ -77,11 +77,11 @@ KNOWWE.core.plugin.objectinfo = function () {
 		 * Load the ajax-previews
 		 */
 		loadPreviews: function (root) {
-			var select = (root == undefined)
+			const select = (root === undefined)
 				? jq$('.asynchronPreviewRenderer')
 				: jq$(root).find('.asynchronPreviewRenderer');
-			var json = [];
-			var ids = [];
+			const json = [];
+			const ids = [];
 			select.each(function () {
 				json.push(this.getAttribute('rel'));
 				ids.push(this.id);
@@ -116,12 +116,12 @@ KNOWWE.core.plugin.objectinfo = function () {
 		createHomePage: function () {
 			objectName = _KS('#objectinfo-src');
 			if (objectName) {
-				var params = {
+				const params = {
 					action: 'CreateObjectHomePageAction',
 					objectname: objectName.innerHTML
 				};
 
-				var options = {
+				const options = {
 					url: KNOWWE.core.util.getURL(params),
 					response: {
 						action: 'none',
@@ -151,9 +151,9 @@ KNOWWE.core.plugin.objectinfo = function () {
 			replacement = jq$('#objectinfo-replacement');
 			web = jq$('#objectinfo-web');
 			if (objectname && replacement && web) {
-				var changeNote = 'Renaming: "' + objectname.val() + '" -> "'
+				const changeNote = 'Renaming: "' + objectname.val() + '" -> "'
 					+ replacement.val() + '"';
-				var params = {
+				const params = {
 					action: jq$(replacement).attr('action'),
 					termname: objectname.val(),
 					termreplacement: replacement.val(),
@@ -161,18 +161,18 @@ KNOWWE.core.plugin.objectinfo = function () {
 					KWikiChangeNote: changeNote,
 					force: forceRename ? "true" : "false"
 				};
-				var options = {
+				const options = {
 					url: KNOWWE.core.util.getURL(params),
 					response: {
 						action: 'none',
 						fn: function () {
-							var jsonResponse = JSON.parse(this.responseText);
-							var alreadyexists = jsonResponse.alreadyexists;
-							var same = jsonResponse.same;
-							if (same == 'true') {
+							const jsonResponse = JSON.parse(this.responseText);
+							const alreadyexists = jsonResponse.alreadyexists;
+							const same = jsonResponse.same;
+							if (same === 'true') {
 								alert('The term has not changed.');
 							} else {
-								if (alreadyexists == 'true') {
+								if (alreadyexists === 'true') {
 									if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
 										KNOWWE.core.plugin.objectinfo
 											.renameTerm(true);
@@ -203,11 +203,11 @@ KNOWWE.core.plugin.objectinfo = function () {
 		lookUp: function (element) {
 			if (!element) element = document;
 			element = jq$(element);
-			var terms = element.find('.objectinfo-terms');
+			const terms = element.find('.objectinfo-terms');
 			if (!terms.exists()) return;
-			var response = terms.first().text();
-			var termsJson = JSON.parse(response);
-			var a = termsJson.allTerms;
+			const response = terms.first().text();
+			const termsJson = JSON.parse(response);
+			const a = termsJson.allTerms;
 			element.find('.objectinfo-search').autocomplete({
 				source: a
 			});
@@ -219,9 +219,9 @@ KNOWWE.core.plugin.objectinfo = function () {
 
 			//Open "Show Info" on Enter key press only if term exists - otherwise do nothing
 			element.find('.objectinfo-search').keyup(function (e) {
-				if (e.keyCode == 13) {
-					var val = jq$('.objectinfo-search').val();
-					if (jq$.inArray(val, a) != -1) {
+				if (e.keyCode === 13) {
+					const val = jq$('.objectinfo-search').val();
+					if (jq$.inArray(val, a) !== -1) {
 						KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(val);
 					}
 
@@ -233,11 +233,11 @@ KNOWWE.core.plugin.objectinfo = function () {
 
 KNOWWE.plugin.renaming = function () {
 
-	var sectionsCache = {};
+	const sectionsCache = {};
 
-	var otherOccurencesHashMap = {};
+	const otherOccurencesHashMap = {};
 
-	var viewRoot = {};
+	let viewRoot = {};
 
 	/**
 	 * Renames all occurrences of a specific term.
@@ -246,9 +246,9 @@ KNOWWE.plugin.renaming = function () {
 		if (forceRename == null)
 			forceRename = false;
 		if (oldValue && (replacement || replacement === "")) {
-			var changeNote = 'Renaming: "' + oldValue + '" -> "'
+			const changeNote = 'Renaming: "' + oldValue + '" -> "'
 				+ replacement + '"';
-			var params = {
+			const params = {
 				action: "TermRenamingAction",
 				termname: oldValue,
 				termreplacement: replacement,
@@ -260,32 +260,29 @@ KNOWWE.plugin.renaming = function () {
 				type: "post", url: KNOWWE.core.util.getURL(params),
 				success: function (data, text, request) {
 
-					var jsonResponse = JSON.parse(data);
-					var alreadyexists = jsonResponse.alreadyexists;
-					var noForce = jsonResponse.noForce;
-					var same = jsonResponse.same;
-					if (same == 'true') {
+					const jsonResponse = JSON.parse(data);
+					const alreadyexists = jsonResponse.alreadyexists;
+					const noForce = jsonResponse.noForce;
+					const same = jsonResponse.same;
+					if (same === 'true') {
 						alert('The term has not changed.');
 					} else {
-						if (alreadyexists == 'true') {
-							if (noForce == 'true') {
+						if (alreadyexists === 'true') {
+							if (noForce === 'true') {
 								alert('A term with this name already exists!');
 								KNOWWE.core.util.reloadPage(request);
 							} else if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
 								renameTerms(oldValue, replacement, sectionId, true);
-							}
-							else {
+							} else {
 								KNOWWE.core.util.reloadPage(request);
 							}
-						}
-						else {
+						} else {
 							if (jsonResponse.objectinfopage === true) {
 								window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
 									+ encodeURIComponent(jsonResponse.newObjectName)
 									+ "&termIdentifier="
 									+ encodeURIComponent(jsonResponse.newTermIdentifier);
-							}
-							else {
+							} else {
 								KNOWWE.core.util.reloadPage(request);
 							}
 						}
@@ -304,16 +301,16 @@ KNOWWE.plugin.renaming = function () {
 	}
 
 	function getOldTermIdentifierAndMatchingSections(sectionId, callback) {
-		var params = {
+		const params = {
 			action: "GetInfosForInlineTermRenamingAction",
 			SectionID: sectionId
 		};
-		var options = {
+		const options = {
 			url: KNOWWE.core.util.getURL(params),
 			response: {
 				action: 'none',
 				fn: function () {
-					var jsonResponse = JSON.parse(this.responseText);
+					const jsonResponse = JSON.parse(this.responseText);
 					callback(jsonResponse);
 
 
@@ -340,9 +337,10 @@ KNOWWE.plugin.renaming = function () {
 	function cancelEdit(settings, original) {
 		restoreOriginal(original);
 
-		for (var occurence in otherOccurencesHashMap) {
-			var section = sectionsCache[occurence];
-			var parent = jq$(otherOccurencesHashMap[occurence]).parent();
+		for (let occurence in otherOccurencesHashMap) {
+			if (!otherOccurencesHashMap.hasOwnProperty(occurence)) continue;
+			const section = sectionsCache[occurence];
+			const parent = jq$(otherOccurencesHashMap[occurence]).parent();
 			jq$(otherOccurencesHashMap[occurence]).parent().html(section);
 			_TM.decorateToolMenus(parent);
 		}
@@ -354,13 +352,15 @@ KNOWWE.plugin.renaming = function () {
 	}
 
 	function showCurrentEditOnOtherOccurences(text) {
-		for (var occurence in otherOccurencesHashMap) {
+		for (let occurence in otherOccurencesHashMap) {
+			if (!otherOccurencesHashMap.hasOwnProperty(occurence)) continue;
 			jq$(otherOccurencesHashMap[occurence]).first().text(text);
 		}
 	}
 
 	function saveOriginalsAndPrepareForEdit(lastPathElement) {
-		for (var occurence in otherOccurencesHashMap) {
+		for (let occurence in otherOccurencesHashMap) {
+			if (!otherOccurencesHashMap.hasOwnProperty(occurence)) continue;
 			sectionsCache[occurence] = jq$(otherOccurencesHashMap[occurence]).parent().html();
 			jq$(otherOccurencesHashMap[occurence]).attr("sectionOccurenceId", occurence);
 			jq$(otherOccurencesHashMap[occurence]).empty();
@@ -383,26 +383,26 @@ KNOWWE.plugin.renaming = function () {
 	}
 
 	function initializeOtherOccurencesHashMap(sectionsIds) {
-		for (var i = 0; i < sectionIds.length; i++) {
-			var sectionId = sectionIds[i];
-			var toolMenuIdentifier = jq$(viewRoot + ".defaultMarkupFrame span[toolmenuidentifier=" + sectionId + "]");
+		for (let i = 0; i < sectionIds.length; i++) {
+			const sectionId = sectionIds[i];
+			const toolMenuIdentifier = jq$(viewRoot + ".defaultMarkupFrame span[toolmenuidentifier=" + sectionId + "]");
 			if (toolMenuIdentifier.length > 0) {
-				var toolMenuDecorated = toolMenuIdentifier[0].parentNode;
-				otherOccurencesHashMap[sectionId] = toolMenuDecorated;
+				otherOccurencesHashMap[sectionId] = toolMenuIdentifier[0].parentNode;
 			}
 		}
 	}
 
+	// noinspection JSUnusedGlobalSymbols
 	return {
 		renameTerm: function (toolMenuIdentifier) {
 			setViewRoot();
-			var callback = function (jsonResponse) {
-				var clickedTerm = jq$(viewRoot + "[toolmenuidentifier=" + toolMenuIdentifier + "]")[0].parentNode;
+			const callback = function (jsonResponse) {
+				const clickedTerm = jq$(viewRoot + "[toolmenuidentifier=" + toolMenuIdentifier + "]")[0].parentNode;
 
 				//get edit field
 				jq$(clickedTerm).addClass("click");
 				//jq$(clickedTerm).css("display", "none");
-				var settings = {};
+				const settings = {};
 				settings.select = true;
 				jq$(".click").editable(function (value, settings) {
 					renameTerms(jsonResponse.termIdentifier, value, toolMenuIdentifier, false);
@@ -416,7 +416,7 @@ KNOWWE.plugin.renaming = function () {
 				});
 				jq$('.click').trigger("click");
 				//replace edit field value with sectionText for encoding reasons
-				var inputField = jq$(clickedTerm).find("input").val(jsonResponse.lastPathElement).select();
+				const inputField = jq$(clickedTerm).find("input").val(jsonResponse.lastPathElement).select();
 				jq$(inputField).autoGrowRenameField(5);
 
 
@@ -441,7 +441,7 @@ KNOWWE.plugin.renaming = function () {
 KNOWWE.core.plugin.renderKDOM = function () {
 
 	jq$('.table_text').hover(function () {
-			var that = this;
+			const that = this;
 			setTimeout(function () {
 				jq$(that).css('height', that.scrollHeight);
 			}, 0);
@@ -453,12 +453,12 @@ KNOWWE.core.plugin.renderKDOM = function () {
 };
 
 KNOWWE.core.plugin.setMarkupSectionActivationStatus = function (id, status) {
-	var params = {
+	const params = {
 		action: 'SetMarkupActivationStatus',
 		SectionID: id,
 		status: status
 	};
-	var options = {
+	const options = {
 		url: KNOWWE.core.util.getURL(params),
 		response: {
 			action: 'none',
@@ -485,14 +485,14 @@ KNOWWE.tooltips.enrich = function (element) {
 		element = jq$(document);
 	}
 	element.find('.tooltipster').each(function () {
-		var anscestor = jq$(this).parents('.tooltipster');
+		const anscestor = jq$(this).parents('.tooltipster');
 		if (anscestor.exists()) {
 			anscestor.removeAttr('title');
 			anscestor.removeClass('tooltipster');
 		}
 	});
 	element.find('.tooltipster').each(function () {
-		var delay = jq$(this).attr('delay');
+		let delay = jq$(this).attr('delay');
 		if (!delay) delay = 1300;
 		jq$(this).tooltipster({
 			position: "top-left",
@@ -505,7 +505,7 @@ KNOWWE.tooltips.enrich = function (element) {
 			functionBefore: function (origin, continueTooltip) {
 				// check if we have an ajax-tooltip
 				// and only do once for each tooltip
-				var src = origin.data('tooltip-src');
+				const src = origin.data('tooltip-src');
 				if (!src) {
 					continueTooltip();
 					return;
@@ -517,12 +517,12 @@ KNOWWE.tooltips.enrich = function (element) {
 				// request new content
 				jq$.ajax(src, {
 					success: function (json) {
-						var html = json;
+						let html = json;
 						if (_EC.isBlank(html)) {
 							html = "No tooltip available";
 						}
 						try {
-							var obj = jq$.parseJSON(json);
+							const obj = jq$.parseJSON(json);
 							if (jq$.isArray(obj)) html = obj[0];
 						} catch (ignore) {
 						}
@@ -554,7 +554,7 @@ KNOWWE.kdomtreetable.init = function () {
 
 KNOWWE.kdomtreetable.setOverflow = function () {
 	jq$('.table_text').hover(function () {
-		var elem = jq$(this);
+		const elem = jq$(this);
 		elem.data("stillin", "yes");
 		setTimeout(function () {
 			if (elem.data("stillin") === "yes") {
@@ -568,15 +568,15 @@ KNOWWE.kdomtreetable.setOverflow = function () {
 };
 
 KNOWWE.kdomtreetable.revealRenderKDOMTable = function (id) {
-	var treetable = jq$('.renderKDOMTable.wikitable.treetable')[0];
-	var markedtitle = jq$(treetable).find('td[style="color: rgb(0, 0, 255);"]');
+	const treetable = jq$('.renderKDOMTable.wikitable.treetable')[0];
+	const markedtitle = jq$(treetable).find('td[style="color: rgb(0, 0, 255);"]');
 	if (typeof markedtitle != "undefined" || markedtitle != null) {
-		for (var i = 0; i < markedtitle.size(); i++) {
+		for (let i = 0; i < markedtitle.size(); i++) {
 			jq$(markedtitle[i]).removeAttr("style");
 		}
 	}
 
-	var tablerow = jq$(treetable).find('tr[data-tt-id="kdom-row-' + id + '"]')[0];
+	const tablerow = jq$(treetable).find('tr[data-tt-id="kdom-row-' + id + '"]')[0];
 	jq$(treetable).treetable("reveal", "kdom-row-" + id);
 	jq$(tablerow).find("td").first().css("color", "rgb(0, 0, 255)");
 	jq$('html, body').animate({
@@ -585,7 +585,7 @@ KNOWWE.kdomtreetable.revealRenderKDOMTable = function (id) {
 };
 
 KNOWWE.kdomtreetable.collapseAll = function () {
-	var treetable = jq$('.renderKDOMTable.wikitable.treetable')[0];
+	const treetable = jq$('.renderKDOMTable.wikitable.treetable')[0];
 	jq$(treetable).treetable("collapseAll");
 };
 
@@ -594,12 +594,12 @@ KNOWWE.core.plugin.attachment = function () {
 	return {
 
 		update: function (sectionId) {
-			var params = {
+			const params = {
 				action: 'AttachmentUpdateAction',
 				SectionID: sectionId
 			};
 
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				fn: function () {
 					window.location.reload();
@@ -615,7 +615,7 @@ KNOWWE.core.plugin.attachment = function () {
  */
 KNOWWE.core.plugin.pagination = function () {
 
-	var windowHeight;
+	let windowHeight;
 
 	function saveCookieAndUpdateNode(cookie, id) {
 		saveCookie(cookie, id);
@@ -623,7 +623,7 @@ KNOWWE.core.plugin.pagination = function () {
 	}
 
 	function saveCookie(cookie, id) {
-		var cookieStr = JSON.stringify(cookie);
+		const cookieStr = JSON.stringify(cookie);
 		jq$.cookie("PaginationDecoratingRenderer-" + id, cookieStr);
 	}
 
@@ -638,7 +638,7 @@ KNOWWE.core.plugin.pagination = function () {
 	}
 
 	function getSortingSymbol(naturalOrder) {
-		var cssClass;
+		let cssClass;
 		if (naturalOrder) {
 			cssClass = "fa fa-caret-up fa-lg";
 		} else {
@@ -650,26 +650,24 @@ KNOWWE.core.plugin.pagination = function () {
 	}
 
 	function renderSortingSymbols(sectionId, sortingMode) {
-		var cookie = jq$.cookie("PaginationDecoratingRenderer-" + sectionId);
+		const cookie = jq$.cookie("PaginationDecoratingRenderer-" + sectionId);
 		if (!cookie) return;
-		var parsedCookie = jq$.parseJSON(cookie);
+		const parsedCookie = jq$.parseJSON(cookie);
 		if (!parsedCookie || !parsedCookie.sorting) return;
-		var sortLength;
+		let sortLength;
 		if (sortingMode === 'multi') {
 			sortLength = (parsedCookie.sorting).length;
-		}
-		else {
+		} else {
 			sortLength = 1;
 		}
-		for (var i = 0; i < sortLength; i++) {
-			var sortingSymbolParent = jq$("[pagination=" + sectionId
+		for (let i = 0; i < sortLength; i++) {
+			const sortingSymbolParent = jq$("[pagination=" + sectionId
 				+ "] th:contains('" + parsedCookie.sorting[i].sort + "') span");
-			var sortingSymbol = jq$(sortingSymbolParent).find("i");
-			if (sortingSymbol.length == 1) {
+			const sortingSymbol = jq$(sortingSymbolParent).find("i");
+			if (sortingSymbol.length === 1) {
 				sortingSymbol.replaceWith(
 					getSortingSymbol(parsedCookie.sorting[i].naturalOrder));
-			}
-			else {
+			} else {
 				jq$(sortingSymbolParent).append(getSortingSymbol(parsedCookie.sorting[i].naturalOrder));
 			}
 		}
@@ -680,22 +678,20 @@ KNOWWE.core.plugin.pagination = function () {
 		if (!jq$(this).hasClass("notSortable")) {
 			jq$(this).addClass("sortable");
 			jq$(this).find("span").bind('click',
-				function (event) {
-					KNOWWE.core.plugin.pagination
-						.sort(this,
-							sectionId);
+				function () {
+					KNOWWE.core.plugin.pagination.sort(this, sectionId);
 				}
 			);
 		}
 	}
 
 	function prepareFilterableElements() {
-		var filterIcon = jq$('<i/>', {
+		const filterIcon = jq$('<i/>', {
 			"class": 'fa fa-filter knowwe-filter'
 		});
 		jq$(this).prepend(filterIcon);
-		var text = jq$(this).text();
-		var preparedFilter = jq$(".paginationFilters div[filtername=" + text + "]").detach();
+		const text = jq$(this).text();
+		const preparedFilter = jq$(".paginationFilters div[filtername=" + text + "]").detach();
 		jq$(filterIcon).tooltipster({
 			content: jq$(preparedFilter),
 			interactive: true,
@@ -709,21 +705,20 @@ KNOWWE.core.plugin.pagination = function () {
 	}
 
 	function toggleLowerPagination(visibility) {
-		var id = jq$(this).attr("pagination");
+		const id = jq$(this).attr("pagination");
 		jq$(".knowwe-paginationToolbar[pagination=" + id + "]").slice(2, 4).css("display", visibility);
 	}
 
 	function handlePaginationBelowTableVisibility() {
 		if (isShortTable.call(this)) {
 			toggleLowerPagination.call(this, "none");
-		}
-		else {
+		} else {
 			toggleLowerPagination.call(this, "inline-block")
 		}
 	}
 
 	jq$(window).resize(function () {
-		if (windowHeight != jq$(window).height()) {
+		if (windowHeight !== jq$(window).height()) {
 			//Do something
 			windowHeight = jq$(window).height();
 			jq$("table[pagination]").each(
@@ -739,7 +734,7 @@ KNOWWE.core.plugin.pagination = function () {
 		windowHeight = jq$(window).height();
 
 		return function () {
-			var sectionId = jq$(this).attr('pagination');
+			const sectionId = jq$(this).attr('pagination');
 
 			//for css purposes
 			jq$(this).addClass('knowwe-pagination');
@@ -754,7 +749,7 @@ KNOWWE.core.plugin.pagination = function () {
 				KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
 			});
 
-			var sortingMode = jq$(this).attr('sortable');
+			const sortingMode = jq$(this).attr('sortable');
 
 			jq$(this).find("th").each(
 				function (i) {
@@ -783,7 +778,7 @@ KNOWWE.core.plugin.pagination = function () {
 	}
 
 	function readCookie(id) {
-		var cookieValue = jq$.cookie("PaginationDecoratingRenderer-" + id);
+		let cookieValue = jq$.cookie("PaginationDecoratingRenderer-" + id);
 		if (!cookieValue) cookieValue = "{}";
 		return cookie = jq$.parseJSON(cookieValue);
 	}
@@ -791,27 +786,26 @@ KNOWWE.core.plugin.pagination = function () {
 	return {
 
 		sort: function (element, id) {
-			var cookie = readCookie(id);
-			var sort = jq$(element).text();
-			var sorting;
+			const cookie = readCookie(id);
+			const sort = jq$(element).text();
+			let sorting;
 			if (typeof cookie.sorting != 'undefined') {
 				sorting = cookie.sorting;
-				var found = false;
-				for (var i = 0; i < sorting.length; i++) {
-					if (sorting[i].sort == sort) {
-						var naturalOrder = sorting[i].naturalOrder;
+				let found = false;
+				for (let i = 0; i < sorting.length; i++) {
+					if (sorting[i].sort === sort) {
+						const naturalOrder = sorting[i].naturalOrder;
 						sorting[i].naturalOrder = !naturalOrder;
 						sorting.move(i, 0);
 						found = true;
 						break;
 					}
 				}
-				if (found == false) {
+				if (found === false) {
 					newSortObject = {sort: sort, naturalOrder: true};
 					sorting.unshift(newSortObject);
 				}
-			}
-			else {
+			} else {
 				sorting = [{sort: sort, naturalOrder: true}];
 			}
 			cookie.sorting = sorting;
@@ -819,23 +813,23 @@ KNOWWE.core.plugin.pagination = function () {
 		},
 
 		setCount: function (selected, id) {
-			var $selected = jq$(selected);
+			const $selected = jq$(selected);
 
-			var cookie = readCookie(id);
+			const cookie = readCookie(id);
 
-			var lastCount = parseInt(cookie.count);
-			var resultSize = parseInt(jq$('#' + id + " .resultSize").val());
-			var count = $selected.val();
+			const lastCount = parseInt(cookie.count);
+			const resultSize = parseInt(jq$('#' + id + " .resultSize").val());
+			const count = $selected.val();
 			$selected.data('current', count);
-			var startRow = parseInt(jq$('div[pagination=' + id + '] .startRow').val());
-			var search = /^\d+$/;
-			var found = search.test(startRow);
+			let startRow = parseInt(jq$('div[pagination=' + id + '] .startRow').val());
+			const search = /^\d+$/;
+			const found = search.test(startRow);
 			if (!(found)) {
 				jq$('div[pagination=' + id + '] .startRow').val('');
 				return;
 			}
 
-			if (count == "Max") {
+			if (count === "Max") {
 				cookie.startRow = 1;
 				cookie.count = "Max";
 			} else {
@@ -854,11 +848,11 @@ KNOWWE.core.plugin.pagination = function () {
 
 		navigate: function (id, direction) {
 
-			var count = jq$("#" + id + " .count").val();
-			var startRow = jq$("#" + id + " .startRow").val();
-			var resultSize = jq$("#" + id + " .resultSize").val();
+			const count = jq$("#" + id + " .count").val();
+			let startRow = jq$("#" + id + " .startRow").val();
+			const resultSize = jq$("#" + id + " .resultSize").val();
 
-			if (count == "All") {
+			if (count === "All") {
 				startRow = 1;
 			} else {
 				switch (direction) {
@@ -882,7 +876,7 @@ KNOWWE.core.plugin.pagination = function () {
 			}
 
 
-			var cookie = readCookie(id);
+			const cookie = readCookie(id);
 			cookie.startRow = startRow;
 			cookie.count = count;
 			saveCookieAndUpdateNode(cookie, id);
@@ -891,12 +885,12 @@ KNOWWE.core.plugin.pagination = function () {
 
 		updateStartRow: function (selectedRow, sectionId, preventRerender) {
 
-			var id = sectionId;
-			var cookie = readCookie(id);
-			var count = jq$("#" + id + " .count").val();
-			var startRow = selectedRow.value;
-			var search = /^\d+$/;
-			var found = search.test(startRow);
+			const id = sectionId;
+			const cookie = readCookie(id);
+			const count = jq$("#" + id + " .count").val();
+			let startRow = selectedRow.value;
+			const search = /^\d+$/;
+			const found = search.test(startRow);
 			if (!(found)) {
 				jq$("#" + id + " .startRow").val('');
 				return;
@@ -904,7 +898,7 @@ KNOWWE.core.plugin.pagination = function () {
 			if (startRow <= 0) {
 				startRow = 1;
 			}
-			if (count == "Max") {
+			if (count === "Max") {
 				cookie.startRow = 1;
 				cookie.count = "Max";
 			} else {
@@ -916,35 +910,30 @@ KNOWWE.core.plugin.pagination = function () {
 		},
 
 		filter: function (checkbox, sectionId) {
-			var key = jq$(checkbox).attr("filterkey");
-			var value = jq$(checkbox).attr("filtervalue");
-			var checked = checkbox.checked;
+			const key = jq$(checkbox).attr("filterkey");
+			const value = jq$(checkbox).attr("filtervalue");
+			const checked = checkbox.checked;
 
-			var cookie = readCookie(id);
+			const cookie = readCookie(id);
 			if (typeof cookie.filters == "undefined") {
 				cookie.filters = {};
 				cookie.filters[key] = [];
 				if (checked === true) {
 					cookie.filters[key].push(value);
-				}
-				else {
+				} else {
 					cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
 				}
-			}
-			else if (typeof cookie.filters[key] == "undefined") {
+			} else if (typeof cookie.filters[key] == "undefined") {
 				cookie.filters[key] = [];
 				if (checked === true) {
 					cookie.filters[key].push(value);
-				}
-				else {
+				} else {
 					cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
 				}
-			}
-			else {
+			} else {
 				if (checked === true) {
 					cookie.filters[key].push(value);
-				}
-				else {
+				} else {
 					cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
 				}
 			}
@@ -953,7 +942,7 @@ KNOWWE.core.plugin.pagination = function () {
 
 		decorateTable: function () {
 			handleNoResult(jq$(this));
-			var id = jq$(this).find(".knowwe-paginationToolbar").first().attr('pagination');
+			const id = jq$(this).find(".knowwe-paginationToolbar").first().attr('pagination');
 			jq$(this).find("table").attr('pagination', id);
 			jq$(this).find("table[pagination]").each(decorate());
 			KNOWWE.helper.observer.notify("paginationTableDecorated");
@@ -961,7 +950,7 @@ KNOWWE.core.plugin.pagination = function () {
 
 		decorateTables: function () {
 			handleNoResult(jq$(this));
-			var wrappers = jq$("div.knowwe-paginationWrapper");
+			const wrappers = jq$("div.knowwe-paginationWrapper");
 			wrappers.each(function () {
 				jq$(this).find("table").attr('pagination', jq$(this).attr('id'));
 			});
@@ -973,8 +962,8 @@ KNOWWE.core.plugin.pagination = function () {
 
 KNOWWE.core.plugin.formatterAjax = function (id, actionClass) {
 
-	var textarea = jq$("#defaultEdit" + id);
-	var wikiText = textarea.val();
+	const textarea = jq$("#defaultEdit" + id);
+	const wikiText = textarea.val();
 
 	jq$.ajax("action/" + actionClass, {
 		data: {
@@ -1022,76 +1011,73 @@ KNOWWE.core.plugin.reloadNamespaceFile = function () {
 }();
 
 //jquery-autogrow for automatic input field resizing (customized for KnowWE renaming)
-(function () {
 
-	(function (jq$) {
-		var inherit;
-		inherit = ['font', 'letter-spacing'];
-		return jq$.fn.autoGrowRenameField = function (options) {
-			var comfortZone, remove, _ref;
-			remove = (options === 'remove' || options === false) || !!(options != null ? options.remove : void 0);
-			comfortZone = (_ref = options != null ? options.comfortZone : void 0) != null ? _ref : options;
-			if (comfortZone != null) {
-				comfortZone = +comfortZone;
-			}
-			return this.each(function () {
-				var check, cz, input, growWithSpan, prop, styles, testSubject, _i, _j, _len, _len1;
-				input = jq$(this);
-				growWithSpan = input.closest("span.toolMenuDecorated");
-				testSubject = input.next().filter('div.autogrow');
-				if (testSubject.length && remove) {
-					input.unbind('input.autogrow');
-					return testSubject.remove();
-				} else if (testSubject.length) {
-					styles = {};
-					for (_i = 0, _len = inherit.length; _i < _len; _i++) {
-						prop = inherit[_i];
-						styles[prop] = input.css(prop);
-					}
-					testSubject.css(styles);
-					if (comfortZone != null) {
-						check = function () {
-							testSubject.text(input.val());
-							growWithSpan.width(testSubject.width() + comfortZone);
-							return input.width(testSubject.width() + comfortZone);
-						};
-						input.unbind('input.autogrow');
-						input.bind('input.autogrow', check);
-						return check();
-					}
-				} else if (!remove) {
-
-					input.css('min-width', '15px');
-					growWithSpan.css('min-width', '15px');
-					growWithSpan.css('padding-right', '10px');
-
-					styles = {
-						position: 'absolute',
-						top: -99999,
-						left: -99999,
-						width: 'auto',
-						visibility: 'hidden'
-					};
-					for (_j = 0, _len1 = inherit.length; _j < _len1; _j++) {
-						prop = inherit[_j];
-						styles[prop] = input.css(prop);
-					}
-					testSubject = jq$('<div class="autogrow"/>').css(styles);
-					testSubject.insertAfter(input);
-					cz = comfortZone != null ? comfortZone : 70;
+(function (jq$) {
+	let inherit;
+	inherit = ['font', 'letter-spacing'];
+	return jq$.fn.autoGrowRenameField = function (options) {
+		let comfortZone, remove, _ref;
+		remove = (options === 'remove' || options === false) || !!(options != null ? options.remove : void 0);
+		comfortZone = (_ref = options != null ? options.comfortZone : void 0) != null ? _ref : options;
+		if (comfortZone != null) {
+			comfortZone = +comfortZone;
+		}
+		return this.each(function () {
+			let check, cz, input, growWithSpan, prop, styles, testSubject, _i, _j, _len, _len1;
+			input = jq$(this);
+			growWithSpan = input.closest("span.toolMenuDecorated");
+			testSubject = input.next().filter('div.autogrow');
+			if (testSubject.length && remove) {
+				input.unbind('input.autogrow');
+				return testSubject.remove();
+			} else if (testSubject.length) {
+				styles = {};
+				for (_i = 0, _len = inherit.length; _i < _len; _i++) {
+					prop = inherit[_i];
+					styles[prop] = input.css(prop);
+				}
+				testSubject.css(styles);
+				if (comfortZone != null) {
 					check = function () {
 						testSubject.text(input.val());
-						growWithSpan.width(testSubject.width() + cz);
-						return input.width(testSubject.width() + cz);
+						growWithSpan.width(testSubject.width() + comfortZone);
+						return input.width(testSubject.width() + comfortZone);
 					};
+					input.unbind('input.autogrow');
 					input.bind('input.autogrow', check);
 					return check();
 				}
-			});
-		};
-	})(typeof Zepto !== "undefined" && Zepto !== null ? Zepto : jQuery);
+			} else if (!remove) {
 
-}).call(this);
+				input.css('min-width', '15px');
+				growWithSpan.css('min-width', '15px');
+				growWithSpan.css('padding-right', '10px');
+
+				styles = {
+					position: 'absolute',
+					top: -99999,
+					left: -99999,
+					width: 'auto',
+					visibility: 'hidden'
+				};
+				for (_j = 0, _len1 = inherit.length; _j < _len1; _j++) {
+					prop = inherit[_j];
+					styles[prop] = input.css(prop);
+				}
+				testSubject = jq$('<div class="autogrow"/>').css(styles);
+				testSubject.insertAfter(input);
+				cz = comfortZone != null ? comfortZone : 70;
+				check = function () {
+					testSubject.text(input.val());
+					growWithSpan.width(testSubject.width() + cz);
+					return input.width(testSubject.width() + cz);
+				};
+				input.bind('input.autogrow', check);
+				return check();
+			}
+		});
+	};
+})(typeof Zepto !== "undefined" && Zepto !== null ? Zepto : jQuery);
 
 
 /* ############################################################### */
