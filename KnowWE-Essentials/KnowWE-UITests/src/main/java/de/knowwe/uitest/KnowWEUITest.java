@@ -204,14 +204,14 @@ public abstract class KnowWEUITest {
 	}
 
 	protected void setText(By by, String text, WebElement parent) {
-		WebElement element = parent.findElement(by);
-		element.click();
-		element.clear();
-		element.sendKeys(text);
+		setText(parent.findElement(by), text);
 	}
 
 	protected void setText(By by, String text) {
-		WebElement element = find(by);
+		setText(find(by), text);
+	}
+
+	protected void setText(WebElement element, String text) {
 		element.click();
 		element.clear();
 		element.sendKeys(text);
