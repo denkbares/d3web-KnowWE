@@ -34,7 +34,7 @@ public class SelectAvailableKnowledgeBase extends AbstractAction {
 				SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS);
 
 		StartCase cmd = (StartCase) Utils.getAction(StartCase.class.getSimpleName());
-		cmd.startCase(context, providers[index]);
+		cmd.startCase(context, providers[index], null);
 	}
 
 }

@@ -7,16 +7,15 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpSession;
 
+import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.UserActionContext;
 import de.knowwe.dialog.Utils;
 import de.knowwe.dialog.action.StartCase.KnowledgeBaseProvider;
 import de.knowwe.dialog.action.StartCase.StartInfo;
-
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.notification.NotificationManager;
 
 import static de.knowwe.dialog.SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS;
-import static de.knowwe.dialog.action.StartCase.PARAM_RESTART_SESSION;
+import static de.knowwe.dialog.action.StartCase.HTTP_SESSION_RECENT_START_INFO;
 
 /**
  * @author Markus Friedrich (denkbares GmbH)
@@ -37,8 +36,8 @@ public class Restart extends AbstractAction {
 				NotificationManager.removeNotification(context, wikiProvider.getSectionId());
 			}
 			StartCase cmd = (StartCase) Utils.getAction(StartCase.class.getSimpleName());
-			httpSession.setAttribute(PARAM_RESTART_SESSION, new StartInfo(true));
-			cmd.startCase(context, provider);
+			StartInfo recent = (StartInfo) httpSession.getAttribute(HTTP_SESSION_RECENT_START_INFO);
+			cmd.startCase(context, provider, new StartInfo(true, recent));
 		}
 		else {
 			String language = context.getParameter(StartCase.PARAM_LANGUAGE);

@@ -23,6 +23,8 @@ import java.util.zip.ZipFile;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
@@ -67,8 +69,10 @@ public class StartCase extends AbstractAction implements EventListener {
 
 	public static final String PARAM_USER = "user";
 	public static final String PARAM_LANGUAGE = "lang";
-	public static final String PARAM_RESTART_SESSION = "restart";
 	public static final String PARAM_PROTOCOL_PATH = "protocol";
+
+	public static final String HTTP_SESSION_START_INFO = "com.denkbares.dialog.startInfo";
+	public static final String HTTP_SESSION_RECENT_START_INFO = "com.denkbares.dialog.recentInfo";
 
 	public StartCase() {
 		synchronized (EventManager.getInstance()) {
@@ -132,11 +136,12 @@ public class StartCase extends AbstractAction implements EventListener {
 		String protocolPath = context.getParameter(PARAM_PROTOCOL_PATH);
 
 		HttpSession httpSession = context.getSession();
-		StartInfo restart = (StartInfo) httpSession.getAttribute(PARAM_RESTART_SESSION);
-		if (restart == null) restart = parseURLParamQuestions(context);
+		StartInfo startInfo = (StartInfo) httpSession.getAttribute(HTTP_SESSION_START_INFO);
+		if (startInfo == null) startInfo = parseURLParamQuestions(context);
 
-		// remove the attribute, the restart is only done once
-		httpSession.removeAttribute(PARAM_RESTART_SESSION);
+		// move the attribute
+		httpSession.removeAttribute(HTTP_SESSION_START_INFO);
+		httpSession.setAttribute(HTTP_SESSION_RECENT_START_INFO, startInfo);
 		KnowledgeBaseProvider provider = (KnowledgeBaseProvider) httpSession.getAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE_PROVIDER);
 
@@ -144,7 +149,7 @@ public class StartCase extends AbstractAction implements EventListener {
 			KnowledgeBase base = provider.getKnowledgeBase();
 			httpSession.setAttribute(SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE, base);
 			if (Strings.isBlank(protocolPath)) {
-				startCase(context, base, restart);
+				startCase(context, base, startInfo);
 			}
 			else {
 				loadCase(context, base, protocolPath);
@@ -172,6 +177,7 @@ public class StartCase extends AbstractAction implements EventListener {
 		context.sendRedirect("Resource/ui.zip/html/index.html?" + PARAM_LANGUAGE + "=" + language);
 	}
 
+	@NotNull
 	private StartInfo parseURLParamQuestions(UserActionContext context) {
 		Map<String, String> answers = new LinkedHashMap<>();
 		int index = 1;
@@ -190,7 +196,6 @@ public class StartCase extends AbstractAction implements EventListener {
 	/**
 	 * Opens a xml or zip file (and take the first xml file from there) read the records from.
 	 *
-	 * @throws IOException
 	 * @created 31.08.2011
 	 */
 	private void loadCase(UserActionContext context, KnowledgeBase knowledgebase, String filePath) throws IOException {
@@ -246,9 +251,12 @@ public class StartCase extends AbstractAction implements EventListener {
 
 	private void startCase(UserActionContext context, KnowledgeBase knowledgebase, StartInfo restart) throws IOException {
 		Session session = SessionProvider.getSession(context, knowledgebase);
-		if (restart != null && restart.forceRestart) {
+		if (session == null || (restart != null && restart.forceRestart)) {
 			session = SessionProvider.createSession(context, knowledgebase);
-			restart.setDefaultAnswers(session, PSMethodInit.getInstance());
+			assert session != null;
+			if (restart != null) {
+				restart.setDefaultAnswers(session, PSMethodInit.getInstance());
+			}
 		}
 		wrapFormStrategy(session);
 	}
@@ -270,9 +278,9 @@ public class StartCase extends AbstractAction implements EventListener {
 	 * @throws IOException if something fails during starting the case
 	 * @created 22.09.2010
 	 */
-	public void startCase(UserActionContext context, KnowledgeBaseProvider provider) throws IOException {
-		context.getSession().setAttribute(
-				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE_PROVIDER, provider);
+	public void startCase(UserActionContext context, KnowledgeBaseProvider provider, StartInfo startInfo) throws IOException {
+		context.getSession().setAttribute(SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE_PROVIDER, provider);
+		context.getSession().setAttribute(HTTP_SESSION_START_INFO, startInfo);
 		execute(context);
 	}
 
@@ -286,6 +294,10 @@ public class StartCase extends AbstractAction implements EventListener {
 
 		public StartInfo(Map<String, String> answers) {
 			this(!answers.isEmpty(), answers);
+		}
+
+		public StartInfo(boolean forceRestart, @Nullable StartInfo source) {
+			this(forceRestart, (source == null) ? Collections.emptyMap() : source.answers);
 		}
 
 		private StartInfo(boolean forceRestart, Map<String, String> answers) {

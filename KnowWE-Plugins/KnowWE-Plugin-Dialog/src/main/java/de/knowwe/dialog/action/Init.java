@@ -14,22 +14,23 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import de.knowwe.dialog.SessionConstants;
-import de.knowwe.dialog.Utils;
-
+import com.denkbares.utils.Log;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.io.PersistenceManager.KnowledgeBaseInfo;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
-import com.denkbares.utils.Log;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.dialog.SessionConstants;
+import de.knowwe.dialog.Utils;
+import de.knowwe.dialog.action.StartCase.KnowledgeBaseProvider;
+import de.knowwe.dialog.action.StartCase.StartInfo;
 
 import static de.knowwe.dialog.SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS;
 
 /**
- * Class to provide action for initializing the denkbares dialog web application. This Action is
- * specialized to incorporate with the Mobile Application.
+ * Class to provide action for initializing the denkbares dialog web application. This Action is specialized to
+ * incorporate with the Mobile Application.
  *
  * @author volker_belli
  * @created 18.04.2011
@@ -39,13 +40,13 @@ public class Init extends AbstractAction {
 	private static String knowledgeBaseRoot = SessionConstants.DEFAULT_KNOWLEDGE_FOLDER;
 
 	/**
-	 * Provides the knowledge base out of a specified file. It reloads the knowledge base only if
-	 * the file has changed, otherwise the session-cached instance id reused.
+	 * Provides the knowledge base out of a specified file. It reloads the knowledge base only if the file has changed,
+	 * otherwise the session-cached instance id reused.
 	 *
 	 * @author volker_belli
 	 * @created 22.09.2010
 	 */
-	public static class FileProvider implements StartCase.KnowledgeBaseProvider {
+	public static class FileProvider implements KnowledgeBaseProvider {
 
 		private final HttpSession httpSession;
 		private final File knowledgeBaseFile;
@@ -115,16 +116,15 @@ public class Init extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 		try {
 			// start a case for the knowledge base (taken out of default folder)
-			StartCase.KnowledgeBaseProvider[] providers = createKnowledgeBaseProviders(context);
+			KnowledgeBaseProvider[] providers = createKnowledgeBaseProviders(context);
 			HttpSession httpSession = context.getSession();
 			httpSession.setAttribute(ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS, providers);
 			if (providers.length == 1) {
 				// make sure that a new session will be started
 				// when initializing (for mobile usage only)
-				httpSession.setAttribute(StartCase.PARAM_RESTART_SESSION, new StartCase.StartInfo(true));
 				StartCase cmd = (StartCase) Utils.getAction(StartCase.class.getSimpleName());
 				assert cmd != null : "Invalid installation: command 'StartCase' is missing";
-				cmd.startCase(context, providers[0]);
+				cmd.startCase(context, providers[0], new StartInfo(true));
 			}
 			else {
 				String language = context.getParameter(StartCase.PARAM_LANGUAGE);
@@ -137,21 +137,19 @@ public class Init extends AbstractAction {
 		}
 	}
 
-	private StartCase.KnowledgeBaseProvider[] createKnowledgeBaseProviders(UserActionContext context) throws IOException {
-		List<StartCase.KnowledgeBaseProvider> result = new LinkedList<>();
-
+	private KnowledgeBaseProvider[] createKnowledgeBaseProviders(UserActionContext context) throws IOException {
+		List<KnowledgeBaseProvider> result = new LinkedList<>();
 		File[] bases = getKnowledgeBaseFiles(Utils.getRootDirectory(context));
 		for (File file : bases) {
 			result.add(new FileProvider(context.getSession(), file));
 		}
 
-		return result.toArray(new StartCase.KnowledgeBaseProvider[result.size()]);
+		return result.toArray(new KnowledgeBaseProvider[0]);
 	}
 
 	/**
-	 * Returns the knowledge base files stored in the specified path (folder or file). If the path
-	 * itself is a file, it is returned. If the path is a folder, the list of knowledge bases are
-	 * directly in that folder are returned.
+	 * Returns the knowledge base files stored in the specified path (folder or file). If the path itself is a file, it
+	 * is returned. If the path is a folder, the list of knowledge bases are directly in that folder are returned.
 	 *
 	 * @param applicationRootPath the path to search at
 	 * @return the knowledge base files found under that path
@@ -184,10 +182,9 @@ public class Init extends AbstractAction {
 	}
 
 	/**
-	 * Sets a knowledge base file or folder name (absolute or relative to the servers working
-	 * directory). If a file is specified, this is the only knowledge base being available to be
-	 * used. If a folder is specified, all d3web knowledge bases of that folder are available to be
-	 * used.
+	 * Sets a knowledge base file or folder name (absolute or relative to the servers working directory). If a file is
+	 * specified, this is the only knowledge base being available to be used. If a folder is specified, all d3web
+	 * knowledge bases of that folder are available to be used.
 	 *
 	 * @param fileOrFolder the knowledge base file or a folder containing these files
 	 * @created 18.04.2011
@@ -197,8 +194,7 @@ public class Init extends AbstractAction {
 	}
 
 	/**
-	 * Returns the knowledge base file or folder name previously set by {@link
-	 * #setKnowledgeBaseRoot(String)}.
+	 * Returns the knowledge base file or folder name previously set by {@link #setKnowledgeBaseRoot(String)}.
 	 *
 	 * @return the previously set path
 	 * @created 17.06.2011

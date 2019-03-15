@@ -7,11 +7,6 @@ package de.knowwe.dialog.action;
 import java.io.IOException;
 import java.util.Set;
 
-import de.knowwe.core.compile.packaging.PackageCompileType;
-import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.dialog.SessionConstants;
-import de.knowwe.dialog.Utils;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
@@ -19,8 +14,13 @@ import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.dialog.SessionConstants;
+import de.knowwe.dialog.Utils;
 
 public class InitWiki extends AbstractAction {
 
@@ -89,14 +89,9 @@ public class InitWiki extends AbstractAction {
 		}
 
 		// using the StartCase command
+		context.getSession().setAttribute(SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS,
+				new StartCase.KnowledgeBaseProvider[] { new WikiProvider(sectionId) });
 		StartCase cmd = (StartCase) Utils.getAction(StartCase.class.getSimpleName());
-		WikiProvider provider = new WikiProvider(sectionId);
-		StartCase.KnowledgeBaseProvider[] providers = new StartCase.KnowledgeBaseProvider[1];
-		providers[0] = provider;
-		context.getSession().setAttribute(
-				SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS,
-				providers);
-		cmd.startCase(context, provider);
+		cmd.startCase(context, new WikiProvider(sectionId), null);
 	}
-
 }
