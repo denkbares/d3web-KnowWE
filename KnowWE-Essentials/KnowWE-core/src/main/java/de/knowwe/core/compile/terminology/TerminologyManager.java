@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -57,6 +57,8 @@ public class TerminologyManager {
 
 	private final TermLogManager termLogManager;
 
+	public enum Action {register, unregister}
+
 	public TerminologyManager() {
 		this(false);
 	}
@@ -78,6 +80,30 @@ public class TerminologyManager {
 	private void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
 		for (String occupiedTermInExternalForm : terminologyExtension.getTermNames()) {
 			occupiedTerms.add(Identifier.fromExternalForm(occupiedTermInExternalForm));
+		}
+	}
+
+	/**
+	 * Util method to allow for code deduplication, because registration and unregistration is often very similar.
+	 */
+	public void termDefinition(Action type, TermCompiler compiler, Section<?> termDefinition, Class<?> termClass, Identifier termIdentifier) {
+		if (type == Action.register) {
+			registerTermDefinition(compiler, termDefinition, termClass, termIdentifier);
+		}
+		else {
+			unregisterTermDefinition(compiler, termDefinition, termClass, termIdentifier);
+		}
+	}
+
+	/**
+	 * Util method to allow for code deduplication, because registration and unregistration is often very similar.
+	 */
+	public void termReference(Action type, TermCompiler compiler, Section<?> termDefinition, Class<?> termClass, Identifier termIdentifier) {
+		if (type == Action.register) {
+			registerTermReference(compiler, termDefinition, termClass, termIdentifier);
+		}
+		else {
+			unregisterTermReference(compiler, termDefinition, termClass, termIdentifier);
 		}
 	}
 
@@ -191,7 +217,7 @@ public class TerminologyManager {
 	 * @return the defining Sections for this term or an empty Collection if the term is not defined
 	 */
 	public synchronized Collection<Section<?>> getTermDefiningSections(Identifier termIdentifier) {
-		if(termIdentifier == null) {
+		if (termIdentifier == null) {
 			return Collections.emptyList();
 		}
 		Collection<Section<?>> definitions = new ArrayList<>();
