@@ -52,7 +52,7 @@ public class NamedObjectRenderer implements Renderer {
 				renderer = StyleRenderer.Question;
 			}
 			else if (tManager.hasTermOfClass(termIdentifier, QContainer.class)) {
-				renderer = StyleRenderer.Questionaire;
+				renderer = StyleRenderer.Questionnaire;
 			}
 			else if (tManager.hasTermOfClass(termIdentifier, Solution.class)) {
 				renderer = StyleRenderer.SOLUTION;
@@ -61,7 +61,7 @@ public class NamedObjectRenderer implements Renderer {
 				renderer = StyleRenderer.CHOICE;
 			}
 			else if (tManager.hasTermOfClass(termIdentifier, KnowledgeBase.class)) {
-				renderer = StyleRenderer.Questionaire;
+				renderer = StyleRenderer.Questionnaire;
 			}
 		}
 		renderer.render(section, user, string);

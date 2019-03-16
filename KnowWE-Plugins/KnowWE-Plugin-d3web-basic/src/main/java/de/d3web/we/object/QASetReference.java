@@ -69,7 +69,7 @@ public class QASetReference extends D3webTermReference<QASet> {
 					break;
 				}
 				if (tm.hasTermOfClass(termIdentifier, QContainer.class)) {
-					delegate = StyleRenderer.Questionaire;
+					delegate = StyleRenderer.Questionnaire;
 					break;
 				}
 			}

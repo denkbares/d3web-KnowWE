@@ -63,7 +63,7 @@ public class StyleRenderer implements Renderer {
 	public static final Renderer CHOICE = CHOICE_NO_TOOLS.withToolMenu();
 	public static final Renderer SOLUTION = SOLUTION_NO_TOOLS.withToolMenu();
 	public static final Renderer Question = QUESTION_NO_TOOLS.withToolMenu();
-	public static final Renderer Questionaire = QUESTIONNAIRE_NO_TOOLS.withToolMenu();
+	public static final Renderer Questionnaire = QUESTIONNAIRE_NO_TOOLS.withToolMenu();
 
 	public static final Renderer Flowchart = FLOWCHART_NO_TOOLS.withToolMenu();
 	public static final Renderer FlowchartStart = FLOWCHART_START_NO_TOOLS.withToolMenu();
