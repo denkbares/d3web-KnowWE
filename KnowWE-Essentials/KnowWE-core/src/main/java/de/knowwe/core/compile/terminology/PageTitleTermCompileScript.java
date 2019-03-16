@@ -40,8 +40,7 @@ public class PageTitleTermCompileScript extends DefaultGlobalCompiler.DefaultGlo
         final TerminologyManager terminologyManager = compiler.getTerminologyManager();
         final Identifier termIdentifier = new Identifier(section.getTitle());
         terminologyManager.registerTermDefinition(compiler, section, Article.class, termIdentifier);
-        Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
-        Compilers.addSectionsToCompile(compiler, termReferenceSections);
+        Compilers.recompileReferences(compiler, termIdentifier);
     }
 
     @Override
@@ -49,8 +48,7 @@ public class PageTitleTermCompileScript extends DefaultGlobalCompiler.DefaultGlo
         final TerminologyManager terminologyManager = compiler.getTerminologyManager();
         final Identifier termIdentifier = new Identifier(section.getTitle());
         terminologyManager.unregisterTermDefinition(compiler, section, Article.class, termIdentifier);
-        Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
-        Compilers.addSectionsToDestroyAndCompile(compiler, termReferenceSections);
-    }
+		Compilers.destroyAndRecompileReferences(compiler, termIdentifier);
+	}
 
   }

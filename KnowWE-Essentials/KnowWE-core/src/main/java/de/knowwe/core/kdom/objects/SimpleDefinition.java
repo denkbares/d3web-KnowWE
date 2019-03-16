@@ -18,8 +18,6 @@
  */
 package de.knowwe.core.kdom.objects;
 
-import java.util.Collection;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
@@ -90,11 +88,7 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 			terminologyManager.registerTermDefinition(compiler, section, termObjectClass, termIdentifier);
 
 			if (compiler instanceof IncrementalCompiler) {
-				Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(termIdentifier);
-				IncrementalCompiler incrementalCompiler = (IncrementalCompiler) compiler;
-				Compilers.addSectionsToCompile(incrementalCompiler, termDefiningSections);
-				Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
-				Compilers.addSectionsToCompile(incrementalCompiler, termReferenceSections);
+				Compilers.recompileRegistrations((IncrementalCompiler) compiler, termIdentifier);
 			}
 		}
 
@@ -116,11 +110,7 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 			terminologyManager.unregisterTermDefinition(compiler, section, termObjectClass, termIdentifier);
 
 			if (compiler instanceof IncrementalCompiler) {
-				Collection<Section<?>> termDefiningSections = terminologyManager.getTermDefiningSections(termIdentifier);
-				IncrementalCompiler incrementalCompiler = (IncrementalCompiler) compiler;
-				Compilers.addSectionsToDestroyAndCompile(incrementalCompiler, termDefiningSections);
-				Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
-				Compilers.addSectionsToDestroyAndCompile(incrementalCompiler, termReferenceSections);
+				Compilers.destroyAndRecompileReferences((IncrementalCompiler) compiler, termIdentifier);
 			}
 		}
 	}

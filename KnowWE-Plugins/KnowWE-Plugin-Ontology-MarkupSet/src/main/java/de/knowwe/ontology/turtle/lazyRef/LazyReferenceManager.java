@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
@@ -22,7 +24,6 @@ import de.knowwe.core.compile.terminology.TermDefinitionRegisteredEvent;
 import de.knowwe.core.compile.terminology.TermDefinitionUnregisteredEvent;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.CompilerEvent;
-import de.knowwe.core.kdom.parsing.Section;
 
 public class LazyReferenceManager implements EventListener {
 
@@ -56,35 +57,36 @@ public class LazyReferenceManager implements EventListener {
 			Compiler compiler = ((CompilerEvent) event).getCompiler();
 			if (compiler instanceof TermCompiler) {
 				cache.remove(compiler);
+				if (!(compiler instanceof IncrementalCompiler)) return;
 				if (event instanceof TermDefinitionRegisteredEvent) {
-					TermDefinitionRegisteredEvent registeredEvent = (TermDefinitionRegisteredEvent) event;
-					compileLazyReferences((TermCompiler) compiler, registeredEvent.getIdentifier());
+					handleRegistration((TermDefinitionRegisteredEvent) event, (IncrementalCompiler) compiler);
 				}
 				if (event instanceof TermDefinitionUnregisteredEvent) {
-					TermDefinitionUnregisteredEvent unregisteredEvent = (TermDefinitionUnregisteredEvent) event;
-					destroyLazyReferences((TermCompiler) compiler, unregisteredEvent.getIdentifier());
+					handleUnregistration((TermDefinitionUnregisteredEvent) event, (IncrementalCompiler) compiler);
 				}
 			}
 		}
 	}
 
-	private void destroyLazyReferences(TermCompiler compiler, Identifier identifier) {
-		if (compiler instanceof IncrementalCompiler) {
-			Collection<Section<?>> termReferenceSections = getTermReferenceSections(compiler, identifier);
-			Compilers.addSectionsToDestroyAndCompile((IncrementalCompiler) compiler, termReferenceSections);
+	public void handleUnregistration(TermDefinitionUnregisteredEvent event, IncrementalCompiler compiler) {
+		Identifier identifier = toLazyIdentifier(event.getIdentifier());
+		if (identifier != null) {
+			Compilers.destroyAndRecompileReferences(compiler, identifier);
 		}
 	}
 
-	private Collection<Section<?>> getTermReferenceSections(TermCompiler compiler, Identifier identifier) {
+	public void handleRegistration(TermDefinitionRegisteredEvent event, IncrementalCompiler compiler) {
+		Identifier identifier = toLazyIdentifier(event.getIdentifier());
+		if (identifier != null) {
+			Compilers.recompileReferences(compiler, identifier);
+		}
+	}
+
+	@Nullable
+	private Identifier toLazyIdentifier(Identifier identifier) {
 		String[] pathElements = identifier.getPathElements();
-		if (pathElements.length != 2) return Collections.emptyList();
-		return compiler.getTerminologyManager().getTermReferenceSections(new Identifier(pathElements[1]));
-	}
-
-	private void compileLazyReferences(TermCompiler compiler, Identifier identifier) {
-		if (compiler instanceof IncrementalCompiler) {
-			Compilers.addSectionsToCompile((IncrementalCompiler) compiler, getTermReferenceSections(compiler, identifier));
-		}
+		if (pathElements.length != 2) return null;
+		return new Identifier(pathElements[1]);
 	}
 
 	public synchronized Set<Identifier> getPotentialMatches(TermCompiler termCompiler, String lazyTermName) {

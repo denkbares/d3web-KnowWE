@@ -25,11 +25,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.denkbares.strings.Identifier;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompileType;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -229,11 +232,11 @@ public class Compilers {
 	@Deprecated
 	public static Collection<Article> getCompilingArticleObjects(Section<?> section) {
 		Collection<Article> articles = new ArrayList<>();
-		Set<String> referingArticleTitles
-				= KnowWEUtils.getPackageManager(section.getArticleManager())
-				.getCompilingArticles(section);
+		PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
+		if (packageManager == null) return Collections.emptyList();
+		Set<String> referringArticleTitles = packageManager.getCompilingArticles(section);
 		ArticleManager articleManager = section.getArticleManager();
-		for (String title : referingArticleTitles) {
+		for (String title : referringArticleTitles) {
 			Article article = articleManager.getArticle(title);
 			if (article == null) continue;
 			articles.add(article);
@@ -268,26 +271,32 @@ public class Compilers {
 		return KnowWEUtils.getArticleManager(web).getCompilerManager();
 	}
 
-	public static void addSectionsToDestroyAndCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
-		for (Section<?> section : sections) {
-			compiler.addSectionToDestroy(section, scriptFilter);
-			if (Sections.isLive(section)) {
-				// the sections that have not been removed from the wiki are also compiled again
-				compiler.addSectionToCompile(section, scriptFilter);
-			}
-		}
+	public static void destroyAndRecompileRegistrations(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
+		Sections.registrations((TermCompiler) compiler, identifier)
+				.forEach(s -> destroyAndRecompileSection(compiler, s, scriptFilter));
 	}
 
-	public static void addSectionsToCompile(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
-		for (Section<?> section : sections) {
+	public static void destroyAndRecompileReferences(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
+		Sections.references((TermCompiler) compiler, identifier)
+				.forEach(s -> destroyAndRecompileSection(compiler, s, scriptFilter));
+	}
+
+	public static void destroyAndRecompileSection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		compiler.addSectionToDestroy(section, scriptFilter);
+		if (Sections.isLive(section)) {
+			// the sections that have not been removed from the wiki are also compiled again
 			compiler.addSectionToCompile(section, scriptFilter);
 		}
 	}
 
-	public static void addSectionsToDestroy(IncrementalCompiler compiler, Collection<Section<?>> sections, Class<?>... scriptFilter) {
-		for (Section<?> section : sections) {
-			compiler.addSectionToDestroy(section, scriptFilter);
-		}
+	public static void recompileRegistrations(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
+		Sections.registrations((TermCompiler) compiler, identifier)
+				.forEach(s -> compiler.addSectionToCompile(s, scriptFilter));
+	}
+
+	public static void recompileReferences(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
+		Sections.references((TermCompiler) compiler, identifier)
+				.forEach(s -> compiler.addSectionToCompile(s, scriptFilter));
 	}
 
 	/**

@@ -22,6 +22,7 @@ package de.knowwe.core.compile.packaging;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.denkbares.strings.Identifier;
@@ -96,8 +97,7 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 			for (String packageName : packageNames) {
 				Identifier termIdentifier = new Identifier(packageName);
 				terminologyManager.registerTermDefinition(compiler, markupSection, Package.class, termIdentifier);
-				Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
-				Compilers.addSectionsToCompile(compiler, termReferenceSections, PackageNotCompiledWarningScript.class);
+				Compilers.recompileReferences(compiler, termIdentifier, PackageNotCompiledWarningScript.class);
 			}
 
 		}
@@ -105,17 +105,16 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 		@Override
 		public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
 			Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
+			Objects.requireNonNull(markupSection);
 			String[] packageNames = (String[]) markupSection.getObject(compiler, PACKAGE_DEFINITIONS_KEY);
+			Objects.requireNonNull(packageNames);
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			for (String packageName : packageNames) {
 				Identifier termIdentifier = new Identifier(packageName);
 				terminologyManager.unregisterTermDefinition(compiler, markupSection, Package.class, termIdentifier);
-				Collection<Section<?>> termReferenceSections = terminologyManager.getTermReferenceSections(termIdentifier);
-				Compilers.addSectionsToDestroyAndCompile(compiler, termReferenceSections, PackageNotCompiledWarningScript.class);
+				Compilers.destroyAndRecompileReferences(compiler, termIdentifier, PackageNotCompiledWarningScript.class);
 			}
-
 		}
-
 	}
 
 	private static class PackageCompileSectionRegistrationScript extends PackageRegistrationScript<DefaultMarkupPackageCompileType> {
