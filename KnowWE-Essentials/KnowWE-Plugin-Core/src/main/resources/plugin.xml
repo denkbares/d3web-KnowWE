@@ -289,9 +289,9 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetInfosForInlineTermRenamingAction">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetRenamingInfoAction">
 		<parameter id="class" value="de.knowwe.core.action.GetRenamingInfoAction" />
-		<parameter id="name" value="GetInfosForInlineTermRenamingAction" />
+		<parameter id="name" value="GetRenamingInfoAction" />
 		<parameter id="description" value="Action GetInfosForInlineTermRenamingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />

@@ -45,10 +45,10 @@ public class GetRenamingInfoAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		Section<?> section = Sections.get(sectionId);
-		Identifier termIdentifier = ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class));
+		Section<Term> section = Sections.get(sectionId, Term.class);
+		Identifier termIdentifier = getIdentifier(section);
 
-		Set<String> allTermOccurrences = getAllTermOccurencesOnThisArticle(section, termIdentifier, context.getArticle());
+		Set<String> allTermOccurrences = getAllTermOccurrencesOnThisArticle(section, termIdentifier, context.getArticle());
 
 		JSONObject json = new JSONObject();
 		try {
@@ -64,11 +64,15 @@ public class GetRenamingInfoAction extends AbstractAction {
 
 	}
 
+	protected Identifier getIdentifier(Section<Term> section) {
+		return section.get().getTermIdentifier(Sections.cast(section, Term.class));
+	}
+
 	protected Section<?> getSection(String identifier) {
 		return Sections.get(identifier);
 	}
 
-	private Set<String> getAllTermOccurencesOnThisArticle(Section<?> section, Identifier termIdentifier, Article article) {
+	protected Set<String> getAllTermOccurrencesOnThisArticle(Section<?> section, Identifier termIdentifier, Article article) {
 		Set<Section<?>> sections = new HashSet<>();
 		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(section.getArticleManager());
 		for (TerminologyManager terminologyManager : terminologyManagers) {

@@ -32,11 +32,11 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractTermRenamingAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
-import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Action which renames all Definitions and References of a given Term. The following parameters are mandatory! <ul>
@@ -50,7 +50,6 @@ public class InlineTermRenamingAction extends AbstractTermRenamingAction {
 	public static final String TERMNAME = "termname";
 	public static final String REPLACEMENT = "termreplacement";
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
@@ -67,8 +66,8 @@ public class InlineTermRenamingAction extends AbstractTermRenamingAction {
 			return;
 		}
 
-		Collection<TerminologyManager> managers = KnowWEUtils.getTerminologyManagers(KnowWEUtils.getArticleManager(web));
-		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = getAllTermSections(managers, termIdentifier);
+		Collection<TermCompiler> compilers = Compilers.getCompilers(context.getArticleManager(), TermCompiler.class);
+		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = getAllTermSections(compilers, termIdentifier);
 
 		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
 		Set<String> failures = new HashSet<>();

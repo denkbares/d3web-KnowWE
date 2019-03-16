@@ -6,19 +6,21 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -29,6 +31,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 04.09.2018
  */
 public abstract class AbstractTermRenamingAction extends AbstractAction {
+
 	protected void renameTerms(
 			Map<String, Set<Section<? extends RenamableTerm>>> allTerms, Identifier term,
 			Identifier replacement, ArticleManager mgr, UserActionContext context,
@@ -55,8 +58,7 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 		}
 	}
 
-	@NotNull
-	protected Map<String, Set<Section<? extends RenamableTerm>>> getAllTermSections(Collection<TerminologyManager> managers, Identifier termIdentifier) {
+	protected Map<String, Set<Section<? extends RenamableTerm>>> getAllTermSections(Collection<TermCompiler> compilers, Identifier termIdentifier) {
 		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<>();
 		Consumer<Section<?>> addIfRenamable = (sec) -> {
 			if (sec.get() instanceof RenamableTerm) {
@@ -65,11 +67,11 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 			}
 		};
 
-		for (TerminologyManager terminologyManager : managers) {
-			// Check if there is a TermDefinition
-			terminologyManager.getTermDefiningSections(termIdentifier).forEach(addIfRenamable);
-			// Check if there are References
-			terminologyManager.getTermReferenceSections(termIdentifier).forEach(addIfRenamable);
+		for (TermCompiler compiler : compilers) {
+
+			TerminologyManager manager = compiler.getTerminologyManager();
+			manager.getTermDefiningSections(termIdentifier).forEach(addIfRenamable);
+			manager.getTermReferenceSections(termIdentifier).forEach(addIfRenamable);
 		}
 		return allTerms;
 	}
