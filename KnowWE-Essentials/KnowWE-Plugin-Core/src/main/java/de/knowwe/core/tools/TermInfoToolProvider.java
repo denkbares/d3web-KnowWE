@@ -56,7 +56,7 @@ public class TermInfoToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return true;
+		return getTools(section, userContext).length > 0;
 	}
 
 	private Identifier getIdentifier(TermCompiler compiler, Section<?> section) {
