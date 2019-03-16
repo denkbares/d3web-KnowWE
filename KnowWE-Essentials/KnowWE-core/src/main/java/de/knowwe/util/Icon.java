@@ -24,8 +24,7 @@ import com.denkbares.strings.Strings;
 /**
  * Created by Stefan Plehn, Albrecht Striffler (denkbares GmbH) on 21.11.14.
  * <p>
- * For further icons or an example of the existing ones;
- * http://fontawesome.io/icons/
+ * For further icons or an example of the existing ones; http://fontawesome.io/icons/
  */
 public class Icon {
 
@@ -105,7 +104,7 @@ public class Icon {
 	public static final Icon SUGGESTED = new Icon("fa-circle-o");
 	public static final Icon EXCLUDED = new Icon("fa-ban");
 	public static final Icon ABSTRACT = new Icon("fa-asterisk");
-	public static final Icon PLUG =  new Icon("fal fa-plug");
+	public static final Icon PLUG = new Icon("fal fa-plug");
 
 	public static final Icon LOW_PRIO = new Icon("fa-exclamation-circle knowwe-lowprio");
 	public static final Icon HIGH_PRIO = new Icon("fa-exclamation-circle knowwe-highprio");
@@ -173,6 +172,16 @@ public class Icon {
 		this.id = id;
 	}
 
+	public static Icon fromImage(String image) {
+		// we require some icon to get a vaild width, color will be set transparent to appear empty
+		return new Icon("fa-pencil", "color: transparent;" +
+				"background-image:url(" + image + ");" +
+				"background-repeat: no-repeat;" +
+				"background-size: contain;" +
+				"background-position: 50%",
+				null, null);
+	}
+
 	public String toString() {
 		return cssClass;
 	}
@@ -232,5 +241,4 @@ public class Icon {
 				return this;
 		}
 	}
-
 }
