@@ -6,11 +6,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -19,6 +15,7 @@ import java.util.stream.Stream;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Functions;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -94,11 +91,6 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 				new RenderWorker(Sections.cast(section, LinkArticlesMarkup.class)).render(out));
 	}
 
-	private static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
-		Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-		return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
-	}
-
 	private static class RenderWorker {
 
 		private final Section<LinkArticlesMarkup> section;
@@ -154,7 +146,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 					.flatMap(this::resolvePackage)
 					// map to disjoint articles
 					.map(Section::getArticle)
-					.filter(distinctByKey(Article::getTitle));
+					.filter(Functions.distinctByKey(Article::getTitle));
 		}
 
 		private Stream<Section<?>> resolvePackage(String packageName) {
@@ -280,10 +272,18 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			int warnings = errors > 0 ? 0 :
 					DefaultMarkupRenderer.getMessageStrings(section, Message.Type.WARNING, null).size();
 			if (errors > 0) {
-				out.append(" (").appendHtml(Icon.ERROR.toHtml()).append(" ").append(Strings.pluralOf(errors, "error")).append(")");
+				out.append(" (")
+						.appendHtml(Icon.ERROR.toHtml())
+						.append(" ")
+						.append(Strings.pluralOf(errors, "error"))
+						.append(")");
 			}
 			if (warnings > 0) {
-				out.append(" (").appendHtml(Icon.WARNING.toHtml()).append(" ").append(Strings.pluralOf(warnings, "warning")).append(")");
+				out.append(" (")
+						.appendHtml(Icon.WARNING.toHtml())
+						.append(" ")
+						.append(Strings.pluralOf(warnings, "warning"))
+						.append(")");
 			}
 
 			out.append("\n");
