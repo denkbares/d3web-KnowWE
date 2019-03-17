@@ -77,10 +77,8 @@ public class PackageManager {// implements EventListener {
 
 	public static void addPackageAnnotation(DefaultMarkup markup) {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
-		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageAnnotationNameType());
-		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME,
-				new PackageTerm());
+		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
+		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageTerm());
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {
@@ -183,6 +181,9 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * Returns an unmodifiable view on the sections of the given packages at the time of calling this method. The
 	 * sections don't have a particular order.
+	 * <p>
+	 * NOTE: For each section-subtree that is contained in a package, only the top-most section of the package is
+	 * returned; all successor sections are implicit in the same package.
 	 *
 	 * @param packageNames the package names to get the sections for
 	 * @return the sections of the given packages
