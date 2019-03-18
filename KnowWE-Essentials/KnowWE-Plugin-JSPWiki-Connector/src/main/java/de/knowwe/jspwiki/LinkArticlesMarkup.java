@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Functions;
+import com.denkbares.utils.Predicates;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -146,7 +146,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 					.flatMap(this::resolvePackage)
 					// map to disjoint articles
 					.map(Section::getArticle)
-					.filter(Functions.distinctByKey(Article::getTitle));
+					.filter(Predicates.distinctByKey(Article::getTitle));
 		}
 
 		private Stream<Section<?>> resolvePackage(String packageName) {
