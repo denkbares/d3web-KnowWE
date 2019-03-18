@@ -62,6 +62,7 @@ import com.denkbares.events.EventManager;
 import com.denkbares.plugin.Plugin;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
@@ -457,18 +458,19 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * @created 07.06.2010
 	 */
 	private void initializeAllArticles(WikiEngine engine) {
+		Stopwatch stopwatchAll = new Stopwatch();
 		ArticleManager articleManager = getDefaultArticleManager();
 		articleManager.open();
 		try {
 			Collection<?> wikiPages = getAllPages(engine);
-			long start = System.currentTimeMillis();
+			Stopwatch stopwatchSectionizing = new Stopwatch();
 			wikiPages.parallelStream().forEach(o -> {
 				WikiPage wp = (WikiPage) o;
 				String content = engine.getPureText(wp.getName(), wp.getVersion());
 				Article article = Article.createArticle(content, wp.getName(), Environment.DEFAULT_WEB);
 				((DefaultArticleManager) articleManager).queueArticle(article);
 			});
-			Log.info("Sectionized all articles in " + (System.currentTimeMillis() - start) + "ms");
+			stopwatchSectionizing.log("Sectionized all articles");
 		}
 		catch (ProviderException e1) {
 			Log.warning("Unable to load all articles, maybe some articles won't be initialized!", e1);
@@ -485,6 +487,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			Log.warning("Caught InterrupedException while waiting til compilation is finished.", e);
 		}
 		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
+		stopwatchAll.log("Initialized all articles");
 	}
 
 	private Collection<?> getAllPages(WikiEngine engine) throws ProviderException {
