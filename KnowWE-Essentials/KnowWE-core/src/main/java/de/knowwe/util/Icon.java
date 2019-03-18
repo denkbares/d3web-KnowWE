@@ -132,6 +132,7 @@ public class Icon {
 	public static final Icon FILE_ZIP = new Icon("far fa-file-archive");
 	public static final Icon FILE_CODE = new Icon("far fa-file-code");
 	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
+	public static final Icon FILE_PLUS = new Icon("fal fa-file-plus");
 
 	//PACKAGES
 	public static final Icon LAYER_PLUS = new Icon("fal fa-layer-plus");
