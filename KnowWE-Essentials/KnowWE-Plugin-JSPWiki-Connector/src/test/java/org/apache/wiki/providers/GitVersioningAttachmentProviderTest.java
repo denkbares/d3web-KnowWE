@@ -58,7 +58,7 @@ public class GitVersioningAttachmentProviderTest {
 	@Before
 	public void init() throws IOException, NoRequiredPropertyException {
 		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "/newRepo";
-		System.out.println(TMP_NEW_REPO);
+//		System.out.println(TMP_NEW_REPO);
 		properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
 		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
