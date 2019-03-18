@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
@@ -66,7 +65,7 @@ public class GitVersioningFileProviderTest {
 
 	@After
 	public void tearDown() throws IOException {
-		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
+//		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
 	}
 
 	@Test
@@ -112,6 +111,44 @@ public class GitVersioningFileProviderTest {
 
 		List<WikiPage> versionHistory = fileProvider.getVersionHistory(page.getName());
 		assertEquals(2, versionHistory.size());
+	}
+
+	@Test
+	public void testGetPageText() throws NoSuchPrincipalException, IOException, NoRequiredPropertyException, ProviderException {
+		String author = "UnknownAuthor";
+		WikiEngine engine = getWikiEngineMock(author);
+		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
+		fileProvider.initialize(engine, properties);
+
+		WikiPage page = new WikiPage(engine, "tess");
+		page.setLastModified(new Date());
+		page.setAuthor(author);
+		page.setAttribute(WikiPage.CHANGENOTE, "add test");
+		fileProvider.putPageText(page, "test file text");
+
+		page.setLastModified(new Date());
+		fileProvider.putPageText(page, "test file text2");
+
+		String tess = fileProvider.getPageText("tess", 1);
+		assertEquals("test file text", tess);
+	}
+
+	@Test
+	public void testMovePage() throws ProviderException, IOException, NoRequiredPropertyException, NoSuchPrincipalException {
+		String author = "UnknownAuthor";
+		WikiEngine engine = getWikiEngineMock(author);
+		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
+		fileProvider.initialize(engine, properties);
+
+		WikiPage page = new WikiPage(engine, "test seite");
+		page.setLastModified(new Date());
+		page.setAuthor(author);
+		page.setAttribute(WikiPage.CHANGENOTE, "add test");
+		fileProvider.putPageText(page, "test file text");
+
+		fileProvider.movePage("test seite", "Neue Seite");
+
+		assertTrue(new File("/tmp/newRepo/Neue+Seite.txt").exists());
 	}
 
 	@Test

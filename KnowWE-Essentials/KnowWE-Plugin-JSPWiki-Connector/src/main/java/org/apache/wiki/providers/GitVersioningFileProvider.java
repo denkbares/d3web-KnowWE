@@ -20,9 +20,7 @@
 package org.apache.wiki.providers;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -37,7 +35,6 @@ import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.search.QueryItem;
-import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
@@ -46,25 +43,20 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
-import org.eclipse.jgit.errors.StopWalkException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectReader;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
-import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
-import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.NotNull;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
@@ -108,7 +100,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					this.repository = git.getRepository();
 				}
 				catch (GitAPIException e) {
-					e.printStackTrace();
+					throw new IOException(e);
 				}
 			}
 			else {
@@ -222,53 +214,30 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	@Override
 	public Collection getAllChangedSince(Date date) {
-		RevFilter filter = new RevFilter() {
-			@Override
-			public boolean include(RevWalk walker, RevCommit cmit) throws StopWalkException {
-				return (1000l * cmit.getCommitTime()) >= date.getTime();
-			}
+		Iterable<RevCommit> commits = GitVersioningUtils.getRevCommitsSince(date, repository);
 
-			@Override
-			public RevFilter clone() {
-				return null;
-			}
-		};
-		Git git = new Git(repository);
 		try {
-			Iterable<RevCommit> commits = git
-					.log()
-					.add(git.getRepository().resolve(Constants.HEAD))
-					.setRevFilter(filter)
-					.call();
-			ObjectReader objRedaer = repository.newObjectReader();
-			CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
 			ObjectId oldCommit = null;
-			CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
-			ObjectId newCommit = null;
+			ObjectId newCommit;
+
 			List<WikiPage> pages = new ArrayList<>();
 			for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
 				String fullMessage = commit.getFullMessage();
 				String author = commit.getCommitterIdent().getName();
 				Date modified = new Date(1000l * commit.getCommitTime());
 
-				System.out.println(commit.getParentCount());
-				System.out.println(fullMessage);
-
 				if (oldCommit != null) {
 					newCommit = commit.getTree();
-					oldTreeParser.reset(objRedaer, oldCommit);
-					newTreeParser.reset(objRedaer, newCommit);
-					DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-					diffFormatter.setRepository(repository);
-					List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
+					List<DiffEntry> diffs = GitVersioningUtils.getDiffEntries(oldCommit, newCommit, repository);
 					for (DiffEntry diff : diffs) {
 						String path = diff.getOldPath();
 						if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
 							path = diff.getNewPath();
 						}
-						WikiPage page = getWikiPage(fullMessage, author, modified, path);
-						pages.add(page);
-						System.out.println("commit rev: " + diff);
+						if (path.endsWith(FILE_EXT) && !path.contains("/")) {
+							WikiPage page = getWikiPage(fullMessage, author, modified, path);
+							pages.add(page);
+						}
 					}
 				}
 				else {
@@ -277,10 +246,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 						treeWalk.setRecursive(true);
 						treeWalk.setFilter(TreeFilter.ANY_DIFF);
 						while (treeWalk.next()) {
-							String nameString = treeWalk.getPathString();
-							System.out.println(nameString);
-							WikiPage page = getWikiPage(fullMessage, author, modified, nameString);
-							pages.add(page);
+							String path = treeWalk.getPathString();
+							if (path.endsWith(FILE_EXT) && !path.contains("/")) {
+								WikiPage page = getWikiPage(fullMessage, author, modified, path);
+								pages.add(page);
+							}
 						}
 					}
 				}
@@ -288,9 +258,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				oldCommit = commit.getTree();
 			}
 			return pages;
-		}
-		catch (GitAPIException e) {
-			e.printStackTrace();
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -359,22 +326,21 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			try {
 				Git git = new Git(repository);
 				List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
-				int versionNr = 1;
-				for (RevCommit revCommit : revCommits) {
-					if (version == versionNr) {
-						git.checkout()
-								.addPath(page.getName())
-								.setName(revCommit.getName())
-								.call();
+				if (version == LATEST_VERSION || (version > 0 && version <= revCommits.size())) {
+					RevCommit revCommit = revCommits.get(version == LATEST_VERSION ? revCommits.size() - 1 : version - 1);
+					TreeWalk treeWalkDir = new TreeWalk(repository);
+					treeWalkDir.reset(revCommit.getTree());
+					treeWalkDir.setFilter(PathFilter.create(page.getName()));
+					treeWalkDir.setRecursive(false);
+					//here we have our file directly
+					if (treeWalkDir.next()) {
+						ObjectId fileId = treeWalkDir.getObjectId(0);
+						ObjectLoader loader = repository.open(fileId);
+						return new String(loader.getBytes(), "UTF-8");
 					}
-					version++;
-				}
-				try (InputStream in = new FileInputStream(page)) {
-					String pageContent = FileUtil.readContents(in, m_encoding);
-					return pageContent;
-				}
-				catch (IOException e) {
-					e.printStackTrace();
+					else {
+						throw new ProviderException("Can't load Git object for " + pageName + " version " + version);
+					}
 				}
 			}
 			catch (IncorrectObjectTypeException e) {

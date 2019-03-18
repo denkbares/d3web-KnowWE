@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiEngine;
@@ -70,7 +71,7 @@ public class GitVersioningAttachmentProviderTest {
 
 	@After
 	public void tearDown() throws IOException {
-//		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
+		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
 	}
 
 	@Test

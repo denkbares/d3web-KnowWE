@@ -53,6 +53,7 @@ import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.api.errors.NoMessageException;
 import org.eclipse.jgit.api.errors.UnmergedPathsException;
 import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
+import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
@@ -63,6 +64,7 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
+import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.jetbrains.annotations.NotNull;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
@@ -266,8 +268,67 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public List<Attachment> listAllChanged(Date timestamp) throws ProviderException {
-		//TODO schwer
-		return super.listAllChanged(timestamp);
+		Iterable<RevCommit> commits = GitVersioningUtils.getRevCommitsSince(timestamp, repository);
+		try {
+			ObjectId oldCommit = null;
+			ObjectId newCommit;
+
+			List<Attachment> attachments = new ArrayList<>();
+			for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
+				String fullMessage = commit.getFullMessage();
+				String author = commit.getCommitterIdent().getName();
+				Date modified = new Date(1000l * commit.getCommitTime());
+
+				if (oldCommit != null) {
+					newCommit = commit.getTree();
+					List<DiffEntry> diffs = GitVersioningUtils.getDiffEntries(oldCommit, newCommit, repository);
+					for (DiffEntry diff : diffs) {
+						String path = diff.getOldPath();
+						if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
+							path = diff.getNewPath();
+						}
+						if (path.contains("/") && path.contains(DIR_EXTENSION)) {
+							Attachment att = getAttachment(fullMessage, author, modified, path);
+							attachments.add(att);
+						}
+					}
+				}
+				else {
+					try (TreeWalk treeWalk = new TreeWalk(repository)) {
+						treeWalk.reset(commit.getTree());
+						treeWalk.setRecursive(true);
+						treeWalk.setFilter(TreeFilter.ANY_DIFF);
+						while (treeWalk.next()) {
+							String path = treeWalk.getPathString();
+							if (path.contains("/") && path.contains(DIR_EXTENSION)) {
+								Attachment att = getAttachment(fullMessage, author, modified, path);
+								attachments.add(att);
+							}
+						}
+					}
+				}
+
+				oldCommit = commit.getTree();
+			}
+			return attachments;
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private Attachment getAttachment(String fullMessage, String author, Date modified, String path) {
+		String parent = path
+				.substring(0, path.indexOf("/"))
+				.replace(DIR_EXTENSION, "");
+		parent = TextUtil.urlDecodeUTF8(parent);
+		String fileName = path.substring(path.indexOf("/"));
+		Attachment att = new Attachment(engine, parent, fileName);
+		att.setAttribute(Attachment.CHANGENOTE, fullMessage);
+		att.setAuthor(author);
+		att.setLastModified(modified);
+		return att;
 	}
 
 	@Override
