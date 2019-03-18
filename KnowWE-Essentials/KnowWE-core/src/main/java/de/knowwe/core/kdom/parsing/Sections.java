@@ -227,7 +227,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Combines call for {@link #definitions(TermCompiler, Identifier)} and {@link #references(TermCompiler, Identifier)}
+	 * Combines call for {@link #definitions(TermCompiler, Identifier)} and {@link #references(TermCompiler,
+	 * Identifier)}
 	 */
 	@NotNull
 	public static Sections<? extends Type> registrations(TermCompiler compiler, @Nullable Section<? extends Term> term) {
@@ -236,7 +237,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Combines call for {@link #definitions(TermCompiler, Identifier)} and {@link #references(TermCompiler, Identifier)}
+	 * Combines call for {@link #definitions(TermCompiler, Identifier)} and {@link #references(TermCompiler,
+	 * Identifier)}
 	 */
 	@NotNull
 	public static Sections<? extends Type> registrations(TermCompiler compiler, @Nullable Identifier termIdentifier) {
@@ -531,16 +533,36 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	/**
 	 * Returns a new Sections instance containing the closest ancestor of each of this instance's sections that is an
-	 * instance the specified type. If any section of this instance does not have an ancestor of the specified type, the
-	 * section is not considered in the resulting Sections objects.
+	 * instance the specified type. In constrast to {@link #closest(Class)}, the ancestor must be a "real" ancestor, so
+	 * the search for a matching type starts at the specified sections' parents. If any section of this instance does
+	 * not have an ancestor of the specified type, the section is not considered in the resulting Sections objects.
 	 *
 	 * @param clazz the class to be matched by the ancestors
 	 * @param <R>   the class to be matched by the ancestors
 	 * @return the closest ancestor for each section matching the type
+	 * @see #closest(Class)
 	 */
 	@NotNull
 	public <R extends Type> Sections<R> ancestor(Class<R> clazz) {
-		return mapNotNull(this, (section) -> Sections.ancestor(section, clazz));
+		return mapNotNull(this, section -> Sections.ancestor(section, clazz));
+	}
+
+	/**
+	 * Returns a new Sections instance containing the closest ancestor of each of this instance's sections that is an
+	 * instance the specified type. In contrast to {@link #ancestor(Class)}, if any of the specified sections are
+	 * instances of the specified type, the section is directly returned, without further searching. If any section of
+	 * this instance does not have an ancestor of the specified type, the section is not considered in the resulting
+	 * Sections objects.
+	 *
+	 * @param clazz the class to be matched by the ancestors
+	 * @param <R>   the class to be matched by the ancestors
+	 * @return the closest ancestor for each section matching the type
+	 * @see #ancestor(Class)
+	 */
+	@NotNull
+	public <R extends Type> Sections<R> closest(Class<R> clazz) {
+		return mapNotNull(this, section ->
+				clazz.isInstance(section.get()) ? cast(section, clazz) : Sections.ancestor(section, clazz));
 	}
 
 	/**
