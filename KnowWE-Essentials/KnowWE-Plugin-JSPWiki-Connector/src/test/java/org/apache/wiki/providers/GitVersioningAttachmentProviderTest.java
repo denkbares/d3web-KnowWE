@@ -28,7 +28,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiEngine;
@@ -71,7 +70,7 @@ public class GitVersioningAttachmentProviderTest {
 
 	@After
 	public void tearDown() throws IOException {
-		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
+//		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
 	}
 
 	@Test
@@ -79,8 +78,23 @@ public class GitVersioningAttachmentProviderTest {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		att.setAttribute(Attachment.CHANGENOTE, "add");
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
+		in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		att.setAttribute(Attachment.CHANGENOTE, "nothing changed");
+		attProvider.putAttachmentData(att, in);
+
+		att.setAttribute(Attachment.CHANGENOTE, "changed");
+		in = new ByteArrayInputStream("text file contents 2".getBytes(Charset.forName("UTF-8")));
+		attProvider.putAttachmentData(att, in);
+
+		List<Attachment> versionHistory = attProvider.getVersionHistory(att);
+		for (Attachment attachment : versionHistory) {
+			System.out.println(attachment.getAttribute(Attachment.CHANGENOTE));
+		}
+
+		assertEquals(2, versionHistory.size());
 	}
 
 	@Test

@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -63,6 +64,11 @@ public class GitVersioningFileProviderTest {
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
 	}
 
+	@After
+	public void tearDown() throws IOException {
+		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
+	}
+
 	@Test
 	public void testInitializeWithoutExistingRepo() throws IOException, NoRequiredPropertyException {
 		WikiEngine engine = Mockito.mock(WikiEngine.class);
@@ -84,6 +90,28 @@ public class GitVersioningFileProviderTest {
 
 		Repository repo = new FileRepositoryBuilder().setGitDir(new File(TMP_NEW_REPO + "/.git")).build();
 		assertTrue(repo.getObjectDatabase().exists());
+	}
+
+	@Test
+	public void testPutPageText() throws NoSuchPrincipalException, IOException, NoRequiredPropertyException, ProviderException {
+		String author = "UnknownAuthor";
+		WikiEngine engine = getWikiEngineMock(author);
+		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
+		fileProvider.initialize(engine, properties);
+
+		WikiPage page = new WikiPage(engine, "tess");
+		page.setLastModified(new Date());
+		page.setAuthor(author);
+		page.setAttribute(WikiPage.CHANGENOTE, "add test");
+		fileProvider.putPageText(page, "test file text");
+
+		fileProvider.putPageText(page, "test file text");
+
+		page.setLastModified(new Date());
+		fileProvider.putPageText(page, "test file text2");
+
+		List<WikiPage> versionHistory = fileProvider.getVersionHistory(page.getName());
+		assertEquals(2, versionHistory.size());
 	}
 
 	@Test
@@ -170,8 +198,4 @@ public class GitVersioningFileProviderTest {
 		return engine;
 	}
 
-	@After
-	public void tearDown() throws IOException {
-		FileUtils.deleteDirectory(new File(TMP_NEW_REPO));
-	}
 }

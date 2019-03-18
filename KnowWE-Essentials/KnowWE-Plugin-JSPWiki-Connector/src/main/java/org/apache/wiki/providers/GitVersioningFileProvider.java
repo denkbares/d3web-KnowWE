@@ -41,6 +41,7 @@ import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.NoFilepatternException;
 import org.eclipse.jgit.api.errors.NoHeadException;
@@ -143,20 +144,25 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			if (addFile) {
 				git.add().addFilepattern(changedFile.getName()).call();
 			}
-			CommitCommand commit = git
-					.commit()
-					.setOnly(changedFile.getName());
-			if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
-				commit.setMessage((String) page.getAttribute(WikiPage.CHANGENOTE));
+
+			Status status = git.status().addPath(changedFile.getName()).call();
+			boolean isChanged = status.getModified().contains(changedFile.getName());
+			if (isChanged || addFile) {
+				CommitCommand commit = git
+						.commit()
+						.setOnly(changedFile.getName());
+				if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
+					commit.setMessage((String) page.getAttribute(WikiPage.CHANGENOTE));
+				}
+				else if (addFile) {
+					commit.setMessage("Added page");
+				}
+				else {
+					commit.setMessage("-");
+				}
+				addUserInfo(m_engine, page.getAuthor(), commit);
+				commit.call();
 			}
-			else if (addFile) {
-				commit.setMessage("Added page");
-			}
-			else {
-				commit.setMessage("-");
-			}
-			addUserInfo(m_engine, page.getAuthor(), commit);
-			commit.call();
 		}
 		catch (GitAPIException e) {
 			e.printStackTrace();

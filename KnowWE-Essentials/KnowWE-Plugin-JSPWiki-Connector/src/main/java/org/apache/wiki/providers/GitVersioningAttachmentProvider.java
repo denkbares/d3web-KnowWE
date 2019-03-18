@@ -44,6 +44,7 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.RmCommand;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.AbortedByHookException;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -149,11 +150,15 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			if (add) {
 				git.add().addFilepattern(getPath(att)).call();
 			}
-			CommitCommand commitCommand = git.commit()
-					.setOnly(getPath(att));
-			setMessage(att, commitCommand);
-			addUserInfo(engine, att.getAuthor(), commitCommand);
-			commitCommand.call();
+			Status status = git.status().addPath(getPath(att)).call();
+			boolean isChanged = status.getModified().contains(getPath(att));
+			if (isChanged || add) {
+				CommitCommand commitCommand = git.commit()
+						.setOnly(getPath(att));
+				setMessage(att, commitCommand);
+				addUserInfo(engine, att.getAuthor(), commitCommand);
+				commitCommand.call();
+			}
 		}
 		catch (NoFilepatternException e) {
 			e.printStackTrace();
