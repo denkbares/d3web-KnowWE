@@ -41,7 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -93,9 +93,9 @@ public class GitVersioningAttachmentProviderTest {
 		attProvider.putAttachmentData(att, in);
 
 		List<Attachment> versionHistory = attProvider.getVersionHistory(att);
-		for (Attachment attachment : versionHistory) {
-			System.out.println(attachment.getAttribute(Attachment.CHANGENOTE));
-		}
+//		for (Attachment attachment : versionHistory) {
+//			System.out.println(attachment.getAttribute(Attachment.CHANGENOTE));
+//		}
 
 		assertEquals(2, versionHistory.size());
 	}
@@ -145,6 +145,7 @@ public class GitVersioningAttachmentProviderTest {
 		attProvider.putAttachmentData(att, in);
 
 		attProvider.deleteAttachment(att);
+		assertFalse(new File(TMP_NEW_REPO + "/test-att/testAtt.txt").exists());
 	}
 
 	@Test
@@ -175,7 +176,9 @@ public class GitVersioningAttachmentProviderTest {
 		attProvider.putAttachmentData(att, in);
 
 		attProvider.moveAttachmentsForPage("test page", "new test page");
-		File dir = new File(TMP_NEW_REPO);
-		System.out.println(dir.listFiles());
+		File dir = new File(TMP_NEW_REPO + "/new+test+page-att");
+		assertNotNull(dir);
+		assertTrue(dir.exists());
+		assertEquals(2, dir.listFiles().length);
 	}
 }

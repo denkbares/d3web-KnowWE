@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -181,20 +182,23 @@ public class GitVersioningFileProviderTest {
 		page2.setAttribute(WikiPage.CHANGENOTE, "add test2");
 		fileProvider.putPageText(page2, "text of test page 2");
 
-		Collection allChangedSince = fileProvider.getAllChangedSince(Date.from(nowMinusOneHour));
+		List<WikiPage> allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
 		assertEquals(3, allChangedSince.size());
-		for (Object o : allChangedSince) {
-			WikiPage o1 = (WikiPage) o;
-			System.out.println(o1.getName());
-			System.out.println(o1.getAttribute(WikiPage.CHANGENOTE));
-			System.out.println(o1.getLastModified());
-		}
-
+//		for (Object o : allChangedSince) {
+//			WikiPage o1 = (WikiPage) o;
+//			System.out.println(o1.getName());
+//			System.out.println(o1.getAttribute(WikiPage.CHANGENOTE));
+//			System.out.println(o1.getLastModified());
+//		}
+		assertEquals("test.txt", allChangedSince.get(0).getName());
+		assertEquals("test.txt", allChangedSince.get(1).getName());
+		assertEquals("test2.txt", allChangedSince.get(2).getName());
 
 		fileProvider.deletePage("test");
-		allChangedSince = fileProvider.getAllChangedSince(Date.from(nowMinusOneHour));
-//		assertEquals(3, allChangedSince.size());
-		System.out.println(allChangedSince);
+		allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
+		assertEquals(4, allChangedSince.size());
+		assertEquals("test.txt", allChangedSince.get(3).getName());
+//		System.out.println(allChangedSince);
 	}
 
 	@Test
