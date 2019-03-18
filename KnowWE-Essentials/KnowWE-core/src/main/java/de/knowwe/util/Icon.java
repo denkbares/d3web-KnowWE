@@ -133,6 +133,8 @@ public class Icon {
 	public static final Icon FILE_CODE = new Icon("far fa-file-code");
 	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
 	public static final Icon FILE_PLUS = new Icon("fal fa-file-plus");
+	public static final Icon FOLDER_PLUS = new Icon("fal fa-folder-plus");
+
 
 	//PACKAGES
 	public static final Icon LAYER_PLUS = new Icon("fal fa-layer-plus");
