@@ -77,7 +77,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	@Override
 	public void initialize(WikiEngine engine, Properties properties) throws NoRequiredPropertyException, IOException {
 		super.initialize(engine, properties);
-//TODO property exceptions
 		String filesystemPath = TextUtil.getCanonicalFilePathProperty(properties, JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR,
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 		File pageDir = new File(filesystemPath);
