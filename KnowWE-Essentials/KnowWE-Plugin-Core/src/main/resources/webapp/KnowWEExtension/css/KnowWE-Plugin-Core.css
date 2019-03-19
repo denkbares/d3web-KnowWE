@@ -24,16 +24,16 @@
 .defaultMarkupFrame {
 	border: 1px solid #DDD;
 	position: relative;
-	margin: 0px 0px 5px 0px;
-	padding: 0px 0px 0px 0px;
+	margin: 0 0 5px 0;
+	padding: 0 0 0 0;
 	clear: left;
 }
 
 .defaultMarkup {
 	position: relative;
 	background-color: #F9F9F9;
-	margin-right: 0em;
-	margin-left: 0em;
+	margin-right: 0;
+	margin-left: 0;
 	min-height: 30px;
 	overflow-x: hidden;
 	overflow-y: visible;
@@ -105,6 +105,7 @@
 }
 
 .defaultMarkupFrame .markupMenuIndicator {
+	/*noinspection CssUnknownTarget*/
 	background: white url(../../templates/KnowWE/images/arrdownsmall.gif) no-repeat right 50%;
 	padding-right: 15px;
 }
@@ -142,7 +143,7 @@
 }
 
 .defaultMarkupFrame .customMenuItem a.markupMenuItem {
-	margin: 0em;
+	margin: 0;
 	margin-left: -0.25em;
 	margin-right: -0.25em;
 }
@@ -162,7 +163,7 @@
 }
 
 .markupMenuDivider {
-	line-height: 0px;
+	line-height: 0;
 	border-top: 1px solid #DDD;
 	display: block;
 }
@@ -267,15 +268,15 @@ span.markupMenuItem {
 
 	.defaultMarkupFrame .headerMenu {
 		max-width: 250px !important;
-		border-width: 0px !important;
+		border-width: 0 !important;
 	}
 
 	.defaultMarkupFrame .headerMenu .markupHeader {
-		padding: 3px 0px 0px 0px !important;
+		padding: 3px 0 0 0 !important;
 	}
 
 	.defaultMarkupFrame .markupMenuIndicator {
-		padding-right: 0px;
+		padding-right: 0;
 		visibility: hidden;
 	}
 }
@@ -330,8 +331,8 @@ span.markupMenuItem {
 
 .toolMenuFrame {
 	position: relative;
-	margin: 0px 0px 0px 0px;
-	padding: 0px 0px 0px 0px;
+	margin: 0 0 0 0;
+	padding: 0 0 0 0;
 }
 
 .toolMenuFrame .markupHeader {
@@ -359,6 +360,7 @@ span.markupMenuItem {
 }
 
 .toolMenuFrame .markupMenuIndicator {
+	/*noinspection CssUnknownTarget*/
 	background: white url(../../templates/KnowWE/images/arrdownsmall.gif) no-repeat right 50%;
 	padding-right: 15px;
 }
@@ -392,18 +394,21 @@ span.markupMenuItem {
 }
 
 .InlineTool a.markupMenuInlineSpacer {
-	padding: 0px 1px 0px 1px;
+	padding: 0 1px 0 1px;
 }
 
 .InlineTool a.markupMenuInlineItem {
-	padding: 0px 3px 0px 3px;
-	margin: 0px 1px 0px 1px;
+	padding: 0 3px 0 3px;
+	margin: 0 1px 0 1px;
 	border: 1px solid grey;
 	border-radius: 3px;
+	display: inline-block;
+	min-width: 1.5em;
+	text-align: center;
 }
 
 .toolMenuFrame .customMenuItem a.markupMenuItem {
-	margin: 0em;
+	margin: 0;
 	margin-left: -0.25em;
 	margin-right: -0.25em;
 	border: 0;
