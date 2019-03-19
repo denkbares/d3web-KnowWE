@@ -150,6 +150,15 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		try {
 
 			if (add) {
+				try {
+					Status status = git.status().addPath(attDir.getName()).call();
+					if (status.getUntracked().contains(attDir.getName())) {
+						git.add().addFilepattern(attDir.getName()).call();
+					}
+				}
+				catch (GitAPIException e) {
+					e.printStackTrace();
+				}
 				git.add().addFilepattern(getPath(att)).call();
 			}
 			Status status = git.status().addPath(getPath(att)).call();
@@ -247,18 +256,16 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public Collection<Attachment> listAttachments(WikiPage page) throws ProviderException {
+		List<Attachment> ret = new ArrayList<>();
 		File attachmentDir = findPageDir(page.getName());
 		if (attachmentDir.exists()) {
-			List<Attachment> ret = new ArrayList<>();
+
 			File[] files = attachmentDir.listFiles();
 			for (File file : files) {
 				ret.add(getAttachmentInfo(page, file.getName(), LATEST_VERSION));
 			}
-			return ret;
 		}
-		else {
-			return null;
-		}
+		return ret;
 	}
 
 	@Override
@@ -268,12 +275,13 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public List<Attachment> listAllChanged(Date timestamp) throws ProviderException {
+		List<Attachment> attachments = new ArrayList<>();
 		Iterable<RevCommit> commits = GitVersioningUtils.getRevCommitsSince(timestamp, repository);
 		try {
 			ObjectId oldCommit = null;
 			ObjectId newCommit;
 
-			List<Attachment> attachments = new ArrayList<>();
+
 			for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
 				String fullMessage = commit.getFullMessage();
 				String author = commit.getCommitterIdent().getName();
@@ -310,12 +318,11 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 				oldCommit = commit.getTree();
 			}
-			return attachments;
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return attachments;
 	}
 
 	private Attachment getAttachment(String fullMessage, String author, Date modified, String path) {
@@ -333,11 +340,12 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public Attachment getAttachmentInfo(WikiPage page, String name, int version) throws ProviderException {
+		Attachment att = new Attachment(engine, page.getName(), name);
 		File attFile = new File(findPageDir(page.getName()), name);
 		if (attFile.exists()) {
-			Attachment att = new Attachment(engine, page.getName(), name);
+
 			List<Attachment> versionHistory = getVersionHistory(att);
-			if (version == LATEST_VERSION) {
+			if (version == LATEST_VERSION && versionHistory.size() > 0) {
 				return versionHistory.get(versionHistory.size() - 1);
 			}
 			else {
@@ -346,7 +354,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				}
 			}
 		}
-		return null;
+		return att;
 	}
 
 	@Override

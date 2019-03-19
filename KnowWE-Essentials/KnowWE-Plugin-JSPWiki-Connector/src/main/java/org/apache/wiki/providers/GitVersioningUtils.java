@@ -69,6 +69,7 @@ public class GitVersioningUtils {
 				commit.setCommitter(userProfile.getFullname(), userProfile.getEmail());
 			}
 			catch (NoSuchPrincipalException e) {
+				commit.setCommitter(author, "");
 				e.printStackTrace();
 			}
 		}
