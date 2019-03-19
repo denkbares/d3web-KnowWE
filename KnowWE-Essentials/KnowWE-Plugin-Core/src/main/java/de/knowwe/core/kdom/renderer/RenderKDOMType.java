@@ -114,19 +114,20 @@ public class RenderKDOMType extends DefaultMarkupType {
 				typeName = s.get().getClass().getName();
 				typeName = typeName.substring(typeName.lastIndexOf(".") + 1);
 			}
-			string.appendHtml("<td>" + typeName + "</td>");
+			string.appendHtml("<td>").append(typeName).appendHtml("</td>");
 			string.appendHtml("<td>" + s.getID() + "</td>");
 			string.appendHtml("<td>" + s.getText().length() + "</td>");
 			string.appendHtml("<td>" + s.getOffsetInParent() + "</td>");
 			string.appendHtml("<td>" + s.getChildren().size() + "</td>");
 			Class renderer = s.get().getRenderer().getClass();
-			String rendererEntry = (renderer.equals(DelegateRenderer.class))?"":renderer.getSimpleName();
-			string.appendHtml("<td>" + rendererEntry + "</td>");
+			String rendererEntry = (renderer.equals(DelegateRenderer.class)) ? "" : renderer.getSimpleName();
+			string.appendHtml("<td>").append(rendererEntry).appendHtml("</td>");
 
 			string.appendHtml("<td><div class='table_text'><div class='kdom_source'>");
 			string.append(Strings.encodeHtml(s.getText()) + "&#8203;");
 			string.appendHtml("</div></div></td>");
-			string.appendHtml("</tr>");
+			string.appendHtml("</tr>\n");
+
 			if (!s.getChildren().isEmpty()) {
 				for (Section<?> child : s.getChildren()) {
 					renderSubtree(child, string, filter);
