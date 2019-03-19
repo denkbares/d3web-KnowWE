@@ -69,8 +69,8 @@ public class GitVersioningUtils {
 				commit.setCommitter(userProfile.getFullname(), userProfile.getEmail());
 			}
 			catch (NoSuchPrincipalException e) {
+				// is sometime necessary, e.g. CI-process is not a Wiki account
 				commit.setCommitter(author, "");
-				e.printStackTrace();
 			}
 		}
 	}
