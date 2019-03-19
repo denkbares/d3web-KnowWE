@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
@@ -45,18 +46,8 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.api.errors.AbortedByHookException;
-import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.NoFilepatternException;
-import org.eclipse.jgit.api.errors.NoHeadException;
-import org.eclipse.jgit.api.errors.NoMessageException;
-import org.eclipse.jgit.api.errors.UnmergedPathsException;
-import org.eclipse.jgit.api.errors.WrongRepositoryStateException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
-import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -75,6 +66,8 @@ import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
  * @created 2019-03-13
  */
 public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
+
+	private static final Logger log = Logger.getLogger(GitVersioningAttachmentProvider.class);
 
 	private Repository repository;
 	private WikiEngine engine;
@@ -101,7 +94,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		}
 	}
 
-	File findPageDir(String page) throws ProviderException {
+	private File findPageDir(String page) throws ProviderException {
 		File dir = new File(storageDir, getAttachmentDir(page));
 		if (dir.exists() && !dir.isDirectory()) {
 			throw new ProviderException("Attachment directory for " + page + " is not a directory");
@@ -114,7 +107,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		return TextUtil.urlEncodeUTF8(page) + DIR_EXTENSION;
 	}
 
-	File findAttachmentDir(Attachment att) throws ProviderException {
+	private File findAttachmentDir(Attachment att) throws ProviderException {
 		return findPageDir(att.getParentName());
 	}
 
@@ -128,7 +121,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				git.add().addFilepattern(attDir.getName()).call();
 			}
 			catch (GitAPIException e) {
-				e.printStackTrace();
+				log.error(e.getMessage(), e);
 			}
 		}
 
@@ -140,7 +133,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			FileUtil.copyContents(data, out);
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
+			throw new ProviderException("Can't write file " + getPath(att) + ": " + e.getMessage());
 		}
 		finally {
 			if (data != null) {
@@ -157,7 +151,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 					}
 				}
 				catch (GitAPIException e) {
-					e.printStackTrace();
+					log.error(e.getMessage(), e);
 				}
 				git.add().addFilepattern(getPath(att)).call();
 			}
@@ -171,11 +165,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				commitCommand.call();
 			}
 		}
-		catch (NoFilepatternException e) {
-			e.printStackTrace();
-		}
 		catch (GitAPIException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 		}
 	}
 
@@ -219,8 +210,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			return ret;
 		}
 		catch (GitAPIException e) {
-			e.printStackTrace();
-			throw new ProviderException("");
+			log.error(e.getMessage(), e);
+			throw new ProviderException("Git call for " + getPath(att) + " throws an error");
 		}
 	}
 
@@ -237,10 +228,9 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			treeWalkFile.reset(objectId);
 			treeWalkFile.setFilter(PathFilter.create(att.getFileName()));
 			treeWalkFile.setRecursive(false);
-			while (treeWalkFile.next()) {
+			if (treeWalkFile.next()) {
 				// now we should have our file
-				ObjectId fileId = treeWalkFile.getObjectId(0);
-				return fileId;
+				return treeWalkFile.getObjectId(0);
 			}
 		}
 		return null;
@@ -261,15 +251,17 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		if (attachmentDir.exists()) {
 
 			File[] files = attachmentDir.listFiles();
-			for (File file : files) {
-				ret.add(getAttachmentInfo(page, file.getName(), LATEST_VERSION));
+			if (files != null) {
+				for (File file : files) {
+					ret.add(getAttachmentInfo(page, file.getName(), LATEST_VERSION));
+				}
 			}
 		}
 		return ret;
 	}
 
 	@Override
-	public Collection<Attachment> findAttachments(QueryItem[] query) {
+	public Collection findAttachments(QueryItem[] query) {
 		return super.findAttachments(query);
 	}
 
@@ -285,7 +277,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
 				String fullMessage = commit.getFullMessage();
 				String author = commit.getCommitterIdent().getName();
-				Date modified = new Date(1000l * commit.getCommitTime());
+				Date modified = new Date(1000L * commit.getCommitTime());
 
 				if (oldCommit != null) {
 					newCommit = commit.getTree();
@@ -320,7 +312,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			}
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
+			throw new ProviderException("Can't get differences for a version");
 		}
 		return attachments;
 	}
@@ -345,7 +338,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		if (attFile.exists()) {
 
 			List<Attachment> versionHistory = getVersionHistory(att);
-			if (version == LATEST_VERSION && versionHistory.size() > 0) {
+			if (version == LATEST_VERSION && !versionHistory.isEmpty()) {
 				return versionHistory.get(versionHistory.size() - 1);
 			}
 			else {
@@ -375,30 +368,19 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 					}
 					return ret;
 				}
-				catch (GitAPIException e) {
-					e.printStackTrace();
-				}
-				catch (IncorrectObjectTypeException e) {
-					e.printStackTrace();
-				}
-				catch (AmbiguousObjectException e) {
-					e.printStackTrace();
-				}
-				catch (MissingObjectException e) {
-					e.printStackTrace();
-				}
-				catch (IOException e) {
-					e.printStackTrace();
+				catch (GitAPIException | IOException e) {
+					log.error(e.getMessage(), e);
 				}
 			}
 		}
 		catch (ProviderException e) {
-
+			log.error(e.getMessage(), e);
 		}
 		return ret;
 	}
 
-	@NotNull Attachment getAttachment(Attachment att, int version, RevCommit revCommit) throws IOException, ProviderException {
+	@NotNull
+	private Attachment getAttachment(Attachment att, int version, RevCommit revCommit) throws IOException, ProviderException {
 		Attachment attVersion = new Attachment(engine, att.getParentName(), att.getFileName());
 		//TODO check pattern
 		attVersion.setCacheable(false);
@@ -406,11 +388,11 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		attVersion.setVersion(version);
 		attVersion.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
 		attVersion.setSize(getObjectSize(revCommit, att));
-		attVersion.setLastModified(new Date(1000l * revCommit.getCommitTime()));
+		attVersion.setLastModified(new Date(1000L * revCommit.getCommitTime()));
 		return attVersion;
 	}
 
-	List<RevCommit> getRevCommitList(Attachment att, Git git) throws GitAPIException, IOException {
+	private List<RevCommit> getRevCommitList(Attachment att, Git git) throws GitAPIException, IOException {
 		Iterable<RevCommit> revCommits = git
 				.log()
 				.add(repository.resolve(Constants.HEAD))
@@ -433,15 +415,16 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@Override
-	public void deleteVersion(Attachment att) throws ProviderException {
-
+	public void deleteVersion(Attachment att) {
+		// Can't delete version from git
 	}
 
 	@Override
 	public void deleteAttachment(Attachment att) throws ProviderException {
 		File attFile = new File(findPageDir(att.getParentName()), att.getFileName());
 		if (attFile.exists()) {
-			attFile.delete();
+			boolean delete = attFile.delete();
+			if (!delete) log.debug("File " + getPath(att) + " could not be deleted on filesystem");
 			try {
 				Git git = new Git(repository);
 				git.rm().addFilepattern(getPath(att)).call();
@@ -450,29 +433,9 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				addUserInfo(engine, att.getAuthor(), commitCommand);
 				commitCommand.call();
 			}
-			catch (AbortedByHookException e) {
-				e.printStackTrace();
-			}
-			catch (ConcurrentRefUpdateException e) {
-				e.printStackTrace();
-			}
-			catch (NoHeadException e) {
-				e.printStackTrace();
-			}
-			catch (UnmergedPathsException e) {
-				e.printStackTrace();
-			}
-			catch (NoFilepatternException e) {
-				e.printStackTrace();
-			}
-			catch (NoMessageException e) {
-				e.printStackTrace();
-			}
-			catch (WrongRepositoryStateException e) {
-				e.printStackTrace();
-			}
 			catch (GitAPIException e) {
-				e.printStackTrace();
+				log.error(e.getMessage(), e);
+				throw new ProviderException("File " + getPath(att) + " could not be deleted");
 			}
 		}
 	}
@@ -491,33 +454,30 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			newDir.mkdirs();
 		}
 		File[] files = oldDir.listFiles();
-		try {
-			Files.move(oldDir.toPath(), newDir.toPath(), StandardCopyOption.ATOMIC_MOVE);
-			Git git = new Git(repository);
-			RmCommand rm = git.rm();
-			AddCommand add = git.add();
-			CommitCommand commit = git.commit();
-			for (File file : files) {
-				rm.addFilepattern(getAttachmentDir(oldParent) + "/" + file.getName());
-				commit.setOnly(getAttachmentDir(oldParent) + "/" + file.getName());
-				add.addFilepattern(getAttachmentDir(newParent) + "/" + file.getName());
-				commit.setOnly(getAttachmentDir(newParent) + "/" + file.getName());
+		if (files != null) {
+			try {
+				Files.move(oldDir.toPath(), newDir.toPath(), StandardCopyOption.ATOMIC_MOVE);
+				Git git = new Git(repository);
+				RmCommand rm = git.rm();
+				AddCommand add = git.add();
+				CommitCommand commit = git.commit();
+				for (File file : files) {
+					rm.addFilepattern(getAttachmentDir(oldParent) + "/" + file.getName());
+					commit.setOnly(getAttachmentDir(oldParent) + "/" + file.getName());
+					add.addFilepattern(getAttachmentDir(newParent) + "/" + file.getName());
+					commit.setOnly(getAttachmentDir(newParent) + "/" + file.getName());
+				}
+				rm.addFilepattern(getAttachmentDir(oldParent));
+				add.addFilepattern(getAttachmentDir(newParent));
+				rm.call();
+				add.call();
+				commit.setMessage("move attachments form " + oldParent + " to " + newParent);
+				commit.call();
 			}
-			rm.addFilepattern(getAttachmentDir(oldParent));
-			add.addFilepattern(getAttachmentDir(newParent));
-			rm.call();
-			add.call();
-			commit.setMessage("move attachments form " + oldParent + " to " + newParent);
-			commit.call();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		catch (NoFilepatternException e) {
-			e.printStackTrace();
-		}
-		catch (GitAPIException e) {
-			e.printStackTrace();
+			catch (IOException | GitAPIException e) {
+				log.error(e.getMessage(), e);
+				throw new ProviderException("Can't move attachments form " + oldParent + " to " + newParent);
+			}
 		}
 	}
 }

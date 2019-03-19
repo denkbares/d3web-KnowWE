@@ -25,17 +25,15 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.user.UserProfile;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.NoHeadException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
-import org.eclipse.jgit.errors.AmbiguousObjectException;
-import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.StopWalkException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -52,6 +50,9 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
  * @created 2019-03-13
  */
 public class GitVersioningUtils {
+
+	private static final Logger log = Logger.getLogger(GitVersioningUtils.class);
+
 	public static List<RevCommit> reverseToList(Iterable<RevCommit> revCommits) {
 		LinkedList<RevCommit> ret = new LinkedList<>();
 		for (RevCommit revCommit : revCommits) {
@@ -91,7 +92,7 @@ public class GitVersioningUtils {
 		RevFilter filter = new RevFilter() {
 			@Override
 			public boolean include(RevWalk walker, RevCommit cmit) throws StopWalkException {
-				return (1000l * cmit.getCommitTime()) >= timestamp.getTime();
+				return (1000L * cmit.getCommitTime()) >= timestamp.getTime();
 			}
 
 			@Override
@@ -108,20 +109,8 @@ public class GitVersioningUtils {
 					.call();
 			return commits;
 		}
-		catch (IncorrectObjectTypeException e) {
-			e.printStackTrace();
-		}
-		catch (AmbiguousObjectException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		catch (NoHeadException e) {
-			e.printStackTrace();
-		}
-		catch (GitAPIException e) {
-			e.printStackTrace();
+		catch (IOException | GitAPIException e) {
+			log.error(e.getMessage(), e);
 		}
 		return new ArrayList<>();
 	}
