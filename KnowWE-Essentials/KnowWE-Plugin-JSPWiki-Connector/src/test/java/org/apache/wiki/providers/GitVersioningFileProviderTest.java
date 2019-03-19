@@ -62,7 +62,7 @@ public class GitVersioningFileProviderTest {
 
 	@Before
 	public void init() {
-		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "newRepo";
+		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "/newRepo";
 //		System.out.println(TMP_NEW_REPO);
 		properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
