@@ -19,7 +19,15 @@
 
 package de.knowwe.core.tools;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -36,11 +44,31 @@ import de.knowwe.util.Icon;
  */
 public class CompositeEditToolProvider implements ToolProvider {
 
+	public static final String SHOW_INFO = "Show Info";
+
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		if (hasTools(section, userContext)) {
-			return new Tool[] {
-					getCompositeEditTool(Sections.cast(section, Term.class)) };
+			Section<Term> termSection = Sections.cast(section, Term.class);
+
+			List<Tool> tools = new ArrayList<>();
+			List<Identifier> identifiers = Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
+					.stream()
+					.map(c -> termSection.get().getTermIdentifier(c, termSection))
+					.map(CompositeEditToolProvider::matchCompatibilityForm)
+					.distinct()
+					.sorted()
+					.collect(Collectors.toList());
+
+			for (Identifier identifier : identifiers) {
+				if (identifiers.size() > 1) {
+					tools.add(getCompositeEditTool(SHOW_INFO + " (" + identifier.toExternalForm() + ")", identifier));
+				}
+				else {
+					tools.add(getCompositeEditTool(identifier));
+				}
+			}
+			return tools.toArray(new Tool[0]);
 		}
 		return ToolUtils.emptyToolArray();
 	}
@@ -50,18 +78,18 @@ public class CompositeEditToolProvider implements ToolProvider {
 		return section.get() instanceof Term;
 	}
 
-	protected Tool getCompositeEditTool(Section<? extends Term> section) {
-		return new DefaultTool(
-				Icon.INFO,
-				"Show Info",
-				"Shows information about this object",
-				createCompositeEditModeAction(section),
-				Tool.CATEGORY_INFO);
+	protected Tool getCompositeEditTool(Identifier identifier) {
+		return getCompositeEditTool(SHOW_INFO, identifier);
 	}
 
-	public static String createCompositeEditModeAction(Section<? extends Term> section) {
-		Identifier termIdentifier = matchCompatibilityForm(section.get().getTermIdentifier(section));
-		return createCompositeEditModeAction(termIdentifier);
+	@NotNull
+	private Tool getCompositeEditTool(String text, Identifier identifier) {
+		return new DefaultTool(
+				Icon.INFO,
+				text,
+				"Shows information about this object",
+				createCompositeEditModeAction(identifier),
+				Tool.CATEGORY_INFO);
 	}
 
 	/**
