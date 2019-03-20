@@ -332,7 +332,7 @@ DenkbaresSkin.scrollTop = function() {
 DenkbaresSkin.addFavoriteToggle = function() {
 	jq$('#page').before("<div id='favorites-toggle'></div>");
 	jq$('#menu-pagecontent').before("<div id='favorites-toggle-button' title='Hide left menu'>" +
-	"<i class='fa fa-angle-double-left'></i></div>");
+	"<i class='far fa-angle-double-left'></i></div>");
 	var setTogglePosition = function() {
 		jq$('#favorites-toggle').css({
 			'left' : (jq$('#page').offset().left - DenkbaresSkin.scrollLeft()) + "px"
