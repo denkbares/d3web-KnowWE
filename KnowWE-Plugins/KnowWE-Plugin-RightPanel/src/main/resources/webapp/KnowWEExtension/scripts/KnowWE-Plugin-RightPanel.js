@@ -26,29 +26,29 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {};
  */
 KNOWWE.core.plugin.rightPanel = function () {
 
-	var rightPanelStorageKey = "rightPanel";
+	const rightPanelStorageKey = "rightPanel";
 
-	var rightPanel = null;
+	let rightPanel = null;
 
-	var showSidebar = false;
+	let showSidebar = false;
 
-	var globalFloatingTime = 500;
+	let globalFloatingTime = 500;
 
-	var initScrolling = null;
+	let initScrolling = null;
 
-	var windowWidth;
+	let windowWidth;
 
-	var isOnBottom = false;
+	let isOnBottom = false;
 
 	jq$(window).resize(function () {
 		if (showSidebar) {
 			windowWidth = jq$(window).width();
 
-			var resize = jq$(window).width() - jq$('#rightPanel').width();
+			let resize = jq$(window).width() - jq$('#rightPanel').width();
 			if (KNOWWE.core.util.isKnowWETemplate()) {
 				resize -= jq$(KNOWWE.core.util.getPageSelector()).offset().left;
 				jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
-				var pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
+				const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
 				rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
 			} else {
 				if (windowWidth < 600) {
@@ -68,7 +68,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	});
 
 	function getSelected() {
-		var t = '';
+		let t = '';
 		if (window.getSelection) {
 			t = window.getSelection();
 		} else if (document.getSelection) {
@@ -84,19 +84,19 @@ KNOWWE.core.plugin.rightPanel = function () {
 		if (showSidebar) {
 			// Old standard Template
 			if (KNOWWE.core.util.isKnowWETemplate()) {
-				var element = $("rightPanel");
+				const element = $("rightPanel");
 				if (!element)
 					return;
-				var originY = initScrolling;
-				var wHeight = window.getHeight();
+				const originY = initScrolling;
+				const wHeight = window.getHeight();
 
-				var docHeight = getDocHeight();
-				var favHeight = element.clientHeight;
-				var scrollY = window.getScrollTop();
-				var scrollMax = docHeight - wHeight;
-				var favToScroll = favHeight - wHeight;
-				var actionsBottom = $("actionsBottom");
-				var disableFixing = (actionsBottom == null
+				const docHeight = getDocHeight();
+				const favHeight = element.clientHeight;
+				const scrollY = window.getScrollTop();
+				const scrollMax = docHeight - wHeight;
+				const favToScroll = favHeight - wHeight;
+				const actionsBottom = $("actionsBottom");
+				const disableFixing = (actionsBottom == null
 					|| favHeight >= actionsBottom.offsetTop + actionsBottom.clientHeight);
 				if (scrollY <= originY || disableFixing) {
 					// when reaching top of page or if page height is made by leftMenu
@@ -160,12 +160,12 @@ KNOWWE.core.plugin.rightPanel = function () {
 					//Haddock Template on the bottom
 
 					//Calculate user's scroll position from bottom
-					var scrollPosition = window.pageYOffset;
-					var windowSize = window.innerHeight;
-					var bodyHeight = document.body.offsetHeight;
-					var distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
+					const scrollPosition = window.pageYOffset;
+					const windowSize = window.innerHeight;
+					const bodyHeight = document.body.offsetHeight;
+					const distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
 
-					var footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
+					const footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
 
 					var sidebar = jq$('#rightPanel');
 					sidebar.css({
@@ -176,7 +176,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		}
 
 		function getDocHeight() {
-			var D = document;
+			const D = document;
 			return Math.max(Math.max(D.body.scrollHeight,
 				D.documentElement.scrollHeight), Math.max(D.body.offsetHeight,
 				D.documentElement.offsetHeight), Math.max(D.body.clientHeight,
@@ -195,8 +195,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 		});
 		rightPanelScroll();
 		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', 'auto');
-		var currentHeight = jq$(KNOWWE.core.util.getPageContentSelector).height();
-		var rightPanelHeight = jq$('#rightPanel').height();
+		const currentHeight = jq$(KNOWWE.core.util.getPageContentSelector).height();
+		const rightPanelHeight = jq$('#rightPanel').height();
 		jq$(KNOWWE.core.util.getPageContentSelector()).css('height', (currentHeight + rightPanelHeight) + 'px');
 	}
 
@@ -212,7 +212,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function makeRightPanelResizable() {
-		var theMaxWidth = jq$(window).width();
+		let theMaxWidth = jq$(window).width();
 		if (KNOWWE.core.util.isKnowWETemplate()) {
 			theMaxWidth = theMaxWidth
 				- (jq$(".tabmenu a:last-child").first().offset().left
@@ -236,10 +236,10 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function restoreLayout() {
-		var resize = jq$(window).width() - jq$("#favorites").outerWidth() - 300;
+		const resize = jq$(window).width() - jq$("#favorites").outerWidth() - 300;
 		jq$(KNOWWE.core.util.getPageSelector()).css("width", resize + "px");
 		jq$(rightPanel).css("width", "300px");
-		var pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
+		const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
 		rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
 	}
 
@@ -247,12 +247,12 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 		showSidebar = true;
 
-		var options = {right: '0px'};
+		const options = {right: '0px'};
 
 		if (KNOWWE.core.util.isKnowWETemplate()) {
 			rightPanel.animate(options, globalFloatingTime, function () {
 				//"left" is needed for resizable to work properly
-				var pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
+				const pagesRightOffset = (jq$(window).width() - (jq$(KNOWWE.core.util.getActionsTopSelector()).offset().left + jq$(KNOWWE.core.util.getActionsTopSelector()).width()));
 				rightPanel.css("left", (jq$(window).width() - pagesRightOffset) + "px");
 				jq$(window).resize();
 			});
@@ -291,7 +291,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	function growPage() {
 		if (KNOWWE.core.util.isKnowWETemplate()) {
 			jq$(KNOWWE.core.util.getMorePopupSelector()).css("display", "none");
-			var pageWidth = jq$(KNOWWE.core.util.getPageSelector()).width() + jq$('#rightPanel').width();
+			const pageWidth = jq$(KNOWWE.core.util.getPageSelector()).width() + jq$('#rightPanel').width();
 			jq$(KNOWWE.core.util.getPageSelector()).animate({'width': pageWidth}, globalFloatingTime, function () {
 				jq$(KNOWWE.core.util.getPageSelector()).css("width", "auto");
 			});
@@ -324,11 +324,11 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function buildRightPanel() {
-		var offsetTop = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : 0;
-		var scrollTop = jq$(window).scrollTop();
-		var width = isOnBottom ? '100%' : '300px';
-		var right = isOnBottom ? 'auto' : '-300px';
-		var position = isOnBottom ? 'fixed' : 'absolute';
+		const offsetTop = KNOWWE.core.util.isKnowWETemplate() ? jq$('.tabs').offset().top : 0;
+		const scrollTop = jq$(window).scrollTop();
+		const width = isOnBottom ? '100%' : '300px';
+		const right = isOnBottom ? 'auto' : '-300px';
+		const position = isOnBottom ? 'fixed' : 'absolute';
 		rightPanel = jq$('<div/>', {
 			'id': 'rightPanel',
 			'css': {
@@ -341,16 +341,16 @@ KNOWWE.core.plugin.rightPanel = function () {
 		});
 
 
-		var rightPanelHide = jq$('<div/>', {
+		const rightPanelHide = jq$('<div/>', {
 			'class': 'rightpanelhide'
 		});
 
-		var rightPanelHideText = jq$('<span/>', {
+		const rightPanelHideText = jq$('<span/>', {
 			'text': 'Hide'
 
 		});
 
-		var rightPanelHideIcon = jq$('<img/>', {
+		const rightPanelHideIcon = jq$('<img/>', {
 			'src': 'KnowWEExtension/images/arrow_right.png'
 
 		});
@@ -377,7 +377,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function setRightPanelCookie(b) {
-		var storage = simpleStorage.get(rightPanelStorageKey);
+		let storage = simpleStorage.get(rightPanelStorageKey);
 		if (typeof storage == 'undefined') {
 			storage = {}
 		}
@@ -478,13 +478,13 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function buildTopBar(title) {
-		var toolTopbar = jq$('<div/>', {
+		const toolTopbar = jq$('<div/>', {
 			'class': 'topbar'
 		});
-		var collapseIcon = jq$('<i/>', {
+		const collapseIcon = jq$('<i/>', {
 			'class': 'collapseicon fa fa-fw fa-caret-down'
 		});
-		var toolTitle = jq$('<div/>', {
+		const toolTitle = jq$('<div/>', {
 			'class': 'title',
 			'text': title
 		});
@@ -500,7 +500,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function buildToolContent(pluginDiv) {
-		var content = jq$('<div/>', {
+		const content = jq$('<div/>', {
 				'class': 'right-panel-content'
 			}
 		);
@@ -509,20 +509,21 @@ KNOWWE.core.plugin.rightPanel = function () {
 	}
 
 	function isRightPanelShown() {
-		return simpleStorage.get(rightPanelStorageKey) == true;
+		return simpleStorage.get(rightPanelStorageKey) === true;
 	}
 
 	function initRightPanelToggleButton(isShown) {
-		var orientation = (isShown ? "right" : "left");
-		var status = (isShown ? "Hide" : "Show");
+		const orientation = (isShown ? "right" : "left");
+		const status = (isShown ? "Hide" : "Show");
 		jq$(KNOWWE.core.util.getMoreButtonSelector()).after("<li><a id='rightPanel-toggle-button' title='" + status + " right panel'"
-			+ " class='action fa fa-angle-double-" + orientation + "'></a></li>");
+			+ " class='action far fa-angle-double-" + orientation + "'></a></li>");
 		bindRightPanelToggleButton();
 	}
 
 	function yoyo() {
 
-		var scrollY, lastScrollY = 0, busy;
+		let scrollY, lastScrollY = 0, busy;
+
 		function update() {
 			scrollY = window.getScroll().y;
 			// Limit scroll top to counteract iOS / OSX bounce.
@@ -552,7 +553,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 	function bindRightPanelToggleButton() {
 		jq$('#rightPanel-toggle-button').unbind('click').click(function () {
-			var $this = jq$(this);
+			const $this = jq$(this);
 			if (isRightPanelShown()) {
 				KNOWWE.core.plugin.rightPanel.hideRightPanel();
 				$this.removeClass("fa-angle-double-right").addClass("fa-angle-double-left").attr("title", "Show right panel");
@@ -574,7 +575,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		},
 
 		init: function () {
-			var isShown = isRightPanelShown();
+			const isShown = isRightPanelShown();
 			if (isShown) {
 				initRightPanel(true);
 			}
@@ -585,9 +586,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 		},
 
 		addToolToRightPanel: function (title, id, pluginDiv) {
-			var tool = buildToolContainer(id);
-			var topbar = buildTopBar(title);
-			var content = buildToolContent(pluginDiv);
+			const tool = buildToolContainer(id);
+			const topbar = buildTopBar(title);
+			const content = buildToolContent(pluginDiv);
 			appendNewToolToRightPanel(tool, topbar, content);
 		},
 
@@ -611,7 +612,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 KNOWWE.core.plugin.rightPanel.custom = function () {
 
 	function buildCustomContentDiv() {
-		var customContent = jq$('<div/>', {});
+		const customContent = jq$('<div/>', {});
 
 		jq$.ajax({
 			url: KNOWWE.core.util.getURL({
@@ -642,15 +643,15 @@ KNOWWE.core.plugin.rightPanel.custom = function () {
 
 KNOWWE.core.plugin.rightPanel.watches = function () {
 
-	var watchesStorageKey = "watches";
+	const watchesStorageKey = "watches";
 
-	var watchesArray;
+	let watchesArray;
 
-	var watches;
+	let watches;
 
-	var restorableEntries = {};
+	const restorableEntries = {};
 
-	var watchlist;
+	let watchlist;
 
 	function bindUiActions() {
 		watches.on("click", ".watchlistentry", function (e) {
@@ -672,11 +673,11 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function handleResponse(data) {
-		var parsed = JSON.parse(data);
-		var expressionArrays = parsed.values;
-		var oldEntries = watchlist.find(".watchlistentry");
+		const parsed = JSON.parse(data);
+		const expressionArrays = parsed.values;
+		const oldEntries = watchlist.find(".watchlistentry");
 		jq$.each(expressionArrays, function (index, value) {
-			var newEntry = createNewEntry(watchesArray[index], value);
+			const newEntry = createNewEntry(watchesArray[index], value);
 			jq$(oldEntries[index]).replaceWith(newEntry);
 		});
 		enableAddWatch();
@@ -695,21 +696,21 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function enableAddWatch() {
-		if (watches.find(".addwatch").prop("disabled") == true && watches.find(".newwatch").length == 0) {
+		if (watches.find(".addwatch").prop("disabled") === true && watches.find(".newwatch").length === 0) {
 			watches.find(".addwatch").prop("disabled", false);
 			watches.find(".fromselection").prop("disabled", false);
 		}
 	}
 
 	function disableAddWatch() {
-		if (watches.find(".addwatch").prop("disabled") == false) {
+		if (watches.find(".addwatch").prop("disabled") === false) {
 			watches.find(".addwatch").prop("disabled", true);
 			watches.find(".fromselection").prop("disabled", true);
 		}
 	}
 
 	function addWatch(text) {
-		var textarea = createTextarea(null, text);
+		const textarea = createTextarea(null, text);
 		watchlist.append(textarea);
 		jq$(textarea).find("textarea").focus();
 		//allow only one new textarea - disable Add Watch
@@ -717,27 +718,27 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function addWatchFromSelection() {
-		var text = getSelectionText();
+		const text = getSelectionText();
 		addWatch(text);
 	}
 
 	function removeWatch(that) {
-		var index = getWatchesIndex(jq$(that).parent());
+		const index = getWatchesIndex(jq$(that).parent());
 		watchesArray.splice(index, 1);
 		jq$(that).parent().remove();
 		updateCookies();
 	}
 
 	function saveOldEntry(index, that) {
-		var oldEntry = jq$(that);
+		const oldEntry = jq$(that);
 		restorableEntries[index] = oldEntry;
 	}
 
 	function editWatch(that) {
-		var index = getWatchesIndex(that);
+		const index = getWatchesIndex(that);
 		saveOldEntry(index, that);
 		watchesArray.splice(index, 1);
-		var textarea = createTextarea(that);
+		const textarea = createTextarea(that);
 		jq$(that).replaceWith(textarea);
 		jq$(textarea).find("textarea").focus();
 		//allow only one new textarea - disable Add Watch
@@ -745,19 +746,19 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function restoreEntry(entry, watchesIndex) {
-		var restorableEntry = restorableEntries[watchesIndex];
-		var restorableExpression = jq$(restorableEntry).find(".expression").text();
+		const restorableEntry = restorableEntries[watchesIndex];
+		const restorableExpression = jq$(restorableEntry).find(".expression").text();
 		watchesArray.splice(watchesIndex, 0, restorableExpression);
 		jq$(entry).replaceWith(restorableEntry);
 		delete restorableEntries[watchesIndex];
 	}
 
 	function handleTextarea(that, e) {
-		var entry = jq$(that).parent();
-		var watchesIndex = getWatchesIndex(entry);
+		const entry = jq$(that).parent();
+		const watchesIndex = getWatchesIndex(entry);
 
 		//escape
-		if (e.keyCode == 27) {
+		if (e.keyCode === 27) {
 			//is it an old element?
 			if (watchesIndex <= watchesArray.length) {
 				//restore it
@@ -769,15 +770,15 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 			enableAddWatch();
 		}
 
-		if (jq$(that).data('ui-tooltip') && jq$(that).val().trim() != "") {
+		if (jq$(that).data('ui-tooltip') && jq$(that).val().trim() !== "") {
 			jq$(that).tooltip("destroy");
 			jq$(that).attr("title", null);
 		}
 
-		var trimmedValue = jq$(that).val().trim();
+		const trimmedValue = jq$(that).val().trim();
 		//shift+enter = newline, enter=submit
-		if (e.keyCode == 13 && !e.shiftKey) {
-			if (trimmedValue == "") {
+		if (e.keyCode === 13 && !e.shiftKey) {
+			if (trimmedValue === "") {
 				jq$(that).tooltip({position: {my: "right bottom", at: "left top"}});
 				jq$(that).attr("title", "Please enter an expression.");
 				jq$(that).trigger("mouseover");
@@ -804,7 +805,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function getExpressionValue(expr, id) {
-		var data = {expressions: expr, page: KNOWWE.helper.gup('page'), id: id};
+		const data = {expressions: expr, page: KNOWWE.helper.gup('page'), id: id};
 		return jq$.ajax({
 			type: 'post',
 			url: 'action/GetExpressionValueAction',
@@ -816,17 +817,17 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 
 
 	function createTextarea(that, text) {
-		var watchesNewEntry = jq$('<div/>', {
+		const watchesNewEntry = jq$('<div/>', {
 			'class': 'newwatch watchlistline'
 		});
-		var textarea = jq$('<textarea>', {});
+		const textarea = jq$('<textarea>', {});
 
-		var textareaDom = textarea[0];
+		const textareaDom = textarea[0];
 
 		if (typeof AutoComplete != "undefined") {
 			new AutoComplete(textareaDom, function (callback, prefix) {
-				var scope = "$d3web/condition";
-				var data = {prefix: prefix, scope: scope};
+				const scope = "$d3web/condition";
+				const data = {prefix: prefix, scope: scope};
 				if (KNOWWE && KNOWWE.helper) {
 					data.KWiki_Topic = KNOWWE.helper.gup('page');
 				}
@@ -841,8 +842,8 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		}
 
 		if (that) {
-			var oldEntry = restorableEntries[getWatchesIndex(that)];
-			var oldText = jq$(oldEntry).find(".expression").text();
+			const oldEntry = restorableEntries[getWatchesIndex(that)];
+			const oldText = jq$(oldEntry).find(".expression").text();
 			textarea.val(oldText);
 		}
 
@@ -873,8 +874,8 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	function handleDefaultResponse(watchesEntry, responseObject) {
 
 		jq$.each(responseObject.kbsEntries, function iterateValuesFromDifferentKbs(index, value) {
-			var watchesEntryValue = createWatchesEntryValueSpan(value);
-			var tooltipcontent = jq$('<span style="padding-right: 5px" class="fa fa-book"></span><span>' + value.kbname + '  </span>');
+			const watchesEntryValue = createWatchesEntryValueSpan(value);
+			const tooltipcontent = jq$('<span style="padding-right: 5px" class="fa fa-book"></span><span>' + value.kbname + '  </span>');
 			jq$(watchesEntryValue).tooltipster({
 				content: tooltipcontent,
 				position: "top-left",
@@ -891,10 +892,10 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	function handleHistoryResponse(watchesEntry, responseObject) {
 
 		jq$.each(responseObject.kbsEntries, function iterateValuesFromDifferentKbs(index, value) {
-			var watchesEntryValue = createWatchesEntryHistoryValueSpan(value.kbname);
+			const watchesEntryValue = createWatchesEntryHistoryValueSpan(value.kbname);
 
 			jq$.each(value.value, function iterateValuesInHistory(index, value) {
-				var historyEntrySpan = jq$('<span/>', {
+				const historyEntrySpan = jq$('<span/>', {
 					'class': 'value tooltip historyentry',
 					'text': value.value
 				});
@@ -906,10 +907,10 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		});
 
 		function createTimestampsToolTip(historyEntrySpan) {
-			var start = this.timestamps[0];
-			var end = this.timestamps[1];
-			var tooltipcontent;
-			if (start != end) {
+			const start = this.timestamps[0];
+			const end = this.timestamps[1];
+			let tooltipcontent;
+			if (start !== end) {
 				tooltipcontent = jq$('<span>Start: ' + start + '</span><br><span>End: ' + end + '  </span>');
 			}
 			else {
@@ -928,19 +929,19 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 
 	function createNewEntry(expression, responseObject) {
 
-		var watchesEntry = jq$('<div/>', {
+		const watchesEntry = jq$('<div/>', {
 			'class': 'watchlistline watchlistentry'
 
 		});
 		watchesEntry.uniqueId();
-		var watchesEntryExpression = jq$('<span/>', {
+		const watchesEntryExpression = jq$('<span/>', {
 			'class': 'expression',
 			'text': expression
 		});
 		watchesEntry.append(watchesEntryExpression);
 
 
-		var length = Object.keys(responseObject).length;
+		const length = Object.keys(responseObject).length;
 		if (length > 0) {
 			switch (responseObject.info) {
 				case 'history':
@@ -951,7 +952,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 			}
 		}
 		else {
-			var watchesEntryValue = jq$('<span/>', {
+			const watchesEntryValue = jq$('<span/>', {
 				'class': 'value expressionerror',
 				'text': '<not a valid expression>'
 			});
@@ -964,9 +965,9 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 
 	function addExpression(original, watchesIndex) {
 
-		var expression = original.val();
+		const expression = original.val();
 
-		var watchesEntry = jq$('<div/>', {
+		const watchesEntry = jq$('<div/>', {
 			'class': 'watchlistline watchlistentry',
 			'text': expression
 		});
@@ -987,16 +988,16 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 
 	function buildBasicWatchesDiv() {
 
-		var watchcontent = jq$('<div/>', {});
+		const watchcontent = jq$('<div/>', {});
 
-		var watchlist = jq$('<div/>', {
+		const watchlist = jq$('<div/>', {
 			'class': 'watchlist'
 		});
 
-		var watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-plus-circle'></i>&nbsp;Add Watch</button>");
+		const watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-plus-circle'></i>&nbsp;Add Watch</button>");
 
 
-		var watchesAddEntryFromSelection = jq$("<button class='fromselection'><i class='fa fa-paragraph'></i>&nbsp;from Selection</button>");
+		const watchesAddEntryFromSelection = jq$("<button class='fromselection'><i class='fa fa-paragraph'></i>&nbsp;from Selection</button>");
 
 		watchcontent.append(watchlist);
 		watchcontent.append(watchesAddEntry);
@@ -1007,11 +1008,11 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 
 	function createDeleteButton() {
 
-		var deleteContainer = jq$('<div/>', {
+		const deleteContainer = jq$('<div/>', {
 			'class': 'iconcontainer deletewatch select'
 		});
 
-		var deleteIcon = jq$("<a class=''><i class='fa fa-times-circle icon'></i></a>");
+		const deleteIcon = jq$("<a class=''><i class='fa fa-times-circle icon'></i></a>");
 
 
 		return deleteContainer.append(deleteIcon);
@@ -1021,10 +1022,10 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 		watchesArray = simpleStorage.get(watchesStorageKey);
 		if (typeof watchesArray != 'undefined') {
 			getExpressionValue(watchesArray).success(function (data) {
-				var parsed = JSON.parse(data);
-				var expressionArrays = parsed.values;
+				const parsed = JSON.parse(data);
+				const expressionArrays = parsed.values;
 				jq$.each(expressionArrays, function (index, value) {
-					var newEntry = createNewEntry(watchesArray[index], value);
+					const newEntry = createNewEntry(watchesArray[index], value);
 					watchlist.append(newEntry);
 				});
 			});
@@ -1039,10 +1040,10 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 	}
 
 	function getSelectionText() {
-		var text = "";
+		let text = "";
 		if (window.getSelection) {
 			text = window.getSelection().toString();
-		} else if (document.selection && document.selection.type != "Control") {
+		} else if (document.selection && document.selection.type !== "Control") {
 			text = document.selection.createRange().text;
 		}
 		return text;
