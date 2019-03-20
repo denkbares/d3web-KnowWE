@@ -122,7 +122,7 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns the first {@link Compiler} of all compilers that compiles the given section, that is
+	 * Returns the first {@link Compiler} of all compilers that compiles  the packages of the given section, that is
 	 * of the specified compiler class, or which extends or implements the specified compiler class. If no such compiler
 	 * exists, null is returned.
 	 *
@@ -161,7 +161,7 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns all {@link Compiler}s with the given type that compile the given section.
+	 * Returns all {@link Compiler}s with the given type that compile the packages of the given section.
 	 *
 	 * @param section       the section for which we want the {@link Compiler}s
 	 * @param compilerClass the type of the {@link Compiler} we want
@@ -199,6 +199,26 @@ public class Compilers {
 			}
 		}
 		return compilers;
+	}
+
+	/**
+	 * Returns all {@link Compiler}s with the given type that compile the packages of the given section and also have
+	 * compile scripts attached to the type of the given section.
+	 *
+	 * @param section       the section for which we want the {@link Compiler}s
+	 * @param compilerClass the type of the {@link Compiler} we want
+	 * @return all {@link Compiler}s compiling the given section
+	 * @created 15.11.2013
+	 */
+	public static <C extends Compiler> Collection<C> getCompilersWithCompileScript(Section<?> section, Class<C> compilerClass) {
+		Collection<C> compilers = getCompilers(section, compilerClass, false);
+		ArrayList<C> filteredCompilers = new ArrayList<>(compilers.size());
+		for (C compiler : compilers) {
+			if (!CompilerManager.getScriptManager(compiler).getScripts(section.get()).isEmpty()) {
+				filteredCompilers.add(compiler);
+			}
+		}
+		return filteredCompilers;
 	}
 
 	/**
