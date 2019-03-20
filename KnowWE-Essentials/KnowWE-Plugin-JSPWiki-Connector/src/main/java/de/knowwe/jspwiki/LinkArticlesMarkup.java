@@ -268,24 +268,25 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			out.appendHtmlTag("/a");
 
 			// render if the section is erroneous
-			int errors = DefaultMarkupRenderer.getMessageStrings(section, Message.Type.ERROR, null).size();
-			int warnings = errors > 0 ? 0 :
-					DefaultMarkupRenderer.getMessageStrings(section, Message.Type.WARNING, null).size();
-			if (errors > 0) {
-				out.append(" (")
-						.appendHtml(Icon.ERROR.toHtml())
-						.append(" ")
-						.append(Strings.pluralOf(errors, "error"))
-						.append(")");
+			if (section.get() instanceof DefaultMarkupType) {
+				int errors = DefaultMarkupRenderer.getMessageStrings(section, Message.Type.ERROR, null).size();
+				int warnings = errors > 0 ? 0 :
+						DefaultMarkupRenderer.getMessageStrings(section, Message.Type.WARNING, null).size();
+				if (errors > 0) {
+					out.append(" (")
+							.appendHtml(Icon.ERROR.toHtml())
+							.append(" ")
+							.append(Strings.pluralOf(errors, "error"))
+							.append(")");
+				}
+				if (warnings > 0) {
+					out.append(" (")
+							.appendHtml(Icon.WARNING.toHtml())
+							.append(" ")
+							.append(Strings.pluralOf(warnings, "warning"))
+							.append(")");
+				}
 			}
-			if (warnings > 0) {
-				out.append(" (")
-						.appendHtml(Icon.WARNING.toHtml())
-						.append(" ")
-						.append(Strings.pluralOf(warnings, "warning"))
-						.append(")");
-			}
-
 			out.append("\n");
 		}
 	}
