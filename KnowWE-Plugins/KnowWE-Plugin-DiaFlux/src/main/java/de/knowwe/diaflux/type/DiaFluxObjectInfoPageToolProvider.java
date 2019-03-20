@@ -25,9 +25,9 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.diaflux.type.FlowchartXMLHeadType.FlowchartTermDef;
 import de.knowwe.tools.Tool;
 
-
 /**
  * Adds an InfoPage Tool to DiaFlux.
+ *
  * @author Reinhard Hatko
  * @created 21.05.2013
  */
@@ -37,7 +37,7 @@ public class DiaFluxObjectInfoPageToolProvider extends CompositeEditToolProvider
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Section<FlowchartTermDef> termDef = Sections.successor(section, FlowchartTermDef.class);
 		if (termDef != null) {
-			return new Tool[] { getCompositeEditTool(termDef) };
+			return new Tool[] { getCompositeEditTool(termDef.get().getTermIdentifier(termDef)) };
 		}
 		else {
 			return new Tool[] {};
