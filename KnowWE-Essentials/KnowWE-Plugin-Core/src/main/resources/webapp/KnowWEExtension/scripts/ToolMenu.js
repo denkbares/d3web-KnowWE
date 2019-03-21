@@ -24,9 +24,9 @@ function ToolMenu() {
 
 ToolMenu.prototype.decorateToolMenus = function ($parent) {
 	if (!$parent) $parent = jq$('.toolMenuParent');
-	var decorators = $parent.find('.toolsMenuDecorator');
+	const decorators = $parent.find('.toolsMenuDecorator');
 	decorators.each(function () {
-		var a = jq$(this);
+		const a = jq$(this);
 		if (a.data('toolMenuDecorated') === 'true') return;
 		a.parent().mouseenter(function () {
 			a.css('visibility', 'visible');
@@ -50,10 +50,10 @@ ToolMenu.prototype.decorateToolMenus = function ($parent) {
 };
 
 ToolMenu.prototype.selectTerm = function (element) {
-	element = jq$(element).parent().find('.clickable-term')[0];
-	var selection = window.getSelection();
-	var range = document.createRange();
-	range.selectNodeContents(element);
+	let clickableTerm = jq$(element).parent().find('.clickable-term')[0] || jq$(element).parents('.toolMenuDecorated')[0];
+	const selection = window.getSelection();
+	const range = document.createRange();
+	range.selectNode(clickableTerm);
 	selection.removeAllRanges();
 	selection.addRange(range);
 };
@@ -63,9 +63,9 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 	jq$('.tooltipstered').tooltipster('hide');
 
 	// hide tool menus opened for other terms
-	var lastMenuId = this.lastMenuId;
+	const lastMenuId = this.lastMenuId;
 	this.hideToolsPopupMenu();
-	var currentMenuId = jq$($node).attr('id');
+	const currentMenuId = jq$($node).attr('id');
 	if (lastMenuId === currentMenuId) return;
 	this.lastMenuId = currentMenuId;
 
@@ -113,7 +113,7 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 	document.body.appendChild(parent);
 	parent.innerHTML = "<div class='toolMenuFrame'>" + this.getToolMenuHtml(node) + "</div>";
 
-	var menu = jq$(parent).find(".markupMenu");
+	const menu = jq$(parent).find(".markupMenu");
 	let menuRect = menu[0].getBoundingClientRect();
 	if (menuRect.top + menuRect.height > windowHeight) {
 		menu.css("height", windowHeight - menuRect.top + "px");
@@ -127,35 +127,35 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 ToolMenu.prototype.getToolMenuHtml = function (node) {
 
 
-	var toolMenuIdentifier = jq$(node).attr('toolMenuIdentifier');
+	let toolMenuIdentifier = jq$(node).attr('toolMenuIdentifier');
 	if (!this.cache[toolMenuIdentifier]) {
-		var toolMenuAction = 'GetToolMenuAction';
-		var specialAction = jq$(node).attr('toolMenuAction');
+		let toolMenuAction = 'GetToolMenuAction';
+		const specialAction = jq$(node).attr('toolMenuAction');
 		if (specialAction) {
 			toolMenuAction = specialAction;
 		}
 
-		var locationName = "default";
+		let locationName = "default";
 		if (jq$(node).parents(".termbrowser").exists()) {
 			locationName = "termbrowser";
 		}
 
-		var params = {
+		const params = {
 			action: toolMenuAction,
 			identifier: toolMenuIdentifier,
 			location: locationName
 		};
 
-		var options = {
+		const options = {
 			url: KNOWWE.core.util.getURL(params),
 			async: false,
 			response: {
 				onError: _EC.onErrorBehavior
 			}
 		};
-		var ajaxCall = new _KA(options);
+		const ajaxCall = new _KA(options);
 		ajaxCall.send();
-		var parsedResponse = JSON.parse(ajaxCall.getResponse());
+		const parsedResponse = JSON.parse(ajaxCall.getResponse());
 		this.cache[parsedResponse.sectionId] = parsedResponse.menuHTML;
 		if (specialAction) {
 			jq$(node).removeAttr('toolMenuAction');
@@ -168,7 +168,7 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 
 ToolMenu.prototype.hideToolsPopupMenu = function () {
 	this.lastMenuId = null;
-	var old = jq$('#toolPopupMenuID')[0];
+	const old = jq$('#toolPopupMenuID')[0];
 	if (old) {
 		old.remove();
 	}
@@ -176,11 +176,11 @@ ToolMenu.prototype.hideToolsPopupMenu = function () {
 
 ToolMenu.prototype.animateDefaultMarkupMenu = function ($parent) {
 	if (!$parent) $parent = jq$('.defaultMarkupFrame');
-	var $markups = $parent.is('.defaultMarkupFrame') ? $parent : $parent.find('.defaultMarkupFrame');
+	const $markups = $parent.is('.defaultMarkupFrame') ? $parent : $parent.find('.defaultMarkupFrame');
 	$markups.each(function () {
-		var markup = jq$(this);
-		var header = markup.find('.headerMenu').first();
-		var menu = markup.find('.markupMenu').first();
+		const markup = jq$(this);
+		const header = markup.find('.headerMenu').first();
+		const menu = markup.find('.markupMenu').first();
 		if (menu.length === 0) {
 			header.find('.markupMenuIndicator').hide();
 		}
@@ -195,15 +195,15 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function ($parent) {
 			header.stop().animate({'max-width': 250, 'z-index': 1500, opacity: 1}, 200);
 			if (menu) {
 				menu.show();
-				var menuBottom = menu[0].getBoundingClientRect().bottom;
-				var windowHeight = jq$(window).height();
-				var footerHeightVisible = 0;
+				const menuBottom = menu[0].getBoundingClientRect().bottom;
+				const windowHeight = jq$(window).height();
+				let footerHeightVisible = 0;
 				if (jq$('.footer').first()) {
 					//Calculate user's scroll position from bottom
-					var scrollPosition = window.pageYOffset;
-					var windowSize = window.innerHeight;
-					var bodyHeight = document.body.offsetHeight;
-					var distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
+					const scrollPosition = window.pageYOffset;
+					const windowSize = window.innerHeight;
+					const bodyHeight = document.body.offsetHeight;
+					const distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
 
 					footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
 				}
@@ -216,7 +216,7 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function ($parent) {
 	});
 };
 
-var _TM = new ToolMenu();
+const _TM = new ToolMenu();
 
 jq$(window).ready(function () {
 	_TM.animateDefaultMarkupMenu();
