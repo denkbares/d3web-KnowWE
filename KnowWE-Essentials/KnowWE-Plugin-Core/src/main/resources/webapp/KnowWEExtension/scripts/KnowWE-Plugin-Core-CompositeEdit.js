@@ -23,7 +23,7 @@
  * preserved.
  */
 if (typeof KNOWWE == "undefined" || !KNOWWE) {
-	var KNOWWE = {};
+	let KNOWWE = {};
 }
 
 /**
@@ -37,7 +37,7 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
 
 KNOWWE.plugin.compositeEditTool = function() {
 
-	var recentlyDragged = false;
+	let recentlyDragged = false;
 
 	function initCompositeEdit(id) {
 
@@ -52,7 +52,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 		_KU.showProcessingIndicator();
 
 		initSections(id);
-		if (_CE.mode == _CE.ModeEnum.EDIT) {
+		if (_CE.mode === _CE.ModeEnum.EDIT) {
 			addEventListenerForEdit(id);
 		}
 		// TODO: replace with dialog specific function
@@ -60,7 +60,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 
 		if (_CEWT.locked) {
-			var message = "Another user has started to edit this page, but "
+			const message = "Another user has started to edit this page, but "
 				+ "hasn't yet saved it. You are allowed to further edit this page, but be "
 				+ "aware that the other user will not be pleased if you do so!";
 			KNOWWE.notification.warn("Locked Article", message);
@@ -95,13 +95,13 @@ KNOWWE.plugin.compositeEditTool = function() {
 		// add id, sectionId, and class attributes to correct html elements
 		jq$(id).find('.editanchor').each(
 			function() {
-				var editAnchor = jq$(this);
-				var sectionId = editAnchor.attr('sectionid');
-				var topLvlAnchorElement = editAnchor;
+				const editAnchor = jq$(this);
+				const sectionId = editAnchor.attr('sectionid');
+				let topLvlAnchorElement = editAnchor;
 
 				topLvlAnchorElement = topLvlAnchorElement.prev("");
 
-				var editElement = topLvlAnchorElement;
+				let editElement = topLvlAnchorElement;
 
 				// if we do not already have an editelement, we create one
 				topLvlAnchorElement.before('<div></div>');
@@ -124,13 +124,14 @@ KNOWWE.plugin.compositeEditTool = function() {
 				// if the attribute id with this section's id is not yet
 				// used, we set it,
 				// otherwise InstantEdit will not work
-				if (sectionId && jq$('#' + sectionId).length == 0
-					&& editElement.attr('sectionid') == sectionId) {
+				if (sectionId && jq$('#' + sectionId).length === 0
+					&& editElement.attr('sectionid') === sectionId) {
 					editElement.attr('id', sectionId);
 				}
 
-				if (sectionId)
+				if (sectionId) {
 					_CE.editableSections.push(sectionId);
+				}
 
 				// we no longer need the anchor
 				editAnchor.remove();
@@ -139,10 +140,10 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function prepareEditElementContents(id) {
-		var beforeFirstElement = true;
-		var afterLastElement = false;
+		let beforeFirstElement = true;
+		let afterLastElement = false;
 		jq$(id).find('.editelement').each(function() {
-			var editElement = jq$(this);
+			const editElement = jq$(this);
 			if (editElement.hasClass('first')) {
 				beforeFirstElement = false;
 			}
@@ -157,8 +158,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 				return;
 			// we add all elements between this editelement
 			// and the next to this editelement
-			var next = editElement.next();
-			while (next.length == 1 && !next.is('.editelement')) {
+			let next = editElement.next();
+			while (next.length === 1 && !next.is('.editelement')) {
 				next.remove();
 				editElement.append(next);
 				next = editElement.next();
@@ -166,7 +167,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 			// if elements are aligned, they are not properly selectable
 			// for editing
 			editElement.children().each(function() {
-				var align = jq$(this).attr('align');
+				const align = jq$(this).attr('align');
 				if (align != null) {
 					jq$(this).attr('align', null);
 				}
@@ -175,31 +176,31 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function initWikiText() {
-		var ids = _CE.editableSections.join(";");
+		const ids = _CE.editableSections.join(";");
 
-		var params = {
-			action : 'InitEditModeAction'
+		const params = {
+			action: 'InitEditModeAction'
 		};
 
-		var options = {
-			url : KNOWWE.core.util.getURL(params),
-			async : false,
-			data : ids,
-			response : {
-				action : 'none'
+		const options = {
+			url: KNOWWE.core.util.getURL(params),
+			async: false,
+			data: ids,
+			response: {
+				action: 'none'
 			}
 		};
 
-		var ajaxCall = new _KA(options);
+		const ajaxCall = new _KA(options);
 		ajaxCall.send();
-		var response = ajaxCall.getResponse();
-		var json = JSON.parse(response);
+		const response = ajaxCall.getResponse();
+		const json = JSON.parse(response);
 
 		// store toolNameSpace and wikiText for each section
-		var sections = json.sections;
+		const sections = json.sections;
 		if (sections != null) {
-			for (var i = 0; i < sections.length; i++) {
-				var section = sections[i];
+			for (let i = 0; i < sections.length; i++) {
+				let section = sections[i];
 				_CE.toolNameSpace[section.id] = eval(section.namespace);
 				_EC.wikiText[section.id] = section.wikitext;
 			}
@@ -207,12 +208,12 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 		// for inline sections we combine the text of the other inlined
 		// sections into the id of the first/main id
-		var lastEditElementId = null;
-		var combinedText = "";
-		for (var i = 0; i < _CE.editableSections.length; i++) {
-			var sectionId = _CE.editableSections[i]
-			var section = getSection(sectionId);
-			if (section.length == 1) {
+		let lastEditElementId = null;
+		let combinedText = "";
+		for (let i = 0; i < _CE.editableSections.length; i++) {
+			let sectionId = _CE.editableSections[i]
+			let section = getSection(sectionId);
+			if (section.length === 1) {
 				if (lastEditElementId != null) {
 					_EC.wikiText[lastEditElementId] = combinedText;
 				}
@@ -225,7 +226,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 		_CEWT.order = [];
 		jq$('.editelement').each(function() {
-			var sectionId = jq$(this).attr('sectionId');
+			const sectionId = jq$(this).attr('sectionId');
 			if (sectionId)
 				_CEWT.order.push(sectionId);
 		});
@@ -236,10 +237,10 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function addEventListenerForEdit(root) {
 
-		var found = jq$(root).find('.editelement');
+		const found = jq$(root).find('.editelement');
 		jq$(root).find('.editelement').each(function() {
-			var editElement = jq$(this);
-			var sectionID = editElement.attr('sectionid');
+			const editElement = jq$(this);
+			const sectionID = editElement.attr('sectionid');
 
 			if (jq$.inArray(sectionID, _CE.editableSections) > -1) {
 				editElement.unbind('click').click(function() {
@@ -266,11 +267,11 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function removeEventListenersForEdit(root) {
-		var found = jq$(root).find('.editelement');
+		const found = jq$(root).find('.editelement');
 		jq$(root).find('.editelement').each(function() {
-			var editElement = jq$(this);
+			const editElement = jq$(this);
 			editElement.unbind('click');
-			var sectionID = editElement.attr('sectionid');
+			const sectionID = editElement.attr('sectionid');
 			editElement.unbind('mouseout');
 			editElement.unbind('mouseover');
 		});
@@ -278,7 +279,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function isEditSourceKey(event) {
 		// E, but not with alt gr (= alt + ctrl) to allow for € in windows
-		return event.which == 69 && (!event.altKey || !event.ctrlKey);
+		return event.which === 69 && (!event.altKey || !event.ctrlKey);
 	}
 
 	function getSection(sectionId) {
@@ -289,26 +290,26 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 		_KU.showProcessingIndicator();
 
-		var params = {
-			action : 'InstantEditEnableAction',
-			KdomNodeId : sectionId
+		const params = {
+			action: 'InstantEditEnableAction',
+			KdomNodeId: sectionId
 		};
 
-		var options = {
-			url : KNOWWE.core.util.getURL(params),
-			response : {
-				action : 'none',
-				fn : function() {
+		const options = {
+			url: KNOWWE.core.util.getURL(params),
+			response: {
+				action: 'none',
+				fn: function() {
 
 					// store the current version of this section for restoring
 					_CE.cancelCache[sectionId] = getSection(sectionId);
 
-					var toolNameSpace = _CE.toolNameSpace[sectionId];
+					const toolNameSpace = _CE.toolNameSpace[sectionId];
 
 					// show edit area
-					var json = JSON.parse(this.responseText);
-					var locked = json.locked;
-					var html = toolNameSpace.generateHTML(sectionId);
+					const json = JSON.parse(this.responseText);
+					const locked = json.locked;
+					let html = toolNameSpace.generateHTML(sectionId);
 					html = wrapHTML(sectionId, locked, html);
 					getSection(sectionId).replaceWith(html);
 
@@ -325,7 +326,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 					});
 					_KU.hideProcessingIndicator();
 				},
-				onError : _EC.onErrorBehavior
+				onError: _EC.onErrorBehavior
 			}
 		};
 		new _KA(options).send();
@@ -336,18 +337,18 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function postProcessHTML(id) {
-		var textarea = jq$('#' + createTextAreaID(id))[0];
+		const textarea = jq$('#' + createTextAreaID(id))[0];
 		if (typeof AutoComplete != "undefined") {
 			new AutoComplete(textarea, function(callback, prefix) {
-				var scope = "root";
-				var data = {sectionId : id, prefix : prefix, scope : scope};
+				const scope = "root";
+				const data = {sectionId: id, prefix: prefix, scope: scope};
 				if (KNOWWE && KNOWWE.helper) {
 					data.KWiki_Topic = KNOWWE.helper.gup('page');
 				}
 				jq$.ajax({
-					url : 'action/CompositeEditCompletionAction',
-					cache : false,
-					data : data
+					url: 'action/CompositeEditCompletionAction',
+					cache: false,
+					data: data
 				}).success(function(data) {
 					callback(eval(data));
 				});
@@ -356,7 +357,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 		new TextArea(textarea);
 
 		textarea.focus();
-		jq$(textarea).autosize({append : "\n"});
+		jq$(textarea).autosize({append: "\n"});
 //	        while (textarea.clientHeight == textarea.scrollHeight) {
 //	        	var tempHeight = textarea.style.height;
 //	        	textarea.style.height = textarea.clientHeight - 5 + "px";
@@ -367,12 +368,12 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function wrapHTML(id, locked, html) {
-		var lockedHTML = "";
+		let lockedHTML = "";
 		if (locked) {
 			lockedHTML = "<div class=\"error\">Another user has started to edit this page, but " + "hasn't yet saved it. You are allowed to further edit this page, but be " + "aware that the other user will not be pleased if you do so!</div>"
 		}
-		var openingDiv = "<div sectionid='" + id + "' class='editarea'><div class='defaultMarkupFrame' compositeEdit='" + id + "'>";
-		var closingDiv = "</div></div>";
+		const openingDiv = "<div sectionid='" + id + "' class='editarea'><div class='defaultMarkupFrame' compositeEdit='" + id + "'>";
+		const closingDiv = "</div></div>";
 
 		return openingDiv + lockedHTML + html + closingDiv;
 	}
@@ -396,53 +397,53 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function appendDefaultMarkupFrameToolMenu(sectionId) {
-		var editField = jq$(".defaultMarkupFrame[compositeEdit=" + sectionId + "]");
+		const editField = jq$(".defaultMarkupFrame[compositeEdit=" + sectionId + "]");
 		editField.css('position', 'relative');
-		var headerMenu = jq$('<div/>', {
-			'class' : 'ueedittoolbar markupHeaderFrame headerMenu'
+		const headerMenu = jq$('<div/>', {
+			'class': 'ueedittoolbar markupHeaderFrame headerMenu'
 		});
-		var markupHeader = generateMarkUpHeader(sectionId)
-		var markUpMenu = generateMarkUpMenu(sectionId);
+		const markupHeader = generateMarkUpHeader(sectionId);
+		const markUpMenu = generateMarkUpMenu(sectionId);
 		headerMenu.append(markupHeader);
 		headerMenu.append(markUpMenu);
 		jq$(editField).prepend(headerMenu);
 	}
 
 	function generateMarkUpHeader(sectionId) {
-		var markupHeader = jq$('<div/>', {
-			"class" : 'markupHeader'
+		const markupHeader = jq$('<div/>', {
+			"class": 'markupHeader'
 		});
-		var img = jq$('<i/>', {
-			"class" : 'fa fa-fw fa-lg fa-angle-down'
+		const img = jq$('<i/>', {
+			"class": 'fa fa-fw fa-lg fa-angle-down'
 		});
 		markupHeader.append(img);
 		return markupHeader;
 	}
 
 	function generateMarkUpMenu(sectionId) {
-		var markupMenu = jq$('<div/>', {
-			"class" : 'markupMenu'
+		const markupMenu = jq$('<div/>', {
+			"class": 'markupMenu'
 		});
-		var cancel = generateMarkUpmenuItem("_CE.cancelSection(\'" + sectionId + "\')", "Revert", "fa-undo");
-		var del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "fa-times");
+		const cancel = generateMarkUpmenuItem("_CE.cancelSection(\'" + sectionId + "\')", "Revert", "fa-undo");
+		const del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "fa-times");
 		markupMenu.append(cancel);
 		markupMenu.append(del);
 		return markupMenu;
 	}
 
 	function generateMarkUpmenuItem(js, text, icon) {
-		var markupMenuItemDiv = jq$('<div/>', {
-			"class" : 'markupMenuItem'
+		const markupMenuItemDiv = jq$('<div/>', {
+			"class": 'markupMenuItem'
 		});
-		var varMenuItemA = jq$('<a/>', {
-			"class" : 'markupMenuItem',
-			"href" : "javascript:" + js
+		const varMenuItemA = jq$('<a/>', {
+			"class": 'markupMenuItem',
+			"href": "javascript:" + js
 		});
-		var img = jq$('<i/>', {
-			"class" : "fa fa-fw " + icon
+		const img = jq$('<i/>', {
+			"class": "fa fa-fw " + icon
 		});
-		var span = jq$('<span/>', {
-			"text" : text
+		const span = jq$('<span/>', {
+			"text": text
 		});
 		varMenuItemA.append(img);
 		varMenuItemA.append(span);
@@ -451,11 +452,11 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function appendMarker(id, reference, color) {
-		var marker = new Element('div', {
-			'id' : id,
-			'class' : 'ueeditmarker',
-			'styles' : {
-				'height' : reference.offsetHeight
+		const marker = new Element('div', {
+			'id': id,
+			'class': 'ueeditmarker',
+			'styles': {
+				'height': reference.offsetHeight
 			}
 		});
 		if (color) {
@@ -483,13 +484,13 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	function buildDefaultMarkupStructure() {
 		_CE.dialogDiv = jq$('<div/>', {
-			id : 'compositeEdit',
-			"class" : 'defaultMarkup',
-			text : ''
+			id: 'compositeEdit',
+			"class": 'defaultMarkup',
+			text: ''
 		});
-		var divMarkupText = jq$('<div/>', {
-			"class" : 'markupText',
-			text : ''
+		const divMarkupText = jq$('<div/>', {
+			"class": 'markupText',
+			text: ''
 		});
 		_CE.dialogDiv.append(divMarkupText);
 		return divMarkupText;
@@ -500,7 +501,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function disableCompositeEditMode() {
-		for (var section in _CE.cancelCache) {
+		for (let section in _CE.cancelCache) {
 			_CE.cancelSection(section);
 		}
 		removeEventListenersForEdit(jq$("#compositeEdit"));
@@ -515,8 +516,8 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function registerButtonEvents() {
-		var pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
-		if (_CE.mode == _CE.ModeEnum.VIEW) {
+		const pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
+		if (_CE.mode === _CE.ModeEnum.VIEW) {
 			unregisterSaveCancelEvents(document, _CE.save, enableCompositeViewMode);
 			jq$(pane).find(".closeButton").unbind().on("click", function() {
 				_CE.disable();
@@ -524,8 +525,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 			jq$(pane).find(".editButton").unbind().on("click", function() {
 				enableCompositeEditMode();
 			});
-		}
-		else {
+		} else {
 			_EC.registerSaveCancelEvents(document, _CE.save, enableCompositeViewMode);
 			jq$(pane).find(".saveButton").unbind().on("click", function() {
 				_CE.save();
@@ -560,15 +560,14 @@ KNOWWE.plugin.compositeEditTool = function() {
 	function enableInitialDialogState() {
 		KNOWWE.core.actions.init();
 		if (!_CE.userCanWriteAllSections) {
-			var pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
+			const pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
 			jq$(pane).find(".editButton").attr('disabled', true).attr('title', "You can't edit these sections, because you don't have write permissions on all sections.");
 		}
 		document.body.style.overflow = 'hidden';
 		appendMaximizeButton();
-		if (_CE.mode == _CE.ModeEnum.EDIT) {
+		if (_CE.mode === _CE.ModeEnum.EDIT) {
 			enableCompositeEditMode();
-		}
-		else {
+		} else {
 			enableCompositeViewMode();
 		}
 		_TM.decorateToolMenus(jq$('#compositeEdit'));
@@ -593,46 +592,46 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function createCompositeEditDialog(identifier, divMarkupText) {
-		var params = {
-			action : 'CompositeEditOpenDialogAction',
-			termIdentifier : identifier
+		const params = {
+			action: 'CompositeEditOpenDialogAction',
+			termIdentifier: identifier
 		};
 
-		var options = {
-			url : KNOWWE.core.util.getURL(params),
-			response : {
-				action : 'none',
-				fn : function() {
+		const options = {
+			url: KNOWWE.core.util.getURL(params),
+			response: {
+				action: 'none',
+				fn: function() {
 					if (this.responseText) {
-						var parsed = JSON.parse(this.responseText);
+						const parsed = JSON.parse(this.responseText);
 						divMarkupText.append(parsed.result);
 						_CE.userCanWriteAllSections = parsed.canWriteAll;
 
 
 						_CE.dialogDiv.dialog({
 							//fix for strange behaviour (=scrolling to top) of dialog at first "mousedown" event
-							open : function(event, ui) {
+							open: function(event, ui) {
 								jq$(this).mousedown(function(event) {
 									event.stopPropagation();
 								});
 								jq$("body").trigger("OpenCompositeEdit");
 							},
-							closeOnEscape : false,
-							dialogClass : "no-close",
-							height : (jq$(window).height() * .9),
-							width : jq$(document).width() * .6,
-							title : parsed.header,
-							resizable : true,
-							draggable : true,
-							modal : true,
-							buttons : [
+							closeOnEscape: false,
+							dialogClass: "no-close",
+							height: (jq$(window).height() * .9),
+							width: jq$(document).width() * .6,
+							title: parsed.header,
+							resizable: true,
+							draggable: true,
+							modal: true,
+							buttons: [
 								{
-									text : "Close",
-									'class' : 'closeButton'
+									text: "Close",
+									'class': 'closeButton'
 								},
 								{
-									text : "Edit",
-									'class' : 'editButton'
+									text: "Edit",
+									'class': 'editButton'
 								}
 							]
 						});
@@ -640,7 +639,7 @@ KNOWWE.plugin.compositeEditTool = function() {
 					enableInitialDialogState();
 					_KU.hideProcessingIndicator();
 				},
-				onError : _EC.onErrorBehavior
+				onError: _EC.onErrorBehavior
 
 			}
 		};
@@ -657,22 +656,21 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function saveExpandState(node) {
-		var prefix = "CompositeEditCollapseState-";
-		var type = jq$(node).find("strong").text();
-		var term = jq$("#objectinfo-src").text();
-		var typeArray;
+		const prefix = "CompositeEditCollapseState-";
+		const type = jq$(node).find("strong").text();
+		const term = jq$("#objectinfo-src").text();
+		let typeArray;
 		if (jq$(node).hasClass("extend-panel-down")) {
 			typeArray = simpleStorage.get(prefix + term);
 			if (typeof typeArray == "undefined") {
 				typeArray = new Array(type);
 				simpleStorage.set(prefix + term, typeArray);
 			}
-			if (jq$.inArray(type, typeArray) == -1) {
+			if (jq$.inArray(type, typeArray) === -1) {
 				typeArray.push(type);
 				simpleStorage.set(prefix + term, typeArray);
 			}
-		}
-		else {
+		} else {
 			typeArray = simpleStorage.get(prefix + term);
 			typeArray.splice(typeArray.indexOf(type), 1);
 			simpleStorage.set(prefix + term, typeArray);
@@ -681,16 +679,16 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 
 	function expandSavedStates() {
-		var prefix = "CompositeEditCollapseState-";
-		var term = jq$("#objectinfo-src").text();
-		var typeArray = simpleStorage.get(prefix + term);
+		const prefix = "CompositeEditCollapseState-";
+		const term = jq$("#objectinfo-src").text();
+		const typeArray = simpleStorage.get(prefix + term);
 		if (typeof typeArray !== "undefined") {
-			for (var i = 0; i < typeArray.length; i++) {
-				var type = typeArray[i];
-				var p = jq$(".extend-panel-right strong").filter(function() {
+			for (let i = 0; i < typeArray.length; i++) {
+				const type = typeArray[i];
+				const p = jq$(".extend-panel-right strong").filter(function() {
 					return jq$(this).text() === type;
 				}).parent().removeClass("extend-panel-right").addClass("extend-panel-down");
-				var section = jq$(p).next('div');
+				const section = jq$(p).next('div');
 				jq$(section).css("display", "inline");
 				KNOWWE.core.plugin.objectinfo.loadPreviews(section);
 			}
@@ -703,25 +701,24 @@ KNOWWE.plugin.compositeEditTool = function() {
 			if (image.hasClass("minimized")) {
 				image.removeClass("minimized").addClass("maximized");
 				jq$(_CE.dialogDiv).parents(".ui-dialog:first").animate({
-					width : window.innerWidth,
-					height : window.innerHeight
+					width: window.innerWidth,
+					height: window.innerHeight
 				}, {
-					duration : 500,
-					step : function() {
+					duration: 500,
+					step: function() {
 						jq$(_CE.dialogDiv).dialog('option', 'position', {my: 'center', at: 'center', of: window});
 					}
 				});
 				jq$(_CE.dialogDiv).dialog("option", "height", window.innerHeight);
 				jq$(_CE.dialogDiv).dialog("option", "width", window.innerHeight);
-			}
-			else {
+			} else {
 				image.removeClass("maximized").addClass("minimized");
 				jq$(_CE.dialogDiv).parents(".ui-dialog:first").animate({
-					width : window.innerWidth * .6,
-					height : window.innerHeight * .9
+					width: window.innerWidth * .6,
+					height: window.innerHeight * .9
 				}, {
-					duration : 500,
-					step : function() {
+					duration: 500,
+					step: function() {
 						jq$(_CE.dialogDiv).dialog('option', 'position', {my: 'center', at: 'center', of: window});
 					}
 				});
@@ -732,22 +729,21 @@ KNOWWE.plugin.compositeEditTool = function() {
 	}
 
 	function appendMaximizeButton() {
-		var image = jq$('<span/>', {
-			"id" : 'maximizeCompositeView',
-			"class" : 'minimized'
+		const image = jq$('<span/>', {
+			"id": 'maximizeCompositeView',
+			"class": 'minimized'
 		});
-		var titlebar = jq$(".ui-dialog-titlebar");
+		const titlebar = jq$(".ui-dialog-titlebar");
 		jq$(titlebar).append(image);
 		registerMaximizeEvent(image);
 	}
 
 	function changeButtons() {
-		var pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
-		if (_CE.mode == _CE.ModeEnum.EDIT) {
+		const pane = jq$("#compositeEdit").next("div.ui-dialog-buttonpane");
+		if (_CE.mode === _CE.ModeEnum.EDIT) {
 			jq$(pane).find(".closeButton").addClass("saveButton").removeClass("closeButton").find(".ui-button-text").text("Save");
 			jq$(pane).find(".editButton").addClass("cancelEditButton").removeClass("editButton").find(".ui-button-text").text("Cancel");
-		}
-		else {
+		} else {
 			jq$(pane).find(".saveButton").addClass("closeButton").removeClass("saveButton").find(".ui-button-text").text("Close");
 			jq$(pane).find(".cancelEditButton").addClass("editButton").removeClass("cancelEditButton").find(".ui-button-text").text("Edit");
 		}
@@ -766,31 +762,31 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 	return {
 
-		dialogDiv : null,
+		dialogDiv: null,
 
 		/** Indicates whether edit mode is enabled */
-		enabled : false,
+		enabled: false,
 
 		/** Caches the old sections for reuse */
-		cancelCache : {},
+		cancelCache: {},
 
 		/** The namespace for each section */
-		toolNameSpace : {},
+		toolNameSpace: {},
 
 		/** All sections that are compatible with edit mode */
-		editableSections : [],
+		editableSections: [],
 
 		/** User has write rights for all sections */
-		userCanWriteAllSections : true,
+		userCanWriteAllSections: true,
 
-		ModeEnum : {
-			VIEW : "view",
-			EDIT : "edit"
+		ModeEnum: {
+			VIEW: "view",
+			EDIT: "edit"
 		},
 
-		mode : "view",
+		mode: "view",
 
-		disable : function() {
+		disable: function() {
 			_CE.enabled = false;
 			unbindUnloadFunctions();
 			_IE.disable(_CEWT.rootID, false);
@@ -803,45 +799,45 @@ KNOWWE.plugin.compositeEditTool = function() {
 			jq$(document).off('keydown', escapeFunction);
 		},
 
-		save : function() {
+		save: function() {
 
 			jsonObj = [];
 			jq$('#compositeEdit .editarea').each(function() {
 
-				var id = jq$(this).attr("sectionid");
-				var text = _CEWT.getSectionText(id);
+				const id = jq$(this).attr("sectionid");
+				const text = _CEWT.getSectionText(id);
 
 				jsonObj.push({
-					id : id,
-					text : text
+					id: id,
+					text: text
 				});
 			});
 
 			jq$.each(_CEWT.deletes, function(index, id) {
 
 				jsonObj.push({
-					id : id,
-					text : ""
+					id: id,
+					text: ""
 				});
 			});
 
-			var params = {
-				action : 'CompositeEditSaveAction',
-				replaceSections : jsonObj
+			const params = {
+				action: 'CompositeEditSaveAction',
+				replaceSections: jsonObj
 			};
 
-			var options = {
-				url : KNOWWE.core.util.getURL(params),
-				response : {
-					action : 'none',
-					fn : function() {
+			const options = {
+				url: KNOWWE.core.util.getURL(params),
+				response: {
+					action: 'none',
+					fn: function() {
 						window.onbeforeunload = null;
 						window.onunload = null;
 						_KU.hideProcessingIndicator();
 						_CE.disable();
 						_IE.disable(_CEWT.rootID, true);
 					},
-					onError : _EC.onErrorBehavior
+					onError: _EC.onErrorBehavior
 				}
 			};
 			_KU.showProcessingIndicator();
@@ -849,20 +845,20 @@ KNOWWE.plugin.compositeEditTool = function() {
 
 		},
 
-		cancelSection : function(sectionId) {
-			var sectionId = sectionId; // we need this -> JS closure
-			var fn = function() {
-				var cached = _CE.cancelCache[sectionId];
-				jq$('#compositeEdit div[sectionid=' + sectionId + ']').replaceWith(cached);
-				addEventListenerForEdit(jq$("#compositeEdit div[sectionid=" + sectionId + "]").parent());
+		cancelSection: function(sectionId) {
+			let id = sectionId; // we need this for the JS closure
+			const fn = function() {
+				const cached = _CE.cancelCache[id];
+				jq$('#compositeEdit div[sectionid=' + id + ']').replaceWith(cached);
+				addEventListenerForEdit(jq$("#compositeEdit div[sectionid=" + id + "]").parent());
 			};
-			_IE.disable(sectionId, false, fn)
-			_TM.decorateToolMenus(jq$('#compositeEdit div[sectionid=' + sectionId + '] .defaultMarkupFrame'));
-			enableCompositeViewToolMenus(jq$('#compositeEdit div[sectionid=' + sectionId + ']'));
+			_IE.disable(id, false, fn)
+			_TM.decorateToolMenus(jq$('#compositeEdit div[sectionid=' + id + '] .defaultMarkupFrame'));
+			enableCompositeViewToolMenus(jq$('#compositeEdit div[sectionid=' + id + ']'));
 		},
 
-		deleteSection : function(id) {
-			var del = confirm("Do you really want to delete this content?");
+		deleteSection: function(id) {
+			const del = confirm("Do you really want to delete this content?");
 			if (del) {
 				_CE.cancelSection(id);
 				_CEWT.deleteSection(id);
@@ -870,18 +866,18 @@ KNOWWE.plugin.compositeEditTool = function() {
 			}
 		},
 
-		openCompositeEditDialog : function(identifier) {
+		openCompositeEditDialog: function(identifier) {
 			closeOldDialog();
 			resetVariables();
 			_KU.showProcessingIndicator();
-			var divMarkupText = buildDefaultMarkupStructure();
-			var options = createCompositeEditDialog(identifier, divMarkupText);
+			const divMarkupText = buildDefaultMarkupStructure();
+			const options = createCompositeEditDialog(identifier, divMarkupText);
 			new _KA(options).send();
 			appendDialogToHtmlBody();
 		},
 
-		afterPreviewsLoad : function(id) {
-			if (_CE.mode == _CE.ModeEnum.EDIT) {
+		afterPreviewsLoad: function(id) {
+			if (_CE.mode === _CE.ModeEnum.EDIT) {
 				initCompositeEdit(id);
 				jq$(".toolsMenuDecorator").click(function(e) {
 					e.stopPropagation();
@@ -889,16 +885,15 @@ KNOWWE.plugin.compositeEditTool = function() {
 			}
 		},
 
-		enableCompositeEditModeByKey : function(event) {
+		enableCompositeEditModeByKey: function(event) {
 			event = jq$.event.fix(event);
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
-				if (event.which == 68) { // D
+				if (event.which === 68) { // D
 					jq$(document).off('keydown', _CE.enableCompositeEditModeByKey);
 					event.stopPropagation();
 					event.preventDefault();
 					enableCompositeEditMode();
-				}
-				else if (isEditSourceKey(event)) { // E
+				} else if (isEditSourceKey(event)) { // E
 					event.stopPropagation();
 					event.preventDefault();
 					enableCompositeEditMode();
@@ -913,32 +908,32 @@ KNOWWE.plugin.compositeEditTool = function() {
 KNOWWE.plugin.compositeEditTool.wikiText = function() {
 
 	function fixLineBreaks(i, newText) {
-		var order = _CEWT.getOriginalOrder();
-		if (i == 0)
+		const order = _CEWT.getOriginalOrder();
+		if (i === 0)
 			return;
-		var lastId = order[i - 1];
-		var id = order[i];
-		var last = newText[lastId];
-		var current = newText[id];
-		var lastOriginalText = getSectionText(lastId);
+		const lastId = order[i - 1];
+		const id = order[i];
+		let last = newText[lastId];
+		let current = newText[id];
+		const lastOriginalText = getSectionText(lastId);
 
 		// moved sections should end with a line break if they are
 		// followed by an line break at the start of the new section
 		// if possible and needed remove a line break from the
 		// current (lower or following) section and add it
 		// to the start of the last (upper) section
-		var endingLineBreak = /\r?\n$/;
-		var startingLineBreak = /^\r?\n/;
+		const endingLineBreak = /\r?\n$/;
+		const startingLineBreak = /^\r?\n/;
 		if (!endingLineBreak.test(last) && startingLineBreak.test(current)) {
 			last += current.match(startingLineBreak)[0];
 			current = current.replace(startingLineBreak, "");
 		}
 		// if we have the last section, make sure it ends with a
 		// line break in case it got moved
-		if (i == order.length - 1) {
-			var newOrder = getSectionOrder();
-			var newPos = jq$.inArray(id, newOrder);
-			if (newPos != -1 && newPos != newOrder.length - 1) {
+		if (i === order.length - 1) {
+			const newOrder = getSectionOrder();
+			const newPos = jq$.inArray(id, newOrder);
+			if (newPos !== -1 && newPos !== newOrder.length - 1) {
 				current += "\n";
 			}
 		}
@@ -946,7 +941,7 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 		// we force the new version also to have a line break at the end
 		// to avoid users accidentally merging section because of the missing
 		// line break
-		var currentOriginalText = _EC.getWikiText(id);
+		const currentOriginalText = _EC.getWikiText(id);
 		if (endingLineBreak.test(currentOriginalText)
 			&& !endingLineBreak.test(current)) {
 			current += currentOriginalText.match(endingLineBreak)[0];
@@ -957,9 +952,9 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 	}
 
 	function getSectionOrder() {
-		var sectionOrder = [];
+		const sectionOrder = [];
 		jq$('.editelement, .editarea').each(function() {
-			var id = jq$(this).attr('id');
+			let id = jq$(this).attr('id');
 			if (id == null) {
 				id = jq$(this).attr('sectionId');
 			}
@@ -972,33 +967,33 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 	return {
 
 		/** ID of the root section */
-		rootID : null,
+		rootID: null,
 
 		/** Original Wiki-Text */
-		text : null,
+		text: null,
 
 		/** Original ordering of the sections */
-		order : null,
+		order: null,
 
 		/** Deleted sections */
-		deletes : [],
+		deletes: [],
 
 		/** is the article locked? */
-		locked : null,
+		locked: null,
 
-		hasChanged : function() {
+		hasChanged: function() {
 			if (_CEWT.deletes.length > 0) {
 				return true;
 			}
-			if (JSON.stringify(_CEWT.order) != JSON
-					.stringify(getSectionOrder())) {
+			if (JSON.stringify(_CEWT.order) !== JSON
+				.stringify(getSectionOrder())) {
 				return true;
 			}
-			for (var i = 0; i < _CE.editableSections.length; i++) {
-				var id = _CE.editableSections[i];
-				var unloadCondition = _CE.toolNameSpace[id].unloadCondition;
+			for (let i = 0; i < _CE.editableSections.length; i++) {
+				const id = _CE.editableSections[i];
+				const unloadCondition = _CE.toolNameSpace[id].unloadCondition;
 				if (unloadCondition) {
-					var hasToolChanged = true;
+					let hasToolChanged = true;
 					try {
 						hasToolChanged = !unloadCondition(id);
 					} catch (err) {
@@ -1014,13 +1009,13 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 			return false;
 		},
 
-		getSectionText : function(id) {
+		getSectionText: function(id) {
 
 			if (jq$.inArray(id, _CEWT.deletes) > -1) {
 				return "";
 			}
-			var toolNameSpace = _CE.toolNameSpace[id];
-			var wikiText = null;
+			const toolNameSpace = _CE.toolNameSpace[id];
+			let wikiText = null;
 			try {
 				wikiText = toolNameSpace.generateWikiText(id);
 			} catch (err) {
@@ -1031,30 +1026,30 @@ KNOWWE.plugin.compositeEditTool.wikiText = function() {
 			return wikiText;
 		},
 
-		getOriginalText : function() {
+		getOriginalText: function() {
 			return _CEWT.text;
 		},
 
-		getOriginalOrder : function() {
+		getOriginalOrder: function() {
 			return _CEWT.order;
 		},
 
-		isLocked : function() {
+		isLocked: function() {
 			return _CEWT.locked;
 		},
 
-		deleteSection : function(id) {
+		deleteSection: function(id) {
 			_CEWT.deletes.push(id);
 		}
 	}
 }();
 
-var _CE = KNOWWE.plugin.compositeEditTool;
-var _CEWT = KNOWWE.plugin.compositeEditTool.wikiText;
+const _CE = KNOWWE.plugin.compositeEditTool;
+const _CEWT = KNOWWE.plugin.compositeEditTool.wikiText;
 
 //fixing jquery(version 2.1) bug where HTML code is not parsed in titlebar
 jq$.widget("ui.dialog", jq$.extend({}, jq$.ui.dialog.prototype, {
-	_title : function(title) {
+	_title: function(title) {
 		if (!this.options.title) {
 			title.html("&#160;");
 		} else {
