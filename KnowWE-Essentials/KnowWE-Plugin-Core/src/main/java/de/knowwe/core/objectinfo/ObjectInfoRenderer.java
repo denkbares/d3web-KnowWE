@@ -310,7 +310,10 @@ public class ObjectInfoRenderer implements Renderer {
 		result.append(identifier.toExternalForm());
 		result.appendHtmlTag("/span");
 		result.appendHtmlTag("span", "class", "objectinfo-header-class");
-		result.append("(" + getTermObjectClassesVerbalization(user, identifier) + ")");
+		String termObjectClassesVerbalization = getTermObjectClassesVerbalization(user, identifier);
+		if (!Strings.isBlank(termObjectClassesVerbalization)) {
+			result.append("(" + termObjectClassesVerbalization + ")");
+		}
 		result.appendHtmlTag("/span");
 	}
 
