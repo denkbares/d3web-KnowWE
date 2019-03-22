@@ -31,6 +31,11 @@ used colors
 /* -------------- general settings    --------------- */
 /* ################################################## */
 
+.fa-pencil.image-icon {
+	width: 16px;
+	margin-right: 4px;
+}
+
 .noselect {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;

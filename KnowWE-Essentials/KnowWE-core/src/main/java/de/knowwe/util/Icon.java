@@ -177,7 +177,7 @@ public class Icon {
 
 	public static Icon fromImage(String image) {
 		// we require some icon to get a valid width, color will be set transparent to appear empty
-		return new Icon("fa-pencil", "color: transparent;" +
+		return new Icon("fa-pencil image-icon", "color: transparent;" +
 				"display: inline-block;" +
 				"background-image:url(" + image + ");" +
 				"background-repeat: no-repeat;" +
