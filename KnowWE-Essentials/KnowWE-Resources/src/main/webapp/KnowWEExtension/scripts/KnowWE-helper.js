@@ -22,7 +22,7 @@ KNOWWE.helper = function(){
     return {
 
     	isFontAwesomeProAvailable : function() {
-			return false; //todo
+			return jq$('head link[href*="font-awesome-pro"]').exists();
 		},
 
         /**

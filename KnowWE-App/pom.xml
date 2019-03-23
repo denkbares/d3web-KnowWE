@@ -287,6 +287,10 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-FontAwesomePro</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
 					<artifactId>denkbares-SemanticCore-Plugin-GraphDB</artifactId>
 				</dependency>
 				<dependency>

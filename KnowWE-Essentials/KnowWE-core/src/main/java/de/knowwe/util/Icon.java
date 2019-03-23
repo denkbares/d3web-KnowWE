@@ -169,7 +169,7 @@ public class Icon {
 	}
 
 	private Icon(String cssClass, String style, String title, String id) {
-		if (fontAweSomeProAvailable()) {
+		if (cssClass != null && isFontAweSomeProAvailable()) {
 			cssClass = cssClass.replace("fas ", "far ");
 		}
 		this.cssClass = cssClass;
@@ -178,8 +178,15 @@ public class Icon {
 		this.id = id;
 	}
 
-	private boolean fontAweSomeProAvailable() {
-		return false; // TODO
+	private boolean isFontAweSomeProAvailable() {
+		// maybe make this nicer?
+		try {
+			Class.forName("com.denkbares.knowwe.fontawesome.FontAwesomeLoader");
+			return true;
+		}
+		catch (ClassNotFoundException e) {
+			return false;
+		}
 	}
 
 	public static Icon fromImage(String image) {

@@ -168,6 +168,18 @@ public class ResourceLoader {
 		addFirst("jquery-2.1.0.min.js", Type.script);
 	}
 
+	public void replaceResource(String resourceBefore, String resourceAfter, Type type) {
+		List<String> list = this.getList(type);
+
+		int i = list.indexOf(resourceBefore);
+		if (i < 0) {
+			list.add(resourceAfter);
+		}
+		else {
+			list.set(i, resourceAfter);
+		}
+	}
+
 	/**
 	 * Adds a resource file to the loader. The type of the resource is detected from the file
 	 * extension of the specified file name.

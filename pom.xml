@@ -373,6 +373,11 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-FontAwesomePro</artifactId>
+				<version>${knowwe.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
 				<version>${knowwe.version}</version>
