@@ -219,7 +219,7 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-state:before {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free";
 	content: "\f04d";
 	color: #CC3333;
 }
@@ -229,7 +229,7 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-error .progress-state:before {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free";
 	content: "\f111";
 	color: #CC3333;
 	background-image: none;
@@ -240,7 +240,7 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-success .progress-state:before {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free";
 	content: "\f111";
 	color: #6A9514;
 }

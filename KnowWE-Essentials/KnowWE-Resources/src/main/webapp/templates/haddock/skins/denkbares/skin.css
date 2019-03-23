@@ -1840,7 +1840,7 @@ div.collapse li {
 }
 
 .collapsebox .collapseOpen:before {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free";
 	content: "\f196";
 }
 */
@@ -2249,7 +2249,7 @@ div.coverflow .knob {
 
 #searchSubmit:before {
 	content: "\f002";
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free";
 	top: -1px;
 	position: relative;
 }
@@ -2261,7 +2261,7 @@ div.coverflow .knob {
 
 #actionsTop > ul > li > a.action.more:before {
 	content: "\f0dd";
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free";
 	position: relative;
 	left: -5px;
 	top: -2px;
@@ -2286,7 +2286,7 @@ a.action.quick2top:hover {
 }
 
 a.action.quick2top:before {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 5 Free";
 	content: "\f0de";
 	position: relative;
 	top: 1px;

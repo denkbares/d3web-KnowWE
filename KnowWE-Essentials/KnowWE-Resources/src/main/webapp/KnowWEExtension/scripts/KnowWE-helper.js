@@ -20,6 +20,11 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
  */
 KNOWWE.helper = function(){
     return {
+
+    	isFontAwesomeProAvailable : function() {
+			return false; //todo
+		},
+
         /**
          * Function: containsArr
          * Checks if a value is already in a array.
