@@ -251,7 +251,7 @@ public final class Messages {
 	public static boolean hasMessagesInSubtree(Section<? extends Type> section, Message.Type... types) {
 		if (hasMessages(section, types)) return true;
 		for (Section<?> child : section.getChildren()) {
-			if (hasMessages(child, types)) return true;
+			if (hasMessagesInSubtree(child, types)) return true;
 		}
 		return false;
 	}
