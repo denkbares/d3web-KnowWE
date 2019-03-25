@@ -27,6 +27,7 @@ import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -38,6 +39,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 	public QuestionnaireReference() {
+		this.setSectionFinder(AllTextFinderTrimmed.getInstance());
 		this.setRenderer(StyleRenderer.Questionnaire);
 		this.addCompileScript(new SimpleReferenceRegistrationScript<>(D3webCompiler.class));
 	}

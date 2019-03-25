@@ -29,7 +29,6 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
-import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -85,9 +84,7 @@ public class ShowSolutionsType extends DefaultMarkupType {
 						"base or the specific question using the %%Property markup.");
 		MARKUP.addAnnotation(END_USER_MODE, false, BoolValue.class);
 
-		QuestionnaireReference qc = new QuestionnaireReference();
-		qc.setSectionFinder(new AllTextFinderTrimmed());
-		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, qc);
+		MARKUP.addAnnotationContentType(ONLY_DERIVATIONS, new QuestionnaireReference());
 		MARKUP.addAnnotationContentType(LANGUAGE, new LocaleType());
 		PackageManager.addPackageAnnotation(MARKUP);
 	}
