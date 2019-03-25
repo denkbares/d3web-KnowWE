@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2014 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,10 +25,10 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-import org.apache.poi.POIXMLProperties.CoreProperties;
-import org.apache.poi.openxml4j.util.Nullable;
+import org.apache.poi.ooxml.POIXMLProperties;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
@@ -51,7 +51,7 @@ import de.knowwe.plugin.Plugins;
 /**
  * Manages the export of the included wiki pages into a specific export
  * artifact.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 07.02.2014
  */
@@ -129,9 +129,9 @@ public class ExportManager {
 	 * sections. If the specified section (or any of it's sub-section) include
 	 * an other include the indirectly included sections of articles are also
 	 * checked iteratively to any depth.
-	 * 
-	 * @created 16.02.2014
+	 *
 	 * @return all articles used by this export
+	 * @created 16.02.2014
 	 */
 	public Set<Article> getIncludedArticles() {
 		if (includedArticles == null) {
@@ -155,9 +155,9 @@ public class ExportManager {
 	 * included. Therefore, e.g. to check if a section is contained in the
 	 * exported result, check if the section or any ancestor section is on the
 	 * set of included sections.
-	 * 
-	 * @created 16.02.2014
+	 *
 	 * @return all sections included in this export
+	 * @created 16.02.2014
 	 * @see #isContained(Section)
 	 */
 	public Set<Section<?>> getIncludedSections() {
@@ -196,10 +196,10 @@ public class ExportManager {
 	 * the exporter of the section may not directly be called, but some ancestor
 	 * exporter will export the whole section subtree without delegate this to
 	 * it's successors. This will not been examined by this method.
-	 * 
-	 * @created 20.02.2014
+	 *
 	 * @param section the section to be check if exported
 	 * @return if the section will be part of the export
+	 * @created 20.02.2014
 	 */
 	public boolean isContained(Section<?> section) {
 		Set<Section<?>> included = getIncludedSections();
@@ -212,9 +212,9 @@ public class ExportManager {
 	/**
 	 * Returns the most recent date the root section's article or any of the
 	 * included articles will have been modified.
-	 * 
-	 * @created 16.02.2014
+	 *
 	 * @return the last modified date of the inclusion of all affected sections
+	 * @created 16.02.2014
 	 */
 	public Date getLastModified() {
 		Date maxDate = null;
@@ -268,8 +268,8 @@ public class ExportManager {
 			progress.updateProgress(0, 0.9f);
 			builder.export(section);
 			// initialize some core properties
-			CoreProperties coreProperties = builder.getDocument().getProperties().getCoreProperties();
-			coreProperties.setModified(new Nullable<>(getLastModified()));
+			POIXMLProperties.CoreProperties coreProperties = builder.getDocument().getProperties().getCoreProperties();
+			coreProperties.setModified(Optional.ofNullable(getLastModified()));
 			progress.updateProgress(1f, MSG_SAVE);
 			return model;
 		}

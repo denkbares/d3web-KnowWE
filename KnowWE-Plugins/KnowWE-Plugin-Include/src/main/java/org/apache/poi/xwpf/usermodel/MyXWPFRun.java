@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2014 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,7 +25,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.apache.poi.POIXMLException;
+import org.apache.poi.ooxml.POIXMLException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
@@ -50,7 +50,6 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTDrawing;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTR;
 
 /**
- * 
  * @author Volker Belli (denkbares GmbH)
  * @created 10.02.2014
  */
@@ -123,7 +122,7 @@ public class MyXWPFRun extends XWPFRun {
 
 			CTBlipFillProperties blipFill = pic.addNewBlipFill();
 			CTBlip blip = blipFill.addNewBlip();
-			blip.setEmbed(picData.getPackageRelationship().getId());
+			blip.setEmbed(doc.getRelationId(picData));
 			blipFill.addNewStretch().addNewFillRect();
 
 			CTShapeProperties spPr = pic.addNewSpPr();

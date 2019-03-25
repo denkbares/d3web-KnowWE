@@ -12,11 +12,11 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.URI;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.QuoteSet;
 import com.denkbares.strings.Strings;
@@ -121,7 +121,6 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			//noinspection unchecked
 			return (Pair<Integer, Integer>) section.getObject(compiler, COUNT_KEY);
 		}
-
 	}
 
 	private static class StatementCompileScript extends OntologyCompileScript<ConfigAnnotationType> {
@@ -154,7 +153,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			// fill variable URIs and Literals from excel
 			for (XSSFSheet sheet : getSheets(xlsx, config)) {
 				// config indexes are 1-based indexes, so subtract 1 to get to 0-based indexes for poi
-				for (int i = config.startRow - 1; i <= Math.min(config.endRow -1, sheet.getLastRowNum()); i++) {
+				for (int i = config.startRow - 1; i <= Math.min(config.endRow - 1, sheet.getLastRowNum()); i++) {
 					XSSFRow row = sheet.getRow(i);
 
 					// subject
@@ -183,14 +182,14 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 						//cell which is tested when using skipRowType
 						String skipTestCell = null;
-						if (config.skipColumn != -1){
-							skipTestCell = getCellValue(row.getCell(config.skipColumn-1));
+						if (config.skipColumn != -1) {
+							skipTestCell = getCellValue(row.getCell(config.skipColumn - 1));
 						}
 
 						// create and add statements
 						Statement statement = null;
 						if (literal != null) {
-							if (config.skipPattern != null && skipTestCell != null && skipTestCell.matches(config.skipPattern)){
+							if (config.skipPattern != null && skipTestCell != null && skipTestCell.matches(config.skipPattern)) {
 								continue;
 							}
 							else {
@@ -293,13 +292,13 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	/**
 	 * returns the value of a XSSFCell as String no matter what Type the cell is, null if the given cell is null
 	 */
-	private static String getCellValue(XSSFCell cell){
+	private static String getCellValue(XSSFCell cell) {
 		if (cell != null) {
 			switch (cell.getCellType()) {
-				case XSSFCell.CELL_TYPE_STRING:
+				case STRING:
 					return cell.getStringCellValue();
 
-				case XSSFCell.CELL_TYPE_NUMERIC:
+				case NUMERIC:
 					if (DateUtil.isCellDateFormatted(cell)) {
 						return cell.getDateCellValue().toString();
 					}
@@ -307,16 +306,17 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 						return Double.toString(cell.getNumericCellValue());
 					}
 
-				case XSSFCell.CELL_TYPE_BOOLEAN:
+				case BOOLEAN:
 					return Boolean.toString(cell.getBooleanCellValue());
 
-				case XSSFCell.CELL_TYPE_FORMULA:
+				case FORMULA:
 					return cell.getCellFormula();
 
 				default:
 					return cell.toString();
 			}
-		} else {
+		}
+		else {
 			return null;
 		}
 	}
@@ -337,10 +337,10 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 		private void skipRows(Section<ConfigAnnotationType> section, Config config) throws CompilerMessage {
 			Section<SkipType> rows = Sections.successor(section, SkipType.class);
-			if (rows == null){
+			if (rows == null) {
 				config.skipPattern = null;
 			}
-			else{
+			else {
 				rows.get().skipRows(rows, config);
 			}
 		}
@@ -422,26 +422,22 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 				}
 			}
 		}
-
 	}
 
-	private static class SkipType extends  AbstractType {
-		private static final String COLUMN_PATTERN = "(\\d+)";	//"(\\d+)(\\+)?(?:-(\\d+))?";
+	private static class SkipType extends AbstractType {
+		private static final String COLUMN_PATTERN = "(\\d+)";    //"(\\d+)(\\+)?(?:-(\\d+))?";
 		private static final String MATCHING_PATTERN = "(?:matching):?\\s*(\"?.*\"?)";
 
 		public SkipType() {
 
-			setSectionFinder(new RegexSectionFinder("\\s*(?:skip column):?\\s*(" + COLUMN_PATTERN +")\\s*(" +
-					MATCHING_PATTERN +")\\s*",
+			setSectionFinder(new RegexSectionFinder("\\s*(?:skip column):?\\s*(" + COLUMN_PATTERN + ")\\s*(" +
+					MATCHING_PATTERN + ")\\s*",
 					Pattern.CASE_INSENSITIVE, 0));
-
-
 		}
 
 		public void skipRows(Section<SkipType> section, Config config) throws CompilerMessage {
 			Pattern columnPattern = Pattern.compile(COLUMN_PATTERN);
 			Matcher columnMatcher = columnPattern.matcher(section.getText());
-
 
 			Pattern matchingPattern = Pattern.compile(MATCHING_PATTERN);
 			Matcher matchingMatcher = matchingPattern.matcher(section.getText());
@@ -452,10 +448,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			if (matchingMatcher.find()) {
 				config.skipPattern = Strings.unquote(matchingMatcher.group(1));
 			}
-
 		}
 	}
-
 
 	private static class RowsType extends AbstractType {
 
@@ -487,8 +481,6 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			}
 		}
 	}
-
-
 
 	private static class XlsxSubjectType extends AbstractType {
 
@@ -611,5 +603,4 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		public Section<AbbreviatedResourceReference> object;
 		public Section<LiteralType> objectLiteral;
 	}
-
 }
