@@ -71,6 +71,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private final MultiDefinitionMode multiDefinitionMode;
 	private final ReferenceValidationMode referenceValidationMode;
 	private final Set<Priority> commitTracker = ConcurrentHashMap.newKeySet();
+	private boolean casesensitive;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
@@ -85,6 +86,17 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
 		this.compilingArticle = compileSection.getTitle();
+		this.casesensitive = true;
+	}
+
+	public OntologyCompiler(PackageManager manager,
+							Section<? extends PackageCompileType> compileSection,
+							Class<? extends Type> compilingType,
+							RepositoryConfig ruleSet, MultiDefinitionMode multiDefMode,
+							ReferenceValidationMode referenceValidationMode,
+							boolean casesensitive) {
+		this(manager, compileSection, compilingType, ruleSet, multiDefMode, referenceValidationMode);
+		this.casesensitive = casesensitive;
 	}
 
 	@Override
@@ -144,7 +156,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	}
 
 	private void createTerminologyManager() {
-		this.terminologyManager = new TerminologyManager(true);
+		this.terminologyManager = new TerminologyManager(casesensitive);
 		// register the lns abbreviation immediately as defined
 		this.terminologyManager.registerTermDefinition(this, getCompileSection(),
 				AbbreviationDefinition.class, new Identifier(Rdf2GoCore.LNS_ABBREVIATION));

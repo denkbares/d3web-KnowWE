@@ -83,6 +83,9 @@ public class OntologyType extends DefaultMarkupType {
 	public static final String ANNOTATION_EXPORT_DELAY = "exportDelay";
 	public static final String ANNOTATION_SILENT_IMPORT = "silentImport";
 	public static final String ANNOTATION_DEFAULT_NAMESPACE = "defaultNamespace";
+	public static final String ANNOTATION_TERM_MATCHING = "termMatching";
+	public static final String CASE_SENSITIVE = "case sensitive";
+	public static final String CASE_INSENSITIVE = "case insensitive";
 
 	public static final DefaultMarkup MARKUP;
 	public static final String COMPILER_PRIORITY = "compilerPriority";
@@ -103,6 +106,8 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
+
+		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
 
 		List<String> collect = RepositoryConfigs.values()
 				.stream()
@@ -204,8 +209,11 @@ public class OntologyType extends DefaultMarkupType {
 			MultiDefinitionMode multiDefMode = getMultiDefinitionMode(multiDefModeValue);
 			String referenceValidationModeValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_REFERENCE_VALIDATION_MODE);
 			ReferenceValidationMode referenceValidationMode = getReferenceValidationMode(referenceValidationModeValue);
+			String termMatchingAnnotation = DefaultMarkupType.getAnnotation(Sections.ancestor(section, OntologyType.class), ANNOTATION_TERM_MATCHING);
+			// for backward compatibility, ask for explicit insensitivity
+			boolean caseSensitive = !CASE_INSENSITIVE.equalsIgnoreCase(termMatchingAnnotation);
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
-					compiler.getPackageManager(), section, OntologyType.class, ruleSet, multiDefMode, referenceValidationMode);
+					compiler.getPackageManager(), section, OntologyType.class, ruleSet, multiDefMode, referenceValidationMode, caseSensitive);
 			compiler.getCompilerManager().addCompiler(getCompilerPriority(section), ontologyCompiler);
 
 			if (ruleSetValue != null && ruleSet == null) {
