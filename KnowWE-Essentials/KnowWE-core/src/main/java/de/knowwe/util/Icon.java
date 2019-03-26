@@ -145,7 +145,7 @@ public class Icon {
 	public static final Icon MINUS_OCTAGON = new Icon("fas fa-minus-octagon");
 
 	//SPINNING
-	public static final Icon LOADING = new Icon("fas fa-spin fa-refresh");
+	public static final Icon LOADING = new Icon("fas fa-spin fa-sync-alt");
 	public static final Icon WAITING = new Icon(LOADING.getCssClass());
 	public static final Icon CALCULATING = new Icon(LOADING.getCssClass());
 
