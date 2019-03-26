@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2011 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -22,7 +22,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
+import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
+import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -42,7 +46,17 @@ public class InstantEditSaveAction extends AbstractAction {
 		String id = context.getParameter("KdomNodeId");
 		String value = context.getParameter("data");
 
-		if (value.equals("POST\n")) {
+		if (context.getRequest().getContentType().equals(Action.JSON)) {
+			// if we get json content we assume that it is a plain quoted (and escaped) json string,
+			// containing the new wiki text: if not, throw an exception
+			value = Strings.trim(value);
+			if (!Strings.isQuoted(value)) {
+				throw new IllegalArgumentException("Unexpected json content");
+			}
+			value = StringEscapeUtils.unescapeJson(Strings.unquote(value));
+		}
+		else if (value.equals("POST\n")) {
+			// for empty values, we will receive "POST" as the content
 			value = "";
 		}
 
