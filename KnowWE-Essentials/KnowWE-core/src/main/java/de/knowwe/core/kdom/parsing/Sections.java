@@ -59,6 +59,13 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return new Sections(sections);
 	}
 
+	@SafeVarargs
+	public static <T extends Type> Sections<T> $(Iterable<? extends Section<? extends T>>... sections) {
+		return $(Stream.of(sections)
+				.flatMap(iter -> StreamSupport.stream(iter.spliterator(), false))
+				.distinct());
+	}
+
 	public static <T extends Type> Sections<T> $(Iterator<? extends Section<? extends T>> sections) {
 		//noinspection unchecked
 		return new Sections(new CachedIterable<>(sections));
@@ -86,15 +93,15 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param sections the sections to create the instance from
 	 * @return a Sections instance with all non-null sections
 	 */
-	public static <T extends Type> Sections<T> $(Stream<Section<T>> sections) {
+	public static <T extends Type> Sections<T> $(Stream<? extends Section<? extends T>> sections) {
 		return $(sections.filter(Objects::nonNull).iterator());
 	}
 
-	public Sections(Section<T> section) {
+	private Sections(Section<T> section) {
 		this((section == null) ? Collections.emptyList() : Collections.singletonList(section));
 	}
 
-	public Sections(Iterable<Section<T>> sections) {
+	private Sections(Iterable<Section<T>> sections) {
 		this.sections = sections;
 	}
 
@@ -510,6 +517,32 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Returns a new Sections containing only the sections of this sections object that are instances of any of the
+	 * specified types.
+	 * <p/>
+	 * This method is similar to {@link #cast(Class)}, but while {@link #cast(Class)} will fail if a section is not of
+	 * the specified instance, this method will remove the failing sections instead.
+	 *
+	 * @param classes the classes to match any
+	 * @param <R>     the common super-class of all classes
+	 * @return the sections matching the filter class
+	 * @see #cast(Class)
+	 */
+	@SuppressWarnings("unchecked")
+	@SafeVarargs
+	@NotNull
+	public final <R extends Type> Sections<R> filter(Class<? extends R>... classes) {
+		if (classes == null || classes.length == 0) return Sections.empty();
+		return (Sections<R>) filter(section -> {
+			T type = section.get();
+			for (Class<? extends R> clazz : classes) {
+				if (clazz.isInstance(type)) return true;
+			}
+			return false;
+		});
+	}
+
+	/**
 	 * Checks if the specified section is an instance of the specified type class (technically the section has a section
 	 * {@link Type} which is of the specified type or is a class inherits or implements the specified type). The method
 	 * returns true if (and only if) the method {@link #cast(Section, Class)} would be successful and the specified
@@ -896,6 +929,22 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * This method returns the if there is any successor of the specified section matching the specified class as its
+	 * type. The class matches if the type object of a section is an instance of the specified class or an instance of
+	 * any sub-class of the specified class or interface. If the specified section matches the specified class, true is
+	 * returned as well.
+	 * <p/>
+	 *
+	 * @param section the section to check the successor sections for
+	 * @param clazz   the class of the successors to be matched
+	 * @return true if there is any successor section of the specified class
+	 * @created 09.12.2013
+	 */
+	public static <T extends Type> boolean hasSuccessor(Section<?> section, Class<T> clazz) {
+		return successor(section, clazz) != null;
 	}
 
 	/**

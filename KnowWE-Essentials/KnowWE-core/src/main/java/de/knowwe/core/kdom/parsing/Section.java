@@ -47,6 +47,8 @@ import de.knowwe.core.kdom.Types;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
  * <p>
  * This class represents a node in the Knowledge-DOM of KnowWE. Basically it has some text, one type and a list of
@@ -273,7 +275,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 					found = true;
 					continue;
 				}
-				new Sections<>(sibling).successor().forEach(successor -> {
+				$(sibling).successor().forEach(successor -> {
 					successor.offsetInArticle = -1;
 					successor.offsetInParent = -1;
 				});

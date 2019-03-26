@@ -142,6 +142,7 @@ public class Icon {
 	public static final Icon PLUS_CIRCLE = new Icon("fas fa-plus-circle");
 	public static final Icon OBJECT_UNGROUP = new Icon("fas fa-object-ungroup");
 	public static final Icon PLUS_OCTAGON = new Icon("fas fa-plus-octagon");
+	public static final Icon MINUS_OCTAGON = new Icon("fas fa-minus-octagon");
 
 	//SPINNING
 	public static final Icon LOADING = new Icon("fas fa-spin fa-refresh");
