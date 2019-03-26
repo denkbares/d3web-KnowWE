@@ -29,7 +29,6 @@ import de.knowwe.core.kdom.basicType.EndLineComment;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
-import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
  * The TerminalCondition type of the CompositeCondition
@@ -56,10 +55,7 @@ public class TerminalCondition extends AbstractType {
 
     public TerminalCondition(String typeName, final String messageText) {
         this.setSectionFinder(new AllTextFinderTrimmed());
-
-		EndLineComment comment = new EndLineComment();
-		comment.setRenderer(StyleRenderer.COMMENT);
-		this.addChildType(0, comment);
+		this.addChildType(0, EndLineComment.getInstance());
 
 		// last: Anything left is an UnrecognizedTC throwing an error
         AnonymousType unrecognizedCond = new AnonymousType(typeName);

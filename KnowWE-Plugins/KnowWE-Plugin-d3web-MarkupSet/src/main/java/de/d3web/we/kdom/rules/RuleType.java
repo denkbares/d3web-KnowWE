@@ -31,9 +31,7 @@ import de.d3web.core.inference.Rule;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.NoAnswerException;
 import de.d3web.core.inference.condition.UnknownAnswerException;
-import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
-import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.kdom.action.ContraIndicationAction;
 import de.d3web.we.kdom.action.InstantIndication;
 import de.d3web.we.kdom.action.QASetIndicationAction;
@@ -103,7 +101,7 @@ public class RuleType extends AbstractType {
 
 		this.addChildType(new ExceptionConditionContainer());
 
-		this.addChildType(new EndLineComment());
+		this.addChildType(EndLineComment.getInstance());
 
 		this.addCompileScript(Priority.LOW, new RuleCompileScript());
 	}
