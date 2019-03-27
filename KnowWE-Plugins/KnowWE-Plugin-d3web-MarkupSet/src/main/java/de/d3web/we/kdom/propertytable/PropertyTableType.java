@@ -93,8 +93,8 @@ public class PropertyTableType extends DefaultMarkupType {
 			return Messages.noMessage();
 		});
 
-		content.injectTableCellContentChildtype(localType);
 		content.injectTableCellContentChildtype(propertyType);
+		content.injectTableCellContentChildtype(localType);
 
 		PropertyObjectReference qRef = new PropertyObjectReference();
 		qRef.setSectionFinder(new ConstraintSectionFinder(AllTextFinderTrimmed.getInstance(),
