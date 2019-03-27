@@ -152,8 +152,9 @@ public class GitVersioningFileProviderTest {
 		page.setAuthor(author);
 		page.setAttribute(WikiPage.CHANGENOTE, "add test");
 		fileProvider.putPageText(page, "test file text");
-
-		fileProvider.movePage("test seite", "Neue Seite");
+		WikiPage from = new WikiPage(engine, "test seite");
+		from.setAuthor("UnknownAuthor");
+		fileProvider.movePage(from, "Neue Seite");
 
 		assertTrue(new File(TMP_NEW_REPO + "/Neue+Seite.txt").exists());
 	}
@@ -195,7 +196,9 @@ public class GitVersioningFileProviderTest {
 		assertEquals("test.txt", allChangedSince.get(1).getName());
 		assertEquals("test2.txt", allChangedSince.get(2).getName());
 
-		fileProvider.deletePage("test");
+		WikiPage p = new WikiPage(engine, "test");
+		p.setAuthor("UnknownAuthor");
+		fileProvider.deletePage(p);
 		allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
 		assertEquals(4, allChangedSince.size());
 		assertEquals("test.txt", allChangedSince.get(3).getName());
@@ -227,7 +230,9 @@ public class GitVersioningFileProviderTest {
 		Collection allChangedSince = fileProvider.getVersionHistory("test");
 		assertEquals(2, allChangedSince.size());
 
-		fileProvider.deletePage("test");
+		WikiPage p = new WikiPage(engine, "test");
+		p.setAuthor("UnknownAuthor");
+		fileProvider.deletePage(p);
 		allChangedSince = fileProvider.getVersionHistory("test");
 		assertTrue("deleted pages have no version log anymore", allChangedSince.isEmpty());
 	}

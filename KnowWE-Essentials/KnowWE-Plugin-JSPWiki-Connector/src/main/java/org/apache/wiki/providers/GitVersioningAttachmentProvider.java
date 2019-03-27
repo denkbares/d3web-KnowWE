@@ -104,11 +104,23 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@NotNull
 	private String getAttachmentDir(String page) {
-		return TextUtil.urlEncodeUTF8(page) + DIR_EXTENSION;
+		return mangleName(page) + DIR_EXTENSION;
 	}
 
 	private File findAttachmentDir(Attachment att) throws ProviderException {
 		return findPageDir(att.getParentName());
+	}
+
+	private File findAttachmentFile(String parentName, String fileName) throws ProviderException {
+		return new File(findPageDir(parentName), mangleName(fileName));
+	}
+
+	private String getAttachmentDir(Attachment att) {
+		return mangleName(att.getParentName()) + DIR_EXTENSION;
+	}
+
+	private String getPath(Attachment att) {
+		return getAttachmentDir(att.getParentName()) + "/" + mangleName(att.getFileName());
 	}
 
 	@Override
@@ -187,7 +199,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public InputStream getAttachmentData(Attachment att) throws IOException, ProviderException {
-		File attFile = new File(findAttachmentDir(att), att.getFileName());
+		File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
 		if (!attFile.exists()) {
 			throw new ProviderException("File " + att.getFileName() + " does not exist");
 		}
@@ -216,32 +228,26 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	private ObjectId getObjectOfCommit(RevCommit commit, Attachment att) throws IOException {
-		TreeWalk treeWalkDir = new TreeWalk(repository);
-		treeWalkDir.reset(commit.getTree());
-		treeWalkDir.setFilter(PathFilter.create(getAttachmentDir(att)));
-		treeWalkDir.setRecursive(false);
-		//only the attachment directory
-		while (treeWalkDir.next()) {
-			ObjectId objectId = treeWalkDir.getObjectId(0);
-			// so now walk a step down
-			TreeWalk treeWalkFile = new TreeWalk(repository);
-			treeWalkFile.reset(objectId);
-			treeWalkFile.setFilter(PathFilter.create(att.getFileName()));
-			treeWalkFile.setRecursive(false);
-			if (treeWalkFile.next()) {
-				// now we should have our file
-				return treeWalkFile.getObjectId(0);
+		try (TreeWalk treeWalkDir = new TreeWalk(repository)) {
+			treeWalkDir.reset(commit.getTree());
+			treeWalkDir.setFilter(PathFilter.create(getAttachmentDir(att)));
+			treeWalkDir.setRecursive(false);
+			//only the attachment directory
+			while (treeWalkDir.next()) {
+				ObjectId objectId = treeWalkDir.getObjectId(0);
+				// so now walk a step down
+				try (TreeWalk treeWalkFile = new TreeWalk(repository)) {
+					treeWalkFile.reset(objectId);
+					treeWalkFile.setFilter(PathFilter.create(mangleName(att.getFileName())));
+					treeWalkFile.setRecursive(false);
+					if (treeWalkFile.next()) {
+						// now we should have our file
+						return treeWalkFile.getObjectId(0);
+					}
+				}
 			}
 		}
 		return null;
-	}
-
-	private String getAttachmentDir(Attachment att) {
-		return TextUtil.urlEncodeUTF8(att.getParentName()) + DIR_EXTENSION;
-	}
-
-	private String getPath(Attachment att) {
-		return getAttachmentDir(att.getParentName()) + "/" + att.getFileName();
 	}
 
 	@Override
@@ -253,7 +259,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			File[] files = attachmentDir.listFiles();
 			if (files != null) {
 				for (File file : files) {
-					ret.add(getAttachmentInfo(page, file.getName(), LATEST_VERSION));
+					ret.add(getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION));
 				}
 			}
 		}
@@ -272,7 +278,6 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		try {
 			ObjectId oldCommit = null;
 			ObjectId newCommit;
-
 
 			for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
 				String fullMessage = commit.getFullMessage();
@@ -322,9 +327,9 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		String parent = path
 				.substring(0, path.indexOf("/"))
 				.replace(DIR_EXTENSION, "");
-		parent = TextUtil.urlDecodeUTF8(parent);
-		String fileName = path.substring(path.indexOf("/"));
-		Attachment att = new Attachment(engine, parent, fileName);
+		parent = unmangleName(parent);
+		String attachmentName = unmangleName(path.substring(path.indexOf("/")));
+		Attachment att = new Attachment(engine, parent, attachmentName);
 		att.setAttribute(Attachment.CHANGENOTE, fullMessage);
 		att.setAuthor(author);
 		att.setLastModified(modified);
@@ -334,12 +339,12 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	@Override
 	public Attachment getAttachmentInfo(WikiPage page, String name, int version) throws ProviderException {
 		Attachment att = new Attachment(engine, page.getName(), name);
-		File attFile = new File(findPageDir(page.getName()), name);
+		File attFile = findAttachmentFile(page.getName(), name);
 		if (attFile.exists()) {
-
 			List<Attachment> versionHistory = getVersionHistory(att);
-			if (version == LATEST_VERSION && !versionHistory.isEmpty()) {
-				return versionHistory.get(versionHistory.size() - 1);
+			if (version == LATEST_VERSION && versionHistory.size() > 0) {
+				Attachment attachment = versionHistory.get(versionHistory.size() - 1);
+				return attachment;
 			}
 			else {
 				if (version > 0 && version <= versionHistory.size()) {
@@ -354,7 +359,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	public List<Attachment> getVersionHistory(Attachment att) {
 		List<Attachment> ret = new ArrayList<>();
 		try {
-			File attFile = new File(findPageDir(att.getParentName()), att.getFileName());
+			File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
 			if (attFile.exists()) {
 
 				Git git = new Git(repository);
@@ -387,7 +392,12 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		attVersion.setAuthor(revCommit.getCommitterIdent().getName());
 		attVersion.setVersion(version);
 		attVersion.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
-		attVersion.setSize(getObjectSize(revCommit, att));
+		try {
+			attVersion.setSize(getObjectSize(revCommit, att));
+		}
+		catch (IOException e) {
+			attVersion.setSize(-1);
+		}
 		attVersion.setLastModified(new Date(1000L * revCommit.getCommitTime()));
 		return attVersion;
 	}
@@ -421,7 +431,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public void deleteAttachment(Attachment att) throws ProviderException {
-		File attFile = new File(findPageDir(att.getParentName()), att.getFileName());
+		File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
 		if (attFile.exists()) {
 			boolean delete = attFile.delete();
 			if (!delete) log.debug("File " + getPath(att) + " could not be deleted on filesystem");
@@ -441,8 +451,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@Override
-	public void moveAttachmentsForPage(String oldParent, String newParent) throws ProviderException {
-		File oldDir = findPageDir(oldParent);
+	public void moveAttachmentsForPage(WikiPage oldParent, String newParent) throws ProviderException {
+		File oldDir = findPageDir(oldParent.getName());
 		File newDir = findPageDir(newParent);
 		if (newDir.exists() && !newDir.isDirectory()) {
 			throw new ProviderException(newParent + DIR_EXTENSION + " is not a directory");
@@ -462,21 +472,21 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				AddCommand add = git.add();
 				CommitCommand commit = git.commit();
 				for (File file : files) {
-					rm.addFilepattern(getAttachmentDir(oldParent) + "/" + file.getName());
-					commit.setOnly(getAttachmentDir(oldParent) + "/" + file.getName());
+					rm.addFilepattern(getAttachmentDir(oldParent.getName()) + "/" + file.getName());
+					commit.setOnly(getAttachmentDir(oldParent.getName()) + "/" + file.getName());
 					add.addFilepattern(getAttachmentDir(newParent) + "/" + file.getName());
 					commit.setOnly(getAttachmentDir(newParent) + "/" + file.getName());
 				}
-				rm.addFilepattern(getAttachmentDir(oldParent));
+				rm.addFilepattern(getAttachmentDir(oldParent.getName()));
 				add.addFilepattern(getAttachmentDir(newParent));
 				rm.call();
 				add.call();
-				commit.setMessage("move attachments form " + oldParent + " to " + newParent);
+				commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
 				commit.call();
 			}
 			catch (IOException | GitAPIException e) {
 				log.error(e.getMessage(), e);
-				throw new ProviderException("Can't move attachments form " + oldParent + " to " + newParent);
+				throw new ProviderException("Can't move attachments form " + oldParent.getName() + " to " + newParent);
 			}
 		}
 	}

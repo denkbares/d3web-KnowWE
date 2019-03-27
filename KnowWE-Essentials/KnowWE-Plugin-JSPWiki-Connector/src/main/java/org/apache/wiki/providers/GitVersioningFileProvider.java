@@ -342,21 +342,22 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	@Override
-	public void deleteVersion(String pageName, int version) {
+	public void deleteVersion(WikiPage pageName, int version) {
 		// Can't delete version from git
 	}
 
 	@Override
-	public void deletePage(String pageName) throws ProviderException {
-		File page = findPage(pageName);
+	public void deletePage(WikiPage pageName) throws ProviderException {
+		File page = findPage(pageName.getName());
 		page.delete();
 		try {
 			Git git = new Git(repository);
 			git.rm().addFilepattern(page.getName()).call();
-			git.commit()
+			CommitCommand commitCommand = git.commit()
 					.setOnly(page.getName())
-					.setMessage("removed page")
-					.call();
+					.setMessage("removed page");
+			addUserInfo(m_engine, pageName.getAuthor(), commitCommand);
+			commitCommand.call();
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
@@ -365,19 +366,20 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	@Override
-	public void movePage(String from, String to) throws ProviderException {
-		File fromFile = findPage(from);
+	public void movePage(WikiPage from, String to) throws ProviderException {
+		File fromFile = findPage(from.getName());
 		File toFile = findPage(to);
 		try {
 			Files.move(fromFile.toPath(), toFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
 			Git git = new Git(repository);
 			git.add().addFilepattern(toFile.getName()).call();
 			git.rm().addFilepattern(fromFile.getName()).call();
-			git.commit()
+			CommitCommand commitCommand = git.commit()
 					.setOnly(toFile.getName())
 					.setOnly(fromFile.getName())
-					.setMessage("renamed page " + from + " to " + to)
-					.call();
+					.setMessage("renamed page " + from + " to " + to);
+			addUserInfo(m_engine, from.getAuthor(), commitCommand);
+			commitCommand.call();
 		}
 		catch (IOException | GitAPIException e) {
 			log.error(e.getMessage(), e);
