@@ -71,7 +71,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private final MultiDefinitionMode multiDefinitionMode;
 	private final ReferenceValidationMode referenceValidationMode;
 	private final Set<Priority> commitTracker = ConcurrentHashMap.newKeySet();
-	private boolean casesensitive;
+	private boolean caseSensitive;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
@@ -86,7 +86,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
 		this.compilingArticle = compileSection.getTitle();
-		this.casesensitive = true;
+		this.caseSensitive = true;
 	}
 
 	public OntologyCompiler(PackageManager manager,
@@ -94,9 +94,9 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 							Class<? extends Type> compilingType,
 							RepositoryConfig ruleSet, MultiDefinitionMode multiDefMode,
 							ReferenceValidationMode referenceValidationMode,
-							boolean casesensitive) {
+							boolean caseSensitive) {
 		this(manager, compileSection, compilingType, ruleSet, multiDefMode, referenceValidationMode);
-		this.casesensitive = casesensitive;
+		this.caseSensitive = caseSensitive;
 	}
 
 	@Override
@@ -124,10 +124,26 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	@Override
 	public Rdf2GoCore getRdf2GoCore() {
+		return getRdf2GoCore(false);
+	}
+
+	/**
+	 * Gets the Rdf2GoCore of this OntologyCompiler. Setting the boolean <tt>committed</tt> to true will make sure,
+	 * that when calling this method during compilation of the same compiler, all statements of the previous compile
+	 * priority are committed and can be accessed via SPARQL. This can however come with negative effects on
+	 * performance.
+	 *
+	 * @param committed decides whether the currenlty added statements should be committed when requesting the core
+	 *                  during compilation
+	 * @return the Rdf2GoCore of this compiler
+	 */
+	public Rdf2GoCore getRdf2GoCore(boolean committed) {
 		if (rdf2GoCore == null) {
 			// in case the compiler doesn't have anything to compile...
 			return new Rdf2GoCore(RepositoryConfigs.get(RdfConfig.class));
 		}
+		if (!committed) return rdf2GoCore;
+
 		// if we are currently in the process of compiling this ontology, we perform a commit
 		// on the Rdf2GoCore exactly once per priority (because the compile order is not stable inside
 		// on priority anyway)
@@ -156,7 +172,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	}
 
 	private void createTerminologyManager() {
-		this.terminologyManager = new TerminologyManager(casesensitive);
+		this.terminologyManager = new TerminologyManager(caseSensitive);
 		// register the lns abbreviation immediately as defined
 		this.terminologyManager.registerTermDefinition(this, getCompileSection(),
 				AbbreviationDefinition.class, new Identifier(Rdf2GoCore.LNS_ABBREVIATION));

@@ -22,7 +22,7 @@ public class StatementProviderResult {
 
 	private final Rdf2GoCore core;
 	private final Collection<Message> messages = new ArrayList<>(0);
-	private final Collection<Statement> statments = new ArrayList<>();
+	private final Collection<Statement> statements = new ArrayList<>();
 
 	public StatementProviderResult(Rdf2GoCompiler compiler) {
 		this(compiler.getRdf2GoCore());
@@ -37,7 +37,7 @@ public class StatementProviderResult {
 	}
 
 	public void addStatement(Statement s) {
-		statments.add(s);
+		statements.add(s);
 	}
 
 	public Collection<Message> getMessages() {
@@ -45,7 +45,7 @@ public class StatementProviderResult {
 	}
 
 	public Collection<Statement> getStatements() {
-		return statments;
+		return statements;
 	}
 
 	public StatementProviderResult error(String msg) {
