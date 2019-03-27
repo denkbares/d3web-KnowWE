@@ -61,8 +61,6 @@ import de.knowwe.ontology.kdom.namespace.Namespace;
 import de.knowwe.ontology.kdom.namespace.NamespaceAbbreviationDefinition;
 import de.knowwe.util.Icon;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * Compiles and provides ontology from the Ontology-MarkupSet.
  *
@@ -73,7 +71,7 @@ public class OntologyType extends DefaultMarkupType {
 
 	public static final String PLUGIN_ID = "KnowWE-Plugin-Ontology-MarkupSet";
 
-	public static final String ANNOTATION_COMPILE = "uses";
+	public static final String ANNOTATION_COMPILE = PackageManager.COMPILE_ATTRIBUTE_NAME;
 	public static final String ANNOTATION_RULE_SET = "ruleset";
 	public static final String ANNOTATION_MULTI_DEF_MODE = "multiDefinitionMode";
 	public static final String ANNOTATION_REFERENCE_VALIDATION_MODE = "referenceValidationMode";
@@ -92,11 +90,18 @@ public class OntologyType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Ontology");
+		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
+		compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());
+		compileType.addCompileScript(new OntologyCompilerRegistrationScript());
+		MARKUP.addContentType(compileType);
+
 		MARKUP.addAnnotation(ANNOTATION_COMPILE, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_COMPILE, Icon.PACKAGE.addTitle("Uses"));
+		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new PackageTerm());
 
 		MARKUP.addAnnotation(ANNOTATION_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_IMPORT, Icon.FILE_XML.addTitle("Import"));
+		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new AttachmentType(false));
 
 		MARKUP.addAnnotation(ANNOTATION_EXPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_EXPORT, Icon.ATTACHMENT.addTitle("Export"));
@@ -109,11 +114,8 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
 
-		List<String> collect = RepositoryConfigs.values()
-				.stream()
-				.map(RepositoryConfig::getName)
-				.collect(toList());
-		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false, collect.toArray(new String[collect.size()]));
+		MARKUP.addAnnotation(ANNOTATION_RULE_SET, false,
+				RepositoryConfigs.values().stream().map(RepositoryConfig::getName).toArray(String[]::new));
 		MARKUP.addAnnotationIcon(ANNOTATION_RULE_SET, Icon.COG.addTitle("Rule Set"));
 
 		MARKUP.addAnnotation(ANNOTATION_MULTI_DEF_MODE, false, MultiDefinitionMode.class);
@@ -129,14 +131,7 @@ public class OntologyType extends DefaultMarkupType {
 						"by other markups, if no specific namespace is given.");
 		MARKUP.addAnnotationContentType(ANNOTATION_DEFAULT_NAMESPACE, new NamespaceAbbreviationDefinition());
 
-		MARKUP.addAnnotationContentType(ANNOTATION_IMPORT, new AttachmentType(false));
 		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class);
-		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
-		compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());
-		compileType.addCompileScript(new OntologyCompilerRegistrationScript());
-		MARKUP.addContentType(compileType);
-
-		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageTerm());
 	}
 
 	public OntologyType() {
