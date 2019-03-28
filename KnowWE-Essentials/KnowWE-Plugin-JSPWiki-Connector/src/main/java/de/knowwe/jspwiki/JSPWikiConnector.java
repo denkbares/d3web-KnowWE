@@ -859,6 +859,8 @@ public class JSPWikiConnector implements WikiConnector {
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext user) {
 		try {
 			WikiPage page = engine.getPage(title);
+			// if PageProvider throws exception, page will be null and can't be saved
+			if (page == null) return false;
 			WikiContext context = engine.createContext(user.getRequest(), WikiContext.EDIT);
 			if (context.getCurrentUser() != null) {
 				page.setAuthor(context.getCurrentUser().getName());

@@ -41,6 +41,7 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -125,7 +126,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		boolean addFile = !changedFile.exists();
 
 		super.putPageText(page, text);
-
+		boolean isChanged = false;
 		Git git = new Git(repository);
 		try {
 			if (addFile) {
@@ -133,7 +134,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			}
 
 			Status status = git.status().addPath(changedFile.getName()).call();
-			boolean isChanged = status.getModified().contains(changedFile.getName());
+			isChanged = status.getModified().contains(changedFile.getName());
 			if (isChanged || addFile) {
 				CommitCommand commit = git
 						.commit()
@@ -148,12 +149,27 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					commit.setMessage("-");
 				}
 				addUserInfo(m_engine, page.getAuthor(), commit);
-				commit.call();
+				commit.setAllowEmpty(true);
+				synchronized (repository) {
+					commit.call();
+				}
 			}
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
 			throw new ProviderException("File " + page.getName() + " could not be commited to git");
+		}
+		catch (JGitInternalException e) {
+			if ("No changes".equals(e.getMessage())) {
+				// As javadoc of CommitCall.setAllowEmpty(true) says, this should not happen,
+				// nevertheless it happens (Bug 510685 of JGit). the underlying problem is caching of
+				// JspWiki because rename puts the actual text through CacheProvider to update the cache
+				log.info("Commit of not changed page " + page.getName());
+			}
+			else {
+				log.error("something went wrong changed: " + isChanged + " page " + page.getName() + " message " + e.getMessage(), e);
+				throw new ProviderException("Git internal error " + e.getMessage());
+			}
 		}
 	}
 
@@ -199,7 +215,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			}
 		}
 		else {
-			return new WikiPage(m_engine, pageName);
+			return null;
 		}
 	}
 
@@ -357,7 +373,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					.setOnly(page.getName())
 					.setMessage("removed page");
 			addUserInfo(m_engine, pageName.getAuthor(), commitCommand);
-			commitCommand.call();
+			synchronized (repository) {
+				commitCommand.call();
+			}
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
@@ -379,7 +397,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					.setOnly(fromFile.getName())
 					.setMessage("renamed page " + from + " to " + to);
 			addUserInfo(m_engine, from.getAuthor(), commitCommand);
-			commitCommand.call();
+			synchronized (repository) {
+				commitCommand.call();
+			}
 		}
 		catch (IOException | GitAPIException e) {
 			log.error(e.getMessage(), e);

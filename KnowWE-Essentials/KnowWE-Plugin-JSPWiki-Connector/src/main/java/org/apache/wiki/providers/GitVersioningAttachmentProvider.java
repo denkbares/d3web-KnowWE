@@ -47,6 +47,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -153,8 +154,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				data.close();
 			}
 		}
+		boolean isChanged = false;
 		try {
-
 			if (add) {
 				try {
 					Status status = git.status().addPath(attDir.getName()).call();
@@ -168,17 +169,30 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				git.add().addFilepattern(getPath(att)).call();
 			}
 			Status status = git.status().addPath(getPath(att)).call();
-			boolean isChanged = status.getModified().contains(getPath(att));
+			isChanged = status.getModified().contains(getPath(att));
 			if (isChanged || add) {
 				CommitCommand commitCommand = git.commit()
 						.setOnly(getPath(att));
 				setMessage(att, commitCommand);
 				addUserInfo(engine, att.getAuthor(), commitCommand);
-				commitCommand.call();
+				synchronized (repository) {
+					commitCommand.call();
+				}
 			}
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
+		}
+		catch (JGitInternalException e) {
+			if ("No changes".equals(e.getMessage())) {
+				// As javadoc of CommitCall.setAllowEmpty(true) says, this should not happen,
+				// nevertheless it happens (Bug 510685 of JGit)
+				log.info("Commit of not changed page " + getPath(att));
+			}
+			else {
+				log.error("something went wrong changed: " + isChanged + " page " + getPath(att) + " message " + e.getMessage(), e);
+				throw new ProviderException("Git internal error " + e.getMessage());
+			}
 		}
 	}
 
@@ -256,10 +270,13 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		File attachmentDir = findPageDir(page.getName());
 		if (attachmentDir.exists()) {
 
-			File[] files = attachmentDir.listFiles();
+			File[] files = attachmentDir.listFiles(file -> !file.isHidden());
 			if (files != null) {
 				for (File file : files) {
-					ret.add(getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION));
+					Attachment attachmentInfo = getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION);
+					if (attachmentInfo != null) {
+						ret.add(attachmentInfo);
+					}
 				}
 			}
 		}
@@ -352,7 +369,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				}
 			}
 		}
-		return att;
+		return null;
 	}
 
 	@Override
@@ -441,7 +458,9 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				CommitCommand commitCommand = git.commit().setOnly(getPath(att));
 				setMessage(att, commitCommand);
 				addUserInfo(engine, att.getAuthor(), commitCommand);
-				commitCommand.call();
+				synchronized (repository) {
+					commitCommand.call();
+				}
 			}
 			catch (GitAPIException e) {
 				log.error(e.getMessage(), e);
@@ -482,7 +501,9 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				rm.call();
 				add.call();
 				commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
-				commit.call();
+				synchronized (repository) {
+					commit.call();
+				}
 			}
 			catch (IOException | GitAPIException e) {
 				log.error(e.getMessage(), e);
