@@ -860,7 +860,9 @@ public class JSPWikiConnector implements WikiConnector {
 		try {
 			WikiPage page = engine.getPage(title);
 			WikiContext context = engine.createContext(user.getRequest(), WikiContext.EDIT);
-			page.setAuthor(context.getCurrentUser().getName());
+			if (context.getCurrentUser() != null) {
+				page.setAuthor(context.getCurrentUser().getName());
+			}
 			String changeNote = user.getParameter(Attributes.CHANGE_NOTE);
 			if (changeNote != null) {
 				page.setAttribute(WikiPage.CHANGENOTE, changeNote);
