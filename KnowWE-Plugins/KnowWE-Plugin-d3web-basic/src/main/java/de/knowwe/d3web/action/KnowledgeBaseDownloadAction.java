@@ -35,7 +35,11 @@ import de.knowwe.core.utils.KnowWEUtils;
 
 public class KnowledgeBaseDownloadAction extends AbstractAction {
 
-	public static final String PARAM_FILENAME = "filename";
+	public static final String PARAM_FILENAME;
+
+	static {
+		PARAM_FILENAME = "filename";
+	}
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
