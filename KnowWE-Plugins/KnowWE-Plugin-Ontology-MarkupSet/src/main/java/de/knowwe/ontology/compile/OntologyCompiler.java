@@ -67,7 +67,6 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	private ParallelScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ParallelScriptCompiler<OntologyCompiler> destroyScriptCompiler;
 	private final RepositoryConfig ruleSet;
-	private final String compilingArticle;
 	private final MultiDefinitionMode multiDefinitionMode;
 	private final ReferenceValidationMode referenceValidationMode;
 	private final Set<Priority> commitTracker = ConcurrentHashMap.newKeySet();
@@ -85,7 +84,6 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		this.referenceValidationMode = referenceValidationMode == null ? ReferenceValidationMode.error : referenceValidationMode;
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
-		this.compilingArticle = compileSection.getTitle();
 		this.caseSensitive = true;
 	}
 
@@ -113,7 +111,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 
 	@Override
 	public String getArticleName() {
-		return compilingArticle;
+		return getCompileSection().getTitle();
 	}
 
 	@Override
