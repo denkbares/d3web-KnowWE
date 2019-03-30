@@ -53,7 +53,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		}
 		catch (IOException e) {
 			if (!file.delete()) file.deleteOnExit();
-			String msg = "Aborted execution due to io exception";
+			String msg = "Aborted due to error: " + e.getMessage();
 			Log.warning(msg, e);
 			addMessage(Messages.error(msg, e));
 		}
@@ -276,10 +276,9 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		}
 		else if (!article.equals(other.article)) return false;
 		if (fileName == null) {
-			if (other.fileName != null) return false;
+			return other.fileName == null;
 		}
-		else if (!fileName.equals(other.fileName)) return false;
-		return true;
+		else return fileName.equals(other.fileName);
 	}
 
 	@Override
@@ -287,5 +286,4 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		super.cancel();
 		if (operationThread != null) operationThread.interrupt();
 	}
-
 }
