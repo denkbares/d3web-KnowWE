@@ -20,6 +20,7 @@
 package de.d3web.we.knowledgebase;
 
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
@@ -44,12 +45,11 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * This class defines the knowledge base markup. With this, you can specify a
- * knowledge base that will be compiled from names package definitions, found on
- * of all wiki articles.
+ * This class defines the knowledge base markup. With this, you can specify a knowledge base that will be compiled from
+ * names package definitions, found on of all wiki articles.
  * <p>
- * As the content of the markup you must specify the knowledge base name. The
- * markup also supports the following annotations.
+ * As the content of the markup you must specify the knowledge base name. The markup also supports the following
+ * annotations.
  * <ul>
  * <li><b>id:</b> a unique textual id of the knowledge base.
  * <li><b>version:</b> the current version of the knowledge base.
@@ -59,12 +59,10 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * base.
  * <li><b>uses:</b> a package name that is searched for compiling.
  * </ul>
- * Please note that you must have at least one package defined. If you want to
- * compile your knowledge base from several packages, use multiple "@uses: ..."
- * annotations. You may specify "this" or "default" as special package names.
- * The package name "default" may be used to compile all wiki content that have
- * no explicitly defined package. The package name "this" may be used to compile
- * the contents of this article, ignoring their package declaration.
+ * Please note that you must have at least one package defined. If you want to compile your knowledge base from several
+ * packages, use multiple "@uses: ..." annotations. You may specify "this" or "default" as special package names. The
+ * package name "default" may be used to compile all wiki content that have no explicitly defined package. The package
+ * name "this" may be used to compile the contents of this article, ignoring their package declaration.
  *
  * @author volker_belli
  * @created 13.10.2010
@@ -80,11 +78,12 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 	public static final String ANNOTATION_AFFILIATION = "affiliation";
 	public static final String ANNOTATION_TERM_MATCHING = "termMatching";
 
+	public static final String DEFAULT_FILENAME = "kb.d3web";
+
 	public static final String CASE_SENSITIVE = "case sensitive";
 	public static final String CASE_INSENSITIVE = "case insensitive";
 
 	private static final DefaultMarkup MARKUP;
-
 
 	static {
 		MARKUP = new DefaultMarkup("KnowledgeBase");
@@ -147,6 +146,11 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 		removeCompileScript(PackageRegistrationCompiler.class, DefaultMarkupPackageRegistrationScript.class);
 		addCompileScript(new CompileMarkupPackageRegistrationScript());
+	}
+
+	public String getFilename(Section<? extends KnowledgeBaseType> self) {
+		String filename = getAnnotation(self, ANNOTATION_FILENAME);
+		return Strings.nonBlank(filename) ? filename : DEFAULT_FILENAME;
 	}
 
 	private static class D3webCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
