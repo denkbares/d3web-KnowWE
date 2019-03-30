@@ -45,13 +45,15 @@ public class OntologyDownloadAction extends AbstractAction {
 		String title = context.getParameter(OntologyDownloadProvider.TITLE);
 
 		Section<?> section;
-		if (title == null) {
+		if (secID != null) {
 			section = $(Sections.get(secID)).successor(PackageCompileType.class).getFirst();
 		}
 		else {
-			Article article = KnowWEUtils.getArticleManager(context.getWeb()).getArticle(title);
+			Article article = (title == null) ? context.getArticle()
+					: KnowWEUtils.getArticleManager(context.getWeb()).getArticle(title);
 			section = $(article).successor(OntologyType.class).successor(PackageCompileType.class).getFirst();
 		}
+
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
 		if (compiler == null) {
 			context.sendError(HttpServletResponse.SC_NOT_FOUND, "No compiler found");
@@ -73,5 +75,4 @@ public class OntologyDownloadAction extends AbstractAction {
 
 		context.getWriter().write(new String(contentBytes, StandardCharsets.UTF_8));
 	}
-
 }

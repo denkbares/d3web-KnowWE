@@ -91,5 +91,4 @@ public class OntologyDownloadProvider implements ToolProvider {
 				Tool.ActionType.HREF,
 				Tool.CATEGORY_DOWNLOAD);
 	}
-
 }
