@@ -21,19 +21,19 @@
  * KnowWE specific util methods using jQuery!
  */
 
-(function (jq$) {
+(function(jq$) {
 
 	/**
 	 * Checks whether the selector returned any elements
 	 */
-	jq$.fn.exists = function () {
+	jq$.fn.exists = function() {
 		return this.length > 0;
 	};
 
 	/**
 	 * Scales the selected elements using a smooth css transition.
 	 */
-	jq$.fn.scale = function (scale) {
+	jq$.fn.scale = function(scale) {
 		if (scale) {
 			this.css('transform', 'scale(' + scale + ')');
 		} else {
@@ -47,7 +47,7 @@
 	};
 
 
-	jq$.fn.copyToClipboard = function (text) {
+	jq$.fn.copyToClipboard = function(text) {
 		const $temp = jq$("<input>");
 		// in case we have a model dialog, we append to that one, otherwise the select() will not work
 		let $parent = jq$(".ui-dialog");
@@ -76,11 +76,11 @@
 	 * This is an extract of the "Masked Input Plugin",
 	 * Copyright (c) 2007-2014 Josh Bush (digitalbush.com).
 	 */
-	$.fn.caret = function (begin, end) {
+	$.fn.caret = function(begin, end) {
 		if (this.length === 0) return;
 		if (typeof begin === 'number') {
 			end = (typeof end === 'number') ? end : begin;
-			return this.each(function () {
+			return this.each(function() {
 				if (this.setSelectionRange) {
 					this.setSelectionRange(begin, end);
 				} else if (this.createTextRange) {
@@ -115,19 +115,26 @@
 	 * You can also just select successors of the default markup, the method will automatically choose the right
 	 * elements to rerender.
 	 */
-	jq$.fn.rerender = function (options) {
+	jq$.fn.rerender = function(options) {
+
+		if (!options) options = {};
+		let checkReplaceNeeded = options.checkReplaceNeeded;
+		let beforeReplace = options.beforeReplace;
+		let callback = options.callback;
+		delete options.checkReplaceNeeded;
+		delete options.beforeReplace;
+		delete options.callback;
 
 		function showGlobalProcessingState() {
 			return typeof options.globalProcessingState === "undefined" || options.globalProcessingState === true;
 		}
 
-		this.each(function (i) {
+		this.each(function(i) {
 			let $element = jq$(this);
 
 			let id = $element.attr('sectionId');
 			if (!id) id = $element.attr('id');
 
-			if (!options) options = {};
 			const currentCounter = jq$.rerenderCounter++;
 			const data = {
 				SectionID: id,
@@ -148,16 +155,16 @@
 				type: 'post',
 				cache: false,
 				data: data
-			}).success(function (data, status, jqXHR) {
-				if (options.checkReplaceNeeded) {
-					if (!options.checkReplaceNeeded.call(this, data, status, jqXHR)) {
+			}).success(function(data, status, jqXHR) {
+				if (checkReplaceNeeded) {
+					if (!checkReplaceNeeded.call(this, data, status, jqXHR)) {
 						return
 					}
 				} else if (jqXHR.status === 304) {
 					return; // no changes, do nothing
 				}
-				if (options.beforeReplace) {
-					options.beforeReplace.call(this, $element, data);
+				if (beforeReplace) {
+					beforeReplace.call(this, $element, data);
 				}
 				const parsed = JSON.parse(data);
 				if (jq$.lastRerenderRequests[id] !== parsed.counter) {
@@ -176,10 +183,10 @@
 				jq$('#knowWEInfoStatus').val(parsed.status);
 				KNOWWE.core.actions.init();
 				KNOWWE.helper.observer.notify("afterRerender", $element);
-				if (options.callback) {
-					options.callback.call(this, $element);
+				if (callback) {
+					callback.call(this, $element);
 				}
-			}).always(function () {
+			}).always(function() {
 				if (showGlobalProcessingState()) {
 					KNOWWE.core.util.updateProcessingState(-1);
 				}
@@ -202,7 +209,7 @@
  * Copyright 2013 Klaus Hartl
  * Released under the MIT license
  */
-(function (factory) {
+(function(factory) {
 	if (typeof define === 'function' && define.amd) {
 		// AMD
 		define(['jquery'], factory);
@@ -213,7 +220,7 @@
 		// Browser globals
 		factory(jQuery);
 	}
-}(function (jq$) {
+}(function(jq$) {
 
 	const pluses = /\+/g;
 
@@ -259,7 +266,7 @@
 		return jq$.isFunction(converter) ? converter(value) : value;
 	}
 
-	let config = jq$.cookie = function (key, value, options) {
+	let config = jq$.cookie = function(key, value, options) {
 
 		// Write
 
@@ -314,7 +321,7 @@
 
 	config.defaults = {};
 
-	jq$.removeCookie = function (key, options) {
+	jq$.removeCookie = function(key, options) {
 		if (jq$.cookie(key) === undefined) {
 			return false;
 		}
@@ -327,10 +334,10 @@
 }));
 
 
-(function (jq$) {
-	jq$.waitForFinalEvent = (function () {
+(function(jq$) {
+	jq$.waitForFinalEvent = (function() {
 		const timers = {};
-		return function (callback, ms, uniqueId) {
+		return function(callback, ms, uniqueId) {
 			if (!uniqueId) {
 				uniqueId = "Don't call this twice without a uniqueId";
 			}
@@ -387,9 +394,9 @@
  *
  */
 
-(function (jq$) {
+(function(jq$) {
 
-	jq$.fn.editable = function (target, options) {
+	jq$.fn.editable = function(target, options) {
 
 		if ('disable' === target) {
 			jq$(this).data('disabled.editable', true);
@@ -410,9 +417,9 @@
 		const settings = jq$.extend({}, jq$.fn.editable.defaults, {target: target}, options);
 
 		/* setup some functions */
-		const plugin = jq$.editable.types[settings.type].plugin || function () {
+		const plugin = jq$.editable.types[settings.type].plugin || function() {
 		};
-		const submit = jq$.editable.types[settings.type].submit || function () {
+		const submit = jq$.editable.types[settings.type].submit || function() {
 		};
 		const buttons = jq$.editable.types[settings.type].buttons
 			|| jq$.editable.types['defaults'].buttons;
@@ -422,15 +429,15 @@
 			|| jq$.editable.types['defaults'].element;
 		const reset = jq$.editable.types[settings.type].reset
 			|| jq$.editable.types['defaults'].reset;
-		const callback = settings.callback || function () {
+		const callback = settings.callback || function() {
 		};
-		const onedit = settings.onedit || function () {
+		const onedit = settings.onedit || function() {
 		};
-		const onsubmit = settings.onsubmit || function () {
+		const onsubmit = settings.onsubmit || function() {
 		};
-		const onreset = settings.onreset || function () {
+		const onreset = settings.onreset || function() {
 		};
-		const afterreset = settings.afterreset || function () {
+		const afterreset = settings.afterreset || function() {
 		};
 		const onerror = settings.onerror || reset;
 
@@ -442,7 +449,7 @@
 		settings.autowidth = 'auto' === settings.width;
 		settings.autoheight = 'auto' === settings.height;
 
-		return this.each(function () {
+		return this.each(function() {
 
 			/* save this to self because this changes when scope changes */
 			const self = this;
@@ -460,7 +467,7 @@
 				jq$(this).html(settings.placeholder);
 			}
 
-			jq$(this).bind(settings.event, function (e) {
+			jq$(this).bind(settings.event, function(e) {
 
 				/* abort if disabled for this element */
 				if (true === jq$(this).data('disabled.editable')) {
@@ -543,7 +550,7 @@
 				let input_content;
 				let t;
 				if (settings.loadurl) {
-					t = setTimeout(function () {
+					t = setTimeout(function() {
 						input.disabled = true;
 						content.apply(form, [settings.loadtext, settings, self]);
 					}, 100);
@@ -560,7 +567,7 @@
 						url: settings.loadurl,
 						data: loaddata,
 						async: false,
-						success: function (result) {
+						success: function(result) {
 							window.clearTimeout(t);
 							input_content = result;
 							input.disabled = false;
@@ -596,7 +603,7 @@
 				}
 
 				/* discard changes if pressing esc */
-				input.keydown(function (e) {
+				input.keydown(function(e) {
 					if (e.keyCode === 27) {
 						e.preventDefault();
 						//self.reset();
@@ -607,30 +614,30 @@
 				/* discard, submit or nothing with changes when clicking outside */
 				/* do nothing is usable when navigating with tab */
 				if ('cancel' === settings.onblur) {
-					input.blur(function (e) {
+					input.blur(function(e) {
 						/* prevent canceling if submit was clicked */
-						t = setTimeout(function () {
+						t = setTimeout(function() {
 							reset.apply(form, [settings, self]);
 						}, 500);
 					});
 				} else if ('submit' === settings.onblur) {
-					input.blur(function (e) {
+					input.blur(function(e) {
 						/* prevent double submit if submit was clicked */
-						t = setTimeout(function () {
+						t = setTimeout(function() {
 							form.submit();
 						}, 200);
 					});
 				} else if (jq$.isFunction(settings.onblur)) {
-					input.blur(function (e) {
+					input.blur(function(e) {
 						settings.onblur.apply(self, [input.val(), settings]);
 					});
 				} else {
-					input.blur(function (e) {
+					input.blur(function(e) {
 						/* TODO: maybe something here */
 					});
 				}
 
-				form.submit(function (e) {
+				form.submit(function(e) {
 
 					if (t) {
 						clearTimeout(t);
@@ -682,7 +689,7 @@
 									data: submitdata,
 									dataType: 'html',
 									url: settings.target,
-									success: function (result, status) {
+									success: function(result, status) {
 										if (ajaxoptions.dataType === 'html') {
 											jq$(self).html(result);
 										}
@@ -692,7 +699,7 @@
 											jq$(self).html(settings.placeholder);
 										}
 									},
-									error: function (xhr, status, error) {
+									error: function(xhr, status, error) {
 										onerror.apply(form, [settings, self, xhr]);
 									}
 								};
@@ -713,7 +720,7 @@
 			});
 
 			/* privileged methods */
-			this.reset = function (form) {
+			this.reset = function(form) {
 				/* prevent calling reset twice when blurring */
 				if (this.editing) {
 					/* before reset hook, if it returns false abort reseting */
@@ -741,24 +748,24 @@
 	jq$.editable = {
 		types: {
 			defaults: {
-				element: function (settings, original) {
+				element: function(settings, original) {
 					const input = jq$('<input type="hidden">');
 					jq$(this).append(input);
 					return (input);
 				},
-				content: function (string, settings, original) {
+				content: function(string, settings, original) {
 					jq$(':input:first', this).val(string);
 				},
-				reset: function (settings, original) {
+				reset: function(settings, original) {
 					original.reset(this);
 				},
-				buttons: function (settings, original) {
+				buttons: function(settings, original) {
 					const form = this;
 					if (settings.submit) {
 						/* if given html string use that */
 						let submit;
 						if (settings.submit.match(/>jq$/)) {
-							submit = jq$(settings.submit).click(function () {
+							submit = jq$(settings.submit).click(function() {
 								if (submit.attr("type") !== "submit") {
 									form.submit();
 								}
@@ -782,7 +789,7 @@
 						}
 						jq$(this).append(cancel);
 
-						jq$(cancel).click(function () {
+						jq$(cancel).click(function() {
 							//original.reset();
 							let reset;
 							if (jq$.isFunction(jq$.editable.types[settings.type].reset)) {
@@ -797,7 +804,7 @@
 				}
 			},
 			text: {
-				element: function (settings, original) {
+				element: function(settings, original) {
 					const input = jq$('<input />');
 					if (settings.width !== 'none') {
 						input.width(settings.width);
@@ -813,7 +820,7 @@
 				}
 			},
 			textarea: {
-				element: function (settings, original) {
+				element: function(settings, original) {
 					const textarea = jq$('<textarea />');
 					if (settings.rows) {
 						textarea.attr('rows', settings.rows);
@@ -830,12 +837,12 @@
 				}
 			},
 			select: {
-				element: function (settings, original) {
+				element: function(settings, original) {
 					const select = jq$('<select />');
 					jq$(this).append(select);
 					return (select);
 				},
-				content: function (data, settings, original) {
+				content: function(data, settings, original) {
 					/* If it is string assume it is json. */
 					let json;
 					if (String === data.constructor) {
@@ -855,7 +862,7 @@
 						jq$('select', this).append(option);
 					}
 					/* Loop option again to set selected. IE needed this... */
-					jq$('select', this).children().each(function () {
+					jq$('select', this).children().each(function() {
 						if (jq$(this).val() === json['selected'] ||
 							jq$(this).text() === jq$.trim(original.revert)) {
 							jq$(this).attr('selected', 'selected');
@@ -866,7 +873,7 @@
 		},
 
 		/* Add new input type */
-		addInputType: function (name, input) {
+		addInputType: function(name, input) {
 			jq$.editable.types[name] = input;
 		}
 	};
@@ -890,7 +897,7 @@
 
 })(jQuery);
 
-jQuery.fn.insertAt = function (index, element) {
+jQuery.fn.insertAt = function(index, element) {
 	const lastIndex = this.children().size();
 	if (index < 0) {
 		index = Math.max(0, lastIndex + 1 + index)
@@ -907,7 +914,7 @@ jQuery.fn.insertAt = function (index, element) {
  license: MIT
  http://www.jacklmoore.com/autosize
  */
-(function ($) {
+(function($) {
 	const defaults = {
 			className: 'autosizejs',
 			id: 'autosizejs',
@@ -944,7 +951,7 @@ jQuery.fn.insertAt = function (index, element) {
 	}
 	mirror.style.lineHeight = '';
 
-	$.fn.autosize = function (options) {
+	$.fn.autosize = function(options) {
 		if (!this.length) {
 			return this;
 		}
@@ -955,7 +962,7 @@ jQuery.fn.insertAt = function (index, element) {
 			$(document.body).append(mirror);
 		}
 
-		return this.each(function () {
+		return this.each(function() {
 			const ta = this,
 				$ta = $(ta);
 			let maxHeight,
@@ -1012,7 +1019,7 @@ jQuery.fn.insertAt = function (index, element) {
 						width = parseFloat(style.width);
 					}
 
-					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function (i, val) {
+					$.each(['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'], function(i, val) {
 						width -= parseFloat(style[val]);
 					});
 				} else {
@@ -1035,7 +1042,7 @@ jQuery.fn.insertAt = function (index, element) {
 				// original textarea.  mirror always has a height of 0.
 				// This gives a cross-browser supported way getting the actual
 				// height of the text, through the scrollTop property.
-				$.each(typographyStyles, function (i, val) {
+				$.each(typographyStyles, function(i, val) {
 					styles[val] = $ta.css(val);
 				});
 
@@ -1114,7 +1121,7 @@ jQuery.fn.insertAt = function (index, element) {
 
 			function resize() {
 				clearTimeout(timeout);
-				timeout = setTimeout(function () {
+				timeout = setTimeout(function() {
 					const newWidth = $ta.width();
 
 					if (newWidth !== width) {
@@ -1132,7 +1139,7 @@ jQuery.fn.insertAt = function (index, element) {
 					$ta.on('input.autosize keyup.autosize', adjust);
 				} else {
 					// IE7 / IE8
-					$ta.on('propertychange.autosize', function () {
+					$ta.on('propertychange.autosize', function() {
 						if (event.propertyName === 'value') {
 							adjust();
 						}
@@ -1156,12 +1163,12 @@ jQuery.fn.insertAt = function (index, element) {
 
 			// Event for manual triggering that also forces the styles to update as well.
 			// Should only be needed if one of typography styles of the textarea change, and the textarea is already the target of the adjust method.
-			$ta.on('autosize.resizeIncludeStyle', function () {
+			$ta.on('autosize.resizeIncludeStyle', function() {
 				mirrored = null;
 				adjust();
 			});
 
-			$ta.on('autosize.destroy', function () {
+			$ta.on('autosize.destroy', function() {
 				mirrored = null;
 				clearTimeout(timeout);
 				$(window).off('resize', resize);
@@ -1182,24 +1189,24 @@ jQuery.fn.insertAt = function (index, element) {
 /**
  * DatePicker and DateTimePicker, extended from jQuery UI
  */
-(function (jq$) {
+(function(jq$) {
 
 	jq$.datepicker.setDefaults({dateFormat: "dd.mm.yy"});
 
 	const datepickerFunction = jq$.fn.datepicker;
-	jq$.fn.datepicker = function () {
+	jq$.fn.datepicker = function() {
 		this.attr('placeholder', "dd.mm.yyyy");
 		return datepickerFunction.apply(this, arguments);
 	};
 
 	// ok, this implementation is pretty lame so far, implement something better if needed
-	jq$.fn.datetimepicker = function () {
+	jq$.fn.datetimepicker = function() {
 		this.attr('placeholder', "dd.mm.yyyy HH:MM");
 	}
 })(jQuery);
 
 
-(function (jq$) {
+(function(jq$) {
 	/**
 	 * Converts a list of items (created e.g. using jq$.sortable()) that it auto-appends items as required. There will
 	 * be an empty line at the end. If the line is filled, new items will be appended. Items may be reordered using
@@ -1220,13 +1227,13 @@ jQuery.fn.insertAt = function (index, element) {
 	 * @returns {jQuery}
 	 */
 	// TODO: check using of typescript to define classes for each line to be edited, including params-functions and "html <-> wikitext" conversion
-	jq$.fn.appendable = function (params) {
+	jq$.fn.appendable = function(params) {
 		const $list = jq$(this[0]);
 
 		// function to check for empty line:
 		// by default an item is empty not any text fields has a value
-		const isEmptyLine = params.isEmpty || function (item) {
-			return !jq$(item).find("input, textarea").is(function () {
+		const isEmptyLine = params.isEmpty || function(item) {
+			return !jq$(item).find("input, textarea").is(function() {
 				return jq$.trim(jq$(this).val()) !== '';
 			});
 		};
@@ -1236,17 +1243,17 @@ jQuery.fn.insertAt = function (index, element) {
 
 		// function to check for focus:
 		// by default if any input or textarea has focus
-		const hasFocus = params.hasFocus || function (item) {
+		const hasFocus = params.hasFocus || function(item) {
 			return jq$(item).find("input, textarea").is(':focus');
 		}
 
 		// function to request the focus:
 		// by default focus the first input or textarea
-		const requestFocus = params.requestFocus || function (item) {
+		const requestFocus = params.requestFocus || function(item) {
 			return jq$(item).find("input, textarea").focus();
 		}
 
-		const ensureEmptyLines = function () {
+		const ensureEmptyLines = function() {
 			let $last = $list.children().last();
 			if ($last.length === 1 && isEmptyLine($last.get(0))) {
 				// clean-up multiple succeeding empty lines
@@ -1266,8 +1273,8 @@ jQuery.fn.insertAt = function (index, element) {
 		// make sure that there is always one empty item at the end
 		$list.on('input', ensureEmptyLines);
 
-		$list.keydown(function (event) {
-			let $item = $list.children().filter(function () {
+		$list.keydown(function(event) {
+			let $item = $list.children().filter(function() {
 				return hasFocus(this);
 			});
 			if ($item.length !== 1) return;
