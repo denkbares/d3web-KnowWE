@@ -19,6 +19,7 @@
 package de.knowwe.core.compile.terminology;
 
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
@@ -51,7 +52,8 @@ public interface RenamableTerm extends Term {
 		// we sometimes register multiple different identifiers to the same section
 		// so by default we only change the text of those sections, where the text actually matches the
 		// last element of the old identifier
-		if (section.getText().equals(oldIdentifier.getLastPathElement())) {
+		if (section.getText().equals(oldIdentifier.getLastPathElement())
+				|| section.getText().equals(Strings.quote(oldIdentifier.getLastPathElement()))) {
 			return TermUtils.quoteIfRequired(newIdentifier.getLastPathElement());
 		}
 		else {
