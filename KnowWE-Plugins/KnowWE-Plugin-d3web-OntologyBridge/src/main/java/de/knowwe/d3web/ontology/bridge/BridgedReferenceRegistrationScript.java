@@ -16,7 +16,7 @@ import de.knowwe.ontology.compile.OntologyCompiler;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.02.2012
  */
-public class BridgedReferenceRegistrationScript extends SimpleReferenceRegistrationScript<D3webCompiler> {
+public class BridgedReferenceRegistrationScript extends SimpleReferenceRegistrationScript<D3webCompiler, Term> {
 
 	private final Priority definitionPriority;
 
