@@ -28,6 +28,7 @@ import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
@@ -61,6 +62,8 @@ import de.knowwe.ontology.kdom.namespace.Namespace;
 import de.knowwe.ontology.kdom.namespace.NamespaceAbbreviationDefinition;
 import de.knowwe.util.Icon;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
  * Compiles and provides ontology from the Ontology-MarkupSet.
  *
@@ -91,6 +94,7 @@ public class OntologyType extends DefaultMarkupType {
 	static {
 		MARKUP = new DefaultMarkup("Ontology");
 		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
+		compileType.addChildType(new OntologyDefinition());
 		compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());
 		compileType.addCompileScript(new OntologyCompilerRegistrationScript());
 		MARKUP.addContentType(compileType);
@@ -142,6 +146,9 @@ public class OntologyType extends DefaultMarkupType {
 		this.setRenderer(new DefaultMarkupPackageCompileTypeRenderer() {
 			@Override
 			protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+				Section<?> title = $(section).successor(OntologyDefinition.class).getFirst();
+				string.appendHtml("<div><b>").append(title, user).appendHtml("</b></div>\n");
+
 				List<Section<AnnotationType>> annotations = Sections.successors(section, AnnotationType.class);
 				for (Section<AnnotationType> annotation : annotations) {
 					Section<AnnotationNameType> annotationName = Sections.successor(annotation, AnnotationNameType.class);
@@ -158,6 +165,14 @@ public class OntologyType extends DefaultMarkupType {
 		addCompileScript(new CompileMarkupPackageRegistrationScript());
 
 		EventManager.getInstance().registerListener(OntologyExporter.getInstance());
+	}
+
+	public OntologyCompiler getCompiler(Section<? extends OntologyType> self) {
+		Section<PackageCompileType> compileSection = Sections.successor(self, PackageCompileType.class);
+		for (OntologyCompiler compiler : Compilers.getCompilers(self, OntologyCompiler.class)) {
+			if (compiler.getCompileSection() == compileSection) return compiler;
+		}
+		throw new IllegalStateException("unexpected error: missing compiler for knowledge base");
 	}
 
 	/**
