@@ -806,9 +806,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * Removes the Object stored for the given key.<br/>
+	 * Removes the Object stored for the given key.
 	 *
 	 * @param key is the key for which the Object should be removed
+	 * @return the removed object for the key, or null
 	 * @created 16.03.2014
 	 */
 	@SuppressWarnings("UnusedDeclaration")
@@ -847,6 +848,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 *
 	 * @param compiler the compiler to store the object for
 	 * @param key      is the key for which the Object should be removed
+	 * @return the removed object for the compiler and key, or null
 	 * @created 16.03.2014
 	 */
 	public synchronized Object removeObject(Compiler compiler, String key) {
