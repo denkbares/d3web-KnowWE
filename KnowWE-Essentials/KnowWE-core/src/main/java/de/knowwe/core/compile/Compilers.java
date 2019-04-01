@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Identifier;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
@@ -50,9 +52,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class Compilers {
 
 	/**
-	 * Compiles the given {@link Section} for the given {@link Compiler} (by calling the {@link
-	 * CompileScript}s of the {@link Compiler} for the {@link Type} of the {@link Section} and
-	 * applying them to the {@link Section}).
+	 * Compiles the given {@link Section} for the given {@link Compiler} (by calling the {@link CompileScript}s of the
+	 * {@link Compiler} for the {@link Type} of the {@link Section} and applying them to the {@link Section}).
 	 *
 	 * @created 07.01.2014
 	 */
@@ -69,15 +70,13 @@ public class Compilers {
 					Messages.storeMessages(compiler, section, compileScript.getClass(),
 							cm.getMessages());
 				}
-
 			}
 		}
 	}
 
 	/**
-	 * Destroys the given {@link Section} for the given {@link Compiler} (by calling the {@link
-	 * CompileScript}s of the {@link Compiler} for the {@link Type} of the {@link Section} and
-	 * applying them to the {@link Section}).
+	 * Destroys the given {@link Section} for the given {@link Compiler} (by calling the {@link CompileScript}s of the
+	 * {@link Compiler} for the {@link Type} of the {@link Section} and applying them to the {@link Section}).
 	 *
 	 * @created 07.01.2014
 	 */
@@ -102,8 +101,8 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns the first {@link PackageCompiler} of the given compiler class, that compiles a {@link
-	 * Section} of the type {@link PackageCompileType} on the given article.
+	 * Returns the first {@link PackageCompiler} of the given compiler class, that compiles a {@link Section} of the
+	 * type {@link PackageCompileType} on the given article.
 	 *
 	 * @param master        the master article for which we want the {@link Compiler}
 	 * @param compilerClass the type of the {@link Compiler} we want
@@ -122,8 +121,8 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns the first {@link Compiler} of all compilers that compiles  the packages of the given section, that is
-	 * of the specified compiler class, or which extends or implements the specified compiler class. If no such compiler
+	 * Returns the first {@link Compiler} of all compilers that compiles  the packages of the given section, that is of
+	 * the specified compiler class, or which extends or implements the specified compiler class. If no such compiler
 	 * exists, null is returned.
 	 *
 	 * @param section       the section for which we want the {@link Compiler}s
@@ -158,6 +157,36 @@ public class Compilers {
 		else {
 			return compilers.iterator().next();
 		}
+	}
+
+	@NotNull
+	public static DefaultGlobalCompiler getGlobalCompiler(Section<?> section) {
+		return getGlobalCompiler(section.getArticleManager());
+	}
+
+	@NotNull
+	public static DefaultGlobalCompiler getGlobalCompiler(ArticleManager manager) {
+		for (Compiler compiler : manager.getCompilerManager().getCompilers()) {
+			if (compiler.getClass() == DefaultGlobalCompiler.class) {
+				return (DefaultGlobalCompiler) compiler;
+			}
+		}
+		throw new IllegalStateException("invalid state: no global compiler");
+	}
+
+	@NotNull
+	public static PackageRegistrationCompiler getPackageRegistrationCompiler(Section<?> section) {
+		return getPackageRegistrationCompiler(section.getArticleManager());
+	}
+
+	@NotNull
+	public static PackageRegistrationCompiler getPackageRegistrationCompiler(ArticleManager manager) {
+		for (Compiler compiler : manager.getCompilerManager().getCompilers()) {
+			if (compiler.getClass() == PackageRegistrationCompiler.class) {
+				return (PackageRegistrationCompiler) compiler;
+			}
+		}
+		throw new IllegalStateException("invalid state: no package registration compiler");
 	}
 
 	/**
@@ -265,9 +294,8 @@ public class Compilers {
 	}
 
 	/**
-	 * Returns all master articles that compile the given Section. If no master article compiles the
-	 * Section, at least the article of the Section itself is returned, so the Collection always at
-	 * least contains one article.
+	 * Returns all master articles that compile the given Section. If no master article compiles the Section, at least
+	 * the article of the Section itself is returned, so the Collection always at least contains one article.
 	 *
 	 * @param section is the Section for which you want to know the compiling articles
 	 * @return a non empty Collection of articles that compile the given Section
@@ -332,5 +360,4 @@ public class Compilers {
 			Log.warning("Interrupted while waiting for compiler to finish", e);
 		}
 	}
-
 }

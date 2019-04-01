@@ -3,6 +3,7 @@ package de.d3web.we.object;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
@@ -13,25 +14,20 @@ import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.ValueUtils;
-import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
-import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
-public class AnswerReferenceRegistrationHandler extends SimpleReferenceRegistrationScript<D3webCompiler> {
+public class AnswerReferenceRegistrationHandler extends SimpleReferenceRegistrationScript<D3webCompiler, AnswerReference> {
 
 	public AnswerReferenceRegistrationHandler() {
 		super(D3webCompiler.class);
 	}
 
 	@Override
-	public Collection<Message> validateReference(D3webCompiler compiler, Section<Term> simpleTermSection) {
-		Section<AnswerReference> section = Sections.cast(simpleTermSection,
-				AnswerReference.class);
+	public Collection<Message> validateReference(D3webCompiler compiler, Section<AnswerReference> section) {
 		Section<QuestionReference> ref = section.get().getQuestionSection(section);
 		Question question = QuestionReference.getObject(compiler, ref);
 		if (question instanceof QuestionYN) {
@@ -74,6 +70,6 @@ public class AnswerReferenceRegistrationHandler extends SimpleReferenceRegistrat
 						+ value + "' does not apply to any supported date format"));
 			}
 		}
-		return super.validateReference(compiler, simpleTermSection);
+		return super.validateReference(compiler, section);
 	}
 }

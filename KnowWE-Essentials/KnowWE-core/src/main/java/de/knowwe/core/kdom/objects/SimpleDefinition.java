@@ -21,19 +21,11 @@ package de.knowwe.core.kdom.objects;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.compile.CompileScript;
-import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.DestroyScript;
-import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.core.report.Messages;
 
 public abstract class SimpleDefinition extends AbstractType implements TermDefinition, RenamableTerm {
 
@@ -56,74 +48,11 @@ public abstract class SimpleDefinition extends AbstractType implements TermDefin
 		return termObjectClass;
 	}
 
-	public static class SimpleDefinitionRegistrationScript<C extends TermCompiler> implements CompileScript<C, SimpleDefinition>, DestroyScript<C, SimpleDefinition> {
-
-		private final Class<C> compilerClass;
-
-		@Override
-		public Class<C> getCompilerClass() {
-			return compilerClass;
-		}
-
-		public SimpleDefinitionRegistrationScript(Class<C> compilerClass) {
-			this.compilerClass = compilerClass;
-		}
-
-		@Override
-		public void compile(C compiler, Section<SimpleDefinition> section) throws CompilerMessage {
-
-			if (!section.get().verifyDefinition(compiler, section)) return;
-
-			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
-			if (termIdentifier == null) {
-				throw new CompilerMessage(Messages.error("Could not determine TermIdentifier"));
-			}
-			Class<?> termObjectClass = section.get().getTermObjectClass(compiler, section);
-
-			compile(compiler, section, termIdentifier, termObjectClass);
-		}
-
-		public void compile(C compiler, Section<SimpleDefinition> section, Identifier termIdentifier, Class<?> termObjectClass) {
-			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			terminologyManager.registerTermDefinition(compiler, section, termObjectClass, termIdentifier);
-
-			if (compiler instanceof IncrementalCompiler) {
-				Compilers.recompileRegistrations((IncrementalCompiler) compiler, termIdentifier);
-			}
-		}
-
-		@Override
-		public void destroy(C compiler, Section<SimpleDefinition> section) {
-			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
-			if (termIdentifier == null) {
-				// we assume that also nothing could have been registered without an Identifier -> ergo nothing to unregister
-				return;
-				//throw CompilerMessage.error( "Could not determine TermIdentifier"));
-			}
-			Class<?> termObjectClass = section.get().getTermObjectClass(compiler, section);
-
-			destroy(compiler, section, termIdentifier, termObjectClass);
-		}
-
-		public void destroy(C compiler, Section<SimpleDefinition> section, Identifier termIdentifier, Class<?> termObjectClass) {
-			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			terminologyManager.unregisterTermDefinition(compiler, section, termObjectClass, termIdentifier);
-
-			if (compiler instanceof IncrementalCompiler) {
-				Compilers.destroyAndRecompileReferences((IncrementalCompiler) compiler, termIdentifier);
-			}
-		}
-	}
-
 	/*
 	 * Override {@link Term#getTermIdentifier(TermCompiler, Section} instead
 	 */
 	@Override
 	public final Identifier getTermIdentifier(Section<? extends Term> section) {
 		return TermDefinition.super.getTermIdentifier(section);
-	}
-
-	protected boolean verifyDefinition(Compiler compiler, Section<SimpleDefinition> section) {
-		return true;
 	}
 }

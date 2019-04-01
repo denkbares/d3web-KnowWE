@@ -34,7 +34,7 @@ import de.knowwe.core.report.Messages;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.02.2012
  */
-public class SimpleReferenceRegistrationScript<C extends TermCompiler> implements CompileScript<C, Term>, DestroyScript<C, Term> {
+public class SimpleReferenceRegistrationScript<C extends TermCompiler, T extends Term> implements CompileScript<C, T>, DestroyScript<C, T> {
 
 	private final Class<C> compilerClass;
 
@@ -71,7 +71,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	}
 
 	@Override
-	public void compile(C compiler, Section<Term> section) throws CompilerMessage {
+	public void compile(C compiler, Section<T> section) throws CompilerMessage {
 		TerminologyManager manager = getTerminologyManager(compiler);
 		if (manager != null) {
 			Class<?> termClass = section.get().getTermObjectClass(compiler, section);
@@ -98,7 +98,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 	 * @return result messages of validation
 	 * @created 28.02.2012
 	 */
-	public Collection<Message> validateReference(C compiler, Section<Term> section) {
+	public Collection<Message> validateReference(C compiler, Section<T> section) {
 		TerminologyManager manager = getTerminologyManager(compiler);
 		if (manager == null) return Messages.noMessage();
 
@@ -114,14 +114,14 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler> implement
 		return Messages.noMessage();
 	}
 
-	protected Message getInvalidTermMessage(C compiler, Section<Term> section, Message.Type messageType) {
+	protected Message getInvalidTermMessage(C compiler, Section<T> section, Message.Type messageType) {
 		return Messages.noSuchObjectError(
 				section.get().getTermObjectClass(compiler, section).getSimpleName(),
 				section.get().getTermName(section), messageType);
 	}
 
 	@Override
-	public void destroy(C compiler, Section<Term> section) {
+	public void destroy(C compiler, Section<T> section) {
 		TerminologyManager manager = getTerminologyManager(compiler);
 		if (manager != null) {
 			Class<?> termClass = section.get().getTermObjectClass(compiler, section);
