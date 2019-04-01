@@ -152,8 +152,8 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 		if (currentCompilePriority != null && !commitTracker.contains(currentCompilePriority)) {
 			synchronized (commitTracker) {
 				if (!commitTracker.contains(currentCompilePriority)) {
-					commitTracker.add(currentCompilePriority);
 					rdf2GoCore.commit();
+					commitTracker.add(currentCompilePriority);
 					Log.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements.");
 				}
 			}
