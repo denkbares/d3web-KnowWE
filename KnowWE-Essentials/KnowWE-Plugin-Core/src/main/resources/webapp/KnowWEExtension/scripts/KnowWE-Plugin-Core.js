@@ -507,6 +507,10 @@ KNOWWE.tooltips.enrich = function(element) {
 			updateAnimation: false,
 			theme: ".tooltipster-knowwe",
 			functionBefore: function(origin, continueTooltip) {
+				// check if dom has changed since triggering... if source no longer exists, don't show tool tip
+				if (!document.contains(origin[0])) {
+					return;
+				}
 				// check if we have an ajax-tooltip
 				// and only do once for each tooltip
 				const src = origin.data('tooltip-src');
