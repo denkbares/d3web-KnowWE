@@ -788,6 +788,8 @@ KNOWWE.plugin.quicki = function () {
 				var quickiId = null;
 				var qid = null;
 				var caret = null;
+				let scrollX = window.scrollX;
+				let scrollY = window.scrollY;
 				jq$('.type_QuickInterview').rerender({
 					beforeReplace: function ($element) {
 						if (!$element) return;
@@ -811,6 +813,7 @@ KNOWWE.plugin.quicki = function () {
 						var $input = jq$('#' + quickiId + ' [qid="' + qid + '"]');
 						$input.focus();
 						if (caret) $input.caret(caret.begin, caret.end);
+						window.scroll(scrollX, scrollY);
 					}
 				});
 			});
