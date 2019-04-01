@@ -1,16 +1,16 @@
 /*
  * Copyright (C) ${year} denkbares GmbH, Germany
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -31,6 +31,8 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.util.Icon;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
  * Renders a knowledge base markup into the wiki page.
  *
@@ -45,7 +47,6 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 
 	@Override
 	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
-		String title = KnowledgeBaseType.getContent(section).trim();
 		String id = KnowledgeBaseType.getAnnotation(section, KnowledgeBaseType.ANNOTATION_ID);
 		String author = KnowledgeBaseType.getAnnotation(section,
 				KnowledgeBaseType.ANNOTATION_AUTHOR);
@@ -57,7 +58,8 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 				KnowledgeBaseType.ANNOTATION_FILENAME);
 
 		// render title line
-		string.appendHtml("<b>" + title + "</b>");
+		Section<?> title = $(section).successor(KnowledgeBaseDefinition.class).getFirst();
+		string.appendHtml("<b>").append(title, user).appendHtml("</b>");
 		if (id != null) {
 			string.append(" (").append(id).append(")");
 		}
@@ -113,5 +115,4 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 			string.appendHtml("</div>");
 		}
 	}
-
 }

@@ -26,6 +26,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
@@ -97,7 +98,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
 		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
 		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
-		compileType.addChildType(new KnowledgeBaseNameType());
+		compileType.addChildType(new KnowledgeBaseDefinition());
 		compileType.addCompileScript(new D3webCompilerRegistrationScript());
 		MARKUP.addContentType(compileType);
 
@@ -151,6 +152,14 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 	public String getFilename(Section<? extends KnowledgeBaseType> self) {
 		String filename = getAnnotation(self, ANNOTATION_FILENAME);
 		return Strings.nonBlank(filename) ? filename : DEFAULT_FILENAME;
+	}
+
+	public D3webCompiler getCompiler(Section<? extends KnowledgeBaseType> self) {
+		Section<PackageCompileType> compileSection = Sections.successor(self, PackageCompileType.class);
+		for (D3webCompiler compiler : Compilers.getCompilers(self, D3webCompiler.class)) {
+			if (compiler.getCompileSection() == compileSection) return compiler;
+		}
+		throw new IllegalStateException("unexpected error: missing compiler for knowledge base");
 	}
 
 	private static class D3webCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
