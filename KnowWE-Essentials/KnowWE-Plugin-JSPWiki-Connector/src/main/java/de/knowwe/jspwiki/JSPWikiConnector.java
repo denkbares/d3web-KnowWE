@@ -42,7 +42,6 @@ import java.util.zip.ZipInputStream;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.PageLock;
 import org.apache.wiki.PageManager;
@@ -64,10 +63,12 @@ import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.util.TextUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
+import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
@@ -84,8 +85,8 @@ import de.knowwe.core.wikiConnector.WikiPageInfo;
  */
 public class JSPWikiConnector implements WikiConnector {
 
-	private ServletContext context = null;
-	private WikiEngine engine = null;
+	private final ServletContext context;
+	private final WikiEngine engine;
 
 	private static final Map<String, List<WikiAttachment>> zipAttachmentCache =
 			Collections.synchronizedMap(new HashMap<>());
@@ -246,17 +247,25 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public Collection<WikiAttachment> getAttachments() throws IOException {
 		cleanZipAttachmentCache();
+		return collectWikiAttachments(true);
+	}
+
+	@Override
+	public Collection<WikiAttachment> getRootAttachments() throws IOException {
+		return collectWikiAttachments(false);
+	}
+
+	@NotNull
+	public Collection<WikiAttachment> collectWikiAttachments(boolean includeZipEntries) throws IOException {
 		try {
 			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
 			Collection<?> attachments = attachmentManager.getAllAttachments();
-			Collection<WikiAttachment> wikiAttachments = new ArrayList<>(
-					attachments.size());
+			Collection<WikiAttachment> wikiAttachments = new ArrayList<>(attachments.size());
 			for (Object o : attachments) {
 				if (o instanceof Attachment) {
 					Attachment att = (Attachment) o;
-					wikiAttachments.add(new JSPWikiAttachment(att,
-							attachmentManager));
-					wikiAttachments.addAll(getZipEntryAttachments(att));
+					wikiAttachments.add(new JSPWikiAttachment(att, attachmentManager));
+					if (includeZipEntries) wikiAttachments.addAll(getZipEntryAttachments(att));
 				}
 			}
 			return wikiAttachments;
@@ -286,7 +295,6 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public WikiAttachment getAttachment(String path, int version) throws IOException {
 		try {
-
 			Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 			String actualPath = actualPathAndEntry.getA();
 			String entry = actualPathAndEntry.getB();
@@ -397,6 +405,16 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public List<WikiAttachment> getAttachments(String title) throws IOException {
 		cleanZipAttachmentCache();
+		return collectWikiAttachments(title, true);
+	}
+
+	@Override
+	public List<WikiAttachment> getRootAttachments(String title) throws IOException {
+		return collectWikiAttachments(title, false);
+	}
+
+	@NotNull
+	public List<WikiAttachment> collectWikiAttachments(String title, boolean includeZipEntries) throws IOException {
 		try {
 			// this list is in fact a Collection<Attachment>,
 			// the conversion is type safe!
@@ -407,16 +425,12 @@ public class JSPWikiConnector implements WikiConnector {
 				// return empty list to prevent NullPointer in AttachmentManager
 				return Collections.emptyList();
 			}
-			@SuppressWarnings("unchecked")
-			Collection<Attachment> attList = attachmentManager.
-					listAttachments(page);
 
-			List<WikiAttachment> attachmentList = new ArrayList<>(attList.size());
-			for (Attachment att : attList) {
-				attachmentList.add(new JSPWikiAttachment(att, attachmentManager));
-				attachmentList.addAll(getZipEntryAttachments(att));
+			List<WikiAttachment> attachmentList = new ArrayList<>();
+			for (Object attachment : attachmentManager.listAttachments(page)) {
+				attachmentList.add(new JSPWikiAttachment((Attachment) attachment, attachmentManager));
+				if (includeZipEntries) attachmentList.addAll(getZipEntryAttachments((Attachment) attachment));
 			}
-
 			return attachmentList;
 		}
 		catch (ProviderException e) {
@@ -536,8 +550,7 @@ public class JSPWikiConnector implements WikiConnector {
 			try {
 				WikiAttachment attachment = getAttachment(title, version);
 				if (attachment != null) {
-					InputStream inputStream = attachment.getInputStream();
-					return IOUtils.toString(inputStream);
+					return Streams.getTextAndClose(attachment.getInputStream());
 				}
 			}
 			catch (IOException e) {

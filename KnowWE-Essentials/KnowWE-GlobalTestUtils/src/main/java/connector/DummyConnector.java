@@ -31,10 +31,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.utils.Log;
@@ -51,22 +53,14 @@ public class DummyConnector implements WikiConnector {
 	private static final String DUMMY_USER = "DummyUser";
 	public static final String BASE_URL = "http://valid_dummy_base_url/";
 
-	private DummyPageProvider dummyPageProvider = null;
+	@NotNull
+	private DummyPageProvider dummyPageProvider = new DummyPageProvider();
 
 	private String knowweExtensionPath = null;
 
 	private final Map<String, String> locks = new HashMap<>();
 
-	public DummyConnector() {
-		this(new DummyPageProvider());
-	}
-
-	public DummyConnector(DummyPageProvider dummyPageProvider) {
-		this.dummyPageProvider = dummyPageProvider;
-	}
-
 	@Override
-	@Nullable
 	public String getTemplate() {
 		return "KnowWE";
 	}
@@ -78,13 +72,13 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public List<WikiPageInfo> getArticleHistory(String title) throws IOException {
+	public List<WikiPageInfo> getArticleHistory(String title) {
 		if (getArticleText(title) == null) return Collections.emptyList();
 		return Collections.singletonList(new WikiPageInfo(title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1)));
 	}
 
 	@Override
-	public List<WikiAttachmentInfo> getAttachmentHistory(String path) throws IOException {
+	public List<WikiAttachmentInfo> getAttachmentHistory(String path) {
 		if (getAttachment(path) == null) return Collections.emptyList();
 		return Collections.singletonList(new WikiAttachmentInfo(path, DUMMY_USER, 1, getLastModifiedDate(path, 1)));
 	}
@@ -92,20 +86,12 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public String createArticle(String title, String author, String content) {
 		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so additional wiki pages cannot be added");
-		}
 		dummyPageProvider.setArticleContent(title, content);
 		return content;
 	}
 
 	@Override
 	public boolean doesArticleExist(String title) {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so there are no articles available");
-		}
 		return dummyPageProvider.getArticle(title) != null;
 	}
 
@@ -116,10 +102,6 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public Map<String, String> getAllArticles(String web) {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so there are no articles available");
-		}
 		return dummyPageProvider.getAllArticles();
 	}
 
@@ -134,35 +116,36 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public WikiAttachment getAttachment(String path) throws IOException {
+	public WikiAttachment getAttachment(String path) {
 		return getAttachment(path, -1);
 	}
 
 	@Override
-	public WikiAttachment getAttachment(String path, int version) throws IOException {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider null, so there are no attachments available");
-		}
+	public WikiAttachment getAttachment(String path, int version) {
 		return dummyPageProvider.getAttachment(path);
 	}
 
 	@Override
 	public Collection<WikiAttachment> getAttachments() {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider null, so there are no attachments available");
-		}
 		return new ArrayList<>(dummyPageProvider.getAllAttachments().values());
 	}
 
 	@Override
+	public Collection<WikiAttachment> getRootAttachments() {
+		return new ArrayList<>(dummyPageProvider.getRootAttachments().values());
+	}
+
+	@Override
 	public List<WikiAttachment> getAttachments(String title) {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider null, so there are no attachments available");
-		}
-		Collection<WikiAttachment> attachments = getAttachments();
+		return filterForArticle(title, getAttachments());
+	}
+
+	@Override
+	public List<WikiAttachment> getRootAttachments(String title) {
+		return filterForArticle(title, getRootAttachments());
+	}
+
+	private static List<WikiAttachment> filterForArticle(String title, Collection<WikiAttachment> attachments) {
 		List<WikiAttachment> attachmentsOfPage = new ArrayList<>();
 		for (WikiAttachment attachment : attachments) {
 			if (attachment.getParentName().equals(title)) {
@@ -199,10 +182,6 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public Date getLastModifiedDate(String title, int version) {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so there are no articles available");
-		}
 		String article = dummyPageProvider.getArticle(title);
 		if (article == null) return null;
 		return dummyPageProvider.getStartUpdate();
@@ -230,20 +209,12 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public int getVersion(String title) {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so there are no articles available");
-		}
 		Log.warning("The used WikiConnector does not support page versions");
 		return dummyPageProvider.getArticle(title) == null ? 0 : 1;
 	}
 
 	@Override
 	public String getArticleText(String title, int version) {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so there are no articles available");
-		}
 		Log.warning("The used WikiConnector only provides one version per article");
 		return dummyPageProvider.getArticle(title);
 	}
@@ -299,10 +270,6 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public WikiAttachment storeAttachment(String title, String user, File attachmentFile) {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so attachments cannot be stored");
-		}
 		WikiAttachment attachment = new FileSystemConnectorAttachment(
 				dummyPageProvider, attachmentFile.getName(), title, attachmentFile);
 		dummyPageProvider.storeAttachment(attachment);
@@ -311,11 +278,6 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public WikiAttachment storeAttachment(String title, String filename, String user, InputStream stream) throws IOException {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so attachments cannot be stored");
-		}
-
 		WikiAttachment attachment = new FileSystemConnectorAttachment(
 				dummyPageProvider, filename, title, stream);
 		dummyPageProvider.storeAttachment(attachment);
@@ -328,27 +290,17 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public void deleteAttachment(String title, String fileName, String user) throws IOException {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException(
-					"PageProvider is null, so attachments cannot be deleted");
-		}
+	public void deleteAttachment(String title, String fileName, String user) {
 		dummyPageProvider.deleteAttachment(JSPWikiConnector.toPath(title, fileName));
 	}
 
 	@Override
-	public void deleteArticle(String title, String user) throws IOException {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException("PageProvider is null, so articles cannot be deleted");
-		}
+	public void deleteArticle(String title, String user) {
 		dummyPageProvider.deletePage(title);
 	}
 
 	@Override
-	public String renamePage(String fromPage, String toPage, HttpServletRequest request) throws IOException {
-		if (dummyPageProvider == null) {
-			throw new NullPointerException("PageProvider is null, so articles cannot be deleted");
-		}
+	public String renamePage(String fromPage, String toPage, HttpServletRequest request) {
 		return dummyPageProvider.renameArticle(fromPage, toPage);
 	}
 
@@ -384,15 +336,11 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context) {
 		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
-		if (dummyPageProvider == null) {
-			Log.warning("No PageProvider given, so additional wiki pages cannot be added");
-			return true;
-		}
 		dummyPageProvider.setArticleContent(title, content);
 		return true;
 	}
 
 	public void setPageProvider(DummyPageProvider pageProvider) {
-		this.dummyPageProvider = pageProvider;
+		this.dummyPageProvider = Objects.requireNonNull(pageProvider);
 	}
 }

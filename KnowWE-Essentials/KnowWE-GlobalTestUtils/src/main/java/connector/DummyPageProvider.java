@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -38,15 +38,16 @@ import java.util.zip.ZipInputStream;
 import org.apache.wiki.providers.BasicAttachmentProvider;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Files;
 import com.denkbares.utils.Log;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.jspwiki.JSPWikiConnector;
 
 /**
- * This {@link DummyPageProvider} can be used together with the DummyConnector
- * to provide articles and attachments in a headless or test environment.
- * 
+ * This {@link DummyPageProvider} can be used together with the DummyConnector to provide articles and attachments in a
+ * headless or test environment.
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 11.04.2012
  */
@@ -70,7 +71,8 @@ public class DummyPageProvider {
 
 	private final TreeMap<String, String> articles = new TreeMap<>();
 
-	private final HashMap<String, WikiAttachment> attachments = new HashMap<>();
+	private final HashMap<String, WikiAttachment> allAttachments = new HashMap<>();
+	private final HashMap<String, WikiAttachment> rootAttachments = new HashMap<>();
 
 	private final HashMap<String, Integer> attachmentVersionCache = new HashMap<>();
 
@@ -137,7 +139,7 @@ public class DummyPageProvider {
 	}
 
 	private Integer getVersion(String versionFileName) {
-		return Integer.parseInt(versionFileName.replaceAll("(?<=\\d+).*", ""));
+		return Integer.parseInt(Files.stripExtension(versionFileName));
 	}
 
 	private boolean isArticleFile(File wikiFile) {
@@ -194,13 +196,13 @@ public class DummyPageProvider {
 	private boolean isAttachmentVersionFile(File attachmentVersionFile) {
 		return attachmentVersionFile.isFile()
 				&& attachmentVersionFile.getName().matches(
-						"^" + ATTACHMENT_VERSION_FILE_PATTERN + "$");
+				"^" + ATTACHMENT_VERSION_FILE_PATTERN + "$");
 	}
 
 	private boolean isAttachmentDirectory(File attributeFile) {
 		return attributeFile.isDirectory()
 				&& attributeFile.getName().endsWith(
-						BasicAttachmentProvider.ATTDIR_EXTENSION);
+				BasicAttachmentProvider.ATTDIR_EXTENSION);
 	}
 
 	private boolean isAttributeDirectory(File wikiFile) {
@@ -216,20 +218,20 @@ public class DummyPageProvider {
 		Log.info("Cached attachment: " + attachment.getPath());
 		// this method can also be used for example by the dummy page provider,
 		// so we further extract the ZipEntryAttachments here
-		attachments.put(attachment.getPath(), attachment);
-		Collection<WikiAttachment> zipEntryAttachments = getZipEntryAttachments(attachment);
-		for (WikiAttachment zipEntryAttachment : zipEntryAttachments) {
-			attachments.put(zipEntryAttachment.getPath(), zipEntryAttachment);
+		allAttachments.put(attachment.getPath(), attachment);
+		rootAttachments.put(attachment.getPath(), attachment);
+		for (WikiAttachment zipEntryAttachment : getZipEntryAttachments(attachment)) {
+			allAttachments.put(zipEntryAttachment.getPath(), zipEntryAttachment);
 		}
 	}
 
 	private Collection<WikiAttachment> getZipEntryAttachments(WikiAttachment attachment) {
-		if (!attachment.getFileName().endsWith(".zip")) return Collections.emptyList();
+		if (attachment == null || !attachment.getFileName().endsWith(".zip")) return Collections.emptyList();
 		Collection<WikiAttachment> entryAttachments = new ArrayList<>();
 		try {
 			InputStream attachmentStream = attachment.getInputStream();
 			ZipInputStream zipStream = new ZipInputStream(attachmentStream);
-			for (ZipEntry e; (e = zipStream.getNextEntry()) != null;) {
+			for (ZipEntry e; (e = zipStream.getNextEntry()) != null; ) {
 				entryAttachments.add(new FileSystemConnectorAttachment(this,
 						JSPWikiConnector.toPath(attachment.getFileName(), e.getName()),
 						attachment.getParentName(), zipStream));
@@ -243,7 +245,11 @@ public class DummyPageProvider {
 	}
 
 	public void deleteAttachment(String path) {
-		attachments.remove(path);
+		rootAttachments.remove(path);
+		WikiAttachment removed = allAttachments.remove(path);
+		for (WikiAttachment zipEntryAttachment : getZipEntryAttachments(removed)) {
+			allAttachments.remove(zipEntryAttachment.getPath());
+		}
 	}
 
 	public Map<String, String> getAllArticles() {
@@ -255,18 +261,22 @@ public class DummyPageProvider {
 	}
 
 	public Map<String, WikiAttachment> getAllAttachments() {
-		return Collections.unmodifiableMap(attachments);
+		return Collections.unmodifiableMap(allAttachments);
+	}
+
+	public Map<String, WikiAttachment> getRootAttachments() {
+		return Collections.unmodifiableMap(rootAttachments);
 	}
 
 	public WikiAttachment getAttachment(String path) {
-		return attachments.get(path);
+		return allAttachments.get(path);
 	}
 
 	public Date getStartUpdate() {
 		return startupDate;
 	}
 
-	public void deletePage(String title){
+	public void deletePage(String title) {
 		articles.remove(title);
 	}
 

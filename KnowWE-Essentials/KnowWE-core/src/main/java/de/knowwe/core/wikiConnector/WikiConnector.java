@@ -152,6 +152,31 @@ public interface WikiConnector {
 	Collection<WikiAttachment> getAttachments() throws IOException;
 
 	/**
+	 * Returns the all attachments of the article with the given title. The method throws an {@link IOException} if
+	 * there are any problems to access the attachments from the underlying wiki architecture.
+	 * <p>
+	 * In contrast to {@link #getAttachment(String)}, this method doe not resolve attached archives files to particular
+	 * attachments, it only returns the plain files as they are attached.
+	 *
+	 * @param title the title of the article to get the attachment from
+	 * @return the attachments of the specified article
+	 * @throws IOException if the attachments cannot be accessed
+	 */
+	List<WikiAttachment> getRootAttachments(String title) throws IOException;
+
+	/**
+	 * Returns a collection of all attachments known to the wiki. The method throws an {@link IOException} if there are
+	 * any problems to access the attachments from the underlying wiki architecture.
+	 * <p>
+	 * In contrast to {@link #getAttachments()}, this method doe not resolve attached archives files to particular
+	 * attachments, it only returns the plain files as they are attached.
+	 *
+	 * @return the attachments of the wiki
+	 * @throws IOException if the attachments cannot be accessed
+	 */
+	Collection<WikiAttachment> getRootAttachments() throws IOException;
+
+	/**
 	 * Returns the author of the specified version of the given article (by name) or null, if the article does not
 	 * exist.
 	 *
@@ -367,9 +392,8 @@ public interface WikiConnector {
 	void deleteArticle(String title, String user) throws IOException;
 
 	/**
-	 * Renames the article page name from <tt>fromPage</tt> to a new name <tt>toPage</tt>. If
-	 * the new page name already exists it throws an exception. Also triggers the renaming of
-	 * the KnowWE article name.
+	 * Renames the article page name from <tt>fromPage</tt> to a new name <tt>toPage</tt>. If the new page name already
+	 * exists it throws an exception. Also triggers the renaming of the KnowWE article name.
 	 *
 	 * @param fromPage actual name of the page
 	 * @param toPage   new name of the page
