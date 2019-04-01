@@ -34,11 +34,10 @@ public class LongOperationUtils {
 	}
 
 	/**
-	 * Checks if the operation of the current thread has been interrupted. If
-	 * so, an {@link InterruptedException} is thrown and the threads interrupt
-	 * state is restored.
+	 * Checks if the operation of the current thread has been interrupted. If so, an {@link InterruptedException} is
+	 * thrown and the threads interrupt state is restored.
 	 *
-	 * @throws InterruptedException
+	 * @throws InterruptedException if the thread was interrupted
 	 * @created 30.07.2013
 	 */
 	public static void checkCancel() throws InterruptedException {
@@ -68,9 +67,8 @@ public class LongOperationUtils {
 	}
 
 	/**
-	 * Returns the id of an operation being registered to a specific section.
-	 * This method returns null if the operation is not registered to the
-	 * section.
+	 * Returns the id of an operation being registered to a specific section. This method returns null if the operation
+	 * is not registered to the section.
 	 *
 	 * @param section   the section to check the operations for
 	 * @param operation the operation to get the id for
@@ -89,9 +87,8 @@ public class LongOperationUtils {
 	}
 
 	/**
-	 * Returns a list of operations that are registered as potential operations
-	 * for a specific section. This method always returns a list, potentially
-	 * empty. it never returns null.
+	 * Returns a list of operations that are registered as potential operations for a specific section. This method
+	 * always returns a list, potentially empty. it never returns null.
 	 *
 	 * @param section the section to get the operations for
 	 * @return the list of operations
@@ -106,9 +103,8 @@ public class LongOperationUtils {
 	}
 
 	/**
-	 * Returns an operation that is registered as potential operations for a
-	 * specific section with the specified name. if no such operation exists,
-	 * null is returned.
+	 * Returns an operation that is registered as potential operations for a specific section with the specified name.
+	 * if no such operation exists, null is returned.
 	 *
 	 * @param section     the section to get the operations for
 	 * @param operationID the id of the requested operation
@@ -128,8 +124,7 @@ public class LongOperationUtils {
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (section) {
 			@SuppressWarnings("unchecked")
-			Map<String, LongOperation> storedObject =
-					(Map<String, LongOperation>) section.getObject(key);
+			Map<String, LongOperation> storedObject = (Map<String, LongOperation>) section.getObject(key);
 			if (storedObject == null) {
 				if (!create) return Collections.emptyMap();
 				storedObject = new LinkedHashMap<>();
@@ -148,13 +143,14 @@ public class LongOperationUtils {
 	 */
 	public static void startLongOperation(final UserActionContext context, final LongOperation operation) {
 
-		final AjaxProgressListener listener = ProgressListenerManager.getInstance().createProgressListener(context, operation);
+		final AjaxProgressListener listener = ProgressListenerManager.getInstance()
+				.createProgressListener(context, operation);
 		try {
 			operation.execute(context, listener);
 		}
 		catch (IOException | LongOperationException e) {
 			Log.warning("Cannot complete operation.", e);
-			listener.setError("Error occurred: " + e.getMessage() + ".");
+			listener.setError("Error occurred: " + e.getMessage());
 		}
 		catch (InterruptedException e) {
 			Log.info("Operation canceled by user.");
@@ -172,5 +168,4 @@ public class LongOperationUtils {
 			operation.doFinally();
 		}
 	}
-
 }
