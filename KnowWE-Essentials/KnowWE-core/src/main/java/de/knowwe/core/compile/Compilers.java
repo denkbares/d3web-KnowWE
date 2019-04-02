@@ -31,7 +31,6 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -209,19 +208,18 @@ public class Compilers {
 		List<Compiler> allCompilers = articleManager.getCompilerManager().getCompilers();
 		Collection<C> compilers = new ArrayList<>();
 		for (Compiler compiler : allCompilers) {
-			if (compilerClass.isAssignableFrom(compiler.getClass())
-					&& compiler.isCompiling(section)) {
+			if (compilerClass.isInstance(compiler) && compiler.isCompiling(section)) {
 				compilers.add(compilerClass.cast(compiler));
 			}
 		}
 		// if we only want one compiler but there are multiple, make sure to check if the section is an ancestor
 		// to a package compile section... if yes, we want the associated compiler
 		if (firstOnly && compilers.size() > 1) {
-			Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(section, DefaultMarkupPackageCompileType.class);
+			Section<PackageCompileType> compileSection = Sections.successor(section, PackageCompileType.class);
 			if (compileSection != null) {
 				Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
 				for (PackageCompiler packageCompiler : packageCompilers) {
-					if (compilerClass.isAssignableFrom(packageCompiler.getClass())) {
+					if (compilerClass.isInstance(packageCompiler)) {
 						return Collections.singletonList(compilerClass.cast(packageCompiler));
 					}
 				}
@@ -266,7 +264,7 @@ public class Compilers {
 		List<Compiler> allCompilers = manager.getCompilerManager().getCompilers();
 		Collection<C> compilers = new ArrayList<>();
 		for (Compiler compiler : allCompilers) {
-			if (compilerClass.isAssignableFrom(compiler.getClass())) {
+			if (compilerClass.isInstance(compiler)) {
 				compilers.add(compilerClass.cast(compiler));
 				if (firstOnly) break;
 			}
