@@ -347,17 +347,17 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	void mapCommit(Map<String, WikiPage> resultingPages, Map<String, File> files, RevCommit commit, String path) {
-		if (resultingPages.containsKey(path)) {
-			WikiPage wikiPage = resultingPages.get(path);
-			wikiPage.setVersion(wikiPage.getVersion() + 1);
-		}
-		else {
-			WikiPage wikiPage = getWikiPage(commit.getFullMessage(),
-					commit.getCommitterIdent().getName(),
-					new Date(1000L * commit.getCommitTime()),
-					path);
-			wikiPage.setVersion(1);
-			if (files.containsKey(path)) {
+		if (files.containsKey(path)) {
+			if (resultingPages.containsKey(path)) {
+				WikiPage wikiPage = resultingPages.get(path);
+				wikiPage.setVersion(wikiPage.getVersion() + 1);
+			}
+			else {
+				WikiPage wikiPage = getWikiPage(commit.getFullMessage(),
+						commit.getCommitterIdent().getName(),
+						new Date(1000L * commit.getCommitTime()),
+						path);
+				wikiPage.setVersion(1);
 				wikiPage.setSize(files.get(path).length());
 				resultingPages.put(path, wikiPage);
 			}
@@ -418,6 +418,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	@NotNull
 	private WikiPage getWikiPage(String fullMessage, String author, Date modified, String path) {
 		int cutpoint = path.lastIndexOf(FILE_EXT);
+		if (cutpoint == -1) {
+			log.error("wrong page name " + path);
+		}
 		WikiPage page = new WikiPage(m_engine, unmangleName(path.substring(0, cutpoint)));
 		page.setAttribute(WikiPage.CHANGENOTE, fullMessage);
 		page.setAuthor(author);
