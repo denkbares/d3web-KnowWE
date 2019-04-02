@@ -195,16 +195,16 @@ public class OntologyType extends DefaultMarkupType {
 		return new Namespace(abbreviation, compiler.getRdf2GoCore().getNamespaces().get(abbreviation));
 	}
 
-	public static int getCompilerPriority(Section<PackageCompileType> compileTypeSection) {
+	public static int getCompilerPriority(Section<? extends PackageCompileType> compileTypeSection) {
 		final Object priority = compileTypeSection.getObject(COMPILER_PRIORITY);
 		return priority == null ? 5 : (int) priority;
 	}
 
-	public static void setCompilerPriority(Section<PackageCompileType> compileTypeSection, int priority) {
+	public static void setCompilerPriority(Section<? extends PackageCompileType> compileTypeSection, int priority) {
 		compileTypeSection.storeObject(COMPILER_PRIORITY, priority);
 	}
 
-	public static void resetCompilerPriority(Section<PackageCompileType> compileTypeSection) {
+	public static void resetCompilerPriority(Section<? extends PackageCompileType> compileTypeSection) {
 		compileTypeSection.removeObject(COMPILER_PRIORITY);
 	}
 

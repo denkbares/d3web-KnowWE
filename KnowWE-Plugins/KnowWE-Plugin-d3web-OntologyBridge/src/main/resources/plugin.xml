@@ -25,13 +25,4 @@
 		<parameter id="scope" value="KnowledgeBaseType" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Annotation" id="OntologyName">
-		<parameter id="name" value="name" />
-		<parameter id="description"
-			value="Allows to give an ontology a name that can be used by other markups to reference this ontology." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="OntologyType" />
-	</extension>
-
 </plugin>
