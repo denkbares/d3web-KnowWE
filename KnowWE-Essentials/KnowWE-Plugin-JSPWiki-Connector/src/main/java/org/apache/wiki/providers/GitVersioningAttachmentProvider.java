@@ -73,6 +73,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	private Repository repository;
 	private WikiEngine engine;
 	private String storageDir;
+	private GitVersioningFileProvider gitVersioningFileProvider;
 
 	@Override
 	public void initialize(WikiEngine engine, Properties properties) throws NoRequiredPropertyException, IOException {
@@ -88,6 +89,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			provider = ((CachingProvider) provider).getRealProvider();
 		}
 		if (provider instanceof GitVersioningFileProvider) {
+			gitVersioningFileProvider = (GitVersioningFileProvider) provider;
 			repository = ((GitVersioningFileProvider) provider).getRepository();
 		}
 		else {
@@ -168,17 +170,18 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				}
 				git.add().addFilepattern(getPath(att)).call();
 			}
-			Status status = git.status().addPath(getPath(att)).call();
-			isChanged = status.getModified().contains(getPath(att));
-			if (isChanged || add) {
-				CommitCommand commitCommand = git.commit()
-						.setOnly(getPath(att));
-				setMessage(att, commitCommand);
-				addUserInfo(engine, att.getAuthor(), commitCommand);
-				synchronized (repository) {
-					commitCommand.call();
-				}
+//			Status status = git.status().addPath(getPath(att)).call();
+//			isChanged = status.getModified().contains(getPath(att));
+//			if (isChanged || add) {
+			CommitCommand commitCommand = git.commit()
+					.setOnly(getPath(att));
+			setMessage(att, commitCommand);
+			addUserInfo(engine, att.getAuthor(), commitCommand);
+			synchronized (repository) {
+				commitCommand.call();
+				gitVersioningFileProvider.periodicalGitGC(git);
 			}
+//			}
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
@@ -460,6 +463,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				addUserInfo(engine, att.getAuthor(), commitCommand);
 				synchronized (repository) {
 					commitCommand.call();
+					gitVersioningFileProvider.periodicalGitGC(git);
 				}
 			}
 			catch (GitAPIException e) {
@@ -503,6 +507,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
 				synchronized (repository) {
 					commit.call();
+					gitVersioningFileProvider.periodicalGitGC(git);
 				}
 			}
 			catch (IOException | GitAPIException e) {

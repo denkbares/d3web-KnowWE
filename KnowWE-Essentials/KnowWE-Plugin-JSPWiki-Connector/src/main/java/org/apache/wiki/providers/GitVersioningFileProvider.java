@@ -20,40 +20,51 @@
 package org.apache.wiki.providers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
+import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.search.QueryItem;
+import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
+import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.NotNull;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
@@ -69,6 +80,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public static final String GIT_DIR = ".git";
 	public static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
 	private static final Logger log = Logger.getLogger(GitVersioningFileProvider.class);
+	private String filesystemPath;
+
+	private AtomicLong commitCount;
 
 	/**
 	 * {@inheritDoc}
@@ -77,8 +91,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	 */
 	@Override
 	public void initialize(WikiEngine engine, Properties properties) throws NoRequiredPropertyException, IOException {
+		commitCount = new AtomicLong();
 		super.initialize(engine, properties);
-		String filesystemPath = TextUtil.getCanonicalFilePathProperty(properties, JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR,
+		filesystemPath = TextUtil.getCanonicalFilePathProperty(properties, JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR,
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 		File pageDir = new File(filesystemPath);
 		File gitDir = new File(pageDir.getAbsolutePath() + File.separator + GIT_DIR);
@@ -109,6 +124,22 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					.setGitDir(gitDir)
 					.build();
 		}
+		Git git = new Git(repository);
+		try {
+			log.info("Beginn Git gc");
+			StopWatch stopWatch = new StopWatch();
+			stopWatch.start();
+			Properties gcRes = git.gc().setAggressive(true).call();
+			stopWatch.stop();
+			log.info("Init gc took " + stopWatch);
+			for (Map.Entry<Object, Object> entry : gcRes.entrySet()) {
+				log.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
+			}
+		}
+		catch (GitAPIException e) {
+			log.error("Git GC not successful: " + e.getMessage());
+		}
+		repository.autoGC(new TextProgressMonitor());
 	}
 
 	Repository getRepository() {
@@ -133,27 +164,25 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				git.add().addFilepattern(changedFile.getName()).call();
 			}
 
-			Status status = git.status().addPath(changedFile.getName()).call();
-			isChanged = status.getModified().contains(changedFile.getName());
-			if (isChanged || addFile) {
-				CommitCommand commit = git
-						.commit()
-						.setOnly(changedFile.getName());
-				if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
-					commit.setMessage((String) page.getAttribute(WikiPage.CHANGENOTE));
-				}
-				else if (addFile) {
-					commit.setMessage("Added page");
-				}
-				else {
-					commit.setMessage("-");
-				}
-				addUserInfo(m_engine, page.getAuthor(), commit);
-				commit.setAllowEmpty(true);
-				synchronized (repository) {
-					commit.call();
-				}
+			CommitCommand commit = git
+					.commit()
+					.setOnly(changedFile.getName());
+			if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
+				commit.setMessage((String) page.getAttribute(WikiPage.CHANGENOTE));
 			}
+			else if (addFile) {
+				commit.setMessage("Added page");
+			}
+			else {
+				commit.setMessage("-");
+			}
+			addUserInfo(m_engine, page.getAuthor(), commit);
+			commit.setAllowEmpty(true);
+			synchronized (repository) {
+				commit.call();
+				periodicalGitGC(git);
+			}
+//			}
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
@@ -173,6 +202,36 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 	}
 
+	void periodicalGitGC(Git git) {
+		long l = commitCount.incrementAndGet();
+		if (l % 2000 == 0) {
+			doGC(git, true);
+		}
+		else if (l % 500 == 0) {
+			doGC(git, false);
+		}
+		else if (l % 100 == 0) {
+			repository.autoGC(new TextProgressMonitor());
+		}
+	}
+
+	private void doGC(Git git, boolean aggressive) {
+		StopWatch stopwatch = new StopWatch();
+		if (log.isDebugEnabled()) {
+			stopwatch.start();
+		}
+		try {
+			git.gc().setAggressive(aggressive).call();
+		}
+		catch (GitAPIException e) {
+			log.warn("Git gc not successful: " + e.getMessage());
+		}
+		if (log.isDebugEnabled()) {
+			stopwatch.stop();
+			log.debug("gc took " + stopwatch);
+		}
+	}
+
 	@Override
 	public boolean pageExists(String page) {
 		return super.pageExists(page);
@@ -182,9 +241,13 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public boolean pageExists(String page, int version) {
 		if (pageExists(page)) {
 			try {
-				List<WikiPage> versionHistory = getVersionHistory(page);
-				return version == WikiPageProvider.LATEST_VERSION
-						|| (version > 0 && version <= versionHistory.size());
+				if (version == WikiPageProvider.LATEST_VERSION) {
+					return true;
+				}
+				else {
+					List<WikiPage> versionHistory = getVersionHistory(page);
+					return (version > 0 && version <= versionHistory.size());
+				}
 			}
 			catch (ProviderException e) {
 				return false;
@@ -221,7 +284,84 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	@Override
 	public Collection getAllPages() throws ProviderException {
-		return super.getAllPages();
+		log.debug("Getting all pages...");
+
+		Map<String, WikiPage> resultingPages = new HashMap<>();
+
+		File wikipagedir = new File(filesystemPath);
+		File[] wikipages = wikipagedir.listFiles(new WikiFileFilter());
+
+		if (wikipages == null) {
+			log.error("Wikipages directory '" + filesystemPath + "' does not exist! Please check " + PROP_PAGEDIR + " in jspwiki.properties.");
+			throw new InternalWikiException("Page directory does not exist");
+		}
+		Map<String, File> files = new HashMap<>();
+		for (File file : wikipages) {
+			files.put(file.getName(), file);
+		}
+		try {
+			ObjectReader objRedaer = repository.newObjectReader();
+			CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
+			CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
+			DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+			diffFormatter.setRepository(repository);
+			ObjectId ref = repository.resolve(Constants.HEAD);
+			RevWalk revWalk = new RevWalk(repository);
+			revWalk.markStart(revWalk.lookupCommit(ref));
+			RevCommit commit;
+			while ((commit = revWalk.next()) != null) {
+				RevCommit[] parents = commit.getParents();
+				if (parents.length > 0) {
+					commit.getTree();
+					oldTreeParser.reset(objRedaer, commit.getParent(0)
+							.getTree());
+					newTreeParser.reset(objRedaer, commit.getTree());
+					List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
+					for (DiffEntry diff : diffs) {
+						String path = null;
+						if (diff.getChangeType() == DiffEntry.ChangeType.MODIFY) {
+							path = diff.getOldPath();
+						}
+						else if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
+							path = diff.getNewPath();
+						}
+						if (path != null) {
+							mapCommit(resultingPages, files, commit, path);
+						}
+					}
+				}
+				else {
+					TreeWalk tw = new TreeWalk(repository);
+					tw.reset(commit.getTree());
+					tw.setRecursive(false);
+					while (tw.next()) {
+						mapCommit(resultingPages, files, commit, tw.getPathString());
+					}
+				}
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		return resultingPages.values();
+	}
+
+	void mapCommit(Map<String, WikiPage> resultingPages, Map<String, File> files, RevCommit commit, String path) {
+		if (resultingPages.containsKey(path)) {
+			WikiPage wikiPage = resultingPages.get(path);
+			wikiPage.setVersion(wikiPage.getVersion() + 1);
+		}
+		else {
+			WikiPage wikiPage = getWikiPage(commit.getFullMessage(),
+					commit.getCommitterIdent().getName(),
+					new Date(1000L * commit.getCommitTime()),
+					path);
+			wikiPage.setVersion(1);
+			if (files.containsKey(path)) {
+				wikiPage.setSize(files.get(path).length());
+				resultingPages.put(path, wikiPage);
+			}
+		}
 	}
 
 	@Override
@@ -277,7 +417,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	@NotNull
 	private WikiPage getWikiPage(String fullMessage, String author, Date modified, String path) {
-		WikiPage page = new WikiPage(m_engine, unmangleName(path));
+		int cutpoint = path.lastIndexOf(FILE_EXT);
+		WikiPage page = new WikiPage(m_engine, unmangleName(path.substring(0, cutpoint)));
 		page.setAttribute(WikiPage.CHANGENOTE, fullMessage);
 		page.setAuthor(author);
 		page.setLastModified(modified);
@@ -299,12 +440,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
 				int versionNr = 1;
 				for (RevCommit revCommit : revCommits) {
-					WikiPage version = new WikiPage(m_engine, pageName);
-					version.setAuthor(revCommit.getCommitterIdent().getName());
-					version.setLastModified(new Date(1000L * revCommit.getCommitTime()));
-					version.setVersion(versionNr++);
-					version.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
+					WikiPage version = getWikiPage(pageName, versionNr, revCommit);
 					pageVersions.add(version);
+					versionNr++;
 				}
 			}
 			catch (IOException | GitAPIException e) {
@@ -315,27 +453,44 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		return pageVersions;
 	}
 
+	@NotNull WikiPage getWikiPage(String pageName, int versionNr, RevCommit revCommit) {
+		WikiPage version = new WikiPage(m_engine, pageName);
+		version.setAuthor(revCommit.getCommitterIdent().getName());
+		version.setLastModified(new Date(1000L * revCommit.getCommitTime()));
+		version.setVersion(versionNr);
+		version.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
+		return version;
+	}
+
 	@Override
 	public String getPageText(String pageName, int version) throws ProviderException {
 		File page = findPage(pageName);
 		if (page.exists()) {
 			try {
-				Git git = new Git(repository);
-				List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
-				if (version == LATEST_VERSION || (version > 0 && version <= revCommits.size())) {
-					RevCommit revCommit = revCommits.get(version == LATEST_VERSION ? revCommits.size() - 1 : version - 1);
-					TreeWalk treeWalkDir = new TreeWalk(repository);
-					treeWalkDir.reset(revCommit.getTree());
-					treeWalkDir.setFilter(PathFilter.create(page.getName()));
-					treeWalkDir.setRecursive(false);
-					//here we have our file directly
-					if (treeWalkDir.next()) {
-						ObjectId fileId = treeWalkDir.getObjectId(0);
-						ObjectLoader loader = repository.open(fileId);
-						return new String(loader.getBytes(), StandardCharsets.UTF_8);
+				if (version == LATEST_VERSION) {
+					try (FileInputStream fileInputStream = new FileInputStream(page)) {
+						String contents = FileUtil.readContents(fileInputStream, m_encoding);
+						return contents;
 					}
-					else {
-						throw new ProviderException("Can't load Git object for " + pageName + " version " + version);
+				}
+				else {
+					Git git = new Git(repository);
+					List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
+					if ((version > 0 && version <= revCommits.size())) {
+						RevCommit revCommit = revCommits.get(version == LATEST_VERSION ? revCommits.size() - 1 : version - 1);
+						TreeWalk treeWalkDir = new TreeWalk(repository);
+						treeWalkDir.reset(revCommit.getTree());
+						treeWalkDir.setFilter(PathFilter.create(page.getName()));
+						treeWalkDir.setRecursive(false);
+						//here we have our file directly
+						if (treeWalkDir.next()) {
+							ObjectId fileId = treeWalkDir.getObjectId(0);
+							ObjectLoader loader = repository.open(fileId);
+							return new String(loader.getBytes(), m_encoding);
+						}
+						else {
+							throw new ProviderException("Can't load Git object for " + pageName + " version " + version);
+						}
 					}
 				}
 			}
@@ -375,6 +530,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			addUserInfo(m_engine, pageName.getAuthor(), commitCommand);
 			synchronized (repository) {
 				commitCommand.call();
+				periodicalGitGC(git);
 			}
 		}
 		catch (GitAPIException e) {
@@ -399,6 +555,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			addUserInfo(m_engine, from.getAuthor(), commitCommand);
 			synchronized (repository) {
 				commitCommand.call();
+				periodicalGitGC(git);
 			}
 		}
 		catch (IOException | GitAPIException e) {

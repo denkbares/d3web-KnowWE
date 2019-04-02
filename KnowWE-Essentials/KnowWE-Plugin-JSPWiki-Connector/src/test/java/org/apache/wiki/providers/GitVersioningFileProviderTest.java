@@ -32,6 +32,7 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.WikiProvider;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.auth.NoSuchPrincipalException;
@@ -47,8 +48,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 /**
@@ -138,6 +138,15 @@ public class GitVersioningFileProviderTest {
 
 		String tess = fileProvider.getPageText("tess", 1);
 		assertEquals("test file text", tess);
+
+		WikiPage pageInfo = fileProvider.getPageInfo(page.getName(), 2);
+		assertNotNull("get page info version 2", pageInfo);
+		pageInfo = fileProvider.getPageInfo(page.getName(), WikiProvider.LATEST_VERSION);
+		assertNotNull("get page info latest version", pageInfo);
+		String pageText = fileProvider.getPageText(page.getName(), 2);
+		assertEquals("get text version 2", "test file text2", pageText);
+		pageText = fileProvider.getPageText(page.getName(), WikiProvider.LATEST_VERSION);
+		assertEquals("get text latest version", "test file text2", pageText);
 	}
 
 	@Test
@@ -178,7 +187,7 @@ public class GitVersioningFileProviderTest {
 		page.setAttribute(WikiPage.CHANGENOTE, "changed test");
 		fileProvider.putPageText(page, "new text");
 
-		WikiPage page2 = new WikiPage(engine, "test2");
+		WikiPage page2 = new WikiPage(engine, "test 2");
 		page2.setLastModified(new Date());
 		page2.setAuthor("UnknownAuthor");
 		page2.setAttribute(WikiPage.CHANGENOTE, "add test2");
@@ -192,16 +201,16 @@ public class GitVersioningFileProviderTest {
 //			System.out.println(o1.getAttribute(WikiPage.CHANGENOTE));
 //			System.out.println(o1.getLastModified());
 //		}
-		assertEquals("test.txt", allChangedSince.get(0).getName());
-		assertEquals("test.txt", allChangedSince.get(1).getName());
-		assertEquals("test2.txt", allChangedSince.get(2).getName());
+		assertEquals("test", allChangedSince.get(0).getName());
+		assertEquals("test", allChangedSince.get(1).getName());
+		assertEquals("test 2", allChangedSince.get(2).getName());
 
 		WikiPage p = new WikiPage(engine, "test");
 		p.setAuthor("UnknownAuthor");
 		fileProvider.deletePage(p);
 		allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
 		assertEquals(4, allChangedSince.size());
-		assertEquals("test.txt", allChangedSince.get(3).getName());
+		assertEquals("test", allChangedSince.get(3).getName());
 //		System.out.println(allChangedSince);
 	}
 
