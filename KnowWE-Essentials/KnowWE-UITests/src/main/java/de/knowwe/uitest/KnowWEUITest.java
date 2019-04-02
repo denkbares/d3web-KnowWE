@@ -163,6 +163,10 @@ public abstract class KnowWEUITest {
 		return await().until(ExpectedConditions.presenceOfElementLocated(selector));
 	}
 
+	protected WebElement waitUntilPresent(By selector, int timeOutInSeconds) {
+		return await(timeOutInSeconds).until(ExpectedConditions.presenceOfElementLocated(selector));
+	}
+
 	protected WebElement waitUntilClickable(By selector) {
 		return await().until(ExpectedConditions.elementToBeClickable(selector));
 	}
