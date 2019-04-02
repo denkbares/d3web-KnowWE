@@ -140,11 +140,11 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			}
 		}
 
-		File newfile = new File(attDir, att.getFileName());
-		boolean add = !newfile.exists();
-		try (OutputStream out = new FileOutputStream(newfile)) {
+		File newFile = findAttachmentFile(att.getParentName(), att.getFileName());
+		boolean add = !newFile.exists();
+		try (OutputStream out = new FileOutputStream(newFile)) {
 			log.info("Uploading attachment " + att.getFileName() + " to page " + att.getParentName());
-			log.info("Saving attachment contents to " + newfile.getAbsolutePath());
+			log.info("Saving attachment contents to " + newFile.getAbsolutePath());
 			FileUtil.copyContents(data, out);
 		}
 		catch (IOException e) {
