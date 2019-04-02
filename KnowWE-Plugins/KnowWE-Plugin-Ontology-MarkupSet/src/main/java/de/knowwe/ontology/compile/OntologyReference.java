@@ -30,7 +30,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class OntologyReference extends AbstractType implements TermReference, RenamableTerm {
 
 	public OntologyReference() {
-		setSectionFinder(new AllTextFinderTrimmed());
+		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
 		addCompileScript(Priority.HIGH, new SimpleReferenceRegistrationScript<>(DefaultGlobalCompiler.class));
 	}

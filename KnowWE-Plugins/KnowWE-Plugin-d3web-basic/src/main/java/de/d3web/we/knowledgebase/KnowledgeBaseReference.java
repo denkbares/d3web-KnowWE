@@ -32,7 +32,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class KnowledgeBaseReference extends AbstractType implements TermReference, D3webTerm<KnowledgeBase>, RenamableTerm {
 
 	public KnowledgeBaseReference() {
-		setSectionFinder(new AllTextFinderTrimmed());
+		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
 		addCompileScript(Priority.HIGH, new SimpleReferenceRegistrationScript<>(DefaultGlobalCompiler.class));
 	}

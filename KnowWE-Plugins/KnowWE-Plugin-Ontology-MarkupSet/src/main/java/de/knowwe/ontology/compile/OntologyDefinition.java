@@ -31,7 +31,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class OntologyDefinition extends AbstractType implements TermDefinition, RenamableTerm {
 
 	public OntologyDefinition() {
-		setSectionFinder(new AllTextFinderTrimmed());
+		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
 		addCompileScript(Priority.HIGHER, new SimpleDefinitionRegistrationScript<>(DefaultGlobalCompiler.class));
 	}

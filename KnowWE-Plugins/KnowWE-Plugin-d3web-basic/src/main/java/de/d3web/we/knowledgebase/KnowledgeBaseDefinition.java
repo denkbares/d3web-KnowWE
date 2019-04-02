@@ -30,7 +30,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class KnowledgeBaseDefinition extends AbstractType implements TermDefinition, D3webTerm<KnowledgeBase>, RenamableTerm {
 
 	public KnowledgeBaseDefinition() {
-		setSectionFinder(new AllTextFinderTrimmed());
+		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
 		addCompileScript(Priority.HIGHER, new SimpleDefinitionRegistrationScript<>(DefaultGlobalCompiler.class));
 		addCompileScript(Priority.HIGHER, (D3webCompileScript<KnowledgeBaseDefinition>) (compiler, section) -> {
