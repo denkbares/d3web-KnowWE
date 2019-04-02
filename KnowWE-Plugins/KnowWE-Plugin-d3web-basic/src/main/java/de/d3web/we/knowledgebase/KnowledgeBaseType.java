@@ -19,6 +19,10 @@
 
 package de.d3web.we.knowledgebase;
 
+import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.InfoStore;
@@ -154,12 +158,11 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		return Strings.nonBlank(filename) ? filename : DEFAULT_FILENAME;
 	}
 
+	@NotNull
 	public D3webCompiler getCompiler(Section<? extends KnowledgeBaseType> self) {
-		Section<PackageCompileType> compileSection = Sections.successor(self, PackageCompileType.class);
-		for (D3webCompiler compiler : Compilers.getCompilers(self, D3webCompiler.class)) {
-			if (compiler.getCompileSection() == compileSection) return compiler;
-		}
-		throw new IllegalStateException("unexpected error: missing compiler for knowledge base");
+		return Objects.requireNonNull(
+				Compilers.getCompiler(Sections.successor(self, PackageCompileType.class), D3webCompiler.class),
+				"unexpected internal error: no compiler created");
 	}
 
 	private static class D3webCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {

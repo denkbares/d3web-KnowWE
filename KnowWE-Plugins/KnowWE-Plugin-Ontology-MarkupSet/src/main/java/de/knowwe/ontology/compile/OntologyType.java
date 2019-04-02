@@ -19,8 +19,10 @@
 package de.knowwe.ontology.compile;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.events.EventManager;
@@ -167,12 +169,11 @@ public class OntologyType extends DefaultMarkupType {
 		EventManager.getInstance().registerListener(OntologyExporter.getInstance());
 	}
 
+	@NotNull
 	public OntologyCompiler getCompiler(Section<? extends OntologyType> self) {
-		Section<PackageCompileType> compileSection = Sections.successor(self, PackageCompileType.class);
-		for (OntologyCompiler compiler : Compilers.getCompilers(self, OntologyCompiler.class)) {
-			if (compiler.getCompileSection() == compileSection) return compiler;
-		}
-		throw new IllegalStateException("unexpected error: missing compiler for knowledge base");
+		return Objects.requireNonNull(
+				Compilers.getCompiler(Sections.successor(self, PackageCompileType.class), OntologyCompiler.class),
+				"unexpected internal error: no compiler created");
 	}
 
 	/**
