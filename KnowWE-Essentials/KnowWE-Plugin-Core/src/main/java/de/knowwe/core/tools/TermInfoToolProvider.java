@@ -74,7 +74,8 @@ public class TermInfoToolProvider implements ToolProvider {
 
 		// get sorted list of all defining articles
 		Map<String, Section<?>> articles = new HashMap<>();
-		List<TermCompiler> compilers = new ArrayList<>(Compilers.getCompilers(section, TermCompiler.class));
+		List<TermCompiler> compilers = new ArrayList<>(Compilers.getCompilersWithCompileScript(section, TermCompiler.class));
+		if (compilers.isEmpty()) compilers = new ArrayList<>(Compilers.getCompilers(section, TermCompiler.class));
 		compilers.sort((o1, o2) -> {
 			if (o1 instanceof PackageCompiler && o2 instanceof PackageCompiler) return 0;
 			if (o1 instanceof PackageCompiler) return -1;
