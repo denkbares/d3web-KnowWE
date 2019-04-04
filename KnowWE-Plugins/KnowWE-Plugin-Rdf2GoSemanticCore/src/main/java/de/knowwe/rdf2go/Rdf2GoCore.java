@@ -54,6 +54,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 import java.util.logging.Level;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
@@ -835,6 +836,18 @@ public class Rdf2GoCore {
 			throw new IllegalArgumentException("Invalid abbreviated namespace: " + abbreviatedNamespace);
 		}
 		return createIRI(fullNamespace + Strings.encodeURL(value));
+	}
+
+	/**
+	 * Expands a short IRI (such as "casis:BGZ_1030300") into a regular URI ("http://example.org/casis/#BGZ_1030300").
+	 *
+	 * @param iri
+	 * @return
+	 */
+	public java.net.URI expandShortIRI(String iri) {
+		// IRIs created from string in short form are created expanded by createIRI() already
+		IRI iriObject = createIRI(iri);
+		return java.net.URI.create(iriObject.getNamespace() + iriObject.getLocalName());
 	}
 
 	public String getLocalNamespace() {
