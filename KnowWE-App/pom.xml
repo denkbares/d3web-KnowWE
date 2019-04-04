@@ -606,7 +606,7 @@
 			<id>claas</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.denkbares</groupId>
+					<groupId>com.denkbares.ssp</groupId>
 					<artifactId>KnowWE-Plugin-ExperienceDatabase</artifactId>
 				</dependency>
 				<dependency>
@@ -622,6 +622,10 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-RightPanel</artifactId>
 					<scope>test</scope>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares.ssp</groupId>
+					<artifactId>KnowWE-Plugin-SemanticServiceCore</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>

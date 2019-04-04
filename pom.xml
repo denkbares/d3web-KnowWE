@@ -690,9 +690,9 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares</groupId>
+				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-ExperienceDatabase</artifactId>
-				<version>${knowwe.version}</version>
+				<version>${ssp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
