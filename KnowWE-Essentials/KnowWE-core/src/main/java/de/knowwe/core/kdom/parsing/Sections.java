@@ -277,6 +277,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return the first section
 	 */
+	@Nullable
 	public Section<T> getFirst() {
 		return getNth(0);
 	}
@@ -286,6 +287,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *
 	 * @return the last section
 	 */
+	@Nullable
 	public Section<T> getLast() {
 		Section<T> last = null;
 		for (Section<T> section : this) {
