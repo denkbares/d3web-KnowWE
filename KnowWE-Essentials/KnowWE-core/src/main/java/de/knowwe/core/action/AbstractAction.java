@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.Attributes;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -50,6 +51,15 @@ public abstract class AbstractAction implements Action {
 		return false;
 	}
 
+	/**
+	 * Returns the section that is denoted for the specified action context. The section is usually referred by the URL
+	 * parameter "SectionID" ({@link Attributes#SECTION_ID}), but for campatibility reasons this method also supports
+	 * "KdomNodeId". If no section is denoted, or if the specified section is not found, or if the user does not have
+	 * read access to the section, an appropriate error is created.
+	 *
+	 * @param context the action context to get the section for
+	 * @return the section for the action
+	 */
 	@NotNull
 	public static Section<?> getSection(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
@@ -70,7 +80,27 @@ public abstract class AbstractAction implements Action {
 		return section;
 	}
 
+	/**
+	 * Returns the section that is denoted for the specified action context. The section is usually referred by the URL
+	 * parameter "SectionID" ({@link Attributes#SECTION_ID}), but for campatibility reasons this method also supports
+	 * "KdomNodeId". If no section is denoted, or if the specified section is not found, or if the section is not of the
+	 * specified expected type, or if the user does not have read access to the section, an appropriate error is
+	 * created.
+	 *
+	 * @param context the action context to get the section for
+	 * @return the section for the action
+	 */
+	@NotNull
+	public static <T extends Type> Section<T> getSection(UserActionContext context, Class<T> type) throws IOException {
+		Section<?> section = getSection(context);
+		if (!type.isInstance(section.get())) {
+			context.sendError(HttpServletResponse.SC_EXPECTATION_FAILED,
+					"The request refers a section of an unexpected type.");
+			throw new IOException("The request refers a section of an unexpected type");
+		}
+		return Sections.cast(section, type);
+	}
+
 	@Override
 	public abstract void execute(UserActionContext context) throws IOException;
-
 }
