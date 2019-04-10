@@ -70,7 +70,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 			html.appendHtml("<div type='hidden' style='display:none' id='knowWEInfoAttachments'>");
 			try {
 				for (WikiAttachment wikiAttachment : connector.getAttachments(article.getTitle())) {
-					html.appendHtmlElement("span", wikiAttachment.getFileName(), "class", "knowWEInfoAttachmentName");
+					html.appendHtmlElement("span", wikiAttachment.getFileName(), "class", "knowWEInfoAttachmentName", "data-size", String.valueOf(wikiAttachment.getSize()));
 				}
 			}
 			catch (IOException e) {
