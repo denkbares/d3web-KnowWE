@@ -482,4 +482,34 @@ public interface WikiConnector {
 	 */
 	@Nullable
 	String getWikiProperty(String property);
+
+	/**
+	 * Opens a page transaction for a Wiki user, in which multiple file operations are put in one Git commit together,
+	 * if GitVersioningFileProvider or equivalent is active
+	 *
+	 * @param user the user which executes a big change
+	 */
+	void openPageTransaction(String user);
+
+	/**
+	 * Do the commit of page transaction which was opened by openPageTransaction. If successful the page
+	 * transaction will be closed.
+	 * If no page transaction was opened before, nothing happens.
+	 *
+	 * @param user      the user which executes a big change
+	 * @param commitMsg commitPageTransaction message
+	 */
+	void commitPageTransaction(String user, String commitMsg);
+
+	/**
+	 * This will rollback the changes of a user to the file system.
+	 * This can be done, if an error occurs or if some defined states were not reached.
+	 * But only if commitPageTransaction was not successfully executed. It also closes
+	 * the page transaction which was opened with openPageTransaction
+	 *
+	 * @param user the user which executes a big change
+	 */
+	void rollbackPageTransaction(String user);
+
+	boolean hasRollbackPageProvider();
 }

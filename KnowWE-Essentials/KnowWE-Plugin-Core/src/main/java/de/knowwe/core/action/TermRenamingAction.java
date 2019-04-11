@@ -104,10 +104,9 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 		}
 	}
 
-
-	private void writeResponse(Set<String> failures, Set<String> success,
-							   Identifier termIdentifier, Identifier replacement,
-							   UserActionContext context) throws IOException {
+	protected void writeResponse(Set<String> failures, Set<String> success,
+								 Identifier termIdentifier, Identifier replacement,
+								 UserActionContext context) throws IOException {
 
 		JSONObject response = new JSONObject();
 		try {

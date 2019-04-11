@@ -26,27 +26,36 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.wiki.InternalWikiException;
+import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.WikiProvider;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.search.QueryItem;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
+import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CleanCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.lib.Constants;
@@ -83,6 +92,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private String filesystemPath;
 
 	private AtomicLong commitCount;
+
+	Map<String, Set<String>> openCommits = new ConcurrentHashMap<>();
+	List<String> refreshCacheList = new ArrayList<>();
 
 	/**
 	 * {@inheritDoc}
@@ -164,41 +176,33 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				git.add().addFilepattern(changedFile.getName()).call();
 			}
 
-			CommitCommand commit = git
-					.commit()
-					.setOnly(changedFile.getName());
-			if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
-				commit.setMessage((String) page.getAttribute(WikiPage.CHANGENOTE));
-			}
-			else if (addFile) {
-				commit.setMessage("Added page");
+			if (openCommits.containsKey(page.getAuthor())) {
+				openCommits.get(page.getAuthor()).add(changedFile.getName());
 			}
 			else {
-				commit.setMessage("-");
+				CommitCommand commit = git
+						.commit()
+						.setOnly(changedFile.getName());
+				if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
+					commit.setMessage((String) page.getAttribute(WikiPage.CHANGENOTE));
+				}
+				else if (addFile) {
+					commit.setMessage("Added page");
+				}
+				else {
+					commit.setMessage("-");
+				}
+				addUserInfo(m_engine, page.getAuthor(), commit);
+				commit.setAllowEmpty(true);
+				synchronized (repository) {
+					commit.call();
+					periodicalGitGC(git);
+				}
 			}
-			addUserInfo(m_engine, page.getAuthor(), commit);
-			commit.setAllowEmpty(true);
-			synchronized (repository) {
-				commit.call();
-				periodicalGitGC(git);
-			}
-//			}
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
 			throw new ProviderException("File " + page.getName() + " could not be commited to git");
-		}
-		catch (JGitInternalException e) {
-			if ("No changes".equals(e.getMessage())) {
-				// As javadoc of CommitCall.setAllowEmpty(true) says, this should not happen,
-				// nevertheless it happens (Bug 510685 of JGit). the underlying problem is caching of
-				// JspWiki because rename puts the actual text through CacheProvider to update the cache
-				log.info("Commit of not changed page " + page.getName());
-			}
-			else {
-				log.error("something went wrong changed: " + isChanged + " page " + page.getName() + " message " + e.getMessage(), e);
-				throw new ProviderException("Git internal error " + e.getMessage());
-			}
 		}
 	}
 
@@ -267,7 +271,16 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public WikiPage getPageInfo(String pageName, int version) throws ProviderException {
 		if (pageExists(pageName)) {
 			List<WikiPage> versionHistory = getVersionHistory(pageName);
-			if (version == WikiPageProvider.LATEST_VERSION) {
+			if (versionHistory.size() == 0 && version == LATEST_VERSION) {
+				WikiPage page = new WikiPage(m_engine, pageName);
+				page.setVersion(LATEST_VERSION);
+				File file = findPage(pageName);
+				page.setSize(file.length());
+				page.setLastModified(new Date(file.lastModified()));
+				refreshCacheList.add(pageName);
+				return page;
+			}
+			else if (version == WikiPageProvider.LATEST_VERSION) {
 				return versionHistory.get(versionHistory.size() - 1);
 			}
 			else if (version > 0 && version <= versionHistory.size()) {
@@ -521,24 +534,29 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	@Override
-	public void deletePage(WikiPage pageName) throws ProviderException {
-		File page = findPage(pageName.getName());
-		page.delete();
+	public void deletePage(WikiPage page) throws ProviderException {
+		File file = findPage(page.getName());
+		file.delete();
 		try {
 			Git git = new Git(repository);
-			git.rm().addFilepattern(page.getName()).call();
-			CommitCommand commitCommand = git.commit()
-					.setOnly(page.getName())
-					.setMessage("removed page");
-			addUserInfo(m_engine, pageName.getAuthor(), commitCommand);
-			synchronized (repository) {
-				commitCommand.call();
-				periodicalGitGC(git);
+			git.rm().addFilepattern(file.getName()).call();
+			if (openCommits.containsKey(page.getAuthor())) {
+				openCommits.get(page.getAuthor()).add(file.getName());
+			}
+			else {
+				CommitCommand commitCommand = git.commit()
+						.setOnly(file.getName())
+						.setMessage("removed page");
+				addUserInfo(m_engine, page.getAuthor(), commitCommand);
+				synchronized (repository) {
+					commitCommand.call();
+					periodicalGitGC(git);
+				}
 			}
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
-			throw new ProviderException("Can't delete page " + pageName + ": " + e.getMessage());
+			throw new ProviderException("Can't delete page " + page + ": " + e.getMessage());
 		}
 	}
 
@@ -551,19 +569,106 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			Git git = new Git(repository);
 			git.add().addFilepattern(toFile.getName()).call();
 			git.rm().addFilepattern(fromFile.getName()).call();
-			CommitCommand commitCommand = git.commit()
-					.setOnly(toFile.getName())
-					.setOnly(fromFile.getName())
-					.setMessage("renamed page " + from + " to " + to);
-			addUserInfo(m_engine, from.getAuthor(), commitCommand);
-			synchronized (repository) {
-				commitCommand.call();
-				periodicalGitGC(git);
+			if (openCommits.containsKey(from.getAuthor())) {
+				openCommits.get(from.getAuthor()).add(fromFile.getName());
+				openCommits.get(from.getAuthor()).add(toFile.getName());
+			}
+			else {
+				CommitCommand commitCommand = git.commit()
+						.setOnly(toFile.getName())
+						.setOnly(fromFile.getName())
+						.setMessage("renamed page " + from + " to " + to);
+				addUserInfo(m_engine, from.getAuthor(), commitCommand);
+				synchronized (repository) {
+					commitCommand.call();
+					periodicalGitGC(git);
+				}
 			}
 		}
 		catch (IOException | GitAPIException e) {
 			log.error(e.getMessage(), e);
 			throw new ProviderException("Can't move page from " + from + " to " + to + ": " + e.getMessage());
+		}
+	}
+
+	public void openCommit(String user) {
+		if (!openCommits.containsKey(user)) {
+			openCommits.put(user, Collections.synchronizedSortedSet(new TreeSet<>()));
+		}
+	}
+
+	public void commit(String user, String commitMsg) {
+		synchronized (repository) {
+			Git git = new Git(repository);
+			CommitCommand commitCommand = git.commit().setMessage(commitMsg);
+			addUserInfo(m_engine, user, commitCommand);
+			if (openCommits.containsKey(user)) {
+				Set<String> paths = openCommits.get(user);
+				for (String path : paths) {
+					commitCommand.setOnly(path);
+				}
+				try {
+					commitCommand.setAllowEmpty(true);
+					commitCommand.call();
+					openCommits.remove(user);
+					PageManager pm = m_engine.getPageManager();
+					// this could be done, because we only remove the page from the cache and the method of
+					// GitVersioningFileProvider does nothing here
+					// But we have to inform KnowWE also and Lucene
+					for (String path : refreshCacheList) {
+						// decide whether page or attachment
+						refreshCache(pm, path);
+					}
+					refreshCacheList.clear();
+				}
+				catch (GitAPIException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void rollback(String user) {
+		Git git = new Git(repository);
+		ResetCommand reset = git.reset();
+		CleanCommand clean = git.clean();
+		CheckoutCommand checkout = git.checkout();
+		Set<String> paths = openCommits.get(user);
+		clean.setPaths(paths);
+		for (String path : paths) {
+			reset.addPath(path);
+			checkout.addPath(path);
+		}
+		clean.setCleanDirectories(true);
+		try {
+			PageManager pm = m_engine.getPageManager();
+			// this could be done, because we only remove the page from the cache and the method of
+			// GitVersioningFileProvider does nothing here
+			// But we have to inform KnowWE also and Lucene
+			for (String path : paths) {
+				// decide whether page or attachment
+				refreshCache(pm, unmangleName(path));
+			}
+			reset.call();
+			clean.call();
+			Status status = git.status().call();
+
+			checkout.call();
+			openCommits.remove(user);
+		}
+		catch (GitAPIException e) {
+			e.printStackTrace();
+		}
+	}
+
+	void refreshCache(PageManager pm, String pageName) {
+		WikiPage page = new WikiPage(m_engine, pageName);
+		page.setVersion(WikiProvider.LATEST_VERSION);
+		try {
+			pm.deleteVersion(page);
+		}
+		catch (ProviderException e) {
+			e.printStackTrace();
 		}
 	}
 }

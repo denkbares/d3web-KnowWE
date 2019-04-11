@@ -72,6 +72,26 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public void openPageTransaction(String user) {
+		Log.warning("Dummy connector does not support commits");
+	}
+
+	@Override
+	public void commitPageTransaction(String user, String commitMsg) {
+		Log.warning("Dummy connector does not support commits");
+	}
+
+	@Override
+	public void rollbackPageTransaction(String user) {
+		Log.warning("Dummy connector does not support commits");
+	}
+
+	@Override
+	public boolean hasRollbackPageProvider() {
+		return false;
+	}
+
+	@Override
 	public List<WikiPageInfo> getArticleHistory(String title) {
 		if (getArticleText(title) == null) return Collections.emptyList();
 		return Collections.singletonList(new WikiPageInfo(title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1)));

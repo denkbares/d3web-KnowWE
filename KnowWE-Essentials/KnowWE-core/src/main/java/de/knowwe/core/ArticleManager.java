@@ -87,4 +87,13 @@ public interface ArticleManager {
 	 */
 	void commit();
 
+	/**
+	 * Call this method after opening with {@link ArticleManager#open()} in case an error occurred and the changes on
+	 * file system have been rolled back also. This could be done in conjunction with a rollback abel FileProvider
+	 * (i.e. GitVersioningFileProvider).
+	 *
+	 * @created 08.04.2019
+	 */
+	void rollback();
+
 }

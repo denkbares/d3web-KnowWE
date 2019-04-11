@@ -47,7 +47,6 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -134,6 +133,9 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			attDir.mkdirs();
 			try {
 				git.add().addFilepattern(attDir.getName()).call();
+				if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
+					gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(attDir.getName());
+				}
 			}
 			catch (GitAPIException e) {
 				log.error(e.getMessage(), e);
@@ -156,7 +158,6 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				data.close();
 			}
 		}
-		boolean isChanged = false;
 		try {
 			if (add) {
 				try {
@@ -170,32 +171,10 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				}
 				git.add().addFilepattern(getPath(att)).call();
 			}
-//			Status status = git.status().addPath(getPath(att)).call();
-//			isChanged = status.getModified().contains(getPath(att));
-//			if (isChanged || add) {
-			CommitCommand commitCommand = git.commit()
-					.setOnly(getPath(att));
-			setMessage(att, commitCommand);
-			addUserInfo(engine, att.getAuthor(), commitCommand);
-			synchronized (repository) {
-				commitCommand.call();
-				gitVersioningFileProvider.periodicalGitGC(git);
-			}
-//			}
+			commitAttachment(att, git);
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
-		}
-		catch (JGitInternalException e) {
-			if ("No changes".equals(e.getMessage())) {
-				// As javadoc of CommitCall.setAllowEmpty(true) says, this should not happen,
-				// nevertheless it happens (Bug 510685 of JGit)
-				log.info("Commit of not changed page " + getPath(att));
-			}
-			else {
-				log.error("something went wrong changed: " + isChanged + " page " + getPath(att) + " message " + e.getMessage(), e);
-				throw new ProviderException("Git internal error " + e.getMessage());
-			}
 		}
 	}
 
@@ -362,14 +341,18 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		File attFile = findAttachmentFile(page.getName(), name);
 		if (attFile.exists()) {
 			List<Attachment> versionHistory = getVersionHistory(att);
-			if (version == LATEST_VERSION && versionHistory.size() > 0) {
+			if (versionHistory.size() == 0 && version == LATEST_VERSION) {
+				att.setCacheable(false);
+				att.setSize(attFile.length());
+				att.setLastModified(new Date(attFile.lastModified()));
+				return att;
+			}
+			else if (version == LATEST_VERSION) {
 				Attachment attachment = versionHistory.get(versionHistory.size() - 1);
 				return attachment;
 			}
-			else {
-				if (version > 0 && version <= versionHistory.size()) {
-					return versionHistory.get(version - 1);
-				}
+			else if (version > 0 && version <= versionHistory.size()) {
+				return versionHistory.get(version - 1);
 			}
 		}
 		return null;
@@ -458,17 +441,26 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			try {
 				Git git = new Git(repository);
 				git.rm().addFilepattern(getPath(att)).call();
-				CommitCommand commitCommand = git.commit().setOnly(getPath(att));
-				setMessage(att, commitCommand);
-				addUserInfo(engine, att.getAuthor(), commitCommand);
-				synchronized (repository) {
-					commitCommand.call();
-					gitVersioningFileProvider.periodicalGitGC(git);
-				}
+				commitAttachment(att, git);
 			}
 			catch (GitAPIException e) {
 				log.error(e.getMessage(), e);
 				throw new ProviderException("File " + getPath(att) + " could not be deleted");
+			}
+		}
+	}
+
+	void commitAttachment(Attachment att, Git git) throws GitAPIException {
+		if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
+			gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(getPath(att));
+		}
+		else {
+			CommitCommand commitCommand = git.commit().setOnly(getPath(att));
+			setMessage(att, commitCommand);
+			addUserInfo(engine, att.getAuthor(), commitCommand);
+			synchronized (repository) {
+				commitCommand.call();
+				gitVersioningFileProvider.periodicalGitGC(git);
 			}
 		}
 	}
@@ -495,19 +487,29 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				AddCommand add = git.add();
 				CommitCommand commit = git.commit();
 				for (File file : files) {
-					rm.addFilepattern(getAttachmentDir(oldParent.getName()) + "/" + file.getName());
-					commit.setOnly(getAttachmentDir(oldParent.getName()) + "/" + file.getName());
-					add.addFilepattern(getAttachmentDir(newParent) + "/" + file.getName());
-					commit.setOnly(getAttachmentDir(newParent) + "/" + file.getName());
+					String oldPath = getAttachmentDir(oldParent.getName()) + "/" + file.getName();
+					String newPath = getAttachmentDir(newParent) + "/" + file.getName();
+					rm.addFilepattern(oldPath);
+					add.addFilepattern(newPath);
+					if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
+						gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(oldPath);
+						gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(newPath);
+					}
+					else {
+						commit.setOnly(oldPath);
+						commit.setOnly(newPath);
+					}
 				}
 				rm.addFilepattern(getAttachmentDir(oldParent.getName()));
 				add.addFilepattern(getAttachmentDir(newParent));
 				rm.call();
 				add.call();
-				commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
-				synchronized (repository) {
-					commit.call();
-					gitVersioningFileProvider.periodicalGitGC(git);
+				if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
+					commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
+					synchronized (repository) {
+						commit.call();
+						gitVersioningFileProvider.periodicalGitGC(git);
+					}
 				}
 			}
 			catch (IOException | GitAPIException e) {

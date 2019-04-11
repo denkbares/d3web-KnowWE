@@ -19,8 +19,10 @@
 
 package org.apache.wiki.providers;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -30,16 +32,23 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.WikiProvider;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.junit.After;
@@ -83,9 +92,13 @@ public class GitVersioningFileProviderTest {
 
 		fileProvider.initialize(engine, properties);
 
-		Repository repo = new FileRepositoryBuilder().setGitDir(new File(TMP_NEW_REPO + "/.git")).build();
+		Repository repo = getRepository();
 		assertTrue(repo.getObjectDatabase().exists());
 		properties.remove(GitVersioningFileProvider.JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT);
+	}
+
+	Repository getRepository() throws IOException {
+		return new FileRepositoryBuilder().setGitDir(new File(TMP_NEW_REPO + "/.git")).build();
 	}
 
 	@Test
@@ -94,7 +107,7 @@ public class GitVersioningFileProviderTest {
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
 
-		Repository repo = new FileRepositoryBuilder().setGitDir(new File(TMP_NEW_REPO + "/.git")).build();
+		Repository repo = getRepository();
 		assertTrue(repo.getObjectDatabase().exists());
 	}
 
@@ -195,12 +208,6 @@ public class GitVersioningFileProviderTest {
 
 		List<WikiPage> allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
 		assertEquals(3, allChangedSince.size());
-//		for (Object o : allChangedSince) {
-//			WikiPage o1 = (WikiPage) o;
-//			System.out.println(o1.getName());
-//			System.out.println(o1.getAttribute(WikiPage.CHANGENOTE));
-//			System.out.println(o1.getLastModified());
-//		}
 		assertEquals("test", allChangedSince.get(0).getName());
 		assertEquals("test", allChangedSince.get(1).getName());
 		assertEquals("test 2", allChangedSince.get(2).getName());
@@ -211,7 +218,6 @@ public class GitVersioningFileProviderTest {
 		allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
 		assertEquals(4, allChangedSince.size());
 		assertEquals("test", allChangedSince.get(3).getName());
-//		System.out.println(allChangedSince);
 	}
 
 	@Test
@@ -246,16 +252,140 @@ public class GitVersioningFileProviderTest {
 		assertTrue("deleted pages have no version log anymore", allChangedSince.isEmpty());
 	}
 
-	@NotNull WikiEngine getWikiEngineMock(String author) throws NoSuchPrincipalException {
+	@Test
+	public void testEmptyCommit() throws NoSuchPrincipalException, IOException, NoRequiredPropertyException, ProviderException, GitAPIException {
+		WikiEngine engine = getWikiEngineMock("egal");
+		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
+		fileProvider.initialize(engine, properties);
+		WikiPage page = getWikiPage(engine, "test", "egal");
+		fileProvider.putPageText(page, "text");
+		fileProvider.putPageText(page, "text");
+		fileProvider.putPageText(page, "text");
+
+		Git git = new Git(getRepository());
+		List<RevCommit> revCommits = GitVersioningUtils.reverseToList(git.log().call());
+		assertEquals(3, revCommits.size());
+		Instant nowMinusOneHour = Instant.now();
+		nowMinusOneHour = nowMinusOneHour.minus(1, ChronoUnit.HOURS);
+		List<WikiPage> allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
+		assertEquals(1, allChangedSince.size());
+	}
+
+	@Test
+	public void testCommitTransaction() throws NoSuchPrincipalException, IOException, NoRequiredPropertyException, ProviderException, GitAPIException {
+		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
+		String user1 = "User1";
+		String user2 = "User2";
+		WikiEngine engine = getWikiEngineMock(user1, user2);
+		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
+		PageManager pm = Mockito.mock(PageManager.class);
+		when(engine.getPageManager()).thenReturn(pm);
+		when(pm.getProvider()).thenReturn(fileProvider);
+		GitVersioningAttachmentProvider attachmentProvider = new GitVersioningAttachmentProvider();
+		fileProvider.initialize(engine, properties);
+		attachmentProvider.initialize(engine, properties);
+		fileProvider.openCommit(user1);
+		WikiPage page = getWikiPage(engine, "test", user1);
+		fileProvider.putPageText(page, "new Text");
+		fileProvider.putPageText(getWikiPage(engine, "other commit", user2), "other commit");
+
+		Attachment att = new Attachment(engine, "test", "dings.txt");
+		att.setAuthor(user1);
+		attachmentProvider.putAttachmentData(att, new ByteArrayInputStream("test inhalt".getBytes()));
+
+		WikiPage page3 = getWikiPage(engine, "another page", user1);
+		fileProvider.putPageText(page3, "more content");
+
+		fileProvider.commit(user1, "one commit");
+
+		Repository repo = getRepository();
+		Git git = new Git(repo);
+		Iterable<RevCommit> commitLog = git.log().call();
+		List<RevCommit> revCommits = GitVersioningUtils.reverseToList(commitLog);
+		assertEquals("expected commits", 2, revCommits.size());
+	}
+
+	@Test
+	public void testRollback() throws NoSuchPrincipalException, IOException, NoRequiredPropertyException, ProviderException, GitAPIException {
+		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
+		String user1 = "User1";
+		String user2 = "User2";
+		WikiEngine engine = getWikiEngineMock(user1, user2);
+		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
+		PageManager pm = Mockito.mock(PageManager.class);
+		when(engine.getPageManager()).thenReturn(pm);
+		when(pm.getProvider()).thenReturn(fileProvider);
+		GitVersioningAttachmentProvider attachmentProvider = new GitVersioningAttachmentProvider();
+		fileProvider.initialize(engine, properties);
+		attachmentProvider.initialize(engine, properties);
+		fileProvider.openCommit(user1);
+		WikiPage page = getWikiPage(engine, "to revert", user1);
+		fileProvider.putPageText(page, "new Text");
+		fileProvider.openCommit(user2);
+		fileProvider.putPageText(getWikiPage(engine, "other commit", user2), "other commit");
+
+		Attachment att = new Attachment(engine, "to revert", "dingsToRevert.txt");
+		att.setAuthor(user1);
+		attachmentProvider.putAttachmentData(att, new ByteArrayInputStream("test inhalt".getBytes()));
+
+		WikiPage page3 = getWikiPage(engine, "another page to revert", user1);
+		fileProvider.putPageText(page3, "more content");
+
+		fileProvider.rollback(user1);
+		String commitMsg = "should be committed after reverting user1";
+		fileProvider.commit(user2, commitMsg);
+		Repository repo = getRepository();
+		Git git = new Git(repo);
+		Iterable<RevCommit> commitLog = git.log().call();
+		List<RevCommit> revCommits = GitVersioningUtils.reverseToList(commitLog);
+		assertEquals("expected commits", 1, revCommits.size());
+		assertEquals(commitMsg, revCommits.get(0).getFullMessage());
+
+		Status status = git.status().call();
+		assertEquals(0, status.getUntracked().size());
+		assertEquals(0, status.getAdded().size());
+		assertEquals(0, status.getModified().size());
+
+		String name4 = "first create";
+		WikiPage page4 = getWikiPage(engine, name4, user1);
+		page4.setAttribute(WikiPage.CHANGENOTE, "created");
+		fileProvider.putPageText(page4, "created");
+		Attachment att4 = new Attachment(engine, name4, "keep.txt");
+		att4.setAuthor(user1);
+		att4.setAttribute(Attachment.CHANGENOTE, "created");
+		attachmentProvider.putAttachmentData(att4, new ByteArrayInputStream("keep".getBytes()));
+		fileProvider.openCommit(user1);
+		Attachment toRevert = new Attachment(engine, name4, "revert.txt");
+		toRevert.setAuthor(user1);
+		attachmentProvider.putAttachmentData(toRevert, new ByteArrayInputStream("revert".getBytes()));
+		attachmentProvider.putAttachmentData(att4, new ByteArrayInputStream("only revert this text".getBytes()));
+		fileProvider.rollback(user1);
+		Collection<Attachment> attachments = attachmentProvider.listAttachments(page4);
+		assertEquals(1, attachments.size());
+		Attachment attachmentInfo = attachmentProvider.getAttachmentInfo(page4, "keep.txt", WikiProvider.LATEST_VERSION);
+		String string = IOUtils.toString(attachmentProvider.getAttachmentData(attachmentInfo), StandardCharsets.UTF_8);
+		assertEquals("keep", string);
+	}
+
+	private WikiPage getWikiPage(WikiEngine engine, String name, String user) {
+		WikiPage page = new WikiPage(engine, name);
+		page.setAuthor(user);
+		return page;
+	}
+
+	@NotNull WikiEngine getWikiEngineMock(String... authors) throws NoSuchPrincipalException {
 		WikiEngine engine = Mockito.mock(WikiEngine.class);
+		when(engine.getWikiProperties()).thenReturn(properties);
 		UserManager uMan = Mockito.mock(UserManager.class);
 		UserDatabase uDB = Mockito.mock(UserDatabase.class);
-		UserProfile uP = Mockito.mock(UserProfile.class);
 		when(engine.getUserManager()).thenReturn(uMan);
 		when(uMan.getUserDatabase()).thenReturn(uDB);
-		when(uDB.findByFullName(author)).thenReturn(uP);
-		when(uP.getFullname()).thenReturn(author);
-		when(uP.getEmail()).thenReturn(author + "@example.com");
+		for (String author : authors) {
+			UserProfile uP = Mockito.mock(UserProfile.class);
+			when(uDB.findByFullName(author)).thenReturn(uP);
+			when(uP.getFullname()).thenReturn(author);
+			when(uP.getEmail()).thenReturn(author + "@example.com");
+		}
 		return engine;
 	}
 

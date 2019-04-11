@@ -1107,4 +1107,39 @@ public class KnowWEUtils {
 		if (localList.isEmpty()) return new Locale[] { Locale.ROOT };
 		return localList.toArray(new Locale[localList.size()]);
 	}
+
+	/**
+	 * Opens a page transaction for a large file based operation
+	 * Also opens a transaction in ArticleManager
+	 * Only works if GitVersioningFileProvider is active
+	 */
+	public static void openPageTransaction(UserContext context) {
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		articleManager.open();
+		Environment.getInstance().getWikiConnector().openPageTransaction(context.getUserName());
+	}
+
+	/**
+	 * Commits an open file transaction
+	 * Also commits an ArticleManager transaction
+	 * Only works if GitVersioningFileProvider is active
+	 */
+	public static void commitPageTransaction(UserContext context, String commitMsg) {
+		Environment.getInstance().getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		articleManager.commit();
+	}
+
+	/**
+	 * Rollbacks an open file transaction
+	 * Also rollbacks an ArticleManager transaction
+	 * Only works if GitVersioningFileProvider is active
+	 */
+	public static void rollbackPageTransaction(UserContext context) {
+		if (Environment.getInstance().getWikiConnector().hasRollbackPageProvider()) {
+			ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+			articleManager.rollback();
+		}
+		Environment.getInstance().getWikiConnector().rollbackPageTransaction(context.getUserName());
+	}
 }

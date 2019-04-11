@@ -66,8 +66,11 @@ import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.providers.CachingAttachmentProvider;
+import org.apache.wiki.providers.CachingProvider;
+import org.apache.wiki.providers.GitVersioningFileProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
+import org.apache.wiki.providers.WikiPageProvider;
 import org.apache.wiki.util.MailUtil;
 import org.apache.wiki.util.TextUtil;
 import org.jetbrains.annotations.NotNull;
@@ -635,6 +638,46 @@ public class JSPWikiConnector implements WikiConnector {
 	@Nullable
 	public String getWikiProperty(String property) {
 		return (String) engine.getWikiProperties().get(property);
+	}
+
+	@Override
+	public void openPageTransaction(String user) {
+		WikiPageProvider realProvider = getRealPageProvider();
+		if (realProvider instanceof GitVersioningFileProvider) {
+			((GitVersioningFileProvider) realProvider).openCommit(user);
+		}
+	}
+
+	@Override
+	public void commitPageTransaction(String user, String commitMsg) {
+		WikiPageProvider realProvider = getRealPageProvider();
+		if (realProvider instanceof GitVersioningFileProvider) {
+			((GitVersioningFileProvider) realProvider).commit(user, commitMsg);
+		}
+	}
+
+	@Override
+	public void rollbackPageTransaction(String user) {
+		WikiPageProvider realProvider = getRealPageProvider();
+		if (realProvider instanceof GitVersioningFileProvider) {
+			((GitVersioningFileProvider) realProvider).rollback(user);
+		}
+	}
+
+	private WikiPageProvider getRealPageProvider() {
+		WikiPageProvider realProvider;
+		if (this.engine.getPageManager().getProvider() instanceof CachingProvider) {
+			realProvider = ((CachingProvider) engine.getPageManager().getProvider()).getRealProvider();
+		}
+		else {
+			realProvider = this.engine.getPageManager().getProvider();
+		}
+		return realProvider;
+	}
+
+	@Override
+	public boolean hasRollbackPageProvider() {
+		return getRealPageProvider() instanceof GitVersioningFileProvider;
 	}
 
 	/**

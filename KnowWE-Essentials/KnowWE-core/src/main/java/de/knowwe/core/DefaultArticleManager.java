@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,9 +25,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -51,6 +51,7 @@ public class DefaultArticleManager implements ArticleManager {
 	 * Stores Articles for article-names
 	 */
 	private final Map<String, Article> articleMap = new ConcurrentHashMap<>();
+	private final Map<String, Article> originalArticleMap = new ConcurrentHashMap<>();
 
 	private final Collection<String> deleteAfterCompile = Collections.synchronizedSet(new HashSet<>());
 
@@ -61,8 +62,8 @@ public class DefaultArticleManager implements ArticleManager {
 	private final AttachmentManager attachmentManager;
 
 	private final ReentrantLock mainLock = new ReentrantLock(true);
-	private final List<Article> added = Collections.synchronizedList(new ArrayList<>());
-	private final List<Article> removed = Collections.synchronizedList(new ArrayList<>());
+	private final Set<Article> added = Collections.synchronizedSet(new HashSet<>());
+	private final Set<Article> removed = Collections.synchronizedSet(new HashSet<>());
 
 	public DefaultArticleManager(String web) {
 		this.web = web;
@@ -136,7 +137,13 @@ public class DefaultArticleManager implements ArticleManager {
 		Article lastVersion = getArticle(title);
 		if (lastVersion != null) removed.add(lastVersion);
 
-		articleMap.put(title.toLowerCase(), article);
+		synchronized (originalArticleMap) {
+			Article originalArticle = articleMap.put(title.toLowerCase(), article);
+			if (!originalArticleMap.containsKey(title.toLowerCase()) && (originalArticle != null)) {
+				originalArticleMap.put(title.toLowerCase(), originalArticle);
+			}
+		}
+
 		// in case an article with the same name gets added in the same compilation window
 		deleteAfterCompile.remove(title.toLowerCase());
 
@@ -220,12 +227,51 @@ public class DefaultArticleManager implements ArticleManager {
 				if (!addedSections.isEmpty() || !removedSections.isEmpty()) {
 					compilerManager.compile(addedSections, removedSections);
 				}
+				originalArticleMap.clear();
 				synchronized (deleteAfterCompile) {
 					for (Iterator<String> iterator = deleteAfterCompile.iterator(); iterator.hasNext(); ) {
 						Article removed = articleMap.remove(iterator.next());
 						removed.destroy(null);
 						iterator.remove();
 					}
+				}
+			}
+		}
+		finally {
+			mainLock.unlock();
+		}
+	}
+
+	/**
+	 * Call this method after opening with {@link ArticleManager#open()} in case an error occurred and the changes on
+	 * file system have been rolled back also. This could be done in conjunction with a rollback abel FileProvider
+	 * (i.e. GitVersioningFileProvider).
+	 */
+	public void rollback() {
+		try {
+			if (mainLock.getHoldCount() == 1) {
+				synchronized (added) {
+					synchronized (originalArticleMap) {
+						if (!originalArticleMap.isEmpty()) {
+							for (Map.Entry<String, Article> entry : originalArticleMap.entrySet()) {
+								articleMap.put(entry.getKey(), entry.getValue());
+							}
+						}
+						for (Article changed : added) {
+							if (!originalArticleMap.containsKey(changed.getTitle().toLowerCase())) {
+								Article removed = articleMap.remove(changed.getTitle().toLowerCase());
+								removed.destroy(null);
+							}
+						}
+						originalArticleMap.clear();
+					}
+					added.clear();
+				}
+				synchronized (removed) {
+					removed.clear();
+				}
+				synchronized (deleteAfterCompile) {
+					deleteAfterCompile.clear();
 				}
 			}
 		}
