@@ -340,7 +340,13 @@ public class DummyConnector implements WikiConnector {
 		return true;
 	}
 
+	@Override
+	public void sendMail(String to, String subject, String content) throws IOException {
+		Log.warning("This WikiConnector does not support sending mails");
+	}
+
 	public void setPageProvider(DummyPageProvider pageProvider) {
 		this.dummyPageProvider = Objects.requireNonNull(pageProvider);
 	}
+
 }

@@ -30,15 +30,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,18 +57,23 @@ import org.apache.wiki.api.exceptions.WikiException;
 import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.auth.AuthorizationManager;
+import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.SessionMonitor;
 import org.apache.wiki.auth.WikiSecurityException;
 import org.apache.wiki.auth.permissions.PagePermission;
 import org.apache.wiki.auth.permissions.PermissionFactory;
+import org.apache.wiki.auth.user.UserDatabase;
+import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
+import org.apache.wiki.util.MailUtil;
 import org.apache.wiki.util.TextUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
@@ -85,27 +93,27 @@ import de.knowwe.core.wikiConnector.WikiPageInfo;
  */
 public class JSPWikiConnector implements WikiConnector {
 
-	private final ServletContext context;
-	private final WikiEngine engine;
-
+	public static final String LINK_PREFIX = "Wiki.jsp?page=";
 	private static final Map<String, List<WikiAttachment>> zipAttachmentCache =
 			Collections.synchronizedMap(new HashMap<>());
-
-	private static int skipCount = 0;
 	private static final int skipAfter = 10;
-
-	public WikiEngine getEngine() {
-		return engine;
-	}
-
-	public static final String LINK_PREFIX = "Wiki.jsp?page=";
-
 	private static final Pattern ZIP_PATTERN = Pattern.compile("^([^/]+/[^/]+\\.zip)/(.+$)");
+	private static int skipCount = 0;
+	private final ServletContext context;
+	private final WikiEngine engine;
 
 	public JSPWikiConnector(WikiEngine eng) {
 		this.context = eng.getServletContext();
 		this.engine = eng;
 		initPageLocking();
+	}
+
+	public static String toPath(String articleTitle, String fileName) {
+		return articleTitle + "/" + fileName;
+	}
+
+	public WikiEngine getEngine() {
+		return engine;
 	}
 
 	/**
@@ -788,10 +796,6 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
-	public static String toPath(String articleTitle, String fileName) {
-		return articleTitle + "/" + fileName;
-	}
-
 	@Override
 	public void unlockArticle(String title, String user) {
 		PageManager mgr = engine.getPageManager();
@@ -891,6 +895,55 @@ public class JSPWikiConnector implements WikiConnector {
 		catch (WikiException e) {
 			Log.severe("Failed to write article changes to wiki persistence", e);
 			return false;
+		}
+	}
+
+	public void sendMail(String to, String subject, String content) throws IOException {
+		// resolve names of users to their mail addresses since any recipient can be given as a regular email address
+		// or by the recipient's full-name, wiki-name or login-name
+		UserDatabase userDatabase = this.engine.getUserManager().getUserDatabase();
+		String[] addrArr = to.split(",");
+		Set<String> resolvedAddrs = new HashSet<>();
+		for (String addr : addrArr) {
+			// trim whitespace
+			addr = Strings.trim(addr);
+			if (addr.length() > 0) {
+				if (addr.contains("@")) {
+					// just an email address (simple or with phrase)
+					resolvedAddrs.add(addr);
+				}
+				else {
+					// .. otherwise we need to perform lookup
+					try {
+						UserProfile userProfile = userDatabase.find(addr);
+						if (Strings.isNotBlank(userProfile.getEmail())) {
+							resolvedAddrs.add(userProfile.getEmail());
+						}
+						else {
+							Log.warning("Ignoring mail recipient since it's user-profile doesn't contain an email address: " + addr);
+						}
+					}
+					catch (NoSuchPrincipalException e) {
+						// we just skip by doing nothing except logging
+						Log.warning("Ignoring mail recipient since it's address is neither a mail-address nor a Wiki user with that login-name, full-name or wiki-name: " + addr);
+					}
+				}
+			}
+		}
+
+		// noop?
+		if (resolvedAddrs.isEmpty()) {
+			Log.info("Aborting to send mail since no recipient was resolved");
+		}
+
+		// perform send
+		String resolvedTo = resolvedAddrs.stream().collect(Collectors.joining(","));
+		try {
+			MailUtil.sendMessage(this.engine.getWikiProperties(), resolvedTo, subject, content);
+		}
+		catch (MessagingException e) {
+			// wrap exception since WikiConnector interface is not aware of JavaMail specific MessagingException
+			throw new IOException("Could not send mail", e);
 		}
 	}
 }

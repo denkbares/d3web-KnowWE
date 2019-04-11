@@ -696,6 +696,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Mail</artifactId>
+				<version>${knowwe.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Keychain</artifactId>
 				<version>${knowwe.version}</version>
 			</dependency>

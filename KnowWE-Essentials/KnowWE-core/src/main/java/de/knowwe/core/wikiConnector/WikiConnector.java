@@ -453,6 +453,18 @@ public interface WikiConnector {
 	boolean writeArticleToWikiPersistence(String title, String content, UserContext context);
 
 	/**
+	 * Send an email to one or more recipients.
+	 *
+	 * @param to One or more comma-separated addresses. Note that an address is either a simple email address
+	 *           or an RFC822 'name & addr-spec' or a user's full-name or a user's login-name or a user's
+	 *           wiki-name
+	 * @throws IOException Thrown if mail transport identifies an error situation during preparing and dispatching
+	 *                     the mail. Note that subsequent errors (such as unknown recipients) are not covered but must
+	 *                     be handled by managing the sender's inbox.
+	 */
+	void sendMail(String to, String subject, String content) throws IOException;
+
+	/**
 	 * Returns the current (rendering) template of the wiki. If the wiki does not support templates, the method will
 	 * return null.
 	 *
