@@ -23,6 +23,7 @@ package de.knowwe.core.wikiConnector;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -463,6 +464,8 @@ public interface WikiConnector {
 	 *                     be handled by managing the sender's inbox.
 	 */
 	void sendMail(String to, String subject, String content) throws IOException;
+
+	void sendMultipartMail(String to, String subject, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException;
 
 	/**
 	 * Returns the current (rendering) template of the wiki. If the wiki does not support templates, the method will

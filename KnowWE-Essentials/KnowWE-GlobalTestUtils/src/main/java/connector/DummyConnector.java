@@ -23,6 +23,7 @@ package connector;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -363,6 +364,11 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public void sendMail(String to, String subject, String content) throws IOException {
 		Log.warning("This WikiConnector does not support sending mails");
+	}
+
+	@Override
+	public void sendMultipartMail(String to, String subject, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException {
+		Log.warning("This WikiConnector does not support sending multipart-mails");
 	}
 
 	public void setPageProvider(DummyPageProvider pageProvider) {

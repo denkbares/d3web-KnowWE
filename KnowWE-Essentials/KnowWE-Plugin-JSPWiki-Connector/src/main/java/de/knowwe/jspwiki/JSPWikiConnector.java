@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -942,6 +943,43 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	public void sendMail(String to, String subject, String content) throws IOException {
+		//
+		Set<String> resolvedAddrs = resolveRecipients(to);
+		if (resolvedAddrs.isEmpty()) {
+			Log.info("Aborting to send mail since no recipient was resolved");
+		}
+
+		// perform send
+		String resolvedTo = resolvedAddrs.stream().collect(Collectors.joining(","));
+		try {
+			MailUtil.sendMessage(this.engine.getWikiProperties(), resolvedTo, subject, content);
+		}
+		catch (MessagingException e) {
+			// wrap exception since WikiConnector interface is not aware of JavaMail specific MessagingException
+			throw new IOException("Could not send mail", e);
+		}
+	}
+
+	public void sendMultipartMail(String to, String subject, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException {
+		//
+		Set<String> resolvedAddrs = resolveRecipients(to);
+		if (resolvedAddrs.isEmpty()) {
+			Log.info("Aborting to send mail since no recipient was resolved");
+		}
+
+		// perform send
+		String resolvedTo = resolvedAddrs.stream().collect(Collectors.joining(","));
+		try {
+			MailUtil.sendMultiPartMessage(this.engine.getWikiProperties(), resolvedTo, subject, htmlContent, imageUrlsByCid);
+		}
+		catch (MessagingException e) {
+			// wrap exception since WikiConnector interface is not aware of JavaMail specific MessagingException
+			throw new IOException("Could not send multipart-mail", e);
+		}
+	}
+
+	@NotNull
+	private Set<String> resolveRecipients(String to) {
 		// resolve names of users to their mail addresses since any recipient can be given as a regular email address
 		// or by the recipient's full-name, wiki-name or login-name
 		UserDatabase userDatabase = this.engine.getUserManager().getUserDatabase();
@@ -973,20 +1011,6 @@ public class JSPWikiConnector implements WikiConnector {
 				}
 			}
 		}
-
-		// noop?
-		if (resolvedAddrs.isEmpty()) {
-			Log.info("Aborting to send mail since no recipient was resolved");
-		}
-
-		// perform send
-		String resolvedTo = resolvedAddrs.stream().collect(Collectors.joining(","));
-		try {
-			MailUtil.sendMessage(this.engine.getWikiProperties(), resolvedTo, subject, content);
-		}
-		catch (MessagingException e) {
-			// wrap exception since WikiConnector interface is not aware of JavaMail specific MessagingException
-			throw new IOException("Could not send mail", e);
-		}
+		return resolvedAddrs;
 	}
 }
