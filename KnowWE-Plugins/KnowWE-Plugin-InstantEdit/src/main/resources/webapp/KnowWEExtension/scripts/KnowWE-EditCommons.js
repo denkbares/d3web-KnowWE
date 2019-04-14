@@ -280,6 +280,9 @@ KNOWWE.editCommons = function () {
 
 
 KNOWWE.editCommons.elements = function () {
+	function newSection(n) {
+		return "<div class='new-section' id='new-section-"+n+"' sectionid='new-section-"+n+"' data-new-section-number='"+n+"'>New Section</div>";
+	}
 
 	return {
 
@@ -298,8 +301,13 @@ KNOWWE.editCommons.elements = function () {
 		getSaveCancelDeleteButtons: function (id, additionalButtonArray) {
 			const buttons = _EC.mode.getSaveCancelDeleteButtons(id, additionalButtonArray);
 			return _EC.mode.getButtonsTable(buttons);
-		}
+		},
 
+		newSectionDragger: function (n) {
+			return "<div class=\"new-element-drag-drop\">" + newSection(n) + "</div>";
+		},
+
+		newSection: newSection
 	}
 
 }();
