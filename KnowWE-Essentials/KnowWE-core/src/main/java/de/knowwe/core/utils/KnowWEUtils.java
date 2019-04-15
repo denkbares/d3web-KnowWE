@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -580,6 +582,20 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Will convert the given link to an absolute URL by pre-fixing the base-url configured in the wiki-properties under
+	 * 'jspwiki.baseURL'.
+	 *
+	 * @param relativeLink The relative link to convert to an absolute link such as "Wiki.jsp?page=ABC", is allowed to
+	 *                     either start with or without a leading slash
+	 * @return an absolute URL such as "http://localhost:8080/KnowWE/Wiki.jsp?page=ABC"
+	 */
+	public static String getAsAbsoluteLink(String relativeLink) {
+		String baseUrl = StringUtils.stripEnd(Environment.getInstance().getWikiConnector().getBaseUrl(), "/");
+		relativeLink = StringUtils.stripStart(relativeLink, "/");
+		return baseUrl + "/" + relativeLink;
+	}
+
+	/**
 	 * Creates a &lt;a href="..."&gt; styled link to the specified article.
 	 *
 	 * @param article the article title to create the link for
@@ -1046,6 +1062,26 @@ public class KnowWEUtils {
 		String title = article.getTitle();
 		int version = connector.getVersion(title);
 		return connector.getLastModifiedDate(title, version);
+	}
+
+	/**
+	 * Returns the latest @{@link WikiPageInfo instance from the given article's history.
+	 *
+	 * @param article Required
+	 * @return null if no history exists
+	 */
+	public static WikiPageInfo getLatestArticleHistory(Article article) {
+		WikiConnector connector = Environment.getInstance().getWikiConnector();
+		String title = article.getTitle();
+
+		try {
+			List<WikiPageInfo> articleHistory = connector.getArticleHistory(title);
+			return (articleHistory != null && articleHistory.size() > 0) ? articleHistory.get(0) : null;
+		}
+		catch (IOException e) {
+			Log.warning("Error fetching article history for " + article, e);
+			return null;
+		}
 	}
 
 	/**
