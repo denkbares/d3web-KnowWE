@@ -947,11 +947,13 @@ public class JSPWikiConnector implements WikiConnector {
 		Set<String> resolvedAddrs = resolveRecipients(to);
 		if (resolvedAddrs.isEmpty()) {
 			Log.info("Aborting to send mail since no recipient was resolved");
+			return;
 		}
 
 		// perform send
-		String resolvedTo = resolvedAddrs.stream().collect(Collectors.joining(","));
+		String resolvedTo = String.join(",", resolvedAddrs);
 		try {
+			Log.info("Sending mail to '" + resolvedTo + "' with subject '" + subject + "'");
 			MailUtil.sendMessage(this.engine.getWikiProperties(), resolvedTo, subject, content);
 		}
 		catch (MessagingException e) {
@@ -965,11 +967,13 @@ public class JSPWikiConnector implements WikiConnector {
 		Set<String> resolvedAddrs = resolveRecipients(to);
 		if (resolvedAddrs.isEmpty()) {
 			Log.info("Aborting to send mail since no recipient was resolved");
+			return;
 		}
 
 		// perform send
-		String resolvedTo = resolvedAddrs.stream().collect(Collectors.joining(","));
+		String resolvedTo = String.join(",", resolvedAddrs);
 		try {
+			Log.info("Sending multipart-mail to '" + resolvedTo + "' with subject '" + subject + "'");
 			MailUtil.sendMultiPartMessage(this.engine.getWikiProperties(), resolvedTo, subject, htmlContent, imageUrlsByCid);
 		}
 		catch (MessagingException e) {
