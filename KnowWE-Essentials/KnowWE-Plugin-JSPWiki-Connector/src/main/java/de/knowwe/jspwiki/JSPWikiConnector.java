@@ -962,7 +962,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
-	public void sendMultipartMail(String to, String subject, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException {
+	public void sendMultipartMail(String to, String subject, String plainContent, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException {
 		//
 		Set<String> resolvedAddrs = resolveRecipients(to);
 		if (resolvedAddrs.isEmpty()) {
@@ -974,7 +974,7 @@ public class JSPWikiConnector implements WikiConnector {
 		String resolvedTo = String.join(",", resolvedAddrs);
 		try {
 			Log.info("Sending multipart-mail to '" + resolvedTo + "' with subject '" + subject + "'");
-			MailUtil.sendMultiPartMessage(this.engine.getWikiProperties(), resolvedTo, subject, htmlContent, imageUrlsByCid);
+			MailUtil.sendMultiPartMessage(this.engine.getWikiProperties(), resolvedTo, subject, plainContent, htmlContent, imageUrlsByCid);
 		}
 		catch (MessagingException e) {
 			// wrap exception since WikiConnector interface is not aware of JavaMail specific MessagingException

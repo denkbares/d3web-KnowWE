@@ -465,7 +465,7 @@ public interface WikiConnector {
 	 */
 	void sendMail(String to, String subject, String content) throws IOException;
 
-	void sendMultipartMail(String to, String subject, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException;
+	void sendMultipartMail(String toAddresses, String subject, String plainTextContent, String htmlContent, Map<String, URL> imageMapping) throws IOException;
 
 	/**
 	 * Returns the current (rendering) template of the wiki. If the wiki does not support templates, the method will

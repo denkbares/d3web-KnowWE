@@ -367,7 +367,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public void sendMultipartMail(String to, String subject, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException {
+	public void sendMultipartMail(String toAddresses, String subject, String plainTextContent, String htmlContent, Map<String, URL> imageMapping) throws IOException {
 		Log.warning("This WikiConnector does not support sending multipart-mails");
 	}
 
