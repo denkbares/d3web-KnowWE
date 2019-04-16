@@ -942,6 +942,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
+	@Override
 	public void sendMail(String to, String subject, String content) throws IOException {
 		//
 		Set<String> resolvedAddrs = resolveRecipients(to);
@@ -962,6 +963,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
+	@Override
 	public void sendMultipartMail(String to, String subject, String plainContent, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException {
 		//
 		Set<String> resolvedAddrs = resolveRecipients(to);
@@ -992,26 +994,25 @@ public class JSPWikiConnector implements WikiConnector {
 		for (String addr : addrArr) {
 			// trim whitespace
 			addr = Strings.trim(addr);
-			if (addr.length() > 0) {
-				if (addr.contains("@")) {
-					// just an email address (simple or with phrase)
-					resolvedAddrs.add(addr);
+			if (addr.isEmpty()) continue;
+			if (addr.contains("@")) {
+				// just an email address (simple or with phrase)
+				resolvedAddrs.add(addr);
+			}
+			else {
+				// .. otherwise we need to perform lookup
+				try {
+					UserProfile userProfile = userDatabase.find(addr);
+					if (Strings.isNotBlank(userProfile.getEmail())) {
+						resolvedAddrs.add(userProfile.getEmail());
+					}
+					else {
+						Log.warning("Ignoring mail recipient since it's user-profile doesn't contain an email address: " + addr);
+					}
 				}
-				else {
-					// .. otherwise we need to perform lookup
-					try {
-						UserProfile userProfile = userDatabase.find(addr);
-						if (Strings.isNotBlank(userProfile.getEmail())) {
-							resolvedAddrs.add(userProfile.getEmail());
-						}
-						else {
-							Log.warning("Ignoring mail recipient since it's user-profile doesn't contain an email address: " + addr);
-						}
-					}
-					catch (NoSuchPrincipalException e) {
-						// we just skip by doing nothing except logging
-						Log.warning("Ignoring mail recipient since it's address is neither a mail-address nor a Wiki user with that login-name, full-name or wiki-name: " + addr);
-					}
+				catch (NoSuchPrincipalException e) {
+					// we just skip by doing nothing except logging
+					Log.warning("Ignoring mail recipient since it's address is neither a mail-address nor a Wiki user with that login-name, full-name or wiki-name: " + addr);
 				}
 			}
 		}
