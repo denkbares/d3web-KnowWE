@@ -23,7 +23,6 @@ package de.knowwe.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -53,7 +52,7 @@ public class DefaultArticleManager implements ArticleManager {
 	private final Map<String, Article> articleMap = new ConcurrentHashMap<>();
 	private final Map<String, Article> originalArticleMap = new ConcurrentHashMap<>();
 
-	private final Collection<String> deleteAfterCompile = Collections.synchronizedSet(new HashSet<>());
+	private final Collection<String> deleteAfterCompile = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	private final String web;
 
@@ -62,8 +61,8 @@ public class DefaultArticleManager implements ArticleManager {
 	private final AttachmentManager attachmentManager;
 
 	private final ReentrantLock mainLock = new ReentrantLock(true);
-	private final Set<Article> added = Collections.synchronizedSet(new HashSet<>());
-	private final Set<Article> removed = Collections.synchronizedSet(new HashSet<>());
+	private final Set<Article> added = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private final Set<Article> removed = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	public DefaultArticleManager(String web) {
 		this.web = web;
@@ -242,11 +241,20 @@ public class DefaultArticleManager implements ArticleManager {
 		}
 	}
 
+	@Override
+	public boolean isLive(Section<?> section) {
+		//noinspection SimplifiableIfStatement
+		if (section == null || section.getTitle() == null) return false;
+		return getArticle(section.getTitle()) == section.getArticle()
+				&& !deleteAfterCompile.contains(section.getTitle().toLowerCase());
+	}
+
 	/**
 	 * Call this method after opening with {@link ArticleManager#open()} in case an error occurred and the changes on
 	 * file system have been rolled back also. This could be done in conjunction with a rollback abel FileProvider
 	 * (i.e. GitVersioningFileProvider).
 	 */
+	@Override
 	public void rollback() {
 		try {
 			if (mainLock.getHoldCount() == 1) {

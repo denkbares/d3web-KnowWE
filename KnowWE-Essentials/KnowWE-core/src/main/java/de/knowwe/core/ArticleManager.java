@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -60,7 +61,8 @@ public interface ArticleManager {
 	void deleteArticle(Article article);
 
 	/**
-	 * Provides an immutable snapshot of the internal queue of registered/queued, but not yet compiled articles. If there
+	 * Provides an immutable snapshot of the internal queue of registered/queued, but not yet compiled articles. If
+	 * there
 	 * currently is no open registration frame, the list will always be empty.
 	 *
 	 * @return the queued articles of the current compilation frame
@@ -96,4 +98,12 @@ public interface ArticleManager {
 	 */
 	void rollback();
 
+	/**
+	 * Checks whether this section belongs to an article that is currently live/used in the article manager. This method
+	 * will also work during compilation.
+	 *
+	 * @param section the section to check the status for
+	 * @return whether the section is live/currently in use
+	 */
+	boolean isLive(Section<?> section);
 }
