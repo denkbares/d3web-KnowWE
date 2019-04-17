@@ -319,7 +319,14 @@ KNOWWE.plugin.compositeEditTool = function() {
 					// show toolmenu
 					appendDefaultMarkupFrameToolMenu(sectionId);
 
-					postProcessHTML(sectionId);
+					toolNameSpace.postProcessHTML(sectionId);
+					try {
+						// this is a workaround to make auto completion work for default edit tool
+						// we should handle auto completion and composite edit in general in the tool namespaces
+						postProcessHTML(id);
+					} catch (e) {
+						console.log(e);
+					}
 
 					jq$('#compositeEdit div.defaultMarkupFrame[compositeedit=' + sectionId + ']').each(function(index, frame) {
 						_TM.animateDefaultMarkupMenu(jq$(frame));
