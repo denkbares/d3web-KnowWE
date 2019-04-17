@@ -1,6 +1,5 @@
 package de.knowwe.kdom.renderer;
 
-import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -23,8 +22,8 @@ import de.knowwe.util.Icon;
  */
 public class AsynchronousRenderer implements Renderer {
 
-	private final Renderer decoratedRenderer;
-	private final boolean inline;
+	protected final Renderer decoratedRenderer;
+	protected final boolean inline;
 
 	public static final String ASYNCHRONOUS = "asynchronous";
 
@@ -37,27 +36,36 @@ public class AsynchronousRenderer implements Renderer {
 		this.inline = inline;
 	}
 
+	protected AsynchronousRenderer() {
+		decoratedRenderer = this;
+		inline = false;
+	}
+
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		if (!isAsynchronous(section, user)) {
+		if (!isAjaxRequested(section, user)) {
 			decoratedRenderer.render(section, user, result);
 		}
 		else {
-			String id = section.getID();
-			String size = inline ? "asynchronSmall" : "asynchronNormal";
-			result.appendHtml("<span class='asynchronRenderer " + size + "'")
-					.appendHtml(" id='")
-					.append(id)
-					.appendHtml("'")
-					.appendHtml(" rel=\"{id:'")
-					.append(id)
-					.appendHtml("'}\">")
-					.appendHtml(inline ? Icon.LOADING.toHtml() : "")
-					.appendHtml("</span>");
+			appendAjaxLoadingSpinner(section, result);
 		}
 	}
 
-	private boolean isAsynchronous(Section<?> section, UserContext user) {
+	protected void appendAjaxLoadingSpinner(Section<?> section, RenderResult result) {
+		String id = section.getID();
+		String size = inline ? "asynchronSmall" : "asynchronNormal";
+		result.appendHtml("<span class='asynchronRenderer " + size + "'")
+				.appendHtml(" id='")
+				.append(id)
+				.appendHtml("'")
+				.appendHtml(" rel=\"{id:'")
+				.append(id)
+				.appendHtml("'}\">")
+				.appendHtml(inline ? Icon.LOADING.toHtml() : "")
+				.appendHtml("</span>");
+	}
+
+	protected boolean isAjaxRequested(Section<?> section, UserContext user) {
 		if (!user.allowAsynchronousRendering()) return false;
 		Section<DefaultMarkupType> defaultMarkupSection = getDefaultMarkupSection(section);
 		if (defaultMarkupSection == null) return true;
@@ -76,5 +84,4 @@ public class AsynchronousRenderer implements Renderer {
 			return Sections.ancestor(section, DefaultMarkupType.class);
 		}
 	}
-
 }
