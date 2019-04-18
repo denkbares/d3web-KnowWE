@@ -648,7 +648,7 @@
 			<id>konap</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.denkbares</groupId>
+					<groupId>com.denkbares.krone</groupId>
 					<artifactId>KnowWE-Plugin-KONAP</artifactId>
 				</dependency>
 			</dependencies>

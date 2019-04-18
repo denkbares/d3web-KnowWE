@@ -710,7 +710,7 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares</groupId>
+				<groupId>com.denkbares.krone</groupId>
 				<artifactId>KnowWE-Plugin-KONAP</artifactId>
 				<version>${knowwe.version}</version>
 			</dependency>
