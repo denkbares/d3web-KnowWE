@@ -989,6 +989,14 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Returns the {@link ArticleManager} for the default web.
+	 * @created 18.04.2019
+	 */
+	public static ArticleManager getDefaultArticleManager() {
+		return Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+	}
+
+	/**
 	 * Returns the default {@link ArticleManager} of the given web.
 	 *
 	 * @param web the web we want the {@link ArticleManager} from
