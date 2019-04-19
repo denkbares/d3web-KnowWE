@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1505,7 +1506,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 *                            specified class.
 	 * @created 28.02.2012
 	 */
-	@SuppressWarnings("unchecked")
+	@Contract("null, _ -> null; !null, _ -> !null")
 	public static <T extends Type> Section<T> cast(Section<?> section, Class<T> typeClass) throws ClassCastException {
 		// first check null, because Class.isInstance differs from
 		// "instanceof"-operator for null objects
@@ -1516,6 +1517,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			throw new ClassCastException();
 		}
 		// and securely cast
+		//noinspection unchecked
 		return (Section<T>) section;
 	}
 
