@@ -219,9 +219,10 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-state:before {
-	font-family: "Font Awesome 5 Free";
+	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
 	content: "\f04d";
 	color: #CC3333;
+	font-weight: 900;
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-error .progress-state {
@@ -229,10 +230,11 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-error .progress-state:before {
-	font-family: "Font Awesome 5 Free";
+	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
 	content: "\f111";
 	color: #CC3333;
 	background-image: none;
+	font-weight: 900;
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-success .progress-state {
@@ -240,9 +242,10 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-success .progress-state:before {
-	font-family: "Font Awesome 5 Free";
+	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
 	content: "\f111";
 	color: #6A9514;
+	font-weight: 900;
 }
 
 .defaultMarkupFrame .long-op-progress-container .progress-message,
