@@ -917,6 +917,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the first successor sections of the specified class
 	 * @created 09.12.2013
 	 */
+	@Nullable
 	public static <T extends Type> Section<T> successor(Section<?> section, Class<T> clazz) {
 		if (section == null) return null;
 		if (clazz.isInstance(section.get())) {
