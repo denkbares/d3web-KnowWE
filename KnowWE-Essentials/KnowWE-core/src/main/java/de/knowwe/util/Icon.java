@@ -49,8 +49,8 @@ public class Icon {
 	public static final Icon EDIT = new Icon("fa-type fa-pencil-alt");
 	public static final Icon HELP = new Icon("fa-type fa-question-circle");
 	public static final Icon INFO = new Icon("fa-type fa-info-circle");
-	public static final Icon ERROR = new Icon("fas fa-exclamation-triangle knowwe-error");
-	public static final Icon WARNING = new Icon("fas fa-exclamation-triangle knowwe-warning");
+	public static final Icon ERROR = new Icon("fa-type fa-exclamation-triangle knowwe-error");
+	public static final Icon WARNING = new Icon("fa-type fa-exclamation-triangle knowwe-warning");
 	public static final Icon SEARCH = new Icon("fa-type fa-search");
 	public static final Icon DELETE = new Icon("fa-type fa-times-circle");
 	public static final Icon DOWNLOAD = new Icon("fa-type fa-download");
