@@ -3,6 +3,7 @@ package de.knowwe.core.utils.progress;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,15 +15,13 @@ import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
 /**
- * Class that allows to download files created on the server. This class shall
- * be utilized to download e.g. newly created temp files. For security reasons
- * only file can be downloaded if their direct parent folders has previously
+ * Class that allows to download files created on the server. This class shall be utilized to download e.g. newly
+ * created temp files. For security reasons only file can be downloaded if their direct parent folders has previously
  * added to the set of allowed directories.
- * 
- * @see #allowDirectory(File)
- * 
+ *
  * @author Albrecht Striffler, Volker Belli (denkbares GmbH)
  * @created 08.02.2014
+ * @see #allowDirectory(File)
  */
 public class DownloadFileAction extends AbstractAction {
 
@@ -30,13 +29,12 @@ public class DownloadFileAction extends AbstractAction {
 	private static File defaultTempDirectory = null;
 
 	/**
-	 * Enables read access for the specified directory. After that call
-	 * potentially all files that are directly located in that folder can be
-	 * accessed by this action. It does not (!) automatically grant read access
-	 * to the sub-folders of the specified folder.
-	 * 
-	 * @created 08.02.2014
+	 * Enables read access for the specified directory. After that call potentially all files that are directly located
+	 * in that folder can be accessed by this action. It does not (!) automatically grant read access to the sub-folders
+	 * of the specified folder.
+	 *
 	 * @param directory the directory to grant read access for
+	 * @created 08.02.2014
 	 */
 	public static void allowDirectory(File directory) {
 		allowedDirectories.add(directory);
@@ -59,13 +57,11 @@ public class DownloadFileAction extends AbstractAction {
 
 		File file = new File(filePath);
 		checkAllowed(file);
-		try {
+
+		try (InputStream in = new FileInputStream(file); OutputStream out = context.getOutputStream()) {
 			context.setContentType(BINARY);
 			context.setHeader("Content-Disposition", "attachment;filename=\"" + name + "\"");
-
-			FileInputStream in = new FileInputStream(file);
-			OutputStream out = context.getOutputStream();
-			Streams.streamAndClose(in, out);
+			Streams.stream(in, out);
 		}
 		finally {
 			file.delete();
@@ -74,12 +70,11 @@ public class DownloadFileAction extends AbstractAction {
 	}
 
 	/**
-	 * Returns a temp directory that has automatically read access granted for
-	 * this action. Therefore a call to {@link #allowDirectory(File)} is not
-	 * required using this method.
-	 * 
-	 * @created 08.02.2014
+	 * Returns a temp directory that has automatically read access granted for this action. Therefore a call to {@link
+	 * #allowDirectory(File)} is not required using this method.
+	 *
 	 * @return a temp directory with granted access rights
+	 * @created 08.02.2014
 	 */
 	public static File getTempDirectory() throws IOException {
 		if (defaultTempDirectory == null) {
@@ -88,5 +83,4 @@ public class DownloadFileAction extends AbstractAction {
 		}
 		return defaultTempDirectory;
 	}
-
 }
