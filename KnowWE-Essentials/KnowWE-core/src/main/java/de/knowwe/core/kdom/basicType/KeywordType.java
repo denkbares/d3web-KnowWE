@@ -19,7 +19,9 @@
 package de.knowwe.core.kdom.basicType;
 
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.rendering.DefaultTextRenderer;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -111,6 +113,34 @@ public class KeywordType extends AbstractType {
 		super(sectionFinder);
 		this.keyWord = keyWord;
 		setRenderer(renderer);
+	}
+
+	/**
+	 * Constrains the section finder of this keyword so that only unquoted keywords are accepted. It modifies this
+	 * instance, and returns this instance to enable chained method calls.
+	 *
+	 * @return this (modified) instance
+	 */
+	public KeywordType unquoted() {
+		final SectionFinder delegate = getSectionFinder();
+		setSectionFinder((text, father, type) ->
+				delegate.lookForSections(text, father, type).stream()
+						.filter(item -> !Strings.isQuoted(text, item.getStart()))
+						.collect(Collectors.toList()));
+		return this;
+	}
+
+	/**
+	 * Constrains the section finder of this keyword so that only the first occurence of the keyword is accepted. It
+	 * modifies this instance, and returns this instance to enable chained method calls.
+	 *
+	 * @return this (modified) instance
+	 */
+	public KeywordType single() {
+		final SectionFinder delegate = getSectionFinder();
+		setSectionFinder((text, father, type) ->
+				delegate.lookForSections(text, father, type).stream().limit(1).collect(Collectors.toList()));
+		return this;
 	}
 
 	@Override

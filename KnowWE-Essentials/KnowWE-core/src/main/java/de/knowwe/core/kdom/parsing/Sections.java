@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -151,7 +152,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	@Nullable
 	public <R> R mapFirst(BiFunction<T, Section<T>, R> mapper) {
 		// filter null after applying, as the findFirst creates a NullPointerException otherwise
-		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
+		return mapOptional(mapper).orElse(null);
 	}
 
 	/**
@@ -165,7 +166,35 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	@Nullable
 	public <R> R mapFirst(Function<Section<T>, ? extends R> mapper) {
 		// filter null after applying, as the findFirst creates a NullPointerException otherwise
-		return map(mapper).filter(Objects::nonNull).findFirst().orElse(null);
+		return mapOptional(mapper).orElse(null);
+	}
+
+	/**
+	 * Maps the available sections to the result of the mapper function, returning the first non-null value. If there is
+	 * no section, or all sections are mapped to <tt>null</tt>, an empty {@link Optional} is returned.
+	 *
+	 * @param mapper the function to map/convert the section to the result
+	 * @param <R>    the result type
+	 * @return the result returned by the mapper function for the first section
+	 */
+	@NotNull
+	public <R> Optional<R> mapOptional(BiFunction<T, Section<T>, R> mapper) {
+		// filter null after applying, as the findFirst creates a NullPointerException otherwise
+		return map(mapper).filter(Objects::nonNull).findFirst();
+	}
+
+	/**
+	 * Maps the available sections to the result of the mapper function, returning the first non-null value. If there is
+	 * no section, or all sections are mapped to <tt>null</tt>, an empty {@link Optional} is returned.
+	 *
+	 * @param mapper the function to map/convert the section to the result
+	 * @param <R>    the result type
+	 * @return the result returned by the mapper function for the first section
+	 */
+	@NotNull
+	public <R> Optional<R> mapOptional(Function<Section<T>, R> mapper) {
+		// filter null after applying, as the findFirst creates a NullPointerException otherwise
+		return map(mapper).filter(Objects::nonNull).findFirst();
 	}
 
 	/**
