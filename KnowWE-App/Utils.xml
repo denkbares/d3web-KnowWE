@@ -67,4 +67,16 @@
 			<cutdirsmapper dirs="5" />
 		</copy>
 	</target>
+	<target name="update_resources konap" depends="update_resources core-plugins">
+		<copy todir="${basedir}/target/KnowWE-App-12.1-SNAPSHOT">
+			<fileset dir="${basedir}/../../krone/KnowWE-Plugin-KONAP/">
+				<include name="*/src/main/resources/webapp/" />
+
+				<exclude name="**/*.ts" />
+				<exclude name="**/*.tsx" />
+
+			</fileset>
+			<cutdirsmapper dirs="5" />
+		</copy>
+	</target>
 </project>
