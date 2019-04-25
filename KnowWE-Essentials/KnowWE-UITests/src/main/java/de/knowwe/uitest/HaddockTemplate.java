@@ -124,12 +124,12 @@ public class HaddockTemplate implements WikiTemplate {
 		}
 
 		elements.get(0).click();
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("j_username")))
+		new WebDriverWait(driver, 20).until(ExpectedConditions.presenceOfElementLocated(By.id("j_username")))
 				.sendKeys(username);
 		driver.findElement(By.id("j_password")).sendKeys(password);
 		driver.findElement(By.name("submitlogin")).click();
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.btn.btn-default.btn-block.logout")));
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+		new WebDriverWait(driver, 20).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.btn.btn-default.btn-block.logout")));
+		new WebDriverWait(driver, 20).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 	}
 
 	@Override
