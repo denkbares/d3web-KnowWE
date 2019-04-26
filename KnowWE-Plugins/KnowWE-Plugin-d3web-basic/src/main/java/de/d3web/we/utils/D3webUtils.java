@@ -116,6 +116,7 @@ public class D3webUtils {
 	 * @param context  the user context for which we want the session
 	 * @return an existing session for the given context and compiler or null, if there is non
 	 */
+	@Nullable
 	public static Session getExistingSession(@Nullable D3webCompiler compiler, UserContext context) {
 		if (compiler != null) {
 			return SessionProvider.getExistingSession(context, D3webUtils.getKnowledgeBase(compiler));
@@ -123,6 +124,7 @@ public class D3webUtils {
 		return null;
 	}
 
+	@Nullable
 	public static NamedObject getTermObject(D3webCompiler compiler, Identifier identifier) {
 		Collection<Section<?>> definingSections = compiler.getTerminologyManager().getTermDefiningSections(identifier);
 		for (Section<?> definingSection : definingSections) {
@@ -136,6 +138,7 @@ public class D3webUtils {
 		return null;
 	}
 
+	@Nullable
 	public static D3webCompiler getCompiler(Section<?> section) {
 		if (section.get() instanceof KnowledgeBaseType) {
 			Section<PackageCompileType> packageCompileTypeSection = Sections.successor(section, PackageCompileType.class);
@@ -157,6 +160,7 @@ public class D3webUtils {
 	}
 
 	@Deprecated
+	@Nullable
 	public static D3webCompiler getCompiler(Article master) {
 		return Compilers.getCompiler(master, D3webCompiler.class);
 	}
@@ -176,6 +180,7 @@ public class D3webUtils {
 				.storeAttachment(attachmentArticle, attachmentName, user, inputStream);
 	}
 
+	@Nullable
 	public static Score getScoreForString(String argument) {
 		for (Score sc : Score.getAllScores()) {
 			if (sc.getSymbol().equals(argument)) {
