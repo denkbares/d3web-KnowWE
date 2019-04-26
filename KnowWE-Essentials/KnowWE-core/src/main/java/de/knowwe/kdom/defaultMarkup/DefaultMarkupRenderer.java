@@ -271,7 +271,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			content.delete(validLength, content.length());
 			content.appendHtmlElement("span", "Error while rendering content, if the problem persists, "
 					+ "please contact your administrator.\n"
-					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error");
+					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error", "style", "white-space: pre");
 			Log.severe("Exception while rendering content of " + section.get().getName(), e);
 		}
 
