@@ -991,6 +991,7 @@ public class KnowWEUtils {
 
 	/**
 	 * Returns the {@link ArticleManager} for the default web.
+	 *
 	 * @created 18.04.2019
 	 */
 	public static ArticleManager getDefaultArticleManager() {
@@ -1156,6 +1157,7 @@ public class KnowWEUtils {
 	@NotNull
 	public static Locale[] getBrowserLocales(HttpServletRequest request) {
 		Enumeration localesEnum = request.getLocales();
+		if (localesEnum == null) return new Locale[] { Locale.ROOT }; // can be null in test environment
 		@SuppressWarnings("unchecked")
 		ArrayList<Locale> localList = Collections.list(localesEnum);
 		if (localList.isEmpty()) return new Locale[] { Locale.ROOT };
