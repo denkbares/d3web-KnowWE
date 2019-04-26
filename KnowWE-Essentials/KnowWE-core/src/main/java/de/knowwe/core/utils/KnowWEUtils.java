@@ -45,6 +45,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -1145,7 +1146,16 @@ public class KnowWEUtils {
 	 * at least one element.
 	 */
 	public static Locale[] getBrowserLocales(UserContext context) {
-		Enumeration localesEnum = context.getRequest().getLocales();
+		return getBrowserLocales(context.getRequest());
+	}
+
+	/**
+	 * Returns and array of locales based on sorted by preferred labels given by the browser. This array always contains
+	 * at least one element.
+	 */
+	@NotNull
+	public static Locale[] getBrowserLocales(HttpServletRequest request) {
+		Enumeration localesEnum = request.getLocales();
 		@SuppressWarnings("unchecked")
 		ArrayList<Locale> localList = Collections.list(localesEnum);
 		if (localList.isEmpty()) return new Locale[] { Locale.ROOT };

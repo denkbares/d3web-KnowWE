@@ -26,8 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * UserContext which represents the users interaction with the server.
@@ -62,7 +62,7 @@ public interface UserContext {
 	 * Returns the preferred locale to render contents for.
 	 */
 	default Locale getLocale() {
-		return Environment.getInstance().getWikiConnector().getLocale(getRequest());
+		return KnowWEUtils.getBrowserLocales(getRequest())[0];
 	}
 
 	/**
