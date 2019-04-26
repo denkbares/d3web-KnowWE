@@ -54,7 +54,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 import java.util.logging.Level;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
@@ -1162,7 +1161,13 @@ public class Rdf2GoCore {
 	 * @return the result of the query
 	 */
 	public TupleQueryResult sparqlSelect(String query, boolean cached, long timeOutMillis) {
-		return (TupleQueryResult) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
+		TupleQueryResult result = (TupleQueryResult) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
+		if (result instanceof CachedTupleQueryResult) {
+			// make the result iterable by different threads multiple times... we have to do this, because the caller
+			// of this methods can not know, that he is getting a cached result that may already be iterated before
+			((CachedTupleQueryResult) result).resetIterator();
+		}
+		return result;
 	}
 
 	/**
@@ -1215,7 +1220,7 @@ public class Rdf2GoCore {
 			}
 		}
 
-		// normal query, e.g.  from a renderer... do all the cache and timeout stuff
+		// normal query, e.g. from a renderer... do all the cache and timeout stuff
 		SparqlTask sparqlTask;
 		if (cached) {
 			synchronized (resultCache) {
