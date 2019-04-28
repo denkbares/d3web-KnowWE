@@ -920,14 +920,12 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		Object type = section.get();
 		if (type instanceof AbstractType) {
 			AbstractType aType = (AbstractType) type;
-			boolean can = false;
 			for (Class<?> clazz : classes) {
 				if (Types.canHaveSuccessorOfType(aType, clazz)) {
-					can = true;
-					break;
+					return true;
 				}
 			}
-			return can;
+			return false;
 		}
 		// should not happen, but just in case: we don't
 		// know and say yes to be safe
