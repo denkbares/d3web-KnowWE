@@ -511,11 +511,15 @@ KNOWWE.core.util = function () {
 			let pageActions;
 			let editAction;
 			if (KNOWWE.core.util.getTemplate() === 'KnowWE') {
-				pageActions = jq$('#actionsTop')[0].getElementsByTagName('ul')[0];
+				let actions = jq$('#actionsTop');
+				if (!actions.exists()) return;
+				pageActions = actions[0].getElementsByTagName('ul')[0];
 				editAction = pageActions.getElementsByTagName('li')[0];
 
 			} else {
-				pageActions = jq$('.nav-pills:nth-child(2)')[0];
+				let actions = jq$('.nav-pills:nth-child(2)');
+				if (!actions.exists()) return;
+				pageActions = actions[0];
 				editAction = pageActions.children[2];
 			}
 			return editAction;
