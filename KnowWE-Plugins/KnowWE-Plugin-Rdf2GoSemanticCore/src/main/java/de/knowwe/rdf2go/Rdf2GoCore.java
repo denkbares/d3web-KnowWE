@@ -1345,7 +1345,8 @@ public class Rdf2GoCore {
 				startTime = System.currentTimeMillis();
 			}
 			try {
-				sparqlReaperPool.execute(new SparqlTaskReaper(this));
+				// deactivated, since it causes severe issues with GraphDB right now
+//				sparqlReaperPool.execute(new SparqlTaskReaper(this));
 				super.run();
 			}
 			finally {
