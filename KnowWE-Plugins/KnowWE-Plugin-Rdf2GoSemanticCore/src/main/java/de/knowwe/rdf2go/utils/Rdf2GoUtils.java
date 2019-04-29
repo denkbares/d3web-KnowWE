@@ -176,6 +176,7 @@ public class Rdf2GoUtils {
 		Map<Locale, String> labels = new HashMap<>();
 		for (BindingSet bindingSet : bindingSets) {
 			Text label = Sparqls.asText(bindingSet.getBinding("label"));
+			if (label == null) continue;
 			if (locales.length == 0 && label.getLanguage() == Locale.ROOT) {
 				return label.getString();
 			}
@@ -184,11 +185,6 @@ public class Rdf2GoUtils {
 		Locale bestLocale = Locales.findBestLocale(Arrays.asList(locales), labels.keySet());
 		return labels.get(bestLocale);
 	}
-
-	private static final String SPARQL_LABEL_LANGUAGE_CONSTRAINTS = "" +
-			"FILTER(LANGMATCHES(LANG(?rdfsLabel), '%1$s')) . " +
-			"FILTER(LANGMATCHES(LANG(?prefLabel), '%1$s')) ." +
-			"FILTER(LANGMATCHES(LANG(?altLabel), '%1$s')) .";
 
 	public static Rdf2GoCore getRdf2GoCore(Section<?> section) {
 		if (section.get() instanceof DefaultMarkupType) {
@@ -207,10 +203,6 @@ public class Rdf2GoUtils {
 
 	public static Statement[] toArray(Collection<Statement> statements) {
 		return statements.toArray(new Statement[0]);
-	}
-
-	public static String getLocalName(Value o) {
-		return o.stringValue();
 	}
 
 	/**
@@ -564,23 +556,18 @@ public class Rdf2GoUtils {
 			builder.append("    FILTER langMatches(lang(" + object + localeAbbreviation + "), \"" + localeAbbreviation + "\") .\n");
 			builder.append("  }\n\n");
 		}
-		builder.append("  BIND (");
-		insertLocaleConditional(new LinkedList<>(Arrays.asList(locales)), object, builder);
-		builder.append(" AS " + object + ") .\n\n");
+		builder.append("  BIND ( COALESCE (");
+		insertLocaleLabels(new LinkedList<>(Arrays.asList(locales)), object, builder);
+		builder.append(") AS " + object + ") .\n\n");
 		return builder.toString();
 	}
 
 	@SuppressWarnings("StringConcatenationInsideStringBufferAppend")
-	private static void insertLocaleConditional(LinkedList<Locale> locales, String labelVar, StringBuilder builder) {
-		if (locales.isEmpty()) {
-			builder.append("\"\"");
+	private static void insertLocaleLabels(LinkedList<Locale> locales, String labelVar, StringBuilder builder) {
+		for (Locale locale : locales) {
+			builder.append(labelVar + locale.toString().toUpperCase()).append(", ");
 		}
-		else {
-			String localeLableVar = labelVar + locales.removeFirst().toString().toUpperCase();
-			builder.append("IF (BOUND(" + localeLableVar + "), " + localeLableVar + ", ");
-			insertLocaleConditional(locales, labelVar, builder);
-			builder.append(")");
-		}
+		builder.append("\"\"");
 	}
 
 	private static String getDoubleAsString(Double doubleValue) {
