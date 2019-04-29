@@ -192,8 +192,8 @@ public class Rdf2GoCore {
 		}
 		this.lns = lns;
 		try {
-			semanticCore = SemanticCore.getOrCreateInstance(wikiConnector.getApplicationName() + "-" + String.valueOf(coreId
-					.incrementAndGet()), reasoning);
+			semanticCore = SemanticCore.getOrCreateInstance(wikiConnector.getApplicationName() + "-" + coreId
+					.incrementAndGet(), reasoning);
 			semanticCore.allocate(); // make sure the core does not shut down on its own...
 			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
 		}
@@ -838,10 +838,7 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Expands a short IRI (such as "casis:BGZ_1030300") into a regular URI ("http://example.org/casis/#BGZ_1030300").
-	 *
-	 * @param iri
-	 * @return
+	 * Expands a short IRI (such as "example:some_concept") into a regular URI ("http://example.org/#some_concept").
 	 */
 	public java.net.URI expandShortIRI(String iri) {
 		// IRIs created from string in short form are created expanded by createIRI() already
@@ -899,7 +896,6 @@ public class Rdf2GoCore {
 		if (namespacePrefixes == null) {
 			synchronized (nsPrefixMutex) {
 				// inspection is wrong here, could no longer be null due to another thread initializing the prefixes
-				//noinspection ConstantConditions
 				if (this.namespacePrefixes == null) {
 					namespacePrefixes = new HashMap<>();
 					Map<String, String> namespaces = getSemanticCoreNameSpaces();
@@ -1390,7 +1386,6 @@ public class Rdf2GoCore {
 			this.task = task;
 		}
 
-		@SuppressWarnings("ConstantConditions")
 		@Override
 		public void run() {
 			long timeOut = (int) Math.min(task.getTimeOutMillis(), Integer.MAX_VALUE);
