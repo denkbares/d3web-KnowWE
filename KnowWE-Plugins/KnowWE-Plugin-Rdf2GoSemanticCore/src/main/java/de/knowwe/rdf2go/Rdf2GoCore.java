@@ -725,15 +725,15 @@ public class Rdf2GoCore {
 		turtle = turtle.trim();
 		int len = turtle.length();
 		if (turtle.startsWith("'''") && turtle.endsWith("'''") && len >= 6) {
-			return unescapeTurtleEscapeSequences(Strings.unquote(turtle.substring(2, len - 2), '\''));
+			return unescapeTurtleEscapeSequences(turtle.substring(3, len - 3));
 		}
 		if (turtle.startsWith("\"\"\"") && turtle.endsWith("\"\"\"") && len >= 6) {
-			return unescapeTurtleEscapeSequences(Strings.unquote(turtle.substring(2, len - 2), '"'));
+			return unescapeTurtleEscapeSequences(turtle.substring(3, len - 3));
 		}
 		if (turtle.startsWith("'") && turtle.endsWith("'")) {
-			return unescapeTurtleEscapeSequences(Strings.unquote(turtle, '\''));
+			return unescapeTurtleEscapeSequences(turtle.substring(1, len - 1));
 		}
-		return unescapeTurtleEscapeSequences(Strings.unquote(turtle));
+		return unescapeTurtleEscapeSequences(turtle.substring(1, len - 1));
 	}
 
 	private static String unescapeTurtleEscapeSequences(String turtle) {
