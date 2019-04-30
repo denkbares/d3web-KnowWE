@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -83,6 +85,7 @@ public class EnumListType extends AbstractType {
 	 * @param section the section to get the keywords from
 	 * @return the accepted keywords
 	 */
+	@NotNull
 	public List<String> getAcceptedKeywords(Section<? extends EnumListType> section) {
 		return section.getChildren().stream()
 				.filter(s -> s.get() != splitter && s.get() instanceof KeywordType)
