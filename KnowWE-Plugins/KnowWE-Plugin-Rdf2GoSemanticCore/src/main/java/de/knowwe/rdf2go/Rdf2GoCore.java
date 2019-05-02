@@ -838,11 +838,11 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Expands a short IRI (such as "example:some_concept") into a regular URI ("http://example.org/#some_concept").
+	 * Converts/expands a (possibly abbreviated) URI in string form (such as "example:some_concept") to a URI instance ("http://example.org/#some_concept").
 	 */
-	public java.net.URI expandShortIRI(String iri) {
+	public java.net.URI createURI(String uri) {
 		// IRIs created from string in short form are created expanded by createIRI() already
-		IRI iriObject = createIRI(iri);
+		IRI iriObject = createIRI(uri);
 		return java.net.URI.create(iriObject.getNamespace() + iriObject.getLocalName());
 	}
 
