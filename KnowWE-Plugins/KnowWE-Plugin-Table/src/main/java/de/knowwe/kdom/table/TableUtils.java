@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -52,10 +52,10 @@ public class TableUtils {
 	}
 
 	/**
-	 * For the table of the given table section, the first row, aka the header row, is returned.
+	 * Returns the first row of the table, aka the header row.
 	 *
 	 * @param tableSection any section of the table
-	 * @return the header/first row of the table
+	 * @return the header/first line of the table
 	 */
 	@Nullable
 	public static Section<TableLine> getHeaderRow(Section<?> tableSection) {
@@ -72,10 +72,10 @@ public class TableUtils {
 	public static Section<TableCellContent> getCell(Section<?> section, int x, int y) {
 		Section<Table> table = Sections.ancestor(section, Table.class);
 		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
-		if(lines.size() > y) {
+		if (lines.size() > y) {
 			Section<TableLine> lineY = lines.get(y);
 			List<Section<TableCellContent>> cells = Sections.successors(lineY, TableCellContent.class);
-			if(cells.size() > x) {
+			if (cells.size() > x) {
 				return cells.get(x);
 			}
 		}
@@ -106,7 +106,15 @@ public class TableUtils {
 				: Sections.ancestor(columnSection, TableCell.class);
 	}
 
+	/**
+	 * @deprecated use {@link #getNumberOfColumns(Section)} instead
+	 */
+	@Deprecated
 	public static int getColumns(Section<?> tableSection) {
+		return getNumberOfColumns(tableSection);
+	}
+
+	public static int getNumberOfColumns(Section<?> tableSection) {
 		Section<?> tableLine = getTableLine(tableSection);
 		List<Section<TableCell>> tableCells = Sections.successors(tableLine, TableCell.class);
 		return tableCells.size();
@@ -139,7 +147,8 @@ public class TableUtils {
 					rowNumbering.put(line.getID(), i);
 				}
 				table.storeObject(ROW_NUMBERING_KEY, rowNumbering);
-			} else {
+			}
+			else {
 				return lines.indexOf(tableLine);
 			}
 		}

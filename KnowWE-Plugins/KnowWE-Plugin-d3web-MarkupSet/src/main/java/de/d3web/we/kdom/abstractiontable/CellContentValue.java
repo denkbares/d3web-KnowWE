@@ -213,7 +213,7 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 					}
 				}
 				else if (type == CellType.SOLUTION_REFERENCE) {
-					int columns = TableUtils.getColumns(section);
+					int columns = TableUtils.getNumberOfColumns(section);
 					int column = TableUtils.getColumn(section);
 					if (column == columns - 1) {
 						setType(compiler, section, CellType.SOLUTION_SCORE);

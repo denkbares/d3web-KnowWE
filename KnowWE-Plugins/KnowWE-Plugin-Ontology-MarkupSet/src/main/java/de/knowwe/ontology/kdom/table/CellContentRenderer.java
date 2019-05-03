@@ -40,7 +40,7 @@ public class CellContentRenderer extends TableCellContentRenderer {
 
 	@Override
 	public String getStyle(Section<?> tableCell, UserContext user) {
-		int columns = TableUtils.getColumns(tableCell);
+		int columns = TableUtils.getNumberOfColumns(tableCell);
 		int column = TableUtils.getColumn(tableCell);
 
 		boolean headerRow = TableUtils.isHeaderRow(tableCell);
