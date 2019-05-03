@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -45,9 +47,20 @@ public class TableUtils {
 	 */
 	public static boolean isHeaderRow(Section<?> tableSection) {
 		Section<?> tableLine = getTableLine(tableSection);
-		Section<Table> table = Sections.ancestor(tableLine, Table.class);
-		Section<TableLine> headerLine = Sections.successor(table, TableLine.class);
+		Section<TableLine> headerLine = getHeaderRow(tableLine);
 		return headerLine == tableLine;
+	}
+
+	/**
+	 * For the table of the given table section, the first row, aka the header row, is returned.
+	 *
+	 * @param tableSection any section of the table
+	 * @return the header/first row of the table
+	 */
+	@Nullable
+	public static Section<TableLine> getHeaderRow(Section<?> tableSection) {
+		Section<Table> table = Sections.ancestor(tableSection, Table.class);
+		return Sections.successor(table, TableLine.class);
 	}
 
 	public static Section<TableLine> getTableLine(Section<?> tableSection) {
