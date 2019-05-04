@@ -386,6 +386,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	private static void renderPostPageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
+		// in case we are rendering a support article (like LeftMenu or MoreMenu), skip this
+		if (!title.equals(userContext.getTitle())) return;
 		for (PageAppendHandler pageAppendHandler : appendhandlers) {
 			if (!pageAppendHandler.isPre()) {
 				pageAppendHandler.append(
@@ -396,6 +398,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	private static void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
+		// in case we are rendering a support article (like LeftMenu or MoreMenu), skip this
+		if (!title.equals(userContext.getTitle())) return;
 		for (PageAppendHandler pageAppendHandler : appendHandlers) {
 			if (pageAppendHandler.isPre()) {
 				pageAppendHandler.append(

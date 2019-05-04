@@ -44,8 +44,6 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 		WikiConnector connector = Environment.getInstance().getWikiConnector();
 		Article article = KnowWEUtils.getArticle(web, title);
 		if (article == null) return; // Can happen in preview mode
-		if (article.getTitle().equals("LeftMenu")) return;
-		if (article.getTitle().equals("LeftMenuFooter")) return;
 		int version = connector.getVersion(title);
 		long modDate = connector.getLastModifiedDate(title, -1).getTime();
 		String userName = user.getUserName();
