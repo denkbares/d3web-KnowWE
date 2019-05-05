@@ -78,12 +78,13 @@ public class CompositeEditToolProvider implements ToolProvider {
 		return section.get() instanceof Term;
 	}
 
+	@NotNull
 	protected Tool getCompositeEditTool(Identifier identifier) {
 		return getCompositeEditTool(SHOW_INFO, identifier);
 	}
 
 	@NotNull
-	private Tool getCompositeEditTool(String text, Identifier identifier) {
+	protected Tool getCompositeEditTool(String text, Identifier identifier) {
 		return new DefaultTool(
 				Icon.INFO,
 				text,
