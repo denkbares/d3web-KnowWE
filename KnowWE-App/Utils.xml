@@ -38,8 +38,6 @@
 				<exclude name="KnowWE-Plugin-AugmentationEdit/**" />
 				<exclude name="KnowWE-Plugin-DenkbaresTmp/**" />
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
-				<exclude name="KnowWE-Plugin-ExperienceDatabase/src/main/resources/webapp/templates/**" />
-				<exclude name="KnowWE-Plugin-ExperienceDatabase/src/main/resources/webapp/WEB-INF/**" />
 
 				<!-- for performance reasons... -->
 				<exclude name="KnowWE-Plugin-XSL/**" />
@@ -75,6 +73,15 @@
 				<exclude name="**/*.ts" />
 				<exclude name="**/*.tsx" />
 
+			</fileset>
+			<cutdirsmapper dirs="5" />
+		</copy>
+	</target>
+	<target name="update_resources edb" depends="update_resources core-plugins">
+		<copy todir="${basedir}/target/KnowWE-App-12.1-SNAPSHOT">
+			<fileset dir="${basedir}/../../SemanticServicePlatform/">
+				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
+				<include name="KnowWE-Plugin-ExperienceDatabase/src/main/resources/webapp/" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
