@@ -61,7 +61,7 @@ KNOWWE.plugin.ci4ke = function () {
 				KNOWWE.notification.error(null, "Server appears to be offline.", status);
 				break;
 			case 409:
-				KNOWWE.notification.error(null, "There already is a build running for this dashbaord. Please abort the running build before starting a new one.", status);
+				KNOWWE.notification.error(null, "There already is a build running for this dashboard. Please abort the running build before starting a new one.", status);
 				break;
 			case 404:
 				KNOWWE.notification.error(null, "This page no longer exists. Please reload.", status);
