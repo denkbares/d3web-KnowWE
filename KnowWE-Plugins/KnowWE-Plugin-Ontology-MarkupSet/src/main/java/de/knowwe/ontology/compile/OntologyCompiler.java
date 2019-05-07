@@ -118,6 +118,7 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	public void destroy() {
 		EventManager.getInstance().unregister(this);
 		this.rdf2GoCore.destroy();
+		this.rdf2GoCore = null; // make sure the core can be gc-ed, even if there are still references to the compiler
 	}
 
 	@Override

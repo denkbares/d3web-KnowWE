@@ -242,7 +242,6 @@ public class Rdf2GoCore {
 
 	@Deprecated
 	public static Rdf2GoCore getInstance(String web, String master) {
-		//noinspection deprecation
 		return getInstance(KnowWEUtils.getArticleManager(web).getArticle(master));
 	}
 
@@ -264,7 +263,7 @@ public class Rdf2GoCore {
 
 	private RepositoryConfig ruleSet;
 
-	private final MultiMap<StatementSource, Statement> statementCache =
+	private MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<>(
 					MultiMaps.minimizedFactory(),
 					MultiMaps.minimizedFactory());
@@ -1634,11 +1633,13 @@ public class Rdf2GoCore {
 		else {
 			shutDownThreadPool.execute(() -> {
 				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+				this.statementCache.clear(); // free memory even if there are still references
 				this.semanticCore.release();
 				if (this.semanticCore.isAllocated()) {
 					Log.warning("Semantic core " + this.semanticCore.getRepositoryId()
 							+ " is still allocated and cannot be shut down, this may be an memory leak.");
 				}
+				this.semanticCore = null;
 			});
 		}
 	}
