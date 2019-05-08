@@ -1463,7 +1463,7 @@ public class Rdf2GoCore {
 						result = queryResult.cachedAndClosed();
 					}
 					else {
-						result = queryResult;
+						result = queryResult.cachedAndClosed();
 					}
 				}
 //				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
