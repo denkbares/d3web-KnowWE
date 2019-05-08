@@ -79,7 +79,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 
 		RenderResult content = new RenderResult(userContext);
 
-		Identifier termIdentifier = ObjectInfoRenderer.getTermIdentifier(userContext, section);
+		Identifier termIdentifier = ObjectInfoRenderer.getTermIdentifier(userContext);
 		renderContent(termIdentifier, userContext, content);
 
 		Section<TagHandlerTypeContent> tagNameSection = Sections.successor(

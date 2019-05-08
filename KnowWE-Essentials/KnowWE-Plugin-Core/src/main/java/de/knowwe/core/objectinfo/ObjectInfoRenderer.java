@@ -82,7 +82,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 		RenderResult content = new RenderResult(userContext);
 
-		Identifier termIdentifier = getTermIdentifier(userContext, section);
+		Identifier termIdentifier = getTermIdentifier(userContext);
 		renderContent(termIdentifier, userContext, content);
 
 		Section<ObjectInfoType> tagNameSection = Sections.successor(
@@ -154,7 +154,7 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("<div>");
 		result.appendHtml("<div style=\"display:none\" class=\"objectinfo-terms\" name=\"terms\" >");
 		result.appendJSPWikiMarkup(ObjectInfoRenderer.getTerms(user).toString()
-				.replaceAll("([^\\\\]\\\"),\\\"", "$1,\n\""));
+				.replaceAll("([^\\\\]\"),\"", "$1,\n\""));
 		result.appendHtml("</div>");
 		result.appendHtml("<input type=\"text\" placeholder=\"Look up terms\" size=\"20\" name=\"")
 				.append(ObjectInfoRenderer.OBJECT_NAME)
@@ -221,13 +221,15 @@ public class ObjectInfoRenderer implements Renderer {
 		Map<Type, List<Section<?>>> typeGroups = groupByType(references);
 		for (Entry<Type, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
 			List<Section<?>> sectionsOfType = typeEntry.getValue();
+			String name = typeEntry.getKey().getName();
+
 			// if we have to many sections of one type, we additionally group by article
 			if (sectionsOfType.size() > MAX_NUMBER_BY_TYPE) {
 				for (Entry<Article, List<Section<?>>> articleEntry : groupByArticle(sectionsOfType).entrySet()) {
 					RenderResult innerResult = new RenderResult(result);
 					List<Section<?>> sectionOfArticle = articleEntry.getValue();
 					renderTermReferencesPreviewsAsync(sectionOfArticle, user, innerResult);
-					wrapInExtendPanel(typeEntry.getKey().getName() + " in " + articleEntry.getKey().getTitle(),
+					wrapInExtendPanel(name + " in " + articleEntry.getKey().getTitle(),
 							String.valueOf(sectionOfArticle.size()),
 							innerResult, result);
 				}
@@ -237,7 +239,7 @@ public class ObjectInfoRenderer implements Renderer {
 				RenderResult innerResult = new RenderResult(result);
 				renderTermReferencesPreviewsAsync(sectionsOfType, user, innerResult);
 				String info = sectionsOfType.size() > 1 ? String.valueOf(sectionsOfType.size()) : null;
-				wrapInExtendPanel(typeEntry.getKey().getName(), info, innerResult, result);
+				wrapInExtendPanel(name, info, innerResult, result);
 			}
 		}
 	}
@@ -317,10 +319,6 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtmlTag("/span");
 	}
 
-	protected static String getRenamingAction() {
-		return "TermRenamingAction";
-	}
-
 	private static Map<Article, List<Section<?>>> groupByArticle(Collection<Section<?>> references) {
 		Map<Article, List<Section<?>>> result =
 				new TreeMap<>(ArticleComparator.getInstance());
@@ -364,26 +362,6 @@ public class ObjectInfoRenderer implements Renderer {
 		return PreviewManager.getInstance().groupByPreview(items);
 	}
 
-	public static void renderLinkToSection(Section<?> reference, RenderResult result) {
-		if (reference == null) return;
-		// Render link to anchor (=uses div id as anchor))
-		// html.append("<a href=\"Wiki.jsp?page=");
-		// html.append(Strings.encodeURL(reference.getArticle()
-		// .getTitle()));
-		// html.append("#header_");
-		// html.append(reference.getID());
-		// html.append("\" >");
-		result.appendHtml("<a href='");
-		result.append(KnowWEUtils.getURLLink(reference));
-		result.appendHtml("' class='onlyObjectInfoPage'>");
-		// html.append(reference.getTitle());
-		// html.append(" (");
-		// Get a nice name
-		result.append(getSurroundingMarkupName(reference).getName());
-		// html.append(")");
-		result.appendHtml("</a>");
-	}
-
 	private static Type getSurroundingMarkupName(Section<?> section) {
 		if (section.get() instanceof DefaultMarkupType) return section.get();
 		Section<?> root = Sections.ancestor(section, DefaultMarkupType.class);
@@ -399,10 +377,6 @@ public class ObjectInfoRenderer implements Renderer {
 			result.appendHtml(KnowWEUtils.getLinkHTMLToSection(previewSection));
 			return;
 		}
-
-		// if (count > 1) {
-		// result.append(" (").append(count).append(" occurences)");
-		// }
 
 		result.appendHtml("<div class='objectinfo preview defaultMarkupFrame" +
 				" type_").append(previewSection.get().getName())
@@ -478,10 +452,6 @@ public class ObjectInfoRenderer implements Renderer {
 		wrapInExtendPanel(surroundingMarkupType, info.toString(), content, result);
 	}
 
-	private static void wrapInExtendPanel(String surroundingMarkupType, RenderResult content, RenderResult result) {
-		wrapInExtendPanel(surroundingMarkupType, (String) null, content, result);
-	}
-
 	private static void wrapInExtendPanel(String surroundingMarkupType, String info, RenderResult content, RenderResult result) {
 		result.appendHtml("<p class=\"show-extend pointer extend-panel-right\" >");
 		result.appendHtml("<strong>");
@@ -526,7 +496,7 @@ public class ObjectInfoRenderer implements Renderer {
 					appropriateSections = true;
 					innerResult.appendHtml("<li>");
 					innerResult.appendHtml("<pre style=\"margin:1em -1em;\">");
-					String textBefore = r.getAdditionalContext(-35).replaceAll("(\\{|\\})", "");
+					String textBefore = r.getAdditionalContext(-35).replaceAll("([{}])", "");
 					if (!article.getRootSection().getText().startsWith(textBefore)) {
 						innerResult.appendHtml("...");
 					}
@@ -538,7 +508,7 @@ public class ObjectInfoRenderer implements Renderer {
 					innerResult.appendHtml("\" >");
 					innerResult.append(s.getText().substring(r.getStart(), r.getEnd()));
 					innerResult.appendHtml("</a>");
-					String textAfter = r.getAdditionalContext(40).replaceAll("(\\{|\\})", "");
+					String textAfter = r.getAdditionalContext(40).replaceAll("([{}])", "");
 					innerResult.append(textAfter);
 					if (!article.getRootSection().getText().endsWith(textAfter)) {
 						innerResult.appendHtml("...");
@@ -570,9 +540,7 @@ public class ObjectInfoRenderer implements Renderer {
 				String externalForm = definition.toExternalForm()
 						.replaceAll("&", "&amp;")
 						.replaceAll("<", "&lt;");
-				if (!allTerms.contains(externalForm)) {
-					allTerms.add(externalForm);
-				}
+				allTerms.add(externalForm);
 			}
 		}
 		JSONObject response = new JSONObject();
@@ -585,36 +553,16 @@ public class ObjectInfoRenderer implements Renderer {
 		return response;
 	}
 
-	public static Identifier getTermIdentifier(UserContext user, Section<?> section) {
-		Map<String, String> urlParameters = user.getParameters();
-
-		// First try the URL-Parameter, if null try the TagHandler-Parameter.
-		String objectName = null;
-		if (urlParameters.get(OBJECT_NAME) != null) {
-			objectName = Strings.decodeURL(urlParameters.get(OBJECT_NAME));
-		}
-
-		// If name is not defined stop rendering contents
-		// TODO: catch?
-		if (Strings.isBlank(objectName)) return null;
-
-		String externalTermIdentifierForm = null;
-		if (urlParameters.get(TERM_IDENTIFIER) != null) {
-			externalTermIdentifierForm = Strings.decodeURL(urlParameters
-					.get(TERM_IDENTIFIER));
-		}
-
+	public static Identifier getTermIdentifier(UserContext user) {
 		// decode term identifier
+		Map<String, String> urlParameters = user.getParameters();
+		String termIdentifier = Strings.decodeURL(urlParameters.get(TERM_IDENTIFIER));
+
 		// use object name as identifier for compatibility issues
-		Identifier termIdentifier;
-		if (externalTermIdentifierForm == null) {
-			externalTermIdentifierForm = objectName;
-			termIdentifier = Identifier.fromExternalForm(externalTermIdentifierForm);
-			objectName = termIdentifier.getLastPathElement();
+		if (termIdentifier == null) {
+			termIdentifier = Strings.decodeURL(urlParameters.get(OBJECT_NAME));
 		}
-		else {
-			termIdentifier = Identifier.fromExternalForm(externalTermIdentifierForm);
-		}
-		return termIdentifier;
+
+		return Identifier.fromExternalForm(termIdentifier);
 	}
 }
