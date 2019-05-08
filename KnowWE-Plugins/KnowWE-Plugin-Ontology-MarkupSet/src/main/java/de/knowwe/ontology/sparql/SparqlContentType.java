@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,6 +27,7 @@ import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderPlusEmpty;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
@@ -41,15 +42,42 @@ import de.knowwe.util.Color;
 public class SparqlContentType extends AbstractType implements SparqlType {
 
 	public SparqlContentType() {
-		this.setSectionFinder(AllTextFinder.getInstance());
+		this.setSectionFinder(AllTextFinderPlusEmpty.getInstance());
 		this.setRenderer(new AsynchronousRenderer(new ReRenderSectionMarkerRenderer(new SparqlContentDecoratingRenderer())));
 
 		// add type (with very low priority) consuming all plain text and rendering it while masking JSPWiki syntax
 		AnonymousType queryText = new AnonymousType("QueryText");
 		queryText.setSectionFinder(AllTextFinder.getInstance());
-		queryText.setRenderer((section, user, result) -> result.append(KnowWEUtils.maskJSPWikiMarkup(Strings.encodeHtml(section.getText()))));
+		queryText.setRenderer((section, user, result) -> result.append(KnowWEUtils.maskJSPWikiMarkup(Strings.encodeHtml(section
+				.getText()))));
 		this.addChildType(100, queryText);
+	}
 
+	public static boolean isConstructQuery(Section<?> section) {
+		return (section.getParent().get() instanceof SparqlMarkupType) && Strings.startsWithIgnoreCase(section.getText()
+				.trim(), "construct");
+	}
+
+	public static boolean checkAnnotation(Section<?> markupSection, String annotationName, boolean defaultValue) {
+		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
+				annotationName);
+		return annotationString == null ? defaultValue : annotationString.equals("true");
+	}
+
+	public static long getTimeout(Section<? extends DefaultMarkupType> markupSection) {
+		String timeoutString = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TIMEOUT);
+		long timeOutMillis = Rdf2GoCore.DEFAULT_TIMEOUT;
+		if (timeoutString != null) {
+			try {
+				timeOutMillis = TimeStampType.getTimeInMillis(timeoutString);
+			}
+			catch (NumberFormatException e) {
+				// if we can not parse (because there is no time unit maybe, we just try parseDouble
+				timeOutMillis = (long) (Double.parseDouble(timeoutString) * TimeUnit.SECONDS.toMillis(1));
+				// if this also fails, we will have the default timeout
+			}
+		}
+		return timeOutMillis;
 	}
 
 	@Override
@@ -83,18 +111,17 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
 		renderOpts.setColor(checkColor(markupSection, SparqlMarkupType.LOG_LEVEL, Color.NONE));
 
-
 		renderOpts.setTimeout(getTimeout(markupSection));
 	}
 
 	private Color checkColor(Section<DefaultMarkupType> markupSection, String logLevel, Color none) {
 		String logLevelString = DefaultMarkupType.getAnnotation(markupSection,
 				logLevel);
-		if(logLevelString == null){
+		if (logLevelString == null) {
 			return none;
 		}
-		switch (logLevelString.toLowerCase()){
-			case  "warning":
+		switch (logLevelString.toLowerCase()) {
+			case "warning":
 				return Color.WARNING;
 			case "error":
 				return Color.ERROR;
@@ -103,40 +130,13 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		}
 	}
 
-	public static boolean isConstructQuery(Section<?> section) {
-		return (section.getParent().get() instanceof SparqlMarkupType) && Strings.startsWithIgnoreCase(section.getText().trim(),"construct");
-	}
-
 	private boolean checkSortingAnnotation(Section<DefaultMarkupType> markupSection, String sorting) {
 		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
 				sorting);
 		return annotationString == null || annotationString.equals("true");
 	}
 
-	public static boolean checkAnnotation(Section<?> markupSection, String annotationName, boolean defaultValue) {
-		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
-				annotationName);
-		return annotationString == null ? defaultValue : annotationString.equals("true");
-	}
-
 	private boolean checkAnnotation(Section<?> markupSection, String annotationName) {
 		return checkAnnotation(markupSection, annotationName, false);
 	}
-
-	public static long getTimeout(Section<? extends DefaultMarkupType> markupSection) {
-		String timeoutString = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TIMEOUT);
-		long timeOutMillis = Rdf2GoCore.DEFAULT_TIMEOUT;
-		if (timeoutString != null) {
-			try {
-				timeOutMillis = TimeStampType.getTimeInMillis(timeoutString);
-			}
-			catch (NumberFormatException e) {
-				// if we can not parse (because there is no time unit maybe, we just try parseDouble
-				timeOutMillis = (long) (Double.parseDouble(timeoutString) * TimeUnit.SECONDS.toMillis(1));
-				// if this also fails, we will have the default timeout
-			}
-		}
-		return timeOutMillis;
-	}
-
 }
