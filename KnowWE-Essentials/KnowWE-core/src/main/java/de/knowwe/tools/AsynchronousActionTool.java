@@ -40,7 +40,7 @@ import static de.knowwe.core.Attributes.*;
 public class AsynchronousActionTool extends DefaultTool {
 
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section) {
-		this(icon, title, description, action, section, new HashMap<>(4));
+		this(icon, title, description, action, section, Collections.emptyMap());
 	}
 
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, Map<String, String> params) {
@@ -62,7 +62,7 @@ public class AsynchronousActionTool extends DefaultTool {
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, String redirectPage, String category) {
 		super(icon, title, description,
 				buildJsAction(action, section, "window.location='Wiki.jsp?page=" + redirectPage + "'",
-						new HashMap<>(Collections.singletonMap(REDIRECT_PAGE, redirectPage))),
+						Collections.singletonMap(REDIRECT_PAGE, redirectPage)),
 				Tool.ActionType.ONCLICK, category);
 	}
 
@@ -76,17 +76,18 @@ public class AsynchronousActionTool extends DefaultTool {
 	}
 
 	private static String createData(Section<?> section, Map<String, String> params) {
+		// expand the parameters by section id and article name
+		params = new HashMap<>(params);
 		params.put(SECTION_ID, section.getID());
 		params.put(TITLE, section.getTitle());
+
 		// we create the JSON manually, because we need single quotes
-		StringBuilder builder = new StringBuilder("{");
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-			builder
-					.append(Strings.quote(entry.getKey(), '\''))
-					.append(":")
-					.append(Strings.quote(entry.getValue(), '\''))
-					.append(",");
-		}
+		StringBuilder builder = new StringBuilder(256);
+		builder.append("{");
+		params.forEach((key, value) -> {
+			builder.append(Strings.quote(key, '\'')).append(":")
+					.append(Strings.quote(value, '\'')).append(",");
+		});
 		builder.append("}");
 		return builder.toString();
 	}

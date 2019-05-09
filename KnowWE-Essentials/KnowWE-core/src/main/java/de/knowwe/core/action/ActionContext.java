@@ -116,10 +116,13 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 	}
 
 	public static Action getAction(String actionName) {
+		if (actionName == null) return null;
 		PluginManager manager = PluginManager.getInstance();
 		Extension[] extensions = manager.getExtensions(EXTENDED_PLUGIN_ID, EXTENDED_POINT_ID);
 		for (Extension e : extensions) {
-			if (e.getID().equals(actionName)) return ((Action) e.getSingleton());
+			if (actionName.equals(e.getID()) || actionName.equals(e.getName())) {
+				return ((Action) e.getSingleton());
+			}
 		}
 		Log.warning("Action: \"" + actionName + "\" not found, check plugin.xml.");
 		return null;

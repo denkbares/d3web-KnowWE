@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.Attributes;
@@ -65,9 +66,8 @@ public abstract class AbstractAction implements Action {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		if (sectionId == null) sectionId = context.getParameter("KdomNodeId"); // compatibility
 		if (sectionId == null) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND,
-					"The request did not contain a section id, unable to execute action!");
-			throw new IOException("The request did not contain a section id, unable to execute action!");
+			fail(context, HttpServletResponse.SC_NOT_FOUND,
+					"The request did not contain a section id, unable to execute action.");
 		}
 		Section<?> section = Sections.get(sectionId);
 		if (section == null) {
@@ -94,11 +94,36 @@ public abstract class AbstractAction implements Action {
 	public static <T extends Type> Section<T> getSection(UserActionContext context, Class<T> type) throws IOException {
 		Section<?> section = getSection(context);
 		if (!type.isInstance(section.get())) {
-			context.sendError(HttpServletResponse.SC_EXPECTATION_FAILED,
+			fail(context, HttpServletResponse.SC_EXPECTATION_FAILED,
 					"The request refers a section of an unexpected type.");
-			throw new IOException("The request refers a section of an unexpected type");
 		}
 		return Sections.cast(section, type);
+	}
+
+	@Contract("_, _, _ -> fail")
+	public static void fail(UserActionContext context, int httpCode, String message) throws IOException {
+		context.sendError(httpCode, message);
+		throw new IOException(message);
+	}
+
+	@Contract("_ -> fail")
+	public static void failOutdated(UserActionContext context) throws IOException {
+		fail(context, HttpServletResponse.SC_EXPECTATION_FAILED,
+				"The page content seems to be outdated. Please reload.");
+	}
+
+	@Contract("_ -> fail")
+	public static void failInternal(UserActionContext context) throws IOException {
+		fail(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+				"An unexpected internal error occurred. Please retry or contact support.");
+	}
+
+	@Contract("_, _ -> fail")
+	public static void failInternal(UserActionContext context, Throwable cause) throws IOException {
+		String message = "An unexpected " + cause.getClass().getSimpleName() + " occurred. " +
+				"Please retry or contact support.";
+		context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
+		throw new IOException(message, cause);
 	}
 
 	@Override
