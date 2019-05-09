@@ -316,9 +316,23 @@ public class Environment {
 	}
 
 	private void initBlockedTools() {
+		// first check for toolmenu settings file in wiki-content
 		String sourceFolder = getWikiConnector().getWikiProperty("var.basedir");
 		if (sourceFolder != null) {
-			ToolUtils.initSettings(new File(sourceFolder, ToolUtils.SETTINGS_FILE));
+			File jsonFile = new File(sourceFolder, ToolUtils.SETTINGS_FILE);
+			if (jsonFile.isFile()) {
+				ToolUtils.initSettings(jsonFile);
+				return;
+			}
+		}
+
+		// otherwise load all json files in 'KnowWEExtension/toolmenu' folder in webapp
+		File appRoot = new File(KnowWEUtils.getApplicationRootPath(), "KnowWEExtension/toolmenu");
+		File[] jsonFiles = appRoot.listFiles(f -> f.isFile() && f.getName().endsWith(".json"));
+		if (jsonFiles != null) {
+			for (File jsonFile : jsonFiles) {
+				ToolUtils.initSettings(jsonFile);
+			}
 		}
 	}
 
