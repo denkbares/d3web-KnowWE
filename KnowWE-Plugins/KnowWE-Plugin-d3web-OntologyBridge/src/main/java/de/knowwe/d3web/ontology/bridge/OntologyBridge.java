@@ -4,6 +4,10 @@
 
 package de.knowwe.d3web.ontology.bridge;
 
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.N2MMap;
 import com.denkbares.utils.Log;
@@ -34,6 +38,30 @@ public class OntologyBridge {
 	}
 
 	/**
+	 * Provides all {@link OntologyCompiler}s for the given section, of the D3webCompilers compiling this section, and
+	 * if any of them imports an ontology. To import an ontology, use the @importOntology annotation in the
+	 * %%KnowledgeBase markup to import an %%Ontology markup by the name specified by the @name annotation.
+	 *
+	 * @param section the section to get the bridged ontology for
+	 * @return the ontology compilers bridged for the given section
+	 */
+	public static Set<OntologyCompiler> getOntologies(Section<?> section) {
+		return getOntologies(Compilers.getCompilers(section, D3webCompiler.class));
+	}
+
+	/**
+	 * Provides all {@link OntologyCompiler}s that are bridged to the given {@link D3webCompiler}s. To import an
+	 * ontology, use the <tt>importOntology</tt> annotation in the %%KnowledgeBase markup to import an %%Ontology markup
+	 * by the name specified by the @name annotation.
+	 *
+	 * @param d3webCompiler the compiler to get the bridged ontology for
+	 * @return the ontology compiler bridged for the given d3web compiler the @name annotation.
+	 */
+	public static Set<OntologyCompiler> getOntologies(Collection<D3webCompiler> d3webCompiler) {
+		return d3webCompiler.stream().map(OntologyBridge::getOntology).collect(Collectors.toSet());
+	}
+
+	/**
 	 * Provides an {@link OntologyCompiler} for the given section, if the D3webCompiler compiling this section imports
 	 * an ontology. To import an ontology, use the @importOntology annotation in the %%KnowledgeBase markup to import an
 	 * %%Ontology markup by the name specified by the @name annotation.
@@ -48,12 +76,10 @@ public class OntologyBridge {
 	/**
 	 * Provides an {@link OntologyCompiler} for the given {@link D3webCompiler}. To import an ontology, use the
 	 * <tt>importOntology</tt> annotation in the %%KnowledgeBase markup to import an %%Ontology markup by the name
-	 * specified by
-	 * the @name annotation.
+	 * specified by the @name annotation.
 	 *
 	 * @param d3webCompiler the compiler to get the bridged ontology for
-	 * @return the ontology compiler bridged for the given d3web compiler
-	 * the @name annotation.
+	 * @return the ontology compiler bridged for the given d3web compiler the @name annotation.
 	 */
 	public static OntologyCompiler getOntology(D3webCompiler d3webCompiler) {
 		return getOntology(d3webCompiler, Priority.ABOVE_DEFAULT);
@@ -62,14 +88,12 @@ public class OntologyBridge {
 	/**
 	 * Provides an {@link OntologyCompiler} for the given {@link D3webCompiler}. To import an ontology, use the
 	 * <tt>importOntology</tt> annotation in the %%KnowledgeBase markup to import an %%Ontology markup by the name
-	 * specified by
-	 * the @name annotation.
+	 * specified by the @name annotation.
 	 *
 	 * @param d3webCompiler   the compiler to get the bridged ontology for
 	 * @param priorityToAwait if the bridged compiler is currently compiling, we wait until the given priority is done
 	 *                        in the compiler
-	 * @return the ontology compiler bridged for the given d3web compiler
-	 * the @name annotation.
+	 * @return the ontology compiler bridged for the given d3web compiler the @name annotation.
 	 */
 	public static OntologyCompiler getOntology(D3webCompiler d3webCompiler, Priority priorityToAwait) {
 		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
@@ -112,7 +136,6 @@ public class OntologyBridge {
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler");
 		}
 		D3webCompiler compiler = Compilers.getCompiler(Sections.get(d3webId), D3webCompiler.class);
-		if (compiler == null) return null;
 		return compiler;
 	}
 }
