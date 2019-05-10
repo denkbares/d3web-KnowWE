@@ -94,30 +94,69 @@ public abstract class AbstractAction implements Action {
 	public static <T extends Type> Section<T> getSection(UserActionContext context, Class<T> type) throws IOException {
 		Section<?> section = getSection(context);
 		if (!type.isInstance(section.get())) {
-			fail(context, HttpServletResponse.SC_EXPECTATION_FAILED,
-					"The request refers a section of an unexpected type.");
+			failUnexpected(context, "The request refers a section of an unexpected type.");
 		}
 		return Sections.cast(section, type);
 	}
 
+	/**
+	 * Fails with the specified error code and message. The context's response is sent the the error code and message,
+	 * and an IOException is thrown with the specified message as well.
+	 *
+	 * @param context  the context to send the error code to
+	 * @param httpCode the fail error code, see {@link HttpServletResponse}#SC_... constants
+	 * @param message  the fail message
+	 */
 	@Contract("_, _, _ -> fail")
 	public static void fail(UserActionContext context, int httpCode, String message) throws IOException {
 		context.sendError(httpCode, message);
 		throw new IOException(message);
 	}
 
+	/**
+	 * Fails with the error code 417 (EXPECTATION FAILED) and the specified message. The context's response is sent the
+	 * the error code and message, and an IOException is thrown with the specified message as well.
+	 *
+	 * @param context the context to send the error code to
+	 * @param message the fail message
+	 */
+	@Contract("_, _ -> fail")
+	public static void failUnexpected(UserActionContext context, String message) throws IOException {
+		fail(context, HttpServletResponse.SC_EXPECTATION_FAILED, message);
+	}
+
+	/**
+	 * Fails with the error code 417 (EXPECTATION FAILED) and the message that the page is outdated. The context's
+	 * response is sent the the error code and message, and an IOException is thrown with the specified message as well.
+	 * This method is usually used if a expectations fails, because some action parameters are no longer matches the
+	 * wiki content, e.g. is some section id or KDOM structure has changed because of already modified page contents.
+	 *
+	 * @param context the context to send the error code to
+	 */
 	@Contract("_ -> fail")
 	public static void failOutdated(UserActionContext context) throws IOException {
 		fail(context, HttpServletResponse.SC_EXPECTATION_FAILED,
 				"The page content seems to be outdated. Please reload.");
 	}
 
+	/**
+	 * Fails with the error code 500 (INTERNAL SERVER ERROR) and the message that an internal error has occurred. The
+	 * context's response is sent the the error code and message, and an IOException is thrown as well.
+	 *
+	 * @param context the context to send the error code to
+	 */
 	@Contract("_ -> fail")
 	public static void failInternal(UserActionContext context) throws IOException {
 		fail(context, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 				"An unexpected internal error occurred. Please retry or contact support.");
 	}
 
+	/**
+	 * Fails with the error code 500 (INTERNAL SERVER ERROR) and the message that an internal error has occurred. The
+	 * context's response is sent the the error code and message, and an IOException is thrown as well.
+	 *
+	 * @param context the context to send the error code to
+	 */
 	@Contract("_, _ -> fail")
 	public static void failInternal(UserActionContext context, Throwable cause) throws IOException {
 		String message = "An unexpected " + cause.getClass().getSimpleName() + " occurred. " +
