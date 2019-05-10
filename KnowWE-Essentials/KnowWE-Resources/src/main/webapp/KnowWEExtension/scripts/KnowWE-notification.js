@@ -24,6 +24,16 @@ KNOWWE.notification = function () {
 
 	return {
 
+		error_jqXHR(jqXHR) {
+			const page = jqXHR.responseText;
+			const start = page.indexOf("<b>Message</b>");
+			const end = page.indexOf("</p>", start);
+			var msg = (start >= 0 && end >= 0)
+				? page.substring(start + 14, end).trim()
+				: jq$("div").html(page).find("h1").first().text();
+			KNOWWE.notification.error(jqXHR.statusText, msg);
+		},
+
 		error: function (title, details, id, fromServer) {
 			KNOWWE.notification._add('error', title, details, id, fromServer);
 		},
@@ -60,7 +70,7 @@ KNOWWE.notification = function () {
 					{
 						id: 'KnowWENotificationCounter',
 						style: 'padding: 5px; ' + 'position: fixed; '
-						+ 'top: 0px; ' + 'right: 25px;'
+							+ 'top: 0px; ' + 'right: 25px;'
 					});
 
 				// quit
@@ -68,7 +78,7 @@ KNOWWE.notification = function () {
 					{
 						id: 'KnowWENotificationQuit',
 						style: 'padding: 5px; ' + 'position: fixed; '
-						+ 'top: 0px; ' + 'right: 10px;'
+							+ 'top: 0px; ' + 'right: 10px;'
 					});
 
 				// dom
@@ -134,14 +144,14 @@ KNOWWE.notification = function () {
 			// css
 			dom.attr({
 				style: 'opacity:0.95;' + 'position:fixed;' + 'z-index:2000;'
-				+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;'
-				+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
-				+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor
-				+ '), to(' + endColor + '));' + 'background-image: -webkit-linear-gradient(top, '
-				+ startColor + ',' + endColor + ');' + 'background-image: -moz-linear-gradient(top, '
-				+ startColor + ',' + endColor + ');' + 'background-image: -ms-linear-gradient(top, '
-				+ startColor + ',' + endColor + ');' + 'background-image: -o-linear-gradient(top, '
-				+ startColor + ',' + endColor + ');'
+					+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;'
+					+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
+					+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor
+					+ '), to(' + endColor + '));' + 'background-image: -webkit-linear-gradient(top, '
+					+ startColor + ',' + endColor + ');' + 'background-image: -moz-linear-gradient(top, '
+					+ startColor + ',' + endColor + ');' + 'background-image: -ms-linear-gradient(top, '
+					+ startColor + ',' + endColor + ');' + 'background-image: -o-linear-gradient(top, '
+					+ startColor + ',' + endColor + ');'
 			});
 
 			// title

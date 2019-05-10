@@ -109,8 +109,7 @@ public abstract class AbstractAction implements Action {
 	 */
 	@Contract("_, _, _ -> fail")
 	public static void fail(UserActionContext context, int httpCode, String message) throws IOException {
-		context.sendError(httpCode, message);
-		throw new IOException(message);
+		throw new SendError(httpCode, message);
 	}
 
 	/**
@@ -159,10 +158,9 @@ public abstract class AbstractAction implements Action {
 	 */
 	@Contract("_, _ -> fail")
 	public static void failInternal(UserActionContext context, Throwable cause) throws IOException {
-		String message = "An unexpected " + cause.getClass().getSimpleName() + " occurred. " +
-				"Please retry or contact support.";
-		context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
-		throw new IOException(message, cause);
+		throw new SendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+				"An unexpected " + cause.getClass().getSimpleName() + " occurred. " +
+						"Please retry or contact support.");
 	}
 
 	@Override

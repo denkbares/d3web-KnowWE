@@ -72,7 +72,7 @@ public class AsynchronousActionTool extends DefaultTool {
 				"cache : false, " +
 				"data : " + createData(section, params) + "," +
 				"success : function() {" + successFunction + "}," +
-				"error: function() {KNOWWE.editCommons.hideAjaxLoader();} })";
+				"error: function(xhr) {KNOWWE.notification.error_jqXHR(xhr);KNOWWE.editCommons.hideAjaxLoader();} })";
 	}
 
 	private static String createData(Section<?> section, Map<String, String> params) {

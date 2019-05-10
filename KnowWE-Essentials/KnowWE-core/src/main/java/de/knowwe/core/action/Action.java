@@ -23,13 +23,12 @@ package de.knowwe.core.action;
 import java.io.IOException;
 
 /**
- * Interface for Actions. Actions are used for user interactions in KnowWE. The
- * most important method of this interface is execute() because this method will
- * be called when an action is executed.
+ * Interface for Actions. Actions are used for user interactions in KnowWE. The most important method of this interface
+ * is execute() because this method will be called when an action is executed.
+ * <p>
+ * Additionally you can specify whether your action is "free for all" or only executable for admins by overwritting the
+ * isAdminAction() method accordingly.
  *
- * Additionally you can specify whether your action is "free for all" or only
- * executable for admins by overwritting the isAdminAction() method accordingly.
- * 
  * @author Sebastian Furth
  * @created Mar 9, 2011
  */
@@ -45,18 +44,48 @@ public interface Action {
 	/**
 	 * Executes the Action.
 	 *
-	 * @created Mar 9, 2011
 	 * @param context the context for this action
+	 * @created Mar 9, 2011
 	 */
 	void execute(UserActionContext context) throws IOException;
 
 	/**
-	 * This method should return true if only admins are allowed to execute this
-	 * action. Otherwise this method should return false.
+	 * This method should return true if only admins are allowed to execute this action. Otherwise this method should
+	 * return false.
 	 *
-	 * @created Mar 9, 2011
 	 * @return true if the action is a admin action otherwise false.
+	 * @created Mar 9, 2011
 	 */
 	boolean isAdminAction();
 
+	/**
+	 * Exception that can be thrown to signal a defined error code to the web page.
+	 */
+	class SendError extends IOException {
+		private static final long serialVersionUID = 8501144599737106114L;
+		private final int httpErrorCode;
+
+		public SendError(int httpErrorCode) {
+			this.httpErrorCode = httpErrorCode;
+		}
+
+		public SendError(int httpErrorCode, String message) {
+			super(message);
+			this.httpErrorCode = httpErrorCode;
+		}
+
+		public SendError(int httpErrorCode, String message, Throwable cause) {
+			super(message, cause);
+			this.httpErrorCode = httpErrorCode;
+		}
+
+		public SendError(int httpErrorCode, Throwable cause) {
+			super(cause);
+			this.httpErrorCode = httpErrorCode;
+		}
+
+		public int getHttpErrorCode() {
+			return httpErrorCode;
+		}
+	}
 }
