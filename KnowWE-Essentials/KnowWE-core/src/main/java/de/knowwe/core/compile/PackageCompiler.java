@@ -18,19 +18,24 @@
  */
 package de.knowwe.core.compile;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * 
+ * Common interface for compilers compiling a set of packages.
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 12.12.2013
  */
 public interface PackageCompiler extends Compiler {
 
+	@NotNull
 	Section<? extends PackageCompileType> getCompileSection();
 
+	@NotNull
 	PackageManager getPackageManager();
 
 }

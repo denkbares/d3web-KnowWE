@@ -20,6 +20,8 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -41,9 +43,9 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	private CompilerManager compilerManager;
 
-	public AbstractPackageCompiler(PackageManager manager,
-								   Section<? extends PackageCompileType> compileSection,
-								   Class<? extends Type> compilingType) {
+	public AbstractPackageCompiler(@NotNull PackageManager manager,
+								   @NotNull Section<? extends PackageCompileType> compileSection,
+								   @NotNull Class<? extends Type> compilingType) {
 		this.compileSection = compileSection;
 		this.packageManager = manager;
 		this.compilingType = compilingType;
@@ -75,6 +77,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		this.compilerManager = compilerManager;
 	}
 
+	@NotNull
 	@Override
 	public PackageManager getPackageManager() {
 		return this.packageManager;
@@ -86,6 +89,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	}
 
 	@Override
+	@NotNull
 	public Section<? extends PackageCompileType> getCompileSection() {
 		return this.compileSection;
 	}
