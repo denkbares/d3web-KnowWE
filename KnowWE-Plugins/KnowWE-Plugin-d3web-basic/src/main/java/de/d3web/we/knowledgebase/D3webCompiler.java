@@ -82,6 +82,15 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	}
 
 	/**
+	 * Returns the name of this compiler, normally given in the content %%KnowledgeBase section.
+	 */
+	public String getName() {
+		return $(getCompileSection()).successor(KnowledgeBaseDefinition.class)
+				.stream().map(s -> s.get().getTermName(s)).findAny()
+				.orElseGet(() -> getCompileSection().getTitle());
+	}
+
+	/**
 	 * FIXME: This method is currently only needed by the AnnotationLoadKnowledgeBaseHandler where a knowledge base is
 	 * loaded from a file. The better way would be though to instead fill an existing knowledge base with the contents
 	 * read from the file. We should implement this later and then remove this method.
