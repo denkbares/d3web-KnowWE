@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 denkbares GmbH, Germany
+ * Copyright (C) 2019 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -20,39 +20,15 @@
 package de.knowwe.rdf2go;
 
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.parsing.Section;
 
 /**
-* @author Albrecht Striffler (denkbares GmbH)
-* @created 19.12.14
-*/
-class SectionSource implements ArticleStatementSource {
+ * Provides the source article for a statement added to the Rdf2GoCore.
+ *
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 19.12.14
+ */
+@FunctionalInterface
+public interface ArticleStatementSource extends StatementSource {
 
-	private final Section<?> section;
-
-	public SectionSource(Section<?> section) {
-		this.section = section;
-	}
-
-	@Override
-	public Article getArticle() {
-		return section.getArticle();
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		SectionSource that = (SectionSource) o;
-
-		if (!section.equals(that.section)) return false;
-
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		return section.hashCode();
-	}
+	Article getArticle();
 }

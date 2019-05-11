@@ -19,15 +19,12 @@
 
 package de.knowwe.rdf2go;
 
-import de.knowwe.core.kdom.Article;
-
 /**
- * Provides the source article for a statement added to the Rdf2GoCore.
+ * Provides a source for a statement added to the Rdf2GoCore.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 19.12.14
  */
 public interface StatementSource {
 
-	Article getArticle();
 }

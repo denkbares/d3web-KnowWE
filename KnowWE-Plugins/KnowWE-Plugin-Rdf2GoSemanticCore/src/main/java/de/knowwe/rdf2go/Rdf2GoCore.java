@@ -158,12 +158,20 @@ public class Rdf2GoCore {
 		});
 		try {
 			Class.forName("com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl");
-			System.getProperties().setProperty("javax.xml.datatype.DatatypeFactory", "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl");
+			System.getProperties()
+					.setProperty("javax.xml.datatype.DatatypeFactory", "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl");
 		}
 		catch (ClassNotFoundException e) {
 			Log.warning("com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl not in class path, using fall back");
 		}
 	}
+
+	private String lns;
+
+	private RepositoryConfig ruleSet;
+
+	private final MultiMap<StatementSource, Statement> statementCache =
+			new N2MMap<>(MultiMaps.minimizedFactory(), MultiMaps.minimizedFactory());
 
 	/**
 	 * Initializes the Rdf2GoCore with the specified arguments. Please note that the RuleSet argument only has an effect
@@ -258,15 +266,6 @@ public class Rdf2GoCore {
 		}
 		return globaleInstance;
 	}
-
-	private String lns;
-
-	private RepositoryConfig ruleSet;
-
-	private MultiMap<StatementSource, Statement> statementCache =
-			new N2MMap<>(
-					MultiMaps.minimizedFactory(),
-					MultiMaps.minimizedFactory());
 
 	/**
 	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value is the full namespace, e.g. rdf and
@@ -486,7 +485,6 @@ public class Rdf2GoCore {
 	 * @param statements the statements you want to add to the triple store
 	 * @created 13.06.2012
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated
 	public void addStatements(Statement... statements) {
 		addStatements(Arrays.asList(statements));
@@ -503,7 +501,6 @@ public class Rdf2GoCore {
 	 * @param statements the statements you want to add to the triple store
 	 * @created 13.06.2012
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated
 	public void addStatements(Collection<Statement> statements) {
 		addStatements((StatementSource) null, statements);
@@ -837,7 +834,8 @@ public class Rdf2GoCore {
 	}
 
 	/**
-	 * Converts/expands a (possibly abbreviated) URI in string form (such as "example:some_concept") to a URI instance ("http://example.org/#some_concept").
+	 * Converts/expands a (possibly abbreviated) URI in string form (such as "example:some_concept") to a URI instance
+	 * ("http://example.org/#some_concept").
 	 */
 	public java.net.URI createURI(String uri) {
 		// IRIs created from string in short form are created expanded by createIRI() already
@@ -1058,7 +1056,9 @@ public class Rdf2GoCore {
 			if (list.isEmpty()) return Collections.emptySet();
 			Set<Article> result = new HashSet<>();
 			for (StatementSource source : list) {
-				result.add(source.getArticle());
+				if (source instanceof ArticleStatementSource) {
+					result.add(((ArticleStatementSource) source).getArticle());
+				}
 			}
 			return Collections.unmodifiableSet(result);
 		}
@@ -1072,12 +1072,19 @@ public class Rdf2GoCore {
 	 * @param statement the statement to get the article for
 	 * @return the article that defines that statement
 	 * @created 13.12.2013
+	 * @deprecated this method is flawed, since a statement can come from different sources
 	 */
+	@Deprecated
 	public Article getSourceArticle(Statement statement) {
 		synchronized (statementMutex) {
 			Collection<StatementSource> list = statementCache.getKeys(statement);
 			if (list.isEmpty()) return null;
-			return list.iterator().next().getArticle();
+			for (StatementSource source : list) {
+				if (source instanceof ArticleStatementSource) {
+					return ((ArticleStatementSource) source).getArticle();
+				}
+			}
+			return null;
 		}
 	}
 
@@ -1633,7 +1640,9 @@ public class Rdf2GoCore {
 		else {
 			shutDownThreadPool.execute(() -> {
 				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
-				this.statementCache.clear(); // free memory even if there are still references
+				synchronized (statementMutex) {
+					this.statementCache.clear(); // free memory even if there are still references
+				}
 				this.semanticCore.release();
 				if (this.semanticCore.isAllocated()) {
 					Log.warning("Semantic core " + this.semanticCore.getRepositoryId()

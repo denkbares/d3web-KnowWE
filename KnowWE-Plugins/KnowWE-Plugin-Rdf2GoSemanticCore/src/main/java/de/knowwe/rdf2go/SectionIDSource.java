@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 * @author Albrecht Striffler (denkbares GmbH)
 * @created 19.12.14
 */
-public class SectionIDSource implements StatementSource {
+public class SectionIDSource implements ArticleStatementSource {
 
 	private final String sectionID;
 
