@@ -32,7 +32,6 @@ import java.util.Set;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.collections.DefaultMultiMap;
@@ -135,7 +134,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				conceptNameEncoded = Strings.encodeURL(concept);
 				url = rdf2GoCore.getLocalNamespace() + conceptNameEncoded;
 			}
-			IRI conceptIRI = SimpleValueFactory.getInstance().createIRI(url);
+			IRI conceptIRI = Rdf2GoUtils.getValueFactory().createIRI(url);
 			mainConceptIRIs.add(conceptIRI);
 
 			if (isTimeOut(stopwatch, timeOutMillis)) return;

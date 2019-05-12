@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
 import com.denkbares.strings.Strings;
@@ -33,6 +32,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class LiteralType extends AbstractType {
 
@@ -128,7 +128,7 @@ public class LiteralType extends AbstractType {
 		}
 
 		public IRI getXSDType(Section<XSDPart> section) {
-			return SimpleValueFactory.getInstance().createIRI(XMLSchema.NAMESPACE + section.getText());
+			return Rdf2GoUtils.getValueFactory().createIRI(XMLSchema.NAMESPACE + section.getText());
 		}
 	}
 

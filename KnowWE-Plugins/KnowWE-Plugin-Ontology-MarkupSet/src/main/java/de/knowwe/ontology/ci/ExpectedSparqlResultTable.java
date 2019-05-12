@@ -25,7 +25,6 @@ import java.util.List;
 import connector.DummyConnector;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import com.denkbares.semanticcore.utils.ResultTableModel;
 import com.denkbares.semanticcore.utils.SimpleTableRow;
@@ -101,8 +100,7 @@ public class ExpectedSparqlResultTable extends Table {
 				if (value instanceof URI && compatibilityMode) {
 					String valueString = value.stringValue();
 					if (valueString.startsWith(DummyConnector.BASE_URL)) {
-						value = SimpleValueFactory.getInstance()
-								.createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
+						value = core.getRdf2GoCore().createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
 					}
 				}
 				if (value != null) row.addValue(variable, value);

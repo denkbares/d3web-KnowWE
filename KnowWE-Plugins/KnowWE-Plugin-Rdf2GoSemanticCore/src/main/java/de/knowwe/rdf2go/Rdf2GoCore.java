@@ -124,7 +124,7 @@ public class Rdf2GoCore {
 
 	private static final AtomicLong coreId = new AtomicLong(0);
 
-	private static Rdf2GoCore globaleInstance;
+	private static Rdf2GoCore globalInstance;
 
 	public static final String GLOBAL = "GLOBAL";
 
@@ -261,10 +261,10 @@ public class Rdf2GoCore {
 	 */
 	@Deprecated
 	public static Rdf2GoCore getInstance() {
-		if (globaleInstance == null) {
-			globaleInstance = new Rdf2GoCore();
+		if (globalInstance == null) {
+			globalInstance = new Rdf2GoCore();
 		}
-		return globaleInstance;
+		return globalInstance;
 	}
 
 	/**
@@ -821,7 +821,7 @@ public class Rdf2GoCore {
 	}
 
 	private ValueFactory getValueFactory() {
-		return semanticCore.getValueFactory();
+		return Rdf2GoUtils.getValueFactory();
 	}
 
 	public IRI createIRI(String abbreviatedNamespace, String value) {

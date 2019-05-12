@@ -42,6 +42,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -49,6 +50,7 @@ import org.eclipse.rdf4j.rio.Rio;
 
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyTree;
+import com.denkbares.semanticcore.OptimizedMemValueFactory;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.semanticcore.utils.RDFUtils;
 import com.denkbares.semanticcore.utils.Sparqls;
@@ -72,6 +74,12 @@ public class Rdf2GoUtils {
 	private static final SimpleDateFormat PRIVATE_XSD_DATE_TIME_FORMAT = getXsdDateTimeFormat();
 
 	/**
+	 * We might want to move the value factory into the semantic core or even the underlying repository or sail, because
+	 * here in the Rdf2GoCore, we cannot control all the value generation.
+	 */
+	private static final OptimizedMemValueFactory valueFactory = new OptimizedMemValueFactory();
+
+	/**
 	 * Returns a {@link SimpleDateFormat} allowing to read and write ^^xsd:date
 	 */
 	public static SimpleDateFormat getXsdDateTimeFormat() {
@@ -85,6 +93,10 @@ public class Rdf2GoUtils {
 			throw new IllegalArgumentException();
 		}
 		return getRdf2GoCore(defaultMarkup);
+	}
+
+	public static ValueFactory getValueFactory() {
+		return valueFactory;
 	}
 
 	public static boolean isClass(Rdf2GoCore core, IRI resource) {
