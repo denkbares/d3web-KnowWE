@@ -128,7 +128,7 @@ public class Rdf2GoCore {
 
 	public static final String GLOBAL = "GLOBAL";
 
-	public static final int DEFAULT_TIMEOUT = 15000;
+	public static final int DEFAULT_TIMEOUT = 60000; // 60 seconds
 
 	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
 
