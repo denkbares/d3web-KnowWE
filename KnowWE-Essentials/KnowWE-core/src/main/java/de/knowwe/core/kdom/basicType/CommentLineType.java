@@ -48,7 +48,7 @@ public class CommentLineType extends AbstractType {
 			int start = text.indexOf(trim);
 			int end = trim.length() + start;
 			result.append(text.substring(0, start));
-			StyleRenderer.COMMENT.renderText(trim, user, result);
+			StyleRenderer.COMMENT.withCssClass("comment-line").renderText(trim, user, result);
 			result.append(text.substring(end));
 		}
 	}
