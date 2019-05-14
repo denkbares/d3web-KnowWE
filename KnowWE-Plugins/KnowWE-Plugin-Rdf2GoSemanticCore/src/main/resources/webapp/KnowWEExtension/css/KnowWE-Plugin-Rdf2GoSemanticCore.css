@@ -37,6 +37,7 @@
 .sparqlTable .sparqltable * TH {
 	vertical-align: middle;
 	text-align: left;
+	white-space: pre;
 }
 
 .emptySparqlResult {
