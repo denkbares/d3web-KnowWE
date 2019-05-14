@@ -289,7 +289,7 @@ public class SparqlResultRenderer {
 				continue;
 			}
 			renderResult.appendHtml("<th>");
-			renderResult.append(var);
+			renderResult.append(var.replace("_", " "));
 			renderResult.appendHtml("</th>");
 		}
 		renderResult.appendHtml("</tr>");
