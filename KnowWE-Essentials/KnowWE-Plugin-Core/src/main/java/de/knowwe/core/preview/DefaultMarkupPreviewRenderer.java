@@ -33,6 +33,8 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
  */
 public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 
+	private static final DefaultMarkupRenderer DEFAULT_MARKUP_RENDERER = new DefaultMarkupRenderer();
+
 	public enum Select {
 		/**
 		 * Shows all successors matching the scope
@@ -244,7 +246,7 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 	static void renderSections(List<Section<?>> previews, UserContext user, RenderResult result) {
 		List<Section<?>> list = new ArrayList<>(previews);
 		Collections.sort(list);
-		DefaultMarkupRenderer.renderContentSections(list, false, user, result);
+		DEFAULT_MARKUP_RENDERER.renderContentsAndAnnotations(list, user, result);
 	}
 
 	/**

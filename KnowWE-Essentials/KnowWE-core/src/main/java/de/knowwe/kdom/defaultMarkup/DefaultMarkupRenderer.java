@@ -43,10 +43,8 @@ import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
-import de.knowwe.core.kdom.basicType.PlainText;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.report.Message;
@@ -58,6 +56,8 @@ import de.knowwe.core.utils.progress.ProgressRenderer;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class DefaultMarkupRenderer implements Renderer {
 
@@ -265,7 +265,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		renderProgress(section, user, tools, content);
 		int validLength = content.length();
 		try {
-			renderContents(section, user, content);
+			renderContentsAndAnnotations(section, user, content);
 		}
 		catch (Throwable e) {
 			content.delete(validLength, content.length());
@@ -295,74 +295,40 @@ public class DefaultMarkupRenderer implements Renderer {
 		renderMessagesOfType(type, Messages.asList(new Message(type, message)), result);
 	}
 
-	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
-		List<Section<?>> subsecs = section.getChildren();
-		renderContentSections(subsecs, isListAnnotations(), user, string);
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult result) {
+		renderContentsAndAnnotations(section.getChildren(), user, result);
 	}
 
-	public static void renderContentSections(List<Section<?>> subSections, boolean listAnnotations, UserContext user, RenderResult result) {
-		if (subSections.isEmpty()) return;
-		// find two sections that can possibly be skipped
-		Section<?> first = subSections.get(0);
-		Section<?> last = subSections.get(subSections.size() - 1);
-		// only skip them if they are plain text and empty
-		if (!isEmptyPlainText(first)) first = null;
-		if (!isEmptyPlainText(last)) last = null;
-		boolean hasAnnotations = false;
-		boolean skipNext = false;
-		for (Section<?> subsec : subSections) {
-			if (subsec == first) continue;
-			if (subsec == last) continue;
-			if (skipNext) {
-				skipNext = false;
-				continue;
-			}
-			de.knowwe.core.kdom.Type type = subsec.get();
-			Renderer renderer = type.getRenderer();
-			if (type instanceof AnnotationType) {
-				if (!hasAnnotations) {
-					if (listAnnotations) {
-						result.appendHtml("\n\n<ul class='markupAnnotations' style='white-space:normal'>");
-					}
-					else {
-						result.appendHtml("<div class='markupAnnotations'>");
-					}
-					hasAnnotations = true;
-				}
-				if (listAnnotations) {
-					result.appendHtml("<li class='markupAnnotation'>");
-					renderer.render(subsec, user, result);
-					result.appendHtml("</li>");
-					continue;
-				}
-				else {
-					result.appendHtml("<span class='markupAnnotation'>");
-					renderer.render(subsec, user, result);
-					result.appendHtml("</span>");
-				}
-				// if we add a "NothingRenderer" to an Annotation, the following PlainText Section
-				// containing the line break between two Annotations will still be rendered, causing
-				// vertical spaces at the end of the DefaultMarkup. Because of this, we skip here.
-				if (renderer instanceof NothingRenderer) {
-					skipNext = true;
-				}
-			}
-			else {
-				renderer.render(subsec, user, result);
-			}
-		}
-		if (hasAnnotations) {
-			if (listAnnotations) {
-				result.appendHtml("</ul>");
-			}
-			else {
-				result.appendHtml("</div>");
-			}
+	public void renderContentsAndAnnotations(List<Section<?>> subSections, UserContext user, RenderResult result) {
+		renderContents($(subSections).filter(ContentType.class).asList(), user, result);
+		renderAnnotations($(subSections).filter(AnnotationType.class).asList(), user, result);
+	}
+
+	protected void renderContents(List<Section<ContentType>> contentSections, UserContext user, RenderResult result) {
+		for (Section<ContentType> contentSection : contentSections) {
+			result.append(contentSection, user);
 		}
 	}
 
-	private static boolean isEmptyPlainText(Section<?> section) {
-		return section.get() instanceof PlainText;
+	protected void renderAnnotations(List<Section<AnnotationType>> annotations, UserContext user, RenderResult result) {
+		if (listAnnotations) {
+			result.appendHtml("\n\n<ul class='markupAnnotations' style='white-space:normal'>");
+			for (Section<AnnotationType> annotation : annotations) {
+				result.appendHtml("<li class='markupAnnotation'>");
+				result.append(annotation, user);
+				result.appendHtml("</li>");
+			}
+			result.appendHtml("</ul>");
+		}
+		else {
+			result.appendHtml("<div class='markupAnnotations'>");
+			for (Section<AnnotationType> annotation : annotations) {
+				result.appendHtml("<span class='markupAnnotation'>");
+				result.append(annotation, user);
+				result.appendHtml("</span>");
+			}
+			result.appendHtml("</div>");
+		}
 	}
 
 	public void renderDefaultMarkupStyled(String title,

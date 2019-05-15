@@ -48,7 +48,7 @@ public class ShowNamespacesType extends DefaultMarkupType {
 	private static class NamespacesRenderer extends DefaultMarkupRenderer {
 
 		@Override
-		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+		public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 
 			if (user.isRenderingPreview()) {
 				string.append("%%information Namespaces are not rendered in live preview. /%");

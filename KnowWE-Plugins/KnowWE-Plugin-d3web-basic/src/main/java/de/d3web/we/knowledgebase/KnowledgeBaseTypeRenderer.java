@@ -46,7 +46,7 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 	}
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 		String id = KnowledgeBaseType.getAnnotation(section, KnowledgeBaseType.ANNOTATION_ID);
 		String author = KnowledgeBaseType.getAnnotation(section,
 				KnowledgeBaseType.ANNOTATION_AUTHOR);
@@ -89,7 +89,7 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 			string.appendHtml("</div>");
 		}
 
-		super.renderContents(section, user, string);
+		super.renderContentsAndAnnotations(section, user, string);
 
 		List<Section<?>> additionalAnnotations = new LinkedList<>();
 		List<Section<AnnotationType>> annotations =

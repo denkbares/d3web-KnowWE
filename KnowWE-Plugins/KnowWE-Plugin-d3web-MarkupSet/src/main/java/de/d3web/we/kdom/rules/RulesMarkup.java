@@ -49,12 +49,12 @@ public class RulesMarkup extends DefaultMarkupType {
 		super(MARKUP);
 		this.setRenderer(new DefaultMarkupRenderer("KnowWEExtension/d3web/icon/rule24.png") {
 			@Override
-			protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+			public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 				boolean ruleDebuggingActive = RuleEditToolProvider.isRuleDebuggingActive(user);
 				if (ruleDebuggingActive) {
 					string.appendHtml("<div class='ruleDebugView'>");
 				}
-				super.renderContents(section, user, string);
+				super.renderContentsAndAnnotations(section, user, string);
 				if (ruleDebuggingActive) {
 					string.appendHtml("</div>>");
 				}

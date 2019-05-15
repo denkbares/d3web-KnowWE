@@ -12,7 +12,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 public class AdministrationMarkupRenderer extends DefaultMarkupRenderer {
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 		if (!user.userIsAdmin()) {
 			string.append("This feature is only visible and usable for administrators.");
 			return;

@@ -53,7 +53,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	}
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 
 		CIDashboard dashboard = CIDashboardManager.getDashboard(Sections.cast(section,
 				CIDashboardType.class));

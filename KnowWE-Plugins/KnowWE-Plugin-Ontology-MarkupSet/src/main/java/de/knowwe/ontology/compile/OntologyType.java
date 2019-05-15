@@ -147,7 +147,7 @@ public class OntologyType extends DefaultMarkupType {
 				DefaultMarkupPackageReferenceRegistrationScript.class);
 		this.setRenderer(new DefaultMarkupPackageCompileTypeRenderer() {
 			@Override
-			protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+			public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 				Section<?> title = $(section).successor(OntologyDefinition.class).getFirst();
 				string.appendHtml("<div><b>").append(title, user).appendHtml("</b></div>\n");
 
@@ -159,7 +159,7 @@ public class OntologyType extends DefaultMarkupType {
 					DelegateRenderer.getInstance().render(annotation, user, string);
 					string.appendHtml("<br>");
 				}
-				super.renderContents(section, user, string);
+				super.renderContentsAndAnnotations(section, user, string);
 			}
 		});
 

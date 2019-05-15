@@ -60,7 +60,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 	}
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 		renderPackages(section, user, string);
 	}
 

@@ -57,10 +57,10 @@ public class OffMarkup extends DefaultMarkupType {
 			}
 
 			@Override
-			protected void renderContents(Section<?> section, UserContext user, RenderResult result) {
+			public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult result) {
 				result.appendHtmlTag("div", "style", "color: grey");
 				RenderResult temp = new RenderResult(result);
-				super.renderContents(section, user, temp);
+				super.renderContentsAndAnnotations(section, user, temp);
 				result.appendJSPWikiMarkup(temp);
 				result.appendHtmlTag("/div");
 			}

@@ -44,6 +44,10 @@
 	padding: 3px 3px 3px 3px;
 }
 
+.defaultMarkup .markupAnnotation {
+	display: block;
+}
+
 .defaultMarkup .markupText .header {
 	font-size: 16px;
 	font-weight: bold;

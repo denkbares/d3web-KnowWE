@@ -36,7 +36,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 	}
 
 	@Override
-	public void renderContents(Section<?> section, UserContext user, RenderResult string) {
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 		String concept = Utils.getConceptFromRequest(user);
 		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(getVisualizationRendererKey(user));
 		if (builder != null) {

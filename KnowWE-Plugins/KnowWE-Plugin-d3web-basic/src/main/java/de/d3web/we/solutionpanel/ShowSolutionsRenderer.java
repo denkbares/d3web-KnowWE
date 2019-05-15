@@ -43,7 +43,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 public class ShowSolutionsRenderer extends DefaultMarkupRenderer {
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, RenderResult result) {
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult result) {
 		// only render the content section
 		Section<?> child = DefaultMarkupType.getContentSection(section);
 		result.append(child, user);

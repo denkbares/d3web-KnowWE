@@ -74,7 +74,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 	private static class KDOMRenderer extends DefaultMarkupRenderer {
 
 		@Override
-		protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+		public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 
 			String html = "";
 			html += "<table class='renderKDOMTable wikitable' article='" + section.getTitle() + "'>";

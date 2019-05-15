@@ -97,7 +97,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 	private static class QuickInterviewMarkupRenderer extends DefaultMarkupRenderer {
 
 		@Override
-		public void renderContents(Section<?> section, UserContext user, RenderResult string) {
+		public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 			String unknown = DefaultMarkupType.getAnnotation(section, UNKNOWN_KEY);
 			String abstractions = DefaultMarkupType.getAnnotation(section,
 					ABSTRACTIONS_KEY);

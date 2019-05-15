@@ -80,7 +80,7 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 	}
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, RenderResult result) {
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult result) {
 		renderTargetSections(section, skipHeader, user, result);
 	}
 

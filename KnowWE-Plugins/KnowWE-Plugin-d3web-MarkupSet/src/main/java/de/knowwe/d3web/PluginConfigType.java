@@ -52,9 +52,9 @@ public class PluginConfigType extends DefaultMarkupType {
 		}
 
 		@Override
-		protected void renderContents(Section<?> section, UserContext user, RenderResult result) {
+		public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult result) {
 			result.append("%%prettify-nonum\n{{{");
-			super.renderContents(section, user, result);
+			super.renderContentsAndAnnotations(section, user, result);
 			result.append("}}}\n/%\n");
 		}
 	}

@@ -58,7 +58,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 	}
 
 	@Override
-	protected void renderContents(Section<?> section, UserContext user, RenderResult string) {
+	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 		if (isRenderingPreview(user)) {
 			//In live preview show info message
 			string.append("%%information DiaFlux is not rendered in live preview. /%");
@@ -74,7 +74,7 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 						+ "Click here to create one." + "</a><br>");
 			}
 
-			super.renderContents(section, user, string);
+			super.renderContentsAndAnnotations(section, user, string);
 
 			if (flowchart == null) {
 				string.append(" %%\n");
