@@ -312,23 +312,22 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void renderAnnotations(List<Section<AnnotationType>> annotations, UserContext user, RenderResult result) {
 		if (listAnnotations) {
-			result.appendHtml("\n\n<ul class='markupAnnotations' style='white-space:normal'>");
-			for (Section<AnnotationType> annotation : annotations) {
-				result.appendHtml("<li class='markupAnnotation'>");
-				result.append(annotation, user);
-				result.appendHtml("</li>");
-			}
-			result.appendHtml("</ul>");
+			result.append("\n\n");
+			renderAnnotations(annotations, user, result, "ul", "li");
 		}
 		else {
-			result.appendHtml("<div class='markupAnnotations'>");
-			for (Section<AnnotationType> annotation : annotations) {
-				result.appendHtml("<span class='markupAnnotation'>");
-				result.append(annotation, user);
-				result.appendHtml("</span>");
-			}
-			result.appendHtml("</div>");
+			renderAnnotations(annotations, user, result, "div", "span");
 		}
+	}
+
+	private void renderAnnotations(List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, String parentTag, String elementTag) {
+		result.appendHtmlTag(parentTag, "class", "markupAnnotations", "style", "white-space:normal");
+		for (Section<AnnotationType> annotation : annotations) {
+			result.appendHtmlTag(elementTag, "class", "markupAnnotation", "data-name", annotation.get().getName());
+			result.append(annotation, user);
+			result.appendHtmlTag("/" + elementTag);
+		}
+		result.appendHtmlTag("/" + parentTag);
 	}
 
 	public void renderDefaultMarkupStyled(String title,
