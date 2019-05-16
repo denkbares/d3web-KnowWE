@@ -327,10 +327,6 @@
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-KBB</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-KPI</artifactId>
 				</dependency>
 				<dependency>
@@ -525,6 +521,16 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>denkbares-SemanticCore-Plugin-GraphDB-ClosedSource</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>kbb</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-KBB</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>
