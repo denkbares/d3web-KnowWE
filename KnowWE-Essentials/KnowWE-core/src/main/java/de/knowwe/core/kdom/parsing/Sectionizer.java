@@ -157,7 +157,7 @@ public class Sectionizer implements Parser {
 		}
 		if (lastEnd < text.length()) {
 			int newPosInTypes = type instanceof ExclusiveType && createdSection ? types.size() : posInTypes;
-			splitToSections(text.substring(lastEnd, text.length()), parent,
+			splitToSections(text.substring(lastEnd), parent,
 					types, newPosInTypes);
 		}
 	}
