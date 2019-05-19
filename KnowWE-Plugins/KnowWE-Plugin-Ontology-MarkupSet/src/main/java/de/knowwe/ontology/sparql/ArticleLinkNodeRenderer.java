@@ -30,11 +30,29 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 		// check for exact matches e.g, for plain Strings
 		ArticleManager articleManager = user.getArticleManager();
 		if (articleManager.getArticle(text) != null) {
-			return KnowWEUtils.getLinkHTMLToArticle(text);
+			if (mode == RenderMode.HTML) {
+				return KnowWEUtils.getLinkHTMLToArticle(text);
+			}
+			if (mode == RenderMode.PlainText) {
+				return text;
+			}
+		}
+
+		// check for exact URI matches
+		String lns = core.getLocalNamespace();
+		if (text.startsWith(lns)) {
+			String title = Strings.decodeURL(text.substring(lns.length()));
+			if (user.getArticleManager().getArticle(title) != null) {
+				if (mode == RenderMode.HTML) {
+					return KnowWEUtils.getLinkHTMLToArticle(title);
+				}
+				if (mode == RenderMode.PlainText) {
+					return title;
+				}
+			}
 		}
 
 		// try some heuristics to find article links in grouped literals with commonly used separators
-		String lns = core.getLocalNamespace();
 		StringBuilder newText = new StringBuilder(text);
 		if (text.contains("\n") && tryGroupedLinks(text, user, lns, mode, newText, LINE_BREAK)) return newText.toString();
 		if (text.contains(",") && tryGroupedLinks(text, user, lns, mode, newText, COMMA)) return newText.toString();
