@@ -27,57 +27,46 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 			return text;
 		}
 
-		/*
-		First, check for exact matches e.g, for plain Strings
-         */
+		// check for exact matches e.g, for plain Strings
 		ArticleManager articleManager = user.getArticleManager();
 		if (articleManager.getArticle(text) != null) {
 			return KnowWEUtils.getLinkHTMLToArticle(text);
 		}
 
-		String lns = core.getLocalNamespace();
-
-		// We are only interested in statements from the local name space.
-		// Other name spaces or no name space (simple string) probably is not
-		// representing an article in the wiki.
-		Matcher matcher = Pattern.compile("(" + Pattern.quote(lns) + "\\S+)").matcher(text);
-		StringBuilder newText = new StringBuilder(text);
-		int offSet = 0;
-		boolean foundLinks = false;
-		while (matcher.find()) {
-			foundLinks = true;
-			String link = matcher.group();
-			String title = Strings.decodeURL(link.substring(lns.length()));
-			if (articleManager.getArticle(title) != null) {
-				if (mode == RenderMode.HTML) {
-					offSet = replaceGroupWithLinkAndUpdateOffset(user, matcher, newText, offSet, title);
-				}
-				if (mode == RenderMode.PlainText) {
-					newText.replace(matcher.start(), matcher.end(), title);
-				}
-			}
-		}
-		if (foundLinks) return newText.toString();
-
 		// try some heuristics to find article links in grouped literals with commonly used separators
-		if (text.contains("\n") && tryGroupedLinks(text, user, newText, LINE_BREAK)) return newText.toString();
-		if (text.contains(",") && tryGroupedLinks(text, user, newText, COMMA)) return newText.toString();
-		if (text.contains(";") && tryGroupedLinks(text, user, newText, SEMICOLON)) return newText.toString();
-		if (text.contains(" ") && tryGroupedLinks(text, user, newText, WHITE_SPACE)) return newText.toString();
+		String lns = core.getLocalNamespace();
+		StringBuilder newText = new StringBuilder(text);
+		if (text.contains("\n") && tryGroupedLinks(text, user, lns, mode, newText, LINE_BREAK)) return newText.toString();
+		if (text.contains(",") && tryGroupedLinks(text, user, lns, mode, newText, COMMA)) return newText.toString();
+		if (text.contains(";") && tryGroupedLinks(text, user, lns, mode, newText, SEMICOLON)) return newText.toString();
+		if (text.contains(" ") && tryGroupedLinks(text, user, lns, mode, newText, WHITE_SPACE)) return newText.toString();
 
 		return newText.toString();
 	}
 
-	private boolean tryGroupedLinks(String text, UserContext user, StringBuilder newText, Pattern pattern) {
+	private boolean tryGroupedLinks(String text, UserContext user, String lns, RenderMode mode, StringBuilder newText, Pattern pattern) {
 		ArticleManager articleManager = user.getArticleManager();
 		Matcher matcher = pattern.matcher(text);
 		int offSet = 0;
 		boolean foundLinks = false;
 		while (matcher.find()) {
 			String title = matcher.group(1);
+			String decodeTitle = Strings.decodeURL(title);
+			if (articleManager.getArticle(title) == null && decodeTitle.startsWith(lns)) {
+				// Check if it is a full url.
+				// We are only interested in statements from the local name space.
+				// Other name spaces or no name space (simple string) probably is not
+				// representing an article in the wiki.
+				title = decodeTitle.substring(lns.length());
+			}
 			if (articleManager.getArticle(title) != null) {
 				foundLinks = true;
-				offSet = replaceGroupWithLinkAndUpdateOffset(user, matcher, newText, offSet, title);
+				if (mode == RenderMode.HTML) {
+					offSet = replaceGroupWithLinkAndUpdateOffset(user, matcher, newText, offSet, title);
+				}
+				if (mode == RenderMode.PlainText) {
+					offSet = replaceGroupWithPlainTextAndUpdateOffset(matcher, newText, offSet, title);
+				}
 			}
 		}
 		return foundLinks;
@@ -85,13 +74,19 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 
 	@NotNull
 	private static Pattern getGroupedLinksPattern(String separator) {
-		return Pattern.compile("(?<=\\A|" + separator + ")(?:\\h*[-*]\\h*)?([^" + separator + "]+)(?=" + separator + "|\\z)");
+		return Pattern.compile("(?<=\\A|" + separator + ")(?:\\h*[-*]\\h*|\\h*)?([^" + separator + "]+)(?=" + separator + "|\\z)");
 	}
 
 	private int replaceGroupWithLinkAndUpdateOffset(UserContext user, Matcher matcher, StringBuilder newText, int offSet, String title) {
 		String htmlLink = RenderResult.mask(KnowWEUtils.getLinkHTMLToArticle(title), user);
 		newText.replace(matcher.start(1) + offSet, matcher.end(1) + offSet, htmlLink);
 		offSet += htmlLink.length() - matcher.group(1).length();
+		return offSet;
+	}
+
+	private int replaceGroupWithPlainTextAndUpdateOffset(Matcher matcher, StringBuilder newText, int offSet, String title) {
+		newText.replace(matcher.start(1) + offSet, matcher.end(1) + offSet, title);
+		offSet += title.length() - matcher.group(1).length();
 		return offSet;
 	}
 
