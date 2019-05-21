@@ -645,13 +645,14 @@ KNOWWE.core.plugin.pagination = function() {
 		}, 0);
 	}
 
-	function getSortingSymbol(naturalOrder) {
+	function getSortingSymbol(naturalOrder, index) {
 		let cssClass;
 		if (naturalOrder) {
-			cssClass = "fa fa-caret-up fa-lg";
-		} else {
 			cssClass = "fa fa-caret-down fa-lg";
+		} else {
+			cssClass = "fa fa-caret-up fa-lg";
 		}
+		if (index !== 0) cssClass += " secondary";
 		return jq$('<i/>', {
 			"class": cssClass
 		});
@@ -669,14 +670,12 @@ KNOWWE.core.plugin.pagination = function() {
 			sortLength = 1;
 		}
 		for (let i = 0; i < sortLength; i++) {
-			const sortingSymbolParent = jq$("[pagination=" + sectionId
-				+ "] th:contains('" + parsedCookie.sorting[i].sort + "') span");
+			const sortingSymbolParent = jq$("[pagination=" + sectionId + "] th:contains('" + parsedCookie.sorting[i].sort + "') span");
 			const sortingSymbol = jq$(sortingSymbolParent).find("i");
-			if (sortingSymbol.length === 1) {
-				sortingSymbol.replaceWith(
-					getSortingSymbol(parsedCookie.sorting[i].naturalOrder));
+			if (sortingSymbol.exists()) {
+				sortingSymbol.replaceWith(getSortingSymbol(parsedCookie.sorting[i].naturalOrder, i));
 			} else {
-				jq$(sortingSymbolParent).append(getSortingSymbol(parsedCookie.sorting[i].naturalOrder));
+				jq$(sortingSymbolParent).append(getSortingSymbol(parsedCookie.sorting[i].naturalOrder, i));
 			}
 		}
 	}
@@ -795,26 +794,36 @@ KNOWWE.core.plugin.pagination = function() {
 
 		sort: function(element, id) {
 			const cookie = readCookie(id);
-			const sort = jq$(element).text();
+			const columnName = jq$(element).text();
 			let sorting;
-			if (typeof cookie.sorting != 'undefined') {
+			if (typeof cookie.sorting == "undefined") {
+				sorting = [{sort: columnName, naturalOrder: true}];
+			} else {
 				sorting = cookie.sorting;
 				let found = false;
-				for (let i = 0; i < sorting.length; i++) {
-					if (sorting[i].sort === sort) {
-						const naturalOrder = sorting[i].naturalOrder;
-						sorting[i].naturalOrder = !naturalOrder;
-						sorting.move(i, 0);
+				let remove = false;
+				let i = 0
+				for (; i < sorting.length; i++) {
+					if (sorting[i].sort === columnName) {
+						if (i === 0) { // we only toggle sorting when primary sort column
+							if (sorting[i].naturalOrder) { // clicked second time, reverse order
+								sorting[i].naturalOrder = false;
+							} else { // clicked third time, remove (not sorting this column)
+								remove = true;
+							}
+						} else {
+							sorting.move(i, 0);
+						}
 						found = true;
 						break;
 					}
 				}
-				if (found === false) {
-					newSortObject = {sort: sort, naturalOrder: true};
-					sorting.unshift(newSortObject);
+				if (remove) {
+					sorting.splice(i, 1);
 				}
-			} else {
-				sorting = [{sort: sort, naturalOrder: true}];
+				if (!found) {
+					sorting.unshift({sort: columnName, naturalOrder: true});
+				}
 			}
 			cookie.sorting = sorting;
 			saveCookieAndUpdateNode(cookie, id);

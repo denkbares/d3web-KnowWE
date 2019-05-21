@@ -519,6 +519,10 @@ table.knowwe-pagination th.sortable i {
 	margin-left: 5px;
 }
 
+table.knowwe-pagination th.sortable .secondary {
+	color: grey;
+}
+
 table.knowwe-pagination th img {
 	position: relative;
 	top: 2px;
