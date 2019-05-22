@@ -27,9 +27,22 @@
 								<exclude>WEB-INF/lib/commons-*.jar</exclude>
 								<exclude>WEB-INF/lib/slf4j-log4j12-*.jar</exclude>
 								<exclude>WEB-INF/lib/slf4j-api-*.jar</exclude>
+								<exclude>META-INF/MANIFEST.MF</exclude>
 							</excludes>
 						</overlay>
 					</overlays>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<manifestEntries>
+							<Extension-Name>${project.artifactId}</Extension-Name>
+							<Implementation-Version>${implementationVersion}</Implementation-Version>
+							<Build-Date>${maven.build.timestamp}</Build-Date>
+							<Build-Branch>${scmBranch}</Build-Branch>
+							<Build-Version>${buildNumber}</Build-Version>
+						</manifestEntries>
+					</archive>
 				</configuration>
 				<executions>
 					<execution>
@@ -64,6 +77,10 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

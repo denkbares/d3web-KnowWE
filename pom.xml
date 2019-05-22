@@ -22,6 +22,7 @@
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.clover.reportPath>target/site/clover/clover.xml</sonar.clover.reportPath>
+		<implementationVersion>${project.version}</implementationVersion>
 	</properties>
 
 	<modules>
@@ -43,6 +44,10 @@
 			<url>http://www.gnu.org/licenses/lgpl.txt</url>
 		</license>
 	</licenses>
+
+	<scm>
+		<connection>scm:git:ssh://git@git.denkbares.com:2222/open-source/code/knowwe.git</connection>
+	</scm>
 
 	<build>
 		<defaultGoal>package</defaultGoal>
@@ -179,6 +184,24 @@
 							</configuration>
 						</execution>
 					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>buildnumber-maven-plugin</artifactId>
+					<version>1.4</version>
+					<executions>
+						<execution>
+							<phase>validate</phase>
+							<goals>
+								<goal>create</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<doCheck>false</doCheck>
+						<doUpdate>false</doUpdate>
+						<shortRevisionLength>10</shortRevisionLength>
+					</configuration>
 				</plugin>
 			</plugins>
 		</pluginManagement>

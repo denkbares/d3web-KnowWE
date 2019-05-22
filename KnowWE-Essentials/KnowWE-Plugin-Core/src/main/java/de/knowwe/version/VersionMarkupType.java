@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -42,6 +44,8 @@ public class VersionMarkupType extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
 
+	private static Manifest manifest;
+
 	static {
 		MARKUP = new DefaultMarkup("Version");
 		MARKUP.setInline(true);
@@ -51,46 +55,72 @@ public class VersionMarkupType extends DefaultMarkupType {
 	public VersionMarkupType() {
 		super(MARKUP);
 		setRenderer((section, user, result) -> {
+			manifest = getApplicationManifest();
 			String type = DefaultMarkupType.getAnnotation(section, "type");
+			if (manifest != null) {
+				result.appendHtml("<div style='font-size: 90%'>");
+				Attributes attributes = manifest.getMainAttributes();
+
+				if ("long".equals(type)) {
+					result.appendHtml("<span style='font-weight:bold'>Version:</span> ");
+				}
+
+				String version = attributes.getValue("Implementation-Version");
+				if (version != null) {
+					result.appendHtml("<span>" + version + ",</span> ");
+				}
+
+				if ("long".equals(type)) {
+					result.appendHtml("<br><span style='font-weight:bold'>Date:</span> ");
+				}
+
+				String dateString;
+				try {
+					Date date = Date.from(Instant.parse(attributes.getValue("Build-Date")));
+					dateString = new SimpleDateFormat("yyyy-MM-dd HH:MM").format(date);
+				}
+				catch (NullPointerException npe) {
+					dateString = VersionTagHandler.getBuildTime();
+				}
+
+				result.appendHtml("<span>" + dateString + "</span>");
+				if ("long".equals(type)) {
+					String buildBranch = attributes.getValue("Build-Branch");
+					String buildVersion = attributes.getValue("Build-Version");
+					if (buildVersion == null) {
+						buildVersion = "";
+					}
+					else {
+						buildVersion = " " + buildVersion;
+					}
+					if (buildBranch == null || "${scmBranch}".equals(buildBranch)) {
+						buildBranch = "IntelliJ local build";
+					}
+					result.appendHtml("<br/><span> Build: " + buildBranch + buildVersion + "</span>");
+				}
+				result.appendHtml("</div>");
+			}
+		});
+	}
+
+	/**
+	 * Tries to load the MANIFEST.MF for the application and returns the singleton manifest
+	 *
+	 * @return the application manifest
+	 */
+	@Nullable
+	public static Manifest getApplicationManifest() {
+		if (manifest == null && Environment.isInitialized()) {
 			String manifestPath = Environment.getInstance()
 					.getWikiConnector()
 					.getApplicationRootPath() + "/META-INF/MANIFEST.MF";
-			Manifest manifest;
 			try {
 				manifest = new Manifest(new FileInputStream(new File(manifestPath)));
 			}
 			catch (IOException e) {
 				Log.warning("Could not read manifest file, build info will not be displayed.");
-				return;
 			}
-
-			result.appendHtml("<div style='font-size: 90%'>");
-			Attributes attributes = manifest.getMainAttributes();
-
-			if ("long".equals(type)) {
-				result.appendHtml("<span style='font-weight:bold'>Version:</span> ");
-			}
-
-			String version = attributes.getValue("Implementation-Version");
-			if (version != null) {
-				result.appendHtml("<span>" + version + ",</span> ");
-			}
-
-			if ("long".equals(type)) {
-				result.appendHtml("<br><span style='font-weight:bold'>Date:</span> ");
-			}
-
-			String dateString;
-			try {
-				Date date = Date.from(Instant.parse(attributes.getValue("Build-Date")));
-				dateString = new SimpleDateFormat("yyyy-MM-dd HH:MM").format(date);
-			}
-			catch (NullPointerException npe) {
-				dateString = VersionTagHandler.getBuildTime();
-			}
-
-			result.appendHtml("<span>" + dateString + "</span>");
-			result.appendHtml("</div>");
-		});
+		}
+		return manifest;
 	}
 }

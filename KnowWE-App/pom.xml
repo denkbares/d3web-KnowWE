@@ -13,6 +13,11 @@
 	<packaging>war</packaging>
 	<description>Maven module for the KnowWE web app. Produces a .war file.</description>
 
+	<properties>
+		<implementationVersion>${project.version}</implementationVersion>
+	</properties>
+
+
 	<build>
 		<plugins>
 			<plugin>
@@ -41,8 +46,10 @@
 						</manifest>
 						<manifestEntries>
 							<Extension-Name>${project.artifactId}</Extension-Name>
-							<Implementation-Version>${project.version}</Implementation-Version>
+							<Implementation-Version>${implementationVersion}</Implementation-Version>
 							<Build-Date>${maven.build.timestamp}</Build-Date>
+							<Build-Branch>${scmBranch}</Build-Branch>
+							<Build-Version>${buildNumber}</Build-Version>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -77,6 +84,10 @@
 						<phase>none</phase>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
@@ -652,6 +663,9 @@
 
 		<profile>
 			<id>konap</id>
+			<properties>
+				<implementationVersion>KONAP 1.0 (MVP)</implementationVersion>
+			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares.krone</groupId>
