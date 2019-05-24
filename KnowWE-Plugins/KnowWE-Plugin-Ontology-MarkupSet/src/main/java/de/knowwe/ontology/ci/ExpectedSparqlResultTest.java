@@ -124,7 +124,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 		Section<ExpectedSparqlResultTable> expectedTable = Sections.successor(expectedResultTableMarkup, ExpectedSparqlResultTable.class);
 		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(expectedTable, variables, compiler);
 
-		MultiMap<String, Message> failures = ResultTableModel.checkEquality(expectedResultTable, actualResultTable, atLeastFlag);
+		MultiMap<String, String> failures = ResultTableModel.checkEquality(expectedResultTable, actualResultTable, atLeastFlag);
 
 		if (!failures.isEmpty()) {
 			String errorsText = ResultTableModel.generateErrorsText(failures, false);
