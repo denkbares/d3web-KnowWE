@@ -28,10 +28,10 @@
 	<description>Open Source KnowWE parent</description>
 
 	<properties>
-		<denkbares.version>12.1-SNAPSHOT</denkbares.version>
-		<d3web.version>12.1-SNAPSHOT</d3web.version>
-		<knowwe.version>12.1-SNAPSHOT</knowwe.version>
-		<ssp.version>3.1-SNAPSHOT</ssp.version>
+		<denkbares.version>12.2-SNAPSHOT</denkbares.version>
+		<d3web.version>12.2-SNAPSHOT</d3web.version>
+		<knowwe.version>12.2-SNAPSHOT</knowwe.version>
+		<ssp.version>3.2-SNAPSHOT</ssp.version>
 		<selenium.version>3.13.0</selenium.version>
 		<tomcat.version>9.0.13</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
