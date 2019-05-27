@@ -129,6 +129,8 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE, false, ReferenceValidationMode.class);
 		MARKUP.addAnnotationIcon(ANNOTATION_REFERENCE_VALIDATION_MODE, Icon.ORDERED_LIST.addTitle("Reference-validation-mode"));
+		MARKUP.getAnnotation(ANNOTATION_REFERENCE_VALIDATION_MODE)
+				.setDocumentation("Specifies how references should be validated for this ontology: error, warn, ignore");
 
 		MARKUP.addAnnotation(ANNOTATION_DEFAULT_NAMESPACE, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_DEFAULT_NAMESPACE, Icon.GLOBE.addTitle("Default Namespace"));
