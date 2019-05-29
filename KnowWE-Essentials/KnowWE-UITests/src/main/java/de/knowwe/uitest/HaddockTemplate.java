@@ -101,18 +101,19 @@ public class HaddockTemplate implements WikiTemplate {
 	@Override
 	public void login(WebDriver driver, UITestUtils.UseCase use, String username, String password) {
 		List<WebElement> elements = null;
+		WebDriverWait wait = new WebDriverWait(driver, 20);
 		if (use == UITestUtils.UseCase.LOGIN_PAGE) {
 			elements = driver.findElements(By.id("section-login"));
 		}
 		else if (use == UITestUtils.UseCase.NORMAL_PAGE) {
-			WebElement userbox = new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(By.className("userbox")));
+			WebElement userbox = wait.until(ExpectedConditions.elementToBeClickable(By.className("userbox")));
 			new Actions(driver).moveToElement(userbox).build().perform();
 			try {
 				Thread.sleep(1000); //Animation
 			}
 			catch (InterruptedException ignore) {
 			}
-			new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.btn.btn-primary.btn-block.login")));
+			wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.btn.btn-primary.btn-block.login")));
 			elements = driver.findElements(By.cssSelector("a.btn.btn-primary.btn-block.login"));
 		}
 
@@ -124,12 +125,11 @@ public class HaddockTemplate implements WikiTemplate {
 		}
 
 		elements.get(0).click();
-		new WebDriverWait(driver, 20).until(ExpectedConditions.presenceOfElementLocated(By.id("j_username")))
-				.sendKeys(username);
-		driver.findElement(By.id("j_password")).sendKeys(password);
-		driver.findElement(By.name("submitlogin")).click();
-		new WebDriverWait(driver, 20).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.btn.btn-default.btn-block.logout")));
-		new WebDriverWait(driver, 20).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("j_username"))).sendKeys(username);
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("j_password"))).sendKeys(password);
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.name("submitlogin"))).click();
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.btn.btn-default.btn-block.logout")));
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 	}
 
 	@Override

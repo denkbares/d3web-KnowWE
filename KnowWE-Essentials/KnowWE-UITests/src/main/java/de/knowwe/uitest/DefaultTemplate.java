@@ -22,7 +22,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
  */
 public class DefaultTemplate implements WikiTemplate {
 
-
 	private static DefaultTemplate instance = null;
 
 	public static DefaultTemplate getInstance() {
@@ -110,12 +109,13 @@ public class DefaultTemplate implements WikiTemplate {
 	@Override
 	public void login(WebDriver driver, UITestUtils.UseCase use, String username, String password) {
 		List<WebElement> elements = null;
+		WebDriverWait wait = new WebDriverWait(driver, 20);
 		if (use == UITestUtils.UseCase.LOGIN_PAGE) {
 			String idLoginElement = "logincontent";
 			elements = driver.findElements(By.id(idLoginElement));
 		}
 		else if (use == UITestUtils.UseCase.NORMAL_PAGE) {
-			WebElement loginButton = new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.action.login")));
+			WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.action.login")));
 			elements = Collections.singletonList(loginButton);
 		}
 
@@ -127,12 +127,11 @@ public class DefaultTemplate implements WikiTemplate {
 		}
 
 		elements.get(0).click();
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("j_username")))
-				.sendKeys(username);
-		driver.findElement(By.id("j_password")).sendKeys(password);
-		driver.findElement(By.name("submitlogin")).click();
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
-		new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("j_username"))).sendKeys(username);
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("j_password"))).sendKeys(password);
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.name("submitlogin"))).click();
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.action.logout")));
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.id("edit-source-button")));
 	}
 
 	@Override
