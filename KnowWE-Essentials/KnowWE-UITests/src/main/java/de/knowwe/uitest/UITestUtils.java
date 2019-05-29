@@ -19,17 +19,23 @@
 
 package de.knowwe.uitest;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Platform;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -55,6 +61,8 @@ import static de.knowwe.uitest.UITestUtils.UseCase.LOGIN_PAGE;
  * @created 03.07.15
  */
 public class UITestUtils {
+
+	private static final String TMP_DEBUG_FOLDER = "/tmp/UI Debug Files/";
 
 	public enum TestMode {
 		local, saucelabs
@@ -211,7 +219,13 @@ public class UITestUtils {
 		driver.manage().deleteAllCookies();
 		if (login && !UITestUtils.isLoggedIn(driver, template)) {
 			driver.get(urlConstructor.apply("Login"));
-			UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", LOGIN_PAGE, template);
+			try {
+				UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", LOGIN_PAGE, template);
+			}
+			catch (TimeoutException te) {
+				Log.warning("The login was not successful. Creating debug files ...");
+				generateDebugFiles(driver);
+			}
 		}
 		driver.get(knowWEUrl);
 		if (!pageExists(template, driver)) {
@@ -219,6 +233,39 @@ public class UITestUtils {
 		}
 		Log.info("New web driver for test " + testName);
 		return driver;
+	}
+
+	/**
+	 * Generate a PNG screen capture and the current XML of the driver page.
+	 *
+	 * @param driver
+	 * @throws IOException
+	 */
+	public static void generateDebugFiles(RemoteWebDriver driver) throws IOException {
+		String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date());
+		String fileNamePNG = timestamp + "_screen-capture.png";
+		Log.info(captureScreenshot(driver, fileNamePNG));
+		String fileNameXML = timestamp + "_page-content.xml";
+		Strings.writeFile(TMP_DEBUG_FOLDER + fileNameXML, driver.getPageSource());
+	}
+
+	/**
+	 * Take a screenshot of the current page and return success message.
+	 *
+	 * @param driver   the current driver
+	 * @param fileName the name of the screenshot file
+	 * @return
+	 */
+	public static String captureScreenshot(WebDriver driver, String fileName) {
+		try {
+			File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			File destFile = new File(TMP_DEBUG_FOLDER + fileName);
+			FileUtils.copyFile(file, destFile);
+			return "The screenshot was saved to \"" + destFile.getAbsolutePath() + "\"";
+		}
+		catch (IOException ioe) {
+			return "Failed to capture screenshot (" + ioe.getMessage() + ")";
+		}
 	}
 
 	private static boolean pageExists(WikiTemplate template, WebDriver driver) {
@@ -258,7 +305,6 @@ public class UITestUtils {
 		}
 		href.click();
 		enterArticleText(Strings.readFile("src/test/resources/Dummy.txt"), driver, template);
-
 	}
 
 	public static void enterArticleText(String newText, WebDriver driver, WikiTemplate template) {
@@ -287,5 +333,4 @@ public class UITestUtils {
 		if (os.contains("nux") || os.contains("nix")) return WebOS.linux;
 		return WebOS.other;
 	}
-
 }
