@@ -36,7 +36,6 @@ import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -54,7 +53,7 @@ public abstract class KnowWEUITest {
 
 	private final TestMode testMode;
 	private final String knowWeUrl;
-	private final RemoteWebDriver driver;
+	private final WebDriver driver;
 	protected final Browser browser;
 	protected final Platform os;
 	private final WikiTemplate template;
