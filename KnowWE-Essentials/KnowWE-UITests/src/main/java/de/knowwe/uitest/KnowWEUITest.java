@@ -91,6 +91,7 @@ public abstract class KnowWEUITest {
 
 	@After
 	public void after() {
+		driver.manage().deleteAllCookies();
 		driver.quit();
 	}
 
