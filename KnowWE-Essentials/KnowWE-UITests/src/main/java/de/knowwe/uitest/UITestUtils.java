@@ -231,9 +231,9 @@ public class UITestUtils {
 			}
 		}
 		driver.get(knowWEUrl);
-		if (!pageExists(template, driver)) {
-			createDummyPage(template, driver);
-		}
+//		if (!pageExists(template, driver)) {
+//			createDummyPage(template, driver);
+//		}
 		Log.info("New web driver for test " + testName);
 		return driver;
 	}
