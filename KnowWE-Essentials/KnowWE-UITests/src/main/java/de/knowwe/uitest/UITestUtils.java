@@ -227,7 +227,7 @@ public class UITestUtils {
 			}
 			catch (TimeoutException te) {
 				Log.warning("The login was not successful. Creating debug files ...");
-				generateDebugFiles(driver);
+				generateDebugFiles(driver, "LOGIN");
 			}
 		}
 		driver.get(knowWEUrl);
@@ -242,11 +242,12 @@ public class UITestUtils {
 	 * Generate a PNG screen capture and the current XML of the driver page.
 	 *
 	 * @param driver
+	 * @param prefix
 	 * @throws IOException
 	 */
-	public static void generateDebugFiles(RemoteWebDriver driver) throws IOException {
+	public static void generateDebugFiles(WebDriver driver, String prefix) throws IOException {
 		String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date());
-		String fileNamePNG = timestamp + "_screen-capture.png";
+		String fileNamePNG = timestamp + "_" + prefix + "_screen-capture.png";
 		Log.info(captureScreenshot(driver, fileNamePNG));
 		String fileNameXML = timestamp + "_page-content.xml";
 		Strings.writeFile(TMP_DEBUG_FOLDER + fileNameXML, driver.getPageSource());
