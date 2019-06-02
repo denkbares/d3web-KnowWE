@@ -25,6 +25,7 @@ import com.denkbares.events.EventManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.AbstractPackageCompiler;
+import de.knowwe.core.compile.NamedCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -44,7 +45,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.11.2013
  */
-public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler {
+public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler, NamedCompiler {
 
 	private TerminologyManager terminologyManager;
 	private KnowledgeBase knowledgeBase;
@@ -84,6 +85,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	/**
 	 * Returns the name of this compiler, normally given in the content %%KnowledgeBase section.
 	 */
+	@Override
 	public String getName() {
 		return $(getCompileSection()).successor(KnowledgeBaseDefinition.class)
 				.stream().map(s -> s.get().getTermName(s)).findAny()

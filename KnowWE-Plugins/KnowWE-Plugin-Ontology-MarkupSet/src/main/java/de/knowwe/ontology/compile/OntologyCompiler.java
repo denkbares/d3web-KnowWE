@@ -36,6 +36,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
+import de.knowwe.core.compile.NamedCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -53,11 +54,14 @@ import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoCompiler, IncrementalCompiler, EventListener {
+public class OntologyCompiler extends AbstractPackageCompiler
+		implements Rdf2GoCompiler, IncrementalCompiler, EventListener, NamedCompiler {
 
 	static final String COMMIT_NOTIFICATION_ID = "CommitNotification";
 	private Rdf2GoCore rdf2GoCore;
@@ -112,6 +116,16 @@ public class OntologyCompiler extends AbstractPackageCompiler implements Rdf2GoC
 	@Override
 	public String getArticleName() {
 		return getCompileSection().getTitle();
+	}
+
+	/**
+	 * Returns the name of this compiler, normally given in the content %%KnowledgeBase section.
+	 */
+	@Override
+	public String getName() {
+		return $(getCompileSection()).successor(OntologyDefinition.class)
+				.stream().map(s -> s.get().getTermName(s)).findAny()
+				.orElseGet(() -> getCompileSection().getTitle());
 	}
 
 	@Override
