@@ -31,6 +31,10 @@ used colors
 /* -------------- general settings    --------------- */
 /* ################################################## */
 
+#KnowWENotificationMessage {
+	white-space: pre;
+}
+
 .fa-pencil.image-icon {
 	width: 16px;
 	margin-right: 4px;
