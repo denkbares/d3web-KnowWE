@@ -5,30 +5,24 @@
  * mootools.js and denkbares-Dialogs's scriptacouls.js
  */
 
-if (typeof KNOWWE == "undefined" || !KNOWWE) {
-	/**
-	 * The KNOWWE global namespace object. If KNOWWE is already defined, the
-	 * existing KNOWWE object will not be overwritten so that defined namespaces
-	 * are preserved.
-	 */
-	var KNOWWE = {};
-}
+KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 /**
  * Class: KNOWWE.notification functions and variables for the notification
  * mechanism.
  */
 KNOWWE.notification = function () {
 
-	var messages = [];
-	var idGenerator = 0;
+	const messages = [];
+	let idGenerator = 0;
 
 	return {
 
 		error_jqXHR(jqXHR) {
 			const page = jqXHR.responseText;
-			const start = page.indexOf("<b>Message</b>");
+			let start = page.indexOf("<b>Message</b>");
+			if (start < 0) start = page.indexOf("<b>message</b>"); // older tomcats
 			const end = page.indexOf("</p>", start);
-			var msg = (start >= 0 && end >= 0)
+			const msg = (start >= 0 && end >= 0)
 				? page.substring(start + 14, end).trim()
 				: jq$("div").html(page).find("h1").first().text();
 			KNOWWE.notification.error(jqXHR.statusText, msg);
@@ -95,15 +89,15 @@ KNOWWE.notification = function () {
 
 		_add: function (severity, title, details, id, fromServer) {
 			if (!id) id = idGenerator++;
-			var duplicate = false;
-			var i = 0
+			let duplicate = false;
+			let i = 0;
 			for (; i < messages.length; i++) {
 				if (messages[i].id == id) {
 					duplicate = true;
 					break;
 				}
 			}
-			var message = {
+			const message = {
 				severity: severity,
 				title: title,
 				details: details,
@@ -125,12 +119,12 @@ KNOWWE.notification = function () {
 		_select: function (index) {
 
 			KNOWWE.notification.activeIndex = index;
-			var message = messages[index];
-			var dom = KNOWWE.notification._getDom();
+			const message = messages[index];
+			const dom = KNOWWE.notification._getDom();
 
 			// set colors
-			var startColor = '#fff6c3';
-			var endColor = '#f9eba5';
+			let startColor = '#fff6c3';
+			let endColor = '#f9eba5';
 			if (message.severity == 'error') {
 				startColor = '#efd5d3';
 				endColor = '#e6bbb8';
@@ -156,7 +150,7 @@ KNOWWE.notification = function () {
 
 			// title
 			if (message.title) {
-				var titleHTML = '<strong>' + message.title + ':</strong>&nbsp;';
+				const titleHTML = '<strong>' + message.title + ':</strong>&nbsp;';
 				jq$('#KnowWENotificationTitle').html(titleHTML);
 			}
 
@@ -165,12 +159,12 @@ KNOWWE.notification = function () {
 
 			// counter
 			if (messages.length > 1) {
-				var counterHTML = "";
-				var counter = '&nbsp;<span>(' + (index + 1) + '/'
+				let counterHTML = "";
+				const counter = '&nbsp;<span>(' + (index + 1) + '/'
 					+ messages.length + ')</span>';
-				var next = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
+				const next = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
 					+ (index + 1) + ');">&gt;</a>';
-				var prev = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
+				const prev = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
 					+ (index - 1) + ');">&lt;</a>';
 				if (index == 0) {
 					counterHTML += counter;
@@ -202,8 +196,8 @@ KNOWWE.notification = function () {
 		 * Removes a specified notification both from server and client
 		 */
 		removeNotification: function (id) {
-			var index = -1;
-			for (var i = 0; i < messages.length; i++) {
+			let index = -1;
+			for (let i = 0; i < messages.length; i++) {
 				if (messages[i].id == id) {
 					index = i;
 					break;
@@ -224,12 +218,12 @@ KNOWWE.notification = function () {
 				jq$('#KnowWENotificationDom').hide();
 			}
 
-			var params = {
+			const params = {
 				action: 'RemoveNotificationAction',
 				notificationid: id
 			};
 
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				response: {
 					action: 'none'
@@ -242,22 +236,22 @@ KNOWWE.notification = function () {
 		 * Loads all notifications from the server and displays them.
 		 */
 		loadNotifications: function () {
-			var params = {
+			const params = {
 				action: 'GetNotificationsAction'
 			};
 
-			var options = {
+			const options = {
 				url: KNOWWE.core.util.getURL(params),
 				method: 'GET',
 				response: {
 					action: 'none',
 					fn: function () {
-						var notifications = JSON.parse(this.responseText);
-						var idsToAdd = notifications.map(function (item) {
+						const notifications = JSON.parse(this.responseText);
+						const idsToAdd = notifications.map(function (item) {
 							return item.id;
 						});
 						// remove all messages that were from the server but are no longer present
-						var idsToRemove = [];
+						const idsToRemove = [];
 						for (var i = 0; i < messages.length; i++) {
 							if (messages[i].fromServer) {
 								idsToRemove.push(messages[i].id);
@@ -270,7 +264,7 @@ KNOWWE.notification = function () {
 						}
 						if (notifications.length > 0) {
 							for (i = 0; i < notifications.length; i++) {
-								var notification = notifications[i];
+								const notification = notifications[i];
 								if (notification.type == "error") {
 									KNOWWE.notification.error(null,
 										notification.message,
