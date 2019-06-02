@@ -119,6 +119,9 @@ public class CIBuildManager implements EventListener {
 				}
 				deleteAttachmentTempFiles(build);
 			}
+			catch (Exception e) {
+				Log.severe("Exception while executing CI build", e);
+			}
 			finally {
 				ciBuildQueue.remove(dashboard);
 				ProgressListenerManager.getInstance().removeProgressListener(
