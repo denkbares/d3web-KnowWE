@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -24,11 +24,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.denkbares.utils.Log;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
-import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.NamedCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -65,19 +67,22 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 			for (Article article : articlesMatchingPattern) {
 				result.add(new TestObjectContainer<>(article.getTitle(), c.cast(article)));
 			}
-
 		}
 		String web = Environment.DEFAULT_WEB;
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
 		if (c.equals(ArticleManager.class)) {
-			Object byName = Environment.getInstance().getArticleManager(web);
-			if (byName != null) {
-				result.add(new TestObjectContainer<>(web, c.cast(byName)));
-			}
+			result.add(new TestObjectContainer<>(web, c.cast(articleManager)));
 		}
 		if (c.equals(PackageManager.class)) {
 			Object byName = KnowWEUtils.getPackageManager(web);
 			if (byName != null) {
 				result.add(new TestObjectContainer<>(web, c.cast(byName)));
+			}
+		}
+		if (NamedCompiler.class.isAssignableFrom(c)) {
+			//noinspection unchecked
+			for (NamedCompiler compiler : Compilers.getCompilers(articleManager, (Class<? extends NamedCompiler>) c)) {
+				result.add(new TestObjectContainer<>(compiler.getName(), c.cast(compiler)));
 			}
 		}
 
@@ -100,5 +105,4 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		}
 		return Collections.unmodifiableCollection(matchingArticles);
 	}
-
 }
