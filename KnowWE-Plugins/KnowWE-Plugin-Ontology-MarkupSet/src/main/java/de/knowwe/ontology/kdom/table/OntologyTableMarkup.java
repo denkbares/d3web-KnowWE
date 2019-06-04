@@ -68,6 +68,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 	private static final DefaultMarkup MARKUP;
 
 	public static final String ANNOTATION_TYPE_RELATION = "typeRelation";
+	public static final String ANNOTATION_DEFAULT_PREDICATE_OBJECT = "defaultPredicateObject";
 
 	static {
 		MARKUP = new DefaultMarkup("OntologyTable");
@@ -76,6 +77,18 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_TYPE_RELATION, false);
 		MARKUP.addAnnotationContentType(ANNOTATION_TYPE_RELATION, new TurtleURI());
+		MARKUP.getAnnotation(ANNOTATION_TYPE_RELATION).setDocumentation("By setting this annotation, the concepts of " +
+				"the first column will get the concept in the header of the first column with the concept given in " +
+				"the annotation as the predicate.\n<br>" +
+				"The resulting statement for each cell in the first column will be:<br>\n " +
+				"S: Column 1 Cell, P: annotation, O: Column 1 Header");
+
+//		MARKUP.addAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT, false);
+//		MARKUP.addAnnotationContentType(ANNOTATION_DEFAULT_PREDICATE_OBJECT, PredicateObjectSentenceList.getInstance());
+//		MARKUP.getAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT).setDocumentation("Specify predicate and object (or " +
+//				"object list) using this annotation. Predicate and object(s) will be added to every concept of the " +
+//				"first column, as long as there is no column with the same predicate in the header and a different " +
+//				"(non empty) entry in its cell for the same row.");
 	}
 
 	public OntologyTableMarkup() {
