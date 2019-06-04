@@ -115,7 +115,6 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	public StatementProviderResult getStatements(Section<? extends Object> section, Rdf2GoCompiler compiler) {
 
 		StatementProviderResult result = new StatementProviderResult(compiler);
-		boolean termError = false;
 		/*
 		 * Handle OBJECT
 		 */
