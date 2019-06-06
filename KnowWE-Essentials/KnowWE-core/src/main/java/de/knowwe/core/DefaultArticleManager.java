@@ -131,7 +131,11 @@ public class DefaultArticleManager implements ArticleManager {
 
 		String title = article.getTitle();
 
-		added.add(article);
+		if (!added.add(article)) {
+			// Old action could not be overwritten so delete and add last action
+			added.remove(article);
+			added.add(article);
+		}
 
 		Article lastVersion = getArticle(title);
 		if (lastVersion != null) removed.add(lastVersion);
