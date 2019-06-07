@@ -93,6 +93,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String FULL_PARSE_FIRED = "fullParseFired";
 	public static final String RENDER_MODE = "renderMode";
 	public static final String PREVIEW = "preview";
+	public static final int RENDER_WAIT_TIMEOUT = 5000;
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
@@ -321,15 +322,22 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 	}
 
-	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
-		List<PageAppendHandler> appendHandlers = Environment.getInstance()
-				.getAppendHandlers();
+	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) throws InterruptedException {
 
-		renderPrePageAppendHandler(userContext, article.getTitle(), renderResult, appendHandlers);
+		if (article.getArticleManager().getCompilerManager().awaitTermination(RENDER_WAIT_TIMEOUT)) {
 
-		renderPage(userContext, article, renderResult);
+			List<PageAppendHandler> appendHandlers = Environment.getInstance()
+					.getAppendHandlers();
 
-		renderPostPageAppendHandler(userContext, article.getTitle(), renderResult, appendHandlers);
+			renderPrePageAppendHandler(userContext, article.getTitle(), renderResult, appendHandlers);
+
+			renderPage(userContext, article, renderResult);
+
+			renderPostPageAppendHandler(userContext, article.getTitle(), renderResult, appendHandlers);
+		}
+		else {
+			renderResult.appendHtmlElement("span", "Timed out while waiting for knowledge to be compiled, please try again later...", "class", "warning");
+		}
 	}
 
 	private static DefaultArticleManager getDefaultArticleManager() {
