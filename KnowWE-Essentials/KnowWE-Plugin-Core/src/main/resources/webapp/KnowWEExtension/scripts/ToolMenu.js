@@ -81,7 +81,9 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 		// show above
 		styles.bottom = windowHeight - nodeRect.top - 1 + 'px';
 		$node.unbind('mouseleave').mouseleave(function (event) {
-			if (event.clientY >= nodeRect.top + 1) _TM.hideToolsPopupMenu();
+			if (event.clientY >= nodeRect.top + 5) {
+				_TM.hideToolsPopupMenu();
+			}
 			jq$(this).unbind('mouseleave');
 		});
 	}
@@ -89,7 +91,9 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 		// show below
 		styles.top = nodeRect.top + nodeRect.height + 'px';
 		$node.unbind('mouseleave').mouseleave(function (event) {
-			if (event.clientY <= nodeRect.bottom - 1) _TM.hideToolsPopupMenu();
+			if (event.clientY <= nodeRect.bottom - 5) {
+				_TM.hideToolsPopupMenu();
+			}
 			jq$(this).unbind('mouseleave');
 		});
 	}
