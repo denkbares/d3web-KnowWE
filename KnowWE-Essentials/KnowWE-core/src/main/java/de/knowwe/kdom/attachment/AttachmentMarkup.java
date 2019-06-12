@@ -181,8 +181,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				this.cancel();
 				return;
 			}
-
-			performUpdate(section);
+			// only perform section update if articles are initialized in case we reference articles from this wiki
+			if (section.getArticleManager().isInitialized()) {
+				performUpdate(section);
+			}
 		}
 	}
 

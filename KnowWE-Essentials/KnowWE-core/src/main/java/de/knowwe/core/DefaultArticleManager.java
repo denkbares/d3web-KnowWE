@@ -64,10 +64,16 @@ public class DefaultArticleManager implements ArticleManager {
 	private final Set<Article> added = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final Set<Article> removed = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+	private boolean initialized;
+
 	public DefaultArticleManager(String web) {
 		this.web = web;
 		this.compilerManager = new CompilerManager(this);
 		this.attachmentManager = new AttachmentManager(this);
+	}
+
+	public void setInitialized(boolean initialized) {
+		this.initialized = initialized;
 	}
 
 	public AttachmentManager getAttachmentManager() {
@@ -251,6 +257,11 @@ public class DefaultArticleManager implements ArticleManager {
 		if (section == null || section.getTitle() == null) return false;
 		return getArticle(section.getTitle()) == section.getArticle()
 				&& !deleteAfterCompile.contains(section.getTitle().toLowerCase());
+	}
+
+	@Override
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	/**

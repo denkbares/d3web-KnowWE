@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -117,7 +118,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		if ("true".equals(copyCorePages)) {
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(
-						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/classes/jspwiki-custom.properties"), "UTF-8"));
+						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/classes/jspwiki-custom.properties"), StandardCharsets.UTF_8));
 				String line;
 				File pageDir = null;
 				while ((line = in.readLine()) != null) {
@@ -471,7 +472,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 */
 	private void initializeAllArticles(WikiEngine engine) {
 		Stopwatch stopwatchAll = new Stopwatch();
-		ArticleManager articleManager = getDefaultArticleManager();
+		DefaultArticleManager articleManager = getDefaultArticleManager();
 		articleManager.open();
 		try {
 			Collection<?> wikiPages = getAllPages(engine);
@@ -480,7 +481,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				WikiPage wp = (WikiPage) o;
 				String content = engine.getPureText(wp.getName(), wp.getVersion());
 				Article article = Article.createArticle(content, wp.getName(), Environment.DEFAULT_WEB);
-				((DefaultArticleManager) articleManager).queueArticle(article);
+				articleManager.queueArticle(article);
 			});
 			stopwatchSectionizing.log("Sectionized all articles");
 		}
@@ -498,6 +499,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		catch (InterruptedException e) {
 			Log.warning("Caught InterrupedException while waiting til compilation is finished.", e);
 		}
+		articleManager.setInitialized(true);
 		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
 		stopwatchAll.log("Initialized all articles");
 	}

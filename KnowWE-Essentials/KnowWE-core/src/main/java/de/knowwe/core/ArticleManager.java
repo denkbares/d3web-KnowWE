@@ -106,4 +106,11 @@ public interface ArticleManager {
 	 * @return whether the section is live/currently in use
 	 */
 	boolean isLive(Section<?> section);
+
+	/**
+	 * Checks whether all articles are initialized after wiki startup.
+	 *
+	 * @return whether all articles are initialized
+	 */
+	boolean isInitialized();
 }
