@@ -91,6 +91,10 @@ public abstract class KnowWEUITest {
 		driver = UITestUtils.setUp(browser, os, template, getArticleName(), testMode, knowWeUrl, login, urlConstructor);
 	}
 
+	/**
+	 * This test watcher catches a failed ui test and saves a screen capture of the current page. For more details there
+	 * is also saved a xml file of the pages html content. The files will be saved to the /tmp folder.
+	 */
 	@Rule
 	public final TestRule watchman = new TestWatcher() {
 
