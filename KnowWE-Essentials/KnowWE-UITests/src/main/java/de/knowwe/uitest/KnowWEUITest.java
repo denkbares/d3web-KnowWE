@@ -25,8 +25,11 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -88,11 +91,21 @@ public abstract class KnowWEUITest {
 		driver = UITestUtils.setUp(browser, os, template, getArticleName(), testMode, knowWeUrl, login, urlConstructor);
 	}
 
-	@After
-	public void after() {
-		driver.manage().deleteAllCookies();
-		driver.quit();
-	}
+	@Rule
+	public final TestRule watchman = new TestWatcher() {
+
+		@Override
+		protected void failed(Throwable e, Description description) {
+			String className = description.getClassName();
+			String prefix = className.substring(className.lastIndexOf(".") + 1);
+			UITestUtils.generateDebugFiles(driver, prefix);
+		}
+
+		@Override
+		protected void finished(Description description) {
+			driver.quit();
+		}
+	};
 
 	protected WikiTemplate getTemplate() {
 		return template;
