@@ -861,8 +861,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
-		if (store == null) return null;
+		if (store == null) return null; // we want this non blocking if null
 		synchronized (this) {
+			if (store == null) return null; // check again in synchronized block
 			return store.get(compiler);
 		}
 	}
