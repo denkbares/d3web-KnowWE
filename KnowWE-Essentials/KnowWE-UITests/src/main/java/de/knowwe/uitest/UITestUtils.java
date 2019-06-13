@@ -22,8 +22,6 @@ package de.knowwe.uitest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -241,14 +239,17 @@ public class UITestUtils {
 	 *
 	 * @param driver
 	 * @param prefix
-	 * @throws IOException
 	 */
-	public static void generateDebugFiles(WebDriver driver, String prefix) throws IOException {
-		String timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date());
-		String fileNamePNG = timestamp + "_" + prefix + "_screen-capture.png";
+	public static void generateDebugFiles(WebDriver driver, String prefix) {
+		String fileNamePNG = prefix + "_screen-capture.png";
 		Log.info(captureScreenshot(driver, fileNamePNG));
-		String fileNameXML = timestamp + "_page-content.xml";
-		Strings.writeFile(TMP_DEBUG_FOLDER + fileNameXML, driver.getPageSource());
+		String fileNameXML = prefix + "_page-content.xml";
+		try {
+			Strings.writeFile(TMP_DEBUG_FOLDER + fileNameXML, driver.getPageSource());
+		}
+		catch (IOException ioe) {
+			Log.warning("Creation of debug xml file failed: " + ioe.getMessage());
+		}
 	}
 
 	/**
@@ -263,10 +264,10 @@ public class UITestUtils {
 			File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 			File destFile = new File(TMP_DEBUG_FOLDER + fileName);
 			FileUtils.copyFile(file, destFile);
-			return "The screenshot was saved to \"" + destFile.getAbsolutePath() + "\"";
+			return "The screenshot was saved to \"" + destFile.getAbsolutePath() + "\".";
 		}
 		catch (IOException ioe) {
-			return "Failed to capture screenshot (" + ioe.getMessage() + ")";
+			return "Failed to capture screenshot: " + ioe.getMessage();
 		}
 	}
 
