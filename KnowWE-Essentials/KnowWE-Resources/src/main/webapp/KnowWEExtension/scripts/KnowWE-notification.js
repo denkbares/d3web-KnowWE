@@ -17,15 +17,8 @@ KNOWWE.notification = function () {
 
 	return {
 
-		error_jqXHR(jqXHR) {
-			const page = jqXHR.responseText;
-			let start = page.indexOf("<b>Message</b>");
-			if (start < 0) start = page.indexOf("<b>message</b>"); // older tomcats
-			const end = page.indexOf("</p>", start);
-			const msg = (start >= 0 && end >= 0)
-				? page.substring(start + 14, end).trim()
-				: jq$("div").html(page).find("h1").first().text();
-			KNOWWE.notification.error(jqXHR.statusText, msg);
+		error_jqXHR: function(jqXHR) {
+			KNOWWE.notification.error(jqXHR.statusText, _KA.xhrExtractMessage(jqXHR));
 		},
 
 		error: function (title, details, id, fromServer) {
