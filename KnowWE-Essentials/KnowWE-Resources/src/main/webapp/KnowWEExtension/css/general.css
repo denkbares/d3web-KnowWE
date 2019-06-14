@@ -130,6 +130,12 @@ a:hover {
 	background: url(../images/arrow_right.png) no-repeat 0px 3px;
 }
 
+.objectInfoPanel .extend-panel-right,
+.objectInfoPanel .extend-panel-up,
+.objectInfoPanel .extend-panel-down {
+	margin-left: 16px;
+}
+
 .message-dialog {
 	position: fixed;
 	background: #FFF6BF;
