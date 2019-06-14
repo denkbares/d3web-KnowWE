@@ -73,7 +73,7 @@ public class ObjectInfoRenderer implements Renderer {
 	// Parameter used in the request
 	public static final String OBJECT_NAME = "objectname";
 	public static final String TERM_IDENTIFIER = "termIdentifier";
-	public static final int MAX_NUMBER_BY_TYPE = 50;
+	public static final int MAX_NUMBER_BY_TYPE = 10;
 
 	private static final DefaultMarkupRenderer defaultMarkupRenderer = new DefaultMarkupRenderer();
 
@@ -220,28 +220,41 @@ public class ObjectInfoRenderer implements Renderer {
 	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
 		Map<Type, List<Section<?>>> typeGroups = groupByType(references);
 		for (Entry<Type, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
-			List<Section<?>> sectionsOfType = typeEntry.getValue();
-			String name = typeEntry.getKey().getName();
 
-			// if we have to many sections of one type, we additionally group by article
-			if (sectionsOfType.size() > MAX_NUMBER_BY_TYPE) {
-				for (Entry<Article, List<Section<?>>> articleEntry : groupByArticle(sectionsOfType).entrySet()) {
-					RenderResult innerResult = new RenderResult(result);
+			// prepare group information
+			List<Section<?>> groupSections = typeEntry.getValue();
+			String groupName = typeEntry.getKey().getName();
+
+			// render the group and wrap group in collapsible view, rendered async
+			RenderResult groupResult = new RenderResult(result);
+			renderGroupOfSingleType(user, groupSections, groupResult);
+			String info = groupSections.size() > 1 ? String.valueOf(groupSections.size()) : null;
+			wrapInExtendPanel(groupName, info, groupResult, result);
+		}
+	}
+
+	private static void renderGroupOfSingleType(UserContext user, List<Section<?>> groupSections, RenderResult groupResult) {
+		// if we have to many sections of one type, we additionally create sub-groups by article
+		if (groupSections.size() > MAX_NUMBER_BY_TYPE) {
+
+			// but only if the sections are places on multiple pages
+			Map<Article, List<Section<?>>> groupedByArticle = groupByArticle(groupSections);
+			if (groupedByArticle.keySet().size() > 1) {
+
+				// if there are multiple pages, create a group for each page
+				for (Entry<Article, List<Section<?>>> articleEntry : groupedByArticle.entrySet()) {
+					RenderResult innerResult = new RenderResult(groupResult);
 					List<Section<?>> sectionOfArticle = articleEntry.getValue();
 					renderTermReferencesPreviewsAsync(sectionOfArticle, user, innerResult);
-					wrapInExtendPanel(name + " in " + articleEntry.getKey().getTitle(),
-							String.valueOf(sectionOfArticle.size()),
-							innerResult, result);
+					wrapInExtendPanel(articleEntry.getKey().getTitle(),
+							String.valueOf(sectionOfArticle.size()), innerResult, groupResult);
 				}
-			}
-			// just group by type
-			else {
-				RenderResult innerResult = new RenderResult(result);
-				renderTermReferencesPreviewsAsync(sectionsOfType, user, innerResult);
-				String info = sectionsOfType.size() > 1 ? String.valueOf(sectionsOfType.size()) : null;
-				wrapInExtendPanel(name, info, innerResult, result);
+				return;
 			}
 		}
+
+		// otherwise render all items directly into the group
+		renderTermReferencesPreviewsAsync(groupSections, user, groupResult);
 	}
 
 	private static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result) {
