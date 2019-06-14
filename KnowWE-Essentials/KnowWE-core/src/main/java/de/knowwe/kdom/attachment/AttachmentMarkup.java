@@ -47,7 +47,6 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -76,6 +75,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.util.CredentialProvider;
 import de.knowwe.util.CredentialProviders;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -96,6 +96,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	private static final String VERSIONING_ANNOTATION = "versioning";
 	private static final String ZIP_ENTRY_ANNOTATION = "zipEntry";
 	private static final String REPLACEMENT = "replacement";
+	private static final String REGEX_REPLACEMENT = "regexReplacement";
 	public static final String COMPILE = "compile";
 
 	private static final String LOCK_KEY = "lock_key";
@@ -363,24 +364,25 @@ public class AttachmentMarkup extends DefaultMarkupType {
 					return;
 				}
 				InputStream connectionStream = getAttachmentStream(section, connection);
+				String connectionString = Strings.readStream(connectionStream);
 
-				// configure replacements, if applicable
-				String[] replacements = DefaultMarkupType.getAnnotations(section, REPLACEMENT);
-				if (replacements.length > 0) {
-					String connectionString = Strings.readStream(connectionStream);
-					for (String replacement : replacements) {
-						if (Strings.isBlank(replacement)) continue;
-						String[] parsedReplacement = Strings.parseConcat("->", replacement);
-						if (parsedReplacement.length < 2) continue;
-						try {
-							connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
-						}
-						catch (PatternSyntaxException e) {
-							connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
-						}
+				for (Section<AnnotationContentType> annotationContent : $(section).successor(AnnotationContentType.class)
+						.asList()) {
+
+					String replacement = annotationContent.getText();
+					if (Strings.isBlank(replacement)) continue;
+					String[] parsedReplacement = Strings.parseConcat("->", replacement);
+					if (parsedReplacement.length < 2) continue;
+
+					if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
+						connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
 					}
-					connectionStream = new ByteArrayInputStream(connectionString.getBytes(StandardCharsets.UTF_8));
+					else if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
+						connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
+					}
 				}
+
+				connectionStream = new ByteArrayInputStream(connectionString.getBytes(StandardCharsets.UTF_8));
 
 				if (attachmentState == State.UNKNOWN || attachmentState == State.OUTDATED) {
 					// if state is unknown, compare contents, so we don't produce unnecessary attachment versions and compiles
