@@ -178,8 +178,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	@Override
-	public void postSave(WikiContext wikiContext, String content)
-			throws FilterException {
+	public void postSave(WikiContext wikiContext, String content) {
 		try {
 			updateArticle(wikiContext, content);
 		}
@@ -194,8 +193,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	@Override
-	public String postTranslate(WikiContext wikiContext, String htmlContent)
-			throws FilterException {
+	public String postTranslate(WikiContext wikiContext, String htmlContent) {
 
 		try {
 			HttpServletRequest httpRequest = wikiContext.getHttpRequest();
@@ -215,8 +213,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	@Override
-	public String preTranslate(WikiContext wikiContext, String content)
-			throws FilterException {
+	public String preTranslate(WikiContext wikiContext, String content) {
 
 		if (!wikiEngineInitialized) {
 			return content;
@@ -249,7 +246,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			return content;
 		}
 
-		if (supportArticleNames.contains(title)) {
+		if (isSupportArticle(title)) {
 			try {
 				Article supportArticle = Environment.getInstance()
 						.getArticle(Environment.DEFAULT_WEB, title);
@@ -323,9 +320,15 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 	}
 
+	public boolean isSupportArticle(String title) {
+		return supportArticleNames.contains(title);
+	}
+
 	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) throws InterruptedException {
 
-		if (article.getArticleManager().getCompilerManager().awaitTermination(RENDER_WAIT_TIMEOUT)) {
+		if (isSupportArticle(article.getTitle()) || article.getArticleManager()
+				.getCompilerManager()
+				.awaitTermination(RENDER_WAIT_TIMEOUT)) {
 
 			List<PageAppendHandler> appendHandlers = Environment.getInstance()
 					.getAppendHandlers();
