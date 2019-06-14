@@ -193,7 +193,7 @@ public class CIDashboardType extends DefaultMarkupType {
 				CIHookManager.registerHook(ciHook);
 				// Store to be able to unregister in destroy method
 				KnowWEUtils.storeObject(s,
-						CIHook.CIHOOK_STORE_KEY, ciHook);
+						CIHook.CI_HOOK_STORE_KEY, ciHook);
 			}
 			throw new CompilerMessage(msgs);
 		}
@@ -222,7 +222,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
-			CIHook ciHook = (CIHook) section.getObject(CIHook.CIHOOK_STORE_KEY);
+			CIHook ciHook = (CIHook) section.getObject(CIHook.CI_HOOK_STORE_KEY);
 			if (ciHook != null) {
 				CIHookManager.unregisterHook(ciHook);
 			}

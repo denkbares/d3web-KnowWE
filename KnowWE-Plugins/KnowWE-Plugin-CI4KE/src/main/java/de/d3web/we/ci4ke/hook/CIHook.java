@@ -9,7 +9,9 @@ public class CIHook {
 	private final Collection<String> monitoredArticles;
 	private final CIDashboard dashboard;
 
-	public static final String CIHOOK_STORE_KEY = "CIHook_Section_Store";
+	public static final String CI_HOOK_STORE_KEY = "CIHook_Section_Store";
+
+	private int lastTrigger = - 1;
 
 	public Collection<String> getMonitoredArticles() {
 		return monitoredArticles;
@@ -23,6 +25,14 @@ public class CIHook {
 
 		this.dashboard = dashboard;
 		this.monitoredArticles = monitoredArticles;
+	}
+
+	public int getLastTrigger() {
+		return lastTrigger;
+	}
+
+	public void setLastTrigger(int lastTrigger) {
+		this.lastTrigger = lastTrigger;
 	}
 
 	@Override
