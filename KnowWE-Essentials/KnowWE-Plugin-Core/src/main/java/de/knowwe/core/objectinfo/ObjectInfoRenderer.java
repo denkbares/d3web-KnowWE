@@ -225,22 +225,13 @@ public class ObjectInfoRenderer implements Renderer {
 			List<Section<?>> groupSections = typeEntry.getValue();
 			String groupName = typeEntry.getKey().getName();
 
-			// render the group and wrap group in collapsible view, rendered async
+			// render the group
 			RenderResult groupResult = new RenderResult(result);
-			renderGroupOfSingleType(user, groupSections, groupResult);
-			String info = groupSections.size() > 1 ? String.valueOf(groupSections.size()) : null;
-			wrapInExtendPanel(groupName, info, groupResult, result);
-		}
-	}
-
-	private static void renderGroupOfSingleType(UserContext user, List<Section<?>> groupSections, RenderResult groupResult) {
-		// if we have to many sections of one type, we additionally create sub-groups by article
-		if (groupSections.size() > MAX_NUMBER_BY_TYPE) {
-
-			// but only if the sections are places on multiple pages
 			Map<Article, List<Section<?>>> groupedByArticle = groupByArticle(groupSections);
-			if (groupedByArticle.keySet().size() > 1) {
-
+			// if we have to many sections of one type, we additionally create sub-groups by article
+			// but only if the sections are places on multiple pages
+			int articleCount = groupedByArticle.keySet().size();
+			if (groupSections.size() > MAX_NUMBER_BY_TYPE && articleCount > 1) {
 				// if there are multiple pages, create a group for each page
 				for (Entry<Article, List<Section<?>>> articleEntry : groupedByArticle.entrySet()) {
 					RenderResult innerResult = new RenderResult(groupResult);
@@ -249,12 +240,22 @@ public class ObjectInfoRenderer implements Renderer {
 					wrapInExtendPanel(articleEntry.getKey().getTitle(),
 							String.valueOf(sectionOfArticle.size()), innerResult, groupResult);
 				}
-				return;
 			}
-		}
+			else {
+				// otherwise render all items directly into the group
+				renderTermReferencesPreviewsAsync(groupSections, user, groupResult);
+			}
 
-		// otherwise render all items directly into the group
-		renderTermReferencesPreviewsAsync(groupSections, user, groupResult);
+			// wrap group in collapsible view, rendered async
+			String info = (groupSections.size() > 1) ? (groupSections.size() + " ") : "";
+			info += (articleCount > 1)
+					? "in " + Strings.pluralOf(articleCount, "article")
+					: "in '" + groupSections.get(0).getTitle() + "'";
+			wrapInExtendPanel(groupName, info, groupResult, result);
+		}
+	}
+
+	private static void renderGroupOfSingleType(UserContext user, List<Section<?>> groupSections, RenderResult groupResult) {
 	}
 
 	private static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result) {
