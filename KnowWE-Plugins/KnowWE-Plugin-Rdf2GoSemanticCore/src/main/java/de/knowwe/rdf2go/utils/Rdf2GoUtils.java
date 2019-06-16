@@ -407,7 +407,7 @@ public class Rdf2GoUtils {
 		int maxDepth = 0;
 		PartialHierarchyTree.Node<IRI> deepestLeaf = classHierarchy.getRoot();
 		for (PartialHierarchyTree.Node<IRI> node : nodes) {
-			int depth = getDepth(node);
+			int depth = classHierarchy.getMaxDepthLevel(node);
 			if (depth >= maxDepth) {
 				maxDepth = depth;
 				deepestLeaf = node;
@@ -416,14 +416,6 @@ public class Rdf2GoUtils {
 		return deepestLeaf.getData();
 	}
 
-	private static int getDepth(PartialHierarchyTree.Node<IRI> node) {
-		int depth = 0;
-		while (node.getParent() != null) {
-			depth++;
-			node = node.getParent();
-		}
-		return depth;
-	}
 
 	/**
 	 * @param core             the repository to work with
