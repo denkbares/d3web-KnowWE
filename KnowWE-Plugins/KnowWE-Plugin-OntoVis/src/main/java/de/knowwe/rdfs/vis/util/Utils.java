@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
+import com.denkbares.collections.PartialHierarchyException;
 import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.TupleQueryResult;
@@ -308,7 +309,12 @@ public class Utils {
 				List<IRI> allClasses = classHierarchy.getNodesDFSOrder();
 				for (IRI clazz : allClasses) {
 					if (!classColorScheme.containsKey(Rdf2GoUtils.reduceNamespace(rdfRepository, clazz.toString()))) {
-						classHierarchy.remove(clazz);
+						try {
+							classHierarchy.remove(clazz);
+						}
+						catch (PartialHierarchyException e) {
+							Log.severe("Unable to remove class " + clazz, e);
+						}
 					}
 				}
 				IRI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
