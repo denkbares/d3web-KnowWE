@@ -29,6 +29,7 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
     public Message execute(Article article, String[] args, String[]... ignores) throws InterruptedException {
         List<Section<CIDashboardType>> successors = Sections.successors(article, CIDashboardType.class);
         Set<String> failedTests = new HashSet<>();
+        Set<String> warningTests = new HashSet<>();
         for (Section<CIDashboardType> successor : successors) {
             CIDashboard dashboard = CIDashboardManager.getDashboard(successor);
             if (dashboard == null  || dashboard.getLatestBuild() == null)
@@ -41,24 +42,31 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
                             Message.Type resultType = result.getSummary().getType();
                             if (resultType == Message.Type.ERROR || resultType == Message.Type.FAILURE)
                                 failedTests.add(result.getTestName());
+                            if (resultType == Message.Type.WARNING){
+                                warningTests.add(result.getTestName());
+                            }
                     }
                 }
-                if (!failedTests.isEmpty())
-                    return createDashboardError(dashboard.getDashboardName(), failedTests);
+                if (!failedTests.isEmpty()) {
+                    return createDashboardError(Message.Type.FAILURE, dashboard.getDashboardName(), failedTests);
+                }
+                if (!warningTests.isEmpty()){
+                    return createDashboardError(Message.Type.WARNING, dashboard.getDashboardName(), warningTests);
+                }
             }
         }
         return new Message(Message.Type.SUCCESS, null);
     }
 
-    protected Message createDashboardError(String dashboard, Set<String> testNames) {
+    protected Message createDashboardError(Message.Type type, String dashboard, Set<String> testNames) {
         // create error message for the build report
         StringBuilder result = new StringBuilder();
         result.append("Dashbord ")
                 .append(KnowWEUtils.maskJSPWikiMarkup(dashboard));
-        result.append("\nThe following tests have failed:");
+        result.append("\nThe following tests did not run Successful:");
         testNames.stream().sorted(NumberAwareComparator.CASE_INSENSITIVE)
                 .forEach(name -> result.append("\n* ").append(KnowWEUtils.maskJSPWikiMarkup(name)));
-        return new Message(Message.Type.FAILURE, result.toString());
+        return new Message(type, result.toString());
     }
 
 
