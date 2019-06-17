@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -19,18 +19,23 @@
 package de.d3web.we.ci4ke.test;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.denkbares.collections.CountingSet;
+import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.MessageObject;
+import de.d3web.testing.TestParameter;
 import de.d3web.testing.TestingUtils;
+import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.compile.Compiler;
 
 /**
  * Abstract test to check of Messages in Articles.
@@ -43,22 +48,32 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 
 	public ArticleHasMessagesTest(Type type) {
 		this.type = type;
+		this.addIgnoreParameter("allowed-message-regex", TestParameter.Type.Regex, TestParameter.Mode.Optional,
+				"Specify regular expression of messages that are ignored by this test");
 	}
 
 	@Override
 	public Message execute(Article moni, String[] args2, String[]... ignores) throws InterruptedException {
 
 		boolean hasError = false;
-		boolean hasWarning  = false;
+		boolean hasWarning = false;
 		StringBuilder buffer = new StringBuilder();
 
-		Collection<de.knowwe.core.report.Message> messages = new LinkedList<>();
 		Map<Compiler, Collection<de.knowwe.core.report.Message>> allMessagesMap =
 				Messages.getMessagesMapFromSubtree(moni.getRootSection(), type);
 
-		for (de.knowwe.core.compile.Compiler s : allMessagesMap.keySet()) {
-			messages.addAll(allMessagesMap.get(s));
-		}
+		List<Pattern> ignorePatterns = Stream.of(ignores)
+				.flatMap(Stream::of)
+				.map(Strings::unquote)
+				.map(Pattern::compile)
+				.collect(Collectors.toList());
+
+		List<de.knowwe.core.report.Message> messages = allMessagesMap.values()
+				.stream()
+				.flatMap(Collection::stream)
+				.filter(s -> ignorePatterns.stream().noneMatch(p -> p.matcher(s.getVerbalization()).find()))
+				.collect(Collectors.toList());
+
 
 		TestingUtils.checkInterrupt();
 
@@ -68,12 +83,12 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 				.append(moni.getTitle())
 				.append("'");
 		if (!messages.isEmpty()) {
-			for (de.knowwe.core.report.Message message : messages){
-				if (message.getType() == Type.ERROR){
+			for (de.knowwe.core.report.Message message : messages) {
+				if (message.getType() == Type.ERROR) {
 					hasError = true;
 					break;
 				}
-				if (message.getType() == Type.WARNING){
+				if (message.getType() == Type.WARNING) {
 					hasWarning = true;
 				}
 			}
