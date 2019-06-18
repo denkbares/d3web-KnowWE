@@ -363,26 +363,31 @@ public class AttachmentMarkup extends DefaultMarkupType {
 					Messages.storeMessage(section, AttachmentMarkup.class, Messages.error("Invalid response code, skipping update: " + responseCode));
 					return;
 				}
+
 				InputStream connectionStream = getAttachmentStream(section, connection);
-				String connectionString = Strings.readStream(connectionStream);
 
-				for (Section<AnnotationContentType> annotationContent : $(section).successor(AnnotationContentType.class)
-						.asList()) {
+				if (DefaultMarkupType.getAnnotation(section, REPLACEMENT) != null || DefaultMarkupType.getAnnotation(section, REGEX_REPLACEMENT) != null) {
 
-					String replacement = annotationContent.getText();
-					if (Strings.isBlank(replacement)) continue;
-					String[] parsedReplacement = Strings.parseConcat("->", replacement);
-					if (parsedReplacement.length < 2) continue;
+					String connectionString = Strings.readStream(connectionStream);
 
-					if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
-						connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
+					for (Section<AnnotationContentType> annotationContent : $(section).successor(AnnotationContentType.class)
+							.asList()) {
+
+						String replacement = annotationContent.getText();
+						if (Strings.isBlank(replacement)) continue;
+						String[] parsedReplacement = Strings.parseConcat("->", replacement);
+						if (parsedReplacement.length < 2) continue;
+
+						if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
+							connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
+						}
+						else if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
+							connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
+						}
 					}
-					else if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
-						connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
-					}
+
+					connectionStream = new ByteArrayInputStream(connectionString.getBytes(StandardCharsets.UTF_8));
 				}
-
-				connectionStream = new ByteArrayInputStream(connectionString.getBytes(StandardCharsets.UTF_8));
 
 				if (attachmentState == State.UNKNOWN || attachmentState == State.OUTDATED) {
 					// if state is unknown, compare contents, so we don't produce unnecessary attachment versions and compiles
