@@ -40,7 +40,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 public class NamespaceAbbreviationDefinition extends AbstractType {
 
 	public NamespaceAbbreviationDefinition() {
-		this.addCompileScript(Priority.HIGHEST, new NamespaceSubtreeHandler());
+		this.addCompileScript(Priority.INIT, new NamespaceSubtreeHandler());
 		this.setSectionFinder(new RegexSectionFinder("\\s*\\S+?\\s\\S+"));
 		this.addChildType(new AbbreviationDefinition());
 		AnonymousType abbreviationSeparator = new AnonymousType("AbbreviationSeparator");
