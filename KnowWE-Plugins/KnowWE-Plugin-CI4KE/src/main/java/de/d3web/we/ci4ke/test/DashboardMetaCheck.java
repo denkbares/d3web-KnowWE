@@ -30,6 +30,7 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
         List<Section<CIDashboardType>> successors = Sections.successors(article, CIDashboardType.class);
         Set<String> failedTests = new HashSet<>();
         Set<String> warningTests = new HashSet<>();
+        Set<String> errorTests = new HashSet<>();
         for (Section<CIDashboardType> successor : successors) {
             CIDashboard dashboard = CIDashboardManager.getDashboard(successor);
             if (dashboard == null  || dashboard.getLatestBuild() == null)
@@ -40,24 +41,52 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
                 for (TestResult result : dashboard.getLatestBuild().getResults()) {
                     if (result.getTestName() != this.getName()) {
                             Message.Type resultType = result.getSummary().getType();
-                            if (resultType == Message.Type.ERROR || resultType == Message.Type.FAILURE)
+                            if (resultType == Message.Type.FAILURE)
                                 failedTests.add(result.getTestName());
                             if (resultType == Message.Type.WARNING){
                                 warningTests.add(result.getTestName());
                             }
+                            if (resultType == Message.Type.ERROR){
+                                errorTests.add(result.getTestName());
+                            }
                     }
                 }
-                if (!failedTests.isEmpty()) {
-                    return createDashboardError(Message.Type.FAILURE, dashboard.getDashboardName(), failedTests);
-                }
-                if (!warningTests.isEmpty()){
-                    return createDashboardError(Message.Type.WARNING, dashboard.getDashboardName(), warningTests);
-                }
+                return createDashboardError(failedTests, warningTests, errorTests, dashboard.getDashboardName());
             }
         }
         return new Message(Message.Type.SUCCESS, null);
     }
 
+    protected Message createDashboardError(Set<String> failedTests, Set<String> warnedTests, Set<String> errorTests, String dashboard){
+        StringBuilder result = new StringBuilder();
+        Message.Type type = Message.Type.SUCCESS;
+        result.append("Dashboard ")
+                .append(KnowWEUtils.maskJSPWikiMarkup(dashboard));
+        if (!failedTests.isEmpty()){
+            result.append("\nThe following tests have failed:");
+            failedTests.stream().sorted(NumberAwareComparator.CASE_INSENSITIVE)
+                    .forEach(name -> result.append("\n* ").append(KnowWEUtils.maskJSPWikiMarkup(name)));
+            type = Message.Type.FAILURE;
+        }
+        if (!warnedTests.isEmpty()){
+            result.append("\nThe following tests have warnings:");
+            warnedTests.stream().sorted(NumberAwareComparator.CASE_INSENSITIVE)
+                    .forEach(name -> result.append("\n* ").append(KnowWEUtils.maskJSPWikiMarkup(name)));
+            type = Message.Type.WARNING;
+        }
+        if (!errorTests.isEmpty()){
+            result.append("\nThe following tests did not run due to error:");
+            errorTests.stream().sorted(NumberAwareComparator.CASE_INSENSITIVE)
+                    .forEach(name -> result.append("\n* ").append(KnowWEUtils.maskJSPWikiMarkup(name)));
+            type = Message.Type.ERROR;
+        }
+        return new Message(type, result.toString());
+
+    }
+
+    /**
+     * TODO: Check and Remove this if behavior is as wanted
+     */
     protected Message createDashboardError(Message.Type type, String dashboard, Set<String> testNames) {
         // create error message for the build report
         StringBuilder result = new StringBuilder();
