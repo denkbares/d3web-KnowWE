@@ -1,13 +1,17 @@
 package de.d3web.we.kdom.action.formula;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import de.d3web.we.kdom.condition.NonTerminalCondition;
 import de.d3web.we.kdom.condition.helper.BracedCondition;
 import de.d3web.we.kdom.condition.helper.BracedConditionContent;
 import de.d3web.we.kdom.condition.helper.CompCondLineEndComment;
 import de.d3web.we.kdom.condition.helper.ConjunctSectionFinder;
+import de.d3web.we.kdom.condition.helper.FormulaFunctionContent;
+import de.d3web.we.kdom.condition.helper.FormulaFunction;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -23,6 +27,16 @@ public class CompositeFormula extends AbstractType {
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		// this.setCustomRenderer(new de.d3web.we.kdom.renderer.KDOMDepthFontSizeRenderer());
 
+		Set<String> names = new HashSet<>();
+		names.add("sin");
+		names.add("cos");
+		names.add("tan");
+		FormulaFunction wrapper = new FormulaFunction(names);
+		this.addChildType(wrapper);
+		FormulaFunctionContent function = new FormulaFunctionContent(names);
+		wrapper.addChildType(function);
+		function.addChildType(this);
+
 		// a composite condition may either be a BracedCondition,...
 		BracedCondition braced = new BracedCondition(); // contains the brackets and the endline-comments
 		this.addChildType(braced);
@@ -30,6 +44,7 @@ public class CompositeFormula extends AbstractType {
 		braced.addChildType(bracedContent);
 		braced.addChildType(new CompCondLineEndComment()); // explicit nodes for the endline-comments
 		bracedContent.addChildType(this);
+
 
 		// ...a Additive expression,...
 		Addition conj = new Addition();
