@@ -10,10 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Scope;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
  * Default implementation of a {@link PreviewRenderer} that can be applied to any ancestor-section
@@ -172,7 +174,7 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 					break;
 			}
 		}
-		renderSections(previews, user, result);
+		renderSections(Sections.cast(section, DefaultMarkupType.class), previews, user, result);
 	}
 
 	/**
@@ -243,10 +245,10 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 		}
 	}
 
-	static void renderSections(List<Section<?>> previews, UserContext user, RenderResult result) {
+	static void renderSections(Section<DefaultMarkupType> markup, List<Section<?>> previews, UserContext user, RenderResult result) {
 		List<Section<?>> list = new ArrayList<>(previews);
 		Collections.sort(list);
-		DEFAULT_MARKUP_RENDERER.renderContentsAndAnnotations(list, user, result);
+		DEFAULT_MARKUP_RENDERER.renderContentsAndAnnotations(markup, list, user, result);
 	}
 
 	/**

@@ -296,21 +296,21 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult result) {
-		renderContentsAndAnnotations(section.getChildren(), user, result);
+		renderContentsAndAnnotations(Sections.cast(section, DefaultMarkupType.class), section.getChildren(), user, result);
 	}
 
-	public void renderContentsAndAnnotations(List<Section<?>> subSections, UserContext user, RenderResult result) {
-		renderContents($(subSections).filter(ContentType.class).asList(), user, result);
-		renderAnnotations($(subSections).filter(AnnotationType.class).asList(), user, result);
+	public void renderContentsAndAnnotations(Section<? extends DefaultMarkupType> markupSection, List<Section<?>> subSections, UserContext user, RenderResult result) {
+		renderContents(markupSection, $(subSections).filter(ContentType.class).asList(), user, result);
+		renderAnnotations(markupSection, $(subSections).filter(AnnotationType.class).asList(), user, result);
 	}
 
-	protected void renderContents(List<Section<ContentType>> contentSections, UserContext user, RenderResult result) {
+	protected void renderContents(Section<? extends DefaultMarkupType> markupSection, List<Section<ContentType>> contentSections, UserContext user, RenderResult result) {
 		for (Section<ContentType> contentSection : contentSections) {
 			result.append(contentSection, user);
 		}
 	}
 
-	protected void renderAnnotations(List<Section<AnnotationType>> annotations, UserContext user, RenderResult result) {
+	protected void renderAnnotations(Section<? extends DefaultMarkupType> markupSection, List<Section<AnnotationType>> annotations, UserContext user, RenderResult result) {
 		if (listAnnotations) {
 			result.append("\n\n");
 			renderAnnotations(annotations, user, result, "ul", "li");
