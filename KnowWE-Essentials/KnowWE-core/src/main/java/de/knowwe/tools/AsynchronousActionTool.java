@@ -66,7 +66,7 @@ public class AsynchronousActionTool extends DefaultTool {
 				Tool.ActionType.ONCLICK, category);
 	}
 
-	private static String buildJsAction(Class<? extends Action> action, Section<?> section, String successFunction, Map<String, String> params) {
+	public static String buildJsAction(Class<? extends Action> action, Section<?> section, String successFunction, Map<String, String> params) {
 		return "KNOWWE.editCommons.showAjaxLoader(); " +
 				"jq$.ajax({url : 'action/" + action.getSimpleName() + "', " +
 				"cache : false, " +
