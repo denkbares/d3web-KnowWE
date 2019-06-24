@@ -43,6 +43,10 @@ public class FormulaFunctionContent extends NonTerminalCondition {
 				int closingBracket = Strings.indexOfClosingBracket(trimmed, leadingCharactersTrimmed,
 						CompositeCondition.BRACE_OPEN, CompositeCondition.BRACE_CLOSED);
 
+				if (closingBracket != trimmed.length() - 1) {
+					return null;
+				}
+
 				if (includeSurroundings) {
 					return SectionFinderResult.singleItemList(new SectionFinderResult(
 							0, closingBracket + 1));
