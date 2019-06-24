@@ -283,7 +283,7 @@ KNOWWE.plugin.renaming = function() {
 									+ "&termIdentifier="
 									+ encodeURIComponent(jsonResponse.newTermIdentifier);
 							} else {
-								KNOWWE.plugin.termbrowserautocompletion.sendTermBrowserAction('', 'clear');
+								KNOWWE.helper.observer.notify("renamed");
 								KNOWWE.core.util.reloadPage(request);
 							}
 						}

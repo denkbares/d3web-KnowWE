@@ -89,10 +89,10 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 
 	protected void writeAlreadyExistsResponse(UserActionContext context, String term, Identifier identifier) throws IOException {
 		JSONObject response = new JSONObject();
-		response.append("alreadyexists", "true");
+		response.put("alreadyexists", "true");
 		boolean sameTerm = identifier.toExternalForm().equals(
 				new Identifier(term).toExternalForm());
-		response.append("same", String.valueOf(sameTerm));
+		response.put("same", String.valueOf(sameTerm));
 		response.write(context.getWriter());
 	}
 
