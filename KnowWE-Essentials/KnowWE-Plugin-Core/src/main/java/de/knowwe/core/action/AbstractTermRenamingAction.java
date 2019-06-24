@@ -6,7 +6,6 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,7 +17,6 @@ import org.json.JSONObject;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -100,11 +98,11 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 
 	protected void writeAlreadyExistsNoForceResponse(UserActionContext context, String term, Identifier identifier) throws IOException {
 		JSONObject response = new JSONObject();
-		response.append("alreadyexists", "true");
-		response.append("noForce", "true");
+		response.put("alreadyexists", "true");
+		response.put("noForce", "true");
 		boolean sameTerm = identifier.toExternalForm().equals(
 				new Identifier(term).toExternalForm());
-		response.append("same", String.valueOf(sameTerm));
+		response.put("same", String.valueOf(sameTerm));
 		response.write(context.getWriter());
 	}
 }
