@@ -62,17 +62,19 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
         Message.Type type = Message.Type.SUCCESS;
         result.append("Dashboard ")
                 .append(KnowWEUtils.maskJSPWikiMarkup(dashboard));
-        if (!failedTests.isEmpty()){
-            result.append("\nThe following tests have failed:");
-            failedTests.stream().sorted(NumberAwareComparator.CASE_INSENSITIVE)
-                    .forEach(name -> result.append("\n* ").append(KnowWEUtils.maskJSPWikiMarkup(name)));
-            type = Message.Type.FAILURE;
-        }
         if (!warnedTests.isEmpty()){
             result.append("\nThe following tests have warnings:");
             warnedTests.stream().sorted(NumberAwareComparator.CASE_INSENSITIVE)
                     .forEach(name -> result.append("\n* ").append(KnowWEUtils.maskJSPWikiMarkup(name)));
-            type = Message.Type.WARNING;
+            if (type != Message.Type.ERROR && type != Message.Type.FAILURE)
+                type = Message.Type.WARNING;
+        }
+        if (!failedTests.isEmpty()){
+            result.append("\nThe following tests have failed:");
+            failedTests.stream().sorted(NumberAwareComparator.CASE_INSENSITIVE)
+                    .forEach(name -> result.append("\n* ").append(KnowWEUtils.maskJSPWikiMarkup(name)));
+            if (type != Message.Type.ERROR)
+                type = Message.Type.FAILURE;
         }
         if (!errorTests.isEmpty()){
             result.append("\nThe following tests did not run due to error:");
@@ -82,20 +84,6 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
         }
         return new Message(type, result.toString());
 
-    }
-
-    /**
-     * TODO: Check and Remove this if behavior is as wanted
-     */
-    protected Message createDashboardError(Message.Type type, String dashboard, Set<String> testNames) {
-        // create error message for the build report
-        StringBuilder result = new StringBuilder();
-        result.append("Dashbord ")
-                .append(KnowWEUtils.maskJSPWikiMarkup(dashboard));
-        result.append("\nThe following tests did not run Successful:");
-        testNames.stream().sorted(NumberAwareComparator.CASE_INSENSITIVE)
-                .forEach(name -> result.append("\n* ").append(KnowWEUtils.maskJSPWikiMarkup(name)));
-        return new Message(type, result.toString());
     }
 
 
