@@ -23,19 +23,26 @@ public class CompositeFormula extends AbstractType {
 	private final TerminalExpression terminalExpression = new TerminalExpression();
 
 	public CompositeFormula() {
+		this(false);
+	}
+
+	public CompositeFormula(boolean allowFunctionCalls) {
 		// this composite takes everything it gets => needs suitable wrapper type as father
 		this.setSectionFinder(new AllTextFinderTrimmed());
 		// this.setCustomRenderer(new de.d3web.we.kdom.renderer.KDOMDepthFontSizeRenderer());
 
-		Set<String> names = new HashSet<>();
-		names.add("sin");
-		names.add("cos");
-		names.add("tan");
-		FormulaFunction wrapper = new FormulaFunction(names);
-		this.addChildType(wrapper);
-		FormulaFunctionContent function = new FormulaFunctionContent(names);
-		wrapper.addChildType(function);
-		function.addChildType(this);
+		//D3Web itself does not yet support function calls
+		if (allowFunctionCalls) {
+			Set<String> names = new HashSet<>();
+			names.add("sin");
+			names.add("cos");
+			names.add("tan");
+			FormulaFunction wrapper = new FormulaFunction(names);
+			this.addChildType(wrapper);
+			FormulaFunctionContent function = new FormulaFunctionContent(names);
+			wrapper.addChildType(function);
+			function.addChildType(this);
+		}
 
 		// a composite condition may either be a BracedCondition,...
 		BracedCondition braced = new BracedCondition(); // contains the brackets and the endline-comments
