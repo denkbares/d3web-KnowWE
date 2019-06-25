@@ -42,7 +42,9 @@ import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.ScriptManager;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -229,18 +231,27 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (DefaultMarkupType.getAnnotation(rootSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) != null) return;
 		if (context != null && context.isRenderingPreview()) return;
 
-		CompilerManager.getScriptManagers()
-				.stream()
-				// ignore markups that don't have package compile scripts
-				.filter(sm -> PackageCompiler.class.isAssignableFrom(sm.getCompilerClass()))
-				// check if the script manager has script for the type of this section or any sub type
-				// get all remaining managers for which there is currently no compiler
-				.filter(sm -> sm.hasScriptsForSubtree(rootSection.get())
-						&& Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
-				.findAny()
-				.ifPresent(scriptManager -> messages.add(
-						"This section has " + scriptManager.getCompilerClass().getSimpleName() + " knowledge, "
-								+ " but does not belong to package compiled by one."));
+		List<ScriptManager<? extends Compiler>> unCompiledScriptManagersWithScriptsForTypeTree =
+				CompilerManager.getScriptManagers()
+						.stream()
+						// ignore markups that don't have package compile scripts
+						.filter(sm -> PackageCompiler.class.isAssignableFrom(sm.getCompilerClass()))
+						// check if the script manager has script for the type of this section or any sub type
+						// get all remaining managers for which there is currently no compiler
+						.filter(sm -> sm.hasScriptsForSubtree(rootSection.get())
+								&& Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
+						.collect(Collectors.toList());
+
+		// check that the found unused compiled scripts belong to types of sections that are actually in the current sub-KDOM
+		for (ScriptManager<? extends Compiler> scriptManager : unCompiledScriptManagersWithScriptsForTypeTree) {
+			for (de.knowwe.core.kdom.Type type : Types.getAllChildrenTypesRecursive(rootSection.get())) {
+				Map map = scriptManager.getScripts(type);
+				if (map.isEmpty()) continue;
+				if ($(rootSection).successor(type.getClass()).isEmpty()) continue;
+				messages.add("This section has " + scriptManager.getCompilerClass().getSimpleName() + " knowledge, "
+						+ " but does not belong to package compiled by one.");
+			}
+		}
 	}
 
 	@Override
