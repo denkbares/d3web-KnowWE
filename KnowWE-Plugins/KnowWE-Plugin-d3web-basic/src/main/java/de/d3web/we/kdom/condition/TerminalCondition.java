@@ -20,13 +20,18 @@
 
 package de.d3web.we.kdom.condition;
 
+import java.util.Collection;
 import java.util.List;
 
 import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.EndLineComment;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.AnonymousType;
 
@@ -60,9 +65,23 @@ public class TerminalCondition extends AbstractType {
 		// last: Anything left is an UnrecognizedTC throwing an error
         AnonymousType unrecognizedCond = new AnonymousType(typeName);
         unrecognizedCond.setSectionFinder(new AllTextFinderTrimmed());
-		unrecognizedCond.addCompileScript((D3webHandler<TerminalCondition>) (compiler, s) ->
-						Messages.asList(Messages.syntaxError(messageText + s.getText())));
+		unrecognizedCond.addCompileScript(new MessageHandler(messageText));
 		this.addChildType(unrecognizedCond);
+	}
+
+	static class MessageHandler extends DefaultGlobalCompiler.DefaultGlobalHandler<TerminalCondition> {
+
+		private final String message;
+
+		public MessageHandler(String message) {
+
+			this.message = message;
+		}
+
+		@Override
+		public Collection<Message> create(DefaultGlobalCompiler compiler, Section<TerminalCondition> section) throws CompilerMessage {
+			return Messages.asList(Messages.syntaxError(message+" " + section.getText()));
+		}
 	}
 
 	public void setAllowedTerminalConditions(List<Type> types) {
