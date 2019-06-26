@@ -26,7 +26,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 
 public class AnonymousType extends AbstractType {
 
-	private String name;
+	private final String name;
 
 	public AnonymousType(String name) {
 		this.name = name;
