@@ -100,7 +100,7 @@ public abstract class LongOperationToolProvider implements ToolProvider {
 			js.append("}, ");
 		}
 		else if (Strings.nonBlank(onSuccess)) {
-			js.append("null, ");
+			js.append(",null, ");
 		}
 
 		if (Strings.nonBlank(onSuccess)) {
