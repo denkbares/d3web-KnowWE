@@ -30,6 +30,7 @@ public interface CredentialProvider {
 
 	enum Credential {
 		USERNAME,
-		PASSWORD
+		PASSWORD,
+		TOKEN
 	}
 }
