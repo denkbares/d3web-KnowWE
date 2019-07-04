@@ -4,20 +4,20 @@
 
 	<!-- Updates all resources needed for the profile core-plugins -->
 	<target name="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="KnowWE-Resources/src/main/webapp/**" />
 				<include name="KnowWE-Resources/src/main/webapp/WEB-INF/" />
 			</fileset>
 			<cutdirsmapper dirs="4" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="*/src/main/resources/webapp/" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Plugins/">
 				<include name="*/src/main/resources/webapp/" />
 				<exclude name="KnowWE-Plugin-d3web-Homepage/**" />
@@ -29,7 +29,7 @@
 
 	<!-- Updates all resources needed for the profile denkbares (and core-plugins) -->
 	<target name="update_resources denkbares" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KnowWE-DES/KnowWE-Plugins-DES/">
 				<include name="*/src/main/resources/webapp/" />
 
@@ -44,7 +44,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../Experimental/KnowWE-Plugins-Experimental/">
 				<include name="KnowWE-Plugin-d3web-TermBrowser/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-DiaFlux-Review/src/main/resources/webapp/" />
@@ -66,19 +66,18 @@
 		</copy>
 	</target>
 	<target name="update_resources konap" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
-			<fileset dir="${basedir}/../../krone/KnowWE-Plugin-KONAP/">
-				<include name="*/src/main/resources/webapp/" />
+		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
+			<fileset dir="${basedir}/../../KRONE/">
+				<include name="KnowWE-Plugin-KONAP/src/main/resources/webapp/" />
 
 				<exclude name="**/*.ts" />
 				<exclude name="**/*.tsx" />
-
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
 	</target>
 	<target name="update_resources edb" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../SemanticServicePlatform/">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-ExperienceDatabase/src/main/resources/webapp/" />
