@@ -39,16 +39,16 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
             if (overallResult != Message.Type.SUCCESS)
             {
                 for (TestResult result : dashboard.getLatestBuild().getResults()) {
-                    if (result.getTestName() != this.getName()) {
-                            Message.Type resultType = result.getSummary().getType();
-                            if (resultType == Message.Type.FAILURE)
-                                failedTests.add(result.getTestName());
-                            if (resultType == Message.Type.WARNING){
-                                warningTests.add(result.getTestName());
-                            }
-                            if (resultType == Message.Type.ERROR){
-                                errorTests.add(result.getTestName());
-                            }
+                    if (!result.getTestName().equals(this.getName())) {
+                        Message.Type resultType = result.getSummary().getType();
+                        if (resultType == Message.Type.FAILURE)
+                            failedTests.add(result.getTestName());
+                        if (resultType == Message.Type.WARNING){
+                            warningTests.add(result.getTestName());
+                        }
+                        if (resultType == Message.Type.ERROR){
+                            errorTests.add(result.getTestName());
+                        }
                     }
                 }
                 return createDashboardError(failedTests, warningTests, errorTests, dashboard.getDashboardName());
@@ -57,7 +57,7 @@ public class DashboardMetaCheck extends AbstractTest<Article> {
         return new Message(Message.Type.SUCCESS, null);
     }
 
-    protected Message createDashboardError(Set<String> failedTests, Set<String> warnedTests, Set<String> errorTests, String dashboard){
+    private Message createDashboardError(Set<String> failedTests, Set<String> warnedTests, Set<String> errorTests, String dashboard){
         StringBuilder result = new StringBuilder();
         Message.Type type = Message.Type.SUCCESS;
         result.append("Dashboard ")
