@@ -348,7 +348,7 @@ public class CIRenderer {
 
 	public static void renderResultMessageFooter(String web, String testObjectName, Class<?> testObjectClass, Message message, RenderResult renderResult) {
 		renderResult.appendHtml("<br>\n");
-		if (!message.getText().contains(testObjectName)) {
+		if (message.getText() != null && !message.getText().contains(testObjectName)) {
 			renderResult.appendHtml("(test object: ");
 			renderObjectName(web, testObjectName, testObjectClass, renderResult);
 			renderResult.appendHtml(")<br>\n");
