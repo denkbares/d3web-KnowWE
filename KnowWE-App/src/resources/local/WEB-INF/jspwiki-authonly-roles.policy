@@ -85,7 +85,7 @@ grant principal org.apache.wiki.auth.authorize.Role "Authenticated" {
 
 
 grant principal org.apache.wiki.auth.GroupPrincipal "Editor" {
-    permission org.apache.wiki.auth.permissions.PagePermission "*:*", "modify,rename";
+    permission org.apache.wiki.auth.permissions.PagePermission "*:*", "modify,rename,delete";
 };
 
 // Administrators (principals or roles possessing AllPermission)

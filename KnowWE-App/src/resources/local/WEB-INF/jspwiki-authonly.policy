@@ -83,7 +83,7 @@ grant principal org.apache.wiki.auth.authorize.Role "Asserted" {
 // edit groups they are members of.
 
 grant principal org.apache.wiki.auth.authorize.Role "Authenticated" {
-    permission org.apache.wiki.auth.permissions.PagePermission "*:*", "modify,rename";
+    permission org.apache.wiki.auth.permissions.PagePermission "*:*", "modify,rename,delete";
     permission org.apache.wiki.auth.permissions.GroupPermission "*:*", "view";
     permission org.apache.wiki.auth.permissions.GroupPermission "*:<groupmember>", "edit";
     permission org.apache.wiki.auth.permissions.WikiPermission "*", "createPages,createGroups";

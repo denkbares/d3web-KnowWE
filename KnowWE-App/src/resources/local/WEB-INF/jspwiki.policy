@@ -66,7 +66,8 @@ grant principal org.apache.wiki.auth.authorize.Role "All" {
 // allow editing only, then replace "modify" with "edit".
 
 grant principal org.apache.wiki.auth.authorize.Role "Anonymous" {
-    permission org.apache.wiki.auth.permissions.PagePermission "*:*", "view";
+    permission org.apache.wiki.auth.permissions.PagePermission "*:*", "modify";
+    permission org.apache.wiki.auth.permissions.WikiPermission "*", "createPages";
 };
 
 
@@ -76,7 +77,9 @@ grant principal org.apache.wiki.auth.authorize.Role "Anonymous" {
 // They can also view the membership list of groups.
 
 grant principal org.apache.wiki.auth.authorize.Role "Asserted" {
-    permission org.apache.wiki.auth.permissions.PagePermission "*:*", "view";
+    permission org.apache.wiki.auth.permissions.PagePermission "*:*", "modify";
+    permission org.apache.wiki.auth.permissions.WikiPermission "*", "createPages";
+    permission org.apache.wiki.auth.permissions.GroupPermission "*:*", "view";
 };
 
 
