@@ -81,16 +81,16 @@ public class UITestUtils {
 	 * @param articleName name of the article to be loaded
 	 * @param driver      the web driver
 	 */
-	public static void goToArticle(String url, String articleName, WebDriver driver) {
+	public static void goToArticle(final String url, final String articleName, final WebDriver driver) {
 		driver.get(url + "/Wiki.jsp?page=" + articleName);
 		try {
 			driver.switchTo().alert().accept();
 		}
-		catch (NoAlertPresentException ignore) {
+		catch (final NoAlertPresentException ignore) {
 		}
 	}
 
-	public static void recompileCurrentArticle(WebDriver driver) {
+	public static void recompileCurrentArticle(final WebDriver driver) {
 		String currentUrl = driver.getCurrentUrl();
 		if (!currentUrl.contains("&parse=full")) {
 			currentUrl += "&parse=full";
@@ -102,38 +102,38 @@ public class UITestUtils {
 		LOGIN_PAGE, NORMAL_PAGE
 	}
 
-	public static void logIn(WebDriver driver, String username, String password, UseCase use, WikiTemplate template) {
+	public static void logIn(final WebDriver driver, final String username, final String password, final UseCase use, final WikiTemplate template) {
 		template.login(driver, use, username, password);
 	}
 
-	private static boolean isLoggedIn(WebDriver driver, WikiTemplate template) {
-		String logoutSelector = template == HaddockTemplate.getInstance() ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
+	private static boolean isLoggedIn(final WebDriver driver, final WikiTemplate template) {
+		final String logoutSelector = template == HaddockTemplate.getInstance() ? "a.btn.btn-default.btn-block.logout" : "a.action.logout";
 		return !driver.findElements(By.cssSelector(logoutSelector)).isEmpty();
 	}
 
-	public static void awaitStatusChange(WebDriver driver, String status) {
+	public static void awaitStatusChange(final WebDriver driver, final String status) {
 		new WebDriverWait(driver, 10).until(ExpectedConditions.not(ExpectedConditions.attributeToBe(By.cssSelector("#knowWEInfoStatus"), "value", status)));
 	}
 
-	public static String getCurrentStatus(WebDriver driver) {
+	public static String getCurrentStatus(final WebDriver driver) {
 		return driver.findElement(By.cssSelector("#knowWEInfoStatus")).getAttribute("value");
 	}
 
-	public static String getKnowWEUrl(WikiTemplate template, String articleName) {
-		String defaultUrl = template instanceof HaddockTemplate ? "https://knowwe-nightly-haddock.denkbares.com" : "https://knowwe-nightly.denkbares.com";
-		String knowweUrl = System.getProperty(template instanceof HaddockTemplate ? "knowwe.haddock.url" : "knowwe.standard.url", defaultUrl);
+	public static String getKnowWEUrl(final WikiTemplate template, final String articleName) {
+		final String defaultUrl = template instanceof HaddockTemplate ? "https://knowwe-nightly-haddock.denkbares.com" : "https://knowwe-nightly.denkbares.com";
+		final String knowweUrl = System.getProperty(template instanceof HaddockTemplate ? "knowwe.haddock.url" : "knowwe.standard.url", defaultUrl);
 		return knowweUrl + "/Wiki.jsp?page=" + articleName;
 	}
 
 	public static LinkedList<Object[]> getTestParametersChromeAndFireFox() {
-		LinkedList<Object[]> params = new LinkedList<>();
+		final LinkedList<Object[]> params = new LinkedList<>();
 		params.addAll(getTestParametersFireFox());
 		params.addAll(getTestParametersChrome());
 		return params;
 	}
 
 	public static LinkedList<Object[]> getTestParametersFireFox() {
-		LinkedList<Object[]> params = new LinkedList<>();
+		final LinkedList<Object[]> params = new LinkedList<>();
 		params.add(new Object[] { Browser.firefox, Platform.WINDOWS, HaddockTemplate.getInstance() });
 		params.add(new Object[] { Browser.firefox, Platform.WINDOWS, DefaultTemplate.getInstance() });
 //		params.add(new Object[] { Browser.firefox, Platform.MAC, HaddockTemplate.getInstance() });
@@ -144,7 +144,7 @@ public class UITestUtils {
 	}
 
 	public static LinkedList<Object[]> getTestParametersChrome() {
-		LinkedList<Object[]> params = new LinkedList<>();
+		final LinkedList<Object[]> params = new LinkedList<>();
 		params.add(new Object[] { Browser.chrome, Platform.WINDOWS, HaddockTemplate.getInstance() });
 		params.add(new Object[] { Browser.chrome, Platform.WINDOWS, DefaultTemplate.getInstance() });
 //		params.add(new Object[] { Browser.chrome, Platform.MAC, HaddockTemplate.getInstance() });
@@ -154,32 +154,33 @@ public class UITestUtils {
 		return params;
 	}
 
-	public static void awaitRerender(WebDriver driver, By by) {
+	public static void awaitRerender(final WebDriver driver, final By by) {
 		try {
-			List<WebElement> elements = driver.findElements(by);
+			final List<WebElement> elements = driver.findElements(by);
 			if (!elements.isEmpty()) {
 				new WebDriverWait(driver, 5).until(ExpectedConditions.stalenessOf(elements.get(0)));
 			}
 		}
-		catch (TimeoutException ignore) {
+		catch (final TimeoutException ignore) {
 		}
 		new WebDriverWait(driver, 5).until(ExpectedConditions.presenceOfElementLocated(by));
 	}
 
-	public static RemoteWebDriver setUp(Browser browser, Platform os, WikiTemplate template, String articleName, TestMode testMode, String knowWEUrl, boolean login, Function<String, String> urlConstructor) throws IOException {
+	public static RemoteWebDriver setUp(final Browser browser, final Platform os, final WikiTemplate template, final String articleName, final TestMode testMode, final String knowWEUrl, final boolean login, final Function<String, String> urlConstructor) throws IOException {
 
-		String testName = "UITest-" + articleName + "-" + template + "-" + browser + "-" + os.name().toLowerCase();
+		final String testName = "UITest-" + articleName + "-" + template + "-" + browser + "-" + os.name()
+				.toLowerCase();
 
-		DesiredCapabilities capabilities = new DesiredCapabilities();
+		final DesiredCapabilities capabilities = new DesiredCapabilities();
 		capabilities.setCapability(CapabilityType.BROWSER_NAME, browser);
 
 		if (browser == Browser.chrome) {
-			String chromeBinary = System.getProperty("knowwe.chrome.binary");
+			final String chromeBinary = System.getProperty("knowwe.chrome.binary");
+			final ChromeOptions chromeOptions = new ChromeOptions();
 			if (chromeBinary != null) {
-				ChromeOptions chromeOptions = new ChromeOptions();
 				chromeOptions.setBinary(chromeBinary);
-				capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
 			}
+			capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
 		}
 		else if (browser == Browser.firefox) {
 			// nothing to do here
@@ -188,11 +189,13 @@ public class UITestUtils {
 			throw new IllegalArgumentException("Browser " + browser + " not yet supported.");
 		}
 
-		RemoteWebDriver driver;
+		final RemoteWebDriver driver;
 		if (testMode == TestMode.local) {
 			if (browser == Browser.chrome) {
-//				driver = new RemoteWebDriver(new URL("http://localhost:9515"), capabilities);
-				driver = new ChromeDriver();
+				final ChromeOptions localChromeOptions = new ChromeOptions();
+				final boolean headless = Boolean.getBoolean("knowwe.chrome.headless");
+				localChromeOptions.setHeadless(headless);
+				driver = new ChromeDriver(localChromeOptions);
 			}
 			else //noinspection ConstantConditions
 				if (browser == Browser.firefox) {
@@ -221,7 +224,7 @@ public class UITestUtils {
 			try {
 				UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", LOGIN_PAGE, template);
 			}
-			catch (TimeoutException te) {
+			catch (final TimeoutException te) {
 				Log.warning("The login was not successful. Creating debug files ...");
 				generateDebugFiles(driver, "LOGIN");
 			}
@@ -240,14 +243,14 @@ public class UITestUtils {
 	 * @param driver
 	 * @param prefix
 	 */
-	public static void generateDebugFiles(WebDriver driver, String prefix) {
-		String fileNamePNG = prefix + "_screen-capture.png";
+	public static void generateDebugFiles(final WebDriver driver, final String prefix) {
+		final String fileNamePNG = prefix + "_screen-capture.png";
 		Log.info(captureScreenshot(driver, fileNamePNG));
-		String fileNameXML = prefix + "_page-content.xml";
+		final String fileNameXML = prefix + "_page-content.xml";
 		try {
 			Strings.writeFile(TMP_DEBUG_FOLDER + fileNameXML, driver.getPageSource());
 		}
-		catch (IOException ioe) {
+		catch (final IOException ioe) {
 			Log.warning("Creation of debug xml file failed: " + ioe.getMessage());
 		}
 	}
@@ -259,24 +262,24 @@ public class UITestUtils {
 	 * @param fileName the name of the screenshot file
 	 * @return
 	 */
-	public static String captureScreenshot(WebDriver driver, String fileName) {
+	public static String captureScreenshot(final WebDriver driver, final String fileName) {
 		try {
-			File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-			File destFile = new File(TMP_DEBUG_FOLDER + fileName);
+			final File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			final File destFile = new File(TMP_DEBUG_FOLDER + fileName);
 			FileUtils.copyFile(file, destFile);
 			return "The screenshot was saved to \"" + destFile.getAbsolutePath() + "\".";
 		}
-		catch (IOException ioe) {
+		catch (final IOException ioe) {
 			return "Failed to capture screenshot: " + ioe.getMessage();
 		}
 	}
 
-	private static boolean pageExists(WikiTemplate template, WebDriver driver) {
+	private static boolean pageExists(final WikiTemplate template, final WebDriver driver) {
 		if (template instanceof HaddockTemplate) {
 			try {
 				new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("a.createpage")));
 			}
-			catch (Exception e) {
+			catch (final Exception e) {
 				// Element not present
 			}
 			return driver.findElements(By.cssSelector("a.createpage")).isEmpty();
@@ -285,7 +288,7 @@ public class UITestUtils {
 			try {
 				new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("div.information a")));
 			}
-			catch (Exception e) {
+			catch (final Exception e) {
 				// Element not present
 			}
 			return driver.findElements(By.cssSelector("div.information a"))
@@ -294,8 +297,8 @@ public class UITestUtils {
 		}
 	}
 
-	private static void createDummyPage(WikiTemplate template, WebDriver driver) throws IOException {
-		WebElement href;
+	private static void createDummyPage(final WikiTemplate template, final WebDriver driver) throws IOException {
+		final WebElement href;
 		if (template instanceof HaddockTemplate) {
 			href = driver.findElement(By.cssSelector("a.createpage"));
 		}
@@ -310,9 +313,9 @@ public class UITestUtils {
 		enterArticleText(Strings.readFile("src/test/resources/Dummy.txt"), driver, template);
 	}
 
-	public static void enterArticleText(String newText, WebDriver driver, WikiTemplate template) {
-		String areaSelector = template == HaddockTemplate.getInstance() ? ".editor.form-control" : "#editorarea";
-		List<WebElement> editorAreas = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By
+	public static void enterArticleText(final String newText, final WebDriver driver, final WikiTemplate template) {
+		final String areaSelector = template == HaddockTemplate.getInstance() ? ".editor.form-control" : "#editorarea";
+		final List<WebElement> editorAreas = new WebDriverWait(driver, 10).until(ExpectedConditions.presenceOfAllElementsLocatedBy(By
 				.cssSelector(areaSelector)));
 		if (driver instanceof JavascriptExecutor) {
 			// hacky but fast/instant!
@@ -327,13 +330,19 @@ public class UITestUtils {
 		driver.findElement(By.name("ok")).click();
 	}
 
-	public static WebOS getWebOS(WebDriver driver) {
-		JavascriptExecutor jse = (JavascriptExecutor) driver;
+	public static WebOS getWebOS(final WebDriver driver) {
+		final JavascriptExecutor jse = (JavascriptExecutor) driver;
 		String os = (String) jse.executeScript("return navigator.appVersion");
 		os = os.toLowerCase();
-		if (os.contains("win")) return WebOS.windows;
-		if (os.contains("mac")) return WebOS.macOS;
-		if (os.contains("nux") || os.contains("nix")) return WebOS.linux;
+		if (os.contains("win")) {
+			return WebOS.windows;
+		}
+		if (os.contains("mac")) {
+			return WebOS.macOS;
+		}
+		if (os.contains("nux") || os.contains("nix")) {
+			return WebOS.linux;
+		}
 		return WebOS.other;
 	}
 }
