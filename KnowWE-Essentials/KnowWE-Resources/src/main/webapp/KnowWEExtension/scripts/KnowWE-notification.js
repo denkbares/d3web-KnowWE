@@ -17,7 +17,7 @@ KNOWWE.notification = function () {
 
 	return {
 
-		error_jqXHR: function(jqXHR) {
+		error_jqXHR: function (jqXHR) {
 			KNOWWE.notification.error(jqXHR.statusText, _KA.xhrExtractMessage(jqXHR));
 		},
 
@@ -85,7 +85,7 @@ KNOWWE.notification = function () {
 			let duplicate = false;
 			let i = 0;
 			for (; i < messages.length; i++) {
-				if (messages[i].id == id) {
+				if (messages[i].id === id) {
 					duplicate = true;
 					break;
 				}
@@ -118,7 +118,7 @@ KNOWWE.notification = function () {
 			// set colors
 			let startColor = '#fff6c3';
 			let endColor = '#f9eba5';
-			if (message.severity == 'error') {
+			if (message.severity === 'error') {
 				startColor = '#efd5d3';
 				endColor = '#e6bbb8';
 			}
@@ -159,7 +159,7 @@ KNOWWE.notification = function () {
 					+ (index + 1) + ');">&gt;</a>';
 				const prev = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
 					+ (index - 1) + ');">&lt;</a>';
-				if (index == 0) {
+				if (index === 0) {
 					counterHTML += counter;
 					counterHTML += next;
 				} else if (index >= 0
@@ -167,7 +167,7 @@ KNOWWE.notification = function () {
 					counterHTML += prev;
 					counterHTML += counter;
 					counterHTML += next;
-				} else if (index == messages.length - 1) {
+				} else if (index === messages.length - 1) {
 					counterHTML += prev;
 					counterHTML += counter;
 				}
@@ -191,7 +191,7 @@ KNOWWE.notification = function () {
 		removeNotification: function (id) {
 			let index = -1;
 			for (let i = 0; i < messages.length; i++) {
-				if (messages[i].id == id) {
+				if (messages[i].id === id) {
 					index = i;
 					break;
 				}
@@ -202,7 +202,7 @@ KNOWWE.notification = function () {
 			// quit: other notifications? show them!
 			if (index > 0) {
 				KNOWWE.notification._select(index - 1);
-			} else if (index == 0
+			} else if (index === 0
 				&& messages.length > 1) {
 				KNOWWE.notification._select(index);
 				// quit: no other notifications? hide notification
@@ -245,26 +245,31 @@ KNOWWE.notification = function () {
 						});
 						// remove all messages that were from the server but are no longer present
 						const idsToRemove = [];
-						for (var i = 0; i < messages.length; i++) {
+						for (let i = 0; i < messages.length; i++) {
 							if (messages[i].fromServer) {
 								idsToRemove.push(messages[i].id);
 							}
 						}
-						for (i = 0; i < idsToRemove.length; i++) {
-							if (idsToAdd.indexOf(idsToRemove[i]) == -1) {
+						for (let i = 0; i < idsToRemove.length; i++) {
+							if (idsToAdd.indexOf(idsToRemove[i]) === -1) {
 								KNOWWE.notification.removeNotification(idsToRemove[i]);
 							}
 						}
 						if (notifications.length > 0) {
-							for (i = 0; i < notifications.length; i++) {
+							for (let i = 0; i < notifications.length; i++) {
 								const notification = notifications[i];
-								if (notification.type == "error") {
+								if (notification.type === "error") {
 									KNOWWE.notification.error(null,
 										notification.message,
 										notification.id,
 										true);
-								} else {
+								} else if (notification.type === "warning") {
 									KNOWWE.notification.warn(null,
+										notification.message,
+										notification.id,
+										true);
+								} else {
+									KNOWWE.notification.success(null,
 										notification.message,
 										notification.id,
 										true);
