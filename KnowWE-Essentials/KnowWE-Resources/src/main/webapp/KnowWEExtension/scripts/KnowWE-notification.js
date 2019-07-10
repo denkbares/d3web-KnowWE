@@ -123,7 +123,7 @@ KNOWWE.notification = function () {
 				endColor = '#e6bbb8';
 			}
 
-			if (message.severity == 'success') {
+			if (message.severity === 'success') {
 				startColor = "rgba(186, 219, 189, 0.72)";
 				endColor = "rgba(167, 249, 168, 0.72)";
 			}
