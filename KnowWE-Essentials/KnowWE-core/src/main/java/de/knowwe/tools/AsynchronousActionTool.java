@@ -45,13 +45,13 @@ public class AsynchronousActionTool extends DefaultTool {
 
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, Map<String, String> params) {
 		super(icon, title, description,
-				buildJsAction(action, section, "window.location.reload()", params),
+				buildJsAction(action, section, params),
 				Tool.ActionType.ONCLICK, null);
 	}
 
 	public AsynchronousActionTool(Icon icon, String title, String description, Class<? extends Action> action, Section<?> section, Map<String, String> params, String category) {
 		super(icon, title, description,
-				buildJsAction(action, section, "window.location.reload()", params),
+				buildJsAction(action, section, params),
 				Tool.ActionType.ONCLICK, category);
 	}
 
@@ -64,6 +64,10 @@ public class AsynchronousActionTool extends DefaultTool {
 				buildJsAction(action, section, "window.location='Wiki.jsp?page=" + redirectPage + "'",
 						Collections.singletonMap(REDIRECT_PAGE, redirectPage)),
 				Tool.ActionType.ONCLICK, category);
+	}
+
+	public static String buildJsAction(Class<? extends Action> action, Section<?> section, Map<String, String> params) {
+		return buildJsAction(action, section, "window.location.reload()", params);
 	}
 
 	public static String buildJsAction(Class<? extends Action> action, Section<?> section, String successFunction, Map<String, String> params) {
