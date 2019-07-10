@@ -94,7 +94,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String FULL_PARSE_FIRED = "fullParseFired";
 	public static final String RENDER_MODE = "renderMode";
 	public static final String PREVIEW = "preview";
-	public static final int RENDER_WAIT_TIMEOUT = 5000;
+	public static final int RENDER_WAIT_TIMEOUT = 20000;
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
