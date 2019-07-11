@@ -21,6 +21,7 @@ package de.knowwe.core.compile;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,23 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 17.11.2013
  */
 public class Compilers {
+
+	/**
+	 * Null safe comparator for compilers.
+	 * For {@link NamedCompiler}s, name will be used.
+	 * For {@link PackageCompiler}
+	 */
+	public static final Comparator<Compiler> COMPARATOR = Comparator.nullsFirst(Comparator.comparing(Compilers::comparable));
+
+	private static String comparable(Compiler compiler) {
+		if (compiler == null) return null;
+		if (compiler instanceof NamedCompiler) return ((NamedCompiler) compiler).getName();
+		if (compiler instanceof PackageCompiler) {
+			Section<? extends PackageCompileType> compileSection = ((PackageCompiler) compiler).getCompileSection();
+			return compileSection.getTitle() + compileSection.getPositionInKDOM();
+		}
+		return compiler.toString();
+	}
 
 	/**
 	 * Compiles the given {@link Section} for the given {@link Compiler} (by calling the {@link CompileScript}s of the
