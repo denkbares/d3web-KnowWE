@@ -24,9 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -44,7 +45,7 @@ import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.kdom.Article;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -345,10 +346,11 @@ public final class Messages {
 	/**
 	 * Returns an unmodifiable {@link Map} with Collections of all {@link Message}s of the given {@link
 	 * Type}s stored in the KDOM subtree with the given {@link Section} as root. The
-	 * Collections are mapped by the title of the {@link Article} the {@link Message}s were stored for. If {@link
-	 * Message}s were stored without an argument {@link Article}, the {@link Map} will contain this {@link Collection}
-	 * with <tt>null</tt> as the
-	 * <tt>key</tt>.
+	 * Collections are mapped by the title of the {@link Compiler}s the {@link Message}s were stored for. If {@link
+	 * Message}s were stored without an argument {@link Compiler}, the {@link Map} will contain this {@link Collection}
+	 * with <tt>null</tt> as the <tt>key</tt>.
+	 * <p>
+	 * The map is sorted by compiler (see {@link Compilers#COMPARATOR}).
 	 *
 	 * @param section is the {@link Section} the {@link Message}s are stored for
 	 * @param types   is the {@link Type} of {@link Message} you want (set to
@@ -356,19 +358,19 @@ public final class Messages {
 	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMapFromSubtree(Section<?> section, Message.Type... types) {
-		Map<Compiler, Collection<Message>> allMessages = new HashMap<>();
+		Map<Compiler, Collection<Message>> allMessages = new LinkedHashMap<>();
 		getMessagesMapFromSubtree(allMessages, section, types);
 		return Collections.unmodifiableMap(allMessages);
 	}
 
-	private static void getMessagesMapFromSubtree(Map<Compiler, Collection<Message>> allMessages, Section<?> section, Message.Type... types) {
-		Map<Compiler, Collection<Message>> messagesOfSectionByTitle = getMessagesMap(section, types);
-		for (Entry<Compiler, Collection<Message>> entry : messagesOfSectionByTitle.entrySet()) {
-			Collection<Message> allMsgsOfTitle = allMessages.computeIfAbsent(entry.getKey(), k -> new LinkedList<>());
-			allMsgsOfTitle.addAll(entry.getValue());
-		}
+	private static void getMessagesMapFromSubtree(Map<Compiler, Collection<Message>> allMessagesOfSubtree, Section<?> section, Message.Type... types) {
+		getMessagesMap(section, types).entrySet().stream()
+				.sorted(Comparator.comparing(Entry::getKey, Compilers.COMPARATOR))
+				.forEach(e -> allMessagesOfSubtree.computeIfAbsent(e.getKey(), c -> new ArrayList<>())
+						.addAll(e.getValue())
+				);
 		for (Section<?> child : section.getChildren()) {
-			getMessagesMapFromSubtree(allMessages, child, types);
+			getMessagesMapFromSubtree(allMessagesOfSubtree, child, types);
 		}
 	}
 
@@ -406,7 +408,6 @@ public final class Messages {
 	 *                <tt>null</tt> if you want all)
 	 */
 	public static Collection<Message> getMessagesFromSubtree(Section<?> section, Message.Type... types) {
-
 		Collection<Message> messages = new ArrayList<>();
 		getMessagesFromSubtree(messages, null, section, types);
 		return Collections.unmodifiableCollection(messages);
