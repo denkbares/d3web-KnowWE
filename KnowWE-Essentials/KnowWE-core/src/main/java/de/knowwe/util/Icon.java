@@ -173,7 +173,8 @@ public class Icon {
 		if (cssClass != null) {
 			if (isFontAweSomeProAvailable()) {
 				cssClass = cssClass.replace("fa-type ", "far ");
-			} else {
+			}
+			else {
 				cssClass = cssClass.replace("fa-type ", "fas ");
 			}
 		}
@@ -217,9 +218,18 @@ public class Icon {
 	 * Returns the HTML tag for the current icon.
 	 */
 	public String toHtml() {
+		String cssClass = this.cssClass;
+		if (title != null) {
+			if (Strings.isBlank(cssClass)) {
+				cssClass = "tooltipster";
+			}
+			else {
+				cssClass += " tooltipster";
+			}
+		}
 		return "<i class='" + cssClass + "' "
 				+ (style == null ? "" : "style='" + style + "'")
-				+ (title == null ? "" : "title='" + title + "'")
+				+ (title == null ? "" : "title='" + Strings.encodeHtml(title) + "'")
 				+ (id == null ? "" : "id='" + id + "'")
 				+ "></i>";
 	}
