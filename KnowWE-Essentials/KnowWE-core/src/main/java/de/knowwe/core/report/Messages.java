@@ -606,7 +606,7 @@ public final class Messages {
 	 */
 	public static void storeMessages(Compiler compiler, Section<?> section, Class<?> source, Collection<Message> messages) {
 		Map<String, Collection<Message>> messagesMap = getMessagesMap(compiler, section);
-		String key = source.getName();
+		String sourceKey = source.getName();
 		// we have messages to store
 		if (messages != null && !messages.isEmpty()) {
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -622,7 +622,7 @@ public final class Messages {
 					}
 				}
 				// store messages in map
-				messagesMap.put(key, Collections.unmodifiableCollection(messages));
+				messagesMap.put(sourceKey, Collections.unmodifiableCollection(messages));
 				// store section for type collections
 				for (Message message : messages) {
 					sectionsWithMessages.put(message.getType(), section);
@@ -635,7 +635,7 @@ public final class Messages {
 			if (messagesMap == null) return;
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
 			synchronized (section) {
-				Collection<Message> removedMessages = messagesMap.remove(key);
+				Collection<Message> removedMessages = messagesMap.remove(sourceKey);
 				// we did not remove anything, no cleanup needed
 				if (removedMessages == null || removedMessages.isEmpty()) return;
 				// we removed messages, cleanup!
@@ -649,6 +649,13 @@ public final class Messages {
 		}
 	}
 
+	/**
+	 * <p><b>THIS METHOD DOES NOT DELETE MESSAGES!</b></p>
+	 * It just checks whether there are still messages for the given section. If not, it cleans up the map holding the
+	 * information if there are still messages.
+	 *
+	 * @param section the section for which we want to do the cleanup
+	 */
 	private static void cleanUpSectionsWithMessagesMap(Section<?> section) {
 		Map<Compiler, Collection<Message>> messagesByCompiler = getMessagesMap(section);
 		Set<Message.Type> availableTypes = new HashSet<>();

@@ -754,8 +754,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	/**
 	 * All objects stored in this Section with the given <tt>key</tt> are collected and returned. The {@link Map} stores
-	 * them by the title of the {@link Article} they were stored for. If an object was stored without an argument {@link
-	 * Article} (article independent), the returned {@link Map} contains this object with <tt>null</tt> as the key.
+	 * them by the compiler they were stored for. If an object was stored without an argument {@link
+	 * Compiler} (compiler independent), the returned {@link Map} contains this object with <tt>null</tt> as the key.
 	 *
 	 * @param key is the key for which the objects were stored
 	 * @created 16.02.2012
@@ -792,7 +792,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * Stores the given Object for the given key.<br/>
 	 * <b>Attention:</b> Be aware, that some times an Object should only be
 	 * stored in the context of a certain {@link Compiler}. Example: An Object was created, because the Section was
-	 * compiled for a certain {@link Article}. If the Section however gets compiled again for another {@link Article},
+	 * compiled for a certain {@link Compiler}. If the Section however gets compiled again for another {@link Compiler},
 	 * the Object would not be created or a different {@link Object} would be created. In this case you have to use the
 	 * method {@link #storeObject(Compiler, String, Object)} to be able to differentiate between the {@link Compiler}s.
 	 *
