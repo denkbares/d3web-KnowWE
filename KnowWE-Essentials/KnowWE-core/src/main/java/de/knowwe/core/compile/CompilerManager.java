@@ -416,6 +416,7 @@ public class CompilerManager {
 			compilerCache.remove(compiler);
 			compilers.remove(compiler);
 		}
+		Messages.clearMessages(compiler);
 		EventManager.getInstance().fireEvent(new CompilerRemovedEvent(compiler));
 		compiler.destroy();
 	}
