@@ -9,7 +9,7 @@ import javax.servlet.ServletContextListener;
 
 import com.denkbares.events.EventManager;
 import de.knowwe.event.ServletContextDestroyedEvent;
-
+import de.knowwe.event.ServletContextInitializedEvent;
 /**
  * Listens to servlet events and delegates them to the denkbares event mechanism. Also allows to register simple tasks
  * to be executed when servlet is destroyed.
@@ -20,7 +20,6 @@ import de.knowwe.event.ServletContextDestroyedEvent;
 public class ServletContextEventListener implements ServletContextListener {
 
 	private static final List<Consumer<ServletContextEvent>> contextDestroyedTask = new ArrayList<>();
-
 	private static boolean destroyInProgress = false;
 
 	/**
@@ -29,7 +28,7 @@ public class ServletContextEventListener implements ServletContextListener {
 	 *
 	 * @param task the task to be executed when the servlet is destroyed.
 	 */
-	public static void registerOnContextDestroyedTask(Consumer<ServletContextEvent> task) {
+	public static void registerOnContextDestroyedTask(final Consumer<ServletContextEvent> task) {
 		contextDestroyedTask.add(task);
 	}
 
@@ -41,12 +40,12 @@ public class ServletContextEventListener implements ServletContextListener {
 	}
 
 	@Override
-	public void contextInitialized(ServletContextEvent servletContextEvent) {
-		// no event listeners will be registered at this point, so no point in firing and event
+	public void contextInitialized(final ServletContextEvent servletContextEvent) {
+		EventManager.getInstance().fireEvent(new ServletContextInitializedEvent(servletContextEvent));
 	}
 
 	@Override
-	public void contextDestroyed(ServletContextEvent servletContextEvent) {
+	public void contextDestroyed(final ServletContextEvent servletContextEvent) {
 		destroyInProgress = true;
 		EventManager.getInstance().fireEvent(new ServletContextDestroyedEvent(servletContextEvent));
 		contextDestroyedTask.forEach(task -> task.accept(servletContextEvent));
