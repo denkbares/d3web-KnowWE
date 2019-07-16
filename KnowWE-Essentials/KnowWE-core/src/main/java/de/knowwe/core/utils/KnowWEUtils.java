@@ -81,7 +81,7 @@ import de.knowwe.plugin.StatusProvider;
 
 public class KnowWEUtils {
 
-	private static void mask(StringBuilder buffer, String toReplace) {
+	private static void mask(final StringBuilder buffer, final String toReplace) {
 		int index = buffer.indexOf(toReplace);
 		while (index >= 0) {
 			// string starts with substring which should be replaced
@@ -93,7 +93,7 @@ public class KnowWEUtils {
 		}
 	}
 
-	private static void unmask(StringBuilder buffer, String toReplace) {
+	private static void unmask(final StringBuilder buffer, final String toReplace) {
 		int index = buffer.indexOf(toReplace);
 		while (index >= 0) {
 			// string does not start with substring which should be replaced
@@ -111,8 +111,8 @@ public class KnowWEUtils {
 	 *
 	 * @created 03.03.2011
 	 */
-	public static String maskJSPWikiMarkup(String string) {
-		StringBuilder temp = new StringBuilder(string);
+	public static String maskJSPWikiMarkup(final String string) {
+		final StringBuilder temp = new StringBuilder(string);
 		maskJSPWikiMarkup(temp);
 		return temp.toString();
 	}
@@ -122,12 +122,12 @@ public class KnowWEUtils {
 	 * article with the given name and the links is also no to an external site or an attachment. This method can be
 	 * used to gracefully handle rendering of copy&pasted texts containing [ and ].
 	 */
-	public static String maskInvalidJSPWikiLinks(ArticleManager articleManager, String text) {
-		Pattern linkFinder = Pattern.compile("\\[(?:[^\\]\\|]+\\|)?([^\\]]+)\\]");
-		Matcher matcher = linkFinder.matcher(text);
-		List<Pair<Integer, Integer>> escapeIndices = new ArrayList<>();
+	public static String maskInvalidJSPWikiLinks(final ArticleManager articleManager, final String text) {
+		final Pattern linkFinder = Pattern.compile("\\[(?:[^\\]\\|]+\\|)?([^\\]]+)\\]");
+		final Matcher matcher = linkFinder.matcher(text);
+		final List<Pair<Integer, Integer>> escapeIndices = new ArrayList<>();
 		while (matcher.find()) {
-			String link = matcher.group(1);
+			final String link = matcher.group(1);
 			if (articleManager.getArticle(link.replaceAll("#.*$", "")) == null
 					&& !link.startsWith("http")
 					&& !link.startsWith("file")
@@ -135,18 +135,18 @@ public class KnowWEUtils {
 				escapeIndices.add(new Pair<>(matcher.start(), matcher.end()));
 			}
 		}
-		StringBuilder builder = new StringBuilder(text);
+		final StringBuilder builder = new StringBuilder(text);
 		int shift = 0;
-		for (Pair<Integer, Integer> indices : escapeIndices) {
-			int start = indices.getA();
-			int end = indices.getB();
+		for (final Pair<Integer, Integer> indices : escapeIndices) {
+			final int start = indices.getA();
+			final int end = indices.getB();
 			builder.insert(indices.getA() + shift++, "~");
 			// also escape opening brackets after the first one, but before the closing one
 			// if they are not escaped, JSPWiki will also make links fore these accidental link subsection
-			char[] chars = new char[end - start - 1];
+			final char[] chars = new char[end - start - 1];
 			builder.getChars(start + shift + 1, end + shift, chars, 0);
 			for (int i = 0; i < chars.length; i++) {
-				char aChar = chars[i];
+				final char aChar = chars[i];
 				if (aChar == '[') {
 					builder.insert(start + i + 1 + shift++, "~");
 				}
@@ -161,8 +161,8 @@ public class KnowWEUtils {
 	 * @param string the string to be unmasked
 	 * @created 28.09.2012
 	 */
-	public static String unmaskJSPWikiMarkup(String string) {
-		StringBuilder temp = new StringBuilder(string);
+	public static String unmaskJSPWikiMarkup(final String string) {
+		final StringBuilder temp = new StringBuilder(string);
 		unmaskJSPWikiMarkup(temp);
 		return temp.toString();
 	}
@@ -174,7 +174,7 @@ public class KnowWEUtils {
 	 * @param builder the builder to destructively mask its contents
 	 * @created 03.03.2011
 	 */
-	public static void maskJSPWikiMarkup(StringBuilder builder) {
+	public static void maskJSPWikiMarkup(final StringBuilder builder) {
 		mask(builder, "[");
 		mask(builder, "]");
 		mask(builder, "----");
@@ -193,7 +193,7 @@ public class KnowWEUtils {
 	 * @param builder the builder to destructively unmask its contents
 	 * @created 28.09.2012
 	 */
-	public static void unmaskJSPWikiMarkup(StringBuilder builder) {
+	public static void unmaskJSPWikiMarkup(final StringBuilder builder) {
 		unmask(builder, "[");
 		unmask(builder, "]");
 		unmask(builder, "----");
@@ -205,24 +205,26 @@ public class KnowWEUtils {
 		unmask(builder, "\\");
 	}
 
-	public static void appendToFile(String path, String entry) {
+	public static void appendToFile(final String path, final String entry) {
 
 		try {
-			OutputStreamWriter writer = new OutputStreamWriter(
+			final OutputStreamWriter writer = new OutputStreamWriter(
 					new FileOutputStream(path, true),
 					Charset.forName("UTF-8").newEncoder()
 			);
-			BufferedWriter out = new BufferedWriter(writer);
+			final BufferedWriter out = new BufferedWriter(writer);
 			out.write(entry);
 			out.close();
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			Log.warning("Unable to append to File", e);
 		}
 	}
 
-	public static String convertUmlaut(String text) {
-		if (text == null) return null;
+	public static String convertUmlaut(final String text) {
+		if (text == null) {
+			return null;
+		}
 		String result = text;
 		result = result.replaceAll("Ä", "&Auml;");
 		result = result.replaceAll("Ö", "&Ouml;");
@@ -241,7 +243,7 @@ public class KnowWEUtils {
 	 * @param section the section to create the anchor for.
 	 * @return the unique anchor name
 	 */
-	public static String getAnchor(Section<?> section) {
+	public static String getAnchor(final Section<?> section) {
 		return "section-" + section.getID();
 	}
 
@@ -253,8 +255,8 @@ public class KnowWEUtils {
 	 * @param result  the output target to be written to
 	 * @created 16.08.2013
 	 */
-	public static void renderAnchor(Section<?> section, RenderResult result) {
-		String anchorName = KnowWEUtils.getAnchor(section);
+	public static void renderAnchor(final Section<?> section, final RenderResult result) {
+		final String anchorName = KnowWEUtils.getAnchor(section);
 		result.appendHtml("<a class='anchor' name='" + anchorName + "'></a>");
 	}
 
@@ -268,14 +270,16 @@ public class KnowWEUtils {
 	 * @return {@link WikiAttachment} fulfilling the specified parameters or null, if no such attachment exists
 	 * @created 27.01.2012
 	 */
-	public static WikiAttachment getAttachment(String title, String fileName) throws IOException {
+	public static WikiAttachment getAttachment(final String title, final String fileName) throws IOException {
 		WikiAttachment actualAttachment = Environment.getInstance()
 				.getWikiConnector().getAttachment(title + "/" + fileName);
-		if (actualAttachment != null) return actualAttachment;
-		Collection<WikiAttachment> attachments = Environment.getInstance()
+		if (actualAttachment != null) {
+			return actualAttachment;
+		}
+		final Collection<WikiAttachment> attachments = Environment.getInstance()
 				.getWikiConnector()
 				.getAttachments();
-		for (WikiAttachment attachment : attachments) {
+		for (final WikiAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
 					&& attachment.getParentName().equals(title))
 					|| attachment.getPath().equals(fileName)) {
@@ -295,29 +299,33 @@ public class KnowWEUtils {
 	 * @return Collection of {@link WikiAttachment}s
 	 * @created 09.02.2012
 	 */
-	public static Collection<WikiAttachment> getAttachments(String title, String regex) throws IOException {
-		Collection<WikiAttachment> result = new LinkedList<>();
-		Collection<WikiAttachment> attachments = Environment.getInstance()
+	public static Collection<WikiAttachment> getAttachments(final String title, final String regex) throws IOException {
+		final Collection<WikiAttachment> result = new LinkedList<>();
+		final Collection<WikiAttachment> attachments = Environment.getInstance()
 				.getWikiConnector().getAttachments();
 		Pattern pattern;
 		try {
 			pattern = Pattern.compile(regex);
 		}
-		catch (PatternSyntaxException e) {
+		catch (final PatternSyntaxException e) {
 			pattern = Pattern.compile(Pattern.quote(regex));
 		}
-		for (WikiAttachment attachment : attachments) {
+		for (final WikiAttachment attachment : attachments) {
 			// we return the attachment if:
 			// the regex argument directly equals the path
 			if (!regex.equals(attachment.getPath())) {
 				// or the pattern matches the path
 				if (!pattern.matcher(attachment.getPath()).matches()) {
 					// or we have the correct title and
-					if (!attachment.getParentName().equals(title)) continue;
+					if (!attachment.getParentName().equals(title)) {
+						continue;
+					}
 					// the regex either directly equals the file name
 					if (!regex.equals(attachment.getFileName())) {
 						// or the pattern matches the filename
-						if (!pattern.matcher(attachment.getFileName()).matches()) continue;
+						if (!pattern.matcher(attachment.getFileName()).matches()) {
+							continue;
+						}
 					}
 				}
 			}
@@ -361,14 +369,14 @@ public class KnowWEUtils {
 	 * @return true if the user has the read access rights to the article
 	 * @created 29.11.2013
 	 */
-	public static boolean canView(Article article, UserContext context) {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
+	public static boolean canView(final Article article, final UserContext context) {
+		final WikiConnector connector = Environment.getInstance().getWikiConnector();
 		// try nine times with catching unexpected exception from AuthorizationManager
 		for (int i = 0; i < 9; i++) {
 			try {
 				return connector.userCanViewArticle(article.getTitle(), context.getRequest());
 			}
-			catch (ConcurrentModificationException e) {
+			catch (final ConcurrentModificationException e) {
 				// do nothing a few times, because we have no influence here
 				Thread.yield();
 			}
@@ -386,9 +394,11 @@ public class KnowWEUtils {
 	 * @return true if the user has the read access rights to all of the articles
 	 * @created 29.11.2013
 	 */
-	private static boolean canView(Set<Article> articles, UserContext context) {
-		for (Article article : articles) {
-			if (!canView(article, context)) return false;
+	private static boolean canView(final Set<Article> articles, final UserContext context) {
+		for (final Article article : articles) {
+			if (!canView(article, context)) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -402,7 +412,7 @@ public class KnowWEUtils {
 	 * @return true if the user has the read access rights to the section
 	 * @created 29.11.2013
 	 */
-	public static boolean canView(Section<?> section, UserContext context) {
+	public static boolean canView(final Section<?> section, final UserContext context) {
 		return canView(section.getArticle(), context);
 	}
 
@@ -415,7 +425,7 @@ public class KnowWEUtils {
 	 * @return true if the user has the read access rights to all of the sections
 	 * @created 29.11.2013
 	 */
-	public static boolean canView(Collection<Section<?>> sections, UserContext context) {
+	public static boolean canView(final Collection<Section<?>> sections, final UserContext context) {
 		return canView(Sections.collectArticles(sections), context);
 	}
 
@@ -428,7 +438,7 @@ public class KnowWEUtils {
 	 * @param context the user context
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
 	 */
-	public static void assertCanView(Section<?> section, UserContext context) throws NotAuthorizedException {
+	public static void assertCanView(final Section<?> section, final UserContext context) throws NotAuthorizedException {
 		if (!canView(section, context)) {
 			throw new NotAuthorizedException("No view access for section '" + section.getID() + "'.");
 		}
@@ -442,7 +452,7 @@ public class KnowWEUtils {
 	 * @return true if the user has the write access rights to the article
 	 * @created 29.11.2013
 	 */
-	public static boolean canWrite(String articleTitle, UserContext user) {
+	public static boolean canWrite(final String articleTitle, final UserContext user) {
 		return Environment.getInstance().getWikiConnector().userCanEditArticle(
 				articleTitle, user.getRequest());
 	}
@@ -455,7 +465,7 @@ public class KnowWEUtils {
 	 * @return true if the user has the write access rights to the article
 	 * @created 29.11.2013
 	 */
-	public static boolean canWrite(Article article, UserContext user) {
+	public static boolean canWrite(final Article article, final UserContext user) {
 		return Environment.getInstance().getWikiConnector().userCanEditArticle(
 				article.getTitle(), user.getRequest());
 	}
@@ -468,9 +478,11 @@ public class KnowWEUtils {
 	 * @return true if the user has the write access rights to all of the articles
 	 * @created 29.11.2013
 	 */
-	private static boolean canWrite(Set<Article> articles, UserContext user) {
-		for (Article article : articles) {
-			if (!canWrite(article, user)) return false;
+	private static boolean canWrite(final Set<Article> articles, final UserContext user) {
+		for (final Article article : articles) {
+			if (!canWrite(article, user)) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -484,7 +496,7 @@ public class KnowWEUtils {
 	 * @return true if the user has the write access rights to the section
 	 * @created 29.11.2013
 	 */
-	public static boolean canWrite(Section<?> section, UserContext user) {
+	public static boolean canWrite(final Section<?> section, final UserContext user) {
 		return canWrite(section.getArticle(), user);
 	}
 
@@ -497,7 +509,7 @@ public class KnowWEUtils {
 	 * @param context the user context
 	 * @throws NotAuthorizedException is thrown if the user has no view rights to the article of the section
 	 */
-	public static void assertCanWrite(Section<?> section, UserContext context) throws NotAuthorizedException {
+	public static void assertCanWrite(final Section<?> section, final UserContext context) throws NotAuthorizedException {
 		if (!canWrite(section, context)) {
 			throw new NotAuthorizedException("No write access for section '" + section.getID() + "'.");
 		}
@@ -510,7 +522,7 @@ public class KnowWEUtils {
 	 * @param user      the user to check the group for
 	 * @return true, if the user is member of the group, false else
 	 */
-	public static boolean isInGroup(String groupName, UserContext user) {
+	public static boolean isInGroup(final String groupName, final UserContext user) {
 		return Environment.getInstance()
 				.getWikiConnector()
 				.userIsMemberOfGroup(groupName, user.getRequest());
@@ -522,7 +534,7 @@ public class KnowWEUtils {
 	 * @param user the user to check
 	 * @return true, if the user is an admin, false else
 	 */
-	public static boolean isAdmin(UserContext user) {
+	public static boolean isAdmin(final UserContext user) {
 		return user.userIsAdmin();
 	}
 
@@ -535,7 +547,7 @@ public class KnowWEUtils {
 	 * @return true if the user has the write access rights to all of the sections
 	 * @created 29.11.2013
 	 */
-	public static boolean canWrite(Collection<Section<?>> sections, UserContext user) {
+	public static boolean canWrite(final Collection<Section<?>> sections, final UserContext user) {
 		return canWrite(Sections.collectArticles(sections), user);
 	}
 
@@ -556,9 +568,9 @@ public class KnowWEUtils {
 	 * @param section the Section which should implement the interface SimpleTerm
 	 * @created 08.02.2012
 	 */
-	public static Identifier getTermIdentifier(Section<?> section) {
+	public static Identifier getTermIdentifier(final Section<?> section) {
 		if (section.get() instanceof Term) {
-			Section<Term> termSection = Sections.cast(section, Term.class);
+			final Section<Term> termSection = Sections.cast(section, Term.class);
 			return termSection.get().getTermIdentifier(termSection);
 		}
 		else {
@@ -572,9 +584,9 @@ public class KnowWEUtils {
 	 * @param termSection the Section which should implement the interface SimpleTerm
 	 * @created 06.05.2012
 	 */
-	public static String getTermName(Section<?> termSection) {
+	public static String getTermName(final Section<?> termSection) {
 		if (termSection.get() instanceof Term) {
-			Section<Term> simpleSection = Sections.cast(termSection, Term.class);
+			final Section<Term> simpleSection = Sections.cast(termSection, Term.class);
 			return simpleSection.get().getTermName(simpleSection);
 		}
 		else {
@@ -591,7 +603,7 @@ public class KnowWEUtils {
 	 * @return an absolute URL such as "http://localhost:8080/KnowWE/Wiki.jsp?page=ABC"
 	 */
 	public static String getAsAbsoluteLink(String relativeLink) {
-		String baseUrl = StringUtils.stripEnd(Environment.getInstance().getWikiConnector().getBaseUrl(), "/");
+		final String baseUrl = StringUtils.stripEnd(Environment.getInstance().getWikiConnector().getBaseUrl(), "/");
 		relativeLink = StringUtils.stripStart(relativeLink, "/");
 		return baseUrl + "/" + relativeLink;
 	}
@@ -604,7 +616,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getLinkHTMLToArticle(Article article) {
+	public static String getLinkHTMLToArticle(final Article article) {
 		return getLinkHTMLToArticle(article.getTitle());
 	}
 
@@ -616,7 +628,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getLinkHTMLToArticle(String title) {
+	public static String getLinkHTMLToArticle(final String title) {
 		return getLinkHTMLToArticle(title, title);
 	}
 
@@ -629,7 +641,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getLinkHTMLToArticle(String title, String linkText) {
+	public static String getLinkHTMLToArticle(final String title, final String linkText) {
 		return "<a href='" + getURLLink(title) + "' >" + linkText + "</a>";
 	}
 
@@ -641,7 +653,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getURLLink(String title) {
+	public static String getURLLink(final String title) {
 		return getURLLink(title, -1);
 	}
 
@@ -654,7 +666,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getURLLink(String title, int version) {
+	public static String getURLLink(final String title, final int version) {
 		return "Wiki.jsp?page=" + Strings.encodeURL(title)
 				+ (version != -1 ? "&version=" + version : "");
 	}
@@ -667,7 +679,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getURLLink(Article article) {
+	public static String getURLLink(final Article article) {
 		return getURLLink(article.getTitle());
 	}
 
@@ -678,7 +690,7 @@ public class KnowWEUtils {
 	 * @param attachment the attachment to create the link for
 	 * @return the created link
 	 */
-	public static String getURLLink(Article article, String attachment) {
+	public static String getURLLink(final Article article, final String attachment) {
 		return "attach/" + article.getTitle() + "/" + attachment;
 	}
 
@@ -688,7 +700,7 @@ public class KnowWEUtils {
 	 * @param attachment the attachment to create the link for
 	 * @return the created link
 	 */
-	public static String getURLLink(WikiAttachment attachment) {
+	public static String getURLLink(final WikiAttachment attachment) {
 		return "attach/" + attachment.getPath();
 	}
 
@@ -702,7 +714,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Article)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getLinkHTMLToSection(Section<?> section) {
+	public static String getLinkHTMLToSection(final Section<?> section) {
 		return "<a href='" + getURLLink(section) + "'>" + section
 				.getTitle() + "</a>";
 	}
@@ -717,11 +729,11 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Article)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getURLLink(Section<?> section) {
+	public static String getURLLink(final Section<?> section) {
 		String title = section.getTitle();
-		ArticleManager articleManager = section.getArticleManager();
+		final ArticleManager articleManager = section.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager) {
-			Set<Section<AttachmentType>> compilingAttachmentSections = ((DefaultArticleManager) articleManager).getAttachmentManager()
+			final Set<Section<AttachmentType>> compilingAttachmentSections = ((DefaultArticleManager) articleManager).getAttachmentManager()
 					.getCompilingAttachmentSections(section.getArticle());
 			if (!compilingAttachmentSections.isEmpty()) {
 				title = compilingAttachmentSections.iterator().next().getTitle();
@@ -741,11 +753,11 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getDiffURLLink(String title, int version1, int version2) {
+	public static String getDiffURLLink(final String title, final int version1, final int version2) {
 		return "Diff.jsp?page=" + title + "&r1=" + version1 + "&r2=" + version2;
 	}
 
-	public static String getURLLinkToObjectInfoPage(Identifier identifier) {
+	public static String getURLLinkToObjectInfoPage(final Identifier identifier) {
 		return "javascript:KNOWWE.plugin.compositeEditTool.openCompositeEditDialog(&quot;" + Strings.unquote(identifier.toExternalForm()) + "&quot;);";
 	}
 
@@ -758,12 +770,14 @@ public class KnowWEUtils {
 	 * @return the stored cookie or null, if no cookie with the given name exists
 	 * @created 11.02.2013
 	 */
-	public static String getCookie(String name, UserContext context) {
-		HttpServletRequest request = context.getRequest();
-		if (request == null) return null;
-		Cookie[] cookies = request.getCookies();
+	public static String getCookie(final String name, final UserContext context) {
+		final HttpServletRequest request = context.getRequest();
+		if (request == null) {
+			return null;
+		}
+		final Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
-			for (Cookie cookie : cookies) {
+			for (final Cookie cookie : cookies) {
 				if (cookie.getName().equals(name)) {
 					return cookie.getValue();
 				}
@@ -779,22 +793,30 @@ public class KnowWEUtils {
 	 * @param cookieNamePattern a pattern that matches the name for the cookie to be cleaned up exactly
 	 * @param sectionIdGroup    the capture group in the pattern that contains the section id.
 	 */
-	public static void cleanupSectionCookies(UserContext context, Pattern cookieNamePattern, int sectionIdGroup) {
-		if (!(context instanceof UserActionContext)) return;
-		HttpServletRequest request = context.getRequest();
-		if (request == null) return;
-		Cookie[] cookies = request.getCookies();
+	public static void cleanupSectionCookies(final UserContext context, final Pattern cookieNamePattern, final int sectionIdGroup) {
+		if (!(context instanceof UserActionContext)) {
+			return;
+		}
+		final HttpServletRequest request = context.getRequest();
+		if (request == null) {
+			return;
+		}
+		final Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				String name = cookie.getName();
-				Matcher matcher = cookieNamePattern.matcher(name);
-				if (!matcher.find()) continue;
-				String sectionId = matcher.group(sectionIdGroup);
-				try {
-					Section<?> section = Sections.get(sectionId);
-					if (section != null) continue;
+			for (final Cookie cookie : cookies) {
+				final String name = cookie.getName();
+				final Matcher matcher = cookieNamePattern.matcher(name);
+				if (!matcher.find()) {
+					continue;
 				}
-				catch (NumberFormatException ignore) {
+				final String sectionId = matcher.group(sectionIdGroup);
+				try {
+					final Section<?> section = Sections.get(sectionId);
+					if (section != null) {
+						continue;
+					}
+				}
+				catch (final NumberFormatException ignore) {
 					// if the parse section id is not a valid section id, we also clean up the cookie
 				}
 				cookie.setMaxAge(0);
@@ -815,9 +837,11 @@ public class KnowWEUtils {
 	 * @return the stored cookie or null, if no cookie with the given name exists
 	 * @created 11.02.2013
 	 */
-	public static String getCookie(String name, String defaultValue, UserContext context) {
+	public static String getCookie(final String name, final String defaultValue, final UserContext context) {
 		String cookie = getCookie(name, context);
-		if (cookie == null) cookie = defaultValue;
+		if (cookie == null) {
+			cookie = defaultValue;
+		}
 		return cookie;
 	}
 
@@ -825,8 +849,8 @@ public class KnowWEUtils {
 	 * Returns the version of the article at the given date or the version saved closest before the given date. If there
 	 * is no such version or article, -1 is returned. In JSPWiki -1 represents the latest version of an article.
 	 */
-	public static int getArticleVersionAtDate(String title, Date date) throws IOException {
-		WikiPageInfo articleVersionInfoAtDate = getArticleVersionInfoAtDate(title, date);
+	public static int getArticleVersionAtDate(final String title, final Date date) throws IOException {
+		final WikiPageInfo articleVersionInfoAtDate = getArticleVersionInfoAtDate(title, date);
 		return articleVersionInfoAtDate == null ? -1 : articleVersionInfoAtDate.getVersion();
 	}
 
@@ -837,7 +861,7 @@ public class KnowWEUtils {
 	 *
 	 * @return an info object of the article for the given date
 	 */
-	public static WikiPageInfo getArticleVersionInfoAtDate(String title, Date date) throws IOException {
+	public static WikiPageInfo getArticleVersionInfoAtDate(final String title, final Date date) throws IOException {
 		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getArticleHistory(title), date);
 	}
 
@@ -848,7 +872,7 @@ public class KnowWEUtils {
 	 *
 	 * @return an info object of the attachment for the given date
 	 */
-	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(String title, Date date) throws IOException {
+	public static WikiAttachmentInfo getAttachmentVersionInfoAtDate(final String title, final Date date) throws IOException {
 		return getObjectInfoAtDate(Environment.getInstance().getWikiConnector().getAttachmentHistory(title), date);
 	}
 
@@ -857,12 +881,12 @@ public class KnowWEUtils {
 	 * there is no such version or article, -1 is returned. In JSPWiki -1 represents the latest version of an
 	 * attachment.
 	 */
-	public static int getAttachmentVersionAtDate(String title, Date date) throws IOException {
-		WikiAttachmentInfo attachmentVersionInfoAtDate = getAttachmentVersionInfoAtDate(title, date);
+	public static int getAttachmentVersionAtDate(final String title, final Date date) throws IOException {
+		final WikiAttachmentInfo attachmentVersionInfoAtDate = getAttachmentVersionInfoAtDate(title, date);
 		return attachmentVersionInfoAtDate == null ? -1 : attachmentVersionInfoAtDate.getVersion();
 	}
 
-	private static <T extends WikiObjectInfo> T getObjectInfoAtDate(List<T> objectHistory, Date date) throws IOException {
+	private static <T extends WikiObjectInfo> T getObjectInfoAtDate(final List<T> objectHistory, final Date date) throws IOException {
 		return objectHistory.stream()
 				// get the first that was saved before or equal to the given date
 				.filter(pageInfo -> pageInfo.getSaveDate().before(date) || pageInfo.getSaveDate().equals(date))
@@ -883,7 +907,7 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getURLLink(Article)
 	 */
-	public static String getWikiLink(Section<?> section) {
+	public static String getWikiLink(final Section<?> section) {
 		String link = section.getTitle();
 		// append section id if the section is not the root section
 		if (section.getParent() != null) {
@@ -892,25 +916,25 @@ public class KnowWEUtils {
 		return link;
 	}
 
-	public static String readFile(String fileName) {
+	public static String readFile(final String fileName) {
 		try {
 			return Strings.readFile(fileName);
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			Log.severe("Unable to read File", e);
 			return "";
 		}
 	}
 
-	public static String readStream(InputStream inputStream) {
+	public static String readStream(final InputStream inputStream) {
 		return Strings.readStream(inputStream);
 	}
 
-	public static void writeFile(String path, String content) {
+	public static void writeFile(final String path, final String content) {
 		try {
 			Strings.writeFile(path, content);
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			Log.severe("Unable to write file", e);
 		}
 	}
@@ -920,18 +944,22 @@ public class KnowWEUtils {
 	 * @deprecated use the method {@link KnowWEUtils#getTerminologyManagers(Section)}
 	 */
 	@Deprecated
-	public static TerminologyManager getTerminologyManager(Article article) {
+	public static TerminologyManager getTerminologyManager(final Article article) {
 		if (article == null) {
 			//noinspection ConstantConditions
 			return Compilers.getCompiler(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB),
 					DefaultGlobalCompiler.class).getTerminologyManager();
 		}
-		Section<PackageCompileType> compileSection = Sections.successor(article.getRootSection(), PackageCompileType.class);
+		final Section<PackageCompileType> compileSection = Sections.successor(article.getRootSection(), PackageCompileType.class);
 		// to emulate old behavior (not return null) we return an empty
 		// TerminologyManager
-		if (compileSection == null) return new TerminologyManager();
-		Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(compileSection);
-		if (terminologyManagers.isEmpty()) return null;
+		if (compileSection == null) {
+			return new TerminologyManager();
+		}
+		final Collection<TerminologyManager> terminologyManagers = KnowWEUtils.getTerminologyManagers(compileSection);
+		if (terminologyManagers.isEmpty()) {
+			return null;
+		}
 		return terminologyManagers.iterator().next();
 	}
 
@@ -942,8 +970,8 @@ public class KnowWEUtils {
 	 * @return the {@link TerminologyManager}s of the given section
 	 * @created 15.11.2013
 	 */
-	public static Collection<TerminologyManager> getTerminologyManagers(Section<?> section) {
-		Collection<TermCompiler> compilers = Compilers.getCompilers(section, TermCompiler.class);
+	public static Collection<TerminologyManager> getTerminologyManagers(final Section<?> section) {
+		final Collection<TermCompiler> compilers = Compilers.getCompilers(section, TermCompiler.class);
 		return KnowWEUtils.getTerminologyManagers(compilers);
 	}
 
@@ -954,8 +982,8 @@ public class KnowWEUtils {
 	 * @return the {@link TerminologyManager}s of the given manager
 	 * @created 15.11.2013
 	 */
-	public static Collection<TerminologyManager> getTerminologyManagers(ArticleManager manager) {
-		Collection<TermCompiler> compilers = Compilers.getCompilers(manager, TermCompiler.class);
+	public static Collection<TerminologyManager> getTerminologyManagers(final ArticleManager manager) {
+		final Collection<TermCompiler> compilers = Compilers.getCompilers(manager, TermCompiler.class);
 		return KnowWEUtils.getTerminologyManagers(compilers);
 	}
 
@@ -968,13 +996,13 @@ public class KnowWEUtils {
 	 * @return the {@link TerminologyManager}s of the given manager
 	 * @created 15.11.2013
 	 */
-	public static Collection<TerminologyManager> getTerminologyManagers(ArticleManager manager, Class<? extends TermCompiler> compilerClass) {
-		Collection<? extends TermCompiler> compilers = Compilers.getCompilers(manager,
+	public static Collection<TerminologyManager> getTerminologyManagers(final ArticleManager manager, final Class<? extends TermCompiler> compilerClass) {
+		final Collection<? extends TermCompiler> compilers = Compilers.getCompilers(manager,
 				compilerClass);
 		return KnowWEUtils.getTerminologyManagers(compilers);
 	}
 
-	private static Collection<TerminologyManager> getTerminologyManagers(Collection<? extends TermCompiler> compilers) {
+	private static Collection<TerminologyManager> getTerminologyManagers(final Collection<? extends TermCompiler> compilers) {
 		return compilers.stream()
 				.map(TermCompiler::getTerminologyManager)
 				.collect(Collectors.toList());
@@ -985,7 +1013,7 @@ public class KnowWEUtils {
 	 *
 	 * @created 07.01.2014
 	 */
-	public static Article getArticle(String web, String title) {
+	public static Article getArticle(final String web, final String title) {
 		return Environment.getInstance().getArticle(web, title);
 	}
 
@@ -1004,7 +1032,7 @@ public class KnowWEUtils {
 	 * @param web the web we want the {@link ArticleManager} from
 	 * @created 07.01.2014
 	 */
-	public static ArticleManager getArticleManager(String web) {
+	public static ArticleManager getArticleManager(final String web) {
 		return Environment.getInstance().getArticleManager(web);
 	}
 
@@ -1014,10 +1042,12 @@ public class KnowWEUtils {
 	 * @param manager the ArticleManager we want the {@link PackageManager} from
 	 * @created 07.01.2014
 	 */
-	public static PackageManager getPackageManager(ArticleManager manager) {
-		Collection<PackageRegistrationCompiler> compilers = Compilers.getCompilers(manager,
+	public static PackageManager getPackageManager(final ArticleManager manager) {
+		final Collection<PackageRegistrationCompiler> compilers = Compilers.getCompilers(manager,
 				PackageRegistrationCompiler.class);
-		if (compilers.isEmpty()) return null;
+		if (compilers.isEmpty()) {
+			return null;
+		}
 		return compilers.iterator().next().getPackageManager();
 	}
 
@@ -1027,8 +1057,8 @@ public class KnowWEUtils {
 	 * @param section the {@link Section} we want the {@link PackageManager} for
 	 * @created 07.01.2014
 	 */
-	public static PackageManager getPackageManager(Section<?> section) {
-		ArticleManager manager = Environment.getInstance().getArticleManager(section.getWeb());
+	public static PackageManager getPackageManager(final Section<?> section) {
+		final ArticleManager manager = Environment.getInstance().getArticleManager(section.getWeb());
 		return getPackageManager(manager);
 	}
 
@@ -1038,24 +1068,35 @@ public class KnowWEUtils {
 	 * @param web the web we want the {@link PackageManager} from
 	 * @created 07.01.2014
 	 */
-	public static PackageManager getPackageManager(String web) {
+	public static PackageManager getPackageManager(final String web) {
 		return getPackageManager(getArticleManager(web));
 	}
 
-	public static void storeObject(Section<?> s, String key, Object o) {
+	public static void storeObject(final Section<?> s, final String key, final Object o) {
 		KnowWEUtils.storeObject(null, s, key, o);
 	}
 
-	public static void storeObject(Compiler compiler, Section<?> s, String key, Object o) {
+	public static void storeObject(final Compiler compiler, final Section<?> s, final String key, final Object o) {
 		s.storeObject(compiler, key, o);
 	}
 
-	public static Object getStoredObject(Section<?> s, String key) {
+	public static Object getStoredObject(final Section<?> s, final String key) {
 		return KnowWEUtils.getStoredObject(null, s, key);
 	}
 
-	public static Object getStoredObject(Compiler compiler, Section<?> s, String key) {
+	public static Object getStoredObject(final Compiler compiler, final Section<?> s, final String key) {
 		return s.getObject(compiler, key);
+	}
+
+	/**
+	 * Returns an object of the given class from section store using the fully qualified class name as key
+	 *
+	 * @param clazz
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> T getStoredObject(final Section<?> section, final Class<T> clazz) {
+		return (T) getStoredObject(section, clazz.getName());
 	}
 
 	/**
@@ -1067,10 +1108,10 @@ public class KnowWEUtils {
 	 * @return the last modification date
 	 * @created 16.02.2014
 	 */
-	public static Date getLastModified(Article article) {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		String title = article.getTitle();
-		int version = connector.getVersion(title);
+	public static Date getLastModified(final Article article) {
+		final WikiConnector connector = Environment.getInstance().getWikiConnector();
+		final String title = article.getTitle();
+		final int version = connector.getVersion(title);
 		return connector.getLastModifiedDate(title, version);
 	}
 
@@ -1080,15 +1121,15 @@ public class KnowWEUtils {
 	 * @param article Required
 	 * @return null if no history exists
 	 */
-	public static WikiPageInfo getLatestArticleHistory(Article article) {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		String title = article.getTitle();
+	public static WikiPageInfo getLatestArticleHistory(final Article article) {
+		final WikiConnector connector = Environment.getInstance().getWikiConnector();
+		final String title = article.getTitle();
 
 		try {
-			List<WikiPageInfo> articleHistory = connector.getArticleHistory(title);
+			final List<WikiPageInfo> articleHistory = connector.getArticleHistory(title);
 			return (articleHistory != null && articleHistory.size() > 0) ? articleHistory.get(0) : null;
 		}
-		catch (IOException e) {
+		catch (final IOException e) {
 			Log.warning("Error fetching article history for " + article, e);
 			return null;
 		}
@@ -1104,9 +1145,9 @@ public class KnowWEUtils {
 	 * @return the latest version
 	 * @created 16.02.2014
 	 */
-	public static int getLatestVersion(Article article) {
-		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		String title = article.getTitle();
+	public static int getLatestVersion(final Article article) {
+		final WikiConnector connector = Environment.getInstance().getWikiConnector();
+		final String title = article.getTitle();
 		return connector.getVersion(title);
 	}
 
@@ -1117,9 +1158,9 @@ public class KnowWEUtils {
 	 * @param context context of the user
 	 * @return current wiki status for a user
 	 */
-	public static String getOverallStatus(UserContext context) {
+	public static String getOverallStatus(final UserContext context) {
 		int overAllStatus = 0;
-		for (StatusProvider statusProvider : Plugins.getStatusProviders()) {
+		for (final StatusProvider statusProvider : Plugins.getStatusProviders()) {
 			overAllStatus += statusProvider.getStatus(context);
 		}
 		return Integer.toHexString(overAllStatus);
@@ -1128,9 +1169,9 @@ public class KnowWEUtils {
 	/**
 	 * Renames and article
 	 */
-	public static void renameArticle(String oldArticleTitle, String newArticleTitle) {
-		ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
-		Article oldArticle = manager.getArticle(oldArticleTitle);
+	public static void renameArticle(final String oldArticleTitle, final String newArticleTitle) {
+		final ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		final Article oldArticle = manager.getArticle(oldArticleTitle);
 		manager.open();
 		try {
 			manager.deleteArticle(oldArticle);
@@ -1146,7 +1187,7 @@ public class KnowWEUtils {
 	 * Returns and array of locales based on sorted by preferred labels given by the browser. This array always contains
 	 * at least one element.
 	 */
-	public static Locale[] getBrowserLocales(UserContext context) {
+	public static Locale[] getBrowserLocales(final UserContext context) {
 		return getBrowserLocales(context.getRequest());
 	}
 
@@ -1155,12 +1196,15 @@ public class KnowWEUtils {
 	 * at least one element.
 	 */
 	@NotNull
-	public static Locale[] getBrowserLocales(HttpServletRequest request) {
-		Enumeration localesEnum = request.getLocales();
-		if (localesEnum == null) return new Locale[] { Locale.ROOT }; // can be null in test environment
-		@SuppressWarnings("unchecked")
-		ArrayList<Locale> localList = Collections.list(localesEnum);
-		if (localList.isEmpty()) return new Locale[] { Locale.ROOT };
+	public static Locale[] getBrowserLocales(final HttpServletRequest request) {
+		final Enumeration localesEnum = request.getLocales();
+		if (localesEnum == null) {
+			return new Locale[] { Locale.ROOT }; // can be null in test environment
+		}
+		@SuppressWarnings("unchecked") final ArrayList<Locale> localList = Collections.list(localesEnum);
+		if (localList.isEmpty()) {
+			return new Locale[] { Locale.ROOT };
+		}
 		return localList.toArray(new Locale[localList.size()]);
 	}
 
@@ -1169,8 +1213,8 @@ public class KnowWEUtils {
 	 * Also opens a transaction in ArticleManager
 	 * Only works if GitVersioningFileProvider is active
 	 */
-	public static void openPageTransaction(UserContext context) {
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+	public static void openPageTransaction(final UserContext context) {
+		final ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 		articleManager.open();
 		Environment.getInstance().getWikiConnector().openPageTransaction(context.getUserName());
 	}
@@ -1180,9 +1224,9 @@ public class KnowWEUtils {
 	 * Also commits an ArticleManager transaction
 	 * Only works if GitVersioningFileProvider is active
 	 */
-	public static void commitPageTransaction(UserContext context, String commitMsg) {
+	public static void commitPageTransaction(final UserContext context, final String commitMsg) {
 		Environment.getInstance().getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+		final ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 		articleManager.commit();
 	}
 
@@ -1191,9 +1235,9 @@ public class KnowWEUtils {
 	 * Also rollbacks an ArticleManager transaction
 	 * Only works if GitVersioningFileProvider is active
 	 */
-	public static void rollbackPageTransaction(UserContext context) {
+	public static void rollbackPageTransaction(final UserContext context) {
 		if (Environment.getInstance().getWikiConnector().hasRollbackPageProvider()) {
-			ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+			final ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 			articleManager.rollback();
 		}
 		Environment.getInstance().getWikiConnector().rollbackPageTransaction(context.getUserName());
