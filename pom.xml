@@ -31,7 +31,7 @@
 		<denkbares.version>12.2-SNAPSHOT</denkbares.version>
 		<d3web.version>12.2-SNAPSHOT</d3web.version>
 		<knowwe.version>12.2-SNAPSHOT</knowwe.version>
-		<ssp.version>3.2-SNAPSHOT</ssp.version>
+		<ssp.version>3.3-SNAPSHOT</ssp.version>
 		<selenium.version>3.13.0</selenium.version>
 		<tomcat.version>9.0.13</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
