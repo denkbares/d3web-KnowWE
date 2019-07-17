@@ -101,8 +101,10 @@ public abstract class KnowWEUITest {
 		@Override
 		protected void failed(Throwable e, Description description) {
 			String className = description.getClassName();
+			String methodName = description.getMethodName();
 			String prefix = className.substring(className.lastIndexOf(".") + 1);
-			UITestUtils.generateDebugFiles(driver, prefix);
+			String suffix = methodName.substring(0, methodName.lastIndexOf("["));
+			UITestUtils.generateDebugFiles(driver, prefix + "-" + suffix);
 		}
 
 		@Override
