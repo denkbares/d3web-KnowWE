@@ -241,12 +241,12 @@ public class UITestUtils {
 	 * Generate a PNG screen capture and the current XML of the driver page.
 	 *
 	 * @param driver
-	 * @param prefix
+	 * @param fileName
 	 */
-	public static void generateDebugFiles(final WebDriver driver, final String prefix) {
-		final String fileNamePNG = prefix + "_screen-capture.png";
+	public static void generateDebugFiles(final WebDriver driver, final String fileName) {
+		final String fileNamePNG = fileName + "_screen-capture.png";
 		Log.info(captureScreenshot(driver, fileNamePNG));
-		final String fileNameXML = prefix + "_page-content.xml";
+		final String fileNameXML = fileName + "_page-content.xml";
 		try {
 			Strings.writeFile(TMP_DEBUG_FOLDER + fileNameXML, driver.getPageSource());
 		}
