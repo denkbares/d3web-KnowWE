@@ -72,14 +72,8 @@ public class GenericHTMLRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
-		string.appendHtml("<").append(tagName);
-		for (int i = 0; i < attributes.length; i += 2) {
-			String attr = attributes[i];
-			String value = attributes[i + 1].replace("\"", "&quot;");
-			string.append(" ").append(attr).appendHtml("=\"").append(value).appendHtml("\"");
-		}
-		string.appendHtml(">");
+		string.appendHtmlTag(tagName, attributes);
 		delegate.render(sec, user, string);
-		string.appendHtml("</").append(tagName).appendHtml(">");
+		string.appendHtmlTag("/" + tagName);
 	}
 }
