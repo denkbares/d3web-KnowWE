@@ -166,10 +166,10 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 				getFileIcon(),
 				fileName,
 				"Download the created file from the server.",
-				"window.location = \"action/DownloadFileAction?file="
+				"action/DownloadFileAction?file="
 						+ Strings.encodeHtml(tempFile.getPath().replace("\\", "/")) + "&name="
-						+ Strings.encodeHtml(fileName)
-						+ "\"",
+						+ Strings.encodeHtml(fileName),
+				Tool.ActionType.HREF,
 				Tool.CATEGORY_DOWNLOAD));
 	}
 
@@ -219,20 +219,23 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		String id = UUID.randomUUID().toString();
 		result.append("<div id='").append(id).append("'><p>");
 		for (Tool tool : actions) {
-			if (tool.getActionType() != Tool.ActionType.HREF_SCRIPT) {
-				Log.warning(FileDownloadOperation.class.getSimpleName() + " only supports Tools with "
-						+ Tool.ActionType.class.getSimpleName() + " " + Tool.ActionType.HREF_SCRIPT
-						+ ". Skipped " + tool.getClass().getSimpleName() + " with "
-						+ Tool.ActionType.class.getSimpleName() + " " + tool.getActionType());
-				continue;
-			}
 			Icon icon = tool.getIcon();
 			String descr = tool.getDescription();
-			result.append("<div>");
-			result.append("<a class='action' href='javascript:")
-					.append("jq$(\"#").append(id).append("\").remove();")
-					.append(Strings.encodeHtml(tool.getAction()))
-					.append("'");
+			if (tool.getActionType() == Tool.ActionType.HREF_SCRIPT) {
+				result.append("<div>");
+				result.append("<a class='action' href='javascript:")
+						.append("jq$(\"#").append(id).append("\").remove();")
+						.append(Strings.encodeHtml(tool.getAction()))
+						.append("'");
+			}
+			else {
+				result.append("<div>");
+				result.append("<a class='action' onclick='")
+						.append("jq$(\"#").append(id).append("\").remove();'")
+						.append(" href='")
+						.append(Strings.encodeHtml(tool.getAction()))
+						.append("'");
+			}
 			if (!Strings.isBlank(descr)) {
 				result.append(" title='").append(Strings.encodeHtml(descr)).append("'");
 			}
@@ -278,7 +281,9 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		if (fileName == null) {
 			return other.fileName == null;
 		}
-		else return fileName.equals(other.fileName);
+		else {
+			return fileName.equals(other.fileName);
+		}
 	}
 
 	@Override
