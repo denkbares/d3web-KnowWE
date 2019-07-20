@@ -41,7 +41,6 @@ import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.objects.Term;
-import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.filter.SectionFilter;
@@ -481,20 +480,35 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns new Sections that are definitions of the reference (or definition) sections in the current object. Sections that don't
-	 * have sub-types of {@link Term} will be skipped when collecting definitions.
+	 * Returns a new Sections instance with definitions of the references (or definitions) in the current instance.
+	 * Sections that don't have sub-types of {@link Term} will be skipped when collecting definitions.
 	 *
 	 * @param compiler the compiler where the definitions are registered
 	 * @param clazz    the class of the type of the sections in the new sections object
 	 * @param <R>      the class of the type of the sections in the new sections object
-	 * @return the definitions for the reg
+	 * @return the definitions for the current sections
 	 */
 	@NotNull
-	public <R extends TermDefinition> Sections<R> definitions(TermCompiler compiler, Class<R> clazz) {
-		return new Sections<R>(filter(Term.class)
-				.stream().flatMap(s -> Sections.definitions(compiler, s)
-						.filter(clazz)
-						.stream()).collect(toList()));
+	public <R extends Term> Sections<R> definitions(TermCompiler compiler, Class<R> clazz) {
+		return new Sections<R>(() -> filter(Term.class).stream()
+				.flatMap(s -> Sections.definitions(compiler, s).filter(clazz).stream())
+				.iterator());
+	}
+
+	/**
+	 * Returns a new Sections instance with references of the references or definitions in the current instance.
+	 * Sections that don't have sub-types of {@link Term} will be skipped when collecting references.
+	 *
+	 * @param compiler the compiler where the references are registered
+	 * @param clazz    the class of the type of the sections in the new sections object
+	 * @param <R>      the class of the type of the sections in the new sections object
+	 * @return the definitions for the current sections
+	 */
+	@NotNull
+	public <R extends Term> Sections<R> references(TermCompiler compiler, Class<R> clazz) {
+		return new Sections<R>(() -> filter(Term.class).stream()
+				.flatMap(s -> Sections.references(compiler, s).filter(clazz).stream())
+				.iterator());
 	}
 
 	/**
@@ -1308,6 +1322,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		public boolean sendErrors(UserActionContext context) throws IOException {
 			return sendErrorMessages(context, missingSectionIDs, forbiddenArticles);
 		}
+
 	}
 
 	/**
