@@ -108,7 +108,6 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -185,11 +184,10 @@ public class Rdf2GoCore {
 		if (reasoning == null) {
 			reasoning = RepositoryConfigs.get(RdfConfig.class);
 		}
-		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		if (lns == null) {
 			String baseUrl;
 			try {
-				baseUrl = wikiConnector.getBaseUrl();
+				baseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
 				new URL(baseUrl); // check if we have a valid url or just context root
 			}
 			catch (Exception e) {
@@ -199,8 +197,16 @@ public class Rdf2GoCore {
 			lns = baseUrl + "Wiki.jsp?page=";
 		}
 		this.lns = lns;
+		String applicationName;
 		try {
-			semanticCore = SemanticCore.getOrCreateInstance(wikiConnector.getApplicationName() + "-" + coreId
+			applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
+		}
+		catch (Exception e) {
+			Log.warning("Unable to get application name, using fallback");
+			applicationName = "Main";
+		}
+		try {
+			semanticCore = SemanticCore.getOrCreateInstance(applicationName + "-" + coreId
 					.incrementAndGet(), reasoning);
 			semanticCore.allocate(); // make sure the core does not shut down on its own...
 			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
