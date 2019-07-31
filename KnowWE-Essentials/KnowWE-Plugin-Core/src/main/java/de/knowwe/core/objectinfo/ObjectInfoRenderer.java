@@ -220,7 +220,6 @@ public class ObjectInfoRenderer implements Renderer {
 	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
 		Map<Type, List<Section<?>>> typeGroups = groupByType(references);
 		for (Entry<Type, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
-
 			// prepare group information
 			List<Section<?>> groupSections = typeEntry.getValue();
 			String groupName = typeEntry.getKey().getName();
@@ -350,8 +349,9 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static Map<Type, List<Section<? extends Type>>> groupByType(Collection<Section<?>> references) {
-		Map<Type, List<Section<? extends Type>>> result = new TreeMap<>(
-				Comparator.comparing(type -> type.getName() == null ? "" : type.getName()));
+		Comparator<Type> orderComparator = getOrderComparator(references);
+		Comparator<Type> nameComparator = Comparator.comparing(type -> type.getName() == null ? "" : type.getName());
+		Map<Type, List<Section<? extends Type>>> result = new HashMap<>();
 		for (Section<?> reference : references) {
 			Type surroundingMarkupType = getSurroundingMarkupName(reference);
 			List<Section<? extends Type>> sectionsForType = result.get(surroundingMarkupType);
@@ -378,7 +378,9 @@ public class ObjectInfoRenderer implements Renderer {
 
 	private static Type getSurroundingMarkupName(Section<?> section) {
 		if (section.get() instanceof DefaultMarkupType) return section.get();
-		Section<?> root = Sections.ancestor(section, DefaultMarkupType.class);
+		Section<?> root = Sections.ancestor(section, GroupingType.class);
+		if (root != null) return root.get();
+		root = Sections.ancestor(section, DefaultMarkupType.class);
 		if (root != null) return root.get();
 		root = Sections.ancestor(section, TagHandlerType.class);
 		if (root != null) return root.get();
@@ -578,5 +580,9 @@ public class ObjectInfoRenderer implements Renderer {
 		}
 
 		return Identifier.fromExternalForm(termIdentifier);
+	}
+
+	public interface GroupingType extends Type {
+		Type getParentGroup(Collection<Section<?>> reference);
 	}
 }
