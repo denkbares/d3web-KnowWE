@@ -18,9 +18,12 @@
  */
 package de.knowwe.core.objectinfo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -361,7 +364,42 @@ public class ObjectInfoRenderer implements Renderer {
 			sectionsForType.add(reference);
 			result.put(surroundingMarkupType, sectionsForType);
 		}
-		return result;
+		TreeMap<Type, List<Section<? extends Type>>> sortedResult = new TreeMap<>(orderComparator.thenComparing(nameComparator));
+		sortedResult.putAll(result);
+		return sortedResult;
+	}
+
+	private static Comparator<Type> getOrderComparator(Collection<Section<?>> references) {
+		return (t1, t2) -> {
+			if (!(t1 instanceof GroupingType) || !(t2 instanceof GroupingType)) return 0;
+			GroupingType gt1 = (GroupingType) t1;
+			GroupingType gt2 = (GroupingType) t2;
+			List<Integer> positions1 = getPositionList(gt1, references);
+			List<Integer> positions2 = getPositionList(gt2, references);
+			Iterator<Integer> thisIter = positions1.iterator();
+			Iterator<Integer> otherIter = positions2.iterator();
+			int c = 0;
+			while (c == 0 && thisIter.hasNext() && otherIter.hasNext()) {
+				c = thisIter.next().compareTo(otherIter.next());
+			}
+			return c == 0 ? positions1.size() - positions2.size() : c;
+		};
+	}
+
+	private static List<Integer> getPositionList(GroupingType start, Collection<Section<?>> references) {
+		Type end = start.getParentGroup(references);
+		LinkedList<Integer> positions = new LinkedList<>();
+		if (end == null) return positions;
+		Type temp = start;
+		Collection<Type> parentTypes = temp.getParentTypes();
+		while (!temp.equals(end) && !parentTypes.isEmpty()) {
+			Type firstParent = parentTypes.iterator().next();
+			List<Type> children = firstParent.getChildrenTypes();
+			positions.addFirst(children.indexOf(temp));
+			temp = firstParent;
+			parentTypes = temp.getParentTypes();
+		}
+		return new ArrayList<>(positions);
 	}
 
 	/**
