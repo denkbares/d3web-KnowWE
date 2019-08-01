@@ -21,7 +21,9 @@
 package de.knowwe.core.report;
 
 import java.io.Serializable;
-import java.util.Objects;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
 
@@ -39,36 +41,43 @@ public final class Message implements Comparable<Message>, Serializable {
 		INFO, WARNING, ERROR
 	}
 
+	public enum Display {
+		/**
+		 * Display as plain text
+		 */
+		PLAIN,
+		/**
+		 * Display as wiki markup.
+		 */
+		WIKI
+	}
+
 	private final Type type;
+	private final Display display;
 	private final String text;
 	private final String details;
 
-	/**
-	 * @deprecated Please util class Messages to create new Messages.
-	 */
-	@Deprecated
-	public Message(Type type, String text) {
+	public Message(@NotNull Type type, @NotNull String text) {
 		this(type, text, (String) null);
 	}
 
-	/**
-	 * @deprecated Please util class Messages to create new Messages.
-	 */
-	@Deprecated
-	public Message(Type type, String text, String details) {
-		Objects.requireNonNull(type);
-		Objects.requireNonNull(text);
+	public Message(@NotNull Type type, @NotNull String text, @NotNull Throwable e) {
+		this(type, text, Strings.getStackTrace(e));
+	}
+
+	public Message(@NotNull Type type, @NotNull String text, @Nullable String details) {
+		this(type, Display.PLAIN, text, details);
+	}
+
+	public Message(@NotNull Type type, @NotNull Display display, @NotNull String text) {
+		this(type, display, text, null);
+	}
+
+	public Message(@NotNull Type type, @NotNull Display display, @NotNull String text, @Nullable String details) {
+		this.display = display;
 		this.type = type;
 		this.text = text;
 		this.details = details;
-	}
-
-	/**
-	 * @deprecated Please util class Messages to create new Messages.
-	 */
-	@Deprecated
-	public Message(Type type, String text, Throwable e) {
-		this(type, text, Strings.getStackTrace(e));
 	}
 
 	/**
@@ -102,11 +111,19 @@ public final class Message implements Comparable<Message>, Serializable {
 		return details;
 	}
 
+	/**
+	 * Returns how the messages should be displayed. See {@link Display} for more info.
+	 */
+	public Display getDisplay() {
+		return display;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Message) {
 			Message otherMsg = (Message) obj;
 			return otherMsg.type == this.type
+					&& otherMsg.display == this.display
 					&& otherMsg.getVerbalization().equals(this.getVerbalization());
 		}
 		return false;
@@ -114,7 +131,7 @@ public final class Message implements Comparable<Message>, Serializable {
 
 	@Override
 	public int hashCode() {
-		return this.type.hashCode() + this.getVerbalization().hashCode();
+		return this.type.hashCode() + this.display.hashCode() + this.getVerbalization().hashCode();
 	}
 
 	@Override

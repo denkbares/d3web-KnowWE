@@ -196,7 +196,8 @@ public class DefaultMarkupRenderer implements Renderer {
 			Map<Message, Collection<Compiler>> compilerForMessage = collectedMessages.get(section);
 			for (Entry<Message, Collection<Compiler>> entry : compilerForMessage.entrySet()) {
 				Message msg = entry.getKey();
-				String message = KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization());
+				String verbalization = msg.getVerbalization();
+				String message = msg.getDisplay() == Message.Display.PLAIN ? KnowWEUtils.maskJSPWikiMarkup(verbalization) : verbalization;
 				// if we have multiple other article compilers
 				Collection<Compiler> compilers = entry.getValue();
 				if (isMultiCompiled(compilers, rootSection)) {
