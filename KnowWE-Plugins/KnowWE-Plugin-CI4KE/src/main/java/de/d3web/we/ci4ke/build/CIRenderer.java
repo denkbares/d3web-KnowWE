@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 denkbares GmbH, Germany
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -151,7 +151,6 @@ public class CIRenderer {
 
 		sb.appendHtml("</div>");
 		sb.appendHtml("</div>");
-
 	}
 
 	private String makeNavButton(int numberOfBuilds, int latestDisplayedBuildNumber, String sign, Icon icon, boolean visible) {
@@ -188,7 +187,7 @@ public class CIRenderer {
 				+ "-column-middle' class='ci-column-middle'>");
 
 		if (build != null) {
-			apppendBuildHeadline(build, result);
+			appendBuildHeadline(build, result);
 			MultiMap<String, TestResult> groups = getTestGroups(build.getResults());
 			for (String group : groups.keySet()) {
 				Set<TestResult> groupResults = groups.getValues(group);
@@ -220,7 +219,7 @@ public class CIRenderer {
 
 	private MultiMap<String, TestResult> getTestGroups(List<TestResult> testResults) {
 		MultiMap<String, TestResult> groups = new DefaultMultiMap<>(
-				MultiMaps.linkedFactory(), MultiMaps.<TestResult>linkedFactory());
+				MultiMaps.linkedFactory(), MultiMaps.linkedFactory());
 		String currentGroup = null;
 		for (TestResult testResult : testResults) {
 			if (TestGroup.TEST_GROUP_NAME.equals(testResult.getTestName())) {
@@ -252,8 +251,9 @@ public class CIRenderer {
 
 		// render title with configuration
 		if (test instanceof ResultRenderer) {
-			((ResultRenderer) test).renderResult(testResult, renderResult);
-		} else {
+			((ResultRenderer) test).renderResultTitle(testResult, renderResult);
+		}
+		else {
 			renderResultTitle(testResult, renderResult);
 		}
 
@@ -325,7 +325,7 @@ public class CIRenderer {
 		renderResult.appendHtml("</span>");
 	}
 
-	public static void renderResultMessageDefault(String web, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
+	public static void renderResultMessageDefault(String web, String testObjectName, TestResult testResult, Message message, RenderResult renderResult) {
 		Class<?> testObjectClass = renderResultMessageHeader(web, message, testResult, renderResult);
 		appendMessageText(web, message, renderResult);
 		renderResultMessageFooter(web, testObjectName, testObjectClass, message, renderResult);
@@ -424,14 +424,15 @@ public class CIRenderer {
 
 			if (test instanceof ResultRenderer) {
 				((ResultRenderer) test).renderResultMessage(web, testObjectName, message, testResult, renderResult);
-			} else {
-				renderResultMessageDefault(web, testObjectName, message, testResult, renderResult);
+			}
+			else {
+				renderResultMessageDefault(web, testObjectName, testResult, message, renderResult);
 			}
 		}
 		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");
 	}
 
-	private void apppendBuildHeadline(BuildResult build, RenderResult buffy) {
+	private void appendBuildHeadline(BuildResult build, RenderResult buffy) {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		String buildDate = dateFormat.format(build.getBuildDate());
 		buffy.appendHtml("<div class='ci-name'>Build #").append(build.getBuildNumber())
@@ -443,7 +444,7 @@ public class CIRenderer {
 		if (duration < 1000) {
 			buffy.append(duration + " msec.");
 		}
-		else if (duration >= 1000 && duration < 60000) {
+		else if (duration < 60000) {
 			buffy.append((duration / 1000) + " sec.");
 		}
 		else {
@@ -518,7 +519,6 @@ public class CIRenderer {
 		string.appendHtml("<span class='ci-progess-text' id='"
 				+ dashboardNameEncoded + "_progress-text'>Build running...</span>");
 		string.appendHtml("</span>");
-
 	}
 
 	private void appendAbortButton(RenderResult string) {
@@ -531,7 +531,6 @@ public class CIRenderer {
 				+ dashboardNameEncoded)
 				+ "')\"><img class='ci-abort-build' height='16' title='Stops the current build' " +
 				"src='KnowWEExtension/images/cross.png' /></a>");
-
 	}
 
 	public void renderForecastIcon(int buildCount, int failedCount, RenderResult result) {

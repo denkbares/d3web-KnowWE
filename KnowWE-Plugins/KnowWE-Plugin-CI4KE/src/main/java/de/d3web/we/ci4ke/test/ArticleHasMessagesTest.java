@@ -31,18 +31,22 @@ import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.MessageObject;
 import de.d3web.testing.TestParameter;
+import de.d3web.testing.TestResult;
 import de.d3web.testing.TestingUtils;
+import de.d3web.we.ci4ke.build.CIRenderer;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Abstract test to check of Messages in Articles.
  *
  * @author Marc-Oliver Ochlast, Albrecht Striffler (denkbares GmbH)
  */
-public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
+public abstract class ArticleHasMessagesTest extends AbstractTest<Article> implements ResultRenderer {
 
 	private final Type type;
 
@@ -74,14 +78,13 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 				.filter(s -> ignorePatterns.stream().noneMatch(p -> p.matcher(s.getVerbalization()).find()))
 				.collect(Collectors.toList());
 
-
 		TestingUtils.checkInterrupt();
 
 		buffer.append(" ")
 				.append(type.toString().toLowerCase())
-				.append("s found in article '")
-				.append(moni.getTitle())
-				.append("'");
+				.append("s found in article '[")
+				.append(fixTitle(moni.getTitle()))
+				.append("]'");
 		if (!messages.isEmpty()) {
 			for (de.knowwe.core.report.Message message : messages) {
 				if (message.getType() == Type.ERROR) {
@@ -96,7 +99,11 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 					new CountingSet<>();
 			msgSet.addAll(messages);
 			for (de.knowwe.core.report.Message message : msgSet) {
-				buffer.append("\n* ").append(message.getVerbalization());
+				String verbalization = message.getVerbalization();
+				if (message.getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
+					verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization);
+				}
+				buffer.append("\n* ").append(verbalization);
 				int count = msgSet.getCount(message);
 				if (count > 1) buffer.append(" (").append(count).append("&times;)");
 			}
@@ -112,13 +119,28 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> {
 					new MessageObject(moni.getTitle(), Article.class));
 		}
 		else {
-			return new Message(
-					Message.Type.SUCCESS, null);
+			return new Message(Message.Type.SUCCESS, null);
+		}
+	}
+
+	private String fixTitle(String title) {
+		if (title.contains("@")) { // somehow JSPWiki links cannot handle @
+			return title + "|" + KnowWEUtils.getAsAbsoluteLink("Wiki.jsp?page=" + Strings.encodeURL(title));
+		}
+		else {
+			return title;
 		}
 	}
 
 	@Override
 	public Class<Article> getTestObjectClass() {
 		return Article.class;
+	}
+
+	@Override
+	public void renderResultMessage(String web, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
+		Class<?> testObjectClass = CIRenderer.renderResultMessageHeader(web, message, testResult, renderResult);
+		renderResult.append(message.getText());
+		CIRenderer.renderResultMessageFooter(web, testObjectName, testObjectClass, message, renderResult);
 	}
 }
