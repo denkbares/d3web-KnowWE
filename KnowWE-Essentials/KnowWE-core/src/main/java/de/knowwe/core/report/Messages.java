@@ -222,9 +222,16 @@ public final class Messages {
 	 * @created 16.02.2012
 	 */
 	public static Map<Compiler, Collection<Message>> getMessagesMap(Section<? extends Type> section, Message.Type... types) {
-		if (section.isEmpty()) return Collections.emptyMap();
-		Map<Compiler, Collection<Message>> allMassagesOfCompiler = new HashMap<>();
+		if (section.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
 		Map<Compiler, Object> messagesOfAllTypesBySourceByTitle = section.getObjects(MESSAGE_KEY);
+		if (messagesOfAllTypesBySourceByTitle == null || messagesOfAllTypesBySourceByTitle.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Map<Compiler, Collection<Message>> allMassagesOfCompiler = new HashMap<>();
 		for (Entry<Compiler, Object> entry : messagesOfAllTypesBySourceByTitle.entrySet()) {
 			@SuppressWarnings("unchecked")
 			Map<Compiler, Collection<Message>> messagesOfAllTypesBySource = (Map<Compiler, Collection<Message>>) entry

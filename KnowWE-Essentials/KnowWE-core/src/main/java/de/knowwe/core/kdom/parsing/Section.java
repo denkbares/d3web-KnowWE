@@ -541,14 +541,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * Method that looks (recursively down) for this section whether some errors has been stored in that subtree.
 	 */
 	public boolean hasMessageInSubtree(Message.Type type) {
-		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(this, type);
-		if (!errors.isEmpty()) return true;
-		for (Section<?> child : getChildren()) {
-			if (child.hasErrorInSubtree()) {
-				return true;
-			}
-		}
-		return false;
+		return Messages.hasMessagesInSubtree(this, type);
 	}
 
 	/**
@@ -564,17 +557,24 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * given compiler or compiler independent.
 	 */
 	public boolean hasMessageInSubtree(Compiler compiler, Message.Type type) {
+		if (Messages.hasMessagesInSubtree(this, type)) { // fast check, but not compiler specific
+			return hasMessageInSubtreeRec(compiler, type); // slower, but compiler specific
+		} else {
+			return false;
+		}
+	}
+
+	private boolean hasMessageInSubtreeRec(Compiler compiler, Message.Type type) {
 		Map<Compiler, Collection<Message>> errors = Messages.getMessagesMap(
 				this, type);
 		if (errors.get(compiler) != null) return true;
 		if (errors.get(null) != null) return true;
 		for (Section<?> child : getChildren()) {
-			boolean err = child.hasErrorInSubtree(compiler);
+			boolean err = child.hasMessageInSubtreeRec(compiler, type);
 			if (err) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -850,8 +850,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param key             the key to store the object for
 	 * @param mappingFunction the function to generate/compute the object initially, will only be called if object is
 	 *                        not yet stored, should NOT return null
-	 * @param <C> the type of the Compiler we are using
-	 * @param <O> the type of the object we are generating,
+	 * @param <C>             the type of the Compiler we are using
+	 * @param <O>             the type of the object we are generating,
 	 * @return the object generated and stored by the mappingFunction
 	 */
 	@NotNull
