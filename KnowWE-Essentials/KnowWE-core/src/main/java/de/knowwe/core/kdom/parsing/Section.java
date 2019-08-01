@@ -34,6 +34,7 @@ import java.util.WeakHashMap;
 import java.util.function.BiFunction;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -838,6 +839,30 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			putStoreForCompiler(compiler, storeForCompiler);
 		}
 		storeForCompiler.put(key, object);
+	}
+
+	/**
+	 * Convenience method to get a stored/cached object from the section, similar as using {@link #getObject(Compiler,
+	 * String)}, but in case the object wasn't yet stored, we compute/generate it via the mappingFunction and
+	 * immediately store it for subsequent calls of this method.
+	 *
+	 * @param compiler        the compiler for which to create and store the object
+	 * @param key             the key to store the object for
+	 * @param mappingFunction the function to generate/compute the object initially, will only be called if object is
+	 *                        not yet stored, should NOT return null
+	 * @param <C> the type of the Compiler we are using
+	 * @param <O> the type of the object we are generating,
+	 * @return the object generated and stored by the mappingFunction
+	 */
+	@NotNull
+	public <C extends Compiler, O> O computeIfAbsent(@Nullable C compiler, String key, BiFunction<@Nullable C, @NotNull Section<T>, @NotNull O> mappingFunction) {
+		//noinspection unchecked
+		O object = (O) getObject(compiler, key);
+		if (object == null) {
+			object = mappingFunction.apply(compiler, this);
+			storeObject(compiler, key, object);
+		}
+		return object;
 	}
 
 	/**
