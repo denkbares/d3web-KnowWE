@@ -23,7 +23,7 @@ import de.knowwe.ontology.sparql.SparqlMarkupType;
 public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRenderer {
 
 	@Override
-	public void renderResult(TestResult testResult, RenderResult renderResult) {
+	public void renderResultTitle(TestResult testResult, RenderResult renderResult) {
 
 		// prepare some information
 		Message summary = testResult.getSummary();
