@@ -694,6 +694,25 @@
 		</profile>
 
 		<profile>
+			<id>konap-noswagger</id>
+			<properties>
+				<implementationVersion>KONAP 1.0 (MVP)</implementationVersion>
+			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares.krone</groupId>
+					<artifactId>KnowWE-Plugin-KONAP</artifactId>
+					<exclusions>
+						<exclusion>
+							<groupId>io.swagger</groupId>
+							<artifactId>swagger-jersey2-jaxrs</artifactId>
+						</exclusion>
+					</exclusions>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>kotlin</id>
 			<dependencies>
 				<dependency>
