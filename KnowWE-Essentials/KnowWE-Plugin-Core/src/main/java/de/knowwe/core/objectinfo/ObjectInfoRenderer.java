@@ -239,7 +239,8 @@ public class ObjectInfoRenderer implements Renderer {
 			// if we have to many sections of one type, we additionally create sub-groups by article
 			// but only if the sections are places on multiple pages
 			int articleCount = groupedByArticle.keySet().size();
-			if (groupSections.size() > MAX_NUMBER_BY_TYPE && articleCount > 1) {
+			boolean cascadingWrapPanels = groupSections.size() > MAX_NUMBER_BY_TYPE && articleCount > 1;
+			if (cascadingWrapPanels) {
 				// if there are multiple pages, create a group for each page
 				for (Entry<Article, List<Section<?>>> articleEntry : groupedByArticle.entrySet()) {
 					RenderResult innerResult = new RenderResult(groupResult);
@@ -259,7 +260,7 @@ public class ObjectInfoRenderer implements Renderer {
 			info += (articleCount > 1)
 					? "in " + Strings.pluralOf(articleCount, "article")
 					: "in '" + groupSections.get(0).getTitle() + "'";
-			wrapInExtendPanel(groupName, info, groupResult, result);
+			wrapInExtendPanel(groupName, info, groupResult, result, cascadingWrapPanels);
 		}
 	}
 
@@ -502,6 +503,10 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static void wrapInExtendPanel(String surroundingMarkupType, CountingSet<Type> occurrences, RenderResult content, RenderResult result) {
+		wrapInExtendPanel(surroundingMarkupType, occurrences, content, result, false);
+	}
+
+	private static void wrapInExtendPanel(String surroundingMarkupType, CountingSet<Type> occurrences, RenderResult content, RenderResult result, boolean expandable) {
 		StringBuilder info = new StringBuilder();
 		for (Type occurrence : occurrences) {
 			if (info.length() > 0) info.append(", ");
@@ -509,10 +514,14 @@ public class ObjectInfoRenderer implements Renderer {
 			if (count > 1) info.append(count).append("&times; ");
 			info.append(occurrence.getName());
 		}
-		wrapInExtendPanel(surroundingMarkupType, info.toString(), content, result);
+		wrapInExtendPanel(surroundingMarkupType, info.toString(), content, result, expandable);
 	}
 
 	private static void wrapInExtendPanel(String surroundingMarkupType, String info, RenderResult content, RenderResult result) {
+		wrapInExtendPanel(surroundingMarkupType, info, content, result, false);
+	}
+
+	private static void wrapInExtendPanel(String surroundingMarkupType, String info, RenderResult content, RenderResult result, boolean expandable) {
 		result.appendHtml("<p class=\"show-extend pointer extend-panel-right\" >");
 		result.appendHtml("<strong>");
 		result.appendHtml(surroundingMarkupType);
@@ -521,6 +530,9 @@ public class ObjectInfoRenderer implements Renderer {
 			result.appendHtml("<span class='typeInfo'>");
 			result.append(" (").append(info).append(")");
 			result.appendHtml("</span>");
+		}
+		if (expandable) {
+			result.appendHtml("<span class=expandPanelButton>Expand All</span>");
 		}
 		result.appendHtml("</p>");
 		result.appendHtml("<div class=\"objectInfoPanel hidden\" style=\"display:none !important\">");
