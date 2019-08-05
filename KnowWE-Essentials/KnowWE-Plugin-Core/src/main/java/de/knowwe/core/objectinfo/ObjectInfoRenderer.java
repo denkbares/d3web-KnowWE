@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -196,6 +197,11 @@ public class ObjectInfoRenderer implements Renderer {
 				renderTermPreview(previewSection, group, user, "definition", result);
 				result.appendHtml("</div>");
 			}
+			result.appendHtml("<div class='relevantSections hidden'")
+					.append(" rel='")
+					.append(Strings.concat(",", definitions.stream().map(Section::getID).collect(Collectors.toSet())))
+					.append("'")
+					.appendHtml("></div>");
 		}
 		renderSectionEnd(result);
 	}

@@ -611,7 +611,12 @@ KNOWWE.plugin.compositeEditTool = function() {
 				fn: function() {
 					if (this.responseText) {
 						const parsed = JSON.parse(this.responseText);
-						divMarkupText.append(parsed.result);
+						let result = jq$(parsed.result);
+						const sectionsToHighlight = result.find('.relevantSections').attr('rel').split(',');
+						sectionsToHighlight.forEach(s => result.find("span[sectionid='" + s + "']").addClass("highlight"));
+						for (let i = 0; i < result.length; i++) {
+							divMarkupText.append(result.get(i));
+						}
 						_CE.userCanWriteAllSections = parsed.canWriteAll;
 
 

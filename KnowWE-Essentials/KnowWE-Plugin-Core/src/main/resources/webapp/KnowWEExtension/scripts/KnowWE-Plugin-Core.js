@@ -96,6 +96,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 						_CE.afterPreviewsLoad(root);
 						KNOWWE.core.actions.init();
 					}
+					KNOWWE.core.plugin.objectinfo.highlightTermReferences(root, json);
 					_TM.decorateToolMenus(root);
 					_TM.animateDefaultMarkupMenu(root);
 					/**
@@ -107,6 +108,12 @@ KNOWWE.core.plugin.objectinfo = function() {
 					jq$("body").trigger("OpenCompositeEdit");
 				}
 			});
+		},
+
+		highlightTermReferences: function(root, sectionIds) {
+			let sectionIdSplit = [];
+			sectionIds.forEach(s => sectionIdSplit = sectionIdSplit.concat(s.split(",")));
+			sectionIdSplit.forEach(s => jq$(root).find("span[sectionid='" + s + "']").addClass("highlight"));
 		},
 
 		/**
