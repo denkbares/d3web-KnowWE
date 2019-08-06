@@ -226,6 +226,15 @@ ToolMenu.prototype.adjustSingletonMenus = function ($parent) {
 		if (menuItems.length !== 1) return;
 		const header = markup.find('.markupHeader').first();
 		const menuItem = menuItems.first();
+		let anchor = menuItem.find('a').first();
+		if (anchor) {
+			const padding = header.css("padding");
+			header.css("padding", "0");
+			menuItem.css("padding", "0");
+			anchor.css("margin", "0");
+			anchor.css("padding", padding);
+			header.closest('.markupHeaderFrame').css("right", "0");
+		}
 		header.html(menuItem);
 		menu.remove();
 	});
