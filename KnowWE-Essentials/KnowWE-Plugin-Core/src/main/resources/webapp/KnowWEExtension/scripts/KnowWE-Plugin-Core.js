@@ -99,6 +99,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 					KNOWWE.core.plugin.objectinfo.highlightTermReferences(root, json);
 					_TM.decorateToolMenus(root);
 					_TM.animateDefaultMarkupMenu(root);
+					_TM.adjustSingletonMenus(root);
 					/**
 					 * Trigger custome Event here to mount the React components so that the
 					 * Item can be renderd on the users side. This even will be triggered

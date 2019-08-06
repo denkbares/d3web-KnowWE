@@ -582,6 +582,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 			e.stopPropagation();
 		});
 		_TM.animateDefaultMarkupMenu(jq$('#compositeEdit'));
+		_TM.adjustSingletonMenus(jq$('#compositeEdit'));
 		jq$(".extend-panel-right").click(function (e) {
 			KNOWWE.core.plugin.objectinfo.loadPreviews(jq$(this).next('div'));
 			saveExpandState(this);
@@ -707,6 +708,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 		_TM.animateDefaultMarkupMenu(jq$(id));
 		_TM.decorateToolMenus(jq$(id));
+		_TM.adjustSingletonMenus(jq$(id));
 		jq$(id).find("a").click(function (e) {
 			e.stopPropagation();
 		});

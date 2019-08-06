@@ -24,6 +24,7 @@ function ToolMenu() {
 
 ToolMenu.prototype.decorateToolMenus = function ($parent) {
 	if (!$parent) $parent = jq$('.toolMenuParent');
+	if ($parent.attr("id") === "compositeEdit") _TM.adjustSingletonMenus();
 	const decorators = $parent.find('.toolsMenuDecorator');
 	decorators.each(function () {
 		const a = jq$(this);
@@ -86,8 +87,7 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 			}
 			jq$(this).unbind('mouseleave');
 		});
-	}
-	else {
+	} else {
 		// show below
 		styles.top = nodeRect.top + nodeRect.height + 'px';
 		$node.unbind('mouseleave').mouseleave(function (event) {
@@ -100,8 +100,7 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 	if (nodeRect.left > windowWidth - nodeRect.left + nodeRect.width) {
 		// expand to the left
 		styles.right = Math.max(0, windowWidth - nodeRect.left - nodeRect.width) + 'px';
-	}
-	else {
+	} else {
 		// expand to the right
 		styles.left = Math.max(0, nodeRect.left) + 'px';
 	}
@@ -125,12 +124,9 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 	if (menuRect.top < 0) {
 		menu.css("height", menuRect.top + menuRect.height + "px");
 	}
-}
-;
+};
 
 ToolMenu.prototype.getToolMenuHtml = function (node) {
-
-
 	let toolMenuIdentifier = jq$(node).attr('toolMenuIdentifier');
 	if (!this.cache[toolMenuIdentifier]) {
 		let toolMenuAction = 'GetToolMenuAction';
@@ -217,6 +213,21 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function ($parent) {
 				menu.stop().animate({opacity: 0.9}, 100);
 			}
 		});
+	});
+};
+
+ToolMenu.prototype.adjustSingletonMenus = function ($parent) {
+	if (!$parent) return;
+	const $markups = $parent.is('.defaultMarkupFrame') ? $parent : $parent.find('.defaultMarkupFrame');
+	$markups.each(function () {
+		const markup = jq$(this);
+		const menu = markup.find('.markupMenu').first();
+		const menuItems = menu.find('div.markupMenuItem');
+		if (menuItems.length !== 1) return;
+		const header = markup.find('.markupHeader').first();
+		const menuItem = menuItems.first();
+		header.html(menuItem);
+		menu.remove();
 	});
 };
 
