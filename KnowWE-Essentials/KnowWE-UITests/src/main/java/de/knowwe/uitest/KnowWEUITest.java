@@ -20,10 +20,13 @@
 package de.knowwe.uitest;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -70,25 +73,25 @@ public abstract class KnowWEUITest {
 	 * -Dknowwe.haddock.url="your-haddock-URL"
 	 * -Dknowwe.standard.url="your-standardTemplate-URL"
 	 */
-	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template) throws IOException {
+	public KnowWEUITest(final Browser browser, final Platform os, final WikiTemplate template) throws IOException {
 		this(browser, os, template, true, null);
 	}
 
-	public KnowWEUITest(Browser browser, Platform os, WikiTemplate template, boolean login, Function<String, String> urlConstructor) throws IOException {
+	public KnowWEUITest(final Browser browser, final Platform os, final WikiTemplate template, final boolean login, Function<String, String> urlConstructor) throws IOException {
 		this.browser = browser;
 		this.os = os;
 		this.template = template;
 		// for backwards compatibility, use knowwwe.testMode instead
-		boolean devMode = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
-		testMode = devMode ? TestMode.local : TestMode.valueOf(System.getProperty("knowwe.testMode", "local"));
+		final boolean devMode = Boolean.parseBoolean(System.getProperty("knowwe.devMode", "false"));
+		this.testMode = devMode ? TestMode.local : TestMode.valueOf(System.getProperty("knowwe.testMode", "local"));
 		if (urlConstructor == null) {
 			urlConstructor = (String article) -> UITestUtils.getKnowWEUrl(getTemplate(), article);
 		}
 
-		knowWeUrl = urlConstructor.apply(getArticleName());
+		this.knowWeUrl = urlConstructor.apply(getArticleName());
 
 		//driver.get(UITestUtils.getKnowWEUrl(template, "Main"));;
-		driver = UITestUtils.setUp(browser, os, template, getArticleName(), testMode, knowWeUrl, login, urlConstructor);
+		this.driver = UITestUtils.setUp(browser, os, template, getArticleName(), this.testMode, this.knowWeUrl, login, urlConstructor);
 	}
 
 	/**
@@ -99,46 +102,46 @@ public abstract class KnowWEUITest {
 	public final TestRule watchman = new TestWatcher() {
 
 		@Override
-		protected void failed(Throwable e, Description description) {
-			String className = description.getClassName();
-			String methodName = description.getMethodName();
-			String prefix = className.substring(className.lastIndexOf(".") + 1);
-			String suffix = methodName.substring(0, methodName.lastIndexOf("["));
-			UITestUtils.generateDebugFiles(driver, prefix + "-" + suffix);
+		protected void failed(final Throwable e, final Description description) {
+			final String className = description.getClassName();
+			final String methodName = description.getMethodName();
+			final String prefix = className.substring(className.lastIndexOf(".") + 1);
+			final String suffix = methodName.substring(0, methodName.lastIndexOf("["));
+			UITestUtils.generateDebugFiles(KnowWEUITest.this.driver, prefix + "-" + suffix);
 		}
 
 		@Override
-		protected void finished(Description description) {
-			driver.quit();
+		protected void finished(final Description description) {
+			KnowWEUITest.this.driver.quit();
 		}
 	};
 
 	protected WikiTemplate getTemplate() {
-		return template;
+		return this.template;
 	}
 
 	public WebDriver getDriver() {
-		return driver;
+		return this.driver;
 	}
 
 	public abstract String getArticleName();
 
-	protected void changeArticleText(String newText) {
+	protected void changeArticleText(final String newText) {
 		this.changeArticleText(newText, true);
 	}
 
-	protected void changeArticleText(String newText, boolean replacePackage) {
+	protected void changeArticleText(String newText, final boolean replacePackage) {
 		try {
 			waitUntilPresent(By.id("edit-source-button"));
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			someoneEditedPageWorkaround();
 			waitUntilPresent(By.id("edit-source-button"));
 		}
 		getDriver().findElement(By.id("edit-source-button")).click();
 		if (replacePackage) {
 			newText = newText.replaceAll("(?i)(%%Package\\s+)",
-					"$1" + template + "-" + browser + "-" + os.toString().toLowerCase() + "-");
+					"$1" + this.template + "-" + this.browser + "-" + this.os.toString().toLowerCase() + "-");
 		}
 		UITestUtils.enterArticleText(newText, getDriver(), getTemplate());
 	}
@@ -146,7 +149,7 @@ public abstract class KnowWEUITest {
 	private void someoneEditedPageWorkaround() {
 		if (getTemplate() instanceof HaddockTemplate) {
 			waitUntilPresent(By.className("error"));
-			Optional oops = getDriver().findElements(By.cssSelector("h4"))
+			final Optional oops = getDriver().findElements(By.cssSelector("h4"))
 					.stream()
 					.filter(webElement -> Strings.containsIgnoreCase(webElement.getText(), "Oops!"))
 					.findFirst();
@@ -170,23 +173,23 @@ public abstract class KnowWEUITest {
 		Assert.assertFalse(getDriver().findElements(By.className("error")).isEmpty());
 	}
 
-	protected WebElement find(By selector) {
+	protected WebElement find(final By selector) {
 		return getDriver().findElement(selector);
 	}
 
-	protected List<WebElement> findAll(By selector) {
+	protected List<WebElement> findAll(final By selector) {
 		return getDriver().findElements(selector);
 	}
 
-	protected WebElement waitUntilPresent(By selector) {
+	protected WebElement waitUntilPresent(final By selector) {
 		return await().until(ExpectedConditions.presenceOfElementLocated(selector));
 	}
 
-	protected WebElement waitUntilPresent(By selector, int timeOutInSeconds) {
+	protected WebElement waitUntilPresent(final By selector, final int timeOutInSeconds) {
 		return await(timeOutInSeconds).until(ExpectedConditions.presenceOfElementLocated(selector));
 	}
 
-	protected WebElement waitUntilClickable(By selector) {
+	protected WebElement waitUntilClickable(final By selector) {
 		return await().until(ExpectedConditions.elementToBeClickable(selector));
 	}
 
@@ -196,45 +199,50 @@ public abstract class KnowWEUITest {
 	}
 
 	@NotNull
-	protected WebDriverWait await(int timeOutInSeconds) {
+	protected WebDriverWait await(final int timeOutInSeconds) {
 		return new WebDriverWait(getDriver(), timeOutInSeconds);
 	}
 
-	protected WebElement waitUntilVisible(By selector) {
+	protected WebElement waitUntilVisible(final By selector) {
 		return await().until(ExpectedConditions.visibilityOfElementLocated(selector));
 	}
 
-	protected void hoverElement(WebElement element) {
+	protected void hoverElement(final WebElement element) {
 		new Actions(getDriver()).moveToElement(element).pause(1000).build().perform();
 	}
 
-	protected void hoverAndClickElement(WebElement element) {
+	protected void hoverAndClickElement(final WebElement element) {
 		new Actions(getDriver()).moveToElement(element).pause(1000).click().build().perform();
 	}
 
-	protected void scrollToElement(WebElement element) {
-		JavascriptExecutor js = (JavascriptExecutor) getDriver();
-		String scrollElementIntoMiddle = ""
+	protected void scrollToElement(final WebElement element) {
+		final JavascriptExecutor js = (JavascriptExecutor) getDriver();
+		final String scrollElementIntoMiddle = ""
 				+ "var viewPortHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);"
 				+ "var elementTop = arguments[0].getBoundingClientRect().top;"
 				+ "window.scrollBy(0, elementTop-(viewPortHeight/2));";
 		js.executeScript(scrollElementIntoMiddle, element);
 	}
 
-	protected String readFile(String fileName) throws IOException {
+	protected String readFile(final String fileName) throws IOException {
 		return Strings.readFile(RESOURCE_DIR + fileName)
 				.replace("%%package systemtest", "%%package systemtest" + getArticleName());
 	}
 
-	protected void setText(By by, String text, WebElement parent) {
+	protected String readResource(final String resourceName) throws IOException {
+		final URL resource = getClass().getResource(resourceName);
+		return IOUtils.toString(resource, StandardCharsets.UTF_8);
+	}
+
+	protected void setText(final By by, final String text, final WebElement parent) {
 		setText(parent.findElement(by), text);
 	}
 
-	protected void setText(By by, String text) {
+	protected void setText(final By by, final String text) {
 		setText(find(by), text);
 	}
 
-	protected void setText(WebElement element, String text) {
+	protected void setText(final WebElement element, final String text) {
 		element.click();
 		element.clear();
 		element.sendKeys(text);
@@ -245,35 +253,35 @@ public abstract class KnowWEUITest {
 			getDriver().switchTo().alert();
 			return true;
 		}
-		catch (NoAlertPresentException e) {
+		catch (final NoAlertPresentException e) {
 			return false;
 		}
 	}
 
-	protected boolean isElementPresent(By by) {
+	protected boolean isElementPresent(final By by) {
 		try {
 			getDriver().findElement(by);
 			return true;
 		}
-		catch (NoSuchElementException e) {
+		catch (final NoSuchElementException e) {
 			return false;
 		}
 	}
 
-	protected boolean isElementPresent(By by, WebElement parent) {
+	protected boolean isElementPresent(final By by, final WebElement parent) {
 		try {
 			parent.findElement(by);
 			return true;
 		}
-		catch (NoSuchElementException e) {
+		catch (final NoSuchElementException e) {
 			return false;
 		}
 	}
 
 	protected String confirmAlertAndGetMsg() {
 		try {
-			Alert alert = getDriver().switchTo().alert();
-			String alertText = alert.getText();
+			final Alert alert = getDriver().switchTo().alert();
+			final String alertText = alert.getText();
 			if (acceptNextAlert) {
 				alert.accept();
 			}
