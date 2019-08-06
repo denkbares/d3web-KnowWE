@@ -1128,6 +1128,16 @@ th.changenote, td.changenote {
 	color: #fff;
 }
 
+#header-spacer {
+	padding-top: 126px;
+}
+
+@media only screen and (max-width: 768px) {
+	#header-spacer {
+		padding-top: 74px;
+	}
+}
+
 a.action.view,
 a.action.comment,
 a.action.prefs,
