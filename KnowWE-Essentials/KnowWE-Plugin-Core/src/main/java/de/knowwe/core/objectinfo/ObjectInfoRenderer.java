@@ -448,7 +448,7 @@ public class ObjectInfoRenderer implements Renderer {
 		result.appendHtml("</div>");
 		result.appendHtml("<div class='markupMenu'>");
 		result.appendHtml("<div class='markupMenuItem'>");
-		result.appendHtml("<a class='markupMenuItem' href='" + KnowWEUtils.getURLLink(previewSection) + "' onclick='_CE.disable();'>");
+		result.appendHtml("<a class='markupMenuItem' href='" + KnowWEUtils.getURLLink(previewSection) + "'>");
 		result.appendHtml(Icon.LINK.fixWidth().toHtml());
 		result.appendHtml("<span>Open</span></a>");
 		result.appendHtml("</div>");
