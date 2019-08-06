@@ -83,7 +83,7 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> imple
 		buffer.append(" ")
 				.append(type.toString().toLowerCase())
 				.append("s found in article '[")
-				.append(fixTitle(moni.getTitle()))
+				.append(moni.getTitle())
 				.append("]'");
 		if (!messages.isEmpty()) {
 			for (de.knowwe.core.report.Message message : messages) {
@@ -120,15 +120,6 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> imple
 		}
 		else {
 			return new Message(Message.Type.SUCCESS, null);
-		}
-	}
-
-	private String fixTitle(String title) {
-		if (title.contains("@")) { // somehow JSPWiki links cannot handle @
-			return title + "|" + KnowWEUtils.getAsAbsoluteLink("Wiki.jsp?page=" + Strings.encodeURL(title));
-		}
-		else {
-			return title;
 		}
 	}
 
