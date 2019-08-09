@@ -96,18 +96,19 @@ public abstract class KnowWEUITest {
 
 	/**
 	 * This test watcher catches a failed ui test and saves a screen capture of the current page. For more details there
-	 * is also saved a xml file of the pages html content. The files will be saved to the /tmp folder.
+	 * is also saved a xml file of the page's html content. The files will be saved to the /tmp folder by default.
 	 */
 	@Rule
 	public final TestRule watchman = new TestWatcher() {
 
 		@Override
 		protected void failed(final Throwable e, final Description description) {
-			final String className = description.getClassName();
-			final String methodName = description.getMethodName();
-			final String prefix = className.substring(className.lastIndexOf(".") + 1);
-			final String suffix = methodName.substring(0, methodName.lastIndexOf("["));
-			UITestUtils.generateDebugFiles(KnowWEUITest.this.driver, prefix + "-" + suffix);
+			String className = description.getClassName();
+			String methodName = description.getMethodName();
+			String prefix = className.substring(className.lastIndexOf(".") + 1);
+			String suffix = methodName.substring(0, methodName.lastIndexOf("["));
+			String debugFolder = System.getProperty("ui.debug.folder");
+			UITestUtils.generateDebugFiles(driver, debugFolder, prefix + "-" + suffix);
 		}
 
 		@Override

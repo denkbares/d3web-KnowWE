@@ -234,18 +234,22 @@ public class UITestUtils {
 	/**
 	 * Generate a PNG screen capture and the current XML of the driver page.
 	 *
-	 * @param driver
-	 * @param fileName
+	 * @param driver   the current driver
+	 * @param folder   the folder to save the files to
+	 * @param fileName the name of the debug file
 	 */
-	public static void generateDebugFiles(final WebDriver driver, final String fileName) {
-		final String fileNamePNG = fileName + "_screen-capture.png";
-		Log.info(captureScreenshot(driver, fileNamePNG));
-		final String fileNameXML = fileName + "_page-content.xml";
+	public static void generateDebugFiles(WebDriver driver, String folder, String fileName) {
+		if (Strings.isBlank(folder)) folder = TMP_DEBUG_FOLDER;
+		String fileNamePNG = fileName + "_screen-capture.png";
+		String fileNameXML = fileName + "_page-content.xml";
+		captureScreenshot(driver, folder, fileNamePNG);
 		try {
-			Strings.writeFile(TMP_DEBUG_FOLDER + fileNameXML, driver.getPageSource());
+			File destFile = new File(folder, fileNameXML);
+			Strings.writeFile(destFile, driver.getPageSource());
+			Log.info("The xml file was saved to \"" + destFile.getParentFile().getAbsolutePath() + "\"");
 		}
-		catch (final IOException ioe) {
-			Log.warning("Creation of debug xml file failed: " + ioe.getMessage());
+		catch (IOException e) {
+			Log.warning("Failed to create xml file", e);
 		}
 	}
 
@@ -253,18 +257,20 @@ public class UITestUtils {
 	 * Take a screenshot of the current page and return success message.
 	 *
 	 * @param driver   the current driver
-	 * @param fileName the name of the screenshot file
+	 * @param folder   the folder to save the screenshot to
+	 * @param fileName the name of the screenshot
 	 * @return
 	 */
-	public static String captureScreenshot(final WebDriver driver, final String fileName) {
+	public static void captureScreenshot(WebDriver driver, String folder, String fileName) {
+		if (Strings.isBlank(folder)) folder = TMP_DEBUG_FOLDER;
 		try {
-			final File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-			final File destFile = new File(TMP_DEBUG_FOLDER + fileName);
+			File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+			File destFile = new File(folder, fileName);
 			FileUtils.copyFile(file, destFile);
-			return "The screenshot was saved to \"" + destFile.getAbsolutePath() + "\".";
+			Log.info("The screenshot was saved to \"" + destFile.getParentFile().getAbsolutePath() + "\"");
 		}
-		catch (final IOException ioe) {
-			return "Failed to capture screenshot: " + ioe.getMessage();
+		catch (IOException e) {
+			Log.warning("Failed to capture screenshot", e);
 		}
 	}
 
