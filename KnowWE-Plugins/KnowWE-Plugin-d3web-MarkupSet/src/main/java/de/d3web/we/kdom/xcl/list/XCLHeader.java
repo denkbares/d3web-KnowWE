@@ -52,13 +52,20 @@ public class XCLHeader extends AbstractType {
 		this.addChildType(3.0, new AnonymousType("bracket",
 				new StringSectionFinderUnquoted("{"), StyleRenderer.COMMENT));
 
-		// split multiple solutions by comma and/or semicolon
-		this.addChildType(3.0, new AnonymousType("split",
-				new UnquotedExpressionFinder(","), StyleRenderer.COMMENT));
+		this.addChildType(new XCLHeaderLine());
+	}
 
-		// and take the remaining ranges as solution definitions,
-		// but also split multiple lines into individual solutions
-		this.addChildType(new XCLSolutionDefinition());
-		this.addChildType(9.0, UnrecognizedSyntaxType.getInstance());
+	public static class XCLHeaderLine extends AbstractType {
+
+		public XCLHeaderLine() {
+			setSectionFinder(LineSectionFinderNonBlankTrimmed.getInstance());
+
+			// split multiple solutions by comma and/or semicolon
+			this.addChildType(new AnonymousType("split",
+					new UnquotedExpressionFinder(","), StyleRenderer.COMMENT));
+			// and take the remaining ranges as solution definitions,
+			this.addChildType(new XCLSolutionDefinition());
+			this.addChildType(UnrecognizedSyntaxType.getInstance());
+		}
 	}
 }
