@@ -75,12 +75,13 @@ public class VersionMarkupType extends DefaultMarkupType {
 				}
 
 				String dateString;
-				try {
-					Date date = Date.from(Instant.parse(attributes.getValue("Build-Date")));
-					dateString = new SimpleDateFormat("yyyy-MM-dd HH:MM").format(date);
-				}
-				catch (NullPointerException npe) {
+				String value = attributes.getValue("Build-Date");
+				if (value == null) {
 					dateString = VersionTagHandler.getBuildTime();
+				}
+				else {
+					Date date = Date.from(Instant.parse(value));
+					dateString = new SimpleDateFormat("yyyy-MM-dd HH:MM").format(date);
 				}
 
 				result.appendHtml("<span>" + dateString + "</span>");
