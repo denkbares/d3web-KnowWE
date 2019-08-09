@@ -221,13 +221,7 @@ public class UITestUtils {
 		driver.navigate().refresh();
 		if (login && !UITestUtils.isLoggedIn(driver, template)) {
 			driver.get(urlConstructor.apply("Login"));
-			try {
-				UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", LOGIN_PAGE, template);
-			}
-			catch (final TimeoutException te) {
-				Log.warning("The login was not successful. Creating debug files ...");
-				generateDebugFiles(driver, "LOGIN");
-			}
+			UITestUtils.logIn(driver, "UiTest", "fyyWWyVeHzzHfkUMZxUQ?3nDBPbTT6", LOGIN_PAGE, template);
 		}
 		driver.get(knowWEUrl);
 //		if (!pageExists(template, driver)) {
