@@ -38,7 +38,7 @@ import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
- * This type defines the possible annotations of the ShowSoltions markup.
+ * This type defines the possible annotations of the ShowSolutions markup.
  *
  * @author Joachim Baumeister (denkbares GmbH)
  * @created 22.10.2010

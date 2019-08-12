@@ -153,42 +153,19 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	 * @return if any contents are rendered
 	 */
 	private boolean renderSolutions(Section<?> section, final Session session, Locale lang, RenderResult content) {
-		Set<Solution> allSolutions = new TreeSet<>(new SolutionComparator(session));
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 
 		// collect the solutions to be presented
 		// --- established solutions are presented by default and have to be
 		// --- opted out
-		if (ShowSolutionsType.shouldShowEstablished(parentSection)) {
-			List<Solution> solutions =
-					D3webUtils.getSolutionsNonBlocking(session, State.ESTABLISHED);
-			if (solutions == null) {
-				renderPropagationError(content);
-				return true;
-			}
-			allSolutions.addAll(solutions);
-		}
-		if (ShowSolutionsType.shouldShowSuggested(parentSection)) {
-			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.SUGGESTED);
-			if (solutions == null) {
-				renderPropagationError(content);
-				return true;
-			}
-			allSolutions.addAll(solutions);
-		}
-		if (ShowSolutionsType.shouldShowExcluded(parentSection)) {
-			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.EXCLUDED);
-			if (solutions == null) {
-				renderPropagationError(content);
-				return true;
-			}
-			allSolutions.addAll(solutions);
+		Set<Solution> allSolutions = getSolutions(session, parentSection);
+		if (allSolutions == null) {
+			renderPropagationError(content);
+			return true;
 		}
 
 		// filter unwanted solutions
-		String[] allowedParents = ShowSolutionsType.getAllowedParents(parentSection);
-		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
-		allSolutions.removeIf(solution -> !SolutionPanelUtils.isShownObject(allowedParents, excludedParents, solution));
+		filterUnwantedSolutions(parentSection, allSolutions);
 
 		Section<ShowSolutionsType> markup = Sections.ancestor(section, ShowSolutionsType.class);
 		boolean endUserMode = Boolean.valueOf(ShowSolutionsType.getEndUserModeFlag(markup));
@@ -212,6 +189,40 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		}
 
 		return !allSolutions.isEmpty();
+	}
+
+	public static void filterUnwantedSolutions(Section<ShowSolutionsType> parentSection, Set<Solution> allSolutions) {
+		String[] allowedParents = ShowSolutionsType.getAllowedParents(parentSection);
+		String[] excludedParents = ShowSolutionsType.getExcludedParents(parentSection);
+		allSolutions.removeIf(solution -> !SolutionPanelUtils.isShownObject(allowedParents, excludedParents, solution));
+	}
+
+	public static Set<Solution> getSolutions(Session session, Section<ShowSolutionsType> parentSection) {
+		Set<Solution> allSolutions = new TreeSet<>(new SolutionComparator(session));
+
+		if (ShowSolutionsType.shouldShowEstablished(parentSection)) {
+			List<Solution> solutions =
+					D3webUtils.getSolutionsNonBlocking(session, State.ESTABLISHED);
+			if (solutions == null) {
+				return null;
+			}
+			allSolutions.addAll(solutions);
+		}
+		if (ShowSolutionsType.shouldShowSuggested(parentSection)) {
+			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.SUGGESTED);
+			if (solutions == null) {
+				return null;
+			}
+			allSolutions.addAll(solutions);
+		}
+		if (ShowSolutionsType.shouldShowExcluded(parentSection)) {
+			List<Solution> solutions = D3webUtils.getSolutionsNonBlocking(session, State.EXCLUDED);
+			if (solutions == null) {
+				return null;
+			}
+			allSolutions.addAll(solutions);
+		}
+		return allSolutions;
 	}
 
 	private KnowledgeBase getKnowledgebaseFor(Section<?> section, UserContext user) {
