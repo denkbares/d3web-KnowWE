@@ -38,6 +38,7 @@ import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.attachment.Attachment;
+import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.search.QueryItem;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
@@ -171,7 +172,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				}
 				git.add().addFilepattern(getPath(att)).call();
 			}
-			commitAttachment(att, git);
+			commitAttachment(att, git, GitVersioningWikiEvent.UPDATE);
 		}
 		catch (GitAPIException e) {
 			log.error(e.getMessage(), e);
@@ -441,7 +442,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			try {
 				Git git = new Git(repository);
 				git.rm().addFilepattern(getPath(att)).call();
-				commitAttachment(att, git);
+				commitAttachment(att, git, GitVersioningWikiEvent.DELETE);
 			}
 			catch (GitAPIException e) {
 				log.error(e.getMessage(), e);
@@ -450,7 +451,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		}
 	}
 
-	void commitAttachment(Attachment att, Git git) throws GitAPIException {
+	private void commitAttachment(Attachment att, Git git, int type) throws GitAPIException {
 		if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
 			gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(getPath(att));
 		}
@@ -459,7 +460,11 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			setMessage(att, commitCommand);
 			addUserInfo(engine, att.getAuthor(), commitCommand);
 			synchronized (repository) {
-				commitCommand.call();
+				RevCommit revCommit = commitCommand.call();
+				WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
+						att.getAuthor(),
+						att.getParentName() + "/" + att.getFileName(),
+						revCommit.getId().toString()));
 				gitVersioningFileProvider.periodicalGitGC(git);
 			}
 		}
@@ -481,6 +486,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		File[] files = oldDir.listFiles();
 		if (files != null) {
 			try {
+				List<String> filesForEvent = new ArrayList<>();
 				Files.move(oldDir.toPath(), newDir.toPath(), StandardCopyOption.ATOMIC_MOVE);
 				Git git = new Git(repository);
 				RmCommand rm = git.rm();
@@ -498,6 +504,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 					else {
 						commit.setOnly(oldPath);
 						commit.setOnly(newPath);
+						filesForEvent.add(oldParent.getName() + "/" + file.getName());
+						filesForEvent.add(newParent + "/" + file.getName());
 					}
 				}
 				rm.addFilepattern(getAttachmentDir(oldParent.getName()));
@@ -507,7 +515,11 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
 					commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
 					synchronized (repository) {
-						commit.call();
+						RevCommit revCommit = commit.call();
+						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
+								oldParent.getAuthor(),
+								filesForEvent,
+								revCommit.getId().toString()));
 						gitVersioningFileProvider.periodicalGitGC(git);
 					}
 				}

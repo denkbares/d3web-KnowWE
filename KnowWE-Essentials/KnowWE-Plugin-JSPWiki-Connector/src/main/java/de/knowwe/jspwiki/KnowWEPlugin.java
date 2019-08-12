@@ -54,6 +54,7 @@ import org.apache.wiki.event.WikiPageEvent;
 import org.apache.wiki.event.WikiPageRenameEvent;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
+import org.apache.wiki.providers.GitVersioningWikiEvent;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.providers.WikiPageProvider;
 import org.apache.wiki.ui.TemplateManager;
@@ -76,6 +77,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.event.FullParseEvent;
@@ -378,6 +380,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
 				throw new UpdateNotAllowedException();
 			}
+			EventManager.getInstance().fireEvent(new ArticleUpdateEvent(title, wikiContext.getRealPage().getAuthor()));
 			defaultArticleManager.open();
 			try {
 				article = Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
@@ -580,6 +583,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				initializeAllArticles(engine);
 				wikiEngineInitialized = true;
 			}
+		}
+		else if (event instanceof GitVersioningWikiEvent) {
+			GitVersioningWikiEvent gitEvent = (GitVersioningWikiEvent) event;
+			ArticleUpdateEvent articleUpdateEvent = new ArticleUpdateEvent(gitEvent.getPages(), gitEvent.getAuthor());
+			articleUpdateEvent.setVersion(gitEvent.getGitCommitRev());
+			EventManager.getInstance().fireEvent(articleUpdateEvent);
 		}
 	}
 

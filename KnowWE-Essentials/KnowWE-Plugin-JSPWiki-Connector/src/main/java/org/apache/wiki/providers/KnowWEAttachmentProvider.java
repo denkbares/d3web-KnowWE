@@ -27,6 +27,9 @@ import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEventManager;
 
+import com.denkbares.events.EventManager;
+import de.knowwe.event.ArticleUpdateEvent;
+
 /**
  * AttachmentProvider that justs fixes the BasicAttachmentProvider from JSPWiki, which does not fire proper events when
  * storing and deleting attachments.
@@ -42,11 +45,15 @@ public class KnowWEAttachmentProvider extends BasicAttachmentProvider {
 	public void putAttachmentData(Attachment att, InputStream data) throws ProviderException, IOException {
 		super.putAttachmentData(att, data);
 		WikiEventManager.fireEvent(this, new WikiAttachmentEvent(this, att.getParentName(), att.getFileName(), WikiAttachmentEvent.STORED));
+		EventManager.getInstance()
+				.fireEvent(new ArticleUpdateEvent(att.getParentName() + "/" + att.getFileName(), att.getAuthor()));
 	}
 
 	@Override
 	public void deleteAttachment(Attachment att) throws ProviderException {
 		super.deleteAttachment(att);
+		EventManager.getInstance()
+				.fireEvent(new ArticleUpdateEvent(att.getParentName() + "/" + att.getFileName(), att.getAuthor()));
 		if (!"false".equals(att.getAttribute(FIRE_DELETE_EVENT))) {
 			WikiEventManager.fireEvent(this, new WikiAttachmentEvent(this, att.getParentName(), att.getFileName(), WikiAttachmentEvent.DELETED));
 		}

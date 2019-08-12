@@ -46,6 +46,7 @@ import org.apache.wiki.WikiPage;
 import org.apache.wiki.WikiProvider;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.search.QueryItem;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
@@ -84,17 +85,17 @@ import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
  */
 public class GitVersioningFileProvider extends AbstractFileProvider {
 
-	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT = "jspwiki.gitVersioningFileProvider.remoteGit";
+	static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT = "jspwiki.gitVersioningFileProvider.remoteGit";
 	protected Repository repository;
-	public static final String GIT_DIR = ".git";
-	public static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
+	private static final String GIT_DIR = ".git";
+	private static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
 	private static final Logger log = Logger.getLogger(GitVersioningFileProvider.class);
 	private String filesystemPath;
 
 	private AtomicLong commitCount;
 
 	Map<String, Set<String>> openCommits = new ConcurrentHashMap<>();
-	List<String> refreshCacheList = new ArrayList<>();
+	private final List<String> refreshCacheList = new ArrayList<>();
 
 	/**
 	 * {@inheritDoc}
@@ -195,7 +196,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				addUserInfo(m_engine, page.getAuthor(), commit);
 				commit.setAllowEmpty(true);
 				synchronized (repository) {
-					commit.call();
+					RevCommit revCommit = commit.call();
+					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.DELETE,
+							page.getAuthor(),
+							page.getName(),
+							revCommit.getId().toString()));
 					periodicalGitGC(git);
 				}
 			}
@@ -271,7 +276,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public WikiPage getPageInfo(String pageName, int version) throws ProviderException {
 		if (pageExists(pageName)) {
 			List<WikiPage> versionHistory = getVersionHistory(pageName);
-			if (versionHistory.size() == 0 && version == LATEST_VERSION) {
+			if (versionHistory.isEmpty() && version == LATEST_VERSION) {
 				WikiPage page = new WikiPage(m_engine, pageName);
 				page.setVersion(LATEST_VERSION);
 				File file = findPage(pageName);
@@ -549,7 +554,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 						.setMessage("removed page");
 				addUserInfo(m_engine, page.getAuthor(), commitCommand);
 				synchronized (repository) {
-					commitCommand.call();
+					RevCommit revCommit = commitCommand.call();
+					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.DELETE,
+							page.getAuthor(),
+							page.getName(),
+							revCommit.getId().toString()));
 					periodicalGitGC(git);
 				}
 			}
@@ -580,7 +589,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 						.setMessage("renamed page " + from + " to " + to);
 				addUserInfo(m_engine, from.getAuthor(), commitCommand);
 				synchronized (repository) {
-					commitCommand.call();
+					RevCommit revCommit = commitCommand.call();
+					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
+							from.getAuthor(),
+							to,
+							revCommit.getId().toString()));
 					periodicalGitGC(git);
 				}
 			}
@@ -609,7 +622,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				}
 				try {
 					commitCommand.setAllowEmpty(true);
-					commitCommand.call();
+					RevCommit revCommit = commitCommand.call();
+					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
+							user,
+							openCommits.get(user),
+							revCommit.getId().toString()));
 					openCommits.remove(user);
 					PageManager pm = m_engine.getPageManager();
 					// this could be done, because we only remove the page from the cache and the method of
