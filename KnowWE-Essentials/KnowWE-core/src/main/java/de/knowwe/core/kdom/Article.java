@@ -28,7 +28,6 @@ import de.knowwe.core.Environment.CompilationMode;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
-import de.knowwe.event.ArticleCreatedEvent;
 import de.knowwe.event.KDOMCreatedEvent;
 
 /**
@@ -74,7 +73,6 @@ public final class Article {
 		Article article = null;
 		try {
 			article = new Article(text, title, web, fullParse, temporary);
-			EventManager.getInstance().fireEvent(new ArticleCreatedEvent(article));
 		}
 		catch (Exception e) {
 			Log.severe("Exception while creating article", e);
@@ -243,10 +241,9 @@ public final class Article {
 		}
 		else if (!title.equals(other.title)) return false;
 		if (web == null) {
-			if (other.web != null) return false;
+			return other.web == null;
 		}
-		else if (!web.equals(other.web)) return false;
-		return true;
+		else return web.equals(other.web);
 	}
 
 	public void setArticleManager(ArticleManager articleManager) {
