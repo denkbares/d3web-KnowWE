@@ -2523,6 +2523,10 @@ li.findpages .btn {
 	}
 }
 
+.form-control {
+	color: black;
+}
+
 .edit-mode .fixed-header > .header {
 	position: absolute;
 }
