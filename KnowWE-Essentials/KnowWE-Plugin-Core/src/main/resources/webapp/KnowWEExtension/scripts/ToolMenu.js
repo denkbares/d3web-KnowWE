@@ -195,7 +195,9 @@ ToolMenu.prototype.animateDefaultMarkupMenu = function ($parent) {
 			header.stop().animate({'max-width': 250, 'z-index': 1500, opacity: 1}, 200);
 			if (menu) {
 				menu.show();
-				const menuBottom = menu[0].getBoundingClientRect().bottom;
+				let menuBottom = 0;
+				if (menu.length > 0)
+					menuBottom = menu[0].getBoundingClientRect().bottom;
 				const windowHeight = jq$(window).height();
 				let footerHeightVisible = 0;
 				if (jq$('.footer').first()) {
