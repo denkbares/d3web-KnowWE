@@ -154,55 +154,61 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			for (XSSFSheet sheet : getSheets(xlsx, config)) {
 				// config indexes are 1-based indexes, so subtract 1 to get to 0-based indexes for poi
 				for (int i = config.startRow - 1; i <= Math.min(config.endRow - 1, sheet.getLastRowNum()); i++) {
-					XSSFRow row = sheet.getRow(i);
+					try {
+						XSSFRow row = sheet.getRow(i);
 
-					// subject
-					if (config.subjectColumn > 0) {
-						subjectURI = getUriFromCell(core, row, config.subjectColumn);
-					}
+						// subject
+						if (config.subjectColumn > 0) {
+							subjectURI = getUriFromCell(core, row, config.subjectColumn);
+						}
 
-					// predicate
-					if (config.predicateColumn > 0) {
-						predicateURI = getUriFromCell(core, row, config.predicateColumn);
-					}
+						// predicate
+						if (config.predicateColumn > 0) {
+							predicateURI = getUriFromCell(core, row, config.predicateColumn);
+						}
 
-					// objects
-					for (int j = 0; j < config.objectConfigs.size(); j++) {
-						ObjectConfig objectConfig = config.objectConfigs.get(j);
-						URI objectURI = objectURIs.get(j);
-						Literal literal = literals.get(j);
-						if (objectConfig.objectColumn > 0) {
-							if (literals.get(j) == null) {
-								objectURI = getUriFromCell(core, row, objectConfig.objectColumn);
+						// objects
+						for (int j = 0; j < config.objectConfigs.size(); j++) {
+							ObjectConfig objectConfig = config.objectConfigs.get(j);
+							URI objectURI = objectURIs.get(j);
+							Literal literal = literals.get(j);
+							if (objectConfig.objectColumn > 0) {
+								if (literals.get(j) == null) {
+									objectURI = getUriFromCell(core, row, objectConfig.objectColumn);
+								}
+								else {
+									literal = getLiteralFromCell(core, row, objectConfig, literal);
+								}
 							}
-							else {
-								literal = getLiteralFromCell(core, row, objectConfig, literal);
-							}
-						}
 
-						//cell which is tested when using skipRowType
-						String skipTestCell = null;
-						if (config.skipColumn != -1) {
-							skipTestCell = getCellValue(row.getCell(config.skipColumn - 1));
-						}
+							//cell which is tested when using skipRowType
+							String skipTestCell = null;
+							if (config.skipColumn != -1) {
+								skipTestCell = getCellValue(row.getCell(config.skipColumn - 1));
+							}
 
-						// create and add statements
-						Statement statement = null;
-						if (literal != null) {
-							if (config.skipPattern != null && skipTestCell != null && skipTestCell.matches(config.skipPattern)) {
-								continue;
+							// create and add statements
+							Statement statement = null;
+							if (literal != null) {
+								if (config.skipPattern != null && skipTestCell != null && skipTestCell.matches(config.skipPattern)) {
+									continue;
+								}
+								else {
+									statement = core.createStatement(subjectURI, predicateURI, literal);
+								}
 							}
-							else {
-								statement = core.createStatement(subjectURI, predicateURI, literal);
+							else if (objectURI != null) {
+								statement = core.createStatement(subjectURI, predicateURI, objectURI);
+							}
+							if (statement != null) {
+								core.addStatements(section, statement);
+								statementCounter++;
 							}
 						}
-						else if (objectURI != null) {
-							statement = core.createStatement(subjectURI, predicateURI, objectURI);
-						}
-						if (statement != null) {
-							core.addStatements(section, statement);
-							statementCounter++;
-						}
+					} catch (Exception e) {
+						String message = "Exception in row " + (i + 1) + ": " + e.getMessage();
+						Log.severe(message, e);
+						throw CompilerMessage.error(message);
 					}
 					rowCounter++;
 				}
