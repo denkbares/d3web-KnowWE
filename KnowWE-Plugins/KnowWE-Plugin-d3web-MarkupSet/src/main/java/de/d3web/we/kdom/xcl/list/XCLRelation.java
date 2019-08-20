@@ -92,7 +92,7 @@ public class XCLRelation extends AbstractType {
 	 *
 	 * @author Jochen
 	 */
-	static class CreateXCLRelationHandler implements D3webHandler<XCLRelation> {
+	public static class CreateXCLRelationHandler implements D3webHandler<XCLRelation> {
 
 		private List<Section<SolutionDefinition>> getCorrespondingSolutionDefinitions(Section<XCLRelation> relation) {
 			return $(relation).ancestor(CoveringList.class)
