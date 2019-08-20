@@ -112,7 +112,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 	@NotNull
 	@Override
-	public StatementProviderResult getStatements(Section<? extends Object> section, Rdf2GoCompiler compiler) {
+	public StatementProviderResult getStatements(Rdf2GoCompiler compiler, Section<? extends Object> section) {
 
 		StatementProviderResult result = new StatementProviderResult(compiler);
 		/*

@@ -33,7 +33,7 @@ public class StatementProviderHandler<Z extends Type> extends OntologyHandler<Z>
 
 		for (Section<StatementProvider> statementSection : Sections.successors(section, StatementProvider.class)) {
 			//noinspection unchecked
-			StatementProviderResult result = statementSection.get().getStatementsSafe(statementSection, compiler);
+			StatementProviderResult result = statementSection.get().getStatementsSafe(compiler, statementSection);
 			compiler.getRdf2GoCore().addStatements(section, result.getStatements());
 			messages.addAll(result.getMessages());
 		}

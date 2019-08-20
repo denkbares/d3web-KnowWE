@@ -116,7 +116,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 	@NotNull
 	@Override
-	public StatementProviderResult getStatements(Section<? extends TurtleCollection> section, Rdf2GoCompiler compiler) {
+	public StatementProviderResult getStatements(Rdf2GoCompiler compiler, Section<? extends TurtleCollection> section) {
 		StatementProviderResult result = new StatementProviderResult(compiler);
 		List<Section<CollectionItem>> listItems = new ArrayList<>();
 		Sections.successors(section, CollectionItem.class, 2, listItems);

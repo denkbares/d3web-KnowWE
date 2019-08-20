@@ -88,7 +88,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 						for (Section<StatementProvider> statementSection : statementProviders) {
 							//noinspection unchecked
 							StatementProviderResult result =
-									statementSection.get().getStatementsSafe(statementSection, compiler);
+									statementSection.get().getStatementsSafe(compiler, statementSection);
 							for (Statement statement : result.getStatements()) {
 								predicates.add(statement.getPredicate());
 							}
@@ -100,7 +100,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 				else {
 					// TODO: clarify whenever this case can make sense...!?
 					final StatementProviderResult result =
-							objectReference.get().getStatementsSafe(objectReference, compiler);
+							objectReference.get().getStatementsSafe(compiler, objectReference);
 					statements.addAll(result.getStatements());
 				}
 			}
