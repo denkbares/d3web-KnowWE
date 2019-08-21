@@ -303,7 +303,6 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public static void renderMessageOfType(RenderResult result, Type type, String message) {
-		//noinspection deprecation
 		renderMessagesOfType(type, Messages.asList(new Message(type, message)), result);
 	}
 
