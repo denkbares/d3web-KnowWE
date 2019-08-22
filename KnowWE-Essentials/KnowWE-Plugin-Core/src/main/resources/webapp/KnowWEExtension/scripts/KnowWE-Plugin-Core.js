@@ -74,50 +74,6 @@ KNOWWE.core.plugin.objectinfo = function() {
 		},
 
 		/**
-		 * Load the ajax-previews
-		 */
-		loadPreviews: function(root) {
-			const select = (root === undefined)
-				? jq$('.asynchronPreviewRenderer')
-				: jq$(root).find('.asynchronPreviewRenderer');
-			const json = [];
-			const ids = [];
-			select.each(function() {
-				json.push(this.getAttribute('rel'));
-				ids.push(this.id);
-			});
-			jq$.ajax("action/RenderPreviewAction", {
-				type: 'post',
-				data: JSON.stringify(json),
-				contentType: 'application/json, UTF-8',
-				success: function(html) {
-					KNOWWE.core.util.replaceElement(ids, html);
-					if (jq$(root).parents('#compositeEdit').length) {
-						_CE.afterPreviewsLoad(root);
-						KNOWWE.core.actions.init();
-					}
-					KNOWWE.core.plugin.objectinfo.highlightTermReferences(root, json);
-					_TM.decorateToolMenus(root);
-					_TM.animateDefaultMarkupMenu(root);
-					_TM.adjustSingletonMenus(root);
-					/**
-					 * Trigger custome Event here to mount the React components so that the
-					 * Item can be renderd on the users side. This even will be triggered
-					 * multiple times since loadPreviews is called async. the react components
-					 * will handle changes so that only new items will be rendered.
-					 */
-					jq$("body").trigger("OpenCompositeEdit");
-				}
-			});
-		},
-
-		highlightTermReferences: function(root, sectionIds) {
-			let sectionIdSplit = [];
-			sectionIds.forEach(s => sectionIdSplit = sectionIdSplit.concat(s.split(",")));
-			sectionIdSplit.forEach(s => jq$(root).find("span[sectionid='" + s + "']").addClass("highlight"));
-		},
-
-		/**
 		 * Function: createHomePage Used in the ObjectInfoToolProvider for
 		 * creating homepages for KnowWEObjects
 		 */

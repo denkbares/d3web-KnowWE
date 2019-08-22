@@ -584,7 +584,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 		_TM.animateDefaultMarkupMenu(jq$('#compositeEdit'));
 		_TM.adjustSingletonMenus(jq$('#compositeEdit'));
 		jq$(".extend-panel-right").click(function (e) {
-			KNOWWE.core.plugin.objectinfo.loadPreviews(jq$(this).next('div'));
+			loadPreviews(jq$(this).next('div'));
 			saveExpandState(this);
 		});
 		jq$(document).on('keydown', escapeFunction);
@@ -593,11 +593,56 @@ KNOWWE.plugin.compositeEditTool = function () {
 		KNOWWE.tooltips.enrich();
 	}
 
+	/**
+	 * Load the ajax-previews
+	 */
+	function loadPreviews(root) {
+		const select = (root === undefined)
+			? jq$('.asynchronPreviewRenderer')
+			: jq$(root).find('.asynchronPreviewRenderer');
+		const json = [];
+		const ids = [];
+		select.each(function () {
+			json.push(this.getAttribute('rel'));
+			ids.push(this.id);
+		});
+		jq$.ajax("action/RenderPreviewAction", {
+			type: 'post',
+			data: JSON.stringify(json),
+			contentType: 'application/json, UTF-8',
+			success: function (html) {
+				KNOWWE.core.util.replaceElement(ids, html);
+				if (jq$(root).parents('#compositeEdit').length) {
+					_CE.afterPreviewsLoad(root);
+					KNOWWE.core.actions.init();
+				}
+				highlightTermReferences(root, json);
+				_TM.decorateToolMenus(root);
+				_TM.animateDefaultMarkupMenu(root);
+				_TM.adjustSingletonMenus(root);
+				/**
+				 * Trigger custom Event here to mount the React components so that the
+				 * Item can be renderd on the users side. This even will be triggered
+				 * multiple times since loadPreviews is called async. the react components
+				 * will handle changes so that only new items will be rendered.
+				 */
+				jq$("body").trigger("OpenCompositeEdit");
+			}
+		});
+	}
+
 	function highlightTermDefinitions() {
 		const edit = jq$('#compositeEdit');
 		const sectionsToHighlight = edit.find('.relevantSections').attr('rel').split(',');
-		sectionsToHighlight.forEach(s => edit.find("span[sectionid='" + s + "']").addClass("highlight"));
+		sectionsToHighlight.forEach(s => edit.find("[sectionid='" + s + "']").addClass("highlight"));
 	}
+
+	function highlightTermReferences(root, sectionIds) {
+		let sectionIdSplit = [];
+		sectionIds.forEach(s => sectionIdSplit = sectionIdSplit.concat(s.split(",")));
+		sectionIdSplit.forEach(s => jq$(root).find("[sectionid='" + s + "']").addClass("highlight"));
+	}
+
 
 	function initExpandAllButtons() {
 		resetButtonTexts();
@@ -749,7 +794,7 @@ KNOWWE.plugin.compositeEditTool = function () {
 				}).parent().removeClass("extend-panel-right").addClass("extend-panel-down");
 				const section = jq$(p).next('div');
 				jq$(section).css("display", "inline");
-				KNOWWE.core.plugin.objectinfo.loadPreviews(section);
+				loadPreviews(section);
 			}
 		}
 	}
