@@ -117,7 +117,7 @@ Interview.retract = function (id, value) {
 	new Ajax.Request(url, {
 		method: 'get',
 		onSuccess: function (transport) {
-			//Interview.displayNextQuestion();
+			Interview.displayNextQuestion();
 			CCAjaxIndicator.hide();
 			Interview.loadNotifications();
 		},
