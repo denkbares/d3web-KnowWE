@@ -85,7 +85,7 @@ KNOWWE.notification = function () {
 			let duplicate = false;
 			let i = 0;
 			for (; i < messages.length; i++) {
-				if (messages[i].id === id) {
+				if (messages[i].id == id) {
 					duplicate = true;
 					break;
 				}
@@ -191,7 +191,7 @@ KNOWWE.notification = function () {
 		removeNotification: function (id) {
 			let index = -1;
 			for (let i = 0; i < messages.length; i++) {
-				if (messages[i].id === id) {
+				if (messages[i].id == id) {
 					index = i;
 					break;
 				}
@@ -202,8 +202,7 @@ KNOWWE.notification = function () {
 			// quit: other notifications? show them!
 			if (index > 0) {
 				KNOWWE.notification._select(index - 1);
-			} else if (index === 0
-				&& messages.length > 1) {
+			} else if (index === 0 && messages.length > 1) {
 				KNOWWE.notification._select(index);
 				// quit: no other notifications? hide notification
 				// bar!
