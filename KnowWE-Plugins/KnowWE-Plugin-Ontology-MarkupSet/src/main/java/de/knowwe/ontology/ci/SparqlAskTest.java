@@ -19,23 +19,9 @@
 
 package de.knowwe.ontology.ci;
 
-
-import java.util.Collection;
-
-import com.denkbares.strings.Strings;
-import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter;
-import de.d3web.testing.TestParser;
-import de.d3web.testing.TestResult;
-import de.d3web.we.ci4ke.test.ResultRenderer;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.ci.provider.SparqlQuerySection;
-import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
-import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -43,7 +29,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshoefer (denkbares GmbH)
  * @created 01.03.16.
  */
-public class SparqlAskTest extends SparqlTests<SparqlQuerySection>{
+public class SparqlAskTest extends SparqlTests<SparqlQuerySection> {
 
 	public static final String WARNING = "warning";
 
@@ -68,7 +54,7 @@ public class SparqlAskTest extends SparqlTests<SparqlQuerySection>{
 	public Message execute(SparqlQuerySection query, String[] args, String[]... ignores) throws InterruptedException {
 		Boolean expectedTruthValue = Boolean.parseBoolean(args[0]);
 		Message.Type messageTypeTestFailed = Message.Type.FAILURE;
-		if (args.length > 1 && args[1] != null && WARNING.equalsIgnoreCase(args[1])){
+		if (args.length > 1 && args[1] != null && WARNING.equalsIgnoreCase(args[1])) {
 			messageTypeTestFailed = Message.Type.WARNING;
 		}
 
@@ -81,14 +67,15 @@ public class SparqlAskTest extends SparqlTests<SparqlQuerySection>{
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, query.getSection().getText());
 
-		boolean result = core.sparqlAsk(
-				sparqlString);
+		boolean result = sparqlAsk(core, sparqlString);
 
 		if (expectedTruthValue.equals(result)) {
 			return new Message(Message.Type.SUCCESS);
-		} else {
+		}
+		else {
 			return new Message(messageTypeTestFailed,
 					"Sparql ASK expected  " + expectedTruthValue + " but was: " + result);
 		}
 	}
+
 }

@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2014 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -30,10 +30,9 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
-import de.d3web.testing.AbstractTest;
+import com.denkbares.utils.Log;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
-import com.denkbares.utils.Log;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
@@ -42,7 +41,7 @@ import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
  * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
-public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
+public class FunctionalPropertyTest extends SparqlTests<OntologyCompiler> {
 
 	@Override
 	public Message execute(OntologyCompiler testObject, String[] args, String[]... ignores) throws InterruptedException {
@@ -82,9 +81,7 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 					for (Value object : objects) {
 						message.append(object).append(", ");
 					}
-
 				}
-
 			}
 
 			return new Message(Type.FAILURE, message.toString());
@@ -102,9 +99,9 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 		SparqlQuery queryFunctionalPropertyAssertions = new SparqlQuery().SELECT(
 				subjectVariableName + " " + objectVariableName).WHERE(
 				subjectVariableName + " <" + prop.stringValue() + "> " + objectVariableName);
-		TupleQueryResult assertions = null;
+		TupleQueryResult assertions;
 		try {
-			assertions = core.sparqlSelect(queryFunctionalPropertyAssertions);
+			assertions = sparqlSelect(core, queryFunctionalPropertyAssertions.toSparql(core));
 		}
 		catch (Exception e) {
 			Log.severe("Exception while executing sparql:\n" + queryFunctionalPropertyAssertions);
@@ -135,15 +132,11 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 		}
 
 		return conflicts;
-
 	}
 
 	/**
 	 * Determine a set of object URIs where none is owl:sameAs any other
 	 *
-	 * @param set
-	 * @param core
-	 * @return
 	 * @created 09.01.2014
 	 */
 	private Set<Value> checkUnity(Set<Value> set, Rdf2GoCore core) {
@@ -161,7 +154,6 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 					isIn = true;
 					break;
 				}
-
 			}
 			if (!isIn) {
 				conflictSet.add(newValue);
@@ -180,5 +172,4 @@ public class FunctionalPropertyTest extends AbstractTest<OntologyCompiler> {
 	public String getDescription() {
 		return "Checks for all existing functional property whether they are indeed used as functional, i.e., for each subject node only one object exists.";
 	}
-
 }

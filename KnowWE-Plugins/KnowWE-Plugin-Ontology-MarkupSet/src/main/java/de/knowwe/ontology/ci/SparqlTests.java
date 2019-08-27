@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
@@ -15,12 +16,23 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
 import de.knowwe.ontology.sparql.SparqlMarkupType;
+import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
+ * Abstract class for SPARQL-based CI test. Handles rendering and queries.
+ *
  * @author Tim Abler
  * @created 14.11.2018
  */
 public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRenderer {
+
+	protected TupleQueryResult sparqlSelect(Rdf2GoCore core, String actualSparqlString) {
+		return core.sparqlSelect(actualSparqlString, true, 60000, 100);
+	}
+
+	protected boolean sparqlAsk(Rdf2GoCore core, String sparqlString) {
+		return core.sparqlAsk(sparqlString, true, 60000, 100);
+	}
 
 	@Override
 	public void renderResultTitle(TestResult testResult, RenderResult renderResult) {
