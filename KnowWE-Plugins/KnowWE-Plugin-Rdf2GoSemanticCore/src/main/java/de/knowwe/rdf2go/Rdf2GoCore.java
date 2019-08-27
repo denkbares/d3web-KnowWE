@@ -45,8 +45,8 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -75,6 +75,7 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParseException;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
@@ -116,6 +117,8 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 public class Rdf2GoCore {
 
 	public static final String LNS_ABBREVIATION = "lns";
+
+	public static final double DEFAULT_QUERY_PRIORITY = 5d;
 
 	private enum SparqlType {
 		SELECT, CONSTRUCT, ASK
@@ -246,7 +249,9 @@ public class Rdf2GoCore {
 	}
 
 	private static ThreadPoolExecutor createThreadPool(int threadCount, final String threadName) {
-		return (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount,
+		return new ThreadPoolExecutor(threadCount, threadCount,
+				0L, TimeUnit.MILLISECONDS,
+				new PriorityBlockingQueue<>(),
 				runnable -> {
 					Thread thread = new Thread(runnable, threadName);
 					thread.setDaemon(true);
@@ -1169,7 +1174,25 @@ public class Rdf2GoCore {
 	 * @return the result of the query
 	 */
 	public TupleQueryResult sparqlSelect(String query, boolean cached, long timeOutMillis) {
-		TupleQueryResult result = (TupleQueryResult) sparql(query, cached, timeOutMillis, SparqlType.SELECT);
+		return sparqlSelect(query, cached, timeOutMillis, DEFAULT_QUERY_PRIORITY);
+	}
+
+	/**
+	 * Performs a SPARQL select query with the given parameters. Be aware that, in case of an uncached query, the
+	 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
+	 * take a long time not covered by the timeout.
+	 * The priority influences the order in which the query will be executed. However, this is only influences a
+	 * potential working queue, in case the we are temporarily not fast enough in handling all incoming queries. The
+	 * individual queries are not faster or slower, as long as they do not queue up.
+	 *
+	 * @param query         the SPARQL query to perform
+	 * @param cached        sets whether the SPARQL query is to be cached or not
+	 * @param timeOutMillis the timeout of the query
+	 * @param priority      the priority with which the query should be executed
+	 * @return the result of the query
+	 */
+	public TupleQueryResult sparqlSelect(String query, boolean cached, long timeOutMillis, double priority) {
+		TupleQueryResult result = (TupleQueryResult) sparql(query, cached, timeOutMillis, priority, SparqlType.SELECT);
 		if (result instanceof CachedTupleQueryResult) {
 			// make the result iterable by different threads multiple times... we have to do this, because the caller
 			// of this methods can not know, that he is getting a cached result that may already be iterated before
@@ -1189,7 +1212,25 @@ public class Rdf2GoCore {
 	 * @return the result of the query
 	 */
 	public boolean sparqlAsk(String query, boolean cached, long timeOutMillis) {
-		return (Boolean) sparql(query, cached, timeOutMillis, SparqlType.ASK);
+		return sparqlAsk(query, cached, timeOutMillis, DEFAULT_QUERY_PRIORITY);
+	}
+
+	/**
+	 * Performs a SPARQL ask query with the given parameters. Be aware that, in case of an uncached query, the timeout
+	 * only effects the process of creating the iterator. Retrieving elements from the iterator might again take a long
+	 * time not covered by the timeout.
+	 * The priority influences the order in which the query will be executed. However, this is only influences a
+	 * potential working queue, in case the we are temporarily not fast enough in handling all incoming queries. The
+	 * individual queries are not faster or slower, as long as they do not queue up.
+	 *
+	 * @param query         the SPARQL query to perform
+	 * @param cached        sets whether the SPARQL query is to be cached or not
+	 * @param timeOutMillis the timeout of the query
+	 * @param priority      the priority with which the query should be executed
+	 * @return the result of the query
+	 */
+	public boolean sparqlAsk(String query, boolean cached, long timeOutMillis, double priority) {
+		return (Boolean) sparql(query, cached, timeOutMillis, priority, SparqlType.ASK);
 	}
 
 //	/**
@@ -1208,6 +1249,10 @@ public class Rdf2GoCore {
 //	}
 
 	private Object sparql(String query, boolean cached, long timeOutMillis, SparqlType type) {
+		return sparql(query, cached, timeOutMillis, DEFAULT_QUERY_PRIORITY, type);
+	}
+
+	private Object sparql(String query, boolean cached, long timeOutMillis, double priority, SparqlType type) {
 		String completeQuery = prependPrefixesToQuery(query);
 
 		// if the compile thread is calling here, we continue without all the timeout, cache, and lock
@@ -1235,7 +1280,7 @@ public class Rdf2GoCore {
 				sparqlTask = resultCache.get(completeQuery);
 				if (sparqlTask == null
 						|| (sparqlTask.isCancelled() && sparqlTask.callable.timeOutMillis != timeOutMillis)) {
-					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, timeOutMillis, true));
+					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, timeOutMillis, true), priority);
 					SparqlTask previous = resultCache.put(completeQuery, sparqlTask);
 					if (previous != null) {
 						resultCacheSize -= previous.getSize();
@@ -1245,7 +1290,7 @@ public class Rdf2GoCore {
 			}
 		}
 		else {
-			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, timeOutMillis, false));
+			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, timeOutMillis, false), priority);
 			sparqlThreadPool.execute(sparqlTask);
 		}
 		String timeOutMessage = "SPARQL query timed out after " + Strings.getDurationVerbalization(timeOutMillis, true) + ".";
@@ -1286,16 +1331,18 @@ public class Rdf2GoCore {
 	/**
 	 * Future for SPARQL queries with some addition control to stop it and get info about state.
 	 */
-	private class SparqlTask extends FutureTask<Object> {
+	private class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 
 		private long startTime = Long.MIN_VALUE;
 		private final SparqlCallable callable;
+		private final double priority;
 		private Thread thread = null;
 		private int size = 1;
 
-		SparqlTask(SparqlCallable callable) {
+		SparqlTask(SparqlCallable callable, double priority) {
 			super(callable);
 			this.callable = callable;
+			this.priority = priority;
 		}
 
 		long getTimeOutMillis() {
@@ -1382,6 +1429,11 @@ public class Rdf2GoCore {
 						+ Strings.getDurationVerbalization(getRunDuration())
 						+ ": " + getReadableQuery(callable.query, callable.type) + "...");
 			}
+		}
+
+		@Override
+		public int compareTo(@NotNull Rdf2GoCore.SparqlTask o) {
+			return Double.compare(this.priority, o.priority);
 		}
 	}
 
