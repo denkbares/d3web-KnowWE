@@ -88,12 +88,11 @@ public class GetVisMenuAction extends GetToolMenuAction {
 		ToolMenuDecoratingRenderer.renderToolMenuDecorator(conceptName, termDefiningSection.getID(), ToolUtils
 				.hasToolInstances(termDefiningSection, context), string);
 
-		writeResponse(context, termDefiningSection, string);
-
+		writeResponse(context, termDefiningSection.getID(), string);
 	}
 
 	@Override
-	public void writeResponse(UserActionContext context, Section<? extends Type> section, RenderResult string) throws IOException {
+	public void writeResponse(UserActionContext context, String sectionId, RenderResult string) throws IOException {
 		if (context.getWriter() != null) {
 			context.setContentType(HTML);
 			context.getWriter().write(string.toString());

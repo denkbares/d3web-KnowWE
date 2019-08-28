@@ -603,7 +603,8 @@ KNOWWE.plugin.compositeEditTool = function () {
 		const json = [];
 		const ids = [];
 		select.each(function () {
-			json.push(this.getAttribute('rel'));
+			let attribute = this.getAttribute('rel');
+			json.push(attribute);
 			ids.push(this.id);
 		});
 		jq$.ajax("action/RenderPreviewAction", {
