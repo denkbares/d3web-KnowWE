@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import com.denkbares.events.EventManager;
 import de.d3web.core.inference.PSMethod.Type;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -34,7 +35,6 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.blackboard.Fact;
 import de.knowwe.core.Attributes;
-import com.denkbares.events.EventManager;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -244,7 +244,7 @@ public class SessionProvider {
 			return false;
 		}
 		// check if existing session is up to date
-		return session.getKnowledgeBase() == base;
+		return session.getKnowledgeBase().getId().equals(base.getId());
 	}
 
 	/**
