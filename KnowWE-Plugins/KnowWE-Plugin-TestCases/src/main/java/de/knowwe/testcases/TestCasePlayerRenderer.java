@@ -43,6 +43,7 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.Solution;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.ValueUtils;
@@ -219,7 +220,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		if (base != null) {
 			if (SessionProvider.hasOutDatedSession(user, base)) {
 				NotificationManager.addNotification(user,
-						new OutDatedSessionNotification(selectedTriple.getKbSection().getID()));
+						new OutDatedSessionNotification(selectedTriple.getKbSection(), KnowledgeBaseUtils.getBaseName(knowledgeBase)));
 			}
 		}
 

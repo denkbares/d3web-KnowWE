@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
@@ -53,6 +54,7 @@ import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
+import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.ValueUtils;
@@ -128,9 +130,13 @@ public class QuickInterviewRenderer {
 			return;
 		}
 
-		if (SessionProvider.hasOutDatedSession(user, D3webUtils.getKnowledgeBase(section))) {
-			NotificationManager.addNotification(user,
-					new OutDatedSessionNotification(D3webUtils.getCompiler(section).getCompileSection().getID()));
+		if (SessionProvider.hasOutDatedSession(user, knowledgeBase)) {
+			final D3webCompiler compiler = D3webUtils.getCompiler(section);
+			if (compiler != null) {
+				NotificationManager.addNotification(user,
+						new OutDatedSessionNotification(compiler.getCompileSection().getID(),
+								KnowledgeBaseUtils.getBaseName(knowledgeBase)));
+			}
 		}
 		new QuickInterviewRenderer(session, section, user).render(result);
 	}
@@ -142,7 +148,7 @@ public class QuickInterviewRenderer {
 		this.session = c;
 		this.web = section.getWeb();
 		this.section = section;
-		this.kbSectionId = D3webUtils.getCompiler(section).getCompileSection().getID();
+		this.kbSectionId = Objects.requireNonNull(D3webUtils.getCompiler(section)).getCompileSection().getID();
 		this.namespace = kb.getId();
 		this.rb = D3webUtils.getD3webBundle(user);
 		this.user = user;

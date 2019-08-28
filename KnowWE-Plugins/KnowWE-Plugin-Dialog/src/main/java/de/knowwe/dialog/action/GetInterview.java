@@ -13,9 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import de.knowwe.dialog.SessionConstants;
-import de.knowwe.dialog.Utils;
-
 import com.denkbares.collections.MultiMap;
 import de.d3web.core.knowledge.InterviewObject;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -37,6 +34,8 @@ import de.d3web.interview.inference.PSMethodInterview;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.dialog.SessionConstants;
+import de.knowwe.dialog.Utils;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
 
@@ -58,11 +57,11 @@ public class GetInterview extends AbstractAction {
 		StartCase.KnowledgeBaseProvider[] providers = (StartCase.KnowledgeBaseProvider[]) context.getSession()
 				.getAttribute(SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS);
 		// create {@link OutDatedSessionNotification} if necessary
-		if (providers.length == 1 && providers[0] instanceof InitWiki.WikiProvider) {
+		if (providers != null && providers.length == 1 && providers[0] instanceof InitWiki.WikiProvider) {
 			InitWiki.WikiProvider wikiProvider = (InitWiki.WikiProvider) providers[0];
 			if (SessionProvider.hasOutDatedSession(context, wikiProvider.getKnowledgeBase())) {
 				NotificationManager.addNotification(context, new OutDatedSessionNotification(
-						wikiProvider.getSectionId()));
+						wikiProvider.getSectionId(), KnowledgeBaseUtils.getBaseName(wikiProvider.getKnowledgeBase())));
 			}
 		}
 
@@ -209,5 +208,4 @@ public class GetInterview extends AbstractAction {
 	private GetInfoObject getInfoCommand(UserActionContext context) throws IOException {
 		return (GetInfoObject) Utils.getAction(GetInfoObject.class.getSimpleName());
 	}
-
 }
