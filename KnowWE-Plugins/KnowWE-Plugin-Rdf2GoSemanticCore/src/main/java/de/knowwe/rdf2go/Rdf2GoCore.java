@@ -45,8 +45,10 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -141,14 +143,14 @@ public class Rdf2GoCore {
 	private int resultCacheSize = 0;
 
 	private static final ThreadPoolExecutor sparqlThreadPool = createThreadPool(
-			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-Sparql-Thread");
+			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-Sparql-Thread", true);
 
 	private static final ThreadPoolExecutor shutDownThreadPool = createThreadPool(
 			Math.max(Runtime.getRuntime()
-					.availableProcessors() - 1, 1), "KnowWE-SemanticCore-Shutdown-Thread");
+					.availableProcessors() - 1, 1), "KnowWE-SemanticCore-Shutdown-Thread", false);
 
 	private static final ThreadPoolExecutor sparqlReaperPool = createThreadPool(
-			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon");
+			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon", false);
 
 	static {
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
@@ -248,15 +250,21 @@ public class Rdf2GoCore {
 		return null;
 	}
 
-	private static ThreadPoolExecutor createThreadPool(int threadCount, final String threadName) {
-		return new ThreadPoolExecutor(threadCount, threadCount,
-				0L, TimeUnit.MILLISECONDS,
-				new PriorityBlockingQueue<>(),
-				runnable -> {
-					Thread thread = new Thread(runnable, threadName);
-					thread.setDaemon(true);
-					return thread;
-				});
+	private static ThreadPoolExecutor createThreadPool(int threadCount, final String threadName, boolean priorityQueue) {
+		final ThreadFactory threadFactory = runnable -> {
+			Thread thread = new Thread(runnable, threadName);
+			thread.setDaemon(true);
+			return thread;
+		};
+		if (priorityQueue) {
+			return new ThreadPoolExecutor(threadCount, threadCount,
+					0L, TimeUnit.MILLISECONDS,
+					new PriorityBlockingQueue<>(),
+					threadFactory);
+		}
+		else {
+			return (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount, threadFactory);
+		}
 	}
 
 	@Deprecated
