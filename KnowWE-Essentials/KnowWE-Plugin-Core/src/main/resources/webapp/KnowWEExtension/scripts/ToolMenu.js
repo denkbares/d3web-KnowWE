@@ -140,13 +140,10 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 			locationName = "termbrowser";
 		}
 
-		let text = jq$(node).parent().text();
-
 		const params = {
 			action: toolMenuAction,
 			identifier: toolMenuIdentifier,
 			location: locationName,
-			element: text
 		};
 
 		const options = {
