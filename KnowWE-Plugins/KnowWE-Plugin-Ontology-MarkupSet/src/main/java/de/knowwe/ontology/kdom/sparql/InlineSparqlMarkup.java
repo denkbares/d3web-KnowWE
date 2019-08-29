@@ -96,7 +96,6 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 			}
 			return null;
 		}
-
 	}
 
 	public InlineSparqlMarkup() {
@@ -138,9 +137,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					throw new Exception("No compiler found.");
 				}
 
-				Section<SparqlContentType> sparqlContent = $(referencedSection).successor(SparqlContentType.class)
-						.getFirst();
-				String query = sparqlContent.getText();
+				String query = $(referencedSection).successor(SparqlContentType.class).mapFirst(Section::getText);
 				long timeout = SparqlContentType.getTimeout(referencedSection);
 				Rdf2GoCore core = compiler.getRdf2GoCore();
 				query = Rdf2GoUtils.createSparqlString(core, query);

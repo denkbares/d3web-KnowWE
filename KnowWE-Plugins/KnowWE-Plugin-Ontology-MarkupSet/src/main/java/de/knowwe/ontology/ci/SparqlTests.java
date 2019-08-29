@@ -26,20 +26,14 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  */
 public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRenderer {
 
+	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options(false, 60000, 100);
+
 	protected TupleQueryResult sparqlSelect(Rdf2GoCore core, String actualSparqlString) {
-		return core.sparqlSelect(actualSparqlString, getOptions());
+		return core.sparqlSelect(actualSparqlString, OPTIONS);
 	}
 
 	protected boolean sparqlAsk(Rdf2GoCore core, String sparqlString) {
-		return core.sparqlAsk(sparqlString, getOptions());
-	}
-
-	private Rdf2GoCore.Options getOptions() {
-		Rdf2GoCore.Options options = new Rdf2GoCore.Options();
-		options.cached = false;
-		options.timeoutMillis = 60000;
-		options.priority = 100;
-		return options;
+		return core.sparqlAsk(sparqlString, OPTIONS);
 	}
 
 	@Override

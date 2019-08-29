@@ -1086,7 +1086,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	@Override
 	public boolean sparqlAsk(Collection<Namespace> namespaces, String query) throws QueryFailedException {
-		return sparqlAsk(namespaces, query, new Options());
+		return sparqlAsk(namespaces, query, Options.DEFAULT);
 	}
 
 	/**
@@ -1120,7 +1120,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	@Override
 	public TupleQueryResult sparqlSelect(Collection<Namespace> namespaces, String query) throws QueryFailedException {
-		return sparqlSelect(namespaces, query, new Options());
+		return sparqlSelect(namespaces, query, Options.DEFAULT);
 	}
 
 	/**
@@ -1389,6 +1389,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public static class Options {
+
+		public static final Options DEFAULT = new Options();
+		public static final Options NO_CACHE = new Rdf2GoCore.Options(false);
+		public static final Options NO_CACHE_NO_TIMEOUT = new Rdf2GoCore.Options(false, Long.MAX_VALUE);
+
 		/**
 		 * Determines whether the result of the query should be cached.
 		 */
@@ -1406,7 +1411,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		 */
 		public double priority = DEFAULT_QUERY_PRIORITY;
 
-		public Options() {
+		private Options() {
 		}
 
 		public Options(long timeoutMillis) {
@@ -1469,7 +1474,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					logSlowEvaluation(stopwatch);
 					result = queryResult.cachedAndClosed();
 				}
-
 			}
 			else {
 				try (RepositoryConnection connection = semanticCore.getConnection()) {
