@@ -169,6 +169,12 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		}
 
 		WikiEventManager.addWikiEventListener(currentProvider, this);
+
+		WikiPageProvider pageProvider = engine.getPageManager().getProvider();
+		if (pageProvider instanceof CachingProvider) {
+			pageProvider = ((CachingProvider) pageProvider).getRealProvider();
+		}
+		WikiEventManager.addWikiEventListener(pageProvider, this);
 	}
 
 	private void initEnvironmentIfNeeded(WikiEngine wEngine) {

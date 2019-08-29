@@ -19,12 +19,16 @@
 
 package org.apache.wiki.providers;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.auth.NoSuchPrincipalException;
@@ -44,6 +48,9 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
+
+import com.denkbares.utils.Files;
+import com.denkbares.utils.Log;
 
 /**
  * @author Josua Nürnberger
@@ -113,5 +120,68 @@ public class GitVersioningUtils {
 			log.error(e.getMessage(), e);
 		}
 		return new ArrayList<>();
+	}
+
+	public static void main(String[] args) {
+		String path = "";
+		String dirExtension = BasicAttachmentProvider.DIR_EXTENSION;
+		String attachmentDitExtension = BasicAttachmentProvider.ATTDIR_EXTENSION;
+		switch (args.length) {
+			case 3:
+				attachmentDitExtension = args[2];
+				//noinspection fallthrough
+			case 2:
+				dirExtension = args[1];
+				//noinspection fallthrough
+			case 1:
+				path = args[0];
+				break;
+			default:
+				//noinspection UseOfSystemOutOrSystemErr
+				System.out.println("Wrong nr of parameters");
+				System.exit(1);
+		}
+		migrateAttachments(path, dirExtension, attachmentDitExtension, BasicAttachmentProvider.PROPERTY_FILE);
+		try {
+			FileUtils.deleteDirectory(new File(path, VersioningFileProvider.PAGEDIR));
+		}
+		catch (IOException e) {
+			Log.severe("Can't delete old file versions", e);
+		}
+	}
+
+	public static void migrateAttachments(String wikiBasePath, final String dirExtension, final String attachmentDirExtension, final String propertyFileName) {
+		File basePath = new File(wikiBasePath);
+		File[] directories = basePath.listFiles(File::isDirectory);
+		if (directories != null) {
+			for (File dir : directories) {
+				if (dir.getName().endsWith(dirExtension)) {
+					File[] attachmentDirs = dir.listFiles(File::isDirectory);
+					if (attachmentDirs != null) {
+						for (File attachmentDir : attachmentDirs) {
+							File newFile = new File(dir, attachmentDir.getName().replace(attachmentDirExtension, ""));
+							File[] files = attachmentDir.listFiles(pathname -> !pathname.getName()
+									.equals(propertyFileName));
+							files = sortFilesByDate(files);
+							File latestFile = files[files.length - 1];
+							try {
+								Files.copy(latestFile, newFile);
+								FileUtils.deleteDirectory(attachmentDir);
+							}
+							catch (IOException e) {
+								Log.severe("Can't fully migrate attachment " + attachmentDir, e);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	//FIXME seems not to work correct
+	private static File[] sortFilesByDate(File[] files) {
+		return Arrays
+				.stream(files)
+				.sorted(Comparator.comparingLong(File::lastModified)).toArray(File[]::new);
 	}
 }

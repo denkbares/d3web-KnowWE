@@ -128,54 +128,60 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public void putAttachmentData(Attachment att, InputStream data) throws ProviderException, IOException {
-		File attDir = findAttachmentDir(att);
-		Git git = new Git(repository);
-		if (!attDir.exists()) {
-			attDir.mkdirs();
-			try {
-				git.add().addFilepattern(attDir.getName()).call();
-				if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
-					gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(attDir.getName());
-				}
-			}
-			catch (GitAPIException e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-
-		File newFile = findAttachmentFile(att.getParentName(), att.getFileName());
-		boolean add = !newFile.exists();
-		try (OutputStream out = new FileOutputStream(newFile)) {
-			log.info("Uploading attachment " + att.getFileName() + " to page " + att.getParentName());
-			log.info("Saving attachment contents to " + newFile.getAbsolutePath());
-			FileUtil.copyContents(data, out);
-		}
-		catch (IOException e) {
-			log.error(e.getMessage(), e);
-			throw new ProviderException("Can't write file " + getPath(att) + ": " + e.getMessage());
-		}
-		finally {
-			if (data != null) {
-				data.close();
-			}
-		}
 		try {
-			if (add) {
+			gitVersioningFileProvider.canWriteFileLock();
+			File attDir = findAttachmentDir(att);
+			Git git = new Git(repository);
+			if (!attDir.exists()) {
+				attDir.mkdirs();
 				try {
-					Status status = git.status().addPath(attDir.getName()).call();
-					if (status.getUntracked().contains(attDir.getName())) {
-						git.add().addFilepattern(attDir.getName()).call();
+					git.add().addFilepattern(attDir.getName()).call();
+					if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
+						gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(attDir.getName());
 					}
 				}
 				catch (GitAPIException e) {
 					log.error(e.getMessage(), e);
 				}
-				git.add().addFilepattern(getPath(att)).call();
 			}
-			commitAttachment(att, git, GitVersioningWikiEvent.UPDATE);
+
+			File newFile = findAttachmentFile(att.getParentName(), att.getFileName());
+			boolean add = !newFile.exists();
+			try (OutputStream out = new FileOutputStream(newFile)) {
+				log.info("Uploading attachment " + att.getFileName() + " to page " + att.getParentName());
+				log.info("Saving attachment contents to " + newFile.getAbsolutePath());
+				FileUtil.copyContents(data, out);
+			}
+			catch (IOException e) {
+				log.error(e.getMessage(), e);
+				throw new ProviderException("Can't write file " + getPath(att) + ": " + e.getMessage());
+			}
+			finally {
+				if (data != null) {
+					data.close();
+				}
+			}
+			try {
+				if (add) {
+					try {
+						Status status = git.status().addPath(attDir.getName()).call();
+						if (status.getUntracked().contains(attDir.getName())) {
+							git.add().addFilepattern(attDir.getName()).call();
+						}
+					}
+					catch (GitAPIException e) {
+						log.error(e.getMessage(), e);
+					}
+					git.add().addFilepattern(getPath(att)).call();
+				}
+				commitAttachment(att, git, GitVersioningWikiEvent.UPDATE);
+			}
+			catch (GitAPIException e) {
+				log.error(e.getMessage(), e);
+			}
 		}
-		catch (GitAPIException e) {
-			log.error(e.getMessage(), e);
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
 
@@ -196,31 +202,37 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public InputStream getAttachmentData(Attachment att) throws IOException, ProviderException {
-		File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
-		if (!attFile.exists()) {
-			throw new ProviderException("File " + att.getFileName() + " does not exist");
-		}
-		int version = att.getVersion();
-		Git git = new Git(repository);
 		try {
-			List<RevCommit> revCommitList = getRevCommitList(att, git);
-			InputStream ret = null;
-			if (version == LATEST_VERSION || (version > 0 && version <= revCommitList.size())) {
-				RevCommit revCommit = revCommitList.get(version == LATEST_VERSION ? revCommitList.size() - 1 : version - 1);
-				ObjectId fileId = getObjectOfCommit(revCommit, att);
-				if (fileId != null) {
-					ObjectLoader loader = repository.open(fileId);
-					ret = loader.openStream();
-				}
-				else {
-					throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
-				}
+			gitVersioningFileProvider.canWriteFileLock();
+			File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
+			if (!attFile.exists()) {
+				throw new ProviderException("File " + att.getFileName() + " does not exist");
 			}
-			return ret;
+			int version = att.getVersion();
+			Git git = new Git(repository);
+			try {
+				List<RevCommit> revCommitList = getRevCommitList(att, git);
+				InputStream ret = null;
+				if (version == LATEST_VERSION || (version > 0 && version <= revCommitList.size())) {
+					RevCommit revCommit = revCommitList.get(version == LATEST_VERSION ? revCommitList.size() - 1 : version - 1);
+					ObjectId fileId = getObjectOfCommit(revCommit, att);
+					if (fileId != null) {
+						ObjectLoader loader = repository.open(fileId);
+						ret = loader.openStream();
+					}
+					else {
+						throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
+					}
+				}
+				return ret;
+			}
+			catch (GitAPIException e) {
+				log.error(e.getMessage(), e);
+				throw new ProviderException("Git call for " + getPath(att) + " throws an error");
+			}
 		}
-		catch (GitAPIException e) {
-			log.error(e.getMessage(), e);
-			throw new ProviderException("Git call for " + getPath(att) + " throws an error");
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
 
@@ -249,21 +261,27 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public Collection<Attachment> listAttachments(WikiPage page) throws ProviderException {
-		List<Attachment> ret = new ArrayList<>();
-		File attachmentDir = findPageDir(page.getName());
-		if (attachmentDir.exists()) {
+		try {
+			gitVersioningFileProvider.canWriteFileLock();
+			List<Attachment> ret = new ArrayList<>();
+			File attachmentDir = findPageDir(page.getName());
+			if (attachmentDir.exists()) {
 
-			File[] files = attachmentDir.listFiles(file -> !file.isHidden());
-			if (files != null) {
-				for (File file : files) {
-					Attachment attachmentInfo = getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION);
-					if (attachmentInfo != null) {
-						ret.add(attachmentInfo);
+				File[] files = attachmentDir.listFiles(file -> !file.isHidden());
+				if (files != null) {
+					for (File file : files) {
+						Attachment attachmentInfo = getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION);
+						if (attachmentInfo != null) {
+							ret.add(attachmentInfo);
+						}
 					}
 				}
 			}
+			return ret;
 		}
-		return ret;
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
+		}
 	}
 
 	@Override
@@ -273,54 +291,60 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public List<Attachment> listAllChanged(Date timestamp) throws ProviderException {
-		List<Attachment> attachments = new ArrayList<>();
-		Iterable<RevCommit> commits = GitVersioningUtils.getRevCommitsSince(timestamp, repository);
 		try {
-			ObjectId oldCommit = null;
-			ObjectId newCommit;
+			gitVersioningFileProvider.canWriteFileLock();
+			List<Attachment> attachments = new ArrayList<>();
+			Iterable<RevCommit> commits = GitVersioningUtils.getRevCommitsSince(timestamp, repository);
+			try {
+				ObjectId oldCommit = null;
+				ObjectId newCommit;
 
-			for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
-				String fullMessage = commit.getFullMessage();
-				String author = commit.getCommitterIdent().getName();
-				Date modified = new Date(1000L * commit.getCommitTime());
+				for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
+					String fullMessage = commit.getFullMessage();
+					String author = commit.getCommitterIdent().getName();
+					Date modified = new Date(1000L * commit.getCommitTime());
 
-				if (oldCommit != null) {
-					newCommit = commit.getTree();
-					List<DiffEntry> diffs = GitVersioningUtils.getDiffEntries(oldCommit, newCommit, repository);
-					for (DiffEntry diff : diffs) {
-						String path = diff.getOldPath();
-						if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
-							path = diff.getNewPath();
-						}
-						if (path.contains("/") && path.contains(DIR_EXTENSION)) {
-							Attachment att = getAttachment(fullMessage, author, modified, path);
-							attachments.add(att);
-						}
-					}
-				}
-				else {
-					try (TreeWalk treeWalk = new TreeWalk(repository)) {
-						treeWalk.reset(commit.getTree());
-						treeWalk.setRecursive(true);
-						treeWalk.setFilter(TreeFilter.ANY_DIFF);
-						while (treeWalk.next()) {
-							String path = treeWalk.getPathString();
+					if (oldCommit != null) {
+						newCommit = commit.getTree();
+						List<DiffEntry> diffs = GitVersioningUtils.getDiffEntries(oldCommit, newCommit, repository);
+						for (DiffEntry diff : diffs) {
+							String path = diff.getOldPath();
+							if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
+								path = diff.getNewPath();
+							}
 							if (path.contains("/") && path.contains(DIR_EXTENSION)) {
 								Attachment att = getAttachment(fullMessage, author, modified, path);
 								attachments.add(att);
 							}
 						}
 					}
-				}
+					else {
+						try (TreeWalk treeWalk = new TreeWalk(repository)) {
+							treeWalk.reset(commit.getTree());
+							treeWalk.setRecursive(true);
+							treeWalk.setFilter(TreeFilter.ANY_DIFF);
+							while (treeWalk.next()) {
+								String path = treeWalk.getPathString();
+								if (path.contains("/") && path.contains(DIR_EXTENSION)) {
+									Attachment att = getAttachment(fullMessage, author, modified, path);
+									attachments.add(att);
+								}
+							}
+						}
+					}
 
-				oldCommit = commit.getTree();
+					oldCommit = commit.getTree();
+				}
 			}
+			catch (IOException e) {
+				log.error(e.getMessage(), e);
+				throw new ProviderException("Can't get differences for a version");
+			}
+			return attachments;
 		}
-		catch (IOException e) {
-			log.error(e.getMessage(), e);
-			throw new ProviderException("Can't get differences for a version");
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
 		}
-		return attachments;
 	}
 
 	private Attachment getAttachment(String fullMessage, String author, Date modified, String path) {
@@ -338,72 +362,89 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public Attachment getAttachmentInfo(WikiPage page, String name, int version) throws ProviderException {
-		Attachment att = new Attachment(engine, page.getName(), name);
-		File attFile = findAttachmentFile(page.getName(), name);
-		if (attFile.exists()) {
-			List<Attachment> versionHistory = getVersionHistory(att);
-			if (versionHistory.size() == 0 && version == LATEST_VERSION) {
-				att.setCacheable(false);
-				att.setSize(attFile.length());
-				att.setLastModified(new Date(attFile.lastModified()));
-				return att;
+		try {
+			gitVersioningFileProvider.canWriteFileLock();
+			Attachment att = new Attachment(engine, page.getName(), name);
+			File attFile = findAttachmentFile(page.getName(), name);
+			if (attFile.exists()) {
+				List<Attachment> versionHistory = getVersionHistory(att);
+				if (versionHistory.isEmpty() && version == LATEST_VERSION) {
+					att.setCacheable(false);
+					att.setSize(attFile.length());
+					att.setLastModified(new Date(attFile.lastModified()));
+					return att;
+				}
+				else if (version == LATEST_VERSION) {
+					return versionHistory.get(versionHistory.size() - 1);
+				}
+				else if (version > 0 && version <= versionHistory.size()) {
+					return versionHistory.get(version - 1);
+				}
 			}
-			else if (version == LATEST_VERSION) {
-				Attachment attachment = versionHistory.get(versionHistory.size() - 1);
-				return attachment;
-			}
-			else if (version > 0 && version <= versionHistory.size()) {
-				return versionHistory.get(version - 1);
-			}
+			return null;
 		}
-		return null;
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
+		}
 	}
 
 	@Override
 	public List<Attachment> getVersionHistory(Attachment att) {
-		List<Attachment> ret = new ArrayList<>();
 		try {
-			File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
-			if (attFile.exists()) {
+			gitVersioningFileProvider.canWriteFileLock();
+			List<Attachment> ret = new ArrayList<>();
+			try {
+				File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
+				if (attFile.exists()) {
 
-				Git git = new Git(repository);
-				try {
-					List<RevCommit> revCommitList = getRevCommitList(att, git);
-					int version = 1;
-					for (RevCommit revCommit : revCommitList) {
-						Attachment attVersion = getAttachment(att, version, revCommit);
-						ret.add(attVersion);
-						version++;
+					Git git = new Git(repository);
+					try {
+						List<RevCommit> revCommitList = getRevCommitList(att, git);
+						int version = 1;
+						for (RevCommit revCommit : revCommitList) {
+							Attachment attVersion = getAttachment(att, version, revCommit);
+							ret.add(attVersion);
+							version++;
+						}
+						return ret;
 					}
-					return ret;
-				}
-				catch (GitAPIException | IOException e) {
-					log.error(e.getMessage(), e);
+					catch (GitAPIException | IOException e) {
+						log.error(e.getMessage(), e);
+					}
 				}
 			}
+			catch (ProviderException e) {
+				log.error(e.getMessage(), e);
+			}
+			return ret;
 		}
-		catch (ProviderException e) {
-			log.error(e.getMessage(), e);
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
 		}
-		return ret;
 	}
 
 	@NotNull
 	private Attachment getAttachment(Attachment att, int version, RevCommit revCommit) throws IOException, ProviderException {
-		Attachment attVersion = new Attachment(engine, att.getParentName(), att.getFileName());
-		//TODO check pattern
-		attVersion.setCacheable(false);
-		attVersion.setAuthor(revCommit.getCommitterIdent().getName());
-		attVersion.setVersion(version);
-		attVersion.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
 		try {
-			attVersion.setSize(getObjectSize(revCommit, att));
+			gitVersioningFileProvider.canWriteFileLock();
+			Attachment attVersion = new Attachment(engine, att.getParentName(), att.getFileName());
+			//TODO check pattern
+			attVersion.setCacheable(false);
+			attVersion.setAuthor(revCommit.getCommitterIdent().getName());
+			attVersion.setVersion(version);
+			attVersion.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
+			try {
+				attVersion.setSize(getObjectSize(revCommit, att));
+			}
+			catch (IOException e) {
+				attVersion.setSize(-1);
+			}
+			attVersion.setLastModified(new Date(1000L * revCommit.getCommitTime()));
+			return attVersion;
 		}
-		catch (IOException e) {
-			attVersion.setSize(-1);
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
 		}
-		attVersion.setLastModified(new Date(1000L * revCommit.getCommitTime()));
-		return attVersion;
 	}
 
 	private List<RevCommit> getRevCommitList(Attachment att, Git git) throws GitAPIException, IOException {
@@ -435,19 +476,25 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	@Override
 	public void deleteAttachment(Attachment att) throws ProviderException {
-		File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
-		if (attFile.exists()) {
-			boolean delete = attFile.delete();
-			if (!delete) log.debug("File " + getPath(att) + " could not be deleted on filesystem");
-			try {
-				Git git = new Git(repository);
-				git.rm().addFilepattern(getPath(att)).call();
-				commitAttachment(att, git, GitVersioningWikiEvent.DELETE);
+		try {
+			gitVersioningFileProvider.canWriteFileLock();
+			File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
+			if (attFile.exists()) {
+				boolean delete = attFile.delete();
+				if (!delete) log.debug("File " + getPath(att) + " could not be deleted on filesystem");
+				try {
+					Git git = new Git(repository);
+					git.rm().addFilepattern(getPath(att)).call();
+					commitAttachment(att, git, GitVersioningWikiEvent.DELETE);
+				}
+				catch (GitAPIException e) {
+					log.error(e.getMessage(), e);
+					throw new ProviderException("File " + getPath(att) + " could not be deleted");
+				}
 			}
-			catch (GitAPIException e) {
-				log.error(e.getMessage(), e);
-				throw new ProviderException("File " + getPath(att) + " could not be deleted");
-			}
+		}
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
 
@@ -459,75 +506,89 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			CommitCommand commitCommand = git.commit().setOnly(getPath(att));
 			setMessage(att, commitCommand);
 			addUserInfo(engine, att.getAuthor(), commitCommand);
-			synchronized (repository) {
+			try {
+				gitVersioningFileProvider.commitLock();
 				RevCommit revCommit = commitCommand.call();
 				WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
 						att.getAuthor(),
 						att.getParentName() + "/" + att.getFileName(),
-						revCommit.getId().toString()));
+						revCommit.getId().getName()));
 				gitVersioningFileProvider.periodicalGitGC(git);
+			}
+			finally {
+				gitVersioningFileProvider.commitUnlock();
 			}
 		}
 	}
 
 	@Override
 	public void moveAttachmentsForPage(WikiPage oldParent, String newParent) throws ProviderException {
-		File oldDir = findPageDir(oldParent.getName());
-		File newDir = findPageDir(newParent);
-		if (newDir.exists() && !newDir.isDirectory()) {
-			throw new ProviderException(newParent + DIR_EXTENSION + " is not a directory");
-		}
-		if (newDir.exists() && !newDir.canWrite()) {
-			throw new ProviderException("Can't write to directory " + newParent + DIR_EXTENSION);
-		}
-		if (!newDir.exists()) {
-			newDir.mkdirs();
-		}
-		File[] files = oldDir.listFiles();
-		if (files != null) {
-			try {
-				List<String> filesForEvent = new ArrayList<>();
-				Files.move(oldDir.toPath(), newDir.toPath(), StandardCopyOption.ATOMIC_MOVE);
-				Git git = new Git(repository);
-				RmCommand rm = git.rm();
-				AddCommand add = git.add();
-				CommitCommand commit = git.commit();
-				for (File file : files) {
-					String oldPath = getAttachmentDir(oldParent.getName()) + "/" + file.getName();
-					String newPath = getAttachmentDir(newParent) + "/" + file.getName();
-					rm.addFilepattern(oldPath);
-					add.addFilepattern(newPath);
-					if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
-						gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(oldPath);
-						gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(newPath);
+		try {
+			gitVersioningFileProvider.canWriteFileLock();
+			File oldDir = findPageDir(oldParent.getName());
+			File newDir = findPageDir(newParent);
+			if (newDir.exists() && !newDir.isDirectory()) {
+				throw new ProviderException(newParent + DIR_EXTENSION + " is not a directory");
+			}
+			if (newDir.exists() && !newDir.canWrite()) {
+				throw new ProviderException("Can't write to directory " + newParent + DIR_EXTENSION);
+			}
+			if (!newDir.exists()) {
+				newDir.mkdirs();
+			}
+			File[] files = oldDir.listFiles();
+			if (files != null) {
+				try {
+					List<String> filesForEvent = new ArrayList<>();
+					Files.move(oldDir.toPath(), newDir.toPath(), StandardCopyOption.ATOMIC_MOVE);
+					Git git = new Git(repository);
+					RmCommand rm = git.rm();
+					AddCommand add = git.add();
+					CommitCommand commit = git.commit();
+					for (File file : files) {
+						String oldPath = getAttachmentDir(oldParent.getName()) + "/" + file.getName();
+						String newPath = getAttachmentDir(newParent) + "/" + file.getName();
+						rm.addFilepattern(oldPath);
+						add.addFilepattern(newPath);
+						if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
+							gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(oldPath);
+							gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(newPath);
+						}
+						else {
+							commit.setOnly(oldPath);
+							commit.setOnly(newPath);
+							filesForEvent.add(oldParent.getName() + "/" + file.getName());
+							filesForEvent.add(newParent + "/" + file.getName());
+						}
 					}
-					else {
-						commit.setOnly(oldPath);
-						commit.setOnly(newPath);
-						filesForEvent.add(oldParent.getName() + "/" + file.getName());
-						filesForEvent.add(newParent + "/" + file.getName());
+					rm.addFilepattern(getAttachmentDir(oldParent.getName()));
+					add.addFilepattern(getAttachmentDir(newParent));
+					rm.call();
+					add.call();
+					if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
+						commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
+						try {
+							gitVersioningFileProvider.commitLock();
+							RevCommit revCommit = commit.call();
+							WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
+									oldParent.getAuthor(),
+									filesForEvent,
+									revCommit.getId().getName()));
+							gitVersioningFileProvider.periodicalGitGC(git);
+						}
+						finally {
+							gitVersioningFileProvider.commitUnlock();
+						}
 					}
 				}
-				rm.addFilepattern(getAttachmentDir(oldParent.getName()));
-				add.addFilepattern(getAttachmentDir(newParent));
-				rm.call();
-				add.call();
-				if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
-					commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
-					synchronized (repository) {
-						RevCommit revCommit = commit.call();
-						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
-								oldParent.getAuthor(),
-								filesForEvent,
-								revCommit.getId().toString()));
-						gitVersioningFileProvider.periodicalGitGC(git);
-					}
+				catch (IOException | GitAPIException e) {
+					log.error(e.getMessage(), e);
+					throw new ProviderException("Can't move attachments form " + oldParent.getName() + " to " + newParent);
 				}
 			}
-			catch (IOException | GitAPIException e) {
-				log.error(e.getMessage(), e);
-				throw new ProviderException("Can't move attachments form " + oldParent.getName() + " to " + newParent);
-			}
+		}
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
 }

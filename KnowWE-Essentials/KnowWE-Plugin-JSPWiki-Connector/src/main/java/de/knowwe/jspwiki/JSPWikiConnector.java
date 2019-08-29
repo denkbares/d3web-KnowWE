@@ -667,7 +667,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
-	private WikiPageProvider getRealPageProvider() {
+	public WikiPageProvider getRealPageProvider() {
 		WikiPageProvider realProvider;
 		if (this.engine.getPageManager().getProvider() instanceof CachingProvider) {
 			realProvider = ((CachingProvider) engine.getPageManager().getProvider()).getRealProvider();
