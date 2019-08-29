@@ -35,6 +35,7 @@
 
 				<exclude name="**/*.ts"/>
 				<exclude name="**/*.tsx"/>
+				<exclude name="**/*.toolmenu.json"/>
 				<exclude name="KnowWE-Plugin-AugmentationEdit/**" />
 				<exclude name="KnowWE-Plugin-DenkbaresTmp/**" />
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
@@ -61,6 +62,7 @@
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-ILME/src/main/resources/webapp/" />
+				<exclude name="**/*.toolmenu.json"/>
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
