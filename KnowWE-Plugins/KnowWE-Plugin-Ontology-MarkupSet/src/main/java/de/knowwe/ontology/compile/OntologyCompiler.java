@@ -131,7 +131,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	@Override
 	public void destroy() {
 		EventManager.getInstance().unregister(this);
-		this.rdf2GoCore.destroy();
+		this.rdf2GoCore.close();
 		this.rdf2GoCore = null; // make sure the core can be gc-ed, even if there are still references to the compiler
 	}
 
@@ -216,7 +216,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
 		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
-			if (this.rdf2GoCore != null) this.rdf2GoCore.destroy();
+			if (this.rdf2GoCore != null) this.rdf2GoCore.close();
 			this.rdf2GoCore = new Rdf2GoCore(ruleSet);
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);

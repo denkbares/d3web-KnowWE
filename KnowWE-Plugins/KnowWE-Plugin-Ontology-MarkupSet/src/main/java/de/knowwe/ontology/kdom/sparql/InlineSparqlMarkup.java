@@ -65,9 +65,8 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 		 * Returns the actual sparql section that is referenced by the section. If the section cannot be found, null is
 		 * returned.
 		 *
-		 *
 		 * @param compiler the compiler for which the query is retrieved
-		 * @param section the referencing section contain the reference name
+		 * @param section  the referencing section contain the reference name
 		 * @return the actual sparql section to be executed
 		 */
 		@Override
@@ -149,7 +148,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 				// we add addtional info for testability
 				result.appendHtmlTag("span", "class", "inline-sparql", "name", reference.get(SparqlNameReference::getTermName));
 
-				TupleQueryResult resultTable = core.sparqlSelect(query, true, timeout);
+				TupleQueryResult resultTable = core.sparqlSelect(query, new Rdf2GoCore.Options(timeout));
 
 				Iterator<BindingSet> rowIterator = resultTable.iterator();
 				List<String> variables = resultTable.getBindingNames();

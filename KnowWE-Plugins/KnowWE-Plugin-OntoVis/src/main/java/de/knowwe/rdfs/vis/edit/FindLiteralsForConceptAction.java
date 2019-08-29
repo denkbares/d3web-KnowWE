@@ -50,19 +50,14 @@ public class FindLiteralsForConceptAction extends AbstractAction {
 		JSONArray literals = new JSONArray();
 
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
-		Rdf2GoCore rdfRepository;
+		if (compiler == null) throw new IOException("No compiler found");
 
-		if (compiler == null) {
-			rdfRepository = Rdf2GoCore.getInstance();
-		} else {
-			rdfRepository = compiler.getRdf2GoCore();
-		}
+		Rdf2GoCore rdfRepository = compiler.getRdf2GoCore();
 
 		if (!conceptName.contains("ONTOVIS-LITERAL")) {
 			String query = "SELECT ?y ?z WHERE { " + conceptName + " ?y ?z. FILTER isLiteral(?z) }";
 			Iterator<BindingSet> result =
-					rdfRepository.sparqlSelectIt(
-							query);
+					rdfRepository.sparqlSelect(query).getBindingSets().iterator();
 			while (result.hasNext()) {
 				BindingSet row = result.next();
 				Value yNode = row.getValue("y");

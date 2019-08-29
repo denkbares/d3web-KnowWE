@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -66,12 +66,12 @@ public class SparqlContentRenderer implements Renderer {
 		String showQueryFlag = DefaultMarkupType.getAnnotation(markupSection,
 				SparqlMarkupType.RENDER_QUERY);
 		if ("true".equalsIgnoreCase(showQueryFlag)) {
-			 // we need an opening html element around all the content as for
-			 // some reason the ajax insert only inserts one (the first) html
-			 // element into the page
+			// we need an opening html element around all the content as for
+			// some reason the ajax insert only inserts one (the first) html
+			// element into the page
 			result.appendHtml("<div>");
 
-			 // render query text
+			// render query text
 			result.appendHtml("<span>");
 			DelegateRenderer.getInstance().render(section, user, result);
 			result.appendHtml("</span>");
@@ -128,7 +128,7 @@ public class SparqlContentRenderer implements Renderer {
 			RenderOptions opts = sparqlTypeSection.get().getRenderOptions(sparqlTypeSection, user);
 			try {
 				String query = sparqlTypeSection.get().getSparqlQuery(sparqlTypeSection, user);
-				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, true, opts.getTimeout());
+				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, new Rdf2GoCore.Options(opts.getTimeout()));
 				result.appendHtml("<div class='sparqlAsk' sparqlSectionId='" + opts.getId() + "'>");
 				if (opts.isBorder()) result.appendHtml("<div class='border'>");
 				result.append(Boolean.valueOf(askResult).toString());

@@ -56,9 +56,6 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 		MARKUP.addAnnotation(Config.SHOW_REDUNDANT, false, "true", "false");
 		MARKUP.addAnnotationRenderer(Config.SHOW_REDUNDANT, NothingRenderer.getInstance());
 
-		MARKUP.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
-		MARKUP.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
-
 		MARKUP.addAnnotation(Config.VISUALIZATION, false, Visualizations.class);
 
 		MARKUP.addAnnotation(Config.RANK_DIR, false, "LR", "RL", "TB", "BT");

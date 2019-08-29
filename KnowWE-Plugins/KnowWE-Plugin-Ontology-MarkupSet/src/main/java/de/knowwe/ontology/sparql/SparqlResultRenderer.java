@@ -111,7 +111,7 @@ public class SparqlResultRenderer {
 		CachedTupleQueryResult qrt = null;
 		try {
 			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
-					.sparqlSelect(query, true, opts.getTimeout());
+					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout()));
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
@@ -172,7 +172,7 @@ public class SparqlResultRenderer {
 			return;
 		}
 
-		query = core.prependPrefixesToQuery(query);
+		query = core.prependPrefixesToQuery(core.getNamespaces(), query);
 		String queryLine = query.split("\n")[lineNumber];
 
 		if (queryLine == null) {
@@ -433,7 +433,7 @@ public class SparqlResultRenderer {
 		CachedTupleQueryResult qrt = null;
 		try {
 			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
-					.sparqlSelect(query, true, opts.getTimeout());
+					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout()));
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {

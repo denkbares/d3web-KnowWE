@@ -55,7 +55,7 @@ public abstract class TerminologyHelper {
 
 	public void registerTerminology(OntologyCompiler compiler, Section<?> section, String query, Class<? extends Resource> termClass) {
 		Iterator<BindingSet> iterator =
-				Rdf2GoCore.getInstance(compiler).sparqlSelectIt(query);
+				Rdf2GoCore.getInstance(compiler).sparqlSelect(query).getBindingSets().iterator();
 		while (iterator.hasNext()) {
 			BindingSet row = iterator.next();
 			String value = row.getValue("resource").toString();

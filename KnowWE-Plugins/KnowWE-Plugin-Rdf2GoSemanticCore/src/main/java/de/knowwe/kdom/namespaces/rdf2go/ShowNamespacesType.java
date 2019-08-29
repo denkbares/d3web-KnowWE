@@ -58,7 +58,7 @@ public class ShowNamespacesType extends DefaultMarkupType {
 			Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
 					ShowNamespacesType.class));
 
-			Map<String, String> namespaces = core.getNamespaces();
+			Map<String, String> namespaces = core.getNamespacesMap();
 
 			string.appendHtml("<table>");
 			string.appendHtml("<tr><th align='left'>Appreviations</th><th align='left'>Namespaces</th></tr>");

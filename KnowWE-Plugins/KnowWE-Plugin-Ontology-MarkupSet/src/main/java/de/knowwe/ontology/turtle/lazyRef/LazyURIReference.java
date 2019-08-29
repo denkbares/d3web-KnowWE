@@ -102,14 +102,14 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
 		if(potentiallyMatchingIdentifiers.size() == 2) {
 			String localNS = rdf2GoCore.getLocalNamespace();
-			String defaultNS = rdf2GoCore.getNamespaces().get("");
+			String defaultNS = rdf2GoCore.getNamespacesMap().get("");
 			Iterator<Identifier> iterator = potentiallyMatchingIdentifiers.iterator();
 			Identifier firstIdentifier = iterator.next();
 			Identifier secondIdentifier = iterator.next();
 			String firstNS = firstIdentifier.getPathElementAt(0);
 			String secondNS = secondIdentifier.getPathElementAt(0);
-			String full = rdf2GoCore.getNamespaces().get(firstNS);
-			return full != null && full.equals(rdf2GoCore.getNamespaces().get(secondNS));
+			String full = rdf2GoCore.getNamespacesMap().get(firstNS);
+			return full != null && full.equals(rdf2GoCore.getNamespacesMap().get(secondNS));
 		}
 		return false;
 	}

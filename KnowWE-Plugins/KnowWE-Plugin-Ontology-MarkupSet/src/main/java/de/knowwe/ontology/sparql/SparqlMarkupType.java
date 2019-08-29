@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -31,7 +31,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
-import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.util.Color;
 
 public class SparqlMarkupType extends DefaultMarkupType {
@@ -47,47 +46,44 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String RENDER_MODE = "renderMode";
 	public static final String TIMEOUT = "timeout";
 	public static final String LOG_LEVEL = "logLevel";
-	private static DefaultMarkup m = null;
+	private static DefaultMarkup MARKUP;
 
 	public static final String MARKUP_NAME = "Sparql";
 
-
 	static {
-		m = new DefaultMarkup(MARKUP_NAME);
-		m.addContentType(new SparqlContentType());
-		m.addAnnotation(RAW_OUTPUT, false, "true", "false");
-		m.addAnnotation(NAVIGATION, false, "true", "false");
-		m.addAnnotationRenderer(NAVIGATION, NothingRenderer.getInstance());
-		m.addAnnotation(RENDER_QUERY, false, "true", "false");
-		m.addAnnotationRenderer(RENDER_QUERY,  NothingRenderer.getInstance());
-		m.addAnnotation(ZEBRAMODE, false, "true", "false");
-		m.addAnnotationRenderer(ZEBRAMODE, NothingRenderer.getInstance());
-		m.addAnnotation(LOG_LEVEL, false, Color.WARNING.name(),
+		MARKUP = new DefaultMarkup(MARKUP_NAME);
+		MARKUP.addContentType(new SparqlContentType());
+		MARKUP.addAnnotation(RAW_OUTPUT, false, "true", "false");
+		MARKUP.addAnnotation(NAVIGATION, false, "true", "false");
+		MARKUP.addAnnotationRenderer(NAVIGATION, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(RENDER_QUERY, false, "true", "false");
+		MARKUP.addAnnotationRenderer(RENDER_QUERY, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(ZEBRAMODE, false, "true", "false");
+		MARKUP.addAnnotationRenderer(ZEBRAMODE, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(LOG_LEVEL, false, Color.WARNING.name(),
 				Color.ERROR.name());
-		m.addAnnotationRenderer(LOG_LEVEL, NothingRenderer.getInstance());
-		m.addAnnotation(TREE, false, "true", "false");
-		m.addAnnotationRenderer(TREE, NothingRenderer.getInstance());
-		m.addAnnotation(SORTING, false, "true", "false");
-		m.addAnnotationRenderer(SORTING, NothingRenderer.getInstance());
-		m.addAnnotation(BORDER, false, "true", "false");
-		m.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
-		m.addAnnotation(RENDER_MODE, false, "PlainText", "HTML", "ToolMenu");
-		m.addAnnotationRenderer(RENDER_MODE, NothingRenderer.getInstance());
-		m.addAnnotation(AsynchronousRenderer.ASYNCHRONOUS, false, "true", "false");
-		m.addAnnotationRenderer(AsynchronousRenderer.ASYNCHRONOUS, NothingRenderer.getInstance());
-		m.addAnnotation(TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
-		m.addAnnotationRenderer(TIMEOUT, NothingRenderer.getInstance());
-		m.addAnnotation(Rdf2GoCore.GLOBAL, false, "true", "false");
-		m.addAnnotationRenderer(Rdf2GoCore.GLOBAL, NothingRenderer.getInstance());
-		m.addAnnotation(NAME, false);
-		m.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
+		MARKUP.addAnnotationRenderer(LOG_LEVEL, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(TREE, false, "true", "false");
+		MARKUP.addAnnotationRenderer(TREE, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(SORTING, false, "true", "false");
+		MARKUP.addAnnotationRenderer(SORTING, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(BORDER, false, "true", "false");
+		MARKUP.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(RENDER_MODE, false, "PlainText", "HTML", "ToolMenu");
+		MARKUP.addAnnotationRenderer(RENDER_MODE, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(AsynchronousRenderer.ASYNCHRONOUS, false, "true", "false");
+		MARKUP.addAnnotationRenderer(AsynchronousRenderer.ASYNCHRONOUS, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
+		MARKUP.addAnnotationRenderer(TIMEOUT, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(NAME, false);
+		MARKUP.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
 		// TODO: replace class SparqlNameRegistrationScript by content type
 		// m.addAnnotationContentType(NAME, new SparqlNameDefinition());
-		PackageManager.addPackageAnnotation(m);
+		PackageManager.addPackageAnnotation(MARKUP);
 	}
 
 	public SparqlMarkupType() {
-		super(m);
+		super(MARKUP);
 		this.setRenderer(new SparqlMarkupRenderer());
 	}
 

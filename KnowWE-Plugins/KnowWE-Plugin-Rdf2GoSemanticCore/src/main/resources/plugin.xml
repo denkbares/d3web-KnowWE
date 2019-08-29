@@ -82,7 +82,6 @@
 
 	<!-- extensions for basic preview rendering -->
 
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="DumpHandler">
 		<parameter id="class" value="de.knowwe.rdf2go.utils.DumpHandler" />
 		<parameter id="name" value="DumpHandler" />
@@ -90,24 +89,5 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RDFXMLExportAction">
-		<parameter id="class" value="de.knowwe.rdf2go.export.RDFXMLExportAction" />
-		<parameter id="name" value="RDFXMLExportAction" />
-		<parameter id="description" value="Action RDFXMLExportAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="RDFXMLExportButtonHandler">
-		<parameter id="class" value="de.knowwe.rdf2go.export.RDFXMLExportButtonHandler" />
-		<parameter id="name" value="RDFXMLExportButtonHandler" />
-		<parameter id="description" value="TagHandler RDFXMLExportButtonHandler" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="script" value="KnowWE-Plugin-Rdf2GoSemanticCore.js" />
-	</extension>
-
 
 </plugin>

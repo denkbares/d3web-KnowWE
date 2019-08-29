@@ -397,7 +397,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 				boolean remove = noLongerReferenced(rCache) || attachmentOutDated(rCache);
 				// if we remove, make sure to properly destroy to allow gc and free up memory
 				if (remove) {
-					rCache.core.destroy();
+					rCache.core.close();
 				}
 				return remove;
 			});
@@ -488,7 +488,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	public void registerQueryResult(OntologyCompiler compiler, Rdf2GoCore core, Section<?> section, String query, Class<? extends Resource> termClass) {
-		Iterator<BindingSet> iterator = core.sparqlSelectIt(query);
+		Iterator<BindingSet> iterator = core.sparqlSelect(query).getBindingSets().iterator();
 		while (iterator.hasNext()) {
 			BindingSet row = iterator.next();
 			String value = row.getValue("resource").stringValue();
@@ -497,7 +497,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	public void registerTerm(OntologyCompiler compiler, Rdf2GoCore core, Section<?> section, String uri, Class<?> termClass) {
-		Map<String, String> namespaces = core.getNamespaces();
+		Map<String, String> namespaces = core.getNamespacesMap();
 		String abbreviation = null;
 		String resource = null;
 		for (Map.Entry<String, String> entry : namespaces.entrySet()) {

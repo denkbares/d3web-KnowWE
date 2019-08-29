@@ -218,7 +218,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 	private void addType(Value node) {
 		String query = "SELECT ?class ?pred WHERE { <" + node.stringValue() + "> ?pred ?class . FILTER regex(str(?pred),\"type\") }";
-		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
+		Iterator<BindingSet> result = rdf2GoCore.sparqlSelect(query).getBindingSets().iterator();
 		while (result != null && result.hasNext()) {
 			BindingSet row = result.next();
 			Value yIRI = row.getValue("pred");
@@ -235,7 +235,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		if (fringeNode instanceof BNode) return;
 		String propertyFilter = predicateFilter(Direction.Forward, "literal");
 		String query = "SELECT ?literal ?y WHERE { <" + fringeNode.stringValue() + "> ?y ?literal . FILTER isLiteral(?literal) . " + propertyFilter + " }";
-		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
+		Iterator<BindingSet> result = rdf2GoCore.sparqlSelect(query).getBindingSets().iterator();
 
 		MultiMap<Value, BindingSet> literalsMap = new DefaultMultiMap<>();
 
@@ -383,7 +383,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 					+ conceptToBeExpanded.stringValue()
 					+ "> ?y ?z. " + predicateFilter(Direction.Forward, "z") + nodeFilter("?z", mode) + "}";
 		}
-		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
+		Iterator<BindingSet> result = rdf2GoCore.sparqlSelect(query).getBindingSets().iterator();
 		int count = 0;
 		while (result != null && result.hasNext()) {
 			count++;
@@ -499,7 +499,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			query = "SELECT ?x ?y WHERE { ?x ?y <"
 					+ conceptToBeExpanded.stringValue() + "> . " + predicateFilter(Direction.Backward, null) + nodeFilter("?x", ExpandMode.Normal) + "}";
 		}
-		Iterator<BindingSet> result = rdf2GoCore.sparqlSelectIt(query);
+		Iterator<BindingSet> result = rdf2GoCore.sparqlSelect(query).getBindingSets().iterator();
 		int count = 0;
 		while (result.hasNext()) {
 			count++;
@@ -586,8 +586,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 				+ conceptIRI.stringValue()
 				+ "> ?y ?z. " + predicateFilter(Direction.Forward, "z") + " " + conceptFilter + "}";
 		Iterator<BindingSet> result =
-				rdf2GoCore.sparqlSelectIt(
-						query);
+				rdf2GoCore.sparqlSelect(query).getBindingSets().iterator();
 		int count = 0;
 		while (result.hasNext()) {
 			count++;

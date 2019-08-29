@@ -19,10 +19,8 @@
 package de.knowwe.ontology.kdom.objectproperty;
 
 import java.util.Collection;
-import java.util.Map;
 
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
@@ -76,7 +74,7 @@ public class ObjectPropertyType extends DefaultMarkupType {
 		public Collection<Message> create(OntologyCompiler compiler, Section<AbbreviatedPropertyDefinition> section) {
 			Rdf2GoCore core = Rdf2GoCore.getInstance(compiler);
 			String abbreviation = section.get().getAbbreviation(section);
-			if (!core.getNamespaces().containsKey(abbreviation)) return Messages.noMessage();
+			if (!core.getNamespacesMap().containsKey(abbreviation)) return Messages.noMessage();
 			String property = section.get().getResource(section);
 			IRI propertyURI = core.createIRI(abbreviation, property);
 			core.addStatements(section, core.createStatement(propertyURI, RDF.TYPE, RDF.PROPERTY));

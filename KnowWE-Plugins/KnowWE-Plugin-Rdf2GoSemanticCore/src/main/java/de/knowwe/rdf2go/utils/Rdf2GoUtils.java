@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Namespace;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -199,13 +200,6 @@ public class Rdf2GoUtils {
 	}
 
 	public static Rdf2GoCore getRdf2GoCore(Section<?> section) {
-		if (section.get() instanceof DefaultMarkupType) {
-			String globalAnnotation = DefaultMarkupType.getAnnotation(section, Rdf2GoCore.GLOBAL);
-			if ("true".equals(globalAnnotation)) {
-				//noinspection deprecation, used for backwards compatibility
-				return Rdf2GoCore.getInstance();
-			}
-		}
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
 		if (compiler != null) {
 			return compiler.getRdf2GoCore();
@@ -227,7 +221,7 @@ public class Rdf2GoUtils {
 	 */
 	public static String trimNamespace(Rdf2GoCore core, String string) {
 		if (string.startsWith(":")) return string.substring(1);
-		for (Entry<String, String> namespaceEntry : core.getNamespaces().entrySet()) {
+		for (Entry<String, String> namespaceEntry : core.getNamespacesMap().entrySet()) {
 			String ns = namespaceEntry.getValue();
 			if (string.startsWith(ns)) {
 				string = string.substring(ns.length());
@@ -274,7 +268,7 @@ public class Rdf2GoUtils {
 	 * @created 06.12.2010
 	 */
 	public static String reduceNamespace(Rdf2GoCore core, String string) {
-		for (Entry<String, String> cur : core.getNamespaces().entrySet()) {
+		for (Entry<String, String> cur : core.getNamespacesMap().entrySet()) {
 			string = string.replaceAll("^" + Pattern.quote(cur.getValue()),
 					toNamespacePrefix(cur.getKey()));
 		}
@@ -303,14 +297,13 @@ public class Rdf2GoUtils {
 	 * @return the namespace prefixes for a SPARQL query.
 	 * @created 15.07.2012
 	 */
-	public static String getSparqlNamespaceShorts(Rdf2GoCore core) {
+	public static String getSparqlNamespaceShorts(Collection<Namespace> namespaces) {
 		StringBuilder buffy = new StringBuilder();
-
-		for (Entry<String, String> cur : core.getNamespaces().entrySet()) {
+		for (Namespace cur : namespaces) {
 			buffy.append("PREFIX ")
-					.append(toNamespacePrefix(cur.getKey()))
+					.append(toNamespacePrefix(cur.getPrefix()))
 					.append(" <")
-					.append(cur.getValue())
+					.append(cur.getName())
 					.append("> \n");
 		}
 		return buffy.toString();
@@ -416,7 +409,6 @@ public class Rdf2GoUtils {
 		return deepestLeaf.getData();
 	}
 
-
 	/**
 	 * @param core             the repository to work with
 	 * @param concept          the concept for which the class tree should be generated
@@ -466,7 +458,7 @@ public class Rdf2GoUtils {
 		sparqlString = sparqlString.replaceAll("\n", " ");
 		sparqlString = sparqlString.replaceAll("\r", "");
 
-		Map<String, String> nameSpaces = core.getNamespaces();
+		Map<String, String> nameSpaces = core.getNamespacesMap();
 
 		StringBuilder newSparqlString = new StringBuilder();
 		StringBuilder pattern = new StringBuilder("[\\s\n\r()]<((");

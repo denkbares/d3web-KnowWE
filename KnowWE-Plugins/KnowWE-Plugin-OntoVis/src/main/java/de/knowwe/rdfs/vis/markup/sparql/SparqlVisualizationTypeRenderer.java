@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.URIImpl;
 import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.collections.MultiMap;
@@ -118,10 +118,8 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 	private String determineClassType(Rdf2GoCore rdfRepository, String variable, BindingSet row, Value fromURI) {
 		// try to determine the clazz/type of the source concept
 		String clazz = null;
-		if (fromURI instanceof org.eclipse.rdf4j.model.URI) {
-			URIImpl uriInstance = new URIImpl(fromURI
-					.stringValue());
-			org.eclipse.rdf4j.model.URI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdfRepository, uriInstance);
+		if (fromURI instanceof IRI) {
+			IRI mostSpecificClass = Rdf2GoUtils.findMostSpecificClass(rdfRepository, rdfRepository.createIRI(fromURI.stringValue()));
 			if (mostSpecificClass != null) {
 				clazz = Rdf2GoUtils.reduceNamespace(rdfRepository, mostSpecificClass.getNamespace()) + mostSpecificClass
 						.getLocalName();
@@ -179,7 +177,8 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		// evaluate sparql query and create graph data
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, sparqlContentRaw);
 
-		CachedTupleQueryResult resultSet = core.sparqlSelect(sparqlString, config.getTimeout());
+		CachedTupleQueryResult resultSet = (CachedTupleQueryResult) core.sparqlSelect(sparqlString, new Rdf2GoCore.Options(config
+				.getTimeout()));
 		SubGraphData data = convertToGraph(resultSet, config, core, uriProvider, section, messages);
 
 		// if no concept is specified, finally take first guess
