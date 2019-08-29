@@ -146,6 +146,8 @@ public class JSPWikiConnector implements WikiConnector {
 
 	public String createArticle(String title, String author, String content, boolean updateReferences, boolean reindex) {
 
+		if (title.contains("+")) throw new IllegalArgumentException("Character + (plus) not allowed in article title: " + title);
+
 		WikiPage wp = new WikiPage(this.engine, title);
 
 		try {
