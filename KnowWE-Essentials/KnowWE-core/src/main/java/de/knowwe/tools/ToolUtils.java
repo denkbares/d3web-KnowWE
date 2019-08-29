@@ -185,7 +185,14 @@ public class ToolUtils {
 	 * @throws IllegalArgumentException if there is no such tool provider plugged to the system
 	 */
 	public static void blockToolProvider(String extensionIdOrClassName, Scope scope) {
-		for (ToolProvider provider : findToolProviders(extensionIdOrClassName)) {
+		final List<ToolProvider> toolProviders;
+		try {
+			toolProviders = findToolProviders(extensionIdOrClassName);
+		}
+		catch (IllegalArgumentException e) {
+			throw new IllegalArgumentException("Unable to find blocked tool provider", e);
+		}
+		for (ToolProvider provider : toolProviders) {
 			blockToolProvider(provider, scope);
 		}
 	}
