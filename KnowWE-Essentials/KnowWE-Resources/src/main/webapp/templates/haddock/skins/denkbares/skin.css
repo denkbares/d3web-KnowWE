@@ -2492,10 +2492,6 @@ li.findpages .btn {
 	z-index: 1001;
 }
 
-.fixed-header > .header.scrolling-down {
-	transform: translate(0, -80px);
-}
-
 @media only screen and (max-width: 768px) {
 	a.logo {
 		text-indent: initial;
