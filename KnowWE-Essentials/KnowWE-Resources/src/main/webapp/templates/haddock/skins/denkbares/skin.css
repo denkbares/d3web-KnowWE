@@ -2425,12 +2425,6 @@ li.findpages .btn {
 	bottom: 0;
 }
 
-@media only screen and (min-width: 600px) {
-	#rightPanel.yoyo {
-		top: 0 !important;
-	}
-}
-
 #rightPanel .topbar {
 	border: none;
 	background: #e5e8ed;
@@ -2490,6 +2484,10 @@ li.findpages .btn {
 
 .fixed-header > .header {
 	z-index: 1001;
+}
+
+.fixed-header>.header.scrolling-down {
+	top: 42px;
 }
 
 @media only screen and (max-width: 768px) {
