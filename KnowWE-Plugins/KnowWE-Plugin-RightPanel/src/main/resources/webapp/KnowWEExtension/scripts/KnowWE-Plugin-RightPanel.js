@@ -115,14 +115,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 				}
 			} else {
-				if (!isOnBottom) {
-					// HaddockTemplate on the right
-					var sidebar = jq$('#rightPanel');
-					sidebar.css({
-						position: 'fixed',
-						top: jq$('.header').outerHeight() + 'px'
-					});
-				} else {
+				if (isOnBottom) {
 					//Haddock Template on the bottom
 
 					//Calculate user's scroll position from bottom
@@ -130,11 +123,17 @@ KNOWWE.core.plugin.rightPanel = function () {
 					const windowSize = window.innerHeight;
 					const bodyHeight = document.body.offsetHeight;
 					const distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
-
 					const footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
 
 					jq$('#rightPanel').css({
 						bottom: footerHeightVisible + 'px'
+					});
+				} else {
+					// HaddockTemplate on the right
+					let $header = jq$('.header');
+					jq$('#rightPanel').css({
+						position: 'fixed',
+						top: $header.position().top + $header.height() + 'px'
 					});
 				}
 			}
