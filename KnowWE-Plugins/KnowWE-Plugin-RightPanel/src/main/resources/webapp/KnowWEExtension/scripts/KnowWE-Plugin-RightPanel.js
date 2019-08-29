@@ -63,10 +63,6 @@ KNOWWE.core.plugin.rightPanel = function () {
 		}
 	});
 
-	jq$(window).scroll(function () {
-		rightPanelScroll();
-	});
-
 	function getSelected() {
 		let t = '';
 		if (window.getSelection) {
@@ -499,9 +495,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 				} else {
 					jq$('#rightPanel').removeClass("yoyo");
 				}
-
 				lastScrollY = scrollY;
-
 			}
 			busy = false;
 		}
@@ -547,6 +541,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 			if (KNOWWE.core.util.isHaddockTemplate()) {
 				yoyo();
 			}
+			jq$(window).scroll(rightPanelScroll);
+			jq$('.header').on("transitionend", rightPanelScroll);
 		},
 
 		addToolToRightPanel: function (title, id, pluginDiv) {
