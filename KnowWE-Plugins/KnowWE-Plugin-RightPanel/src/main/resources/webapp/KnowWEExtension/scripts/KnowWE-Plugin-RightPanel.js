@@ -118,40 +118,6 @@ KNOWWE.core.plugin.rightPanel = function () {
 				if (!isOnBottom) {
 					// HaddockTemplate on the right
 					var sidebar = jq$('#rightPanel');
-					/*var sidebarTop = 0
-					if (sidebar) {
-						sidebarTop = sidebar.offset().top;
-						var sidebarHeight = sidebar.outerHeight();
-					}
-					var footer = jq$('.footer');
-					var footerTop = 0;
-					if (footer) {
-						footerTop = footer.offset().top;
-					}
-					var limit = footerTop - sidebarHeight;
-					var windowTop = jq$(window).scrollTop();
-
-					// when header is visible, place sidebar beneath it
-					if (window.pageYOffset <= jq$('.header').outerHeight()) {
-						sidebar.css({
-							position: "absolute",
-							top: "0"
-						});
-						// keep sidebar fixed on the left when header is not visible
-					} else if (sidebarTop - stickyMenuHeight < windowTop) {
-						sidebar.css({
-							position: 'fixed',
-							top: stickyMenuHeight + 'px'
-						});
-					}
-					// if footer is visible align bottom of sidebar with footer's top
-					if (limit - stickyMenuHeight < windowTop) {
-						var diff = limit - (windowTop);
-						sidebar.css({
-							position: 'fixed',
-							top: diff + 'px'
-						})
-					}*/
 					sidebar.css({
 						position: 'fixed',
 						top: jq$('.header').outerHeight() + 'px'
@@ -167,8 +133,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 					const footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
 
-					var sidebar = jq$('#rightPanel');
-					sidebar.css({
+					jq$('#rightPanel').css({
 						bottom: footerHeightVisible + 'px'
 					});
 				}
