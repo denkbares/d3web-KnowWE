@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -127,7 +128,7 @@ public class Rdf2GoUtils {
 			return false;
 		}
 		String query = "ASK { <" + resource + "> rdf:type <" + core.createIRI(classURI) + "> .}";
-		return core.sparqlAsk(query);
+		return core.sparqlAsk(Collections.emptyList(), query);
 	}
 
 	/**
