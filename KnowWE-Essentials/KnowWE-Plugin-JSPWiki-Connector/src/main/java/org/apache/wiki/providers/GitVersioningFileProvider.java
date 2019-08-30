@@ -135,7 +135,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 							.setBare(false)
 							.call();
 					this.repository = git.getRepository();
-					this.remoteRepo = true;
 				}
 				catch (GitAPIException e) {
 					throw new IOException(e);
@@ -151,6 +150,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					.setGitDir(gitDir)
 					.build();
 		}
+		Set<String> remoteNames = repository.getRemoteNames();
+		if (!remoteNames.isEmpty()) {
+			this.remoteRepo = true;
+		}
+
 		Git git = new Git(repository);
 		try {
 			log.info("Beginn Git gc");
