@@ -112,6 +112,7 @@ import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class Rdf2GoCore implements SPARQLEndpoint {
 
+	public static final String SEMANTICCORE_SPARQL_THREADS_COUNT = "semanticcore.sparql.threads.count";
 	public static final String LNS_ABBREVIATION = "lns";
 
 	public static final double DEFAULT_QUERY_PRIORITY = 5d;
@@ -133,11 +134,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	private int resultCacheSize = 0;
 
 	private static final ThreadPoolExecutor sparqlThreadPool = createThreadPool(
-			Math.max(Runtime.getRuntime().availableProcessors() - 1, 1), "KnowWE-Sparql-Thread", true);
+			getMaxSparqlThreadCount(), "KnowWE-Sparql-Thread", true);
 
 	private static final ThreadPoolExecutor shutDownThreadPool = createThreadPool(
-			Math.max(Runtime.getRuntime()
-					.availableProcessors() - 1, 1), "KnowWE-SemanticCore-Shutdown-Thread", false);
+			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-SemanticCore-Shutdown-Thread", false);
 
 	private static final ThreadPoolExecutor sparqlReaperPool = createThreadPool(
 			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon", false);
@@ -223,6 +223,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	private static ThreadPoolExecutor createThreadPool(int threadCount, final String threadName, boolean priorityQueue) {
+		threadCount = Math.max(threadCount, 1);
+		Log.info("Creating " + threadName + "-Pool with " + threadCount + " threads");
 		final ThreadFactory threadFactory = runnable -> {
 			Thread thread = new Thread(runnable, threadName);
 			thread.setDaemon(true);
@@ -236,6 +238,17 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		else {
 			return (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount, threadFactory);
+		}
+	}
+
+	private static int getMaxSparqlThreadCount() {
+		final int defaultThreadCount = Runtime.getRuntime().availableProcessors() - 1;
+		final String threadCount = System.getProperty(SEMANTICCORE_SPARQL_THREADS_COUNT, String.valueOf(defaultThreadCount));
+		try {
+			return Integer.parseInt(threadCount);
+		}
+		catch (NumberFormatException e) {
+			return defaultThreadCount;
 		}
 	}
 
