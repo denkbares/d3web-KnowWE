@@ -58,7 +58,12 @@ public class WikiTextExporter implements Exporter<WikiTextType> {
 			// replace (multiple) tab/spaces/returns by one space
 			// this can be done, because multiple paragraphs are NOT (!) included in one WikiTextType section
 			// but the wiki allows single line breaks as floating text
-			String line = Strings.trim(text.substring(from, to));
+			String line = text.substring(from, to);
+
+			// remove spaces between the manual line break "\\" and the text
+			// and also remove multiple space characters
+			if (from > 0) line = Strings.trimLeft(line);
+			if (to < text.length()) line = Strings.trimRight(line);
 			manager.append(line.replaceAll("\\s+", " "));
 
 			// proceed to next line, skipping all '\\' (at least two
