@@ -46,6 +46,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String RENDER_MODE = "renderMode";
 	public static final String TIMEOUT = "timeout";
 	public static final String LOG_LEVEL = "logLevel";
+	public static final String COLUMNSTYLE = "columnStyle";  // usage: @columnStyle: columnName style value
+	public static final String TABLESTYLE = "tableStyle";  // usage: @tableStyle: style value
 	private static DefaultMarkup MARKUP;
 
 	public static final String MARKUP_NAME = "Sparql";
@@ -77,6 +79,10 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(TIMEOUT, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(NAME, false);
 		MARKUP.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(COLUMNSTYLE, false);
+		MARKUP.addAnnotationRenderer(COLUMNSTYLE, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(TABLESTYLE, false);
+		MARKUP.addAnnotationRenderer(TABLESTYLE, NothingRenderer.getInstance());
 		// TODO: replace class SparqlNameRegistrationScript by content type
 		// m.addAnnotationContentType(NAME, new SparqlNameDefinition());
 		PackageManager.addPackageAnnotation(MARKUP);

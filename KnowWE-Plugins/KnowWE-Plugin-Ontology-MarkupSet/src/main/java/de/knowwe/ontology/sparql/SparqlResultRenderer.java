@@ -11,6 +11,7 @@ import java.util.Scanner;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -246,6 +247,9 @@ public class SparqlResultRenderer {
 		boolean isTree = opts.isTree();
 		boolean isNavigation = opts.isNavigation();
 		Color color = opts.getColor();
+		List<RenderOptions.StyleOption> columnStyle = opts.getColumnStyles();
+		List<RenderOptions.StyleOption> tableStyle = opts.getTableStyles();
+
 
 		String tableID = UUID.randomUUID().toString();
 
@@ -273,6 +277,9 @@ public class SparqlResultRenderer {
 
 		renderResult.appendHtmlTag("div", "style", "overflow-x: auto");
 		boolean hasColor = color != Color.NONE;
+		String styleText = hasColor ?
+				" style='border-color:" + color.getColorValue() + ";" + getStyleForKey("table", tableStyle) + "'" :
+				" style='" + getStyleForKey("table", tableStyle) + "'";
 		renderResult.appendHtml("<table id='").append(tableID).appendHtml("'")
 				.append(isTree
 						? " class='sparqltable sparqltreetable"
@@ -280,10 +287,19 @@ public class SparqlResultRenderer {
 				.append(hasColor ? " logLevel" : "")
 				.append("'")
 				.append(opts.isSorting() ? " sortable='multi'" : "")
-				.append(hasColor ? " style='border-color:" + color.getColorValue() + "'" : "")
+				.append(styleText)
 				.append(">");
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
+
 		int column = 0;
+		for (String var : variables) {
+			if (isSkipped(isTree, column++, var)) {
+				continue;
+			}
+			String styleHtml = getStyleForKey(var, columnStyle);
+			renderResult.appendHtml("<col span='1' style='" + styleHtml + "';>");
+		}
+		column = 0;
 		for (String var : variables) {
 			if (isSkipped(isTree, column++, var)) {
 				continue;
@@ -532,5 +548,21 @@ public class SparqlResultRenderer {
 		}
 
 		return sb.toString();
+	}
+
+	private String getStyleForKey(String key, List<RenderOptions.StyleOption> styles) {
+		if (styles == null){
+			return "";
+		}
+
+		List<RenderOptions.StyleOption> columnStyles = styles.stream().filter(a -> Strings.equalsIgnoreCase(a.getColumnName(), key)).collect(Collectors.toList());
+		StringBuilder styleHtmlBuffer = new StringBuilder();
+		for (RenderOptions.StyleOption styleOption : columnStyles) {
+			styleHtmlBuffer.append(styleOption.getStyleKey());
+			styleHtmlBuffer.append(":");
+			styleHtmlBuffer.append(styleOption.getStyleValue());
+			styleHtmlBuffer.append(";");
+		}
+		return styleHtmlBuffer.toString();
 	}
 }

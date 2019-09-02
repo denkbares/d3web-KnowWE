@@ -1,6 +1,7 @@
 package de.knowwe.rdf2go.sparql.utils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -22,6 +23,8 @@ public class RenderOptions {
 	private boolean tree = false;
 	private long timeout = 10000;
 	private Color color;
+	private List<StyleOption> columnStyles;
+	private List<StyleOption> tableStyles;
 
 	public RenderOptions(String id) {
 		this.zebraMode = true;
@@ -33,6 +36,8 @@ public class RenderOptions {
 		this.id = id;
 		showAll = false;
  		color = Color.NONE;
+ 		this.columnStyles = null;
+ 		this.tableStyles = null;
 	}
 
 	public String getId() {
@@ -99,6 +104,14 @@ public class RenderOptions {
 		return navigationOffset;
 	}
 
+	public List<StyleOption> getColumnStyles() {
+		return columnStyles;
+	}
+
+	public List<StyleOption> getTableStyles() {
+		return tableStyles;
+	}
+
 	public void setNavigationOffset(String navigationOffset) {
 		this.navigationOffset = Integer.parseInt(navigationOffset);
 	}
@@ -141,5 +154,49 @@ public class RenderOptions {
 
 	public void setColor(Color color) {
 		this.color = color;
+	}
+
+	public void setColumnStyles(List<StyleOption> styles) {
+		this.columnStyles = styles;
+	}
+
+	public void setTableStyles(List<StyleOption> tableStyles) {
+		this.tableStyles = tableStyles;
+	}
+
+	public static class StyleOption {
+		private String columnName;
+		private String styleKey;
+		private String styleValue;
+
+		public StyleOption(String columnName, String styleKey, String styleValue) {
+			this.columnName = columnName;
+			this.styleKey = styleKey;
+			this.styleValue = styleValue;
+		}
+
+		public String getStyleValue() {
+			return styleValue;
+		}
+
+		public void setStyleValue(String styleValue) {
+			this.styleValue = styleValue;
+		}
+
+		public String getColumnName() {
+			return columnName;
+		}
+
+		public void setColumnName(String columnName) {
+			this.columnName = columnName;
+		}
+
+		public String getStyleKey() {
+			return styleKey;
+		}
+
+		public void setStyleKey(String styleKey) {
+			this.styleKey = styleKey;
+		}
 	}
 }

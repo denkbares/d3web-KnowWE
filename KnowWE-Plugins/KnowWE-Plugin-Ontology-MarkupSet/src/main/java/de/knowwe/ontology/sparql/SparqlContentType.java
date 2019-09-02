@@ -19,9 +19,12 @@
  */
 package de.knowwe.ontology.sparql;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -110,6 +113,8 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER, true));
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
 		renderOpts.setColor(checkColor(markupSection, SparqlMarkupType.LOG_LEVEL, Color.NONE));
+		renderOpts.setColumnStyles(checkStyle(markupSection, SparqlMarkupType.COLUMNSTYLE));
+		renderOpts.setTableStyles(checkStyle(markupSection, SparqlMarkupType.TABLESTYLE));
 
 		renderOpts.setTimeout(getTimeout(markupSection));
 	}
@@ -128,6 +133,32 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 			default:
 				return none;
 		}
+	}
+
+	private List<RenderOptions.StyleOption> checkStyle(Section<DefaultMarkupType> markupSection, String annotationName) {
+		String[] annotationStrings = DefaultMarkupType.getAnnotations(markupSection,
+				annotationName);
+		List<RenderOptions.StyleOption> styles = new ArrayList<>();
+
+		for (String annotationString : annotationStrings) {
+			if (Strings.equals(annotationName, SparqlMarkupType.COLUMNSTYLE)) {
+				String[] annoStringArray = annotationString.split(" ", 3);
+				if (annoStringArray.length < 3) {
+					Log.severe("The style '" + annotationString + "' does not include all necessary information. It has to consist of <columnName styleName style>");
+					continue;
+				}
+				styles.add(new RenderOptions.StyleOption(annoStringArray[0], annoStringArray[1], annoStringArray[2]));
+
+			} else if (Strings.equals(annotationName, SparqlMarkupType.TABLESTYLE)) {
+				String[] annoStringArray = annotationString.split(" ", 2);
+				if (annoStringArray.length < 2) {
+					Log.severe("The style '" + annotationString + "' does not include all necessary information. It has to consist of <styleName style>");
+					continue;
+				}
+				styles.add(new RenderOptions.StyleOption("table", annoStringArray[0], annoStringArray[1]));
+			}
+		}
+		return styles;
 	}
 
 	private boolean checkSortingAnnotation(Section<DefaultMarkupType> markupSection, String sorting) {
