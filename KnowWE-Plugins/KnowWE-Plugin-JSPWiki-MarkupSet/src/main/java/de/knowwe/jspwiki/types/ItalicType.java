@@ -18,6 +18,8 @@
  */
 package de.knowwe.jspwiki.types;
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -30,7 +32,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 public class ItalicType extends AbstractType {
 
 	public ItalicType() {
-		this.setSectionFinder(new RegexSectionFinder("\\'\\'(.*?)\\'\\'"));
+		this.setSectionFinder(new RegexSectionFinder("\\'\\'(.*?)\\'\\'", Pattern.DOTALL));
 		this.addChildType(new KeywordType("''", true));
 		this.addChildType(new LinkType());
 		this.addChildType(new WikiTextType());

@@ -19,6 +19,8 @@
  */
 package de.knowwe.jspwiki.types;
 
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
@@ -31,7 +33,7 @@ import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 public class BoldType extends AbstractType {
 
 	public BoldType() {
-		this.setSectionFinder(new RegexSectionFinder("__(.*?)__"));
+		this.setSectionFinder(new RegexSectionFinder("__(.*?)__", Pattern.DOTALL));
 		this.addChildType(new KeywordType("__", true));
 		this.addChildType(new LinkType());
 		this.addChildType(new WikiTextType());
