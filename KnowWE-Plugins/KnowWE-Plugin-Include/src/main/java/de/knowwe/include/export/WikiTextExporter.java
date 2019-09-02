@@ -42,21 +42,28 @@ public class WikiTextExporter implements Exporter<WikiTextType> {
 	public void export(Section<WikiTextType> section, DocumentBuilder manager) throws ExportException {
 		String text = Strings.trimBlankLinesAndTrailingLineBreak(section.getText());
 		if (Strings.isBlank(text)) return;
+
 		// Split lines by two or more '\' characters
 		// Also ignore trailing and leading whitespaces surrounding the returns
-		String[] lines = text.split("[\\s\u00A0]*\\\\\\\\+[\\s ]*");
-		boolean first = true;
-		for (String line : lines) {
-			if (first) {
-				first = false;
-			}
-			else {
-				manager.appendLineBreak();
-			}
+		int from = 0;
+		while (from <= text.length()) {
+			// append line break after the first line
+			if (from > 0) manager.appendLineBreak();
+
+			// find next manual line break, or the end of text if no such line break is available
+			int to = text.indexOf("\\\\", from);
+			if (to == -1) to = text.length();
+
+			// append the line
 			// replace (multiple) tab/spaces/returns by one space
 			// this can be done, because multiple paragraphs are NOT (!) included in one WikiTextType section
 			// but the wiki allows single line breaks as floating text
+			String line = Strings.trim(text.substring(from, to));
 			manager.append(line.replaceAll("\\s+", " "));
+
+			// proceed to next line, skipping all '\\' (at least two
+			from = to + 2;
+			while (from < text.length() && text.charAt(from) == '\\') from++;
 		}
 	}
 }
