@@ -245,6 +245,11 @@ code, tt, pre {
 	overflow: auto;
 }
 
+tt {
+	color: #000;
+	background-color: #f9f9f9;
+}
+
 pre {
 	/* clear:both; */
 	white-space: pre;
