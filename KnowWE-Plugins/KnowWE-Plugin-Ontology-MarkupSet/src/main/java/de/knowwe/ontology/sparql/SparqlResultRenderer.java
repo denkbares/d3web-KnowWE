@@ -297,7 +297,7 @@ public class SparqlResultRenderer {
 				continue;
 			}
 			String styleHtml = getStyleForKey(var, columnStyle);
-			renderResult.appendHtml("<col span='1' style='" + styleHtml + "';>");
+			renderResult.appendHtml("<col span='1' style='" + styleHtml + "'>");
 		}
 		column = 0;
 		for (String var : variables) {
