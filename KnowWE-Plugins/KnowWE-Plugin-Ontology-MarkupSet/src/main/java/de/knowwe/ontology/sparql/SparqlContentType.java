@@ -108,7 +108,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setSorting(checkSortingAnnotation(markupSection,
 				SparqlMarkupType.SORTING));
 		renderOpts.setZebraMode(checkAnnotation(markupSection, SparqlMarkupType.ZEBRAMODE, true));
-		renderOpts.setTree(Boolean.valueOf(DefaultMarkupType.getAnnotation(markupSection,
+		renderOpts.setTree(Boolean.parseBoolean(DefaultMarkupType.getAnnotation(markupSection,
 				SparqlMarkupType.TREE)));
 		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER, true));
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
