@@ -61,9 +61,12 @@ public class WikiTextExporter implements Exporter<WikiTextType> {
 			String line = text.substring(from, to);
 
 			// remove spaces between the manual line break "\\" and the text
-			// and also remove multiple space characters
 			if (from > 0) line = Strings.trimLeft(line);
 			if (to < text.length()) line = Strings.trimRight(line);
+			// unescape JSPWiki escape character "~" and potentially used HTML entities
+			line = line.replaceAll("~([_'|~\\\\])", "$1");
+			line = Strings.decodeHtml(line);
+			// and also remove multiple space characters, which are ignored in HTML but not in target format
 			manager.append(line.replaceAll("\\s+", " "));
 
 			// proceed to next line, skipping all '\\' (at least two
