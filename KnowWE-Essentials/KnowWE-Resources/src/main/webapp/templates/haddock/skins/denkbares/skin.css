@@ -241,7 +241,7 @@ fieldset {
 
 /* +++ 240 Pre-formatted text blocks and code +++ */
 code, tt, pre {
-	font: 105% Monaco, "Courier New", Courier, monospace;
+	font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, "Courier New", monospace;
 	overflow: auto;
 }
 
