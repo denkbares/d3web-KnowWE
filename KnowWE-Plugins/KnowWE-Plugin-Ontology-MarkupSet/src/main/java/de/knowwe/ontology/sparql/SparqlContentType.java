@@ -115,6 +115,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setColor(checkColor(markupSection, SparqlMarkupType.LOG_LEVEL, Color.NONE));
 		renderOpts.setColumnStyles(checkStyle(markupSection, SparqlMarkupType.COLUMNSTYLE));
 		renderOpts.setTableStyles(checkStyle(markupSection, SparqlMarkupType.TABLESTYLE));
+		renderOpts.setAllowJSPWikiMarkup(checkAnnotation(markupSection, SparqlMarkupType.ALLOW_JSPWIKIMARKUP));
 
 		renderOpts.setTimeout(getTimeout(markupSection));
 	}

@@ -25,6 +25,7 @@ public class RenderOptions {
 	private Color color;
 	private List<StyleOption> columnStyles;
 	private List<StyleOption> tableStyles;
+	private boolean allowJSPWikiMarkup;
 
 	public RenderOptions(String id) {
 		this.zebraMode = true;
@@ -38,6 +39,7 @@ public class RenderOptions {
  		color = Color.NONE;
  		this.columnStyles = null;
  		this.tableStyles = null;
+ 		this.allowJSPWikiMarkup = false;
 	}
 
 	public String getId() {
@@ -112,6 +114,10 @@ public class RenderOptions {
 		return tableStyles;
 	}
 
+	public boolean isAllowJSPWikiMarkup() {
+		return allowJSPWikiMarkup;
+	}
+
 	public void setNavigationOffset(String navigationOffset) {
 		this.navigationOffset = Integer.parseInt(navigationOffset);
 	}
@@ -162,6 +168,10 @@ public class RenderOptions {
 
 	public void setTableStyles(List<StyleOption> tableStyles) {
 		this.tableStyles = tableStyles;
+	}
+
+	public void setAllowJSPWikiMarkup(boolean allowJSPWikiMarkup) {
+		this.allowJSPWikiMarkup = allowJSPWikiMarkup;
 	}
 
 	public static class StyleOption {

@@ -246,6 +246,7 @@ public class SparqlResultRenderer {
 		boolean rawOutput = opts.isRawOutput();
 		boolean isTree = opts.isTree();
 		boolean isNavigation = opts.isNavigation();
+		boolean renderJSPWikiMarkup = opts.isAllowJSPWikiMarkup();
 		List<RenderOptions.StyleOption> columnStyle = opts.getColumnStyles();
 		List<RenderOptions.StyleOption> tableStyle = opts.getTableStyles();
 		if (opts.getColor() != Color.NONE) tableStyle.add(new RenderOptions.StyleOption("table", "border-color", opts.getColor().getColorValue()));
@@ -376,10 +377,14 @@ public class SparqlResultRenderer {
 
 				Value node = row.getValue(var);
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
-						getRenderMode(section));
+						getRenderMode(section), opts.isAllowJSPWikiMarkup());
 
 				renderResult.appendHtml("<td>");
-				renderResult.append(erg);
+				if (renderJSPWikiMarkup) {
+					renderResult.append(erg);
+				} else {
+					renderResult.appendJSPWikiMarkup(erg);
+				}
 				renderResult.appendHtml("</td>\n");
 			}
 			renderResult.appendHtml("</tr>");
@@ -441,6 +446,7 @@ public class SparqlResultRenderer {
 		RenderOptions opts = section.get().getRenderOptions(section, user);
 		boolean isTree = opts.isTree();
 		String query = section.get().getSparqlQuery(section, user);
+		boolean renderJSPWikiMarkup = opts.isAllowJSPWikiMarkup();
 
 		CachedTupleQueryResult qrt = null;
 		try {
@@ -476,10 +482,14 @@ public class SparqlResultRenderer {
 
 						Value node = child.getValue(var);
 						String erg = renderNode(node, var, opts.isRawOutput(), user, opts.getRdf2GoCore(),
-								getRenderMode(section));
+								getRenderMode(section), opts.isAllowJSPWikiMarkup());
 
 						result.appendHtml("<td>");
-						result.append(erg);
+						if (renderJSPWikiMarkup) {
+							result.append(erg);
+						} else {
+							result.appendJSPWikiMarkup(erg);
+						}
 						result.appendHtml("</td>\n");
 					}
 					result.appendHtml("</tr>");
@@ -495,7 +505,7 @@ public class SparqlResultRenderer {
 		return Integer.toString(code);
 	}
 
-	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode) {
+	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode, boolean renderJSPWikiMarkup) {
 		if (node == null) {
 			return "";
 		}
@@ -510,6 +520,15 @@ public class SparqlResultRenderer {
 			for (SparqlResultNodeRenderer nodeRenderer : nodeRenderers) {
 				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer) {
 					continue;
+				}
+				if (nodeRenderer instanceof ArticleLinkNodeRenderer) {
+					if ((!renderJSPWikiMarkup) || (!rendered.contains("[") && !rendered.contains("]"))) {
+						continue;
+					}
+					else {
+						rendered = rendered.replace("[", "");
+						rendered = rendered.replace("]", "");
+					}
 				}
 
 				String temp = rendered;

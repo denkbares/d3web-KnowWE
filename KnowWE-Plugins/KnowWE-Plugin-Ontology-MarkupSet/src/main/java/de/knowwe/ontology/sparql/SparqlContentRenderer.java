@@ -101,17 +101,17 @@ public class SparqlContentRenderer implements Renderer {
 
 					result.appendHtml("<td>");
 					final Resource subject = statement.getSubject();
-					result.appendHtml(sparqlResultRenderer.renderNode(subject, "", false, user, core, RenderMode.HTML));
+					result.appendHtml(sparqlResultRenderer.renderNode(subject, "", false, user, core, RenderMode.HTML, false));
 					result.appendHtml("</td>");
 
 					result.appendHtml("<td>");
 					final URI predicate = statement.getPredicate();
-					result.appendHtml(sparqlResultRenderer.renderNode(predicate, "", false, user, core, RenderMode.HTML));
+					result.appendHtml(sparqlResultRenderer.renderNode(predicate, "", false, user, core, RenderMode.HTML, false));
 					result.appendHtml("</td>");
 
 					result.appendHtml("<td>");
 					final Value object = statement.getObject();
-					result.appendHtml(sparqlResultRenderer.renderNode(object, "", false, user, core, RenderMode.HTML));
+					result.appendHtml(sparqlResultRenderer.renderNode(object, "", false, user, core, RenderMode.HTML, false));
 					result.appendHtml("</td>");
 
 					result.appendHtml("</tr>");
