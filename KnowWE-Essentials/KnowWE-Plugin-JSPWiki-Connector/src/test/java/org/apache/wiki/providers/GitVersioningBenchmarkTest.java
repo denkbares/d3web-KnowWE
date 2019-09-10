@@ -31,6 +31,9 @@ import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.WikiProvider;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.auth.UserManager;
+import org.apache.wiki.auth.user.UserDatabase;
+import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.util.TextUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -39,6 +42,7 @@ import org.mockito.Mockito;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -49,6 +53,7 @@ import static org.mockito.Mockito.when;
 public class GitVersioningBenchmarkTest {
 
 	public static final String NAME1 = "Test1";
+	public static final String AUTHOR = "author";
 
 	private String TMP_NEW_REPO = "/tmp/newRepo";
 
@@ -60,7 +65,7 @@ public class GitVersioningBenchmarkTest {
 	public void setUp() throws Exception {
 //		TestEngine
 		engine = Mockito.mock(WikiEngine.class);
-//		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "/newRepo";
+		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "/newRepo";
 		System.out.println(TMP_NEW_REPO);
 		properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
@@ -73,6 +78,14 @@ public class GitVersioningBenchmarkTest {
 		fileProvider.initialize(engine, properties);
 		when(engine.getPageManager()).thenReturn(pageManager);
 		when(pageManager.getProvider()).thenReturn(fileProvider);
+		UserManager um = Mockito.mock(UserManager.class);
+		when(engine.getUserManager()).thenReturn(um);
+		UserDatabase udb = mock(UserDatabase.class);
+		when(um.getUserDatabase()).thenReturn(udb);
+		UserProfile up = mock(UserProfile.class);
+		when(udb.findByFullName(AUTHOR)).thenReturn(up);
+		when(up.getFullname()).thenReturn(AUTHOR);
+		when(up.getEmail()).thenReturn("author@nowhere.com");
 	}
 
 	@After
@@ -127,6 +140,7 @@ public class GitVersioningBenchmarkTest {
 
 	private void saveText(String name, String text) throws ProviderException {
 		WikiPage p = new WikiPage(engine, name);
+		p.setAuthor(AUTHOR);
 		this.fileProvider.putPageText(p, text);
 	}
 

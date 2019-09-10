@@ -36,12 +36,16 @@ import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.attachment.Attachment;
+import org.apache.wiki.auth.UserManager;
+import org.apache.wiki.auth.user.UserDatabase;
+import org.apache.wiki.auth.user.UserProfile;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -51,12 +55,13 @@ import static org.mockito.Mockito.when;
 public class GitVersioningAttachmentProviderTest {
 
 	private String TMP_NEW_REPO = "/tmp/newRepo";
+	public static final String AUTHOR = "author";
 
 	private Properties properties;
 	private WikiEngine engine;
 
 	@Before
-	public void init() throws IOException, NoRequiredPropertyException {
+	public void init() throws Exception {
 		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "/newRepo";
 //		System.out.println(TMP_NEW_REPO);
 		properties = new Properties();
@@ -69,6 +74,14 @@ public class GitVersioningAttachmentProviderTest {
 		fileProvider.initialize(engine, properties);
 		when(engine.getPageManager()).thenReturn(pageManager);
 		when(pageManager.getProvider()).thenReturn(fileProvider);
+		UserManager um = Mockito.mock(UserManager.class);
+		when(engine.getUserManager()).thenReturn(um);
+		UserDatabase udb = mock(UserDatabase.class);
+		when(um.getUserDatabase()).thenReturn(udb);
+		UserProfile up = mock(UserProfile.class);
+		when(udb.findByFullName(AUTHOR)).thenReturn(up);
+		when(up.getFullname()).thenReturn(AUTHOR);
+		when(up.getEmail()).thenReturn("author@nowhere.com");
 	}
 
 	@After
@@ -81,6 +94,7 @@ public class GitVersioningAttachmentProviderTest {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		att.setAuthor(AUTHOR);
 		att.setAttribute(Attachment.CHANGENOTE, "add");
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
@@ -105,6 +119,7 @@ public class GitVersioningAttachmentProviderTest {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
 		in = new ByteArrayInputStream("text file contents 2".getBytes(Charset.forName("UTF-8")));
@@ -123,6 +138,7 @@ public class GitVersioningAttachmentProviderTest {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
 		in = new ByteArrayInputStream("text file contents 2".getBytes(Charset.forName("UTF-8")));
@@ -141,6 +157,7 @@ public class GitVersioningAttachmentProviderTest {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
 
@@ -153,9 +170,11 @@ public class GitVersioningAttachmentProviderTest {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
 		att = new Attachment(engine, "test", "testAtt2.txt");
+		att.setAuthor(AUTHOR);
 		in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
 
@@ -169,9 +188,11 @@ public class GitVersioningAttachmentProviderTest {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test page", "testAtt.txt");
+		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
 		att = new Attachment(engine, "test page", "testAtt2.txt");
+		att.setAuthor(AUTHOR);
 		in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
 		attProvider.putAttachmentData(att, in);
 		WikiPage from = new WikiPage(engine, "test page");
