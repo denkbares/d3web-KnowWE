@@ -796,6 +796,7 @@ public class JSPWikiConnector implements WikiConnector {
 			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
+			Log.severe("Can't delete article " + title, e);
 			throw new IOException(e);
 		}
 	}
@@ -826,6 +827,7 @@ public class JSPWikiConnector implements WikiConnector {
 			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
+			Log.severe("Can't delete attachment " + title, e);
 			throw new IOException(e);
 		}
 	}
