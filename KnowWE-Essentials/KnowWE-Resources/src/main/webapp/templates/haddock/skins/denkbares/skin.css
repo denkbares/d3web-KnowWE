@@ -138,6 +138,10 @@ ul ul, ol ol {
 	margin: 0;
 }
 
+ol > li > ol > li {
+	list-style-type: lower-alpha;
+}
+
 ul, ol {
 	padding-left: 3em;
 }
