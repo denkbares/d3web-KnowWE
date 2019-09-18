@@ -27,8 +27,8 @@ import de.knowwe.core.user.UserContext;
 /**
  * Default renderer for error messages
  * <p/>
- * To have your own customized ErrorRenderer overwrite getErrorRenderer in your
- * Type and return a (custom) MessageRenderer of your choice
+ * To have your own customized ErrorRenderer overwrite getErrorRenderer in your Type and return a (custom)
+ * MessageRenderer of your choice
  *
  * @author Jochen
  */
@@ -41,7 +41,7 @@ public class DefaultMessageRenderer implements MessageRenderer {
 			"KDDOMWarning", "color:#CFCF00;text-decoration:underline;");
 
 	public static final DefaultMessageRenderer NOTE_RENDERER = new DefaultMessageRenderer(
-			"KDDOMNotice", null);
+			"KDDOMNotice", "color:#CFCF00;text-decoration:underline;");
 
 	private final String cssClass;
 	private final String cssStyle;

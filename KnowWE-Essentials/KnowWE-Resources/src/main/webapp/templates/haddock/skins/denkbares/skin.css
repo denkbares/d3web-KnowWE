@@ -448,7 +448,7 @@ a.footnote {
 	background-color: #e0e0ff;
 }
 
-.diffnote, .information, .warning, .error {
+.diffnote, .information, .info, .warning, .error {
 	display: block !important;
 	clear: both;
 	/*margin: 1em .5em;
@@ -456,20 +456,21 @@ a.footnote {
 	background-repeat: no-repeat;
 }
 
-.haddock .warning, .haddock .error {
+.haddock .warning, .haddock .error{
 	padding: 5px 20px 5px 45px;
 }
 
-.haddock .diffnote, .haddock .information {
+.haddock .diffnote, .haddock .information, .haddock .info {
 	padding: 5px 20px 5px 15px;
 }
 
-td .information, td .warning, td .error {
+td .information, td .info, td .warning, td .error {
 	margin: 0;
 }
 
 .defaultMarkup .markupText .error,
 .defaultMarkup .markupText .warning,
+.defaultMarkup .markupText .info,
 .defaultMarkup .markupText .information {
 	padding: 5px 20px 5px 45px;
 	margin: 0px;
@@ -478,6 +479,7 @@ td .information, td .warning, td .error {
 
 .defaultMarkup .markupText .error.singleLine,
 .defaultMarkup .markupText .warning.singleLine,
+.defaultMarkup .markupText .info.singleLine,
 .defaultMarkup .markupText .information.singleLine {
 	/*padding-top: 13px;*/
 	min-height: 24px;
