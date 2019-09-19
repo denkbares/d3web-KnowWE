@@ -1654,14 +1654,17 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			shutDownThreadPool.execute(() -> {
 				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 				synchronized (statementMutex) {
+					if (this.semanticCore == null) return;
+
 					this.statementCache.clear(); // free memory even if there are still references
+
+					this.semanticCore.release();
+					if (this.semanticCore.isAllocated()) {
+						Log.warning("Semantic core " + this.semanticCore.getRepositoryId()
+								+ " is still allocated and cannot be shut down, this may be an memory leak.");
+					}
+					this.semanticCore = null;
 				}
-				this.semanticCore.release();
-				if (this.semanticCore.isAllocated()) {
-					Log.warning("Semantic core " + this.semanticCore.getRepositoryId()
-							+ " is still allocated and cannot be shut down, this may be an memory leak.");
-				}
-				this.semanticCore = null;
 			});
 		}
 	}
