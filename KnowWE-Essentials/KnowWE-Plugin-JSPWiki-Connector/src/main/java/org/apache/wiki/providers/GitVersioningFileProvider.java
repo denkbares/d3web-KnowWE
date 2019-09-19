@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -102,7 +103,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private AtomicLong commitCount;
 
 	Map<String, Set<String>> openCommits = new ConcurrentHashMap<>();
-	private final List<String> refreshCacheList = new ArrayList<>();
+	private final Set<String> refreshCacheList = new HashSet<>();
 
 	public boolean isRemoteRepo() {
 		return remoteRepo;
@@ -311,7 +312,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		try {
 			canWriteFileLock();
 			if (pageExists(pageName)) {
+				// is necessary to get the right version of the current file
 				List<WikiPage> versionHistory = getVersionHistory(pageName);
+				// this first block is only needed, if a file was renamed in a larger commit transaction
+				// should never be called in normal JSPWiki work
 				if (versionHistory.isEmpty() && version == LATEST_VERSION) {
 					WikiPage page = new WikiPage(m_engine, pageName);
 					page.setVersion(LATEST_VERSION);
@@ -319,6 +323,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					page.setSize(file.length());
 					page.setLastModified(new Date(file.lastModified()));
 					refreshCacheList.add(pageName);
+					Log.info("File not in repo but getPageInfo " + pageName);
 					return page;
 				}
 				else if (version == WikiPageProvider.LATEST_VERSION) {
@@ -402,6 +407,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			}
 			catch (IOException e) {
 				Log.severe(e.getMessage(), e);
+				throw new ProviderException("Can't load all pages from repository: " + e.getMessage(), e);
 			}
 			return resultingPages.values();
 		}
@@ -695,6 +701,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	public void commit(String user, String commitMsg) {
+		Log.info("start commit");
 		try {
 			canWriteFileLock();
 			commitLock();
@@ -715,9 +722,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 							revCommit.getId().getName()));
 					openCommits.remove(user);
 					PageManager pm = m_engine.getPageManager();
-					// this could be done, because we only remove the page from the cache and the method of
-					// GitVersioningFileProvider does nothing here
-					// But we have to inform KnowWE also and Lucene
+					Log.info("Start refresh");
 					for (String path : refreshCacheList) {
 						// decide whether page or attachment
 						refreshCache(pm, path);
@@ -779,6 +784,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		WikiPage page = new WikiPage(m_engine, pageName);
 		page.setVersion(WikiProvider.LATEST_VERSION);
 		try {
+			// this could be done, because we only remove the page from the cache and the method of
+			// GitVersioningFileProvider does nothing here
+			// But we have to inform KnowWE also and Lucene
 			pm.deleteVersion(page);
 		}
 		catch (ProviderException e) {

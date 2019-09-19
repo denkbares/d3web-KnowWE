@@ -20,6 +20,7 @@
 package org.apache.wiki.providers;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,7 +107,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@NotNull
-	private String getAttachmentDir(String page) {
+	public static String getAttachmentDir(String page) {
 		return mangleName(page) + DIR_EXTENSION;
 	}
 
@@ -213,15 +214,25 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			try {
 				List<RevCommit> revCommitList = getRevCommitList(att, git);
 				InputStream ret = null;
-				if (version == LATEST_VERSION || (version > 0 && version <= revCommitList.size())) {
-					RevCommit revCommit = revCommitList.get(version == LATEST_VERSION ? revCommitList.size() - 1 : version - 1);
-					ObjectId fileId = getObjectOfCommit(revCommit, att);
-					if (fileId != null) {
-						ObjectLoader loader = repository.open(fileId);
-						ret = loader.openStream();
+				if (revCommitList.isEmpty()) {
+					if (version == LATEST_VERSION) {
+						ret = new FileInputStream(attFile);
 					}
 					else {
 						throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
+					}
+				}
+				else {
+					if (version == LATEST_VERSION || (version > 0 && version <= revCommitList.size())) {
+						RevCommit revCommit = revCommitList.get(version == LATEST_VERSION ? revCommitList.size() - 1 : version - 1);
+						ObjectId fileId = getObjectOfCommit(revCommit, att);
+						if (fileId != null) {
+							ObjectLoader loader = repository.open(fileId);
+							ret = loader.openStream();
+						}
+						else {
+							throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
+						}
 					}
 				}
 				return ret;
@@ -424,7 +435,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@NotNull
-	private Attachment getAttachment(Attachment att, int version, RevCommit revCommit) throws IOException, ProviderException {
+	private Attachment getAttachment(Attachment att, int version, RevCommit revCommit) throws ProviderException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
 			Attachment attVersion = new Attachment(engine, att.getParentName(), att.getFileName());

@@ -2,6 +2,7 @@ package org.apache.wiki.providers;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import org.apache.wiki.event.WikiEvent;
 
@@ -49,7 +50,10 @@ public class GitVersioningWikiEvent extends WikiEvent {
 	public GitVersioningWikiEvent(Object src, int type, String author, Collection<String> pages, String gitCommitRev) {
 		super(src, type);
 		this.author = author;
-		this.pages = pages;
+		this.pages = pages.stream()
+				.map(s -> s.replaceAll(GitVersioningAttachmentProvider.DIR_EXTENSION, "")
+						.replaceAll(GitVersioningFileProvider.FILE_EXT, "").replaceAll("\\+", " "))
+				.collect(Collectors.toList());
 		this.gitCommitRev = gitCommitRev;
 	}
 
