@@ -22,14 +22,11 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-
 /**
  * @author Rüdiger Hain (denkbares GmbH)
  * @created 19.09.19
  */
-public class VersioningFileProviderStressTest extends AbstractPageProviderStressTest<VersioningFileProvider> {
+public class GitVersioningFileProviderStressTest extends AbstractPageProviderStressTest<GitVersioningFileProvider> {
 	@Override
 	protected void initProperties(final Properties properties) {
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, this.wikiDir.getAbsolutePath());
@@ -37,19 +34,18 @@ public class VersioningFileProviderStressTest extends AbstractPageProviderStress
 	}
 
 	@Override
-	protected VersioningFileProvider createPageProvider() {
-		return new VersioningFileProvider();
-	}
-
-	@Override
-	protected void shutdownPageProvider(final VersioningFileProvider pageProvider) throws Exception {
-		FileUtils.deleteDirectory(this.wikiDir);
-		Assert.assertFalse(this.wikiDir.exists());
+	protected GitVersioningFileProvider createPageProvider() {
+		return new GitVersioningFileProvider();
 	}
 
 	@Override
 	protected int countWikiPagesInPersistanceStore() {
 		final File[] pageFiles = this.wikiDir.listFiles(file -> file.isFile() && file.getName().endsWith(".txt"));
 		return pageFiles.length;
+	}
+
+	@Override
+	protected void shutdownPageProvider(final GitVersioningFileProvider pageProvider) throws Exception {
+		pageProvider.shutdown();
 	}
 }
