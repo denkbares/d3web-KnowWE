@@ -1313,7 +1313,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 		/**
 		 * Sends the error occurred during the replacement to the user context's response. If there were no errors, the
-		 * method has no effect on the response. Therefore this method can be called withot checking for errors first.
+		 * method has no effect on the response. Therefore this method can be called without checking for errors first.
 		 *
 		 * @param context the context to send the errors to
 		 * @return if there have been any errors sent
