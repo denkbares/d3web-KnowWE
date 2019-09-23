@@ -521,16 +521,6 @@ public class SparqlResultRenderer {
 				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer) {
 					continue;
 				}
-				if (nodeRenderer instanceof ArticleLinkNodeRenderer) {
-					if ((!renderJSPWikiMarkup) || (!rendered.contains("[") && !rendered.contains("]"))) {
-						continue;
-					}
-					else {
-						rendered = rendered.replace("[", "");
-						rendered = rendered.replace("]", "");
-					}
-				}
-
 				String temp = rendered;
 				rendered = nodeRenderer.renderNode(node, rendered, var, user, core, mode);
 				if (!temp.equals(rendered) && !nodeRenderer.allowFollowUpRenderer()) break;
