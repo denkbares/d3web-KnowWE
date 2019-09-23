@@ -21,9 +21,9 @@ package de.knowwe.ontology.sparql;
 
 import java.util.Set;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.kdom.parsing.Section;
@@ -101,17 +101,17 @@ public class SparqlContentRenderer implements Renderer {
 
 					result.appendHtml("<td>");
 					final Resource subject = statement.getSubject();
-					result.appendHtml(sparqlResultRenderer.renderNode(subject, "", false, user, core, RenderMode.HTML, false));
+					result.appendHtml(sparqlResultRenderer.renderNode(subject, "", false, user, core, RenderMode.HTML));
 					result.appendHtml("</td>");
 
 					result.appendHtml("<td>");
-					final URI predicate = statement.getPredicate();
-					result.appendHtml(sparqlResultRenderer.renderNode(predicate, "", false, user, core, RenderMode.HTML, false));
+					final IRI predicate = statement.getPredicate();
+					result.appendHtml(sparqlResultRenderer.renderNode(predicate, "", false, user, core, RenderMode.HTML));
 					result.appendHtml("</td>");
 
 					result.appendHtml("<td>");
 					final Value object = statement.getObject();
-					result.appendHtml(sparqlResultRenderer.renderNode(object, "", false, user, core, RenderMode.HTML, false));
+					result.appendHtml(sparqlResultRenderer.renderNode(object, "", false, user, core, RenderMode.HTML));
 					result.appendHtml("</td>");
 
 					result.appendHtml("</tr>");

@@ -377,7 +377,7 @@ public class SparqlResultRenderer {
 
 				Value node = row.getValue(var);
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
-						getRenderMode(section), opts.isAllowJSPWikiMarkup());
+						getRenderMode(section));
 
 				renderResult.appendHtml("<td>");
 				if (renderJSPWikiMarkup) {
@@ -482,7 +482,7 @@ public class SparqlResultRenderer {
 
 						Value node = child.getValue(var);
 						String erg = renderNode(node, var, opts.isRawOutput(), user, opts.getRdf2GoCore(),
-								getRenderMode(section), opts.isAllowJSPWikiMarkup());
+								getRenderMode(section));
 
 						result.appendHtml("<td>");
 						if (renderJSPWikiMarkup) {
@@ -505,7 +505,7 @@ public class SparqlResultRenderer {
 		return Integer.toString(code);
 	}
 
-	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode, boolean renderJSPWikiMarkup) {
+	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		if (node == null) {
 			return "";
 		}
