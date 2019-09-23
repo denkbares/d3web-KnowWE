@@ -178,12 +178,18 @@
 	  </div>
 
 	  <div id="searchbar">
-  		<span>
+  		<span id="searchReplace">
+		<span class="find">
         <label for="tbFIND" ><fmt:message key="editor.plain.find"/></label>
   		<input type="text"   name="tbFIND" id="tbFIND" size="16" />
+		</span>
+		<span  class="replace">
 		<label for="tbREPLACE" ><fmt:message key="editor.plain.replace"/></label>
 		<input type="text"   name="tbREPLACE" id="tbREPLACE" size="16" />
+		</span>
+		<span class="replaceButton">
         <input type="button" name="doreplace" id="doreplace" value="<fmt:message key='editor.plain.find.submit' />" />
+		</span>
         </span>
   		<span>
   		<input type="checkbox" name="tbMatchCASE" id="tbMatchCASE" />

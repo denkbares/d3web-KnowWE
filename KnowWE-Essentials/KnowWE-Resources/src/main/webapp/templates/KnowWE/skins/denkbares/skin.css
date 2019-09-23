@@ -883,6 +883,23 @@ a.tool:hover, .btn:hover {
 	white-space: nowrap;
 }
 
+#searchbar span[id="searchReplace"] {
+	width: 100%;
+}
+
+#searchbar .find input[type=text], #searchbar .replace input[type=text] {
+	width: calc(100% - 80px);
+}
+
+.find, .replace {
+	width: 42%;
+	margin: 0;
+}
+
+#searchbar .replaceButton {
+	margin-right: 0;
+}
+
 #searchbarhelp {
 }
 
