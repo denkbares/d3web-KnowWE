@@ -48,7 +48,7 @@ public class SetMarkupActivationStatus extends AbstractAction {
 			newText = "%%Off:" + text;
 		}
 		else {
-			newText = text.replaceFirst("Off:", "");
+			newText = text.replaceFirst("(?i)%%Off:", "%%");
 		}
 
 		Sections.replace(context, sectionID, newText);
