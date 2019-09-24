@@ -85,7 +85,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		storageDir = TextUtil.getCanonicalFilePathProperty(properties, PROP_STORAGEDIR,
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 
-		String patternString = engine.getWikiProperties().getProperty(PROP_DISABLECACHE);
+		engine.getWikiProperties().getProperty(PROP_DISABLECACHE);
 		WikiPageProvider provider = engine.getPageManager().getProvider();
 		if (provider instanceof CachingProvider) {
 			provider = ((CachingProvider) provider).getRealProvider();
@@ -460,7 +460,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@NotNull
-	private Attachment getAttachment(Attachment att, int version, RevCommit revCommit) throws ProviderException {
+	private Attachment getAttachment(Attachment att, int version, RevCommit revCommit) {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
 			Attachment attVersion = new Attachment(engine, att.getParentName(), att.getFileName());
@@ -492,7 +492,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		return reverseToList(revCommits);
 	}
 
-	private long getObjectSize(RevCommit version, Attachment att) throws IOException, ProviderException {
+	private long getObjectSize(RevCommit version, Attachment att) throws IOException {
 		long ret;
 		//TODO look why this is not working every time
 		ObjectId objectId = getObjectOfCommit(version, att);
@@ -501,7 +501,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			ret = loader.getSize();
 		}
 		else {
-			throw new ProviderException("Can't load Git object for " + att.getFileName());
+			ret = 0;
 		}
 		return ret;
 	}
