@@ -22,6 +22,7 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -35,12 +36,15 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.wiki.InternalWikiException;
@@ -61,8 +65,10 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -104,6 +110,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	Map<String, Set<String>> openCommits = new ConcurrentHashMap<>();
 	private final Set<String> refreshCacheList = new HashSet<>();
+	private boolean windowsGitHackNeeded = false;
+	private boolean dontUseHack = false;
 
 	public boolean isRemoteRepo() {
 		return this.remoteRepo;
@@ -156,22 +164,66 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			this.remoteRepo = true;
 		}
 
-		final Git git = new Git(this.repository);
-		try {
-			log.info("Beginn Git gc");
-			final StopWatch stopWatch = new StopWatch();
-			stopWatch.start();
-			final Properties gcRes = git.gc().setAggressive(true).call();
-			stopWatch.stop();
-			log.info("Init gc took " + stopWatch);
-			for (final Map.Entry<Object, Object> entry : gcRes.entrySet()) {
-				log.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
+		String os = System.getProperty("os.name").toLowerCase();
+
+		if (os.startsWith("windows") || os.equals("nt")) {
+			windowsGitHackNeeded = true;
+		}
+		if (windowsGitHackNeeded) {
+			try {
+				Runtime.getRuntime().exec("git");
+			}
+			catch (IOException e) {
+				if (e.getMessage().toLowerCase().contains("command not found")) {
+					dontUseHack = true;
+					Log.warning("Can't find git in PATH");
+				}
+				else {
+					Log.severe(e.getMessage(), e);
+				}
 			}
 		}
-		catch (final GitAPIException e) {
-			log.error("Git GC not successful: " + e.getMessage());
+		if (windowsGitHackNeeded && !dontUseHack) {
+			doBinaryGC(pageDir);
+		}
+		else {
+			final Git git = new Git(this.repository);
+			try {
+				log.info("Beginn Git gc");
+				final StopWatch stopWatch = new StopWatch();
+				stopWatch.start();
+				final Properties gcRes = git.gc().setAggressive(true).call();
+				stopWatch.stop();
+				log.info("Init gc took " + stopWatch);
+				for (final Map.Entry<Object, Object> entry : gcRes.entrySet()) {
+					log.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
+				}
+			}
+			catch (final GitAPIException e) {
+				log.error("Git GC not successful: " + e.getMessage());
+			}
 		}
 		this.repository.autoGC(new TextProgressMonitor());
+	}
+
+	private void doBinaryGC(File pageDir) {
+		try {
+			Process git_gc = Runtime.getRuntime().exec("git gc", null, pageDir);
+			InputStream inputStream = git_gc.getInputStream();
+			InputStream errorStream = git_gc.getErrorStream();
+
+			String stdOut = IOUtils.toString(inputStream);
+			String stdErr = IOUtils.toString(errorStream);
+			Log.info(stdOut);
+			Log.severe(stdErr);
+			boolean b = git_gc.waitFor(2, TimeUnit.MINUTES);
+		}
+		catch (InterruptedException e) {
+			Log.warning("External git process didn't end in 2 minutes, therefore cancel it");
+		}
+		catch (IOException e) {
+			Log.severe("Error executing external git: " + e.getMessage(), e);
+		}
 	}
 
 	public Repository getRepository() {
@@ -187,6 +239,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public void putPageText(final WikiPage page, final String text) throws ProviderException {
 		try {
 			canWriteFileLock();
+			commitLock();
 			final File changedFile = findPage(page.getName());
 			final boolean addFile = !changedFile.exists();
 
@@ -195,7 +248,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			final Git git = new Git(this.repository);
 			try {
 				if (addFile) {
-					git.add().addFilepattern(changedFile.getName()).call();
+					retryGitOperation(() -> {
+						git.add().addFilepattern(changedFile.getName()).call();
+						return null;
+					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
 				}
 
 				if (this.openCommits.containsKey(page.getAuthor())) {
@@ -216,37 +272,90 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					}
 					addUserInfo(this.m_engine, page.getAuthor(), commit);
 					commit.setAllowEmpty(true);
-					try {
-						commitLock();
+//					try {
+					retryGitOperation(() -> {
 						final RevCommit revCommit = commit.call();
 						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.DELETE,
 								page.getAuthor(),
 								page.getName(),
 								revCommit.getId().getName()));
-						periodicalGitGC(git);
-					}
-					finally {
-						commitUnlock();
-					}
+						return null;
+					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+//					} catch (final JGitInternalException e) {
+//						if(e.getCause() instanceof LockFailedException){
+//							Log.warning("Retry commit to repo, because of lock failed exception");
+//							final RevCommit revCommit = commit.call();
+//							WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.DELETE,
+//									page.getAuthor(),
+//									page.getName(),
+//									revCommit.getId().getName()));
+//						} else {
+//							throw e;
+//						}
+//					}
+					periodicalGitGC(git);
 				}
 			}
-			catch (final GitAPIException e) {
+			catch (final Exception e) {
 				log.error(e.getMessage(), e);
 				throw new ProviderException("File " + page.getName() + " could not be committed to git");
 			}
 		}
 		finally {
+			commitUnlock();
 			writeFileUnlock();
 		}
+	}
+
+	private static final int RETRY = 2;
+	private static final int DELAY = 100;
+
+	public static <V> V retryGitOperation(Callable<V> callable, Class<? extends Throwable> t, String message) throws Exception {
+		int counter = 0;
+
+		JGitInternalException internalException = null;
+		while (counter < RETRY) {
+			try {
+				return callable.call();
+			}
+			catch (JGitInternalException e) {
+				internalException = e;
+				if (t.isAssignableFrom(e.getCause().getClass())) {
+					counter++;
+					log.warn(String.format("retry %s/%s, %s", counter, RETRY, message));
+
+					try {
+						Thread.sleep(DELAY);
+					}
+					catch (InterruptedException e1) {
+						// ignore
+					}
+				}
+				else {
+					throw e;
+				}
+			}
+		}
+		throw internalException;
 	}
 
 	void periodicalGitGC(final Git git) {
 		final long l = this.commitCount.incrementAndGet();
 		if (l % 2000 == 0) {
-			doGC(git, true);
+			if (windowsGitHackNeeded && !dontUseHack) {
+				doBinaryGC(git.getRepository().getWorkTree());
+			}
+			else {
+				doGC(git, true);
+			}
 		}
 		else if (l % 500 == 0) {
-			doGC(git, false);
+			if (windowsGitHackNeeded && !dontUseHack) {
+				doBinaryGC(git.getRepository().getWorkTree());
+			}
+			else {
+				doGC(git, false);
+			}
 		}
 		else if (l % 100 == 0) {
 			this.repository.autoGC(new TextProgressMonitor());
@@ -612,11 +721,17 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public void deletePage(final WikiPage page) throws ProviderException {
 		try {
 			canWriteFileLock();
+			commitLock();
 			final File file = findPage(page.getName());
 			file.delete();
 			try {
 				final Git git = new Git(this.repository);
-				git.rm().addFilepattern(file.getName()).call();
+
+				retryGitOperation(() -> {
+					git.rm().addFilepattern(file.getName()).call();
+					return null;
+				}, LockFailedException.class, "Retry removing from repo, because of lock failed exception");
+
 				if (this.openCommits.containsKey(page.getAuthor())) {
 					this.openCommits.get(page.getAuthor()).add(file.getName());
 				}
@@ -625,26 +740,26 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 							.setOnly(file.getName())
 							.setMessage("removed page");
 					addUserInfo(this.m_engine, page.getAuthor(), commitCommand);
-					try {
-						commitLock();
+
+					retryGitOperation(() -> {
 						final RevCommit revCommit = commitCommand.call();
 						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.DELETE,
 								page.getAuthor(),
 								page.getName(),
 								revCommit.getId().getName()));
-						periodicalGitGC(git);
-					}
-					finally {
-						commitUnlock();
-					}
+						return null;
+					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+
+					periodicalGitGC(git);
 				}
 			}
-			catch (final GitAPIException e) {
+			catch (final Exception e) {
 				log.error(e.getMessage(), e);
 				throw new ProviderException("Can't delete page " + page + ": " + e.getMessage());
 			}
 		}
 		finally {
+			commitUnlock();
 			writeFileUnlock();
 		}
 	}
@@ -653,13 +768,22 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public void movePage(final WikiPage from, final String to) throws ProviderException {
 		try {
 			canWriteFileLock();
+			commitLock();
 			final File fromFile = findPage(from.getName());
 			final File toFile = findPage(to);
 			try {
 				Files.move(fromFile.toPath(), toFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
 				final Git git = new Git(this.repository);
-				git.add().addFilepattern(toFile.getName()).call();
-				git.rm().addFilepattern(fromFile.getName()).call();
+				retryGitOperation(() -> {
+					git.add().addFilepattern(toFile.getName()).call();
+					return null;
+				}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
+
+				retryGitOperation(() -> {
+					git.rm().addFilepattern(fromFile.getName()).call();
+					return null;
+				}, LockFailedException.class, "Retry removing from repo, because of lock failed exception");
+
 				if (this.openCommits.containsKey(from.getAuthor())) {
 					this.openCommits.get(from.getAuthor()).add(fromFile.getName());
 					this.openCommits.get(from.getAuthor()).add(toFile.getName());
@@ -670,26 +794,25 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 							.setOnly(fromFile.getName())
 							.setMessage("renamed page " + from + " to " + to);
 					addUserInfo(this.m_engine, from.getAuthor(), commitCommand);
-					try {
-						commitLock();
+					retryGitOperation(() -> {
 						final RevCommit revCommit = commitCommand.call();
 						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
 								from.getAuthor(),
 								to,
 								revCommit.getId().getName()));
-						periodicalGitGC(git);
-					}
-					finally {
-						commitUnlock();
-					}
+						return null;
+					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+
+					periodicalGitGC(git);
 				}
 			}
-			catch (final IOException | GitAPIException e) {
+			catch (final Exception e) {
 				log.error(e.getMessage(), e);
 				throw new ProviderException("Can't move page from " + from + " to " + to + ": " + e.getMessage());
 			}
 		}
 		finally {
+			commitUnlock();
 			writeFileUnlock();
 		}
 	}
@@ -715,11 +838,15 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				}
 				try {
 					commitCommand.setAllowEmpty(true);
-					final RevCommit revCommit = commitCommand.call();
-					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
-							user,
-							this.openCommits.get(user),
-							revCommit.getId().getName()));
+					retryGitOperation(() -> {
+						final RevCommit revCommit = commitCommand.call();
+						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
+								user,
+								this.openCommits.get(user),
+								revCommit.getId().getName()));
+						return null;
+					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+
 					this.openCommits.remove(user);
 					final PageManager pm = this.m_engine.getPageManager();
 					Log.info("Start refresh");
@@ -729,7 +856,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					}
 					this.refreshCacheList.clear();
 				}
-				catch (final GitAPIException e) {
+				catch (final Exception e) {
 					Log.severe(e.getMessage(), e);
 				}
 			}
@@ -743,7 +870,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public void rollback(final String user) {
 		try {
 			canWriteFileLock();
-
+			commitLock();
 			final Git git = new Git(this.repository);
 			final ResetCommand reset = git.reset();
 			final CleanCommand clean = git.clean();
@@ -764,18 +891,34 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					// decide whether page or attachment
 					refreshCache(pm, unmangleName(path));
 				}
-				reset.call();
-				clean.call();
-				final Status status = git.status().call();
+				retryGitOperation(() -> {
+					reset.call();
+					return null;
+				}, LockFailedException.class, "Retry reset repo, because of lock failed exception");
 
-				checkout.call();
+				retryGitOperation(() -> {
+					clean.call();
+					return null;
+				}, LockFailedException.class, "Retry clean repo, because of lock failed exception");
+
+				retryGitOperation(() -> {
+					final Status status = git.status().call();
+					return null;
+				}, LockFailedException.class, "Retry status repo, because of lock failed exception");
+
+				retryGitOperation(() -> {
+					checkout.call();
+					return null;
+				}, LockFailedException.class, "Retry checkout repo, because of lock failed exception");
+
 				this.openCommits.remove(user);
 			}
-			catch (final GitAPIException e) {
+			catch (final Exception e) {
 				Log.severe(e.getMessage(), e);
 			}
 		}
 		finally {
+			commitUnlock();
 			writeFileUnlock();
 		}
 	}

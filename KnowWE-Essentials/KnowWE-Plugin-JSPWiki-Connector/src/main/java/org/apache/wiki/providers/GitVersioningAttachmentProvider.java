@@ -50,6 +50,7 @@ import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -131,17 +132,21 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	public void putAttachmentData(Attachment att, InputStream data) throws ProviderException, IOException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
+			gitVersioningFileProvider.commitLock();
 			File attDir = findAttachmentDir(att);
 			Git git = new Git(repository);
 			if (!attDir.exists()) {
 				attDir.mkdirs();
 				try {
-					git.add().addFilepattern(attDir.getName()).call();
+					GitVersioningFileProvider.retryGitOperation(() -> {
+						git.add().addFilepattern(attDir.getName()).call();
+						return null;
+					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
 					if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
 						gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(attDir.getName());
 					}
 				}
-				catch (GitAPIException e) {
+				catch (Exception e) {
 					log.error(e.getMessage(), e);
 				}
 			}
@@ -159,29 +164,49 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			}
 			finally {
 				if (data != null) {
-					data.close();
+					try {
+						data.close();
+					}
+					catch (IOException e) {
+						// Ignore
+					}
 				}
 			}
 			try {
 				if (add) {
 					try {
-						Status status = git.status().addPath(attDir.getName()).call();
-						if (status.getUntracked().contains(attDir.getName())) {
+						GitVersioningFileProvider.retryGitOperation(() -> {
 							git.add().addFilepattern(attDir.getName()).call();
+							return null;
+						}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
+
+						Status status = GitVersioningFileProvider.retryGitOperation(
+								() -> git.status().addPath(attDir.getName()).call()
+								, LockFailedException.class, "Retry status of repo, because of lock failed exception");
+
+						if (status.getUntracked().contains(attDir.getName())) {
+							GitVersioningFileProvider.retryGitOperation(() -> {
+								git.add().addFilepattern(attDir.getName()).call();
+								return null;
+							}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
 						}
 					}
 					catch (GitAPIException e) {
 						log.error(e.getMessage(), e);
 					}
-					git.add().addFilepattern(getPath(att)).call();
+					GitVersioningFileProvider.retryGitOperation(() -> {
+						git.add().addFilepattern(getPath(att)).call();
+						return null;
+					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
 				}
 				commitAttachment(att, git, GitVersioningWikiEvent.UPDATE);
 			}
-			catch (GitAPIException e) {
+			catch (Exception e) {
 				log.error(e.getMessage(), e);
 			}
 		}
 		finally {
+			gitVersioningFileProvider.commitUnlock();
 			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
@@ -469,6 +494,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	private long getObjectSize(RevCommit version, Attachment att) throws IOException, ProviderException {
 		long ret;
+		//TODO look why this is not working every time
 		ObjectId objectId = getObjectOfCommit(version, att);
 		if (objectId != null) {
 			ObjectLoader loader = repository.open(objectId);
@@ -489,27 +515,33 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	public void deleteAttachment(Attachment att) throws ProviderException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
+			gitVersioningFileProvider.commitLock();
 			File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
 			if (attFile.exists()) {
 				boolean delete = attFile.delete();
 				if (!delete) log.debug("File " + getPath(att) + " could not be deleted on filesystem");
 				try {
 					Git git = new Git(repository);
-					git.rm().addFilepattern(getPath(att)).call();
+					GitVersioningFileProvider.retryGitOperation(() -> {
+						git.rm().addFilepattern(getPath(att)).call();
+						return null;
+					}, LockFailedException.class, "Retry removing to repo, because of lock failed exception");
+
 					commitAttachment(att, git, GitVersioningWikiEvent.DELETE);
 				}
-				catch (GitAPIException e) {
+				catch (Exception e) {
 					log.error(e.getMessage(), e);
 					throw new ProviderException("File " + getPath(att) + " could not be deleted");
 				}
 			}
 		}
 		finally {
+			gitVersioningFileProvider.commitUnlock();
 			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
 
-	private void commitAttachment(Attachment att, Git git, int type) throws GitAPIException {
+	private void commitAttachment(Attachment att, Git git, int type) throws Exception {
 		if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
 			gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(getPath(att));
 		}
@@ -519,11 +551,15 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			addUserInfo(engine, att.getAuthor(), commitCommand);
 			try {
 				gitVersioningFileProvider.commitLock();
-				RevCommit revCommit = commitCommand.call();
-				WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
-						att.getAuthor(),
-						att.getParentName() + "/" + att.getFileName(),
-						revCommit.getId().getName()));
+				GitVersioningFileProvider.retryGitOperation(() -> {
+					RevCommit revCommit = commitCommand.call();
+					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
+							att.getAuthor(),
+							att.getParentName() + "/" + att.getFileName(),
+							revCommit.getId().getName()));
+					return null;
+				}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+
 				gitVersioningFileProvider.periodicalGitGC(git);
 			}
 			finally {
@@ -536,6 +572,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	public void moveAttachmentsForPage(WikiPage oldParent, String newParent) throws ProviderException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
+			gitVersioningFileProvider.commitLock();
 			File oldDir = findPageDir(oldParent.getName());
 			File newDir = findPageDir(newParent);
 			if (newDir.exists() && !newDir.isDirectory()) {
@@ -574,17 +611,30 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 					}
 					rm.addFilepattern(getAttachmentDir(oldParent.getName()));
 					add.addFilepattern(getAttachmentDir(newParent));
-					rm.call();
-					add.call();
+
+					GitVersioningFileProvider.retryGitOperation(() -> {
+						rm.call();
+						return null;
+					}, LockFailedException.class, "Retry removing to repo, because of lock failed exception");
+
+					GitVersioningFileProvider.retryGitOperation(() -> {
+						add.call();
+						return null;
+					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
+
 					if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
 						commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
 						try {
 							gitVersioningFileProvider.commitLock();
-							RevCommit revCommit = commit.call();
-							WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
-									oldParent.getAuthor(),
-									filesForEvent,
-									revCommit.getId().getName()));
+							GitVersioningFileProvider.retryGitOperation(() -> {
+								RevCommit revCommit = commit.call();
+								WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
+										oldParent.getAuthor(),
+										filesForEvent,
+										revCommit.getId().getName()));
+								return null;
+							}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+
 							gitVersioningFileProvider.periodicalGitGC(git);
 						}
 						finally {
@@ -592,13 +642,14 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 						}
 					}
 				}
-				catch (IOException | GitAPIException e) {
+				catch (Exception e) {
 					log.error(e.getMessage(), e);
 					throw new ProviderException("Can't move attachments form " + oldParent.getName() + " to " + newParent);
 				}
 			}
 		}
 		finally {
+			gitVersioningFileProvider.commitUnlock();
 			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
