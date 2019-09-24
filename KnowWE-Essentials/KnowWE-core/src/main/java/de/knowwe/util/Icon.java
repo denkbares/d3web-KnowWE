@@ -106,6 +106,7 @@ public class Icon {
 	public static final Icon EXCLUDED = new Icon("fa-type fa-ban");
 	public static final Icon ABSTRACT = new Icon("fa-type fa-asterisk");
 	public static final Icon PLUG = new Icon("fa-type fa-plug");
+	public static final Icon GRIP_LINES_VERTICAL = new Icon("fa-type fa-grip-lines-vertical");
 
 	public static final Icon LOW_PRIO = new Icon("fa-type fa-exclamation-circle knowwe-lowprio");
 	public static final Icon HIGH_PRIO = new Icon("fa-type fa-exclamation-circle knowwe-highprio");
