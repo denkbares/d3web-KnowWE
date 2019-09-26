@@ -146,7 +146,7 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 	private void createPages(final int numPages) throws ProviderException {
 		for (int i = 0; i < numPages; i++) {
 			final String content = RandomStringUtils.randomAlphabetic(1024);
-			System.out.println("creating page #" + i + "/" + numPages);
+			//System.out.println("creating page #" + i + "/" + numPages);
 			createPage("page " + i, content);
 		}
 	}
@@ -163,7 +163,7 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 			final WikiPage page = createPage(pageName, initialContent);
 
 			for (int j = 0; j < NUM_EDITS; j++) {
-				System.out.println("edit #" + j);
+				//System.out.println("edit #" + j);
 				final String editedContent = RandomStringUtils.randomAlphabetic(4 * 1024);
 				updatePage(page, editedContent);
 				verifyPage(page, editedContent);
@@ -243,7 +243,7 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 		final String pageName = "page for " + user;
 		final WikiPage page = createPage(pageName, "initial content for " + user);
 		for (int i = 0; i < this.numEdits; i++) {
-			System.out.println("User " + user + " edit #" + i);
+			//System.out.println("User " + user + " edit #" + i);
 			final String editedContent = RandomStringUtils.randomAlphabetic(10 * 1024);
 			updatePage(page, editedContent);
 			verifyPage(page, editedContent);
@@ -285,7 +285,7 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 		for (int i = 0; i < this.numEdits; i++) {
 			final String editedContent = RandomStringUtils.randomAlphabetic(10 * 1024);
 			final WikiPage page = allPages.get(RandomUtils.nextInt(0, allPages.size()));
-			System.out.println("User " + user + " edit #" + i + " for page " + page.getName());
+			//System.out.println("User " + user + " edit #" + i + " for page " + page.getName());
 			updatePage(page, editedContent);
 		}
 	}
