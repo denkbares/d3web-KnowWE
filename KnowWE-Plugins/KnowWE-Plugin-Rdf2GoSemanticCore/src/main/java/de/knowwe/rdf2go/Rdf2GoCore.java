@@ -1168,13 +1168,14 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	private Object sparql(Collection<Namespace> namespaces, String query, Options options, SparqlType type) {
+
+		Stopwatch stopwatch = new Stopwatch();
 		String completeQuery = prependPrefixesToQuery(namespaces, query);
 
 		// if the compile thread is calling here, we continue without all the timeout, cache, and lock
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
 			try {
-				Stopwatch stopwatch = new Stopwatch();
 				Object result = new SparqlCallable(completeQuery, type, Long.MAX_VALUE, true).call();
 				if (stopwatch.getTime() > 10) {
 					Log.warning("Slow compile time SPARQL query detected. Query finished after "
@@ -1208,11 +1209,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, options.timeoutMillis, false), options.priority);
 			sparqlThreadPool.execute(sparqlTask);
 		}
-		String timeOutMessage = "SPARQL query timed out after " + Strings.getDurationVerbalization(options.timeoutMillis, true) + ".";
+		String timeOutMessage = "SPARQL query timed out or was cancelled after ";
 		try {
-			// We set a generous time out to be sure to not be blocked indefinitely, even if stuff goes wrong with
-			// stopping the thread cold. Using maxEvaluation timeout and the SparqlTaskReaper, we should return
-			// way sooner in normal cases.
 			long maxTimeOut = options.timeoutMillis * 2;
 			if (options.timeoutMillis > 0 && maxTimeOut < 0) {
 				// in case we get an overflow because timeOutMillis is near MAX_VALUE
@@ -1222,13 +1220,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		catch (CancellationException | InterruptedException | TimeoutException e) {
 //			Log.warning("SPARQL query failed due to an exception", e);
-			throw new RuntimeException(timeOutMessage, e);
+			throw new RuntimeException(timeOutMessage + stopwatch.getDisplay(), e);
 		}
 		catch (Exception e) {
 			Throwable cause = e.getCause();
 			if (cause == null) cause = e;
 			if (cause instanceof ThreadDeath || cause instanceof QueryInterruptedException) {
-				throw new RuntimeException(timeOutMessage, cause);
+				throw new RuntimeException(timeOutMessage + stopwatch.getDisplay(), cause);
 			}
 			else if (cause instanceof RuntimeException) {
 				if (!(cause.getCause() instanceof QueryInterruptedException)) {
