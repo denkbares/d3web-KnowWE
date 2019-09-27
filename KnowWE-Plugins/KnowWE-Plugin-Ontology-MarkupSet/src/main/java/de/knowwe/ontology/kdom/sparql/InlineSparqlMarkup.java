@@ -164,7 +164,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 						String variable = variableIterator.next();
 						Value node = row.getValue(variable);
 						if (node == null) continue;
-						cell = node.toString();
+						cell = node.stringValue();
 						cell = Rdf2GoUtils.trimDataType(core, cell);
 						cell = Rdf2GoUtils.trimNamespace(core, cell);
 						line.appendJSPWikiMarkup(cell);
