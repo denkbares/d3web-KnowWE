@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -49,15 +49,29 @@ public class TableIndexConstraint implements SectionFinderConstraint {
 	private int minRowFromLast;
 	private int maxRowFromLast;
 
+	private int minColumnOffset;
+	private int maxColumnOffset;
+
 	public TableIndexConstraint(int minColumn, int maxColumn, int minRow, int maxRow) {
 		this.minColumn = minColumn;
 		this.maxColumn = maxColumn;
 		this.minRow = minRow;
 		this.maxRow = maxRow;
+		this.minColumnOffset = -1;
+		this.maxColumnOffset = -1;
+	}
+
+	public void setDynamicConstraints(int minColumnOffset, int maxColumnOffset, int minRow, int maxRow){
+		this.minColumnOffset = minColumnOffset;
+		this.maxColumnOffset = maxColumnOffset;
+		this.minRow = minRow;
+		this.maxRow = maxRow;
 	}
 
 	public TableIndexConstraint() {
-		// using setters
+		//Default to offset to -1
+		this.minColumnOffset = -1;
+		this.maxColumnOffset = -1;
 	}
 
 	public void setColumnConstraints(int minColumn, int maxColumn) {
@@ -114,10 +128,16 @@ public class TableIndexConstraint implements SectionFinderConstraint {
 
 	private boolean columnRangeIsOk(int currentColumn, Pair<Integer, Integer> tableSize) {
 		int numberOfColumns = tableSize.getA();
-		// we support counting backwards from the end
-		return (currentColumn >= minColumn && currentColumn < maxColumn)
-				|| (currentColumn >= numberOfColumns - minColumnFromLast
-				&& currentColumn < numberOfColumns - maxColumnFromLast);
+		//for dynamicaly growing columns for tables use this check
+		if (minColumnOffset >= 0 && maxColumnOffset >= 0) {
+			return ( (currentColumn >= minColumnOffset)
+					&& (currentColumn < numberOfColumns - maxColumnOffset) );
+		} else {
+			//Default behavior
+			return (currentColumn >= minColumn && currentColumn < maxColumn)
+					|| (currentColumn >= numberOfColumns - minColumnFromLast
+					&& currentColumn < numberOfColumns - maxColumnFromLast);
+		}
 	}
 
 	private boolean rowRangeIsOk(int currentRow, Pair<Integer, Integer> tableSize) {
