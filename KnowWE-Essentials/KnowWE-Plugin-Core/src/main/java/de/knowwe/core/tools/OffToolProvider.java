@@ -21,6 +21,7 @@ package de.knowwe.core.tools;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -49,7 +50,7 @@ public class OffToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return true;
+		return KnowWEUtils.canWrite(section, userContext);
 	}
 
 }

@@ -27,6 +27,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Action sets status of a markup section on/off
@@ -41,6 +42,11 @@ public class SetMarkupActivationStatus extends AbstractAction {
 		String status = context.getParameter("status");
 		Section<?> section = Sections.get(sectionID);
 
+		if(!KnowWEUtils.canWrite(section, context)) {
+			context.sendError(403, "No right permission for section");
+			return;
+		}
+
 		String text = section.getText();
 		String newText = "";
 		if (status.equals("off")) {
@@ -50,6 +56,8 @@ public class SetMarkupActivationStatus extends AbstractAction {
 		else {
 			newText = text.replaceFirst("(?i)%%Off:", "%%");
 		}
+
+
 
 		Sections.replace(context, sectionID, newText);
 
