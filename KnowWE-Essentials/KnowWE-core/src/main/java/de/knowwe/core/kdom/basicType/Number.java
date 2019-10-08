@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import de.knowwe.core.compile.DefaultGlobalCompiler;
-import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalHandler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -48,10 +47,30 @@ public class Number extends AbstractType {
 		this(new NumberFinder());
 	}
 
-	public Number(SectionFinder f) {
-		this.setSectionFinder(f);
-		// NumberChecker only makes sense if NumberFinder is not Numberfinder
-		if (!(f instanceof NumberFinder)) this.addCompileScript(new NumberChecker());
+	/**
+	 * New number type.
+	 *
+	 * @param allowCommaAsDecimalSeparator whether both point and comma are accepted to separate decimal digits
+	 */
+	public Number(boolean allowCommaAsDecimalSeparator) {
+		this(new NumberFinder(allowCommaAsDecimalSeparator));
+	}
+
+	public Number(SectionFinder finder) {
+		this(finder, false);
+	}
+
+	/**
+	 * New number type with the given finder
+	 *
+	 * @param finder                       finder for the number
+	 * @param allowCommaAsDecimalSeparator whether both point and comma are accepted to separate decimal digits
+	 */
+	public Number(SectionFinder finder, boolean allowCommaAsDecimalSeparator) {
+
+		this.setSectionFinder(finder);
+		// NumberChecker only makes sense if NumberFinder is not NumberFinder
+		if (!(finder instanceof NumberFinder)) this.addCompileScript(new NumberChecker(allowCommaAsDecimalSeparator));
 		this.setRenderer(StyleRenderer.NUMBER);
 	}
 
@@ -71,38 +90,57 @@ public class Number extends AbstractType {
 		}
 		return null;
 	}
-}
 
-// only one of them NumberFinder/NumberChecker makes sense to have for one
-// Number-type
+	private static class NumberFinder implements SectionFinder {
 
-class NumberFinder implements SectionFinder {
+		private final boolean allowCommaAsDecimalSeparator;
 
-	@Override
-	public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-		String trim = text.trim();
-		try {
-			Double.parseDouble(trim);
-			return new AllTextFinderTrimmed().lookForSections(text, father, type);
+		public NumberFinder() {
+			this(false);
 		}
-		catch (Exception e) {
-			return null;
+
+		public NumberFinder(boolean allowCommaAsDecimalSeparator) {
+			this.allowCommaAsDecimalSeparator = allowCommaAsDecimalSeparator;
+		}
+
+		@Override
+		public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
+			String trim = text.trim();
+			if (allowCommaAsDecimalSeparator) {
+				trim = trim.replaceAll(",", ".");
+			}
+			try {
+				Double.parseDouble(trim);
+				return new AllTextFinderTrimmed().lookForSections(text, father, type);
+			}
+			catch (Exception e) {
+				return null;
+			}
+		}
+	}
+
+	private static class NumberChecker extends DefaultGlobalCompiler.DefaultGlobalHandler<Number> {
+
+		private final boolean allowCommaAsDecimalSeparator;
+
+		public NumberChecker(boolean allowCommaAsDecimalSeparator) {
+			this.allowCommaAsDecimalSeparator = allowCommaAsDecimalSeparator;
+		}
+
+		@Override
+		public Collection<Message> create(DefaultGlobalCompiler compiler, Section<Number> section) {
+			List<Message> msgs = new ArrayList<>();
+			String trim = section.getText().trim();
+			if (allowCommaAsDecimalSeparator) trim = trim.replaceAll(",", ".");
+			try {
+				Double.parseDouble(trim);
+			}
+			catch (Exception e) {
+				msgs.add(Messages.invalidNumberError(trim));
+			}
+			return msgs;
 		}
 	}
 }
 
-class NumberChecker extends DefaultGlobalHandler<Number> {
 
-	@Override
-	public Collection<Message> create(DefaultGlobalCompiler compiler, Section<Number> s) {
-		List<Message> msgs = new ArrayList<>();
-		String trim = s.getText().trim();
-		try {
-			Double.parseDouble(trim);
-		}
-		catch (Exception e) {
-			msgs.add(Messages.invalidNumberError(trim));
-		}
-		return msgs;
-	}
-}
