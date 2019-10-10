@@ -7,6 +7,9 @@ package de.d3web.we.kdom.xcl.list;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.Condition;
@@ -94,23 +97,21 @@ public class XCLRelation extends AbstractType {
 	 */
 	public static class CreateXCLRelationHandler implements D3webHandler<XCLRelation> {
 
-		private List<Section<SolutionDefinition>> getCorrespondingSolutionDefinitions(Section<XCLRelation> relation) {
+		private Set<Solution> getCorrespondingSolutions(D3webCompiler compiler, Section<XCLRelation> relation) {
 			return $(relation).ancestor(CoveringList.class)
 					.successor(XCLHeader.class)
 					.successor(SolutionDefinition.class)
-					.asList();
+					.map(s -> s.get().getTermObject(compiler, s))
+					.filter(Objects::nonNull)
+					.collect(Collectors.toSet());
 		}
 
 		private List<XCLModel> getCorrespondingXCLModels(D3webCompiler compiler, Section<XCLRelation> relation) {
 			List<XCLModel> models = new ArrayList<>();
-			for (Section<SolutionDefinition> solutionDef : getCorrespondingSolutionDefinitions(relation)) {
-				// process if no solution has been created
-				Solution solution = solutionDef.get().getTermObject(compiler, solutionDef);
-				if (solution != null) {
-					// add associated XCL model (if there is any)
-					XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
-					if (xclModel != null) models.add(xclModel);
-				}
+			for (Solution solution : getCorrespondingSolutions(compiler, relation)) {
+				// add associated XCL model (if there is any)
+				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
+				if (xclModel != null) models.add(xclModel);
 			}
 			return models;
 		}
