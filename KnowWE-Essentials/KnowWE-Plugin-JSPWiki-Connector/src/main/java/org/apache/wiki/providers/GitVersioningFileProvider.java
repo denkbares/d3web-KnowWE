@@ -22,7 +22,6 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.wiki.InternalWikiException;
@@ -208,15 +206,15 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	private void doBinaryGC(File pageDir) {
 		try {
-			Process git_gc = Runtime.getRuntime().exec("git gc", null, pageDir);
-			InputStream inputStream = git_gc.getInputStream();
-			InputStream errorStream = git_gc.getErrorStream();
-
-			String stdOut = IOUtils.toString(inputStream);
-			String stdErr = IOUtils.toString(errorStream);
-			Log.info(stdOut);
-			Log.severe(stdErr);
-			boolean b = git_gc.waitFor(2, TimeUnit.MINUTES);
+			StopWatch sw = new StopWatch();
+			sw.start();
+			log.info("binary gc start");
+			ProcessBuilder pb = new ProcessBuilder();
+			pb.inheritIO().command("git", "gc").directory(pageDir);
+			Process git_gc = pb.start();
+			git_gc.waitFor(2, TimeUnit.MINUTES);
+			sw.stop();
+			log.info("binary gc took " + sw.toString());
 		}
 		catch (InterruptedException e) {
 			Log.warning("External git process didn't end in 2 minutes, therefore cancel it");
@@ -966,5 +964,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	public void shutdown() {
 		this.repository.close();
+	}
+
+	public String getFilesystemPath() {
+		return filesystemPath;
 	}
 }
