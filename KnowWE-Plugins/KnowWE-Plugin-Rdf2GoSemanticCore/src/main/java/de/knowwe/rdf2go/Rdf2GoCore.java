@@ -40,6 +40,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
@@ -201,9 +202,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			applicationName = "Main";
 		}
 		try {
-			semanticCore = SemanticCore.getOrCreateInstance(applicationName + "-" + coreId
+			this.semanticCore = SemanticCore.getOrCreateInstance(applicationName + "-" + coreId
 					.incrementAndGet(), reasoning);
-			semanticCore.allocate(); // make sure the core does not shut down on its own...
+			this.semanticCore.allocate(); // make sure the core does not shut down on its own...
 			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
 		}
 		catch (IOException e) {
@@ -212,8 +213,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		this.ruleSet = reasoning;
 
-		insertCache = new HashSet<>();
-		removeCache = new HashSet<>();
+		this.insertCache = new HashSet<>();
+		this.removeCache = new HashSet<>();
 
 		initDefaultNamespaces();
 	}
@@ -292,7 +293,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	public static Rdf2GoCore getInstance(Section<?> section) {
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
-		if (compiler == null) return null;
+		if (compiler == null) {
+			return null;
+		}
 		return getInstance(compiler);
 	}
 
@@ -300,11 +303,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * Make sure to close the connection after use!
 	 */
 	public RepositoryConnection getRepositoryConnection() throws RepositoryException {
-		return semanticCore.getConnection();
+		return this.semanticCore.getConnection();
 	}
 
 	public Date getLastModified() {
-		return new Date(lastModified);
+		return new Date(this.lastModified);
 	}
 
 	/**
@@ -323,9 +326,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @param namespaces the namespaces to add (URL)
 	 */
 	public void addNamespaces(Namespace... namespaces) {
-		synchronized (namespaceMutex) {
+		synchronized (this.namespaceMutex) {
 			try {
-				try (RepositoryConnection connection = semanticCore.getConnection()) {
+				try (RepositoryConnection connection = this.semanticCore.getConnection()) {
 					for (Namespace namespace : namespaces) {
 						connection.setNamespace(namespace.getPrefix(), namespace.getName());
 						if ("lns".equals(namespace.getPrefix())) {
@@ -422,13 +425,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @param source     the {@link StatementSource} for which the {@link Statement}s are added and cached
 	 * @param statements the {@link Statement}s to add
 	 */
-	public void addStatements(StatementSource source, Collection<Statement> statements) {
-		synchronized (statementMutex) {
+	public void addStatements(StatementSource source, @NotNull Collection<Statement> statements) {
+		synchronized (this.statementMutex) {
 			for (Statement statement : statements) {
-				if (!statementCache.containsValue(statement)) {
-					insertCache.add(statement);
+				if (!this.statementCache.containsValue(statement)) {
+					this.insertCache.add(Objects.requireNonNull(statement));
 				}
-				statementCache.put(source, statement);
+				this.statementCache.put(source, statement);
 			}
 		}
 	}
@@ -503,13 +506,15 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		boolean removedStatements = false;
 		boolean insertedStatements = false;
 		try {
-			synchronized (statementMutex) {
+			synchronized (this.statementMutex) {
 
-				int removeSize = removeCache.size();
-				int insertSize = insertCache.size();
+				int removeSize = this.removeCache.size();
+				int insertSize = this.insertCache.size();
 
 				// return immediately if no changes are recorded yet
-				if (removeSize == 0 && insertSize == 0) return false;
+				if (removeSize == 0 && insertSize == 0) {
+					return false;
+				}
 
 				// verbose log if only a few changes are recorded
 				boolean verboseLog = (removeSize + insertSize < 50) && !Log.logger().isLoggable(Level.FINE);
@@ -525,18 +530,18 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				Duplicate statements are ignored by the model anyway.
 				*/
 
-				removeCache.removeAll(insertCache);
+				this.removeCache.removeAll(this.insertCache);
 
 
 				/*
 				Do actual changes on the model
 				 */
 				long connectionStart = System.currentTimeMillis();
-				try (RepositoryConnection connection = semanticCore.getConnection()) {
+				try (RepositoryConnection connection = this.semanticCore.getConnection()) {
 					connection.begin();
 
-					connection.remove(removeCache);
-					connection.add(insertCache);
+					connection.remove(this.removeCache);
+					connection.add(this.insertCache);
 
 					connection.commit();
 				}
@@ -544,22 +549,22 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				/*
 				Fire events
 				 */
-				if (!removeCache.isEmpty()) {
+				if (!this.removeCache.isEmpty()) {
 					EventManager.getInstance().fireEvent(new RemoveStatementsEvent(
-							Collections.unmodifiableCollection(removeCache), this));
+							Collections.unmodifiableCollection(this.removeCache), this));
 					removedStatements = true;
 				}
-				if (!insertCache.isEmpty()) {
+				if (!this.insertCache.isEmpty()) {
 					EventManager.getInstance().fireEvent(new InsertStatementsEvent(
-							Collections.unmodifiableCollection(removeCache),
-							Collections.unmodifiableCollection(insertCache), this));
+							Collections.unmodifiableCollection(this.removeCache),
+							Collections.unmodifiableCollection(this.insertCache), this));
 					insertedStatements = true;
 				}
 				if (removedStatements || insertedStatements) {
 					// clear result cache if there are any changes
-					synchronized (resultCache) {
-						resultCache.clear();
-						resultCacheSize = 0;
+					synchronized (this.resultCache) {
+						this.resultCache.clear();
+						this.resultCacheSize = 0;
 					}
 					EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
 				}
@@ -568,8 +573,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				Logging
 				 */
 				if (verboseLog) {
-					logStatements(removeCache, connectionStart, "Removed statements:\n");
-					logStatements(insertCache, connectionStart, "Inserted statements:\n");
+					logStatements(this.removeCache, connectionStart, "Removed statements:\n");
+					logStatements(this.insertCache, connectionStart, "Inserted statements:\n");
 				}
 				else {
 					Log.info("Removed " + removeSize + " statements from and added "
@@ -578,13 +583,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 							+ (System.currentTimeMillis() - connectionStart) + "ms.");
 				}
 
-				Log.info("Current number of statements: " + statementCache.size());
+				Log.info("Current number of statements: " + this.statementCache.size());
 
 				/*
 				Reset caches
 				 */
-				removeCache = new HashSet<>();
-				insertCache = new HashSet<>();
+				this.removeCache = new HashSet<>();
+				this.insertCache = new HashSet<>();
 			}
 		}
 		catch (RepositoryException e) {
@@ -592,7 +597,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		finally {
 			// outside of commit an auto committing connection seems to be ok
-			lastModified = System.currentTimeMillis();
+			this.lastModified = System.currentTimeMillis();
 			EventManager.getInstance().fireEvent(new Rdf2GoCoreCommitFinishedEvent(this));
 		}
 		return removedStatements || insertedStatements;
@@ -772,7 +777,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return an uri of the local namespace
 	 */
 	public IRI createLocalIRI(String name) {
-		return createIRI(lns + Strings.encodeURL(name));
+		return createIRI(this.lns + Strings.encodeURL(name));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -841,7 +846,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public Map<String, String> getNamespacesMap() {
 		Map<String, String> namespaces = this.namespaces;
 		if (namespaces == null) {
-			synchronized (namespaceMutex) {
+			synchronized (this.namespaceMutex) {
 				namespaces = this.namespaces;
 				if (namespaces == null) {
 					namespaces = new HashMap<>();
@@ -858,7 +863,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	@Override
 	@NotNull
 	public Collection<Namespace> getNamespaces() {
-		return semanticCore.getNamespaces();
+		return this.semanticCore.getNamespaces();
 	}
 
 	/**
@@ -871,7 +876,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		Map<String, String> namespacePrefixes = this.namespacePrefixes;
 		// check before and after synchronizing synchronizing...
 		if (namespacePrefixes == null) {
-			synchronized (nsPrefixMutex) {
+			synchronized (this.nsPrefixMutex) {
 				namespacePrefixes = this.namespacePrefixes;
 				if (namespacePrefixes == null) {
 					namespacePrefixes = new HashMap<>();
@@ -893,7 +898,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		Set<Statement> statements1 = null;
 		try {
-			RepositoryResult<Statement> statements = semanticCore.getConnection()
+			RepositoryResult<Statement> statements = this.semanticCore.getConnection()
 					.getStatements(null, null, null, true);
 			statements1 = Iterations.asSet(statements);
 		}
@@ -907,8 +912,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * Returns the set of statements that have been created from the given section during the compile process
 	 */
 	public Set<Statement> getStatementsFromCache(Section<?> source) {
-		synchronized (statementMutex) {
-			return statementCache.getValues(new SectionSource(source));
+		synchronized (this.statementMutex) {
+			return this.statementCache.getValues(new SectionSource(source));
 		}
 	}
 
@@ -933,7 +938,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private void logStatements(Set<Statement> statements, long start, String caption) {
 		// check if we have something to log
-		if (statements.isEmpty()) return;
+		if (statements.isEmpty()) {
+			return;
+		}
 
 		// sort statements at this point using tree map
 		StringBuilder buffer = new StringBuilder();
@@ -945,29 +952,29 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public void readFrom(InputStream in, RDFFormat syntax) throws RDFParseException, RepositoryException, IOException {
-		semanticCore.addData(in, syntax);
-		namespaces = null;
-		namespacePrefixes = null;
+		this.semanticCore.addData(in, syntax);
+		this.namespaces = null;
+		this.namespacePrefixes = null;
 	}
 
 	public void readFrom(File in) throws RDFParseException, RepositoryException, IOException {
-		semanticCore.addData(in);
-		namespaces = null;
-		namespacePrefixes = null;
+		this.semanticCore.addData(in);
+		this.namespaces = null;
+		this.namespacePrefixes = null;
 	}
 
 	public void removeAllCachedStatements() {
 		// get all statements of this wiki and remove them from the model
-		synchronized (statementMutex) {
-			removeCache.addAll(statementCache.valueSet());
-			statementCache.clear();
+		synchronized (this.statementMutex) {
+			this.removeCache.addAll(this.statementCache.valueSet());
+			this.statementCache.clear();
 		}
 	}
 
 	public void removeNamespace(String abbreviation) throws RepositoryException {
-		semanticCore.getConnection().removeNamespace(abbreviation);
-		namespaces = null;
-		namespacePrefixes = null;
+		this.semanticCore.getConnection().removeNamespace(abbreviation);
+		this.namespaces = null;
+		this.namespacePrefixes = null;
 	}
 
 	/**
@@ -978,7 +985,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @created 13.06.2012
 	 */
 	public void removeStatements(Collection<Statement> statements) {
-		synchronized (statementMutex) {
+		synchronized (this.statementMutex) {
 			removeStatements(null, statements);
 		}
 	}
@@ -989,18 +996,18 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @param source the {@link StatementSource} for which the statements should be removed
 	 */
 	public void removeStatements(StatementSource source) {
-		synchronized (statementMutex) {
-			Collection<Statement> statements = statementCache.getValues(source);
+		synchronized (this.statementMutex) {
+			Collection<Statement> statements = this.statementCache.getValues(source);
 			removeStatements(source, new ArrayList<>(statements));
 		}
 	}
 
 	private void removeStatements(StatementSource source, Collection<Statement> statements) {
-		synchronized (statementMutex) {
+		synchronized (this.statementMutex) {
 			for (Statement statement : statements) {
-				statementCache.remove(source, statement);
-				if (!statementCache.containsValue(statement)) {
-					removeCache.add(statement);
+				this.statementCache.remove(source, statement);
+				if (!this.statementCache.containsValue(statement)) {
+					this.removeCache.add(statement);
 				}
 			}
 		}
@@ -1029,9 +1036,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @created 13.12.2013
 	 */
 	public Set<Article> getSourceArticles(Statement statement) {
-		synchronized (statementMutex) {
-			Collection<StatementSource> list = statementCache.getKeys(statement);
-			if (list.isEmpty()) return Collections.emptySet();
+		synchronized (this.statementMutex) {
+			Collection<StatementSource> list = this.statementCache.getKeys(statement);
+			if (list.isEmpty()) {
+				return Collections.emptySet();
+			}
 			Set<Article> result = new HashSet<>();
 			for (StatementSource source : list) {
 				if (source instanceof ArticleStatementSource) {
@@ -1054,9 +1063,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	@Deprecated
 	public Article getSourceArticle(Statement statement) {
-		synchronized (statementMutex) {
-			Collection<StatementSource> list = statementCache.getKeys(statement);
-			if (list.isEmpty()) return null;
+		synchronized (this.statementMutex) {
+			Collection<StatementSource> list = this.statementCache.getKeys(statement);
+			if (list.isEmpty()) {
+				return null;
+			}
 			for (StatementSource source : list) {
 				if (source instanceof ArticleStatementSource) {
 					return ((ArticleStatementSource) source).getArticle();
@@ -1075,10 +1086,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public boolean clearSparqlResult(String query) {
 		String completeQuery = prependPrefixesToQuery(getNamespaces(), query);
-		synchronized (resultCache) {
-			SparqlTask removed = resultCache.remove(completeQuery);
+		synchronized (this.resultCache) {
+			SparqlTask removed = this.resultCache.remove(completeQuery);
 			if (removed != null) {
-				resultCacheSize -= removed.getSize();
+				this.resultCacheSize -= removed.getSize();
 				return true;
 			}
 			return false;
@@ -1192,14 +1203,14 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		// normal query, e.g. from a renderer... do all the cache and timeout stuff
 		SparqlTask sparqlTask;
 		if (options.cached) {
-			synchronized (resultCache) {
-				sparqlTask = resultCache.get(completeQuery);
+			synchronized (this.resultCache) {
+				sparqlTask = this.resultCache.get(completeQuery);
 				if (sparqlTask == null
 						|| (sparqlTask.isCancelled() && sparqlTask.callable.timeOutMillis != options.timeoutMillis)) {
 					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, options.timeoutMillis, true), options.priority);
-					SparqlTask previous = resultCache.put(completeQuery, sparqlTask);
+					SparqlTask previous = this.resultCache.put(completeQuery, sparqlTask);
 					if (previous != null) {
-						resultCacheSize -= previous.getSize();
+						this.resultCacheSize -= previous.getSize();
 					}
 					sparqlThreadPool.execute(sparqlTask);
 				}
@@ -1224,7 +1235,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		catch (Exception e) {
 			Throwable cause = e.getCause();
-			if (cause == null) cause = e;
+			if (cause == null) {
+				cause = e;
+			}
 			if (cause instanceof ThreadDeath || cause instanceof QueryInterruptedException) {
 				throw new RuntimeException(timeOutMessage + stopwatch.getDisplay(), cause);
 			}
@@ -1259,7 +1272,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 
 		long getTimeOutMillis() {
-			return callable.timeOutMillis;
+			return this.callable.timeOutMillis;
 		}
 
 		public synchronized void setSize(int size) {
@@ -1267,19 +1280,19 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 
 		public synchronized int getSize() {
-			return size;
+			return this.size;
 		}
 
 		synchronized long getRunDuration() {
-			return hasStarted() ? System.currentTimeMillis() - startTime : 0;
+			return hasStarted() ? System.currentTimeMillis() - this.startTime : 0;
 		}
 
 		synchronized boolean hasStarted() {
-			return startTime != Long.MIN_VALUE;
+			return this.startTime != Long.MIN_VALUE;
 		}
 
 		synchronized boolean isAlive() {
-			return !hasStarted() || (thread != null && thread.isAlive());
+			return !hasStarted() || (this.thread != null && this.thread.isAlive());
 		}
 
 		@Override
@@ -1288,20 +1301,20 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			if (canceled) {
 				Log.warning("SPARQL query was canceled after "
 						+ Strings.getDurationVerbalization(getRunDuration())
-						+ ": " + getReadableQuery(callable.query, callable.type) + "...");
+						+ ": " + getReadableQuery(this.callable.query, this.callable.type) + "...");
 			}
 			return canceled;
 		}
 
 		public synchronized void stop() {
-			if (thread != null) {
+			if (this.thread != null) {
 				//noinspection deprecation
 				this.thread.stop();
 				LockSupport.unpark(this.thread);
 				this.thread = null;
 				Log.warning("SPARQL query was stopped after "
 						+ Strings.getDurationVerbalization(getRunDuration())
-						+ ": " + getReadableQuery(callable.query, callable.type) + "...");
+						+ ": " + getReadableQuery(this.callable.query, this.callable.type) + "...");
 			}
 		}
 
@@ -1314,7 +1327,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		public void run() {
 			synchronized (this) {
 				this.thread = Thread.currentThread();
-				startTime = System.currentTimeMillis();
+				this.startTime = System.currentTimeMillis();
 			}
 			try {
 				// deactivated, since it causes severe issues with GraphDB right now
@@ -1323,10 +1336,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			}
 			finally {
 				synchronized (this) {
-					thread = null;
+					this.thread = null;
 				}
 			}
-			if (callable.cached) {
+			if (this.callable.cached) {
 				handleCacheSize(this);
 			}
 		}
@@ -1334,13 +1347,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		@Override
 		protected void set(Object o) {
 			super.set(o);
-			if (callable.cached) {
+			if (this.callable.cached) {
 				setSize(getResultSize(o));
 			}
 			if (getRunDuration() > 1000) {
 				Log.info("SPARQL query finished after "
 						+ Strings.getDurationVerbalization(getRunDuration())
-						+ ": " + getReadableQuery(callable.query, callable.type) + "...");
+						+ ": " + getReadableQuery(this.callable.query, this.callable.type) + "...");
 			}
 		}
 
@@ -1366,22 +1379,22 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		@Override
 		public void run() {
-			long timeOut = (int) Math.min(task.getTimeOutMillis(), Integer.MAX_VALUE);
+			long timeOut = (int) Math.min(this.task.getTimeOutMillis(), Integer.MAX_VALUE);
 			try {
 				long killTimeOut = Math.min((long) (timeOut * 1.5), timeOut + Duration.of(1, MINUTES).toMillis());
-				task.get(killTimeOut, TimeUnit.MILLISECONDS);
+				this.task.get(killTimeOut, TimeUnit.MILLISECONDS);
 			}
 			catch (TimeoutException e) {
 
 				// we cancel the task
-				task.cancel(true);
+				this.task.cancel(true);
 
 				sleep(timeOut);
 
 				// if it has not died after the sleep, we kill it
 				// (not all repositories will react to cancel)
-				if (task.isAlive()) {
-					task.stop();
+				if (this.task.isAlive()) {
+					this.task.stop();
 				}
 			}
 			catch (Exception ignore) {
@@ -1470,15 +1483,15 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		@Override
 		public Object call() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-			int timeOutSeconds = (int) Math.min(timeOutMillis / 1000, Integer.MAX_VALUE);
+			int timeOutSeconds = (int) Math.min(this.timeOutMillis / 1000, Integer.MAX_VALUE);
 			final Stopwatch stopwatch = new Stopwatch();
 			Object result;
-			if (type == SparqlType.CONSTRUCT) {
+			if (this.type == SparqlType.CONSTRUCT) {
 				result = null; // TODO?
 			}
-			else if (type == SparqlType.SELECT) {
+			else if (this.type == SparqlType.SELECT) {
 
-				try (RepositoryConnection connection = semanticCore.getConnection()) {
+				try (RepositoryConnection connection = Rdf2GoCore.this.semanticCore.getConnection()) {
 					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, this.query);
 					tupleQuery.setMaxExecutionTime(timeOutSeconds);
 					TupleQueryResult queryResult = tupleQuery.evaluate();
@@ -1487,8 +1500,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				}
 			}
 			else {
-				try (RepositoryConnection connection = semanticCore.getConnection()) {
-					final BooleanQuery booleanQuery = connection.prepareBooleanQuery(query);
+				try (RepositoryConnection connection = Rdf2GoCore.this.semanticCore.getConnection()) {
+					final BooleanQuery booleanQuery = connection.prepareBooleanQuery(this.query);
 					booleanQuery.setMaxExecutionTime(timeOutSeconds);
 					logSlowEvaluation(stopwatch);
 					result = booleanQuery.evaluate();
@@ -1505,10 +1518,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 
 		private void logSlowEvaluation(Stopwatch stopwatch) {
-			if (cached && stopwatch.getTime() > LOG_TIMEOUT) {
+			if (this.cached && stopwatch.getTime() > LOG_TIMEOUT) {
 				Log.info("SPARQL query evaluation finished after "
 						+ Strings.getDurationVerbalization(stopwatch.getTime())
-						+ ", retrieving results...: " + getReadableQuery(query, type) + "...");
+						+ ", retrieving results...: " + getReadableQuery(this.query, this.type) + "...");
 			}
 		}
 	}
@@ -1525,7 +1538,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		else if (type == SparqlType.CONSTRUCT) {
 			start = query.toLowerCase().indexOf("construct");
 		}
-		if (start == -1) start = 0;
+		if (start == -1) {
+			start = 0;
+		}
 		final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
 		return query.substring(start, endIndex) + "...";
 	}
@@ -1541,15 +1556,15 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	private void handleCacheSize(SparqlTask task) {
-		resultCacheSize += task.getSize();
-		if (resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
-			synchronized (resultCache) {
-				Iterator<Entry<String, SparqlTask>> iterator = resultCache.entrySet().iterator();
-				while (iterator.hasNext() && resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
+		this.resultCacheSize += task.getSize();
+		if (this.resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
+			synchronized (this.resultCache) {
+				Iterator<Entry<String, SparqlTask>> iterator = this.resultCache.entrySet().iterator();
+				while (iterator.hasNext() && this.resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
 					Entry<String, SparqlTask> next = iterator.next();
 					iterator.remove();
 					try {
-						resultCacheSize -= next.getValue().getSize();
+						this.resultCacheSize -= next.getValue().getSize();
 					}
 					catch (Exception ignore) {
 						// nothing to do, cache size wasn't increase either
@@ -1604,7 +1619,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public void writeModel(Writer out, RDFFormat syntax) throws IOException {
 		try {
-			semanticCore.export(out, syntax);
+			this.semanticCore.export(out, syntax);
 		}
 		catch (RepositoryException | RDFHandlerException e) {
 			throw new IOException(e);
@@ -1620,7 +1635,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public void writeModel(OutputStream out, RDFFormat syntax) throws IOException {
 		try {
-			semanticCore.export(out, syntax);
+			this.semanticCore.export(out, syntax);
 		}
 		catch (RepositoryException | RDFHandlerException e) {
 			throw new IOException(e);
@@ -1634,8 +1649,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @created 19.04.2013
 	 */
 	public boolean isEmpty() {
-		synchronized (statementMutex) {
-			return statementCache.isEmpty();
+		synchronized (this.statementMutex) {
+			return this.statementCache.isEmpty();
 		}
 	}
 
@@ -1651,8 +1666,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		else {
 			shutDownThreadPool.execute(() -> {
 				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
-				synchronized (statementMutex) {
-					if (this.semanticCore == null) return;
+				synchronized (this.statementMutex) {
+					if (this.semanticCore == null) {
+						return;
+					}
 
 					this.statementCache.clear(); // free memory even if there are still references
 
@@ -1668,7 +1685,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public RepositoryConfig getRuleSet() {
-		return ruleSet;
+		return this.ruleSet;
 	}
 
 	/**
@@ -1680,6 +1697,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	@SuppressWarnings("unused")
 	public void dump(String query) {
-		semanticCore.dump(query);
+		this.semanticCore.dump(query);
 	}
 }
