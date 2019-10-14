@@ -694,6 +694,34 @@
 		</profile>
 
 		<profile>
+			<id>ehcache-100k-default</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<id>copy-ehcache</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target name="copy ehcache">
+										<copy file="src/resources/local/WEB-INF/classes/ehcache.xml.default"
+											toFile="target/${project.build.finalName}/WEB-INF/classes/ehcache.xml"
+											verbose="true" />
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
 			<id>konap-noswagger</id>
 			<properties>
 				<implementationVersion>KONAP 1.0 (MVP)</implementationVersion>
