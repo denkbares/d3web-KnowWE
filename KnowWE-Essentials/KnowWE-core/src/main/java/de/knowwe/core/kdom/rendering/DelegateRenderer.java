@@ -82,7 +82,7 @@ public class DelegateRenderer implements Renderer {
 			// now we log instead AND report the error to the user
 			Log.warning("Internal error while rendering section", e);
 			result.appendHtml("<span class='warning'>");
-			result.append("internal error while rendering section: " + e);
+			result.append("Internal error while rendering section: " + e);
 			result.appendHtml("</span>");
 		}
 
