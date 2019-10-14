@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.utils.ResultTableChecker;
 import com.denkbares.semanticcore.utils.ResultTableModel;
 import de.d3web.testing.Message;
 import de.d3web.testing.MessageObject;
@@ -117,17 +117,17 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 			appendMessageObjects(actualSparqlName, expectedSparqlName, message);
 			return message;
 		}
-		ResultTableModel actualResultTable = new ResultTableModel(result);
+		ResultTableModel actualResultTable = ResultTableModel.create(result);
 
 		List<String> variables = actualResultTable.getVariables();
 
 		Section<ExpectedSparqlResultTable> expectedTable = Sections.successor(expectedResultTableMarkup, ExpectedSparqlResultTable.class);
 		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(expectedTable, variables, compiler);
 
-		MultiMap<String, String> failures = ResultTableModel.checkEquality(expectedResultTable, actualResultTable, atLeastFlag);
+		List<ResultTableChecker.Failure> failures = ResultTableChecker.checkEquality(expectedResultTable, actualResultTable, atLeastFlag);
 
 		if (!failures.isEmpty()) {
-			String errorsText = ResultTableModel.generateErrorsText(failures, false);
+			String errorsText = ResultTableChecker.generateErrorsText(failures, false);
 			errorsText += "Expected result: " + expectedSparqlName + ", actual result: " + actualSparqlName;
 			Message message = new Message(messageTypeTestFailed, errorsText);
 			appendMessageObjects(actualSparqlName, expectedSparqlName, message);
@@ -157,7 +157,9 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 	@Override
 	protected @Nullable Section<?> getLinkTarget(String sectionName) {
 		Collection<Section<ExpectedSparqlResultTableMarkup>> expectedQueryResultSection = SparqlTestObjectProviderUtils.getExpectedQueryResultSection(sectionName);
-		if (expectedQueryResultSection.isEmpty()) return null;
+		if (expectedQueryResultSection.isEmpty()) {
+			return null;
+		}
 		return expectedQueryResultSection.iterator().next();
 	}
 }

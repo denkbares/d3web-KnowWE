@@ -20,14 +20,15 @@ package de.knowwe.ontology.ci;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import connector.DummyConnector;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.semanticcore.utils.ResultTableModel;
-import com.denkbares.semanticcore.utils.SimpleTableRow;
 import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
@@ -65,15 +66,21 @@ public class ExpectedSparqlResultTable extends Table {
 	}
 
 	public static ResultTableModel getResultTableModel(Section<ExpectedSparqlResultTable> table, List<String> variables, Rdf2GoCompiler c) {
-		if (table == null) return new ResultTableModel(Collections.emptyList(), variables);
+		if (table == null) {
+			return new ResultTableModel(Collections.emptyList(), variables);
+		}
 		List<TableRow> rows = new ArrayList<>();
 		List<Section<TableLine>> lines = Sections.successors(table, TableLine.class);
+
+		ResultTableModel.Builder resultTableModelBuilder = ResultTableModel.builder(variables);
 		for (Section<TableLine> line : lines) {
-			SimpleTableRow row = createResultRow(line, variables, c);
-			if (!row.isEmpty()) rows.add(row);
+			Map<String, Value> row = createResultRow(line, variables, c);
+			if (!row.isEmpty()) {
+				resultTableModelBuilder.addRow(row);
+			}
 		}
 
-		return new ResultTableModel(rows, variables);
+		return resultTableModelBuilder.build();
 	}
 
 	private static boolean isCompatibilityMode() {
@@ -82,10 +89,9 @@ public class ExpectedSparqlResultTable extends Table {
 
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	private static SimpleTableRow createResultRow(Section<TableLine> line, List<String> variables, Rdf2GoCompiler core) {
-		List<Section<NodeProvider>> nodeProviders = Sections.successors(line, NodeProvider.class);
+	private static Map<String, Value> createResultRow(Section<TableLine> line, List<String> variables, Rdf2GoCompiler core) {
 		List<Section<TableCellContent>> cells = Sections.successors(line, TableCellContent.class);
-		SimpleTableRow row = new SimpleTableRow();
+		Map<String, Value> row = new HashMap<>();
 		boolean compatibilityMode = isCompatibilityMode();
 		String currentBaseUrl = Environment.getInstance().getWikiConnector().getBaseUrl();
 		int column = 0;
@@ -93,7 +99,7 @@ public class ExpectedSparqlResultTable extends Table {
 			String variable = variables.get(column);
 			final Section<NodeProvider> nodeProvider = Sections.successor(cell, NodeProvider.class);
 			if (nodeProvider == null) {
-				row.addValue(variable, null);
+				row.put(variable, null);
 			}
 			if (nodeProvider != null) {
 				Value value = nodeProvider.get().getNode(nodeProvider, core);
@@ -103,7 +109,9 @@ public class ExpectedSparqlResultTable extends Table {
 						value = core.getRdf2GoCore().createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
 					}
 				}
-				if (value != null) row.addValue(variable, value);
+				if (value != null) {
+					row.put(variable, value);
+				}
 			}
 			column++;
 		}

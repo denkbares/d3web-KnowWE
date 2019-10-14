@@ -23,8 +23,8 @@ import org.eclipse.rdf4j.query.MalformedQueryException;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.utils.IndexedResultTableModel;
 import com.denkbares.semanticcore.utils.ResultTableHierarchy;
-import com.denkbares.semanticcore.utils.ResultTableModel;
 import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -57,14 +57,16 @@ public class SparqlResultRenderer {
 	private List<SparqlResultNodeRenderer> nodeRenderers;
 
 	public static SparqlResultRenderer getInstance() {
-		if (instance == null) instance = new SparqlResultRenderer();
+		if (instance == null) {
+			instance = new SparqlResultRenderer();
+		}
 		return instance;
 	}
 
 	private SparqlResultRenderer() {
 		List<SparqlResultNodeRenderer> nodeRenderer = getNodeRenderers();
 		optimizeNodeRenderer(nodeRenderer);
-		nodeRenderers = nodeRenderer;
+		this.nodeRenderers = nodeRenderer;
 	}
 
 	/**
@@ -82,7 +84,9 @@ public class SparqlResultRenderer {
 				containsBoth = true;
 			}
 		}
-		if (containsBoth) nodeRenderer.remove(rnnRenderer);
+		if (containsBoth) {
+			nodeRenderer.remove(rnnRenderer);
+		}
 	}
 
 	public static List<SparqlResultNodeRenderer> getNodeRenderers() {
@@ -105,7 +109,9 @@ public class SparqlResultRenderer {
 		RenderOptions opts = section.get().getRenderOptions(section, user);
 		result.appendHtml("<div class='sparqlTable' sparqlSectionId='" + opts.getId() + "' id='sparqlTable_" + opts
 				.getId() + "'>");
-		if (opts.isBorder()) result.appendHtml("<div class='border'>");
+		if (opts.isBorder()) {
+			result.appendHtml("<div class='border'>");
+		}
 
 		SparqlRenderResult renderResult;
 
@@ -123,7 +129,9 @@ public class SparqlResultRenderer {
 
 			result.appendHtml(renderResult.getHTML());
 		}
-		if (opts.isBorder()) result.appendHtml("</div>");
+		if (opts.isBorder()) {
+			result.appendHtml("</div>");
+		}
 		result.appendHtml("</div>");
 	}
 
@@ -141,9 +149,13 @@ public class SparqlResultRenderer {
 		}
 		else {
 			String message = e.getMessage();
-			if (message == null) message = "RuntimeException without message.";
+			if (message == null) {
+				message = "RuntimeException without message.";
+			}
 			message = Strings.trimRight(message);
-			if (!message.endsWith(".")) message += ".";
+			if (!message.endsWith(".")) {
+				message += ".";
+			}
 			result.append(message);
 		}
 	}
@@ -182,9 +194,15 @@ public class SparqlResultRenderer {
 		}
 		int start = Math.max(0, columnNumber - 15);
 		int end = Math.min(columnNumber + 15, queryLine.length());
-		while (start > 0 && queryLine.charAt(start) != ' ') start--;
-		if (start > 0) start++;
-		while (end < queryLine.length() && queryLine.charAt(end) != ' ') end++;
+		while (start > 0 && queryLine.charAt(start) != ' ') {
+			start--;
+		}
+		if (start > 0) {
+			start++;
+		}
+		while (end < queryLine.length() && queryLine.charAt(end) != ' ') {
+			end++;
+		}
 		String queryContextPrefix = "..." + queryLine.substring(start, columnNumber);
 		String charAtException = columnNumber >= queryLine.length() ? "<EOL>" : queryLine.substring(columnNumber, columnNumber + 1);
 		String queryContextSuffix = columnNumber >= queryLine.length() ? "" : queryLine.substring(columnNumber + 1, end) + "...";
@@ -249,7 +267,9 @@ public class SparqlResultRenderer {
 		boolean renderJSPWikiMarkup = opts.isAllowJSPWikiMarkup();
 		List<RenderOptions.StyleOption> columnStyle = opts.getColumnStyles();
 		List<RenderOptions.StyleOption> tableStyle = opts.getTableStyles();
-		if (opts.getColor() != Color.NONE) tableStyle.add(new RenderOptions.StyleOption("table", "border-color", opts.getColor().getColorValue()));
+		if (opts.getColor() != Color.NONE) {
+			tableStyle.add(new RenderOptions.StyleOption("table", "border-color", opts.getColor().getColorValue()));
+		}
 
 		String tableID = UUID.randomUUID().toString();
 
@@ -306,13 +326,13 @@ public class SparqlResultRenderer {
 			renderResult.appendHtml("</th>");
 		}
 		renderResult.appendHtml("</tr>");
-		ResultTableModel table = new ResultTableModel(qrt);
+		IndexedResultTableModel table = IndexedResultTableModel.create(qrt);
 		PaginationRenderer.setResultSize(user, table.getSize());
 		Iterator<TableRow> iterator;
 		if (isNavigation) {
 			if (opts.isSorting()) {
 				List<Pair<String, Boolean>> multiColumnSorting = PaginationRenderer.getMultiColumnSorting(section, user);
-				table.sortRows(multiColumnSorting);
+				table = (IndexedResultTableModel) table.sort(multiColumnSorting);
 			}
 			int startRow = PaginationRenderer.getStartRow(section, user);
 			int count = PaginationRenderer.getCount(section, user);
@@ -409,7 +429,9 @@ public class SparqlResultRenderer {
 	}
 
 	private boolean isEmpty(CachedTupleQueryResult qrt) {
-		if (qrt.getBindingSets().isEmpty()) return true;
+		if (qrt.getBindingSets().isEmpty()) {
+			return true;
+		}
 		if (qrt.getBindingSets().size() == 1) {
 			// some queries return one result with only blank entries, we ignore them as their rendering is weird
 			BindingSet bindings = qrt.getBindingSets().get(0);
@@ -441,8 +463,8 @@ public class SparqlResultRenderer {
 
 	public void getTreeChildren(Section<? extends SparqlType> section, String parentNodeID, UserActionContext user, RenderResult result) {
 		parentNodeID = parentNodeID.replace("sparql-id-", "");
-		ResultTableModel table = (ResultTableModel) section.getObject(RESULT_TABLE);
-		ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(RESULT_TABLE_TREE);
+		final IndexedResultTableModel table = (IndexedResultTableModel) section.getObject(RESULT_TABLE);
+		final ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(RESULT_TABLE_TREE);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
 		boolean isTree = opts.isTree();
 		String query = section.get().getSparqlQuery(section, user);
@@ -461,7 +483,7 @@ public class SparqlResultRenderer {
 		if (qrt != null) {
 			List<String> variables = qrt.getBindingNames();
 			@SuppressWarnings("unchecked") Map<String, Value> usedIDs = (Map<String, Value>) section.getObject(USED_IDS);
-			Collection<TableRow> parents = table.findRowFor(usedIDs.get(parentNodeID));
+			Collection<TableRow> parents = table.getRowsForKey(usedIDs.get(parentNodeID));
 			for (TableRow parent : parents) {
 				for (TableRow child : tree.getChildren(parent)) {
 					Value childValue = child.getValue(qrt.getBindingNames().get(0));
@@ -499,7 +521,9 @@ public class SparqlResultRenderer {
 	}
 
 	private String valueToID(Value childValue, String parentValue) {
-		if (childValue == null) return null;
+		if (childValue == null) {
+			return null;
+		}
 		String valueString = childValue.stringValue() + parentValue;
 		int code = valueString.replaceAll("[\\s\"]+", "").hashCode();
 		return Integer.toString(code);
@@ -517,13 +541,15 @@ public class SparqlResultRenderer {
 			rendered = node.stringValue();
 		}
 		if (!rawOutput) {
-			for (SparqlResultNodeRenderer nodeRenderer : nodeRenderers) {
+			for (SparqlResultNodeRenderer nodeRenderer : this.nodeRenderers) {
 				if (node instanceof Literal && nodeRenderer instanceof DecodeUrlNodeRenderer) {
 					continue;
 				}
 				String temp = rendered;
 				rendered = nodeRenderer.renderNode(node, rendered, var, user, core, mode);
-				if (!temp.equals(rendered) && !nodeRenderer.allowFollowUpRenderer()) break;
+				if (!temp.equals(rendered) && !nodeRenderer.allowFollowUpRenderer()) {
+					break;
+				}
 			}
 			// rendered = KnowWEUtils.maskJSPWikiMarkup(rendered);
 		}
@@ -561,7 +587,9 @@ public class SparqlResultRenderer {
 		}
 
 		List<RenderOptions.StyleOption> columnStyles = styles.stream().filter(a -> Strings.equalsIgnoreCase(a.getColumnName(), key)).collect(Collectors.toList());
-		if (columnStyles.isEmpty()) return "";
+		if (columnStyles.isEmpty()) {
+			return "";
+		}
 		StringBuilder styleHtmlBuffer = new StringBuilder();
 		styleHtmlBuffer.append(" style='");
 		for (Iterator<RenderOptions.StyleOption> iterator = columnStyles.iterator(); iterator.hasNext(); ) {
@@ -569,7 +597,9 @@ public class SparqlResultRenderer {
 			styleHtmlBuffer.append(styleOption.getStyleKey());
 			styleHtmlBuffer.append(": ");
 			styleHtmlBuffer.append(styleOption.getStyleValue());
-			if (iterator.hasNext()) styleHtmlBuffer.append("; ");
+			if (iterator.hasNext()) {
+				styleHtmlBuffer.append("; ");
+			}
 		}
 		styleHtmlBuffer.append("'");
 		return styleHtmlBuffer.toString();
