@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.utils.Log;
@@ -148,6 +149,7 @@ public class Compilers {
 	 * compiler with the given class
 	 * @created 15.11.2013
 	 */
+	@Nullable
 	public static <C extends Compiler> C getCompiler(Section<?> section, Class<C> compilerClass) {
 		Collection<C> compilers = getCompilers(section, compilerClass, true);
 		if (compilers.isEmpty()) {
@@ -166,6 +168,7 @@ public class Compilers {
 	 * @return the first {@link Compiler}s of a given ArticleManager and Class.
 	 * @created 15.11.2013
 	 */
+	@Nullable
 	public static <C extends Compiler> C getCompiler(ArticleManager manager, Class<C> compilerClass) {
 		Collection<C> compilers = getCompilers(manager, compilerClass, true);
 		if (compilers.isEmpty()) {
@@ -188,7 +191,7 @@ public class Compilers {
 				return (DefaultGlobalCompiler) compiler;
 			}
 		}
-		throw new IllegalStateException("invalid state: no global compiler");
+		throw new IllegalStateException("Invalid state: no global compiler");
 	}
 
 	@NotNull
@@ -214,6 +217,7 @@ public class Compilers {
 	 * @return all {@link Compiler}s compiling the given section
 	 * @created 15.11.2013
 	 */
+	@NotNull
 	public static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass) {
 		return getCompilers(section, compilerClass, false);
 	}
@@ -255,6 +259,7 @@ public class Compilers {
 	 * @return all {@link Compiler}s compiling the given section
 	 * @created 15.11.2013
 	 */
+	@NotNull
 	public static <C extends Compiler> Collection<C> getCompilersWithCompileScript(Section<?> section, Class<C> compilerClass) {
 		Collection<C> compilers = getCompilers(section, compilerClass, false);
 		ArrayList<C> filteredCompilers = new ArrayList<>(compilers.size());
@@ -274,6 +279,7 @@ public class Compilers {
 	 * @return all {@link AbstractPackageCompiler}s compiling the given section
 	 * @created 15.11.2013
 	 */
+	@NotNull
 	public static <C extends Compiler> Collection<C> getCompilers(ArticleManager manager, Class<C> compilerClass) {
 		return getCompilers(manager, compilerClass, false);
 	}
@@ -295,6 +301,7 @@ public class Compilers {
 	 * @deprecated Helper method while we transition to new compiler framework
 	 */
 	@Deprecated
+	@NotNull
 	public static Collection<Article> getCompilingArticleObjects(Section<?> section) {
 		Collection<Article> articles = new ArrayList<>();
 		PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
@@ -319,6 +326,7 @@ public class Compilers {
 	 * @deprecated Helper method while we transition to new compiler framework
 	 */
 	@Deprecated
+	@NotNull
 	public static Collection<Article> getCompilingArticles(Section<?> section) {
 		Collection<Article> articles = getCompilingArticleObjects(section);
 		if (articles.isEmpty()) articles.add(section.getArticle());
@@ -331,6 +339,7 @@ public class Compilers {
 	 * @param web the web we want the {@link CompilerManager} from
 	 * @created 07.01.2014
 	 */
+	@NotNull
 	public static CompilerManager getCompilerManager(String web) {
 		return KnowWEUtils.getArticleManager(web).getCompilerManager();
 	}

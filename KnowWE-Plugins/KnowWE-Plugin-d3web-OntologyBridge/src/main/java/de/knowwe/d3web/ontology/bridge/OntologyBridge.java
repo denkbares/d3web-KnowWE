@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.jgit.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.N2MMap;
 import com.denkbares.utils.Log;
@@ -45,6 +48,7 @@ public class OntologyBridge {
 	 * @param section the section to get the bridged ontology for
 	 * @return the ontology compilers bridged for the given section
 	 */
+	@NotNull
 	public static Set<OntologyCompiler> getOntologies(Section<?> section) {
 		return getOntologies(Compilers.getCompilers(section, D3webCompiler.class));
 	}
@@ -57,6 +61,7 @@ public class OntologyBridge {
 	 * @param d3webCompiler the compiler to get the bridged ontology for
 	 * @return the ontology compiler bridged for the given d3web compiler the @name annotation.
 	 */
+	@NotNull
 	public static Set<OntologyCompiler> getOntologies(Collection<D3webCompiler> d3webCompiler) {
 		return d3webCompiler.stream().map(OntologyBridge::getOntology).collect(Collectors.toSet());
 	}
@@ -69,8 +74,11 @@ public class OntologyBridge {
 	 * @param section the section to get the bridged ontology for
 	 * @return the ontology compiler bridged for the given section
 	 */
+	@Nullable
 	public static OntologyCompiler getOntology(Section<?> section) {
-		return getOntology(D3webUtils.getCompiler(section));
+		final D3webCompiler compiler = D3webUtils.getCompiler(section);
+		if (compiler == null) return null;
+		return getOntology(compiler);
 	}
 
 	/**
@@ -81,7 +89,8 @@ public class OntologyBridge {
 	 * @param d3webCompiler the compiler to get the bridged ontology for
 	 * @return the ontology compiler bridged for the given d3web compiler the @name annotation.
 	 */
-	public static OntologyCompiler getOntology(D3webCompiler d3webCompiler) {
+	@NotNull
+	public static OntologyCompiler getOntology(@NotNull D3webCompiler d3webCompiler) {
 		return getOntology(d3webCompiler, Priority.ABOVE_DEFAULT);
 	}
 
@@ -95,7 +104,8 @@ public class OntologyBridge {
 	 *                        in the compiler
 	 * @return the ontology compiler bridged for the given d3web compiler the @name annotation.
 	 */
-	public static OntologyCompiler getOntology(D3webCompiler d3webCompiler, Priority priorityToAwait) {
+	@NotNull
+	public static OntologyCompiler getOntology(@NotNull D3webCompiler d3webCompiler, Priority priorityToAwait) {
 		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) throw new IllegalArgumentException("No ontology linked to the given d3web compiler");
 		OntologyCompiler compiler = Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class);
@@ -118,9 +128,9 @@ public class OntologyBridge {
 	 * @return if there is an ontology compiler bridged for the given d3web compiler
 	 */
 	public static boolean hasOntology(D3webCompiler d3webCompiler) {
+		if (d3webCompiler == null) return false;
 		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
-		if (ontologyId == null) return false;
-		return Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class) != null;
+		return ontologyId != null && Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class) != null;
 	}
 
 	/**
@@ -130,12 +140,17 @@ public class OntologyBridge {
 	 * @param ontologyCompiler the ontology compiler for which to get the linking d3web compiler
 	 * @return the d3web compiler linking to the given ontology compiler
 	 */
-	public static D3webCompiler getCompiler(OntologyCompiler ontologyCompiler) {
+	@NotNull
+	public static D3webCompiler getCompiler(@NotNull OntologyCompiler ontologyCompiler) {
 		String d3webId = mapping.getAnyKey(ontologyCompiler.getCompileSection().getID());
 		if (d3webId == null) {
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler");
 		}
 		D3webCompiler compiler = Compilers.getCompiler(Sections.get(d3webId), D3webCompiler.class);
+		if (compiler == null) {
+			// should not happen
+			throw new IllegalArgumentException("Mapping not up to date, this is probably a failure of the OntologyBridge");
+		}
 		return compiler;
 	}
 }

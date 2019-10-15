@@ -242,25 +242,25 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	@NotNull
-	public static Sections<? extends Type> definitions(TerminologyManager manager, @Nullable Identifier identifier) {
+	public static Sections<? extends Type> definitions(@NotNull TerminologyManager manager, @Nullable Identifier identifier) {
 		//noinspection unchecked
 		return new Sections(manager.getTermDefiningSections(identifier));
 	}
 
 	@NotNull
-	public static Sections<? extends Type> definitions(TermCompiler compiler, @Nullable Identifier identifier) {
+	public static Sections<? extends Type> definitions(@NotNull TermCompiler compiler, @Nullable Identifier identifier) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		return definitions(terminologyManager, identifier);
 	}
 
 	@NotNull
-	public static Sections<? extends Type> definitions(TermCompiler compiler, @Nullable Section<? extends Term> term) {
+	public static Sections<? extends Type> definitions(@NotNull TermCompiler compiler, @Nullable Section<? extends Term> term) {
 		if (term == null) return Sections.empty();
 		return definitions(compiler, term.get().getTermIdentifier(compiler, term));
 	}
 
 	@NotNull
-	public static Sections<? extends Type> references(TerminologyManager manager, @Nullable Identifier identifier) {
+	public static Sections<? extends Type> references(@NotNull TerminologyManager manager, @Nullable Identifier identifier) {
 		//noinspection unchecked
 		return new Sections(manager.getTermReferenceSections(identifier));
 	}
@@ -270,7 +270,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * Identifier)}
 	 */
 	@NotNull
-	public static Sections<? extends Type> registrations(TermCompiler compiler, @Nullable Section<? extends Term> term) {
+	public static Sections<? extends Type> registrations(@NotNull TermCompiler compiler, @Nullable Section<? extends Term> term) {
 		if (term == null) return Sections.empty();
 		return registrations(compiler, term.get().getTermIdentifier(compiler, term));
 	}
@@ -280,20 +280,20 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * Identifier)}
 	 */
 	@NotNull
-	public static Sections<? extends Type> registrations(TermCompiler compiler, @Nullable Identifier termIdentifier) {
+	public static Sections<? extends Type> registrations(@NotNull TermCompiler compiler, @Nullable Identifier termIdentifier) {
 		if (termIdentifier == null) return Sections.empty();
 		//noinspection unchecked
 		return new Sections(new ConcatenateIterable<Section<?>>(definitions(compiler, termIdentifier), references(compiler, termIdentifier)));
 	}
 
 	@NotNull
-	public static Sections<? extends Type> references(TermCompiler compiler, @Nullable Identifier identifier) {
+	public static Sections<? extends Type> references(@NotNull TermCompiler compiler, @Nullable Identifier identifier) {
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		return references(terminologyManager, identifier);
 	}
 
 	@NotNull
-	public static Sections<? extends Type> references(TermCompiler compiler, @Nullable Section<? extends Term> term) {
+	public static Sections<? extends Type> references(@NotNull TermCompiler compiler, @Nullable Section<? extends Term> term) {
 		if (term == null) return Sections.empty();
 		return references(compiler, term.get().getTermIdentifier(compiler, term));
 	}
@@ -489,7 +489,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the definitions for the current sections
 	 */
 	@NotNull
-	public <R extends Term> Sections<R> definitions(TermCompiler compiler, Class<R> clazz) {
+	public <R extends Term> Sections<R> definitions(@NotNull TermCompiler compiler, Class<R> clazz) {
 		return new Sections<R>(() -> filter(Term.class).stream()
 				.flatMap(s -> Sections.definitions(compiler, s).filter(clazz).stream())
 				.iterator());
@@ -505,7 +505,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the definitions for the current sections
 	 */
 	@NotNull
-	public <R extends Term> Sections<R> references(TermCompiler compiler, Class<R> clazz) {
+	public <R extends Term> Sections<R> references(@NotNull TermCompiler compiler, Class<R> clazz) {
 		return new Sections<R>(() -> filter(Term.class).stream()
 				.flatMap(s -> Sections.references(compiler, s).filter(clazz).stream())
 				.iterator());
