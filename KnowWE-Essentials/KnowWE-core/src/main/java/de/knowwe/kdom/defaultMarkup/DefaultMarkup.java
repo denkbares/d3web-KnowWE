@@ -68,7 +68,6 @@ public class DefaultMarkup implements Cloneable {
 		return clone;
 	}
 
-
 	/**
 	 * Returns the name of this markup.
 	 *
@@ -169,7 +168,6 @@ public class DefaultMarkup implements Cloneable {
 	 * @param mandatory if the annotation is required for the markup
 	 */
 	public void addRegexAnnotation(String regex, boolean mandatory) {
-		//noinspection RedundantCast
 		this.addAnnotation(regex, mandatory, true, (Pattern) null);
 	}
 
@@ -205,6 +203,17 @@ public class DefaultMarkup implements Cloneable {
 
 	public void addAnnotationIcon(String name, Icon icon) {
 		addAnnotationNameType(name, new IconType(icon));
+	}
+
+	/**
+	 * Adds an icon with a label to the annotation which matches the given name.
+	 *
+	 * @param name  the name of the annotation to add the icon and label
+	 * @param icon  the icon of the annotation to be added
+	 * @param label the label of the annotation to be added
+	 */
+	public void addAnnotationIcon(String name, Icon icon, String label) {
+		addAnnotationNameType(name, new IconType(icon, label));
 	}
 
 	/**
@@ -400,6 +409,21 @@ public class DefaultMarkup implements Cloneable {
 		public IconType(Icon icon) {
 			this.setSectionFinder(AllTextFinder.getInstance());
 			this.setRenderer((section, user, result) -> result.appendHtml(icon.toHtml()));
+		}
+
+		public IconType(Icon icon, String label) {
+			this.setSectionFinder(AllTextFinder.getInstance());
+			this.setRenderer((section, user, result) -> {
+				result.appendHtmlTag("span");
+				result.appendHtmlTag("span", "class", "annotation-icon", "style", "padding-right: 3px");
+				result.appendHtml(icon.toHtml());
+				result.appendHtmlTag("/span");
+				result.appendHtmlTag("span", "class", "annotation-label");
+				result.append(label);
+				result.append(":");
+				result.appendHtmlTag("/span");
+				result.appendHtmlTag("/span");
+			});
 		}
 	}
 
