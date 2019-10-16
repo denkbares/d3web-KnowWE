@@ -73,7 +73,7 @@ public class AnnotationType extends AbstractType {
 		return annotation;
 	}
 
-	private static class CheckContentExistsHandler extends DefaultGlobalScript<AnnotationType> {
+	public static class CheckContentExistsHandler extends DefaultGlobalScript<AnnotationType> {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AnnotationType> section) {
