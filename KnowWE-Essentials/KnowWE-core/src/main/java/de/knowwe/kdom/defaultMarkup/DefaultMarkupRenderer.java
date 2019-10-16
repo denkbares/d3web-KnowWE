@@ -231,6 +231,8 @@ public class DefaultMarkupRenderer implements Renderer {
 		// if there is a package annotation, a message will be produced there, no need to produce another one
 		if (DefaultMarkupType.getAnnotation(rootSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) != null) return;
 		if (context != null && context.isRenderingPreview()) return;
+		// happens for temp articles, e.g. while viewing older version
+		if (rootSection.getArticle().getArticleManager() == null) return;
 
 		List<ScriptManager<? extends Compiler>> unCompiledScriptManagersWithScriptsForTypeTree =
 				CompilerManager.getScriptManagers()
