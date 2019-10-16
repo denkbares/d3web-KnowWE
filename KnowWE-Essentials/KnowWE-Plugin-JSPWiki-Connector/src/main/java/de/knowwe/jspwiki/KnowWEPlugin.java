@@ -286,6 +286,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			String pureText = engine.getPureText(title, version);
 			if (!content.equals(pureText)) return content;
 		}
+
 		DefaultArticleManager articleManager = getDefaultArticleManager();
 		Article existingArticle = articleManager.getArticle(title);
 		// if we have an existing article but having another case of the title,
@@ -298,7 +299,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		try {
 			String stringRaw = (String) httpRequest.getAttribute("renderresult" + title);
 			if (stringRaw != null) return stringRaw;
-			Article article = updateArticle(wikiContext, content);
+			Article article;
+			if (version == WikiPageProvider.LATEST_VERSION) {
+				article = updateArticle(wikiContext, content);
+			}
+			else {
+				// just create/sectionize temp version of the article that is NOT added and compiled to the article manager
+				article = Article.createArticle(content, title, Environment.DEFAULT_WEB);
+			}
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
@@ -334,9 +342,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) throws InterruptedException {
 
-		if (isSupportArticle(article.getTitle()) || article.getArticleManager()
-				.getCompilerManager()
-				.awaitTermination(RENDER_WAIT_TIMEOUT)) {
+		if (isSupportArticle(article.getTitle())
+				|| article.getArticleManager() == null
+				|| article.getArticleManager().getCompilerManager().awaitTermination(RENDER_WAIT_TIMEOUT)) {
 
 			List<PageAppendHandler> appendHandlers = Environment.getInstance()
 					.getAppendHandlers();
