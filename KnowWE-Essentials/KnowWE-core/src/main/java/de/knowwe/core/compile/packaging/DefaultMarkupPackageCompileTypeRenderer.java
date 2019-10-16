@@ -138,7 +138,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 				compileSection.getArticle().getRootSection(), PackageTerm.class);
 		for (Section<PackageTerm> packageTermSection : packageTermSections) {
 			if (packageTermSection.get().getTermName(packageTermSection).equals(packageName)) {
-				ToolMenuDecoratingRenderer.renderToolMenuDecorator(subString.toStringRaw(),
+				ToolMenuDecoratingRenderer.renderToolMenuDecorator(subString,
 						packageTermSection.getID(), true, string);
 				rendered = true;
 				break;

@@ -26,6 +26,8 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 
 /**
+ * Adds a tool menu to the element rendered by the given delegate renderer.
+ *
  * @author volker_belli
  * @created 30.11.2010
  */
@@ -45,7 +47,7 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 
 		RenderResult subResult = new RenderResult(string);
 		decoratedRenderer.render(sec, user, subResult);
-		renderToolMenuDecorator(subResult.toStringRaw(), sec.getID(), null, hasTools, string);
+		renderToolMenuDecorator(subResult, sec.getID(), null, hasTools, string);
 	}
 
 	public Renderer getDecoratedRenderer() {
@@ -53,10 +55,22 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 	}
 
 	public static void renderToolMenuDecorator(String innerText, String toolMenuID, boolean hasTools, RenderResult string) {
+		RenderResult innerTextResult = new RenderResult(string);
+		innerTextResult.append(innerText);
+		renderToolMenuDecorator(innerTextResult, toolMenuID, null, hasTools, string);
+	}
+
+	public static void renderToolMenuDecorator(RenderResult innerText, String toolMenuID, boolean hasTools, RenderResult string) {
 		renderToolMenuDecorator(innerText, toolMenuID, null, hasTools, string);
 	}
 
 	public static void renderToolMenuDecorator(String innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
+		RenderResult innerTextResult = new RenderResult(string);
+		innerTextResult.append(innerText);
+		renderToolMenuDecorator(innerTextResult, toolMenuID, toolMenuAction, hasTools, string);
+	}
+
+	public static void renderToolMenuDecorator(RenderResult innerText, String toolMenuID, String toolMenuAction, boolean hasTools, RenderResult string) {
 
 		if (hasTools) {
 			String headerID = UUID.randomUUID().toString();
