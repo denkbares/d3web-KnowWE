@@ -146,7 +146,9 @@ public class JSPWikiConnector implements WikiConnector {
 
 	public String createArticle(String title, String author, String content, boolean updateReferences, boolean reindex) {
 
-		if (title.contains("+")) throw new IllegalArgumentException("Character + (plus) not allowed in article title: " + title);
+		if (title.contains("+")) {
+			throw new IllegalArgumentException("Character + (plus) not allowed in article title: " + title);
+		}
 
 		WikiPage wp = new WikiPage(this.engine, title);
 
@@ -888,18 +890,15 @@ public class JSPWikiConnector implements WikiConnector {
 				this.engine.getPage(title));
 
 		AuthorizationManager authmgr = engine.getAuthorizationManager();
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
-		synchronized (authmgr) {
-			PagePermission pp = PermissionFactory.getPagePermission(page,
-					permission);
-			try {
-				return authmgr.checkPermission(context.getWikiSession(), pp);
-			}
-			catch (StackOverflowError e) {
-				// happens with very large articles
-				Log.severe("StackOverflowError while checking permissions on article '" + title + "': " + e.getMessage());
-				return false;
-			}
+		PagePermission pp = PermissionFactory.getPagePermission(page,
+				permission);
+		try {
+			return authmgr.checkPermission(context.getWikiSession(), pp);
+		}
+		catch (StackOverflowError e) {
+			// happens with very large articles
+			Log.severe("StackOverflowError while checking permissions on article '" + title + "': " + e.getMessage());
+			return false;
 		}
 	}
 
