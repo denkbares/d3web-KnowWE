@@ -361,6 +361,15 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Returns true if this instance contains at least one section, i.e. is not empty.
+	 *
+	 * @return true if we have at least one section
+	 */
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	/**
 	 * Returns the section at the specified index contained in this instance. If this instance has less sections than
 	 * the specified index requests, null is returned. If a negative index is specified, an {@link
 	 * java.lang.IndexOutOfBoundsException} is thrown.
@@ -369,7 +378,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return the nth section
 	 */
 	public Section<T> getNth(int index) {
-		if (index < 0) throw new IndexOutOfBoundsException("invalid index " + index);
+		if (index < 0) throw new IndexOutOfBoundsException("Invalid index " + index);
 		for (Section<T> section : this) {
 			if (index == 0) return section;
 			index--;
