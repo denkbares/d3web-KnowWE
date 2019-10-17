@@ -125,11 +125,6 @@ public class XCLRelation extends AbstractType {
 				return Messages.noMessage();
 			}
 
-			if (section.hasErrorInSubtree(compiler)) {
-				return Messages.asList(Messages.warning(
-						D3webUtils.getD3webBundle().getString("KnowWE.xcllist.relationfail")));
-			}
-
 			// prepare condition for relation
 			Condition condition = KDOMConditionFactory.createCondition(compiler, cond);
 			if (condition == null) {
