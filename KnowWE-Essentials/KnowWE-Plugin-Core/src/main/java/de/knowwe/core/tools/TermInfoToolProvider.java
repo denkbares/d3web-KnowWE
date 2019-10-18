@@ -95,7 +95,11 @@ public class TermInfoToolProvider implements ToolProvider {
 		Collections.sort(sorted);
 
 		// check if we have a home page for that term (article that has the same title)
-		Article home = getHomeArticle(section.getArticleManager(), identifier);
+		final ArticleManager articleManager = section.getArticleManager();
+		if (articleManager == null) {
+			return ToolUtils.emptyToolArray();
+		}
+		Article home = getHomeArticle(articleManager, identifier);
 		if (home != null) {
 			sorted.remove(home.getTitle());
 			sorted.add(0, home.getTitle());
@@ -195,9 +199,7 @@ public class TermInfoToolProvider implements ToolProvider {
 
 		// check if concatenated with " : "
 		article = manager.getArticle(prefix + Strings.concat(" : ", identifier.getPathElements()));
-		if (article != null) return article;
-
-		return null;
+		return article;
 	}
 
 	public static String createObjectInfoPageJSAction(Identifier termIdentifier) {
