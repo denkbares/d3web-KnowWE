@@ -20,6 +20,8 @@
 
 package de.knowwe.core.kdom;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
@@ -250,6 +252,14 @@ public final class Article {
 		this.articleManager = articleManager;
 	}
 
+	/**
+	 * Provides the {@link ArticleManager} this article belongs to.
+	 * <p>Attention:</p> Articles will not always be added to an article manager, e.g. when creating temp articles for
+	 * viewing older versions, so this might return null!
+	 *
+	 * @return the article manager of this article or null, if it doesn't belong to one
+	 */
+	@Nullable
 	public ArticleManager getArticleManager() {
 		return articleManager;
 	}

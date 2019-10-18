@@ -559,7 +559,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public boolean hasMessageInSubtree(Compiler compiler, Message.Type type) {
 		if (Messages.hasMessagesInSubtree(this, type)) { // fast check, but not compiler specific
 			return hasMessageInSubtreeRec(compiler, type); // slower, but compiler specific
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -661,6 +662,14 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return -1;
 	}
 
+	/**
+	 * Provides the {@link ArticleManager} this section's article belongs to.
+	 * <p>Attention:</p> Articles will not always be added to an article manager, e.g. when creating temp articles for
+	 * viewing older versions, so this might return null!
+	 *
+	 * @return the article manager of this section or null, if it doesn't belong to one
+	 */
+	@Nullable
 	public ArticleManager getArticleManager() {
 		return article.getArticleManager();
 	}
