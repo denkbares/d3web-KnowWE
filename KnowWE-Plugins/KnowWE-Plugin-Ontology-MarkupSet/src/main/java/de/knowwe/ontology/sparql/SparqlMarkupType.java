@@ -49,7 +49,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String COLUMNSTYLE = "columnStyle";  // usage: @columnStyle: columnName style value
 	public static final String TABLESTYLE = "tableStyle";  // usage: @tableStyle: style value
 	public static final String ALLOW_JSPWIKIMARKUP = "allowJSPWikiMarkup";
-	private static DefaultMarkup MARKUP;
+	private static final DefaultMarkup MARKUP;
 
 	public static final String MARKUP_NAME = "Sparql";
 
