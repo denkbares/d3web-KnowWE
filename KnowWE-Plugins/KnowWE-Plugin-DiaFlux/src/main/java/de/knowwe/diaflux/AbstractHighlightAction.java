@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -22,7 +22,6 @@ import java.io.IOException;
 
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.diaFlux.flow.Flow;
-import de.d3web.diaFlux.flow.FlowSet;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -33,8 +32,7 @@ import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 
 /**
- * This class provides some basic functionalities to highlight flowchart
- * elements.
+ * This class provides some basic functionalities to highlight flowchart elements.
  *
  * @author Reinhard Hatko
  * @created 26.10.2012
@@ -60,13 +58,11 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 		insertHighlighting(flowchart, highlight, context);
 
 		highlight.write(context);
-
 	}
 
 	public static Flow findFlow(Section<FlowchartType> flowchart, KnowledgeBase kb) {
 		String flowchartName = FlowchartType.getFlowchartName(flowchart);
-		FlowSet flowSet = DiaFluxUtils.getFlowSet(kb);
-		return flowSet == null ? null : flowSet.get(flowchartName);
+		return DiaFluxUtils.findFlow(kb, flowchartName);
 	}
 
 	protected KnowledgeBase getKB(Section<FlowchartType> flowchart) {
@@ -76,9 +72,8 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 	}
 
 	/**
-	 * Returns the prefix of CSS classes to be removed, if highlighting is
-	 * updated without reloading the page, e.g. the execution trace. If the
-	 * highlighting is just updated on page load, this doesn't matter.
+	 * Returns the prefix of CSS classes to be removed, if highlighting is updated without reloading the page, e.g. the
+	 * execution trace. If the highlighting is just updated on page load, this doesn't matter.
 	 *
 	 * @return
 	 * @created 26.10.2012
@@ -95,5 +90,4 @@ public abstract class AbstractHighlightAction extends AbstractAction {
 	 * @created 26.10.2012
 	 */
 	public abstract void insertHighlighting(Section<FlowchartType> flowchart, Highlight highlight, UserActionContext context) throws IOException;
-
 }
