@@ -536,7 +536,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				/*
 				Do actual changes on the model
 				 */
-				long connectionStart = System.currentTimeMillis();
+				Stopwatch connectionStopwatch = new Stopwatch();
 				try (RepositoryConnection connection = this.semanticCore.getConnection()) {
 					connection.begin();
 
@@ -573,14 +573,14 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				Logging
 				 */
 				if (verboseLog) {
-					logStatements(this.removeCache, connectionStart, "Removed statements:\n");
-					logStatements(this.insertCache, connectionStart, "Inserted statements:\n");
+					logStatements(this.removeCache, connectionStopwatch, "Removed statements:\n");
+					logStatements(this.insertCache, connectionStopwatch, "Inserted statements:\n");
 				}
 				else {
 					Log.info("Removed " + removeSize + " statements from and added "
 							+ insertSize
 							+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
-							+ (System.currentTimeMillis() - connectionStart) + "ms.");
+							+ connectionStopwatch.getDisplay()+ ".");
 				}
 
 				Log.info("Current number of statements: " + this.statementCache.size());
@@ -936,7 +936,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				new SimpleNamespace("onto", "http://www.ontotext.com/"));
 	}
 
-	private void logStatements(Set<Statement> statements, long start, String caption) {
+	private void logStatements(Set<Statement> statements, Stopwatch stopwatch, String caption) {
 		// check if we have something to log
 		if (statements.isEmpty()) {
 			return;
@@ -947,7 +947,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		for (Statement statement : statements) {
 			buffer.append("* ").append(verbalizeStatement(statement)).append("\n");
 		}
-		buffer.append("Done after ").append(System.currentTimeMillis() - start).append("ms");
+		buffer.append("Done after ").append(stopwatch.getDisplay());
 		Log.fine(caption + ":\n" + buffer);
 	}
 
