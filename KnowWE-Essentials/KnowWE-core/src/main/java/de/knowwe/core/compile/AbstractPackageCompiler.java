@@ -23,6 +23,7 @@ import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Type;
@@ -98,9 +99,9 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
 		String[] packagesToCompile = getCompiledPackages();
 		if (getPackageManager().hasChanged(packagesToCompile)) {
-			long start = System.currentTimeMillis();
+			Stopwatch stopwatch = new Stopwatch();
 			compilePackages(packagesToCompile);
-			Log.info(this + " finished after " + (System.currentTimeMillis() - start) + "ms");
+			Log.info(this + " finished after " + stopwatch.getDisplay());
 		}
 	}
 

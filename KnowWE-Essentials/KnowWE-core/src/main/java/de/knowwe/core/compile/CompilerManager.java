@@ -24,6 +24,7 @@ import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
 import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.kdom.Type;
@@ -157,7 +158,7 @@ public class CompilerManager {
 			compilationCount++;
 		}
 		threadPool.execute(() -> {
-			long startTime = System.currentTimeMillis();
+			Stopwatch stopwatch = new Stopwatch();
 			try {
 				EventManager.getInstance().fireEvent(new CompilationStartEvent(CompilerManager.this));
 				doCompile(added, removed);
@@ -171,8 +172,7 @@ public class CompilerManager {
 					currentlyCompiledArticles.clear();
 					Log.info("Compiled " + added.size() + " added and " + removed.size()
 							+ " removed section" + (removed.size() == 1 ? "" : "s")
-							+ " after " + (System.currentTimeMillis() - startTime)
-							+ "ms");
+							+ " after " + stopwatch.getDisplay());
 					lock.notifyAll();
 				}
 				EventManager.getInstance().fireEvent(new CompilationFinishedEvent(CompilerManager.this));
@@ -213,7 +213,7 @@ public class CompilerManager {
 				// wait until we are allowed to compile
 				threadPool.execute(() -> {
 
-					long startTime = System.currentTimeMillis();
+					Stopwatch stopwatch = new Stopwatch();
 					try {
 						// compile the content
 						compiler.compile(added, removed);
@@ -237,7 +237,7 @@ public class CompilerManager {
 							// 1- update all required compiler flags
 							activeCompilers.remove(compiler);
 							Log.fine(compiler.getClass().getSimpleName() +
-									" finished after " + (System.currentTimeMillis() - startTime) + "ms");
+									" finished after " + stopwatch.getDisplay());
 							clearCurrentCompilePriority(compiler);
 							// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
 							// always notify all, as the clear is usually a noop (if the compiler has cleared before)
