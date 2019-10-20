@@ -39,7 +39,7 @@ public class RenderOptions {
  		color = Color.NONE;
  		this.columnStyles = null;
  		this.tableStyles = null;
- 		this.allowJSPWikiMarkup = false;
+ 		this.allowJSPWikiMarkup = true;
 	}
 
 	public String getId() {
