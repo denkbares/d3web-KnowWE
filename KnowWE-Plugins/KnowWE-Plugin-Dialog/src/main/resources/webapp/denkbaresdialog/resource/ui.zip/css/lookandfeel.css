@@ -112,6 +112,15 @@ a:active {
 
 
 /* Styles for button */
+button {
+	height: 22px;
+}
+
+button img {
+	height: 16px;
+	width: 16px;
+}
+
 .button {
 	float:left;
 	margin-top:0;

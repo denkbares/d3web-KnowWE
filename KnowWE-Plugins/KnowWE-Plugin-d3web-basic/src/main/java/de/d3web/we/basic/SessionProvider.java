@@ -111,7 +111,7 @@ public class SessionProvider {
 	 * Return an existing session for the given user context and knowledge base. If, for the given knowledge base, we
 	 * don't yet have a session, we don't create one, but return null.
 	 *
-	 * @param context the user context for which we want the session
+	 * @param context       the user context for which we want the session
 	 * @param knowledgeBase the knowledgeBase for which we want a session
 	 * @return an existing session for the given context and knowledge base or null, if there is non
 	 */
@@ -240,6 +240,7 @@ public class SessionProvider {
 			return false;
 		}
 		Session session = provider.sessions.get(base.getId());
+		//noinspection SimplifiableIfStatement
 		if (session == null) {
 			return false;
 		}
@@ -316,5 +317,4 @@ public class SessionProvider {
 			sessionProvider.setSessionInternally(context, session);
 		}
 	}
-
 }

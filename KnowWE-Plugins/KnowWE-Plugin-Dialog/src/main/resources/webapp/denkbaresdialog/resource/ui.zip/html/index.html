@@ -20,25 +20,29 @@
 	<link rel="stylesheet" type="text/css" href="../css/interview.css">
 </head>
 
-<body style="width: 100vw; min-height: 100vh" id="dropzone" onload="Translate.fillLanguageSelector(); Interview.displayNextQuestion(true); Sync.startCheckUpdateTask(); KNOWWE.notification.loadNotifications();">
+<body style="width: 100vw; min-height: 100vh" id="dropzone"
+	  onload="Translate.fillLanguageSelector(); Interview.displayNextQuestion(true); Sync.startCheckUpdateTask(); KNOWWE.notification.loadNotifications();">
 
 <div id="content">
 	<script type="text/javascript">
-		document.writeln(LookAndFeel.renderSeparator(
-			Translate.get("use_title"),
-			"<span id='alternativeButton' style='display:none'>" +
-			LookAndFeel.renderButton("../image/new.gif", "Select Alternative", "SelectTarget.openSelection();") +
-			"</span>" +
-			LookAndFeel.renderButton("../image/new.gif", Translate.get("use_button_new"), "Interview.startCase();") +
-			LookAndFeel.renderButton("../image/upload.gif", Translate.get("use_button_load"), 'document.getElementById("file-input").click();') +
-			LookAndFeel.renderButton("../image/save.gif", Translate.get("use_button_save"), "Interview.downloadProtocol();") +
-			"<input id='file-input' type='file' name='name' style='display: none;' onchange='Interview.uploadProtocol(this.files)' />" +
-			"<select id='language-selector' onchange='Translate.changeLanguage();' style='display: none'></select>"
-		));
+      let fromFile = KNOWWE.helper.gup('fromFile') === "true"
+      document.writeln(LookAndFeel.renderSeparator(
+        Translate.get("use_title"),
+        "<span id='alternativeButton' style='display:none'>" +
+        LookAndFeel.renderButton("../image/new.gif", "Select Alternative", "SelectTarget.openSelection();") +
+        "</span>" +
+        LookAndFeel.renderButton("../image/new.gif", Translate.get("use_button_new"), "Interview.startCase();") +
+        LookAndFeel.renderButton("../image/upload.gif", Translate.get("use_button_load"), 'document.getElementById("file-input").click();') +
+        LookAndFeel.renderButton("../image/save.gif", Translate.get("use_button_save"), "Interview.downloadProtocol(" + !fromFile + ");") +
+        (fromFile ? LookAndFeel.renderButton("../image/save.gif", Translate.get("use_button_save_as"), "Interview.downloadProtocol(true);") : "") +
+        "<input id='file-input' type='file' name='name' style='display: none;' onchange='Interview.uploadProtocol(this.files)' />" +
+        "<select id='language-selector' onchange='Translate.changeLanguage();' style='display: none'></select>"
+      ));
 	</script>
 	<div id="interview" style="position: relative"></div>
 	<div id="solutions" style="position: relative"></div>
-	<div id="dropIndicator" style="box-sizing: border-box; position: fixed; border: 5px dashed gray; width: 100vw; height: 100vh; top: 0; left: 0; background-color: rgba(255, 255, 255, 0.6); box-shadow: 2px 2px 30px gray;display: none">
+	<div id="dropIndicator"
+		 style="box-sizing: border-box; position: fixed; border: 5px dashed gray; width: 100vw; height: 100vh; top: 0; left: 0; background-color: rgba(255, 255, 255, 0.6); box-shadow: 2px 2px 30px gray;display: none">
 		<div style="position: relative; top: 45%; text-align: center; font-size: xx-large; color: grey">
 			Drop protocol here to load
 		</div>
@@ -46,7 +50,7 @@
 </div>
 
 <script type="text/javascript">
-	Interview.initDataDrop();
+  Interview.initDataDrop();
 </script>
 </body>
 </html>

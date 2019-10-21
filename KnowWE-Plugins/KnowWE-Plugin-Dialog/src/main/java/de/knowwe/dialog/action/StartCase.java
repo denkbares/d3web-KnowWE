@@ -145,14 +145,15 @@ public class StartCase extends AbstractAction implements EventListener {
 		KnowledgeBaseProvider provider = (KnowledgeBaseProvider) httpSession.getAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE_PROVIDER);
 
+		Session session;
 		try {
 			KnowledgeBase base = provider.getKnowledgeBase();
 			httpSession.setAttribute(SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE, base);
 			if (Strings.isBlank(protocolPath)) {
-				startCase(context, base, startInfo);
+				session = startCase(context, base, startInfo);
 			}
 			else {
-				loadCase(context, base, protocolPath);
+				session = loadCase(context, base, protocolPath);
 			}
 
 			// adapt language to one of the supported ones
@@ -174,7 +175,9 @@ public class StartCase extends AbstractAction implements EventListener {
 		}
 
 		// and redirect to interview
-		context.sendRedirect("Resource/ui.zip/html/index.html?" + PARAM_LANGUAGE + "=" + language);
+		context.sendRedirect("Resource/ui.zip/html/index.html?" + PARAM_LANGUAGE + "=" + language + "&fromFile=" + session
+				.getSessionObject(LoadedSessionContext.getInstance())
+				.isLoadedFromFile());
 	}
 
 	@NotNull
@@ -198,7 +201,7 @@ public class StartCase extends AbstractAction implements EventListener {
 	 *
 	 * @created 31.08.2011
 	 */
-	private void loadCase(UserActionContext context, KnowledgeBase knowledgebase, String filePath) throws IOException {
+	private Session loadCase(UserActionContext context, KnowledgeBase knowledgebase, String filePath) throws IOException {
 		File file = new File(filePath);
 		if (!file.isFile()) throw new IOException("no such file: " + file.getCanonicalPath());
 
@@ -244,12 +247,16 @@ public class StartCase extends AbstractAction implements EventListener {
 
 		Session session = SessionConversionFactory.replayToSession(
 				knowledgebase, records.iterator().next());
+
+		session.getSessionObject(LoadedSessionContext.getInstance()).setFile(file);
+
 		wrapFormStrategy(session);
 		// set the session in the provider
 		SessionProvider.setSession(context, session);
+		return session;
 	}
 
-	private void startCase(UserActionContext context, KnowledgeBase knowledgebase, StartInfo restart) throws IOException {
+	private Session startCase(UserActionContext context, KnowledgeBase knowledgebase, StartInfo restart) {
 		Session session = SessionProvider.getSession(context, knowledgebase);
 		if (session == null || (restart != null && restart.forceRestart)) {
 			session = SessionProvider.createSession(context, knowledgebase);
@@ -259,6 +266,7 @@ public class StartCase extends AbstractAction implements EventListener {
 			}
 		}
 		wrapFormStrategy(session);
+		return session;
 	}
 
 	private void wrapFormStrategy(Session session) {
