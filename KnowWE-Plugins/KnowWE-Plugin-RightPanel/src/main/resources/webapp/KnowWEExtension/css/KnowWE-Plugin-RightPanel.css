@@ -99,10 +99,18 @@
 	background-color: white;
 }
 
+#rightPanel #custom {
+	height: 100%;
+}
+
+#rightPanel #custom .custom-container {
+	height: 100%;
+}
+
 #rightPanel .right-panel-content {
 	position: relative;
 	padding-right: 2px;
-	position: relative;
+	height: 100%;
 }
 
 /* watches plugin for rightPanel*/

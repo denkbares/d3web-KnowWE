@@ -111,16 +111,15 @@ KNOWWE.core.plugin.rightPanel = function () {
 
 				}
 			} else {
+				//Calculate user's scroll position from bottom
+				const scrollPosition = window.pageYOffset;
+				const windowSize = window.innerHeight;
+				const bodyHeight = document.body.offsetHeight;
+				const distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
+				const footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
+
 				if (isOnBottom) {
 					//Haddock Template on the bottom
-
-					//Calculate user's scroll position from bottom
-					const scrollPosition = window.pageYOffset;
-					const windowSize = window.innerHeight;
-					const bodyHeight = document.body.offsetHeight;
-					const distToBottom = Math.max(bodyHeight - (scrollPosition + windowSize), 0);
-					const footerHeightVisible = Math.max(jq$('.footer').first().outerHeight() - distToBottom, 0);
-
 					jq$('#rightPanel').css({
 						bottom: footerHeightVisible + 'px'
 					});
@@ -129,7 +128,8 @@ KNOWWE.core.plugin.rightPanel = function () {
 					let $header = jq$('.header');
 					jq$('#rightPanel').css({
 						position: 'fixed',
-						top: $header.position().top + $header.height() + 'px'
+						top: $header.position().top + $header.height() + 'px',
+						height: (document.documentElement.clientHeight - ($header.position().top + $header.height() + footerHeightVisible)) + 'px'
 					});
 				}
 			}
@@ -572,7 +572,9 @@ KNOWWE.core.plugin.rightPanel = function () {
 KNOWWE.core.plugin.rightPanel.custom = function () {
 
 	function buildCustomContentDiv() {
-		const customContent = jq$('<div/>', {});
+		const customContent = jq$('<div/>', {
+			class: 'custom-container'
+		});
 
 		jq$.ajax({
 			url: KNOWWE.core.util.getURL({
