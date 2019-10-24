@@ -911,7 +911,7 @@ public class KnowWEUtils {
 		String link = section.getTitle();
 		// append section id if the section is not the root section
 		if (section.getParent() != null) {
-			link += "#" + getAnchor(section);
+			link += "#" + section.getID();
 		}
 		return link;
 	}
