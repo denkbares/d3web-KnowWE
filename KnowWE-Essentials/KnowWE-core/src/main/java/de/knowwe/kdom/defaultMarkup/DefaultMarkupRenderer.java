@@ -352,8 +352,8 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		String sectionID = section.getID();
 		string.appendHtmlTag("div",
-				"id", sectionID, "class",
-				"defaultMarkupFrame toolMenuParent type_" + section.get().getName(),
+				"id", sectionID,
+				"class", "defaultMarkupFrame toolMenuParent type_" + section.get().getName(),
 				"data-name", section.get().getName());
 
 		appendHeader(title, sectionID, tools, user, string);
