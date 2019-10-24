@@ -85,6 +85,7 @@ KNOWWE.notification = function () {
 			let duplicate = false;
 			let i = 0;
 			for (; i < messages.length; i++) {
+				// noinspection EqualityComparisonWithCoercionJS
 				if (messages[i].id == id) {
 					duplicate = true;
 					break;
@@ -191,6 +192,7 @@ KNOWWE.notification = function () {
 		removeNotification: function (id) {
 			let index = -1;
 			for (let i = 0; i < messages.length; i++) {
+				// noinspection EqualityComparisonWithCoercionJS
 				if (messages[i].id == id) {
 					index = i;
 					break;

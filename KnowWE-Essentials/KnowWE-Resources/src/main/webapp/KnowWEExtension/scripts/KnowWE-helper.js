@@ -673,9 +673,10 @@ KNOWWE.helper.ajax.xhrExtractMessage = function(jqXHR) {
 	let start = page.indexOf("<b>Message</b>");
 	if (start < 0) start = page.indexOf("<b>message</b>"); // older tomcats
 	const end = page.indexOf("</p>", start);
+	if (start >= 0 && end >= 0)
 	return (start >= 0 && end >= 0)
-		? page.substring(start + 14, end).trim()
-		: jq$("div").html(page).find("h1").first().text();
+		? jq$(document.createElement("div")).html(page.substring(start + 14, end).trim()).text()
+		: jq$(document.createElement("div")).html(page).find("h1").first().text();
 }
 
 

@@ -32,7 +32,7 @@ used colors
 /* ################################################## */
 
 #KnowWENotificationMessage {
-	white-space: pre;
+	white-space: pre-wrap;
 }
 
 .fa-pencil.image-icon {

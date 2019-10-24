@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -109,7 +110,7 @@ public abstract class AbstractAction implements Action {
 	 */
 	@Contract("_, _, _ -> fail")
 	public static void fail(UserActionContext context, int httpCode, String message) throws IOException {
-		throw new SendError(httpCode, message);
+		throw new SendError(httpCode, Environment.getInstance().getWikiConnector().renderWikiSyntax(message));
 	}
 
 	/**
