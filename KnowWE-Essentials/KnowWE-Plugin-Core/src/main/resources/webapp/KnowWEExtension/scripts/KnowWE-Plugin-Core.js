@@ -59,7 +59,7 @@ KNOWWE.core.plugin.objectinfo = function() {
 
       jq$('.anchor-highlight').removeClass("highlight").removeClass("anchor-highlight");
       const name = window.location.hash.substring(1);
-      const sectionId = name.substr(name.lastIndexOf("-") + 1)
+      const sectionId = name.substr(name.lastIndexOf("-") + 1).toLowerCase();
       // first, try to find section directly
       let section = jq$('[sectionid="' + sectionId + '"]');
       if (section.exists()) {
