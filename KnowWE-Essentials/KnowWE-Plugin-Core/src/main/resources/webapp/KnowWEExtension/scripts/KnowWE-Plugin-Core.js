@@ -23,6 +23,12 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 
 KNOWWE.core.plugin.objectinfo = function() {
 
+  function scrollIntoView($element) {
+    jq$('html, body').animate({
+      scrollTop: $element.offset().top - (jq$('.navigation').height() + 5)
+    }, 200);
+  }
+
   return {
 
     init: function() {
@@ -49,27 +55,37 @@ KNOWWE.core.plugin.objectinfo = function() {
     },
 
     highlighAnchor: function() {
-      if (!window.location.hash.startsWith("#section-")) return;
+      if (!window.location.hash) return;
+
       jq$('.anchor-highlight').removeClass("highlight").removeClass("anchor-highlight");
       const name = window.location.hash.substring(1);
-      const sectionId = name.substring(8);
+      const sectionId = name.substr(name.lastIndexOf("-") + 1)
       // first, try to find section directly
-      const section = jq$('[sectionid="' + sectionId + '"]');
+      let section = jq$('[sectionid="' + sectionId + '"]');
       if (section.exists()) {
         section.addClass('highlight');
         section.addClass('anchor-highlight');
+        scrollIntoView(section);
         return;
       }
+
       // section not found, try highlighting from anchor to anchor-end
       const anchor = jq$('.anchor[name="' + name + '"]');
-      if (!anchor.exists()) return;
-      const endSelector = '.anchor,.anchor-end[name="' + name + '"]';
-      if (!anchor.nextAll(endSelector).exists()) return;
-      let next = anchor.next();
-      while (!next.is(endSelector)) {
-        next.addClass('highlight');
-        next.addClass('anchor-highlight');
-        next = next.next();
+      if (anchor.exists()) {
+        scrollIntoView(anchor.parent());
+        const endSelector = '.anchor,.anchor-end[name="' + name + '"]';
+        if (!anchor.nextAll(endSelector).exists()) return;
+        let next = anchor.next();
+        while (!next.is(endSelector)) {
+          next.addClass('highlight');
+          next.addClass('anchor-highlight');
+          next = next.next();
+        }
+      }
+
+      section = jq$('#' + sectionId);
+      if (section.exists()) {
+        scrollIntoView(section);
       }
     },
 
