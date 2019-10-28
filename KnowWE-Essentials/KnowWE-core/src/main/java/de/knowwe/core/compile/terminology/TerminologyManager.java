@@ -28,6 +28,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.events.EventManager;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
@@ -201,6 +204,7 @@ public class TerminologyManager {
 	 * @param termIdentifier the {@link Identifier} for the defining Section you are looking for
 	 * @return the first defining Section for this term or <tt>null</tt> if the term is not defined
 	 */
+	@Nullable
 	public synchronized Section<? extends Type> getTermDefiningSection(Identifier termIdentifier) {
 		TermLog refLog = termLogManager.getLog(termIdentifier);
 		if (refLog != null) {
@@ -216,6 +220,7 @@ public class TerminologyManager {
 	 * @param termIdentifier the {@link Identifier} for the defining Sections you are looking for
 	 * @return the defining Sections for this term or an empty Collection if the term is not defined
 	 */
+	@NotNull
 	public synchronized Collection<Section<?>> getTermDefiningSections(Identifier termIdentifier) {
 		if (termIdentifier == null) {
 			return Collections.emptyList();
