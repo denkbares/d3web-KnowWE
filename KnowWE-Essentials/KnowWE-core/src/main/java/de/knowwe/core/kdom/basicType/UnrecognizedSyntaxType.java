@@ -21,6 +21,7 @@ package de.knowwe.core.kdom.basicType;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalHandler;
 import de.knowwe.core.kdom.AbstractType;
@@ -49,7 +50,7 @@ public class UnrecognizedSyntaxType extends AbstractType {
 			@Override
 			public Collection<Message> create(DefaultGlobalCompiler article, Section<UnrecognizedSyntaxType> section) {
 				Collection<Message> msgs = new ArrayList<>(1);
-				msgs.add(Messages.error("Unrecognized syntax: " + section.getText()));
+				msgs.add(Messages.error("Unrecognized syntax: " + Strings.ellipsis(section.getText(), 50)));
 				return msgs;
 			}
 		});
