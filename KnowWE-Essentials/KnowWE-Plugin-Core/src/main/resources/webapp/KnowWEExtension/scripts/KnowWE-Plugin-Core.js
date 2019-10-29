@@ -26,7 +26,7 @@ KNOWWE.core.plugin.objectinfo = function() {
   function scrollIntoView($element) {
     jq$('html, body').animate({
       scrollTop: $element.offset().top - (jq$('.navigation').height() + 5)
-    }, 200);
+    }, 0);
   }
 
   return {

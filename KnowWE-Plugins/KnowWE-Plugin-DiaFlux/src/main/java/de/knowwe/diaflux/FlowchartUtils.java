@@ -26,14 +26,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.WeakHashMap;
 
+import com.denkbares.plugin.Extension;
+import com.denkbares.plugin.JPFPluginManager;
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.diaFlux.flow.DiaFluxElement;
 import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.inference.DiaFluxUtils;
-import com.denkbares.plugin.Extension;
-import com.denkbares.plugin.JPFPluginManager;
-import com.denkbares.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -128,7 +128,7 @@ public class FlowchartUtils {
 	 */
 	public static RenderResult prepareFlowchartRenderer(Section<FlowchartType> flowchartSection, String parentId, UserContext user, String scope, boolean insertRessources) {
 		RenderResult result = new RenderResult(user);
-		result.appendHtml("<div class='flowchartContainer'>");
+		result.appendHtml("<div class='flowchartContainer' sectionid='" + flowchartSection.getID() + "'>");
 		if (insertRessources) {
 			insertDiaFluxResources(user, scope, result, flowchartSection);
 		}
