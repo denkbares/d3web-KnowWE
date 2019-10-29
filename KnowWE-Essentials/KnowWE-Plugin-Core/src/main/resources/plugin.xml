@@ -411,6 +411,34 @@
 		<parameter id="scope" value="TSMPrototypeDefinition" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CopyToClipboardToolProvider">
+		<parameter id="class" value="de.knowwe.core.tools.CopyToClipboardToolProvider" />
+		<parameter id="name" value="CopyToClipboardToolProvider" />
+		<parameter id="description" value="Copies this text to your clipboard." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="QuestionDefinition" />
+		<parameter id="scope" value="SolutionDefinition" />
+		<parameter id="scope" value="QuestionReference" />
+		<parameter id="scope" value="QuestionnaireReference" />
+		<parameter id="scope" value="QASetReference" />
+		<parameter id="scope" value="QASetDefinition" />
+		<parameter id="scope" value="AnswerReference" />
+		<parameter id="scope" value="AnswerDefinition" />
+		<parameter id="scope" value="SolutionReference" />
+		<parameter id="scope" value="NamedObjectReference" />
+		<parameter id="scope" value="AbstractIRITermDefinition" />
+		<parameter id="scope" value="IRITermReference" />
+		<parameter id="scope" value="FlowchartOrderReference" />
+		<parameter id="scope" value="PackageTerm" />
+		<parameter id="scope" value="CellContent" />
+		<parameter id="scope" value="TSMElementName" />
+		<parameter id="scope" value="SimpleReference" />
+		<parameter id="scope" value="SimpleDefinition" />
+		<parameter id="scope" value="TSMElementType" />
+		<parameter id="scope" value="TSMPrototypeDefinition" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="KDOMRendererCollapseAllToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.KDOMRendererCollapseAllToolProvider" />
 		<parameter id="name" value="KDOMRendererCollapseAllToolProvider" />
