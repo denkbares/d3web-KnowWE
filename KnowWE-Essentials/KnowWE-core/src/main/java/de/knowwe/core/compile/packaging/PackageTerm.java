@@ -21,6 +21,9 @@ package de.knowwe.core.compile.packaging;
 import java.util.regex.Pattern;
 
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -28,6 +31,8 @@ import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.report.Message;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -39,6 +44,7 @@ public class PackageTerm extends SimpleReference {
 	public PackageTerm() {
 		super(new SimpleReferenceRegistrationScript<>(PackageRegistrationCompiler.class, false), Package.class, Priority.BELOW_DEFAULT);
 		this.addCompileScript(Priority.LOW, new PackageNotCompiledWarningScript());
+		this.addCompileScript(new CheckWildCardCompileScript());
 		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\s*((?=\\s*\\S).+?)\\s*(?:\r?\n|\\z)"), 1));
 		setRenderer(StyleRenderer.PACKAGE);
 	}
@@ -46,6 +52,25 @@ public class PackageTerm extends SimpleReference {
 	@Override
 	public String getSectionTextAfterRename(Section<? extends RenamableTerm> section, Identifier oldIdentifier, Identifier newIdentifier) {
 		return newIdentifier.getLastPathElement();
+	}
+
+	public static final String WILDCARD_OPERATOR = "*";
+
+
+	private static class CheckWildCardCompileScript extends DefaultGlobalCompiler.DefaultGlobalScript<PackageTerm>{
+
+		@Override
+		public void compile(DefaultGlobalCompiler compiler, Section<PackageTerm> section) throws CompilerMessage {
+			if(section.getText().contains(WILDCARD_OPERATOR)) {
+				throw new CompilerMessage(new Message(Message.Type.ERROR, "Wildcard not allowed in package name: "+WILDCARD_OPERATOR));
+			}
+		}
+
+		@Override
+		public void destroy(DefaultGlobalCompiler compiler, Section<PackageTerm> section) {
+			// do nothing
+		}
+
 	}
 
 }

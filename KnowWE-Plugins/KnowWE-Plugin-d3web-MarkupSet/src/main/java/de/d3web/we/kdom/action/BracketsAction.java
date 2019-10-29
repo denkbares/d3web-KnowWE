@@ -23,7 +23,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.kdom.AnonymousType;
-import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringUnquotedFinder;
 
 /**

@@ -49,7 +49,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
-import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 
 public class QuestionSetValueLine extends AbstractType {
 

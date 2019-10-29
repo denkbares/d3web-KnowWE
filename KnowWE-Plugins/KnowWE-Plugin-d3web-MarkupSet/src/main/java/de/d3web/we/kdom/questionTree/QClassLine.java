@@ -48,7 +48,7 @@ import de.knowwe.kdom.constraint.UnquotedConstraint;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeTermRelationScript;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
-import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 
 public class QClassLine extends AbstractType {
 
@@ -117,9 +117,7 @@ public class QClassLine extends AbstractType {
 						.getParentDashTreeElement(s);
 				if (dashTreeFather != null) {
 					// is child of a QClass declaration => also declaration
-					if (Sections.successor(dashTreeFather, QClassLine.class) != null) {
-						return true;
-					}
+					return Sections.successor(dashTreeFather, QClassLine.class) != null;
 				}
 
 				return false;

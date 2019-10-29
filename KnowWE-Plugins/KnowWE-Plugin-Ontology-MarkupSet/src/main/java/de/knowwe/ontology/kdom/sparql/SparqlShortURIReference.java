@@ -23,7 +23,6 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
-import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.FilterSectionFinder;
 import de.knowwe.ontology.turtle.TurtleURI;
 

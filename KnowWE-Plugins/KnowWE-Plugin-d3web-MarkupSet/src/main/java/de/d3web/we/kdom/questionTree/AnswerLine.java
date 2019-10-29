@@ -40,7 +40,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.dashtree.DashTreeElement;
 import de.knowwe.kdom.dashtree.DashTreeUtils;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
@@ -65,10 +65,8 @@ public class AnswerLine extends AbstractType {
 				if (dashTreeElement.get() instanceof DashTreeElement) {
 					Section<? extends DashTreeElement> dashFather = DashTreeUtils
 							.getParentDashTreeElement(dashTreeElement);
-					if (dashFather != null
-							&& Sections.successor(dashFather, QuestionLine.class) != null) {
-						return true;
-					}
+					return dashFather != null
+							&& Sections.successor(dashFather, QuestionLine.class) != null;
 				}
 
 				return false;

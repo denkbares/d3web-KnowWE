@@ -27,7 +27,7 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
-import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
 
 public class QuestionRefLine extends AbstractType {

@@ -58,7 +58,7 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
-import de.knowwe.kdom.sectionFinder.ConditionalSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringFinder;

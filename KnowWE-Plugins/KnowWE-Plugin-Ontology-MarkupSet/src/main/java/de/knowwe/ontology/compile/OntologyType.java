@@ -39,6 +39,7 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageSelection;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.compile.terminology.TermCompiler.ReferenceValidationMode;
@@ -95,7 +96,7 @@ public class OntologyType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Ontology");
-		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
+		PackageCompileType compileType = new DefaultMarkupPackageCompileType();
 		compileType.addChildType(new OntologyDefinition());
 		compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());
 		compileType.addCompileScript(new OntologyCompilerRegistrationScript());
@@ -103,7 +104,8 @@ public class OntologyType extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_COMPILE, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_COMPILE, Icon.PACKAGE.addTitle("Uses"));
-		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new PackageTerm());
+		//MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new PackageTerm());
+		MARKUP.addAnnotationContentType(ANNOTATION_COMPILE, new PackageSelection());
 
 		MARKUP.addAnnotation(ANNOTATION_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_IMPORT, Icon.FILE_XML.addTitle("Import"));

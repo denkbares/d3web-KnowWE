@@ -24,10 +24,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.Priority;
@@ -41,6 +45,8 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Implementation of a compile type to handle the uses-annotations of a default markup. This Type does not add a
@@ -63,19 +69,28 @@ public class DefaultMarkupPackageCompileType extends PackageCompileType {
 	@Override
 	public String[] getPackagesToCompile(Section<? extends PackageCompileType> section) {
 		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
+		PackageManager packageManager = Compilers.getPackageRegistrationCompiler(section).getPackageManager();
+
 		List<Section<? extends AnnotationContentType>> usesSections = DefaultMarkupType.getAnnotationContentSections(markupSection, PackageManager.COMPILE_ATTRIBUTE_NAME);
-		List<Section<PackageTerm>> termSections = new ArrayList<>();
+
+		List<String> packages = new ArrayList<>();
+
 		for (Section<? extends AnnotationContentType> usesSection : usesSections) {
-			termSections.addAll(Sections.successors(usesSection, PackageTerm.class));
+			// obtain all package term references
+			Sections.successors(usesSection, PackageTerm.class).stream().map(Section::getText).forEach(packages::add);
+
+
+			// obtain and resolve all term patterns
+			Sections.successors(usesSection, PackagePattern.class).forEach(s -> {
+				packages.addAll(PackagePattern.resolvePackages(packageManager, s));
+			});
+
 		}
-		String[] uses = new String[termSections.size()];
-		for (int i = 0; i < termSections.size(); i++) {
-			uses[i] = termSections.get(i).getText();
-		}
-		if (uses.length == 0) {
+
+		if (packages.isEmpty()) {
 			return KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
 		}
-		return uses;
+		return packages.toArray(new String[0]);
 	}
 
 	/**
