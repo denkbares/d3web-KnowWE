@@ -201,11 +201,11 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 
 		StringWriter out = new StringWriter();
 		// out.append("<p>").append(message).append("<p/>");
-		if (!Strings.isBlank(report)) {
-			out.append("<p>").append(report).append("</p>");
-		}
 		if (!Strings.isBlank(actions)) {
 			out.append("<p>").append(actions).append("</p>");
+		}
+		if (!Strings.isBlank(report)) {
+			out.append("<p>").append(report).append("</p>");
 		}
 
 		return out.toString();
