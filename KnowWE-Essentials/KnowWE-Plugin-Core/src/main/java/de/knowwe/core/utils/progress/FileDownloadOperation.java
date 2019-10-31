@@ -122,7 +122,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 			StringBuilder builder = (type == Type.ERROR) ? errors :
 					(type == Type.WARNING) ? warnings : other;
 			if (builder.length() > 0) {
-				builder.append("\n<br>");
+				builder.append("\n");
 			}
 			builder.append(Strings.encodeHtml(msg.getVerbalization()));
 			if (!Strings.isBlank(details)) {
