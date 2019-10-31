@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -64,9 +65,7 @@ public class TableUtils {
 	}
 
 	public static Section<TableLine> getTableLine(Section<?> tableSection) {
-		return Sections.cast(tableSection.get() instanceof TableLine
-				? tableSection
-				: Sections.ancestor(tableSection, TableLine.class), TableLine.class);
+		return $(tableSection).closest(TableLine.class).getFirst();
 	}
 
 	public static Section<TableCellContent> getCell(Section<?> section, int x, int y) {
@@ -253,5 +252,53 @@ public class TableUtils {
 	public static Section<TableCellContent> getRowHeader(Section<?> cell) {
 		Section<TableLine> line = Sections.ancestor(cell, TableLine.class);
 		return Sections.successor(line, TableCellContent.class);
+	}
+
+	/**
+	 * For the current row, return the first cell with the given header. If there are multiple columns with the same
+	 * header, the first one from the left is returned.
+	 *
+	 * @param rowSection    the section of the row or a successor
+	 * @param columnHeader  the column header for which we want the cell in the current row
+	 * @param cellTypeClass the type of the section we want to extract from the cell
+	 * @return the section with the given type in the cell with the given header in the current row
+	 */
+	public static <T extends Type> Section<T> getInRow(Section<?> rowSection, String columnHeader, Class<T> cellTypeClass) {
+		return getInRow(rowSection, columnHeader, cellTypeClass, 0);
+	}
+
+	/**
+	 * For the current row, return the cell with the given header. Use this method if the table contains
+	 * multiple columns with the same header. The given 0-based index specifies which of those columns will be used.
+	 *
+	 * @param rowSection    the section of the row or a successor
+	 * @param columnHeader  the column header for which we want the cell in the current row
+	 * @param cellTypeClass the type of the section we want to extract from the cell
+	 * @return the section with the given type in the cell with the given header in the current row
+	 */
+	@Nullable
+	public static <T extends Type> Section<T> getInRow(Section<?> rowSection, String columnHeader, Class<T> cellTypeClass, int index) {
+		columnHeader = Strings.trim(columnHeader);
+
+		Section<TableLine> headerRow = getHeaderRow(rowSection);
+		List<Section<TableCellContent>> headerCells = Sections.successors(headerRow, TableCellContent.class);
+
+		List<Section<TableCellContent>> currentLineCells = Sections.successors(getTableLine(rowSection), TableCellContent.class);
+		int matchCount = 0;
+		for (int i = 0; i < headerCells.size(); i++) {
+			String headerText = Strings.trim(headerCells.get(i).getText());
+			if (headerText.equalsIgnoreCase(columnHeader)) {
+				if (matchCount == index) {
+					if (currentLineCells.size() >= i + 1) {
+						return $(currentLineCells.get(i)).successor(cellTypeClass).getFirst();
+					}
+					else {
+						return null;
+					}
+				}
+				matchCount++;
+			}
+		}
+		return null;
 	}
 }
