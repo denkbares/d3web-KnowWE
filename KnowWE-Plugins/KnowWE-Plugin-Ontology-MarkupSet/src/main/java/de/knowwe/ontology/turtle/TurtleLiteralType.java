@@ -139,7 +139,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		}
 	}
 
-	private static class LiteralPart extends AbstractType {
+	public static class LiteralPart extends AbstractType {
 
 		public LiteralPart() {
 			this.setSectionFinder(AllTextFinder.getInstance());
@@ -150,7 +150,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		}
 	}
 
-	private static class LanguageTagPart extends AbstractType {
+	public static class LanguageTagPart extends AbstractType {
 
 		public LanguageTagPart() {
 			this.setSectionFinder(new RegexSectionFinder(LANGUAGE_TAG + "\\z"));
@@ -161,7 +161,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 		}
 	}
 
-	private static class XSDPart extends AbstractType {
+	public static class XSDPart extends AbstractType {
 
 		public XSDPart() {
 			this.setSectionFinder(new RegexSectionFinder(Pattern.compile(XSD_PATTERN + "\\z"), 1));
