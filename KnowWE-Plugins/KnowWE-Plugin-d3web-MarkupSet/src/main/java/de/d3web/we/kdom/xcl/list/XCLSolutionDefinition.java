@@ -20,19 +20,8 @@
 
 package de.d3web.we.kdom.xcl.list;
 
-import java.util.Optional;
-
-import de.d3web.core.knowledge.terminology.Solution;
-import de.d3web.core.knowledge.terminology.info.MMInfo;
-import de.d3web.we.knowledgebase.D3webCompileScript;
-import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.SolutionDefinition;
-import de.d3web.xcl.XCLModel;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.sectionFinder.LineSectionFinderNonBlankTrimmed;
 
 public class XCLSolutionDefinition extends SolutionDefinition {
@@ -45,58 +34,5 @@ public class XCLSolutionDefinition extends SolutionDefinition {
 		super(priority);
 		this.setSectionFinder(LineSectionFinderNonBlankTrimmed.getInstance());
 		this.addCompileScript(Priority.HIGH, new XCLModelCreator());
-	}
-
-	/**
-	 * This handler creates the solution in the KB and also a covering-model
-	 *
-	 * @author Jochen Reutelshöfer
-	 */
-	private static class XCLModelCreator implements D3webCompileScript<XCLSolutionDefinition> {
-		@Override
-		public void compile(D3webCompiler compiler, Section<XCLSolutionDefinition> definition) throws CompilerMessage {
-
-			// prepare sections and solution
-			Section<DefaultMarkupType> markup = Sections.ancestor(definition, DefaultMarkupType.class);
-			Solution solution = definition.get().getTermObject(compiler, definition);
-			if (solution == null) {
-				throw CompilerMessage.warning("Cannot create XCL model, solution is not available.");
-			}
-
-			// create it lazy if not already exists
-			XCLModel xclModel = solution.getKnowledgeStore()
-					.computeIfAbsent(XCLModel.KNOWLEDGE_KIND, () -> new XCLModel(solution));
-
-			// initialize xcl model parameters
-			String otherQuestions = DefaultMarkupType.getAnnotation(markup, CoveringListMarkup.OTHER_QUESTIONS);
-			if (otherQuestions != null) {
-				boolean considerOnlyRelevantRelations = CoveringListMarkup.OTHER_QUESTIONS_IGNORE.equalsIgnoreCase(otherQuestions);
-				xclModel.setConsiderOnlyRelevantRelations(considerOnlyRelevantRelations);
-			}
-
-			// handle ESTABLISHED_THRESHOLD, SUGGESTED_THRESHOLD, and MIN_SUPPORT
-			asDouble(markup, CoveringListMarkup.ESTABLISHED_THRESHOLD).ifPresent(xclModel::setEstablishedThreshold);
-			asDouble(markup, CoveringListMarkup.SUGGESTED_THRESHOLD).ifPresent(xclModel::setSuggestedThreshold);
-			asDouble(markup, CoveringListMarkup.MIN_SUPPORT).ifPresent(xclModel::setMinSupport);
-
-			// set description
-			String description = DefaultMarkupType.getAnnotation(markup, CoveringListMarkup.DESCRIPTION);
-			if (description != null) {
-				xclModel.getSolution().getInfoStore().addValue(MMInfo.DESCRIPTION, description);
-			}
-		}
-
-		private Optional<Double> asDouble(Section<DefaultMarkupType> markup, String annotationName) {
-			Section<?> annotation = DefaultMarkupType.getAnnotationContentSection(markup, annotationName);
-			if (annotation != null) {
-				String text = annotation.getText();
-				try {
-					return Optional.of(Double.parseDouble(text));
-				}
-				catch (NumberFormatException ignore) {
-				}
-			}
-			return Optional.empty();
-		}
 	}
 }
