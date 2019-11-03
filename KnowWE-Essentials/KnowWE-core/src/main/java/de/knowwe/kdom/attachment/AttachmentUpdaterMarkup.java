@@ -11,7 +11,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 @Deprecated
 public class AttachmentUpdaterMarkup extends AttachmentMarkup {
 
-	private static DefaultMarkup MARKUP = AttachmentMarkup.MARKUP.copy();
+	private static final DefaultMarkup MARKUP = AttachmentMarkup.MARKUP.copy();
 
 	static {
 		MARKUP.setDeprecated(MARKUP.getName());

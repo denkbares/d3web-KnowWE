@@ -183,7 +183,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				return;
 			}
 			// only perform section update if articles are initialized in case we reference articles from this wiki
-			if (section.getArticleManager().isInitialized()) {
+			if (Objects.requireNonNull(section.getArticleManager()).isInitialized()) {
 				performUpdate(section);
 			}
 		}
@@ -224,7 +224,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentMarkup> section) {
 
-			if (section.hasErrorInSubtree()) return;
+			if (section.hasErrorInSubtree() || section.getArticleManager() == null) return;
 			if (DefaultMarkupType.getAnnotation(section, INTERVAL_ANNOTATION) == null) return;
 			if (DefaultMarkupType.getAnnotation(section, URL_ANNOTATION) == null) return;
 
@@ -320,6 +320,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	}
 
 	static void performUpdate(Section<AttachmentMarkup> section) {
+		if (section.getArticleManager() == null) return;
 
 		logLastRun(section);
 		cleanUpLastRuns();
