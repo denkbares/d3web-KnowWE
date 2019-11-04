@@ -19,7 +19,11 @@
 
 package de.knowwe.core.tools;
 
+import java.util.Collection;
+
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -48,9 +52,15 @@ public class RenamingToolProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return section.get() instanceof RenamableTerm
+		if (!(section.get() instanceof RenamableTerm)) return false;
+		Collection<TermCompiler> compilers = Compilers.getCompilers(section, TermCompiler.class);
+		Section<RenamableTerm> termSection = Sections.cast(section, RenamableTerm.class);
+		return !compilers.isEmpty()
+				&& compilers.stream()
+				.anyMatch(c -> !c.getTerminologyManager()
+						.getTermClasses(termSection.get().getTermIdentifier(c, termSection)).isEmpty())
 				&& ((RenamableTerm) section.get()).allowRename(Sections.cast(section, RenamableTerm.class))
-				&& ((Term) section.get()).getTermIdentifier(Sections.cast(section, Term.class)) != null
+				&& termSection.get().getTermIdentifier(compilers.iterator().next(), termSection) != null
 				&& KnowWEUtils.canWrite(section, userContext);
 	}
 

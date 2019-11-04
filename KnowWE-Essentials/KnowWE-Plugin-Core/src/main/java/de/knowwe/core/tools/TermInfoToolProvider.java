@@ -60,7 +60,7 @@ public class TermInfoToolProvider implements ToolProvider {
 	}
 
 	private Identifier getIdentifier(TermCompiler compiler, Section<?> section) {
-		if (section.get() instanceof Term) {
+		if (compiler != null && section.get() instanceof Term) {
 			return ((Term) section.get()).getTermIdentifier(compiler, Sections.cast(section, Term.class));
 		}
 		return null;
@@ -68,7 +68,8 @@ public class TermInfoToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		Identifier identifier = getIdentifier(null, section);
+		final TermCompiler compiler = Compilers.getCompiler(section, TermCompiler.class);
+		Identifier identifier = getIdentifier(compiler, section);
 		if (identifier == null) return ToolUtils.emptyToolArray();
 		Section<? extends Term> term = Sections.cast(section, Term.class);
 
