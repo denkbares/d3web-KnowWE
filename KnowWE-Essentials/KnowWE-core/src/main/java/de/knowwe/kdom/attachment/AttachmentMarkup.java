@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -52,6 +53,8 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletResponse;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -67,10 +70,14 @@ import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.basicType.URLType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
+import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.util.CredentialProvider;
 import de.knowwe.util.CredentialProviders;
@@ -165,6 +172,14 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	public AttachmentMarkup(DefaultMarkup markup) {
 		super(markup);
 		addCompileScript(new UpdateTaskRegistrationScript());
+		setRenderer(new DefaultMarkupRenderer() {
+			@Override
+			protected void renderContents(Section<? extends DefaultMarkupType> markupSection, List<Section<ContentType>> contentSections, UserContext user, RenderResult result) {
+				if (getLock(Sections.cast(markupSection, AttachmentMarkup.class)).isLocked()) {
+					result.appendHtml("<span style='color:green'>").append("Update currently ongoing...").appendHtml("</span>");
+				}
+			}
+		});
 	}
 
 	private static class UpdateTask extends TimerTask {
@@ -456,6 +471,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		return connectionStream;
 	}
 
+	@NotNull
 	private static ReentrantLock getLock(Section<AttachmentMarkup> section) {
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (section) {
