@@ -90,6 +90,15 @@ public class XCLRelation extends AbstractType {
 		this.addChildType(cond);
 	}
 
+	public Set<Solution> getCorrespondingSolutions(D3webCompiler compiler, Section<XCLRelation> relation) {
+		return $(relation).ancestor(CoveringList.class)
+				.successor(XCLHeader.class)
+				.successor(SolutionDefinition.class)
+				.map(s -> s.get().getTermObject(compiler, s))
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+	}
+
 	/**
 	 * this handler translates the parsed covering-relation-KDOM to the d3web knowledge base
 	 *
@@ -97,18 +106,9 @@ public class XCLRelation extends AbstractType {
 	 */
 	public static class CreateXCLRelationHandler implements D3webHandler<XCLRelation> {
 
-		private Set<Solution> getCorrespondingSolutions(D3webCompiler compiler, Section<XCLRelation> relation) {
-			return $(relation).ancestor(CoveringList.class)
-					.successor(XCLHeader.class)
-					.successor(SolutionDefinition.class)
-					.map(s -> s.get().getTermObject(compiler, s))
-					.filter(Objects::nonNull)
-					.collect(Collectors.toSet());
-		}
-
 		private List<XCLModel> getCorrespondingXCLModels(D3webCompiler compiler, Section<XCLRelation> relation) {
 			List<XCLModel> models = new ArrayList<>();
-			for (Solution solution : getCorrespondingSolutions(compiler, relation)) {
+			for (Solution solution : relation.get().getCorrespondingSolutions(compiler, relation)) {
 				// add associated XCL model (if there is any)
 				XCLModel xclModel = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
 				if (xclModel != null) models.add(xclModel);
