@@ -198,24 +198,24 @@ KNOWWE.core.plugin.progress = function() {
 							var bar = container.find("#" + opId);
 							if (bar.length == 0) {
 								container.append("<div id='" + opId + "'>" +
-									"<div class='progress-state'></div>" +
-									"<div class='progress-bar'>" +
-									"<span class='progress-bar-percent'>0 %</span>" +
+									"<div class='long-progress-state'></div>" +
+									"<div class='long-progress-bar'>" +
+									"<span class='long-progress-bar-percent'>0 %</span>" +
 									"</div>" +
-									"<div class='progress-message'></div></div>");
+									"<div class='long-progress-message'></div></div>");
 								bar = container.find("#" + opId);
 							}
-							bar.find(".progress-state").attr('title', "click to cancel").click(function() {
+							bar.find(".long-progress-state").attr('title', "click to cancel").click(function() {
 								KNOWWE.core.plugin.progress.cancelLongOperation(sectionId, jq$(this).parent().attr('id'));
 							});
-							bar.removeClass("progress-error progress-success");
+							bar.removeClass("long-progress-error long-progress-success");
 							var percent = Math.floor(progress * 100);
-							bar.find(".progress-bar").progressbar({value : percent});
-							bar.find(".progress-bar-percent").text(percent + " %");
-							bar.find(".progress-message").html(message);
+							bar.find(".long-progress-bar").progressbar({value : percent});
+							bar.find(".long-progress-bar-percent").text(percent + " %");
+							bar.find(".long-progress-message").html(message);
 							var hasLineBreaks = /<\/?(br|p)\/?>|\\n/.test(message);
 							if (hasLineBreaks) {
-								bar.find(".progress-message").css('display', 'block');
+								bar.find(".long-progress-message").css('display', 'block');
 							}
 							if (!running) {
 								var closeFunction = function(event) {
@@ -226,28 +226,28 @@ KNOWWE.core.plugin.progress = function() {
 									KNOWWE.core.plugin.progress.removeLongOperation(sectionId, barOpId);
 									removeAllErrors();
 								};
-								bar.find(".progress-state").unbind("click").click(closeFunction);
-								if (!bar.find(".progress-close").exists()) {
-									var closeButton = "<a class='progress-close'>[Hide]</a>";
+								bar.find(".long-progress-state").unbind("click").click(closeFunction);
+								if (!bar.find(".long-progress-close").exists()) {
+									var closeButton = "<a class='long-progress-close'>[Hide]</a>";
 									if (hasLineBreaks) {
-										bar.find('.progress-bar').after(closeButton);
+										bar.find('.long-progress-bar').after(closeButton);
 									} else {
 										bar.append(" " + closeButton);
 									}
 								}
-								bar.find(".progress-close").unbind("click").click(closeFunction);
+								bar.find(".long-progress-close").unbind("click").click(closeFunction);
 								if (error) {
-									bar.addClass("progress-error");
-									bar.find(".progress-message").html(error);
-									bar.find(".progress-state").attr("title", "aborted, click to hide");
+									bar.addClass("long-progress-error");
+									bar.find(".long-progress-message").html(error);
+									bar.find(".long-progress-state").attr("title", "aborted, click to hide");
 									KNOWWE.helper.observer.notify('longOperationAborted', {
 										sectionId : sectionId,
 										opId : opId
 									});
 								}
 								else {
-									bar.addClass("progress-success");
-									bar.find(".progress-state").attr("title", "succeeded, click to hide");
+									bar.addClass("long-progress-success");
+									bar.find(".long-progress-state").attr("title", "succeeded, click to hide");
 									KNOWWE.helper.observer.notify('longOperationSuccessful', {
 										sectionId : sectionId,
 										opId : opId

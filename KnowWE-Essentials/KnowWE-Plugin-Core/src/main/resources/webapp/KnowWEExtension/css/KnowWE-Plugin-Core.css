@@ -179,18 +179,18 @@ span.markupMenuItem {
 .defaultMarkupFrame .long-op-progress-container {
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-bar {
+.defaultMarkupFrame .long-op-progress-container .long-progress-bar {
 	display: inline-block;
 	width: 50%;
 	height: 21px;
 	position: relative;
 }
 
-.KnowWE .defaultMarkupFrame .long-op-progress-container .progress-bar {
+.KnowWE .defaultMarkupFrame .long-op-progress-container .long-progress-bar {
 	height: 12px;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-bar .progress-bar-percent {
+.defaultMarkupFrame .long-op-progress-container .long-progress-bar .long-progress-bar-percent {
 	position: absolute;
 	top: -2px;
 	left: 10px;
@@ -198,15 +198,15 @@ span.markupMenuItem {
 	text-align: center;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-bar .ui-progressbar-value {
+.defaultMarkupFrame .long-op-progress-container .long-progress-bar .ui-progressbar-value {
 	height: 21px;
 }
 
-.KnowWE .defaultMarkupFrame .long-op-progress-container .progress-bar .ui-progressbar-value {
+.KnowWE .defaultMarkupFrame .long-op-progress-container .long-progress-bar .ui-progressbar-value {
 	height: 21px;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-state {
+.defaultMarkupFrame .long-op-progress-container .long-progress-state {
 	display: inline-block;
 	position: relative;
 	top: -3px;
@@ -214,26 +214,26 @@ span.markupMenuItem {
 	background-image: none
 }
 
-.KnowWE .defaultMarkupFrame .long-op-progress-container .progress-state {
+.KnowWE .defaultMarkupFrame .long-op-progress-container .long-progress-state {
 	margin-right: 8px;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-state:hover {
+.defaultMarkupFrame .long-op-progress-container .long-progress-state:hover {
 	cursor: pointer;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-state:before {
+.defaultMarkupFrame .long-op-progress-container .long-progress-state:before {
 	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
 	content: "\f04d";
 	color: #CC3333;
 	font-weight: 900;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-error .progress-state {
+.defaultMarkupFrame .long-op-progress-container .long-progress-error .long-progress-state {
 	background-image: none;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-error .progress-state:before {
+.defaultMarkupFrame .long-op-progress-container .long-progress-error .long-progress-state:before {
 	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
 	content: "\f111";
 	color: #CC3333;
@@ -241,26 +241,26 @@ span.markupMenuItem {
 	font-weight: 900;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-success .progress-state {
+.defaultMarkupFrame .long-op-progress-container .long-progress-success .long-progress-state {
 	background-image: none;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-success .progress-state:before {
+.defaultMarkupFrame .long-op-progress-container .long-progress-success .long-progress-state:before {
 	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
 	content: "\f111";
 	color: #6A9514;
 	font-weight: 900;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-message,
-.defaultMarkupFrame .long-op-progress-container .progress-close {
+.defaultMarkupFrame .long-op-progress-container .long-progress-message,
+.defaultMarkupFrame .long-op-progress-container .long-progress-close {
 	display: inline-block;
 	margin-left: 5px;
 	top: -3px;
 	position: relative;
 }
 
-.defaultMarkupFrame .long-op-progress-container .progress-close {
+.defaultMarkupFrame .long-op-progress-container .long-progress-close {
 	color: grey;
 }
 
@@ -431,7 +431,7 @@ span.markupMenuItem {
 	vertical-align: -7px;
 }
 
-.defaultMarkup .markupText .progress-message a.action {
+.defaultMarkup .markupText .long-progress-message a.action {
 	position: relative;
 	display: inline-block;
 	padding: 0.25em 0.5em;
@@ -449,7 +449,7 @@ span.markupMenuItem {
 	-webkit-box-sizing: content-box;
 }
 
-.defaultMarkup .markupText .progress-message a.action .fa {
+.defaultMarkup .markupText .long-progress-message a.action .fa {
 	position: relative;
 	top: -1px;
 	padding-right: 5px;
