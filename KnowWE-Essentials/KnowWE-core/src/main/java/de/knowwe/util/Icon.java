@@ -82,6 +82,9 @@ public class Icon {
 	public static final Icon GLOBE = new Icon("fa-type fa-globe");
 	public static final Icon ORDERED_LIST = new Icon("fa-type fa-list-ol");
 	public static final Icon COPY_TO_CLIPBOARD = new Icon("fa-type fa-clipboard");
+	public static final Icon CIRCLE_FULL = new Icon("fas fa-circle");
+	public static final Icon CIRCLE_HALF_FULL = new Icon("fas fa-adjust");
+	public static final Icon CIRCLE_EMPTY = new Icon("fa-type fa-circle");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-type fa-file-alt");
