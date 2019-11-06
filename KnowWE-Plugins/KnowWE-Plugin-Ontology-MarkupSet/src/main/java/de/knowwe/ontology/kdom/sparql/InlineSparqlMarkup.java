@@ -182,7 +182,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 						boolean foundContent = false;
 						for (String variable : variables) {
 							Value node = row.getValue(variable);
-							if (node != null && !Strings.isBlank(node.toString())) {
+							if (node != null && !Strings.isBlank(node.stringValue())) {
 								foundContent = true;
 							}
 						}
