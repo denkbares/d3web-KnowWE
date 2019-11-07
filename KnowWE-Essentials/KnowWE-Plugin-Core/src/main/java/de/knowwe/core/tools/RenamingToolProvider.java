@@ -53,7 +53,7 @@ public class RenamingToolProvider implements ToolProvider {
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		if (!(section.get() instanceof RenamableTerm)) return false;
-		Collection<TermCompiler> compilers = Compilers.getCompilers(section, TermCompiler.class);
+		Collection<TermCompiler> compilers = Compilers.getCompilersWithCompileScript(section, TermCompiler.class);
 		Section<RenamableTerm> termSection = Sections.cast(section, RenamableTerm.class);
 		return !compilers.isEmpty()
 				&& compilers.stream()

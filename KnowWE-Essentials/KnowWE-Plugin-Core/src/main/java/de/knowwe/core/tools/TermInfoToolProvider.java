@@ -68,14 +68,13 @@ public class TermInfoToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		final TermCompiler compiler = Compilers.getCompiler(section, TermCompiler.class);
-		Identifier identifier = getIdentifier(compiler, section);
+		List<TermCompiler> compilers = new ArrayList<>(Compilers.getCompilersWithCompileScript(section, TermCompiler.class));
+		Identifier identifier = getIdentifier(compilers.stream().findFirst().orElse(null), section);
 		if (identifier == null) return ToolUtils.emptyToolArray();
 		Section<? extends Term> term = Sections.cast(section, Term.class);
 
 		// get sorted list of all defining articles
 		Map<String, Section<?>> articles = new HashMap<>();
-		List<TermCompiler> compilers = new ArrayList<>(Compilers.getCompilersWithCompileScript(section, TermCompiler.class));
 		if (compilers.isEmpty()) compilers = new ArrayList<>(Compilers.getCompilers(section, TermCompiler.class));
 		compilers.sort((o1, o2) -> {
 			if (o1 instanceof PackageCompiler && o2 instanceof PackageCompiler) return 0;
