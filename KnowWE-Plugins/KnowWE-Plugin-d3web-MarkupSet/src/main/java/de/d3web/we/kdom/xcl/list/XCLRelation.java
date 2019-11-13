@@ -37,6 +37,7 @@ import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -44,7 +45,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.StyleRenderer;
-import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -116,6 +116,10 @@ public class XCLRelation extends AbstractType {
 			return models;
 		}
 
+		protected Message.Type getMessageLevel(D3webCompiler compiler) {
+			return Message.Type.WARNING;
+		}
+
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<XCLRelation> section) {
 
@@ -129,7 +133,7 @@ public class XCLRelation extends AbstractType {
 			Condition condition = KDOMConditionFactory.createCondition(compiler, cond);
 			if (condition == null) {
 				// no condition could be created
-				return Messages.asList(Messages.warning(
+				return Messages.asList(new Message(getMessageLevel(compiler),
 						D3webUtils.getD3webBundle().getString("KnowWE.xcllist.conditionerror")));
 			}
 
@@ -153,7 +157,7 @@ public class XCLRelation extends AbstractType {
 			// get the models to add the relation to
 			List<XCLModel> models = getCorrespondingXCLModels(compiler, section);
 			if (models.isEmpty()) {
-				return Messages.asList(Messages.warning(
+				return Messages.asList(new Message(getMessageLevel(compiler),
 						D3webUtils.getD3webBundle().getString("KnowWE.xcllist.relationfail")));
 			}
 
