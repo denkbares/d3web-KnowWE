@@ -169,6 +169,10 @@ public class XCLRelation extends AbstractType {
 			return Messages.noMessage();
 		}
 
+		protected Message.Type getMessageLevel(D3webCompiler compiler) {
+			return Message.Type.WARNING;
+		}
+
 		@Override
 		public void destroy(D3webCompiler compiler, Section<XCLRelation> section) {
 			// do nothing if no relation has been created (and therefore not added at all)
