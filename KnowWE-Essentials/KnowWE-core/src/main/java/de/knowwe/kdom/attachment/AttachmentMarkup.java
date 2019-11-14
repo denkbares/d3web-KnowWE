@@ -130,6 +130,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotationContentType(URL_ANNOTATION, new URLType());
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION);
 		MARKUP.addAnnotation(REPLACEMENT, false, Pattern.compile(".+->.*"));
+		MARKUP.addAnnotation(REGEX_REPLACEMENT, false, Pattern.compile(".+->.*"));
 		TimeStampType timeStampType = new TimeStampType();
 		timeStampType.setRenderer((section, user, result) -> {
 			result.append(section.getText());
@@ -394,10 +395,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 						String[] parsedReplacement = Strings.parseConcat("->", replacement);
 						if (parsedReplacement.length < 2) continue;
 
-						if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
+						if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
 							connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
 						}
-						else if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
+						else if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
 							connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
 						}
 					}
