@@ -116,10 +116,6 @@ public class XCLRelation extends AbstractType {
 			return models;
 		}
 
-		protected Message.Type getMessageLevel(D3webCompiler compiler) {
-			return Message.Type.WARNING;
-		}
-
 		@Override
 		public Collection<Message> create(D3webCompiler compiler, Section<XCLRelation> section) {
 
