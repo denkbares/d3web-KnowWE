@@ -177,7 +177,9 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			@Override
 			protected void renderContents(Section<? extends DefaultMarkupType> markupSection, List<Section<ContentType>> contentSections, UserContext user, RenderResult result) {
 				if (getLock(Sections.cast(markupSection, AttachmentMarkup.class)).isLocked()) {
-					result.appendHtml("<span style='color:green'>").append("Update currently ongoing...").appendHtml("</span>");
+					result.appendHtml("<span style='color:green'>")
+							.append("Update currently ongoing...")
+							.appendHtml("</span>");
 				}
 			}
 		});
@@ -396,10 +398,26 @@ public class AttachmentMarkup extends DefaultMarkupType {
 						if (parsedReplacement.length < 2) continue;
 
 						if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
-							connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
+							if (Pattern.compile(parsedReplacement[0]).matcher(connectionString).find()) {
+								connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
+								Messages.clearMessages(annotationContent,  AttachmentMarkup.class);
+							}
+							else {
+								Messages.storeMessage(annotationContent, AttachmentMarkup.class,
+										Messages.warning("Replacement regex /" + parsedReplacement[0]
+												+ "/ does not match to any text in this attachment."));
+							}
 						}
 						else if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
-							connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
+							if (connectionString.contains(parsedReplacement[0])) {
+								connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
+								Messages.clearMessages(annotationContent,  AttachmentMarkup.class);
+							}
+							else {
+								Messages.storeMessage(annotationContent, AttachmentMarkup.class,
+										Messages.warning("Replacement pattern '" + parsedReplacement[0]
+												+ "' does not match to any text in this attachment."));
+							}
 						}
 					}
 
