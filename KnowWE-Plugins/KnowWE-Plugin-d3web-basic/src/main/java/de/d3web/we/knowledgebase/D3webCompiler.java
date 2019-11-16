@@ -21,6 +21,8 @@ package de.d3web.we.knowledgebase;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.events.EventManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
@@ -82,6 +84,12 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		return knowledgeBase;
 	}
 
+	@NotNull
+	@Override
+	public Section<KnowledgeBaseType> getCompileSection() {
+		return Sections.cast(compileSection, KnowledgeBaseType.class);
+	}
+
 	/**
 	 * Returns the name of this compiler, normally given in the content %%KnowledgeBase section.
 	 */
@@ -130,8 +138,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		Collection<Section<?>> sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 		for (Section<?> section : sectionsOfPackage) {
 			// only compile the KnowledgeBaseType sections belonging to this compiler
-			if (!(section.get() instanceof KnowledgeBaseType)
-					|| Sections.ancestor(getCompileSection(), KnowledgeBaseType.class) == section) {
+			if (!(section.get() instanceof KnowledgeBaseType) || getCompileSection() == section) {
 				scriptCompiler.addSubtree(section);
 			}
 		}

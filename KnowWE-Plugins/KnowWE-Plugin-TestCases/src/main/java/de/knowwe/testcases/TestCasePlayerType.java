@@ -56,24 +56,8 @@ public class TestCasePlayerType extends DefaultMarkupType {
 
 	public TestCasePlayerType() {
 		super(MARKUP);
-		//noinspection ConstantConditions
 		DefaultMarkupType.getContentType(this).setRenderer(
 				new ReRenderSectionMarkerRenderer(new TestCasePlayerRenderer()));
-		this.addCompileScript(new PackageRegistrationScript<TestCasePlayerType>() {
-
-			@Override
-			public void compile(PackageRegistrationCompiler compiler, Section<TestCasePlayerType> section) {
-				for (String packageName : DefaultMarkupType.getPackages(section,
-						PackageManager.COMPILE_ATTRIBUTE_NAME)) {
-					compiler.getPackageManager().addSectionToPackage(section, packageName);
-				}
-			}
-
-			@Override
-			public void destroy(PackageRegistrationCompiler compiler, Section<TestCasePlayerType> section) {
-				compiler.getPackageManager().removeSectionFromAllPackages(section);
-			}
-		});
 	}
 
 }

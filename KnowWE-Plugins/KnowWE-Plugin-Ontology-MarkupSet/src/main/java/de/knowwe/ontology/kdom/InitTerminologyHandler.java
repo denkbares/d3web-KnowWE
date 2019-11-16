@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,18 +36,17 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
-import org.jetbrains.annotations.NotNull;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -76,7 +74,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 23.04.2015
  */
-public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> {
+public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 
 	private static final Map<String, TermCache> importCache = new HashMap<>();
 	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -239,17 +237,16 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	};
 
 	@Override
-	public Collection<Message> create(OntologyCompiler compiler, Section<PackageCompileType> section) {
+	public Collection<Message> create(OntologyCompiler compiler, Section<OntologyType> section) {
 		registerBaseTerminology(compiler, section);
 
-		Section<OntologyType> ontologyMarkup = Sections.ancestor(section, OntologyType.class);
-		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(ontologyMarkup, OntologyType.ANNOTATION_IMPORT), false);
-		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(ontologyMarkup, OntologyType.ANNOTATION_SILENT_IMPORT), true);
+		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(section, OntologyType.ANNOTATION_IMPORT), false);
+		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(section, OntologyType.ANNOTATION_SILENT_IMPORT), true);
 
 		return Messages.noMessage();
 	}
 
-	private void registerBaseTerminology(OntologyCompiler compiler, Section<PackageCompileType> section) {
+	private void registerBaseTerminology(OntologyCompiler compiler, Section<OntologyType> section) {
 		compiler.getRdf2GoCore()
 				.addNamespaces(new SimpleNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
 						new SimpleNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"),
@@ -488,9 +485,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	public void registerQueryResult(OntologyCompiler compiler, Rdf2GoCore core, Section<?> section, String query, Class<? extends Resource> termClass) {
-		Iterator<BindingSet> iterator = core.sparqlSelect(query).getBindingSets().iterator();
-		while (iterator.hasNext()) {
-			BindingSet row = iterator.next();
+		for (BindingSet row : core.sparqlSelect(query).getBindingSets()) {
 			String value = row.getValue("resource").stringValue();
 			registerTerm(compiler, core, section, value, termClass);
 		}
@@ -526,7 +521,7 @@ public class InitTerminologyHandler extends OntologyHandler<PackageCompileType> 
 	}
 
 	@Override
-	public void destroy(OntologyCompiler compiler, Section<PackageCompileType> section) {
+	public void destroy(OntologyCompiler compiler, Section<OntologyType> section) {
 		// no need to remove something, we get a new TerminologyManager
 		// anyway...
 	}

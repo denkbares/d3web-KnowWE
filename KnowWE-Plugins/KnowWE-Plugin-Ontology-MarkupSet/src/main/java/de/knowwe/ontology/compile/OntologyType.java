@@ -40,7 +40,6 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileTypeRenderer;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageSelection;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.compile.terminology.TermCompiler.ReferenceValidationMode;
 import de.knowwe.core.kdom.basicType.AttachmentType;
@@ -54,10 +53,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
-import de.knowwe.kdom.defaultMarkup.CompileMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationScript;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.kdom.InitTerminologyHandler;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
@@ -73,7 +69,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 17.12.2013
  */
-public class OntologyType extends DefaultMarkupType {
+public class OntologyType extends DefaultMarkupPackageCompileType {
 
 	public static final String PLUGIN_ID = "KnowWE-Plugin-Ontology-MarkupSet";
 
@@ -96,11 +92,7 @@ public class OntologyType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Ontology");
-		PackageCompileType compileType = new DefaultMarkupPackageCompileType();
-		compileType.addChildType(new OntologyDefinition());
-		compileType.addCompileScript(Priority.INIT, new InitTerminologyHandler());
-		compileType.addCompileScript(new OntologyCompilerRegistrationScript());
-		MARKUP.addContentType(compileType);
+		MARKUP.addContentType(new OntologyDefinition());
 
 		MARKUP.addAnnotation(ANNOTATION_COMPILE, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_COMPILE, Icon.PACKAGE.addTitle("Uses"));
@@ -146,9 +138,9 @@ public class OntologyType extends DefaultMarkupType {
 
 	public OntologyType() {
 		super(MARKUP);
+		this.addCompileScript(Priority.INIT, new InitTerminologyHandler());
+		this.addCompileScript(new OntologyCompilerRegistrationScript());
 
-		this.removeCompileScript(PackageRegistrationCompiler.class,
-				DefaultMarkupPackageReferenceRegistrationScript.class);
 		this.setRenderer(new DefaultMarkupPackageCompileTypeRenderer() {
 			@Override
 			public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
@@ -166,9 +158,6 @@ public class OntologyType extends DefaultMarkupType {
 				super.renderContentsAndAnnotations(section, user, string);
 			}
 		});
-
-		removeCompileScript(PackageRegistrationCompiler.class, DefaultMarkupPackageRegistrationScript.class);
-		addCompileScript(new CompileMarkupPackageRegistrationScript());
 
 		EventManager.getInstance().registerListener(OntologyExporter.getInstance());
 	}
@@ -190,8 +179,7 @@ public class OntologyType extends DefaultMarkupType {
 	@Nullable
 	public static Namespace getDefaultNamespace(OntologyCompiler compiler) {
 		if (compiler == null) return null;
-		Section<OntologyType> ontologyTypeSection = Sections.ancestor(compiler.getCompileSection(), OntologyType.class);
-		if (ontologyTypeSection == null) return null;
+		Section<OntologyType> ontologyTypeSection = compiler.getCompileSection();
 		Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
 		if (annotationContentSection == null) return null;
 		Section<AbbreviationDefinition> abbreviationDefinition = Sections.successor(annotationContentSection, AbbreviationDefinition.class);
@@ -213,18 +201,17 @@ public class OntologyType extends DefaultMarkupType {
 		compileTypeSection.removeObject(COMPILER_PRIORITY);
 	}
 
-	private static class OntologyCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
+	private static class OntologyCompilerRegistrationScript extends PackageRegistrationScript<OntologyType> {
 
 		@Override
-		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) throws CompilerMessage {
-			Section<DefaultMarkupType> ontologyType = Sections.ancestor(section, DefaultMarkupType.class);
-			String ruleSetValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_RULE_SET);
+		public void compile(PackageRegistrationCompiler compiler, Section<OntologyType> section) throws CompilerMessage {
+			String ruleSetValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_RULE_SET);
 			RepositoryConfig ruleSet = getRuleSet(ruleSetValue);
-			String multiDefModeValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_MULTI_DEF_MODE);
+			String multiDefModeValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_MULTI_DEF_MODE);
 			MultiDefinitionMode multiDefMode = getMultiDefinitionMode(multiDefModeValue);
-			String referenceValidationModeValue = DefaultMarkupType.getAnnotation(ontologyType, ANNOTATION_REFERENCE_VALIDATION_MODE);
+			String referenceValidationModeValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_REFERENCE_VALIDATION_MODE);
 			ReferenceValidationMode referenceValidationMode = getReferenceValidationMode(referenceValidationModeValue);
-			String termMatchingAnnotation = DefaultMarkupType.getAnnotation(Sections.ancestor(section, OntologyType.class), ANNOTATION_TERM_MATCHING);
+			String termMatchingAnnotation = DefaultMarkupType.getAnnotation(section, ANNOTATION_TERM_MATCHING);
 			// for backward compatibility, ask for explicit insensitivity
 			boolean caseSensitive = !CASE_INSENSITIVE.equalsIgnoreCase(termMatchingAnnotation);
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
@@ -262,7 +249,7 @@ public class OntologyType extends DefaultMarkupType {
 		}
 
 		@Override
-		public void destroy(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
+		public void destroy(PackageRegistrationCompiler compiler, Section<OntologyType> section) {
 			// we just remove the no longer used compiler... we do not need to destroy the s
 			for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
 				if (packageCompiler instanceof OntologyCompiler) {

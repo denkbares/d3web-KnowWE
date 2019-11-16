@@ -43,10 +43,7 @@ import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.kdom.defaultMarkup.CompileMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageReferenceRegistrationScript;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
@@ -72,7 +69,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @author volker_belli
  * @created 13.10.2010
  */
-public class KnowledgeBaseType extends DefaultMarkupType {
+public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 
 	public static final String ANNOTATION_ID = "id";
 	public static final String ANNOTATION_VERSION = "version";
@@ -101,10 +98,8 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_STATUS, false);
 		MARKUP.addAnnotation(ANNOTATION_AFFILIATION, false);
 		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
-		DefaultMarkupPackageCompileType compileType = new DefaultMarkupPackageCompileType();
-		compileType.addChildType(new KnowledgeBaseDefinition());
-		compileType.addCompileScript(new D3webCompilerRegistrationScript());
-		MARKUP.addContentType(compileType);
+
+		MARKUP.addContentType(new KnowledgeBaseDefinition());
 
 		MARKUP.addAnnotationNameType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
 		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageTerm());
@@ -112,11 +107,8 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 	public KnowledgeBaseType() {
 		super(MARKUP);
-
-		this.removeCompileScript(PackageRegistrationCompiler.class,
-				DefaultMarkupPackageReferenceRegistrationScript.class);
-
 		this.setRenderer(new KnowledgeBaseTypeRenderer());
+		this.addCompileScript(new D3webCompilerRegistrationScript());
 		this.addCompileScript(Priority.HIGHEST, (D3webCompileScript<KnowledgeBaseType>) (compiler, section) -> {
 			// get required information
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
@@ -149,8 +141,6 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 			}
 		});
 
-		removeCompileScript(PackageRegistrationCompiler.class, DefaultMarkupPackageRegistrationScript.class);
-		addCompileScript(new CompileMarkupPackageRegistrationScript());
 	}
 
 	public String getFilename(Section<? extends KnowledgeBaseType> self) {
@@ -169,7 +159,7 @@ public class KnowledgeBaseType extends DefaultMarkupType {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
-			String annotation = DefaultMarkupType.getAnnotation(Sections.ancestor(section, KnowledgeBaseType.class), ANNOTATION_TERM_MATCHING);
+			String annotation = DefaultMarkupType.getAnnotation(section, ANNOTATION_TERM_MATCHING);
 			boolean caseSensitive = CASE_SENSITIVE.equalsIgnoreCase(annotation);
 			compiler.getCompilerManager()
 					.addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseType.class, caseSensitive));

@@ -67,7 +67,7 @@ public class ImportOntologyAnnotationType extends OntologyReference {
 		}
 
 		private Section<? extends PackageCompileType> getD3webCompileSection(Section<ImportOntologyAnnotationType> section) {
-			return $(section).ancestor(KnowledgeBaseType.class).successor(PackageCompileType.class).getFirst();
+			return $(section).ancestor(KnowledgeBaseType.class).cast(PackageCompileType.class).getFirst();
 		}
 	}
 }

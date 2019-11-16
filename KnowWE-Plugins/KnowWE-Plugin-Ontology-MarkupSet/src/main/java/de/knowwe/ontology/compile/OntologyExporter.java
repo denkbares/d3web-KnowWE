@@ -48,8 +48,6 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
-import static de.knowwe.core.kdom.parsing.Sections.$;
-
 /**
  * Exports the ontology of a type to a attachment specified by the @export annotation in the %%Ontology markup.
  * <p>
@@ -82,13 +80,7 @@ public class OntologyExporter implements EventListener {
 
 		final OntologyCompiler compiler = finishedEvent.getCompiler();
 		final Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
-		Section<OntologyType> ontologySection = $(finishedEvent.getCompiler()
-				.getCompileSection()).ancestor(OntologyType.class)
-				.getFirst();
-		if (ontologySection == null) {
-			Log.severe("Unable to find ontology section of OntologyCompiler, something is very wrong...");
-			return;
-		}
+		Section<OntologyType> ontologySection = compiler.getCompileSection();
 
 		synchronized (timers) {
 			Timer lastTimer = timers.get(ontologySection.getID());

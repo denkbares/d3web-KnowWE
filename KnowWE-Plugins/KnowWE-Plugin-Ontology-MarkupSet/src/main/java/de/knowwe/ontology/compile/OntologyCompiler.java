@@ -118,6 +118,11 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		return getCompileSection().getTitle();
 	}
 
+	@Override
+	public @NotNull Section<OntologyType> getCompileSection() {
+		return Sections.cast(super.getCompileSection(), OntologyType.class);
+	}
+
 	/**
 	 * Returns the name of this compiler, normally given in the content %%KnowledgeBase section.
 	 */
@@ -156,6 +161,8 @@ public class OntologyCompiler extends AbstractPackageCompiler
 			return new Rdf2GoCore(RepositoryConfigs.get(RdfConfig.class));
 		}
 		if (!committed) return rdf2GoCore;
+
+		if (getCompileSection().getArticleManager() == null) return rdf2GoCore;
 
 		// if we are currently in the process of compiling this ontology, we perform a commit
 		// on the Rdf2GoCore exactly once per priority (because the compile order is not stable inside
@@ -252,8 +259,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	private void compile(Collection<Section<?>> sectionsOfPackage) {
 		for (Section<?> section : sectionsOfPackage) {
 			// only compile the OntologyType sections belonging to this compiler
-			if (!(section.get() instanceof OntologyType)
-					|| Sections.ancestor(getCompileSection(), OntologyType.class) == section) {
+			if (!(section.get() instanceof OntologyType) || getCompileSection() == section) {
 				scriptCompiler.addSubtree(section);
 			}
 		}
@@ -268,8 +274,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	}
 
 	static CommitType getCommitType(OntologyCompiler compiler) {
-		Section<OntologyType> ontologySection = Sections.ancestor(compiler.getCompileSection(), OntologyType.class);
-		String commitTypeString = DefaultMarkupType.getAnnotation(ontologySection, OntologyType.ANNOTATION_COMMIT);
+		String commitTypeString = DefaultMarkupType.getAnnotation(compiler.getCompileSection(), OntologyType.ANNOTATION_COMMIT);
 		return Strings.parseEnum(commitTypeString, CommitType.onSave);
 	}
 
