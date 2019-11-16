@@ -28,7 +28,8 @@ import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Abstract class for PackageCompilers.
@@ -59,16 +60,9 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 				|| packageManager.getCompileSections(section).contains(compileSection)) {
 			return true;
 		}
-		Section<?> compilingMarkupSection;
-		if (section.get().getClass().isInstance(compilingType)) {
-			compilingMarkupSection = Sections.cast(section, compilingType);
-		}
-		else {
-			compilingMarkupSection = Sections.ancestor(section, compilingType);
-		}
-		if (compilingMarkupSection != null) {
-			Section<PackageCompileType> compileSection = Sections.successor(compilingMarkupSection, PackageCompileType.class);
-			return getCompileSection() == compileSection;
+		Section<?> compilingMarkupSection = $(section).closest(compilingType).getFirst();
+		if (compilingMarkupSection != null && compilingMarkupSection.get() instanceof PackageCompileType) {
+			return getCompileSection() == compilingMarkupSection;
 		}
 		return false;
 	}

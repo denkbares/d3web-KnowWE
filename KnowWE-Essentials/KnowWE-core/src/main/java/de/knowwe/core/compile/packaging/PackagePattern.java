@@ -4,10 +4,9 @@
 
 package de.knowwe.core.compile.packaging;
 
-import java.util.Collection;
-import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -22,7 +21,6 @@ import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
  */
 public class PackagePattern extends AbstractType {
 
-
 	public PackagePattern() {
 		this.setSectionFinder(new ConditionalSectionFinder(new AllTextFinderTrimmed()) {
 			@Override
@@ -32,16 +30,8 @@ public class PackagePattern extends AbstractType {
 		});
 	}
 
-	/**
-	 * Resolves the pattern of the section on all existing ontology package names
-	 *
-	 * @param packageManager the package manager to be used for resolution
-	 * @param section the section containing the pattern
-	 * @return all package names that match the wild card pattern
-	 */
-	public static Collection<String> resolvePackages(PackageManager packageManager, Section<PackagePattern> section) {
-		Set<String> allPackageNames = packageManager.getAllPackageNames();
-		Pattern pattern = Pattern.compile(section.getText().replace("*", ".*"));
-		return allPackageNames.stream().filter(s -> pattern.matcher(s).matches()).collect(Collectors.toList());
+	@NotNull
+	public Pattern getPattern(Section<PackagePattern> section) {
+		return Pattern.compile(section.getText().replace("*", ".*"));
 	}
 }

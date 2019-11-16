@@ -44,7 +44,6 @@ import de.knowwe.kdom.attachment.AttachmentMarkup;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
-import static java.util.stream.Collectors.toList;
 
 /**
  * This class represents a section of the top-level default markup. That markup always starts with "%%" followed by an
@@ -162,7 +161,6 @@ public class DefaultMarkupType extends AbstractType {
 		this.addChildType(10, new UnknownAnnotationType());
 		this.addCompileScript(new DefaultMarkupPackageRegistrationScript());
 		this.addCompileScript(new DefaultMarkupCompileScript(markup));
-		this.addCompileScript(new DefaultMarkupPackageReferenceRegistrationScript());
 	}
 
 	@Override
@@ -203,10 +201,7 @@ public class DefaultMarkupType extends AbstractType {
 	 */
 	@Nullable
 	public static Section<? extends ContentType> getContentSection(Section<?> section) {
-		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
-			throw new IllegalArgumentException("section not of type DefaultMarkupType");
-		}
-		return Sections.child(section, ContentType.class);
+		return $(section).closest(DefaultMarkupType.class).successor(ContentType.class).getFirst();
 	}
 
 	/**
@@ -277,10 +272,6 @@ public class DefaultMarkupType extends AbstractType {
 	@SuppressWarnings("unchecked")
 	@Nullable
 	public static Section<? extends AnnotationContentType> getAnnotationContentSection(Section<? extends Type> section, String name) {
-		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
-			throw new IllegalArgumentException("section not of type DefaultMarkupType");
-		}
-
 		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
 			Section<AnnotationContentType> annotationContent = (Section<AnnotationContentType>) child;
 			String annotationName = annotationContent.get().getName(annotationContent);
@@ -301,7 +292,6 @@ public class DefaultMarkupType extends AbstractType {
 	 * @return the list of annotation sections
 	 * @throws IllegalArgumentException if the specified section is not of {@link DefaultMarkupType}
 	 */
-	@SuppressWarnings("unchecked")
 	@NotNull
 	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String name) {
 		return getAnnotationContentSections(section, new String[] { name });
@@ -320,9 +310,6 @@ public class DefaultMarkupType extends AbstractType {
 	@SuppressWarnings("unchecked")
 	@NotNull
 	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String... names) {
-		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
-			throw new IllegalArgumentException("section not of type DefaultMarkupType");
-		}
 		List<Section<? extends AnnotationContentType>> results = new ArrayList<>();
 		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
 			Section<AnnotationContentType> annotationContent = (Section<AnnotationContentType>) child;
@@ -345,7 +332,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @created 11.03.2012
 	 */
 	@NotNull
-	public static String[] getPackages(Section<?> section) {
+	public String[] getPackages(Section<?> section) {
 		return getPackages(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
 	}
 
@@ -358,10 +345,7 @@ public class DefaultMarkupType extends AbstractType {
 	 * @created 12.03.2012
 	 */
 	@NotNull
-	public static String[] getPackages(Section<?> section, String annotation) {
-		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
-			throw new IllegalArgumentException("section not of type DefaultMarkupType");
-		}
+	public String[] getPackages(Section<?> section, String annotation) {
 		String[] packageNames = DefaultMarkupType.getAnnotations(section, annotation);
 		if (packageNames.length == 0) {
 			packageNames = KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
@@ -377,8 +361,7 @@ public class DefaultMarkupType extends AbstractType {
 					.stream()
 					.map(s -> $(s).ancestor(AttachmentMarkup.class).getFirst())
 					.filter(Objects::nonNull)
-					.map(DefaultMarkupType::getPackages).flatMap(Arrays::stream)
-					.collect(toList()).toArray(new String[0]);
+					.map(s -> s.get().getPackages(s)).flatMap(Arrays::stream).toArray(String[]::new);
 			if (collectedPackageNames.length > 0) packageNames = collectedPackageNames;
 		}
 		return packageNames;
@@ -395,9 +378,6 @@ public class DefaultMarkupType extends AbstractType {
 	@SuppressWarnings("unchecked")
 	@NotNull
 	public static List<Section<? extends AnnotationContentType>> getAllAnnotationContentSections(Section<?> section) {
-		if (!DefaultMarkupType.class.isAssignableFrom(section.get().getClass())) {
-			throw new IllegalArgumentException("section not of type DefaultMarkupType");
-		}
 		List<Section<? extends AnnotationContentType>> results = new ArrayList<>();
 		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
 			results.add((Section<? extends AnnotationContentType>) child);
@@ -405,8 +385,13 @@ public class DefaultMarkupType extends AbstractType {
 		return results;
 	}
 
-	private static List<Section<AnnotationContentType>> findAnnotationContentTypes(Section<? extends Type> section) {
-		return Sections.successors(section, AnnotationContentType.class);
+
+	private static List<Section<AnnotationContentType>> findAnnotationContentTypes(Section<? extends Type> markupSectionOrSuccessor) {
+		Section<DefaultMarkupType> markupTypeSection = $(markupSectionOrSuccessor).closest(DefaultMarkupType.class).getFirst();
+		if (markupTypeSection == null) {
+			throw new IllegalArgumentException("Not a DefaultMarkupType section (or successor)");
+		}
+		return Sections.successors(markupTypeSection, AnnotationContentType.class);
 	}
 
 	/**

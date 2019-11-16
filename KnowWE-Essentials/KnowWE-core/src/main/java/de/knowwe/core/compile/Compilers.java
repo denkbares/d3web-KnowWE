@@ -181,7 +181,8 @@ public class Compilers {
 
 	@NotNull
 	public static DefaultGlobalCompiler getGlobalCompiler(Section<?> section) {
-		return getGlobalCompiler(section.getArticleManager());
+		return getGlobalCompiler(section.getArticleManager() == null
+				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
 	}
 
 	@NotNull
@@ -196,7 +197,8 @@ public class Compilers {
 
 	@NotNull
 	public static PackageRegistrationCompiler getPackageRegistrationCompiler(Section<?> section) {
-		return getPackageRegistrationCompiler(section.getArticleManager());
+		return getPackageRegistrationCompiler(section.getArticleManager() == null
+				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
 	}
 
 	@NotNull
@@ -308,6 +310,7 @@ public class Compilers {
 		if (packageManager == null) return Collections.emptyList();
 		Set<String> referringArticleTitles = packageManager.getCompilingArticles(section);
 		ArticleManager articleManager = section.getArticleManager();
+		if (articleManager == null) return Collections.emptyList();
 		for (String title : referringArticleTitles) {
 			Article article = articleManager.getArticle(title);
 			if (article == null) continue;

@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -29,8 +29,9 @@ import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author Jochen Reutelshöfer
@@ -54,15 +55,14 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	}
 
 	public static TerminologyManager getTerminologyManager(String master) {
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(
-				Environment.DEFAULT_WEB);
+		ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 		Collection<PackageCompiler> compilers = Compilers.getCompilers(articleManager,
 				PackageCompiler.class);
 		for (PackageCompiler ontologyCompiler : compilers) {
 			Section<? extends PackageCompileType> compileSection = ontologyCompiler.getCompileSection();
-			Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(compileSection,
-					DefaultMarkupType.class);
-			if ((defaultMarkup.getText().contains(master) || defaultMarkup.getTitle().equals(master))
+			Section<DefaultMarkupType> defaultMarkup = $(compileSection).closest(DefaultMarkupType.class).getFirst();
+			if (defaultMarkup != null
+					&& (defaultMarkup.getText().contains(master) || defaultMarkup.getTitle().equals(master))
 					&& ontologyCompiler instanceof TermCompiler) {
 				return ((TermCompiler) ontologyCompiler).getTerminologyManager();
 			}
@@ -131,5 +131,4 @@ public class PackageCompileLinkToTermDefinitionProvider implements LinkToTermDef
 	// return uri;
 	//
 	// }
-
 }

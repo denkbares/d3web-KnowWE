@@ -8,7 +8,6 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 
 /**
- *
  * Container type allowing for normal package terms and wildcard package pattern
  *
  * @author Jochen Reutelshoefer (denkbares GmbH)
