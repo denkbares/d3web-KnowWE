@@ -18,6 +18,7 @@
  */
 package de.knowwe.kdom.defaultMarkup;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Stream;
@@ -87,12 +88,13 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 			}
 
 			// Special case for package patterns: Since we don't know which new package names will match on a package
-			// patterns added in the future, we have to check and potentially compile as new packages get added
+			// pattern added in the future, we have to check and register/add as new packages get added
 			if (isNewPackage && !isCompileMarkup) {
 				for (Section<? extends PackageCompileType> compileSection : packageManager.getCompileSections()) {
 					if (packageManager.getSectionsOfPackage(packageName).contains(compileSection)) continue;
 					if (!compilesPackageViaPatternMatch(packageName, compileSection)) continue;
 					packageManager.addSectionToPackage(compileSection, packageName);
+					packageManager.registerPackageCompileSection(compileSection);
 					terminologyManager.registerTermDefinition(compiler, compileSection, Package.class, packageIdentifier);
 					String[] packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
 					storeRegisteredPackages(compiler, compileSection, packagesToCompile);
@@ -166,7 +168,7 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 
 		Collection<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections();
 		packageLoop:
-		for (String packageName : packageManager.getAllPackageNames()) {
+		for (String packageName : new ArrayList<>(packageManager.getAllPackageNames())) {
 			if (!packageManager.hasChanged(packageName)) continue;
 
 			Collection<Section<?>> sectionsOfPackage = packageManager.getSectionsOfPackage(packageName);

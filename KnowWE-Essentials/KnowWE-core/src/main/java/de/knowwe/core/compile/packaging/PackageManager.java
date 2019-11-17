@@ -21,19 +21,14 @@
 package de.knowwe.core.compile.packaging;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.denkbares.collections.ConcatenateCollection;
 import com.denkbares.events.EventManager;
@@ -75,12 +70,6 @@ public class PackageManager {// implements EventListener {
 	 * For each package, you get all compile sections of the compilers compiling the package.
 	 */
 	private final Map<String, Set<Section<? extends PackageCompileType>>> packageToCompilingSections =
-			new HashMap<>();
-
-	/**
-	 * For each package pattern, you get all compile sections of the compilers compiling the package.
-	 */
-	private final Map<HashablePattern, Set<Section<? extends PackageCompileType>>> patternToCompilingSections =
 			new HashMap<>();
 
 	private final Map<String, Pair<Set<Section<?>>, Set<Section<?>>>> changedPackages =
@@ -271,51 +260,30 @@ public class PackageManager {// implements EventListener {
 
 		packageCompileSections.add(section);
 
-		List<String> registrationPackages = Arrays.asList(section.get().getPackagesToCompile(section));
-		registerToMap(section, packageToCompilingSections, registrationPackages);
-
-		List<HashablePattern> registrationPatterns = Stream.of(section.get()
-				.getPackagePatterns(section))
-				.map(HashablePattern::new)
-				.collect(Collectors.toList());
-		registerToMap(section, patternToCompilingSections, registrationPatterns);
+		for (String object : section.get().getPackagesToCompile(section)) {
+			packageToCompilingSections.computeIfAbsent(object, k -> new HashSet<>()).add(section);
+		}
 
 		EventManager.getInstance().fireEvent(new RegisteredPackageCompileSectionEvent(section));
-	}
-
-	private <O> void registerToMap(Section<? extends PackageCompileType> section, Map<O, Set<Section<? extends PackageCompileType>>> patternToCompilingSections, Collection<O> registrationObjects) {
-		for (O object : registrationObjects) {
-			patternToCompilingSections.computeIfAbsent(object, k -> new HashSet<>()).add(section);
-		}
 	}
 
 	public boolean unregisterPackageCompileSection(Section<? extends PackageCompileType> section) {
 
 		boolean removed = packageCompileSections.remove(section);
 		if (removed) {
-			List<String> packages = Arrays.asList(section.get().getPackagesToCompile(section));
-			List<HashablePattern> patterns = Stream.of(section.get()
-					.getPackagePatterns(section))
-					.map(HashablePattern::new)
-					.collect(Collectors.toList());
-			unregisterFromMap(section, packageToCompilingSections, packages);
-			unregisterFromMap(section, patternToCompilingSections, patterns);
+			for (String object : section.get().getPackagesToCompile(section)) {
+				Set<Section<? extends PackageCompileType>> compileTypeSections = packageToCompilingSections.get(object);
+				if (compileTypeSections != null) {
+					compileTypeSections.remove(section);
+					if (compileTypeSections.isEmpty()) {
+						packageToCompilingSections.remove(object);
+					}
+				}
+			}
 		}
 
 		EventManager.getInstance().fireEvent(new UnregisteredPackageCompileSectionEvent(section));
 		return removed;
-	}
-
-	private <O> void unregisterFromMap(Section<? extends PackageCompileType> section, Map<O, Set<Section<? extends PackageCompileType>>> patternToCompilingSections, Collection<O> registrationObjects) {
-		for (O object : registrationObjects) {
-			Set<Section<? extends PackageCompileType>> compileTypeSections = patternToCompilingSections.get(object);
-			if (compileTypeSections != null) {
-				compileTypeSections.remove(section);
-				if (compileTypeSections.isEmpty()) {
-					patternToCompilingSections.remove(object);
-				}
-			}
-		}
 	}
 
 	public Set<String> getAllPackageNames() {
@@ -359,12 +327,6 @@ public class PackageManager {// implements EventListener {
 		Set<Section<? extends PackageCompileType>> resolvedSections = packageToCompilingSections.get(packageName);
 		if (resolvedSections != null) {
 			compilingSections.addAll(resolvedSections);
-		}
-
-		// also check for patterns
-		for (Map.Entry<HashablePattern, Set<Section<? extends PackageCompileType>>> entry : patternToCompilingSections.entrySet()) {
-			if (!entry.getKey().pattern.matcher(packageName).matches()) continue;
-			compilingSections.addAll(entry.getValue());
 		}
 
 		return Collections.unmodifiableSet(compilingSections);
@@ -411,29 +373,5 @@ public class PackageManager {// implements EventListener {
 			titles.add(sections.getTitle());
 		}
 		return titles;
-	}
-
-	/**
-	 * Pattern wrapper allowing for string-based equals/hashcode
-	 */
-	private static class HashablePattern {
-		private final Pattern pattern;
-
-		public HashablePattern(Pattern pattern) {
-			this.pattern = pattern;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			HashablePattern that = (HashablePattern) o;
-			return Objects.equals(pattern.pattern(), that.pattern.pattern());
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(pattern.pattern());
-		}
 	}
 }
