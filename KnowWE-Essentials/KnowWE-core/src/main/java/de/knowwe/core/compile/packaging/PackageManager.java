@@ -363,7 +363,7 @@ public class PackageManager {// implements EventListener {
 
 		// also check for patterns
 		for (Map.Entry<HashablePattern, Set<Section<? extends PackageCompileType>>> entry : patternToCompilingSections.entrySet()) {
-			if (!entry.getKey().pattern.matcher(packageName).find()) continue;
+			if (!entry.getKey().pattern.matcher(packageName).matches()) continue;
 			compilingSections.addAll(entry.getValue());
 		}
 
