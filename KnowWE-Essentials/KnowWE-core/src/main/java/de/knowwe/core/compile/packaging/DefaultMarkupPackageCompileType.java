@@ -119,13 +119,10 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 			String[] packagesToCompile = getPackagesToCompile(section);
 			Collection<Section<?>> sectionsOfPackages = compiler.getPackageManager().getSectionsOfPackage(
 					packagesToCompile);
-			Section<DefaultMarkupType> markupSection = Sections.ancestor(
-					section, DefaultMarkupType.class);
 			boolean emptyPackages = sectionsOfPackages.isEmpty()
 					// the parents markup section does not count
 					|| (sectionsOfPackages.size() == 1
-					&& markupSection != null
-					&& sectionsOfPackages.contains(markupSection));
+					&& sectionsOfPackages.contains(section));
 			if (emptyPackages) {
 				String packagesString = Strings.concat(" ,", packagesToCompile);
 				if (packagesToCompile.length > 1) {
