@@ -258,6 +258,7 @@ span.markupMenuItem {
 	margin-left: 5px;
 	top: -3px;
 	position: relative;
+	user-select: none;
 }
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-close {
