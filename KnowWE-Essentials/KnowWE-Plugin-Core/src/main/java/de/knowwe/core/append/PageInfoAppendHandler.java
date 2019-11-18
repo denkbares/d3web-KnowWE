@@ -40,16 +40,16 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 public class PageInfoAppendHandler implements PageAppendHandler {
 
 	@Override
-	public void append(String web, String title, UserContext user, RenderResult html) {
+	public void append(Article article, UserContext user, RenderResult html) {
 		WikiConnector connector = Environment.getInstance().getWikiConnector();
-		Article article = KnowWEUtils.getArticle(web, title);
 		if (article == null) return; // Can happen in preview mode
+		final String title = article.getTitle();
 		int version = connector.getVersion(title);
 		long modDate = connector.getLastModifiedDate(title, -1).getTime();
 		String userName = user.getUserName();
 		String overallStatus = KnowWEUtils.getOverallStatus(user);
 
-		html.appendHtml("<input type='hidden' id='knowWEInfoWeb' value='" + web + "'>");
+		html.appendHtml("<input type='hidden' id='knowWEInfoWeb' value='" + article.getWeb() + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageName' value=" + Strings.quote(title) + ">");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageVersion' value='" + version + "'>");
 		html.appendHtml("<input type='hidden' id='knowWEInfoPageDate' value='" + modDate + "'>");

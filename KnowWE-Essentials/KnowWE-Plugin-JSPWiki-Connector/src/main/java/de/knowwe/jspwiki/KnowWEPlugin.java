@@ -349,11 +349,11 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			List<PageAppendHandler> appendHandlers = Environment.getInstance()
 					.getAppendHandlers();
 
-			renderPrePageAppendHandler(userContext, article.getTitle(), renderResult, appendHandlers);
+			renderPrePageAppendHandler(userContext, article, renderResult, appendHandlers);
 
 			renderPage(userContext, article, renderResult);
 
-			renderPostPageAppendHandler(userContext, article.getTitle(), renderResult, appendHandlers);
+			renderPostPageAppendHandler(userContext, article, renderResult, appendHandlers);
 		}
 		else {
 			renderResult.appendHtmlElement("span", "Timed out while waiting for knowledge to be compiled, please try again later...", "class", "warning");
@@ -414,26 +414,22 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		return parse != null && (parse.equals("full") || parse.equals("true")) && fullParseFired == null;
 	}
 
-	private static void renderPostPageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
+	private static void renderPostPageAppendHandler(JSPWikiUserContext userContext, Article article, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
 		// in case we are rendering a support article (like LeftMenu or MoreMenu), skip this
-		if (!title.equals(userContext.getTitle())) return;
+		if (!article.getTitle().equals(userContext.getTitle())) return;
 		for (PageAppendHandler pageAppendHandler : appendhandlers) {
 			if (!pageAppendHandler.isPre()) {
-				pageAppendHandler.append(
-						Environment.DEFAULT_WEB, title,
-						userContext, renderResult);
+				pageAppendHandler.append(article, userContext, renderResult);
 			}
 		}
 	}
 
-	private static void renderPrePageAppendHandler(JSPWikiUserContext userContext, String title, RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
+	private static void renderPrePageAppendHandler(JSPWikiUserContext userContext, Article article, RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
 		// in case we are rendering a support article (like LeftMenu or MoreMenu), skip this
-		if (!title.equals(userContext.getTitle())) return;
+		if (!article.getTitle().equals(userContext.getTitle())) return;
 		for (PageAppendHandler pageAppendHandler : appendHandlers) {
 			if (pageAppendHandler.isPre()) {
-				pageAppendHandler.append(
-						Environment.DEFAULT_WEB, title,
-						userContext, renderResult);
+				pageAppendHandler.append(article, userContext, renderResult);
 			}
 		}
 	}
@@ -459,10 +455,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		List<PageAppendHandler> appendHandlers = Environment.getInstance()
 				.getAppendHandlers();
-		renderPrePageAppendHandler(userContext, title, renderResult, appendHandlers);
+		renderPrePageAppendHandler(userContext, article, renderResult, appendHandlers);
 		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
 				renderResult);
-		renderPostPageAppendHandler(userContext, title, renderResult, appendHandlers);
+		renderPostPageAppendHandler(userContext, article, renderResult, appendHandlers);
 
 		return renderResult.toStringRaw();
 	}

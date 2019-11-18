@@ -19,6 +19,7 @@
 package de.knowwe.core.correction;
 
 import de.knowwe.core.append.PageAppendHandler;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 
@@ -33,7 +34,7 @@ import de.knowwe.core.user.UserContext;
 public class CorrectionAppendHandler implements PageAppendHandler {
 
 	@Override
-	public void append(String web, String title, UserContext user, RenderResult result) {
+	public void append(Article article, UserContext user, RenderResult result) {
 
 	}
 

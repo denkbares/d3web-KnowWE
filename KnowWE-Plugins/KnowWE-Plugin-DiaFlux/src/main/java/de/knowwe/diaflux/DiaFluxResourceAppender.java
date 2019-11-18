@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.wiki.ui.TemplateManager;
-
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -15,7 +13,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.include.IncludeMarkup;
 import de.knowwe.include.WikiReference;
-import de.knowwe.jspwiki.JSPWikiUserContext;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 import static java.util.stream.Collectors.toList;
@@ -29,15 +26,14 @@ import static java.util.stream.Collectors.toList;
 public class DiaFluxResourceAppender implements PageAppendHandler {
 
 	@Override
-	public void append(String web, String title, UserContext user, RenderResult result) {
-		Article article = user.getArticleManager().getArticle(title);
+	public void append(Article article, UserContext user, RenderResult result) {
 		if (article == null) return; // Can happen in preview mode
 		List<Section<FlowchartType>> flowcharts = new ArrayList<>(Sections.successors(article.getRootSection(), FlowchartType.class));
 		// also render included flowcharts
 		flowcharts.addAll($(article).successor(IncludeMarkup.class)
 				.successor(WikiReference.class)
 				.stream()
-				.map(reference -> reference.get().getReferencedSection(reference))
+				.map(WikiReference::getReferencedSection)
 				.filter(Objects::nonNull)
 				.flatMap(referencedSection -> $(referencedSection).successor(FlowchartType.class).stream())
 				.filter(Objects::nonNull)
