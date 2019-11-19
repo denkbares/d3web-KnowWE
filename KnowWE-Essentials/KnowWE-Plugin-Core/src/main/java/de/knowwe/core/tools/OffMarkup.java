@@ -69,7 +69,7 @@ public class OffMarkup extends DefaultMarkupType {
 
 	public static String getOriginalMarkupName(Section<?> section) {
 		String text = section.getText();
-		return text.substring(0, text.indexOf("\n")).replaceAll("^%%Off:", "");
+		return text.substring(0, text.indexOf("\n")).replaceAll("^(?i)%%off:", "");
 	}
 
 	@Override
