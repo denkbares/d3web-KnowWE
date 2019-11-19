@@ -38,6 +38,14 @@ public class TableLineRenderer implements Renderer {
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
 
+		renderLineBeginning(sec, user, string);
+		DelegateRenderer.getInstance().render(sec, user, string);
+
+		string.appendHtml("</tr>");
+
+	}
+
+	protected void renderLineBeginning(Section<?> sec, UserContext user, RenderResult string) {
 		string.appendHtml("<tr");
 
 		string.appendHtml(" id='").append(sec.getID()).append("'");
@@ -49,10 +57,6 @@ public class TableLineRenderer implements Renderer {
 		}
 
 		string.appendHtml(">");
-		DelegateRenderer.getInstance().render(sec, user, string);
-
-		string.appendHtml("</tr>");
-
 	}
 
 	/**
