@@ -80,8 +80,13 @@ public class VersionMarkupType extends DefaultMarkupType {
 					dateString = VersionTagHandler.getBuildTime();
 				}
 				else {
-					Date date = Date.from(Instant.parse(value));
-					dateString = new SimpleDateFormat("yyyy-MM-dd HH:MM").format(date);
+					try {
+						Date date = Date.from(Instant.parse(value));
+						dateString = new SimpleDateFormat("yyyy-MM-dd HH:MM").format(date);
+					}
+					catch (Exception e) {
+						dateString = value;
+					}
 				}
 
 				result.appendHtml("<span>" + dateString + "</span>");
@@ -95,7 +100,7 @@ public class VersionMarkupType extends DefaultMarkupType {
 						buildVersion = " " + buildVersion;
 					}
 					if (buildBranch == null || "${scmBranch}".equals(buildBranch)) {
-						buildBranch = "IntelliJ local build";
+						buildBranch = "Local IDE build";
 					}
 					result.appendHtml("<br/><span> Build: " + buildBranch + buildVersion + "</span>");
 				}
