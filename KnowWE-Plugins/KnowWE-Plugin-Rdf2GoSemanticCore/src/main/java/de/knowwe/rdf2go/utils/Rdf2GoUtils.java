@@ -449,6 +449,9 @@ public class Rdf2GoUtils {
 
 		@Override
 		public boolean isSuccessorOf(IRI node1, IRI node2) {
+			if(node1.equals(node2)) {
+				return false;
+			}
 			return core.sparqlAsk("ASK { <" + node1.stringValue() + "> " + subClassRelation + " <" + node2.stringValue() + "> }");
 		}
 	}
