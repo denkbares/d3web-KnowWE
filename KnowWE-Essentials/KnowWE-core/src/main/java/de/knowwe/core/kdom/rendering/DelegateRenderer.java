@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -56,51 +56,41 @@ public class DelegateRenderer implements Renderer {
 		boolean renderTypes = isRenderTypes(user.getParameters());
 		if (renderTypes) renderType(section, true, result);
 
-		try {
-			List<Section<?>> subSections = section.getChildren();
-			if (subSections.isEmpty()) {
-				// KnowWEDomRenderer renderer = getRenderer(section, user);
-				// if (renderer == this) {
-				// // avoid endless recursion
-				// builder.append(section.getOriginalText());
-				// }
-				// else {
-				// // otherwise use section's renderer instead
-				// renderer.render(article, section, user, builder);
-				// }
-				renderAnchor(section, result);
-				result.append(section.getText());
-			}
-			else {
-				for (Section<?> subSection : subSections) {
-					renderSubSection(subSection, user, result);
-				}
-			}
+		List<Section<?>> subSections = section.getChildren();
+		if (subSections.isEmpty()) {
+			result.append(section.getText());
 		}
-		catch (Exception e) {
-			// wow, that was evil!
-			// now we log instead AND report the error to the user
-			Log.warning("Internal error while rendering section", e);
-			result.appendHtml("<span class='warning'>");
-			result.append("Internal error while rendering section: " + e);
-			result.appendHtml("</span>");
+		else {
+			for (Section<?> subSection : subSections) {
+				renderSubSection(subSection, user, result);
+			}
 		}
 
 		if (renderTypes) renderType(section, false, result);
 	}
 
-	public void renderSubSection(Section<?> subSection, UserContext user, RenderResult builder) {
-		renderAnchor(subSection, builder);
+	public void renderSubSection(Section<?> subSection, UserContext user, RenderResult result) {
+		try {
+			final RenderResult subResult = new RenderResult(result);
 
-		// any messageRenderer has pre- and post rendering hook
-		// first call pre-rendering for all messages of this subsection
-		renderMessagesPre(subSection, user, builder);
+			// any messageRenderer has pre- and post rendering hook
+			// first call pre-rendering for all messages of this subsection
+			renderMessagesPre(subSection, user, subResult);
 
-		// use subSection's renderer
-		builder.append(subSection, user);
+			// use subSection's renderer
+			result.append(subSection, user);
 
-		// then call post rendering for all messages of this subsection
-		renderMessagesPost(subSection, user, builder);
+			// then call post rendering for all messages of this subsection
+			renderMessagesPost(subSection, user, subResult);
+
+			result.append(subResult);
+		}
+		catch (Exception e) {
+			Log.warning("Internal error while rendering section", e);
+			result.appendHtml("<span class='warning'>");
+			result.append("Internal error while rendering section: " + e.getMessage());
+			result.appendHtml("</span>");
+		}
 	}
 
 	private void renderMessagesPost(Section<?> subSection, UserContext user, RenderResult builder) {
@@ -203,13 +193,8 @@ public class DelegateRenderer implements Renderer {
 		}
 	}
 
-	private void renderAnchor(Section<?> subSection, RenderResult builder) {
-		// String anchor = subSection.getId();
-		// builder.append(KnowWEUtils.maskHTML("<a name='kdomID-"+anchor+"'></a>"));
-	}
-
 	private void renderType(Section<?> section, boolean openIt,
-			RenderResult builder) {
+							RenderResult builder) {
 		builder.appendHtml("<sub>&lt;");
 		if (!openIt) builder.append('/');
 		builder.append(section.get().getName());
