@@ -78,7 +78,7 @@ public class DelegateRenderer implements Renderer {
 			renderMessagesPre(subSection, user, subResult);
 
 			// use subSection's renderer
-			result.append(subSection, user);
+			subResult.append(subSection, user);
 
 			// then call post rendering for all messages of this subsection
 			renderMessagesPost(subSection, user, subResult);
