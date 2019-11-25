@@ -45,6 +45,8 @@ import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.util.Color;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 public class SparqlResultRenderer {
 
 	private static final String POINT_ID = "SparqlResultNodeRenderer";
@@ -256,6 +258,7 @@ public class SparqlResultRenderer {
 
 		RenderResult renderResult = new RenderResult(user);
 		if (isEmpty(qrt)) {
+			PaginationRenderer.setResultSize(user, 0);
 			renderResult.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
 			return new SparqlRenderResult(renderResult.toStringRaw());
 		}
@@ -448,7 +451,7 @@ public class SparqlResultRenderer {
 	}
 
 	private RenderMode getRenderMode(Section<?> section) {
-		Section<DefaultMarkupType> defaultMarkupTypeSection = Sections.ancestor(section, DefaultMarkupType.class);
+		Section<DefaultMarkupType> defaultMarkupTypeSection = $(section).closest(DefaultMarkupType.class).getFirst();
 		String annotation = DefaultMarkupType.getAnnotation(defaultMarkupTypeSection, SparqlMarkupType.RENDER_MODE);
 		if (annotation != null) {
 			try {

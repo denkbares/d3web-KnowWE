@@ -98,6 +98,16 @@
 		<parameter id="css" value="KnowWE-Plugin-Rdf2GoSemanticCore.css" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SparqlConsoleMarkupType">
+		<parameter id="class" value="de.knowwe.ontology.sparql.SparqlConsoleMarkupType" />
+		<parameter id="name" value="SparqlConsoleMarkupType" />
+		<parameter id="description" value="Type SparqlConsoleMarkupType" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="3" />
+		<parameter id="scope" value="root" />
+		<parameter id="css" value="KnowWE-Plugin-Rdf2GoSemanticCore.css" />
+	</extension>
+
 	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
 		id="DecodeUrlNodeRenderer">
 		<parameter id="class" value="de.knowwe.ontology.sparql.DecodeUrlNodeRenderer" />
@@ -331,6 +341,14 @@
 		<parameter id="class" value="de.knowwe.ontology.action.OntologyDownloadAction" />
 		<parameter id="name" value="OntologyDownloadAction" />
 		<parameter id="description" value="Downloads a specific ontology of a named wiki article." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SparqlConsoleRenderAction">
+		<parameter id="class" value=" de.knowwe.ontology.sparql.SparqlConsoleRenderAction" />
+		<parameter id="name" value="SparqlConsoleRenderAction" />
+		<parameter id="description" value="Renders the input insida a sparql console text area." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

@@ -199,3 +199,16 @@ KNOWWE.plugin.hierarchy.init = function () {
 		});
 	});
 }
+
+KNOWWE.plugin.sparqlConsole = {}
+KNOWWE.plugin.sparqlConsole.updateConsole = function(sectionID) {
+	var sparql = jq$('#' + sectionID).parent().siblings('textarea').val()
+	jq$.cookie("sparqlConsole_" + sectionID, sparql)
+	jq$('#' + sectionID).rerender();
+}
+
+KNOWWE.plugin.sparqlConsole.keyUpTrigger = function(event, sectionID) {
+	if (event.metaKey && event.keyCode === 13) { // render sparql when cmd + enter is pressed
+		KNOWWE.plugin.sparqlConsole.updateConsole(sectionID);
+	}
+}
