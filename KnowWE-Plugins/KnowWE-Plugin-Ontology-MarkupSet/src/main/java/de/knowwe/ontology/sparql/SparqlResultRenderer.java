@@ -309,17 +309,10 @@ public class SparqlResultRenderer {
 				.append(getStyleForKey("table", tableStyle))
 				.append(">");
 
-		int column = 0;
-		for (String var : variables) {
-			if (isSkipped(isTree, column++, var)) {
-				continue;
-			}
-			renderResult.appendHtml("<col" + getStyleForKey(var, columnStyle) +">");
-		}
 
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 
-		column = 0;
+		int column = 0;
 		for (String var : variables) {
 			if (isSkipped(isTree, column++, var)) {
 				continue;
@@ -402,7 +395,7 @@ public class SparqlResultRenderer {
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 						getRenderMode(section));
 
-				renderResult.appendHtml("<td>");
+				renderResult.appendHtml(getStyleForKey(var, columnStyle).isEmpty() ? "<td>" : "<td " + getStyleForKey(var, columnStyle) + ">");
 				if (renderJSPWikiMarkup) {
 					renderResult.append(erg);
 				} else {
@@ -606,5 +599,25 @@ public class SparqlResultRenderer {
 		}
 		styleHtmlBuffer.append("'");
 		return styleHtmlBuffer.toString();
+	}
+
+	/**
+	 * add style options for the column group.
+	 * Can be used if, for some reason, it is not practicable to set the column style for each <td>
+	 *
+	 * @param renderResult: RenderResult
+	 * @param variables: List of variables
+	 * @param opts: RenderOptions
+	 * @return the updated RenderResult
+	 */
+	private RenderResult addColumnGroupStyles(RenderResult renderResult, List<String> variables, RenderOptions opts) {
+		int column = 0;
+		for (String var : variables) {
+			if (isSkipped(opts.isTree(), column++, var)) {
+				continue;
+			}
+			renderResult.appendHtml("<col" + getStyleForKey(var, opts.getColumnStyles()) +">");
+		}
+		return renderResult;
 	}
 }
