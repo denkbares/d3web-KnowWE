@@ -89,7 +89,7 @@ public class CIAction extends AbstractAction {
 		}// Get the details of one build (wiki changes + test results)
 		else if (task.equals("refreshBuildDetails")) {
 			BuildResult build = dashboard.getBuild(selectedBuildNumber);
-			renderer.renderBuildDetails(context.getWeb(), build, html);
+			renderer.renderBuildDetails(context, build, html);
 		}
 		else if (task.equals("refreshBuildStatus")) {
 			BuildResult build = dashboard.getLatestBuild();

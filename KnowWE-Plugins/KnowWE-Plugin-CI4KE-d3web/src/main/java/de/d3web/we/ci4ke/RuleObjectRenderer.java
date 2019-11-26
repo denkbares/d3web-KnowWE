@@ -13,6 +13,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -22,8 +23,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class RuleObjectRenderer implements ObjectNameRenderer {
 
 	@Override
-	public void render(String web, String objectName, RenderResult result) {
-		ArticleManager articleManager = KnowWEUtils.getArticleManager(web);
+	public void render(UserContext context, String objectName, RenderResult result) {
+		ArticleManager articleManager = KnowWEUtils.getArticleManager(context.getWeb());
 
 		Sections<RuleType> ruleTypeSections = Sections.$(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB)).successor(RuleType.class);
 		Collection<D3webCompiler> compilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB), D3webCompiler.class);

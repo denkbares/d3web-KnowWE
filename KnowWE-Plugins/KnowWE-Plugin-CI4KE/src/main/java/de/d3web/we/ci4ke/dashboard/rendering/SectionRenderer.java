@@ -8,6 +8,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -23,7 +24,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class SectionRenderer implements ObjectNameRenderer {
 
 	@Override
-	public void render(String web, String objectName, RenderResult result) {
+	public void render(UserContext context, String objectName, RenderResult result) {
 		Section<?> section = null;
 		try {
 			section = Sections.get(objectName);
@@ -34,7 +35,7 @@ public class SectionRenderer implements ObjectNameRenderer {
 		if (section == null) {
 			// seems to not be the id, try annotation "name"
 			displayName = objectName;
-			section = $(Environment.getInstance().getArticleManager(web))
+			section = $(Environment.getInstance().getArticleManager(context.getWeb()))
 					.successor(DefaultMarkupType.class)
 					.stream()
 					.filter(s -> objectName.equals(DefaultMarkupType.getAnnotation(s, "name")))

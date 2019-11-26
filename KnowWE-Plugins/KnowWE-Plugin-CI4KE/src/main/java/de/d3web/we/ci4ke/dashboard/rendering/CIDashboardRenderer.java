@@ -120,13 +120,13 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		checkForOutdatedBuild(user, dashboardName, dashboardSection, string);
 
-		appendDashboard(dashboard, string);
+		appendDashboard(user, dashboard, string);
 
 		string.appendHtml("</div>");
 		return string.toStringRaw();
 	}
 
-	private static void appendDashboard(CIDashboard dashboard, RenderResult string) {
+	private static void appendDashboard(UserContext context, CIDashboard dashboard, RenderResult string) {
 		BuildResult latestBuild = dashboard.getLatestBuild();
 
 		dashboard.getRenderer().renderDashboardHeader(latestBuild, string);
@@ -136,7 +136,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		appendBuildListCell(dashboard, latestBuild, string);
 
-		appendBuildDetailsCell(dashboard, latestBuild, string);
+		appendBuildDetailsCell(context, dashboard, latestBuild, string);
 
 		// close table
 		string.appendHtml("</tr></table>");
@@ -160,14 +160,14 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		string.appendHtml("</td>");
 	}
 
-	private static void appendBuildDetailsCell(CIDashboard dashboard, BuildResult shownBuild, RenderResult string) {
+	private static void appendBuildDetailsCell(UserContext context, CIDashboard dashboard, BuildResult shownBuild, RenderResult string) {
 
 		string.appendHtml("<td valign='top'>");
 		string.appendHtml("<div id='")
 				.append(Strings.encodeURL(dashboard.getDashboardName()))
 				.appendHtml(
 						"-build-details-wrapper' class='ci-build-details-wrapper'>");
-		dashboard.getRenderer().renderBuildDetails(dashboard.getWeb(), shownBuild, string);
+		dashboard.getRenderer().renderBuildDetails(context, shownBuild, string);
 		string.appendHtml("</div>");
 		string.appendHtml("</td>");
 	}

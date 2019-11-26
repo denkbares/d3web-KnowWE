@@ -4,6 +4,7 @@ import de.d3web.testing.Message;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 
 /**
  * @author Tim Abler
@@ -15,7 +16,7 @@ public interface ResultRenderer  {
 		CIRenderer.renderResultTitle(testResult, renderResult);
 	}
 
-	default void renderResultMessage(String web, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
-		CIRenderer.renderResultMessageDefault(web, testObjectName, testResult, message, renderResult);
+	default void renderResultMessage(UserContext context, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
+		CIRenderer.renderResultMessageDefault(context, testObjectName, testResult, message, renderResult);
 	}
 }

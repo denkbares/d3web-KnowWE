@@ -21,6 +21,7 @@ package de.d3web.we.ci4ke;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.TermIdentifierRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 
 /**
  * Renders a link to the definition of a NamedObject or to the ObjectInfoPage of
@@ -33,8 +34,8 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 public class NamedObjectRenderer implements ObjectNameRenderer {
 
 	@Override
-	public void render(String web, String objectName, RenderResult result) {
-		TermIdentifierRenderer.renderTermIdentifier(web, objectName, result);
+	public void render(UserContext context, String objectName, RenderResult result) {
+		TermIdentifierRenderer.renderTermIdentifier(context, objectName, result);
 	}
 
 }

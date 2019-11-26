@@ -46,6 +46,7 @@ import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
 import de.d3web.we.ci4ke.test.ResultRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.util.Icon;
 
@@ -181,7 +182,7 @@ public class CIRenderer {
 	/**
 	 * Renders out the test results of a selected Build
 	 */
-	public void renderBuildDetails(String web, BuildResult build, RenderResult result) {
+	public void renderBuildDetails(UserContext context, BuildResult build, RenderResult result) {
 
 		result.appendHtml("<div id='" + dashboardNameEncoded
 				+ "-column-middle' class='ci-column-middle'>");
@@ -202,7 +203,7 @@ public class CIRenderer {
 				}
 				// render the particular tests
 				for (TestResult testResult : groupResults) {
-					appendTestResult(web, testResult, result);
+					appendTestResult(context, testResult, result);
 				}
 				// close group if available
 				if (group != null) {
@@ -236,7 +237,7 @@ public class CIRenderer {
 		return "<span class='ci-test-title' title='" + title + "'>";
 	}
 
-	private void appendTestResult(String web, TestResult testResult, RenderResult renderResult) {
+	private void appendTestResult(UserContext context, TestResult testResult, RenderResult renderResult) {
 
 		// ruling out special characters (which are causing problems)
 		String name = testResult.getTestName();
@@ -259,7 +260,7 @@ public class CIRenderer {
 
 		// render test-message (if exists)
 		openMessageBlock(type, renderResult);
-		appendMessage(web, testResult, renderResult);
+		appendMessage(context, testResult, renderResult);
 		closeMessageBlock(renderResult);
 		closeCollapse(renderResult);
 	}
@@ -325,13 +326,13 @@ public class CIRenderer {
 		renderResult.appendHtml("</span>");
 	}
 
-	public static void renderResultMessageDefault(String web, String testObjectName, TestResult testResult, Message message, RenderResult renderResult) {
-		Class<?> testObjectClass = renderResultMessageHeader(web, message, testResult, renderResult);
-		appendMessageText(web, message, renderResult);
-		renderResultMessageFooter(web, testObjectName, testObjectClass, message, renderResult);
+	public static void renderResultMessageDefault(UserContext context, String testObjectName, TestResult testResult, Message message, RenderResult renderResult) {
+		Class<?> testObjectClass = renderResultMessageHeader(context, message, testResult, renderResult);
+		appendMessageText(context, message, renderResult);
+		renderResultMessageFooter(context, testObjectName, testObjectClass, message, renderResult);
 	}
 
-	public static Class<?> renderResultMessageHeader(String web, Message message, TestResult testResult, RenderResult renderResult) {
+	public static Class<?> renderResultMessageHeader(UserContext context, Message message, TestResult testResult, RenderResult renderResult) {
 		Message.Type messageType = message.getType();
 		Test<?> test = TestManager.findTest(testResult.getTestName());
 		Class<?> testObjectClass = null;
@@ -346,16 +347,16 @@ public class CIRenderer {
 		return testObjectClass;
 	}
 
-	public static void renderResultMessageFooter(String web, String testObjectName, Class<?> testObjectClass, Message message, RenderResult renderResult) {
+	public static void renderResultMessageFooter(UserContext context, String testObjectName, Class<?> testObjectClass, Message message, RenderResult renderResult) {
 		renderResult.appendHtml("<br>\n");
 		if (message.getText() != null && !message.getText().contains(testObjectName)) {
 			renderResult.appendHtml("(test object: ");
-			renderObjectName(web, testObjectName, testObjectClass, renderResult);
+			renderObjectName(context, testObjectName, testObjectClass, renderResult);
 			renderResult.appendHtml(")<br>\n");
 		}
 	}
 
-	public static void renderObjectName(String web, String objectName, Class<?> objectClass, RenderResult result) {
+	public static void renderObjectName(UserContext context, String objectName, Class<?> objectClass, RenderResult result) {
 		if (objectClass == null) {
 			// the case on old build version with outdated test names
 			result.append(objectName);
@@ -367,10 +368,10 @@ public class CIRenderer {
 			result.append(objectName);
 			return;
 		}
-		objectRenderer.render(web, objectName, result);
+		objectRenderer.render(context, objectName, result);
 	}
 
-	static void appendMessageText(String web, Message message, RenderResult result) {
+	static void appendMessageText(UserContext context, Message message, RenderResult result) {
 		String text = message.getText();
 		if (text == null) text = "";
 		ArrayList<MessageObject> objects = new ArrayList<>(message.getObjects());
@@ -380,7 +381,7 @@ public class CIRenderer {
 		int i = 0;
 		for (MessageObject object : objects) {
 			RenderResult temp = new RenderResult(result);
-			renderObjectName(web, object.getObjectName(), object.geObjectClass(), temp);
+			renderObjectName(context, object.getObjectName(), object.geObjectClass(), temp);
 			String renderedObjectName = temp.toStringRaw();
 			targets[i] = object.getObjectName();
 			replacements[i] = renderedObjectName;
@@ -413,7 +414,7 @@ public class CIRenderer {
 		}
 	}
 
-	private void appendMessage(String web, TestResult testResult, RenderResult renderResult) {
+	private void appendMessage(UserContext context, TestResult testResult, RenderResult renderResult) {
 		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
 		int successes = testResult.getSuccessfullyTestedObjects();
 		for (String testObjectName : testObjectNames) {
@@ -423,10 +424,10 @@ public class CIRenderer {
 			Test<?> test = TestManager.findTest(testResult.getTestName());
 
 			if (test instanceof ResultRenderer) {
-				((ResultRenderer) test).renderResultMessage(web, testObjectName, message, testResult, renderResult);
+				((ResultRenderer) test).renderResultMessage(context, testObjectName, message, testResult, renderResult);
 			}
 			else {
-				renderResultMessageDefault(web, testObjectName, testResult, message, renderResult);
+				renderResultMessageDefault(context, testObjectName, testResult, message, renderResult);
 			}
 		}
 		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");

@@ -39,6 +39,7 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message.Type;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -129,9 +130,9 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> imple
 	}
 
 	@Override
-	public void renderResultMessage(String web, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
-		Class<?> testObjectClass = CIRenderer.renderResultMessageHeader(web, message, testResult, renderResult);
+	public void renderResultMessage(UserContext context, String testObjectName, Message message, TestResult testResult, RenderResult renderResult) {
+		Class<?> testObjectClass = CIRenderer.renderResultMessageHeader(context, message, testResult, renderResult);
 		renderResult.append(message.getText());
-		CIRenderer.renderResultMessageFooter(web, testObjectName, testObjectClass, message, renderResult);
+		CIRenderer.renderResultMessageFooter(context, testObjectName, testObjectClass, message, renderResult);
 	}
 }

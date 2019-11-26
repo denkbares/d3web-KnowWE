@@ -20,6 +20,7 @@ package de.d3web.we.ci4ke.dashboard.rendering;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -32,11 +33,11 @@ import de.knowwe.core.utils.KnowWEUtils;
 public class TermIdentifierRenderer implements ObjectNameRenderer {
 
 	@Override
-	public void render(String web, String objectName, RenderResult result) {
-		renderTermIdentifier(web, objectName, result);
+	public void render(UserContext context, String objectName, RenderResult result) {
+		renderTermIdentifier(context, objectName, result);
 	}
 
-	public static void renderTermIdentifier(String web, String objectName, RenderResult result) {
+	public static void renderTermIdentifier(UserContext context, String objectName, RenderResult result) {
 
 		String url = KnowWEUtils.getURLLinkToObjectInfoPage(Identifier.fromExternalForm(objectName));
 		result.appendHtml("<a href='" + url + "'>");

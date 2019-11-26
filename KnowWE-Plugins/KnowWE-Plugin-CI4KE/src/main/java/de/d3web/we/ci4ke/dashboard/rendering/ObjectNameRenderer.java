@@ -19,6 +19,7 @@
 package de.d3web.we.ci4ke.dashboard.rendering;
 
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.user.UserContext;
 
 /**
  * Interface for renderers allowing to render certain objects dependent by their
@@ -33,6 +34,6 @@ public interface ObjectNameRenderer {
 	String PLUGIN_ID = "KnowWE-Plugin-CI4KE";
 	String EXTENSION_POINT_ID = "ObjectNameRenderer";
 
-	void render(String web, String objectName, RenderResult result);
+	void render(UserContext context, String objectName, RenderResult result);
 
 }
