@@ -22,10 +22,6 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 
 	@Override
 	public String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
-		// a link containing brackets is not interpreted therefore remove them
-		text = text.replace("[", "");
-		text = text.replace("]", "");
-
 		// no-op in case we don't render a wiki page in this context but rather perform an action such as Excel Export
 		if (user.getTitle() == null) {
 			return text;

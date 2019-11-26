@@ -19,6 +19,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.Binding;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.MalformedQueryException;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
@@ -33,7 +34,6 @@ import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -53,6 +53,7 @@ public class SparqlResultRenderer {
 	private static final String RESULT_TABLE = "resultTable";
 	private static final String RESULT_TABLE_TREE = "resultTableTree";
 	private static final String USED_IDS = "usedIDs";
+	private static final Pattern ARTICLE_LINK_PATTERN = Pattern.compile("\\[\\h*(?:([^|]+)\\h*\\|\\h*)?(\\w+?://[^\\]|]+)\\h*]");
 
 	private static SparqlResultRenderer instance = null;
 
@@ -309,7 +310,6 @@ public class SparqlResultRenderer {
 				.append(getStyleForKey("table", tableStyle))
 				.append(">");
 
-
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 
 		int column = 0;
@@ -397,8 +397,10 @@ public class SparqlResultRenderer {
 
 				renderResult.appendHtml(getStyleForKey(var, columnStyle).isEmpty() ? "<td>" : "<td " + getStyleForKey(var, columnStyle) + ">");
 				if (renderJSPWikiMarkup) {
+					erg = renderExternalJSPWikiLinks(erg);
 					renderResult.append(erg);
-				} else {
+				}
+				else {
 					renderResult.appendJSPWikiMarkup(erg);
 				}
 				renderResult.appendHtml("</td>\n");
@@ -409,6 +411,27 @@ public class SparqlResultRenderer {
 		renderResult.appendHtml("</table>");
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());
+	}
+
+	/**
+	 * JSPWiki seems to ignore links embedded in tables, we parse them manually
+	 */
+	private String renderExternalJSPWikiLinks(String erg) {
+
+		final Matcher matcher = ARTICLE_LINK_PATTERN.matcher(erg);
+		if (!matcher.find()) return erg;
+
+		final String linkLabel = Strings.trim(matcher.group(1));
+		final String linkUrl = Strings.trim(matcher.group(2));
+
+		return generateReplacement(erg, matcher, linkLabel == null ? linkUrl : linkLabel, linkUrl);
+	}
+
+	@NotNull
+	private String generateReplacement(String erg, Matcher matcher, String linkLabel, String linkUrl) {
+		return erg.substring(0, matcher.start()) +
+				"<a class='external' href='" + linkUrl + "'>" + linkLabel + "</a>" +
+				erg.substring(matcher.end());
 	}
 
 	private boolean isSkipped(boolean isTree, int column, String var) {
@@ -504,8 +527,10 @@ public class SparqlResultRenderer {
 
 						result.appendHtml("<td>");
 						if (renderJSPWikiMarkup) {
+							erg = renderExternalJSPWikiLinks(erg);
 							result.append(erg);
-						} else {
+						}
+						else {
 							result.appendJSPWikiMarkup(erg);
 						}
 						result.appendHtml("</td>\n");
@@ -578,11 +603,13 @@ public class SparqlResultRenderer {
 	}
 
 	private String getStyleForKey(String key, List<RenderOptions.StyleOption> styles) {
-		if (styles == null){
+		if (styles == null) {
 			return "";
 		}
 
-		List<RenderOptions.StyleOption> columnStyles = styles.stream().filter(a -> Strings.equalsIgnoreCase(a.getColumnName(), key)).collect(Collectors.toList());
+		List<RenderOptions.StyleOption> columnStyles = styles.stream()
+				.filter(a -> Strings.equalsIgnoreCase(a.getColumnName(), key))
+				.collect(Collectors.toList());
 		if (columnStyles.isEmpty()) {
 			return "";
 		}
@@ -606,8 +633,8 @@ public class SparqlResultRenderer {
 	 * Can be used if, for some reason, it is not practicable to set the column style for each <td>
 	 *
 	 * @param renderResult: RenderResult
-	 * @param variables: List of variables
-	 * @param opts: RenderOptions
+	 * @param variables:    List of variables
+	 * @param opts:         RenderOptions
 	 * @return the updated RenderResult
 	 */
 	private RenderResult addColumnGroupStyles(RenderResult renderResult, List<String> variables, RenderOptions opts) {
@@ -616,7 +643,7 @@ public class SparqlResultRenderer {
 			if (isSkipped(opts.isTree(), column++, var)) {
 				continue;
 			}
-			renderResult.appendHtml("<col" + getStyleForKey(var, opts.getColumnStyles()) +">");
+			renderResult.appendHtml("<col" + getStyleForKey(var, opts.getColumnStyles()) + ">");
 		}
 		return renderResult;
 	}
