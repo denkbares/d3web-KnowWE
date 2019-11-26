@@ -18,7 +18,9 @@ KNOWWE.notification = function () {
 	return {
 
 		error_jqXHR: function (jqXHR) {
-			KNOWWE.notification.error(jqXHR.statusText, _KA.xhrExtractMessage(jqXHR));
+			let title = jqXHR.statusText;
+			if (title) title = title.charAt(0).toUpperCase() + title.slice(1)
+			KNOWWE.notification.error(title, _KA.xhrExtractMessage(jqXHR));
 		},
 
 		error: function (title, details, id, fromServer) {
