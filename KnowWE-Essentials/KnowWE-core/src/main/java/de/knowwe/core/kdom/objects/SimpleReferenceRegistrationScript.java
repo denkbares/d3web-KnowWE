@@ -109,9 +109,13 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler, T extends
 		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		if (!manager.isDefinedTerm(termIdentifier)) {
 			return Messages.asList(getInvalidTermMessage(compiler, section,
-					validationMode == TermCompiler.ReferenceValidationMode.warn ? Message.Type.WARNING : Message.Type.ERROR));
+					validationMode == TermCompiler.ReferenceValidationMode.warn ? Message.Type.WARNING : getMessageLevel(compiler)));
 		}
 		return Messages.noMessage();
+	}
+
+	protected Message.Type getMessageLevel(C compiler) {
+		return Message.Type.ERROR;
 	}
 
 	protected Message getInvalidTermMessage(C compiler, Section<T> section, Message.Type messageType) {
