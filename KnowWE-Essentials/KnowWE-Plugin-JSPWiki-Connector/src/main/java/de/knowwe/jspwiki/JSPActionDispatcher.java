@@ -58,6 +58,10 @@ public class JSPActionDispatcher extends ActionDispatcher {
 		catch (NotAuthorizedException e) {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage(context.getAction(), context));
 		}
+		catch (Action.SendError e) {
+			Log.warning("Action aborted with an error: " + action, e);
+			context.sendError(e.getHttpErrorCode(), e.getMessage());
+		}
 		catch (IOException e) {
 			Log.severe("IOException while executing action " + action, e);
 			throw e;
