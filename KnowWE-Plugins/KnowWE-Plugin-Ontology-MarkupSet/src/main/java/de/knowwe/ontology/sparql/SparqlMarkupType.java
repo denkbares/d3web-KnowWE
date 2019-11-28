@@ -81,9 +81,17 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotation(NAME, false);
 		MARKUP.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(COLUMNSTYLE, false);
+		MARKUP.getAnnotation(COLUMNSTYLE)
+				.setDocumentation("Set styles for a specific column of the SPARQL table. Any HTML/CSS style should work.<p>" +
+						"Example for setting the width of column 'Name' to 100px:<br>" +
+						"@" + COLUMNSTYLE + ": Name width 100px");
 		MARKUP.addAnnotationRenderer(COLUMNSTYLE, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(TABLESTYLE, false);
 		MARKUP.addAnnotationRenderer(TABLESTYLE, NothingRenderer.getInstance());
+		MARKUP.getAnnotation(TABLESTYLE)
+				.setDocumentation("Set styles for the SPARQL table. Any HTML/CSS style should work.<p>" +
+						"Example for setting the width of the table to 1000px:<br>" +
+						"@" + TABLESTYLE + ": width 1000px");
 		MARKUP.addAnnotation(ALLOW_JSPWIKIMARKUP, false);
 		MARKUP.addAnnotationRenderer(ALLOW_JSPWIKIMARKUP, NothingRenderer.getInstance());
 		// TODO: replace class SparqlNameRegistrationScript by content type
