@@ -430,6 +430,11 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-Gantt</artifactId>
+				<version>${knowwe.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
 				<version>${knowwe.version}</version>

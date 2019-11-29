@@ -290,6 +290,10 @@
 					<artifactId>KnowWE-Plugin-KnowSEC</artifactId>
 				</dependency>
 				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Gantt</artifactId>
+				</dependency>
+				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-SimpleScoreTable</artifactId>
 				</dependency>
