@@ -116,6 +116,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setColumnStyles(checkStyle(markupSection, SparqlMarkupType.COLUMNSTYLE));
 		renderOpts.setTableStyles(checkStyle(markupSection, SparqlMarkupType.TABLESTYLE));
 		renderOpts.setAllowJSPWikiMarkup(checkAnnotation(markupSection, SparqlMarkupType.ALLOW_JSPWIKIMARKUP, true));
+		renderOpts.setColumnWidth(checkStyle(markupSection, SparqlMarkupType.COLUMNWIDTH));
 
 		renderOpts.setTimeout(getTimeout(markupSection));
 	}
@@ -155,13 +156,22 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 				}
 				styles.add(new RenderOptions.StyleOption(annoStringArray[0], annoStringArray[1], annoStringArray[2]));
 
-			} else if (Strings.equals(annotationName, SparqlMarkupType.TABLESTYLE)) {
+			}
+			else if (Strings.equals(annotationName, SparqlMarkupType.TABLESTYLE)) {
 				String[] annoStringArray = annotationString.split(" ", 2);
 				if (annoStringArray.length < 2) {
 					Log.severe("The style '" + annotationString + "' does not include all necessary information. It has to consist of <styleName style>");
 					continue;
 				}
 				styles.add(new RenderOptions.StyleOption("table", annoStringArray[0], annoStringArray[1]));
+			}
+			else if (Strings.equals(annotationName, SparqlMarkupType.COLUMNWIDTH)) {
+				String[] annoStringArray = annotationString.split(" ", 2);
+				if (annoStringArray.length < 2) {
+					Log.severe("The style '" + annotationString + "' does not include all necessary information. It has to consist of <columnName columnWidth>");
+					continue;
+				}
+				styles.add(new RenderOptions.StyleOption(annoStringArray[0], "max-width", annoStringArray[1]));
 			}
 		}
 		return styles;

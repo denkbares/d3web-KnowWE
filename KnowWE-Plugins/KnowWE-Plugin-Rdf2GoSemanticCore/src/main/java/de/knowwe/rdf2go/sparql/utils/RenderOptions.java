@@ -1,8 +1,11 @@
 package de.knowwe.rdf2go.sparql.utils;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.text.Style;
 
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.util.Color;
@@ -26,6 +29,7 @@ public class RenderOptions {
 	private List<StyleOption> columnStyles;
 	private List<StyleOption> tableStyles;
 	private boolean allowJSPWikiMarkup;
+	private List<StyleOption> columnWidths;
 
 	public RenderOptions(String id) {
 		this.zebraMode = true;
@@ -40,6 +44,7 @@ public class RenderOptions {
  		this.columnStyles = null;
  		this.tableStyles = null;
  		this.allowJSPWikiMarkup = true;
+ 		this.columnWidths = null;
 	}
 
 	public String getId() {
@@ -120,6 +125,14 @@ public class RenderOptions {
 
 	public void setNavigationOffset(String navigationOffset) {
 		this.navigationOffset = Integer.parseInt(navigationOffset);
+	}
+
+	public List<StyleOption> getColumnWidths() {
+		return columnWidths;
+	}
+
+	public void setColumnWidth(List<StyleOption> columnWidth) {
+		this.columnWidths = columnWidth;
 	}
 
 	public int getNavigationLimit() {

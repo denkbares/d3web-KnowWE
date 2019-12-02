@@ -49,6 +49,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String COLUMNSTYLE = "columnStyle";  // usage: @columnStyle: columnName style value
 	public static final String TABLESTYLE = "tableStyle";  // usage: @tableStyle: style value
 	public static final String ALLOW_JSPWIKIMARKUP = "allowJSPWikiMarkup";
+	public static final String COLUMNWIDTH = "columnWidth";
 	private static final DefaultMarkup MARKUP;
 
 	public static final String MARKUP_NAME = "Sparql";
@@ -94,6 +95,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 						"@" + TABLESTYLE + ": width 1000px");
 		MARKUP.addAnnotation(ALLOW_JSPWIKIMARKUP, false);
 		MARKUP.addAnnotationRenderer(ALLOW_JSPWIKIMARKUP, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(COLUMNWIDTH, false);
+		MARKUP.addAnnotationRenderer(COLUMNWIDTH, NothingRenderer.getInstance());
 		// TODO: replace class SparqlNameRegistrationScript by content type
 		// m.addAnnotationContentType(NAME, new SparqlNameDefinition());
 		PackageManager.addPackageAnnotation(MARKUP);

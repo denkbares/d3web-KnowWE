@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -271,6 +272,7 @@ public class SparqlResultRenderer {
 		boolean renderJSPWikiMarkup = opts.isAllowJSPWikiMarkup();
 		List<RenderOptions.StyleOption> columnStyle = opts.getColumnStyles();
 		List<RenderOptions.StyleOption> tableStyle = opts.getTableStyles();
+		List<RenderOptions.StyleOption> columnWidths = opts.getColumnWidths();
 		if (opts.getColor() != Color.NONE) {
 			tableStyle.add(new RenderOptions.StyleOption("table", "border-color", opts.getColor().getColorValue()));
 		}
@@ -395,7 +397,17 @@ public class SparqlResultRenderer {
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 						getRenderMode(section));
 
-				renderResult.appendHtml(getStyleForKey(var, columnStyle).isEmpty() ? "<td>" : "<td " + getStyleForKey(var, columnStyle) + ">");
+				List<RenderOptions.StyleOption> allColumnStyles = Stream.concat(columnStyle.stream(), columnWidths.stream()).collect(Collectors.toList());
+				if (getStyleForKey(var, allColumnStyles).isEmpty()) {
+					renderResult.appendHtml("<td>");
+				}
+				else if (getStyleForKey(var, columnWidths).isEmpty()) {
+					renderResult.appendHtml("<td " + getStyleForKey(var, columnStyle) + ">");
+				}
+				else {
+					renderResult.appendHtml("<td " + getStyleForKey(var, allColumnStyles).substring(0, getStyleForKey(var, allColumnStyles).length()-1) + "; overflow-wrap: break-word'" + ">");
+				}
+				//renderResult.appendHtml(getStyleForKey(var, columnStyle).isEmpty() ? "<td>" : "<td " + getStyleForKey(var, columnStyle) + ">");
 				if (renderJSPWikiMarkup) {
 					erg = renderExternalJSPWikiLinks(erg);
 					renderResult.append(erg);
@@ -637,13 +649,13 @@ public class SparqlResultRenderer {
 	 * @param opts:         RenderOptions
 	 * @return the updated RenderResult
 	 */
-	private RenderResult addColumnGroupStyles(RenderResult renderResult, List<String> variables, RenderOptions opts) {
+	private RenderResult addColumnGroupStyles(RenderResult renderResult, List<String> variables, RenderOptions opts, List<RenderOptions.StyleOption> styleOptions) {
 		int column = 0;
 		for (String var : variables) {
 			if (isSkipped(opts.isTree(), column++, var)) {
 				continue;
 			}
-			renderResult.appendHtml("<col" + getStyleForKey(var, opts.getColumnStyles()) + ">");
+			renderResult.appendHtml("<col" + getStyleForKey(var, styleOptions) + ">");
 		}
 		return renderResult;
 	}
