@@ -144,6 +144,11 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		for (String annotationString : annotationStrings) {
 			if (Strings.equals(annotationName, SparqlMarkupType.COLUMNSTYLE)) {
 				String[] annoStringArray = annotationString.split(" ", 3);
+				for (int i = 0; i < annoStringArray.length; i++) {
+					if (annoStringArray[i].endsWith(":")) {
+						annoStringArray[i] = annoStringArray[i].substring(0, annoStringArray[i].length()-1);
+					}
+				}
 				if (annoStringArray.length < 3) {
 					Log.severe("The style '" + annotationString + "' does not include all necessary information. It has to consist of <columnName styleName style>");
 					continue;
