@@ -144,18 +144,33 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 		for (String annotationString : annotationStrings) {
 			if (Strings.equals(annotationName, SparqlMarkupType.COLUMNSTYLE)) {
-				String[] annoStringArray = annotationString.split(" ", 3);
-				for (int i = 0; i < annoStringArray.length; i++) {
-					if (annoStringArray[i].endsWith(":")) {
-						annoStringArray[i] = annoStringArray[i].substring(0, annoStringArray[i].length()-1);
-					}
-				}
-				if (annoStringArray.length < 3) {
-					Log.severe("The style '" + annotationString + "' does not include all necessary information. It has to consist of <columnName styleName style>");
-					continue;
-				}
-				styles.add(new RenderOptions.StyleOption(annoStringArray[0], annoStringArray[1], annoStringArray[2]));
+				annotationString = annotationString.replaceAll("\r", "");
+				String[] lines = annotationString.split("\n");
+				if (lines.length != 1){
+					String column = cleanStyleString(lines[0]);
+					for (int i = 1; i < lines.length; i++) {
+						String[] annoStringArray = lines[i].split(" ", 3);
+						for (int j = 0; j < annoStringArray.length - 1; j++) {
+							annoStringArray[j] = cleanStyleString(annoStringArray[j]);
+						}
+						if (annoStringArray.length < 2) {
+							Log.severe("The style '" + annotationString + "' does not include all necessary information. It has to consist of <columnName styleName style>");
+							continue;
+						}
+						styles.add(new RenderOptions.StyleOption(column, annoStringArray[0], annoStringArray[1]));
 
+					}
+				} else {
+					String[] annoStringArray = annotationString.split(" ", 3);
+					for (int i = 0; i < annoStringArray.length; i++) {
+						annoStringArray[i] = cleanStyleString(annoStringArray[i]);
+					}
+					if (annoStringArray.length < 3) {
+						Log.severe("The style '" + annotationString + "' does not include all necessary information. It has to consist of <columnName styleName style>");
+						continue;
+					}
+					styles.add(new RenderOptions.StyleOption(annoStringArray[0], annoStringArray[1], annoStringArray[2]));
+				}
 			}
 			else if (Strings.equals(annotationName, SparqlMarkupType.TABLESTYLE)) {
 				String[] annoStringArray = annotationString.split(" ", 2);
@@ -175,6 +190,18 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 			}
 		}
 		return styles;
+	}
+
+	/**
+	 * remove a semicolon or colon in the end of the string
+	 * @param styleString: string to be cleaned
+	 * @return cleaned String
+	 */
+	private String cleanStyleString(String styleString) {
+		if (styleString.endsWith(":") || styleString.endsWith(";")) {
+			return styleString.substring(0, styleString.length() - 1);
+		}
+		return styleString;
 	}
 
 	private boolean checkSortingAnnotation(Section<DefaultMarkupType> markupSection, String sorting) {
