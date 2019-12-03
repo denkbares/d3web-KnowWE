@@ -765,7 +765,7 @@ public class JSPWikiConnector implements WikiConnector {
 			return getAttachment(toPath(title, filename));
 		}
 		catch (ProviderException e) {
-			throw new IOException("could not store attachment");
+			throw new IOException("could not store attachment", e);
 		}
 	}
 
