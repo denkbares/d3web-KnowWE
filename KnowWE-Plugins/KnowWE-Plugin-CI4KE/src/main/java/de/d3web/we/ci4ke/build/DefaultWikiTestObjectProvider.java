@@ -79,10 +79,13 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 				result.add(new TestObjectContainer<>(web, c.cast(byName)));
 			}
 		}
+		final Pattern namePattern = Pattern.compile(testObjectName);
 		if (NamedCompiler.class.isAssignableFrom(c)) {
 			//noinspection unchecked
 			for (NamedCompiler compiler : Compilers.getCompilers(articleManager, (Class<? extends NamedCompiler>) c)) {
-				result.add(new TestObjectContainer<>(compiler.getName(), c.cast(compiler)));
+				if (namePattern.matcher(compiler.getName()).matches()) {
+					result.add(new TestObjectContainer<>(compiler.getName(), c.cast(compiler)));
+				}
 			}
 		}
 
