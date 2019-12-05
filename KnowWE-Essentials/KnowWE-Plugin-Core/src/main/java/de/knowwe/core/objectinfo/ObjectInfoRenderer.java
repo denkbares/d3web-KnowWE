@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -191,7 +192,7 @@ public class ObjectInfoRenderer implements Renderer {
 				Section<?> previewSection = entry.getKey();
 				Collection<Section<?>> group = entry.getValue();
 				result.appendHtml("<div class='articleName'>");
-				result.appendHtml(getSurroundingMarkupName(previewSection).getName());
+				result.appendHtml(getNameForSection(previewSection));
 				result.appendHtml("</div>");
 				result.appendHtml("<div class=\"previewItem\">");
 				renderTermPreview(previewSection, group, user, "definition", result);
@@ -204,6 +205,12 @@ public class ObjectInfoRenderer implements Renderer {
 					.appendHtml("></div>");
 		}
 		renderSectionEnd(result);
+	}
+
+	public static String getNameForSection(Section<?> previewSection) {
+		Type surroundingMarkupName = getSurroundingMarkupName(previewSection);
+		return surroundingMarkupName instanceof GroupingType ? ((GroupingType) surroundingMarkupName).getSurroundingMarkupName(Sections
+				.ancestor(previewSection, GroupingType.class)) : surroundingMarkupName.getName();
 	}
 
 	public static void renderTermReferences(Identifier identifier, UserContext user, RenderResult result) {
@@ -227,8 +234,8 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
-		Map<Type, List<Section<?>>> typeGroups = groupByType(references);
-		for (Entry<Type, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
+		Map<TypeGroup, List<Section<?>>> typeGroups = groupByType(references);
+		for (Entry<TypeGroup, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
 			// prepare group information
 			List<Section<?>> groupSections = typeEntry.getValue();
 			String groupName = typeEntry.getKey().getName();
@@ -271,7 +278,7 @@ public class ObjectInfoRenderer implements Renderer {
 		Map<Article, List<Section<?>>> articleGroups = groupByArticle(references);
 		for (Entry<Article, List<Section<?>>> articleEntry : articleGroups.entrySet()) {
 			RenderResult innerResult = new RenderResult(result);
-			for (Entry<Type, List<Section<?>>> typeEntry : groupByType(articleEntry.getValue()).entrySet()) {
+			for (Entry<TypeGroup, List<Section<?>>> typeEntry : groupByType(articleEntry.getValue()).entrySet()) {
 				renderTermReferencesPreviewsAsync(typeEntry.getValue(), user, innerResult);
 			}
 			wrapInExtendPanel(articleEntry.getKey().getTitle(),
@@ -358,29 +365,30 @@ public class ObjectInfoRenderer implements Renderer {
 		return result;
 	}
 
-	private static Map<Type, List<Section<? extends Type>>> groupByType(Collection<Section<?>> references) {
-		Comparator<Type> orderComparator = getOrderComparator(references);
-		Comparator<Type> nameComparator = Comparator.comparing(type -> type.getName() == null ? "" : type.getName());
-		Map<Type, List<Section<? extends Type>>> result = new HashMap<>();
+	private static Map<TypeGroup, List<Section<? extends Type>>> groupByType(Collection<Section<?>> references) {
+		Comparator<TypeGroup> orderComparator = getOrderComparator(references);
+		Comparator<TypeGroup> nameComparator = Comparator.comparing(type -> type.getName() == null ? "" : type.getName());
+		Map<TypeGroup, List<Section<? extends Type>>> result = new HashMap<>();
 		for (Section<?> reference : references) {
 			Type surroundingMarkupType = getSurroundingMarkupName(reference);
-			List<Section<? extends Type>> sectionsForType = result.get(surroundingMarkupType);
+			TypeGroup typeGroup = new TypeGroup(getNameForSection(reference), surroundingMarkupType);
+			List<Section<? extends Type>> sectionsForType = result.get(typeGroup);
 			if (sectionsForType == null) {
 				sectionsForType = new LinkedList<>();
 			}
 			sectionsForType.add(reference);
-			result.put(surroundingMarkupType, sectionsForType);
+			result.put(typeGroup, sectionsForType);
 		}
-		TreeMap<Type, List<Section<? extends Type>>> sortedResult = new TreeMap<>(orderComparator.thenComparing(nameComparator));
+		TreeMap<TypeGroup, List<Section<? extends Type>>> sortedResult = new TreeMap<>(orderComparator.thenComparing(nameComparator));
 		sortedResult.putAll(result);
 		return sortedResult;
 	}
 
-	private static Comparator<Type> getOrderComparator(Collection<Section<?>> references) {
+	private static Comparator<TypeGroup> getOrderComparator(Collection<Section<?>> references) {
 		return (t1, t2) -> {
-			if (!(t1 instanceof GroupingType) || !(t2 instanceof GroupingType)) return 0;
-			GroupingType gt1 = (GroupingType) t1;
-			GroupingType gt2 = (GroupingType) t2;
+			if (!(t1.getType() instanceof GroupingType) || !(t2.getType() instanceof GroupingType)) return 0;
+			GroupingType gt1 = (GroupingType) t1.getType();
+			GroupingType gt2 = (GroupingType) t2.getType();
 			List<Integer> positions1 = getPositionList(gt1, references);
 			List<Integer> positions2 = getPositionList(gt2, references);
 			Iterator<Integer> thisIter = positions1.iterator();
@@ -440,7 +448,7 @@ public class ObjectInfoRenderer implements Renderer {
 		}
 
 		result.appendHtml("<div class='objectinfo preview defaultMarkupFrame" +
-				" type_").append(previewSection.get().getName())
+				" type_").append(getNameForSection(previewSection))
 				.appendHtml(" ").append(cssClass).appendHtml("'>");
 		result.appendHtml("<div class='objectinfo markupHeaderFrame headerMenu'>");
 		result.appendHtml("<div class='markupHeader'>");
@@ -640,5 +648,47 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public interface GroupingType extends Type {
 		Type getParentGroup(Collection<Section<?>> reference);
+
+		/**
+		 * Method to return a section specified markup name if {@link Type#getName()} would return the same name.
+		 * @param section the section to define a specified markup name for
+		 * @return the name for the markup
+		 */
+		String getSurroundingMarkupName(Section<?> section);
+	}
+
+	/**
+	 * Class to group the types with a specified name, so the same type can have to different names to group them.
+	 */
+	private static class TypeGroup {
+		private final String name;
+		private final Type type;
+
+		TypeGroup(String name, Type type) {
+			this.name = name;
+			this.type = type;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Type getType() {
+			return type;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			TypeGroup typeGroup = (TypeGroup) o;
+			return name.equals(typeGroup.name) &&
+					type.equals(typeGroup.type);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(name, type);
+		}
 	}
 }
