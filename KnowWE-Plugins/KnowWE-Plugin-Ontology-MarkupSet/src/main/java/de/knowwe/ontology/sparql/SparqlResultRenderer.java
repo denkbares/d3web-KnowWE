@@ -397,7 +397,8 @@ public class SparqlResultRenderer {
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 						getRenderMode(section));
 
-				List<RenderOptions.StyleOption> allColumnStyles = Stream.concat(columnStyle.stream(), columnWidths.stream()).collect(Collectors.toList());
+				List<RenderOptions.StyleOption> allColumnStyles = Stream.concat(columnStyle.stream(), columnWidths.stream())
+						.collect(Collectors.toList());
 				if (getStyleForKey(var, allColumnStyles).isEmpty()) {
 					renderResult.appendHtml("<td>");
 				}
@@ -405,7 +406,8 @@ public class SparqlResultRenderer {
 					renderResult.appendHtml("<td " + getStyleForKey(var, columnStyle) + ">");
 				}
 				else {
-					renderResult.appendHtml("<td " + getStyleForKey(var, allColumnStyles).substring(0, getStyleForKey(var, allColumnStyles).length()-1) + "; overflow-wrap: break-word'" + ">");
+					renderResult.appendHtml("<td " + getStyleForKey(var, allColumnStyles).substring(0, getStyleForKey(var, allColumnStyles)
+							.length() - 1) + "; overflow-wrap: break-word'" + ">");
 				}
 				//renderResult.appendHtml(getStyleForKey(var, columnStyle).isEmpty() ? "<td>" : "<td " + getStyleForKey(var, columnStyle) + ">");
 				if (renderJSPWikiMarkup) {
@@ -429,14 +431,30 @@ public class SparqlResultRenderer {
 	 * JSPWiki seems to ignore links embedded in tables, we parse them manually
 	 */
 	private String renderExternalJSPWikiLinks(String erg) {
-
+		StringBuilder links = new StringBuilder();
 		final Matcher matcher = ARTICLE_LINK_PATTERN.matcher(erg);
-		if (!matcher.find()) return erg;
+		int index = 0;
+		while (matcher.find()) {
+			links.append(erg, index, matcher.start());
 
-		final String linkLabel = Strings.trim(matcher.group(1));
-		final String linkUrl = Strings.trim(matcher.group(2));
+			final String linkLabel = Strings.trim(matcher.group(1));
+			final String linkUrl = Strings.trim(matcher.group(2));
 
-		return generateReplacement(erg, matcher, linkLabel == null ? linkUrl : linkLabel, linkUrl);
+			links.append("<a class='external' href='")
+					.append(linkUrl)
+					.append("'>")
+					.append(linkLabel == null ? linkUrl : linkLabel)
+					.append("</a>");
+
+			index = matcher.end();
+		}
+		if (index > 0) {
+			links.append(erg, index, erg.length());
+			return links.toString();
+		}
+		else {
+			return erg;
+		}
 	}
 
 	@NotNull
