@@ -397,23 +397,19 @@ public class SparqlResultRenderer {
 				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
 						getRenderMode(section));
 
-				if (columnStyle == null || columnWidths == null) {
-					renderResult.appendHtml(getStyleForKey(var, columnStyle).isEmpty() ? "<td>" : "<td " + getStyleForKey(var, columnStyle) + ">");
+				List<RenderOptions.StyleOption> allColumnStyles = Stream.concat(columnStyle.stream(), columnWidths.stream())
+						.collect(Collectors.toList());
+				if (getStyleForKey(var, allColumnStyles).isEmpty()) {
+					renderResult.appendHtml("<td>");
+				}
+				else if (getStyleForKey(var, columnWidths).isEmpty()) {
+					renderResult.appendHtml("<td " + getStyleForKey(var, columnStyle) + ">");
 				}
 				else {
-					List<RenderOptions.StyleOption> allColumnStyles = Stream.concat(columnStyle.stream(), columnWidths.stream())
-							.collect(Collectors.toList());
-					if (getStyleForKey(var, allColumnStyles).isEmpty()) {
-						renderResult.appendHtml("<td>");
-					}
-					else if (getStyleForKey(var, columnWidths).isEmpty()) {
-						renderResult.appendHtml("<td " + getStyleForKey(var, columnStyle) + ">");
-					}
-					else {
-						renderResult.appendHtml("<td " + getStyleForKey(var, allColumnStyles).substring(0, getStyleForKey(var, allColumnStyles)
-								.length() - 1) + "; overflow-wrap: break-word'" + ">");
-					}
+					renderResult.appendHtml("<td " + getStyleForKey(var, allColumnStyles).substring(0, getStyleForKey(var, allColumnStyles)
+							.length() - 1) + "; overflow-wrap: break-word'" + ">");
 				}
+
 				if (renderJSPWikiMarkup) {
 					erg = renderExternalJSPWikiLinks(erg);
 					renderResult.append(erg);

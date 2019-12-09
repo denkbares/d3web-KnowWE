@@ -20,17 +20,23 @@
 
 package de.knowwe.ontology.sparql;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupCompileScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.util.Color;
 
 public class SparqlMarkupType extends DefaultMarkupType {
@@ -105,6 +111,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public SparqlMarkupType() {
 		super(MARKUP);
 		this.setRenderer(new SparqlMarkupRenderer());
+		this.addCompileScript(new StyleCollectorScript());
 	}
 
 	private static class SparqlMarkupRenderer extends Rdf2GoCoreCheckRenderer {
@@ -117,4 +124,96 @@ public class SparqlMarkupType extends DefaultMarkupType {
 			return title;
 		}
 	}
+
+	/**
+	 * Compiler Script that checks the StyleOptions and stores StyleOptions.
+	 * Displays an error if necessary style information is missing.
+	 * Stores the StyleOptions in the section so that they can be used.
+	 */
+	private class StyleCollectorScript extends DefaultGlobalCompiler.DefaultGlobalScript<SparqlMarkupType> {
+		@Override
+		public void compile(DefaultGlobalCompiler compiler, Section<SparqlMarkupType> section) throws CompilerMessage {
+			section.storeObject(TABLESTYLE, new ArrayList<RenderOptions.StyleOption>());
+			section.storeObject(COLUMNSTYLE, new ArrayList<RenderOptions.StyleOption>());
+			section.storeObject(COLUMNWIDTH, new ArrayList<RenderOptions.StyleOption>());
+
+			try {
+				section.storeObject(TABLESTYLE, checkStyle(section, TABLESTYLE));
+				section.storeObject(COLUMNSTYLE, checkStyle(section, COLUMNSTYLE));
+				section.storeObject(COLUMNWIDTH, checkStyle(section, COLUMNWIDTH));
+			} catch (IncorrectStyleOptionException e) {
+				throw CompilerMessage.error(e.getMessage());
+			}
+		}
+
+
+		private List<RenderOptions.StyleOption> checkStyle(Section<SparqlMarkupType> markupSection, String annotationName) throws IncorrectStyleOptionException {
+			String[] annotationStrings = DefaultMarkupType.getAnnotations(markupSection,
+					annotationName);
+			List<RenderOptions.StyleOption> styles = new ArrayList<>();
+
+			for (String annotationString : annotationStrings) {
+				if (Strings.equals(annotationName, COLUMNSTYLE)) {
+					annotationString = annotationString.replaceAll("\r", "");
+					String[] lines = annotationString.split("\n");
+					if (lines.length != 1){
+						String column = cleanStyleString(lines[0]);
+						for (int i = 1; i < lines.length; i++) {
+							String[] annoStringArray = lines[i].split(" ", 3);
+							for (int j = 0; j < annoStringArray.length - 1; j++) {
+								annoStringArray[j] = cleanStyleString(annoStringArray[j]);
+							}
+							if (annoStringArray.length < 2) {
+								throw new IncorrectStyleOptionException("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
+							}
+							styles.add(new RenderOptions.StyleOption(column, annoStringArray[0], annoStringArray[1]));
+						}
+					} else {
+						String[] annoStringArray = annotationString.split(" ", 3);
+						for (int i = 0; i < annoStringArray.length; i++) {
+							annoStringArray[i] = cleanStyleString(annoStringArray[i]);
+						}
+						if (annoStringArray.length < 3) {
+							throw new IncorrectStyleOptionException("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
+						}
+						styles.add(new RenderOptions.StyleOption(annoStringArray[0], annoStringArray[1], annoStringArray[2]));
+					}
+				}
+				else if (Strings.equals(annotationName, TABLESTYLE)) {
+					String[] annoStringArray = annotationString.split(" ", 2);
+					if (annoStringArray.length < 2) {
+						throw new IncorrectStyleOptionException("The style '" + TABLESTYLE + "' does not include all necessary information. It has to consist of <styleName> <style>");
+					}
+					styles.add(new RenderOptions.StyleOption("table", annoStringArray[0], annoStringArray[1]));
+				}
+				else if (Strings.equals(annotationName, COLUMNWIDTH)) {
+					String[] annoStringArray = annotationString.split(" ", 2);
+					if (annoStringArray.length < 2) {
+						throw new IncorrectStyleOptionException("The style '" + COLUMNWIDTH + "' does not include all necessary information. It has to consist of <columnName> <columnWidth>");
+					}
+					styles.add(new RenderOptions.StyleOption(annoStringArray[0], "max-width", annoStringArray[1]));
+				}
+			}
+			return styles;
+		}
+
+		/**
+		 * remove a semicolon or colon in the end of the string
+		 * @param styleString: string to be cleaned
+		 * @return cleaned String
+		 */
+		private String cleanStyleString(String styleString) {
+			if (styleString.endsWith(":") || styleString.endsWith(";")) {
+				return styleString.substring(0, styleString.length() - 1);
+			}
+			return styleString;
+		}
+
+		public class IncorrectStyleOptionException extends Exception {
+			public IncorrectStyleOptionException(String errorMessage) {
+				super(errorMessage);
+			}
+		}
+	}
+
 }

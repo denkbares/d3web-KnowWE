@@ -1,11 +1,11 @@
 package de.knowwe.rdf2go.sparql.utils;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.text.Style;
+import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.util.Color;
@@ -41,10 +41,10 @@ public class RenderOptions {
 		this.id = id;
 		showAll = false;
  		color = Color.NONE;
- 		this.columnStyles = null;
- 		this.tableStyles = null;
+ 		this.columnStyles = new ArrayList<>();
+ 		this.tableStyles = new ArrayList<>();
  		this.allowJSPWikiMarkup = true;
- 		this.columnWidths = null;
+ 		this.columnWidths = new ArrayList<>();
 	}
 
 	public String getId() {
@@ -131,10 +131,6 @@ public class RenderOptions {
 		return columnWidths;
 	}
 
-	public void setColumnWidth(List<StyleOption> columnWidth) {
-		this.columnWidths = columnWidth;
-	}
-
 	public int getNavigationLimit() {
 		return navigationLimit;
 	}
@@ -175,12 +171,16 @@ public class RenderOptions {
 		this.color = color;
 	}
 
-	public void setColumnStyles(List<StyleOption> styles) {
+	public void setColumnStyles(@NotNull List<StyleOption> styles) {
 		this.columnStyles = styles;
 	}
 
-	public void setTableStyles(List<StyleOption> tableStyles) {
-		this.tableStyles = tableStyles;
+	public void setTableStyles(@NotNull List<StyleOption> styles) {
+		this.tableStyles = styles;
+	}
+
+	public void setColumnWidth(@NotNull List<StyleOption> columnWidth) {
+		this.columnWidths = columnWidth;
 	}
 
 	public void setAllowJSPWikiMarkup(boolean allowJSPWikiMarkup) {
