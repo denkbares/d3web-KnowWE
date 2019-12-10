@@ -96,6 +96,7 @@ public class Icon {
 	//temporary
 	public static final Icon RENAME = new Icon("fa-type fa-font");
 	public static final Icon RUN = new Icon("fas fa-play");
+	public static final Icon TARGET = new Icon("fas fa-bullseye-pointer");
 	//temporary
 	public static final Icon PACKAGE = new Icon("fa-type fa-puzzle-piece");
 	public static final Icon EDITSECTION = new Icon("fa-type fa-edit");
@@ -103,6 +104,7 @@ public class Icon {
 	public static final Icon DEBUG = new Icon("fa-type fa-bug");
 	public static final Icon CONSISTENCY = new Icon("fa-type fa-crosshairs");
 	public static final Icon CHECK = new Icon("fa-type fa-check-square");
+	public static final Icon CHECK2 = new Icon("fa-type fa-check-circle");
 	public static final Icon CHECKED = new Icon("fa-type fa-check");
 	public static final Icon DEFER = new Icon("fa-type fa-share");
 	public static final Icon ESTABLISHED = new Icon("fas fa-circle");
@@ -110,6 +112,9 @@ public class Icon {
 	public static final Icon EXCLUDED = new Icon("fa-type fa-ban");
 	public static final Icon ABSTRACT = new Icon("fa-type fa-asterisk");
 	public static final Icon PLUG = new Icon("fa-type fa-plug");
+	public static final Icon MEASUREMENT_DEVICE = new Icon("fa-type fa-weight");
+	public static final Icon VISUAL_INSPECTION = new Icon("fa-type fa-eye");
+	public static final Icon SWITCHES = new Icon("fa-type fa-sliders-h");
 	public static final Icon GRIP_LINES_VERTICAL = new Icon("fa-type fa-grip-lines-vertical");
 	public static final Icon INTERNAL_UNIT_FAILURE = new Icon("fa-type fa-times-square");
 

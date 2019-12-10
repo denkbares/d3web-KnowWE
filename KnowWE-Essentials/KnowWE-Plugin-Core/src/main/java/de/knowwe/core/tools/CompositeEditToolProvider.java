@@ -85,6 +85,11 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 	@NotNull
 	protected Tool getCompositeEditTool(String text, Identifier identifier) {
+		return createCompositeEditTool(text, identifier);
+	}
+
+	@NotNull
+	public static Tool createCompositeEditTool(String text, Identifier identifier) {
 		return new DefaultTool(
 				Icon.INFO,
 				text,
@@ -107,6 +112,5 @@ public class CompositeEditToolProvider implements ToolProvider {
 		return "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
 				+ TermInfoToolProvider.maskTermForHTML(externalTermIdentifierForm) + "')";
 	}
-
 }
 
