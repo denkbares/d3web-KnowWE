@@ -185,6 +185,7 @@ public class KnowWEUtils {
 		mask(builder, "%%");
 		mask(builder, "\\");
 		mask(builder, "__");
+		mask(builder, "''");
 	}
 
 	/**
@@ -203,6 +204,7 @@ public class KnowWEUtils {
 		unmask(builder, "}}");
 		unmask(builder, "%%");
 		unmask(builder, "\\");
+		unmask(builder, "''");
 	}
 
 	public static void appendToFile(final String path, final String entry) {
