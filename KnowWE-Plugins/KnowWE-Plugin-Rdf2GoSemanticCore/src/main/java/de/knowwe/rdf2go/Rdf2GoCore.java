@@ -227,9 +227,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		threadCount = Math.max(threadCount, 1);
 		Log.info("Creating " + threadName + "-Pool with " + threadCount + " threads");
 		final ThreadFactory threadFactory = runnable -> {
-			Thread thread = new Thread(runnable,
-					runnable instanceof SparqlTask ?
-							threadName + " (" + ((SparqlTask) runnable).getPriority() + ")" : threadName);
+			Thread thread = new Thread(runnable, threadName);
 			thread.setDaemon(true);
 			return thread;
 		};
