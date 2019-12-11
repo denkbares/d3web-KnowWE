@@ -227,7 +227,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		threadCount = Math.max(threadCount, 1);
 		Log.info("Creating " + threadName + "-Pool with " + threadCount + " threads");
 		final ThreadFactory threadFactory = runnable -> {
-			Thread thread = new Thread(runnable, threadName);
+			Thread thread = new Thread(runnable,
+					runnable instanceof SparqlTask ?
+							threadName + " (" + ((SparqlTask) runnable).getPriority() + ")" : threadName);
 			thread.setDaemon(true);
 			return thread;
 		};
@@ -580,7 +582,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					Log.info("Removed " + removeSize + " statements from and added "
 							+ insertSize
 							+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
-							+ connectionStopwatch.getDisplay()+ ".");
+							+ connectionStopwatch.getDisplay() + ".");
 				}
 
 				Log.info("Current number of statements: " + this.statementCache.size());
@@ -1269,6 +1271,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			super(callable);
 			this.callable = callable;
 			this.priority = priority;
+		}
+
+		public double getPriority() {
+			return priority;
 		}
 
 		long getTimeOutMillis() {
