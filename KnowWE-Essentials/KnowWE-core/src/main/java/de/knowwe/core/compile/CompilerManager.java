@@ -15,6 +15,8 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,11 +92,15 @@ public class CompilerManager {
 		// we need at least to threads here, because one thread is used to start compilation
 		// and the rest for compiling the individual compilers
 		int threadCount = Runtime.getRuntime().availableProcessors() + 1;
-		ExecutorService pool = Executors.newFixedThreadPool(threadCount, runnable -> {
-			Thread thread = new Thread(runnable, "KnowWE-Compiler");
-			thread.setDaemon(true);
-			compileThreads.put(thread, null);
-			return thread;
+		ExecutorService pool = Executors.newFixedThreadPool(threadCount, new ThreadFactory() {
+			private final AtomicLong number = new AtomicLong(1);
+			@Override
+			public Thread newThread(@NotNull Runnable runnable) {
+				Thread thread = new Thread(runnable, "KnowWE-Compiler-" + number.getAndIncrement());
+				thread.setDaemon(true);
+				compileThreads.put(thread, null);
+				return thread;
+			}
 		});
 		Log.fine("Created multi core thread pool of size " + threadCount);
 		return pool;
