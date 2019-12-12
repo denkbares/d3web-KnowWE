@@ -122,6 +122,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		SELECT, CONSTRUCT, ASK
 	}
 
+	private final String name;
+
 	private static final AtomicLong coreId = new AtomicLong(0);
 
 	public static final int DEFAULT_TIMEOUT = 60000; // 60 seconds
@@ -134,52 +136,57 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private int resultCacheSize = 0;
 
-	private static final ThreadPoolExecutor sparqlThreadPool = createThreadPool(
-			getMaxSparqlThreadCount(), "KnowWE-Sparql-Thread", true);
+	private final ThreadPoolExecutor sparqlThreadPool;
 
-	private static final ThreadPoolExecutor shutDownThreadPool = createThreadPool(
-			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-SemanticCore-Shutdown-Thread", false);
+	private final ThreadPoolExecutor shutDownThreadPool;
 
-	private static final ThreadPoolExecutor sparqlReaperPool = createThreadPool(
-			sparqlThreadPool.getMaximumPoolSize(), "KnowWE-Sparql-Deamon", false);
-
-	static {
-		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			Log.info("Shutting down Rdf2Go thread pools.");
-			sparqlThreadPool.shutdown();
-			sparqlReaperPool.shutdown();
-			shutDownThreadPool.shutdown();
-			SemanticCore.shutDownRepositoryManager();
-		});
-		try {
-			Class.forName("com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl");
-			System.getProperties()
-					.setProperty("javax.xml.datatype.DatatypeFactory", "com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl");
-		}
-		catch (ClassNotFoundException e) {
-			Log.warning("com.sun.org.apache.xerces.internal.jaxp.datatype.DatatypeFactoryImpl not in class path, using fall back");
-		}
-	}
+	private final RepositoryConfig ruleSet;
 
 	private String lns;
 
-	private RepositoryConfig ruleSet;
-
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<>(MultiMaps.minimizedFactory(), MultiMaps.minimizedFactory());
+
+	public Rdf2GoCore(String lns, RepositoryConfig reasoning) {
+		this("Rdf2GoCore", lns, reasoning);
+	}
 
 	/**
 	 * Initializes the Rdf2GoCore with the specified arguments. Please note that the RuleSet argument only has an effect
 	 * if OWLIM is used as underlying implementation.
 	 *
+	 * @param coreName  the name of this {@link Rdf2GoCore} (used for log messages and thread names and so forth)
 	 * @param lns       the uri used as local namespace
 	 * @param reasoning the rule set (only relevant for OWLIM model)
 	 */
-	public Rdf2GoCore(String lns, RepositoryConfig reasoning) {
+	public Rdf2GoCore(@NotNull String coreName, String lns, RepositoryConfig reasoning) {
 
 		if (reasoning == null) {
 			reasoning = RepositoryConfigs.get(RdfConfig.class);
 		}
+
+		String applicationName;
+		try {
+			applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
+		}
+		catch (Exception e) {
+			Log.warning("Unable to get application name, using fallback");
+			applicationName = "ROOT";
+		}
+
+		final long coreId = Rdf2GoCore.coreId.incrementAndGet();
+		this.name = applicationName + "-" + coreName.replaceAll("\\s+", "-") + "-" + coreId;
+
+		try {
+			this.semanticCore = SemanticCore.getOrCreateInstance(coreName, reasoning);
+			this.semanticCore.allocate(); // make sure the core does not shut down on its own...
+			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
+		}
+		catch (IOException e) {
+			Log.severe("Unable to create SemanticCore", e);
+			throw new IllegalStateException(e);
+		}
+
 		if (lns == null) {
 			String baseUrl;
 			try {
@@ -193,25 +200,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			lns = baseUrl + "Wiki.jsp?page=";
 		}
 		this.lns = lns;
-		String applicationName;
-		try {
-			applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
-		}
-		catch (Exception e) {
-			Log.warning("Unable to get application name, using fallback");
-			applicationName = "Main";
-		}
-		try {
-			this.semanticCore = SemanticCore.getOrCreateInstance(applicationName + "-" + coreId
-					.incrementAndGet(), reasoning);
-			this.semanticCore.allocate(); // make sure the core does not shut down on its own...
-			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
-		}
-		catch (IOException e) {
-			Log.severe("Unable to create SemanticCore", e);
-			return;
-		}
 		this.ruleSet = reasoning;
+
+		sparqlThreadPool = createThreadPool(
+				getMaxSparqlThreadCount(reasoning), name + "-Sparql-Thread", true);
+
+		shutDownThreadPool = createThreadPool(
+				sparqlThreadPool.getMaximumPoolSize(), name + "-Shutdown-Thread", false);
 
 		this.insertCache = new HashSet<>();
 		this.removeCache = new HashSet<>();
@@ -226,10 +221,15 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	private static ThreadPoolExecutor createThreadPool(int threadCount, final String threadName, boolean priorityQueue) {
 		threadCount = Math.max(threadCount, 1);
 		Log.info("Creating " + threadName + "-Pool with " + threadCount + " threads");
-		final ThreadFactory threadFactory = runnable -> {
-			Thread thread = new Thread(runnable, threadName);
-			thread.setDaemon(true);
-			return thread;
+		final ThreadFactory threadFactory = new ThreadFactory() {
+			private final AtomicLong number = new AtomicLong(1);
+
+			@Override
+			public Thread newThread(@NotNull Runnable runnable) {
+				Thread thread = new Thread(runnable, threadName + "-" + number.getAndIncrement());
+				thread.setDaemon(true);
+				return thread;
+			}
 		};
 		if (priorityQueue) {
 			return new ThreadPoolExecutor(threadCount, threadCount,
@@ -242,8 +242,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 	}
 
-	private static int getMaxSparqlThreadCount() {
-		final int defaultThreadCount = Runtime.getRuntime().availableProcessors() - 1;
+	private int getMaxSparqlThreadCount(RepositoryConfig reasoning) {
+		final int defaultThreadCount = Math.min(Runtime.getRuntime()
+				.availableProcessors() - 1, reasoning.getNumberOfSupportedParallelConnections());
 		final String threadCount = System.getProperty(SEMANTICCORE_SPARQL_THREADS_COUNT, String.valueOf(defaultThreadCount));
 		try {
 			return Integer.parseInt(threadCount);
@@ -1218,6 +1219,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		else {
 			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, options.timeoutMillis, false), options.priority);
+			final int currentQueueSize = sparqlThreadPool.getQueue().size();
+			if (currentQueueSize > 5) {
+				Log.info("Queuing new SPARQL query (" + name + "), current queue length: " + currentQueueSize);
+			}
 			sparqlThreadPool.execute(sparqlTask);
 		}
 		String timeOutMessage = "SPARQL query timed out or was cancelled after ";
@@ -1666,6 +1671,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		if (ServletContextEventListener.isDestroyInProgress()) {
 			EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 			this.semanticCore.close();
+			this.sparqlThreadPool.shutdownNow();
+			this.shutDownThreadPool.shutdownNow();
 		}
 		else {
 			shutDownThreadPool.execute(() -> {

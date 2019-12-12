@@ -224,7 +224,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
 			if (this.rdf2GoCore != null) this.rdf2GoCore.close();
-			this.rdf2GoCore = new Rdf2GoCore(ruleSet);
+			this.rdf2GoCore = new Rdf2GoCore(getName(), null, ruleSet);
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 		}
