@@ -96,7 +96,8 @@ public class Icon {
 	//temporary
 	public static final Icon RENAME = new Icon("fa-type fa-font");
 	public static final Icon RUN = new Icon("fas fa-play");
-	public static final Icon TARGET = new Icon("fas fa-bullseye-pointer");
+	public static final Icon SELECT_TARGET = new Icon("fa-type fa-bullseye-pointer");
+	public static final Icon UNSELECT_TARGET = new Icon("fa-type fa-eraser");
 	//temporary
 	public static final Icon PACKAGE = new Icon("fa-type fa-puzzle-piece");
 	public static final Icon EDITSECTION = new Icon("fa-type fa-edit");
