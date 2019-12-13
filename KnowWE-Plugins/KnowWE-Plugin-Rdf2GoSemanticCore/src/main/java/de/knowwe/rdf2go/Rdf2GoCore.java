@@ -178,7 +178,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		this.name = applicationName + "-" + coreName.replaceAll("\\s+", "-") + "-" + coreId;
 
 		try {
-			this.semanticCore = SemanticCore.getOrCreateInstance(coreName, reasoning);
+			this.semanticCore = SemanticCore.getOrCreateInstance(name, reasoning);
 			this.semanticCore.allocate(); // make sure the core does not shut down on its own...
 			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
 		}
