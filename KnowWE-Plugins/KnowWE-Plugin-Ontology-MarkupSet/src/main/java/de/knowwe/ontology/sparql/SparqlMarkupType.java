@@ -137,26 +137,22 @@ public class SparqlMarkupType extends DefaultMarkupType {
 			section.storeObject(COLUMNSTYLE, new ArrayList<RenderOptions.StyleOption>());
 			section.storeObject(COLUMNWIDTH, new ArrayList<RenderOptions.StyleOption>());
 
-			try {
-				section.storeObject(TABLESTYLE, checkStyle(section, TABLESTYLE));
-				section.storeObject(COLUMNSTYLE, checkStyle(section, COLUMNSTYLE));
-				section.storeObject(COLUMNWIDTH, checkStyle(section, COLUMNWIDTH));
-			} catch (IncorrectStyleOptionException e) {
-				throw CompilerMessage.error(e.getMessage());
-			}
+			checkStyle(section, TABLESTYLE);
+			checkStyle(section, COLUMNSTYLE);
+			checkStyle(section, COLUMNWIDTH);
 		}
 
-
-		private List<RenderOptions.StyleOption> checkStyle(Section<SparqlMarkupType> markupSection, String annotationName) throws IncorrectStyleOptionException {
+		private void checkStyle(Section<SparqlMarkupType> markupSection, String annotationName) throws CompilerMessage {
 			String[] annotationStrings = DefaultMarkupType.getAnnotations(markupSection,
 					annotationName);
 			List<RenderOptions.StyleOption> styles = new ArrayList<>();
+			List<String> invalidCssKeys = new ArrayList<>();
 
 			for (String annotationString : annotationStrings) {
 				if (Strings.equals(annotationName, COLUMNSTYLE)) {
 					annotationString = annotationString.replaceAll("\r", "");
 					String[] lines = annotationString.split("\n");
-					if (lines.length != 1){
+					if (lines.length != 1) {
 						String column = cleanStyleString(lines[0]);
 						for (int i = 1; i < lines.length; i++) {
 							String[] annoStringArray = lines[i].split(" ", 3);
@@ -164,41 +160,73 @@ public class SparqlMarkupType extends DefaultMarkupType {
 								annoStringArray[j] = cleanStyleString(annoStringArray[j]);
 							}
 							if (annoStringArray.length < 2) {
-								throw new IncorrectStyleOptionException("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
+								throw CompilerMessage.error("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
 							}
 							styles.add(new RenderOptions.StyleOption(column, annoStringArray[0], annoStringArray[1]));
+							if (!cssKeyIsValid(annoStringArray[0])) {
+								invalidCssKeys.add(annoStringArray[0]);
+							}
 						}
-					} else {
+					}
+					else {
 						String[] annoStringArray = annotationString.split(" ", 3);
 						for (int i = 0; i < annoStringArray.length; i++) {
 							annoStringArray[i] = cleanStyleString(annoStringArray[i]);
 						}
 						if (annoStringArray.length < 3) {
-							throw new IncorrectStyleOptionException("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
+							throw CompilerMessage.error("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
 						}
 						styles.add(new RenderOptions.StyleOption(annoStringArray[0], annoStringArray[1], annoStringArray[2]));
+						if (!cssKeyIsValid(annoStringArray[1])) {
+							invalidCssKeys.add(annoStringArray[1]);
+						}
 					}
 				}
 				else if (Strings.equals(annotationName, TABLESTYLE)) {
 					String[] annoStringArray = annotationString.split(" ", 2);
 					if (annoStringArray.length < 2) {
-						throw new IncorrectStyleOptionException("The style '" + TABLESTYLE + "' does not include all necessary information. It has to consist of <styleName> <style>");
+						throw CompilerMessage.error("The style '" + TABLESTYLE + "' does not include all necessary information. It has to consist of <styleName> <style>");
+					}
+					if (!cssKeyIsValid(annoStringArray[0])) {
+						invalidCssKeys.add(annoStringArray[0]);
 					}
 					styles.add(new RenderOptions.StyleOption("table", annoStringArray[0], annoStringArray[1]));
 				}
 				else if (Strings.equals(annotationName, COLUMNWIDTH)) {
 					String[] annoStringArray = annotationString.split(" ", 2);
 					if (annoStringArray.length < 2) {
-						throw new IncorrectStyleOptionException("The style '" + COLUMNWIDTH + "' does not include all necessary information. It has to consist of <columnName> <columnWidth>");
+						throw CompilerMessage.error("The style '" + COLUMNWIDTH + "' does not include all necessary information. It has to consist of <columnName> <columnWidth>");
 					}
 					styles.add(new RenderOptions.StyleOption(annoStringArray[0], "max-width", annoStringArray[1]));
 				}
 			}
-			return styles;
+
+			markupSection.storeObject(annotationName, styles);
+			if (!invalidCssKeys.isEmpty()) {
+				throw CompilerMessage.error(createUnknownCssExceptionMessage(invalidCssKeys));
+			}
+		}
+
+		/**
+		 * check validity of a css key by regex
+		 * @param key css key to be validated
+		 * @return true if key is valid, false if not
+		 */
+		private boolean cssKeyIsValid(String key) {
+			return key.matches("[a-z]+(-?[a-z]+)*");  // a valid css solely consists of words and "-" in between
+		}
+
+		private String createUnknownCssExceptionMessage(List<String> invalidCssKeys) {
+			StringBuilder messageBuffer = new StringBuilder();
+			messageBuffer.append("The css key(s) ");
+			invalidCssKeys.forEach(messageBuffer::append);
+			messageBuffer.append(" are not known by the system and may be wrong");
+			return messageBuffer.toString();
 		}
 
 		/**
 		 * remove a semicolon or colon in the end of the string
+		 *
 		 * @param styleString: string to be cleaned
 		 * @return cleaned String
 		 */
@@ -207,12 +235,6 @@ public class SparqlMarkupType extends DefaultMarkupType {
 				return styleString.substring(0, styleString.length() - 1);
 			}
 			return styleString;
-		}
-
-		public class IncorrectStyleOptionException extends Exception {
-			public IncorrectStyleOptionException(String errorMessage) {
-				super(errorMessage);
-			}
 		}
 	}
 
