@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import com.denkbares.utils.Log;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -52,7 +53,6 @@ import de.d3web.core.knowledge.terminology.AnswerNo;
 import de.d3web.core.knowledge.terminology.AnswerYes;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionMC;
-import com.denkbares.utils.Log;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**
@@ -144,10 +144,6 @@ public class ConditionVerbalizer implements Verbalizer {
 
 	/**
 	 * reads the parameter and delegates with parameter to createConditionText
-	 * 
-	 * @param cond
-	 * @param parameter
-	 * @return
 	 */
 	private String renderCondition(Condition cond) {
 
@@ -331,7 +327,7 @@ public class ConditionVerbalizer implements Verbalizer {
 								value, tCondition.getClass().getSimpleName()));
 					}
 					return new NonTerminalCondVerbalization(tCondVerbs,
-							getClassVerbalisation(new CondAnd(null)),
+							getClassVerbalisation(new CondAnd()),
 							tCondition.getClass().getSimpleName());
 				}
 			}
