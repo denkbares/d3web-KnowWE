@@ -634,8 +634,10 @@ KNOWWE.plugin.compositeEditTool = function () {
 
 	function highlightTermDefinitions() {
 		const edit = jq$('#compositeEdit');
-		const sectionsToHighlight = edit.find('.relevantSections').attr('rel').split(',');
-		sectionsToHighlight.forEach(s => edit.find("[sectionid='" + s + "']").addClass("highlight"));
+		const rel = edit.find('.relevantSections').attr('rel');
+		if (rel) {
+			rel.split(',').forEach(s => edit.find("[sectionid='" + s + "']").addClass("highlight"));
+		}
 	}
 
 	function highlightTermReferences(root, sectionIds) {
