@@ -12,9 +12,9 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -135,13 +135,13 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Config config = getConfig(section);
 			Rdf2GoCore core = compiler.getRdf2GoCore();
 
-			// get static URIs and Literals from config
-			URI subjectURI = getUriFromConfig(core, config.subject);
-			URI predicateURI = getUriFromConfig(core, config.predicate);
-			List<URI> objectURIs = new ArrayList<>();
+			// get static IRIs and Literals from config
+			IRI subjectIRI = getUriFromConfig(core, config.subject);
+			IRI predicateIRI = getUriFromConfig(core, config.predicate);
+			List<IRI> objectIRIs = new ArrayList<>();
 			List<Literal> literals = new ArrayList<>();
 			for (ObjectConfig objectConfig : config.objectConfigs) {
-				objectURIs.add(getUriFromConfig(core, objectConfig.object));
+				objectIRIs.add(getUriFromConfig(core, objectConfig.object));
 				if (objectConfig.objectLiteral != null) {
 					literals.add(objectConfig.objectLiteral.get().getLiteral(core, objectConfig.objectLiteral));
 				}
@@ -150,7 +150,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			int statementCounter = 0;
 			int rowCounter = 0;
 
-			// fill variable URIs and Literals from excel
+			// fill variable IRIs and Literals from excel
 			for (XSSFSheet sheet : getSheets(xlsx, config)) {
 				// config indexes are 1-based indexes, so subtract 1 to get to 0-based indexes for poi
 				for (int i = config.startRow - 1; i <= Math.min(config.endRow - 1, sheet.getLastRowNum()); i++) {
@@ -159,22 +159,22 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 						// subject
 						if (config.subjectColumn > 0) {
-							subjectURI = getUriFromCell(core, row, config.subjectColumn);
+							subjectIRI = getUriFromCell(core, row, config.subjectColumn);
 						}
 
 						// predicate
 						if (config.predicateColumn > 0) {
-							predicateURI = getUriFromCell(core, row, config.predicateColumn);
+							predicateIRI = getUriFromCell(core, row, config.predicateColumn);
 						}
 
 						// objects
 						for (int j = 0; j < config.objectConfigs.size(); j++) {
 							ObjectConfig objectConfig = config.objectConfigs.get(j);
-							URI objectURI = objectURIs.get(j);
+							IRI objectIRI = objectIRIs.get(j);
 							Literal literal = literals.get(j);
 							if (objectConfig.objectColumn > 0) {
 								if (literals.get(j) == null) {
-									objectURI = getUriFromCell(core, row, objectConfig.objectColumn);
+									objectIRI = getUriFromCell(core, row, objectConfig.objectColumn);
 								}
 								else {
 									literal = getLiteralFromCell(core, row, objectConfig, literal);
@@ -194,18 +194,19 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 									continue;
 								}
 								else {
-									statement = core.createStatement(subjectURI, predicateURI, literal);
+									statement = core.createStatement(subjectIRI, predicateIRI, literal);
 								}
 							}
-							else if (objectURI != null) {
-								statement = core.createStatement(subjectURI, predicateURI, objectURI);
+							else if (objectIRI != null) {
+								statement = core.createStatement(subjectIRI, predicateIRI, objectIRI);
 							}
 							if (statement != null) {
 								core.addStatements(section, statement);
 								statementCounter++;
 							}
 						}
-					} catch (Exception e) {
+					}
+					catch (Exception e) {
 						String message = "Exception in row " + (i + 1) + ": " + e.getMessage();
 						Log.severe(message, e);
 						throw CompilerMessage.error(message);
@@ -260,15 +261,15 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		}
 
 		@Nullable
-		private URI getUriFromConfig(Rdf2GoCore core, Section<AbbreviatedResourceReference> resource) {
-			URI uri = null;
+		private IRI getUriFromConfig(Rdf2GoCore core, Section<AbbreviatedResourceReference> resource) {
+			IRI uri = null;
 			if (resource != null) {
 				uri = resource.get().getResourceIRI(core, resource);
 			}
 			return uri;
 		}
 
-		private URI getUriFromCell(Rdf2GoCore core, XSSFRow row, int subjectColumn) {
+		private IRI getUriFromCell(Rdf2GoCore core, XSSFRow row, int subjectColumn) {
 			XSSFCell cell = row.getCell(subjectColumn - 1);
 			if (cell == null) return null;
 			return core.createIRI(getCellValue(cell));
@@ -341,7 +342,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			section.storeObject(CONFIG_KEY, config);
 		}
 
-		private void skipRows(Section<ConfigAnnotationType> section, Config config) throws CompilerMessage {
+		private void skipRows(Section<ConfigAnnotationType> section, Config config) {
 			Section<SkipType> rows = Sections.successor(section, SkipType.class);
 			if (rows == null) {
 				config.skipPattern = null;
@@ -441,7 +442,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 					Pattern.CASE_INSENSITIVE, 0));
 		}
 
-		public void skipRows(Section<SkipType> section, Config config) throws CompilerMessage {
+		public void skipRows(Section<SkipType> section, Config config) {
 			Pattern columnPattern = Pattern.compile(COLUMN_PATTERN);
 			Matcher columnMatcher = columnPattern.matcher(section.getText());
 
