@@ -65,24 +65,20 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
-import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.utils.Log;
@@ -242,6 +238,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			final boolean addFile = !changedFile.exists();
 
 			super.putPageText(page, text);
+			File file = findPage(page.getName());
+			page.setSize(file.length());
 			final boolean isChanged = false;
 			final Git git = new Git(this.repository);
 			try {
@@ -469,53 +467,74 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			}
 			final Map<String, File> files = new HashMap<>();
 			for (final File file : wikipages) {
-				files.put(file.getName(), file);
-			}
-			try {
-				final ObjectReader objectReader = this.repository.newObjectReader();
-				final CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
-				final CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
-				final DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-				diffFormatter.setRepository(this.repository);
-				final ObjectId ref = this.repository.resolve(Constants.HEAD);
-				final RevWalk revWalk = new RevWalk(this.repository);
-				revWalk.markStart(revWalk.lookupCommit(ref));
-				RevCommit commit;
-				while ((commit = revWalk.next()) != null) {
-					final RevCommit[] parents = commit.getParents();
-					if (parents.length > 0) {
-						commit.getTree();
-						oldTreeParser.reset(objectReader, commit.getParent(0)
-								.getTree());
-						newTreeParser.reset(objectReader, commit.getTree());
-						final List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
-						for (final DiffEntry diff : diffs) {
-							String path = null;
-							if (diff.getChangeType() == DiffEntry.ChangeType.MODIFY) {
-								path = diff.getOldPath();
-							}
-							else if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
-								path = diff.getNewPath();
-							}
-							if (path != null) {
-								mapCommit(resultingPages, files, commit, path);
-							}
-						}
+				String fileName = file.getName();
+				int cutpoint = fileName.indexOf(FILE_EXT);
+				String pageName = fileName.substring(0, cutpoint);
+				PageCacheItem pageVersion = cache.getPageVersion(unmangleName(pageName), LATEST_VERSION);
+				if (pageVersion != null) {
+					WikiPage page = cache.createWikiPage(pageVersion.getPageName(), pageVersion);
+					resultingPages.put(fileName, page);
+				}
+				else {
+					Log.warning("Datei " + fileName + " wurde nicht im Cache gefunden! Versuche über VersionHistory");
+					List<WikiPage> versionHistory = getVersionHistory(pageName);
+					if (versionHistory != null && !versionHistory.isEmpty()) {
+						resultingPages.put(fileName, versionHistory.get(versionHistory.size() - 1));
+						Log.info("Datei " + fileName + " wurde gefunden");
 					}
 					else {
-						final TreeWalk tw = new TreeWalk(this.repository);
-						tw.reset(commit.getTree());
-						tw.setRecursive(false);
-						while (tw.next()) {
-							mapCommit(resultingPages, files, commit, tw.getPathString());
-						}
+						Log.severe("Datei " + fileName + " wurde nicht im Repository gefunden!");
 					}
 				}
 			}
-			catch (final IOException e) {
-				Log.severe(e.getMessage(), e);
-				throw new ProviderException("Can't load all pages from repository: " + e.getMessage(), e);
-			}
+//			try {
+//				final ObjectReader objectReader = this.repository.newObjectReader();
+//				final CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
+//				final CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
+//				final DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+//				diffFormatter.setRepository(this.repository);
+//				final ObjectId ref = this.repository.resolve(Constants.HEAD);
+//				final RevWalk revWalk = new RevWalk(this.repository);
+//				revWalk.markStart(revWalk.lookupCommit(ref));
+//				RevCommit commit;
+//				while ((commit = revWalk.next()) != null) {
+//					final RevCommit[] parents = commit.getParents();
+//					if (parents.length > 0) {
+//						commit.getTree();
+//						oldTreeParser.reset(objectReader, commit.getParent(0)
+//								.getTree());
+//						newTreeParser.reset(objectReader, commit.getTree());
+//						List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
+//						RenameDetector rd = new RenameDetector(repository);
+//						rd.addAll(diffs);
+//						diffs = rd.compute();
+//						for (final DiffEntry diff : diffs) {
+//							String path = null;
+//							if (diff.getChangeType() == DiffEntry.ChangeType.MODIFY) {
+//								path = diff.getOldPath();
+//							}
+//							else if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
+//								path = diff.getNewPath();
+//							}
+//							if (path != null) {
+//								mapCommit(resultingPages, files, commit, path);
+//							}
+//						}
+//					}
+//					else {
+//						final TreeWalk tw = new TreeWalk(this.repository);
+//						tw.reset(commit.getTree());
+//						tw.setRecursive(false);
+//						while (tw.next()) {
+//							mapCommit(resultingPages, files, commit, tw.getPathString());
+//						}
+//					}
+//				}
+//			}
+//			catch (final IOException e) {
+//				Log.severe(e.getMessage(), e);
+//				throw new ProviderException("Can't load all pages from repository: " + e.getMessage(), e);
+//			}
 			return resultingPages.values();
 		}
 		finally {
@@ -745,6 +764,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 								page.getAuthor(),
 								page.getName(),
 								revCommit.getId().getName()));
+						cache.deletePage(page, commitCommand.getMessage(), revCommit.getId());
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 

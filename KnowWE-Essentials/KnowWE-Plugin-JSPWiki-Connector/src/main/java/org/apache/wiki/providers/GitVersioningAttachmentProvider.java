@@ -199,6 +199,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 						return null;
 					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
 				}
+				att.setSize(newFile.length());
 				commitAttachment(att, git, GitVersioningWikiEvent.UPDATE);
 			}
 			catch (Exception e) {
@@ -428,29 +429,33 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	public List<Attachment> getVersionHistory(Attachment att) {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
-			List<Attachment> ret = new ArrayList<>();
-			try {
-				File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
-				if (attFile.exists()) {
+			List<Attachment> ret = cache.getAttachmentHistory(att);
+			if (ret == null) {
+				ret = new ArrayList<>();
+				try {
+					File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
+					if (attFile.exists()) {
 
-					Git git = new Git(repository);
-					try {
-						List<RevCommit> revCommitList = getRevCommitList(att, git);
-						int version = 1;
-						for (RevCommit revCommit : revCommitList) {
-							Attachment attVersion = getAttachment(att, version, revCommit);
-							ret.add(attVersion);
-							version++;
+						Git git = new Git(repository);
+						try {
+							List<RevCommit> revCommitList = getRevCommitList(att, git);
+							int version = 1;
+							for (RevCommit revCommit : revCommitList) {
+								Attachment attVersion = getAttachment(att, version, revCommit);
+								cache.addAttachmentVersion(att, revCommit.getFullMessage(), revCommit.getId());
+								ret.add(attVersion);
+								version++;
+							}
+							return ret;
 						}
-						return ret;
-					}
-					catch (GitAPIException | IOException e) {
-						log.error(e.getMessage(), e);
+						catch (GitAPIException | IOException e) {
+							log.error(e.getMessage(), e);
+						}
 					}
 				}
-			}
-			catch (ProviderException e) {
-				log.error(e.getMessage(), e);
+				catch (ProviderException e) {
+					log.error(e.getMessage(), e);
+				}
 			}
 			return ret;
 		}

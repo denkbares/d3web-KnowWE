@@ -38,6 +38,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.errors.StopWalkException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
@@ -84,14 +85,17 @@ public class GitVersioningUtils {
 	}
 
 	public static List<DiffEntry> getDiffEntries(ObjectId oldCommit, ObjectId newCommit, Repository repository) throws IOException {
-		ObjectReader objRedaer = repository.newObjectReader();
+		ObjectReader objectReader = repository.newObjectReader();
 		CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
 		CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
-		oldTreeParser.reset(objRedaer, oldCommit);
-		newTreeParser.reset(objRedaer, newCommit);
+		oldTreeParser.reset(objectReader, oldCommit);
+		newTreeParser.reset(objectReader, newCommit);
 		DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
 		diffFormatter.setRepository(repository);
-		return diffFormatter.scan(oldTreeParser, newTreeParser);
+		List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
+		RenameDetector rd = new RenameDetector(repository);
+		rd.addAll(diffs);
+		return rd.compute();
 	}
 
 	public static Iterable<RevCommit> getRevCommitsSince(Date timestamp, Repository repository) {

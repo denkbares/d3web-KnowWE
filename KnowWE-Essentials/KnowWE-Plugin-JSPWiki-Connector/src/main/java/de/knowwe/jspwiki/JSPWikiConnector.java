@@ -762,7 +762,8 @@ public class JSPWikiConnector implements WikiConnector {
 			String path = toPath(title, filename);
 			Log.info("Stored attachment '" + path + "'");
 			if (!wasLocked) unlockArticle(title, user);
-			return getAttachment(toPath(title, filename));
+//			return getAttachment(toPath(title, filename));
+			return new JSPWikiAttachment(attachment, attachmentManager);
 		}
 		catch (ProviderException e) {
 			throw new IOException("could not store attachment", e);
