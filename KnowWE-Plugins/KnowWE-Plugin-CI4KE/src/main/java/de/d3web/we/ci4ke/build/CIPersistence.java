@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,11 +44,11 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Streams;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.BuildResultPersistenceHandler;
 import de.d3web.testing.TestResult;
-import com.denkbares.utils.Log;
-import com.denkbares.utils.Streams;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -58,6 +59,7 @@ public class CIPersistence {
 
 	public static final int MAX_BUILDS = 200;
 
+	private final boolean skipCleaning;
 	private static final String ATTACHMENT_PREFIX = "ci-build-";
 
 	private final CIDashboard dashboard;
@@ -66,6 +68,7 @@ public class CIPersistence {
 	public CIPersistence(CIDashboard dashboard, CIBuildCache buildCache) {
 		this.dashboard = dashboard;
 		this.buildCache = buildCache;
+		skipCleaning = System.getProperty("knowwe.ci.skipCleaning") != null;
 	}
 
 	/**
@@ -133,14 +136,14 @@ public class CIPersistence {
 		DOMSource source = new DOMSource(document);
 		transformer.transform(source, result);
 
-		byte[] bytes = result.getWriter().toString().getBytes("UTF-8");
+		byte[] bytes = result.getWriter().toString().getBytes(StandardCharsets.UTF_8);
 		ByteArrayInputStream currentBuildInputStream = new ByteArrayInputStream(bytes);
 
 		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
 		String userName = "CI-process";
 		String dashboardArticle = attachmentTargetArticle(dashboard.getDashboardArticle());
 
-		if (build.getBuildNumber() > MAX_BUILDS) {
+		if (!skipCleaning && build.getBuildNumber() > MAX_BUILDS) {
 			// do big cleanup, where the older half of the builds are deleted
 			LinkedList<ByteArrayInputStream> streams = new LinkedList<>();
 			streams.add(currentBuildInputStream);
