@@ -99,6 +99,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private String filesystemPath;
 	private final ReadWriteLock pushLock = new ReentrantReadWriteLock();
 	private final ReentrantLock commitLock = new ReentrantLock();
+	private GitVersionCache cache;
 
 	private AtomicLong commitCount;
 
@@ -198,6 +199,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			}
 		}
 		this.repository.autoGC(new TextProgressMonitor());
+		this.cache = new GitVersionCache(engine, this.repository);
+		cache.initializeCache();
 	}
 
 	private void doBinaryGC(File pageDir) {
@@ -252,6 +255,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 				if (this.openCommits.containsKey(page.getAuthor())) {
 					this.openCommits.get(page.getAuthor()).add(changedFile.getName());
+					cache.addCacheCommand(page.getAuthor(), new CacheCommand.AddPageVersion(page));
 				}
 				else {
 					final CommitCommand commit = git
@@ -275,20 +279,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 								page.getAuthor(),
 								page.getName(),
 								revCommit.getId().getName()));
+						cache.addPageVersion(page, commit.getMessage(), revCommit.getId());
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
-//					} catch (final JGitInternalException e) {
-//						if(e.getCause() instanceof LockFailedException){
-//							Log.warning("Retry commit to repo, because of lock failed exception");
-//							final RevCommit revCommit = commit.call();
-//							WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.DELETE,
-//									page.getAuthor(),
-//									page.getName(),
-//									revCommit.getId().getName()));
-//						} else {
-//							throw e;
-//						}
-//					}
+
 					periodicalGitGC(git);
 				}
 			}
@@ -377,7 +371,14 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	@Override
 	public boolean pageExists(final String page) {
-		return super.pageExists(page);
+		File pageFile = super.findPage(page);
+		try {
+			return pageFile.exists() && pageFile.getCanonicalPath().equals(pageFile.getAbsolutePath());
+		}
+		catch (IOException e) {
+			Log.warning("Could not evaluate canonical path", e);
+		}
+		return pageFile.exists();
 	}
 
 	@Override
@@ -618,7 +619,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	@NotNull
-	private WikiPage getWikiPage(final String fullMessage, final String author, final Date modified, final String path) {
+	WikiPage getWikiPage(final String fullMessage, final String author, final Date modified, final String path) {
 		final int cutpoint = path.lastIndexOf(FILE_EXT);
 		if (cutpoint == -1) {
 			log.error("wrong page name " + path);
@@ -642,19 +643,26 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			final File page = findPage(pageName);
 			final List<WikiPage> pageVersions = new ArrayList<>();
 			if (page.exists()) {
-				try {
-					final Git git = new Git(this.repository);
-					final List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
-					int versionNr = 1;
-					for (final RevCommit revCommit : revCommits) {
-						final WikiPage version = getWikiPage(pageName, versionNr, revCommit);
-						pageVersions.add(version);
-						versionNr++;
-					}
+				List<WikiPage> versionHistory = cache.getPageHistory(pageName);
+				if (versionHistory != null) {
+					return versionHistory;
 				}
-				catch (final IOException | GitAPIException e) {
-					log.error(e.getMessage(), e);
-					throw new ProviderException("Can't get version history for page " + pageName + ": " + e.getMessage());
+				else {
+					try {
+						final Git git = new Git(this.repository);
+						final List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
+						int versionNr = 1;
+						for (final RevCommit revCommit : revCommits) {
+							final WikiPage version = getWikiPage(pageName, versionNr, revCommit);
+							pageVersions.add(version);
+							cache.addPageVersion(version, revCommit.getFullMessage(), revCommit.getId());
+							versionNr++;
+						}
+					}
+					catch (final IOException | GitAPIException e) {
+						log.error(e.getMessage(), e);
+						throw new ProviderException("Can't get version history for page " + pageName + ": " + e.getMessage());
+					}
 				}
 			}
 			return pageVersions;
@@ -687,22 +695,19 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 						}
 					}
 					else {
-						final Git git = new Git(this.repository);
-						final List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
-						if ((version > 0 && version <= revCommits.size())) {
-							final RevCommit revCommit = revCommits.get(version - 1);
-							final TreeWalk treeWalkDir = new TreeWalk(this.repository);
-							treeWalkDir.reset(revCommit.getTree());
-							treeWalkDir.setFilter(PathFilter.create(page.getName()));
-							treeWalkDir.setRecursive(false);
-							//here we have our file directly
-							if (treeWalkDir.next()) {
-								final ObjectId fileId = treeWalkDir.getObjectId(0);
-								final ObjectLoader loader = this.repository.open(fileId);
-								return new String(loader.getBytes(), this.m_encoding);
+						PageCacheItem pageCacheItem = cache.getPageVersion(pageName, version);
+						if (pageCacheItem != null) {
+							try (RevWalk revWalk = new RevWalk(repository)) {
+								RevCommit revCommit = revWalk.parseCommit(pageCacheItem.getId());
+								return loadObject(page.getName(), version, revCommit);
 							}
-							else {
-								throw new ProviderException("Can't load Git object for " + pageName + " version " + version);
+						}
+						else {
+							final Git git = new Git(this.repository);
+							final List<RevCommit> revCommits = GitVersioningUtils.reverseToList(getRevCommits(page, git));
+							if ((version > 0 && version <= revCommits.size())) {
+								final RevCommit revCommit = revCommits.get(version - 1);
+								return loadObject(page.getName(), version, revCommit);
 							}
 						}
 					}
@@ -718,6 +723,23 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 		finally {
 			writeFileUnlock();
+		}
+	}
+
+	@NotNull
+	private String loadObject(String pageName, int version, RevCommit revCommit) throws IOException, ProviderException {
+		final TreeWalk treeWalkDir = new TreeWalk(this.repository);
+		treeWalkDir.reset(revCommit.getTree());
+		treeWalkDir.setFilter(PathFilter.create(pageName));
+		treeWalkDir.setRecursive(false);
+		//here we have our file directly
+		if (treeWalkDir.next()) {
+			final ObjectId fileId = treeWalkDir.getObjectId(0);
+			final ObjectLoader loader = this.repository.open(fileId);
+			return new String(loader.getBytes(), this.m_encoding);
+		}
+		else {
+			throw new ProviderException("Can't load Git object for " + pageName + " version " + version);
 		}
 	}
 
@@ -751,6 +773,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 				if (this.openCommits.containsKey(page.getAuthor())) {
 					this.openCommits.get(page.getAuthor()).add(file.getName());
+					cache.addCacheCommand(page.getAuthor(), new CacheCommand.DeletePageVersion(page));
 				}
 				else {
 					final CommitCommand commitCommand = git.commit()
@@ -790,7 +813,14 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			final File fromFile = findPage(from.getName());
 			final File toFile = findPage(to);
 			try {
-				Files.move(fromFile.toPath(), toFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+				if (fromFile.getName().equalsIgnoreCase(toFile.getName())) {
+					File tmpFile = findPage(to + "_tmp");
+					Files.move(fromFile.toPath(), tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					Files.move(tmpFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				}
+				else {
+					Files.move(fromFile.toPath(), toFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				}
 				final Git git = new Git(this.repository);
 				retryGitOperation(() -> {
 					git.add().addFilepattern(toFile.getName()).call();
@@ -798,13 +828,14 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
 
 				retryGitOperation(() -> {
-					git.rm().addFilepattern(fromFile.getName()).call();
+					git.rm().setCached(true).addFilepattern(fromFile.getName()).call();
 					return null;
 				}, LockFailedException.class, "Retry removing from repo, because of lock failed exception");
 
 				if (this.openCommits.containsKey(from.getAuthor())) {
 					this.openCommits.get(from.getAuthor()).add(fromFile.getName());
 					this.openCommits.get(from.getAuthor()).add(toFile.getName());
+					cache.addCacheCommand(from.getAuthor(), new CacheCommand.MovePage(from, to));
 				}
 				else {
 					final CommitCommand commitCommand = git.commit()
@@ -818,6 +849,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 								from.getAuthor(),
 								to,
 								revCommit.getId().getName()));
+						cache.movePage(from, to, commitCommand.getMessage(), revCommit.getId());
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 
@@ -862,6 +894,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 								user,
 								this.openCommits.get(user),
 								revCommit.getId().getName()));
+						cache.executeCacheCommands(user, commitMsg, revCommit.getId());
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 
@@ -907,7 +940,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				// But we have to inform KnowWE also and Lucene
 				for (final String path : paths) {
 					// decide whether page or attachment
-					refreshCache(pm, unmangleName(path));
+					refreshCache(pm, unmangleName(path).replaceAll(FILE_EXT, ""));
 				}
 				retryGitOperation(() -> {
 					reset.call();
@@ -988,5 +1021,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	public String getFilesystemPath() {
 		return filesystemPath;
+	}
+
+	public GitVersionCache getCache() {
+		return cache;
 	}
 }
