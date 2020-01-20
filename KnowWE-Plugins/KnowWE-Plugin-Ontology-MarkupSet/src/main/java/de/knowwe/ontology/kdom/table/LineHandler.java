@@ -27,6 +27,7 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -58,7 +59,6 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 
 	@Override
 	public void compile(OntologyCompiler compiler, Section<TableLine> section) throws CompilerMessage {
-
 		if (TableUtils.isHeaderRow(section)) {
 			Messages.clearMessages(compiler, section, getClass());
 			return;
@@ -67,11 +67,27 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 		List<Statement> statements = new LinkedList<>();
 		Section<NodeProvider> subjectReference = findSubject(section);
+
+		Message typeAnnotationMissing = addStatements(compiler, section, core, statements, subjectReference);
+
+		core.addStatements(section, statements);
+
+		/*
+		Error message handling after committing statements
+		 */
+		if (typeAnnotationMissing != null) {
+			throw new CompilerMessage(typeAnnotationMissing);
+		}
+	}
+
+	@Nullable
+	public Message addStatements(OntologyCompiler compiler, Section<TableLine> section, Rdf2GoCore core, List<Statement> statements, Section<NodeProvider> subjectReference) {
 		if (subjectReference == null) {
 			// obviously no subject in this line, could be an empty table line
-			return;
+			return null;
 		}
-		@SuppressWarnings("unchecked")
+
+		//noinspection unchecked
 		Value subjectNode = subjectReference.get().getNode(subjectReference, compiler);
 		List<Section<OntologyTableCellEntry>> cells = Sections.successors(section, OntologyTableCellEntry.class);
 		Set<Value> predicates = new HashSet<>();
@@ -91,8 +107,8 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 									statementSection.get().getStatementsSafe(compiler, statementSection);
 							for (Statement statement : result.getStatements()) {
 								predicates.add(statement.getPredicate());
+								statements.add(statement);
 							}
-							compiler.getRdf2GoCore().addStatements(section, result.getStatements());
 							Messages.storeMessages(section, this.getClass(), result.getMessages());
 						}
 					}
@@ -114,9 +130,9 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 			if (!(predicate instanceof IRI)) continue;
 			if (!(subjectNode instanceof Resource)) continue;
 			if (predicates.contains(predicate)) continue;
-			$(annotation).successor(Object.class).map(o -> o.get().getNode(o, compiler)).forEach(o -> {
-				statements.add(core.createStatement((Resource) subjectNode, (IRI) predicate, o));
-			});
+			$(annotation).successor(Object.class)
+					.map(o -> o.get().getNode(o, compiler))
+					.forEach(o -> statements.add(core.createStatement((Resource) subjectNode, (IRI) predicate, o)));
 		}
 
 		/*
@@ -145,15 +161,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 				typeAnnotationMissing = Messages.error("If subject concepts should be defined as instance of the class given in the first column header, a type-relation has to be defined via the typeRelation-typeRelationAnnotationValue. Otherwise, leave the first cell header blank.");
 			}
 		}
-
-		core.addStatements(section, statements);
-
-		/*
-		Error message handling after committing statements
-		 */
-		if (typeAnnotationMissing != null) {
-			throw new CompilerMessage(typeAnnotationMissing);
-		}
+		return typeAnnotationMissing;
 	}
 
 	protected Section<NodeProvider> findSubject(Section<TableLine> section) {
