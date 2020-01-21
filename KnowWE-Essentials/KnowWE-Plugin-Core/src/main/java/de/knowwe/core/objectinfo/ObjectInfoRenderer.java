@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -68,6 +69,8 @@ import de.knowwe.kdom.search.SearchOption;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
 import de.knowwe.util.Icon;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author stefan
@@ -253,8 +256,9 @@ public class ObjectInfoRenderer implements Renderer {
 					RenderResult innerResult = new RenderResult(groupResult);
 					List<Section<?>> sectionOfArticle = articleEntry.getValue();
 					renderTermReferencesPreviewsAsync(sectionOfArticle, user, innerResult);
+					String subtitle = getSubtitleForSections(user, sectionOfArticle);
 					wrapInExtendPanel(articleEntry.getKey().getTitle(),
-							String.valueOf(sectionOfArticle.size()), innerResult, groupResult);
+							subtitle, innerResult, groupResult);
 				}
 			}
 			else {
@@ -269,6 +273,38 @@ public class ObjectInfoRenderer implements Renderer {
 					: "in '" + groupSections.get(0).getTitle() + "'";
 			wrapInExtendPanel(groupName, info, groupResult, result, cascadingWrapPanels);
 		}
+	}
+
+	/**
+	 * Gets the titles of the section and join them to one subtitle string
+	 *
+	 * @param user             the user context to get the language for
+	 * @param sectionOfArticle the sections of the article to get the titles
+	 * @return a subtitle for the sections of the article
+	 */
+	private static String getSubtitleForSections(UserContext user, List<Section<?>> sectionOfArticle) {
+		StringBuilder builder = new StringBuilder();
+
+		Locale locale = Locale.forLanguageTag(user.getLocale().getLanguage());
+		//noinspection unchecked
+		Set<String> titleSet = $(sectionOfArticle).ancestor(DefaultMarkupType.class)
+				.filter(s -> s.get() instanceof HasTitle)
+				.map(s -> ((HasTitle) s.get()).getInfoTitle(s, locale))
+				.filter(Objects::nonNull)
+				.collect(Collectors.toSet());
+
+		if (titleSet.isEmpty()) {
+			builder.append(sectionOfArticle.size());
+		}
+		else {
+			builder.append(Strings.pluralOf(sectionOfArticle.size(), "Reference"))
+					.append("; ");
+			String titleStrings = String.join(", ", titleSet);
+			builder.append(Strings.pluralOf(titleSet.size(), "Name", false))
+					.append(": ")
+					.append(Strings.ellipsis(titleStrings, 70));
+		}
+		return builder.toString();
 	}
 
 	private static void renderGroupOfSingleType(UserContext user, List<Section<?>> groupSections, RenderResult groupResult) {
@@ -651,6 +687,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 		/**
 		 * Method to return a section specified markup name if {@link Type#getName()} would return the same name.
+		 *
 		 * @param section the section to define a specified markup name for
 		 * @return the name for the markup
 		 */
@@ -690,5 +727,11 @@ public class ObjectInfoRenderer implements Renderer {
 		public int hashCode() {
 			return Objects.hash(name, type);
 		}
+	}
+
+	@FunctionalInterface
+	public interface HasTitle<T extends Type> {
+
+		String getInfoTitle(Section<T> section, Locale locale);
 	}
 }
