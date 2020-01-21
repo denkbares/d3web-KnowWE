@@ -177,8 +177,6 @@ KNOWWE.plugin.instantEdit = function () {
 			const reload = parameters["reload"];
 			const fn = parameters["callback"];
 
-			_EC.showAjaxLoader(id);
-
 			if (newWikiText == null) {
 				newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
 			}
