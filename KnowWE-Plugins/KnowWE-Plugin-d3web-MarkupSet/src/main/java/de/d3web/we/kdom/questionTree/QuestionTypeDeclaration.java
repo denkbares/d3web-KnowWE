@@ -1,7 +1,7 @@
 package de.d3web.we.kdom.questionTree;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
 import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.questionTree.QuestionLine.QuestionTypeChecker;
@@ -10,7 +10,6 @@ import de.d3web.we.object.QuestionDefinition;
 import de.d3web.we.object.QuestionDefinition.QuestionType;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
@@ -74,17 +73,17 @@ public class QuestionTypeDeclaration extends
 			"yn", "jn", "num", "date", "text", "info" };
 
 	public QuestionTypeDeclaration() {
-		SectionFinder typeFinder = new SectionFinder() {
+		SectionFinder typeFinder = (text, father, type) -> {
 
-			@Override
-			public List<SectionFinderResult> lookForSections(String text,
-					Section<?> father, Type type) {
-
-				return SectionFinderResult
-						.singleItemList(new SectionFinderResult(
-								Strings.indexOfUnquoted(text, "["),
-								Strings.indexOfUnquoted(text, "]") + 1));
+			int start = Strings.indexOfUnquoted(text, "[");
+			int end = Strings.indexOfUnquoted(text, "]");
+			if (start == -1 || end == -1) {
+				return Collections.emptyList();
 			}
+			return SectionFinderResult
+					.singleItemList(new SectionFinderResult(
+							start,
+							end + 1));
 		};
 		this.setSectionFinder(typeFinder);
 		this.setRenderer(StyleRenderer.OPERATOR);
