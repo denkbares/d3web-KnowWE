@@ -62,10 +62,10 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 			for (Identifier identifier : identifiers) {
 				if (identifiers.size() > 1) {
-					tools.add(getCompositeEditTool(SHOW_INFO + " (" + identifier.toExternalForm() + ")", identifier));
+					tools.add(getCompositeEditTool(section, CompositeEditToolProvider.SHOW_INFO + " (" + identifier.toExternalForm() + ")", identifier));
 				}
 				else {
-					tools.add(getCompositeEditTool(identifier));
+					tools.add(getCompositeEditTool(section, identifier));
 				}
 			}
 			return tools.toArray(new Tool[0]);
@@ -79,13 +79,13 @@ public class CompositeEditToolProvider implements ToolProvider {
 	}
 
 	@NotNull
-	protected Tool getCompositeEditTool(Identifier identifier) {
-		return getCompositeEditTool(SHOW_INFO, identifier);
+	protected Tool getCompositeEditTool(@NotNull Section<?> section, Identifier identifier) {
+		return getCompositeEditTool(section, CompositeEditToolProvider.SHOW_INFO, identifier);
 	}
 
 	@NotNull
-	protected Tool getCompositeEditTool(String text, Identifier identifier) {
-		return createCompositeEditTool(text, identifier);
+	protected Tool getCompositeEditTool(@NotNull Section<?> section, String text, Identifier identifier) {
+		return CompositeEditToolProvider.createCompositeEditTool(text, identifier);
 	}
 
 	@NotNull
@@ -94,7 +94,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 				Icon.INFO,
 				text,
 				"Shows information about this object",
-				createCompositeEditModeAction(identifier),
+				CompositeEditToolProvider.createCompositeEditModeAction(identifier),
 				Tool.CATEGORY_INFO);
 	}
 
