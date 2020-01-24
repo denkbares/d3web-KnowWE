@@ -37,11 +37,10 @@ public class DiaFluxObjectInfoPageToolProvider extends CompositeEditToolProvider
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		Section<FlowchartTermDef> termDef = Sections.successor(section, FlowchartTermDef.class);
 		if (termDef != null) {
-			return new Tool[] { getCompositeEditTool(termDef.get().getTermIdentifier(termDef)) };
+			return new Tool[] { getCompositeEditTool(section, termDef.get().getTermIdentifier(termDef)) };
 		}
 		else {
 			return new Tool[] {};
 		}
-
 	}
 }
