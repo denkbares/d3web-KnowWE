@@ -1225,11 +1225,19 @@ public class KnowWEUtils {
 	 * Commits an open file transaction
 	 * Also commits an ArticleManager transaction
 	 * Only works if GitVersioningFileProvider is active
+	 * Awaits termination of compile manager, although ArticleManager.commit() seems to do the same,
+	 * it seems to be necessary for some actions, to get a correct section, which was just changed, in a following transaction
 	 */
 	public static void commitPageTransaction(final UserContext context, final String commitMsg) {
 		Environment.getInstance().getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
 		final ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 		articleManager.commit();
+		try {
+			articleManager.getCompilerManager().awaitTermination();
+		}
+		catch (InterruptedException e) {
+			Log.severe("awaitTermination was interrupted", e);
+		}
 	}
 
 	/**
