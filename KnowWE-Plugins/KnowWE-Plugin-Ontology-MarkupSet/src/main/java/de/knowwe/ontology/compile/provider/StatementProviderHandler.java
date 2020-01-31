@@ -31,6 +31,7 @@ public class StatementProviderHandler<Z extends Type> extends OntologyHandler<Z>
 			return messages;
 		}
 
+		//noinspection rawtypes
 		for (Section<StatementProvider> statementSection : Sections.successors(section, StatementProvider.class)) {
 			//noinspection unchecked
 			StatementProviderResult result = statementSection.get().getStatementsSafe(compiler, statementSection);
