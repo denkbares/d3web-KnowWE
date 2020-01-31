@@ -213,7 +213,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		}
 		// While destroying, perhaps a complete compilation was requested by some of the scripts
 		if (completeCompilation && !firstCompilation) {
-			// Since we we later compile all sections in the compile step, we first have to destroy all of them.
+			// Since we later compile all sections in the compile step, we first have to destroy all of them.
 			// This is different from just removing and adding a new compiler to the CompilerManager without
 			// destroying in case of a full parse, because we still want to continue using the current compiler
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
