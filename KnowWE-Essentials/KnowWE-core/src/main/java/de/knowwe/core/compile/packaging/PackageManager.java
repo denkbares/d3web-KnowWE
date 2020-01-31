@@ -206,7 +206,7 @@ public class PackageManager {// implements EventListener {
 			}
 		}
 		//noinspection unchecked
-		return new ConcatenateCollection(sets.toArray(new Set[0]));
+		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
 
 	public boolean hasChanged(String... packageNames) {
@@ -233,7 +233,7 @@ public class PackageManager {// implements EventListener {
 			}
 		}
 		//noinspection unchecked
-		return new ConcatenateCollection(sets.toArray(new Set[0]));
+		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
 
 	/**
@@ -253,7 +253,7 @@ public class PackageManager {// implements EventListener {
 			}
 		}
 		//noinspection unchecked
-		return new ConcatenateCollection(sets.toArray(new Set[0]));
+		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
 
 	public void registerPackageCompileSection(Section<? extends PackageCompileType> section) {
