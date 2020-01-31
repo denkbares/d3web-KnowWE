@@ -112,6 +112,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 */
 	public void addSubtree(Section<?> section, Class<?>... scriptFilter) {
+		//noinspection DuplicatedCode
 		if (scriptManager.hasScriptsForSubtree(section.get())) {
 			if (typeFilter.length == 0 || Sections.canHaveSuccessor(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
