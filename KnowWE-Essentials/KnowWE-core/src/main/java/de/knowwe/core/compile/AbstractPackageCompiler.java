@@ -92,11 +92,24 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	@Override
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
 		String[] packagesToCompile = getCompiledPackages();
-		if (getPackageManager().hasChanged(packagesToCompile)) {
+		if (getPackageManager().hasChanged(packagesToCompile) && hasChangedForCompiler(packagesToCompile)) {
 			Stopwatch stopwatch = new Stopwatch();
 			compilePackages(packagesToCompile);
 			Log.info(this + " finished after " + stopwatch.getDisplay());
 		}
+	}
+
+	private boolean hasChangedForCompiler(String... packagesToCompile) {
+		final ScriptManager<AbstractPackageCompiler> scriptManager = CompilerManager.getScriptManager(this);
+		return hasKnowledgeForCompiler(getPackageManager().getRemovedSections(packagesToCompile), scriptManager)
+				|| hasKnowledgeForCompiler(getPackageManager().getAddedSections(packagesToCompile), scriptManager);
+	}
+
+	private boolean hasKnowledgeForCompiler(Collection<Section<?>> addedSections, ScriptManager<AbstractPackageCompiler> scriptManager) {
+		for (Section<?> section : addedSections) {
+			if (scriptManager.hasScriptsForSubtree(section.get())) return true;
+		}
+		return false;
 	}
 
 	public String[] getCompiledPackages() {
