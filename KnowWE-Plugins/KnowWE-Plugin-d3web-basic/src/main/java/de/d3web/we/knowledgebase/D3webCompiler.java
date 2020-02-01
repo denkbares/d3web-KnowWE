@@ -20,12 +20,14 @@ package de.d3web.we.knowledgebase;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.EventManager;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
@@ -62,6 +64,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private final boolean caseSensitive;
 	private D3webScriptCompiler compileScriptCompiler;
 	private D3webScriptCompiler destroyScriptCompiler;
+	private final boolean allowIncrementalCompilation = false;
 
 	public D3webCompiler(PackageManager packageManager,
 						 Section<? extends PackageCompileType> compileSection,
@@ -139,12 +142,11 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	 */
 	private boolean tryIncrementalCompilation(String[] packagesToCompile) {
 		if (knowledgeBase == null) return false; // first compilation, no need to do checking
+		if (!allowIncrementalCompilation) return false;
 
-		// cleanup
 		this.compileScriptCompiler = new D3webScriptCompiler(this);
 		this.destroyScriptCompiler = new D3webScriptCompiler(this);
 
-		// check removed sections first
 		Collection<Section<?>> removedSections = getPackageManager().getRemovedSections(packagesToCompile);
 		this.destroyScriptCompiler.addSections(removedSections);
 		if (!destroyScriptCompiler.isIncrementalCompilationPossible()) {
@@ -166,11 +168,17 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		return true;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void logAndCleanup() {
-		Log.info("The following script(s) prevented incremental compilation: " +
-				Stream.concat(compileScriptCompiler.getCompileScriptsNotSupportingIncrementalCompilation().stream(),
-						destroyScriptCompiler.getCompileScriptsNotSupportingIncrementalCompilation().stream())
-						.map(Class::getSimpleName).sorted().collect(Collectors.joining(", ")));
+		Set<Class<? extends CompileScript>> failedDestroyScripts = destroyScriptCompiler.getCompileScriptsNotSupportingIncrementalCompilation();
+		Set<Class<? extends CompileScript>> failedCompileScripts = compileScriptCompiler.getCompileScriptsNotSupportingIncrementalCompilation();
+		int failedScriptsCount = failedCompileScripts.size() + failedDestroyScripts.size();
+		if (failedScriptsCount > 0) {
+			Log.info("The following " + Strings.pluralOf(failedScriptsCount, "script")
+					+ " prevented incremental compilation: "
+					+ Stream.concat(failedCompileScripts.stream(), failedDestroyScripts.stream())
+					.map(Class::getSimpleName).sorted().collect(Collectors.joining(", ")));
+		}
 
 		this.compileScriptCompiler = null;
 		this.destroyScriptCompiler = null;
