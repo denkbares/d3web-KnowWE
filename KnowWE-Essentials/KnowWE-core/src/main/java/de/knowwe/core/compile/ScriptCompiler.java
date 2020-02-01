@@ -1,5 +1,6 @@
 package de.knowwe.core.compile;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -40,16 +41,22 @@ public class ScriptCompiler<C extends Compiler> {
 
 	private Priority currentPriority;
 	private Iterator<CompilePair> currentIterator = null;
+	@SuppressWarnings("rawtypes")
+	private final Set<Class<? extends CompileScript>> compileScriptsNotSupportingIncrementalCompilation = new HashSet<>();
 
-	@SuppressWarnings("unchecked")
 	public ScriptCompiler(C compiler, Class<?>... typeFilter) {
 		this.compiler = compiler;
+		//noinspection unchecked
 		this.scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
 		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
 			compileMap.put(p, new LinkedHashSet<>());
 		}
 		currentPriority = Priority.getRegisteredPriorities().first();
+	}
+
+	public C getCompiler() {
+		return compiler;
 	}
 
 	/**
@@ -66,8 +73,8 @@ public class ScriptCompiler<C extends Compiler> {
 	 * @created 27.07.2012
 	 */
 	public void addSection(Section<?> section, Class<?>... scriptFilter) {
-		Map<Priority, List<CompileScript<C, Type>>> scripts =
-				scriptManager.getScripts(Sections.cast(section, Type.class).get());
+		Section<Type> typeSection = Sections.cast(section, Type.class);
+		Map<Priority, List<CompileScript<C, Type>>> scripts = scriptManager.getScripts(section.get());
 		for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
 			Priority priority = entry.getKey();
 			LinkedHashSet<CompilePair> compileSet = compileMap.get(priority);
@@ -75,7 +82,10 @@ public class ScriptCompiler<C extends Compiler> {
 				if (scriptFilter.length > 0 && !ArrayUtils.contains(scriptFilter, script.getClass())) {
 					continue;
 				}
-				CompilePair pair = new CompilePair(Sections.cast(section, Type.class), script);
+				if (!isIncrementalCompilationPossible(typeSection, script)) {
+					this.compileScriptsNotSupportingIncrementalCompilation.add(script.getClass());
+				}
+				CompilePair pair = new CompilePair(typeSection, script);
 				// we only add pairs that are not already added before (e.g. during incremental compilation)
 				if (pairSet.add(pair)) {
 					compileSet.add(pair);
@@ -85,6 +95,19 @@ public class ScriptCompiler<C extends Compiler> {
 				}
 			}
 		}
+	}
+
+	public boolean isIncrementalCompilationPossible() {
+		return compileScriptsNotSupportingIncrementalCompilation.isEmpty();
+	}
+
+	protected <T extends Type> boolean isIncrementalCompilationPossible(Section<T> section, CompileScript<C, T> script) {
+		return script instanceof DestroyScript;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Set<Class<? extends CompileScript>> getCompileScriptsNotSupportingIncrementalCompilation() {
+		return Collections.unmodifiableSet(this.compileScriptsNotSupportingIncrementalCompilation);
 	}
 
 	/**
@@ -100,6 +123,7 @@ public class ScriptCompiler<C extends Compiler> {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 */
 	public void addSubtree(Section<?> section, Class<?>... scriptFilter) {
+		//noinspection DuplicatedCode
 		if (scriptManager.hasScriptsForSubtree(section.get())) {
 			if (typeFilter.length == 0 || Sections.canHaveSuccessor(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
@@ -150,7 +174,7 @@ public class ScriptCompiler<C extends Compiler> {
 			catch (CompilerMessage cm) {
 				Messages.storeMessages(compiler, section, script.getClass(), cm.getMessages());
 			}
-			catch (Exception e) {
+			catch (Throwable e) {
 				String msg = "Unexpected internal exception while compiling with script " + script + ": " + e;
 				Messages.storeMessage(compiler, section, script.getClass(), Messages.error(msg));
 				Log.severe(msg, e);
@@ -159,17 +183,17 @@ public class ScriptCompiler<C extends Compiler> {
 		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void destroy() {
 		while (hasNext()) {
 			CompilePair pair = next();
-			if (pair.getB() instanceof DestroyScript) {
+			CompileScript<C, Type> destroyScript = pair.getB();
+			if (destroyScript instanceof DestroyScript) {
 				try {
-					((DestroyScript<C, Type>) pair.getB()).destroy(compiler, pair.getA());
+					//noinspection unchecked
+					((DestroyScript<C, Type>) destroyScript).destroy(compiler, pair.getA());
 				}
-				catch (Exception e) {
-					String msg = "Unexpected internal exception while destroying with script "
-							+ pair.getB();
+				catch (Throwable e) {
+					String msg = "Unexpected internal exception while destroying with script " + destroyScript;
 					Log.severe(msg, e);
 				}
 			}

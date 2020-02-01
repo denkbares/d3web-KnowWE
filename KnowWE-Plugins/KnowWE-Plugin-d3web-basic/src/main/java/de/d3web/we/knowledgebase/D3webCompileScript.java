@@ -40,4 +40,8 @@ public interface D3webCompileScript<T extends Type> extends PackageCompileScript
 	default void destroy(D3webCompiler compiler, Section<T> section) {
 		// nothing to do for now...
 	}
+
+	default boolean isIncrementalCompilationSupported(Section<T> section) {
+		return false; // be default, we don't support incremental compilation
+	}
 }
