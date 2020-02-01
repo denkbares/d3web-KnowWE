@@ -180,6 +180,11 @@ public class XCLRelation extends AbstractType {
 				xclModel.removeRelation(rel);
 			}
 		}
+
+		@Override
+		public boolean isIncrementalCompilationSupported(Section<XCLRelation> section) {
+			return true;
+		}
 	}
 
 	/**

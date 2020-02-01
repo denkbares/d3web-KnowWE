@@ -20,7 +20,10 @@
 
 package de.d3web.we.kdom.xcl.list;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
@@ -88,5 +91,26 @@ public class XCLModelCreator implements D3webCompileScript<XCLSolutionDefinition
 			}
 		}
 		return Optional.empty();
+	}
+
+	@Override
+	public void destroy(D3webCompiler compiler, Section<XCLSolutionDefinition> section) {
+		Set<Section<?>> solutionDefinitions = new HashSet<>(compiler.getTerminologyManager()
+				.getTermDefiningSections(section.get().getTermIdentifier(compiler, section)));
+
+		solutionDefinitions.removeIf(s -> s == section || !(s.get() instanceof XCLSolutionDefinition));
+		if (!solutionDefinitions.isEmpty()) return; // there are other xcl, dont remove model just yet
+
+		Solution solution = section.get().getTermObject(compiler, section);
+		if (solution == null) return;
+
+		XCLModel model = solution.getKnowledgeStore().getKnowledge(XCLModel.KNOWLEDGE_KIND);
+		if (model == null) return;
+		solution.getKnowledgeStore().removeKnowledge(XCLModel.KNOWLEDGE_KIND, model);
+	}
+
+	@Override
+	public boolean isIncrementalCompilationSupported(Section<XCLSolutionDefinition> section) {
+		return true;
 	}
 }

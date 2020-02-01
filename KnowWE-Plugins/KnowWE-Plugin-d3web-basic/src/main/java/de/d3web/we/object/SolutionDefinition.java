@@ -29,6 +29,7 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -50,6 +51,11 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 
 	public SolutionDefinition() {
 		this(Priority.HIGHEST);
+	}
+
+	public SolutionDefinition(Priority p) {
+		this.setRenderer(StyleRenderer.SOLUTION, true);
+		this.addCompileScript(p, new CreateSolutionHandler());
 		this.addCompileScript(Priority.LOW, new TerminologyLoopDetectionHandler<Solution>());
 		this.addCompileScript(Priority.LOWER, new TerminologyLoopResolveHandler<Solution>());
 	}
@@ -57,11 +63,6 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 	@Override
 	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return Solution.class;
-	}
-
-	public SolutionDefinition(Priority p) {
-		this.setRenderer(StyleRenderer.SOLUTION, true);
-		this.addCompileScript(p, new CreateSolutionHandler());
 	}
 
 	public void setRenderer(Renderer renderer, boolean decorate) {
@@ -115,6 +116,21 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 			// if not available, create a new one and store it for later usage
 			section.get().storeTermObject(compiler, section, new Solution(kb, name));
 			return Messages.noMessage();
+		}
+
+		@Override
+		public void destroy(D3webCompiler compiler, Section<SolutionDefinition> section) {
+			Identifier identifier = section.get().getTermIdentifier(compiler, section);
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			terminologyManager.unregisterTermDefinition(compiler, section, section.get()
+					.getTermObjectClass(compiler, section), identifier);
+			if (!terminologyManager.isDefinedTerm(identifier)) {
+				String name = section.get().getTermName(section);
+				Solution solution = compiler.getKnowledgeBase().getManager().searchSolution(name);
+				if (solution == null) return;
+				solution.destroy();
+			}
+			Compilers.destroyAndRecompileRegistrations(compiler, identifier);
 		}
 	}
 }
