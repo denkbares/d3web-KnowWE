@@ -101,4 +101,9 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 		}
 		Compilers.destroyAndRecompileRegistrations(compiler, identifier);
 	}
+
+	@Override
+	public boolean isIncrementalCompilationSupported(Section<SectionType> section) {
+		return true;
+	}
 }
