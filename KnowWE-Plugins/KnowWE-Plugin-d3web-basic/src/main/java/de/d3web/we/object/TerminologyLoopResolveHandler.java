@@ -13,9 +13,9 @@ import de.knowwe.core.report.Messages;
 
 public class TerminologyLoopResolveHandler<TermObject extends TerminologyObject> implements D3webHandler<D3webTermDefinition<TermObject>> {
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<D3webTermDefinition<TermObject>> section) {
-
 		Object object = section.getObject(compiler,
 				TerminologyLoopDetectionHandler.LOOP_DETECTED);
 		if (TerminologyLoopDetectionHandler.REMOVE_PARENTS.equals(object)) {
@@ -36,4 +36,8 @@ public class TerminologyLoopResolveHandler<TermObject extends TerminologyObject>
 		return Messages.noMessage();
 	}
 
+	@Override
+	public boolean isIncrementalCompilationSupported(Section<D3webTermDefinition<TermObject>> section) {
+		return true; // links are cleared when actual object is removed
+	}
 }

@@ -27,4 +27,8 @@ public class TerminologyLoopDetectionHandler<TermObject extends TerminologyObjec
 		return Messages.noMessage();
 	}
 
+	@Override
+	public boolean isIncrementalCompilationSupported(Section<D3webTermDefinition<TermObject>> section) {
+		return true; // just a check, messages are handled automatically
+	}
 }
