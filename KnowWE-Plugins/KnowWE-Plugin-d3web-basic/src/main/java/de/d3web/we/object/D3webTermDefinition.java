@@ -36,7 +36,6 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermDefinition;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
@@ -60,24 +59,24 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 	 * needed) else
 	 * @created 12.02.2012
 	 */
-	public AbortCheck canAbortTermObjectCreation(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
+	public AbortCheck<TermObject> canAbortTermObjectCreation(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section) {
 		Collection<Message> msgs = new ArrayList<>(1);
 		if (section.hasErrorInSubtree(compiler)) {
 			// obviously there are already errors present, simply abort
-			AbortCheck check = new AbortCheck();
+			AbortCheck<TermObject> check = new AbortCheck<>();
 			check.setMessages(msgs);
 			check.setHasErrors(true);
 			return check;
 		}
-		AbortCheck check = new AbortCheck();
-		Collection<NamedObject> termObjectsIgnoreTermObjectClass = getAllTermObjects(compiler, section);
+		AbortCheck<TermObject> check = new AbortCheck<>();
+		Collection<TermObject> termObjectsIgnoreTermObjectClass = getAllTermObjects(compiler, section);
 		if (termObjectsIgnoreTermObjectClass.isEmpty()) {
 			// object does not yet exist, so just return null to continue
 			// creating the terminology object
 			return check;
 		}
 		else {
-			for (NamedObject termObject : termObjectsIgnoreTermObjectClass) {
+			for (TermObject termObject : termObjectsIgnoreTermObjectClass) {
 				if (section.get().getTermObjectClass(compiler, section).isAssignableFrom(
 						termObject.getClass())) {
 					// other object already exist, we return it in the check
@@ -97,16 +96,16 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		return check;
 	}
 
-	private <T extends NamedObject> Collection<NamedObject> getAllTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<T>> section) {
-		Set<NamedObject> foundTermObjects = new HashSet<>();
+	private Collection<TermObject> getAllTermObjects(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section) {
+		Set<TermObject> foundTermObjects = new HashSet<>();
 		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		Collection<Section<?>> termDefiningSections = terminologyHandler.getTermDefiningSections(termIdentifier);
 		for (Section<?> potentialDefSection : termDefiningSections) {
 			if (!(section.get() instanceof D3webTermDefinition)) continue;
-			Section<D3webTermDefinition> termDefiningSection = Sections.cast(potentialDefSection, D3webTermDefinition.class);
 			//noinspection unchecked
-			NamedObject namedObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
+			Section<D3webTermDefinition<TermObject>> termDefiningSection = (Section<D3webTermDefinition<TermObject>>) potentialDefSection;
+			TermObject namedObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
 			if (namedObject instanceof TerminologyObject) {
 				if (((TerminologyObject) namedObject).getKnowledgeBase() != compiler.getKnowledgeBase()) continue;
 			}

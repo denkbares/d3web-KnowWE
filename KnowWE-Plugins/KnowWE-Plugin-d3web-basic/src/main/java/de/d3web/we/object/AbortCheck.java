@@ -6,13 +6,13 @@ import java.util.Collections;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.knowwe.core.report.Message;
 
-public class AbortCheck {
+public class AbortCheck<TermObject extends NamedObject> {
 
 	private Collection<Message> msgs = Collections.emptyList();
 
 	private boolean hasErrors = false;
 	private boolean termExists = false;
-	private NamedObject namedObject = null;
+	private TermObject namedObject = null;
 
 	public void setHasErrors(boolean hasErrors) {
 		this.hasErrors = hasErrors;
@@ -26,7 +26,7 @@ public class AbortCheck {
 		this.msgs = messages;
 	}
 
-	public void setNamedObject(NamedObject namedObject) {
+	public void setNamedObject(TermObject namedObject) {
 		this.namedObject = namedObject;
 	}
 
@@ -38,7 +38,7 @@ public class AbortCheck {
 		return this.hasErrors || !this.msgs.isEmpty();
 	}
 
-	public NamedObject getNamedObject() {
+	public TermObject getNamedObject() {
 		return this.namedObject;
 	}
 
