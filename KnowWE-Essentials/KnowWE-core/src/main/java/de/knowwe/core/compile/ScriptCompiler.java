@@ -1,9 +1,11 @@
 package de.knowwe.core.compile;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,27 +34,39 @@ import de.knowwe.core.report.Messages;
  */
 public class ScriptCompiler<C extends Compiler> {
 
-	private final TreeMap<Priority, LinkedHashSet<CompilePair>> compileMap = new TreeMap<>();
+	private final TreeMap<Priority, List<CompilePair>> compileSetMap;
 	private final Set<CompilePair> pairSet = new HashSet<>();
 
 	private final C compiler;
 	private final ScriptManager<C> scriptManager;
 	private final Class<?>[] typeFilter;
+	private final boolean reverseOrder;
+	private final Comparator<Priority> comparator;
+	private Iterator<Priority> priorityIterator;
 
 	private Priority currentPriority;
-	private Iterator<CompilePair> currentIterator = null;
+	private Iterator<CompilePair> currentCompileSetIterator = null;
 	@SuppressWarnings("rawtypes")
 	private final Set<Class<? extends CompileScript>> compileScriptsNotSupportingIncrementalCompilation = new HashSet<>();
 
 	public ScriptCompiler(C compiler, Class<?>... typeFilter) {
+		this(compiler, false, typeFilter);
+	}
+
+	public ScriptCompiler(C compiler, boolean reverseOrder, Class<?>... typeFilter) {
 		this.compiler = compiler;
 		//noinspection unchecked
 		this.scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
+		this.reverseOrder = reverseOrder;
 		this.typeFilter = typeFilter;
+		// the natural order for priority is from high priority to low priority, which in numbers is from low to high numbers
+		this.comparator = reverseOrder ? Comparator.naturalOrder() : Comparator.<Priority>naturalOrder().reversed();
+		this.compileSetMap = new TreeMap<>(comparator);
 		for (Priority p : Priority.getRegisteredPriorities()) {
-			compileMap.put(p, new LinkedHashSet<>());
+			compileSetMap.put(p, reverseOrder ? new LinkedList<>() : new ArrayList<>(100));
 		}
-		currentPriority = Priority.getRegisteredPriorities().first();
+		this.priorityIterator = compileSetMap.keySet().iterator();
+		this.currentPriority = priorityIterator.next();
 	}
 
 	public C getCompiler() {
@@ -77,7 +91,7 @@ public class ScriptCompiler<C extends Compiler> {
 		Map<Priority, List<CompileScript<C, Type>>> scripts = scriptManager.getScripts(section.get());
 		for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
 			Priority priority = entry.getKey();
-			LinkedHashSet<CompilePair> compileSet = compileMap.get(priority);
+			List<CompilePair> compileSet = compileSetMap.get(priority);
 			for (CompileScript<C, Type> script : entry.getValue()) {
 				if (scriptFilter.length > 0 && !ArrayUtils.contains(scriptFilter, script.getClass())) {
 					continue;
@@ -88,13 +102,30 @@ public class ScriptCompiler<C extends Compiler> {
 				CompilePair pair = new CompilePair(typeSection, script);
 				// we only add pairs that are not already added before (e.g. during incremental compilation)
 				if (pairSet.add(pair)) {
-					compileSet.add(pair);
-					// we reset the iterator and priority in case we added
-					currentIterator = null;
-					if (priority.compareTo(currentPriority) > 0) currentPriority = priority;
+					if (reverseOrder) {
+						((LinkedList<CompilePair>) compileSet).addFirst(pair);
+					}
+					else {
+						compileSet.add(pair);
+					}
+					// we reset the iterator and priority in case we added during compilation
+					currentCompileSetIterator = null;
+					if (comparator.compare(priority, currentPriority) < 0) {
+						priorityIterator = resetPriorityIteratorTo(priority);
+						currentPriority = priority;
+					}
 				}
 			}
 		}
+	}
+
+	private Iterator<Priority> resetPriorityIteratorTo(Priority priority) {
+		Iterator<Priority> iterator = compileSetMap.keySet().iterator();
+		Priority currentPriority = iterator.next();
+		while (iterator.hasNext() && currentPriority != priority) {
+			currentPriority = iterator.next();
+		}
+		return iterator;
 	}
 
 	public boolean isIncrementalCompilationPossible() {
@@ -135,25 +166,25 @@ public class ScriptCompiler<C extends Compiler> {
 	}
 
 	private boolean hasNext() {
-		if (compileMap.isEmpty()) return false;
-		if (!compileMap.get(currentPriority).isEmpty()) return true;
+		if (compileSetMap.isEmpty()) return false;
+		if (!compileSetMap.get(currentPriority).isEmpty()) return true;
 
 		// switch to lower priority if possible
-		while (Priority.decrement(currentPriority) != null) {
-			currentPriority = Priority.decrement(currentPriority);
-			currentIterator = null;
-			if (!compileMap.get(currentPriority).isEmpty()) return true;
+		while (priorityIterator.hasNext()) {
+			currentPriority = priorityIterator.next();
+			currentCompileSetIterator = null;
+			if (!compileSetMap.get(currentPriority).isEmpty()) return true;
 		}
 
 		return false;
 	}
 
 	private CompilePair next() {
-		if (currentIterator == null) {
-			currentIterator = compileMap.get(currentPriority).iterator();
+		if (currentCompileSetIterator == null) {
+			currentCompileSetIterator = compileSetMap.get(currentPriority).iterator();
 		}
-		CompilePair next = currentIterator.next();
-		currentIterator.remove();
+		CompilePair next = currentCompileSetIterator.next();
+		currentCompileSetIterator.remove();
 		return next;
 	}
 
