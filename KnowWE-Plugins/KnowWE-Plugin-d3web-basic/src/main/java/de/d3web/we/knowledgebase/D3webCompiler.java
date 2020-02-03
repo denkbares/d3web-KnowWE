@@ -64,7 +64,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private final boolean caseSensitive;
 	private D3webScriptCompiler compileScriptCompiler;
 	private D3webScriptCompiler destroyScriptCompiler;
-	private final boolean allowIncrementalCompilation = false;
+	private final boolean allowIncrementalCompilation = true;
 	private boolean isIncrementalBuild = false;
 
 	public D3webCompiler(PackageManager packageManager,
@@ -153,7 +153,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		if (!allowIncrementalCompilation) return false;
 
 		this.compileScriptCompiler = new D3webScriptCompiler(this);
-		this.destroyScriptCompiler = new D3webScriptCompiler(this);
+		this.destroyScriptCompiler = new D3webScriptCompiler(this, true);
 
 		Collection<Section<?>> removedSections = getPackageManager().getRemovedSections(packagesToCompile);
 		this.destroyScriptCompiler.addSections(removedSections);
@@ -273,7 +273,11 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private static class D3webScriptCompiler extends ScriptCompiler<D3webCompiler> {
 
 		public D3webScriptCompiler(D3webCompiler compiler) {
-			super(compiler);
+			this(compiler, false);
+		}
+
+		public D3webScriptCompiler(D3webCompiler compiler, boolean reverseOrder) {
+			super(compiler, reverseOrder);
 		}
 
 		public void addSections(Collection<Section<?>> sectionsOfPackage) {
