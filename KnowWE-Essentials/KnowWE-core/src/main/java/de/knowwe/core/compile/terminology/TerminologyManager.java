@@ -35,6 +35,7 @@ import com.denkbares.events.EventManager;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.strings.Identifier;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Type;
@@ -265,7 +266,10 @@ public class TerminologyManager {
 
 		synchronized (this) {
 			TermLog termRefLog = termLogManager.getLog(termIdentifier);
-			if (termRefLog != null) {
+			if (termRefLog == null) {
+				Log.warning("Trying to unregister unknown term: " + termIdentifier);
+			}
+			else {
 				termRefLog.removeTermDefinition(compiler, termDefinition,
 						termClass, termIdentifier);
 			}
@@ -366,5 +370,4 @@ public class TerminologyManager {
 			return Collections.unmodifiableCollection(refLog.getTermClasses());
 		}
 	}
-
 }

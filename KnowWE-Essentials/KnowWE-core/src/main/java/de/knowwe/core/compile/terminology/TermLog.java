@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.kdom.Type;
@@ -150,7 +151,9 @@ class TermLog {
 							  Class<?> termClass,
 							  Identifier termIdentifier) {
 
-		termDefinitions.remove(new TermLogEntry(termDefinition, termClass, termIdentifier));
+		if (!termDefinitions.remove(new TermLogEntry(termDefinition, termClass, termIdentifier))) {
+			Log.warning("Trying to unregister unknown section from term log: " + termIdentifier);
+		}
 		Messages.clearMessages(compiler, termDefinition, this.getClass());
 		handleMessagesForDefinition(compiler);
 	}
