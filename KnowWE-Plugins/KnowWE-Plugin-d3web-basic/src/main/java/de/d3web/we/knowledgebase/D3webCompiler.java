@@ -65,6 +65,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private D3webScriptCompiler compileScriptCompiler;
 	private D3webScriptCompiler destroyScriptCompiler;
 	private final boolean allowIncrementalCompilation = false;
+	private boolean isIncrementalBuild = false;
 
 	public D3webCompiler(PackageManager packageManager,
 						 Section<? extends PackageCompileType> compileSection,
