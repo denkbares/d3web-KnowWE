@@ -96,6 +96,13 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		return knowledgeBase;
 	}
 
+	/**
+	 * Returns true, if the last compilation of the compiler was done incrementally, false otherwise
+	 */
+	public boolean isIncrementalBuild() {
+		return isIncrementalBuild;
+	}
+
 	@NotNull
 	@Override
 	public Section<KnowledgeBaseType> getCompileSection() {
@@ -164,6 +171,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		destroyScriptCompiler.destroy();
 		compileScriptCompiler.compile();
 
+		isIncrementalBuild = true;
+
 		logAndCleanup();
 		return true;
 	}
@@ -200,6 +209,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		D3webScriptCompiler scriptCompiler = new D3webScriptCompiler(this);
 		scriptCompiler.addSections(getPackageManager().getSectionsOfPackage(packagesToCompile));
 		scriptCompiler.compile();
+
+		isIncrementalBuild = false;
 
 		knowledgeBase.initPluggedPSMethods();
 	}
