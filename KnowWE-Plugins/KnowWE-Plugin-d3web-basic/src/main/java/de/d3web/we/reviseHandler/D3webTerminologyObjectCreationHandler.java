@@ -81,6 +81,7 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 
 		// if not available, create a new one and store it for later usage
 		section.get().storeTermObject(compiler, section, createTermObject(name, kb));
+		Compilers.recompileRegistrations(compiler, termIdentifier);
 		return Messages.noMessage();
 	}
 
