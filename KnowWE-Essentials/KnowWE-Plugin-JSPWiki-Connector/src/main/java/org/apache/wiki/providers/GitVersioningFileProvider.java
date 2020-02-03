@@ -310,7 +310,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			}
 			catch (JGitInternalException e) {
 				internalException = e;
-				if (t.isAssignableFrom(e.getCause().getClass())) {
+				if (t.isAssignableFrom(e.getClass()) ||
+						(e.getCause() != null && t.isAssignableFrom(e.getCause().getClass()))) {
 					counter++;
 					log.warn(String.format("retry %s/%s, %s", counter, RETRY, message));
 
