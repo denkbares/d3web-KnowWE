@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -123,7 +123,7 @@ public class KnowWEUtils {
 	 * used to gracefully handle rendering of copy&pasted texts containing [ and ].
 	 */
 	public static String maskInvalidJSPWikiLinks(final ArticleManager articleManager, final String text) {
-		final Pattern linkFinder = Pattern.compile("\\[(?:[^\\]\\|]+\\|)?([^\\]]+)\\]");
+		final Pattern linkFinder = Pattern.compile("\\[(?:[^]|]+\\|)?([^]]+)]");
 		final Matcher matcher = linkFinder.matcher(text);
 		final List<Pair<Integer, Integer>> escapeIndices = new ArrayList<>();
 		while (matcher.find()) {
@@ -212,7 +212,7 @@ public class KnowWEUtils {
 		try {
 			final OutputStreamWriter writer = new OutputStreamWriter(
 					new FileOutputStream(path, true),
-					Charset.forName("UTF-8").newEncoder()
+					StandardCharsets.UTF_8.newEncoder()
 			);
 			final BufferedWriter out = new BufferedWriter(writer);
 			out.write(entry);
@@ -888,7 +888,7 @@ public class KnowWEUtils {
 		return attachmentVersionInfoAtDate == null ? -1 : attachmentVersionInfoAtDate.getVersion();
 	}
 
-	private static <T extends WikiObjectInfo> T getObjectInfoAtDate(final List<T> objectHistory, final Date date) throws IOException {
+	private static <T extends WikiObjectInfo> T getObjectInfoAtDate(final List<T> objectHistory, final Date date) {
 		return objectHistory.stream()
 				// get the first that was saved before or equal to the given date
 				.filter(pageInfo -> pageInfo.getSaveDate().before(date) || pageInfo.getSaveDate().equals(date))
@@ -1082,22 +1082,22 @@ public class KnowWEUtils {
 		s.storeObject(compiler, key, o);
 	}
 
-	public static Object getStoredObject(final Section<?> s, final String key) {
-		return KnowWEUtils.getStoredObject(null, s, key);
+	public static Object getStoredObject(final Section<?> section, final String key) {
+		return KnowWEUtils.getStoredObject(null, section, key);
 	}
 
-	public static Object getStoredObject(final Compiler compiler, final Section<?> s, final String key) {
-		return s.getObject(compiler, key);
+	public static Object getStoredObject(final Compiler compiler, final Section<?> section, final String key) {
+		return section.getObject(compiler, key);
 	}
 
 	/**
 	 * Returns an object of the given class from section store using the fully qualified class name as key
 	 *
-	 * @param clazz
-	 * @param <T>
-	 * @return
+	 * @param clazz the class of the returned object
+	 * @return the object stored for the given clazz in the given section
 	 */
 	public static <T> T getStoredObject(final Section<?> section, final Class<T> clazz) {
+		//noinspection unchecked
 		return (T) getStoredObject(section, clazz.getName());
 	}
 
@@ -1129,7 +1129,7 @@ public class KnowWEUtils {
 
 		try {
 			final List<WikiPageInfo> articleHistory = connector.getArticleHistory(title);
-			return (articleHistory != null && articleHistory.size() > 0) ? articleHistory.get(0) : null;
+			return (articleHistory != null && !articleHistory.isEmpty()) ? articleHistory.get(0) : null;
 		}
 		catch (final IOException e) {
 			Log.warning("Error fetching article history for " + article, e);
@@ -1199,15 +1199,15 @@ public class KnowWEUtils {
 	 */
 	@NotNull
 	public static Locale[] getBrowserLocales(final HttpServletRequest request) {
-		final Enumeration localesEnum = request.getLocales();
+		final Enumeration<Locale> localesEnum = request.getLocales();
 		if (localesEnum == null) {
 			return new Locale[] { Locale.ROOT }; // can be null in test environment
 		}
-		@SuppressWarnings("unchecked") final ArrayList<Locale> localList = Collections.list(localesEnum);
+		final ArrayList<Locale> localList = Collections.list(localesEnum);
 		if (localList.isEmpty()) {
 			return new Locale[] { Locale.ROOT };
 		}
-		return localList.toArray(new Locale[localList.size()]);
+		return localList.toArray(new Locale[0]);
 	}
 
 	/**
@@ -1226,7 +1226,8 @@ public class KnowWEUtils {
 	 * Also commits an ArticleManager transaction
 	 * Only works if GitVersioningFileProvider is active
 	 * Awaits termination of compile manager, although ArticleManager.commit() seems to do the same,
-	 * it seems to be necessary for some actions, to get a correct section, which was just changed, in a following transaction
+	 * it seems to be necessary for some actions, to get a correct section, which was just changed, in a following
+	 * transaction
 	 */
 	public static void commitPageTransaction(final UserContext context, final String commitMsg) {
 		Environment.getInstance().getWikiConnector().commitPageTransaction(context.getUserName(), commitMsg);
@@ -1251,5 +1252,19 @@ public class KnowWEUtils {
 			articleManager.rollback();
 		}
 		Environment.getInstance().getWikiConnector().rollbackPageTransaction(context.getUserName());
+	}
+
+	/**
+	 * Re-compiles the given article without changing it. The articles is parsed and compiled again. The method waits
+	 * until the compilation is completed.
+	 *
+	 * @param article the article to recompile
+	 */
+	public static void reCompileArticle(Article article) throws InterruptedException {
+		ArticleManager articleManager = article.getArticleManager();
+		if (articleManager == null) return;
+		Article newKbArticle = Article.createArticle(article.getText(), article.getTitle(), article.getWeb());
+		articleManager.registerArticle(newKbArticle);
+		articleManager.getCompilerManager().awaitTermination();
 	}
 }
