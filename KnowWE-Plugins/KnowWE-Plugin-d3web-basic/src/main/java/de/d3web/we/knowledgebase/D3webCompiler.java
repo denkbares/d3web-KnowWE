@@ -178,8 +178,15 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		return true;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void logAndCleanup() {
+		logFailingIncrementalCompilationScripts();
+
+		this.compileScriptCompiler = null;
+		this.destroyScriptCompiler = null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private void logFailingIncrementalCompilationScripts() {
 		Set<Class<? extends CompileScript>> failedDestroyScripts = destroyScriptCompiler.getCompileScriptsNotSupportingIncrementalCompilation();
 		Set<Class<? extends CompileScript>> failedCompileScripts = compileScriptCompiler.getCompileScriptsNotSupportingIncrementalCompilation();
 		int failedScriptsCount = failedCompileScripts.size() + failedDestroyScripts.size();
@@ -189,9 +196,6 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 					+ Stream.concat(failedCompileScripts.stream(), failedDestroyScripts.stream())
 					.map(Class::getSimpleName).sorted().collect(Collectors.joining(", ")));
 		}
-
-		this.compileScriptCompiler = null;
-		this.destroyScriptCompiler = null;
 	}
 
 	private void fullCompilation(String[] packagesToCompile) {
@@ -265,6 +269,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	private void assertIncrementalCompilationStillPossible(D3webScriptCompiler scriptCompiler) {
 		if (!scriptCompiler.isIncrementalCompilationPossible()) {
+			logFailingIncrementalCompilationScripts();
 			throw new IllegalStateException("Non-incremental script was added during incremental compilation. " +
 					"Please inform your administrator and try refresh of the knowledge base to recover.");
 		}
