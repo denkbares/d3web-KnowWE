@@ -48,7 +48,7 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 	public Collection<Message> create(D3webCompiler compiler, Section<SectionType> section) {
 
 		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
-		String name = section.get().getTermName(section);
+		String name = getTermName(compiler, section);
 		Class<?> termObjectClass = section.get().getTermObjectClass(compiler, section);
 		TerminologyManager terminologyHandler = compiler.getTerminologyManager();
 		terminologyHandler.registerTermDefinition(compiler, section, termObjectClass, termIdentifier);
@@ -85,6 +85,10 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 		return Messages.noMessage();
 	}
 
+	protected String getTermName(D3webCompiler compiler, Section<SectionType> section) {
+		return section.get().getTermName(section);
+	}
+
 	@NotNull
 	protected abstract TermType createTermObject(String name, KnowledgeBase kb);
 
@@ -95,7 +99,7 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 		Class<?> termObjectClass = section.get().getTermObjectClass(compiler, section);
 		terminologyManager.unregisterTermDefinition(compiler, section, termObjectClass, identifier);
 		if (!terminologyManager.isDefinedTerm(identifier)) {
-			String name = section.get().getTermName(section);
+			String name = getTermName(compiler, section);
 			TerminologyObject terminologyObject = compiler.getKnowledgeBase().getManager().search(name);
 			if (!termObjectClass.isInstance(terminologyObject)) return;
 			terminologyObject.destroy();
