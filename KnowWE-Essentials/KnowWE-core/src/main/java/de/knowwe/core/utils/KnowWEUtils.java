@@ -415,7 +415,7 @@ public class KnowWEUtils {
 	 * @created 29.11.2013
 	 */
 	public static boolean canView(final Section<?> section, final UserContext context) {
-		return canView(section.getArticle(), context);
+		return section != null && canView(section.getArticle(), context);
 	}
 
 	/**
