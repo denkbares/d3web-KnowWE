@@ -13,6 +13,7 @@ public class AbortCheck<TermObject extends NamedObject> {
 	private boolean hasErrors = false;
 	private boolean termExists = false;
 	private TermObject namedObject = null;
+	private boolean skipCreation = false;
 
 	public void setHasErrors(boolean hasErrors) {
 		this.hasErrors = hasErrors;
@@ -46,4 +47,11 @@ public class AbortCheck<TermObject extends NamedObject> {
 		return this.msgs;
 	}
 
+	public void setSkipCreation(boolean skipCreation) {
+		this.skipCreation = skipCreation;
+	}
+
+	public boolean skipCreation() {
+		return skipCreation;
+	}
 }

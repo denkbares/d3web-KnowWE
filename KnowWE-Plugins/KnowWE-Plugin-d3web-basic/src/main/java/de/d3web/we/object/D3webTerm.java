@@ -18,18 +18,22 @@
  */
 package de.d3web.we.object;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * 
+ * Common section type for d3web terms
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 06.02.2012
  */
 public interface D3webTerm<TermObject extends NamedObject> extends Term {
 
+	@Nullable
 	TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section);
 
 }

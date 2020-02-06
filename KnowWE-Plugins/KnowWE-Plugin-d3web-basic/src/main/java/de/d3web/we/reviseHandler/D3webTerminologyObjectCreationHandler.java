@@ -20,6 +20,7 @@
 package de.d3web.we.reviseHandler;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -54,6 +55,9 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 		terminologyHandler.registerTermDefinition(compiler, section, termObjectClass, termIdentifier);
 
 		AbortCheck<TermType> abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
+		if (abortCheck.skipCreation()) {
+			return Collections.emptySet();
+		}
 		if (abortCheck.hasErrors()) {
 			// we clear term objects from previous compilations that didn't have errors
 			section.get().storeTermObject(compiler, section, null);
