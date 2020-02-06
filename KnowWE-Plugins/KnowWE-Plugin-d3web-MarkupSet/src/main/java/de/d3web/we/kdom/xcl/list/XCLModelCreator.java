@@ -20,7 +20,6 @@
 
 package de.d3web.we.kdom.xcl.list;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -44,14 +43,14 @@ public class XCLModelCreator implements D3webCompileScript<XCLSolutionDefinition
 	@Override
 	public void compile(D3webCompiler compiler, Section<XCLSolutionDefinition> definition) throws CompilerMessage {
 
+		if (isRestrictedSolution(compiler, definition)) return;
+
 		// prepare sections and solution
 		Section<DefaultMarkupType> markup = Sections.ancestor(definition, DefaultMarkupType.class);
 		Solution solution = definition.get().getTermObject(compiler, definition);
 		if (solution == null) {
 			throw CompilerMessage.warning("Cannot create XCL model, solution is not available.");
 		}
-
-		if (isRestrictedSolution(compiler, definition)) return;
 
 		// create it lazy if not already exists
 		XCLModel xclModel = solution.getKnowledgeStore()
