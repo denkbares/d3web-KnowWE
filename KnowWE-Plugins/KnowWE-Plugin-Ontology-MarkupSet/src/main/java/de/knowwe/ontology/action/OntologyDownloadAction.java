@@ -4,8 +4,6 @@
 package de.knowwe.ontology.action;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,12 +65,6 @@ public class OntologyDownloadAction extends AbstractAction {
 		context.setContentType(mimeType);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-		StringWriter writer = new StringWriter();
-		rdf2GoCore.writeModel(writer, syntax);
-		String content = writer.toString();
-		byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-		context.setContentLength(contentBytes.length);
-
-		context.getWriter().write(new String(contentBytes, StandardCharsets.UTF_8));
+		rdf2GoCore.writeModel(context.getWriter(), syntax);
 	}
 }
