@@ -58,7 +58,7 @@
 			<cutdirsmapper dirs="5" />
 		</copy>
 		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
-			<fileset dir="${basedir}/../../SemanticServicePlatform/">
+			<fileset dir="${basedir}/../../KnowWE-SSP/">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-ILME/src/main/resources/webapp/" />
