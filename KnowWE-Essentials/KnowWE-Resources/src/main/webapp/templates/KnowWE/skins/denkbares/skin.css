@@ -107,6 +107,24 @@
 	tab-size: 4;
 }
 
+.KDDOMError {
+	color: red !important;
+	text-decoration-color: red !important;
+	text-decoration: underline !important;
+}
+
+.KDDOMWarning {
+	color: #CFCF00 !important;
+	text-decoration-color: #CFCF00 !important;
+	text-decoration: underline !important;
+}
+
+.KDDOMNotice {
+	color: #40a3cf !important;
+	text-decoration-color: #40a3cf !important;
+	text-decoration: underline !important;
+}
+
 /*#wikibody.fav-left*/
 #page, #wikibody.fav-right #favorites {
 	float: right;

@@ -35,13 +35,13 @@ import de.knowwe.core.user.UserContext;
 public class DefaultMessageRenderer implements MessageRenderer {
 
 	public static final DefaultMessageRenderer ERROR_RENDERER = new DefaultMessageRenderer(
-			"KDDOMError", "color:red;text-decoration:underline;");
+			"KDDOMError", null);
 
 	public static final DefaultMessageRenderer WARNING_RENDERER = new DefaultMessageRenderer(
-			"KDDOMWarning", "color:#CFCF00;text-decoration:underline;");
+			"KDDOMWarning", null);
 
 	public static final DefaultMessageRenderer NOTE_RENDERER = new DefaultMessageRenderer(
-			"KDDOMNotice", "color:#CFCF00;text-decoration:underline;");
+			"KDDOMNotice", null);
 
 	private final String cssClass;
 	private final String cssStyle;
