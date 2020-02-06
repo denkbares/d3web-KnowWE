@@ -1332,6 +1332,25 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			return sendErrorMessages(context, missingSectionIDs, forbiddenArticles);
 		}
 
+		/**
+		 * When replacing was not successful it returns all missing section IDs Can be used, if you don't want to send
+		 * errors directly to response stream
+		 *
+		 * @return all missing section IDs, unmodifiable
+		 */
+		public Collection<String> getMissingSectionIDs() {
+			return Collections.unmodifiableCollection(missingSectionIDs);
+		}
+
+		/**
+		 * When replacing was not successful caused by missing user rights, it returns all article titles which hadn't
+		 * edit rights for the user Can be used, if you don't want to send errors directly to response stream
+		 *
+		 * @return all forbidden article titles, unmodifiable
+		 */
+		public Collection<String> getForbiddenArticles() {
+			return Collections.unmodifiableCollection(forbiddenArticles);
+		}
 	}
 
 	/**
