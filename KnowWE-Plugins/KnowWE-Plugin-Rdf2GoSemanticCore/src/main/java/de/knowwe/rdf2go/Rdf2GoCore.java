@@ -1507,6 +1507,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					logSlowEvaluation(stopwatch);
 					result = queryResult.cachedAndClosed();
 				}
+				catch (Throwable e) {
+					throw new RuntimeException(e);
+				}
 			}
 			else {
 				try (RepositoryConnection connection = Rdf2GoCore.this.semanticCore.getConnection()) {
@@ -1515,7 +1518,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					logSlowEvaluation(stopwatch);
 					result = booleanQuery.evaluate();
 				}
-				catch (RepositoryException | MalformedQueryException | QueryEvaluationException e) {
+				catch (Throwable e) {
 					throw new RuntimeException(e);
 				}
 			}
