@@ -1,5 +1,7 @@
 package de.knowwe.ontology.sparql;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,7 +43,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 		// check for exact URI matches
 		String lns = core.getLocalNamespace();
 		if (text.startsWith(lns)) {
-			String title = Strings.decodeURL(text.substring(lns.length()));
+			String title = decodeSilent(text.substring(lns.length()));
 			if (user.getArticleManager().getArticle(title) != null) {
 				if (mode == RenderMode.HTML) {
 					return KnowWEUtils.getLinkHTMLToArticle(title);
@@ -69,7 +71,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 		boolean foundLinks = false;
 		while (matcher.find()) {
 			String title = matcher.group(1);
-			String decodeTitle = Strings.decodeURL(title);
+			String decodeTitle = decodeSilent(title);
 			if (articleManager.getArticle(title) == null && decodeTitle.startsWith(lns)) {
 				// Check if it is a full url.
 				// We are only interested in statements from the local name space.
@@ -88,6 +90,16 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 			}
 		}
 		return foundLinks;
+	}
+
+	private String decodeSilent(String text) {
+		if (text == null) return null;
+		try {
+			return URLDecoder.decode(text, String.valueOf(Strings.Encoding.UTF8));
+		}
+		catch (UnsupportedEncodingException | IllegalArgumentException e) {
+			return text;
+		}
 	}
 
 	@NotNull
