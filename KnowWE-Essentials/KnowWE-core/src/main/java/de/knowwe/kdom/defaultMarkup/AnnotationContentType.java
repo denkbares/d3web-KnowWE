@@ -20,8 +20,6 @@
 
 package de.knowwe.kdom.defaultMarkup;
 
-import java.util.function.BiFunction;
-
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -64,7 +62,7 @@ public final class AnnotationContentType extends AbstractType {
 					+ AnnotationContentType.class.getSimpleName());
 		}
 		return $(section).ancestor(AnnotationType.class).children().filter(AnnotationNameType.class)
-				.mapFirst((BiFunction<AnnotationNameType, Section<AnnotationNameType>, String>) AnnotationNameType::getName);
+				.mapFirst(name -> name.get().getName(name));
 	}
 
 	/**

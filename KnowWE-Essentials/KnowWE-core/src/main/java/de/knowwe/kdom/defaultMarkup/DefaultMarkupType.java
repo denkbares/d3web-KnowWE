@@ -307,21 +307,26 @@ public class DefaultMarkupType extends AbstractType {
 	 * @return the list of annotation sections
 	 * @throws IllegalArgumentException if the specified section is not of {@link DefaultMarkupType}
 	 */
-	@SuppressWarnings("unchecked")
 	@NotNull
 	public static List<Section<? extends AnnotationContentType>> getAnnotationContentSections(Section<?> section, String... names) {
-		List<Section<? extends AnnotationContentType>> results = new ArrayList<>();
-		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
-			Section<AnnotationContentType> annotationContent = (Section<AnnotationContentType>) child;
-			String annotationName = annotationContent.get().getName(annotationContent);
-			for (String name : names) {
-				if (annotationName.equalsIgnoreCase(name)) {
-					results.add((Section<? extends AnnotationContentType>) child);
-					break;
-				}
+		List<Section<? extends AnnotationContentType>> sections = new ArrayList<>();
+		$(section).closest(DefaultMarkupType.class)
+				.successor(AnnotationNameType.class)
+				.filter(nameSection -> matchesName(nameSection, names))
+				.ancestor(AnnotationType.class)
+				.successor(AnnotationContentType.class)
+				.forEach(sections::add);
+		return sections;
+	}
+
+	private static boolean matchesName(Section<AnnotationNameType> nameSection, String[] names) {
+		String annotationName = nameSection.get().getName(nameSection);
+		for (String name : names) {
+			if (annotationName.equalsIgnoreCase(name)) {
+				return true;
 			}
 		}
-		return results;
+		return false;
 	}
 
 	/**
@@ -385,9 +390,10 @@ public class DefaultMarkupType extends AbstractType {
 		return results;
 	}
 
-
 	private static List<Section<AnnotationContentType>> findAnnotationContentTypes(Section<? extends Type> markupSectionOrSuccessor) {
-		Section<DefaultMarkupType> markupTypeSection = $(markupSectionOrSuccessor).closest(DefaultMarkupType.class).getFirst();
+		Section<DefaultMarkupType> markupTypeSection = $(markupSectionOrSuccessor)
+				.closest(DefaultMarkupType.class)
+				.getFirst();
 		if (markupTypeSection == null) {
 			throw new IllegalArgumentException("Not a DefaultMarkupType section (or successor)");
 		}
