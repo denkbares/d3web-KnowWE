@@ -51,7 +51,7 @@ import de.knowwe.core.report.Messages;
 public class CompilerManager {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
-	private int compilationCount = 0;
+	private volatile int compilationCount = 0;
 
 	private final PriorityList<Double, Compiler> compilers;
 	// just a fast cache for the contains() method
