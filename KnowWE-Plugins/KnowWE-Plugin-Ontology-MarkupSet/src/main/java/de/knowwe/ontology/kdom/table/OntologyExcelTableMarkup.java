@@ -1,6 +1,5 @@
 package de.knowwe.ontology.kdom.table;
 
-import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -236,7 +235,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 				markupSection.storeObject(WORKBOOK_CACHE_KEY, new SoftReference<>(workbook));
 				return workbook;
 			}
-			catch (IOException e) {
+			catch (Exception e) {
 				String message = "Exception while trying to access attached XLSX file";
 				Log.severe(message, e);
 				throw CompilerMessage.error(message);
