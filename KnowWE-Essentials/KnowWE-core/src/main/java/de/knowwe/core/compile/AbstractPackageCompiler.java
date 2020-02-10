@@ -43,6 +43,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	private final PackageManager packageManager;
 	private final Class<? extends Type> compilingType;
 
+	private CompilationLocal<String[]> compiledPackages;
 	private CompilerManager compilerManager;
 
 	public AbstractPackageCompiler(@NotNull PackageManager manager,
@@ -70,6 +71,8 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	@Override
 	public void init(CompilerManager compilerManager) {
 		this.compilerManager = compilerManager;
+		this.compiledPackages = new CompilationLocal<>(getCompilerManager(),
+				() -> getCompileSection().get().getPackagesToCompile(getCompileSection()));
 	}
 
 	@NotNull
@@ -113,7 +116,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	}
 
 	public String[] getCompiledPackages() {
-		return getCompileSection().get().getPackagesToCompile(getCompileSection());
+		return compiledPackages.get();
 	}
 
 	public abstract void compilePackages(String[] packagesToCompile);
