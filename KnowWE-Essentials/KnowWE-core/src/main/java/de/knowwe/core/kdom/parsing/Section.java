@@ -148,8 +148,18 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return method.apply(get(), this);
 	}
 
-	public static <T extends Type> Section<T> createSection(String text, T o, Section<? extends Type> parent) {
-		return new Section<>(text, o, parent);
+	/**
+	 * Creates a new section of the specified text and section type and adds it as the next child to the specified
+	 * parent.
+	 *
+	 * @param text   the text to create the section for
+	 * @param type   the section type to be used for the created section
+	 * @param parent the parent section to add this section to
+	 * @return the newly created section
+	 */
+	@NotNull
+	public static <T extends Type> Section<T> createSection(@NotNull String text, @NotNull T type, @Nullable Section<? extends Type> parent) {
+		return new Section<>(text, type, parent);
 	}
 
 	/**
@@ -764,8 +774,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	/**
 	 * All objects stored in this Section with the given <tt>key</tt> are collected and returned. The {@link Map} stores
-	 * them by the compiler they were stored for. If an object was stored without an argument {@link
-	 * Compiler} (compiler independent), the returned {@link Map} contains this object with <tt>null</tt> as the key.
+	 * them by the compiler they were stored for. If an object was stored without an argument {@link Compiler} (compiler
+	 * independent), the returned {@link Map} contains this object with <tt>null</tt> as the key.
 	 *
 	 * @param key is the key for which the objects were stored
 	 * @created 16.02.2012

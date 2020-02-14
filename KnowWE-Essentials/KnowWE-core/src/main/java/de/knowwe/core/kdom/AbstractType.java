@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,7 +25,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompileScript;
@@ -48,40 +51,33 @@ import de.knowwe.core.report.MessageRenderer;
 public abstract class AbstractType implements Type, Sectionizable {
 
 	/**
-	 * the children types of the type. Used to serve the getAllowedChildrenTypes
-	 * of the Type interface
-	 * 
+	 * the children types of the type. Used to serve the getAllowedChildrenTypes of the Type interface
+	 *
 	 * @see Type#getChildrenTypes()
-	 * 
 	 */
 	private final TypePriorityList childrenTypes = new TypePriorityList();
 
 	private final List<Type> parents = new ArrayList<>(2);
 
 	/**
-	 * Contains all types this type can have as successors. It can be used to
-	 * faster search for {@link Section}s of a certain type inside the KDOM.
-	 * This set will be filled lazily while the KDOM is created. For search
-	 * speed it would be better to have this set in every {@link Section} with
-	 * the actual successor types of this section, but to reduce the memory
-	 * overhead of another Set in each individual {@link Section}, we just do
-	 * this per type. It will not be much slower to search and we can also
-	 * reduce the overhead for creating this set (because it we don't need to to
-	 * it every time a new Section is created).
+	 * Contains all types this type can have as successors. It can be used to faster search for {@link Section}s of a
+	 * certain type inside the KDOM. This set will be filled lazily while the KDOM is created. For search speed it would
+	 * be better to have this set in every {@link Section} with the actual successor types of this section, but to
+	 * reduce the memory overhead of another Set in each individual {@link Section}, we just do this per type. It will
+	 * not be much slower to search and we can also reduce the overhead for creating this set (because it we don't need
+	 * to to it every time a new Section is created).
 	 */
 	private final Set<Class<?>> successorTypes = new HashSet<>();
 
 	/**
-	 * allows to set a custom renderer for a type (at initialization) if a
-	 * custom renderer is set, it is used to present the type content in the
-	 * wiki view
+	 * allows to set a custom renderer for a type (at initialization) if a custom renderer is set, it is used to present
+	 * the type content in the wiki view
 	 */
 	private Renderer renderer = DelegateRenderer.getInstance();
 
 	/**
-	 * The sectionFinder of this type, used to serve the getSectionFinder-method
-	 * of the Type interface
-	 * 
+	 * The sectionFinder of this type, used to serve the getSectionFinder-method of the Type interface
+	 *
 	 * @see #getSectionFinder()
 	 */
 	private SectionFinder sectionFinder;
@@ -96,7 +92,6 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	/**
 	 * constructor calling init() which is abstract
-	 * 
 	 */
 	public AbstractType() {
 		successorTypes.add(PlainText.class);
@@ -139,7 +134,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.Type#getName()
 	 */
 	@Override
@@ -149,7 +144,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.Sectionizable#getSectioFinder()
 	 */
 	@Override
@@ -164,15 +159,17 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.d3web.we.kdom.Type#getAllowedChildrenTypes()
 	 */
+	@NotNull
 	@Override
 	public final List<Type> getChildrenTypes() {
 		return childrenTypes.getTypes();
 	}
 
 	@Override
+	@NotNull
 	public final Collection<Type> getParentTypes() {
 		return Collections.unmodifiableCollection(parents);
 	}
@@ -189,9 +186,9 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	/**
-	 * We assert this on every possibility to change the KDOM, because in general it is a very bad idea to edit
-	 * the KDOM after initialization. It can for example create memory leaks (because we cache a lot with types) and
-	 * it also disrupts a lot of optimizations for KDOM navigation (canHaveSuccessor and so forth).
+	 * We assert this on every possibility to change the KDOM, because in general it is a very bad idea to edit the KDOM
+	 * after initialization. It can for example create memory leaks (because we cache a lot with types) and it also
+	 * disrupts a lot of optimizations for KDOM navigation (canHaveSuccessor and so forth).
 	 */
 	private void checkInitializationStatus() {
 		assert !Environment.isInitialized();
@@ -227,16 +224,15 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	/**
-	 * Adds the given typeClass to the potential successor types of this type.
-	 * The added successor is automatically also added to all parent types.
+	 * Adds the given typeClass to the potential successor types of this type. The added successor is automatically also
+	 * added to all parent types.
 	 * <p>
 	 * <b>Normally, you don't have to add successor types manually, because
-	 * children types are automatically also added as successor types. You
-	 * should only need this, if you change the type tree after initialization,
-	 * which you should only do, if you exactly know what you are doing.</b>
-	 * 
-	 * @created 10.12.2013
+	 * children types are automatically also added as successor types. You should only need this, if you change the type
+	 * tree after initialization, which you should only do, if you exactly know what you are doing.</b>
+	 *
 	 * @param typeClass the class of the successor you want to add
+	 * @created 10.12.2013
 	 */
 	public void addSuccessorType(Class<?> typeClass) {
 		if (typeClass != null
@@ -258,11 +254,11 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	/**
-	 * Removes the first occurrence (descending priority order) of a type where
-	 * the given class is assignable from this type.
-	 * 
-	 * @created 09.12.2013
+	 * Removes the first occurrence (descending priority order) of a type where the given class is assignable from this
+	 * type.
+	 *
 	 * @param typeClass the class of the type to be removed
+	 * @created 09.12.2013
 	 */
 	public void removeChildType(Class<? extends Type> typeClass) {
 		Type removedType = this.childrenTypes.removeType(typeClass);
@@ -280,9 +276,9 @@ public abstract class AbstractType implements Type, Sectionizable {
 
 	/**
 	 * Adds the given type at the end of the (current) children priority chain.
-	 * 
-	 * @created 27.08.2013
+	 *
 	 * @param type the type to add
+	 * @created 27.08.2013
 	 */
 	public void addChildTypeLast(Type type) {
 		checkInitializationStatus();
@@ -290,6 +286,7 @@ public abstract class AbstractType implements Type, Sectionizable {
 	}
 
 	@Override
+	@NotNull
 	public final Renderer getRenderer() {
 		return renderer;
 	}
@@ -297,20 +294,20 @@ public abstract class AbstractType implements Type, Sectionizable {
 	@Override
 	public MessageRenderer getMessageRenderer(Message.Type messageType) {
 		switch (messageType) {
-		case INFO:
-			return DefaultMessageRenderer.NOTE_RENDERER;
-		case WARNING:
-			return DefaultMessageRenderer.WARNING_RENDERER;
-		default:
-			return DefaultMessageRenderer.ERROR_RENDERER;
+			case INFO:
+				return DefaultMessageRenderer.NOTE_RENDERER;
+			case WARNING:
+				return DefaultMessageRenderer.WARNING_RENDERER;
+			default:
+				return DefaultMessageRenderer.ERROR_RENDERER;
 		}
 	}
 
 	/**
 	 * Allows to set a renderer for this type
 	 */
-	public void setRenderer(Renderer renderer) {
-		this.renderer = renderer;
+	public void setRenderer(@NotNull Renderer renderer) {
+		this.renderer = Objects.requireNonNull(renderer);
 	}
 
 	@Override

@@ -61,7 +61,6 @@ import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
-import de.knowwe.core.kdom.parsing.Sectionizer;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.taghandler.TagHandler;
@@ -344,7 +343,7 @@ public class Environment {
 
 	private void initSectionizerModules() {
 		for (SectionizerModule sm : Plugins.getSectionizerModules()) {
-			Sectionizer.registerSectionizerModule(sm);
+			SectionizerModule.Registry.register(sm);
 		}
 	}
 

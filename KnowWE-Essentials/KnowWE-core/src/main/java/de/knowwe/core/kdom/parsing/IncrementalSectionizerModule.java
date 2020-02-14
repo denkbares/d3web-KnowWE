@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
@@ -35,19 +37,19 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 public class IncrementalSectionizerModule implements SectionizerModule {
 
 	@Override
-	public Section<?> createSection(String text, Type type, Section<?> father, SectionFinderResult result) {
+	@Nullable
+	public Section<?> createSection(Section<?> parent, String parentText, Type childType, SectionFinderResult range) {
 
 		// Update mechanism:
 		// try to get unchanged Sections from the last version
 		// of the article
-		if (isAllowedToReuse(father, type, result)) {
+		if (isAllowedToReuse(parent, childType, range)) {
 
-			Section<?> match = findMatchingSection(father, type, text);
+			Section<?> match = findMatchingSection(parent, childType, parentText);
 
 			if (match != null) {
-				return adaptSectionToNewArticle(father, match);
+				return adaptSectionToNewArticle(parent, match);
 			}
-
 		}
 		return null;
 	}
@@ -92,7 +94,6 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 				// update pointer to article
 				node.article = father.getArticle();
 			}
-
 		}
 		return match;
 	}
@@ -111,7 +112,6 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		// in the last version of the article
 		Map<String, List<Section<?>>> sectionsOfSameType = findSectionsWithTypePathCached(
 				father.getArticle().getLastVersionOfArticle(), path);
-
 
 		List<Section<?>> matches = sectionsOfSameType.remove(text);
 
@@ -151,6 +151,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 			return null;
 		}
 	}
+
 	private boolean isAllowedToReuse(Section<?> father, Type type, SectionFinderResult result) {
 		return !father.getArticle().isFullParse()
 				&& result.getClass().equals(SectionFinderResult.class)
@@ -199,7 +200,6 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		Map<String, List<Section<?>>> found = new HashMap<>();
 		findSuccessorsWithTypePathAsMap(section, path, index, found);
 		return found;
-
 	}
 
 	private void findSuccessorsWithTypePathAsMap(
@@ -222,7 +222,5 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 			}
 			equalSections.add(section);
 		}
-
 	}
-
 }

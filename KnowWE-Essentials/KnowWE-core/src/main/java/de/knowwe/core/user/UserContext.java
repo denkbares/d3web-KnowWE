@@ -152,4 +152,13 @@ public interface UserContext {
 	 * @return true, if preview is rendered, false otherwise
 	 */
 	boolean isRenderingPreview();
+
+	/**
+	 * Returns if a re-rendering version is rendered, e.g. is the current d3web session changes.
+	 *
+	 * @return true, if is re-rendered, false otherwise
+	 */
+	default boolean isReRendering() {
+		return "ReRenderContentPartAction".equalsIgnoreCase(getParameter("action"));
+	}
 }

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -20,9 +20,11 @@
 
 package de.knowwe.core.kdom.parsing;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.ExclusiveType;
@@ -32,8 +34,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 
 /**
- * This singleton contains the algorithm which parses the KDOM. The algorithm searches occurrences
- * that match certain types.
+ * This singleton contains the algorithm which parses the KDOM. The algorithm searches occurrences that match certain
+ * types.
  *
  * @author Jochen, Albrecht
  */
@@ -45,22 +47,9 @@ public class Sectionizer implements Parser {
 		this.type = type;
 	}
 
-	private static final List<SectionizerModule> sectionizerModules = new ArrayList<>();
-
-	private static SectionizerModule defaultSectionizerModule = new DefaultSectionizerModule();
-
-	public static void registerSectionizerModule(SectionizerModule sectionizerModule) {
-		sectionizerModules.add(sectionizerModule);
-	}
-
-	public static void setDefaultSectionizerModule(SectionizerModule defSectionizerModule) {
-		if (defSectionizerModule != null) {
-			defaultSectionizerModule = defSectionizerModule;
-		}
-	}
-
 	@Override
-	public Section<?> parse(String text, Section<? extends Type> parent) {
+	@NotNull
+	public Section<?> parse(@NotNull String text, @Nullable Section<? extends Type> parent) {
 		Section<?> section = Section.createSection(text, type, parent);
 
 		if (parent != null) {
@@ -76,37 +65,33 @@ public class Sectionizer implements Parser {
 		}
 
 		// fetches the allowed children types of the local type
-		ArrayList<Type> types = new ArrayList<>();
-		if (type.getChildrenTypes() != null) {
-			types.addAll(type.getChildrenTypes());
-		}
-
+		List<Type> types = type.getChildrenTypes();
 		if (!types.isEmpty()) {
-			splitToSections(section.getText(), section, types, 0);
+			splitToSections(section, types);
 		}
 		if (section.children != null) section.children.trimToSize();
 		return section;
 	}
 
-	public void splitToSections(String text, Section<?> parent, ArrayList<Type> types, int posInTypes) {
+	protected void splitToSections(Section<?> parent, List<Type> types) {
+		splitToSections(parent.getText(), parent, types, 0);
+	}
 
+	private void splitToSections(String text, Section<?> parent, List<Type> types, int posInTypes) {
+		// use next child type, and PlainText as default last type
 		if (posInTypes > types.size()) return;
-
-		Type type = posInTypes == types.size()
-				? PlainText.getInstance()
-				: types.get(posInTypes);
-
+		Type type = posInTypes == types.size() ? PlainText.getInstance() : types.get(posInTypes);
 		posInTypes++;
 
+		// check for valid sectionizable type
 		if (type == null) throw new NullPointerException("children type list may not contain null");
-
 		if (!(type instanceof Sectionizable)) {
 			splitToSections(text, parent, types, posInTypes);
 			return;
 		}
 
+		// the look for sections, using the section finder of the child types
 		List<SectionFinderResult> results = null;
-
 		SectionFinder finder = ((Sectionizable) type).getSectionFinder();
 		if (finder != null) {
 			try {
@@ -117,7 +102,7 @@ public class Sectionizer implements Parser {
 			}
 		}
 
-		if (results == null ) {
+		if (results == null) {
 			// recursive type, child is repeat of the parent, so just ignore it
 			results = Collections.emptyList();
 		}
@@ -138,28 +123,17 @@ public class Sectionizer implements Parser {
 			}
 
 			if (lastEnd < result.getStart()) {
-				int newPosInTypes = type instanceof ExclusiveType ? types.size() : posInTypes;
-				splitToSections(text.substring(lastEnd, result.getStart()), parent, types,
-						newPosInTypes);
+				int newPosInTypes = (type instanceof ExclusiveType) ? types.size() : posInTypes;
+				splitToSections(text.substring(lastEnd, result.getStart()), parent, types, newPosInTypes);
 			}
 
-			Section<?> child = null;
-			String sectionText = text.substring(result.getStart(), result.getEnd());
-			for (SectionizerModule sModule : sectionizerModules) {
-				child = sModule.createSection(sectionText, type, parent, result);
-				if (child != null) break;
-			}
-			if (child == null) {
-				defaultSectionizerModule.createSection(sectionText, type, parent, result);
-			}
+			SectionizerModule.Registry.createSection(parent, text, type, result);
 			createdSection = true;
 			lastEnd = result.getEnd();
 		}
 		if (lastEnd < text.length()) {
-			int newPosInTypes = type instanceof ExclusiveType && createdSection ? types.size() : posInTypes;
-			splitToSections(text.substring(lastEnd), parent,
-					types, newPosInTypes);
+			int newPosInTypes = (createdSection && (type instanceof ExclusiveType)) ? types.size() : posInTypes;
+			splitToSections(text.substring(lastEnd), parent, types, newPosInTypes);
 		}
 	}
-
 }
