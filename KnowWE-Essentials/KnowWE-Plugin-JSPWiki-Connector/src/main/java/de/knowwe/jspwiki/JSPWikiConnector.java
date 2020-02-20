@@ -71,6 +71,7 @@ import org.apache.wiki.providers.GitVersioningFileProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.providers.WikiPageProvider;
+import org.apache.wiki.ui.Command;
 import org.apache.wiki.util.MailUtil;
 import org.apache.wiki.util.TextUtil;
 import org.jetbrains.annotations.NotNull;
@@ -727,7 +728,8 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public String renderWikiSyntax(String content, HttpServletRequest request) {
 		try {
-			WikiContext context = engine.createContext(request, WikiContext.VIEW);
+			Command command = engine.getCommandResolver().findCommand(request, WikiContext.VIEW);
+			WikiContext context = new WikiContext(engine, request, command);
 			content = engine.textToHTML(context, content);
 		}
 		catch (Exception e) {
