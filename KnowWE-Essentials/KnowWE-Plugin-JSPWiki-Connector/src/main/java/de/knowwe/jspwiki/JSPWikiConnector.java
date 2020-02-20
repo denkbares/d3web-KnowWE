@@ -46,7 +46,6 @@ import javax.mail.MessagingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.PageLock;
 import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiContext;
@@ -731,8 +730,8 @@ public class JSPWikiConnector implements WikiConnector {
 			WikiContext context = engine.createContext(request, WikiContext.VIEW);
 			content = engine.textToHTML(context, content);
 		}
-		catch (InternalWikiException e) {
-			// happens only during KnowWE's startup and can thus be ignored...
+		catch (Exception e) {
+			Log.severe("Unable to render wiki syntax", e);
 		}
 		return content;
 	}
