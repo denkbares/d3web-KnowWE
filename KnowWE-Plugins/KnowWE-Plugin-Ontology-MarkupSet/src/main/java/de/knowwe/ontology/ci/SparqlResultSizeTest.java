@@ -24,7 +24,7 @@ import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.testing.Message;
-import de.d3web.testing.TestParameter.Mode;
+import de.d3web.testing.ResultSizeTest;
 import de.knowwe.ontology.ci.provider.SparqlQuerySection;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -37,23 +37,10 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshöfer
  * @created 08.01.2014
  */
-public class SparqlResultSizeTest extends SparqlTests<SparqlQuerySection> {
-
-	public static final String GREATER_THAN = ">";
-	public static final String SMALLER_THAN = "<";
-	public static final String EQUAL = "=";
-
-	public static final String WARNING = "warning";
+public class SparqlResultSizeTest extends SparqlTests<SparqlQuerySection> implements ResultSizeTest {
 
 	public SparqlResultSizeTest() {
-		String[] comparators = new String[] {
-				EQUAL, SMALLER_THAN, GREATER_THAN };
-
-		this.addParameter("comparator", Mode.Mandatory,
-				"how to compare the result size against the expected size", comparators);
-		this.addParameter("expected size", de.d3web.testing.TestParameter.Type.Number,
-				Mode.Mandatory, "expected size to compare with");
-		this.addParameter("warning", Mode.Optional, "show warning instead of failure if this test fails", WARNING);
+		getParameters().forEach(this::addParameter);
 	}
 
 	@Override
@@ -68,19 +55,14 @@ public class SparqlResultSizeTest extends SparqlTests<SparqlQuerySection> {
 
 	@Override
 	public Message execute(SparqlQuerySection query, String[] args, String[]... ignores) throws InterruptedException {
-		String comparator = args[0];
-		double number = Double.parseDouble(args[1]);
-
-		Message.Type messageTypeTestFailed = Message.Type.FAILURE;
-		if (args.length > 2 && args[2] != null && WARNING.equalsIgnoreCase(args[2])) {
-			messageTypeTestFailed = Message.Type.WARNING;
-		}
+		Comparator comparator = getComparator(args, 0);
+		int number = comparator.getNumber();
+		Message.Type messageType = comparator.getMessageType();
 
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(query.getSection());
 
 		if (core == null) {
-			return new Message(Message.Type.ERROR,
-					"No repository found for section: " + query.getSection());
+			return new Message(Message.Type.ERROR, "No repository found for section: " + query.getSection());
 		}
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, query.getSection().getText());
@@ -98,38 +80,33 @@ public class SparqlResultSizeTest extends SparqlTests<SparqlQuerySection> {
 			count++;
 		}
 
-		if (comparator.equals(GREATER_THAN)) {
+		if (comparator.getComparator().equals(GREATER_THAN)) {
 			if (count > number) {
 				return new Message(Message.Type.SUCCESS);
 			}
 			else {
-
-				return new Message(messageTypeTestFailed,
-						"Result size should be greater than " + (int) number + " but was: " + count);
+				return getMessageGreater(messageType, number, count);
 			}
 		}
 
-		if (comparator.equals(SMALLER_THAN)) {
+		if (comparator.getComparator().equals(SMALLER_THAN)) {
 			if (count < number) {
 				return new Message(Message.Type.SUCCESS);
 			}
 			else {
-				return new Message(messageTypeTestFailed,
-						"Result size should be smaller than " + (int) number + " but was: " + count);
+				return getMessageSmaller(messageType, number, count);
 			}
 		}
 
-		if (comparator.equals(EQUAL)) {
+		if (comparator.getComparator().equals(EQUAL)) {
 			if (count == number) {
 				return new Message(Message.Type.SUCCESS);
 			}
 			else {
-				return new Message(messageTypeTestFailed,
-						"Result size should be " + (int) number + " but was: " + count);
+				return getMessageEqual(messageType, number, count);
 			}
 		}
 
-		return new Message(Message.Type.ERROR,
-				"Unknown error in test (invalid comparator?)");
+		return new Message(Message.Type.ERROR, "Unknown error in test (invalid comparator?)");
 	}
 }
