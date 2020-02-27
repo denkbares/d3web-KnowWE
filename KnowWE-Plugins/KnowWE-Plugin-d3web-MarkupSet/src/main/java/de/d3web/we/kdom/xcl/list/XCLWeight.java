@@ -32,7 +32,7 @@ public class XCLWeight extends AbstractType {
 	/**
 	 * Returns the type of the relation.
 	 */
-	public XCLRelationType getXCLRealtionType(Section<XCLWeight> section) {
+	public XCLRelationType getXCLRelationType(Section<XCLWeight> section) {
 		String text = section.getText();
 		if (text.contains("--")) {
 			return XCLRelationType.contradicted;

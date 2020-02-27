@@ -139,7 +139,7 @@ public class XCLRelation extends AbstractType {
 			double w = 1.0;
 			if (weight != null) {
 				// check the weight/relation type in square brackets
-				type = weight.get().getXCLRealtionType(weight);
+				type = weight.get().getXCLRelationType(weight);
 				if (type == XCLRelationType.explains) {
 					w = weight.get().getXCLRelationWeight(weight);
 					if (w <= 0 || !Double.isFinite(w)) {
