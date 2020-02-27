@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+  ~ Copyright (C) 2020 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
 <project name="KnowWE-App-Utils" default="update_resources denkbares">
 
 	<!-- Updates all resources needed for the profile core-plugins -->
 	<target name="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="KnowWE-Resources/src/main/webapp/**" />
 				<include name="KnowWE-Resources/src/main/webapp/WEB-INF/" />
 			</fileset>
 			<cutdirsmapper dirs="4" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="*/src/main/resources/webapp/" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Plugins/">
 				<include name="*/src/main/resources/webapp/" />
 				<exclude name="KnowWE-Plugin-d3web-Homepage/**" />
@@ -29,7 +48,7 @@
 
 	<!-- Updates all resources needed for the profile denkbares (and core-plugins) -->
 	<target name="update_resources denkbares" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KnowWE-DES/KnowWE-Plugins-DES/">
 				<include name="*/src/main/resources/webapp/" />
 
@@ -45,7 +64,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../Experimental/KnowWE-Plugins-Experimental/">
 				<include name="KnowWE-Plugin-d3web-TermBrowser/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-DiaFlux-Review/src/main/resources/webapp/" />
@@ -57,7 +76,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT">
 			<fileset dir="${basedir}/../../KnowWE-SSP/">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
@@ -68,7 +87,7 @@
 		</copy>
 	</target>
 	<target name="update_resources konap" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KRONE/">
 				<include name="KnowWE-Plugin-KONAP/src/main/resources/webapp/" />
 
@@ -79,7 +98,7 @@
 		</copy>
 	</target>
 	<target name="update_resources edb" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-12.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../SemanticServicePlatform/">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-ExperienceDatabase/src/main/resources/webapp/" />
