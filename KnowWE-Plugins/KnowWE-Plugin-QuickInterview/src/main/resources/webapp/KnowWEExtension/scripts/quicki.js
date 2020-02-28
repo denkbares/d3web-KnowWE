@@ -662,17 +662,23 @@ KNOWWE.plugin.quicki = function() {
     },
 
     initDataDrop: function() {
-      KNOWWE.core.plugin.dropZone.addDropZoneTo('.quickinterview', "Drop protocol here", KNOWWE.plugin.quicki.handleDrop, null, "replace")
+      if (KNOWWE.core.plugin.dropZone) {
+        KNOWWE.core.plugin.dropZone.addDropZoneTo('.quickinterview', "Drop protocol here", KNOWWE.plugin.quicki.handleDrop, null, "replace")
+      }
     },
 
     resetDataDrop: function(element) {
-      KNOWWE.core.plugin.dropZone.resetDropZoneStyle(element, "Drop protocol here");
+      if (KNOWWE.core.plugin.dropZone) {
+        KNOWWE.core.plugin.dropZone.resetDropZoneStyle(element, "Drop protocol here");
+      }
     },
 
     handleDrop: function(event) {
       event.stopPropagation();
       event.preventDefault();
-      KNOWWE.core.plugin.dropZone.setDropZoneStyleUploading(event.target);
+      if (KNOWWE.core.plugin.dropZone) {
+        KNOWWE.core.plugin.dropZone.setDropZoneStyleUploading(event.target);
+      }
       const data = event.dataTransfer.files;
 
       if (data.length !== 1) {
