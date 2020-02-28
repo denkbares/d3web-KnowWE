@@ -22,8 +22,6 @@
 KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.plugin = KNOWWE.plugin || {};
 
-var toSelect;
-
 /**
  * Namespace: KNOWWE.plugin.quicki The quick interview (quicki) namespace.
  */
@@ -215,7 +213,7 @@ KNOWWE.plugin.quicki = function() {
       mcanswervals = '';
       _KS('.answerMCClicked').each(function(element) {
         var rel = eval("(" + element.getAttribute('rel') + ")");
-        if (rel.qid == questionID) {
+        if (rel.qid === questionID) {
           mcanswervals += rel.choice;
           mcanswervals += "#####"
         }
@@ -243,11 +241,11 @@ KNOWWE.plugin.quicki = function() {
        * not yet clicked, thus highlight, store, collect all highlighted,
        * and send
        */
-      if (el.className == 'answerMC') {
+      if (el.className === 'answerMC') {
         el.className = 'answerMCClicked';
 
         // if not already contained, attach value
-        if (mcanswervals.indexOf("#####" + toreplace) == -1) {
+        if (mcanswervals.indexOf("#####" + toreplace) === -1) {
           mcanswervals += oid;
           mcanswervals += "#####";
         }
@@ -260,19 +258,19 @@ KNOWWE.plugin.quicki = function() {
 
       }
       /* already clicked mc answer */
-      else if (el.className == 'answerMCClicked') {
+      else if (el.className === 'answerMCClicked') {
         el.className = 'answerMC';
 
         // save mcvalues
         var mcvalsOld = mcanswervals.substring(0, mcanswervals.length - 5);
 
         // if value is alerady contained, remove it
-        if (mcanswervals.indexOf(toreplace) != -1) {
+        if (mcanswervals.indexOf(toreplace) !== -1) {
           mcanswervals = mcanswervals.replace(toreplace, '');
         }
 
         // if mcanswerval storage is empty after last removal
-        if (mcanswervals == "") {
+        if (mcanswervals === "") {
           // we need to call a retract action
           KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid,
             {action: 'RetractSingleFindingAction', ValueID: mcvalsOld});
@@ -293,15 +291,15 @@ KNOWWE.plugin.quicki = function() {
      */
     answerClicked: function(event) {
       var el = _KE.target(event); 	// get the clicked element
-      if (el.className.toLowerCase() == "answerunknown") return;
-      if (el.className.toLowerCase() == "answerunknownclicked") return;
-      if (el.className.toLowerCase() == "answermc") return;
-      if (el.className.toLowerCase() == "answermcclicked") return;
+      if (el.className.toLowerCase() === "answerunknown") return;
+      if (el.className.toLowerCase() === "answerunknownclicked") return;
+      if (el.className.toLowerCase() === "answermc") return;
+      if (el.className.toLowerCase() === "answermcclicked") return;
       var retract = false;
 
       // if already clicked, it needs to be de-highlighted and val
       // retracted
-      if (el.className == 'answerClicked') {
+      if (el.className === 'answerClicked') {
         retract = true;
       }
       _KE.cancel(event);
@@ -337,7 +335,7 @@ KNOWWE.plugin.quicki = function() {
       var questionID = rel.qid;
 
       // handle num input fields
-      if (rel.type == 'num') {
+      if (rel.type === 'num') {
         var numfield = _KS('#input_' + rel.qid);
         // clear input field
         if (numfield) {
@@ -367,14 +365,14 @@ KNOWWE.plugin.quicki = function() {
       var inputtext = jq$(event.target).val();
 
       // empty values should not be sent!
-      if (inputtext == '') {
+      if (inputtext === '') {
         KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
           {action: 'SetSingleFindingAction', ValueID: 'MaU'});
         return;
       }
 
       // enabling float value input also with "," instead of "."
-      if (inputtext.indexOf(",") != -1) {
+      if (inputtext.indexOf(",") !== -1) {
         inputtext = inputtext.replace(",", ".");
       }
       if (!inputtext.match(/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/)) {
@@ -405,7 +403,7 @@ KNOWWE.plugin.quicki = function() {
           _KE.target(event).value = inputtext;
 
           // and display error message
-          var errormessage = 'Input needs to be a number between ' + rel.rangeMin + ' and ' + rel.rangeMax + '!';
+          errormessage = 'Input needs to be a number between ' + rel.rangeMin + ' and ' + rel.rangeMax + '!';
           _KS('#' + rel.oid + "_errormsg").className = 'errormsg';
           _KS('#' + rel.oid + "_errormsg").innerHTML = errormessage;
         }
@@ -483,11 +481,11 @@ KNOWWE.plugin.quicki = function() {
      */
     toggleImage: function(flag, questionnaire) {
 
-      if (flag == 1) {
+      if (flag === 1) {
         // questionnaire is visible and should be hidden
         // thus image needs to be the triangle indicating extensibility
         questionnaire.className = 'questionnaire pointRight';
-      } else if (flag == 0) {
+      } else if (flag === 0) {
         questionnaire.className = 'questionnaire pointDown';
       }
     },
@@ -501,17 +499,17 @@ KNOWWE.plugin.quicki = function() {
      */
     toggleAnswerHighlighting: function(answerEl, type, retract) {
 
-      if (answerEl.className.toLowerCase() == "answerunknownclicked") return;
-      if (answerEl.className.toLowerCase() == "answerunknown") return;
+      if (answerEl.className.toLowerCase() === "answerunknownclicked") return;
+      if (answerEl.className.toLowerCase() === "answerunknown") return;
 
       var relClicked = eval("(" + answerEl.getAttribute('rel') + ")");
 
       // if clicked q is a oc q, already clicked answer alternatives need
       // to be de-highlighted
-      if (type == "oc") {
+      if (type === "oc") {
         _KS('.answerClicked').each(function(element) {
           var relElement = eval("(" + element.getAttribute('rel') + ")");
-          if (relElement.qid == relClicked.qid) {
+          if (relElement.qid === relClicked.qid) {
             element.className = 'answer';
           }
         });
@@ -520,7 +518,7 @@ KNOWWE.plugin.quicki = function() {
         // reset
         _KS('.answerunknownClicked').each(function(element) {
           var relElement = eval("(" + element.getAttribute('rel') + ")");
-          if (relElement.qid == relClicked.qid) {
+          if (relElement.qid === relClicked.qid) {
             element.className = 'answerunknown';
           }
         });
@@ -536,9 +534,9 @@ KNOWWE.plugin.quicki = function() {
       // otherwise just toggle highlighting
       else {
         // to highlight/unhighlight an answer if clicked on, generally
-        if (answerEl.className == 'answerClicked') {
+        if (answerEl.className === 'answerClicked') {
           answerEl.className = 'answer';
-        } else if (answerEl.className == 'answer') {
+        } else if (answerEl.className === 'answer') {
           answerEl.className = 'answerClicked';
         }
       }
@@ -556,9 +554,9 @@ KNOWWE.plugin.quicki = function() {
       _KS('.answerClicked').each(function(element) {
 
         var relElement = eval("(" + element.getAttribute('rel') + ")");
-        if (relElement.qid == questionID) {
+        if (relElement.qid === questionID) {
 
-          if (element.className != "answerunknownClicked") {
+          if (element.className !== "answerunknownClicked") {
             element.className = "answer";
           }
         }
@@ -577,7 +575,7 @@ KNOWWE.plugin.quicki = function() {
       var questionnaire = _KE.target(event);
       var group = _KS('#group_' + questionnaire.id);
 
-      if (group.style.display == 'block') {
+      if (group.style.display === 'block') {
         var indicated = questionnaire.hasClass('indicated');
         if (indicated) {
           questionnaireVis[questionnaire.id] = 2;
@@ -588,7 +586,7 @@ KNOWWE.plugin.quicki = function() {
 
         KNOWWE.plugin.quicki.toggleImage(1, questionnaire);
 
-      } else if (group.style.display == 'none') {
+      } else if (group.style.display === 'none') {
 
         group.style.display = 'block';
 
@@ -688,7 +686,6 @@ KNOWWE.plugin.quicki = function() {
 
     /**
      * Initiates load dialogue to let user upload representation of a previously saved interview from their drive
-     * @param sectionId id of interview's section
      */
     loadFromFile: function() {
       jq$('#file-input').trigger('click');
