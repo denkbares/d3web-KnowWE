@@ -19,8 +19,6 @@
 
 package de.knowwe.dropzone.util;
 
-import java.io.File;
-
 import de.knowwe.core.user.UserContext;
 
 /**
