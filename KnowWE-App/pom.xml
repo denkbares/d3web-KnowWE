@@ -484,6 +484,10 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-RightPanel</artifactId>
 				</dependency>
+				<dependency>
+					<groupId>de.uniwue.d3web</groupId>
+					<artifactId>KnowWE-Plugin-DropZone</artifactId>
+				</dependency>
 			</dependencies>
 		</profile>
 
