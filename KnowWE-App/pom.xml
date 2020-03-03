@@ -283,6 +283,16 @@
 		</profile>
 
 		<profile>
+			<id>gantt</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Gantt</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
 			<id>knowsec</id>
 			<dependencies>
 				<dependency>
