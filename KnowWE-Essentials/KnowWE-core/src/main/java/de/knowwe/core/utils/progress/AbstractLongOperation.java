@@ -20,6 +20,8 @@ package de.knowwe.core.utils.progress;
 
 import java.util.UUID;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -29,9 +31,18 @@ import de.knowwe.core.action.UserActionContext;
  */
 public abstract class AbstractLongOperation implements LongOperation {
 
+	private final DefaultAjaxProgressListener progressListener;
 	private boolean canceled = false;
 
 	private String id;
+
+	public AbstractLongOperation() {
+		this(new DefaultAjaxProgressListener());
+	}
+
+	public AbstractLongOperation(@NotNull DefaultAjaxProgressListener progressListener) {
+		this.progressListener = progressListener;
+	}
 
 	@Override
 	public String renderMessage(UserActionContext context, float percent, String message) {
@@ -65,5 +76,11 @@ public abstract class AbstractLongOperation implements LongOperation {
 			id = UUID.randomUUID().toString();
 		}
 		return id;
+	}
+
+	@NotNull
+	@Override
+	public DefaultAjaxProgressListener getProgressListener() {
+		return progressListener;
 	}
 }

@@ -34,9 +34,7 @@ public class RemoveOperationAction extends OperationAction {
 
 	@Override
 	public void execute(UserActionContext context, Section<?> section, LongOperation operation) throws IOException {
-		ProgressListenerManager manager = ProgressListenerManager.getInstance();
-		if (!manager.isRunning(operation)) {
-			manager.removeProgressListener(operation);
+		if (!operation.getProgressListener().isRunning()) {
 			operation.cleanUp();
 		}
 	}

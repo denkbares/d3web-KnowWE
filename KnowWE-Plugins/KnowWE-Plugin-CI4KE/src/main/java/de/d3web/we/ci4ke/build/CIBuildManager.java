@@ -31,6 +31,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
@@ -45,9 +47,7 @@ import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.CompilationStartEvent;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
-import de.knowwe.core.utils.progress.ProgressListenerManager;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuildManager implements EventListener {
@@ -89,7 +89,7 @@ public class CIBuildManager implements EventListener {
 
 		private final CIDashboard dashboard;
 		private final TestExecutor testExecutor;
-		AjaxProgressListener listener;
+		private final DefaultAjaxProgressListener listener;
 
 		public CIBuildCallable(CIDashboard dashboard) {
 			this.dashboard = dashboard;
@@ -98,14 +98,13 @@ public class CIBuildManager implements EventListener {
 			List<TestObjectProvider> pluggedProviders = TestObjectProviderManager.getTestObjectProviders();
 			providers.addAll(pluggedProviders);
 
-			listener = new DefaultAjaxProgressListener(CIBuildManager.class.getSimpleName());
+			listener = new DefaultAjaxProgressListener();
 			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), listener);
 		}
 
 		@Override
-		public Void call() throws Exception {
+		public Void call() {
 			Log.info("Executing new CI build for dashboard '" + dashboard.getDashboardName() + "'");
-			ProgressListenerManager.getInstance().setProgressListener(Integer.toString(dashboard.hashCode()), listener);
 			try {
 				testExecutor.run();
 
@@ -124,8 +123,6 @@ public class CIBuildManager implements EventListener {
 			}
 			finally {
 				ciBuildQueue.remove(dashboard);
-				ProgressListenerManager.getInstance().removeProgressListener(
-						Integer.toString(dashboard.hashCode()));
 			}
 			return null;
 		}
@@ -230,6 +227,19 @@ public class CIBuildManager implements EventListener {
 	 */
 	public static boolean isRunning(CIDashboard dashboard) {
 		return ciBuildQueue.get(dashboard) != null;
+	}
+
+	/**
+	 * Provides a ProgressListener of the given dashboard, if the dashboard exists and is currently running, null otherwise.
+	 *
+	 * @param dashboard the dashboard to get the progress listener for
+	 * @return the progress listener for the given dashboard
+	 */
+	@Nullable
+	public static DefaultAjaxProgressListener getProgress(CIDashboard dashboard) {
+		CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
+		if (ciBuildFuture == null) return null;
+		return ciBuildFuture.ciBuildCallable.listener;
 	}
 
 	@Override

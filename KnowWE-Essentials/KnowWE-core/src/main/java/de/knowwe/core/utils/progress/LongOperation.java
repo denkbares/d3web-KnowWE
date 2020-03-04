@@ -2,6 +2,8 @@ package de.knowwe.core.utils.progress;
 
 import java.io.IOException;
 
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.action.UserActionContext;
 
 /**
@@ -20,12 +22,10 @@ public interface LongOperation {
 	 * this method.
 	 * 
 	 * @created 30.07.2013
-	 * @param context
-	 *@param listener the progress listener to monitor the progress  @throws IOException if an transport error or file access error occurred
 	 * @throws InterruptedException if the operation has been interrupted (e.g.
 	 *         canceled by user)
 	 */
-	void execute(UserActionContext context, AjaxProgressListener listener) throws IOException, InterruptedException, LongOperationException;
+	void execute(UserActionContext context) throws IOException, InterruptedException, LongOperationException;
 
 	/**
 	 * Cancels the current operation indicated by this progress. The
@@ -42,7 +42,7 @@ public interface LongOperation {
 
 	/**
 	 * This method will be run after the method
-	 * {@link LongOperation#execute(de.knowwe.core.action.UserActionContext, AjaxProgressListener)} in a finally block.
+	 * {@link LongOperation#execute(de.knowwe.core.action.UserActionContext)} in a finally block.
 	 * This way it will also run, if the execution fails due to an exception.
 	 * 
 	 * @created 04.10.2013
@@ -74,4 +74,10 @@ public interface LongOperation {
 	 * Provides a unique id for this LongOperation instance.
 	 */
 	String getId();
+
+	/**
+	 * Provides the progress listener of this operation
+	 */
+	@NotNull
+	AjaxProgressListener getProgressListener();
 }

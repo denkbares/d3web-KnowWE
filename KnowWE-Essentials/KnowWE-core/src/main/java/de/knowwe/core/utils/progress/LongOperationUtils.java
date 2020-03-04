@@ -143,28 +143,28 @@ public class LongOperationUtils {
 	 */
 	public static void startLongOperation(final UserActionContext context, final LongOperation operation) {
 
-		final AjaxProgressListener listener = ProgressListenerManager.getInstance()
-				.createProgressListener(context, operation);
 		try {
-			operation.execute(context, listener);
+			operation.getProgressListener().updateProgress(0, "Initializing...");
+			operation.getProgressListener().setRunning(true);
+			operation.execute(context);
 		}
 		catch (IOException | LongOperationException e) {
 			Log.warning("Cannot complete operation.", e);
-			listener.setError("Error occurred: " + e.getMessage());
+			operation.getProgressListener().setError("Error occurred: " + e.getMessage());
 		}
 		catch (InterruptedException e) {
 			Log.info("Operation canceled by user.");
-			listener.setError("Canceled by user.");
+			operation.getProgressListener().setError("Canceled by user.");
 		}
 		catch (Throwable e) {
 			// use Throwable here, so that the user can see,
 			// even if there is an internal server error
 			// (like wrong linkage)
 			Log.severe("Cannot complete operation, unexpected internal error.", e);
-			listener.setError("Unexpected internal error: " + e.getMessage() + ".");
+			operation.getProgressListener().setError("Unexpected internal error: " + e.getMessage() + ".");
 		}
 		finally {
-			listener.setRunning(false);
+			operation.getProgressListener().setRunning(false);
 			operation.doFinally();
 		}
 	}

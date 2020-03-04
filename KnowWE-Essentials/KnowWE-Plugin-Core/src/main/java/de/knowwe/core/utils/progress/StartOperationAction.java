@@ -25,7 +25,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
- * This action handles the ajax upate request of the ci-build progress bar on
+ * This action handles the ajax update request of the ci-build progress bar on
  * the dashboard.
  * 
  * @author Jochen Reutelshöfer (denkbares GmbH)
@@ -36,11 +36,11 @@ public class StartOperationAction extends OperationAction {
 	@Override
 	public void execute(final UserActionContext context, Section<?> section, final LongOperation operation) throws IOException {
 
-		if (ProgressListenerManager.getInstance().isRunning(operation)) {
+		if (operation.getProgressListener().isRunning()) {
 			context.sendError(412, "Operation still running, please terminate first");
 			return;
 		}
 
-		LongOperationUtils.startLongOperation(context, operation);
+		new Thread(() -> LongOperationUtils.startLongOperation(context, operation)).start();
 	}
 }

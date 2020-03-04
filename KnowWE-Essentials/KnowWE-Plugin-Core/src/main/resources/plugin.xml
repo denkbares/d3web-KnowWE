@@ -567,16 +567,6 @@
 		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="StartProgressAction">
-		<parameter id="class" value="de.knowwe.core.utils.progress.StartProgressAction" />
-		<parameter id="name" value="StartProgressAction" />
-		<parameter id="description"
-			value="Action to check if the long operations has started and we can start to update the progress bar" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="CancelOperationAction">
 		<parameter id="class" value="de.knowwe.core.utils.progress.CancelOperationAction" />
 		<parameter id="name" value="CancelOperationAction" />

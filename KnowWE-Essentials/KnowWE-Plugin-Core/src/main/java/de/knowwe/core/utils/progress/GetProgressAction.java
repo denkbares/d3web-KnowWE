@@ -34,7 +34,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
 /**
- * This action handles the ajax upate request of the ci-build progress bar on
+ * This action handles the ajax update request of the ci-build progress bar on
  * the dashboard.
  * 
  * @author Jochen Reutelshöfer (denkbares GmbH)
@@ -55,9 +55,7 @@ public class GetProgressAction extends AbstractAction {
 		try {
 			JSONArray result = new JSONArray();
 			for (LongOperation operation : new ArrayList<>(LongOperationUtils.getLongOperations(section))) {
-				AjaxProgressListener listener =
-						ProgressListenerManager.getInstance().getProgressListener(operation);
-				if (listener == null) continue;
+				AjaxProgressListener listener = operation.getProgressListener();
 
 				JSONObject progress = new JSONObject();
 				progress.put("operationID",
@@ -68,7 +66,6 @@ public class GetProgressAction extends AbstractAction {
 				progress.put("message", message);
 				progress.put("error", listener.getError());
 				progress.put("running", listener.isRunning());
-				progress.put("user", listener.getUserName());
 				result.put(progress);
 			}
 			result.write(context.getWriter());

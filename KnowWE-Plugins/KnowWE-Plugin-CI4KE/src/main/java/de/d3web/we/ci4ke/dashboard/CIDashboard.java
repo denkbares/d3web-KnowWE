@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.denkbares.utils.Log;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestSpecification;
-import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildCache;
 import de.d3web.we.ci4ke.build.CIPersistence;
 import de.d3web.we.ci4ke.build.CIRenderer;

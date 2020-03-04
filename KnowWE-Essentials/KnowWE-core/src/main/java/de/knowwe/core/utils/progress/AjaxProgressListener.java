@@ -38,9 +38,6 @@ public interface AjaxProgressListener extends ExtendedProgressListener {
 	@Override
 	String getMessage();
 
-	String getUserName();
-
-
 	/**
 	 * Sets an error, occurred during executing this progress.
 	 * 

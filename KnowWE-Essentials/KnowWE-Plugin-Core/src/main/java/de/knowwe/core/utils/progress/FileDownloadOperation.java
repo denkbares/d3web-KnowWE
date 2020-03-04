@@ -39,7 +39,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	@Override
-	public void execute(UserActionContext context, final AjaxProgressListener listener) throws IOException, InterruptedException {
+	public void execute(UserActionContext context) throws IOException, InterruptedException {
 		this.operationThread = Thread.currentThread();
 		this.messages.clear();
 		this.requestMarker = UUID.randomUUID();
@@ -49,7 +49,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 				"FileDownloadOperation-", null, DownloadFileAction.getTempDirectory());
 		tempFile = file;
 		try {
-			execute(context, file, listener);
+			execute(context, file, getProgressListener());
 		}
 		catch (IOException e) {
 			if (!file.delete()) file.deleteOnExit();
@@ -69,7 +69,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 			addMessage(Messages.error(msg + ": " + e, e));
 		}
 		finally {
-			listener.updateProgress(1f, COMPLETE_MESSAGE);
+			getProgressListener().updateProgress(1f, COMPLETE_MESSAGE);
 		}
 	}
 

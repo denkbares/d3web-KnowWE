@@ -76,15 +76,15 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT">
-			<fileset dir="${basedir}/../../KnowWE-SSP/">
-				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
-				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
-				<include name="KnowWE-Plugin-ILME/src/main/resources/webapp/" />
-				<exclude name="**/*.toolmenu.json"/>
-			</fileset>
-			<cutdirsmapper dirs="5" />
-		</copy>
+<!--		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT">-->
+<!--			<fileset dir="${basedir}/../../KnowWE-SSP/">-->
+<!--				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />-->
+<!--				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />-->
+<!--				<include name="KnowWE-Plugin-ILME/src/main/resources/webapp/" />-->
+<!--				<exclude name="**/*.toolmenu.json"/>-->
+<!--			</fileset>-->
+<!--			<cutdirsmapper dirs="5" />-->
+<!--		</copy>-->
 	</target>
 	<target name="update_resources konap" depends="update_resources core-plugins">
 		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">

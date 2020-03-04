@@ -23,14 +23,14 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 	}
 
 	@Override
-	public void execute(UserActionContext context, final AjaxProgressListener listener) throws IOException, InterruptedException {
+	public void execute(UserActionContext context) throws IOException, InterruptedException {
 		operationThread = Thread.currentThread();
 
 		final File folder = Files.createTempDir();
 		final File file = new File(folder, attachmentFileName);
 
 		try {
-			ParallelProgress parallel = new ParallelProgress(listener, 98f, 2f);
+			ParallelProgress parallel = new ParallelProgress(getProgressListener(), 98f, 2f);
 			ProgressListener executeListener = parallel.getSubTaskProgressListener(0);
 			ProgressListener attachListener = parallel.getSubTaskProgressListener(1);
 
@@ -72,7 +72,6 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 	 * does not contain the article's name.
 	 * 
 	 * @created 30.07.2013
-	 * @return
 	 */
 	public String getAttachmentFileName() {
 		return attachmentFileName;
@@ -103,10 +102,9 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 		}
 		else if (!article.equals(other.article)) return false;
 		if (attachmentFileName == null) {
-			if (other.attachmentFileName != null) return false;
+			return other.attachmentFileName == null;
 		}
-		else if (!attachmentFileName.equals(other.attachmentFileName)) return false;
-		return true;
+		else return attachmentFileName.equals(other.attachmentFileName);
 	}
 
 	@Override

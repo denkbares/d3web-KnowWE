@@ -26,17 +26,13 @@ package de.knowwe.core.utils.progress;
  */
 public class DefaultAjaxProgressListener implements AjaxProgressListener {
 
-	private final String userName;
 
 	private String currentMessage = "";
 	private float currentProgress = 0;
 	private String error = null;
-	private boolean running = true;
+	private boolean running = false;
 	private String id;
 
-	public DefaultAjaxProgressListener(String userName) {
-		this.userName = userName;
-	}
 
 	@Override
 	public String getMessage() {
@@ -62,11 +58,6 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 	@Override
 	public void setError(String error) {
 		this.error = error;
-	}
-
-	@Override
-	public String getUserName() {
-		return userName;
 	}
 
 	@Override
