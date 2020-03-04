@@ -2,12 +2,6 @@ KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 
-// KNOWWE.helper.observer.subscribe("beforeRerender", function() {
-// 	jq$('.long-op-progress-container').each(function() {
-// 		KNOWWE.core.plugin.progress.cache[jq$(this).attr('id')] = this;
-// 	});
-// });
-
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
 	jq$(document).find('.defaultMarkupFrame').each(function() {
 		KNOWWE.core.plugin.progress.updateProgressBar(jq$(this).attr('id'));
@@ -106,9 +100,10 @@ KNOWWE.core.plugin.progress = function() {
       // remove old errors
       removeAllErrors();
 
-      // remove old progress indicators (create a new one)
-      var container = jq$("#" + sectionID + " .long-op-progress-container");
-      container.find("#" + operationID).remove();
+      KNOWWE.helper.observer.notify('longOperationStarted', {
+        sectionId: sectionID,
+        opId: operationID
+      });
 
       new _KA(options).send();
 
@@ -136,6 +131,9 @@ KNOWWE.core.plugin.progress = function() {
     },
 
     removeLongOperation: function(sectionID, operationID) {
+      jq$('#' + operationID).remove();
+      hideProgress(operationID);
+      removeAllErrors();
 
       var params = {
         action: 'RemoveOperationAction',
@@ -186,7 +184,7 @@ KNOWWE.core.plugin.progress = function() {
               if (!running && progress === 0) continue;
               var bar = container.find("#" + opId);
               if (bar.length === 0) {
-                container.append("<div id='" + opId + "'>" +
+                container.append("<div id='" + opId + "' class='long-progress'>" +
                   "<div class='long-progress-state'></div>" +
                   "<div class='long-progress-bar'>" +
                   "<span class='long-progress-bar-percent'>0 %</span>" +
@@ -208,12 +206,7 @@ KNOWWE.core.plugin.progress = function() {
               }
               if (!running) {
                 var closeFunction = function(event) {
-                  var bar = jq$(event.target).parent();
-                  bar.remove();
-                  var barOpId = bar.attr('id');
-                  hideProgress(barOpId);
-                  KNOWWE.core.plugin.progress.removeLongOperation(sectionId, barOpId);
-                  removeAllErrors();
+                  KNOWWE.core.plugin.progress.removeLongOperation(sectionId, jq$(event.target).parent().attr('id'));
                 };
                 bar.find(".long-progress-state").unbind("click").click(closeFunction);
                 if (!bar.find(".long-progress-close").exists()) {
