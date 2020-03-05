@@ -24,9 +24,13 @@ import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
+import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.basicType.AttachmentType;
+import de.knowwe.core.kdom.objects.SimpleReference;
+import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -45,8 +49,8 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.OntologyUtils;
-import de.knowwe.ontology.kdom.relation.LiteralType;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
+import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class OntologyExcelTableMarkup extends DefaultMarkupType {
@@ -136,6 +140,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 			// get static IRIs and Literals from config
 			IRI subjectIRI = getUriFromConfig(core, config.subject);
+			if (subjectIRI == null) return; // error should already be handled elsewhere
+			final String subjectUriString = subjectIRI.toString();
 			IRI predicateIRI = getUriFromConfig(core, config.predicate);
 			List<IRI> objectIRIs = new ArrayList<>();
 			List<Literal> literals = new ArrayList<>();
@@ -159,6 +165,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 						// subject
 						if (config.subjectColumn > 0) {
 							subjectIRI = getUriFromCell(core, row, config.subjectColumn);
+						} else {
+							subjectIRI = core.createIRI(subjectUriString.replace("%23", String.valueOf(i)));
 						}
 
 						// predicate
@@ -494,9 +502,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			setSectionFinder(new RegexSectionFinder(
 					"\\s*subje[ck]t:?\\s+(.+)",
 					Pattern.CASE_INSENSITIVE, 1));
-			AbbreviatedResourceReference resource = new AbbreviatedResourceReference();
-			resource.setSectionFinder(OntologyUtils.ABBREVIATED_NS_RESOURCE_FINDER);
-			addChildType(resource);
+			addChildType(new XlsxTableResourceReference());
 		}
 
 		public void addSubject(Section<XlsxSubjectType> xlsxSubject, Config config) throws CompilerMessage {
@@ -523,9 +529,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			setSectionFinder(new RegexSectionFinder(
 					"\\s*predi[ck]ate?:?\\s+(.+)*",
 					Pattern.CASE_INSENSITIVE, 1));
-			AbbreviatedResourceReference resource = new AbbreviatedResourceReference();
-			resource.setSectionFinder(OntologyUtils.ABBREVIATED_NS_RESOURCE_FINDER);
-			addChildType(resource);
+			addChildType(new XlsxTableResourceReference());
 		}
 
 		public void addPredicate(Section<XlsxPredicateType> xlsxSubject, Config config) throws CompilerMessage {
@@ -551,22 +555,20 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			setSectionFinder(new RegexSectionFinder(
 					"\\s*obje[ck]t:?\\s+(.+)",
 					Pattern.CASE_INSENSITIVE, 1));
-			addChildType(new LiteralType());
-			AbbreviatedResourceReference resource = new AbbreviatedResourceReference();
-			resource.setSectionFinder(OntologyUtils.ABBREVIATED_NS_RESOURCE_FINDER);
-			addChildType(resource);
+			addChildType(new TurtleLiteralType());
+			addChildType(new XlsxTableResourceReference());
 		}
 
 		public void addObjects(Section<XlsxObjectType> xlsxObject, Config config) throws CompilerMessage {
 			ObjectConfig objectConfig = new ObjectConfig();
 			Section<AbbreviatedResourceReference> object = Sections.child(xlsxObject, AbbreviatedResourceReference.class);
-			Section<LiteralType> literal = Sections.child(xlsxObject, LiteralType.class);
+			Section<TurtleLiteralType> literal = Sections.child(xlsxObject, TurtleLiteralType.class);
 			if (object != null) {
 				objectConfig.object = object;
 			}
 			else if (literal != null) {
 				objectConfig.objectLiteral = literal;
-				Section<LiteralType.LiteralPart> content = Sections.child(literal, LiteralType.LiteralPart.class);
+				Section<TurtleLiteralType.LiteralPart> content = Sections.child(literal, TurtleLiteralType.LiteralPart.class);
 				if (content != null) {
 					setObjectColumn(content.getText(), objectConfig);
 				}
@@ -584,9 +586,21 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 				config.objectColumn = Integer.parseInt(matcher.group(1));
 			}
 			else {
-				throw CompilerMessage.error("Invalid subject. Either give an abbreviated uri, " +
+				throw CompilerMessage.error("Invalid object. Either give an abbreviated uri, " +
 						"e.g. ns:mySubject, or an column, e.g. column 1, or literal column, e.g. \"column 1\"@en");
 			}
+		}
+	}
+
+	private static class XlsxTableResourceReference extends AbbreviatedResourceReference {
+
+		public XlsxTableResourceReference() {
+			for (SimpleReference reference : Types.successors(this, SimpleReference.class)) {
+				//noinspection unchecked
+				reference.removeCompileScript(OntologyCompiler.class, SimpleReferenceRegistrationScript.class);
+				reference.addCompileScript(Priority.LOW, new SimpleReferenceRegistrationScript<>(OntologyCompiler.class, false));
+			}
+			setSectionFinder(OntologyUtils.ABBREVIATED_NS_RESOURCE_FINDER);
 		}
 	}
 
@@ -607,6 +621,6 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	private static class ObjectConfig {
 		public int objectColumn;
 		public Section<AbbreviatedResourceReference> object;
-		public Section<LiteralType> objectLiteral;
+		public Section<TurtleLiteralType> objectLiteral;
 	}
 }
