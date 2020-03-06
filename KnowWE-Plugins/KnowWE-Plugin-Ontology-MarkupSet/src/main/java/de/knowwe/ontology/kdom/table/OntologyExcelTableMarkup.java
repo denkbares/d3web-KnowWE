@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -63,9 +64,11 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	private static final String COUNT_KEY = "countKey";
 	private static final String ANNOTATION_CONFIG = "config";
 	private static final String ANNOTATION_XLSX = "xlsx";
-	private static final Pattern COLUMN_PATTERN = Pattern.compile("$?column:?\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+	private static final Pattern COLUMN_PATTERN = Pattern.compile("\\$column:?\\s*(\\w+)|\\$\\{column:?\\s*(\\w+)}", Pattern.CASE_INSENSITIVE);
 	private static final String ROW_VARIABLE = "$row";
+	private static final String ROW_VARIABLE2 = "${row}";
 	private static final String URL_ROW_VARIABLE = Strings.encodeURL(ROW_VARIABLE);
+	private static final String URL_ROW_VARIABLE2 = Strings.encodeURL(ROW_VARIABLE2);
 
 	static {
 		MARKUP = new DefaultMarkup("OntologyExcelTable");
@@ -76,8 +79,10 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_CONFIG, true);
 		MARKUP.addAnnotationContentType(ANNOTATION_CONFIG, new ConfigAnnotationType());
 		String documentation = "Some examples:\n"
-				+ "@readLines: Sheet 1-3, Rows 5+, Subject Column 1, Predicate skos:prefLabel, Object \"Column 3\"@en\n"
-				+ "@readLines: Sheet 4, Rows 5-120, Subject Column 1, Predicate rdf:type, Object Column 2";
+				+ "@config: Sheet 1-3, Rows 5+, Subject $columnA, Predicate rdf:type, Object lns:ImportedRow\n"
+				+ "@config: Sheet 1-3, Rows 5+, Subject $columnA, Predicate lns:hasRowNumber, Object \"$row\"^^xsd:int\n"
+				+ "@config: Sheet 1-3, Rows 5+, Subject ${column A}, Predicate skos:prefLabel, Object \"${column C}\"@en\n"
+				+ "@config: Sheet 4, Rows 5-120, Subject $column1, Predicate $column4, Object $column5";
 		MARKUP.getAnnotation(ANNOTATION_CONFIG).setDocumentation(documentation);
 		MARKUP.addAnnotation(ANNOTATION_XLSX, true);
 		MARKUP.addAnnotationContentType(ANNOTATION_XLSX, new AttachmentType());
@@ -175,7 +180,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 							subjectIRI = getUriFromCell(core, row, config.subjectColumn);
 						}
 						else { // read from config
-							subjectIRI = core.createIRI(subjectIriString.replace(URL_ROW_VARIABLE, String.valueOf(i)));
+							subjectIRI = core.createIRI(replaceRowInUri(i, subjectIriString));
 						}
 
 						// predicate
@@ -183,7 +188,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 							predicateIRI = getUriFromCell(core, row, config.predicateColumn);
 						}
 						else { // read from config
-							predicateIRI = core.createIRI(predicateIriString.replace(URL_ROW_VARIABLE, String.valueOf(i)));
+							predicateIRI = core.createIRI(replaceRowInUri(i, predicateIriString));
 						}
 
 						// objects
@@ -202,18 +207,18 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 							}
 							else { // read from config
 								if (objectIriString != null) {
-									objectIRI = core.createIRI(objectIriString.replace(URL_ROW_VARIABLE, String.valueOf(i)));
+									objectIRI = core.createIRI(replaceRowInUri(i, objectIriString));
 								}
 								else if (literal != null) {
 									final Optional<String> language = literal.getLanguage();
 									if (language.isPresent()) {
 										literal = core.createLanguageTaggedLiteral(
-												literal.getLabel().replace(ROW_VARIABLE, String.valueOf(i)),
+												replaceRow(i, literal.getLabel()),
 												language.get());
 									}
 									else {
 										literal = core.createDatatypeLiteral(
-												literal.stringValue().replace(ROW_VARIABLE, String.valueOf(i)),
+												replaceRow(i, literal.getLabel()),
 												literal.getDatatype());
 									}
 								}
@@ -332,6 +337,17 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private Config getConfig(Section<ConfigAnnotationType> section) {
 			return (Config) section.getObject(CONFIG_KEY);
 		}
+	}
+
+	@NotNull
+	private static String replaceRowInUri(int i, String objectIriString) {
+		return objectIriString.replace(URL_ROW_VARIABLE, String.valueOf(i))
+				.replace(URL_ROW_VARIABLE2, String.valueOf(i));
+	}
+
+	@NotNull
+	private static String replaceRow(int i, String label) {
+		return label.replace(ROW_VARIABLE, String.valueOf(i)).replace(ROW_VARIABLE2, String.valueOf(i));
 	}
 
 	/**
@@ -470,7 +486,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	}
 
 	private static class SkipType extends AbstractType {
-		private static final String COLUMN_PATTERN = "(\\d+)";    //"(\\d+)(\\+)?(?:-(\\d+))?";
+		private static final String COLUMN_PATTERN = "(\\w+)";    //"(\\d+)(\\+)?(?:-(\\d+))?";
 		private static final String MATCHING_PATTERN = "(?:matching):?\\s*(\"?.*\"?)";
 
 		public SkipType() {
@@ -488,7 +504,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Matcher matchingMatcher = matchingPattern.matcher(section.getText());
 
 			if (columnMatcher.find()) {
-				config.skipColumn = Integer.parseInt(columnMatcher.group(1));
+				config.skipColumn = getColumnNumber(columnMatcher);
 			}
 			if (matchingMatcher.find()) {
 				config.skipPattern = Strings.unquote(matchingMatcher.group(1));
@@ -544,7 +560,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			else {
 				Matcher matcher = COLUMN_PATTERN.matcher(xlsxSubject.getText());
 				if (matcher.find()) {
-					config.subjectColumn = Integer.parseInt(matcher.group(1));
+					config.subjectColumn = getColumnNumber(matcher);
 				}
 				else {
 					throw CompilerMessage.error("Invalid subject. Either give an abbreviated uri, " +
@@ -571,7 +587,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			else {
 				Matcher matcher = COLUMN_PATTERN.matcher(xlsxSubject.getText());
 				if (matcher.find()) {
-					config.predicateColumn = Integer.parseInt(matcher.group(1));
+					config.predicateColumn = getColumnNumber(matcher);
 				}
 				else {
 					throw CompilerMessage.error("Invalid predicate. Either give an abbreviated uri, e.g. ns:myPredicate or an column, e.g. column 1");
@@ -614,8 +630,21 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private void setObjectColumn(String text, ObjectConfig config) {
 			Matcher matcher = COLUMN_PATTERN.matcher(text);
 			if (matcher.find()) {
-				config.objectColumn = Integer.parseInt(matcher.group(1));
+				config.objectColumn = getColumnNumber(matcher);
 			}
+		}
+	}
+
+	private static int getColumnNumber(Matcher columnMatcher) {
+		String columnIdentifier = columnMatcher.group(1);
+		if (columnIdentifier == null) {
+			columnIdentifier = columnMatcher.group(2);
+		}
+		try {
+			return Integer.parseInt(columnIdentifier);
+		}
+		catch (NumberFormatException e) {
+			return CellReference.convertColStringToIndex(columnIdentifier) + 1;
 		}
 	}
 
