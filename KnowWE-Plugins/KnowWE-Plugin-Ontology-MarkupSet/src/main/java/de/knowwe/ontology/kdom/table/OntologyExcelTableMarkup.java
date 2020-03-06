@@ -3,6 +3,7 @@ package de.knowwe.ontology.kdom.table;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,7 +63,9 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	private static final String COUNT_KEY = "countKey";
 	private static final String ANNOTATION_CONFIG = "config";
 	private static final String ANNOTATION_XLSX = "xlsx";
-	public static final Pattern COLUMN_PATTERN = Pattern.compile("column:?\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+	private static final Pattern COLUMN_PATTERN = Pattern.compile("$?column:?\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+	private static final String ROW_VARIABLE = "$row";
+	private static final String URL_ROW_VARIABLE = Strings.encodeURL(ROW_VARIABLE);
 
 	static {
 		MARKUP = new DefaultMarkup("OntologyExcelTable");
@@ -141,15 +144,20 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			// get static IRIs and Literals from config
 			IRI subjectIRI = getUriFromConfig(core, config.subject);
 			if (subjectIRI == null) return; // error should already be handled elsewhere
-			final String subjectUriString = subjectIRI.toString();
+			final String subjectIriString = subjectIRI.toString();
 			IRI predicateIRI = getUriFromConfig(core, config.predicate);
+			if (predicateIRI == null) return; // error should already be handled elsewhere
+			final String predicateIriString = predicateIRI.toString();
+
 			List<IRI> objectIRIs = new ArrayList<>();
+			List<String> objectIriStrings = new ArrayList<>();
 			List<Literal> literals = new ArrayList<>();
 			for (ObjectConfig objectConfig : config.objectConfigs) {
-				objectIRIs.add(getUriFromConfig(core, objectConfig.object));
-				if (objectConfig.objectLiteral != null) {
-					literals.add(objectConfig.objectLiteral.get().getLiteral(core, objectConfig.objectLiteral));
-				}
+				final IRI uriFromConfig = getUriFromConfig(core, objectConfig.object);
+				objectIRIs.add(uriFromConfig);
+				objectIriStrings.add(uriFromConfig == null ? null : uriFromConfig.toString());
+				literals.add(objectConfig.objectLiteral == null ?
+						null : objectConfig.objectLiteral.get().getLiteral(core, objectConfig.objectLiteral));
 			}
 
 			int statementCounter = 0;
@@ -163,28 +171,51 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 						XSSFRow row = sheet.getRow(i);
 
 						// subject
-						if (config.subjectColumn > 0) {
+						if (config.subjectColumn > 0) { // read from excel
 							subjectIRI = getUriFromCell(core, row, config.subjectColumn);
-						} else {
-							subjectIRI = core.createIRI(subjectUriString.replace("%23", String.valueOf(i)));
+						}
+						else { // read from config
+							subjectIRI = core.createIRI(subjectIriString.replace(URL_ROW_VARIABLE, String.valueOf(i)));
 						}
 
 						// predicate
-						if (config.predicateColumn > 0) {
+						if (config.predicateColumn > 0) { // read from excel
 							predicateIRI = getUriFromCell(core, row, config.predicateColumn);
+						}
+						else { // read from config
+							predicateIRI = core.createIRI(predicateIriString.replace(URL_ROW_VARIABLE, String.valueOf(i)));
 						}
 
 						// objects
 						for (int j = 0; j < config.objectConfigs.size(); j++) {
 							ObjectConfig objectConfig = config.objectConfigs.get(j);
 							IRI objectIRI = objectIRIs.get(j);
+							String objectIriString = objectIriStrings.get(j);
 							Literal literal = literals.get(j);
-							if (objectConfig.objectColumn > 0) {
+							if (objectConfig.objectColumn > 0) { // read from excel
 								if (literals.get(j) == null) {
 									objectIRI = getUriFromCell(core, row, objectConfig.objectColumn);
 								}
 								else {
 									literal = getLiteralFromCell(core, row, objectConfig, literal);
+								}
+							}
+							else { // read from config
+								if (objectIriString != null) {
+									objectIRI = core.createIRI(objectIriString.replace(URL_ROW_VARIABLE, String.valueOf(i)));
+								}
+								else if (literal != null) {
+									final Optional<String> language = literal.getLanguage();
+									if (language.isPresent()) {
+										literal = core.createLanguageTaggedLiteral(
+												literal.getLabel().replace(ROW_VARIABLE, String.valueOf(i)),
+												language.get());
+									}
+									else {
+										literal = core.createDatatypeLiteral(
+												literal.stringValue().replace(ROW_VARIABLE, String.valueOf(i)),
+												literal.getDatatype());
+									}
 								}
 							}
 
@@ -559,7 +590,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			addChildType(new XlsxTableResourceReference());
 		}
 
-		public void addObjects(Section<XlsxObjectType> xlsxObject, Config config) throws CompilerMessage {
+		public void addObjects(Section<XlsxObjectType> xlsxObject, Config config) {
 			ObjectConfig objectConfig = new ObjectConfig();
 			Section<AbbreviatedResourceReference> object = Sections.child(xlsxObject, AbbreviatedResourceReference.class);
 			Section<TurtleLiteralType> literal = Sections.child(xlsxObject, TurtleLiteralType.class);
@@ -580,14 +611,10 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			config.objectConfigs.add(objectConfig);
 		}
 
-		private void setObjectColumn(String text, ObjectConfig config) throws CompilerMessage {
+		private void setObjectColumn(String text, ObjectConfig config) {
 			Matcher matcher = COLUMN_PATTERN.matcher(text);
 			if (matcher.find()) {
 				config.objectColumn = Integer.parseInt(matcher.group(1));
-			}
-			else {
-				throw CompilerMessage.error("Invalid object. Either give an abbreviated uri, " +
-						"e.g. ns:mySubject, or an column, e.g. column 1, or literal column, e.g. \"column 1\"@en");
 			}
 		}
 	}
