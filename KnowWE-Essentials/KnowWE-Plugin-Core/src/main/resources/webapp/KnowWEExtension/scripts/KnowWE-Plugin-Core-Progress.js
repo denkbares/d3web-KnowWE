@@ -85,13 +85,12 @@ KNOWWE.core.plugin.progress = function() {
 
       jq$.extend(params, parameters);
 
+      // Start the long operation
       var options = {
         url: KNOWWE.core.util.getURL(params),
         loader: false,
         response: {
           fn: function() {
-            showProgress(operationID);
-            KNOWWE.core.plugin.progress.updateProgressBar(sectionID);
           },
           onError: handleErrResponse
         }
@@ -106,6 +105,32 @@ KNOWWE.core.plugin.progress = function() {
       });
 
       new _KA(options).send();
+
+      // Start the progress updates for the longer operations. We need a separate action here, because the request
+      // starting the actual operation does not return to the client until the operation is finished
+      params = {
+        action : 'StartProgressAction',
+        SectionID : sectionID,
+        OperationID : operationID,
+        ProgressID : progressID
+      };
+
+      jq$.extend(params, parameters);
+
+      options = {
+        url : KNOWWE.core.util.getURL(params),
+        loader : false,
+        response : {
+          fn : function() {
+            showProgress(operationID);
+            KNOWWE.core.plugin.progress.updateProgressBar(sectionID);
+          },
+          onError : handleErrResponse
+        }
+      };
+
+      new _KA(options).send();
+
 
     },
 
