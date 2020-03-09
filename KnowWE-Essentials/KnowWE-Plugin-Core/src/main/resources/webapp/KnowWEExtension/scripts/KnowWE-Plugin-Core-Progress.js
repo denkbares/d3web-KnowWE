@@ -55,7 +55,7 @@ KNOWWE.core.plugin.progress = function() {
 
   function isProgressShown(operationID) {
 		let visible = localStorage.getItem(getKey(operationID));
-		return typeof visible === "undefined" || visible === "true";
+		return typeof visible === "undefined" || visible === null || visible === "true";
   }
 
   return {
