@@ -3,10 +3,12 @@ package de.knowwe.core.utils.progress;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -29,7 +31,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	private File tempFile = null;
 	private UUID requestMarker = null;
 	private final String storeKey = FileDownloadOperation.class.getName();
-	private final List<Message> messages = new LinkedList<>();
+	private final List<Message> messages = Collections.synchronizedList(new ArrayList<>());
 
 	public static String COMPLETE_MESSAGE = "Done.";
 
@@ -41,7 +43,9 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	@Override
 	public void execute(UserActionContext context) throws IOException, InterruptedException {
 		this.operationThread = Thread.currentThread();
-		this.messages.clear();
+		synchronized (messages) {
+			this.messages.clear();
+		}
 		this.requestMarker = UUID.randomUUID();
 		context.getSession().setAttribute(storeKey, requestMarker);
 
@@ -85,11 +89,7 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	 */
 	public abstract void execute(UserActionContext context, File resultFile, AjaxProgressListener listener) throws IOException, InterruptedException;
 
-	public Article getArticle() {
-		return article;
-	}
-
-	public void addMessage(Message msg) {
+	public void addMessage(@NotNull Message msg) {
 		this.messages.add(msg);
 	}
 
@@ -98,10 +98,12 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	public boolean hasMessage(Type type) {
-		for (Message msg : messages) {
-			if (msg.getType() == type) return true;
+		synchronized (messages) {
+			for (Message msg : messages) {
+				if (msg.getType() == type) return true;
+			}
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -116,19 +118,21 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		StringBuilder errors = new StringBuilder();
 		StringBuilder warnings = new StringBuilder();
 		StringBuilder other = new StringBuilder();
-		for (Message msg : messages) {
-			Type type = msg.getType();
-			String details = msg.getDetails();
-			StringBuilder builder = (type == Type.ERROR) ? errors :
-					(type == Type.WARNING) ? warnings : other;
-			if (builder.length() > 0) {
-				builder.append("\n");
-			}
-			builder.append(Strings.encodeHtml(msg.getVerbalization()));
-			if (!Strings.isBlank(details)) {
-				builder.append(" <span title='")
-						.append(Strings.encodeHtml(details))
-						.append("'><img src='KnowWEExtension/images/dt_icon_q_description_small.png'></img></span>");
+		synchronized (messages) {
+			for (Message msg : messages) {
+				Type type = msg.getType();
+				String details = msg.getDetails();
+				StringBuilder builder = (type == Type.ERROR) ? errors :
+						(type == Type.WARNING) ? warnings : other;
+				if (builder.length() > 0) {
+					builder.append("\n");
+				}
+				builder.append(Strings.encodeHtml(msg.getVerbalization()));
+				if (!Strings.isBlank(details)) {
+					builder.append(" <span title='")
+							.append(Strings.encodeHtml(details))
+							.append("'><img src='KnowWEExtension/images/dt_icon_q_description_small.png'></img></span>");
+				}
 			}
 		}
 
