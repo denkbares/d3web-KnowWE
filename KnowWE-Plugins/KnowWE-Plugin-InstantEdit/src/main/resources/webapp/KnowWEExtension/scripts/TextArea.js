@@ -3,7 +3,11 @@ function TextArea(area) {
 		return area.textarea;
 	}
 	this.area = jq$(area)[0];
-	this.area.addClassName('ui-wiki-content-edit-area');
+	if (this.area.addClass) {
+		this.area.addClass('ui-wiki-content-edit-area');
+	} else {
+	  this.area.addClassName('ui-wiki-content-edit-area');
+	}
 	area.textarea = this;
 	this.area.undoHistory = [];
 	this.area.redoHistory = [];
