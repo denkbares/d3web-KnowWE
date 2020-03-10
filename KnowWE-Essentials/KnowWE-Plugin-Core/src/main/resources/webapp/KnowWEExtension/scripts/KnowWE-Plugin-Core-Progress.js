@@ -2,25 +2,12 @@ KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 
-KNOWWE.helper.observer.subscribe("afterRerender", function() {
-	jq$(document).find('.defaultMarkupFrame').each(function() {
-		KNOWWE.core.plugin.progress.updateProgressBar(jq$(this).attr('id'));
-	})
-});
-
-jq$(window).ready(function() {
-  jq$(document).find('.defaultMarkupFrame').each(function() {
-    KNOWWE.core.plugin.progress.updateProgressBar(jq$(this).attr('id'));
-  })
-});
-
-
 /**
  * Namespace: KNOWWE.core.plugin.progress
  */
 KNOWWE.core.plugin.progress = function() {
 
-	function handleErrResponse() {
+  function handleErrResponse() {
     var status = this.status;
     if (status == null) status = -1;
     switch (status) {
@@ -41,21 +28,21 @@ KNOWWE.core.plugin.progress = function() {
     KNOWWE.notification.removeNotification("lop_unexpected");
   }
 
-	function getKey(operationID) {
-		return 'knowwe-progress-visibility-' + operationID;
-	}
+  function getKey(operationID) {
+    return 'knowwe-progress-visibility-' + operationID;
+  }
 
-	function showProgress(operationID) {
-		localStorage.setItem(getKey(operationID), "true");
+  function showProgress(operationID) {
+    localStorage.setItem(getKey(operationID), "true");
   }
 
   function hideProgress(operationID) {
-		localStorage.setItem(getKey(operationID), "false");
+    localStorage.setItem(getKey(operationID), "false");
   }
 
   function isProgressShown(operationID) {
-		let visible = localStorage.getItem(getKey(operationID));
-		return typeof visible === "undefined" || visible === null || visible === "true";
+    let visible = localStorage.getItem(getKey(operationID));
+    return typeof visible === "undefined" || visible === null || visible === "true";
   }
 
   return {
@@ -109,23 +96,23 @@ KNOWWE.core.plugin.progress = function() {
       // Start the progress updates for the longer operations. We need a separate action here, because the request
       // starting the actual operation does not return to the client until the operation is finished
       params = {
-        action : 'StartProgressAction',
-        SectionID : sectionID,
-        OperationID : operationID,
-        ProgressID : progressID
+        action: 'StartProgressAction',
+        SectionID: sectionID,
+        OperationID: operationID,
+        ProgressID: progressID
       };
 
       jq$.extend(params, parameters);
 
       options = {
-        url : KNOWWE.core.util.getURL(params),
-        loader : false,
-        response : {
-          fn : function() {
+        url: KNOWWE.core.util.getURL(params),
+        loader: false,
+        response: {
+          fn: function() {
             showProgress(operationID);
             KNOWWE.core.plugin.progress.updateProgressBar(sectionID);
           },
-          onError : handleErrResponse
+          onError: handleErrResponse
         }
       };
 
@@ -183,6 +170,14 @@ KNOWWE.core.plugin.progress = function() {
     // we remember which bars are hidden/removed, otherwise they can be added again accidentally, because the ajax
     // to remove and refresh could be timed unfortunately
     hiddenProgress: {},
+
+    updateProgressBars: function() {
+      jq$(document).find('.defaultMarkupFrame').each(function() {
+        if (jq$(this).find('.long-op-progress-container').exists()) {
+          KNOWWE.core.plugin.progress.updateProgressBar(jq$(this).attr('id'));
+        }
+      });
+    },
 
     updateProgressBar: function(sectionId, refreshTilProgress) {
 
@@ -279,4 +274,6 @@ KNOWWE.core.plugin.progress = function() {
   }
 }();
 
+KNOWWE.helper.observer.subscribe("afterRerender", KNOWWE.core.plugin.progress.updateProgressBars);
 
+jq$(window).ready(KNOWWE.core.plugin.progress.updateProgressBars);
