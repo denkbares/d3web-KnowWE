@@ -247,7 +247,11 @@ public class DefaultArticleManager implements ArticleManager {
 			}
 		}
 		finally {
-			mainLock.unlock();
+			// if a transaction has made a rollback, the mainLock was finally unlocked and the lock count is 0
+			// if we then make a unlock, we will get an exception
+			if(mainLock.getHoldCount()>0) {
+				mainLock.unlock();
+			}
 		}
 	}
 

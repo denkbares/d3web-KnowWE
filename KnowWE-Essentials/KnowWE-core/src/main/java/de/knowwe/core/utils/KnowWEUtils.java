@@ -1246,12 +1246,15 @@ public class KnowWEUtils {
 	 * Also rollbacks an ArticleManager transaction
 	 * Only works if GitVersioningFileProvider is active
 	 */
-	public static void rollbackPageTransaction(final UserContext context) {
+	public static boolean rollbackPageTransaction(final UserContext context) {
+		boolean rolledBack = false;
 		if (Environment.getInstance().getWikiConnector().hasRollbackPageProvider()) {
 			final ArticleManager articleManager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 			articleManager.rollback();
+			rolledBack = true;
 		}
 		Environment.getInstance().getWikiConnector().rollbackPageTransaction(context.getUserName());
+		return rolledBack;
 	}
 
 	/**
