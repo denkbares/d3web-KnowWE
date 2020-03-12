@@ -217,6 +217,13 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 	@Override
 	public void commit() {
+
+		if (mainLock.getHoldCount() == 0) {
+			// This can happen if a rollback was performed, where we also unlock (reduce hold count)
+			// in the finally block. In this case we must not commit (or reduce hold count again).
+			return;
+		}
+
 		try {
 			if (mainLock.getHoldCount() == 1) {
 				ArrayList<Section<?>> addedSections = new ArrayList<>();
@@ -247,11 +254,7 @@ public class DefaultArticleManager implements ArticleManager {
 			}
 		}
 		finally {
-			// if a transaction has made a rollback, the mainLock was finally unlocked and the lock count is 0
-			// if we then make a unlock, we will get an exception
-			if(mainLock.getHoldCount()>0) {
-				mainLock.unlock();
-			}
+			mainLock.unlock();
 		}
 	}
 
