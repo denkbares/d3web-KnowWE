@@ -536,10 +536,6 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
 				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-OntoDoc</artifactId>
-				</dependency>
 			</dependencies>
 		</profile>
 
