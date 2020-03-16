@@ -160,7 +160,7 @@ public class ValueTooltipRenderer extends TooltipRenderer {
 			builder.append("<p>The following input values were used to derive this value:");
 			builder.append("<ul>");
 			for (Fact sourceFact : sourceFacts) {
-				String valueString = formatValue((ValueObject) namedObject, sourceFact.getValue());
+				String valueString = formatValue((ValueObject) sourceFact.getTerminologyObject(), sourceFact.getValue());
 				Identifier identifier = new Identifier(sourceFact.getTerminologyObject().getName());
 				String urlLinkToTermDefinition = CompositeEditToolProvider.createCompositeEditModeAction(identifier);
 				builder.append("<li>")
