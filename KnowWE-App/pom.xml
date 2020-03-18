@@ -559,6 +559,10 @@
 					<artifactId>KnowWE-Plugin-SemanticServiceCore</artifactId>
 				</dependency>
 				<dependency>
+					<groupId>com.denkbares.ssp</groupId>
+					<artifactId>KnowWE-Plugin-ServiceMate</artifactId>
+				</dependency>
+				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TermBrowser-Autocompletion</artifactId>
 				</dependency>

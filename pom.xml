@@ -32,6 +32,7 @@
 		<d3web.version>${project.version}</d3web.version>
 		<knowwe.version>${project.version}</knowwe.version>
 		<ssp.version>3.4-SNAPSHOT</ssp.version>
+		<mate.version>2.5-SNAPSHOT</mate.version>
 		<selenium.version>3.13.0</selenium.version>
 		<tomcat.version>9.0.13</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -487,7 +488,7 @@
 			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>KnowWE-Plugin-ServiceMate</artifactId>
-				<version>${knowwe.version}</version>
+				<version>${mate.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
