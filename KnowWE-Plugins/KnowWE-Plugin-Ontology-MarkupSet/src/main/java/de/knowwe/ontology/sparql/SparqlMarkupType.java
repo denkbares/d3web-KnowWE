@@ -36,6 +36,8 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupCompileScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
+import de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup;
+import de.knowwe.ontology.ci.RegisteredNameType;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.util.Color;
 
@@ -87,6 +89,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(TIMEOUT, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(NAME, false);
 		MARKUP.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
+		MARKUP.addAnnotationContentType(NAME, new RegisteredNameType(SparqlMarkupType.class));
 		MARKUP.addAnnotation(COLUMNSTYLE, false);
 		MARKUP.getAnnotation(COLUMNSTYLE)
 				.setDocumentation("Set styles for a specific column of the SPARQL table. Any HTML/CSS style should work.<p>" +
@@ -103,8 +106,6 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(ALLOW_JSPWIKIMARKUP, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(COLUMNWIDTH, false);
 		MARKUP.addAnnotationRenderer(COLUMNWIDTH, NothingRenderer.getInstance());
-		// TODO: replace class SparqlNameRegistrationScript by content type
-		// m.addAnnotationContentType(NAME, new SparqlNameDefinition());
 		PackageManager.addPackageAnnotation(MARKUP);
 	}
 

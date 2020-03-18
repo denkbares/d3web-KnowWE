@@ -38,6 +38,7 @@ public class ExpectedSparqlResultTableMarkup extends DefaultMarkupType {
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(SPARQL_ANNOTATION, true);
 		MARKUP.addAnnotation(NAME_ANNOTATION, true);
+		MARKUP.addAnnotationContentType(NAME_ANNOTATION, new RegisteredNameType(ExpectedSparqlResultTableMarkup.class));
 
 		MARKUP.addContentType(new ExpectedSparqlResultTable());
 	}
