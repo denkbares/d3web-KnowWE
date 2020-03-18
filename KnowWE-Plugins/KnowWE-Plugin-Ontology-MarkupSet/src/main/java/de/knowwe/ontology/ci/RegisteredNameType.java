@@ -19,15 +19,23 @@
 
 package de.knowwe.ontology.ci;
 
+import java.util.Collection;
+
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.SimpleDefinition;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.utils.KnowWEUtils;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * A simple type to be used in name annotations (and similar). It will register the section with the name/content of the
@@ -42,11 +50,20 @@ public class RegisteredNameType extends SimpleDefinition {
 
 	public RegisteredNameType(Class<? extends Type> parentClass) {
 		super(DefaultGlobalCompiler.class, parentClass);
+		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		this.parentClass = parentClass;
 	}
 
 	@Override
 	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return new Identifier(parentClass.getSimpleName(), getTermName(section));
+	}
+
+	@NotNull
+	public static <T extends Type> Collection<Section<T>> getNamedMarkupSections(String registeredName, Class<T> registeredType) {
+		DefaultGlobalCompiler defaultGlobalCompiler = Compilers.getGlobalCompiler(KnowWEUtils.getDefaultArticleManager());
+		Section<? extends Type> registeredSections = defaultGlobalCompiler.getTerminologyManager()
+				.getTermDefiningSection(new Identifier(registeredType.getSimpleName(), registeredName));
+		return $(registeredSections).closest(registeredType).asList();
 	}
 }

@@ -20,12 +20,8 @@ package de.knowwe.ontology.ci.provider;
 
 import java.util.Collection;
 
-import com.denkbares.strings.Identifier;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup;
 import de.knowwe.ontology.ci.RegisteredNameType;
@@ -59,9 +55,6 @@ public class SparqlTestObjectProviderUtils {
 	}
 
 	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(String sparqlName, Class<T> clazz) {
-		DefaultGlobalCompiler defaultGlobalCompiler = Compilers.getGlobalCompiler(KnowWEUtils.getDefaultArticleManager());
-		Section<? extends Type> registeredSections = defaultGlobalCompiler.getTerminologyManager()
-				.getTermDefiningSection(new Identifier(clazz.getSimpleName(), sparqlName));
-		return $(registeredSections).closest(clazz).asList();
+		return RegisteredNameType.getNamedMarkupSections(sparqlName, clazz);
 	}
 }
