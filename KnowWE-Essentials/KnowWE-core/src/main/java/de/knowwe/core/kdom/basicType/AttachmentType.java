@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
@@ -67,15 +69,12 @@ public class AttachmentType extends AbstractType {
 
 			@Override
 			public void compile(DefaultGlobalCompiler compiler, Section<AttachmentType> section) {
-
 				section.storeObject(compiler, LISTENER_KEY, new AttachmentChangedListener(section));
-
 				if (generateMessages) handleMessages(section);
 			}
 
 			@Override
 			public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentType> section) {
-
 				// clean up listener
 				AttachmentChangedListener listener = (AttachmentChangedListener) section.removeObject(compiler, LISTENER_KEY);
 				if (listener != null) listener.destroy();
@@ -98,26 +97,34 @@ public class AttachmentType extends AbstractType {
 		}
 		catch (IOException e) {
 			Messages.storeMessage(section, AttachmentType.class,
-					Messages.internalError("Could not access attachment '"
-							+ path + "'.", e));
+					Messages.internalError("Could not access attachment '" + path + "'.", e));
 			return;
 		}
 
 		if (attachment == null) {
-			Messages.storeMessage(section, AttachmentType.class,
-					Messages.noSuchObjectError("Attachment", path));
+			Messages.storeMessage(section, AttachmentType.class, Messages.noSuchObjectError("Attachment", path));
 			return;
 		}
 
 		Messages.clearMessages(section, AttachmentType.class);
 	}
 
-	public static WikiAttachment getAttachment(Section<AttachmentType> section) throws IOException {
+	/**
+	 * Returns the {@link WikiAttachment} referenced by the specified section. This method returns null if the
+	 * attachment does not exists. The method throws an {@link IOException} if there are any problems to access the
+	 * attachment from the underlying wiki architecture.
+	 *
+	 * @param section the attachment-referencing section
+	 * @return the referenced attachment or null, if there is no such attachment
+	 * @throws IOException if the attachment cannot be accessed
+	 */
+	@Nullable
+	public static WikiAttachment getAttachment(Section<? extends AttachmentType> section) throws IOException {
 		String path = getPath(section);
 		return Environment.getInstance().getWikiConnector().getAttachment(path);
 	}
 
-	public static String getPath(Section<AttachmentType> section) {
+	public static String getPath(Section<? extends AttachmentType> section) {
 		String path = Strings.trim(section.getText());
 		if (!path.contains("/")) {
 			path = section.getTitle() + "/" + path;
@@ -174,8 +181,7 @@ public class AttachmentType extends AbstractType {
 				ArticleManager articleManager = article.getArticleManager();
 
 				boolean alreadyQueued = articleManager.getQueuedArticles()
-						.stream()
-						.anyMatch(a -> a.getTitle().equals(article.getTitle()));
+						.stream().anyMatch(a -> a.getTitle().equals(article.getTitle()));
 				if (!alreadyQueued) {
 					// basically, do a full parse...
 					Article newArticle = Article.createArticle(article.getText(), article.getTitle(), web);
