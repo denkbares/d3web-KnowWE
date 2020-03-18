@@ -780,6 +780,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param key is the key for which the objects were stored
 	 * @created 16.02.2012
 	 */
+	@NotNull
 	public synchronized Map<Compiler, Object> getObjects(String key) {
 		if (store == null) return Collections.emptyMap();
 		Map<Compiler, Object> objects = new HashMap<>(store.size());
@@ -790,6 +791,19 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			if (object != null) objects.put(compiler, object);
 		}
 		return Collections.unmodifiableMap(objects);
+	}
+
+	/**
+	 * Returns all objects stored in this Section for the specified compiler. The {@link Map} maps the stored keys to
+	 * the stored object of that compiler. To get the objects that are stored without an {@link Compiler} (compiler
+	 * independent), specify <tt>null</tt> as the requested compiler.
+	 *
+	 * @param compiler the compiler to get the stored objects for, or null for compiler-independent stored objects
+	 */
+	@NotNull
+	public synchronized Map<String, Object> getObjects(Compiler compiler) {
+		Map<String, Object> store = getStoreForCompiler(compiler);
+		return (store == null) ? Collections.emptyMap() : Collections.unmodifiableMap(store);
 	}
 
 	/**
