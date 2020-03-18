@@ -37,7 +37,7 @@ public class SimpleDefinitionRegistrationScript<C extends TermCompiler, T extend
 	@Override
 	public void compile(C compiler, Section<T> section) throws CompilerMessage {
 
-		if (!(section.get() instanceof TermDefinition)) return;
+		if (section.get() == null) return;
 
 		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		if (termIdentifier == null) {
