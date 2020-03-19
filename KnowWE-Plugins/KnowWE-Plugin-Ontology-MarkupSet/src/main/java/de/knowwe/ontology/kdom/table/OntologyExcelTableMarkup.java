@@ -281,7 +281,6 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			}
 			catch (Exception e) {
 				String message = "Exception while trying to access attached XLSX file";
-				Log.severe(message, e);
 				throw CompilerMessage.error(message);
 			}
 		}
