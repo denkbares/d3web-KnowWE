@@ -51,6 +51,11 @@ public abstract class AbstractLongOperation implements LongOperation {
 	}
 
 	@Override
+	public void reset() {
+		this.canceled = false;
+	}
+
+	@Override
 	public void doFinally() {
 		// default implementation doing nothing
 	}

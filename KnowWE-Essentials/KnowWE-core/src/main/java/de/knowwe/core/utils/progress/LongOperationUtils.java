@@ -144,6 +144,7 @@ public class LongOperationUtils {
 	public static void startLongOperation(final UserActionContext context, final LongOperation operation) {
 
 		try {
+			operation.reset();
 			operation.getProgressListener().updateProgress(0, "Initializing...");
 			operation.getProgressListener().setRunning(true);
 			operation.execute(context);
