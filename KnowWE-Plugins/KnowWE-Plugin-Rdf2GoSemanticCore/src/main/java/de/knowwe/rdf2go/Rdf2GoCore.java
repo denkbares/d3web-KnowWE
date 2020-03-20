@@ -1098,8 +1098,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * Executes the given ASK query with the given options. The currently known namespaces will automatically be
-	 * * prepended as prefixes.
+	 * Executes the given ASK query with the given options. The currently known namespaces will automatically be *
+	 * prepended as prefixes.
 	 *
 	 * @param query   the ASK query to be executed
 	 * @param options the options for this query
@@ -1115,8 +1115,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * Executes the given ASK query with the given options. Only the given namespaces will automatically be
-	 * prepended as prefixes.
+	 * Executes the given ASK query with the given options. Only the given namespaces will automatically be prepended as
+	 * prefixes.
 	 *
 	 * @param namespaces the namespaces to prepend as prefixes
 	 * @param query      the ASK query to be executed
@@ -1133,8 +1133,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * Executes the given SELECT query. The currently known namespaces will automatically be
-	 * prepended as prefixes.
+	 * Executes the given SELECT query. The currently known namespaces will automatically be prepended as prefixes.
 	 *
 	 * @param query the SELECT query to be executed
 	 * @return the result of the SELECT query
@@ -1161,8 +1160,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * Executes the given SELECT query with the given options. Only the given namespaces will automatically be
-	 * prepended as prefixes.
+	 * Executes the given SELECT query with the given options. Only the given namespaces will automatically be prepended
+	 * as prefixes.
 	 *
 	 * @param namespaces the namespaces to prepend as prefixes
 	 * @param query      the SELECT query to be executed
@@ -1432,9 +1431,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		 */
 		public boolean cached = true;
 		/**
-		 * Timeout for the query. Be aware that, in case of an uncached query, the
-		 * timeout only effects the process of creating the iterator. Retrieving elements from the iterator might again
-		 * take a long time not covered by the timeout.
+		 * Timeout for the query. Be aware that, in case of an uncached query, the timeout only effects the process of
+		 * creating the iterator. Retrieving elements from the iterator might again take a long time not covered by the
+		 * timeout.
 		 */
 		public long timeoutMillis = DEFAULT_TIMEOUT;
 		/**
@@ -1702,15 +1701,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		return this.ruleSet;
 	}
 
-	/**
-	 * Executes the sparql query, and dumps the result to the console, as a human-readable ascii formatted table. The
-	 * bound variables are in the title of the table, the column widths are adjusted to the content of each column. URI
-	 * references are abbreviated as the namespace is known to this core.
-	 *
-	 * @param query the sparql query to be executed
-	 */
-	@SuppressWarnings("unused")
+	@Override
 	public void dump(String query) {
+		Stopwatch stopwatch = new Stopwatch();
 		this.semanticCore.dump(query);
+		stopwatch.log("query executed");
 	}
 }
