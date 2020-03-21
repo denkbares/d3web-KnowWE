@@ -35,25 +35,19 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.LockSupport;
 import java.util.logging.Level;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -67,22 +61,20 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
-import org.eclipse.rdf4j.query.BooleanQuery;
-import org.eclipse.rdf4j.query.MalformedQueryException;
-import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
-import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.collections.N2MMap;
 import com.denkbares.events.EventManager;
+import com.denkbares.semanticcore.BooleanQuery;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.RepositoryConnection;
 import com.denkbares.semanticcore.SemanticCore;
@@ -108,6 +100,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import de.knowwe.rdf2go.utils.SparqlType;
 
 import static java.time.temporal.ChronoUnit.MINUTES;
 
@@ -118,23 +111,15 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	public static final double DEFAULT_QUERY_PRIORITY = 5d;
 
-	private enum SparqlType {
-		SELECT, CONSTRUCT, ASK
-	}
-
 	private final String name;
 
 	private static final AtomicLong coreId = new AtomicLong(0);
 
 	public static final int DEFAULT_TIMEOUT = 60000; // 60 seconds
 
-	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
-
-	private final Map<String, SparqlTask> resultCache = new LinkedHashMap<>(16, 0.75f, true);
-
 	private final Object statementMutex = new Object();
 
-	private int resultCacheSize = 0;
+	private final SparqlCache sparqlCache = new SparqlCache(this);
 
 	private final ThreadPoolExecutor sparqlThreadPool;
 
@@ -252,6 +237,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		catch (NumberFormatException e) {
 			return defaultThreadCount;
 		}
+	}
+
+	public SparqlCache getSparqlCache() {
+		return sparqlCache;
 	}
 
 	/**
@@ -563,10 +552,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				}
 				if (removedStatements || insertedStatements) {
 					// clear result cache if there are any changes
-					synchronized (this.resultCache) {
-						this.resultCache.clear();
-						this.resultCacheSize = 0;
-					}
+					sparqlCache.clear();
 					EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
 				}
 
@@ -1079,25 +1065,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * Clears any cached result for the given sparql query. This way, if the query is executed again, it has to be
-	 * calculated anew.
-	 *
-	 * @param query the query for which the cached result should be removed
-	 * @return true if a result was cached, false if not
-	 */
-	public boolean clearSparqlResult(String query) {
-		String completeQuery = prependPrefixesToQuery(getNamespaces(), query);
-		synchronized (this.resultCache) {
-			SparqlTask removed = this.resultCache.remove(completeQuery);
-			if (removed != null) {
-				this.resultCacheSize -= removed.getSize();
-				return true;
-			}
-			return false;
-		}
-	}
-
-	/**
 	 * Executes the given ASK query with the given options. The currently known namespaces will automatically be *
 	 * prepended as prefixes.
 	 *
@@ -1114,6 +1081,21 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		return sparqlAsk(namespaces, query, Options.DEFAULT);
 	}
 
+	@Override
+	public boolean sparqlAsk(com.denkbares.semanticcore.BooleanQuery query) throws QueryFailedException {
+		return (Boolean) sparql(Options.DEFAULT, SparqlType.ASK, null, query, null);
+	}
+
+	@Override
+	public BooleanQuery prepareAsk(String query) {
+		return semanticCore.prepareAsk(query);
+	}
+
+	@Override
+	public BooleanQuery prepareAsk(Collection<Namespace> namespaces, String query) {
+		return semanticCore.prepareAsk(namespaces, query);
+	}
+
 	/**
 	 * Executes the given ASK query with the given options. Only the given namespaces will automatically be prepended as
 	 * prefixes.
@@ -1124,7 +1106,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return the result of the ASK query
 	 */
 	public boolean sparqlAsk(Collection<Namespace> namespaces, String query, Options options) throws QueryFailedException {
-		return (Boolean) sparql(namespaces, query, options, SparqlType.ASK);
+		String completeQuery = prependPrefixesToQuery(namespaces, query);
+		return (Boolean) sparql(options, SparqlType.ASK, completeQuery, null, null);
 	}
 
 	@Override
@@ -1169,7 +1152,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return the result of the SELECT query
 	 */
 	public TupleQueryResult sparqlSelect(Collection<Namespace> namespaces, String query, Options options) {
-		TupleQueryResult result = (TupleQueryResult) sparql(namespaces, query, options, SparqlType.SELECT);
+		String completeQuery = prependPrefixesToQuery(namespaces, query);
+		TupleQueryResult result = (TupleQueryResult) sparql(options, SparqlType.SELECT, completeQuery, null, null);
 		if (result instanceof CachedTupleQueryResult) {
 			// make the result iterable by different threads multiple times... we have to do this, because the caller
 			// of this methods can not know, that he is getting a cached result that may already be iterated before
@@ -1178,20 +1162,43 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		return result;
 	}
 
-	private Object sparql(Collection<Namespace> namespaces, String query, Options options, SparqlType type) {
+	@Override
+	public TupleQueryResult sparqlSelect(TupleQuery query) throws QueryFailedException {
+		TupleQueryResult result = (TupleQueryResult) sparql(Options.DEFAULT, SparqlType.ASK, null, null, query);
+		if (result instanceof CachedTupleQueryResult) {
+			// make the result iterable by different threads multiple times... we have to do this, because the caller
+			// of this methods can not know, that he is getting a cached result that may already be iterated before
+			((CachedTupleQueryResult) result).resetIterator();
+		}
+		return result;
+	}
+
+	@Override
+	public TupleQuery prepareSelect(String query) {
+		return semanticCore.prepareSelect(query);
+	}
+
+	@Override
+	public TupleQuery prepareSelect(Collection<Namespace> namespaces, String query) {
+		return semanticCore.prepareSelect(namespaces, query);
+	}
+
+	private Object sparql(Options options, SparqlType type, @Nullable String query,
+						  @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery preparedSelect) {
 
 		Stopwatch stopwatch = new Stopwatch();
-		String completeQuery = prependPrefixesToQuery(namespaces, query);
 
 		// if the compile thread is calling here, we continue without all the timeout, cache, and lock
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
 			try {
-				Object result = new SparqlCallable(completeQuery, type, Long.MAX_VALUE, true).call();
+				// if the compiler itself requests a query, evaluate synchronously
+				SparqlCallable callable = newSparqlCallable(query, type, Long.MAX_VALUE, true, preparedAsk, preparedSelect);
+				Object result = callable.call();
 				if (stopwatch.getTime() > 10) {
 					Log.warning("Slow compile time SPARQL query detected. Query finished after "
 							+ stopwatch.getDisplay()
-							+ ": " + getReadableQuery(completeQuery, type) + "...");
+							+ ": " + Rdf2GoUtils.getReadableQuery(query, type) + "...");
 				}
 				return result;
 			}
@@ -1202,22 +1209,23 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		// normal query, e.g. from a renderer... do all the cache and timeout stuff
 		SparqlTask sparqlTask;
-		if (options.cached) {
-			synchronized (this.resultCache) {
-				sparqlTask = this.resultCache.get(completeQuery);
+		if (options.cached && query != null) {
+			// use case, if enabled, and we use a non-prepared query
+			synchronized (this.sparqlCache) {
+				sparqlTask = this.sparqlCache.get(query);
 				if (sparqlTask == null
-						|| (sparqlTask.isCancelled() && sparqlTask.callable.timeOutMillis != options.timeoutMillis)) {
-					sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, options.timeoutMillis, true), options.priority);
-					SparqlTask previous = this.resultCache.put(completeQuery, sparqlTask);
-					if (previous != null) {
-						this.resultCacheSize -= previous.getSize();
-					}
+						|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != options.timeoutMillis)) {
+					SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, true, preparedAsk, preparedSelect);
+					sparqlTask = new SparqlTask(callable, options.priority);
+					this.sparqlCache.put(query, sparqlTask);
 					sparqlThreadPool.execute(sparqlTask);
 				}
 			}
 		}
 		else {
-			sparqlTask = new SparqlTask(new SparqlCallable(completeQuery, type, options.timeoutMillis, false), options.priority);
+			// otherwise execute sparql query with no caches
+			SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, false, preparedAsk, preparedSelect);
+			sparqlTask = new SparqlTask(callable, options.priority);
 			final int currentQueueSize = sparqlThreadPool.getQueue().size();
 			if (currentQueueSize > 5) {
 				Log.info("Queuing new SPARQL query (" + name + "), current queue length: " + currentQueueSize);
@@ -1258,117 +1266,19 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 	}
 
-	/**
-	 * Future for SPARQL queries with some addition control to stop it and get info about state.
-	 */
-	private class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
-
-		private long startTime = Long.MIN_VALUE;
-		private final SparqlCallable callable;
-		private final double priority;
-		private Thread thread = null;
-		private int size = 1;
-
-		SparqlTask(SparqlCallable callable, double priority) {
-			super(callable);
-			this.callable = callable;
-			this.priority = priority;
+	@NotNull
+	private SparqlCallable newSparqlCallable(@Nullable String query, SparqlType type, long timeoutMillis, boolean cached,
+											 @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery preparedSelect) {
+		if (type == SparqlType.ASK && preparedAsk != null) {
+			assert query == null;
+			return new SparqlCallable(this, preparedAsk, type, timeoutMillis);
 		}
-
-		public double getPriority() {
-			return priority;
+		if (type == SparqlType.SELECT && preparedSelect != null) {
+			assert query == null;
+			return new SparqlCallable(this, preparedSelect, type, timeoutMillis);
 		}
-
-		long getTimeOutMillis() {
-			return this.callable.timeOutMillis;
-		}
-
-		public synchronized void setSize(int size) {
-			this.size = size;
-		}
-
-		public synchronized int getSize() {
-			return this.size;
-		}
-
-		synchronized long getRunDuration() {
-			return hasStarted() ? System.currentTimeMillis() - this.startTime : 0;
-		}
-
-		synchronized boolean hasStarted() {
-			return this.startTime != Long.MIN_VALUE;
-		}
-
-		synchronized boolean isAlive() {
-			return !hasStarted() || (this.thread != null && this.thread.isAlive());
-		}
-
-		@Override
-		public boolean cancel(boolean mayInterruptIfRunning) {
-			boolean canceled = super.cancel(mayInterruptIfRunning);
-			if (canceled) {
-				Log.warning("SPARQL query was canceled after "
-						+ Strings.getDurationVerbalization(getRunDuration())
-						+ ": " + getReadableQuery(this.callable.query, this.callable.type) + "...");
-			}
-			return canceled;
-		}
-
-		public synchronized void stop() {
-			if (this.thread != null) {
-				//noinspection deprecation
-				this.thread.stop();
-				LockSupport.unpark(this.thread);
-				this.thread = null;
-				Log.warning("SPARQL query was stopped after "
-						+ Strings.getDurationVerbalization(getRunDuration())
-						+ ": " + getReadableQuery(this.callable.query, this.callable.type) + "...");
-			}
-		}
-
-		@Override
-		public Object get() throws InterruptedException, ExecutionException {
-			return super.get();
-		}
-
-		@Override
-		public void run() {
-			synchronized (this) {
-				this.thread = Thread.currentThread();
-				this.startTime = System.currentTimeMillis();
-			}
-			try {
-				// deactivated, since it causes severe issues with GraphDB right now
-//				sparqlReaperPool.execute(new SparqlTaskReaper(this));
-				super.run();
-			}
-			finally {
-				synchronized (this) {
-					this.thread = null;
-				}
-			}
-			if (this.callable.cached) {
-				handleCacheSize(this);
-			}
-		}
-
-		@Override
-		protected void set(Object o) {
-			super.set(o);
-			if (this.callable.cached) {
-				setSize(getResultSize(o));
-			}
-			if (getRunDuration() > 1000) {
-				Log.info("SPARQL query finished after "
-						+ Strings.getDurationVerbalization(getRunDuration())
-						+ ": " + getReadableQuery(this.callable.query, this.callable.type) + "...");
-			}
-		}
-
-		@Override
-		public int compareTo(@NotNull Rdf2GoCore.SparqlTask o) {
-			return Double.compare(this.priority, o.priority);
-		}
+		assert query != null;
+		return new SparqlCallable(this, query, type, timeoutMillis, cached);
 	}
 
 	/**
@@ -1470,92 +1380,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 	}
 
-	/**
-	 * Does the work and retrieves the SPARQL result.
-	 */
-	private final class SparqlCallable implements Callable<Object> {
-
-		private static final int LOG_TIMEOUT = 1000;
-		private final String query;
-		private final SparqlType type;
-		private final boolean cached;
-		private final long timeOutMillis;
-
-		private SparqlCallable(String query, SparqlType type, long timeOutMillis, boolean cached) {
-			this.query = query;
-			this.type = type;
-			this.cached = cached;
-			// timeouts shorter than 1 seconds are not possible with sesame
-			this.timeOutMillis = Math.max(1000, timeOutMillis);
-		}
-
-		@Override
-		public Object call() throws RepositoryException, MalformedQueryException, QueryEvaluationException {
-			int timeOutSeconds = (int) Math.min(this.timeOutMillis / 1000, Integer.MAX_VALUE);
-			final Stopwatch stopwatch = new Stopwatch();
-			Object result;
-			if (this.type == SparqlType.CONSTRUCT) {
-				result = null; // TODO?
-			}
-			else if (this.type == SparqlType.SELECT) {
-
-				try (RepositoryConnection connection = Rdf2GoCore.this.semanticCore.getConnection()) {
-					TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, this.query);
-					tupleQuery.setMaxExecutionTime(timeOutSeconds);
-					TupleQueryResult queryResult = tupleQuery.evaluate();
-					logSlowEvaluation(stopwatch);
-					result = queryResult.cachedAndClosed();
-				}
-				catch (Throwable e) {
-					throw new RuntimeException(e);
-				}
-			}
-			else {
-				try (RepositoryConnection connection = Rdf2GoCore.this.semanticCore.getConnection()) {
-					final BooleanQuery booleanQuery = connection.prepareBooleanQuery(this.query);
-					booleanQuery.setMaxExecutionTime(timeOutSeconds);
-					logSlowEvaluation(stopwatch);
-					result = booleanQuery.evaluate();
-				}
-				catch (Throwable e) {
-					throw new RuntimeException(e);
-				}
-			}
-			if (Thread.currentThread().isInterrupted()) {
-				// not need to waste cache size (e.g. in case of half done results that were aborted)
-				result = null;
-			}
-			return result;
-		}
-
-		private void logSlowEvaluation(Stopwatch stopwatch) {
-			if (this.cached && stopwatch.getTime() > LOG_TIMEOUT) {
-				Log.info("SPARQL query evaluation finished after "
-						+ Strings.getDurationVerbalization(stopwatch.getTime())
-						+ ", retrieving results...: " + getReadableQuery(this.query, this.type) + "...");
-			}
-		}
-	}
-
-	private String getReadableQuery(String query, SparqlType type) {
-		query = query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ");
-		int start = -1;
-		if (type == SparqlType.ASK) {
-			start = query.toLowerCase().indexOf("ask");
-		}
-		else if (type == SparqlType.SELECT) {
-			start = query.toLowerCase().indexOf("select");
-		}
-		else if (type == SparqlType.CONSTRUCT) {
-			start = query.toLowerCase().indexOf("construct");
-		}
-		if (start == -1) {
-			start = 0;
-		}
-		final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
-		return query.substring(start, endIndex) + "...";
-	}
-
 	public String prependPrefixesToQuery(Collection<Namespace> namespaces, String query) {
 		String sparqlNamespaceShorts = Rdf2GoUtils.getSparqlNamespaceShorts(namespaces);
 		if (query.startsWith(sparqlNamespaceShorts)) {
@@ -1563,40 +1387,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		else {
 			return sparqlNamespaceShorts + query;
-		}
-	}
-
-	private void handleCacheSize(SparqlTask task) {
-		this.resultCacheSize += task.getSize();
-		if (this.resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
-			synchronized (this.resultCache) {
-				Iterator<Entry<String, SparqlTask>> iterator = this.resultCache.entrySet().iterator();
-				while (iterator.hasNext() && this.resultCacheSize > DEFAULT_MAX_CACHE_SIZE) {
-					Entry<String, SparqlTask> next = iterator.next();
-					iterator.remove();
-					try {
-						this.resultCacheSize -= next.getValue().getSize();
-					}
-					catch (Exception ignore) {
-						// nothing to do, cache size wasn't increase either
-					}
-				}
-			}
-		}
-	}
-
-	private int getResultSize(Object result) {
-		if (result instanceof TupleQueryResult) {
-			TupleQueryResult cacheResult = (TupleQueryResult) result;
-			try {
-				return cacheResult.getBindingNames().size() * cacheResult.getBindingSets().size();
-			}
-			catch (QueryEvaluationException e) {
-				return 1;
-			}
-		}
-		else {
-			return 1;
 		}
 	}
 

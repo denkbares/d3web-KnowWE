@@ -81,6 +81,25 @@ public class Rdf2GoUtils {
 	 */
 	private static final OptimizedMemValueFactory valueFactory = new OptimizedMemValueFactory();
 
+	public static String getReadableQuery(String query, SparqlType type) {
+		query = query.replace("\n", " ").replaceAll("\t|\\s\\s+", " ");
+		int start = -1;
+		if (type == SparqlType.ASK) {
+			start = query.toLowerCase().indexOf("ask");
+		}
+		else if (type == SparqlType.SELECT) {
+			start = query.toLowerCase().indexOf("select");
+		}
+		else if (type == SparqlType.CONSTRUCT) {
+			start = query.toLowerCase().indexOf("construct");
+		}
+		if (start == -1) {
+			start = 0;
+		}
+		final int endIndex = query.length() - start > 75 ? start + 75 : query.length();
+		return query.substring(start, endIndex) + "...";
+	}
+
 	/**
 	 * Returns a {@link SimpleDateFormat} allowing to read and write ^^xsd:date
 	 */
