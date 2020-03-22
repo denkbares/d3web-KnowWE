@@ -1164,7 +1164,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	@Override
 	public TupleQueryResult sparqlSelect(TupleQuery query) throws QueryFailedException {
-		TupleQueryResult result = (TupleQueryResult) sparql(Options.DEFAULT, SparqlType.ASK, null, null, query);
+		TupleQueryResult result = (TupleQueryResult) sparql(Options.DEFAULT, SparqlType.SELECT, null, null, query);
 		if (result instanceof CachedTupleQueryResult) {
 			// make the result iterable by different threads multiple times... we have to do this, because the caller
 			// of this methods can not know, that he is getting a cached result that may already be iterated before
