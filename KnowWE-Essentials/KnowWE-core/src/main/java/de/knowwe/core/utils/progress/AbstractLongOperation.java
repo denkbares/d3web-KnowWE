@@ -53,6 +53,8 @@ public abstract class AbstractLongOperation implements LongOperation {
 	@Override
 	public void reset() {
 		this.canceled = false;
+		this.progressListener.updateProgress(0, "");
+		this.progressListener.setError(null);
 	}
 
 	@Override
