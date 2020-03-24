@@ -1083,7 +1083,12 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	@Override
 	public boolean sparqlAsk(com.denkbares.semanticcore.BooleanQuery query) throws QueryFailedException {
-		return (Boolean) sparql(Options.DEFAULT, SparqlType.ASK, null, query, null);
+		return (Boolean) sparql(Options.DEFAULT, SparqlType.ASK, null, query, null, null);
+	}
+
+	@Override
+	public boolean sparqlAsk(com.denkbares.semanticcore.BooleanQuery query, Map<String, Value> bindings) throws QueryFailedException {
+		return (Boolean) sparql(Options.DEFAULT, SparqlType.ASK, null, query, null, bindings);
 	}
 
 	@Override
@@ -1107,7 +1112,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public boolean sparqlAsk(Collection<Namespace> namespaces, String query, Options options) throws QueryFailedException {
 		String completeQuery = prependPrefixesToQuery(namespaces, query);
-		return (Boolean) sparql(options, SparqlType.ASK, completeQuery, null, null);
+		return (Boolean) sparql(options, SparqlType.ASK, completeQuery, null, null, null);
 	}
 
 	@Override
@@ -1153,7 +1158,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public TupleQueryResult sparqlSelect(Collection<Namespace> namespaces, String query, Options options) {
 		String completeQuery = prependPrefixesToQuery(namespaces, query);
-		TupleQueryResult result = (TupleQueryResult) sparql(options, SparqlType.SELECT, completeQuery, null, null);
+		TupleQueryResult result = (TupleQueryResult) sparql(options, SparqlType.SELECT, completeQuery, null, null, null);
 		if (result instanceof CachedTupleQueryResult) {
 			// make the result iterable by different threads multiple times... we have to do this, because the caller
 			// of this methods can not know, that he is getting a cached result that may already be iterated before
@@ -1164,7 +1169,18 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	@Override
 	public TupleQueryResult sparqlSelect(TupleQuery query) throws QueryFailedException {
-		TupleQueryResult result = (TupleQueryResult) sparql(Options.DEFAULT, SparqlType.SELECT, null, null, query);
+		TupleQueryResult result = (TupleQueryResult) sparql(Options.DEFAULT, SparqlType.SELECT, null, null, query, null);
+		if (result instanceof CachedTupleQueryResult) {
+			// make the result iterable by different threads multiple times... we have to do this, because the caller
+			// of this methods can not know, that he is getting a cached result that may already be iterated before
+			((CachedTupleQueryResult) result).resetIterator();
+		}
+		return result;
+	}
+
+	@Override
+	public TupleQueryResult sparqlSelect(TupleQuery query, Map<String, Value> bindings) throws QueryFailedException {
+		TupleQueryResult result = (TupleQueryResult) sparql(Options.DEFAULT, SparqlType.SELECT, null, null, query, bindings);
 		if (result instanceof CachedTupleQueryResult) {
 			// make the result iterable by different threads multiple times... we have to do this, because the caller
 			// of this methods can not know, that he is getting a cached result that may already be iterated before
@@ -1184,7 +1200,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	private Object sparql(Options options, SparqlType type, @Nullable String query,
-						  @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery preparedSelect) {
+						  @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery preparedSelect, @Nullable Map<String, Value> bindings) {
 
 		Stopwatch stopwatch = new Stopwatch();
 
@@ -1193,7 +1209,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		if (CompilerManager.isCompileThread()) {
 			try {
 				// if the compiler itself requests a query, evaluate synchronously
-				SparqlCallable callable = newSparqlCallable(query, type, Long.MAX_VALUE, true, preparedAsk, preparedSelect);
+				SparqlCallable callable = newSparqlCallable(query, type, Long.MAX_VALUE, true, preparedAsk, preparedSelect, bindings);
 				Object result = callable.call();
 				if (stopwatch.getTime() > 10) {
 					Log.warning("Slow compile time SPARQL query detected. Query finished after "
@@ -1215,7 +1231,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				sparqlTask = this.sparqlCache.get(query);
 				if (sparqlTask == null
 						|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != options.timeoutMillis)) {
-					SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, true, preparedAsk, preparedSelect);
+					SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, true, preparedAsk, preparedSelect, bindings);
 					sparqlTask = new SparqlTask(callable, options.priority);
 					this.sparqlCache.put(query, sparqlTask);
 					sparqlThreadPool.execute(sparqlTask);
@@ -1224,7 +1240,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		else {
 			// otherwise execute sparql query with no caches
-			SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, false, preparedAsk, preparedSelect);
+			SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, false, preparedAsk, preparedSelect, bindings);
 			sparqlTask = new SparqlTask(callable, options.priority);
 			final int currentQueueSize = sparqlThreadPool.getQueue().size();
 			if (currentQueueSize > 5) {
@@ -1268,16 +1284,18 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	@NotNull
 	private SparqlCallable newSparqlCallable(@Nullable String query, SparqlType type, long timeoutMillis, boolean cached,
-											 @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery preparedSelect) {
+											 @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery preparedSelect,
+											 @Nullable Map<String, Value> bindings) {
 		if (type == SparqlType.ASK && preparedAsk != null) {
 			assert query == null;
-			return new SparqlCallable(this, preparedAsk, type, timeoutMillis);
+			return new SparqlCallable(this, preparedAsk, bindings, type, timeoutMillis);
 		}
 		if (type == SparqlType.SELECT && preparedSelect != null) {
 			assert query == null;
-			return new SparqlCallable(this, preparedSelect, type, timeoutMillis);
+			return new SparqlCallable(this, preparedSelect, bindings, type, timeoutMillis);
 		}
 		assert query != null;
+		assert bindings == null;
 		return new SparqlCallable(this, query, type, timeoutMillis, cached);
 	}
 

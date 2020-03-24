@@ -19,9 +19,11 @@
 
 package de.knowwe.rdf2go;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -54,6 +56,7 @@ class SparqlCallable implements Callable<Object> {
 	// we may have optional prepared (shared) queries, that should be used if available
 	private final TupleQuery preparedSelectQuery;
 	private final BooleanQuery preparedAskQuery;
+	private final Map<String, Value> preparedBindings;
 
 	SparqlCallable(Rdf2GoCore core, String query, SparqlType type, long timeOutMillis, boolean cached) {
 		this.core = core;
@@ -64,9 +67,10 @@ class SparqlCallable implements Callable<Object> {
 		this.timeOutMillis = Math.max(1000, timeOutMillis);
 		this.preparedAskQuery = null;
 		this.preparedSelectQuery = null;
+		this.preparedBindings = null;
 	}
 
-	SparqlCallable(Rdf2GoCore core, TupleQuery query, SparqlType type, long timeOutMillis) {
+	SparqlCallable(Rdf2GoCore core, TupleQuery query, Map<String, Value> bindings, SparqlType type, long timeOutMillis) {
 		this.core = core;
 		this.query = query.getQueryString();
 		this.type = type;
@@ -76,9 +80,10 @@ class SparqlCallable implements Callable<Object> {
 		this.timeOutMillis = Math.max(1000, timeOutMillis);
 		this.preparedAskQuery = null;
 		this.preparedSelectQuery = query;
+		this.preparedBindings = bindings;
 	}
 
-	SparqlCallable(Rdf2GoCore core, BooleanQuery query, SparqlType type, long timeOutMillis) {
+	SparqlCallable(Rdf2GoCore core, BooleanQuery query, Map<String, Value> bindings, SparqlType type, long timeOutMillis) {
 		this.core = core;
 		this.query = query.getQueryString();
 		this.type = type;
@@ -88,6 +93,7 @@ class SparqlCallable implements Callable<Object> {
 		this.timeOutMillis = Math.max(1000, timeOutMillis);
 		this.preparedAskQuery = query;
 		this.preparedSelectQuery = null;
+		this.preparedBindings = bindings;
 	}
 
 	public long getTimeOutMillis() {
@@ -147,7 +153,9 @@ class SparqlCallable implements Callable<Object> {
 	@NotNull
 	private Object executeAsk(int timeOutSeconds, Stopwatch stopwatch, BooleanQuery booleanQuery) {
 		booleanQuery.setMaxExecutionTime(timeOutSeconds);
-		boolean result = booleanQuery.evaluate();
+		boolean result = (preparedBindings == null)
+				? booleanQuery.evaluate()
+				: booleanQuery.evaluate(preparedBindings);
 		logSlowEvaluation(stopwatch);
 		return result;
 	}
@@ -164,7 +172,9 @@ class SparqlCallable implements Callable<Object> {
 	@NotNull
 	private Object executeSelect(int timeOutSeconds, Stopwatch stopwatch, TupleQuery tupleQuery) {
 		tupleQuery.setMaxExecutionTime(timeOutSeconds);
-		TupleQueryResult result = tupleQuery.evaluate();
+		TupleQueryResult result = (preparedBindings == null)
+				? tupleQuery.evaluate()
+				: tupleQuery.evaluate(preparedBindings);
 		logSlowEvaluation(stopwatch);
 		return result.cachedAndClosed();
 	}
