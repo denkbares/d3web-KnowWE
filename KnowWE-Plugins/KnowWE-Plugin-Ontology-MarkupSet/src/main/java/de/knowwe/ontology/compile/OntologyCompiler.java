@@ -119,7 +119,8 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	}
 
 	@Override
-	public @NotNull Section<OntologyType> getCompileSection() {
+	@NotNull
+	public Section<OntologyType> getCompileSection() {
 		return Sections.cast(super.getCompileSection(), OntologyType.class);
 	}
 
@@ -146,10 +147,9 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	}
 
 	/**
-	 * Gets the Rdf2GoCore of this OntologyCompiler. Setting the boolean <tt>committed</tt> to true will make sure,
-	 * that when calling this method during compilation of the same compiler, all statements of the previous compile
-	 * priority are committed and can be accessed via SPARQL. This can however come with negative effects on
-	 * performance.
+	 * Gets the Rdf2GoCore of this OntologyCompiler. Setting the boolean <tt>committed</tt> to true will make sure, that
+	 * when calling this method during compilation of the same compiler, all statements of the previous compile priority
+	 * are committed and can be accessed via SPARQL. This can however come with negative effects on performance.
 	 *
 	 * @param committed decides whether the currenlty added statements should be committed when requesting the core
 	 *                  during compilation
