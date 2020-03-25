@@ -60,7 +60,6 @@ KNOWWE.core.plugin.progress = function() {
       }
 
 
-      KNOWWE.core.util.updateProcessingState(1);
       var progressID = new Date().getMilliseconds() + Math.floor((Math.random() * 10) + 1);
 
       var params = {
@@ -262,7 +261,6 @@ KNOWWE.core.plugin.progress = function() {
                 KNOWWE.core.plugin.progress.updateProgressBar(sectionId);
               }, 100);
             }
-            KNOWWE.core.util.updateProcessingState(-1);
           },
           onError: handleErrResponse
         }
