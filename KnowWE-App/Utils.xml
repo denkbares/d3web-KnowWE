@@ -52,9 +52,9 @@
 			<fileset dir="${basedir}/../../KnowWE-DES/KnowWE-Plugins-DES/">
 				<include name="*/src/main/resources/webapp/" />
 
-				<exclude name="**/*.ts"/>
-				<exclude name="**/*.tsx"/>
-				<exclude name="**/*.toolmenu.json"/>
+				<exclude name="**/*.ts" />
+				<exclude name="**/*.tsx" />
+				<exclude name="**/*.toolmenu.json" />
 				<exclude name="KnowWE-Plugin-AugmentationEdit/**" />
 				<exclude name="KnowWE-Plugin-DenkbaresTmp/**" />
 				<exclude name="KnowWE-Plugin-Insert-Section/**" />
@@ -76,15 +76,21 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-<!--		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT">-->
-<!--			<fileset dir="${basedir}/../../KnowWE-SSP/">-->
-<!--				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />-->
-<!--				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />-->
-<!--				<include name="KnowWE-Plugin-ILME/src/main/resources/webapp/" />-->
-<!--				<exclude name="**/*.toolmenu.json"/>-->
-<!--			</fileset>-->
-<!--			<cutdirsmapper dirs="5" />-->
-<!--		</copy>-->
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT">
+			<fileset dir="${basedir}/../../KnowWE-SSP/">
+				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
+				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
+				<include name="KnowWE-Plugin-ILME/src/main/resources/webapp/" />
+				<exclude name="**/*.toolmenu.json" />
+			</fileset>
+			<cutdirsmapper dirs="5" />
+		</copy>
+		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
+			<fileset dir="${basedir}/../../ServiceMatePlatform/">
+				<include name="KnowWE-Plugin-ServiceMate/src/main/resources/webapp/" />
+			</fileset>
+			<cutdirsmapper dirs="5" />
+		</copy>
 	</target>
 	<target name="update_resources konap" depends="update_resources core-plugins">
 		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
