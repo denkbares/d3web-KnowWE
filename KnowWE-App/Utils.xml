@@ -77,7 +77,7 @@
 			<cutdirsmapper dirs="5" />
 		</copy>
 		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT">
-			<fileset dir="${basedir}/../../KnowWE-SSP/">
+			<fileset dir="${basedir}/../../KnowWE-SSP/" erroronmissingdir="false">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-ILME/src/main/resources/webapp/" />
@@ -86,7 +86,7 @@
 			<cutdirsmapper dirs="5" />
 		</copy>
 		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
-			<fileset dir="${basedir}/../../ServiceMatePlatform/">
+			<fileset dir="${basedir}/../../ServiceMatePlatform/" erroronmissingdir="false">
 				<include name="KnowWE-Plugin-ServiceMate/src/main/resources/webapp/" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
