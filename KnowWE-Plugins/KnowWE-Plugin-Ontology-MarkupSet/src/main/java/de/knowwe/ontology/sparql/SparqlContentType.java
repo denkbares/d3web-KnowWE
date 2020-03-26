@@ -66,19 +66,22 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	}
 
 	public static long getTimeout(Section<? extends DefaultMarkupType> markupSection) {
+		return getTimeout(markupSection, Rdf2GoCore.DEFAULT_TIMEOUT);
+	}
+
+	public static long getTimeout(Section<? extends DefaultMarkupType> markupSection, long defaultTimeOut) {
 		String timeoutString = DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TIMEOUT);
-		long timeOutMillis = Rdf2GoCore.DEFAULT_TIMEOUT;
 		if (timeoutString != null) {
 			try {
-				timeOutMillis = TimeStampType.getTimeInMillis(timeoutString);
+				defaultTimeOut = TimeStampType.getTimeInMillis(timeoutString);
 			}
 			catch (NumberFormatException e) {
 				// if we can not parse (because there is no time unit maybe, we just try parseDouble
-				timeOutMillis = (long) (Double.parseDouble(timeoutString) * TimeUnit.SECONDS.toMillis(1));
+				defaultTimeOut = (long) (Double.parseDouble(timeoutString) * TimeUnit.SECONDS.toMillis(1));
 				// if this also fails, we will have the default timeout
 			}
 		}
-		return timeOutMillis;
+		return defaultTimeOut;
 	}
 
 	@Override
