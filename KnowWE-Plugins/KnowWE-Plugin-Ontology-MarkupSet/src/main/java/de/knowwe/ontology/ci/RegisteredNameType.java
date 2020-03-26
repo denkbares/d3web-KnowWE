@@ -20,6 +20,7 @@
 package de.knowwe.ontology.ci;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +62,7 @@ public class RegisteredNameType extends SimpleDefinition {
 
 	@NotNull
 	public static <T extends Type> Collection<Section<T>> getNamedMarkupSections(String registeredName, Class<T> registeredType) {
+		if (registeredName == null) return Collections.emptyList();
 		DefaultGlobalCompiler defaultGlobalCompiler = Compilers.getGlobalCompiler(KnowWEUtils.getDefaultArticleManager());
 		Section<? extends Type> registeredSections = defaultGlobalCompiler.getTerminologyManager()
 				.getTermDefiningSection(new Identifier(registeredType.getSimpleName(), registeredName));
