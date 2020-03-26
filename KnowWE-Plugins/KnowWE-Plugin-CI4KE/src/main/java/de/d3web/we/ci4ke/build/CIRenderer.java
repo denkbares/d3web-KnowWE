@@ -25,8 +25,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 
+import com.denkbares.collections.CountingSet;
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
@@ -352,7 +354,7 @@ public class CIRenderer {
 		if (message.getText() != null && !message.getText().contains(testObjectName)) {
 			renderResult.appendHtml("(test object: ");
 			renderObjectName(context, testObjectName, testObjectClass, renderResult);
-			renderResult.appendHtml(")<br>\n");
+			renderResult.appendHtml(")");
 		}
 	}
 
@@ -410,19 +412,19 @@ public class CIRenderer {
 			if (objectName1 == objectName2) return 0; // if both are null
 			if (objectName1 == null) return -1;
 			if (objectName2 == null) return 1;
-			return -(new Integer(objectName1.length()).compareTo(objectName2.length()));
+			return Integer.compare(objectName2.length(), objectName1.length());
 		}
 	}
 
 	private void appendMessage(UserContext context, TestResult testResult, RenderResult renderResult) {
 		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
-		int successes = testResult.getSuccessfullyTestedObjects();
+		CountingSet<Message.Type> typeCount = new CountingSet<>();
 		for (String testObjectName : testObjectNames) {
 			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
+			typeCount.add((message == null) ? Type.SKIPPED : message.getType());
 			if (message == null) continue;
 
 			Test<?> test = TestManager.findTest(testResult.getTestName());
-
 			if (test instanceof ResultRenderer) {
 				((ResultRenderer) test).renderResultMessage(context, testObjectName, message, testResult, renderResult);
 			}
@@ -430,7 +432,19 @@ public class CIRenderer {
 				renderResultMessageDefault(context, testObjectName, testResult, message, renderResult);
 			}
 		}
-		renderResult.appendHtml("<span>" + successes + " test objects tested successfully</span>");
+
+		// print summary
+		for (Type type : Type.values()) {
+			int count = typeCount.getCount(type);
+			if (count > 0) {
+				String text = (type == Type.SUCCESS) ? "tested successfully" :
+						(type == Type.SKIPPED) ? "skipped" : "tested with " + type.name().toLowerCase() + "s";
+				renderResult.appendHtml("\n<br><span>" + Strings.pluralOf(count, "test object") + " " + text + "</span>");
+			}
+		}
+		if (typeCount.isEmpty()) {
+			renderResult.appendHtml("\n<br><span>No test objects could be found</span>");
+		}
 	}
 
 	private void appendBuildHeadline(BuildResult build, RenderResult buffy) {
@@ -458,37 +472,44 @@ public class CIRenderer {
 
 	public void renderBuildStatus(Type resultType, boolean checkRunning, Icon icon, RenderResult result) {
 
-		boolean showRunning = checkRunning && CIBuildManager.isRunning(dashboard);
+		boolean running = checkRunning && CIBuildManager.isRunning(dashboard);
+		String css, text;
 
-		String imgBulb = "<i class='fa %s ci-state' dashboardName='" + dashboardNameEncoded + "'"
-				+ " running='%s'"
-				+ " title='%s'></i>";
-
-		if (showRunning) {
-			imgBulb = String.format(imgBulb, "fa-spin fa-sync", "true", "Build running!");
+		if (running) {
+			css = "fa-spin fa-sync";
+			text = "Build running!";
 		}
 		else {
 			switch (resultType) {
 				case SUCCESS:
-					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-ok", "false", "Build successful: " + Strings
-							.encodeHtml(dashboardName));
+					css = icon.getCssClass() + " knowwe-ok";
+					text = "Build successful";
+					break;
+				case SKIPPED:
+					css = icon.getCssClass() + " knowwe-gray";
+					text = "Build has skipped tests";
 					break;
 				case WARNING:
-					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-warning", "false", "Build has warning: " + Strings
-							.encodeHtml(dashboardName));
+					css = icon.getCssClass() + " knowwe-warning";
+					text = "Build has warning";
 					break;
 				case FAILURE:
-					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-error", "false", "Build failed: " + Strings
-							.encodeHtml(dashboardName));
+					css = icon.getCssClass() + " knowwe-error";
+					text = "Build failed";
 					break;
 				case ERROR:
-					imgBulb = String.format(imgBulb, icon.getCssClass() + " knowwe-gray", "false", "Build has errors: " + Strings
-							.encodeHtml(dashboardName));
+					css = icon.getCssClass() + " knowwe-error";
+					text = "Build has errors";
 					break;
+				default:
+					throw new NotImplementedException("unexpected build status: " + resultType);
 			}
 		}
-
-		result.appendHtml(imgBulb);
+		result.appendHtml("<i class='fa ").append(css).append(" ci-state'")
+				.append(" dashboardName='").appendHtml(dashboardNameEncoded).append("'")
+				.append(" running='").append(running).append("'")
+				.append(" title='").append(text).append(": ").append(dashboardName).append("'")
+				.appendHtml("></i>");
 	}
 
 	public void renderDashboardHeader(BuildResult latestBuild, RenderResult result) {
