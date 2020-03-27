@@ -421,7 +421,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				if (!this.statementCache.containsValue(statement)) {
 					this.insertCache.add(Objects.requireNonNull(statement));
 				}
-				this.statementCache.put(source, statement);
+				if (source != null) this.statementCache.put(source, statement);
 			}
 		}
 	}
