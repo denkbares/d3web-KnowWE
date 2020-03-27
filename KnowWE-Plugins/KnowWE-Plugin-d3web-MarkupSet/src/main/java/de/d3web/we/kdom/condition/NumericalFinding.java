@@ -21,6 +21,7 @@ package de.d3web.we.kdom.condition;
 
 import java.util.List;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondNumEqual;
 import de.d3web.core.inference.condition.CondNumGreater;
@@ -31,7 +32,6 @@ import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.TerminalCondition;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionNum;
-import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.AbstractType;
@@ -134,8 +134,8 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 			return null;
 		}
 		if (!(question instanceof QuestionNum)) {
-			Message error = Messages.error("Expected " + QuestionNum.class.getSimpleName() + ", but was " + question.getClass()
-					.getSimpleName());
+			Message error = Messages.error("The question is of type " + question.getClass().getSimpleName() +
+					", but the answer is numeric. One of them has to be adapted to the corresponding format." );
 			Messages.storeMessage(compiler, s, getClass(), error);
 			return null;
 		}
