@@ -45,6 +45,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	private CompilationLocal<String[]> compiledPackages;
 	private CompilerManager compilerManager;
+	private boolean newlyCreated = true;
 
 	public AbstractPackageCompiler(@NotNull PackageManager manager,
 								   @NotNull Section<? extends PackageCompileType> compileSection,
@@ -95,7 +96,8 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	@Override
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
 		String[] packagesToCompile = getCompiledPackages();
-		if (getPackageManager().hasChanged(packagesToCompile) && hasChangedForCompiler(packagesToCompile)) {
+		if (newlyCreated || (getPackageManager().hasChanged(packagesToCompile) && hasChangedForCompiler(packagesToCompile))) {
+			newlyCreated = false;
 			Stopwatch stopwatch = new Stopwatch();
 			compilePackages(packagesToCompile);
 			Log.info(this + " finished after " + stopwatch.getDisplay());
