@@ -53,8 +53,8 @@ public class ToolUtils {
 		for (Extension match : extensions.getMatches(section)) {
 			ToolProvider provider = (ToolProvider) match.getSingleton();
 			try {
-				if (!provider.hasTools(section, userContext)) continue;
 				if (isBlocked(provider, section)) continue;
+				if (!provider.hasTools(section, userContext)) continue;
 				Tool[] tools = provider.getTools(section, userContext);
 				if (tools != null) {
 					Collections.addAll(result, tools);
