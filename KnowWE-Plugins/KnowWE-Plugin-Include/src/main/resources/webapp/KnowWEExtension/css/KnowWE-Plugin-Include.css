@@ -12,6 +12,10 @@
 	text-decoration: none;
 }
 
+.IncludeMarkup .defaultMarkup {
+	overflow-y: hidden;
+}
+
 .wikiBook-author:BEFORE,.wikiBook-autor:BEFORE,.wikiBook-creator:BEFORE {
 	content: "Author: "
 }
