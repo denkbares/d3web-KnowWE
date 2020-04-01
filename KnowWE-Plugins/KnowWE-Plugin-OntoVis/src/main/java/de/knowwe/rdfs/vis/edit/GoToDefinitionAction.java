@@ -20,8 +20,6 @@
 package de.knowwe.rdfs.vis.edit;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.action.AbstractAction;
@@ -72,10 +70,8 @@ public class GoToDefinitionAction extends AbstractAction {
 			uriProvider = new PackageCompileLinkToTermDefinitionProvider();
 		}
 
-		Map<String, String> parameterMap = new HashMap<>();
 		Config config = new Config();
-		config.readFromSection(Sections.cast(section, DefaultMarkupType.class));
-
+		config.init(Sections.cast(section, DefaultMarkupType.class), context);
 		String uri = Rdf2GoUtils.expandNamespace(compiler.getRdf2GoCore(), conceptName);
 
 		String link = Utils.createConceptURL(conceptName, config, section, uriProvider, uri);

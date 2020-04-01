@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import connector.DummyConnector;
@@ -124,7 +125,7 @@ public class OntoVisTest {
 		config.setShowOutgoingEdges(false);
 		config.setShowLabels("true");
 		config.setLiteralMode(Config.LiteralMode.OFF);
-		config.setLanguage("en");
+		config.setLanguages(Locale.forLanguageTag("en"));
 		config.setCacheFileID("classes");
 
 		Map<String, String> colorMap = new HashMap<>();

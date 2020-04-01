@@ -25,10 +25,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -38,6 +42,7 @@ import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -113,7 +118,7 @@ public class Config {
 	private String width = null;
 	private String height = null;
 	private String format = "svg";
-	private String language = null;
+	private Locale[] languages = null;
 	private long timeout = DEFAULT_TIMEOUT;
 	private RankDir rankDir = RankDir.LR;
 	private String rankSame = null;
@@ -184,9 +189,9 @@ public class Config {
 		this.literalNodeStyle = literalNodeStyle;
 	}
 
-	public Config(Section<? extends DefaultMarkupType> section) {
+	public Config(Section<? extends DefaultMarkupType> section, UserContext user) {
 		this();
-		readFromSection(section);
+		init(section, user);
 	}
 
 	public String getForceVisualizationStyle() {
@@ -245,7 +250,7 @@ public class Config {
 		this.sectionId = sectionId;
 	}
 
-	public void readFromSection(Section<? extends DefaultMarkupType> section) {
+	public void init(Section<? extends DefaultMarkupType> section, UserContext user) {
 		int configCount = 0;
 		String[] configNames = DefaultMarkupType.getAnnotations(section, CONFIG);
 		if (configNames.length > 0) {
@@ -263,7 +268,7 @@ public class Config {
 						.ANNOTATION_NAME);
 				if (names.contains(name)) {
 					configCount++;
-					readFromSection(configTypeSection);
+					init(configTypeSection, user);
 				}
 			}
 		}
@@ -291,7 +296,13 @@ public class Config {
 		setTimeout(DefaultMarkupType.getAnnotation(section, TIMEOUT));
 		setHeight(DefaultMarkupType.getAnnotation(section, HEIGHT));
 		setFormat(DefaultMarkupType.getAnnotation(section, FORMAT));
-		setLanguage(DefaultMarkupType.getAnnotation(section, LANGUAGE));
+		@NotNull String[] langAnnotations = DefaultMarkupType.getAnnotations(section, LANGUAGE);
+		if (langAnnotations.length == 0) {
+			setLanguages(KnowWEUtils.getBrowserLocales(user));
+		}
+		else {
+			setLanguages(Stream.of(langAnnotations).map(Locale::forLanguageTag).toArray(Locale[]::new));
+		}
 		parseAndSetEnum(section, RANK_DIR, RankDir.class, this::setRankDir);
 		setDotAddLine(DefaultMarkupType.getAnnotation(section, ADD_TO_DOT));
 		parseAndSetEnum(section, VISUALIZATION, Visualization.class, this::setVisualization);
@@ -573,13 +584,13 @@ public class Config {
 		this.format = format;
 	}
 
-	public String getLanguage() {
-		return language;
+	public Locale[] getLanguages() {
+		return languages;
 	}
 
-	public void setLanguage(String language) {
-		if (language == null) return;
-		this.language = language;
+	public void setLanguages(Locale... languages) {
+		if (languages == null) return;
+		this.languages = languages;
 	}
 
 	public RankDir getRankDir() {

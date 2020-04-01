@@ -86,25 +86,25 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		}
 
 		for (BindingSet row : resultSet) {
-			Value fromURI = row.getValue(variables.get(0));
-			Value relationURI = row.getValue(variables.get(1));
-			Value toURI = row.getValue(variables.get(2));
+			Value subject = row.getValue(variables.get(0));
+			Value predicate = row.getValue(variables.get(1));
+			Value object = row.getValue(variables.get(2));
 
-			if (fromURI == null || toURI == null || relationURI == null) {
+			if (subject == null || object == null || predicate == null) {
 				Log.warning("Incomplete query result row: " + row);
 				continue;
 			}
 
-			ConceptNode fromNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, fromURI, true,
-					determineClassType(rdfRepository, variables.get(0), row, fromURI));
+			ConceptNode fromNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, subject, true,
+					determineClassType(rdfRepository, variables.get(0), row, subject));
 
-			String relation = Utils.getConceptName(relationURI, rdfRepository);
-			String relationLabel = Utils.createRelationLabel(config, rdfRepository, relationURI, relation);
+			String relation = Utils.getConceptName(predicate, rdfRepository);
+			String relationLabel = Utils.createRelationLabel(config, rdfRepository, predicate, relation);
 
-			ConceptNode toNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, toURI, true,
-					determineClassType(rdfRepository, variables.get(2), row, toURI));
+			ConceptNode toNode = Utils.createValue(config, rdfRepository, uriProvider, section, data, object, true,
+					determineClassType(rdfRepository, variables.get(2), row, object));
 
-			Edge newLineRelationsKey = new Edge(fromNode, relationLabel, relationURI.stringValue(), toNode);
+			Edge newLineRelationsKey = new Edge(fromNode, relationLabel, predicate.stringValue(), toNode);
 			data.addEdge(newLineRelationsKey);
 		}
 		if (data.getConceptDeclarations().isEmpty()) {
@@ -141,7 +141,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		config.setCacheFileID(getCacheFileID(section, user));
 
 		Messages.clearMessages(section, this.getClass());
-		config.readFromSection(section);
+		config.init(section, user);
 
 		config.setConcept(Utils.getConceptFromRequest(user));
 

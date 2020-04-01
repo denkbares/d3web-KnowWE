@@ -96,7 +96,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 		}
 
 		Messages.clearMessages(section, this.getClass());
-		config.readFromSection(Sections.cast(section, DefaultMarkupType.class));
+		config.init(Sections.cast(section, DefaultMarkupType.class), user);
 
 //		Is this a ConceptVisualization template?
 		if (!Strings.isBlank(DefaultMarkupType.getAnnotation(section, ConceptVisualizationType.VIS_TEMPLATE_CLASS))) {

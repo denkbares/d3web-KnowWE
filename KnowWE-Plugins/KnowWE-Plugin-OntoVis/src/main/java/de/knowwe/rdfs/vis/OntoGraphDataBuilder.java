@@ -20,17 +20,21 @@
 package de.knowwe.rdfs.vis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
+import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 
@@ -39,6 +43,7 @@ import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.semanticcore.utils.Sparqls;
 import com.denkbares.semanticcore.utils.Text;
+import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
@@ -218,9 +223,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 	private void addType(Value node) {
 		String query = "SELECT ?class ?pred WHERE { <" + node.stringValue() + "> ?pred ?class . FILTER regex(str(?pred),\"type\") }";
-		Iterator<BindingSet> result = rdf2GoCore.sparqlSelect(query).getBindingSets().iterator();
-		while (result != null && result.hasNext()) {
-			BindingSet row = result.next();
+		for (BindingSet row : rdf2GoCore.sparqlSelect(query).getBindingSets()) {
 			Value yIRI = row.getValue("pred");
 			Value zIRI = row.getValue("class");
 			addConcept(node, zIRI, yIRI);
@@ -237,80 +240,24 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		String query = "SELECT ?literal ?y WHERE { <" + fringeNode.stringValue() + "> ?y ?literal . FILTER isLiteral(?literal) . " + propertyFilter + " }";
 		Iterator<BindingSet> result = rdf2GoCore.sparqlSelect(query).getBindingSets().iterator();
 
-		MultiMap<Value, BindingSet> literalsMap = new DefaultMultiMap<>();
+		Map<Value, Map<Locale, Value>> literalsMap = new HashMap<>();
 
-		while (result != null && result.hasNext()) {
+		while (result.hasNext()) {
 			BindingSet row = result.next();
 			Value predIRI = row.getValue("y");
-			literalsMap.put(predIRI, row);
+			Value value = row.getValue("literal");
+			Locale locale = Locale.ROOT;
+			if (value instanceof Literal) {
+				locale = ((Literal) value).getLanguage().map(Strings::parseLocale).orElse(Locale.ROOT);
+			}
+			literalsMap.computeIfAbsent(predIRI, k -> new HashMap<>()).put(locale, value);
+		}
+		List<Locale> preferred = Arrays.asList(getConfig().getLanguages());
+		for (Map.Entry<Value, Map<Locale, Value>> entry : literalsMap.entrySet()) {
+			Locale bestLocale = Locales.findBestLocale(preferred, entry.getValue().keySet());
+			addConcept(fringeNode, entry.getValue().get(bestLocale), entry.getKey());
 		}
 
-		// Check every key in the multimap for values having the chosen language
-		for (Value key : literalsMap.keySet()) {
-			Set<BindingSet> set = literalsMap.getValues(key);
-
-			// Case 1: language is specified in config (de, en, ...)
-			if (config.getLanguage() != null) {
-
-				// Case 1.1: key has values with specified language: Show fitting language specific values only
-				if (hasLanguage(set, config.getLanguage())) {
-					filterAndAddBindingSets(fringeNode, set, config.getLanguage());
-				}
-				// Case 1.2: key has no fitting values with specified language, but unspecified: show unspecified
-				else if (hasLanguage(set, "")) {
-					filterAndAddBindingSets(fringeNode, set, "");
-				}
-				// Case 1.3: key has neither fitting specified values nor unspecified: show all
-				else {
-					filterAndAddBindingSets(fringeNode, set, null);
-				}
-			}
-//			Case 2: language is unspecified in config (null)
-			else {
-//				Case 2.1: key has unspecified values: show unspecified
-				if (hasLanguage(set, "")) {
-					filterAndAddBindingSets(fringeNode, set, "");
-				}
-//				Case 2.2: key has no unspecified values (only language specific): show all of them
-				else {
-					filterAndAddBindingSets(fringeNode, set, null);
-				}
-			}
-		}
-	}
-
-	// checks given BindingSet for rows containing chosen language
-	private boolean hasLanguage(Set<BindingSet> set, String language) {
-		Text literal;
-		String l;
-
-		for (BindingSet b : set) {
-			literal = Sparqls.asText(b, "literal");
-			l = literal.getLanguage().toString();
-			if (l.equals(language)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private void filterAndAddBindingSets(Value fringeNode, Set<BindingSet> set, String language) {
-		Value predIRI;
-		Value objectLiteral;
-		Text literal;
-		String l;
-
-		for (BindingSet b : set) {
-			predIRI = b.getValue("y");
-			objectLiteral = b.getValue("literal");
-			literal = Sparqls.asText(b, "literal");
-			l = literal.getLanguage().toString();
-
-			// if literal language is same as asked language or given language is unspecified: add values
-			if ((l.equals(language) && !excludedRelation(objectLiteral.stringValue())) || language == null) {
-				addConcept(fringeNode, objectLiteral, predIRI);
-			}
-		}
 	}
 
 	private void insertMainConcept(Value conceptIRI) {

@@ -19,9 +19,11 @@
 package de.knowwe.rdfs.vis.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,7 +43,10 @@ import com.denkbares.collections.PartialHierarchyException;
 import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.TupleQueryResult;
+import com.denkbares.semanticcore.utils.Sparqls;
+import com.denkbares.semanticcore.utils.Text;
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
@@ -70,17 +75,17 @@ import de.knowwe.visualization.dot.RenderingStyle;
  */
 public class Utils {
 
-	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, String languageTag) {
-		return getLabel(concept, repo, languageTag, "<http://www.w3.org/2004/02/skos/core#prefLabel>", "rdfs:label");
+	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, Locale... languages) {
+		return getLabel(concept, repo, languages, "<http://www.w3.org/2004/02/skos/core#prefLabel>", "rdfs:label");
 	}
 
-	public static String getLabel(Value concept, Rdf2GoCore repo, String languageTag, String... properties) {
+	public static String getLabel(Value concept, Rdf2GoCore repo, Locale[] languages, String... properties) {
 		if (properties.length == 0) {
 			throw new IllegalArgumentException("Property definition requred here!");
 		}
 
 		// try to find language specific label
-		String label = getLanguageSpecificLabel(concept, repo, languageTag, properties);
+		String label = getLanguageSpecificLabel(concept, repo, languages, properties);
 
 		// otherwise use non-language specific label according to priority
 		if (label == null) {
@@ -97,24 +102,23 @@ public class Utils {
 		return label;
 	}
 
-	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, String languageTag, String...
-			properties) {
-		if (languageTag == null) return null;
-
+	private static String getLanguageSpecificLabel(Value concept, Rdf2GoCore repo, Locale[] languages, String... properties) {
+		if (languages == null) return null;
+		Map<Locale, String> cache = new HashMap<>();
 		for (String property : properties) {
 			String query = "SELECT ?x WHERE { <" + concept
-					+ "> " + property.trim() + " ?x. FILTER(LANGMATCHES(LANG(?x), \"" + languageTag + "\"))}";
+					+ "> " + property.trim() + " ?x. }";
 			TupleQueryResult resultTable = repo.sparqlSelect(query);
 			for (BindingSet queryRow : resultTable) {
-				Value node = queryRow.getValue("x");
-				String label = node.stringValue();
-				if (label.charAt(label.length() - 3) == '@') {
-					label = label.substring(0, label.length() - 3);
+				Text text = Sparqls.asText(queryRow, "x");
+				if (Locales.hasSameLanguage(text.getLanguage(), languages[0])) {
+					return text.getString();
 				}
-				return label;
+				cache.put(text.getLanguage(), text.getString());
 			}
 		}
-		return null;
+		Locale bestLocale = Locales.findBestLocale(Arrays.asList(languages), cache.keySet());
+		return cache.get(bestLocale);
 	}
 
 	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider
@@ -123,7 +127,7 @@ public class Utils {
 	}
 
 	public static ConceptNode createValue(Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider
-			uriProvider, Section<?> section, SubGraphData data, Value toIRI, boolean insertNewValue, String clazz) {
+			uriProvider, Section<?> section, SubGraphData data, Value value, boolean insertNewValue, String clazz) {
 		ConceptNode visValue;
 
 		GraphDataBuilder.NODE_TYPE type;
@@ -134,8 +138,8 @@ public class Utils {
 		/*
 		1. case: Value is Literal
 		 */
-		try {
-			toLiteral = (Literal) toIRI;
+		if (value instanceof Literal) {
+			toLiteral = (Literal) value;
 			//add a key to identifier to have distinguish between concepts and literals, e.g., <lns:Q> and "Q"
 			identifier = getIdentifierLiteral(toLiteral);
 			type = GraphDataBuilder.NODE_TYPE.LITERAL;
@@ -148,16 +152,13 @@ public class Utils {
 			}
 			return visValue;
 		}
-		catch (ClassCastException ignore) {
-			// do nothing as this is just a type check
-		}
 
 		/*
 		2. case: Value is BNode
 		 */
 		BNode bValue;
 		try {
-			bValue = (BNode) toIRI;
+			bValue = (BNode) value;
 			identifier = getIdentifierBValue(bValue);
 
 			visValue = data.getConcept(identifier);
@@ -183,8 +184,8 @@ public class Utils {
 		3. case: Value is IRI-Resource
 		 */
 		try {
-			IRI uri = (IRI) toIRI;
-			identifier = getConceptName(toIRI, rdfRepository);
+			IRI uri = (IRI) value;
+			identifier = getConceptName(value, rdfRepository);
 			visValue = data.getConcept(identifier);
 
 			if (visValue == null) {
@@ -196,13 +197,13 @@ public class Utils {
 				if (Rdf2GoUtils.isProperty(rdfRepository, uri)) {
 					type = GraphDataBuilder.NODE_TYPE.PROPERTY;
 				}
-				label = fetchLabel(config, toIRI, rdfRepository);
+				label = fetchLabel(config, value, rdfRepository);
 
 				if (label == null) {
 					label = identifier;
 				}
 				RenderingStyle style = Utils.getStyle(type, config);
-				Utils.setClassColorCoding(toIRI, style, config, rdfRepository);
+				Utils.setClassColorCoding(value, style, config, rdfRepository);
 				String conceptURL = createConceptURL(identifier, config, section, uriProvider, uri.toString());
 				visValue = new ConceptNode(identifier, type, conceptURL, label, clazz, style);
 				if (insertNewValue) {
@@ -215,7 +216,7 @@ public class Utils {
 					visValue.setClazz(clazz);
 					// re-color according to newly found clazz
 					RenderingStyle style = Utils.getStyle(visValue.getType(), config);
-					Utils.setClassColorCoding(toIRI, style, config, rdfRepository);
+					Utils.setClassColorCoding(value, style, config, rdfRepository);
 					visValue.setStyle(style);
 				}
 			}
@@ -262,10 +263,10 @@ public class Utils {
 		String label = null;
 		if (!Strings.isBlank(showLabels) && !"false".equals(showLabels.toLowerCase())) {
 			if ("true".equals(showLabels.toLowerCase())) {
-				label = Utils.getRDFSLabel(toIRI, rdf2GoCore, config.getLanguage());
+				label = Utils.getRDFSLabel(toIRI, rdf2GoCore, config.getLanguages());
 			}
 			else {
-				label = Utils.getLabel(toIRI, rdf2GoCore, config.getLanguage(), showLabels.split(","));
+				label = Utils.getLabel(toIRI, rdf2GoCore, config.getLanguages(), showLabels.split(","));
 			}
 			if (label != null && label.length() >= 3 && label.charAt(label.length() - 3) == '@') {
 				// do not show language tag of relation labels
