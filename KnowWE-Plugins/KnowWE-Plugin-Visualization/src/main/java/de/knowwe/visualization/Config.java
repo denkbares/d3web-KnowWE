@@ -118,7 +118,7 @@ public class Config {
 	private String width = null;
 	private String height = null;
 	private String format = "svg";
-	private Locale[] languages = null;
+	private Locale[] languages = new Locale[] { Locale.ROOT };
 	private long timeout = DEFAULT_TIMEOUT;
 	private RankDir rankDir = RankDir.LR;
 	private String rankSame = null;
