@@ -828,7 +828,7 @@ const _KU = KNOWWE.core.util;
 		KNOWWE.helper.observer.subscribe("afterRerender", function () {
       // Sometimes the history is not updated after a rerender, so after going back in the history the old rendered page
       // is shown. So replace the current state after a rerender to save the current state in the history.
-      history.pushState({name: 'rerender'}, 'rerender');
-    });
+      history.replaceState({name: 'rerender'}, 'rerender');
+		});
   }
 }());
