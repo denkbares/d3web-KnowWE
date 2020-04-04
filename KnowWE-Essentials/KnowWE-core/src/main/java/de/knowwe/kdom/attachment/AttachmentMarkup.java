@@ -160,6 +160,10 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		if (since < 5000) {
 			timeDisplay = "moments";
 		}
+		else if (since <= 60000) {
+			// no milliseconds required
+			timeDisplay = Stopwatch.getDisplay(since, TimeUnit.MINUTES);
+		}
 		else {
 			timeDisplay = Stopwatch.getDisplay(since);
 		}
