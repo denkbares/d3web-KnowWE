@@ -617,3 +617,9 @@ input.knowwe-paginationFilter {
 	color: #999;
 }
 
+/*
+ * Workaround for a Chrome bug, see: https://bugs.chromium.org/p/chromium/issues/detail?id=1066924#c9
+ */
+.edit-area textarea {
+	overflow-anchor: none
+}
