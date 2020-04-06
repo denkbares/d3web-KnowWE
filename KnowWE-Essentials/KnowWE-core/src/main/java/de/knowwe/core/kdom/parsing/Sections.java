@@ -59,7 +59,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	private final Iterable<Section<T>> sections;
 
 	public static <T extends Type> Sections<T> $(Iterable<? extends Section<? extends T>> sections) {
-		//noinspection unchecked
+		//noinspection rawtypes,unchecked
 		return new Sections(sections);
 	}
 
@@ -71,12 +71,12 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	public static <T extends Type> Sections<T> $(Iterator<? extends Section<? extends T>> sections) {
-		//noinspection unchecked
+		//noinspection rawtypes,unchecked
 		return new Sections(new CachedIterable<>(sections));
 	}
 
 	public static <T extends Type> Sections<T> $(ArticleManager manager) {
-		//noinspection unchecked
+		//noinspection rawtypes,unchecked
 		return new Sections(new CachedIterable<Section<RootType>>(manager.getArticles()
 				.stream()
 				.map(Article::getRootSection)
@@ -243,7 +243,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	@NotNull
 	public static Sections<? extends Type> definitions(@NotNull TerminologyManager manager, @Nullable Identifier identifier) {
-		//noinspection unchecked
+		//noinspection rawtypes,unchecked
 		return new Sections(manager.getTermDefiningSections(identifier));
 	}
 
@@ -261,7 +261,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	@NotNull
 	public static Sections<? extends Type> references(@NotNull TerminologyManager manager, @Nullable Identifier identifier) {
-		//noinspection unchecked
+		//noinspection rawtypes,unchecked
 		return new Sections(manager.getTermReferenceSections(identifier));
 	}
 
@@ -282,7 +282,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	@NotNull
 	public static Sections<? extends Type> registrations(@NotNull TermCompiler compiler, @Nullable Identifier termIdentifier) {
 		if (termIdentifier == null) return Sections.empty();
-		//noinspection unchecked
+		//noinspection rawtypes,unchecked
 		return new Sections(new ConcatenateIterable<Section<?>>(definitions(compiler, termIdentifier), references(compiler, termIdentifier)));
 	}
 
@@ -493,6 +493,20 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * Sections that don't have sub-types of {@link Term} will be skipped when collecting definitions.
 	 *
 	 * @param compiler the compiler where the definitions are registered
+	 * @return the definitions for the current sections
+	 */
+	@NotNull
+	public Sections<?> definitions(@NotNull TermCompiler compiler) {
+		return new Sections<>(() -> filter(Term.class).stream()
+				.flatMap(s -> Sections.definitions(compiler, s).stream())
+				.iterator());
+	}
+
+	/**
+	 * Returns a new Sections instance with definitions of the references (or definitions) in the current instance.
+	 * Sections that don't have sub-types of {@link Term} will be skipped when collecting definitions.
+	 *
+	 * @param compiler the compiler where the definitions are registered
 	 * @param clazz    the class of the type of the sections in the new sections object
 	 * @param <R>      the class of the type of the sections in the new sections object
 	 * @return the definitions for the current sections
@@ -501,6 +515,20 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public <R extends Term> Sections<R> definitions(@NotNull TermCompiler compiler, Class<R> clazz) {
 		return new Sections<R>(() -> filter(Term.class).stream()
 				.flatMap(s -> Sections.definitions(compiler, s).filter(clazz).stream())
+				.iterator());
+	}
+
+	/**
+	 * Returns a new Sections instance with references of the references or definitions in the current instance.
+	 * Sections that don't have sub-types of {@link Term} will be skipped when collecting references.
+	 *
+	 * @param compiler the compiler where the references are registered
+	 * @return the definitions for the current sections
+	 */
+	@NotNull
+	public Sections<?> references(@NotNull TermCompiler compiler) {
+		return new Sections<>(() -> filter(Term.class).stream()
+				.flatMap(s -> Sections.references(compiler, s).stream())
 				.iterator());
 	}
 
@@ -825,7 +853,8 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * of outdated article objects (because of changes) are for example not live.
 	 */
 	public static boolean isLive(Section<?> section) {
-		return section.getArticleManager().isLive(section);
+		ArticleManager manager = section.getArticleManager();
+		return (manager != null) && manager.isLive(section);
 	}
 
 	/**
