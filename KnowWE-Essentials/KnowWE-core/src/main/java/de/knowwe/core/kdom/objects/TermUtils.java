@@ -11,6 +11,7 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompilationLocal;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -98,22 +99,10 @@ public class TermUtils {
 	 * @created 25.08.2013
 	 */
 	public static TermInfoSet getAllTermInfos(UserContext userContext, boolean caseSensitive, Class<?>... allowedTermClasses) {
-		final String sessionKey = "termInfos" + Stream.of(allowedTermClasses).map(Class::getName).collect(joining());
-		//noinspection unchecked
-		CompilationLocal<TermInfoSet> container = (CompilationLocal<TermInfoSet>)
-				userContext.getSession().getAttribute(sessionKey);
-		if (container == null) {
-			synchronized (userContext.getSession()) {
-				//noinspection unchecked
-				container = (CompilationLocal<TermInfoSet>) userContext.getSession().getAttribute(sessionKey);
-				if (container == null) {
-					container = new CompilationLocal<>(userContext.getArticleManager().getCompilerManager(),
-							() -> getAllTermInfosInternal(userContext.getWeb(), caseSensitive, allowedTermClasses));
-					userContext.getSession().setAttribute(sessionKey, container);
-				}
-			}
-		}
-		return container.get();
+		final String cacheKey = "allTermInfos_" + Stream.of(allowedTermClasses).map(Class::getName).collect(joining("-"));
+		CompilerManager compilerManager = userContext.getArticleManager().getCompilerManager();
+		String web = userContext.getWeb();
+		return CompilationLocal.getCached(cacheKey, compilerManager, () -> getAllTermInfosInternal(web, caseSensitive, allowedTermClasses));
 	}
 
 	/**

@@ -72,7 +72,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	@Override
 	public void init(CompilerManager compilerManager) {
 		this.compilerManager = compilerManager;
-		this.compiledPackages = new CompilationLocal<>(getCompilerManager(),
+		this.compiledPackages = CompilationLocal.create(getCompilerManager(),
 				() -> getCompileSection().get().getPackagesToCompile(getCompileSection()));
 	}
 
