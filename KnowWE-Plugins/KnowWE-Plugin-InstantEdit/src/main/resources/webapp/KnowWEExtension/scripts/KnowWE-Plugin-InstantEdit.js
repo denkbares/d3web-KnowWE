@@ -145,9 +145,19 @@ KNOWWE.plugin.instantEdit = function () {
 		 */
 		save: function (id, newWikiText) {
 
+			var sectionData = {
+				sections : []
+			};
+
 			if (newWikiText == null) {
 				newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
 			}
+
+			sectionData.sections.push({
+				type: "WIKI",
+				sectionID : id,
+				data : newWikiText
+			});
 
 			const params = {
 				action: 'InstantEditSaveAction',
@@ -155,7 +165,7 @@ KNOWWE.plugin.instantEdit = function () {
 				KWikiChangeNote: _EC.mode.getChangeNote(id)
 			};
 
-			_EC.sendChanges(newWikiText, params, function (id) {
+			_EC.sendChanges(sectionData, params, function (id) {
 				_IE.disable(id, true, null);
 			});
 		},
@@ -177,6 +187,10 @@ KNOWWE.plugin.instantEdit = function () {
 			const reload = parameters["reload"];
 			const fn = parameters["callback"];
 
+			var sectionData = {
+				sections : []
+			};
+
 			if (newWikiText == null) {
 				newWikiText = _IE.toolNameSpace[id].generateWikiText(id);
 			}
@@ -184,13 +198,19 @@ KNOWWE.plugin.instantEdit = function () {
 				title = _IE.toolNameSpace[id].getNewArticleTitle(id);
 			}
 
+			sectionData.push({
+				type: "WIKI",
+				sectionID : id,
+				data : newWikiText
+			});
+
 			const params = {
 				action: 'InstantEditAddArticleAction',
 				KdomNodeId: id,
 				KWiki_Topic: title
 			};
 
-			_EC.sendChanges(newWikiText, params, function (id) {
+			_EC.sendChanges(sectionData, params, function (id) {
 				if (fn) fn(title);
 				_IE.disable(id, reload, null);
 				if (redirect) {

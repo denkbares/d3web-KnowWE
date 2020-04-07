@@ -18,24 +18,23 @@
  */
 package de.knowwe.instantedit.actions;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-
-import com.denkbares.strings.Strings;
+import com.google.gson.Gson;
 import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Sections;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Saves the changed Section.
  *
  * @author Stefan Mark
  * @author Albrecht Striffler (denkbares GmbH)
+ * @author Nikolai Reed (Olyro GmbH)
  * @created 15.06.2011
  */
 public class InstantEditSaveAction extends AbstractAction {
@@ -44,26 +43,34 @@ public class InstantEditSaveAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String id = context.getParameter("KdomNodeId");
-		String value = context.getParameter("data");
+		String jsonData = context.getParameter("data");
 
-		if (context.getRequest().getContentType().equals(Action.JSON)) {
-			// if we get json content we assume that it is a plain quoted (and escaped) json string,
-			// containing the new wiki text: if not, throw an exception
-			value = Strings.trim(value);
-			if (!Strings.isQuoted(value)) {
-				throw new IllegalArgumentException("Unexpected json content");
-			}
-			value = StringEscapeUtils.unescapeJson(Strings.unquote(value));
-		}
-		else if (value.equals("POST\n")) {
-			// for empty values, we will receive "POST" as the content
-			value = "";
-		}
+		Gson g = new Gson();
+		SaveActionDTO data = g.fromJson(jsonData, SaveActionDTO.class);
+		String newArticle = buildArticle(data);
 
-		// errors and security are handled inside replaceKDOMNodesSaveAndBuild
 		Map<String, String> nodesMap = new HashMap<>();
-		nodesMap.put(id, value);
+		nodesMap.put(id, newArticle);
 		Sections.replace(context, nodesMap).sendErrors(context);
 		Compilers.awaitTermination(Compilers.getCompilerManager(context.getWeb()));
 	}
+
+	/**
+	 * Parses the SaveActionDTO to String as new Article to replace old one
+	 * Currently will only parse Type WIKI (wiki text as string) only
+	 * @param actionData SaveActionDTO
+	 * @return String
+	 * @exception IllegalArgumentException for DTO object if it contains JSON type that cannot be parsed
+	 */
+	private String buildArticle(SaveActionDTO actionData){
+		//filter out empty Sections and join the rest
+		return actionData.getSections().stream().filter(s->!s.isEmpty()).map(section->{
+			if (section.getType().equals(SaveActionSectionDTO.Type.WIKI)){
+				return section.getWikiData();
+			} else {
+				throw new IllegalArgumentException("Received data type JSON but expected WIKI for Section " + section.getSectionID());
+			}
+		}).collect(Collectors.joining("\r\n\r\n"));
+	}
+
 }

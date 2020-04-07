@@ -124,23 +124,21 @@ KNOWWE.editCommons = function () {
 		sendChanges: function (newWikiText, params, fn, async) {
 			if (typeof async === "undefined") async = true;
 			_EC.showAjaxLoader();
-			const options = {
-				url: KNOWWE.core.util.getURL(params),
-				data: newWikiText,
-				async: async,
-				response: {
-					action: 'none',
-					fn: function () {
-						// TODO: Remove?
-						window.onbeforeunload = null;
-						window.onunload = null;
-						if (fn) fn();
-						_EC.hideAjaxLoader();
-					},
-					onError: _EC.onErrorBehavior
+			let xhr = new XMLHttpRequest();
+			let url = KNOWWE.core.util.getURL(params);
+			xhr.open("POST", url, true);
+			xhr.setRequestHeader("Content-Type", "application/json");
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState === 4 && xhr.status === 200) {
+					window.onbeforeunload = null;
+					window.onunload = null;
+					if (fn) fn();
+					_EC.hideAjaxLoader();
+				} else {
+					_EC.onErrorBehavior
 				}
 			};
-			new _KA(options).send();
+			xhr.send(JSON.stringify(newWikiText));
 		},
 
 		registerSaveCancelEvents: function (element, saveFunction, cancelFunction, argument) {
