@@ -47,11 +47,11 @@ public final class CompilationLocal<E> {
 
 	/**
 	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. The object
-	 * stays valid until a new compilation is started by the given compilation manager. Make sure to remove the cache,
-	 * if it is no longer needed.
+	 * stays valid until a new compilation is started by the given CompilerManager. Make sure to remove the cache,
+	 * if it is no longer needed using the methode {@link #removeCache(Object, CompilerManager)}.
 	 *
 	 * @param cacheKey        the object by which the supplier/result is cached
-	 * @param compilerManager the compilerManager the cache refers to
+	 * @param compilerManager the CompilerManager the cache refers to
 	 * @param supplier        the supplier generating the object to be cached
 	 * @param <L>             the type of the object to be generated
 	 * @return a cached or newly generated instance of the object provided by the supplier
@@ -63,10 +63,10 @@ public final class CompilationLocal<E> {
 	}
 
 	/**
-	 * Removes the object cached by the given cacheKey and compilerManager from the cache. Use this to clear up memory.
+	 * Removes the object cached by the given cacheKey and CompilerManager from the cache. Use this to clear up memory.
 	 *
 	 * @param cacheKey        the object by which the supplier/result is cached
-	 * @param compilerManager the compilerManager the cache refers to
+	 * @param compilerManager the CompilerManager the cache refers to
 	 */
 	public static void removeCache(@NotNull Object cacheKey, @NotNull CompilerManager compilerManager) {
 		cache.getOrDefault(compilerManager, Collections.emptyMap()).remove(cacheKey);
@@ -78,7 +78,7 @@ public final class CompilationLocal<E> {
 	 * as the cacheKey is no longer used elsewhere and garbage collected, the cached object is also cleaned up.
 	 *
 	 * @param cacheKey        the object by which the supplier/result is cached
-	 * @param compilerManager the compilerManager the cache refers to
+	 * @param compilerManager the CompilerManager the cache refers to
 	 * @param supplier        the supplier generating the object to be cached
 	 * @param <L>             the type of the object to be generated
 	 * @return a cached or newly generated instance of the object provided by the supplier
@@ -90,10 +90,11 @@ public final class CompilationLocal<E> {
 	}
 
 	/**
-	 * Creates a new CompilationLocal. The CompilationLocal itself caches the object from the supplier, but is not
-	 * itself cached. So it is the responsibility of the caller to handle the life-cycle of the CompilationLocal.
+	 * Creates a new CompilationLocal. The CompilationLocal caches the object from the supplier til the next
+	 * compilation, but is not itself cached. So it is the responsibility of the caller to handle the life-cycle of the
+	 * CompilationLocal.
 	 *
-	 * @param compilerManager the compilerManager the cache refers to
+	 * @param compilerManager the CompilerManager the cache refers to
 	 * @param supplier        the supplier generating the object to be cached
 	 * @param <L>             the type of the object to be generated
 	 * @return the CompilationLocal
