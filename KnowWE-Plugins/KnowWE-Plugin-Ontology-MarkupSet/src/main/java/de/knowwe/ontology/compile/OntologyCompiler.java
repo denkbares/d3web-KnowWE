@@ -67,7 +67,6 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	private Rdf2GoCore rdf2GoCore;
 	private TerminologyManager terminologyManager;
 	private boolean completeCompilation = true;
-	private boolean firstCompilation = true;
 	private ParallelScriptCompiler<OntologyCompiler> scriptCompiler;
 	private ParallelScriptCompiler<OntologyCompiler> destroyScriptCompiler;
 	private final RepositoryConfig ruleSet;
@@ -202,24 +201,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	public void compilePackages(String[] packagesToCompile) {
 		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this));
 
-		if (firstCompilation) createTerminologyManager();
-
 		Collection<Section<?>> sectionsOfPackage;
-		// If this is the first compilation of this compiler, we do not need to destroy, because the compiler
-		// has not created yet.
-		if (!firstCompilation) {
-			sectionsOfPackage = getPackageManager().getRemovedSections(packagesToCompile);
-			destroy(sectionsOfPackage);
-		}
-		// While destroying, perhaps a complete compilation was requested by some of the scripts
-		if (completeCompilation && !firstCompilation) {
-			// Since we later compile all sections in the compile step, we first have to destroy all of them.
-			// This is different from just removing and adding a new compiler to the CompilerManager without
-			// destroying in case of a full parse, because we still want to continue using the current compiler
-			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
-			destroy(sectionsOfPackage);
-		}
-
 		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
 		// we compile all sections of the compiled packages, not just the added ones
 		if (completeCompilation) {
@@ -228,8 +210,10 @@ public class OntologyCompiler extends AbstractPackageCompiler
 			createTerminologyManager();
 			sectionsOfPackage = getPackageManager().getSectionsOfPackage(packagesToCompile);
 		}
-		// an incremental compilation... just compile the added sections
+		// an incremental compilation... destroy the removed and compile the added sections
 		else {
+			sectionsOfPackage = getPackageManager().getRemovedSections(packagesToCompile);
+			destroy(sectionsOfPackage);
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
 
@@ -249,7 +233,6 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this, changed));
 
-		firstCompilation = false;
 		completeCompilation = false;
 		commitTracker.clear();
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this);
