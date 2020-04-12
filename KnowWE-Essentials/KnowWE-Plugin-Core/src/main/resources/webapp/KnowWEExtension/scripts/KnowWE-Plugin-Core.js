@@ -1004,6 +1004,38 @@ KNOWWE.core.plugin.reloadNamespaceFile = function() {
   }
 }();
 
+KNOWWE.core.plugin.recompile = function() {
+
+  return {
+
+    init: function() {
+      jq$(document).keyup(function(event) {
+          let command = null;
+          //console.log(event.ctrlKey + " " + event.shiftKey + " " + event.altKey + " " + event.key);
+          if (event.ctrlKey && event.altKey && event.shiftKey && event.key === 'R') {
+            command = "recompileAll";
+            KNOWWE.notification.success("Full Recompile", "Recompiling the current page and all its compilers.");
+          } else if (event.ctrlKey && event.altKey && event.key === 'r') {
+            command = "recompile"
+            KNOWWE.notification.success("Recompile", "Recompiling the current page.");
+          } else {
+            return;
+          }
+          jq$.ajax({
+            url: "action/RecompileAction",
+            data: {
+              command: command,
+              title: KNOWWE.helper.getPagename()
+            },
+          });
+          // just refresh, server will wait for compilation to finish before rendering
+          window.location.reload();
+        }
+      );
+    }
+  }
+}();
+
 //jquery-autogrow for automatic input field resizing (customized for KnowWE renaming)
 
 (function(jq$) {
@@ -1087,6 +1119,7 @@ KNOWWE.core.plugin.reloadNamespaceFile = function() {
       KNOWWE.core.plugin.renderKDOM();
       KNOWWE.kdomtreetable.init();
       KNOWWE.core.plugin.pagination.decorateTables();
+      KNOWWE.core.plugin.recompile.init();
     });
   }
   jq$(window).on('hashchange', function() {
