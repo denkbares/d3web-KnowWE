@@ -1454,7 +1454,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public void writeModel(OutputStream out, RDFFormat syntax) throws IOException {
 		try {
-			this.semanticCore.export(out, syntax);
+			synchronized (this.statementMutex) {
+				if (this.semanticCore != null) { // if the semantic core was closed while waiting, just skip
+					this.semanticCore.export(out, syntax);
+				}
+			}
 		}
 		catch (RepositoryException | RDFHandlerException e) {
 			throw new IOException(e);
