@@ -1011,14 +1011,16 @@ KNOWWE.core.plugin.recompile = function() {
     init: function() {
       jq$(document).keyup(function(event) {
           let command = null;
-          //console.log(event.ctrlKey + " " + event.shiftKey + " " + event.altKey + " " + event.key);
-          if (event.ctrlKey && event.altKey && event.shiftKey && event.key === 'R') {
+          console.log(event.ctrlKey + " " + event.shiftKey + " " + event.altKey + " " + event.key);
+          if (event.ctrlKey && event.altKey && event.shiftKey && (event.key === 'R' || event.key === '¸')) {
             command = "recompileAll";
-            KNOWWE.notification.success("Full Recompile", "Recompiling the current page and all its compilers.");
-          } else if (event.ctrlKey && event.altKey && event.key === 'r') {
+            KNOWWE.notification.success("Full Recompile", "Performing recompilation of the current page and all involved compilers.");
+          }
+          else if (event.ctrlKey && event.altKey && (event.key === 'r' || event.key === '®')) {
             command = "recompile"
             KNOWWE.notification.success("Recompile", "Recompiling the current page.");
-          } else {
+          }
+          else {
             return;
           }
           jq$.ajax({
