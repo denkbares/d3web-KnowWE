@@ -42,6 +42,8 @@ import java.util.logging.LogManager;
 
 import javax.servlet.ServletContext;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.collections.PriorityList;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
@@ -557,6 +559,7 @@ public class Environment {
 	 *
 	 * @param web the web of the {@link ArticleManager}
 	 */
+	@NotNull
 	public ArticleManager getArticleManager(String web) {
 		return this.articleManagers.computeIfAbsent(web, k -> new DefaultArticleManager(web));
 	}

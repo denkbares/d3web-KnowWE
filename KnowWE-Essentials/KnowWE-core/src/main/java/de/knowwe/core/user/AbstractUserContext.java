@@ -20,6 +20,8 @@ package de.knowwe.core.user;
 
 import java.util.NoSuchElementException;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
@@ -121,6 +123,7 @@ public abstract class AbstractUserContext implements UserContext {
 	}
 
 	@Override
+	@NotNull
 	public ArticleManager getArticleManager() {
 		return KnowWEUtils.getArticleManager(getWeb());
 	}

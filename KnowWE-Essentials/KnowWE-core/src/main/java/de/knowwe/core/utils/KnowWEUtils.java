@@ -1034,6 +1034,7 @@ public class KnowWEUtils {
 	 * @param web the web we want the {@link ArticleManager} from
 	 * @created 07.01.2014
 	 */
+	@NotNull
 	public static ArticleManager getArticleManager(final String web) {
 		return Environment.getInstance().getArticleManager(web);
 	}
