@@ -21,6 +21,9 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.stream.Stream;
+
+import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
@@ -48,41 +51,38 @@ public class RecompileAction extends AbstractAction {
 			failUnexpected(context, "No article found for title '" + title + ", unable to recompile");
 			return;
 		}
+		ArticleManager articleManager = context.getArticleManager();
 		if ("recompileAll".equals(command)) {
-			recompileAll(article);
+			recompile(articleManager, getCompilerArticles(article));
 		}
 		else if ("recompile".equals(command)) {
-			recompile(article);
+			articleManager.registerArticle(cloneArticle(article));
 		}
 		else {
 			failUnexpected(context, "Unknown command for RecompileAction: " + command);
 		}
 	}
 
-	private void recompile(Article article) {
-		ArticleManager articleManager = article.getArticleManager();
-		assert articleManager != null;
-		articleManager.registerArticle(cloneArticle(article));
-	}
-
-	private void recompileAll(Article article) {
-		ArticleManager articleManager = article.getArticleManager();
-		assert articleManager != null;
+	public static void recompile(@NotNull ArticleManager articleManager, Stream<Article> compilerArticles) {
 		articleManager.open();
 		try {
-			$(article).successor(DefaultMarkupType.class)
-					.map(s -> Compilers.getCompilers(s, PackageCompiler.class))
-					.flatMap(Collection::stream)
-					.distinct()
-					.map(c -> c.getCompileSection().getArticle())
-					.forEach(compilerArticle -> articleManager.registerArticle(cloneArticle(compilerArticle)));
+			compilerArticles.forEach(article -> articleManager.registerArticle(cloneArticle(article)));
 		}
 		finally {
 			articleManager.commit();
 		}
 	}
 
-	private Article cloneArticle(Article compilerArticle) {
+	@NotNull
+	public static Stream<Article> getCompilerArticles(Article article) {
+		return $(article).successor(DefaultMarkupType.class)
+				.map(s -> Compilers.getCompilers(s, PackageCompiler.class))
+				.flatMap(Collection::stream)
+				.distinct()
+				.map(c -> c.getCompileSection().getArticle());
+	}
+
+	private static Article cloneArticle(Article compilerArticle) {
 		return Article.createArticle(compilerArticle.getText(), compilerArticle
 				.getTitle(), compilerArticle
 				.getWeb());
