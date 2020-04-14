@@ -13,7 +13,7 @@ public class SaveActionSectionDTO {
     private String sectionID;
     private String data;
 
-    enum Type {
+    public enum Type {
         WIKI,
         JSON
     }
