@@ -61,6 +61,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.RepositoryResult;
@@ -1190,12 +1191,12 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	@Override
-	public TupleQuery prepareSelect(String query) {
+	public TupleQuery prepareSelect(String query) throws RepositoryException, MalformedQueryException {
 		return semanticCore.prepareSelect(query);
 	}
 
 	@Override
-	public TupleQuery prepareSelect(Collection<Namespace> namespaces, String query) {
+	public TupleQuery prepareSelect(Collection<Namespace> namespaces, String query)throws RepositoryException, MalformedQueryException  {
 		return semanticCore.prepareSelect(namespaces, query);
 	}
 
