@@ -365,6 +365,11 @@ public class Compilers {
 		}
 	}
 
+	// very simple method at the moment, we have it to be consistent with #destroyAndRecompileSection
+	public static void recompileSection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		compiler.addSectionToCompile(section, scriptFilter);
+	}
+
 	public static void recompileRegistrations(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
 		Sections.registrations((TermCompiler) compiler, identifier)
 				.forEach(s -> compiler.addSectionToCompile(s, scriptFilter));
