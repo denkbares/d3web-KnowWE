@@ -85,8 +85,12 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 
 		// if not available, create a new one and store it for later usage
 		section.get().storeTermObject(compiler, section, createTermObject(name, kb));
-		Compilers.recompileRegistrations(compiler, termIdentifier);
+		recompile(compiler, section, termIdentifier);
 		return Messages.noMessage();
+	}
+
+	protected void recompile(D3webCompiler compiler, Section<SectionType> section, Identifier termIdentifier) {
+		Compilers.recompileRegistrations(compiler, termIdentifier);
 	}
 
 	protected String getTermName(D3webCompiler compiler, Section<SectionType> section) {
@@ -108,6 +112,10 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 			if (!termObjectClass.isInstance(terminologyObject)) return;
 			terminologyObject.destroy();
 		}
+		destroyAndRecompile(compiler, section, identifier);
+	}
+
+	protected void destroyAndRecompile(D3webCompiler compiler, Section<SectionType> section, Identifier identifier) {
 		Compilers.destroyAndRecompileRegistrations(compiler, identifier);
 	}
 

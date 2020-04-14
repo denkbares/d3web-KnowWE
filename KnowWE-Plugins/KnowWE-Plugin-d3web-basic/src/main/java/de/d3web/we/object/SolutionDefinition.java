@@ -19,25 +19,20 @@
  */
 package de.d3web.we.object;
 
-import java.util.Collection;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webTerminologyObjectCreationHandler;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 /**
@@ -82,5 +77,26 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 		protected Solution createTermObject(String name, KnowledgeBase kb) {
 			return new Solution(kb, name);
 		}
+
+		@Override
+		protected void recompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier termIdentifier) {
+			section.get().recompile(compiler, section, termIdentifier);
+			super.recompile(compiler, section, termIdentifier);
+		}
+
+		@Override
+		protected void destroyAndRecompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier identifier) {
+			section.get().destroyAndRecompile(compiler, section, identifier);
+			super.destroyAndRecompile(compiler, section, identifier);
+		}
 	}
+
+	protected void recompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier identifier) {
+		Compilers.recompileRegistrations(compiler, identifier);
+	}
+
+	protected void destroyAndRecompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier identifier) {
+		Compilers.destroyAndRecompileRegistrations(compiler, identifier);
+	}
+
 }
