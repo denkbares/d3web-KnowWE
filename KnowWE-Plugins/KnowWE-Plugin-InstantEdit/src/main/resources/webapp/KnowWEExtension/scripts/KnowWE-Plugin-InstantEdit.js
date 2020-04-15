@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 denkbares GmbH, Germany
+ * Copyright (C) 2020 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -198,7 +198,7 @@ KNOWWE.plugin.instantEdit = function () {
 				title = _IE.toolNameSpace[id].getNewArticleTitle(id);
 			}
 
-			sectionData.push({
+			sectionData.sections.push({
 				type: "WIKI",
 				sectionID : id,
 				data : newWikiText
