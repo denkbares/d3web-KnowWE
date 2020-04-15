@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 denkbares GmbH, Germany
+ * Copyright (C) 2020 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -43,7 +43,7 @@ KNOWWE.editCommons = function () {
 		wrapHTML: function (id, locked, html) {
 			let lockedHTML = "";
 			if (locked) {
-				lockedHTML = "<div class=\"error\">Another user has started to edit this page, but " + "hasn't yet saved it. You are allowed to further edit this page, but be " + "aware that the other user will not be pleased if you do so!</div>"
+				lockedHTML = "<div class=\"error\">Another user has started to edit this page, but " + "hasn't yet saved it. You are allowed to further edit this page, but be " + "aware that the other user will not be pleased if you do so!</div>";
 			}
 			let openingDiv = "<div id='" + id + "' class='editarea'>";
 			let closingDiv = "</div>\n";
@@ -135,7 +135,7 @@ KNOWWE.editCommons = function () {
 					if (fn) fn();
 					_EC.hideAjaxLoader();
 				} else {
-					_EC.onErrorBehavior
+					_EC.onErrorBehavior();
 				}
 			};
 			xhr.send(JSON.stringify(newWikiText));
@@ -227,7 +227,7 @@ KNOWWE.editCommons = function () {
 			};
 			const ajaxCall = new _KA(options);
 			ajaxCall.send();
-			return JSON.parse(ajaxCall.getResponse()).text
+			return JSON.parse(ajaxCall.getResponse()).text;
 		},
 
 		getWikiText: function (id, actionName) {
@@ -273,7 +273,7 @@ KNOWWE.editCommons = function () {
 			return (!str || 0 === str.length);
 		}
 
-	}
+	};
 }();
 
 
@@ -306,7 +306,7 @@ KNOWWE.editCommons.elements = function () {
 		},
 
 		newSection: newSection
-	}
+	};
 
 }();
 

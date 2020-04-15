@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2011 University Wuerzburg, Computer Science VI
- * 
+ * Copyright (C) 2020 denkbares GmbH, Germany
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -19,6 +19,8 @@
 package de.knowwe.instantedit.actions;
 
 import java.io.IOException;
+
+import com.google.gson.Gson;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
@@ -37,7 +39,11 @@ public class InstantEditAddArticleAction extends AbstractAction {
 
 		String title = context.getTitle();
 		String web = context.getWeb();
-		String value = context.getParameter("data");
+		String jsonData = context.getParameter("data");
+
+		Gson g = new Gson();
+		SaveActionDTO data = g.fromJson(jsonData, SaveActionDTO.class);
+		String value = data.buildArticle();
 
 		boolean canWrite = Environment.getInstance().getWikiConnector().userCanEditArticle(
 				title, context.getRequest());
@@ -61,5 +67,4 @@ public class InstantEditAddArticleAction extends AbstractAction {
 			Environment.getInstance().getWikiConnector().writeArticleToWikiPersistence(title, value, context);
 		}
 	}
-
 }
