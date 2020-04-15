@@ -103,7 +103,8 @@ public final class CompilationLocal<E> {
 	/**
 	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. The object
 	 * stays valid until a new compilation is started by the given compilation manager. As soon as the object provided
-	 * as the cacheKey is no longer used elsewhere and garbage collected, the cached object is also cleaned up.
+	 * as the cacheKey is no longer used/referenced elsewhere and garbage collected, the cached object is also cleaned
+	 * up.
 	 *
 	 * @param cacheKey        the object by which the supplier/result is cached
 	 * @param compilerManager the CompilerManager the cache refers to
