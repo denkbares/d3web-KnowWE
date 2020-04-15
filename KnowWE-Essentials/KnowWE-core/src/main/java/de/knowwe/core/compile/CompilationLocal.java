@@ -27,6 +27,8 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 
+import de.knowwe.core.kdom.parsing.Section;
+
 /**
  * A container for a variable that is only valid during one compilation cycle of the {@link CompilerManager}. If the
  * variable gets accessed again after a new compilations has started, the variable from the last compilation gets
@@ -44,6 +46,32 @@ public final class CompilationLocal<E> {
 
 	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> cache = Collections.synchronizedMap(new WeakHashMap<>());
 	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> weakCache = Collections.synchronizedMap(new WeakHashMap<>());
+
+	/**
+	 * Get the object provided by the supplier either freshly generated, or if still valid, from the section store. The
+	 * object stays valid until a new compilation is started by the given CompilerManager. The {@link CompilationLocal}
+	 * is cleaned up together with the section.
+	 *
+	 * @param compiler the compiler for which to store/cache the object in the section store
+	 * @param section  the section providing the section store the store/cache the object
+	 * @param key      the key to use when storing the object in the section store, should be unique for the section
+	 * @param supplier the supplier generating the object to be cached
+	 * @param <L>      the type of the object to be generated
+	 * @return a cached or newly generated instance of the object provided by the supplier
+	 */
+	public static <L> L getCached(@NotNull Compiler compiler, @NotNull Section<?> section, @NotNull String key, @NotNull Supplier<L> supplier) {
+		CompilationLocal<L> compilationLocal = section.getObject(compiler, key);
+		if (compilationLocal == null) {
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (section) {
+				compilationLocal = section.getObject(compiler, key);
+				if (compilationLocal == null) {
+					compilationLocal = create(compiler.getCompilerManager(), supplier);
+				}
+			}
+		}
+		return compilationLocal.get();
+	}
 
 	/**
 	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. The object
