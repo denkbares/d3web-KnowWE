@@ -18,7 +18,7 @@
  */
 package de.knowwe.core.utils.progress;
 
-import com.denkbares.progress.ExtendedProgressListener;
+import com.denkbares.progress.ReadableProgressListener;
 
 /**
  * A simple ProgressListener that stores the updated values to be pulled by ajax
@@ -27,7 +27,7 @@ import com.denkbares.progress.ExtendedProgressListener;
  * @author Jochen Reutelshöfer (denkbares GmbH)
  * @created 18.07.2012
  */
-public interface AjaxProgressListener extends ExtendedProgressListener {
+public interface AjaxProgressListener extends ReadableProgressListener {
 
 	/**
 	 * Allows to pull the current message of this ProgressListener.
