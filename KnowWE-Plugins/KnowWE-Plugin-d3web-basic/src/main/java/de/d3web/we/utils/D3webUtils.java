@@ -36,6 +36,7 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.events.EventManager;
@@ -207,7 +208,9 @@ public class D3webUtils {
 		object.destroy();
 	}
 
+	@Contract("null -> null; !null -> !null")
 	public static KnowledgeBase getKnowledgeBase(D3webCompiler compiler) {
+		if (compiler == null) return null;
 		return compiler.getKnowledgeBase();
 	}
 
