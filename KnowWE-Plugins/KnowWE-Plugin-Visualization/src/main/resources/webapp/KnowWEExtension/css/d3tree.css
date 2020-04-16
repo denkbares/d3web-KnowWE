@@ -1,24 +1,24 @@
-.node {
+.type_VisualizationConfig .node {
   cursor: pointer;
 }
 
-.node circle {
+.type_VisualizationConfig .node circle {
   fill: #fff;
   stroke: darkblue;
   stroke-width: 1.5px;
 }
 
-.node.expandable circle {
+.type_VisualizationConfig .node.expandable circle {
 	fill: lightsteelblue;
 }
 
 
-text.nodetext {
+.type_VisualizationConfig text.nodetext {
 	fill: blue;
 
 }
 
-path.link {
+.type_VisualizationConfig path.link {
   fill: none;
   stroke: grey;
   stroke-width: 1.5px;

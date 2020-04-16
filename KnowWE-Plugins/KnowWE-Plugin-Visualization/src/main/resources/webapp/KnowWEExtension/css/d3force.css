@@ -1,55 +1,55 @@
-path.link {
+.type_VisualizationConfig path.link {
   fill: none;
   stroke: #666;
   stroke-width: 1.5px;
 }
 
-marker#kann {
+.type_VisualizationConfig marker#kann {
   fill: green;
 }
 
-path.link.kann {
+.type_VisualizationConfig path.link.kann {
   stroke: green;
   stroke-dasharray: 0,2 1;
 }
 
-marker#muss {
+.type_VisualizationConfig marker#muss {
   fill: red;
 }
 
-path.link.muss {
+.type_VisualizationConfig path.link.muss {
   stroke: red;
 }
 
-marker#unterkonzept {
+.type_VisualizationConfig marker#unterkonzept {
   fill: blue;
 }
 
-path.link.unterkonzept {
+.type_VisualizationConfig path.link.unterkonzept {
   stroke: blue;
 }
 
-marker#type {
+.type_VisualizationConfig marker#type {
   fill: orange;
 }
 
-path.link.type {
+.type_VisualizationConfig path.link.type {
   stroke: orange;
   stroke-dasharray: 0,2 1;
 }
 
-circle {
+.type_VisualizationConfig circle {
   fill: #ccc;
   stroke: #333;
   stroke-width: 1.5px;
 }
 
-text {
+.type_VisualizationConfig text {
   font: 15px sans-serif;
 
 }
 
-text.shadow {
+.type_VisualizationConfig text.shadow {
   stroke: #fff;
   stroke-width: 3px;
   stroke-opacity: .8;
