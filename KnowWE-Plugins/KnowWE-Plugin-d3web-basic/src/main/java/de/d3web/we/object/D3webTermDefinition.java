@@ -102,7 +102,7 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 		Collection<Section<?>> termDefiningSections = terminologyHandler.getTermDefiningSections(termIdentifier);
 		for (Section<?> potentialDefSection : termDefiningSections) {
-			if (!(section.get() instanceof D3webTermDefinition)) continue;
+			if (!(potentialDefSection.get() instanceof D3webTermDefinition)) continue;
 			//noinspection unchecked
 			Section<D3webTermDefinition<TermObject>> termDefiningSection = (Section<D3webTermDefinition<TermObject>>) potentialDefSection;
 			TermObject namedObject = termDefiningSection.get().getTermObject(compiler, termDefiningSection);
