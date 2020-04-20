@@ -356,7 +356,10 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return offsetInParent;
 	}
 
-	int getTextLength() {
+	/**
+	 * Returns the length of the markup text of this section.
+	 */
+	public int getTextLength() {
 		return textLength;
 	}
 
