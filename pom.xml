@@ -362,6 +362,11 @@
 				<version>${d3web.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>d3web-Plugin-CostBenefit-AStar</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.denkbares.ssp</groupId>
 				<artifactId>d3web-Plugin-AVL</artifactId>
 				<version>${ssp.version}</version>
