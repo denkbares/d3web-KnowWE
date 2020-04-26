@@ -55,7 +55,7 @@ public class DefaultMarkupPreviewRenderer extends AbstractPreviewRenderer {
 		relevantOrSome,
 
 		/**
-		 * /** Shows successors that contains relevant items, but all if there are no successors
+		 * Shows successors that contains relevant items, but all if there are no successors
 		 * with relevant items
 		 */
 		relevantOrAll,
