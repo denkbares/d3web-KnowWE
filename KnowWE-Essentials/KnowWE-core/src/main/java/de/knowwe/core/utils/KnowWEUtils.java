@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -1045,13 +1047,10 @@ public class KnowWEUtils {
 	 * @param manager the ArticleManager we want the {@link PackageManager} from
 	 * @created 07.01.2014
 	 */
+	@NotNull
 	public static PackageManager getPackageManager(final ArticleManager manager) {
-		final Collection<PackageRegistrationCompiler> compilers = Compilers.getCompilers(manager,
-				PackageRegistrationCompiler.class);
-		if (compilers.isEmpty()) {
-			return null;
-		}
-		return compilers.iterator().next().getPackageManager();
+		return Objects.requireNonNull(Compilers.getCompiler(manager, PackageRegistrationCompiler.class))
+				.getPackageManager();
 	}
 
 	/**
