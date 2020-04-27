@@ -105,7 +105,7 @@
 	</target>
 	<target name="update_resources edb" depends="update_resources core-plugins">
 		<copy todir="${basedir}/target/KnowWE-App-12.3-SNAPSHOT" verbose="true">
-			<fileset dir="${basedir}/../../SemanticServicePlatform/">
+			<fileset dir="${basedir}/../../knowwe-ssp/">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-ExperienceDatabase/src/main/resources/webapp/" />
 			</fileset>
