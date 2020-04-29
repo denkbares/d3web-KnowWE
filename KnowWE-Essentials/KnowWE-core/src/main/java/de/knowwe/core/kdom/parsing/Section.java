@@ -895,8 +895,13 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	public <C extends Compiler, O> O computeIfAbsent(@Nullable C compiler, String key, BiFunction<@Nullable C, @NotNull Section<T>, @NotNull O> mappingFunction) {
 		O object = getObject(compiler, key);
 		if (object == null) {
-			object = mappingFunction.apply(compiler, this);
-			storeObject(compiler, key, object);
+			synchronized (this) {
+				object = getObject(compiler, key);
+				if (object == null) {
+					object = mappingFunction.apply(compiler, this);
+					storeObject(compiler, key, object);
+				}
+			}
 		}
 		return object;
 	}
