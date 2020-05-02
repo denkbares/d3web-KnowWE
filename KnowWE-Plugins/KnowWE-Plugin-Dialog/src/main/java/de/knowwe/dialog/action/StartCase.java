@@ -51,7 +51,6 @@ import de.d3web.interview.FormStrategy;
 import de.d3web.interview.Interview;
 import de.d3web.interview.NextUnansweredQuestionFormStrategy;
 import de.d3web.interview.SingleQuestionFormStrategyWrapper;
-import de.d3web.interview.inference.PSMethodInterview;
 import de.d3web.we.basic.SessionCreatedEvent;
 import de.d3web.we.basic.SessionProvider;
 import de.knowwe.core.action.AbstractAction;
@@ -270,7 +269,7 @@ public class StartCase extends AbstractAction implements EventListener {
 	}
 
 	private void wrapFormStrategy(Session session) {
-		Interview interview = session.getSessionObject(session.getPSMethodInstance(PSMethodInterview.class));
+		Interview interview = Interview.get(session);
 		FormStrategy originalFormStrategy = interview.getFormStrategy();
 		if (!(originalFormStrategy instanceof NextUnansweredQuestionFormStrategy)) {
 			interview.setFormStrategy(new SingleQuestionFormStrategyWrapper(originalFormStrategy));

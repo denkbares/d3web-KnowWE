@@ -114,7 +114,7 @@ public class GetInterview extends AbstractAction {
 	}
 
 	private List<FactProtocolEntry> getUserSelectedHistory(Session session) {
-		Interview interview = session.getSessionObject(session.getPSMethodInstance(PSMethodInterview.class));
+		Interview interview = Interview.get(session);
 		List<FactProtocolEntry> entries =
 				session.getProtocol().getProtocolHistory(FactProtocolEntry.class);
 
