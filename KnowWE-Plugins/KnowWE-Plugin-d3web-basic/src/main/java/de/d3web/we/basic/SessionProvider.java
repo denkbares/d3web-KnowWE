@@ -38,8 +38,8 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.user.UserContext;
 
 /**
- * This class stores all {@link Session}s. The class itself is stored in each user's HTTPSession and
- * is accessible by calling:
+ * This class stores all {@link Session}s. The class itself is stored in each user's HTTPSession and is accessible by
+ * calling:
  * <p>
  * <pre>
  * httpSession.getAttribute(Attributes.SESSIONPROVIDER)
@@ -71,12 +71,11 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Returns the SessionProvider object for a specified {@link UserContext}. If there is no
-	 * SessionProvider object, a new one will be created and stored in the provided UserContext, i.
-	 * e. HTTPSession.
+	 * Returns the SessionProvider object for a specified {@link UserContext}. If there is no SessionProvider object, a
+	 * new one will be created and stored in the provided UserContext, i. e. HTTPSession.
 	 * <p>
-	 * Please be aware that this method only works with an UserContext backed by a real HTTPSession.
-	 * Otherwise there is no place to store and retrieve the SessionProvider object.
+	 * Please be aware that this method only works with an UserContext backed by a real HTTPSession. Otherwise there is
+	 * no place to store and retrieve the SessionProvider object.
 	 *
 	 * @param context UserContext of the current user.
 	 * @return SessionProvider object associated to the user
@@ -88,8 +87,8 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Returns the SessionProvider object for a specified http session. If there is no
-	 * SessionProvider object, a new one will be created and stored in the provided http session.
+	 * Returns the SessionProvider object for a specified http session. If there is no SessionProvider object, a new one
+	 * will be created and stored in the provided http session.
 	 *
 	 * @param httpSession HttpSession of the current user.
 	 * @return SessionProvider object associated to the user
@@ -131,10 +130,9 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Returns an existing {@link Session} for the provided knowledge base. If there exists no
-	 * session for this knowledge base this method will create one. If the knowledge base of an
-	 * existing session is not up to date and no user facts has been set, the knowledge base will be
-	 * replaced automatically (the session will be reset).
+	 * Returns an existing {@link Session} for the provided knowledge base. If there exists no session for this
+	 * knowledge base this method will create one. If the knowledge base of an existing session is not up to date and no
+	 * user facts has been set, the knowledge base will be replaced automatically (the session will be reset).
 	 *
 	 * @param kb the underlying knowledge base
 	 * @return session for the specified knowledge base
@@ -150,7 +148,14 @@ public class SessionProvider {
 			// check if the session is empty
 			for (TerminologyObject t : session.getBlackboard().getValuedObjects()) {
 				Fact fact = session.getBlackboard().getValueFact(t);
-				if (fact.getPSMethod() == null || fact.getPSMethod().hasType(Type.source)) {
+				if (fact != null && fact.getPSMethod() != null && fact.getPSMethod().hasType(Type.source)) {
+					// session is not empty -> don't touch it!
+					return session;
+				}
+			}
+			for (TerminologyObject t : session.getBlackboard().getInterviewObjects()) {
+				Fact fact = session.getBlackboard().getInterviewFact(t);
+				if (fact != null && fact.getPSMethod() != null && fact.getPSMethod().hasType(Type.source)) {
 					// session is not empty -> don't touch it!
 					return session;
 				}
@@ -180,8 +185,8 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Creates and returns a new {@link Session} for the {@link KnowledgeBase}. The created session
-	 * is accessible by using the id of the knowledge base.
+	 * Creates and returns a new {@link Session} for the {@link KnowledgeBase}. The created session is accessible by
+	 * using the id of the knowledge base.
 	 *
 	 * @param context the {@link UserContext} the session will belong to
 	 * @param kb      The underlying knowledge base
@@ -197,15 +202,14 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Returns the {@link Session} for a specified {@link UserContext} and a {@link KnowledgeBase}.
-	 * This methods tries to load an existing SessionProvider object from the user's HTTPSession. If
-	 * there is no SessionProvider object, a new one will be created and stored in the provided
-	 * UserContext, i. e. HTTPSession. If the knowledge base of an existing session is not up to
-	 * date and no user facts has been set, the knowledge base will be replaced automatically (the
-	 * session will be reset).
+	 * Returns the {@link Session} for a specified {@link UserContext} and a {@link KnowledgeBase}. This methods tries
+	 * to load an existing SessionProvider object from the user's HTTPSession. If there is no SessionProvider object, a
+	 * new one will be created and stored in the provided UserContext, i. e. HTTPSession. If the knowledge base of an
+	 * existing session is not up to date and no user facts has been set, the knowledge base will be replaced
+	 * automatically (the session will be reset).
 	 * <p>
-	 * Please be aware that this method only works with an UserContext backed by a real HTTPSession.
-	 * Otherwise there is no place to store and retrieve the SessionProvider object.
+	 * Please be aware that this method only works with an UserContext backed by a real HTTPSession. Otherwise there is
+	 * no place to store and retrieve the SessionProvider object.
 	 *
 	 * @param context UserContext of the current user.
 	 * @param base    the underlying knowledge base
@@ -221,13 +225,12 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Returns if a {@link Session} for a specified {@link UserContext} and a {@link KnowledgeBase}
-	 * has already been created. This methods tries to load an existing SessionProvider object from
-	 * the user's HTTPSession. If there is no SessionProvider object, a new one will be created and
-	 * stored in the provided UserContext, i. e. HTTPSession.
+	 * Returns if a {@link Session} for a specified {@link UserContext} and a {@link KnowledgeBase} has already been
+	 * created. This methods tries to load an existing SessionProvider object from the user's HTTPSession. If there is
+	 * no SessionProvider object, a new one will be created and stored in the provided UserContext, i. e. HTTPSession.
 	 * <p>
-	 * Please be aware that this method only works with an UserContext backed by a real HTTPSession.
-	 * Otherwise there is no place to store and retrieve the SessionProvider object.
+	 * Please be aware that this method only works with an UserContext backed by a real HTTPSession. Otherwise there is
+	 * no place to store and retrieve the SessionProvider object.
 	 *
 	 * @param context UserContext of the current user.
 	 * @param base    the underlying knowledge base
@@ -274,9 +277,9 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Removes an existing {@link Session} for the provided knowledge base. If there exists no
-	 * session for this knowledge base ID this method will do nothing. The removed session is also
-	 * terminated, so it cannot be used later accidentally.
+	 * Removes an existing {@link Session} for the provided knowledge base. If there exists no session for this
+	 * knowledge base ID this method will do nothing. The removed session is also terminated, so it cannot be used later
+	 * accidentally.
 	 *
 	 * @param context the {@link UserContext} to which the session belongs
 	 * @param kb      the underlying knowledge base
@@ -287,13 +290,12 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Removes an existing {@link Session} for the provided knowledge base. If there exists no
-	 * session for this knowledge base ID this method will do nothing.
+	 * Removes an existing {@link Session} for the provided knowledge base. If there exists no session for this
+	 * knowledge base ID this method will do nothing.
 	 *
 	 * @param context   the {@link UserContext} to which the session belongs
 	 * @param kb        the underlying knowledge base
-	 * @param terminate a boolean to decide whether the removed session should also be terminated or
-	 *                  not
+	 * @param terminate a boolean to decide whether the removed session should also be terminated or not
 	 * @created 06.03.2012
 	 */
 	public static void removeSession(UserContext context, KnowledgeBase kb, boolean terminate) {
@@ -304,8 +306,8 @@ public class SessionProvider {
 	}
 
 	/**
-	 * Sets the session to the specified session by using the id of the session's underlying kb. An
-	 * existing session will be overwritten!
+	 * Sets the session to the specified session by using the id of the session's underlying kb. An existing session
+	 * will be overwritten!
 	 *
 	 * @param context the {@link UserContext} for which the session should be set
 	 * @param session the session to be set
