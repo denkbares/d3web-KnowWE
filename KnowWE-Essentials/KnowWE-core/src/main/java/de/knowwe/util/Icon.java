@@ -99,6 +99,7 @@ public class Icon {
 	public static final Icon RUN = new Icon("fas fa-play");
 	public static final Icon SELECT_TARGET = new Icon("fa-type fa-bullseye-pointer");
 	public static final Icon UNSELECT_TARGET = new Icon("fa-type fa-eraser");
+	public static final Icon CLEAR_UUT_STATE = new Icon("fa-type fa-eraser");
 	//temporary
 	public static final Icon PACKAGE = new Icon("fa-type fa-puzzle-piece");
 	public static final Icon EDITSECTION = new Icon("fa-type fa-edit");
