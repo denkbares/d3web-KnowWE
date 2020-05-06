@@ -24,8 +24,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.events.EventManager;
 import de.d3web.core.inference.PSMethod.Type;
@@ -64,10 +67,9 @@ import de.knowwe.core.user.UserContext;
  */
 public class SessionProvider {
 
-	private final Map<String, Session> sessions;
+	private final Map<String, SessionEntry> sessions = new HashMap<>();
 
 	private SessionProvider() {
-		sessions = new HashMap<>();
 	}
 
 	/**
@@ -114,6 +116,7 @@ public class SessionProvider {
 	 * @param knowledgeBase the knowledgeBase for which we want a session
 	 * @return an existing session for the given context and knowledge base or null, if there is non
 	 */
+	@Nullable
 	public static Session getExistingSession(UserContext context, KnowledgeBase knowledgeBase) {
 		if (hasSession(context, knowledgeBase)) {
 			return getSession(context, knowledgeBase);
@@ -121,11 +124,24 @@ public class SessionProvider {
 		return null;
 	}
 
+	/**
+	 * Marks the specified session to be used, so that it will remain until the user actively resets the session. If the
+	 * session is currently not (or no longer) provided by this session provider, the method does nothing.
+	 *
+	 * @param session the session to be pinned, if it is actively provided by this session provider
+	 */
+	public void pinSession(Session session) {
+		SessionEntry entry = sessions.get(session.getKnowledgeBase().getId());
+		if (entry != null && entry.session == session) {
+			entry.knownToBeUsed = true;
+		}
+	}
+
 	private Session createSessionInternally(UserContext context, KnowledgeBase kb) {
 		removeSessionInternally(context, kb, true);
 		Session session = SessionFactory.createSession(kb);
+		sessions.put(kb.getId(), new SessionEntry(session));
 		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session, context));
-		sessions.put(kb.getId(), session);
 		return session;
 	}
 
@@ -139,49 +155,48 @@ public class SessionProvider {
 	 * @created 06.03.2012
 	 */
 	private Session getSessionInternally(UserContext context, KnowledgeBase kb) {
-		Session session = sessions.get(kb.getId());
-		if (session == null) {
-			session = createSessionInternally(context, kb);
+		// check if there is no entry, so create and return
+		SessionEntry entry = sessions.get(kb.getId());
+		if (entry == null) {
+			return createSessionInternally(context, kb);
 		}
-		// check if existing session is out dated
-		if (session.getKnowledgeBase() != kb) {
-			// check if the session is empty
-			for (TerminologyObject t : session.getBlackboard().getValuedObjects()) {
-				Fact fact = session.getBlackboard().getValueFact(t);
-				if (fact != null && fact.getPSMethod() != null && fact.getPSMethod().hasType(Type.source)) {
-					// session is not empty -> don't touch it!
-					return session;
-				}
-			}
-			for (TerminologyObject t : session.getBlackboard().getInterviewObjects()) {
-				Fact fact = session.getBlackboard().getInterviewFact(t);
-				if (fact != null && fact.getPSMethod() != null && fact.getPSMethod().hasType(Type.source)) {
-					// session is not empty -> don't touch it!
-					return session;
-				}
-			}
-			// session is empty -> reset
+
+		// check if existing session's knowledge base is outdated, and session not yet used:
+		if (entry.session.getKnowledgeBase() != kb && !entry.isActivelyUsed()) {
+			// session is no used -> silently reset the session
 			removeSessionInternally(context, kb, true);
-			session = createSessionInternally(context, kb);
+			return createSessionInternally(context, kb);
 		}
-		return session;
+
+		// otherwise, continue with the existing session
+		return entry.session;
 	}
 
 	private void removeSessionInternally(UserContext context, KnowledgeBase kb, boolean terminate) {
-		Session removedSession = sessions.remove(kb.getId());
-		if (removedSession != null) {
-			EventManager.getInstance().fireEvent(new SessionRemovedEvent(removedSession, context));
-			if (terminate) removedSession.getPropagationManager().terminate();
+		SessionEntry removedEntry = sessions.remove(kb.getId());
+		if (removedEntry != null) {
+			EventManager.getInstance().fireEvent(new SessionRemovedEvent(removedEntry.session, context));
+			if (terminate) removedEntry.session.getPropagationManager().terminate();
 		}
 	}
 
 	private void setSessionInternally(UserContext context, Session session) {
 		String key = session.getKnowledgeBase().getId();
-		if (sessions.get(key) != session) {
-			// only remove (which will also terminate the session), if this is a new session instance
+		SessionEntry entry = sessions.get(key);
+
+		// check if we already have an entry of that session, so do nothing
+		if (entry != null && entry.session == session) return;
+
+		// if there was an existing session before,
+		// remove existing one (which will also terminate the session), and create a new one
+		if (entry != null) {
 			removeSessionInternally(context, session.getKnowledgeBase(), true);
-			sessions.put(key, session);
 		}
+
+		// the create a new session entry for the session
+		entry = new SessionEntry(session);
+		sessions.put(key, entry);
+		EventManager.getInstance().fireEvent(new SessionCreatedEvent(session, context));
 	}
 
 	/**
@@ -242,13 +257,13 @@ public class SessionProvider {
 		if (provider == null) {
 			return false;
 		}
-		Session session = provider.sessions.get(base.getId());
+		SessionEntry entry = provider.sessions.get(base.getId());
 		//noinspection SimplifiableIfStatement
-		if (session == null) {
+		if (entry == null) {
 			return false;
 		}
 		// check if existing session is up to date
-		return session.getKnowledgeBase().getId().equals(base.getId());
+		return entry.session.getKnowledgeBase().getId().equals(base.getId());
 	}
 
 	/**
@@ -263,7 +278,7 @@ public class SessionProvider {
 		if (provider == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableCollection(provider.sessions.values());
+		return provider.sessions.values().stream().map(entry -> entry.session).collect(Collectors.toList());
 	}
 
 	/**
@@ -317,6 +332,56 @@ public class SessionProvider {
 		SessionProvider sessionProvider = getSessionProvider(context);
 		if (sessionProvider != null) {
 			sessionProvider.setSessionInternally(context, session);
+		}
+	}
+
+	/**
+	 * Marks the specified session to be used, so that it will remain until the user actively resets the session. If the
+	 * session is currently not (or no longer) provided by the user's session provider, the method does nothing.
+	 *
+	 * @param context the {@link UserContext} for which the session should be pinneed
+	 * @param session the session to be pinned, if it is actively provided by the user's session provider
+	 */
+	public static void pinSession(UserContext context, Session session) {
+		SessionProvider sessionProvider = getSessionProvider(context);
+		if (sessionProvider != null) {
+			sessionProvider.pinSession(session);
+		}
+	}
+
+	private static final class SessionEntry {
+		private final Session session;
+		private boolean knownToBeUsed = false;
+
+		public SessionEntry(Session session) {
+			this.session = session;
+		}
+
+		/**
+		 * Returns true if the session is already actively used by the user.
+		 */
+		public boolean isActivelyUsed() {
+			if (knownToBeUsed) return true;
+
+			// check if the session is empty
+			for (TerminologyObject t : session.getBlackboard().getValuedObjects()) {
+				Fact fact = session.getBlackboard().getValueFact(t);
+				if (fact != null && fact.getPSMethod() != null && fact.getPSMethod().hasType(Type.source)) {
+					// session is not empty -> known to be used
+					knownToBeUsed = true;
+					return true;
+				}
+			}
+			for (TerminologyObject t : session.getBlackboard().getInterviewObjects()) {
+				Fact fact = session.getBlackboard().getInterviewFact(t);
+				if (fact != null && fact.getPSMethod() != null && fact.getPSMethod().hasType(Type.source)) {
+					// session is not empty -> known to be used
+					knownToBeUsed = true;
+					return true;
+				}
+			}
+
+			return false;
 		}
 	}
 }
