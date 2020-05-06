@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.denkbares.utils.Log;
+import de.knowwe.core.Environment;
 import de.knowwe.core.wikiConnector.NotAuthorizedException;
 
 /**
@@ -159,8 +160,11 @@ public abstract class AbstractActionServlet extends HttpServlet {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage(action, context));
 		}
 		catch (Throwable e) { // NOSONAR
-			Log.severe("Unexpected exception while executing action " + action, e);
-			throw e;
+			String message = "Unexpected " + e.getClass()
+					.getSimpleName() + " while executing action " + action.getClass()
+					.getSimpleName();
+			Log.severe(message, e);
+			context.sendError(HttpServletResponse.SC_EXPECTATION_FAILED, message + (e.getMessage() == null ? "" : ": " + e.getMessage()));
 		}
 	}
 
