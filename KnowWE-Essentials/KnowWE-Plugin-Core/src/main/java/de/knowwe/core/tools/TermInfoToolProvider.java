@@ -50,6 +50,8 @@ import de.knowwe.tools.ToolUtils;
 import de.knowwe.util.Icon;
 
 /**
+ * Provides tools to open definition of term or highlight it on the current page.
+ *
  * @author volker_belli
  * @created 01.12.2010
  */
