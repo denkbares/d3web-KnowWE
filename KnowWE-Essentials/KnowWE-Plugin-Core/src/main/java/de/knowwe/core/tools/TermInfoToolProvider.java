@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +35,6 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
-import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -69,9 +70,12 @@ public class TermInfoToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<TermCompiler> compilers = new ArrayList<>(Compilers.getCompilersWithCompileScript(section, TermCompiler.class));
-		Identifier identifier = getIdentifier(compilers.stream().findFirst().orElse(null), section);
-		if (identifier == null) return ToolUtils.emptyToolArray();
-		Section<? extends Term> term = Sections.cast(section, Term.class);
+		Optional<Identifier> identifierOpt = compilers.stream()
+				.map(c -> getIdentifier(c, section))
+				.filter(Objects::nonNull)
+				.findFirst();
+		if (!identifierOpt.isPresent()) return ToolUtils.emptyToolArray();
+		Identifier identifier = identifierOpt.get();
 
 		// get sorted list of all defining articles
 		Map<String, Section<?>> articles = new HashMap<>();
@@ -82,10 +86,8 @@ public class TermInfoToolProvider implements ToolProvider {
 			return 1;
 		});
 		for (TermCompiler termCompiler : compilers) {
-			TerminologyManager manager = termCompiler.getTerminologyManager();
-			if (manager == null) continue;
-
-			Collection<Section<?>> definitions = manager.getTermDefiningSections(getIdentifier(termCompiler, section));
+			Identifier identifierForCompiler = getIdentifier(termCompiler, section);
+			Collection<Section<?>> definitions = getTermDefiningSections(termCompiler, identifierForCompiler);
 			for (Section<?> definition : definitions) {
 				Section<?> previewAncestor = PreviewManager.getInstance().getPreviewAncestor(definition);
 				articles.put(definition.getTitle(), previewAncestor == null ? definition : previewAncestor);
@@ -145,6 +147,10 @@ public class TermInfoToolProvider implements ToolProvider {
 					link, Tool.ActionType.HREF, Tool.CATEGORY_NAVIGATE);
 		}
 		return tools;
+	}
+
+	protected @NotNull Collection<Section<?>> getTermDefiningSections(TermCompiler termCompiler, Identifier identifierForCompiler) {
+		return termCompiler.getTerminologyManager().getTermDefiningSections(identifierForCompiler);
 	}
 
 	@NotNull
