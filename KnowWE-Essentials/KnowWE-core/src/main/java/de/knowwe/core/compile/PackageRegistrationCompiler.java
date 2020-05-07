@@ -14,7 +14,7 @@ public class PackageRegistrationCompiler extends DefaultGlobalCompiler {
 	private TerminologyManager terminologyManager;
 
 	@Override
-	public TerminologyManager getTerminologyManager() {
+	public @org.jetbrains.annotations.NotNull TerminologyManager getTerminologyManager() {
 		return terminologyManager;
 	}
 

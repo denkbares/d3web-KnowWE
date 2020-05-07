@@ -29,7 +29,7 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 	}
 
 	@Override
-	public TerminologyManager getTerminologyManager() {
+	public @org.jetbrains.annotations.NotNull TerminologyManager getTerminologyManager() {
 		return this.terminologyManager;
 	}
 

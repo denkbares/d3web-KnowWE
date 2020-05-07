@@ -72,6 +72,7 @@ public interface TermCompiler extends de.knowwe.core.compile.Compiler {
 	 * @created 30.10.2013
 	 * @return the {@link TerminologyManager} of this compiler
 	 */
+	@NotNull
 	TerminologyManager getTerminologyManager();
 
 	/**

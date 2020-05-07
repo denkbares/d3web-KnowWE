@@ -183,7 +183,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	}
 
 	@Override
-	public TerminologyManager getTerminologyManager() {
+	public @NotNull TerminologyManager getTerminologyManager() {
 		if (terminologyManager == null) {
 			createTerminologyManager();
 		}

@@ -82,7 +82,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	}
 
 	@Override
-	public TerminologyManager getTerminologyManager() {
+	public @NotNull TerminologyManager getTerminologyManager() {
 		if (terminologyManager == null) {
 			// in case the compiler doesn't have anything to compile...
 			return new TerminologyManager();
