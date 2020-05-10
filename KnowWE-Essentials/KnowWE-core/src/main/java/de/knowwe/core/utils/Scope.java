@@ -2,12 +2,12 @@ package de.knowwe.core.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -58,11 +58,9 @@ public class Scope {
 	private static final String ROOT = "root";
 	private static final String SEPERATOR = "/";
 
-	private static final Map<Type, Set<String>> CACHED_NAMES_OF_KDOM_TYPE =
-			new HashMap<>();
+	private static final Map<Type, Set<String>> CACHED_NAMES_OF_KDOM_TYPE = new ConcurrentHashMap<>();
 
-	private static final Map<String, Scope> CACHED_SCOPES =
-			new HashMap<>();
+	private static final Map<String, Scope> CACHED_SCOPES = new ConcurrentHashMap<>();
 
 	public static class TypePath {
 
@@ -130,7 +128,7 @@ public class Scope {
 			items.add(item.toLowerCase().trim());
 		}
 
-		this.scopeElements = items.toArray(new String[items.size()]);
+		this.scopeElements = items.toArray(new String[0]);
 	}
 
 	/**
