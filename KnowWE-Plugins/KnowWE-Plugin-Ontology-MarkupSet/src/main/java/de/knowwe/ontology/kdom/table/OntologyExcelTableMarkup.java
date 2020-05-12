@@ -175,6 +175,14 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 					try {
 						XSSFRow row = sheet.getRow(i);
 
+						//cell which is tested when using skipRowType
+						if (config.skipColumn != -1) {
+							String skipTestCell = getCellValue(row.getCell(config.skipColumn - 1));
+							if (config.skipPattern != null && skipTestCell != null && skipTestCell.matches(config.skipPattern)) {
+								continue;
+							}
+						}
+
 						// subject
 						if (config.subjectColumn > 0) { // read from excel
 							subjectIRI = getUriFromCell(core, row, config.subjectColumn);
@@ -224,21 +232,10 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 								}
 							}
 
-							//cell which is tested when using skipRowType
-							String skipTestCell = null;
-							if (config.skipColumn != -1) {
-								skipTestCell = getCellValue(row.getCell(config.skipColumn - 1));
-							}
-
 							// create and add statements
 							Statement statement = null;
 							if (literal != null) {
-								if (config.skipPattern != null && skipTestCell != null && skipTestCell.matches(config.skipPattern)) {
-									continue;
-								}
-								else {
-									statement = core.createStatement(subjectIRI, predicateIRI, literal);
-								}
+								statement = core.createStatement(subjectIRI, predicateIRI, literal);
 							}
 							else if (objectIRI != null) {
 								statement = core.createStatement(subjectIRI, predicateIRI, objectIRI);
@@ -485,22 +482,16 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	}
 
 	private static class SkipType extends AbstractType {
-		private static final String COLUMN_PATTERN = "(\\w+)";    //"(\\d+)(\\+)?(?:-(\\d+))?";
-		private static final String MATCHING_PATTERN = "(?:matching):?\\s*(\"?.*\"?)";
+		private static final Pattern MATCHING_PATTERN = Pattern.compile("(?:matching):?\\s*(\"?.*\"?)");
 
 		public SkipType() {
-
-			setSectionFinder(new RegexSectionFinder("\\s*(?:skip column):?\\s*(" + COLUMN_PATTERN + ")\\s*(" +
-					MATCHING_PATTERN + ")\\s*",
-					Pattern.CASE_INSENSITIVE, 0));
+			setSectionFinder(new RegexSectionFinder(
+					"\\s*skip:?\\s+(.+)", Pattern.CASE_INSENSITIVE, 0));
 		}
 
 		public void skipRows(Section<SkipType> section, Config config) {
-			Pattern columnPattern = Pattern.compile(COLUMN_PATTERN);
-			Matcher columnMatcher = columnPattern.matcher(section.getText());
-
-			Pattern matchingPattern = Pattern.compile(MATCHING_PATTERN);
-			Matcher matchingMatcher = matchingPattern.matcher(section.getText());
+			Matcher columnMatcher = COLUMN_PATTERN.matcher(section.getText());
+			Matcher matchingMatcher = MATCHING_PATTERN.matcher(section.getText());
 
 			if (columnMatcher.find()) {
 				config.skipColumn = getColumnNumber(columnMatcher);
