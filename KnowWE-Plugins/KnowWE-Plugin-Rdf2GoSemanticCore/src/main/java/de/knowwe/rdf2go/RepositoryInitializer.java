@@ -17,7 +17,13 @@ public class RepositoryInitializer implements Instantiation {
 
 	@Override
 	public void init(String web) {
-		String context = Environment.getInstance().getWikiConnector().getRealPath().replaceAll("\\W", "");
+		String realPath = Environment.getInstance().getWikiConnector().getRealPath().replaceAll("\\W", "");
+		String pathHash = Integer.toHexString(Environment.getInstance()
+				.getWikiConnector()
+				.getApplicationRootPath()
+				.hashCode());
+		String context = realPath + "_" + pathHash;
+
 		try {
 			SemanticCore.initializeRepositoryManager(SemanticCore.createRepositoryPath(context));
 		}
