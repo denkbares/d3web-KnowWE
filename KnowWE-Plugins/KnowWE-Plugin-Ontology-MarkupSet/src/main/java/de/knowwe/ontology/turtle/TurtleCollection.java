@@ -21,27 +21,25 @@ package de.knowwe.ontology.turtle;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.BNodeImpl;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.AnonymousType;
-import de.knowwe.ontology.turtle.TurtleCollection.ItemList.CollectionItem;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.ontology.compile.provider.ResourceProvider;
 import de.knowwe.ontology.compile.provider.StatementProvider;
 import de.knowwe.ontology.compile.provider.StatementProviderResult;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.ontology.turtle.TurtleCollection.ItemList.CollectionItem;
 
 public class TurtleCollection extends AbstractType implements ResourceProvider<TurtleCollection>, StatementProvider<TurtleCollection> {
 
@@ -84,7 +82,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 			this.addChildType(new CollectionItem());
 		}
 
-		class CollectionItem extends AbstractType {
+		static class CollectionItem extends AbstractType {
 
 			public CollectionItem() {
 
@@ -95,32 +93,26 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 				this.addChildType(new EncodedTurtleURI());
 				this.addChildType(new TurtleURI());
 
-				this.setSectionFinder(new SectionFinder() {
-
-					@Override
-					public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-						return SectionFinderResult.resultList(Strings.splitUnquoted(text,
-								" ",
-								false,
-								TurtleMarkup.TURTLE_QUOTES));
-					}
-				});
+				this.setSectionFinder((text, father, type) -> SectionFinderResult.resultList(Strings.splitUnquoted(text,
+						" ",
+						false,
+						TurtleMarkup.TURTLE_QUOTES)));
 			}
 		}
 	}
 
 	@Override
-	public Value getNode(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
+	public Value getNode(OntologyCompiler core, Section<? extends TurtleCollection> section) {
 		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 
 	@NotNull
 	@Override
-	public StatementProviderResult getStatements(Rdf2GoCompiler compiler, Section<? extends TurtleCollection> section) {
+	public StatementProviderResult getStatements(OntologyCompiler compiler, Section<? extends TurtleCollection> section) {
 		StatementProviderResult result = new StatementProviderResult(compiler);
 		List<Section<CollectionItem>> listItems = new ArrayList<>();
 		Sections.successors(section, CollectionItem.class, 2, listItems);
-		org.eclipse.rdf4j.model.Resource listNode = getResource(section, compiler);
+		org.eclipse.rdf4j.model.Resource listNode = getResource(compiler, section);
 		if (!listItems.isEmpty()) {
 			addListStatements(listNode, 0, listItems, result, compiler, section);
 		}
@@ -132,7 +124,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 	@SuppressWarnings({
 			"unchecked", "rawtypes" })
-	private void addListStatements(org.eclipse.rdf4j.model.Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, Rdf2GoCompiler core, Section<? extends TurtleCollection> collectionSection) {
+	private void addListStatements(org.eclipse.rdf4j.model.Resource subject, int listIndex, List<Section<CollectionItem>> subList, StatementProviderResult result, OntologyCompiler core, Section<? extends TurtleCollection> collectionSection) {
 
 		Section<CollectionItem> dataSection = subList.get(0);
 
@@ -142,7 +134,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 		// add data triple
 		result.addStatement(core.getRdf2GoCore().createStatement(subject, org.eclipse.rdf4j.model.vocabulary.RDF.FIRST,
-				dataNodeSection.get().getNode(dataNodeSection, core)));
+				dataNodeSection.get().getNode(core, dataNodeSection)));
 
 		// go on to next list element
 		List<Section<CollectionItem>> nextSublist = subList.subList(1, subList.size());
@@ -165,7 +157,7 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 	}
 
 	@Override
-	public org.eclipse.rdf4j.model.Resource getResource(Section<? extends TurtleCollection> section, Rdf2GoCompiler core) {
-		return new BNodeImpl(getNode(section, core).stringValue());
+	public org.eclipse.rdf4j.model.Resource getResource(OntologyCompiler core, Section<? extends TurtleCollection> section) {
+		return new BNodeImpl(getNode(core, section).stringValue());
 	}
 }

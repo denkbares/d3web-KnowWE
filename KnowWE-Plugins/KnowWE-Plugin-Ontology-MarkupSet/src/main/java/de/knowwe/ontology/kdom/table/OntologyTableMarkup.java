@@ -47,6 +47,7 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableIndexConstraint;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.ontology.turtle.EncodedTurtleURI;
@@ -58,7 +59,6 @@ import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.ontology.turtle.TurtleURI;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * @author Sebastian Furth (denkbares GmbH)
@@ -87,10 +87,11 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET, false);
 		PredicateObjectSentenceList type = PredicateObjectSentenceList.getInstance();
 		MARKUP.addAnnotationContentType(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET, type);
-		MARKUP.getAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET).setDocumentation("Specify predicate and object (or " +
-				"object list) using this annotation. Predicate and object(s) will be added to every concept of the " +
-				"first column, as long as there is no column with the same predicate in the header and a different " +
-				"(non empty) entry in its cell for the same row.");
+		MARKUP.getAnnotation(ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET)
+				.setDocumentation("Specify predicate and object (or " +
+						"object list) using this annotation. Predicate and object(s) will be added to every concept of the " +
+						"first column, as long as there is no column with the same predicate in the header and a different " +
+						"(non empty) entry in its cell for the same row.");
 	}
 
 	public OntologyTableMarkup() {
@@ -171,14 +172,14 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		}
 
 		@Override
-		public Resource findSubject(Rdf2GoCompiler compiler, Section<?> section) {
+		public Resource findSubject(OntologyCompiler compiler, Section<?> section) {
 			Section<Subject> subjectSection = findSubjectSecTable(section);
-			return subjectSection.get().getResource(subjectSection, compiler);
+			return subjectSection.get().getResource(compiler, subjectSection);
 		}
 
 		@Override
 		@Nullable
-		public Resource findSubject(Rdf2GoCompiler core, StatementProviderResult result, Section<? extends Object> section) {
+		public Resource findSubject(OntologyCompiler core, StatementProviderResult result, Section<? extends Object> section) {
 			Resource subject = findSubject(core, section);
 			if (subject == null) {
 				Section<Subject> subjectSection = findSubjectSecTable(section);
@@ -203,7 +204,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 		}
 
 		@Override
-		public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
+		public Value getNode(OntologyCompiler core, Section<? extends TurtleLiteralType> section) {
 			Section<LocaleType> locale = TableUtils.getColumnHeader(section, LocaleType.class);
 			Locale lang = locale.get().getLocale(locale);
 			String text = Strings.unquote(section.getText());

@@ -37,6 +37,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.ci.provider.SparqlExpectedResultSection;
 import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -97,7 +98,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 		}
 
 		Section<SparqlContentType> actualSparqlSection = actualSparqlSections.iterator().next();
-		Rdf2GoCompiler compiler = Compilers.getCompiler(actualSparqlSection, Rdf2GoCompiler.class);
+		OntologyCompiler compiler = Compilers.getCompiler(actualSparqlSection, OntologyCompiler.class);
 		assert compiler != null;
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 
@@ -122,7 +123,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 		List<String> variables = actualResultTable.getVariables();
 
 		Section<ExpectedSparqlResultTable> expectedTable = Sections.successor(expectedResultTableMarkup, ExpectedSparqlResultTable.class);
-		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(expectedTable, variables, compiler);
+		ResultTableModel expectedResultTable = ExpectedSparqlResultTable.getResultTableModel(compiler, expectedTable, variables);
 
 		List<ResultTableChecker.Failure> failures = ResultTableChecker.checkEquality(expectedResultTable, actualResultTable, atLeastFlag);
 

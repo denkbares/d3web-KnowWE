@@ -8,9 +8,9 @@ import org.eclipse.rdf4j.model.IRI;
 
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.ontology.compile.OntologyCompiler;
 
 public interface URIProvider<T extends Type> extends NodeProvider<T> {
 
-	IRI getIRI(Section<T> section, Rdf2GoCompiler core);
+	IRI getIRI(OntologyCompiler core, Section<T> section);
 }

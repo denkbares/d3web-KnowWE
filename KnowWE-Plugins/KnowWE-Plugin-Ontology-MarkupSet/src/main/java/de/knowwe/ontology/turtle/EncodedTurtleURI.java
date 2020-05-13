@@ -34,12 +34,12 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.AnonymousType;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.namespace.AbbreviationReference;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.compile.provider.URIProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -67,14 +67,14 @@ public class EncodedTurtleURI extends AbstractType implements URIProvider<Encode
 	}
 
 	@Override
-	public Value getNode(Section<? extends EncodedTurtleURI> section, Rdf2GoCompiler core) {
+	public Value getNode(OntologyCompiler core, Section<? extends EncodedTurtleURI> section) {
 		String uri = getURI(section);
 		return core.getRdf2GoCore().createIRI(uri);
 	}
 
 	@Override
-	public IRI getIRI(Section<EncodedTurtleURI> section, Rdf2GoCompiler core) {
-		return (IRI) getNode(section, core);
+	public IRI getIRI(OntologyCompiler core, Section<EncodedTurtleURI> section) {
+		return (IRI) getNode(core, section);
 	}
 
 	private static class EncodedResourceReference extends ResourceReference {

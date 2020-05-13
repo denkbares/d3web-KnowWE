@@ -41,8 +41,8 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.renderer.StyleRenderer;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -173,7 +173,7 @@ public class TurtleLiteralType extends AbstractType implements NodeProvider<Turt
 	}
 
 	@Override
-	public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
+	public Value getNode(OntologyCompiler core, Section<? extends TurtleLiteralType> section) {
 		return getLiteral(core.getRdf2GoCore(), section);
 	}
 }

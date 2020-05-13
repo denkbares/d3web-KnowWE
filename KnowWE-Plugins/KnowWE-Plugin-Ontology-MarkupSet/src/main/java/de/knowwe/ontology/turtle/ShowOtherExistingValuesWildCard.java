@@ -32,7 +32,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
@@ -58,7 +57,7 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 	}
 
 	@Override
-	public Value getNode(Section<? extends ShowOtherExistingValuesWildCard> section, Rdf2GoCompiler core) {
+	public Value getNode(OntologyCompiler core, Section<? extends ShowOtherExistingValuesWildCard> section) {
 		return core.getRdf2GoCore().createIRI(RDF.NIL.stringValue());
 	}
 
@@ -111,7 +110,7 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 			assert objectSection != null;
 			Resource subjectResource = objectSection.get().findSubject(compiler, objectSection);
 			Section<Predicate> predicateSection = objectSection.get().getPredicateSection(objectSection);
-			IRI predicate = predicateSection.get().getIRI(predicateSection, compiler);
+			IRI predicate = predicateSection.get().getIRI(compiler, predicateSection);
 			String var = "var";
 			String query = "SELECT * WHERE { <" + subjectResource + "> <" + predicate + "> ?" + var + " . }";
 			CachedTupleQueryResult queryResult = core.sparqlSelect(query);
@@ -181,7 +180,7 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 			Collection<Value> result = new HashSet<>(values);
 			List<Section<NodeProvider>> otherValueSections = Sections.successors(objectListSection, NodeProvider.class);
 			//noinspection unchecked
-			otherValueSections.stream().map(section -> section.get().getNode(section, core)).forEach(result::remove);
+			otherValueSections.stream().map(section -> section.get().getNode(core, section)).forEach(result::remove);
 			return result;
 		}
 	}

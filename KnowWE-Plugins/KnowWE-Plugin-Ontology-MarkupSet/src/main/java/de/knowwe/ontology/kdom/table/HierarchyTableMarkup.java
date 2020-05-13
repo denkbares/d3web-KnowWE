@@ -80,11 +80,11 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 						Section<NodeProvider> parentNodeProvider = Sections.successor(parentConcept, NodeProvider.class);
 						Rdf2GoCore core = compiler.getRdf2GoCore();
 						assert subjectNodeProvider != null;
-						Resource subjectURI = subjectNodeProvider.get().getResource(subjectNodeProvider, compiler);
+						Resource subjectURI = subjectNodeProvider.get().getResource(compiler, subjectNodeProvider);
 						assert propertyNodeProvider != null;
-						URI predicateNode = propertyNodeProvider.get().getIRI(propertyNodeProvider, compiler);
+						URI predicateNode = propertyNodeProvider.get().getIRI(compiler, propertyNodeProvider);
 						assert parentNodeProvider != null;
-						Value parentNode = parentNodeProvider.get().getNode(parentConcept, compiler);
+						Value parentNode = parentNodeProvider.get().getNode(compiler, parentConcept);
 						core.addStatements(section, core.createStatement(subjectURI, predicateNode, parentNode));
 					}
 				}

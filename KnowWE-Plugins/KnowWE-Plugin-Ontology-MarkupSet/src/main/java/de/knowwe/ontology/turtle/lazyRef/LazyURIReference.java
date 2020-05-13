@@ -50,14 +50,14 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 	}
 
 	@Override
-	public Value getNode(Section<? extends LazyURIReference> section, Rdf2GoCompiler compiler) {
+	public Value getNode(OntologyCompiler compiler, Section<? extends LazyURIReference> section) {
 		Identifier identifier = getTermIdentifier(compiler, section);
 		return TurtleURI.getNodeForIdentifier(compiler.getRdf2GoCore(), identifier);
 	}
 
 	@Override
-	public IRI getIRI(Section<LazyURIReference> section, Rdf2GoCompiler core) {
-		return (IRI) getNode(section, core);
+	public IRI getIRI(OntologyCompiler core, Section<LazyURIReference> section) {
+		return (IRI) getNode(core, section);
 	}
 
 	@NotNull

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import connector.DummyConnector;
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 
@@ -40,8 +41,8 @@ import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableRenderer;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -65,7 +66,7 @@ public class ExpectedSparqlResultTable extends Table {
 		});
 	}
 
-	public static ResultTableModel getResultTableModel(Section<ExpectedSparqlResultTable> table, List<String> variables, Rdf2GoCompiler c) {
+	public static ResultTableModel getResultTableModel(OntologyCompiler c, Section<ExpectedSparqlResultTable> table, List<String> variables) {
 		if (table == null) {
 			return new ResultTableModel(Collections.emptyList(), variables);
 		}
@@ -74,7 +75,7 @@ public class ExpectedSparqlResultTable extends Table {
 
 		ResultTableModel.Builder resultTableModelBuilder = ResultTableModel.builder(variables);
 		for (Section<TableLine> line : lines) {
-			Map<String, Value> row = createResultRow(line, variables, c);
+			Map<String, Value> row = createResultRow(c, line, variables);
 			if (!row.isEmpty()) {
 				resultTableModelBuilder.addRow(row);
 			}
@@ -89,7 +90,7 @@ public class ExpectedSparqlResultTable extends Table {
 
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	private static Map<String, Value> createResultRow(Section<TableLine> line, List<String> variables, Rdf2GoCompiler core) {
+	private static Map<String, Value> createResultRow(OntologyCompiler core, Section<TableLine> line, List<String> variables) {
 		List<Section<TableCellContent>> cells = Sections.successors(line, TableCellContent.class);
 		Map<String, Value> row = new HashMap<>();
 		boolean compatibilityMode = isCompatibilityMode();
@@ -102,11 +103,12 @@ public class ExpectedSparqlResultTable extends Table {
 				row.put(variable, null);
 			}
 			if (nodeProvider != null) {
-				Value value = nodeProvider.get().getNode(nodeProvider, core);
-				if (value instanceof URI && compatibilityMode) {
+				Value value = nodeProvider.get().getNode(core, nodeProvider);
+				if (value instanceof IRI && compatibilityMode) {
 					String valueString = value.stringValue();
 					if (valueString.startsWith(DummyConnector.BASE_URL)) {
-						value = core.getRdf2GoCore().createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
+						value = core.getRdf2GoCore()
+								.createIRI(currentBaseUrl + valueString.substring(DummyConnector.BASE_URL.length()));
 					}
 				}
 				if (value != null) {

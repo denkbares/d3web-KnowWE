@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.ontology.compile.OntologyCompiler;
 
 public interface StatementProvider<T extends Type> extends Type {
 
 	@NotNull
-	StatementProviderResult getStatements(Rdf2GoCompiler compiler, Section<? extends T> section) throws CompilerMessage;
+	StatementProviderResult getStatements(OntologyCompiler compiler, Section<? extends T> section) throws CompilerMessage;
 
 	@NotNull
-	default StatementProviderResult getStatementsSafe(Rdf2GoCompiler compiler, Section<? extends T> section) {
+	default StatementProviderResult getStatementsSafe(OntologyCompiler compiler, Section<? extends T> section) {
 		try {
 			return getStatements(compiler, section);
 		}

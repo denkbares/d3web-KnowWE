@@ -88,7 +88,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		}
 
 		//noinspection unchecked
-		Value subjectNode = subjectReference.get().getNode(subjectReference, compiler);
+		Value subjectNode = subjectReference.get().getNode(compiler, subjectReference);
 		List<Section<OntologyTableCellEntry>> cells = Sections.successors(section, OntologyTableCellEntry.class);
 		Set<Value> predicates = new HashSet<>();
 		for (Section<OntologyTableCellEntry> cell : cells) {
@@ -126,12 +126,12 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		for (Section<? extends AnnotationContentType> annotation : DefaultMarkupType.getAnnotationContentSections($(section)
 				.ancestor(DefaultMarkupType.class)
 				.getFirst(), OntologyTableMarkup.ANNOTATION_DEFAULT_PREDICATE_OBJECT_SET)) {
-			Value predicate = $(annotation).successor(Predicate.class).mapFirst(p -> p.get().getNode(p, compiler));
+			Value predicate = $(annotation).successor(Predicate.class).mapFirst(p -> p.get().getNode(compiler, p));
 			if (!(predicate instanceof IRI)) continue;
 			if (!(subjectNode instanceof Resource)) continue;
 			if (predicates.contains(predicate)) continue;
 			$(annotation).successor(Object.class)
-					.map(o -> o.get().getNode(o, compiler))
+					.map(o -> o.get().getNode(compiler, o))
 					.forEach(o -> statements.add(core.createStatement((Resource) subjectNode, (IRI) predicate, o)));
 		}
 
@@ -148,7 +148,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 					.successor(NodeProvider.class)
 					.getFirst();
 			@SuppressWarnings("unchecked")
-			Value headerClassResource = nodeProviderSection.get().getNode(nodeProviderSection, compiler);
+			Value headerClassResource = nodeProviderSection.get().getNode(compiler, nodeProviderSection);
 			Sections<DefaultMarkupType> markup = $(section).ancestor(DefaultMarkupType.class);
 			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);
 			if (typeRelationAnnotationValue != null) {

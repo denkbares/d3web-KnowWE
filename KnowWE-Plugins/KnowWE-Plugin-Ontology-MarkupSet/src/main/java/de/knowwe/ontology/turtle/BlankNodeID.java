@@ -29,8 +29,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class BlankNodeID extends AbstractType implements NodeProvider<BlankNodeID> {
 
@@ -50,7 +50,7 @@ public class BlankNodeID extends AbstractType implements NodeProvider<BlankNodeI
 	}
 
 	@Override
-	public Value getNode(Section<? extends BlankNodeID> section, Rdf2GoCompiler core) {
+	public Value getNode(OntologyCompiler core, Section<? extends BlankNodeID> section) {
 		Section<TurtleSentence> content = Sections.ancestor(section,
 				TurtleSentence.class);
 		return core.getRdf2GoCore().createBlankNode(content.getID() + "_" + section.getText());

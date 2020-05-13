@@ -27,11 +27,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.kdom.renderer.CompositeRenderer;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.edit.DropTargetRenderer;
 import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.ontology.compile.provider.URIProvider;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class Predicate extends AbstractType implements URIProvider<Predicate> {
 
@@ -50,7 +50,7 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 	@Override
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
-	public org.eclipse.rdf4j.model.Value getNode(Section<? extends Predicate> section, Rdf2GoCompiler core) {
+	public org.eclipse.rdf4j.model.Value getNode(OntologyCompiler core, Section<? extends Predicate> section) {
 		// there should be exactly one NodeProvider successor
 		List<Section<?>> children = section.getChildren();
 		for (Section<?> child : children) {
@@ -59,14 +59,14 @@ public class Predicate extends AbstractType implements URIProvider<Predicate> {
 			Section<NodeProvider> nodeProviderChild = Sections.successor(child,
 					NodeProvider.class);
 			if (nodeProviderChild != null) {
-				return nodeProviderChild.get().getNode(nodeProviderChild, core);
+				return nodeProviderChild.get().getNode(core, nodeProviderChild);
 			}
 		}
 		return null;
 	}
 
 	@Override
-	public IRI getIRI(Section<Predicate> section, Rdf2GoCompiler core) {
-		return (IRI) getNode(section, core);
+	public IRI getIRI(OntologyCompiler core, Section<Predicate> section) {
+		return (IRI) getNode(core, section);
 	}
 }

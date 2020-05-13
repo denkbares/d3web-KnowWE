@@ -25,8 +25,8 @@ import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.sectionFinder.OneOfStringFinderExact;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * @author Jochen Reutelshöfer
@@ -42,7 +42,7 @@ public class PredicateAType extends AbstractType implements NodeProvider<TurtleL
     }
 
     @Override
-    public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
+    public Value getNode(OntologyCompiler core, Section<? extends TurtleLiteralType> section) {
         return org.eclipse.rdf4j.model.vocabulary.RDF.TYPE;
     }
 }

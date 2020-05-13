@@ -24,8 +24,8 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * @author Jochen Reutelshöfer
@@ -38,7 +38,7 @@ public class NumberLiteral extends de.knowwe.core.kdom.basicType.Number implemen
     }
 
     @Override
-    public Value getNode(Section<? extends TurtleLiteralType> section, Rdf2GoCompiler core) {
+    public Value getNode(OntologyCompiler core, Section<? extends TurtleLiteralType> section) {
         /*
         The SectionFinder already assures that it actually is a valid number
          */

@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.parsing.Sections.ReplaceResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 /**
@@ -45,13 +45,13 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  * will reflect the desired changes to its statements. Please note that other
  * cores may be affected by the changes as well, as they compile the same turtle
  * statements.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 17.12.2013
  */
 public class TurtleModifier {
 
-	private final Rdf2GoCompiler compiler;
+	private final OntologyCompiler compiler;
 	private final boolean compactMode;
 	private final String preferredIndent;
 	private final Map<Article, ArticleTurtleModifier> modifiers = new HashMap<>();
@@ -68,10 +68,10 @@ public class TurtleModifier {
 	 * <p>
 	 * By default, the created turtle modifier will use compact mode and two
 	 * space characters as indent.
-	 * 
+	 *
 	 * @param core the core that compiles the turtle to be modified
 	 */
-	public TurtleModifier(Rdf2GoCompiler core) {
+	public TurtleModifier(OntologyCompiler core) {
 		this(core, true);
 	}
 
@@ -87,14 +87,14 @@ public class TurtleModifier {
 	 * <p>
 	 * By default, the created turtle modifier will two space characters as
 	 * indent.
-	 * 
-	 * @param core the core that compiles the turtle to be modified
+	 *
+	 * @param core        the core that compiles the turtle to be modified
 	 * @param compactMode specifies if newly inserted turtle markup should be
-	 *        created compact (prefer single-line-mode) or verbose (prefer
-	 *        readability with line-breaks for each property and value, using
-	 *        indenting).
+	 *                    created compact (prefer single-line-mode) or verbose (prefer
+	 *                    readability with line-breaks for each property and value, using
+	 *                    indenting).
 	 */
-	public TurtleModifier(Rdf2GoCompiler core, boolean compactMode) {
+	public TurtleModifier(OntologyCompiler core, boolean compactMode) {
 		this(core, compactMode, "  ");
 	}
 
@@ -107,16 +107,16 @@ public class TurtleModifier {
 	 * <p>
 	 * Note that it is not possible to remove statements from a core, that is
 	 * not based on some compiled turtle markup.
-	 * 
-	 * @param core the core that compiles the turtle to be modified
-	 * @param compactMode specifies if newly inserted turtle markup should be
-	 *        created compact (prefer single-line-mode) or verbose (prefer
-	 *        readability with line-breaks for each property and value, using
-	 *        indenting).
+	 *
+	 * @param core            the core that compiles the turtle to be modified
+	 * @param compactMode     specifies if newly inserted turtle markup should be
+	 *                        created compact (prefer single-line-mode) or verbose (prefer
+	 *                        readability with line-breaks for each property and value, using
+	 *                        indenting).
 	 * @param preferredIndent the preferred indent to be used, should consist of
-	 *        spaces and tab characters only
+	 *                        spaces and tab characters only
 	 */
-	public TurtleModifier(Rdf2GoCompiler core, boolean compactMode, String preferredIndent) {
+	public TurtleModifier(OntologyCompiler core, boolean compactMode, String preferredIndent) {
 		this.compiler = core;
 		this.compactMode = compactMode;
 		this.preferredIndent = preferredIndent;
@@ -124,7 +124,7 @@ public class TurtleModifier {
 
 	/**
 	 * Creates a new turtle modifier as a (deep) copy of the specified modifier.
-	 * 
+	 *
 	 * @param modifier the turtle modifier to be copied
 	 */
 	public TurtleModifier(TurtleModifier modifier) {
@@ -134,9 +134,9 @@ public class TurtleModifier {
 
 	/**
 	 * Returns the core used by this turtle modifier.
-	 * 
-	 * @created 20.12.2013
+	 *
 	 * @return the core of this modifier
+	 * @created 20.12.2013
 	 */
 	public Rdf2GoCore getCore() {
 		return compiler.getRdf2GoCore();
@@ -146,9 +146,9 @@ public class TurtleModifier {
 	 * Adds all the statements to be inserted and to be deleted from the
 	 * specified turtle modifier to this modifier. The specified modifier
 	 * remains unchanged.
-	 * 
-	 * @created 20.12.2013
+	 *
 	 * @param other the turtle modifier to add all statements from
+	 * @created 20.12.2013
 	 */
 	public void addAll(TurtleModifier other) {
 		for (ArticleTurtleModifier modifier : other.modifiers.values()) {
@@ -159,10 +159,10 @@ public class TurtleModifier {
 	/**
 	 * Adds a number of statements that shall be inserted into the turtle
 	 * markups of the specified wiki article.
-	 * 
-	 * @created 09.12.2013
-	 * @param target the article to add the statements to
+	 *
+	 * @param target     the article to add the statements to
 	 * @param statements the statements to be added to the article
+	 * @created 09.12.2013
 	 */
 	public void addInsert(Article target, Statement... statements) {
 		if (statements == null) return;
@@ -172,10 +172,10 @@ public class TurtleModifier {
 	/**
 	 * Adds a number of statements that shall be inserted into the turtle
 	 * markups of the specified wiki article.
-	 * 
-	 * @created 09.12.2013
-	 * @param target the article to add the statements to
+	 *
+	 * @param target     the article to add the statements to
 	 * @param statements the statements to be added to the article
+	 * @created 09.12.2013
 	 */
 	public void addInsert(Article target, List<Statement> statements) {
 		if (statements == null) return;
@@ -186,9 +186,9 @@ public class TurtleModifier {
 	/**
 	 * Defines a number of statements that shall be deleted from all turtle
 	 * markups compiled by this turtle modifiers core.
-	 * 
-	 * @created 09.12.2013
+	 *
 	 * @param statements the statements to be deleted from the markups
+	 * @created 09.12.2013
 	 */
 	public void addDelete(Statement... statements) {
 		if (statements == null) return;
@@ -198,9 +198,9 @@ public class TurtleModifier {
 	/**
 	 * Defines a number of statements that shall be deleted from all turtle
 	 * markups compiled by this turtle modifiers core.
-	 * 
-	 * @created 09.12.2013
+	 *
 	 * @param statements the statements to be deleted from the markups
+	 * @created 09.12.2013
 	 */
 	public void addDelete(List<Statement> statements) {
 		if (statements == null) return;
@@ -215,7 +215,7 @@ public class TurtleModifier {
 	/**
 	 * Returns the turtle modifier for the specified article. The returned
 	 * modifier is created lazy if required.
-	 * 
+	 *
 	 * @created 17.12.2013
 	 */
 	private ArticleTurtleModifier getModifier(Article article) {
@@ -233,13 +233,13 @@ public class TurtleModifier {
 	 * be performed with the specified user context.
 	 * <p>
 	 * If multiple turtle modifiers are applied
-	 * 
-	 * @created 17.12.2013
+	 *
 	 * @param context the user context used to modify the articles
-	 * @throws IOException if this TurtleModifier was not capable to write the
-	 *         changes to the wiki
+	 * @throws IOException       if this TurtleModifier was not capable to write the
+	 *                           changes to the wiki
 	 * @throws SecurityException if the specified user is not allowed to change
-	 *         the articles to be modified (or any of these articles)
+	 *                           the articles to be modified (or any of these articles)
+	 * @created 17.12.2013
 	 */
 	public ReplaceResult commit(UserContext context) throws IOException, SecurityException {
 		// check is all modifiers can apply their changes completely
@@ -273,12 +273,11 @@ public class TurtleModifier {
 	/**
 	 * Returns the set of all articles that are modified by this turtle
 	 * modifier.
-	 * 
-	 * @created 17.12.2013
+	 *
 	 * @return the articles modified (or going to be modified)
+	 * @created 17.12.2013
 	 */
 	public Set<Article> getArticles() {
 		return modifiers.keySet();
 	}
-
 }

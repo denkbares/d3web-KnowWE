@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -46,6 +46,7 @@ import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.turtle.BlankNode;
 import de.knowwe.ontology.turtle.Object;
 import de.knowwe.ontology.turtle.ObjectList;
@@ -56,7 +57,6 @@ import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleContent;
 import de.knowwe.ontology.turtle.TurtleMarkup;
 import de.knowwe.ontology.turtle.TurtleSentence;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * This class allows to add and remove statements to/from the turtle markup of a specific wiki
@@ -108,7 +108,7 @@ public class ArticleTurtleModifier {
 	/*
 	 * Statements to be modified
 	 */
-	private final Rdf2GoCompiler compiler;
+	private final OntologyCompiler compiler;
 	private final List<Statement> insertStatements = new LinkedList<>();
 	private final List<Statement> deleteStatements = new LinkedList<>();
 
@@ -128,7 +128,7 @@ public class ArticleTurtleModifier {
 	 * @param compiler the compiler to be used to compile the modified turtle contents
 	 * @param article  the wiki article to be modified
 	 */
-	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article) {
+	public ArticleTurtleModifier(OntologyCompiler compiler, Article article) {
 		this(compiler, article, true);
 	}
 
@@ -142,7 +142,7 @@ public class ArticleTurtleModifier {
 	 *                    or verbose (prefer readability with line-breaks for each property and value, using
 	 *                    indenting).
 	 */
-	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article, boolean compactMode) {
+	public ArticleTurtleModifier(OntologyCompiler compiler, Article article, boolean compactMode) {
 		this(compiler, article, compactMode, "  ");
 	}
 
@@ -159,7 +159,7 @@ public class ArticleTurtleModifier {
 	 * @param preferredIndent the preferred indent to be used, should consist of spaces and tab
 	 *                        characters only
 	 */
-	public ArticleTurtleModifier(Rdf2GoCompiler compiler, Article article, boolean compactMode, String preferredIndent) {
+	public ArticleTurtleModifier(OntologyCompiler compiler, Article article, boolean compactMode, String preferredIndent) {
 		this.compiler = compiler;
 		this.article = article;
 		this.compactMode = compactMode;
@@ -567,7 +567,6 @@ public class ArticleTurtleModifier {
 	private boolean traverse(Section<?> node, StringBuilder result) {
 		// check if we are reached an object to delete
 		// the skip this node and tell that the node is not if interest
-		//noinspection SuspiciousMethodCalls
 		if (objectsToRemove.contains(node)) return false;
 
 		// check for some special nodes we only include
@@ -741,7 +740,7 @@ public class ArticleTurtleModifier {
 		if (sentence == null) return false;
 		Section<Subject> subject = Sections.successor(sentence, Subject.class);
 		if (subject == null) return false;
-		org.eclipse.rdf4j.model.Resource resource = subject.get().getResource(subject, compiler);
+		org.eclipse.rdf4j.model.Resource resource = subject.get().getResource(compiler, subject);
 		return resource.equals(statement.getSubject());
 	}
 
@@ -749,13 +748,13 @@ public class ArticleTurtleModifier {
 		if (predicateSentence == null) return false;
 		Section<Predicate> predicate = Sections.successor(predicateSentence, Predicate.class);
 		if (predicate == null) return false;
-		IRI uri = predicate.get().getIRI(predicate, compiler);
+		IRI uri = predicate.get().getIRI(compiler, predicate);
 		return uri.equals(statement.getPredicate());
 	}
 
 	private boolean hasSameObject(Section<Object> object, Statement statement) {
 		if (object == null) return false;
-		Value node = object.get().getNode(object, compiler);
+		Value node = object.get().getNode(compiler, object);
 		return node.equals(statement.getObject());
 	}
 
@@ -796,5 +795,4 @@ public class ArticleTurtleModifier {
 	public Article getArticle() {
 		return this.article;
 	}
-
 }

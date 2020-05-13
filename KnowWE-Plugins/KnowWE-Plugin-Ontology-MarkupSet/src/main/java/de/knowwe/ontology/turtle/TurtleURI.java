@@ -29,10 +29,10 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.compile.provider.URIProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -47,7 +47,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 	}
 
 	@Override
-	public Value getNode(Section<? extends TurtleURI> section, Rdf2GoCompiler compiler) {
+	public Value getNode(OntologyCompiler compiler, Section<? extends TurtleURI> section) {
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 		String turtleURIText = section.getText();
 		Section<ResourceReference> ref = Sections.successor(section, ResourceReference.class);
@@ -77,7 +77,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 	}
 
 	@Override
-	public IRI getIRI(Section<TurtleURI> section, Rdf2GoCompiler core) {
-		return (IRI) getNode(section, core);
+	public IRI getIRI(OntologyCompiler core, Section<TurtleURI> section) {
+		return (IRI) getNode(core, section);
 	}
 }

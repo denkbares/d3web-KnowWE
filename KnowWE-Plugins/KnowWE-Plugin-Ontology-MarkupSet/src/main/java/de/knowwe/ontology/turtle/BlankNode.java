@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,8 +27,8 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.AnonymousType;
+import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.ResourceProvider;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class BlankNode extends AbstractType implements ResourceProvider<BlankNode> {
 
@@ -49,7 +49,6 @@ public class BlankNode extends AbstractType implements ResourceProvider<BlankNod
 		this.addChildType(closingBracket);
 
 		this.addChildType(PredicateObjectSentenceList.getInstance());
-
 	}
 
 	static class MaskBracketsRenderer implements Renderer {
@@ -57,19 +56,16 @@ public class BlankNode extends AbstractType implements ResourceProvider<BlankNod
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 			result.append(section.getText().replaceAll("\\[", "~[").replaceAll("\\]", "~]"));
-
 		}
-
 	}
 
 	@Override
-	public org.eclipse.rdf4j.model.Value getNode(Section<? extends BlankNode> section, Rdf2GoCompiler core) {
+	public org.eclipse.rdf4j.model.Value getNode(OntologyCompiler core, Section<? extends BlankNode> section) {
 		return core.getRdf2GoCore().createBlankNode(section.getID());
 	}
 
 	@Override
-	public Resource getResource(Section<? extends BlankNode> section, Rdf2GoCompiler core) {
-		return (Resource) getNode(section, core);
+	public Resource getResource(OntologyCompiler core, Section<? extends BlankNode> section) {
+		return (Resource) getNode(core, section);
 	}
-
 }

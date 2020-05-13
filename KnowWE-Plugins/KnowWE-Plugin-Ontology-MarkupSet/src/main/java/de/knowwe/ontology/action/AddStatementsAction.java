@@ -83,7 +83,7 @@ public class AddStatementsAction extends AbstractAction {
 						"article '" + articleName + "' not available");
 				return;
 			}
-			Rdf2GoCompiler compiler = findCompiler(article);
+			OntologyCompiler compiler = findCompiler(article);
 			if (compiler == null) {
 				context.sendError(HttpServletResponse.SC_NOT_FOUND,
 						"Article '" + articleName + "' is not compiled in an ontology");
@@ -107,7 +107,7 @@ public class AddStatementsAction extends AbstractAction {
 	/**
 	 * Returns an instance that compiles any section in this article (taking the terms as a basis)
 	 */
-	private static Rdf2GoCompiler findCompiler(Article article) {
+	private static OntologyCompiler findCompiler(Article article) {
 		for (Section<?> section : Sections.successors(article.getRootSection(), Term.class)) {
 			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
 			if (compiler == null) continue;
@@ -132,9 +132,9 @@ public class AddStatementsAction extends AbstractAction {
 	 * Creates a JavaScript action that can be used as a tool action which will add the specified
 	 * statements to the specified article if the action will be executed.
 	 *
-	 * @param source the article to place the JavaScript action
+	 * @param source        the article to place the JavaScript action
 	 * @param targetArticle the article to add the statements to
-	 * @param statements the statements to be added
+	 * @param statements    the statements to be added
 	 * @return the JavaScript action to be included in a {@link Tool}
 	 * @created 25.11.2013
 	 */
@@ -146,11 +146,11 @@ public class AddStatementsAction extends AbstractAction {
 	 * Creates a JavaScript action that can be used as a tool action which will add the specified
 	 * statements to the specified article if the action will be executed.
 	 *
-	 * @param source the article to place the JavaScript action
+	 * @param source        the article to place the JavaScript action
 	 * @param targetArticle the article to add the statements to
-	 * @param compactMode Shall the created markup be kept compact or more structured using line
-	 * breaks and intends.
-	 * @param statement the statements to be added
+	 * @param compactMode   Shall the created markup be kept compact or more structured using line
+	 *                      breaks and intends.
+	 * @param statement     the statements to be added
 	 * @return the JavaScript action to be included in a {@link Tool}
 	 * @created 25.11.2013
 	 */
@@ -163,11 +163,11 @@ public class AddStatementsAction extends AbstractAction {
 	 * Creates a JavaScript action that can be used as a tool action which will add the specified
 	 * statements to the specified article if the action will be executed.
 	 *
-	 * @param source the article to place the JavaScript action
-	 * @param targetArticle the article to add the statements to
-	 * @param compactMode Shall the created markup be kept compact or more structured using line
-	 * breaks and intends.
-	 * @param statementToAdd the statements to be added
+	 * @param source            the article to place the JavaScript action
+	 * @param targetArticle     the article to add the statements to
+	 * @param compactMode       Shall the created markup be kept compact or more structured using line
+	 *                          breaks and intends.
+	 * @param statementToAdd    the statements to be added
 	 * @param statementToRemove the statements to be removed
 	 * @return the JavaScript action to be included in a {@link Tool}
 	 * @created 25.11.2013

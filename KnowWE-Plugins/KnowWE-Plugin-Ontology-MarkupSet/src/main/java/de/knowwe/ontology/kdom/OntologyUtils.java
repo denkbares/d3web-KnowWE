@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.jetbrains.annotations.Nullable;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -125,7 +126,7 @@ public class OntologyUtils {
 	 * @return the article's content, extended with the statements
 	 * @created 23.11.2013
 	 */
-	public static String addTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, Statement... statements) {
+	public static String addTurtle(OntologyCompiler compiler, Article article, boolean compactMode, Statement... statements) {
 		return modifyTurtle(compiler, article, compactMode,
 				Arrays.asList(statements), Collections.emptyList());
 	}
@@ -158,7 +159,7 @@ public class OntologyUtils {
 	 * @return the article's content, extended with the statements
 	 * @created 23.11.2013
 	 */
-	public static String modifyTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, Statement[] statementsToAdd, Statement[] statementsToRemove) {
+	public static String modifyTurtle(OntologyCompiler compiler, Article article, boolean compactMode, Statement[] statementsToAdd, Statement[] statementsToRemove) {
 		return modifyTurtle(compiler, article, compactMode,
 				Arrays.asList(statementsToAdd), Arrays.asList(statementsToRemove));
 	}
@@ -191,7 +192,7 @@ public class OntologyUtils {
 	 * @return the article's content, extended with the statements
 	 * @created 23.11.2013
 	 */
-	public static String modifyTurtle(Rdf2GoCompiler compiler, Article article, boolean compactMode, List<Statement> statementsToAdd, List<Statement> statementsToRemove) {
+	public static String modifyTurtle(OntologyCompiler compiler, Article article, boolean compactMode, List<Statement> statementsToAdd, List<Statement> statementsToRemove) {
 		ArticleTurtleModifier writer = new ArticleTurtleModifier(compiler, article, compactMode);
 		writer.addInsert(statementsToAdd);
 		writer.addDelete(statementsToRemove);
@@ -209,7 +210,7 @@ public class OntologyUtils {
 	 * @return the sentence for the subject and predicate
 	 * @created 24.11.2013
 	 */
-	public static Section<PredicateSentence> findSentence(Article article, Resource subject, URI predicate) {
+	public static Section<PredicateSentence> findSentence(Article article, Resource subject, IRI predicate) {
 		List<Section<PredicateSentence>> sentences = findSentences(article, subject, predicate);
 		if (sentences.isEmpty()) return null;
 		return sentences.get(0);
@@ -226,7 +227,7 @@ public class OntologyUtils {
 	 * @return the predicate sentences for the subject and predicate
 	 * @created 24.11.2013
 	 */
-	public static List<Section<PredicateSentence>> findSentences(Article article, Resource subject, URI predicate) {
+	public static List<Section<PredicateSentence>> findSentences(Article article, Resource subject, IRI predicate) {
 		List<Section<PredicateSentence>> result = new LinkedList<>();
 
 		// check all sentences of the specified subject

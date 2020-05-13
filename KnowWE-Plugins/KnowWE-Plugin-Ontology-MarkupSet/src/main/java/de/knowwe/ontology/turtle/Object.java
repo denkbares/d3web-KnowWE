@@ -45,7 +45,6 @@ import de.knowwe.ontology.compile.provider.StatementProvider;
 import de.knowwe.ontology.compile.provider.StatementProviderResult;
 import de.knowwe.ontology.kdom.resource.ResourceReference;
 import de.knowwe.ontology.turtle.lazyRef.LazyURIReference;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 public class Object extends AbstractType implements NodeProvider<Object>, StatementProvider<Object> {
 
@@ -112,13 +111,13 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 	@NotNull
 	@Override
-	public StatementProviderResult getStatements(Rdf2GoCompiler compiler, Section<? extends Object> section) {
+	public StatementProviderResult getStatements(OntologyCompiler compiler, Section<? extends Object> section) {
 
 		StatementProviderResult result = new StatementProviderResult(compiler);
 		/*
 		 * Handle OBJECT
 		 */
-		Value object = section.get().getNode(section, compiler);
+		Value object = section.get().getNode(compiler, section);
 		if (object == null) {
 			result.error("'" + section.getText() + "' is not a valid value.");
 		}
@@ -138,7 +137,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 			return result.error("No predicate section found: " + section);
 		}
 
-		IRI predicate = predicateSection.get().getIRI(predicateSection, compiler);
+		IRI predicate = predicateSection.get().getIRI(compiler, predicateSection);
 
 		// check term definition
 		if (predicate == null) {
@@ -164,7 +163,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	}
 
 	@Nullable
-	protected Resource findSubject(Rdf2GoCompiler core, StatementProviderResult result, Section<? extends Object> section) {
+	protected Resource findSubject(OntologyCompiler core, StatementProviderResult result, Section<? extends Object> section) {
 		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section, PredicateSentence.class);
 		assert predSentenceSection != null;
 
@@ -173,7 +172,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		// OR a blank node
 		Section<BlankNode> blankNodeSection = Sections.ancestor(predSentenceSection, BlankNode.class);
 		if (blankNodeSection != null) {
-			subject = blankNodeSection.get().getResource(blankNodeSection, core);
+			subject = blankNodeSection.get().getResource(core, blankNodeSection);
 			if (subject == null) {
 				result.addMessage(Messages.error("'" + blankNodeSection.getText() + "' is not a valid subject."));
 			}
@@ -184,26 +183,26 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		return subject;
 	}
 
-	public Resource findSubject(Rdf2GoCompiler compiler, Section<?> section) {
+	public Resource findSubject(OntologyCompiler compiler, Section<?> section) {
 		if (!(section.get() instanceof TurtleSentence)) {
 			section = Sections.ancestor(section, TurtleSentence.class);
 		}
 		Section<Subject> subject = Sections.successor(section, Subject.class);
 		if (subject == null) return null;
-		return subject.get().getResource(subject, compiler);
+		return subject.get().getResource(compiler, subject);
 	}
 
 	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Value getNode(Section<? extends Object> section, Rdf2GoCompiler core) {
+	public Value getNode(OntologyCompiler core, Section<? extends Object> section) {
 		// there should be exactly one NodeProvider child (while potentially
 		// many successors)
 		List<Section<NodeProvider>> nodeProviderSections = Sections.children(section, NodeProvider.class);
 
 		// if there are more NodeProvider we return null to force an error
-		if (nodeProviderSections != null && nodeProviderSections.size() == 1) {
+		if (nodeProviderSections.size() == 1) {
 			Section<NodeProvider> nodeProvider = nodeProviderSections.get(0);
-			return nodeProvider.get().getNode(nodeProvider, core);
+			return nodeProvider.get().getNode(core, nodeProvider);
 		}
 		return null;
 	}
