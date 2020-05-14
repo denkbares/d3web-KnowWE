@@ -669,14 +669,18 @@ KNOWWE.helper.ajax = function(options) {
 };
 
 KNOWWE.helper.ajax.xhrExtractMessage = function(jqXHR) {
-  const page = jqXHR.responseText || "";
-  let start = page.indexOf("<b>Message</b>");
-  if (start < 0) start = page.indexOf("<b>message</b>"); // older tomcats
-  const end = page.indexOf("</p>", start);
-  if (start >= 0 && end >= 0)
-    return (start >= 0 && end >= 0)
-      ? jq$(document.createElement("div")).html(page.substring(start + 14, end).trim()).text()
-      : jq$(document.createElement("div")).html(page).find("h1").first().text();
+  if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
+    return jqXHR.responseJSON.message;
+  } else { // old variant, where we parse the message out of the tomcat error html
+    const page = jqXHR.responseText || "";
+    let start = page.indexOf("<b>Message</b>");
+    if (start < 0) start = page.indexOf("<b>message</b>"); // older tomcats
+    const end = page.indexOf("</p>", start);
+    if (start >= 0 && end >= 0)
+      return (start >= 0 && end >= 0)
+        ? jq$(document.createElement("div")).html(page.substring(start + 14, end).trim()).text()
+        : jq$(document.createElement("div")).html(page).find("h1").first().text();
+  }
 }
 
 

@@ -21,12 +21,15 @@ package de.knowwe.core.action;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
@@ -88,11 +91,11 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 	/**
 	 * Default constructor.
 	 *
-	 * @param actionName Name of your action, equivalent to the ID specified in your plugin.xml
-	 * @param path optional parameter, only necessary for special servlets
-	 * @param parameters all parameters of the request
-	 * @param request the request itself
-	 * @param response the response you can use for your purposes
+	 * @param actionName     Name of your action, equivalent to the ID specified in your plugin.xml
+	 * @param path           optional parameter, only necessary for special servlets
+	 * @param parameters     all parameters of the request
+	 * @param request        the request itself
+	 * @param response       the response you can use for your purposes
 	 * @param servletContext the servlet context
 	 */
 	public ActionContext(String actionName, String path, Map<String, String> parameters,
@@ -216,7 +219,12 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 
 	@Override
 	public void sendError(int sc, String msg) throws IOException {
-		this.response.sendError(sc, msg);
+		this.response.setContentType(Action.JSON);
+		JSONObject responseJSON = new JSONObject();
+		responseJSON.put("status", sc);
+		responseJSON.put("timestamp", new Date().getTime());
+		responseJSON.put("message", msg);
+		responseJSON.write(this.response.getWriter());
+		this.response.setStatus(sc);
 	}
-
 }

@@ -62,12 +62,8 @@ public class JSPActionDispatcher extends ActionDispatcher {
 			Log.warning("Action aborted with an error: " + action, e);
 			context.sendError(e.getHttpErrorCode(), e.getMessage());
 		}
-		catch (IOException e) {
-			Log.severe("IOException while executing action " + action, e);
-			throw e;
-		}
 		catch (Throwable e) {
-			String message = e.getClass().getSimpleName() + " while executing action " + action;
+			String message = "Unexpected " + e.getClass().getSimpleName() + " while executing action " + action;
 			Log.severe(message, e);
 			context.sendError(500, message);
 		}
