@@ -19,12 +19,17 @@
 
 package de.knowwe.core.tools;
 
+import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupCompileScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.defaultMarkup.UnknownAnnotationType;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Markup for another deactivated markup section.
@@ -41,11 +46,11 @@ public class OffMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
-		MARKUP.addRegexAnnotation(".*", false);
 	}
 
 	public OffMarkup() {
 		super(MARKUP);
+		this.removeCompileScript(DefaultGlobalCompiler.class, DefaultMarkupCompileScript.class);
 		this.setRenderer(new DefaultMarkupRenderer() {
 
 			@Override
@@ -61,6 +66,9 @@ public class OffMarkup extends DefaultMarkupType {
 				result.appendHtmlTag("div", "style", "color: grey");
 				RenderResult temp = new RenderResult(result);
 				super.renderContentsAndAnnotations(section, user, temp);
+				for (Section<UnknownAnnotationType> annotation : $(section).successor(UnknownAnnotationType.class)) {
+					temp.appendJSPWikiMarkup(annotation.getText());
+				}
 				result.appendJSPWikiMarkup(temp);
 				result.appendHtmlTag("/div");
 			}
