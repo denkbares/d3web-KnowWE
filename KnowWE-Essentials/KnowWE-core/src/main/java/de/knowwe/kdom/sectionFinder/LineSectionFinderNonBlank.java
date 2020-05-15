@@ -16,7 +16,7 @@ public class LineSectionFinderNonBlank extends RegexSectionFinder {
 	private static final LineSectionFinderNonBlank instance = new LineSectionFinderNonBlank();
 
 	private LineSectionFinderNonBlank() {
-		super("^\\h*\\S+[^\r\n]*\r?\n", Pattern.MULTILINE);
+		super("^\\h*\\S+[^\r\n]*(?:\r?\n|\\z)", Pattern.MULTILINE);
 	}
 
 	public static LineSectionFinderNonBlank getInstance() {
