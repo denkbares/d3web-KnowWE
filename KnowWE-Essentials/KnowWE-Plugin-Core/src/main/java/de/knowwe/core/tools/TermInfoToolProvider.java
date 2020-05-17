@@ -64,7 +64,11 @@ public class TermInfoToolProvider implements ToolProvider {
 
 	private Identifier getIdentifier(TermCompiler compiler, Section<?> section) {
 		if (compiler != null && section.get() instanceof Term) {
-			return ((Term) section.get()).getTermIdentifier(compiler, Sections.cast(section, Term.class));
+			try {
+				return ((Term) section.get()).getTermIdentifier(compiler, Sections.cast(section, Term.class));
+			}
+			catch (ClassCastException ignore) {  // in case the identifier can only be generated for certain term compilers
+			}
 		}
 		return null;
 	}

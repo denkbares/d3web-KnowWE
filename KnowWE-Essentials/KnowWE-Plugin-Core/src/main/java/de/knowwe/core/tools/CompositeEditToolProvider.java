@@ -21,6 +21,7 @@ package de.knowwe.core.tools;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
@@ -54,7 +55,8 @@ public class CompositeEditToolProvider implements ToolProvider {
 			List<Tool> tools = new ArrayList<>();
 			List<Identifier> identifiers = Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
 					.stream()
-					.map(c -> termSection.get().getTermIdentifier(c, termSection))
+					.map(c -> getTermIdentifier(c, termSection))
+					.filter(Objects::nonNull)
 					.map(CompositeEditToolProvider::matchCompatibilityForm)
 					.distinct()
 					.sorted()
@@ -71,6 +73,15 @@ public class CompositeEditToolProvider implements ToolProvider {
 			return tools.toArray(new Tool[0]);
 		}
 		return ToolUtils.emptyToolArray();
+	}
+
+	public Identifier getTermIdentifier(TermCompiler compiler, Section<Term> termSection) {
+		try {
+			return termSection.get().getTermIdentifier(compiler, termSection);
+		}
+		catch (ClassCastException e) { // in case the identifier can only be generated for certain term compilers
+			return null;
+		}
 	}
 
 	@Override
