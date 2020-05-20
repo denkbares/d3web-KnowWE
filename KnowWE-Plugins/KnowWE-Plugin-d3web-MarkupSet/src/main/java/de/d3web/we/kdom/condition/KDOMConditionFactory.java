@@ -63,8 +63,12 @@ public class KDOMConditionFactory {
 					conds.add(subCond);
 				}
 			}
-
-			return new CondAnd(conds);
+			if (conds.isEmpty()) {
+				return null;
+			}
+			else {
+				return new CondAnd(conds);
+			}
 		}
 
 		// create disjunctions
@@ -82,7 +86,12 @@ public class KDOMConditionFactory {
 				}
 			}
 
-			return new CondOr(conds);
+			if (conds.isEmpty()) {
+				return null;
+			}
+			else {
+				return new CondOr(conds);
+			}
 		}
 
 		// create negations
