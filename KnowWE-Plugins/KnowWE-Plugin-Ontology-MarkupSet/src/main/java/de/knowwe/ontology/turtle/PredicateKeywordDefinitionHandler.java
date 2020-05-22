@@ -30,9 +30,9 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.provider.NodeProvider;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
-import de.knowwe.ontology.compile.provider.NodeProvider;
 
 /**
  * @author Jochen Reutelshofer (denkbares GmbH)
@@ -52,7 +52,6 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 	public void compile(OntologyCompiler compiler, Section<SimpleReference> s) {
 
 		List<Section<Predicate>> predicates = getPredicates(s);
-		boolean hasInstancePredicate = false;
 		Section<Predicate> predicate = null;
 		for (Section<Predicate> section : predicates) {
 			for (String exp : matchExpressions) {
@@ -79,7 +78,8 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 		}
 
 		Section<NodeProvider> successor = Sections.successor(predicate, NodeProvider.class);
-		assert successor != null;
+		if (successor == null) return;
+
 		String turtleURI = successor.collectTextsFromChildren();
 		Class<?> termClass = Resource.class;
 		if (turtleURI.equals("rdfs:subPropertyOf")) {
