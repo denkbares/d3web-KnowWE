@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -82,7 +82,6 @@ public class CIBuildManager implements EventListener {
 			super(ciBuildCallable);
 			this.ciBuildCallable = ciBuildCallable;
 		}
-
 	}
 
 	private static class CIBuildCallable implements Callable<Void> {
@@ -146,7 +145,6 @@ public class CIBuildManager implements EventListener {
 			// the future will remove itself in method done().
 			ciBuildExecutor.execute(ciBuildFuture);
 		}
-
 	}
 
 	private static void deleteAttachmentTempFiles(BuildResult build) {
@@ -167,9 +165,11 @@ public class CIBuildManager implements EventListener {
 	 * Terminates the build of the given dashboard (if there is one).
 	 */
 	public void shutDownNow(CIDashboard dashboard) {
-		CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
-		if (ciBuildFuture != null) {
-			ciBuildFuture.ciBuildCallable.testExecutor.shutDownNow();
+		synchronized (ciBuildQueue) {
+			CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
+			if (ciBuildFuture != null) {
+				ciBuildFuture.ciBuildCallable.testExecutor.shutDownNow();
+			}
 		}
 	}
 
@@ -230,7 +230,8 @@ public class CIBuildManager implements EventListener {
 	}
 
 	/**
-	 * Provides a ProgressListener of the given dashboard, if the dashboard exists and is currently running, null otherwise.
+	 * Provides a ProgressListener of the given dashboard, if the dashboard exists and is currently running, null
+	 * otherwise.
 	 *
 	 * @param dashboard the dashboard to get the progress listener for
 	 * @return the progress listener for the given dashboard
@@ -256,5 +257,4 @@ public class CIBuildManager implements EventListener {
 		shutDownNow();
 //		awaitTermination();
 	}
-
 }

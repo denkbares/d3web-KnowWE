@@ -270,15 +270,13 @@ public class CIRenderer {
 	private void openCollapse(Type type, RenderResult renderResult) {
 		renderResult.appendHtml("<div class='ci-collapsible-box'>");
 
-		String styleExpand = type == Type.SUCCESS ? "" : "style='display:none' ";
-		renderResult.appendHtml("<span " + styleExpand
-				+ "class='expandCIMessage' onclick='KNOWWE.plugin.ci4ke.expandMessage(this)'>");
+		String styleExpand = showCollapsed(type) ? "" : "style='display:none' ";
+		renderResult.appendHtml("<span " + styleExpand + "class='expandCIMessage' onclick='KNOWWE.plugin.ci4ke.expandMessage(this)'>");
 		renderBuildStatus(type, false, Icon.EXPAND, renderResult);
 		renderResult.appendHtml("</span>");
 
-		String styleCollapse = type == Type.SUCCESS ? "style='display:none' " : "";
-		renderResult.appendHtml("<span " + styleCollapse
-				+ "class='collapseCIMessage' onclick='KNOWWE.plugin.ci4ke.collapseMessage(this)'>");
+		String styleCollapse = showCollapsed(type) ? "style='display:none' " : "";
+		renderResult.appendHtml("<span " + styleCollapse + "class='collapseCIMessage' onclick='KNOWWE.plugin.ci4ke.collapseMessage(this)'>");
 		renderBuildStatus(type, false, Icon.COLLAPSE, renderResult);
 		renderResult.appendHtml("</span>");
 	}
@@ -289,9 +287,12 @@ public class CIRenderer {
 
 	private void openMessageBlock(Type type, RenderResult renderResult) {
 		// not visible at beginning
-		String styleCollapse = (type == null || type == Type.SUCCESS)
-				? "style='display:none' " : "";
+		String styleCollapse = showCollapsed(type) ? "style='display:none' " : "";
 		renderResult.appendHtml("<div " + styleCollapse + "class='ci-message'>");
+	}
+
+	private boolean showCollapsed(Type type) {
+		return type == null || type == Type.SUCCESS || type == Type.SKIPPED;
 	}
 
 	private void closeMessageBlock(RenderResult renderResult) {
@@ -423,6 +424,7 @@ public class CIRenderer {
 			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
 			typeCount.add((message == null) ? Type.SKIPPED : message.getType());
 			if (message == null) continue;
+			if (message.getType() == Type.SKIPPED) continue;
 
 			Test<?> test = TestManager.findTest(testResult.getTestName());
 			if (test instanceof ResultRenderer) {
@@ -443,7 +445,13 @@ public class CIRenderer {
 			}
 		}
 		if (typeCount.isEmpty()) {
-			renderResult.appendHtml("\n<br><span>No test objects could be found</span>");
+			int successfullyTestedObjects = testResult.getSuccessfullyTestedObjects();
+			if (successfullyTestedObjects == 0) {
+				renderResult.appendHtml("\n<br><span>No test objects could be found</span>");
+			}
+			else {
+				renderResult.appendHtml("<span>" + successfullyTestedObjects + " test objects tested successfully</span>");
+			}
 		}
 	}
 
