@@ -22,14 +22,16 @@ package de.d3web.we.ci4ke.build;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +65,9 @@ public class CIBuildManager implements EventListener {
 		EventManager.getInstance().registerListener(this);
 	}
 
-	private static final ExecutorService ciBuildExecutor = Executors.newFixedThreadPool(2);
+	private static final AtomicLong executorNumber = new AtomicLong();
+	private static final ExecutorService ciBuildExecutor = Executors.newFixedThreadPool(2,
+			r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet()));
 
 	static {
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
@@ -72,7 +76,7 @@ public class CIBuildManager implements EventListener {
 		});
 	}
 
-	private static final Map<CIDashboard, CIBuildFuture> ciBuildQueue = new ConcurrentHashMap<>();
+	private static final Map<CIDashboard, CIBuildFuture> ciBuildQueue = Collections.synchronizedMap(new WeakHashMap<>());
 
 	private static class CIBuildFuture extends FutureTask<Void> {
 
@@ -104,6 +108,7 @@ public class CIBuildManager implements EventListener {
 		@Override
 		public Void call() {
 			Log.info("Executing new CI build for dashboard '" + dashboard.getDashboardName() + "'");
+			Log.info("### Start new CI-Build " + dashboard.getDashboardName());
 			try {
 				testExecutor.run();
 
@@ -121,7 +126,13 @@ public class CIBuildManager implements EventListener {
 				Log.severe("Exception while executing CI build", e);
 			}
 			finally {
-				ciBuildQueue.remove(dashboard);
+				synchronized (ciBuildQueue) {
+					CIBuildFuture ciBuildFuture = ciBuildQueue.get(dashboard);
+					if (ciBuildFuture != null && ciBuildFuture.ciBuildCallable == this) {
+						ciBuildQueue.remove(dashboard);
+					}
+				}
+				Log.info("#### Shutdown CI-Build " + dashboard.getDashboardName());
 			}
 			return null;
 		}
@@ -136,15 +147,13 @@ public class CIBuildManager implements EventListener {
 		// while we shut down and wait for termination in notify(), because a new compilation frame
 		// is opened. notify() also synchronizes on the build manager instance.
 
-		synchronized (ciBuildQueue) {
-			// if there already is a running build, we terminate it
-			shutDownNow(dashboard);
+		// if there already is a running build, we terminate it
+		shutDownNow(dashboard);
 
-			CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard));
-			ciBuildQueue.put(dashboard, ciBuildFuture);
-			// the future will remove itself in method done().
-			ciBuildExecutor.execute(ciBuildFuture);
-		}
+		CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard));
+		ciBuildQueue.put(dashboard, ciBuildFuture);
+		// the future will remove itself in method done().
+		ciBuildExecutor.execute(ciBuildFuture);
 	}
 
 	private static void deleteAttachmentTempFiles(BuildResult build) {
@@ -208,14 +217,16 @@ public class CIBuildManager implements EventListener {
 	 * aborted by calling this method.
 	 */
 	public void awaitTermination() {
+		ArrayList<CIBuildFuture> ciBuildFutures;
 		synchronized (ciBuildQueue) {
-			for (CIBuildFuture ciBuildFuture : ciBuildQueue.values()) {
-				try {
-					ciBuildFuture.get();
-				}
-				catch (InterruptedException | ExecutionException e) {
-					Log.severe("Exception while awaiting CI Build termination", e);
-				}
+			ciBuildFutures = new ArrayList<>(ciBuildQueue.values());
+		}
+		for (CIBuildFuture ciBuildFuture : ciBuildFutures) {
+			try {
+				ciBuildFuture.get();
+			}
+			catch (InterruptedException | ExecutionException e) {
+				Log.severe("Exception while awaiting CI Build termination", e);
 			}
 		}
 	}
