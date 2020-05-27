@@ -53,14 +53,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 			Section<Term> termSection = Sections.cast(section, Term.class);
 
 			List<Tool> tools = new ArrayList<>();
-			List<Identifier> identifiers = Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
-					.stream()
-					.map(c -> getTermIdentifier(c, termSection))
-					.filter(Objects::nonNull)
-					.map(CompositeEditToolProvider::matchCompatibilityForm)
-					.distinct()
-					.sorted()
-					.collect(Collectors.toList());
+			List<Identifier> identifiers = getIdentifiers(section, termSection);
 
 			for (Identifier identifier : identifiers) {
 				if (identifiers.size() > 1) {
@@ -73,6 +66,18 @@ public class CompositeEditToolProvider implements ToolProvider {
 			return tools.toArray(new Tool[0]);
 		}
 		return ToolUtils.emptyToolArray();
+	}
+
+	@NotNull
+	protected List<Identifier> getIdentifiers(Section<?> section, Section<Term> termSection) {
+		return Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
+				.stream()
+				.map(c -> getTermIdentifier(c, termSection))
+				.filter(Objects::nonNull)
+				.map(CompositeEditToolProvider::matchCompatibilityForm)
+				.distinct()
+				.sorted()
+				.collect(Collectors.toList());
 	}
 
 	public Identifier getTermIdentifier(TermCompiler compiler, Section<Term> termSection) {
