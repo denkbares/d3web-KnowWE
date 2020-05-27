@@ -58,6 +58,8 @@ import de.knowwe.util.Icon;
  */
 public class CIRenderer {
 
+	private static final int SKIP_CUTOFF = 10;
+
 	private final CIDashboard dashboard;
 
 	private final String dashboardName;
@@ -367,7 +369,7 @@ public class CIRenderer {
 		}
 		ObjectNameRenderer objectRenderer = ObjectNameRendererManager.getObjectNameRenderer(objectClass);
 		if (objectRenderer == null) {
-			Log.warning("No renderer found for " + objectClass);
+//			Log.warning("No renderer found for " + objectClass);
 			result.append(objectName);
 			return;
 		}
@@ -424,7 +426,11 @@ public class CIRenderer {
 			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
 			typeCount.add((message == null) ? Type.SKIPPED : message.getType());
 			if (message == null) continue;
-			if (message.getType() == Type.SKIPPED) continue;
+			if (message.getType() == Type.SKIPPED) {
+				if (typeCount.getCount(Type.SKIPPED) > SKIP_CUTOFF) {
+					continue;
+				}
+			}
 
 			Test<?> test = TestManager.findTest(testResult.getTestName());
 			if (test instanceof ResultRenderer) {
@@ -433,6 +439,10 @@ public class CIRenderer {
 			else {
 				renderResultMessageDefault(context, testObjectName, testResult, message, renderResult);
 			}
+		}
+		int skipCount = typeCount.getCount(Type.SKIPPED);
+		if (skipCount > SKIP_CUTOFF) {
+			renderResult.appendHtml("\n<br><br><span>There are " + (skipCount - SKIP_CUTOFF) + " omitted messages of skipped test objects...</span><br>");
 		}
 
 		// print summary
@@ -450,7 +460,7 @@ public class CIRenderer {
 				renderResult.appendHtml("\n<br><span>No test objects could be found</span>");
 			}
 			else {
-				renderResult.appendHtml("<span>" + successfullyTestedObjects + " test objects tested successfully</span>");
+				renderResult.appendHtml("\n<br><span>" + successfullyTestedObjects + " test objects tested successfully</span>");
 			}
 		}
 	}
