@@ -1675,6 +1675,27 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Returns a new Sections containing only the sections of this sections object that have ancestors of the given type.
+	 *
+	 * @param clazz the type of ancestor the sections are required to have
+	 * @return the sections with ancestors of the given type
+	 */
+	@NotNull
+	public Sections<T> filterByAncestor(Class<? extends Type> clazz) {
+		return  new Sections<>(() -> SectionFilter.filter(sections.iterator(), section -> $(section).hasAncestor(clazz)));
+	}
+
+	/**
+	 * Returns a new Sections containing only the sections of this sections object that have successors of the given type.
+	 *
+	 * @param clazz the type of successors the sections are required to have
+	 * @return the sections with successors of the given type
+	 */
+	public Sections<T> filterBySuccessor(Class<? extends Type> clazz) {
+		return  new Sections<>(() -> SectionFilter.filter(sections.iterator(), section -> $(section).hasSuccessor(clazz)));
+	}
+
+	/**
 	 * Returns the set of articles for a specified collection of sections. The Articles will remain the order of the
 	 * first appearance within the specified section collection.
 	 *
