@@ -62,7 +62,7 @@ public class TermInfoToolProvider implements ToolProvider {
 		return getTools(section, userContext).length > 0;
 	}
 
-	private Identifier getIdentifier(TermCompiler compiler, Section<?> section) {
+	protected Identifier getIdentifier(TermCompiler compiler, Section<?> section) {
 		if (compiler != null && section.get() instanceof Term) {
 			try {
 				return ((Term) section.get()).getTermIdentifier(compiler, Sections.cast(section, Term.class));
@@ -92,8 +92,7 @@ public class TermInfoToolProvider implements ToolProvider {
 			return 1;
 		});
 		for (TermCompiler termCompiler : compilers) {
-			Identifier identifierForCompiler = getIdentifier(termCompiler, section);
-			Collection<Section<?>> definitions = getTermDefiningSections(termCompiler, identifierForCompiler);
+			Collection<Section<?>> definitions = getTermDefiningSections(termCompiler, section);
 			for (Section<?> definition : definitions) {
 				Section<?> previewAncestor = PreviewManager.getInstance().getPreviewAncestor(definition);
 				articles.put(definition.getTitle(), previewAncestor == null ? definition : previewAncestor);
@@ -155,7 +154,8 @@ public class TermInfoToolProvider implements ToolProvider {
 		return tools;
 	}
 
-	protected @NotNull Collection<Section<?>> getTermDefiningSections(TermCompiler termCompiler, Identifier identifierForCompiler) {
+	protected @NotNull Collection<Section<?>> getTermDefiningSections(TermCompiler termCompiler, Section<?> section) {
+		Identifier identifierForCompiler = getIdentifier(termCompiler, section);
 		return termCompiler.getTerminologyManager().getTermDefiningSections(identifierForCompiler);
 	}
 
