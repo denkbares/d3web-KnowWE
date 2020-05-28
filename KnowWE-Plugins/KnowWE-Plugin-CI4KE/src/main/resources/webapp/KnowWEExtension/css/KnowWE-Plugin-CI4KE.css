@@ -109,6 +109,10 @@ a.ci-daemon:hover {
 	padding: 3px 5px;
 }
 
+.ci-collapsible-box .knowwe-skip {
+	color: #999;
+}
+
 .ci-state {
 	margin-right: 2px;
 }

@@ -58,7 +58,7 @@ import de.knowwe.util.Icon;
  */
 public class CIRenderer {
 
-	private static final int SKIP_CUTOFF = 10;
+	private static final int ABORT_CUTOFF = 10;
 
 	private final CIDashboard dashboard;
 
@@ -294,7 +294,7 @@ public class CIRenderer {
 	}
 
 	private boolean showCollapsed(Type type) {
-		return type == null || type == Type.SUCCESS || type == Type.SKIPPED;
+		return type == null || type == Type.SUCCESS || type == Type.SKIPPED || type == Type.ABORTED;
 	}
 
 	private void closeMessageBlock(RenderResult renderResult) {
@@ -424,10 +424,10 @@ public class CIRenderer {
 		CountingSet<Message.Type> typeCount = new CountingSet<>();
 		for (String testObjectName : testObjectNames) {
 			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
-			typeCount.add((message == null) ? Type.SKIPPED : message.getType());
+			typeCount.add((message == null) ? Type.ABORTED : message.getType());
 			if (message == null) continue;
-			if (message.getType() == Type.SKIPPED) {
-				if (typeCount.getCount(Type.SKIPPED) > SKIP_CUTOFF) {
+			if (message.getType() == Type.ABORTED) {
+				if (typeCount.getCount(Type.ABORTED) > ABORT_CUTOFF) {
 					continue;
 				}
 			}
@@ -440,17 +440,26 @@ public class CIRenderer {
 				renderResultMessageDefault(context, testObjectName, testResult, message, renderResult);
 			}
 		}
-		int skipCount = typeCount.getCount(Type.SKIPPED);
-		if (skipCount > SKIP_CUTOFF) {
-			renderResult.appendHtml("\n<br><br><span>There are " + (skipCount - SKIP_CUTOFF) + " omitted messages of skipped test objects...</span><br>");
+		if (typeCount.getCount(Type.ABORTED) > ABORT_CUTOFF) {
+			renderResult.appendHtml("\n<br><br><span>There are some additional omitted messages of aborted test objects...</span><br>");
 		}
 
 		// print summary
 		for (Type type : Type.values()) {
 			int count = typeCount.getCount(type);
 			if (count > 0) {
-				String text = (type == Type.SUCCESS) ? "tested successfully" :
-						(type == Type.SKIPPED) ? "skipped" : "tested with " + type.name().toLowerCase() + "s";
+				String text;
+				if (type == Type.SUCCESS) {
+					text = "tested successfully";
+				}
+				else {
+					if (type == Type.SKIPPED || type == Type.ABORTED) {
+						text = type.name().toLowerCase();
+					}
+					else {
+						text = "tested with " + type.name().toLowerCase() + "s";
+					}
+				}
 				renderResult.appendHtml("\n<br><span>" + Strings.pluralOf(count, "test object") + " " + text + "</span>");
 			}
 		}
@@ -460,7 +469,7 @@ public class CIRenderer {
 				renderResult.appendHtml("\n<br><span>No test objects could be found</span>");
 			}
 			else {
-				renderResult.appendHtml("\n<br><span>" + successfullyTestedObjects + " test objects tested successfully</span>");
+				renderResult.appendHtml("\n<br><span>" + Strings.pluralOf(successfullyTestedObjects,"test object") + " tested successfully</span>");
 			}
 		}
 	}
@@ -504,8 +513,12 @@ public class CIRenderer {
 					text = "Build successful";
 					break;
 				case SKIPPED:
-					css = icon.getCssClass() + " knowwe-gray";
+					css = icon.getCssClass() + " knowwe-skip";
 					text = "Build has skipped tests";
+					break;
+				case ABORTED:
+					css = icon.getCssClass() + " knowwe-gray";
+					text = "Build has aborted tests";
 					break;
 				case WARNING:
 					css = icon.getCssClass() + " knowwe-warning";

@@ -613,6 +613,10 @@ input.knowwe-paginationFilter {
 	color: #036;
 }
 
+.knowwe-skip {
+	color: #6A9514;
+}
+
 .knowwe-disabled, .knowwe-deactivated, .knowwe-gray, .knowwe-grey {
 	color: #999;
 }
