@@ -108,7 +108,6 @@ public class CIBuildManager implements EventListener {
 		@Override
 		public Void call() {
 			Log.info("Executing new CI build for dashboard '" + dashboard.getDashboardName() + "'");
-			Log.info("### Start new CI-Build " + dashboard.getDashboardName());
 			try {
 				testExecutor.run();
 
@@ -132,7 +131,6 @@ public class CIBuildManager implements EventListener {
 						ciBuildQueue.remove(dashboard);
 					}
 				}
-				Log.info("#### Shutdown CI-Build " + dashboard.getDashboardName());
 			}
 			return null;
 		}
