@@ -4,6 +4,7 @@
 
 .haddock .defaultEditTool {
 	font-size: 90%;
+	line-height: 1.428571429;
 }
 
 .defaultEditTool {
@@ -16,6 +17,8 @@
 	width: 100%;
 	resize: none;
 	box-sizing: border-box;
+	white-space: pre;
+	overflow: auto;
 	-moz-box-sizing: border-box;
 	-ms-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
