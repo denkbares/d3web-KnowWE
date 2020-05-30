@@ -200,6 +200,9 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 	private static class UnquotedStringLiteral extends AbstractType implements NodeProvider<TurtleLiteralType>, SectionFinderConstraint {
 
 		public UnquotedStringLiteral() {
+			setRenderer((section, user, result) -> {
+				result.appendJSPWikiMarkup(section.getText());
+			});
 			setSectionFinder(new ConstraintSectionFinder(AllTextFinderTrimmed.getInstance(), this));
 		}
 
