@@ -8,6 +8,10 @@
 }
 
 .defaultEditTool {
+	overflow-x: hidden;
+}
+
+.defaultEditTool {
 	font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
 	display: block;
 	border: 1px solid #9ACBFB;
@@ -17,8 +21,7 @@
 	width: 100%;
 	resize: none;
 	box-sizing: border-box;
-	white-space: pre;
-	overflow: auto;
+	overflow-wrap: break-word;
 	-moz-box-sizing: border-box;
 	-ms-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
