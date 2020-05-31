@@ -1011,7 +1011,6 @@ KNOWWE.core.plugin.recompile = function() {
     init: function() {
       jq$(document).keyup(function(event) {
           let command = null;
-          console.log(event.ctrlKey + " " + event.shiftKey + " " + event.altKey + " " + event.key);
           if (event.ctrlKey && event.altKey && event.shiftKey && (event.key === 'R' || event.key === '¸')) {
             command = "recompileAll";
             KNOWWE.notification.success("Full Recompile", "Performing recompilation of the current page and all involved compilers.");
