@@ -72,6 +72,13 @@ public class CIDashboardType extends DefaultMarkupType {
 		MARKUP.addAnnotation(TEST_KEY, true);
 		MARKUP.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
 				"^(onDemand|onSave\\s*(\".+?\"|[^\\s]+))$"));
+		MARKUP.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
+				"<p><b>Options:</b><br>" +
+				"<ul>" +
+				"<li>@" + TRIGGER_KEY + ": onSave \"Article Title Pattern\"</li>" +
+				"<li>@" + TRIGGER_KEY + ": onDemand</li>" +
+				"</ul>" +
+				"</p>");
 
 		// allow grouping of tests
 		MARKUP.addAnnotation(GROUP_KEY, false);
