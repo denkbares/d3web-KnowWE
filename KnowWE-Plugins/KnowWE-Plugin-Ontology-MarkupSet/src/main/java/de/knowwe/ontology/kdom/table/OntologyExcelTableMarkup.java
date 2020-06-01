@@ -272,6 +272,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Section<? extends AnnotationContentType> contentSection = DefaultMarkupType.getAnnotationContentSection(markupSection, ANNOTATION_XLSX);
 			try {
 				WikiAttachment attachment = AttachmentType.getAttachment(Sections.successor(contentSection, AttachmentType.class));
+				if (attachment == null) throw CompilerMessage.error("Attachment specified at " + ANNOTATION_XLSX + " not found");
 				XSSFWorkbook workbook = new XSSFWorkbook(attachment.getInputStream());
 				markupSection.storeObject(WORKBOOK_CACHE_KEY, new SoftReference<>(workbook));
 				return workbook;
@@ -426,7 +427,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private void addSubject(Section<ConfigAnnotationType> section, Config config) throws CompilerMessage {
 			Section<XlsxSubjectType> xlsxSubject = Sections.successor(section, XlsxSubjectType.class);
 			if (xlsxSubject == null) {
-				throw CompilerMessage.error("Subject not defined. Please specify subject, e.g. 'Subject Column 2' or 'Subject ns:mySubject'");
+				throw CompilerMessage.error("Subject not defined. Please specify subject, e.g. 'Subject $Column2' or 'Subject ns:mySubject'");
 			}
 			else {
 				xlsxSubject.get().addSubject(xlsxSubject, config);
@@ -436,7 +437,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private void addPredicate(Section<ConfigAnnotationType> section, Config config) throws CompilerMessage {
 			Section<XlsxPredicateType> xlsxPredicate = Sections.successor(section, XlsxPredicateType.class);
 			if (xlsxPredicate == null) {
-				throw CompilerMessage.error("Predicate not defined. Please predicate subject, e.g. 'Predicate Column 3' or 'Predicate ns:myPredicate'");
+				throw CompilerMessage.error("Predicate not defined. Please specify predicate, e.g. 'Predicate $Column3' or 'Predicate ns:myPredicate'");
 			}
 			else {
 				xlsxPredicate.get().addPredicate(xlsxPredicate, config);
@@ -447,7 +448,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			List<Section<XlsxObjectType>> xlsxObjects = Sections.successors(section, XlsxObjectType.class);
 			if (xlsxObjects.isEmpty()) {
 				throw CompilerMessage.error("Object not defined. Please specify one or more objects, " +
-						"e.g. 'Object Column 3' or 'Object ns:myPredicate' or 'Object \"Column 5\"@en'.");
+						"e.g. 'Object $Column3' or 'Object ns:myPredicate' or 'Object \"$Column5\"@en'.");
 			}
 			else {
 				for (Section<XlsxObjectType> object : xlsxObjects) {
@@ -554,7 +555,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 				}
 				else {
 					throw CompilerMessage.error("Invalid subject. Either give an abbreviated uri, " +
-							"e.g. ns:mySubject or an column, e.g. column 1");
+							"e.g. ns:mySubject or an column, e.g. $column1");
 				}
 			}
 		}
@@ -580,7 +581,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 					config.predicateColumn = getColumnNumber(matcher);
 				}
 				else {
-					throw CompilerMessage.error("Invalid predicate. Either give an abbreviated uri, e.g. ns:myPredicate or an column, e.g. column 1");
+					throw CompilerMessage.error("Invalid predicate. Either give an abbreviated uri, e.g. ns:myPredicate or an column, e.g. $column1");
 				}
 			}
 		}
