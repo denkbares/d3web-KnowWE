@@ -1011,11 +1011,12 @@ KNOWWE.core.plugin.recompile = function() {
     init: function() {
       jq$(document).keyup(function(event) {
           let command = null;
-          if (event.ctrlKey && event.altKey && event.shiftKey && (event.key === 'R' || event.key === '¸')) {
+          const isCMD = event.ctrlKey || event.metaKey;
+          if (isCMD && event.altKey && event.shiftKey && (event.key === 'R' || event.key === '¸')) {
             command = "recompileAll";
             KNOWWE.notification.success("Full Recompile", "Performing recompilation of the current page and all involved compilers.");
           }
-          else if (event.ctrlKey && event.altKey && (event.key === 'r' || event.key === '®')) {
+          else if (isCMD && event.altKey && (event.key === 'r' || event.key === '®')) {
             command = "recompile"
             KNOWWE.notification.success("Recompile", "Recompiling the current page.");
           }
