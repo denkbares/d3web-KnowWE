@@ -146,13 +146,9 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Config config = getConfig(section);
 			Rdf2GoCore core = compiler.getRdf2GoCore();
 
-			// get static IRIs and Literals from config
+			// get static IRIs
 			IRI subjectIRI = getUriFromConfig(core, config.subject);
-			if (subjectIRI == null) return; // error should already be handled elsewhere
-			final String subjectIriString = subjectIRI.toString();
 			IRI predicateIRI = getUriFromConfig(core, config.predicate);
-			if (predicateIRI == null) return; // error should already be handled elsewhere
-			final String predicateIriString = predicateIRI.toString();
 
 			List<IRI> objectIRIs = new ArrayList<>();
 			List<String> objectIriStrings = new ArrayList<>();
@@ -187,16 +183,16 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 						if (config.subjectColumn > 0) { // read from excel
 							subjectIRI = getUriFromCell(core, row, config.subjectColumn);
 						}
-						else { // read from config
-							subjectIRI = core.createIRI(replaceRowInUri(i, subjectIriString));
+						else if (subjectIRI != null) { // read from config
+							subjectIRI = core.createIRI(replaceRowInUri(i, subjectIRI.toString()));
 						}
 
 						// predicate
 						if (config.predicateColumn > 0) { // read from excel
 							predicateIRI = getUriFromCell(core, row, config.predicateColumn);
 						}
-						else { // read from config
-							predicateIRI = core.createIRI(replaceRowInUri(i, predicateIriString));
+						else if (predicateIRI != null) { // read from config
+							predicateIRI = core.createIRI(replaceRowInUri(i, predicateIRI.toString()));
 						}
 
 						// objects
