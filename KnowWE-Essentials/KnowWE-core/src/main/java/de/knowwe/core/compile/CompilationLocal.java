@@ -19,6 +19,7 @@
 
 package de.knowwe.core.compile;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -27,6 +28,9 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -46,6 +50,26 @@ public final class CompilationLocal<E> {
 
 	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> cache = Collections.synchronizedMap(new WeakHashMap<>());
 	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> weakCache = Collections.synchronizedMap(new WeakHashMap<>());
+
+	/*
+	 * Be more memory friendly by making sure the CompilationLocals cached here in this class are cleaned up as soon as
+	 * the next compilation starts, instead of when the CompilationLocals are accessed.
+	 */
+	static {
+		EventManager.getInstance().registerListener(new EventListener() {
+			@Override
+			public Collection<Class<? extends Event>> getEvents() {
+				return Collections.singleton(CompilationStartEvent.class);
+			}
+
+			@Override
+			public void notify(Event event) {
+				CompilationStartEvent compilationEvent = (CompilationStartEvent) event;
+				cache.remove(compilationEvent.getCompilerManager());
+				weakCache.remove(compilationEvent.getCompilerManager());
+			}
+		});
+	}
 
 	/**
 	 * Get the object provided by the supplier either freshly generated, or if still valid, from the section store. The
