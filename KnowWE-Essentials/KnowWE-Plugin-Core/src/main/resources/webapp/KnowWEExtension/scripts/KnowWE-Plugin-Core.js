@@ -477,15 +477,17 @@ KNOWWE.tooltips.enrich = function(element) {
     }
   });
   element.find('.tooltipster').each(function() {
-    let delay = jq$(this).attr('delay');
-    if (!delay) delay = 1300;
-    jq$(this).tooltipster({
+    let $this = jq$(this);
+    let delay = $this.attr('delay') || 1300;
+    let trigger = $this.attr('trigger') || "hover";
+    $this.tooltipster({
       position: "top-left",
       interactive: true,
       multiple: true,
       delay: delay,
       contentAsHTML: true,
       updateAnimation: false,
+      trigger: trigger,
       theme: ".tooltipster-knowwe",
       functionBefore: function(origin, continueTooltip) {
         // check if dom has changed since triggering... if source no longer exists, don't show tool tip
