@@ -775,7 +775,7 @@ KNOWWE.core.plugin.pagination = function() {
 
     sort: function(element, id) {
       const cookie = readCookie(id);
-      const columnName = jq$(element).text();
+      const columnName = jq$(element).parent().attr("sortname") || jq$(element).text();
       let sorting;
       if (typeof cookie.sorting == "undefined") {
         sorting = [{sort: columnName, naturalOrder: true}];
