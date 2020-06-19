@@ -319,7 +319,7 @@ public class SparqlResultRenderer {
 			if (isSkipped(isTree, column++, var)) {
 				continue;
 			}
-			renderResult.appendHtml("<th>");
+			renderResult.appendHtmlTag("th", "sortname", var);
 			renderResult.append(var.replace("_", " "));
 			renderResult.appendHtml("</th>");
 		}
