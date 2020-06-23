@@ -1,5 +1,7 @@
 package de.knowwe.instantedit.actions;
 
+import com.denkbares.strings.Strings;
+
 /**
  * DTO Section object of Json being sent from KnowWe-EditCommons.js and KnowWE-Plugin-EditMode.js
  *
@@ -9,34 +11,34 @@ package de.knowwe.instantedit.actions;
 
 public class SaveActionSectionDTO {
 
-    private Type type;
-    private String sectionID;
-    private String data;
+	private final Type type;
+	private final String sectionID;
+	private final String data;
 
-    public enum Type {
-        WIKI,
-        JSON
-    }
+	public enum Type {
+		WIKI,
+		JSON
+	}
 
-    public SaveActionSectionDTO(Type type, String sectionID, String data) {
-        this.type = type;
-        this.sectionID = sectionID;
-        this.data = data;
-    }
+	public SaveActionSectionDTO(Type type, String sectionID, String data) {
+		this.type = type;
+		this.sectionID = sectionID;
+		this.data = data;
+	}
 
-    public Type getType() {
-        return type;
-    }
+	public Type getType() {
+		return type;
+	}
 
-    public String getSectionID() {
-        return sectionID;
-    }
+	public String getSectionID() {
+		return sectionID;
+	}
 
-    public String getWikiData() {
-        return data.trim();
-    }
+	public String getWikiData() {
+		return Strings.trim(data);
+	}
 
-    public boolean isEmpty(){
-        return this.data.trim().isEmpty();
-    }
+	public boolean isEmpty() {
+		return Strings.isBlank(this.data);
+	}
 }
