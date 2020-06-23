@@ -121,12 +121,12 @@ KNOWWE.editCommons = function () {
 			new _KA(options).send();
 		},
 
-		sendChanges: function (newWikiText, params, fn, async) {
+		sendChanges: function (sectionData, params, fn, async) {
 			if (typeof async === "undefined") async = true;
 			_EC.showAjaxLoader();
 			let xhr = new XMLHttpRequest();
 			let url = KNOWWE.core.util.getURL(params);
-			xhr.open("POST", url, true);
+			xhr.open("POST", url, async);
 			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.onreadystatechange = function () {
 				if (xhr.readyState === 4 && xhr.status === 200) {
@@ -138,7 +138,7 @@ KNOWWE.editCommons = function () {
 					_EC.onErrorBehavior();
 				}
 			};
-			xhr.send(JSON.stringify(newWikiText));
+			xhr.send(JSON.stringify(sectionData));
 		},
 
 		registerSaveCancelEvents: function (element, saveFunction, cancelFunction, argument) {
