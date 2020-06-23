@@ -31,30 +31,32 @@ import java.util.stream.Collectors;
 
 public class SaveActionDTO {
 
-    private List<SaveActionSectionDTO> sections;
+	private final List<SaveActionSectionDTO> sections;
 
-    public SaveActionDTO(List<SaveActionSectionDTO> sections) {
-        this.sections = sections;
-    }
+	public SaveActionDTO(List<SaveActionSectionDTO> sections) {
+		this.sections = sections;
+	}
 
-    public List<SaveActionSectionDTO> getSections() {
-        return sections;
-    }
+	public List<SaveActionSectionDTO> getSections() {
+		return sections;
+	}
 
-    /**
-     * Parses the SaveActionDTO to String as new Article to replace old one
-     * Currently will only parse Type WIKI (wiki text as string) only
-     * @return StringF
-     * @exception IllegalArgumentException for DTO object if it contains JSON type that cannot be parsed
-     */
-    public String buildArticle(){
-        //filter out empty Sections and join the rest
-        return getSections().stream().filter(s->!s.isEmpty()).map(section->{
-            if (section.getType().equals(SaveActionSectionDTO.Type.WIKI)){
-                return section.getWikiData();
-            } else {
-                throw new IllegalArgumentException("Received data type JSON but expected WIKI for Section " + section.getSectionID());
-            }
-        }).collect(Collectors.joining("\r\n\r\n"));
-    }
+	/**
+	 * Parses the SaveActionDTO to String as new Article to replace old one
+	 * Currently will only parse Type WIKI (wiki text as string) only
+	 *
+	 * @return StringF
+	 * @throws IllegalArgumentException for DTO object if it contains JSON type that cannot be parsed
+	 */
+	public String buildArticle() {
+		//filter out empty Sections and join the rest
+		return getSections().stream().filter(s -> !s.isEmpty()).map(section -> {
+			if (section.getType() == SaveActionSectionDTO.Type.WIKI) {
+				return section.getWikiData();
+			}
+			else {
+				throw new IllegalArgumentException("Received data type JSON but expected WIKI for Section " + section.getSectionID());
+			}
+		}).collect(Collectors.joining("\r\n\r\n"));
+	}
 }
