@@ -57,6 +57,6 @@ public class SaveActionDTO {
 			else {
 				throw new IllegalArgumentException("Received data type JSON but expected WIKI for Section " + section.getSectionID());
 			}
-		}).collect(Collectors.joining("\r\n\r\n"));
+		}).collect(Collectors.joining("\n\n")) + "\n";
 	}
 }
