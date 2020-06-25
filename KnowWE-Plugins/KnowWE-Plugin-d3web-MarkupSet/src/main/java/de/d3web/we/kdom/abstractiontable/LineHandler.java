@@ -48,7 +48,7 @@ import de.knowwe.kdom.table.TableUtils;
 
 public class LineHandler implements D3webCompileScript<TableLine> {
 
-	private static final Pattern INTERVAL_PATTERN = Pattern.compile("(\\[|\\]|\\() *(\\d+\\.?\\d*) +(\\d+\\.?\\d*) *(\\[|\\]|\\))");
+	private static final Pattern INTERVAL_PATTERN = Pattern.compile("([\\[\\](]) *(\\d+\\.?\\d*) +(\\d+\\.?\\d*) *([\\[\\])])");
 
 	@Override
 	public void compile(D3webCompiler compiler, Section<TableLine> section) throws CompilerMessage {
@@ -64,7 +64,7 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 		List<Condition> conditions = new ArrayList<>(cells.size());
 		List<PSAction> actions = new ArrayList<>();
 
-		for (; cellIter.hasNext(); ) {
+		while (cellIter.hasNext()) {
 			Section<CellContent> cell = cellIter.next();
 			if (cellIter.hasNext()) {
 				// it's a condition cell
