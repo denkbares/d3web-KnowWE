@@ -20,15 +20,16 @@ public class CellContentRenderer extends TableCellContentRenderer {
 	public String getStyle(Section<?> tableCell, UserContext user) {
 		int columns = TableUtils.getNumberOfColumns(tableCell);
 		int column = TableUtils.getColumn(tableCell);
+		final int actionColumns = AbstractionTableMarkup.getActionColumns(tableCell);
 
 		boolean headerRow = TableUtils.isHeaderRow(tableCell);
 
 		String style = "";
-		if (columns == column + 1) {
-			style += "border-left-width: 3px;";
+		if (columns == column + actionColumns) {
+			style += "border-left: solid 3px #ddd;";
 		}
 		if (headerRow) {
-			style += " border-bottom-width: 3px;";
+			style += " border-bottom: solid 3px #ddd";
 		}
 		return style;
 	}

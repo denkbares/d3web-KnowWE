@@ -1,7 +1,6 @@
 package de.d3web.we.kdom.abstractiontable;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,20 +57,20 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 			return;
 		}
 
+		final int actionColumns = AbstractionTableMarkup.getActionColumns(section);
+
 		List<Section<CellContent>> cells = Sections.successors(section, CellContent.class);
-		Iterator<Section<CellContent>> cellIter = cells.iterator();
 
 		List<Condition> conditions = new ArrayList<>(cells.size());
 		List<PSAction> actions = new ArrayList<>();
 
-		while (cellIter.hasNext()) {
-			Section<CellContent> cell = cellIter.next();
-			if (cellIter.hasNext()) {
-				// it's a condition cell
+		for (int i = 0; i < cells.size(); i++) {
+			final Section<CellContent> cell = cells.get(i);
+			boolean isConditionCell = i < cells.size() - actionColumns;
+			if (isConditionCell) {
 				conditions.addAll(createCondition(compiler, cell));
 			}
 			else {
-				// it's the action cell then
 				actions.addAll(createAction(compiler, cell));
 			}
 		}
@@ -328,5 +327,4 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 			return null;
 		}
 	}
-
 }
