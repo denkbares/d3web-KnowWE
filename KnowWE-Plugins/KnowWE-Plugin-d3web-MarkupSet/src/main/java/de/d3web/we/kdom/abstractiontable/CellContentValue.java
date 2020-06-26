@@ -106,8 +106,8 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 		}
 		else {
 			if (isNegatedWithNOT(text)) {
-				text = text.replaceAll("^NOT\\s*[\\(\\[]", "");
-				text = text.replaceAll("[\\)\\]]\\z", "");
+				text = text.replaceAll("^NOT\\s*[(\\[]", "");
+				text = text.replaceAll("[)\\]]\\z", "");
 			}
 		}
 		return Strings.trimQuotes(text);
@@ -205,6 +205,9 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 					else if (namedObject instanceof QuestionNum) {
 						setType(compiler, section, CellType.QUESTION_NUM_VALUE);
 					}
+					else if (namedObject == null) {
+						// nothing to do, should already be handled bei term reference
+					}
 					else {
 						throw CompilerMessage.error("The type "
 								+ namedObject.getClass().getSimpleName()
@@ -215,7 +218,7 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 				else if (type == CellType.SOLUTION_REFERENCE) {
 					int columns = TableUtils.getNumberOfColumns(section);
 					int column = TableUtils.getColumn(section);
-					if (column == columns - 1) {
+					if (column == columns - AbstractionTableMarkup.getActionColumns(section)) {
 						setType(compiler, section, CellType.SOLUTION_SCORE);
 					}
 					else {
