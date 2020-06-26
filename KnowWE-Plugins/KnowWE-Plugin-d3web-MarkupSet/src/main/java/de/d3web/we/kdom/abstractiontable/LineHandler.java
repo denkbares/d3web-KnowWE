@@ -42,8 +42,11 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
+import de.knowwe.kdom.table.TableCell;
 import de.knowwe.kdom.table.TableLine;
 import de.knowwe.kdom.table.TableUtils;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class LineHandler implements D3webCompileScript<TableLine> {
 
@@ -59,13 +62,14 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 
 		final int actionColumns = AbstractionTableMarkup.getActionColumns(section);
 
-		List<Section<CellContent>> cells = Sections.successors(section, CellContent.class);
+		List<Section<TableCell>> cells = Sections.successors(section, TableCell.class);
 
-		List<Condition> conditions = new ArrayList<>(cells.size());
+		List<Condition> conditions = new ArrayList<>();
 		List<PSAction> actions = new ArrayList<>();
 
 		for (int i = 0; i < cells.size(); i++) {
-			final Section<CellContent> cell = cells.get(i);
+			final Section<CellContent> cell = $(cells.get(i)).successor(CellContent.class).getFirst();
+			if (cell == null) continue;
 			boolean isConditionCell = i < cells.size() - actionColumns;
 			if (isConditionCell) {
 				conditions.addAll(createCondition(compiler, cell));
