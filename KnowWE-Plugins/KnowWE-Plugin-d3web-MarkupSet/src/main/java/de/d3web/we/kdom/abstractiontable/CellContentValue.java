@@ -218,7 +218,7 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 				else if (type == CellType.SOLUTION_REFERENCE) {
 					int columns = TableUtils.getNumberOfColumns(section);
 					int column = TableUtils.getColumn(section);
-					if (column == columns - AbstractionTableMarkup.getActionColumns(section)) {
+					if (column >= columns - AbstractionTableMarkup.getActionColumns(section)) {
 						setType(compiler, section, CellType.SOLUTION_SCORE);
 					}
 					else {
