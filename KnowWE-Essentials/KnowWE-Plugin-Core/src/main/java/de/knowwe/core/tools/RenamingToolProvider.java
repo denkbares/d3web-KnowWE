@@ -20,6 +20,7 @@
 package de.knowwe.core.tools;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -53,8 +54,11 @@ public class RenamingToolProvider implements ToolProvider {
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		if (!(section.get() instanceof RenamableTerm)) return false;
-		Collection<TermCompiler> compilers = Compilers.getCompilersWithCompileScript(section, TermCompiler.class);
 		Section<RenamableTerm> termSection = Sections.cast(section, RenamableTerm.class);
+		Collection<TermCompiler> compilers = Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
+				.stream()
+				.filter(c -> isCompatibleCompiler(c, termSection))
+				.collect(Collectors.toList());
 		return !compilers.isEmpty()
 				&& compilers.stream()
 				.anyMatch(c -> !c.getTerminologyManager()
@@ -62,6 +66,16 @@ public class RenamingToolProvider implements ToolProvider {
 				&& ((RenamableTerm) section.get()).allowRename(Sections.cast(section, RenamableTerm.class))
 				&& termSection.get().getTermIdentifier(compilers.iterator().next(), termSection) != null
 				&& KnowWEUtils.canWrite(section, userContext);
+	}
+
+	public boolean isCompatibleCompiler(TermCompiler compiler, Section<RenamableTerm> termSection) {
+		try {
+			termSection.get().getTermIdentifier(compiler, termSection);
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
 	}
 
 	protected Tool getRenamingTool(Section<? extends Term> section) {
