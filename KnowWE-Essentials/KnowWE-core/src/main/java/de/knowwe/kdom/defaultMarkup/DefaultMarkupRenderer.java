@@ -201,8 +201,8 @@ public class DefaultMarkupRenderer implements Renderer {
 				// if we have multiple other article compilers
 				Collection<Compiler> compilers = entry.getValue();
 				if (isMultiCompiled(compilers, rootSection)) {
-					message += compilers.stream().map(DefaultMarkupRenderer::getCompilerName)
-							.collect(Collectors.joining(", ", " (compiled in ", ")"));
+					message += compilers.stream().map(DefaultMarkupRenderer::getCompilerName).distinct()
+							.collect(Collectors.joining(", ", " (compiled in [", "])"));
 				}
 				messages.add(message);
 			}
