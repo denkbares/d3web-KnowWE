@@ -549,6 +549,23 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Returns a new Sections instance with all registrations (definitions and references) of the references or
+	 * definitions in the current instance. Sections that don't have sub-types of {@link Term} will be skipped when
+	 * collecting references.
+	 *
+	 * @param compiler the compiler with the registrations
+	 * @param clazz    the class of the type of the sections in the new sections object
+	 * @param <R>      the class of the type of the sections in the new sections object
+	 * @return the definitions for the current sections
+	 */
+	public <R extends Term> Sections<R> registrations(@NotNull TermCompiler compiler, Class<R> clazz) {
+		return new Sections<R>(() -> filter(Term.class).stream()
+				.flatMap(s -> Stream.concat(Sections.definitions(compiler, s)
+						.filter(clazz).stream(), Sections.references(compiler, s).filter(clazz).stream()))
+				.iterator());
+	}
+
+	/**
 	 * Returns a new Sections instance containing all successors of this object's sections that is an instance the
 	 * specified type. If any section of this object's sections matches the specified class the section itself is
 	 * contained. If any section of this instance is neither of the specified type, nor does have a successor of the
@@ -1675,24 +1692,26 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Returns a new Sections containing only the sections of this sections object that have ancestors of the given type.
+	 * Returns a new Sections containing only the sections of this sections object that have ancestors of the given
+	 * type.
 	 *
 	 * @param clazz the type of ancestor the sections are required to have
 	 * @return the sections with ancestors of the given type
 	 */
 	@NotNull
 	public Sections<T> filterByAncestor(Class<? extends Type> clazz) {
-		return  new Sections<>(() -> SectionFilter.filter(sections.iterator(), section -> $(section).hasAncestor(clazz)));
+		return new Sections<>(() -> SectionFilter.filter(sections.iterator(), section -> $(section).hasAncestor(clazz)));
 	}
 
 	/**
-	 * Returns a new Sections containing only the sections of this sections object that have successors of the given type.
+	 * Returns a new Sections containing only the sections of this sections object that have successors of the given
+	 * type.
 	 *
 	 * @param clazz the type of successors the sections are required to have
 	 * @return the sections with successors of the given type
 	 */
 	public Sections<T> filterBySuccessor(Class<? extends Type> clazz) {
-		return  new Sections<>(() -> SectionFilter.filter(sections.iterator(), section -> $(section).hasSuccessor(clazz)));
+		return new Sections<>(() -> SectionFilter.filter(sections.iterator(), section -> $(section).hasSuccessor(clazz)));
 	}
 
 	/**
