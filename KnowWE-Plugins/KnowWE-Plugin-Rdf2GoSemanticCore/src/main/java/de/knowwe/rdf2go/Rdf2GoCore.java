@@ -731,15 +731,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				else if (current == 'f') {
 					builder.append('\f');
 				}
-				else if (current == '"') {
-					builder.append('"');
-				}
-				else if (current == '\'') {
-					builder.append('\'');
-				}
-				else if (current == '\\') {
-					builder.append('\\');
-				}
 				else {
 					builder.append(current);
 				}
