@@ -40,6 +40,7 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 	private final double priority;
 	private Thread thread = null;
 	private int size = 1;
+	private long runTime = Long.MIN_VALUE;
 
 	SparqlTask(SparqlCallable callable, double priority) {
 		super(callable);
@@ -64,7 +65,11 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 	}
 
 	synchronized long getRunDuration() {
-		return hasStarted() ? System.currentTimeMillis() - this.startTime : 0;
+		return hasStarted()
+				? this.runTime == Long.MIN_VALUE
+						? System.currentTimeMillis() - this.startTime
+						: this.runTime
+				: 0;
 	}
 
 	synchronized boolean hasStarted() {
@@ -118,6 +123,7 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 			synchronized (this) {
 				this.thread = null;
 			}
+			this.runTime = System.currentTimeMillis() - this.startTime;
 		}
 		callable.notifyCompleted(this);
 	}

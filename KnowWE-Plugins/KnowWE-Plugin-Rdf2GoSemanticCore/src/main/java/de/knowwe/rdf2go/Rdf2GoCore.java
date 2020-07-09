@@ -1242,8 +1242,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			return sparqlTask.get(maxTimeOut, TimeUnit.MILLISECONDS);
 		}
 		catch (CancellationException | InterruptedException | TimeoutException e) {
-//			Log.warning("SPARQL query failed due to an exception", e);
-			throw new RuntimeException(timeOutMessage + stopwatch.getDisplay(), e);
+			throw new RuntimeException(timeOutMessage + Stopwatch.getDisplay(sparqlTask.getRunDuration()), e);
 		}
 		catch (Exception e) {
 			Throwable cause = e.getCause();
@@ -1251,7 +1250,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				cause = e;
 			}
 			if (cause instanceof ThreadDeath || cause instanceof QueryInterruptedException) {
-				throw new RuntimeException(timeOutMessage + stopwatch.getDisplay(), cause);
+				throw new RuntimeException(timeOutMessage + Stopwatch.getDisplay(sparqlTask.getRunDuration()), cause);
 			}
 			else if (cause instanceof RuntimeException) {
 				if (!(cause.getCause() instanceof QueryInterruptedException)) {
