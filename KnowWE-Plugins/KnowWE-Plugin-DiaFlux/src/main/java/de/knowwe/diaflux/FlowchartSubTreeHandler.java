@@ -23,6 +23,7 @@ package de.knowwe.diaflux;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.ConditionTrue;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -33,7 +34,6 @@ import de.d3web.diaFlux.flow.Flow;
 import de.d3web.diaFlux.flow.FlowFactory;
 import de.d3web.diaFlux.flow.Node;
 import de.d3web.diaFlux.io.DiaFluxPersistenceHandler;
-import com.denkbares.strings.Strings;
 import de.d3web.we.kdom.condition.CompositeCondition;
 import de.d3web.we.kdom.condition.KDOMConditionFactory;
 import de.d3web.we.knowledgebase.D3webCompileScript;
@@ -62,8 +62,6 @@ import de.knowwe.kdom.xml.XMLContent;
  */
 public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType> {
 
-	public static final String ORIGIN_KEY = "diafluxorigin";
-	public static final String ICON_KEY = "diafluxicon";
 
 	@Override
 	public void compile(D3webCompiler article, Section<FlowchartType> s) {
@@ -79,7 +77,6 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		}
 
 		String name = FlowchartType.getFlowchartName(s);
-		String icon = FlowchartType.getIcon(s);
 		boolean autostart = FlowchartType.isAutoStart(s);
 
 		if (name == null || name.equals("")) {
@@ -91,10 +88,6 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		Flow flow = FlowFactory.createFlow(kb, name, nodes, edges);
 		flow.setAutostart(autostart);
 
-		FlowchartUtils.storeFlowProperty(flow, ORIGIN_KEY, s.getID());
-		if (!Strings.isBlank(icon)) {
-			FlowchartUtils.storeFlowProperty(flow, ICON_KEY, icon);
-		}
 
 	}
 
@@ -102,8 +95,9 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 		List<Edge> result = new ArrayList<>();
 
 		List<Section<EdgeType>> edgeSections = new ArrayList<>();
-		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
-		Sections.successors(flowcontent, EdgeType.class, edgeSections);
+		Section<XMLContent> flowContent = AbstractXMLType.getContentChild(flowSection);
+		if (flowContent == null) return result;
+		Sections.successors(flowContent, EdgeType.class, edgeSections);
 
 		for (Section<EdgeType> section : edgeSections) {
 
@@ -199,8 +193,9 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 
 		List<Node> result = new ArrayList<>();
 		ArrayList<Section<NodeType>> nodeSections = new ArrayList<>();
-		Section<XMLContent> flowcontent = AbstractXMLType.getContentChild(flowSection);
-		Sections.successors(flowcontent, NodeType.class, nodeSections);
+		Section<XMLContent> flowContent = AbstractXMLType.getContentChild(flowSection);
+		if (flowContent == null) return result;
+		Sections.successors(flowContent, NodeType.class, nodeSections);
 		for (Section<NodeType> nodeSection : nodeSections) {
 
 			NodeHandler handler = NodeHandlerManager.getInstance().findNodeHandler(compiler, kb,

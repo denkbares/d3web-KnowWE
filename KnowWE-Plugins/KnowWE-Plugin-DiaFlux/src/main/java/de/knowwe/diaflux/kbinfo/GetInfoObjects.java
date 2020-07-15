@@ -331,15 +331,6 @@ public class GetInfoObjects extends AbstractAction {
 		bob.append(" id='").append(encodeXML(id)).append("'");
 		bob.append(" name='").append(encodeXML(name)).append("'");
 
-		// String iconName = flow.getInfoStore().getValue(
-		// Property.getProperty(FlowchartSubTreeHandler.ICON, String.class));
-		String iconName = (String) FlowchartUtils.getFlowProperty(flow,
-				FlowchartSubTreeHandler.ICON_KEY);
-
-		if (iconName != null && !iconName.isEmpty()) {
-			bob.append(" icon='").append(encodeXML(iconName)).append("'");
-		}
-
 		bob.append(">\n");
 		for (StartNode node : startNodes) {
 			bob.append("\t\t<start>").append(encodeXML(node.getName())).append("</start>\n");

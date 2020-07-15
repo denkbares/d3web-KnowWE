@@ -21,10 +21,8 @@ package de.knowwe.diaflux;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.WeakHashMap;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.JPFPluginManager;
@@ -70,33 +68,7 @@ public class FlowchartUtils {
 			"cc/flow/flowchart.css", "cc/flow/guard.css", "cc/flow/node.css",
 			"cc/flow/rule.css" };
 
-	private static final HashMap<String, WeakHashMap<Flow, HashMap<String, Object>>> flowPropertyStore = new HashMap<>();
-
 	private FlowchartUtils() {
-	}
-
-	public static Object storeFlowProperty(Flow flow, String key, Object property) {
-		return storeFlowProperty(Environment.DEFAULT_WEB, flow, key, property);
-	}
-
-	public static Object getFlowProperty(Flow flow, String key) {
-		return getFlowProperty(Environment.DEFAULT_WEB, flow, key);
-	}
-
-	public static Object storeFlowProperty(String web, Flow flow, String key, Object property) {
-		return getPropertyMapForFlow(web, flow).put(key, property);
-	}
-
-	public static Object getFlowProperty(String web, Flow flow, String key) {
-		return getPropertyMapForFlow(web, flow).get(key);
-	}
-
-	private static HashMap<String, Object> getPropertyMapForFlow(String web, Flow flow) {
-		return getFlowPropertyMapForWeb(web).computeIfAbsent(flow, k -> new HashMap<>());
-	}
-
-	private static WeakHashMap<Flow, HashMap<String, Object>> getFlowPropertyMapForWeb(String web) {
-		return flowPropertyStore.computeIfAbsent(web, k -> new WeakHashMap<>());
 	}
 
 	public static String createFlowchartRenderer(Section<FlowchartType> section, UserContext user, boolean insertResources) {
@@ -303,7 +275,7 @@ public class FlowchartUtils {
 		String id = AbstractXMLType.getAttributes(node).get("fcid");
 		String flowName = FlowchartType.getFlowchartName(flowType);
 		Flow flow = DiaFluxUtils.findFlow(kb, flowName);
-
+		if (flow == null) return null;
 		return DiaFluxUtils.findObjectById(flow, id);
 	}
 
