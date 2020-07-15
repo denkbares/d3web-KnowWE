@@ -147,17 +147,19 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Rdf2GoCore core = compiler.getRdf2GoCore();
 
 			// get static IRIs
-			IRI subjectIRI = getUriFromConfig(core, config.subject);
-			IRI predicateIRI = getUriFromConfig(core, config.predicate);
+			final IRI subjectIriFromConfig = getUriFromConfig(core, config.subject);
+			IRI subjectIRI = subjectIriFromConfig;
+			final IRI predicateIriFromConfig = getUriFromConfig(core, config.predicate);
+			IRI predicateIRI = predicateIriFromConfig;
 
-			List<IRI> objectIRIs = new ArrayList<>();
-			List<String> objectIriStrings = new ArrayList<>();
-			List<Literal> literals = new ArrayList<>();
+			List<IRI> objectFromConfigIris = new ArrayList<>();
+			List<String> objectFromConfigIriStrings = new ArrayList<>();
+			List<Literal> literalsFromConfig = new ArrayList<>();
 			for (ObjectConfig objectConfig : config.objectConfigs) {
 				final IRI uriFromConfig = getUriFromConfig(core, objectConfig.object);
-				objectIRIs.add(uriFromConfig);
-				objectIriStrings.add(uriFromConfig == null ? null : uriFromConfig.toString());
-				literals.add(objectConfig.objectLiteral == null ?
+				objectFromConfigIris.add(uriFromConfig);
+				objectFromConfigIriStrings.add(uriFromConfig == null ? null : uriFromConfig.toString());
+				literalsFromConfig.add(objectConfig.objectLiteral == null ?
 						null : objectConfig.objectLiteral.get().getLiteral(core, objectConfig.objectLiteral));
 			}
 
@@ -183,26 +185,26 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 						if (config.subjectColumn > 0) { // read from excel
 							subjectIRI = getUriFromCell(core, row, config.subjectColumn);
 						}
-						else if (subjectIRI != null) { // read from config
-							subjectIRI = core.createIRI(replaceRowInUri(i, subjectIRI.toString()));
+						else if (subjectIriFromConfig != null) { // read from config
+							subjectIRI = core.createIRI(replaceRowInUri(i, subjectIriFromConfig.toString()));
 						}
 
 						// predicate
 						if (config.predicateColumn > 0) { // read from excel
 							predicateIRI = getUriFromCell(core, row, config.predicateColumn);
 						}
-						else if (predicateIRI != null) { // read from config
-							predicateIRI = core.createIRI(replaceRowInUri(i, predicateIRI.toString()));
+						else if (predicateIriFromConfig != null) { // read from config
+							predicateIRI = core.createIRI(replaceRowInUri(i, predicateIriFromConfig.toString()));
 						}
 
 						// objects
 						for (int j = 0; j < config.objectConfigs.size(); j++) {
 							ObjectConfig objectConfig = config.objectConfigs.get(j);
-							IRI objectIRI = objectIRIs.get(j);
-							String objectIriString = objectIriStrings.get(j);
-							Literal literal = literals.get(j);
+							IRI objectIRI = objectFromConfigIris.get(j);
+							String objectIriString = objectFromConfigIriStrings.get(j);
+							Literal literal = literalsFromConfig.get(j);
 							if (objectConfig.objectColumn > 0) { // read from excel
-								if (literals.get(j) == null) {
+								if (literal == null) {
 									objectIRI = getUriFromCell(core, row, objectConfig.objectColumn);
 								}
 								else {

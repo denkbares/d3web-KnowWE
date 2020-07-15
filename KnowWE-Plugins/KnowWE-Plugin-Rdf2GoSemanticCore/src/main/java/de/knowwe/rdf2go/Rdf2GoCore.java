@@ -507,26 +507,24 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					return false;
 				}
 
+				// Hazard Filter
+				Stopwatch stopwatch = new Stopwatch();
+				Set<Statement> removeCopy = new HashSet<>(this.removeCache);
+				this.removeCache.removeAll(this.insertCache);
+				this.insertCache.removeAll(removeCopy);
+				stopwatch.log("Hazard filtering");
+
+				// check again
+				removeSize = this.removeCache.size();
+				insertSize = this.insertCache.size();
+				if (removeSize == 0 && insertSize == 0) {
+					return false;
+				}
+
 				// verbose log if only a few changes are recorded
 				boolean verboseLog = (removeSize + insertSize < 50) && !Log.logger().isLoggable(Level.FINE);
 
-				/*
-				Hazard Filter:
-				Since removing statements is expansive, we do not remove statements
-				that are inserted again anyway.
-				Since inserting a statement is cheap and the fact that a statement in
-				the remove cache has not necessarily been committed to the model
-				before (e.g. compiling the same sections multiple times before the
-				first commit), we do not remove statements from the insert cache.
-				Duplicate statements are ignored by the model anyway.
-				*/
-
-				this.removeCache.removeAll(this.insertCache);
-
-
-				/*
-				Do actual changes on the model
-				 */
+				// Do actual changes on the model
 				Stopwatch connectionStopwatch = new Stopwatch();
 				try (RepositoryConnection connection = this.semanticCore.getConnection()) {
 					connection.begin();
@@ -537,9 +535,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					connection.commit();
 				}
 
-				/*
-				Fire events
-				 */
+				// Fire events
 				if (!this.removeCache.isEmpty()) {
 					EventManager.getInstance().fireEvent(new RemoveStatementsEvent(
 							Collections.unmodifiableCollection(this.removeCache), this));
@@ -557,9 +553,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
 				}
 
-				/*
-				Logging
-				 */
+				// Logging
 				if (verboseLog) {
 					logStatements(this.removeCache, connectionStopwatch, "Removed statements:\n");
 					logStatements(this.insertCache, connectionStopwatch, "Inserted statements:\n");
@@ -573,9 +567,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 				Log.info("Current number of statements: " + this.statementCache.size());
 
-				/*
-				Reset caches
-				 */
+				// Reset caches
 				this.removeCache = new HashSet<>();
 				this.insertCache = new HashSet<>();
 			}
@@ -730,15 +722,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				}
 				else if (current == 'f') {
 					builder.append('\f');
-				}
-				else if (current == '"') {
-					builder.append('"');
-				}
-				else if (current == '\'') {
-					builder.append('\'');
-				}
-				else if (current == '\\') {
-					builder.append('\\');
 				}
 				else {
 					builder.append(current);
@@ -1259,8 +1242,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			return sparqlTask.get(maxTimeOut, TimeUnit.MILLISECONDS);
 		}
 		catch (CancellationException | InterruptedException | TimeoutException e) {
-//			Log.warning("SPARQL query failed due to an exception", e);
-			throw new RuntimeException(timeOutMessage + stopwatch.getDisplay(), e);
+			throw new RuntimeException(timeOutMessage + Stopwatch.getDisplay(sparqlTask.getRunDuration()), e);
 		}
 		catch (Exception e) {
 			Throwable cause = e.getCause();
@@ -1268,7 +1250,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				cause = e;
 			}
 			if (cause instanceof ThreadDeath || cause instanceof QueryInterruptedException) {
-				throw new RuntimeException(timeOutMessage + stopwatch.getDisplay(), cause);
+				throw new RuntimeException(timeOutMessage + Stopwatch.getDisplay(sparqlTask.getRunDuration()), cause);
 			}
 			else if (cause instanceof RuntimeException) {
 				if (!(cause.getCause() instanceof QueryInterruptedException)) {
