@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Streams;
@@ -26,25 +27,40 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 public class KnowledgeBaseDownloadAction extends AbstractAction {
 
-	public static final String PARAM_FILENAME;
-
-	static {
-		PARAM_FILENAME = "filename";
-	}
+	public static final String PARAM_FILENAME = "filename";
+	public static final String PARAM_KB_NAME = "kb";
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String filename = context.getParameter(PARAM_FILENAME);
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
+
+		if (sectionId == null) {
+			String kbName = context.getParameter(PARAM_KB_NAME);
+			if (kbName != null) {
+				DefaultGlobalCompiler globalCompiler = Compilers.getGlobalCompiler(KnowWEUtils.getDefaultArticleManager());
+				Section<? extends Type> definition = globalCompiler.getTerminologyManager()
+						.getTermDefiningSection(new Identifier(kbName));
+				if (definition != null) {
+					sectionId = $(definition).ancestor(KnowledgeBaseType.class).mapFirst(Section::getID);
+				}
+
+			}
+		}
 
 		if (sectionId == null) {
 			// may be specified by Attributes.TOPIC
