@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -271,13 +272,12 @@ public class PackageManager {// implements EventListener {
 
 		boolean removed = packageCompileSections.remove(section);
 		if (removed) {
-			for (String object : section.get().getPackagesToCompile(section)) {
-				Set<Section<? extends PackageCompileType>> compileTypeSections = packageToCompilingSections.get(object);
-				if (compileTypeSections != null) {
-					compileTypeSections.remove(section);
-					if (compileTypeSections.isEmpty()) {
-						packageToCompilingSections.remove(object);
-					}
+			for (Iterator<Set<Section<? extends PackageCompileType>>> iterator = packageToCompilingSections.values()
+					.iterator(); iterator.hasNext(); ) {
+				Set<Section<? extends PackageCompileType>> compileSections = iterator.next();
+				compileSections.remove(section);
+				if (compileSections.isEmpty()) {
+					iterator.remove();
 				}
 			}
 		}
