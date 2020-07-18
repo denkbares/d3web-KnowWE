@@ -111,7 +111,7 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 	/**
 	 * Script to check whether the compiled packages contain any packages
 	 */
-	private class PackageWithoutSectionsWarningScript extends PackageRegistrationScript<DefaultMarkupPackageCompileType> {
+	public class PackageWithoutSectionsWarningScript extends PackageRegistrationScript<DefaultMarkupPackageCompileType> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
