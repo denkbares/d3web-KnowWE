@@ -99,7 +99,7 @@ public final class CompilationLocal<E> {
 
 	/**
 	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. The object
-	 * is valid until a new compilation is started by the given CompilerManager. The cache ist cleared (inclusindg the
+	 * is valid until a new compilation is started by the given CompilerManager. The cache ist cleared (including the
 	 * keys) for the given CompilationManager as soon as the next compilation starts. Use method {@link
 	 * #removeCache(Object, CompilerManager)} if it should be cleaned up even sooner.
 	 *
