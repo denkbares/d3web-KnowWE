@@ -95,7 +95,7 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 		return $(compileAnnotations).successor(PackageTerm.class).map(s -> s.get().getTermName(s)).toArray(String[]::new);
 	}
 
-	private static class PackageCompileSectionRegistrationScript extends PackageRegistrationScript<DefaultMarkupPackageCompileType> {
+	public static class PackageCompileSectionRegistrationScript extends PackageRegistrationScript<DefaultMarkupPackageCompileType> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) throws CompilerMessage {
