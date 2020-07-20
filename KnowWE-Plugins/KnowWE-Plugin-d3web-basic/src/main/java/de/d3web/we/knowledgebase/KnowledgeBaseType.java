@@ -108,7 +108,7 @@ public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 	public KnowledgeBaseType() {
 		super(MARKUP);
 		this.setRenderer(new KnowledgeBaseTypeRenderer());
-		this.addCompileScript(new D3webCompilerRegistrationScript());
+		this.addCompileScript(Priority.HIGHEST, new D3webCompilerRegistrationScript());
 		this.addCompileScript(Priority.HIGHEST, (D3webCompileScript<KnowledgeBaseType>) (compiler, section) -> {
 			// get required information
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);

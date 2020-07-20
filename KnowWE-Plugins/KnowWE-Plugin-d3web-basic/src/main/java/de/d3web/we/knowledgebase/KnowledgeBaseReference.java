@@ -11,6 +11,7 @@ import de.d3web.we.object.D3webTerm;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -34,7 +35,7 @@ public class KnowledgeBaseReference extends AbstractType implements TermReferenc
 	public KnowledgeBaseReference() {
 		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
-		addCompileScript(Priority.HIGH, new SimpleReferenceRegistrationScript<>(DefaultGlobalCompiler.class));
+		addCompileScript(Priority.HIGH, new SimpleReferenceRegistrationScript<>(PackageRegistrationCompiler.class));
 	}
 
 	@Override
@@ -48,7 +49,7 @@ public class KnowledgeBaseReference extends AbstractType implements TermReferenc
 	}
 
 	public Sections<KnowledgeBaseDefinition> getDefinition(Section<? extends KnowledgeBaseReference> self) {
-		DefaultGlobalCompiler compiler = Compilers.getGlobalCompiler(self);
+		DefaultGlobalCompiler compiler = Compilers.getPackageRegistrationCompiler(self);
 		return Sections.definitions(compiler, self).filter(KnowledgeBaseDefinition.class);
 	}
 }

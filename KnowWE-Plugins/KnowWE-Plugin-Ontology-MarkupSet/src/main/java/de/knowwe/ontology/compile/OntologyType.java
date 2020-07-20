@@ -139,7 +139,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 	public OntologyType() {
 		super(MARKUP);
 		this.addCompileScript(Priority.INIT, new InitTerminologyHandler());
-		this.addCompileScript(new OntologyCompilerRegistrationScript());
+		this.addCompileScript(Priority.HIGHEST, new OntologyCompilerRegistrationScript());
 
 		this.setRenderer(new DefaultMarkupPackageCompileTypeRenderer() {
 			@Override

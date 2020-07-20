@@ -9,7 +9,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -33,7 +33,7 @@ public class OntologyDefinition extends AbstractType implements TermDefinition, 
 	public OntologyDefinition() {
 		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
-		addCompileScript(Priority.HIGHER, new SimpleDefinitionRegistrationScript<>(DefaultGlobalCompiler.class));
+		addCompileScript(Priority.HIGHER, new SimpleDefinitionRegistrationScript<>(PackageRegistrationCompiler.class));
 	}
 
 	@Override

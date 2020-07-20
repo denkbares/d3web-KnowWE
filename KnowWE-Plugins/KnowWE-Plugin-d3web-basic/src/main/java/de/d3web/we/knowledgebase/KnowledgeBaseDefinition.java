@@ -11,7 +11,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.utils.D3webUtils;
-import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -32,7 +32,7 @@ public class KnowledgeBaseDefinition extends AbstractType implements TermDefinit
 	public KnowledgeBaseDefinition() {
 		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
-		addCompileScript(Priority.HIGHER, new SimpleDefinitionRegistrationScript<>(DefaultGlobalCompiler.class));
+		addCompileScript(Priority.HIGHER, new SimpleDefinitionRegistrationScript<>(PackageRegistrationCompiler.class));
 		addCompileScript(Priority.HIGHER, (D3webCompileScript<KnowledgeBaseDefinition>) (compiler, section) -> {
 
 			// get required information

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -32,7 +33,7 @@ public class OntologyReference extends AbstractType implements TermReference, Re
 	public OntologyReference() {
 		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
-		addCompileScript(Priority.HIGH, new SimpleReferenceRegistrationScript<>(DefaultGlobalCompiler.class));
+		addCompileScript(Priority.HIGH, new SimpleReferenceRegistrationScript<>(PackageRegistrationCompiler.class));
 	}
 
 	@Override
@@ -41,7 +42,7 @@ public class OntologyReference extends AbstractType implements TermReference, Re
 	}
 
 	public Sections<OntologyDefinition> getDefinition(Section<? extends OntologyReference> self) {
-		DefaultGlobalCompiler compiler = Compilers.getGlobalCompiler(self);
+		DefaultGlobalCompiler compiler = Compilers.getPackageRegistrationCompiler(self);
 		return Sections.definitions(compiler, self).filter(OntologyDefinition.class);
 	}
 }
