@@ -251,8 +251,10 @@ public class DefaultMarkupRenderer implements Renderer {
 				Map map = scriptManager.getScripts(type);
 				if (map.isEmpty()) continue;
 				if ($(rootSection).successor(type.getClass()).isEmpty()) continue;
-				messages.add("This section has " + scriptManager.getCompilerClass().getSimpleName() + " knowledge, "
-						+ " but does not belong to package compiled by one.");
+				Class<? extends Compiler> compilerClass = scriptManager.getCompilerClass();
+				if (ScriptManager.IgnoreNotCompiledSections.class.isAssignableFrom(compilerClass)) continue;
+				messages.add("This section has " + compilerClass.getSimpleName() + " knowledge, "
+						+ "but does not belong to package compiled by one.");
 			}
 		}
 	}

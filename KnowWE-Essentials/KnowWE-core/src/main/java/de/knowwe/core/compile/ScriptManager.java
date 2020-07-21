@@ -18,7 +18,7 @@ import de.knowwe.event.InitEvent;
 
 /**
  * Class to manage all the compile scripts of a specific compiler type.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 30.10.2013
  */
@@ -51,11 +51,11 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 
 	/**
 	 * Adds a script for a specific type with a specific priority.
-	 * 
-	 * @created 30.10.2013
+	 *
 	 * @param priority the priority of the script
-	 * @param type the type the script is intended for
-	 * @param script the script to be added
+	 * @param type     the type the script is intended for
+	 * @param script   the script to be added
+	 * @created 30.10.2013
 	 */
 	@SuppressWarnings({
 			"rawtypes", "unchecked" })
@@ -74,7 +74,6 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 			list.add(priority, script);
 		}
 	}
-
 
 	private void addSubtreeTypesWithScripts(Type type) {
 		if (!subtreeTypesWithScripts.add(type)) return;
@@ -143,7 +142,13 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 				addSubtreeTypesWithScripts(type);
 			}
 		}
-
 	}
 
+	/**
+	 * Marker interface for compilers, declaring that it is ok, that some section containing knowledge for that compiler
+	 * are currently not compiled.
+	 */
+	public interface IgnoreNotCompiledSections {
+
+	}
 }
