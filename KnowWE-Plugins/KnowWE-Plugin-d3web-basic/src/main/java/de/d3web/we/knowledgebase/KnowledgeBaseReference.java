@@ -6,6 +6,7 @@ package de.d3web.we.knowledgebase;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.utils.D3webUtils;
@@ -51,5 +52,10 @@ public class KnowledgeBaseReference extends AbstractType implements TermReferenc
 	public Sections<KnowledgeBaseDefinition> getDefinition(Section<? extends KnowledgeBaseReference> self) {
 		DefaultGlobalCompiler compiler = Compilers.getPackageRegistrationCompiler(self);
 		return Sections.definitions(compiler, self).filter(KnowledgeBaseDefinition.class);
+	}
+
+	@Override
+	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
+		return new Identifier(getTermObjectClass(compiler, section).getSimpleName(), getTermName(section));
 	}
 }

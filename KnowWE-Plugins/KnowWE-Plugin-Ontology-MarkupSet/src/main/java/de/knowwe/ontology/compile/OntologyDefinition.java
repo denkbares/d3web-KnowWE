@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -46,5 +47,10 @@ public class OntologyDefinition extends AbstractType implements TermDefinition, 
 		//noinspection ConstantConditions
 		return Objects.requireNonNull(
 				$(self).ancestor(OntologyType.class).mapFirst(OntologyType::getCompiler));
+	}
+
+	@Override
+	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
+		return new Identifier(getTermObjectClass(compiler, section).getSimpleName(), getTermName(section));
 	}
 }

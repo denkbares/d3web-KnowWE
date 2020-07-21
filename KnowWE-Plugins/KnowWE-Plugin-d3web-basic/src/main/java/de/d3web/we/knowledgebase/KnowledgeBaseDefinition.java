@@ -65,4 +65,9 @@ public class KnowledgeBaseDefinition extends AbstractType implements TermDefinit
 		return Objects.requireNonNull(
 				$(self).ancestor(KnowledgeBaseType.class).mapFirst(KnowledgeBaseType::getCompiler));
 	}
+
+	@Override
+	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
+		return new Identifier(getTermObjectClass(compiler, section).getSimpleName(), getTermName(section));
+	}
 }

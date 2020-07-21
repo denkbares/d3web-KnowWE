@@ -6,6 +6,7 @@ package de.knowwe.ontology.compile;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
@@ -44,5 +45,10 @@ public class OntologyReference extends AbstractType implements TermReference, Re
 	public Sections<OntologyDefinition> getDefinition(Section<? extends OntologyReference> self) {
 		DefaultGlobalCompiler compiler = Compilers.getPackageRegistrationCompiler(self);
 		return Sections.definitions(compiler, self).filter(OntologyDefinition.class);
+	}
+
+	@Override
+	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
+		return new Identifier(getTermObjectClass(compiler, section).getSimpleName(), getTermName(section));
 	}
 }
