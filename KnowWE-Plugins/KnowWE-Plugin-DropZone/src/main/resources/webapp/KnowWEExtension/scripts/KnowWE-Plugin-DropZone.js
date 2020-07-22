@@ -6,25 +6,10 @@ KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
-(function init() {
-  window.addEvent('domready', _KL.setup);
-  if (window.location.search !== "?page=Create%20new%20EDB%20entry") if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-    window.addEvent('domready', function() {
-      KNOWWE.core.plugin.dropZone.initAttachToExisting();
-    });
-  }
-}());
-
-
 /**
  * Namespace: KNOWWE.core.plugin.dropZone for debugging d3web expressions in KnowWE
  */
 KNOWWE.core.plugin.dropZone = function() {
-
-  function manualUpload(event) {
-    // const uploadData = prepareUploadData(event);
-    // ajaxData(uploadData, event);
-  }
 
   function handleDragOver(event) {
     if (!isEventWithFiles(event)) return;
@@ -204,7 +189,7 @@ KNOWWE.core.plugin.dropZone = function() {
     },
 
     initAttachToExisting: function() {
-      KNOWWE.core.plugin.dropZone.addDropZoneTo('div.page', "Drop attachment(s)", handleDropToExisting)
+      KNOWWE.core.plugin.dropZone.addDropZoneTo('div.page', "Drop attachment(s)", handleDropToExisting);
     },
 
     addDropZoneTo: function(elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
