@@ -14,30 +14,25 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Streams;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.we.knowledgebase.KnowledgeBaseReference;
 import de.d3web.we.knowledgebase.KnowledgeBaseType;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
-
-import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class KnowledgeBaseDownloadAction extends AbstractAction {
 
@@ -52,13 +47,9 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		if (sectionId == null) {
 			String kbName = context.getParameter(PARAM_KB_NAME);
 			if (kbName != null) {
-				PackageRegistrationCompiler globalCompiler = Compilers.getPackageRegistrationCompiler(KnowWEUtils.getDefaultArticleManager());
-				Section<? extends Type> definition = globalCompiler.getTerminologyManager()
-						.getTermDefiningSection(new Identifier(kbName));
-				if (definition != null) {
-					sectionId = $(definition).ancestor(KnowledgeBaseType.class).mapFirst(Section::getID);
-				}
-
+				sectionId = KnowledgeBaseReference.getDefinition(context.getArticleManager(), kbName)
+						.ancestor(KnowledgeBaseType.class)
+						.mapFirst(Section::getID);
 			}
 		}
 
