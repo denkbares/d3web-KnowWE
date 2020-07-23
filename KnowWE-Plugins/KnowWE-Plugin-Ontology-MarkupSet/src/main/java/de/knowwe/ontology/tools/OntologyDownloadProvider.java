@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParserRegistry;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -80,7 +81,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 		}
 		jsAction = "action/OntologyDownloadAction" +
 				"?" + identifierForThisOntology +
-				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + syntax.getDefaultMIMEType() +
+				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + Strings.encodeURL(syntax.getDefaultMIMEType()) +
 				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + "." + extension + "";
 		// assemble download tool
 		return new DefaultTool(
