@@ -5,7 +5,7 @@
 package de.knowwe.d3web.ontology.bridge;
 
 import de.d3web.we.knowledgebase.KnowledgeBaseType;
-import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
@@ -34,10 +34,10 @@ public class ImportOntologyAnnotationType extends OntologyReference {
 		addCompileScript(new ImportOntologyCompileScript());
 	}
 
-	public static class ImportOntologyCompileScript extends DefaultGlobalCompiler.DefaultGlobalScript<ImportOntologyAnnotationType> {
+	public static class ImportOntologyCompileScript extends PackageRegistrationCompiler.PackageRegistrationScript<ImportOntologyAnnotationType> {
 
 		@Override
-		public void compile(DefaultGlobalCompiler compiler, Section<ImportOntologyAnnotationType> section) throws CompilerMessage {
+		public void compile(PackageRegistrationCompiler compiler, Section<ImportOntologyAnnotationType> section) throws CompilerMessage {
 			Section<? extends PackageCompileType> ontologyCompileSection = getOntologyCompileSection(section);
 			if (ontologyCompileSection == null) {
 				throw CompilerMessage.error("Ontology with name '" + section.getText() + "' could not be found.");
@@ -49,7 +49,7 @@ public class ImportOntologyAnnotationType extends OntologyReference {
 		}
 
 		@Override
-		public void destroy(DefaultGlobalCompiler compiler, Section<ImportOntologyAnnotationType> section) {
+		public void destroy(PackageRegistrationCompiler compiler, Section<ImportOntologyAnnotationType> section) {
 			// we do not search for the referenced section itself, because during destroy it might probably not be available
 			// instead we have stored the section, and use exactly the section the has been used to register the bridge
 			//noinspection unchecked
