@@ -28,7 +28,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.DefaultGlobalCompiler;
+import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
@@ -52,7 +52,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		if (sectionId == null) {
 			String kbName = context.getParameter(PARAM_KB_NAME);
 			if (kbName != null) {
-				DefaultGlobalCompiler globalCompiler = Compilers.getGlobalCompiler(KnowWEUtils.getDefaultArticleManager());
+				PackageRegistrationCompiler globalCompiler = Compilers.getPackageRegistrationCompiler(KnowWEUtils.getDefaultArticleManager());
 				Section<? extends Type> definition = globalCompiler.getTerminologyManager()
 						.getTermDefiningSection(new Identifier(kbName));
 				if (definition != null) {
