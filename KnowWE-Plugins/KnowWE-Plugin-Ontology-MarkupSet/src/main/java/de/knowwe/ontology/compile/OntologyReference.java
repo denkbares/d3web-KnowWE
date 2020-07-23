@@ -4,9 +4,13 @@
 
 package de.knowwe.ontology.compile;
 
+import java.util.Collection;
+
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
@@ -22,6 +26,8 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Class that references a named knowledge base within the wiki.
@@ -47,8 +53,20 @@ public class OntologyReference extends AbstractType implements TermReference, Re
 		return Sections.definitions(compiler, self).filter(OntologyDefinition.class);
 	}
 
+	public static Sections<OntologyDefinition> getDefinition(ArticleManager manager, String ontologyName) {
+		PackageRegistrationCompiler compiler = Compilers.getPackageRegistrationCompiler(manager);
+		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
+				.getTermDefiningSections(toIdentifier(ontologyName));
+		return $(termDefiningSections).filter(OntologyDefinition.class);
+	}
+
 	@Override
 	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
-		return new Identifier(getTermObjectClass(compiler, section).getSimpleName(), getTermName(section));
+		return toIdentifier(getTermName(section));
+	}
+
+	@NotNull
+	private static Identifier toIdentifier(String termName) {
+		return new Identifier(Rdf2GoCore.class.getSimpleName(), termName); // to avoid conflicts, we add class name
 	}
 }

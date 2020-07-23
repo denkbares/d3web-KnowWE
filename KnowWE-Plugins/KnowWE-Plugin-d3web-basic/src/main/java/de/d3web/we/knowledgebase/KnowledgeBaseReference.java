@@ -4,12 +4,16 @@
 
 package de.d3web.we.knowledgebase;
 
+import java.util.Collection;
+
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.object.D3webTerm;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
@@ -24,6 +28,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.kdom.renderer.StyleRenderer;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Class that references a named knowledge base within the wiki.
@@ -54,8 +60,20 @@ public class KnowledgeBaseReference extends AbstractType implements TermReferenc
 		return Sections.definitions(compiler, self).filter(KnowledgeBaseDefinition.class);
 	}
 
+	public static Sections<KnowledgeBaseDefinition> getDefinition(ArticleManager manager, String knowledgeBaseName) {
+		PackageRegistrationCompiler compiler = Compilers.getPackageRegistrationCompiler(manager);
+		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
+				.getTermDefiningSections(toIdentifier(knowledgeBaseName));
+		return $(termDefiningSections).filter(KnowledgeBaseDefinition.class);
+	}
+
 	@Override
 	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
-		return new Identifier(getTermObjectClass(compiler, section).getSimpleName(), getTermName(section));
+		return toIdentifier(getTermName(section));
+	}
+
+	@NotNull
+	private static Identifier toIdentifier(String termName) {
+		return new Identifier(KnowledgeBase.class.getSimpleName(), termName); // to avoid conflicts, we add class name
 	}
 }
