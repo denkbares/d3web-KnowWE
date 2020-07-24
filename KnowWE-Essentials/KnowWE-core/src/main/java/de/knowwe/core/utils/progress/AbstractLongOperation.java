@@ -76,11 +76,10 @@ public abstract class AbstractLongOperation implements LongOperation {
 	 * @param result  the result to write the report to
 	 * @created 17.02.2014
 	 */
-	private void renderReport(UserActionContext context, RenderResult result) {
+	private void renderCollectedMessages(UserActionContext context, RenderResult result) {
 		RenderResult errors = new RenderResult(result);
 		RenderResult warnings = new RenderResult(result);
 		RenderResult other = new RenderResult(result);
-		if (!messages.isEmpty()) result.appendHtml("<br>");
 		synchronized (messages) {
 			for (Message msg : messages) {
 				Message.Type type = msg.getType();
@@ -111,18 +110,15 @@ public abstract class AbstractLongOperation implements LongOperation {
 	}
 
 	@Override
-	public void renderMessage(UserActionContext context, RenderResult result) {
-		// check whether the user is the current one
-		// and whether the progress allows to show the final actions
-		// if not, simply return the current message
+	public void renderReport(UserActionContext context, RenderResult result) {
+		// by default, we only show a message if we are done
 		if (getProgressListener().getProgress() < 1f) {
-			result.append(getProgressListener().getMessage());
 			return;
 		}
 
 		// if we have completed and the user is the requesting one
 		// we show some more detailed information and the actions
-		renderReport(context, result);
+		renderCollectedMessages(context, result);
 	}
 
 	@Override

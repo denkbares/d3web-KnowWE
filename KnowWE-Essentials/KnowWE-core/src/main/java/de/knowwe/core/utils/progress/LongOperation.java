@@ -57,15 +57,14 @@ public interface LongOperation {
 	void doFinally();
 
 	/**
-	 * This method is called to render the status message of the progress bar
-	 * using the context of the user. This way it is possible to render user
-	 * specific messages.
+	 * This method is called to render the report for the current long operation below the progress bar.
+	 * Usually, it is displayed after the operation finished.
 	 *
 	 * @param context the context of the user
 	 * @param result the result to write the message to
 	 * @created 07.10.2013
 	 */
-	void renderMessage(UserActionContext context, RenderResult result);
+	void renderReport(UserActionContext context, RenderResult result);
 
 	/**
 	 * This method is called when a LongOperation gets removed. Use it if there

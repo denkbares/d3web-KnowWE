@@ -62,15 +62,9 @@ public class GetProgressAction extends AbstractAction {
 				JSONObject progress = new JSONObject();
 				progress.put("operationID",
 						LongOperationUtils.getRegistrationID(section, operation));
-				float currentProgress = listener.getProgress();
-				progress.put("progress", currentProgress);
-
-				final RenderResult renderResult = new RenderResult(context);
-				operation.renderMessage(context, renderResult);
-				String rawResult = Environment.getInstance().getWikiConnector()
-						.renderWikiSyntax(renderResult.toStringRaw());
-				progress.put("message", RenderResult.unmask(rawResult, context));
-
+				progress.put("progress", listener.getProgress());
+				progress.put("message", listener.getMessage());
+				progress.put("report", getReport(context, operation));
 				progress.put("error", listener.getError());
 				progress.put("running", listener.isRunning());
 				result.put(progress);
@@ -82,4 +76,11 @@ public class GetProgressAction extends AbstractAction {
 		}
 	}
 
+	private String getReport(UserActionContext context, LongOperation operation) {
+		final RenderResult renderResult = new RenderResult(context);
+		operation.renderReport(context, renderResult);
+		String rawResult = Environment.getInstance().getWikiConnector()
+				.renderWikiSyntax(renderResult.toStringRaw());
+		return RenderResult.unmask(rawResult, context);
+	}
 }

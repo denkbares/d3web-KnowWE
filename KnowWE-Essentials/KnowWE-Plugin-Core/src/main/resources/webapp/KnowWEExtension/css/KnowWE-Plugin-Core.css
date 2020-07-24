@@ -176,7 +176,12 @@ span.markupMenuItem {
 	padding: 0 !important;
 }
 
-.defaultMarkupFrame .long-op-progress-container {
+.defaultMarkupFrame .long-op-progress-container .long-progress:first-of-type {
+	margin-top: 5px;
+}
+
+.defaultMarkupFrame .long-op-progress-container .long-progress {
+	margin-top: 10px;
 }
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-bar {
@@ -192,7 +197,7 @@ span.markupMenuItem {
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-bar .long-progress-bar-percent {
 	position: absolute;
-	top: -2px;
+	top: -3px;
 	left: 10px;
 	right: 10px;
 	text-align: center;
@@ -212,6 +217,10 @@ span.markupMenuItem {
 	top: -3px;
 	margin: 2px 2px 2px 5px;
 	background-image: none
+}
+
+.haddock .defaultMarkupFrame .long-op-progress-container .long-progress-state {
+	top: -5px;
 }
 
 .KnowWE .defaultMarkupFrame .long-op-progress-container .long-progress-state {
@@ -252,11 +261,11 @@ span.markupMenuItem {
 	font-weight: 900;
 }
 
-.defaultMarkupFrame .long-op-progress-container .long-progress-message,
+.defaultMarkupFrame .long-op-progress-container .long-progress-bar-message,
 .defaultMarkupFrame .long-op-progress-container .long-progress-close {
 	display: inline-block;
 	margin-left: 5px;
-	top: -3px;
+	top: -4px;
 	position: relative;
 	user-select: none;
 }
@@ -432,7 +441,7 @@ span.markupMenuItem {
 	vertical-align: -7px;
 }
 
-.defaultMarkup .markupText .long-progress-message a.action {
+.defaultMarkup .markupText .long-progress-report a.action {
 	position: relative;
 	display: inline-block;
 	padding: 0.25em 0.5em;
@@ -450,7 +459,7 @@ span.markupMenuItem {
 	-webkit-box-sizing: content-box;
 }
 
-.defaultMarkup .markupText .long-progress-message a.action .fa {
+.defaultMarkup .markupText .long-progress-report a.action .fa {
 	position: relative;
 	top: -1px;
 	padding-right: 5px;

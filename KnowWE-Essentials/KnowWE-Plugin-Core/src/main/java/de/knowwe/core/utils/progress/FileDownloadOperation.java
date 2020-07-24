@@ -119,14 +119,14 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	@Override
-	public void renderMessage(UserActionContext context, RenderResult result) {
-		super.renderMessage(context, result);
+	public void renderReport(UserActionContext context, RenderResult result) {
 		if (tempFile == null) return;
 		UUID requestMarker = (UUID) context.getSession().getAttribute(storeKey);
 		if (this.requestMarker != requestMarker) return;
 		if (getProgressListener().getProgress() != 1f) return;
 
 		renderActions(context, result);
+		super.renderReport(context, result);
 	}
 
 	private void renderActions(UserActionContext context, RenderResult result) {
