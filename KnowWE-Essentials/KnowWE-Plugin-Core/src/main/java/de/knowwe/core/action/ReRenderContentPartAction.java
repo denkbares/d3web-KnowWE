@@ -3,17 +3,17 @@ package de.knowwe.core.action;
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -31,9 +31,7 @@ import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -47,8 +45,8 @@ public class ReRenderContentPartAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
-		if (sectionId == null)  sectionId = context.getParameter("KdomNodeId"); // compatibility
- 		execute(context, Sections.get(sectionId));
+		if (sectionId == null) sectionId = context.getParameter("KdomNodeId"); // compatibility
+		execute(context, Sections.get(sectionId));
 	}
 
 	private static void execute(UserActionContext context, Section<?> section) throws IOException {
@@ -108,29 +106,10 @@ public class ReRenderContentPartAction extends AbstractAction {
 
 		RenderResult result = new RenderResult(context);
 
-		Renderer renderer = section.get().getRenderer();
-		if (renderer != null) {
-			renderer.render(section, context, result);
-		}
-		else {
-			DelegateRenderer.getInstance().render(section, context, result);
-		}
+		section.get().getRenderer().render(section, context, result);
 
-		// If the node is in <pre> than do not
-		// render it through the JSPWikiPipeline
-		String inPre = context.getParameter("inPre");
-		String rawResult = result.toStringRaw();
-
-		if ("false".equals(inPre)) {
-			rawResult = Environment.getInstance()
-					.getWikiConnector().renderWikiSyntax(rawResult);
-		}
-		else {
-			rawResult = Environment.getInstance().getWikiConnector()
-					.renderWikiSyntax(rawResult);
-		}
-
+		String rawResult = Environment.getInstance().getWikiConnector()
+					.renderWikiSyntax(result.toStringRaw());
 		return RenderResult.unmask(rawResult, context);
 	}
-
 }
