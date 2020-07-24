@@ -298,6 +298,17 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return references(compiler, term.get().getTermIdentifier(compiler, term));
 	}
 
+	/**
+	 * Creates a new sections instance that first iterates over the elements of this instance, then over the elements of
+	 * the given instance.
+	 *
+	 * @param sections the sections to append/concat
+	 * @return a new sections object with the elements of this and the given instance
+	 */
+	public Sections<T> concat(Sections<T> sections) {
+		return new Sections<>(new ConcatenateIterable<>(this, sections));
+	}
+
 	@NotNull
 	@Override
 	public Iterator<Section<T>> iterator() {
