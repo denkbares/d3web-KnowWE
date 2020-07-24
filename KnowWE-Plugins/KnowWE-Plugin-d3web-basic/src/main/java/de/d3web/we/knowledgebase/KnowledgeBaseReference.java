@@ -5,7 +5,6 @@
 package de.d3web.we.knowledgebase;
 
 import java.util.Collection;
-import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,20 +64,21 @@ public class KnowledgeBaseReference extends AbstractType implements TermReferenc
 
 	public Sections<KnowledgeBaseDefinition> getDefinition(Section<? extends KnowledgeBaseReference> self) {
 		DefaultGlobalCompiler compiler = Compilers.getPackageRegistrationCompiler(self);
-		return Sections.definitions(compiler, self).filter(KnowledgeBaseDefinition.class);
+		return Sections.definitions(compiler, self)
+				.filter(KnowledgeBaseDefinition.class)
+				.concat(getDefinition(self.getArticleManager(), self.get().getTermName(self)));
 	}
 
 	public static Sections<KnowledgeBaseDefinition> getDefinition(ArticleManager manager, String knowledgeBaseName) {
 		PackageRegistrationCompiler compiler = Compilers.getPackageRegistrationCompiler(manager);
 		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
 				.getTermDefiningSections(toIdentifier(knowledgeBaseName));
-		return $(Stream.concat($(termDefiningSections).filter(KnowledgeBaseDefinition.class).stream(),
-				$(manager.getArticle(knowledgeBaseName)).successor(KnowledgeBaseDefinition.class).stream()));
+		return $(termDefiningSections).filter(KnowledgeBaseDefinition.class)
+				.concat($(manager.getArticle(knowledgeBaseName)).successor(KnowledgeBaseDefinition.class));
 	}
 
 	@Override
 	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return toIdentifier(getTermName(section));
 	}
-
 }

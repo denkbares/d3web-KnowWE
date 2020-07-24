@@ -5,7 +5,6 @@
 package de.knowwe.ontology.compile;
 
 import java.util.Collection;
-import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -58,15 +57,16 @@ public class OntologyReference extends AbstractType implements TermReference, Re
 
 	public Sections<OntologyDefinition> getDefinition(Section<? extends OntologyReference> self) {
 		DefaultGlobalCompiler compiler = Compilers.getPackageRegistrationCompiler(self);
-		return Sections.definitions(compiler, self).filter(OntologyDefinition.class);
+		return Sections.definitions(compiler, self).filter(OntologyDefinition.class)
+				.concat(getDefinition(self.getArticleManager(), self.get().getTermName(self)));
 	}
 
 	public static Sections<OntologyDefinition> getDefinition(ArticleManager manager, String ontologyName) {
 		PackageRegistrationCompiler compiler = Compilers.getPackageRegistrationCompiler(manager);
 		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
 				.getTermDefiningSections(toIdentifier(ontologyName));
-		return $(Stream.concat($(termDefiningSections).filter(OntologyDefinition.class).stream(),
-				$(manager.getArticle(ontologyName)).successor(OntologyDefinition.class).stream()));
+		return $(termDefiningSections).filter(OntologyDefinition.class)
+				.concat($(manager.getArticle(ontologyName)).successor(OntologyDefinition.class));
 	}
 
 	@Override
