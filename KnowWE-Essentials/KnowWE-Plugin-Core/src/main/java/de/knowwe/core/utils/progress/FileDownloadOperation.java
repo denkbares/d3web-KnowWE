@@ -2,20 +2,15 @@ package de.knowwe.core.utils.progress;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.report.Message;
-import de.knowwe.core.report.Message.Type;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
@@ -31,7 +26,6 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	private File tempFile = null;
 	private UUID requestMarker = null;
 	private final String storeKey = FileDownloadOperation.class.getName();
-	private final List<Message> messages = Collections.synchronizedList(new ArrayList<>());
 
 	public static String COMPLETE_MESSAGE = "Done.";
 
@@ -43,9 +37,6 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	@Override
 	public void execute(UserActionContext context) throws IOException, InterruptedException {
 		this.operationThread = Thread.currentThread();
-		synchronized (messages) {
-			this.messages.clear();
-		}
 		this.requestMarker = UUID.randomUUID();
 		context.getSession().setAttribute(storeKey, requestMarker);
 
@@ -89,66 +80,6 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	 */
 	public abstract void execute(UserActionContext context, File resultFile, AjaxProgressListener listener) throws IOException, InterruptedException;
 
-	public void addMessage(@NotNull Message msg) {
-		this.messages.add(msg);
-	}
-
-	public boolean hasError() {
-		return hasMessage(Type.ERROR);
-	}
-
-	public boolean hasMessage(Type type) {
-		synchronized (messages) {
-			for (Message msg : messages) {
-				if (msg.getType() == type) return true;
-			}
-			return false;
-		}
-	}
-
-	/**
-	 * Returns the report of the current operation. As the default implementation this method returns the list of
-	 * messages added to this operation since the last start of the operation.
-	 *
-	 * @param context the current user viewing the messages
-	 * @return this operations report
-	 * @created 17.02.2014
-	 */
-	public String getReport(UserActionContext context) {
-		StringBuilder errors = new StringBuilder();
-		StringBuilder warnings = new StringBuilder();
-		StringBuilder other = new StringBuilder();
-		synchronized (messages) {
-			for (Message msg : messages) {
-				Type type = msg.getType();
-				String details = msg.getDetails();
-				StringBuilder builder = (type == Type.ERROR) ? errors :
-						(type == Type.WARNING) ? warnings : other;
-				if (builder.length() > 0) {
-					builder.append("\n");
-				}
-				builder.append(Strings.encodeHtml(msg.getVerbalization()));
-				if (!Strings.isBlank(details)) {
-					builder.append(" <span title='")
-							.append(Strings.encodeHtml(details))
-							.append("'><img src='KnowWEExtension/images/dt_icon_q_description_small.png'></img></span>");
-				}
-			}
-		}
-
-		StringBuilder result = new StringBuilder();
-		if (errors.length() > 0) {
-			result.append("<span class='error'>").append(errors).append("</span>");
-		}
-		if (warnings.length() > 0) {
-			result.append("<span class='warning'>").append(warnings).append("</span>");
-		}
-		if (other.length() > 0) {
-			result.append("<span class='information'>").append(other).append("</span>");
-		}
-		return result.toString();
-	}
-
 	/**
 	 * Returns the actions that shall be offered to the user. This default implementation returns a single action that
 	 * allows the user to download the created file, if there is such a file and no error has been reported.
@@ -188,72 +119,52 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 	}
 
 	@Override
-	public String renderMessage(UserActionContext context, float percent, String message) {
-		// check whether the user is the current one
-		// and whether the progress allows to show the final actions
-		// if not, simply return the current message
-		if (tempFile == null) return message;
+	public void renderMessage(UserActionContext context, RenderResult result) {
+		super.renderMessage(context, result);
+		if (tempFile == null) return;
 		UUID requestMarker = (UUID) context.getSession().getAttribute(storeKey);
-		if (this.requestMarker != requestMarker) return message;
-		if (percent != 1f) return message;
-		if (!message.equals(COMPLETE_MESSAGE)) return message;
+		if (this.requestMarker != requestMarker) return;
+		if (getProgressListener().getProgress() != 1f) return;
 
-		// if we have completed and the user is the requesting one
-		// we show some more detailed information and the actions
-		String report = getReport(context);
-		String actions = renderActions(context);
-
-		StringWriter out = new StringWriter();
-		// out.append("<p>").append(message).append("<p/>");
-		if (!Strings.isBlank(actions)) {
-			out.append("<p>").append(actions).append("</p>");
-		}
-		if (!Strings.isBlank(report)) {
-			out.append("<p>").append(report).append("</p>");
-		}
-
-		return out.toString();
+		renderActions(context, result);
 	}
 
-	private String renderActions(UserActionContext context) {
+	private void renderActions(UserActionContext context, RenderResult result) {
 		List<Tool> actions = getActions(context);
-		if (actions.isEmpty()) return null;
+		if (actions.isEmpty()) return;
 
-		StringBuilder result = new StringBuilder();
 		String id = UUID.randomUUID().toString();
-		result.append("<div id='").append(id).append("'><p>");
+		result.appendHtml("<div id='").append(id).appendHtml("'><p>");
 		for (Tool tool : actions) {
 			Icon icon = tool.getIcon();
-			String descr = tool.getDescription();
 			if (tool.getActionType() == Tool.ActionType.HREF_SCRIPT) {
-				result.append("<div>");
-				result.append("<a class='action' href='javascript:")
-						.append("jq$(\"#").append(id).append("\").remove();")
-						.append(Strings.encodeHtml(tool.getAction()))
-						.append("'");
+				result.appendHtml("<div>");
+				result.appendHtml("<a class='action' href='javascript:")
+						.appendHtml("jq$(\"#").append(id).appendHtml("\").remove();")
+						.appendHtml(Strings.encodeHtml(tool.getAction()))
+						.appendHtml("'");
 			}
 			else {
-				result.append("<div>");
-				result.append("<a class='action' onclick='")
-						.append("jq$(\"#").append(id).append("\").remove();'")
-						.append(" href='")
-						.append(Strings.encodeHtml(tool.getAction()))
-						.append("'");
+				result.appendHtml("<div>");
+				result.appendHtml("<a class='action' onclick='")
+						.appendHtml("jq$(\"#").append(id).appendHtml("\").remove();'")
+						.appendHtml(" href='")
+						.appendHtml(Strings.encodeHtml(tool.getAction()))
+						.appendHtml("'");
 			}
-			if (!Strings.isBlank(descr)) {
-				result.append(" title='").append(Strings.encodeHtml(descr)).append("'");
+			String description = tool.getDescription();
+			if (!Strings.isBlank(description)) {
+				result.appendHtml(" title='").append(Strings.encodeHtml(description)).appendHtml("'");
 			}
-			result.append(">");
+			result.appendHtml(">");
 			if (icon != null) {
-				//TODO STEFAN WORKS?
-				result.append(icon.toHtml());
+				result.appendHtml(icon.toHtml());
 			}
-			result.append(tool.getTitle());
-			result.append("</a>");
-			result.append("</div>");
+			result.append(" " + tool.getTitle());
+			result.appendHtml("</a>");
+			result.appendHtml("</div>");
 		}
-		result.append("</p></<div>");
-		return result.toString();
+		result.appendHtml("</p></<div>");
 	}
 
 	@Override

@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -41,6 +41,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.progress.AjaxProgressListener;
 import de.knowwe.core.utils.progress.FileDownloadOperation;
 import de.knowwe.core.utils.progress.LongOperationUtils;
@@ -56,8 +57,6 @@ import de.knowwe.util.Icon;
  */
 public class CasesZipOperation extends FileDownloadOperation {
 
-	private StringBuilder skipped = null;
-	private StringBuilder errors = null;
 	private List<Triple<String, KnowledgeBase, TestCase>> casesToWrite = null;
 
 	public CasesZipOperation(Article article, String attachmentFileName) {
@@ -68,8 +67,6 @@ public class CasesZipOperation extends FileDownloadOperation {
 		Section<?> section = DownloadCaseAction.getPlayerSection(user);
 		List<ProviderTriple> providers =
 				TestCaseUtils.getTestCaseProviders(Sections.cast(section.getParent(), TestCasePlayerType.class));
-		skipped = new StringBuilder();
-		errors = new StringBuilder();
 		casesToWrite = new ArrayList<>();
 
 		check(user, section, providers, casesToWrite);
@@ -88,7 +85,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 			String testCaseName = provider.getName();
 
 			if (!userCanView(context, section) || !userCanView(context, testCaseSection)) {
-				skipped.append(testCaseName).append(": You are not authorized to see this case.<br/>");
+				addMessage(Messages.warning(testCaseName + ": You are not authorized to see this case"));
 				continue;
 			}
 
@@ -96,7 +93,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 			Session session = provider.getActualSession(context);
 
 			if (session == null) {
-				skipped.append(testCaseName).append(": Internal error (no session found).<br/>");
+				addMessage(Messages.error(testCaseName + ": Internal error (no session found)"));
 				continue;
 			}
 			casesToWrite.add(new Triple<>(testCaseName, session.getKnowledgeBase(), testCase));
@@ -111,7 +108,6 @@ public class CasesZipOperation extends FileDownloadOperation {
 		ProgressListener zipListener = parallel.getSubTaskProgressListener(1);
 		List<TestCase> stcs = collect(executeListener);
 		zipTestCases(resultFile, stcs, zipListener);
-
 	}
 
 	private List<TestCase> collect(ProgressListener listener) throws InterruptedException {
@@ -155,7 +151,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 			}
 		}
 		else {
-			errors.append("There are not test cases to download.<br/>");
+			addMessage(Messages.error("There are not test cases to download"));
 			throw new IOException("There are not test cases to download.");
 		}
 	}
@@ -168,7 +164,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 		else {
 			originalDescription = "Unnamed";
 		}
-		originalDescription = originalDescription.replaceAll("[^ \\.-_+\\w()]", "");
+		originalDescription = originalDescription.replaceAll("[^ .-_+\\w()]", "");
 		int i = 2;
 		String testCaseName = originalDescription;
 		while (usedEntryNames.contains(testCaseName)) {
@@ -185,24 +181,7 @@ public class CasesZipOperation extends FileDownloadOperation {
 	}
 
 	@Override
-	public String getReport(UserActionContext context) {
-		String report = super.getReport(context);
-		if (report == null) report = "";
-
-		String skipped = this.skipped.toString();
-		if (!skipped.isEmpty()) {
-			report += "<p>Skipped:<br/>" + skipped + "</p>";
-		}
-		String errors = this.errors.toString();
-		if (!errors.isEmpty()) {
-			report += "<p>Error:<br/>" + errors + "</p>";
-		}
-		return report;
-	}
-
-	@Override
 	public Icon getFileIcon() {
 		return Icon.FILE_ZIP;
 	}
-
 }

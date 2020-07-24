@@ -28,10 +28,12 @@ import org.json.JSONObject;
 
 import com.denkbares.utils.Log;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.RenderResult;
 
 /**
  * This action handles the ajax update request of the ci-build progress bar on
@@ -62,8 +64,13 @@ public class GetProgressAction extends AbstractAction {
 						LongOperationUtils.getRegistrationID(section, operation));
 				float currentProgress = listener.getProgress();
 				progress.put("progress", currentProgress);
-				String message = operation.renderMessage(context, currentProgress, listener.getMessage());
-				progress.put("message", message);
+
+				final RenderResult renderResult = new RenderResult(context);
+				operation.renderMessage(context, renderResult);
+				String rawResult = Environment.getInstance().getWikiConnector()
+						.renderWikiSyntax(renderResult.toStringRaw());
+				progress.put("message", RenderResult.unmask(rawResult, context));
+
 				progress.put("error", listener.getError());
 				progress.put("running", listener.isRunning());
 				result.put(progress);

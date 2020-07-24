@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.rendering.RenderResult;
 
 /**
  * Interface for describing a long-duration user operation. The operation may be
@@ -61,12 +62,10 @@ public interface LongOperation {
 	 * specific messages.
 	 *
 	 * @param context the context of the user
-	 * @param percent the current percent of the progress bar
-	 * @param message the message of the progress bar which should be rendered
-	 * @return the rendered progress bar
+	 * @param result the result to write the message to
 	 * @created 07.10.2013
 	 */
-	String renderMessage(UserActionContext context, float percent, String message);
+	void renderMessage(UserActionContext context, RenderResult result);
 
 	/**
 	 * This method is called when a LongOperation gets removed. Use it if there
