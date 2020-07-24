@@ -254,6 +254,7 @@ KNOWWE.core.plugin.progress = function() {
                   });
                 }
               }
+              KNOWWE.tooltips.enrich(bar);
               refresh |= running;
             }
             if (refresh) {
