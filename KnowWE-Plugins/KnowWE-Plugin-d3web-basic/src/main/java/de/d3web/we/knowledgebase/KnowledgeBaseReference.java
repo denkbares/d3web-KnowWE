@@ -5,6 +5,7 @@
 package de.d3web.we.knowledgebase;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +40,8 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class KnowledgeBaseReference extends AbstractType implements TermReference, D3webTerm<KnowledgeBase>, RenamableTerm {
 
+	public static final Class<KnowledgeBase> TERM_CLASS = KnowledgeBase.class;
+
 	public KnowledgeBaseReference() {
 		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
@@ -47,7 +50,12 @@ public class KnowledgeBaseReference extends AbstractType implements TermReferenc
 
 	@Override
 	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
-		return KnowledgeBase.class;
+		return TERM_CLASS;
+	}
+
+	@NotNull
+	private static Identifier toIdentifier(String termName) {
+		return new Identifier(TERM_CLASS.getSimpleName(), termName); // to avoid conflicts, we add class name
 	}
 
 	@Override
@@ -64,7 +72,8 @@ public class KnowledgeBaseReference extends AbstractType implements TermReferenc
 		PackageRegistrationCompiler compiler = Compilers.getPackageRegistrationCompiler(manager);
 		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
 				.getTermDefiningSections(toIdentifier(knowledgeBaseName));
-		return $(termDefiningSections).filter(KnowledgeBaseDefinition.class);
+		return $(Stream.concat($(termDefiningSections).filter(KnowledgeBaseDefinition.class).stream(),
+				$(manager.getArticle(knowledgeBaseName)).successor(KnowledgeBaseDefinition.class).stream()));
 	}
 
 	@Override
@@ -72,8 +81,4 @@ public class KnowledgeBaseReference extends AbstractType implements TermReferenc
 		return toIdentifier(getTermName(section));
 	}
 
-	@NotNull
-	private static Identifier toIdentifier(String termName) {
-		return new Identifier(KnowledgeBase.class.getSimpleName(), termName); // to avoid conflicts, we add class name
-	}
 }

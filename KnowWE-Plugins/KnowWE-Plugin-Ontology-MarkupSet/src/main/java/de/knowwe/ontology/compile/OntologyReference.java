@@ -5,6 +5,7 @@
 package de.knowwe.ontology.compile;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,6 +38,8 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class OntologyReference extends AbstractType implements TermReference, RenamableTerm {
 
+	public static final Class<Rdf2GoCore> TERM_CLASS = Rdf2GoCore.class;
+
 	public OntologyReference() {
 		setSectionFinder(AllTextFinderTrimmed.getInstance());
 		setRenderer(StyleRenderer.CONSTANT.withToolMenu());
@@ -45,7 +48,12 @@ public class OntologyReference extends AbstractType implements TermReference, Re
 
 	@Override
 	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
-		return Rdf2GoCore.class;
+		return TERM_CLASS;
+	}
+
+	@NotNull
+	private static Identifier toIdentifier(String termName) {
+		return new Identifier(TERM_CLASS.getSimpleName(), termName); // to avoid conflicts, we add class name
 	}
 
 	public Sections<OntologyDefinition> getDefinition(Section<? extends OntologyReference> self) {
@@ -57,16 +65,12 @@ public class OntologyReference extends AbstractType implements TermReference, Re
 		PackageRegistrationCompiler compiler = Compilers.getPackageRegistrationCompiler(manager);
 		Collection<Section<?>> termDefiningSections = compiler.getTerminologyManager()
 				.getTermDefiningSections(toIdentifier(ontologyName));
-		return $(termDefiningSections).filter(OntologyDefinition.class);
+		return $(Stream.concat($(termDefiningSections).filter(OntologyDefinition.class).stream(),
+				$(manager.getArticle(ontologyName)).successor(OntologyDefinition.class).stream()));
 	}
 
 	@Override
 	public Identifier getTermIdentifier(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return toIdentifier(getTermName(section));
-	}
-
-	@NotNull
-	private static Identifier toIdentifier(String termName) {
-		return new Identifier(Rdf2GoCore.class.getSimpleName(), termName); // to avoid conflicts, we add class name
 	}
 }
