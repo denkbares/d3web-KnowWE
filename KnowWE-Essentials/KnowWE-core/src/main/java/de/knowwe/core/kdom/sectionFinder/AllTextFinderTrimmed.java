@@ -36,6 +36,7 @@ public class AllTextFinderTrimmed implements SectionFinder {
 
 	private static AllTextFinderTrimmed instance;
 	private final TrimType trimType;
+	private final boolean allowEmpty;
 
 	public enum TrimType {
 		SPACES,
@@ -53,13 +54,17 @@ public class AllTextFinderTrimmed implements SectionFinder {
 		this(TrimType.SPACES);
 	}
 
-	// for backwards compatibility
 	public AllTextFinderTrimmed(boolean trimBlankLinesAndTrailingLineBreakOnly) {
 		this(trimBlankLinesAndTrailingLineBreakOnly ? TrimType.BLANK_LINES_AND_TRAILING_LINE_BREAK : TrimType.SPACES);
 	}
 
 	public AllTextFinderTrimmed(TrimType type) {
+		this(type, false);
+	}
+
+	public AllTextFinderTrimmed(TrimType type, boolean allowEmpty) {
 		this.trimType = type;
+		this.allowEmpty = allowEmpty;
 	}
 
 	@Override
@@ -84,7 +89,7 @@ public class AllTextFinderTrimmed implements SectionFinder {
 				throw new IllegalStateException();
 		}
 
-		if (trimmed.isEmpty()) return result;
+		if (!allowEmpty && trimmed.isEmpty()) return result;
 		int start = text.indexOf(trimmed);
 		int end = start + trimmed.length();
 		result.add(new SectionFinderResult(start, end));
