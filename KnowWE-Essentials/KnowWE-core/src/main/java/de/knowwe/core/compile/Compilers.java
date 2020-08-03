@@ -44,6 +44,8 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
  * Utility methods needed while compiling.
  *
@@ -236,10 +238,10 @@ public class Compilers {
 				compilers.add(compilerClass.cast(compiler));
 			}
 		}
-		// if we only want one compiler but there are multiple, make sure to check if the section is an ancestor
-		// to a package compile section... if yes, we want the associated compiler
+		// if we only want one compiler but there are multiple, make sure to check if the section is a (or successor of)
+		// package compile section... if yes, we want the associated compiler
 		if (firstOnly && compilers.size() > 1) {
-			Section<PackageCompileType> compileSection = Sections.successor(section, PackageCompileType.class);
+			Section<PackageCompileType> compileSection = $(section).closest(PackageCompileType.class).getFirst();
 			if (compileSection != null) {
 				Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
 				for (PackageCompiler packageCompiler : packageCompilers) {
