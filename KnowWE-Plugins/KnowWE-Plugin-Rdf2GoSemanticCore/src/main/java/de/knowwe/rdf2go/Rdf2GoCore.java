@@ -68,6 +68,7 @@ import org.eclipse.rdf4j.repository.RepositoryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFParseException;
+import org.eclipse.rdf4j.rio.RDFWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1408,8 +1409,17 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @param out the target to write the model to
 	 * @created 03.02.2012
 	 */
-	public void writeModel(Writer out) throws IOException {
-		writeModel(out, RDFFormat.RDFXML);
+	public void writeModel(RDFWriter out) throws IOException {
+		try {
+			synchronized (this.statementMutex) {
+				if (this.semanticCore != null) { // if the semantic core was closed while waiting, just skip
+					this.semanticCore.export(out);
+				}
+			}
+		}
+		catch (RepositoryException | RDFHandlerException e) {
+			throw new IOException(e);
+		}
 	}
 
 	/**

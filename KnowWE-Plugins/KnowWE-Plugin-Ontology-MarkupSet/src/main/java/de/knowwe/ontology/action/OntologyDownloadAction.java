@@ -3,13 +3,20 @@
  */
 package de.knowwe.ontology.action;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 
+import com.denkbares.utils.Log;
+import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -65,6 +72,32 @@ public class OntologyDownloadAction extends AbstractAction {
 		context.setContentType(mimeType);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
 
-		rdf2GoCore.writeModel(context.getWriter(), syntax);
+		try (OutputStream outputStream = context.getOutputStream()) {
+			if (syntax == RDFFormat.TURTLE) {
+				// pretty formatted turtle doesn't always work, we try first and do fallback in case it does not work
+				// since we can't fallback if we write to the response directly, we have to write to a temp file first
+				final File tempFile = Files.createTempFile(secID, filename).toFile();
+				tempFile.deleteOnExit();
+				try {
+					try (FileOutputStream out = new FileOutputStream(tempFile)) {
+						rdf2GoCore.writeModel(out, syntax);
+					}
+					try (FileInputStream inputStream = new FileInputStream(tempFile)) {
+						Streams.stream(inputStream, outputStream);
+					}
+				}
+				catch (Exception e) {
+					Log.warning("Formatted turtle export failed, very likely due to setting inline_blank_nodes, trying again without...");
+					// formatted writing didn't work, just write to response directly, we don't expect failure
+					rdf2GoCore.writeModel(Rio.createWriter(syntax, outputStream));
+				}
+				finally {
+					tempFile.delete();
+				}
+			}
+			else {
+				rdf2GoCore.writeModel(outputStream, syntax);
+			}
+		}
 	}
 }
