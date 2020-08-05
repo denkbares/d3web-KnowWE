@@ -46,6 +46,32 @@
     }
   };
 
+  /**
+   * Copy from https://stackoverflow.com/questions/499126/jquery-set-cursor-position-in-text-area
+   * Uses:
+   * jq$('#elem').selectRange(3,5); // select a range of text
+   * jq$('#elem').selectRange(3); // set cursor position
+   */
+  jq$.fn.selectRange = function(start, end) {
+    if (end === undefined) {
+      end = start;
+    }
+    return this.each(function() {
+      if ('selectionStart' in this) {
+        this.selectionStart = start;
+        this.selectionEnd = end;
+      } else if (this.setSelectionRange) {
+        this.setSelectionRange(start, end);
+      } else if (this.createTextRange) {
+        var range = this.createTextRange();
+        range.collapse(true);
+        range.moveEnd('character', end);
+        range.moveStart('character', start);
+        range.select();
+      }
+    });
+  };
+
   jq$.fn.copyToClipboard = function(text) {
     const $temp = jq$("<input>");
     // in case we have a model dialog, we append to that one, otherwise the select() will not work
