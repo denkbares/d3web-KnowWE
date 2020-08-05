@@ -6,6 +6,15 @@ KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
+
+(function init() {
+  if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
+    window.addEvent('domready', function() {
+      KNOWWE.core.plugin.dropZone.initAttachToExisting();
+    });
+  }
+}());
+
 /**
  * Namespace: KNOWWE.core.plugin.dropZone for debugging d3web expressions in KnowWE
  */
@@ -74,15 +83,15 @@ KNOWWE.core.plugin.dropZone = function() {
   function ajaxData(uploadData, event) {
     uploadFile(uploadData.ajaxData, uploadData.form, function() {
       setUploadedStyle(event.target);
-      if (!event.reload) {
+      if (event.reload) {
+        setTimeout(function() {
+          window.location.reload();
+        }, 1000);
+      } else {
         setTimeout(function() {
           resetStyle(event.target, "Drop attachment(s) here");
         }, 1000);
         if (event.callback) event.callback();
-      } else {
-        setTimeout(function() {
-          window.location.reload();
-        }, 1000);
       }
     }, function(data) {
       KNOWWE.notification.error(data.responseText);
