@@ -23,7 +23,9 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
 
 (function init() {
-  if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
+  window.addEvent('domready', _KL.setup);
+  // ToDo: get rid of EDB check.
+  if (window.location.search !== "?page=Create_new_EDB_entry") if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
     window.addEvent('domready', function() {
       KNOWWE.core.plugin.dropZone.initAttachToExisting();
     });
