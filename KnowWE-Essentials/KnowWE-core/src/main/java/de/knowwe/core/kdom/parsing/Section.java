@@ -917,13 +917,14 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the removed object for the compiler and key, or null
 	 * @created 16.03.2014
 	 */
-	public synchronized Object removeObject(Compiler compiler, String key) {
+	public synchronized <O> O removeObject(Compiler compiler, String key) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
 		if (storeForCompiler == null) return null;
 		Object removed = storeForCompiler.remove(key);
 		if (storeForCompiler.isEmpty()) store.remove(compiler);
 		if (store.isEmpty()) store = null;
-		return removed;
+		//noinspection unchecked
+		return (O) removed;
 	}
 
 	private Map<String, Object> getStoreForCompiler(Compiler compiler) {
