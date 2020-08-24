@@ -74,6 +74,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	private final ReferenceValidationMode referenceValidationMode;
 	private final Set<Priority> commitTracker = ConcurrentHashMap.newKeySet();
 	private boolean caseSensitive;
+	private boolean isIncrementalBuild;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
@@ -88,6 +89,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		this.scriptCompiler = new ParallelScriptCompiler<>(this);
 		this.ruleSet = ruleSet;
 		this.caseSensitive = true;
+		this.isIncrementalBuild = false;
 	}
 
 	public OntologyCompiler(PackageManager manager,
@@ -121,6 +123,13 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	@NotNull
 	public Section<OntologyType> getCompileSection() {
 		return Sections.cast(super.getCompileSection(), OntologyType.class);
+	}
+
+	/**
+	 * Returns true, if the last compilation of the compiler was done incrementally, false otherwise
+	 */
+	public boolean isIncrementalBuild() {
+		return isIncrementalBuild;
 	}
 
 	/**
@@ -212,6 +221,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		}
 		// an incremental compilation... destroy the removed and compile the added sections
 		else {
+			isIncrementalBuild = true;
 			sectionsOfPackage = getPackageManager().getRemovedSections(packagesToCompile);
 			destroy(sectionsOfPackage);
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
