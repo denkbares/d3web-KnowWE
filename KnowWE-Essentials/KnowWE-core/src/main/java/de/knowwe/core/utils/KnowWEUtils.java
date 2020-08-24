@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -1258,16 +1257,25 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Re-compiles the given article without changing it. The articles is parsed and compiled again. The method waits
+	 * Re-compiles the given articles without changing it. The articles are parsed and compiled again. The method waits
 	 * until the compilation is completed.
 	 *
-	 * @param article the article to recompile
+	 * @param articles the articles to recompile
 	 */
-	public static void reCompileArticle(Article article) throws InterruptedException {
-		ArticleManager articleManager = article.getArticleManager();
+	public static void reCompileArticles(Article... articles) throws InterruptedException {
+		if (articles.length == 0) return;
+		ArticleManager articleManager = articles[0].getArticleManager();
 		if (articleManager == null) return;
-		Article newKbArticle = Article.createArticle(article.getText(), article.getTitle(), article.getWeb());
-		articleManager.registerArticle(newKbArticle);
+		articleManager.open();
+		try {
+			for (Article article : articles) {
+				Article newKbArticle = Article.createArticle(article.getText(), article.getTitle(), article.getWeb());
+				articleManager.registerArticle(newKbArticle);
+			}
+		}
+		finally {
+			articleManager.commit();
+		}
 		articleManager.getCompilerManager().awaitTermination();
 	}
 }
