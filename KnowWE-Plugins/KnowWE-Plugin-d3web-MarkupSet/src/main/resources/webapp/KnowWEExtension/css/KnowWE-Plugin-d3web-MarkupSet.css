@@ -22,6 +22,10 @@
 	list-style-type: none;
 }
 
+.type_plugin-config .markupIcon {
+	height: 28px;
+}
+
 /* -- IfCondition/Condition -- */
 
 .IfCondition {
