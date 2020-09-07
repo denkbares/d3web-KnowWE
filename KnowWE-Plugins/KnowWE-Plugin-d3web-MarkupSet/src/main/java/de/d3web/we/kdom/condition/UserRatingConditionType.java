@@ -52,29 +52,25 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 		CONFIRMED, REJECTED
 	}
 
+	private final Pattern evalPattern = Pattern.compile("(?i:rejected|confirmed|bestätigt|abgelehnt)");
+	private final Pattern conditionPattern = Pattern.compile("\\s*\\S.*\\s*=\\s*([\\w]+)");
+
 	public UserRatingConditionType() {
-		setSectionFinder(new SectionFinder() {
+		setSectionFinder((text, father, type) -> {
+			Matcher matcher = conditionPattern.matcher(text);
 
-			private Pattern evalPattern = Pattern.compile("(?i:rejected|confirmed|bestätigt|abgelehnt)");
-			private Pattern conditionPattern = Pattern.compile("\\s*\\S.*\\s*=\\s*([\\w]+)");
+			if (!matcher.matches()) {
+				return null;
+			}
+			else {
+				String evaluation = matcher.group(1);
 
-			@Override
-			public List<SectionFinderResult> lookForSections(String text, Section<?> father, Type type) {
-				Matcher matcher = conditionPattern.matcher(text);
-
-				if (!matcher.matches()) {
-					return null;
+				if (evalPattern.matcher(evaluation).matches()) {
+					return Collections.singletonList(new SectionFinderResult(matcher.start(0),
+							matcher.end(0)));
 				}
 				else {
-					String evaluation = matcher.group(1);
-
-					if (evalPattern.matcher(evaluation).matches()) {
-						return Collections.singletonList(new SectionFinderResult(matcher.start(0),
-								matcher.end(0)));
-					}
-					else {
-						return null;
-					}
+					return null;
 				}
 			}
 		});
@@ -105,12 +101,10 @@ public class UserRatingConditionType extends D3webCondition<UserRatingConditionT
 			UserEvaluation eval = UserRatingType.getUserEvaluationType(ratingSec);
 			if (solution != null && eval != null) {
 				if (eval == UserEvaluation.CONFIRMED) {
-					return new CondSolutionConfirmed(
-							solution);
+					return new CondSolutionConfirmed(solution);
 				}
 				else if (eval == UserEvaluation.REJECTED) {
-					return new CondSolutionRejected(
-							solution);
+					return new CondSolutionRejected(solution);
 				}
 			}
 		}
