@@ -873,9 +873,7 @@ public class QuickInterviewRenderer {
 	}
 
 	private String getLabel(NamedObject to) {
-		String prompt = to.getInfoStore().getValue(MMInfo.PROMPT, getSelectedLanguage());
-		if (prompt != null) return prompt;
-		return to.getName();
+		return Strings.htmlToPlain(MMInfo.getPrompt(to, getSelectedLanguage()));
 	}
 
 	private Locale getSelectedLanguage() {
