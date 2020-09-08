@@ -121,11 +121,11 @@ public class GitVersionCache {
 		log.info("Git version cache successful initiated in " + sw);
 	}
 
-	private void mapDelete(RevCommit commit, String path) throws IOException {
+	void mapDelete(RevCommit commit, String path) throws IOException {
 		mapCommit(commit, path, true);
 	}
 
-	private void mapMove(RevCommit commit, String oldPath, String newPath) throws IOException {
+	void mapMove(RevCommit commit, String oldPath, String newPath) throws IOException {
 		Log.finest("move " + oldPath + " -> " + newPath);
 		String key;
 		String newKey;
@@ -146,17 +146,19 @@ public class GitVersionCache {
 			key = TextUtil.urlDecodeUTF8(oldPath.replace(GitVersioningFileProvider.FILE_EXT, ""));
 			newKey = TextUtil.urlDecodeUTF8(newPath.replace(GitVersioningFileProvider.FILE_EXT, ""));
 		}
-		List<GitCacheItem> gitCacheItems = cache.get(key);
-		cache.remove(key);
-		cache.put(newKey, gitCacheItems);
+		if(cache.containsKey(key)) {
+			List<GitCacheItem> gitCacheItems = cache.get(key);
+			cache.remove(key);
+			cache.put(newKey, gitCacheItems);
+		}
 		mapCommit(commit, newPath);
 	}
 
-	private void mapCommit(RevCommit commit, String path) throws IOException {
+	void mapCommit(RevCommit commit, String path) throws IOException {
 		mapCommit(commit, path, false);
 	}
 
-	private void mapCommit(RevCommit commit, String path, boolean delete) throws IOException {
+	void mapCommit(RevCommit commit, String path, boolean delete) throws IOException {
 		Log.finest("commit " + (delete ? "delete " : "") + path);
 		Map<String, List<GitCacheItem>> cache;
 		GitCacheItem toCache;
@@ -405,5 +407,10 @@ public class GitVersionCache {
 				att.getAuthor(), new Date(), att.getSize(), true, id);
 		String key = getAttachmentKey(att);
 		putInCache(attachmentRevisionCache, item, key);
+	}
+
+	public void reset(Attachment att) {
+		String key = getAttachmentKey(att);
+		attachmentRevisionCache.remove(key);
 	}
 }

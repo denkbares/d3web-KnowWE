@@ -92,6 +92,7 @@ import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT = "jspwiki.gitVersioningFileProvider.remoteGit";
+	static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE = "jspwiki.gitVersioningFileProvider.autoUpdate";
 	protected Repository repository;
 	private static final String GIT_DIR = ".git";
 	private static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
@@ -100,6 +101,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private final ReadWriteLock pushLock = new ReentrantReadWriteLock();
 	private final ReentrantLock commitLock = new ReentrantLock();
 	private GitVersionCache cache;
+	private final GitAutoUpdateScheduler scheduler;
 
 	private AtomicLong commitCount;
 
@@ -108,11 +110,16 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private boolean windowsGitHackNeeded = false;
 	private boolean dontUseHack = false;
 
+	public GitVersioningFileProvider() {
+		scheduler = new GitAutoUpdateScheduler();
+	}
+
 	public boolean isRemoteRepo() {
 		return this.remoteRepo;
 	}
 
 	private boolean remoteRepo = false;
+	private boolean autoUpdateEnabled = false;
 
 	/**
 	 * {@inheritDoc}
@@ -127,7 +134,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 		final File pageDir = new File(this.filesystemPath);
 		final File gitDir = new File(pageDir.getAbsolutePath() + File.separator + GIT_DIR);
-
+		autoUpdateEnabled = TextUtil.getBooleanProperty(properties, JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE, false);
 		if (!RepositoryCache.FileKey.isGitRepository(gitDir, FS.DETECTED)) {
 			final String remoteURL = TextUtil.getStringProperty(properties, JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT, "");
 			if (!"".equals(remoteURL)) {
@@ -201,6 +208,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		this.repository.autoGC(new TextProgressMonitor());
 		this.cache = new GitVersionCache(engine, this.repository);
 		cache.initializeCache();
+		if(autoUpdateEnabled && remoteRepo){
+			scheduler.initialize(engine, this);
+		}
 	}
 
 	private void doBinaryGC(File pageDir) {
@@ -1017,6 +1027,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	public void shutdown() {
+		if(autoUpdateEnabled && remoteRepo){
+			scheduler.shutdown();
+		}
 		this.repository.close();
 	}
 
