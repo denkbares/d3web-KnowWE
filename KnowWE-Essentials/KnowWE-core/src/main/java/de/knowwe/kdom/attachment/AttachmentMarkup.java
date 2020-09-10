@@ -1,20 +1,5 @@
 /*
- * Copyright (C) 2015 denkbares GmbH, Germany
- *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
+ * Copyright (C) 2020 denkbares GmbH. All rights reserved.
  */
 
 package de.knowwe.kdom.attachment;
@@ -24,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
@@ -379,13 +365,17 @@ public class AttachmentMarkup extends DefaultMarkupType {
 					return;
 				}
 
-				final HttpURLConnection connection = openConnection(url);
+				URLConnection connection;
+				if("file".equals(url.getProtocol())){
+					connection = url.openConnection();
+				}else {
+				connection = openHttpConnection(url);
 
-				int responseCode = connection.getResponseCode();
+				int responseCode = ((HttpURLConnection) connection).getResponseCode();
 				if (responseCode != HttpServletResponse.SC_OK) {
 					Messages.storeMessage(section, AttachmentMarkup.class, Messages.error("Invalid response code, skipping update: " + responseCode));
 					return;
-				}
+				}}
 
 				InputStream connectionStream = getAttachmentStream(section, connection);
 
@@ -404,7 +394,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 						if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
 							if (Pattern.compile(parsedReplacement[0]).matcher(connectionString).find()) {
 								connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
-								Messages.clearMessages(annotationContent,  AttachmentMarkup.class);
+								Messages.clearMessages(annotationContent, AttachmentMarkup.class);
 							}
 							else {
 								Messages.storeMessage(annotationContent, AttachmentMarkup.class,
@@ -415,7 +405,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 						else if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
 							if (connectionString.contains(parsedReplacement[0])) {
 								connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
-								Messages.clearMessages(annotationContent,  AttachmentMarkup.class);
+								Messages.clearMessages(annotationContent, AttachmentMarkup.class);
 							}
 							else {
 								Messages.storeMessage(annotationContent, AttachmentMarkup.class,
@@ -473,7 +463,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		}
 	}
 
-	private static InputStream getAttachmentStream(Section<AttachmentMarkup> section, HttpURLConnection connection) throws IOException {
+	private static InputStream getAttachmentStream(Section<AttachmentMarkup> section, URLConnection connection) throws IOException {
 		InputStream connectionStream = null;
 		String zipEntryName = DefaultMarkupType.getAnnotation(section, ZIP_ENTRY_ANNOTATION);
 		if (zipEntryName != null) {
@@ -511,8 +501,15 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		WikiAttachment attachment = AttachmentType.getAttachment(attachmentSection);
 		if (attachment == null) return State.OUTDATED;
 
-		HttpURLConnection connection = openConnection(url);
-		connection.setRequestMethod("HEAD");
+		URLConnection connection;
+		if (url.getProtocol().equals("file")) {
+			connection = url.openConnection();
+		}
+		else {
+			HttpURLConnection httpURLConnection = openHttpConnection(url);
+			httpURLConnection.setRequestMethod("HEAD");
+			connection = httpURLConnection;
+		}
 		connection.connect();
 
 		Date attachmentSectionDate = Environment.getInstance()
@@ -542,7 +539,9 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		else {
 			state = State.UP_TO_DATE;
 		}
-		connection.disconnect();
+		if (connection instanceof HttpURLConnection) {
+			((HttpURLConnection) connection).disconnect();
+		}
 		return state;
 	}
 
@@ -557,7 +556,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	 * @param url URL to open the connection for
 	 * @return HttpURLConnection instance
 	 */
-	private static HttpURLConnection openConnection(URL url) throws IOException {
+	private static HttpURLConnection openHttpConnection(URL url) throws IOException {
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 		if (url.getUserInfo() != null) {
