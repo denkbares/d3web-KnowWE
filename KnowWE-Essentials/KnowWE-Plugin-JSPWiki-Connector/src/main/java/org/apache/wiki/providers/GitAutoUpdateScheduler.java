@@ -19,6 +19,7 @@ public class GitAutoUpdateScheduler {
 
 	private static final Logger log = Logger.getLogger(GitAutoUpdateScheduler.class);
 	private static final String JSPWIKI_GIT_AUTOUPDATE_INIT_DELAY = "jspwiki.git.autoupdate.initDelay";
+	private static final String JSPWIKI_GIT_AUTOUPDATE_DELAY = "jspwiki.git.autoupdate.delay";
 	private final ScheduledExecutorService scheduler;
 
 	GitAutoUpdateScheduler(){
@@ -48,7 +49,8 @@ public class GitAutoUpdateScheduler {
 			}
 		};
 		int startDelay = TextUtil.getIntegerProperty(engine.getWikiProperties(), JSPWIKI_GIT_AUTOUPDATE_INIT_DELAY, 900);
-		scheduler.scheduleAtFixedRate(t, startDelay, 5, TimeUnit.SECONDS);
+		int delay = TextUtil.getIntegerProperty(engine.getWikiProperties(), JSPWIKI_GIT_AUTOUPDATE_DELAY, 5);
+		scheduler.scheduleAtFixedRate(t, startDelay, delay, TimeUnit.SECONDS);
 	}
 
 	public void shutdown(){
