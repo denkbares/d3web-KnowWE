@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
@@ -38,11 +39,11 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  * A Dash-Subtree containing the subtree-content of a (root-)element. This type
  * is defined recursively - meaning it has itself as a child (allowing any depth
  * of parsing).
- * 
+ * <p>
  * General Structure of this dashTree: Subtree always has 1 child which is an
  * Element, which is the root of the subtree. Then it contains 0..* subtrees as
  * further children.
- * 
+ *
  * @author Jochen
  */
 public class DashSubtree extends AbstractType {
@@ -73,10 +74,10 @@ public class DashSubtree extends AbstractType {
 	/**
 	 * Finds the subtrees for a given (dash-) level the level is retrieved from
 	 * father.
-	 * 
+	 *
 	 * @author Jochen
 	 */
-	class SubtreeFinder implements SectionFinder {
+	static class SubtreeFinder implements SectionFinder {
 
 		/**
 		 * Determines with how many dashes the top level of the dash tree should
@@ -103,7 +104,7 @@ public class DashSubtree extends AbstractType {
 		/**
 		 * Pattern for dash tree level 1
 		 */
-		private Pattern p1;
+		private final Pattern p1;
 
 		/**
 		 * The pattern can easily also be generated on demand. However, for
@@ -117,32 +118,22 @@ public class DashSubtree extends AbstractType {
 		public SubtreeFinder(char c, int startLevel) {
 			this.startLevel = startLevel;
 			key = c;
-			p0 = Pattern.compile("^\\s*[\\w\"ÜÖÄüöäß]+.*$",
-					Pattern.MULTILINE);
+
+			p0 = Pattern.compile("^\\h*[^" + c + "/\\s]+.*$", Pattern.MULTILINE);
 
 			keyString = "" + c;
-
-			// just to increase speed by reuse of precompiled patterns
-
 			try {
-				// check if its a meta-character for regex
-				p1 = Pattern.compile(getRegex(keyString, 1),
-						Pattern.MULTILINE);
+				Pattern.compile(keyString);
 			}
 			catch (PatternSyntaxException e) {
-				// escape meta-character
-				keyString = "\\" + c;
-				p1 = Pattern.compile(getRegex(keyString, 1),
-						Pattern.MULTILINE);
+				keyString = Pattern.quote(keyString);
 			}
-			p2 = Pattern.compile(getRegex(keyString, 2),
-					Pattern.MULTILINE);
 
-			p3 = Pattern.compile(getRegex(keyString, 3),
-					Pattern.MULTILINE);
-
-			p4 = Pattern.compile(getRegex(keyString, 4),
-					Pattern.MULTILINE);
+			// just to increase speed by reuse of precompiled patterns
+			p1 = Pattern.compile(getRegex(keyString, 1), Pattern.MULTILINE);
+			p2 = Pattern.compile(getRegex(keyString, 2), Pattern.MULTILINE);
+			p3 = Pattern.compile(getRegex(keyString, 3), Pattern.MULTILINE);
+			p4 = Pattern.compile(getRegex(keyString, 4), Pattern.MULTILINE);
 		}
 
 		private String getRegex(String keyString, int level) {
@@ -155,7 +146,7 @@ public class DashSubtree extends AbstractType {
 
 		@Override
 		public List<SectionFinderResult> lookForSections(String text,
-				Section<?> father, Type type) {
+														 Section<?> father, Type type) {
 
 			// if there is no dashTree-father the first level of dashes to be
 			// looked for is startLevel
@@ -166,7 +157,7 @@ public class DashSubtree extends AbstractType {
 				level = DashTreeUtils.getDashLevel(father) + 1;
 			}
 
-			Matcher m = null;
+			Matcher m;
 			ArrayList<SectionFinderResult> result = new ArrayList<>();
 			if (Strings.isBlank(text)) return result;
 			try {
@@ -193,14 +184,13 @@ public class DashSubtree extends AbstractType {
 								"^\\s*" + keyString + "{" + level + "}" + "[^" + keyString + "]",
 								Pattern.MULTILINE).matcher(text);
 					}
-
 				}
 				else {
 					m = p0.matcher(text);
 				}
 			}
 			catch (StackOverflowError e) {
-				e.printStackTrace();
+				Log.severe("Dash tree to deep", e);
 				return result;
 			}
 			int lastStart = -1;
@@ -209,15 +199,11 @@ public class DashSubtree extends AbstractType {
 					result.add(new SectionFinderResult(lastStart, m.start()));
 				}
 				lastStart = m.start();
-
 			}
 			if (lastStart > -1) {
 				result.add(new SectionFinderResult(lastStart, text.length()));
 			}
 			return result;
-
 		}
-
 	}
-
 }
