@@ -30,16 +30,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 
 public class DashTreeUtils {
 
-	private static DashTreeUtils instance = null;
-
-	public static DashTreeUtils getInstance() {
-		if (instance == null) {
-			instance = new DashTreeUtils();
-		}
-		return instance;
-	}
-
-	protected DashTreeUtils() {
+	private DashTreeUtils() {
 	}
 
 	/**
@@ -125,8 +116,7 @@ public class DashTreeUtils {
 
 	@SuppressWarnings("unchecked")
 	public static Section<? extends DashSubtree> getParentDashSubtree(Section<?> s) {
-		Section<? extends DashSubtree> dashSubtree = Sections.ancestor(s,
-				DashSubtree.class);
+		Section<? extends DashSubtree> dashSubtree = Sections.ancestor(s, DashSubtree.class);
 		if (dashSubtree != null) {
 			if (dashSubtree.getParent().get() instanceof DashSubtree) {
 				return (Section<? extends DashSubtree>) dashSubtree.getParent();
@@ -217,5 +207,4 @@ public class DashTreeUtils {
 		}
 		return 0;
 	}
-
 }
