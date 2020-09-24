@@ -87,6 +87,7 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 			Log.warning("SPARQL query was canceled after "
 					+ Strings.getDurationVerbalization(getRunDuration())
 					+ ": " + callable.getReadableQuery());
+			ThreadLocalCleaner.cleanThreadLocals();
 		}
 		return canceled;
 	}
@@ -97,6 +98,7 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 			this.thread.stop();
 			LockSupport.unpark(this.thread);
 			this.thread = null;
+			ThreadLocalCleaner.cleanThreadLocals();
 			Log.warning("SPARQL query was stopped after "
 					+ Strings.getDurationVerbalization(getRunDuration())
 					+ ": " + callable.getReadableQuery());
@@ -124,6 +126,7 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 				this.thread = null;
 			}
 			this.runTime = System.currentTimeMillis() - this.startTime;
+			ThreadLocalCleaner.cleanThreadLocals();
 		}
 		callable.notifyCompleted(this);
 	}
