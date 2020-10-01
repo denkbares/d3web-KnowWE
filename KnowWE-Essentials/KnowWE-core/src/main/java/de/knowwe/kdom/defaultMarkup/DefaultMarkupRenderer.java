@@ -41,6 +41,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.NamedCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.ScriptManager;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -202,7 +203,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				Collection<Compiler> compilers = entry.getValue();
 				if (isMultiCompiled(compilers, rootSection)) {
 					message += compilers.stream().map(DefaultMarkupRenderer::getCompilerName).distinct()
-							.collect(Collectors.joining(", ", " (compiled in [", "])"));
+							.collect(Collectors.joining(", ", " (compiled in ", ")"));
 				}
 				messages.add(message);
 			}
@@ -216,8 +217,17 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	private static String getCompilerName(Compiler compiler) {
-		if (compiler instanceof PackageCompiler) {
-			return ((PackageCompiler) compiler).getCompileSection().getTitle();
+		if (compiler instanceof NamedCompiler) {
+			final String name = ((NamedCompiler) compiler).getName();
+			if (compiler instanceof PackageCompiler) {
+				return "[" + name + "|" + KnowWEUtils.getWikiLink(((PackageCompiler) compiler).getCompileSection()) + "]";
+			}
+			else {
+				return name;
+			}
+		}
+		else if (compiler instanceof PackageCompiler) {
+			return "[" + KnowWEUtils.getWikiLink(((PackageCompiler) compiler).getCompileSection()) + "]";
 		}
 		else {
 			return compiler.toString();
