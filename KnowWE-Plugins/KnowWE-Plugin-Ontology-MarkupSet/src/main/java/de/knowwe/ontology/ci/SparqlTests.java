@@ -26,7 +26,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  */
 public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRenderer {
 
-	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options(false, 60000, 100);
+	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options(true, 60000, 100);
 
 	protected TupleQueryResult sparqlSelect(Rdf2GoCore core, String actualSparqlString) {
 		return core.sparqlSelect(actualSparqlString, OPTIONS);
