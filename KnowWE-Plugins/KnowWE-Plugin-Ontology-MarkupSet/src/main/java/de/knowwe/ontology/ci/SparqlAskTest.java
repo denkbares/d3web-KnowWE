@@ -29,7 +29,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshoefer (denkbares GmbH)
  * @created 01.03.16.
  */
-public class SparqlAskTest extends SparqlTests<SparqlQuerySection> {
+public class SparqlAskTest extends SparqlTest<SparqlQuerySection> {
 
 	public static final String WARNING = "warning";
 

@@ -41,7 +41,7 @@ import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
  * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
-public class FunctionalPropertyTest extends SparqlTests<OntologyCompiler> {
+public class FunctionalPropertyTest extends SparqlTest<OntologyCompiler> {
 
 	@Override
 	public Message execute(OntologyCompiler testObject, String[] args, String[]... ignores) throws InterruptedException {

@@ -2,6 +2,7 @@ package de.knowwe.ontology.ci;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.semanticcore.TupleQueryResult;
@@ -12,9 +13,12 @@ import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.test.ResultRenderer;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
+import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -24,12 +28,18 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  * @author Tim Abler
  * @created 14.11.2018
  */
-public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRenderer {
+public abstract class SparqlTest<T> extends AbstractTest<T> implements ResultRenderer {
 
-	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options(true, 60000, 100);
+	protected static final int TIMEOUT_MILLIS_DEFAULT = 60000;
+
+	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options(true, TIMEOUT_MILLIS_DEFAULT, 100);
+
+	protected TupleQueryResult sparqlSelect(Rdf2GoCore core, String actualSparqlString, Rdf2GoCore.Options options) {
+		return core.sparqlSelect(actualSparqlString, options);
+	}
 
 	protected TupleQueryResult sparqlSelect(Rdf2GoCore core, String actualSparqlString) {
-		return core.sparqlSelect(actualSparqlString, OPTIONS);
+		return sparqlSelect(core, actualSparqlString, OPTIONS);
 	}
 
 	protected boolean sparqlAsk(Rdf2GoCore core, String sparqlString) {
@@ -92,5 +102,23 @@ public abstract class SparqlTests<T> extends AbstractTest<T> implements ResultRe
 			sparqlMarkupSection = sparqlMarkupSections.iterator().next();
 		}
 		return sparqlMarkupSection;
+	}
+
+	@NotNull
+	protected Rdf2GoCore.Options obtainQueryOptions(Section<SparqlContentType> contentSection) {
+		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(contentSection, DefaultMarkupType.class);
+		String markupTimeout = DefaultMarkupType.getAnnotation(defaultMarkup, SparqlMarkupType.TIMEOUT);
+		if(!Strings.isBlank(markupTimeout)) {
+			// we got a time-out specified for this query markup section
+			try {
+				int timoutMillis = timoutMillis = Integer.parseInt(markupTimeout);
+				return new Rdf2GoCore.Options(true, timoutMillis, 100);
+			} catch (NumberFormatException e) {
+				// damn, not a valid number given as time-out, hence use default options
+				return OPTIONS;
+			}
+		}
+		return OPTIONS;
+
 	}
 }

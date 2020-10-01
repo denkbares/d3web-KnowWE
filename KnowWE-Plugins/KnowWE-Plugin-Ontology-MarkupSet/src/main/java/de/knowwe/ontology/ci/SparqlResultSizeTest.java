@@ -25,7 +25,9 @@ import org.eclipse.rdf4j.query.BindingSet;
 import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.testing.Message;
 import de.d3web.testing.ResultSizeTest;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.ontology.ci.provider.SparqlQuerySection;
+import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -37,7 +39,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshöfer
  * @created 08.01.2014
  */
-public class SparqlResultSizeTest extends SparqlTests<SparqlQuerySection> implements ResultSizeTest {
+public class SparqlResultSizeTest extends SparqlTest<SparqlQuerySection> implements ResultSizeTest {
 
 	public SparqlResultSizeTest() {
 		getParameters().forEach(this::addParameter);
@@ -59,15 +61,19 @@ public class SparqlResultSizeTest extends SparqlTests<SparqlQuerySection> implem
 		int number = comparator.getNumber();
 		Message.Type messageType = comparator.getMessageType();
 
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(query.getSection());
+		Section<SparqlContentType> contentSection = query.getSection();
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(contentSection);
 
 		if (core == null) {
-			return new Message(Message.Type.ERROR, "No repository found for section: " + query.getSection());
+			return new Message(Message.Type.ERROR, "No repository found for section: " + contentSection);
 		}
 
-		String sparqlString = Rdf2GoUtils.createSparqlString(core, query.getSection().getText());
+		String sparqlString = Rdf2GoUtils.createSparqlString(core, contentSection.getText());
 
-		TupleQueryResult resultSet = sparqlSelect(core, sparqlString);
+		// we obtain the time-out parameter from the query section (if existing)
+		Rdf2GoCore.Options options = obtainQueryOptions(contentSection);
+
+		TupleQueryResult resultSet = sparqlSelect(core, sparqlString, options);
 
 		Iterator<BindingSet> iterator = resultSet.iterator();
 		int count = 0;
@@ -109,4 +115,6 @@ public class SparqlResultSizeTest extends SparqlTests<SparqlQuerySection> implem
 
 		return new Message(Message.Type.ERROR, "Unknown error in test (invalid comparator?)");
 	}
+
+
 }

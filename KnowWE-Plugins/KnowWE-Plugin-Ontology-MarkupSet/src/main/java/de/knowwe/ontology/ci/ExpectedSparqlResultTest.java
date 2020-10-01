@@ -39,7 +39,6 @@ import de.knowwe.ontology.ci.provider.SparqlExpectedResultSection;
 import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.sparql.SparqlContentType;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -47,7 +46,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshöfer
  * @created 10.01.2014
  */
-public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSection> {
+public class ExpectedSparqlResultTest extends SparqlTest<SparqlExpectedResultSection> {
 
 	public static final String AT_LEAST = "atLeast";
 	public static final String EQUAL = "equal";
@@ -111,7 +110,7 @@ public class ExpectedSparqlResultTest extends SparqlTests<SparqlExpectedResultSe
 		String actualSparqlString = Rdf2GoUtils.createSparqlString(core, actualSparqlSection.getText());
 		CachedTupleQueryResult result;
 		try {
-			result = (CachedTupleQueryResult) sparqlSelect(core, actualSparqlString);
+			result = (CachedTupleQueryResult) sparqlSelect(core, actualSparqlString, obtainQueryOptions(actualSparqlSection));
 		}
 		catch (Exception e) {
 			Message message = new Message(messageTypeTestFailed, "Exception while executing SPARQL query: " + e.getMessage());
