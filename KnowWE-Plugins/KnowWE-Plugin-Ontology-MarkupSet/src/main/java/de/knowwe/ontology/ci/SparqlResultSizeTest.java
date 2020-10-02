@@ -71,7 +71,7 @@ public class SparqlResultSizeTest extends SparqlTest<SparqlQuerySection> impleme
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, contentSection.getText());
 
 		// we obtain the time-out parameter from the query section (if existing)
-		Rdf2GoCore.Options options = obtainQueryOptions(contentSection);
+		Rdf2GoCore.Options options = getSparqlOptions(contentSection);
 
 		TupleQueryResult resultSet = sparqlSelect(core, sparqlString, options);
 

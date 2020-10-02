@@ -110,7 +110,7 @@ public class ExpectedSparqlResultTest extends SparqlTest<SparqlExpectedResultSec
 		String actualSparqlString = Rdf2GoUtils.createSparqlString(core, actualSparqlSection.getText());
 		CachedTupleQueryResult result;
 		try {
-			result = (CachedTupleQueryResult) sparqlSelect(core, actualSparqlString, obtainQueryOptions(actualSparqlSection));
+			result = (CachedTupleQueryResult) sparqlSelect(core, actualSparqlString, getSparqlOptions(actualSparqlSection));
 		}
 		catch (Exception e) {
 			Message message = new Message(messageTypeTestFailed, "Exception while executing SPARQL query: " + e.getMessage());

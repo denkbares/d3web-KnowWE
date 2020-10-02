@@ -13,7 +13,6 @@ import de.d3web.testing.TestParser;
 import de.d3web.testing.TestResult;
 import de.d3web.we.ci4ke.test.ResultRenderer;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -21,6 +20,8 @@ import de.knowwe.ontology.ci.provider.SparqlTestObjectProviderUtils;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCore;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Abstract class for SPARQL-based CI test. Handles rendering and queries.
@@ -30,9 +31,7 @@ import de.knowwe.rdf2go.Rdf2GoCore;
  */
 public abstract class SparqlTest<T> extends AbstractTest<T> implements ResultRenderer {
 
-	protected static final int TIMEOUT_MILLIS_DEFAULT = 60000;
-
-	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options(true, TIMEOUT_MILLIS_DEFAULT, 100);
+	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options(true, 60000, 100);
 
 	protected TupleQueryResult sparqlSelect(Rdf2GoCore core, String actualSparqlString, Rdf2GoCore.Options options) {
 		return core.sparqlSelect(actualSparqlString, options);
@@ -105,20 +104,8 @@ public abstract class SparqlTest<T> extends AbstractTest<T> implements ResultRen
 	}
 
 	@NotNull
-	protected Rdf2GoCore.Options obtainQueryOptions(Section<SparqlContentType> contentSection) {
-		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(contentSection, DefaultMarkupType.class);
-		String markupTimeout = DefaultMarkupType.getAnnotation(defaultMarkup, SparqlMarkupType.TIMEOUT);
-		if(!Strings.isBlank(markupTimeout)) {
-			// we got a time-out specified for this query markup section
-			try {
-				int timoutMillis = timoutMillis = Integer.parseInt(markupTimeout);
-				return new Rdf2GoCore.Options(true, timoutMillis, 100);
-			} catch (NumberFormatException e) {
-				// damn, not a valid number given as time-out, hence use default options
-				return OPTIONS;
-			}
-		}
-		return OPTIONS;
-
+	protected Rdf2GoCore.Options getSparqlOptions(Section<SparqlContentType> contentSection) {
+		long timeout = SparqlContentType.getTimeout($(contentSection).closest(DefaultMarkupType.class).getFirst());
+		return new Rdf2GoCore.Options(true, timeout, 100);
 	}
 }
