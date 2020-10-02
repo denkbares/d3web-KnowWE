@@ -35,7 +35,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Tobias Schmee (denkbares GmbH)
  * @created 21.10.19
  */
-public class SparqlConsoleContentType extends AbstractType implements SparqlType{
+public class SparqlConsoleContentType extends AbstractType implements SparqlType {
 
 	public SparqlConsoleContentType() {
 		this.setSectionFinder(AllTextFinderPlusEmpty.getInstance());
@@ -49,7 +49,8 @@ public class SparqlConsoleContentType extends AbstractType implements SparqlType
 			cookie = "SELECT * WHERE { ?x ?y ?z } LIMIT 0"; // A query that always returns empty
 		}
 		cookie = Strings.decodeURL(cookie);
-		return Rdf2GoUtils.createSparqlString(Rdf2GoCore.getInstance(section), cookie) == null ? "" : Rdf2GoUtils.createSparqlString(Rdf2GoCore.getInstance(section), cookie);
+		Rdf2GoCore core = Rdf2GoCore.getInstance(section);
+		return core == null ? cookie : Rdf2GoUtils.createSparqlString(core, cookie);
 	}
 
 	@Override
