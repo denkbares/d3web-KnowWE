@@ -20,6 +20,8 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
+import javax.naming.Name;
+
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.utils.Log;
@@ -126,6 +128,6 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	@Override
 	public String toString() {
 		return this.getClass().getSimpleName() + " ("
-				+ compileSection.getTitle() + ")";
+				+ (this instanceof NamedCompiler ? ((NamedCompiler) this).getName() : compileSection.get()) + ")";
 	}
 }
