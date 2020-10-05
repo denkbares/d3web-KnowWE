@@ -22,14 +22,14 @@ KNOWWE.helper = function() {
   return {
 
     /**
-     * Add a key-value pair to the local section store (section is represented by the sectionID). All key-value pairs
+     * Set a key-value pair to the local section store (section is represented by the sectionID). All key-value pairs
      * will be added to the rerender requestion as a JSON object.
      *
      * @param sectionID the id of the section to add a key-value pair to
      * @param key the key for which to add the value
-     * @param value the value to add for the key and sectionID
+     * @param value the JSON value to set for the key and sectionID
      */
-    addToLocalSectionStorage: function(sectionID, key, value) {
+    setToLocalSectionStorage: function(sectionID, key, value) {
       let sectionStorage = this.getLocalSectionStorage(sectionID);
       sectionStorage[key] = value;
       localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
