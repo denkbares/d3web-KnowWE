@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2014 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -19,14 +19,8 @@
 package de.knowwe.kdom.renderer;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import javax.servlet.http.Cookie;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,11 +29,11 @@ import org.json.JSONObject;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
+import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.util.Icon;
 
 /**
@@ -77,12 +71,11 @@ import de.knowwe.util.Icon;
  * @author Stefan Plehn
  * @created 14.01.2014
  */
-@SuppressWarnings({ "WeakerAccess", "unused" })
+@SuppressWarnings({ "WeakerAccess" })
 public class PaginationRenderer implements Renderer {
 
 	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 10;
-	public static final String PAGINATION_COOKIE_PREFIX = "PaginationDecoratingRenderer-";
-	public static final Pattern PAGINATION_COOKIE_CLEANUP_PATTERN = Pattern.compile("^" + PAGINATION_COOKIE_PREFIX + "(.+)$");
+	public static final String PAGINATION_KEY = "pagination";
 	private final Renderer decoratedRenderer;
 
 	public static final String UNKNOWN_RESULT_SIZE = "unknown";
@@ -102,8 +95,6 @@ public class PaginationRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 
-		KnowWEUtils.cleanupSectionCookies(user, PAGINATION_COOKIE_CLEANUP_PATTERN, 1);
-
 		result.appendHtmlTag("div", "class", "knowwe-paginationWrapper", "id", section.getID());
 		RenderResult table = new RenderResult(user);
 		decoratedRenderer.render(section, user, table);
@@ -120,9 +111,7 @@ public class PaginationRenderer implements Renderer {
 		result.append(table);
 		result.append(pagination);
 
-		renderHiddenFilterDiv(user, result, section);
 		result.appendHtml("</div>");
-
 	}
 
 	public static void renderPagination(Section<?> section, UserContext user, RenderResult result, boolean show) {
@@ -165,7 +154,6 @@ public class PaginationRenderer implements Renderer {
 		result.appendHtml("<div class='toolSeparator'>");
 		result.appendHtml("</div>");
 		result.appendHtml("</div>");
-
 	}
 
 	/**
@@ -181,7 +169,7 @@ public class PaginationRenderer implements Renderer {
 		int endRow = Math.min(resultSize, startRow + count - 1);
 
 		int fill = ((int) (Math.log10(resultSize)) - ((int) Math.log10(endRow)));
-		StringBuilder fillString = new StringBuilder("");
+		StringBuilder fillString = new StringBuilder();
 		for (int i = 0; i < fill; i++) {
 			fillString.append("&nbsp;");
 		}
@@ -207,7 +195,6 @@ public class PaginationRenderer implements Renderer {
 
 			renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", forward, result);
 			renderToolbarButton(Icon.LAST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'end')", forward, result);
-
 		}
 		if (count == Integer.MAX_VALUE) {
 			renderToolbarButton(Icon.FIRST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'begin')", false, result);
@@ -276,34 +263,19 @@ public class PaginationRenderer implements Renderer {
 		for (int size : sizeArray) {
 			if (size <= resultSize || size == Integer.MAX_VALUE) sizes.add(size);
 		}
-		return sizes.toArray(new Integer[sizes.size()]);
+		return sizes.toArray(new Integer[0]);
 	}
 
 	private static JSONObject getJsonObject(Section<?> section, UserContext user) {
-		if (getJSONCookieString(section, user) != null) {
-			try {
-				return new JSONObject(Strings.decodeURL(getJSONCookieString(section, user)));
-			}
-			catch (JSONException e) {
-				Log.warning("Exception while parsing json", e);
-			}
+		String sectionStorage = user.getParameter(Attributes.LOCAL_SECTION_STORAGE);
+		if (sectionStorage == null) return null;
+		try {
+			return new JSONObject(sectionStorage).optJSONObject(PAGINATION_KEY);
 		}
-		return null;
-	}
-
-	private static String getJSONCookieString(Section<?> sec, UserContext user) {
-		return getCookie(user, PAGINATION_COOKIE_PREFIX + sec.getID(), null);
-	}
-
-	private static String getCookie(UserContext user, String cookieName, String defaultValue) {
-		if (user != null && user.getRequest() != null && user.getRequest().getCookies() != null) {
-			for (Cookie cookie : user.getRequest().getCookies()) {
-				if (cookie.getName().equals(cookieName)) {
-					return cookie.getValue();
-				}
-			}
+		catch (JSONException e) {
+			Log.warning("Exception while parsing json", e);
+			return null;
 		}
-		return defaultValue;
 	}
 
 	public static int getStartRow(Section<?> sec, UserContext user) {
@@ -326,7 +298,6 @@ public class PaginationRenderer implements Renderer {
 		else {
 			return UNKNOWN_RESULT_SIZE;
 		}
-
 	}
 
 	/**
@@ -414,39 +385,6 @@ public class PaginationRenderer implements Renderer {
 		return new JSONArray();
 	}
 
-	/**
-	 * Get all filters selected for this tab.le,
-	 *
-	 * @param sec  the section
-	 * @param user the user context
-	 * @return a map with all filter names which have values to be filtered by.
-	 */
-	public static Map<String, List<String>> getFilters(Section<?> sec, UserContext user) {
-		Map<String, List<String>> activeFilters = new HashMap<>();
-		try {
-			JSONObject jsonObject = getJsonObject(sec, user);
-			if (jsonObject != null && jsonObject.has(ACTIVE_FILTERS)) {
-				JSONObject json = jsonObject.getJSONObject(ACTIVE_FILTERS);
-
-				Iterator iterator = json.keys();
-				while (iterator.hasNext()) {
-					String key = (String) iterator.next();
-					List<String> filterValues = new LinkedList<>();
-					JSONArray jsonArray = json.getJSONArray(key);
-					for (int i = 0; i < jsonArray.length(); i++) {
-						filterValues.add(jsonArray.get(i).toString());
-					}
-					activeFilters.put(key, filterValues);
-				}
-			}
-			return activeFilters;
-		}
-		catch (JSONException e) {
-			Log.warning("Exception while parsing filters", e);
-		}
-		return activeFilters;
-	}
-
 	private static String getResultSizeTag(Section<?> sec, UserContext user) {
 		String resultSize = getResultSizeString(user);
 		String tag = "";
@@ -509,31 +447,4 @@ public class PaginationRenderer implements Renderer {
 		}
 		return filterList;
 	}
-
-	public static void renderHiddenFilterDiv(UserContext context, RenderResult result, Section<?> section) {
-		List<Pair<String, List<String>>> filterList = getFilterList(context);
-		result.appendHtmlTag("div", "class", "paginationFilters", "display", "none");
-
-		for (Pair<String, List<String>> filter : filterList) {
-			result.appendHtmlTag("div", "filterName", filter.getA());
-			List<String> filters = filter.getB();
-			for (String filterValue : filters) {
-				result.appendHtmlTag("div", "filterValue", filterValue);
-				result.appendHtmlTag("span");
-				String checked = "";
-				if (getFilters(section, context).containsKey(filter.getA()) &&
-						getFilters(section, context).get(filter.getA()).contains(filterValue)) {
-					checked = "checked";
-				}
-				result.appendHtml("<input type='checkbox' class='knowwe-paginationFilter' onchange='KNOWWE.core.plugin.pagination.filter(this, &#39;" + section
-						.getID() + "&#39;)' filterkey='" + filter.getA() + "' filtervalue='" + filterValue + "' " + checked + ">");
-				result.appendHtml(filterValue);
-				result.appendHtml("</span>");
-				result.appendHtml("</div>");
-			}
-			result.appendHtml("</div>");
-		}
-		result.appendHtml("</div>");
-	}
-
 }

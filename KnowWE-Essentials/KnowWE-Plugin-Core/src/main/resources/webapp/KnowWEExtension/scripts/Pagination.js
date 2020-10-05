@@ -21,6 +21,8 @@ KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 
+const sortingIcon = "sorting-icon";
+const filterIcon = "filter-icon";
 /**
  * Namespace: KNOWWE.core.plugin.pagination The KNOWWE plugin d3web namespace.
  */
@@ -28,14 +30,9 @@ KNOWWE.core.plugin.pagination = function() {
 
   let windowHeight;
 
-  function saveCookieAndUpdateNode(cookie, id) {
-    saveCookie(cookie, id);
+  function setPaginaionStateAndUpdateNode(cookie, id) {
+    setPaginationState(id, cookie);
     updateNode(id);
-  }
-
-  function saveCookie(cookie, id) {
-    const cookieStr = JSON.stringify(cookie);
-    jq$.cookie("PaginationDecoratingRenderer-" + id, cookieStr);
   }
 
   function updateNode(id) {
@@ -51,9 +48,9 @@ KNOWWE.core.plugin.pagination = function() {
   function getSortingSymbol(naturalOrder, index) {
     let cssClass;
     if (naturalOrder) {
-      cssClass = "fa fa-caret-down fa-lg";
+      cssClass = "fa fa-caret-down fa-lg " + sortingIcon;
     } else {
-      cssClass = "fa fa-caret-up fa-lg";
+      cssClass = "fa fa-caret-up fa-lg " + sortingIcon;
     }
     if (index !== 0) cssClass += " secondary";
     return jq$('<i/>', {
@@ -61,24 +58,32 @@ KNOWWE.core.plugin.pagination = function() {
     });
   }
 
-  function renderSortingSymbols(sectionId, sortingMode) {
-    const cookie = jq$.cookie("PaginationDecoratingRenderer-" + sectionId);
-    if (!cookie) return;
-    const parsedCookie = jq$.parseJSON(cookie);
-    if (!parsedCookie || !parsedCookie.sorting) return;
-    let sortLength;
-    if (sortingMode === 'multi') {
-      sortLength = (parsedCookie.sorting).length;
-    } else {
-      sortLength = 1;
-    }
-    for (let i = 0; i < sortLength; i++) {
-      const sortingSymbolParent = jq$("[pagination=" + sectionId + "] th:contains('" + parsedCookie.sorting[i].sort + "') span");
-      const sortingSymbol = jq$(sortingSymbolParent).find("i");
+  function getFilterSymbol() {
+    return jq$('<i/>', {
+      "class": 'fa fa-filter ' + filterIcon
+    });
+  }
+
+  function getPaginationState(sectionId) {
+    return KNOWWE.helper.getLocalSectionStorage(sectionId).pagination || {};
+  }
+
+  function setPaginationState(id, state) {
+    KNOWWE.helper.setToLocalSectionStorage(id, "pagination", state);
+  }
+
+  function renderSymbols(sectionId, sortingMode) {
+    const paginationCookie = getPaginationState(sectionId);
+
+    let sorting = paginationCookie.sorting || [];
+    for (let i = 0; i < (sortingMode === 'multi' ? sorting.length : 1); i++) {
+      let sort = sorting[i].sort;
+      const sortingSymbolParent = jq$("table[pagination=" + sectionId + "] th:contains('" + sort + "') span");
+      const sortingSymbol = jq$(sortingSymbolParent).find("." + sortingIcon);
       if (sortingSymbol.exists()) {
-        sortingSymbol.replaceWith(getSortingSymbol(parsedCookie.sorting[i].naturalOrder, i));
+        sortingSymbol.replaceWith(getSortingSymbol(sorting[i].naturalOrder, i));
       } else {
-        jq$(sortingSymbolParent).append(getSortingSymbol(parsedCookie.sorting[i].naturalOrder, i));
+        jq$(sortingSymbolParent).append(getSortingSymbol(sorting[i].naturalOrder, i));
       }
     }
   }
@@ -87,23 +92,25 @@ KNOWWE.core.plugin.pagination = function() {
     jq$(this.firstChild).wrap('<span></span>');
     if (!jq$(this).hasClass("notSortable")) {
       jq$(this).addClass("sortable");
-      jq$(this).find("span").bind('click',
-        function() {
+      jq$(this).find("span").bind('click', function(event) {
+          if (event.altKey) return;
           KNOWWE.core.plugin.pagination.sort(this, sectionId);
         }
       );
     }
   }
 
-  function prepareFilterableElements() {
-    const filterIcon = jq$('<i/>', {
-      "class": 'fa fa-filter knowwe-filter'
+  function enableFiltering(sectionId) {
+    const filtered = "filtered";
+
+    let $self = jq$(this);
+    $self.find("span").bind('click', function(event) {
+      if (!event.altKey) return;
+      $self.toggleClass(filtered)
+
     });
-    jq$(this).prepend(filterIcon);
-    const text = jq$(this).text();
-    const preparedFilter = jq$(".paginationFilters div[filtername=" + text + "]").detach();
     jq$(filterIcon).tooltipster({
-      content: jq$(preparedFilter),
+      content: "TEST",
       interactive: true,
       interactiveTolerance: 500,
       theme: "tooltipster-knowwe"
@@ -161,21 +168,18 @@ KNOWWE.core.plugin.pagination = function() {
 
       const sortingMode = jq$(this).attr('sortable');
 
-      jq$(this).find("th").each(
-        function(i) {
+      jq$(this).find("th").each(function(th) {
           // make <th> clickable and therefore sortable except if
           // it's stated explicitly otherwise
           if (typeof sortingMode != 'undefined') {
             enableSorting.call(this, sectionId);
           }
-          if (jq$(this).hasClass("filterable")) {
-            prepareFilterableElements.call(this);
-          }
+          enableFiltering.call(this, sectionId);
         }
       );
 
       // render sorting symbol
-      renderSortingSymbols(sectionId, sortingMode);
+      renderSymbols(sectionId, sortingMode);
 
       handlePaginationBelowTableVisibility.call(this);
     }
@@ -187,16 +191,10 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 
-  function readCookie(id) {
-    let cookieValue = jq$.cookie("PaginationDecoratingRenderer-" + id);
-    if (!cookieValue) cookieValue = "{}";
-    return cookie = jq$.parseJSON(cookieValue);
-  }
-
   return {
 
     sort: function(element, id) {
-      const cookie = readCookie(id);
+      const cookie = getPaginationState(id);
       const columnName = jq$(element).parent().attr("sortname") || jq$(element).text();
       let sorting;
       if (typeof cookie.sorting == "undefined") {
@@ -229,13 +227,13 @@ KNOWWE.core.plugin.pagination = function() {
         }
       }
       cookie.sorting = sorting;
-      saveCookieAndUpdateNode(cookie, id);
+      setPaginaionStateAndUpdateNode(cookie, id);
     },
 
     setCount: function(selected, id) {
       const $selected = jq$(selected);
 
-      const cookie = readCookie(id);
+      const cookie = getPaginationState(id);
 
       const lastCount = parseInt(cookie.count);
       const resultSize = parseInt(jq$('#' + id + " .resultSize").val());
@@ -263,7 +261,7 @@ KNOWWE.core.plugin.pagination = function() {
         cookie.count = count;
       }
 
-      saveCookieAndUpdateNode(cookie, id);
+      setPaginaionStateAndUpdateNode(cookie, id);
     },
 
     navigate: function(id, direction) {
@@ -296,17 +294,17 @@ KNOWWE.core.plugin.pagination = function() {
       }
 
 
-      const cookie = readCookie(id);
+      const cookie = getPaginationState(id);
       cookie.startRow = startRow;
       cookie.count = count;
-      saveCookieAndUpdateNode(cookie, id);
+      setPaginaionStateAndUpdateNode(cookie, id);
 
     },
 
     updateStartRow: function(selectedRow, sectionId, preventRerender) {
 
       const id = sectionId;
-      const cookie = readCookie(id);
+      const cookie = getPaginationState(id);
       const count = jq$("#" + id + " .count").val();
       let startRow = selectedRow.value;
       const search = /^\d+$/;
@@ -325,7 +323,7 @@ KNOWWE.core.plugin.pagination = function() {
         cookie.startRow = startRow;
         cookie.count = count;
       }
-      saveCookie(cookie, id);
+      setPaginationState(id, cookie);
       if (!preventRerender) updateNode(id);
     },
 
@@ -334,7 +332,7 @@ KNOWWE.core.plugin.pagination = function() {
       const value = jq$(checkbox).attr("filtervalue");
       const checked = checkbox.checked;
 
-      const cookie = readCookie(id);
+      const cookie = getPaginationState(id);
       if (typeof cookie.filters == "undefined") {
         cookie.filters = {};
         cookie.filters[key] = [];
@@ -357,7 +355,7 @@ KNOWWE.core.plugin.pagination = function() {
           cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
         }
       }
-      saveCookieAndUpdateNode(cookie, sectionId);
+      setPaginaionStateAndUpdateNode(cookie, sectionId);
     },
 
     decorateTable: function() {
