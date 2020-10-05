@@ -21,6 +21,33 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
 KNOWWE.helper = function() {
   return {
 
+    /**
+     * Add a key-value pair to the local section store (section is represented by the sectionID). All key-value pairs
+     * will be added to the rerender requestion as a JSON object.
+     *
+     * @param sectionID the id of the section to add a key-value pair to
+     * @param key the key for which to add the value
+     * @param value the value to add for the key and sectionID
+     */
+    addToLocalSectionStorage: function(sectionID, key, value) {
+      let sectionStorage = this.getLocalSectionStorage(sectionID);
+      sectionStorage[key] = value;
+      localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
+    },
+
+    /**
+     * Returns the local storage for the given sectionID as a JSON object (optionally string). To add to the
+     * local storage of the section, please use KNOWWE.helper.addToLocalSectionStorage(...).
+     *
+     * @param sectionID the id of the section to get the local section storage for
+     * @param asString specify whether the storage should be returned as a string
+     * @returns the local section storage as a JSON object (or string if desired)
+     */
+    getLocalSectionStorage: function(sectionID, asString) {
+      let storageString = localStorage.getItem(sectionID) || "{}";
+      return asString ? storageString : JSON.parse(storageString);
+    },
+
     isFontAwesomeProAvailable: function() {
       return jq$('head link[href*="font-awesome-pro"]').exists();
     },

@@ -138,7 +138,8 @@
 			const currentCounter = jq$.rerenderCounter++;
 			const data = {
 				SectionID: id,
-				counter: currentCounter
+				counter: currentCounter,
+				localSectionStorage: KNOWWE.helper.getLocalSectionStorage(id)
 			};
 			jq$.extend(data, options);
 			jq$.lastRerenderRequests[id] = currentCounter;
