@@ -148,6 +148,7 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5.0" />
 		<parameter id="scope" value="root" />
+		<parameter id="script" value="Pagination.js" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="VersionMarkupType">
