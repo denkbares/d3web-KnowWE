@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.Value;
@@ -34,6 +33,7 @@ import org.json.JSONObject;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.NumberAwareComparator;
+import com.denkbares.strings.Strings;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
@@ -48,26 +48,31 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
  */
 public class SparqlFilterProviderAction extends AbstractAction {
 
-	public static final String COLUMN_NAME = "column-name";
+	private static final String COLUMN_NAME = "column-name";
+	private static final String FILTER_TEXT_QUERY = "filter-text-query";
+	private static final String FILTER_TEXTS = "filter-texts";
+	private static final int MAX_FILTER_COUNT = 200;
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
 		if (context.getWriter() != null) {
-			Collection<String> filterTexts = getFilterTexts(context);
+			String filterTextQuery = context.getParameter(FILTER_TEXT_QUERY);
+			Collection<String> filterTexts = getFilterTexts(context, filterTextQuery);
 			context.setContentType(JSON);
 			JSONArray filterTextsArray = new JSONArray();
 			for (String text : filterTexts) {
 				filterTextsArray.put(text);
 			}
 			JSONObject response = new JSONObject();
-			response.put("filter-texts", filterTextsArray);
+			response.put(FILTER_TEXTS, filterTextsArray);
+			response.put(FILTER_TEXT_QUERY, filterTextQuery);
 			response.write(context.getWriter());
 		}
 	}
 
 	@NotNull
-	protected Collection<String> getFilterTexts(UserActionContext context) throws IOException {
+	protected Collection<String> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
 		Set<String> filterTexts = new HashSet<>();
 		Section<SparqlContentType> section = getSection(context, SparqlContentType.class);
 		String columnName = context.getParameter(COLUMN_NAME);
@@ -82,7 +87,10 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		for (BindingSet bindingSet : bindingSets) {
 			Value value = bindingSet.getValue(columnName);
 			if (value == null) continue;
-			filterTexts.add(value.stringValue());
+			String valueText = value.stringValue();
+			if (!Strings.isBlank(filterTextQuery) && !Strings.containsIgnoreCase(valueText, filterTextQuery)) continue;
+			filterTexts.add(valueText);
+			if (filterTexts.size() >= MAX_FILTER_COUNT) break;
 		}
 
 		ArrayList<String> sorted = new ArrayList<>(filterTexts);

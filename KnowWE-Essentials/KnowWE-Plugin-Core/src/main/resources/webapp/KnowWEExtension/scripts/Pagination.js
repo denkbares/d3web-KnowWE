@@ -26,7 +26,8 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {}
  */
 KNOWWE.core.plugin.pagination = function() {
 
-  const columnName = "column-name";
+  const columnNameAttribute = "column-name";
+  const filterTextQueryAttribute = "filter-text-query";
   const sortingIcon = "sorting-icon";
   const filterIcon = "filter-icon";
   const filterProviderActionAttribute = 'filter-provider-action';
@@ -41,12 +42,6 @@ KNOWWE.core.plugin.pagination = function() {
 
   function updateNode(id) {
     jq$('#' + id).rerender();
-  }
-
-  function scrollToTopNavigation(id) {
-    jq$('html, body').animate({
-      scrollTop: jq$("#" + id).offset().top
-    }, 0);
   }
 
   function getSortingSymbol(naturalOrder, index) {
@@ -76,7 +71,11 @@ KNOWWE.core.plugin.pagination = function() {
     KNOWWE.helper.setToLocalSectionStorage(id, "pagination", state);
   }
 
-  function renderSymbols(sectionId, sortingMode) {
+  function isEmpty(columnState) {
+    return columnState.selectAll && columnState.selectedTexts.length === 0 && columnState.selectedCustomTexts.length === 0;
+  }
+
+  function renderIcons(sectionId, sortingMode) {
     const paginationState = getPaginationState(sectionId);
 
     let $paginationTable = jq$("table[pagination=" + sectionId + "]");
@@ -92,9 +91,11 @@ KNOWWE.core.plugin.pagination = function() {
       }
     }
 
-    let filter = paginationState.filter || {};
-    for (let column in filter) {
-      $paginationTable.find("th:contains('" + column + "') span").add(getFilterSymbol());
+    let columns = (paginationState.filter || {}).columns || [];
+    for (let column in columns) {
+      if (!columns.hasOwnProperty(column)) continue;
+      if (isEmpty(columns[column])) continue;
+      $paginationTable.find("th:contains('" + column + "') span").prepend(getFilterSymbol());
     }
   }
 
@@ -110,81 +111,175 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 
-  function getTooltipContent($thElement, filterState, json) {
-    let checkBoxes = json[filterTextsProperty].map((text, i) => {
-      let id = "filter" + i;
-      return "<li>" +
-        "<input type='checkbox' id='" + id + "' name='" + id + "'>" +
-        "<label for='" + id + "'>" + text + "</label>" +
-        "</li>\n";
-    }).join('');
-
-    return jq$("<div><label for='filter-input'>Filter:</label><input id='filter-input'>\n" +
-      "<ul class='pagination-filter-list'>\n" +
-      checkBoxes +
-      "</ul>\n" +
-      "</div>");
-  }
-
   function enableFiltering(sectionId) {
-    const filterState = getPaginationState(sectionId).filter || {};
-
     let $thElement = jq$(this);
 
     let filterProviderAction = $thElement.attr(filterProviderActionAttribute);
     if (!filterProviderAction) return; // if no action is defined, we cannot support filtering
 
-    const getData = () => {
-      let data = {SectionID: sectionId};
-      data[columnName] = $thElement.attr(columnName);
-      return data;
+    const paginationState = getPaginationState(sectionId);
+    if (!paginationState.filter) paginationState.filter = {};
+    const filterState = paginationState.filter;
+    if (!filterState.columns) filterState.columns = {};
+
+    const columnName = $thElement.attr(columnNameAttribute);
+    if (!filterState.columns[columnName]) {
+      filterState.columns[columnName] = {
+        selectAll: true,
+        customTexts: [],
+        selectedCustomTexts: [],
+        selectedTexts: [],
+      };
+    }
+    const columnState = filterState.columns[columnName];
+    let filterTextsJson = {};
+    let latestFilterTextQuery = "";
+
+    const ajaxFilterTexts = (filterTextQuery, callback) => {
+      latestFilterTextQuery = filterTextQuery;
+      jq$.ajax({
+        url: KNOWWE.core.util.getURL({
+          action: filterProviderAction
+        }),
+        type: 'post',
+        data: function() {
+          let data = {SectionID: sectionId};
+          data[columnNameAttribute] = columnName;
+          data[filterTextQueryAttribute] = filterTextQuery;
+          return data;
+        }(),
+        success: function(json) {
+          if (json[filterTextQueryAttribute] === latestFilterTextQuery) { // if not equal, response is outdated...
+            filterTextsJson = json;
+            if (typeof callback === "function") callback();
+          }
+        },
+        error: _EC.onErrorBehavior
+      });
+    };
+
+    const generateTooltip = (origin, continueTooltip) => {
+      if (!$thElement.attr(filterProviderActionAttribute)) {
+        // nothing to do, we already retrieved the filter texts
+        continueTooltip();
+        return;
+      }
+
+      continueTooltip();
+
+      $thElement.removeAttr(filterProviderActionAttribute); // prevent second additional ajax calls
+
+      ajaxFilterTexts("", () => {
+        origin.tooltipster('content', getTooltipContent()).tooltipster('reposition');
+      });
+
     };
 
     $thElement.find("span").bind('click', function(event) {
       if (!event.altKey) return;
 
-      $thElement.toggleClass("filtered")
+      if (!$thElement.hasClass('tooltipstered')) {
 
-      $thElement.tooltipster({
-        content: "Loading filters...",
-        interactive: true,
-        interactiveTolerance: 500,
-        trigger: "click",
-        theme: "tooltipster-knowwe",
-        functionBefore: function(origin, continueTooltip) {
-          if (!$thElement.attr(filterProviderActionAttribute)) {
-            // nothing to do, we already retrieved the filter texts
-            continueTooltip();
-            return;
-          }
-
-          continueTooltip();
-
-          $thElement.removeAttr(filterProviderActionAttribute); // prevent second additional ajax calls
-
-          jq$.ajax({
-            url: "action/" + filterProviderAction,
-            data: getData(),
-            success: function(json) {
-              origin.tooltipster('content', getTooltipContent($thElement, filterState, json)).tooltipster('reposition');
-            },
-            error: function(request, status, error) {
-              KNOWWE.notification.error(error, "Cannot get filter texts", src);
-              origin.tooltipster('hide');
-            }
-          });
-
-        },
-        functionReady: function(origin, tooltip) {
-          // jq$(tooltip).find('.here').click(function() {
-          //   alert("hi")
-          // });
-        }
-
-      });
-
+        $thElement.tooltipster({
+          interactive: true,
+          interactiveTolerance: 500,
+          updateAnimation: false,
+          trigger: "click",
+          theme: "tooltipster-knowwe",
+          functionBefore: generateTooltip,
+          functionReady: initTooltip,
+          functionAfter: () => updateNode(sectionId)
+        });
+      }
+      $thElement.addClass("tooltipstered");
       $thElement.tooltipster('show');
     });
+
+    const getFilterList = () => {
+      const selectAll = columnState.selectAll;
+      const customTexts = columnState.customTexts;
+      const selectedCustomTexts = columnState.selectedCustomTexts;
+      const selectedTexts = columnState.selectedTexts.concat(customTexts);
+
+      const isSelected = (text, array) => (selectAll && !array.includes(text)) || (!selectAll && array.includes(text));
+
+      return "<ul class='pagination-filter-list'>\n" +
+        customTexts.concat(filterTextsJson[filterTextsProperty]).map((text, i) => {
+          let id = "filter" + i;
+          return "<li class='" + (isSelected(text, selectedCustomTexts) ? "custom" : "query") + "'>" +
+            "<input type='checkbox' id='" + id + "' name='" + id + "' " + (isSelected(text, selectedTexts) ? "checked" : "") + ">" +
+            "<label for='" + id + "'>" + text + "</label>" +
+            "</li>\n";
+        }).join('') +
+        "</ul>";
+    };
+
+    const updateFilterList = $tooltip => {
+      $tooltip.find('.pagination-filter-list').replaceWith(getFilterList());
+      initFilterList($tooltip);
+    };
+
+    const getTooltipContent = () => {
+      return jq$("<div class='filter-parent'><label for='filter-input'>Filter:</label><input id='filter-input'>\n" +
+        "<div><button class='toggle-button'>Toggle All</button></div>" +
+        getFilterList() +
+        "</div>");
+    };
+
+    const initFilterInput = $tooltip => {
+      $tooltip.find('#filter-input').keyup(function() {
+        const filterText = jq$(this).val();
+        filterState.filterText = filterText;
+        setPaginationState(sectionId, paginationState);
+        ajaxFilterTexts(filterText, () => {
+          updateFilterList($tooltip);
+        })
+      });
+    };
+
+    const initFilterList = function($tooltip) {
+      const deleteFromArray = (selectedTexts, value) => {
+        if (selectedTexts) {
+          const index = selectedTexts.indexOf(value);
+          if (index >= 0) selectedTexts.splice(index, 1);
+        }
+      };
+
+      $tooltip.find('li input').change(function() {
+        const text = jq$(this).parent().find('label').text();
+        if (this.checked && !columnState.selectAll || !this.checked && columnState.selectAll) {
+          if (!columnState.selectedTexts.includes(text)) {
+            columnState.selectedTexts.push(text);
+          }
+        } else {
+          deleteFromArray(columnState.selectedTexts, text);
+          deleteFromArray(columnState.selectedCustomTexts, text);
+        }
+        setPaginationState(sectionId, paginationState);
+      });
+    };
+
+    const initButtons = $tooltip => {
+      $tooltip.find('.toggle-button').click(function() {
+        if (columnState.selectedTexts.length === 0 && columnState.selectedCustomTexts.length === 0) {
+          columnState.selectAll = !columnState.selectAll;
+        } else {
+          columnState.selectAll = true;
+          columnState.selectedTexts = [];
+          columnState.selectedCustomTexts = [];
+        }
+        setPaginationState(sectionId, paginationState);
+        updateFilterList($tooltip);
+      });
+    };
+
+
+    const initTooltip = (origin, tooltip) => {
+      let $tooltip = jq$(tooltip);
+      initFilterInput($tooltip);
+      initFilterList($tooltip);
+      initButtons($tooltip);
+    };
   }
 
   function isShortTable() {
@@ -238,7 +333,7 @@ KNOWWE.core.plugin.pagination = function() {
 
       const sortingMode = jq$(this).attr('sortable');
 
-      jq$(this).find("th").each(function(th) {
+      jq$(this).find("th").each(function() {
           // make <th> clickable and therefore sortable except if
           // it's stated explicitly otherwise
           if (typeof sortingMode != 'undefined') {
@@ -249,7 +344,7 @@ KNOWWE.core.plugin.pagination = function() {
       );
 
       // render sorting symbol
-      renderSymbols(sectionId, sortingMode);
+      renderIcons(sectionId, sortingMode);
 
       handlePaginationBelowTableVisibility.call(this);
     }
@@ -265,7 +360,7 @@ KNOWWE.core.plugin.pagination = function() {
 
     sort: function(element, id) {
       const cookie = getPaginationState(id);
-      const sortingName = jq$(element).parent().attr(columnName) || jq$(element).text();
+      const sortingName = jq$(element).parent().attr(columnNameAttribute) || jq$(element).text();
       let sorting;
       if (typeof cookie.sorting == "undefined") {
         sorting = [{sort: sortingName, naturalOrder: true}];
@@ -395,37 +490,6 @@ KNOWWE.core.plugin.pagination = function() {
       }
       setPaginationState(id, cookie);
       if (!preventRerender) updateNode(id);
-    },
-
-    filter: function(checkbox, sectionId) {
-      const key = jq$(checkbox).attr("filterkey");
-      const value = jq$(checkbox).attr("filtervalue");
-      const checked = checkbox.checked;
-
-      const cookie = getPaginationState(id);
-      if (typeof cookie.filters == "undefined") {
-        cookie.filters = {};
-        cookie.filters[key] = [];
-        if (checked === true) {
-          cookie.filters[key].push(value);
-        } else {
-          cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
-        }
-      } else if (typeof cookie.filters[key] == "undefined") {
-        cookie.filters[key] = [];
-        if (checked === true) {
-          cookie.filters[key].push(value);
-        } else {
-          cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
-        }
-      } else {
-        if (checked === true) {
-          cookie.filters[key].push(value);
-        } else {
-          cookie.filters[key].splice(cookie.filters[key].indexOf(value), 1)
-        }
-      }
-      setPaginaionStateAndUpdateNode(cookie, sectionId);
     },
 
     decorateTable: function() {

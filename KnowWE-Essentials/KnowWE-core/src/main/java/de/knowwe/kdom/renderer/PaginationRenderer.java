@@ -18,10 +18,16 @@
  */
 package de.knowwe.kdom.renderer;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,37 +65,102 @@ import de.knowwe.util.Icon;
  * #getSingleColumnSorting(de.knowwe.core.kdom.parsing.Section, de.knowwe.core.user.UserContext)}
  * and {@link #getMultiColumnSorting(de.knowwe.core.kdom.parsing.Section,
  * de.knowwe.core.user.UserContext)} respectively. <br> You can exclude columns from sorting by
- * stating this explicitly like this: {@code &lt;th class="notSortable"&gt;...&lt/th&gt;}<br><br>
- * Optionally: You can apply filters to rows by preparing your table column headers with {@code
- * &lt;th class="filterable"&gt;...&lt;/th&gt;} and use in your decorated render class {@link
- * #createFilter(String, String...)} and then {@link #setFilterList(de.knowwe.core.user.UserContext,
- * Pair[])}  }. To get the active filters use {@link #getFilters(de.knowwe.core.kdom.parsing.Section,
- * de.knowwe.core.user.UserContext)}<br><br> Optionally: If the decorated renderer knows the size of
+ * stating this explicitly like this: {@code <th class="notSortable">...</th>}
+ * <p>
+ * Optionally: If the decorated renderer knows the size of
  * its result it can use {@link #setResultSize(de.knowwe.core.user.UserContext, int)} to render more
  * information in the pagination bar.
  *
  * @author Stefan Plehn
  * @created 14.01.2014
  */
-@SuppressWarnings({ "WeakerAccess" })
 public class PaginationRenderer implements Renderer {
 
 	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 10;
-	public static final String PAGINATION_KEY = "pagination";
+	private static final String PAGINATION_KEY = "pagination";
+	private static final String COLUMNS = "columns";
+	private static final String SELECTED_TEXTS = "selectedTexts";
+	private static final String SELECTED_CUSTOM_TEXTS = "selectedCustomTexts";
+	public static final String SELECT_ALL = "selectAll";
 	private final Renderer decoratedRenderer;
 
-	public static final String UNKNOWN_RESULT_SIZE = "unknown";
-	public static final String START_ROW = "startRow";
-	public static final String RESULT_SIZE = "resultsize";
-	public static final String COUNT = "count";
+	private static final String UNKNOWN_RESULT_SIZE = "unknown";
+	private static final String START_ROW = "startRow";
+	private static final String RESULT_SIZE = "resultsize";
+	private static final String COUNT = "count";
 	private static final String START_ROW_DEFAULT = "1";
-	public static final String SORTING = "sorting";
+	private static final String SORTING = "sorting";
 	private static final int COUNT_DEFAULT = 20;
 	private static final String FILTER = "filter";
-	private static final String ACTIVE_FILTERS = "filters";
 
 	public PaginationRenderer(Renderer decoratedRenderer) {
 		this.decoratedRenderer = decoratedRenderer;
+	}
+
+	@NotNull
+	public static Map<String, Set<Pattern>> getFilter(Section<?> section, UserContext user) {
+		HashMap<String, Set<Pattern>> filterMap = new HashMap<>();
+
+		JSONObject paginationSettings = getJsonObject(section, user);
+		if (paginationSettings == null) return filterMap;
+		JSONObject filter = paginationSettings.optJSONObject(FILTER);
+		if (filter == null) return filterMap;
+		JSONObject columns = filter.optJSONObject(COLUMNS);
+		if (columns == null) return filterMap;
+
+		for (Object columnKey : columns.keySet()) {
+			String columnName = (String) columnKey;
+			JSONObject columnObject = columns.optJSONObject(columnName);
+			JSONArray selectedTexts = columnObject.optJSONArray(SELECTED_TEXTS);
+			if (selectedTexts != null) {
+				// with selectAll, all texts are considered selected, except the ones given in the array
+				if (columnObject.optBoolean(SELECT_ALL)) {
+					// we have to generate a reverse pattern matching everything except the given texts
+					// will look something like: ^(?!(?:text1|text2|text3)$).*
+					if (selectedTexts.length() > 0) {
+						StringBuilder regex = new StringBuilder("^(?!(?:");
+						for (int i = 0; i < selectedTexts.length(); i++) {
+							regex.append(Pattern.quote(selectedTexts.getString(i)));
+							if (i < selectedTexts.length() - 1) regex.append("|");
+						}
+						regex.append(")$).*");
+						filterMap.computeIfAbsent(columnName, k -> new HashSet<>())
+								.add(Pattern.compile(regex.toString()));
+					}
+				}
+				// with !selectAll, only the texts given in the array are considered selected
+				else {
+					if (selectedTexts.length() > 0) {
+						for (int i = 0; i < selectedTexts.length(); i++) {
+							filterMap.computeIfAbsent(columnName, k -> new HashSet<>())
+									.add(Pattern.compile(Pattern.quote(selectedTexts.getString(i))));
+						}
+					}
+					// special case... not useful but we want to be correct -> !selectAll and nothing selected
+					// generate pattern that matches nothing at all
+					else {
+						//noinspection RegExpUnexpectedAnchor
+						filterMap.computeIfAbsent(columnName, k -> new HashSet<>()).add(Pattern.compile("a^"));
+					}
+				}
+			}
+			JSONArray selectedCustomTexts = columnObject.optJSONArray(SELECTED_CUSTOM_TEXTS);
+			if (selectedCustomTexts != null) {
+				for (int i = 0; i < selectedCustomTexts.length(); i++) {
+					String regex = selectedCustomTexts.getString(i);
+					Pattern pattern;
+					try {
+						pattern = Pattern.compile(regex);
+					}
+					catch (PatternSyntaxException e) {
+						pattern = Pattern.compile(Pattern.quote(regex));
+					}
+					filterMap.computeIfAbsent(columnName, k -> new HashSet<>()).add(pattern);
+				}
+			}
+		}
+
+		return filterMap;
 	}
 
 	@Override
@@ -407,44 +478,5 @@ public class PaginationRenderer implements Renderer {
 	 */
 	public static void setResultSize(UserContext context, int maxResult) {
 		context.getRequest().setAttribute(RESULT_SIZE, Integer.toString(maxResult));
-	}
-
-	/**
-	 * Use this method to enable those filters you created by {@link #createFilter(String,
-	 * String...)}.
-	 *
-	 * @param context the user context
-	 * @param filters created by {@link #createFilter(String, String...)}
-	 */
-	@SafeVarargs
-	public static void setFilterList(UserContext context, Pair<String, List<String>>... filters) {
-		List<Pair<String, List<String>>> filterList = new LinkedList<>();
-		Collections.addAll(filterList, filters);
-		context.getRequest().setAttribute(FILTER, filterList);
-	}
-
-	/**
-	 * Create a new filter for a table column
-	 *
-	 * @param header The name of the HTML table column header (=the string inside the {@code
-	 *               <th></th>}) tags
-	 * @param values All the values you want to be able to filter by
-	 * @return a new filter (you have to enable it (and others for other columns) by calling {@link
-	 * #setFilterList(de.knowwe.core.user.UserContext, Pair[])}.
-	 */
-	public static Pair<String, List<String>> createFilter(String header, String... values) {
-		List<String> filterTerms = new LinkedList<>();
-		Collections.addAll(filterTerms, values);
-		return new Pair<>(header, filterTerms);
-	}
-
-	private static List<Pair<String, List<String>>> getFilterList(UserContext context) {
-		@SuppressWarnings("unchecked")
-		List<Pair<String, List<String>>> filterList = (List<Pair<String, List<String>>>) context.getRequest()
-				.getAttribute(FILTER);
-		if (filterList == null) {
-			return new LinkedList<>();
-		}
-		return filterList;
 	}
 }

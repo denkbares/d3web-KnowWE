@@ -245,7 +245,9 @@ public class SparqlResultRenderer {
 	 * @created 06.12.2010
 	 */
 	public SparqlRenderResult getSparqlRenderResult(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
-		if (section.getArticleManager() != null) Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
+		if (section.getArticleManager() != null) {
+			Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
+		}
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
 		}
@@ -319,7 +321,8 @@ public class SparqlResultRenderer {
 			if (isSkipped(isTree, column++, var)) {
 				continue;
 			}
-			renderResult.appendHtmlTag("th", "column-name", var, "filter-provider-action", SparqlFilterProviderAction.class.getSimpleName());
+			renderResult.appendHtmlTag("th", "column-name", var, "filter-provider-action", SparqlFilterProviderAction.class
+					.getSimpleName());
 			renderResult.append(var.replace("_", " "));
 			renderResult.appendHtml("</th>");
 		}
@@ -332,6 +335,7 @@ public class SparqlResultRenderer {
 				List<Pair<String, Boolean>> multiColumnSorting = PaginationRenderer.getMultiColumnSorting(section, user);
 				table = (IndexedResultTableModel) table.sort(multiColumnSorting);
 			}
+			table = (IndexedResultTableModel) table.filter(PaginationRenderer.getFilter(section, user));
 			int startRow = PaginationRenderer.getStartRow(section, user);
 			int count = PaginationRenderer.getCount(section, user);
 			if (count != Integer.MAX_VALUE) {
