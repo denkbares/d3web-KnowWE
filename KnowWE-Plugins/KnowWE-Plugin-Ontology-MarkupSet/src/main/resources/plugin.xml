@@ -45,6 +45,14 @@
 		<parameter-def id="priority" type="number" />
 	</extension-point>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SparqlFilterProviderAction">
+		<parameter id="class" value="de.knowwe.ontology.sparql.SparqlFilterProviderAction" />
+		<parameter id="name" value="SparqlFilterProviderAction" />
+		<parameter id="description" value="Action SparqlFilterProviderAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ClearCachedSparqlAction">
 		<parameter id="class" value="de.knowwe.ontology.sparql.ClearCachedSparqlAction" />
 		<parameter id="name" value="ClearCachedSparqlAction" />

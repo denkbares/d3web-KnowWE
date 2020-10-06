@@ -524,7 +524,7 @@ table.knowwe-pagination th.sortable span:hover {
 	cursor: pointer;
 }
 
-table.knowwe-pagination th.sortable i {
+table.knowwe-pagination th.sortable .sorting-icon {
 	text-decoration: none;
 	margin-left: 5px;
 }
@@ -550,16 +550,26 @@ table.knowwe-pagination th img.filter:hover {
 	cursor: pointer;
 }
 
-.knowwe-filter {
-	margin-right: 5px;
-	background: linear-gradient(#036, rgb(232, 242, 249));
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+.filter-parent .pagination-filter-list {
+	list-style-type: none;
+	padding: 0;
 }
 
-input.knowwe-paginationFilter {
+.filter-parent .pagination-filter-list label {
 	position: relative;
-	top: 2px;
+	bottom: 1px;
+}
+
+.filter-parent .pagination-filter-list li {
+	white-space: pre;
+}
+
+.filter-icon {
+	padding-right: 5px;
+}
+
+.filter-parent button.toggle-button {
+	margin-top: 8px;
 }
 
 /* ################################################## */
