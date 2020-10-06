@@ -25,6 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -51,44 +54,43 @@ public class UserContextUtil {
 	 */
 	public static Map<String, String> getParameters(HttpServletRequest request) {
 		Map<String, String> parameters = new LinkedHashMap<>();
-		if (request != null) {
-			Enumeration<?> iter = request.getParameterNames();
-			boolean decode = checkForFlowChart(request.getParameter("action"));
-			while (iter.hasMoreElements()) {
-				String key = (String) iter.nextElement();
-				String value = request.getParameter(key);
-				parameters.put(key, decode ? Strings.decodeURL(value) : value);
+		if (request == null) return parameters;
+
+		Set<String> urlParameters = Stream.of(request.getQueryString().split("&"))
+				.map(pair -> pair.split("=")[0])
+				.collect(Collectors.toSet());
+		Enumeration<?> iter = request.getParameterNames();
+		while (iter.hasMoreElements()) {
+			String key = (String) iter.nextElement();
+			String value = request.getParameter(key);
+			if (urlParameters.contains(key)) { // we only have to decode parameters given via url
+				value = Strings.decodeURL(value);
 			}
+			parameters.put(key, value);
+		}
 
-			// for post request (additionally) parse the content and add them as data
-			if ("POST".equals(request.getMethod())) {
-				// do not handle file uploads, leave this to the action
-				if (!ServletFileUpload.isMultipartContent(request)) {
-					try {
-						BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8));
+		// for post request (additionally) parse the content and add them as data
+		if ("POST".equals(request.getMethod())) {
+			// do not handle file uploads, leave this to the action
+			if (!ServletFileUpload.isMultipartContent(request)) {
+				try {
+					BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8));
 
-						String line;
-						StringBuilder bob = new StringBuilder();
+					String line;
+					StringBuilder bob = new StringBuilder();
 
-						while ((line = br.readLine()) != null) {
-							bob.append(line).append("\n");
-						}
-
-						parameters.put("data", bob.toString());
+					while ((line = br.readLine()) != null) {
+						bob.append(line).append("\n");
 					}
-					catch (IOException e) {
-						Log.severe("unexpected internal error", e);
-					}
+
+					parameters.put("data", bob.toString());
+				}
+				catch (IOException e) {
+					Log.severe("unexpected internal error", e);
 				}
 			}
 		}
 		return parameters;
 	}
 
-	/**
-	 * Remove this ugly hack as soon as a proper solution for the double encoding problem is found!
-	 */
-	private static boolean checkForFlowChart(String parameter) {
-		return (parameter != null && !parameter.equalsIgnoreCase("SaveFlowchartAction"));
-	}
 }
