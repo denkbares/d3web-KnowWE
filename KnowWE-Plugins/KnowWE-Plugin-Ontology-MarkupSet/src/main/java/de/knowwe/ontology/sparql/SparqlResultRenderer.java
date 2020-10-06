@@ -54,7 +54,7 @@ public class SparqlResultRenderer {
 	private static final String RESULT_TABLE = "resultTable";
 	private static final String RESULT_TABLE_TREE = "resultTableTree";
 	private static final String USED_IDS = "usedIDs";
-	private static final Pattern ARTICLE_LINK_PATTERN = Pattern.compile("\\[\\h*(?:([^|]+)\\h*\\|\\h*)?(\\w+?://[^\\]|]+)\\h*]");
+	private static final Pattern ARTICLE_LINK_PATTERN = Pattern.compile("\\[\\h*(?:([^|]+)\\h*\\|\\h*)?(\\w+?://[^]|]+)\\h*]");
 
 	private static SparqlResultRenderer instance = null;
 
@@ -244,8 +244,8 @@ public class SparqlResultRenderer {
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
-	public SparqlRenderResult getSparqlRenderResult(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section section) {
-		Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
+	public SparqlRenderResult getSparqlRenderResult(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
+		if (section.getArticleManager() != null) Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
 		try {
 			return renderQueryResultLocked(qrt, opts, user, section);
 		}
@@ -319,7 +319,7 @@ public class SparqlResultRenderer {
 			if (isSkipped(isTree, column++, var)) {
 				continue;
 			}
-			renderResult.appendHtmlTag("th", "sortname", var);
+			renderResult.appendHtmlTag("th", "column-name", var, "filter-provider-action", SparqlFilterProviderAction.class.getSimpleName());
 			renderResult.append(var.replace("_", " "));
 			renderResult.appendHtml("</th>");
 		}

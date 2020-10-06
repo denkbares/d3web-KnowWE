@@ -22,6 +22,8 @@ package de.knowwe.ontology.sparql;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
@@ -85,6 +87,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	}
 
 	@Override
+	@Nullable
 	public String getSparqlQuery(Section<? extends SparqlType> section, UserContext context) {
 		Section<SparqlMarkupType> markupSection = Sections.ancestor(section, SparqlMarkupType.class);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);

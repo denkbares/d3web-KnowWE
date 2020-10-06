@@ -541,16 +541,19 @@ table.knowwe-pagination th img.filter:hover {
 	cursor: pointer;
 }
 
-.knowwe-filter {
-	margin-right: 5px;
-	background: linear-gradient(#036, rgb(232, 242, 249));
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+.pagination-filter-list {
+	list-style-type: none;
+	padding: 0;
+	margin-top: 10px;
 }
 
-input.knowwe-paginationFilter {
+.pagination-filter-list label {
 	position: relative;
-	top: 2px;
+	bottom: 1px;
+}
+
+.pagination-filter-list li {
+	white-space: pre;
 }
 
 /* ################################################## */

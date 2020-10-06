@@ -21,12 +21,16 @@ KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 
-const sortingIcon = "sorting-icon";
-const filterIcon = "filter-icon";
 /**
  * Namespace: KNOWWE.core.plugin.pagination The KNOWWE plugin d3web namespace.
  */
 KNOWWE.core.plugin.pagination = function() {
+
+  const columnName = "column-name";
+  const sortingIcon = "sorting-icon";
+  const filterIcon = "filter-icon";
+  const filterProviderActionAttribute = 'filter-provider-action';
+  const filterTextsProperty = "filter-texts";
 
   let windowHeight;
 
@@ -73,18 +77,24 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function renderSymbols(sectionId, sortingMode) {
-    const paginationCookie = getPaginationState(sectionId);
+    const paginationState = getPaginationState(sectionId);
 
-    let sorting = paginationCookie.sorting || [];
+    let $paginationTable = jq$("table[pagination=" + sectionId + "]");
+    let sorting = paginationState.sorting || [];
     for (let i = 0; i < (sortingMode === 'multi' ? sorting.length : 1); i++) {
       let sort = sorting[i].sort;
-      const sortingSymbolParent = jq$("table[pagination=" + sectionId + "] th:contains('" + sort + "') span");
+      const sortingSymbolParent = $paginationTable.find("th:contains('" + sort + "') span");
       const sortingSymbol = jq$(sortingSymbolParent).find("." + sortingIcon);
       if (sortingSymbol.exists()) {
         sortingSymbol.replaceWith(getSortingSymbol(sorting[i].naturalOrder, i));
       } else {
         jq$(sortingSymbolParent).append(getSortingSymbol(sorting[i].naturalOrder, i));
       }
+    }
+
+    let filter = paginationState.filter || {};
+    for (let column in filter) {
+      $paginationTable.find("th:contains('" + column + "') span").add(getFilterSymbol());
     }
   }
 
@@ -100,20 +110,80 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 
+  function getTooltipContent($thElement, filterState, json) {
+    let checkBoxes = json[filterTextsProperty].map((text, i) => {
+      let id = "filter" + i;
+      return "<li>" +
+        "<input type='checkbox' id='" + id + "' name='" + id + "'>" +
+        "<label for='" + id + "'>" + text + "</label>" +
+        "</li>\n";
+    }).join('');
+
+    return jq$("<div><label for='filter-input'>Filter:</label><input id='filter-input'>\n" +
+      "<ul class='pagination-filter-list'>\n" +
+      checkBoxes +
+      "</ul>\n" +
+      "</div>");
+  }
+
   function enableFiltering(sectionId) {
-    const filtered = "filtered";
+    const filterState = getPaginationState(sectionId).filter || {};
 
-    let $self = jq$(this);
-    $self.find("span").bind('click', function(event) {
+    let $thElement = jq$(this);
+
+    let filterProviderAction = $thElement.attr(filterProviderActionAttribute);
+    if (!filterProviderAction) return; // if no action is defined, we cannot support filtering
+
+    const getData = () => {
+      let data = {SectionID: sectionId};
+      data[columnName] = $thElement.attr(columnName);
+      return data;
+    };
+
+    $thElement.find("span").bind('click', function(event) {
       if (!event.altKey) return;
-      $self.toggleClass(filtered)
 
-    });
-    jq$(filterIcon).tooltipster({
-      content: "TEST",
-      interactive: true,
-      interactiveTolerance: 500,
-      theme: "tooltipster-knowwe"
+      $thElement.toggleClass("filtered")
+
+      $thElement.tooltipster({
+        content: "Loading filters...",
+        interactive: true,
+        interactiveTolerance: 500,
+        trigger: "click",
+        theme: "tooltipster-knowwe",
+        functionBefore: function(origin, continueTooltip) {
+          if (!$thElement.attr(filterProviderActionAttribute)) {
+            // nothing to do, we already retrieved the filter texts
+            continueTooltip();
+            return;
+          }
+
+          continueTooltip();
+
+          $thElement.removeAttr(filterProviderActionAttribute); // prevent second additional ajax calls
+
+          jq$.ajax({
+            url: "action/" + filterProviderAction,
+            data: getData(),
+            success: function(json) {
+              origin.tooltipster('content', getTooltipContent($thElement, filterState, json)).tooltipster('reposition');
+            },
+            error: function(request, status, error) {
+              KNOWWE.notification.error(error, "Cannot get filter texts", src);
+              origin.tooltipster('hide');
+            }
+          });
+
+        },
+        functionReady: function(origin, tooltip) {
+          // jq$(tooltip).find('.here').click(function() {
+          //   alert("hi")
+          // });
+        }
+
+      });
+
+      $thElement.tooltipster('show');
     });
   }
 
@@ -195,17 +265,17 @@ KNOWWE.core.plugin.pagination = function() {
 
     sort: function(element, id) {
       const cookie = getPaginationState(id);
-      const columnName = jq$(element).parent().attr("sortname") || jq$(element).text();
+      const sortingName = jq$(element).parent().attr(columnName) || jq$(element).text();
       let sorting;
       if (typeof cookie.sorting == "undefined") {
-        sorting = [{sort: columnName, naturalOrder: true}];
+        sorting = [{sort: sortingName, naturalOrder: true}];
       } else {
         sorting = cookie.sorting;
         let found = false;
         let remove = false;
         let i = 0
         for (; i < sorting.length; i++) {
-          if (sorting[i].sort === columnName) {
+          if (sorting[i].sort === sortingName) {
             if (i === 0) { // we only toggle sorting when primary sort column
               if (sorting[i].naturalOrder) { // clicked second time, reverse order
                 sorting[i].naturalOrder = false;
@@ -223,7 +293,7 @@ KNOWWE.core.plugin.pagination = function() {
           sorting.splice(i, 1);
         }
         if (!found) {
-          sorting.unshift({sort: columnName, naturalOrder: true});
+          sorting.unshift({sort: sortingName, naturalOrder: true});
         }
       }
       cookie.sorting = sorting;
