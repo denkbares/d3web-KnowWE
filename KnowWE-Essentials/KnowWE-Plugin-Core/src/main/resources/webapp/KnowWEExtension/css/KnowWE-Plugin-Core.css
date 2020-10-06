@@ -555,6 +555,18 @@ table.knowwe-pagination th img.filter:hover {
 	padding: 0;
 }
 
+.filter-parent input[type=checkbox] {
+	margin: 3px 6px 3px 4px;
+}
+
+.filter-parent > label {
+	margin: 0;
+}
+
+.filter-parent ul {
+	margin: 0.5em 0;
+}
+
 .filter-parent .pagination-filter-list label {
 	position: relative;
 	bottom: 1px;
@@ -570,6 +582,7 @@ table.knowwe-pagination th img.filter:hover {
 
 .filter-parent button.toggle-button {
 	margin-top: 8px;
+	padding: 1px 6px;
 }
 
 /* ################################################## */
