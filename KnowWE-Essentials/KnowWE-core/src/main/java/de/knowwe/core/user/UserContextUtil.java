@@ -56,17 +56,19 @@ public class UserContextUtil {
 		Map<String, String> parameters = new LinkedHashMap<>();
 		if (request == null) return parameters;
 
-		Set<String> urlParameters = Stream.of(request.getQueryString().split("&"))
-				.map(pair -> pair.split("=")[0])
-				.collect(Collectors.toSet());
-		Enumeration<?> iter = request.getParameterNames();
-		while (iter.hasMoreElements()) {
-			String key = (String) iter.nextElement();
-			String value = request.getParameter(key);
-			if (urlParameters.contains(key)) { // we only have to decode parameters given via url
-				value = Strings.decodeURL(value);
+		if(request.getQueryString() != null) {
+			Set<String> urlParameters = Stream.of(request.getQueryString().split("&"))
+					.map(pair -> pair.split("=")[0])
+					.collect(Collectors.toSet());
+			Enumeration<?> iter = request.getParameterNames();
+			while (iter.hasMoreElements()) {
+				String key = (String) iter.nextElement();
+				String value = request.getParameter(key);
+				if (urlParameters.contains(key)) { // we only have to decode parameters given via url
+					value = Strings.decodeURL(value);
+				}
+				parameters.put(key, value);
 			}
-			parameters.put(key, value);
 		}
 
 		// for post request (additionally) parse the content and add them as data
