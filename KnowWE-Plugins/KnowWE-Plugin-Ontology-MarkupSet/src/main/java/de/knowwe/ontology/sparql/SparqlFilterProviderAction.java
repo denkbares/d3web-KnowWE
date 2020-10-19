@@ -86,11 +86,17 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		CachedTupleQueryResult bindingSets = compiler.getRdf2GoCore().sparqlSelect(sparqlQuery);
 		for (BindingSet bindingSet : bindingSets) {
 			Value value = bindingSet.getValue(columnName);
-			if (value == null) continue;
+			if (value == null) {
+				filterTexts.add(""); // allow filtering for empty string
+				continue;
+			}
 			String valueText = value.stringValue();
 			if (!Strings.isBlank(filterTextQuery) && !Strings.containsIgnoreCase(valueText, filterTextQuery)) continue;
 			filterTexts.add(valueText);
-			if (filterTexts.size() >= MAX_FILTER_COUNT) break;
+			if (filterTexts.size() >= MAX_FILTER_COUNT) {
+				filterTexts.add(""); // make sure empty string is added in this case
+				break;
+			}
 		}
 
 		ArrayList<String> sorted = new ArrayList<>(filterTexts);

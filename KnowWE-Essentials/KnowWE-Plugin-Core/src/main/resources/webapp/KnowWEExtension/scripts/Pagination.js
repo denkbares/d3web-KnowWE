@@ -260,7 +260,7 @@ KNOWWE.core.plugin.pagination = function() {
           let id = "filter" + i;
           return "<li class='" + (isSelected(text, selectedCustomTexts) ? "custom" : "query") + "'>" +
             "<input type='checkbox' id='" + id + "' name='" + id + "' " + (isSelected(text, selectedTexts) ? "checked" : "") + ">" +
-            "<label for='" + id + "'>" + text + "</label>" +
+            "<label for='" + id + "'>" + (text.length === 0 ? "&lt;Empty&gt;" : text) + "</label><div style='display: none'>" + text + "</div>" +
             "</li>\n";
         }).join('') +
         "</ul>";
@@ -319,7 +319,7 @@ KNOWWE.core.plugin.pagination = function() {
       };
 
       $tooltip.find('li input').change(function() {
-        const text = jq$(this).parent().find('label').text();
+        const text = jq$(this).parent().find('div').text();
         if (this.checked && !columnState.selectAll || !this.checked && columnState.selectAll) {
           if (!columnState.selectedTexts.includes(text)) {
             columnState.selectedTexts.push(text);
