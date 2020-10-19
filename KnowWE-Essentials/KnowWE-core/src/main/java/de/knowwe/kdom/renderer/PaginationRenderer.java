@@ -82,6 +82,7 @@ public class PaginationRenderer implements Renderer {
 	private static final String SELECTED_TEXTS = "selectedTexts";
 	private static final String SELECTED_CUSTOM_TEXTS = "selectedCustomTexts";
 	public static final String SELECT_ALL = "selectAll";
+	private static final String ACTIVE = "active";
 	private final Renderer decoratedRenderer;
 
 	private static final String UNKNOWN_RESULT_SIZE = "unknown";
@@ -105,6 +106,7 @@ public class PaginationRenderer implements Renderer {
 		if (paginationSettings == null) return filterMap;
 		JSONObject filter = paginationSettings.optJSONObject(FILTER);
 		if (filter == null) return filterMap;
+		if (!filter.optBoolean(ACTIVE, false)) return filterMap;
 		JSONObject columns = filter.optJSONObject(COLUMNS);
 		if (columns == null) return filterMap;
 
@@ -188,6 +190,15 @@ public class PaginationRenderer implements Renderer {
 	public static void renderPagination(Section<?> section, UserContext user, RenderResult result, boolean show) {
 		renderTableSizeSelector(section, user, result, show);
 		renderNavigation(section, user, result, show);
+		renderFilter(section, user, result, show);
+	}
+
+	private static void renderFilter(Section<?> section, UserContext user, RenderResult result, boolean show) {
+		renderToolBarElementHeader(section, result, show);
+		String id = "filter-activator" + section.getID();
+		result.appendHtmlTag("input", "class", "filter-activator", "type", "checkbox", "id", id, "name", id);
+		result.appendHtmlElement("label", "Filter", "class", "fillText", "for", id);
+		result.appendHtml("</div>");
 	}
 
 	public static void renderToolSeparator(RenderResult navigation) {
@@ -207,7 +218,7 @@ public class PaginationRenderer implements Renderer {
 
 		Integer[] sizeArray = getSizeChoices(user);
 
-		result.appendHtml("<span class=fillText>Show </span><select class='count'>");
+		result.appendHtml("<span class='fillText'>Show </span><select class='count'>");
 
 		boolean foundSelected = false;
 		for (Integer size : sizeArray) {

@@ -512,10 +512,20 @@ i.knowwe-paginationNavigationIcons {
 	color: #808080;
 }
 
+.knowwe-paginationToolbar label {
+	font-weight: inherit;
+}
+
+.knowwe-paginationToolbar .filter-activator {
+	position: relative;
+	bottom: -1px;
+}
+
 table.knowwe-pagination th.sortable span {
 	color: #036;
 	text-decoration: none;
 	cursor: pointer;
+	user-select: none;
 }
 
 table.knowwe-pagination th.sortable span:hover {
@@ -567,7 +577,7 @@ table.knowwe-pagination th img.filter:hover {
 	margin: 0.5em 0;
 }
 
-.filter-parent .pagination-filter-list label {
+.filter-parent label {
 	position: relative;
 	bottom: 1px;
 }
@@ -580,9 +590,20 @@ table.knowwe-pagination th img.filter:hover {
 	padding-right: 5px;
 }
 
-.filter-parent button.toggle-button {
+.filter-parent .toggle-box-parent {
 	margin-top: 8px;
+}
+
+.filter-parent button.toggle-box {
 	padding: 1px 6px;
+}
+
+.filter-parent button.cancel-button {
+	margin-left: 6px;
+}
+
+.filter-parent .close-buttons {
+	margin-top: 10px;
 }
 
 /* ################################################## */
