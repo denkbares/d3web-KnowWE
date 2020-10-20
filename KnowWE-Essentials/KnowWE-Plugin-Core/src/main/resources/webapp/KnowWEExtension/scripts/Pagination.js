@@ -35,6 +35,10 @@ KNOWWE.core.plugin.pagination = function() {
 
   let windowHeight;
 
+  const getColumnName = $th => {
+    return $th.attr(columnNameAttribute) || $th.text();
+  };
+
   function setPaginationStateAndUpdateNode(cookie, id) {
     setPaginationState(id, cookie);
     updateNode(id);
@@ -101,7 +105,8 @@ KNOWWE.core.plugin.pagination = function() {
       let columns = paginationState.filter.columns || [];
       $table.find("th").each(function() {
         const $th = jq$(this);
-        $th.prepend(getFilterSymbol(isEmpty(columns[$th.text()])));
+
+        $th.prepend(getFilterSymbol(isEmpty(columns[getColumnName($th)])));
       });
     }
   }
@@ -133,7 +138,7 @@ KNOWWE.core.plugin.pagination = function() {
     const filterState = getPaginationFilterState(paginationState);
     if (!filterState.columns) filterState.columns = {};
 
-    const columnName = $thElement.attr(columnNameAttribute);
+    const columnName = getColumnName($thElement);
     if (!filterState.columns[columnName]) {
       filterState.columns[columnName] = {
         selectAll: true,
@@ -446,7 +451,7 @@ KNOWWE.core.plugin.pagination = function() {
 
     sort: function(element, id) {
       const cookie = getPaginationState(id);
-      const sortingName = jq$(element).parent().attr(columnNameAttribute) || jq$(element).text();
+      const sortingName = getColumnName(jq$(element).parent());
       let sorting;
       if (typeof cookie.sorting == "undefined") {
         sorting = [{sort: sortingName, naturalOrder: true}];
