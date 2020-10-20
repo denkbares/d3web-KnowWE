@@ -22,6 +22,7 @@ package de.knowwe.ontology.sparql;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,11 +35,15 @@ import org.json.JSONObject;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Pair;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 
 /**
  * Provides a list of filter texts for a specific SPARQL table column, to be used in filter feature for sparql tables
@@ -58,11 +63,14 @@ public class SparqlFilterProviderAction extends AbstractAction {
 
 		if (context.getWriter() != null) {
 			String filterTextQuery = context.getParameter(FILTER_TEXT_QUERY);
-			Collection<String> filterTexts = getFilterTexts(context, filterTextQuery);
+			Collection<Pair<String, String>> filterTexts = getFilterTexts(context, filterTextQuery);
 			context.setContentType(JSON);
 			JSONArray filterTextsArray = new JSONArray();
-			for (String text : filterTexts) {
-				filterTextsArray.put(text);
+			for (Pair<String, String> text : filterTexts) {
+				JSONArray textPair = new JSONArray();
+				textPair.put(text.getA());
+				textPair.put(text.getB());
+				filterTextsArray.put(textPair);
 			}
 			JSONObject response = new JSONObject();
 			response.put(FILTER_TEXTS, filterTextsArray);
@@ -71,36 +79,67 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		}
 	}
 
+	/**
+	 * Generate a collection of pairs to be shown in the filter tooltip/dialog when filtering sparql tables.
+	 * The first or A value of the pair is the actual text of the sparql value, the second or B  value is the rendered
+	 * label to be displayed besides the check box.
+	 *
+	 * @param context         context of the action
+	 * @param filterTextQuery the query for which we are currently filtering the returned list
+	 * @return a collections of pairs: value text, rendered text
+	 */
 	@NotNull
-	protected Collection<String> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
-		Set<String> filterTexts = new HashSet<>();
+	protected Collection<Pair<String, String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
+		Set<Pair<String, String>> filterTexts = new HashSet<>();
 		Section<SparqlContentType> section = getSection(context, SparqlContentType.class);
 		String columnName = context.getParameter(COLUMN_NAME);
 		if (columnName == null) return filterTexts;
 		String sparqlQuery = section.get().getSparqlQuery(section, context);
 		if (sparqlQuery == null) return filterTexts;
-
 		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
 		if (compiler == null) return filterTexts;
+
+		RenderOptions renderOptions = section.get().getRenderOptions(section, context);
 
 		CachedTupleQueryResult bindingSets = compiler.getRdf2GoCore().sparqlSelect(sparqlQuery);
 		for (BindingSet bindingSet : bindingSets) {
 			Value value = bindingSet.getValue(columnName);
 			if (value == null) {
-				filterTexts.add(""); // allow filtering for empty string
+				filterTexts.add(new Pair<>("", "<Empty>")); // allow filtering for empty string
 				continue;
 			}
-			String valueText = value.stringValue();
-			if (!Strings.isBlank(filterTextQuery) && !Strings.containsIgnoreCase(valueText, filterTextQuery)) continue;
-			filterTexts.add(valueText);
+			String rendered = getRenderedValue(compiler, columnName, value, context, renderOptions);
+
+			if (!Strings.isBlank(rendered) && !Strings.containsIgnoreCase(rendered, filterTextQuery)) continue;
+
+			filterTexts.add(new Pair<>(value.stringValue(), rendered));
 			if (filterTexts.size() >= MAX_FILTER_COUNT) {
-				filterTexts.add(""); // make sure empty string is added in this case
+				filterTexts.add(new Pair<>("", "<Empty>")); // make sure empty string is added in this case
 				break;
 			}
 		}
 
-		ArrayList<String> sorted = new ArrayList<>(filterTexts);
-		sorted.sort(NumberAwareComparator.CASE_INSENSITIVE);
+		ArrayList<Pair<String, String>> sorted = new ArrayList<>(filterTexts);
+		sorted.sort(Comparator.comparing(Pair::getA, NumberAwareComparator.CASE_INSENSITIVE));
 		return sorted;
+	}
+
+	private String getRenderedValue(Rdf2GoCompiler compiler, String columnName, Value value, UserActionContext context, RenderOptions renderOptions) {
+		String sparqlRendered = SparqlResultRenderer.getInstance()
+				.renderNode(value, columnName, renderOptions.isRawOutput(), context, compiler.getRdf2GoCore(), RenderMode.HTML);
+		String plain;
+		if (renderOptions.isAllowJSPWikiMarkup()) {
+			RenderResult renderResult = new RenderResult(context);
+			renderResult.appendHtml(sparqlRendered);
+			RenderResult renderResult2 = new RenderResult(context);
+			renderResult2.appendHtml(Environment.getInstance()
+					.getWikiConnector()
+					.renderWikiSyntax(renderResult.toStringRaw()));
+			plain = Strings.htmlToPlain(renderResult2.toString());
+		}
+		else {
+			plain = Strings.htmlToPlain(sparqlRendered);
+		}
+		return plain;
 	}
 }
