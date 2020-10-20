@@ -105,16 +105,16 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		for (BindingSet bindingSet : bindingSets) {
 			Value value = bindingSet.getValue(columnName);
 			if (value == null) {
-				filterTexts.add(new Pair<>("", "<Empty>")); // allow filtering for empty string
+				addEmptyIfNotFiltered(filterTexts, filterTextQuery);
 				continue;
 			}
 			String rendered = getRenderedValue(compiler, columnName, value, context, renderOptions);
 
-			if (!Strings.isBlank(rendered) && !Strings.containsIgnoreCase(rendered, filterTextQuery)) continue;
+			if (isFilteredOut(filterTextQuery, rendered)) continue;
 
 			filterTexts.add(new Pair<>(value.stringValue(), rendered));
 			if (filterTexts.size() >= MAX_FILTER_COUNT) {
-				filterTexts.add(new Pair<>("", "<Empty>")); // make sure empty string is added in this case
+				addEmptyIfNotFiltered(filterTexts, filterTextQuery);
 				break;
 			}
 		}
@@ -122,6 +122,16 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		ArrayList<Pair<String, String>> sorted = new ArrayList<>(filterTexts);
 		sorted.sort(Comparator.comparing(Pair::getA, NumberAwareComparator.CASE_INSENSITIVE));
 		return sorted;
+	}
+
+	private void addEmptyIfNotFiltered(Set<Pair<String, String>> filterTexts, String filterTextQuery) {
+		String rendered = "<Empty>";
+		if (isFilteredOut(filterTextQuery, rendered)) return;
+		filterTexts.add(new Pair<>("", rendered)); // allow filtering for empty string
+	}
+
+	private boolean isFilteredOut(String filterQuery, String value) {
+		return !Strings.isBlank(value) && !Strings.containsIgnoreCase(value, filterQuery);
 	}
 
 	private String getRenderedValue(Rdf2GoCompiler compiler, String columnName, Value value, UserActionContext context, RenderOptions renderOptions) {
