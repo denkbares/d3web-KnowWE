@@ -26,6 +26,7 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {}
  */
 KNOWWE.core.plugin.pagination = function() {
 
+  const initialState = "initial-state";
   const columnNameAttribute = "column-name";
   const filterTextQueryAttribute = "filter-text-query";
   const sortingIcon = "sorting-icon";
@@ -148,7 +149,7 @@ KNOWWE.core.plugin.pagination = function() {
       };
     }
     const columnState = filterState.columns[columnName];
-    const initialColumnState = JSON.parse(JSON.stringify(columnState))
+    $thElement.data(initialState, JSON.parse(JSON.stringify(columnState)));
     let filterTextsJson = {}; // will be initialized in ajaxFilterTexts
     let latestFilterTextQuery = ""; // will be initialized in ajaxFilterTexts
     let $tooltip = null; // will be initialized in initTooltip
@@ -175,7 +176,8 @@ KNOWWE.core.plugin.pagination = function() {
 
     const cancelFilter = $filterIcon => {
       jq$(document).off(paginationClickEvent); // in case we close via buttons
-      filterState.columns[columnName] = initialColumnState;
+      const $thElement = $filterIcon.parents('th');
+      filterState.columns[getColumnName($thElement)] = $thElement.data(initialState);
       setPaginationState(sectionId, paginationState);
       $filterIcon.tooltipster("hide");
     };
@@ -229,7 +231,14 @@ KNOWWE.core.plugin.pagination = function() {
       initButtons($tooltip);
       $tooltip.on("click", function(event) {
         event.stopPropagation(); // don't allow click to bubble up to document, closing tooltip again
-      })
+      });
+      $tooltip.on("keyup", function(event) {
+        if (event.originalEvent.code === 'Enter') {
+          $tooltip.find('.ok-button').click();
+        } else if (event.originalEvent.code === 'Escape') {
+          $tooltip.find('.cancel-button').click();
+        }
+      });
     };
 
 
@@ -248,9 +257,12 @@ KNOWWE.core.plugin.pagination = function() {
       });
       $filterIcon.click(function(event) {
         // hide other open filter tooltips
-        $filterIcon.parents('tr').first().find('.filter-icon').filter('.tooltipstered').each(function() {
-          saveAndCloseFilter(jq$(this));
-        })
+        $filterIcon.parents('tr').first().find('.filter-icon')
+          .filter('.tooltipstered')
+          .filter((i, e) => e !== $filterIcon[0])
+          .each(function() {
+            cancelFilter(jq$(this));
+          })
         // open filter tooltip
         $filterIcon.tooltipster("show");
         // prevent closing it again immediately
@@ -258,7 +270,7 @@ KNOWWE.core.plugin.pagination = function() {
         // close tooltip when clicking outside of it
         jq$(document).off(paginationClickEvent); // just to be sure
         jq$(document).on(paginationClickEvent, function() {
-          saveAndCloseFilter($filterIcon);
+          cancelFilter($filterIcon);
         })
       });
     }
