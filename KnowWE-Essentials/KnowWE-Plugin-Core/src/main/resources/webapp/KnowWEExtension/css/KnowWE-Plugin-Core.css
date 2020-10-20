@@ -586,6 +586,8 @@ table.knowwe-pagination th img.filter:hover {
 .filter-parent label {
 	position: relative;
 	bottom: 1px;
+	user-select: none;
+	padding: 3px 5px 3px 0;
 }
 
 .filter-parent .pagination-filter-list li {
@@ -614,6 +616,10 @@ table.knowwe-pagination th img.filter:hover {
 
 .filter-parent .close-buttons {
 	margin-top: 10px;
+}
+
+.filter-parent .close-buttons button {
+	width: 60px;
 }
 
 /* ################################################## */
