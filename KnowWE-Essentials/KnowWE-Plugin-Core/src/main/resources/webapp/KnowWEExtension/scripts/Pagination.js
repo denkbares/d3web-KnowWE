@@ -240,7 +240,7 @@ KNOWWE.core.plugin.pagination = function() {
         interactive: true,
         updateAnimation: false,
         trigger: "custom",
-        theme: "tooltipster-knowwe",
+        theme: "tooltipster-knowwe pagination-filter-tooltipster",
         content: "Loading...",
         functionBefore: generateTooltip,
         functionReady: initTooltip,

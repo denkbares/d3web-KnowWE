@@ -560,9 +560,15 @@ table.knowwe-pagination th img.filter:hover {
 	cursor: pointer;
 }
 
+.pagination-filter-tooltipster.tooltipster-knowwe .tooltipster-content {
+	max-height: 450px;
+}
+
 .filter-parent .pagination-filter-list {
 	list-style-type: none;
 	padding: 0;
+	max-height: 330px;
+	overflow: auto;
 }
 
 .filter-parent input[type=checkbox] {
@@ -588,7 +594,6 @@ table.knowwe-pagination th img.filter:hover {
 
 .filter-parent #filter-input {
 	width: 150px;
-	margin-right: 10px;
 }
 
 .filter-icon {
