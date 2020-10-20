@@ -586,6 +586,10 @@ table.knowwe-pagination th img.filter:hover {
 	white-space: pre;
 }
 
+.filter-parent #filter-input {
+	width: 150px;
+}
+
 .filter-icon {
 	padding-right: 5px;
 }
