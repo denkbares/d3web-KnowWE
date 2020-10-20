@@ -254,13 +254,15 @@ KNOWWE.core.plugin.pagination = function() {
       const selectedTexts = columnState.selectedTexts.concat(customTexts);
 
       const isSelected = (text, array) => (selectAll && !array.includes(text)) || (!selectAll && array.includes(text));
-
+      const encodeHTML = s => jq$("<div/>").text(s).html();
       return "<ul class='pagination-filter-list'>\n" +
-        customTexts.concat(filterTextsJson[filterTextsProperty]).map((text, i) => {
+        customTexts.concat(filterTextsJson[filterTextsProperty]).map((textPair, i) => {
+          let text = textPair[0];
+          let rendered = textPair[1];
           let id = "filter" + i;
           return "<li class='" + (isSelected(text, selectedCustomTexts) ? "custom" : "query") + "'>" +
             "<input type='checkbox' id='" + id + "' name='" + id + "' " + (isSelected(text, selectedTexts) ? "checked" : "") + ">" +
-            "<label for='" + id + "'>" + (text.length === 0 ? "&lt;Empty&gt;" : text) + "</label><div style='display: none'>" + text + "</div>" +
+            "<label for='" + id + "'>" + encodeHTML(rendered) + "</label><div style='display: none'>" + text + "</div>" +
             "</li>\n";
         }).join('') +
         "</ul>";
@@ -301,6 +303,7 @@ KNOWWE.core.plugin.pagination = function() {
       if (columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0) {
         $toggleBox.prop("indeterminate", true);
       } else {
+        $toggleBox.prop("indeterminate", false);
         $toggleBox.prop("checked", columnState.selectAll);
       }
 
