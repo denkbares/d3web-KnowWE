@@ -267,7 +267,7 @@ KNOWWE.core.plugin.pagination = function() {
           let id = "filter" + i;
           return "<li class='" + (isSelected(text, selectedCustomTexts) ? "custom" : "query") + "'>" +
             "<input type='checkbox' id='" + id + "' name='" + id + "' " + (isSelected(text, selectedTexts) ? "checked" : "") + ">" +
-            "<label for='" + id + "'>" + encodeHTML(rendered) + "</label><div style='display: none'>" + text + "</div>" +
+            "<label for='" + id + "'>" + encodeHTML(rendered) + "</label><div style='display: none'>" + encodeHTML(text) + "</div>" +
             "</li>\n";
         }).join('') +
         "</ul>";
