@@ -328,7 +328,6 @@ public class SparqlResultRenderer {
 		}
 		renderResult.appendHtml("</tr>");
 		IndexedResultTableModel table = IndexedResultTableModel.create(qrt);
-		PaginationRenderer.setResultSize(user, table.getSize());
 		Iterator<TableRow> iterator;
 		if (isNavigation) {
 			if (opts.isSorting()) {
@@ -336,6 +335,7 @@ public class SparqlResultRenderer {
 				table = (IndexedResultTableModel) table.sort(multiColumnSorting);
 			}
 			table = (IndexedResultTableModel) table.filter(PaginationRenderer.getFilter(section, user));
+			PaginationRenderer.setResultSize(user, table.getSize());
 			int startRow = PaginationRenderer.getStartRow(section, user);
 			int count = PaginationRenderer.getCount(section, user);
 			if (count != Integer.MAX_VALUE) {
