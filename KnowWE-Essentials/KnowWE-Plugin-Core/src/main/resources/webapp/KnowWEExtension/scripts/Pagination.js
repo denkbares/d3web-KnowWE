@@ -92,7 +92,7 @@ KNOWWE.core.plugin.pagination = function() {
     let sorting = paginationState.sorting || [];
     for (let i = 0; i < (sortingMode === 'multi' ? sorting.length : 1); i++) {
       let sort = sorting[i].sort;
-      const sortingSymbolParent = $paginationTable.find("th:contains('" + sort + "') span");
+      const sortingSymbolParent = $paginationTable.find("th[column-name=" + sort + "] span");
       const sortingSymbol = jq$(sortingSymbolParent).find("." + sortingIcon);
       if (sortingSymbol.exists()) {
         sortingSymbol.replaceWith(getSortingSymbol(sorting[i].naturalOrder, i));
