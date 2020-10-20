@@ -18,6 +18,7 @@
  */
 package de.knowwe.kdom.renderer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -82,6 +84,7 @@ public class PaginationRenderer implements Renderer {
 	private static final String SELECTED_TEXTS = "selectedTexts";
 	private static final String SELECTED_CUSTOM_TEXTS = "selectedCustomTexts";
 	public static final String SELECT_ALL = "selectAll";
+	private static final String ACTIVE = "active";
 	private final Renderer decoratedRenderer;
 
 	private static final String UNKNOWN_RESULT_SIZE = "unknown";
@@ -105,6 +108,7 @@ public class PaginationRenderer implements Renderer {
 		if (paginationSettings == null) return filterMap;
 		JSONObject filter = paginationSettings.optJSONObject(FILTER);
 		if (filter == null) return filterMap;
+		if (!filter.optBoolean(ACTIVE, false)) return filterMap;
 		JSONObject columns = filter.optJSONObject(COLUMNS);
 		if (columns == null) return filterMap;
 
@@ -112,35 +116,44 @@ public class PaginationRenderer implements Renderer {
 			String columnName = (String) columnKey;
 			JSONObject columnObject = columns.optJSONObject(columnName);
 			JSONArray selectedTexts = columnObject.optJSONArray(SELECTED_TEXTS);
+			Set<Pattern> patterns = filterMap.computeIfAbsent(columnName, k -> new HashSet<>());
 			if (selectedTexts != null) {
+				boolean containsEmptyString = false;
+				List<String> cleanedTexts = new ArrayList<>();
+				for (int i = 0; i < selectedTexts.length(); i++) {
+					String text = selectedTexts.getString(i);
+					if (Strings.isBlank(text)) {
+						containsEmptyString = true;
+					}
+					else {
+						cleanedTexts.add(text);
+					}
+				}
 				// with selectAll, all texts are considered selected, except the ones given in the array
 				if (columnObject.optBoolean(SELECT_ALL)) {
 					// we have to generate a reverse pattern matching everything except the given texts
 					// will look something like: ^(?!(?:text1|text2|text3)$).*
 					if (selectedTexts.length() > 0) {
-						StringBuilder regex = new StringBuilder("^(?!(?:");
-						for (int i = 0; i < selectedTexts.length(); i++) {
-							regex.append(Pattern.quote(selectedTexts.getString(i)));
-							if (i < selectedTexts.length() - 1) regex.append("|");
-						}
-						regex.append(")$).*");
-						filterMap.computeIfAbsent(columnName, k -> new HashSet<>())
+						StringBuilder regex = new StringBuilder("(?s)^(?!(?:");
+						regex.append(cleanedTexts.stream().map(Pattern::quote).collect(Collectors.joining("|")));
+						regex.append(")\\z).").append(containsEmptyString ? "+" : "*");
+						patterns
 								.add(Pattern.compile(regex.toString()));
 					}
 				}
 				// with !selectAll, only the texts given in the array are considered selected
 				else {
 					if (selectedTexts.length() > 0) {
-						for (int i = 0; i < selectedTexts.length(); i++) {
-							filterMap.computeIfAbsent(columnName, k -> new HashSet<>())
-									.add(Pattern.compile(Pattern.quote(selectedTexts.getString(i))));
+						for (String text : cleanedTexts) {
+							patterns.add(Pattern.compile(Pattern.quote(text)));
 						}
+						if (containsEmptyString) patterns.add(Pattern.compile("\\s*"));
 					}
 					// special case... not useful but we want to be correct -> !selectAll and nothing selected
 					// generate pattern that matches nothing at all
 					else {
 						//noinspection RegExpUnexpectedAnchor
-						filterMap.computeIfAbsent(columnName, k -> new HashSet<>()).add(Pattern.compile("a^"));
+						patterns.add(Pattern.compile("a^"));
 					}
 				}
 			}
@@ -155,7 +168,7 @@ public class PaginationRenderer implements Renderer {
 					catch (PatternSyntaxException e) {
 						pattern = Pattern.compile(Pattern.quote(regex));
 					}
-					filterMap.computeIfAbsent(columnName, k -> new HashSet<>()).add(pattern);
+					patterns.add(pattern);
 				}
 			}
 		}
@@ -188,6 +201,15 @@ public class PaginationRenderer implements Renderer {
 	public static void renderPagination(Section<?> section, UserContext user, RenderResult result, boolean show) {
 		renderTableSizeSelector(section, user, result, show);
 		renderNavigation(section, user, result, show);
+		renderFilter(section, user, result, show);
+	}
+
+	private static void renderFilter(Section<?> section, UserContext user, RenderResult result, boolean show) {
+		renderToolBarElementHeader(section, result, show);
+		String id = "filter-activator" + section.getID();
+		result.appendHtmlTag("input", "class", "filter-activator", "type", "checkbox", "id", id, "name", id);
+		result.appendHtmlElement("label", "Filter", "class", "fillText", "for", id);
+		result.appendHtml("</div>");
 	}
 
 	public static void renderToolSeparator(RenderResult navigation) {
@@ -207,7 +229,7 @@ public class PaginationRenderer implements Renderer {
 
 		Integer[] sizeArray = getSizeChoices(user);
 
-		result.appendHtml("<span class=fillText>Show </span><select class='count'>");
+		result.appendHtml("<span class='fillText'>Show </span><select class='count'>");
 
 		boolean foundSelected = false;
 		for (Integer size : sizeArray) {
