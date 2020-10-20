@@ -32,6 +32,7 @@ KNOWWE.core.plugin.pagination = function() {
   const filterIcon = "filter-icon";
   const filterProviderActionAttribute = 'filter-provider-action';
   const filterTextsProperty = "filter-texts";
+  const paginationClickEvent = "click.pagination-filter";
 
   let windowHeight;
 
@@ -111,10 +112,10 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 
-  function enableSorting(sectionId) {
-    if (!jq$(this).hasClass("notSortable")) {
-      jq$(this).addClass("sortable");
-      jq$(this).find("span").bind('click', function(event) {
+  function enableSorting($thElement, sectionId) {
+    if (!$thElement.hasClass("notSortable")) {
+      $thElement.addClass("sortable");
+      $thElement.find("span").bind('click', function(event) {
           if (event.altKey) return;
           KNOWWE.core.plugin.pagination.sort(this, sectionId);
         }
@@ -127,8 +128,7 @@ KNOWWE.core.plugin.pagination = function() {
     return paginationState.filter;
   }
 
-  function enableFiltering(sectionId) {
-    let $thElement = jq$(this);
+  function enableFiltering($thElement, sectionId) {
 
     let filterProviderAction = $thElement.attr(filterProviderActionAttribute);
     if (!filterProviderAction) return; // if no action is defined, we cannot support filtering
@@ -142,7 +142,6 @@ KNOWWE.core.plugin.pagination = function() {
     if (!filterState.columns[columnName]) {
       filterState.columns[columnName] = {
         selectAll: true,
-        columnState: "",
         customTexts: [],
         selectedCustomTexts: [],
         selectedTexts: [],
@@ -150,18 +149,32 @@ KNOWWE.core.plugin.pagination = function() {
     }
     const columnState = filterState.columns[columnName];
     const initialColumnState = JSON.parse(JSON.stringify(columnState))
-    let filterTextsJson = {};
-    let latestFilterTextQuery = "";
+    let filterTextsJson = {}; // will be initialized in ajaxFilterTexts
+    let latestFilterTextQuery = ""; // will be initialized in ajaxFilterTexts
+    let $tooltip = null; // will be initialized in initTooltip
 
     const saveAndCloseFilter = $filterIcon => {
+      jq$(document).off(paginationClickEvent); // in case we close via buttons
       if (isValidState()) {
         $filterIcon.tooltipster("hide");
       } else {
         cancelFilter($filterIcon);
       }
+      if ($tooltip && latestFilterTextQuery.length > 0) {
+        const checked = $tooltip.find(".pagination-filter-list input:checked");
+        if (checked.exists()) {
+          columnState.selectAll = false;
+          columnState.selectedTexts = [];
+          checked.each(function() {
+            columnState.selectedTexts.push(getFilterText(jq$(this)));
+          });
+          setPaginationState(sectionId, paginationState);
+        }
+      }
     };
 
     const cancelFilter = $filterIcon => {
+      jq$(document).off(paginationClickEvent); // in case we close via buttons
       filterState.columns[columnName] = initialColumnState;
       setPaginationState(sectionId, paginationState);
       $filterIcon.tooltipster("hide");
@@ -210,7 +223,7 @@ KNOWWE.core.plugin.pagination = function() {
 
     // function to initialize functionality after tooltip content has be loaded and inserted
     const initTooltip = (origin, tooltip) => {
-      let $tooltip = jq$(tooltip);
+      $tooltip = jq$(tooltip); // init tooltip variable in closure
       initFilterInput($tooltip);
       initFilterList($tooltip);
       initButtons($tooltip);
@@ -243,8 +256,8 @@ KNOWWE.core.plugin.pagination = function() {
         // prevent closing it again immediately
         event.stopPropagation();
         // close tooltip when clicking outside of it
-        jq$(document).off("click.pagination-filter");
-        jq$(document).on("click.pagination-filter", function() {
+        jq$(document).off(paginationClickEvent); // just to be sure
+        jq$(document).on(paginationClickEvent, function() {
           saveAndCloseFilter($filterIcon);
         })
       });
@@ -292,13 +305,17 @@ KNOWWE.core.plugin.pagination = function() {
 
     // init events for "Filter: ..." text input
     const initFilterInput = $tooltip => {
-      $tooltip.find('#filter-input').keyup(function() {
-        const filterText = jq$(this).val();
-        columnState.filterText = filterText;
-        setPaginationState(sectionId, paginationState);
-        ajaxFilterTexts(filterText, () => {
-          updateFilterList($tooltip);
-        })
+      $tooltip.find('#filter-input').keyup(function(event) {
+        if (event.originalEvent.code === 'Enter') {
+          saveAndCloseFilter($filterIcon);
+        } else {
+          const filterText = jq$(this).val();
+          columnState.filterText = filterText;
+          setPaginationState(sectionId, paginationState);
+          ajaxFilterTexts(filterText, () => {
+            updateFilterList($tooltip);
+          })
+        }
       });
     };
 
@@ -316,6 +333,7 @@ KNOWWE.core.plugin.pagination = function() {
     };
 
     const isValidState = () => columnState.selectAll || columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0;
+    const getFilterText = $checkBox => $checkBox.parent().find('div').text();
 
     // init events for filter check boxes
     const initFilterList = function($tooltip) {
@@ -327,7 +345,8 @@ KNOWWE.core.plugin.pagination = function() {
       };
 
       $tooltip.find('li input').change(function() {
-        const text = jq$(this).parent().find('div').text();
+        const $checkBox = jq$(this);
+        const text = getFilterText($checkBox);
         if (this.checked && !columnState.selectAll || !this.checked && columnState.selectAll) {
           if (!columnState.selectedTexts.includes(text)) {
             columnState.selectedTexts.push(text);
@@ -430,10 +449,11 @@ KNOWWE.core.plugin.pagination = function() {
       jq$(this).find("th").each(function() {
           // make <th> clickable and therefore sortable except if
           // it's stated explicitly otherwise
+          const $thElement = jq$(this);
           if (typeof sortingMode != 'undefined') {
-            enableSorting.call(this, sectionId);
+            enableSorting($thElement, sectionId);
           }
-          enableFiltering.call(this, sectionId);
+          enableFiltering($thElement, sectionId);
         }
       );
 

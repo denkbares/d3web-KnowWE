@@ -588,6 +588,7 @@ table.knowwe-pagination th img.filter:hover {
 
 .filter-parent #filter-input {
 	width: 150px;
+	margin-right: 10px;
 }
 
 .filter-icon {
