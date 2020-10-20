@@ -134,9 +134,9 @@ public class PaginationRenderer implements Renderer {
 					// we have to generate a reverse pattern matching everything except the given texts
 					// will look something like: ^(?!(?:text1|text2|text3)$).*
 					if (selectedTexts.length() > 0) {
-						StringBuilder regex = new StringBuilder("^(?!(?:");
+						StringBuilder regex = new StringBuilder("(?s)^(?!(?:");
 						regex.append(cleanedTexts.stream().map(Pattern::quote).collect(Collectors.joining("|")));
-						regex.append(")$).").append(containsEmptyString ? "+" : "*");
+						regex.append(")\\z).").append(containsEmptyString ? "+" : "*");
 						patterns
 								.add(Pattern.compile(regex.toString()));
 					}
