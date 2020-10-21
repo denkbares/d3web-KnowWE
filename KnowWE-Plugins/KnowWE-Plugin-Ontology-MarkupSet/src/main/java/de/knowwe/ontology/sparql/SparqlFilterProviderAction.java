@@ -20,6 +20,7 @@
 package de.knowwe.ontology.sparql;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -55,6 +56,21 @@ public class SparqlFilterProviderAction extends AbstractAction {
 	private static final String FILTER_TEXT_QUERY = "filter-text-query";
 	private static final String FILTER_TEXTS = "filter-texts";
 	private static final int MAX_FILTER_COUNT = 200;
+	public static final String EMPTY = "<Empty>";
+	private static final Comparator<String> COMPARATOR = (o1, o2) -> {
+		if (EMPTY.equals(o1) && EMPTY.equals(o2)) {
+			return 0;
+		}
+		else if (EMPTY.equals(o1)) {
+			return -1;
+		}
+		else if (EMPTY.equals(o2)) {
+			return 1;
+		}
+		else {
+			return NumberAwareComparator.CASE_INSENSITIVE.compare(o1, o2);
+		}
+	};
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -66,7 +82,7 @@ public class SparqlFilterProviderAction extends AbstractAction {
 			JSONArray filterTextsArray = new JSONArray();
 			filterTexts.entrySet()
 					.stream()
-					.sorted(Map.Entry.comparingByValue(NumberAwareComparator.CASE_INSENSITIVE))
+					.sorted(Map.Entry.comparingByValue(COMPARATOR))
 					.forEach(e -> {
 						JSONArray textPair = new JSONArray();
 						textPair.put(e.getKey());
@@ -134,9 +150,8 @@ public class SparqlFilterProviderAction extends AbstractAction {
 	}
 
 	private void addEmptyIfNotFiltered(Map<String, String> filterTexts, String filterTextQuery) {
-		String rendered = "<Empty>";
-		if (isFilteredOut(filterTextQuery, rendered)) return;
-		filterTexts.put("", rendered); // allow filtering for empty string
+		if (isFilteredOut(filterTextQuery, EMPTY)) return;
+		filterTexts.put("", EMPTY); // allow filtering for empty string
 	}
 
 	private boolean isFilteredOut(String filterQuery, String value) {
