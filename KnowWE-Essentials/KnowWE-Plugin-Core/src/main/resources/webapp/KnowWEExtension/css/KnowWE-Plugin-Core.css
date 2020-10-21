@@ -598,6 +598,26 @@ table.knowwe-pagination th img.filter:hover {
 	width: 150px;
 }
 
+.filter-parent .filter-input-indicator-parent {
+	display: inline-block;
+	height: 22px;
+	width: 22px;
+	overflow: hidden;
+	vertical-align: middle;
+	visibility: hidden;
+	opacity: 0;
+}
+
+.filter-parent .filter-input-indicator-parent.loading-texts {
+	visibility: initial;
+	opacity: 1;
+	transition: opacity 200ms ease-in 200ms;
+}
+
+.filter-parent .filter-input-indicator {
+	padding: 5px;
+}
+
 .filter-icon {
 	padding-right: 5px;
 }
