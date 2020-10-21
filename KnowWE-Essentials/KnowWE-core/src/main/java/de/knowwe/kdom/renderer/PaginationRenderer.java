@@ -182,7 +182,6 @@ public class PaginationRenderer implements Renderer {
 		result.appendHtmlTag("div", "class", "knowwe-paginationWrapper", "id", section.getID());
 		RenderResult table = new RenderResult(user);
 		decoratedRenderer.render(section, user, table);
-		RenderResult pagination = new RenderResult(user);
 
 		String resultString = PaginationRenderer.getResultSizeString(user);
 		boolean show = true;
@@ -190,10 +189,9 @@ public class PaginationRenderer implements Renderer {
 			int resultSize = Integer.parseInt(resultString);
 			show = resultSize > DEFAULT_SHOW_NAVIGATION_MAX_RESULTS;
 		}
-		PaginationRenderer.renderPagination(section, user, pagination, show);
-		result.append(pagination);
+		PaginationRenderer.renderPagination(section, user, result, show);
 		result.append(table);
-		result.append(pagination);
+		PaginationRenderer.renderPagination(section, user, result, show);
 
 		result.appendHtml("</div>");
 	}
@@ -206,9 +204,16 @@ public class PaginationRenderer implements Renderer {
 
 	private static void renderFilter(Section<?> section, UserContext user, RenderResult result, boolean show) {
 		renderToolBarElementHeader(section, result, show);
-		String id = "filter-activator" + section.getID();
-		result.appendHtmlTag("input", "class", "filter-activator", "type", "checkbox", "id", id, "name", id);
-		result.appendHtmlElement("label", "Filter", "class", "fillText", "for", id);
+
+		// generate unique id in case the filter is added multiple times
+		String id = "filter-activator-" + section.getID();
+		Integer activators = (Integer) user.getRequest().getAttribute(id);
+		if (activators == null) activators = 0;
+		String uniqueId = id + "-" + activators;
+		user.getRequest().setAttribute(id, activators + 1);
+
+		result.appendHtmlTag("input", "class", "filter-activator", "type", "checkbox", "id", uniqueId, "name", uniqueId);
+		result.appendHtmlElement("label", "Filter", "class", "fillText", "for", uniqueId);
 		result.appendHtml("</div>");
 	}
 
@@ -488,7 +493,7 @@ public class PaginationRenderer implements Renderer {
 			int resultSizeInt = Integer.parseInt(resultSize);
 			tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
 			tag += "<span class=fillText>" + (getCount(sec, user) == Integer.MAX_VALUE ? "" : " of");
-			tag += " " + resultSize + " " + Strings.pluralOf(resultSizeInt,"row", false) + "</span>";
+			tag += " " + resultSize + " " + Strings.pluralOf(resultSizeInt, "row", false) + "</span>";
 		}
 		return tag;
 	}
