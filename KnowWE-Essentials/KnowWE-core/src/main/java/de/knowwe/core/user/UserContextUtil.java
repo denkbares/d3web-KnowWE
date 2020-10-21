@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -56,7 +57,9 @@ public class UserContextUtil {
 		Map<String, String> parameters = new LinkedHashMap<>();
 		if (request == null) return parameters;
 
-		Set<String> urlParameters = Stream.of(request.getQueryString().split("&"))
+		Set<String> urlParameters = request.getQueryString() == null
+				? Collections.emptySet()
+				: Stream.of(request.getQueryString().split("&"))
 				.map(pair -> pair.split("=")[0])
 				.collect(Collectors.toSet());
 		Enumeration<?> iter = request.getParameterNames();
@@ -92,5 +95,4 @@ public class UserContextUtil {
 		}
 		return parameters;
 	}
-
 }
