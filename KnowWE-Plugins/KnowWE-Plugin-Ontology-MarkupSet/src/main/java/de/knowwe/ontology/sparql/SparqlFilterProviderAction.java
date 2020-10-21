@@ -20,10 +20,9 @@
 package de.knowwe.ontology.sparql;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.Value;
@@ -35,7 +34,6 @@ import org.json.JSONObject;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -63,15 +61,18 @@ public class SparqlFilterProviderAction extends AbstractAction {
 
 		if (context.getWriter() != null) {
 			String filterTextQuery = context.getParameter(FILTER_TEXT_QUERY);
-			Collection<Pair<String, String>> filterTexts = getFilterTexts(context, filterTextQuery);
+			@NotNull Map<String, String> filterTexts = getFilterTexts(context, filterTextQuery);
 			context.setContentType(JSON);
 			JSONArray filterTextsArray = new JSONArray();
-			for (Pair<String, String> text : filterTexts) {
-				JSONArray textPair = new JSONArray();
-				textPair.put(text.getA());
-				textPair.put(text.getB());
-				filterTextsArray.put(textPair);
-			}
+			filterTexts.entrySet()
+					.stream()
+					.sorted(Map.Entry.comparingByValue(NumberAwareComparator.CASE_INSENSITIVE))
+					.forEach(e -> {
+						JSONArray textPair = new JSONArray();
+						textPair.put(e.getKey());
+						textPair.put(e.getValue());
+						filterTextsArray.put(textPair);
+					});
 			JSONObject response = new JSONObject();
 			response.put(FILTER_TEXTS, filterTextsArray);
 			response.put(FILTER_TEXT_QUERY, filterTextQuery);
@@ -80,17 +81,16 @@ public class SparqlFilterProviderAction extends AbstractAction {
 	}
 
 	/**
-	 * Generate a collection of pairs to be shown in the filter tooltip/dialog when filtering sparql tables.
-	 * The first or A value of the pair is the actual text of the sparql value, the second or B  value is the rendered
-	 * label to be displayed besides the check box.
+	 * Generate a map of filter texts (value text to rendered text) to be shown filtering a sparql table
 	 *
 	 * @param context         context of the action
 	 * @param filterTextQuery the query for which we are currently filtering the returned list
-	 * @return a collections of pairs: value text, rendered text
+	 * @return a map with the filter texts
 	 */
 	@NotNull
-	protected Collection<Pair<String, String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
-		Set<Pair<String, String>> filterTexts = new HashSet<>();
+	protected Map<String, String> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
+		Map<String, String> filterTexts = new HashMap<>();
+		Set<String> filteredOut = new HashSet<>();
 		Section<SparqlContentType> section = getSection(context, SparqlContentType.class);
 		String columnName = context.getParameter(COLUMN_NAME);
 		if (columnName == null) return filterTexts;
@@ -108,26 +108,35 @@ public class SparqlFilterProviderAction extends AbstractAction {
 				addEmptyIfNotFiltered(filterTexts, filterTextQuery);
 				continue;
 			}
+
+			String valueText = value.stringValue();
+			// no need to do expensive rendering if already contained
+			if (filterTexts.containsKey(valueText) || filteredOut.contains(valueText)) continue;
+
 			String rendered = getRenderedValue(compiler, columnName, value, context, renderOptions);
+			if (isFilteredOut(filterTextQuery, rendered)) {
+				filteredOut.add(valueText);
+				continue;
+			}
 
-			if (isFilteredOut(filterTextQuery, rendered)) continue;
-
-			filterTexts.add(new Pair<>(value.stringValue(), rendered));
+			filterTexts.put(valueText, rendered);
 			if (filterTexts.size() >= MAX_FILTER_COUNT) {
-				addEmptyIfNotFiltered(filterTexts, filterTextQuery);
 				break;
 			}
 		}
 
-		ArrayList<Pair<String, String>> sorted = new ArrayList<>(filterTexts);
-		sorted.sort(Comparator.comparing(Pair::getA, NumberAwareComparator.CASE_INSENSITIVE));
-		return sorted;
+		if (filterTexts.size() >= MAX_FILTER_COUNT) {
+			// we cannot be sure yet if empty cells exist, add <empty> just to be sure
+			addEmptyIfNotFiltered(filterTexts, filterTextQuery);
+		}
+
+		return filterTexts;
 	}
 
-	private void addEmptyIfNotFiltered(Set<Pair<String, String>> filterTexts, String filterTextQuery) {
+	private void addEmptyIfNotFiltered(Map<String, String> filterTexts, String filterTextQuery) {
 		String rendered = "<Empty>";
 		if (isFilteredOut(filterTextQuery, rendered)) return;
-		filterTexts.add(new Pair<>("", rendered)); // allow filtering for empty string
+		filterTexts.put("", rendered); // allow filtering for empty string
 	}
 
 	private boolean isFilteredOut(String filterQuery, String value) {

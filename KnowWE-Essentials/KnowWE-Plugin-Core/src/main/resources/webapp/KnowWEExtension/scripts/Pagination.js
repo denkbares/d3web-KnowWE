@@ -64,11 +64,11 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function getFilterSymbol(empty) {
-    const symbol = jq$('<i/>', {
-      "class": 'fa fa-filter ' + filterIcon
-    });
-    if (empty) symbol.css("color", "grey");
-    return symbol;
+    const $symbol = jq$('<i/>', {"class": 'fa-filter'});
+    $symbol.addClass(filterIcon);
+    $symbol.addClass(empty ? "far" : "fa");
+    if (empty) $symbol.css("color", "grey");
+    return $symbol;
   }
 
   function getPaginationState(sectionId) {
@@ -199,9 +199,26 @@ KNOWWE.core.plugin.pagination = function() {
 
     };
 
+    // show little spinner at the filter text input
+    const showSpinner = () => {
+      if ($tooltip) {
+        $tooltip.find('.filter-input-indicator-parent').addClass("loading-texts")
+        console.log("show");
+      }
+    };
+
+    // hide little spinner at the filter text input
+    const hideSpinner = () => {
+      if ($tooltip) {
+        $tooltip.find('.filter-input-indicator-parent').removeClass("loading-texts")
+        console.log("hide");
+      }
+    };
+
     // function to get filter texts
     const ajaxFilterTexts = (filterTextQuery, callback) => {
       latestFilterTextQuery = filterTextQuery;
+      showSpinner($tooltip);
       jq$.ajax({
         url: KNOWWE.core.util.getURL({
           action: filterProviderAction
@@ -216,10 +233,16 @@ KNOWWE.core.plugin.pagination = function() {
         success: function(json) {
           if (json[filterTextQueryAttribute] === latestFilterTextQuery) { // if not equal, response is outdated...
             filterTextsJson = json;
-            if (typeof callback === "function") callback();
+            if (typeof callback === "function") {
+              callback();
+            }
+            hideSpinner();
           }
         },
-        error: _EC.onErrorBehavior
+        error: function() {
+          hideSpinner();
+          _EC.onErrorBehavior();
+        }
       });
     };
 
@@ -306,7 +329,8 @@ KNOWWE.core.plugin.pagination = function() {
 
     // generate html for tooltip content
     const getTooltipContent = () => {
-      return jq$("<div class='filter-parent'><label for='filter-input'>Filter:</label><input id='filter-input'>\n" +
+      return jq$("<div class='filter-parent'><label for='filter-input'>Filter:</label><input id='filter-input'>" +
+        "<div class='filter-input-indicator-parent'><i class='filter-input-indicator fas fa-spinner fa-pulse'/></div>\n" +
         "<div class='toggle-box-parent'><input class='toggle-box' id='toggle-checkbox' type='checkbox'><label for='toggle-checkbox'>All</label></div>" +
         getFilterList() +
         "<div class='close-buttons'>" +
