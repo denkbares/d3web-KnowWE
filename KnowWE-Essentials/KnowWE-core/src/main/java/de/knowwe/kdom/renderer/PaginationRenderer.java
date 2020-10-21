@@ -78,7 +78,7 @@ import de.knowwe.util.Icon;
  */
 public class PaginationRenderer implements Renderer {
 
-	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 0;
+	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = -1; // -1 to still show pagination if all entries are filtered out
 	private static final String PAGINATION_KEY = "pagination";
 	private static final String COLUMNS = "columns";
 	private static final String SELECTED_TEXTS = "selectedTexts";
