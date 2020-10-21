@@ -1,13 +1,21 @@
+.type_Sparql a.anchor {
+	display: none;
+}
+
+.type_Sparql.defaultMarkupFrame {
+	padding-top: 2px;
+}
+
 .sparqlTable .border .sparqltable td, .sparqlTable .border .sparqltable th {
 	border: 1px solid #DDD;
 }
 
 .sparqlTable TABLE.sparqltable {
-	 margin: 0px;
-	 margin-top: 5px;
-	 margin-bottom: 5px;
-	 border: transparent;
- }
+	margin: 0px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	border: transparent;
+}
 
 .sparqlTable TABLE.sparqltable.logLevel {
 	border-style: dashed;

@@ -519,6 +519,7 @@ i.knowwe-paginationNavigationIcons {
 .knowwe-paginationToolbar .filter-activator {
 	position: relative;
 	bottom: -1px;
+	margin: 3px 3px 3px 4px;
 }
 
 table.knowwe-pagination th.sortable span {
