@@ -78,7 +78,7 @@ import de.knowwe.util.Icon;
  */
 public class PaginationRenderer implements Renderer {
 
-	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 10;
+	public static final int DEFAULT_SHOW_NAVIGATION_MAX_RESULTS = 0;
 	private static final String PAGINATION_KEY = "pagination";
 	private static final String COLUMNS = "columns";
 	private static final String SELECTED_TEXTS = "selectedTexts";
@@ -485,9 +485,10 @@ public class PaginationRenderer implements Renderer {
 			tag += "<span class=fillText> rows (overall number unknown)</span>";
 		}
 		else {
+			int resultSizeInt = Integer.parseInt(resultSize);
 			tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
 			tag += "<span class=fillText>" + (getCount(sec, user) == Integer.MAX_VALUE ? "" : " of");
-			tag += " " + resultSize + " rows</span>";
+			tag += " " + resultSize + " " + Strings.pluralOf(resultSizeInt,"row", false) + "</span>";
 		}
 		return tag;
 	}
