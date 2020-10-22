@@ -22,6 +22,8 @@ import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 public class TrimDataTypeNodeRenderer implements SparqlResultNodeRenderer {

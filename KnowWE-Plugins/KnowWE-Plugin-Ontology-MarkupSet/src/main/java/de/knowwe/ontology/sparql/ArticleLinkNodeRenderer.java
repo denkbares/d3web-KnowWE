@@ -14,6 +14,8 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode;
 
 public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 

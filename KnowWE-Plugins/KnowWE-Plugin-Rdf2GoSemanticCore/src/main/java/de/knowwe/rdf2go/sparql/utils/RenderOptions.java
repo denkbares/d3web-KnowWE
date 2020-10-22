@@ -30,6 +30,7 @@ public class RenderOptions {
 	private List<StyleOption> tableStyles;
 	private boolean allowJSPWikiMarkup;
 	private List<StyleOption> columnWidths;
+	private RenderMode renderMode = RenderMode.HTML;
 
 	public RenderOptions(String id) {
 		this.zebraMode = true;
@@ -185,6 +186,29 @@ public class RenderOptions {
 
 	public void setAllowJSPWikiMarkup(boolean allowJSPWikiMarkup) {
 		this.allowJSPWikiMarkup = allowJSPWikiMarkup;
+	}
+
+	public void setRenderMode(RenderMode renderMode) {
+		this.renderMode = renderMode;
+	}
+
+	public RenderMode getRenderMode() {
+		return renderMode;
+	}
+
+	public enum RenderMode {
+		/**
+		 * This is the default. Support HTML content in the sparql result.
+		 */
+		HTML,
+		/**
+		 * Display sparql result only using plain text
+		 */
+		PlainText,
+		/**
+		 * Try to add tool menus in the sparql result, where appropriate
+		 */
+		ToolMenu
 	}
 
 	public static class StyleOption {

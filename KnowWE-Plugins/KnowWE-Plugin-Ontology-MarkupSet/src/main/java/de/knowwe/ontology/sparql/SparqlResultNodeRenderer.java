@@ -22,6 +22,7 @@ import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 
 /**
  * Renderer for the {@link Value}s of the {@link QueryResultTable} returned by
@@ -41,9 +42,8 @@ public interface SparqlResultNodeRenderer {
 	 * @created 13.07.2012
 	 * @param node
 	 * @param text the text of the node to render or alter
-	 * @param variable the name of the variable of this node (or the column name
-	 * */
-	String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode);
+	 * @param variable the name of the variable of this node (or the column name    */
+	String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderOptions.RenderMode mode);
 
 	/**
 	 * If the method returns <tt>false</tt>, the returned String of the method

@@ -19,12 +19,14 @@
  */
 package de.knowwe.ontology.sparql;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -41,6 +43,8 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.util.Color;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class SparqlContentType extends AbstractType implements SparqlType {
 
@@ -97,24 +101,15 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 	@Override
 	public RenderOptions getRenderOptions(Section<? extends SparqlType> section, UserContext context) {
-		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 
 		RenderOptions renderOpts = new RenderOptions(section.getID());
+		Section<DefaultMarkupType> markupSection = $(section).closest(DefaultMarkupType.class).getFirst();
 
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
-		renderOpts.setRdf2GoCore(core);
-		setRenderOptions(markupSection, renderOpts);
-
-		return renderOpts;
-	}
-
-	private void setRenderOptions(Section<DefaultMarkupType> markupSection, RenderOptions renderOpts) {
+		renderOpts.setRdf2GoCore(Rdf2GoUtils.getRdf2GoCore(markupSection));
 		renderOpts.setRawOutput(checkAnnotation(markupSection, SparqlMarkupType.RAW_OUTPUT));
-		renderOpts.setSorting(checkSortingAnnotation(markupSection,
-				SparqlMarkupType.SORTING));
+		renderOpts.setSorting(checkSortingAnnotation(markupSection, SparqlMarkupType.SORTING));
 		renderOpts.setZebraMode(checkAnnotation(markupSection, SparqlMarkupType.ZEBRAMODE, true));
-		renderOpts.setTree(Boolean.parseBoolean(DefaultMarkupType.getAnnotation(markupSection,
-				SparqlMarkupType.TREE)));
+		renderOpts.setTree(Boolean.parseBoolean(DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TREE)));
 		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER, true));
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
 		renderOpts.setColor(checkColor(markupSection, SparqlMarkupType.LOG_LEVEL, Color.NONE));
@@ -122,13 +117,25 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setTableStyles(getStyles(markupSection, SparqlMarkupType.TABLESTYLE));
 		renderOpts.setAllowJSPWikiMarkup(checkAnnotation(markupSection, SparqlMarkupType.ALLOW_JSPWIKIMARKUP, true));
 		renderOpts.setColumnWidth(getStyles(markupSection, SparqlMarkupType.COLUMNWIDTH));
-
 		renderOpts.setTimeout(getTimeout(markupSection));
+		renderOpts.setRenderMode(getRenderMode(markupSection));
+
+		return renderOpts;
+	}
+
+	private RenderOptions.RenderMode getRenderMode(Section<?> section) {
+		String annotation = DefaultMarkupType.getAnnotation(section, SparqlMarkupType.RENDER_MODE);
+		if (annotation == null) return RenderOptions.RenderMode.HTML;
+		try {
+			return RenderOptions.RenderMode.valueOf(annotation);
+		}
+		catch (IllegalArgumentException e) {
+			return RenderOptions.RenderMode.HTML;
+		}
 	}
 
 	private List<RenderOptions.StyleOption> getStyles(Section<DefaultMarkupType> markupSection, String columnstyle) {
-		//noinspection unchecked
-		return (List<RenderOptions.StyleOption>) markupSection.getObject(columnstyle);
+		return markupSection == null ? Collections.emptyList() : markupSection.getObject(columnstyle);
 	}
 
 	private Color checkColor(Section<DefaultMarkupType> markupSection, String logLevel, Color none) {

@@ -37,7 +37,6 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -45,8 +44,6 @@ import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.util.Color;
-
-import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class SparqlResultRenderer {
 
@@ -378,7 +375,7 @@ public class SparqlResultRenderer {
 					: "<tr class='" + Strings.concat(" ", classNames) + "'");
 
 			if (isTree) {
-				ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(RESULT_TABLE_TREE);
+				ResultTableHierarchy tree = section.getObject(RESULT_TABLE_TREE);
 				Value childValue = row.getValue(childIdVariable);
 				Value parentValue = row.getValue(parentIdVariable);
 				String valueID = valueToID(childValue, parentValue == null ? "" : parentValue.stringValue());
@@ -397,10 +394,6 @@ public class SparqlResultRenderer {
 					continue;
 				}
 
-				Value node = row.getValue(var);
-				String erg = renderNode(node, var, rawOutput, user, opts.getRdf2GoCore(),
-						getRenderMode(section));
-
 				List<RenderOptions.StyleOption> allColumnStyles = Stream.concat(columnStyle.stream(), columnWidths.stream())
 						.collect(Collectors.toList());
 				if (getStyleForKey(var, allColumnStyles).isEmpty()) {
@@ -414,13 +407,8 @@ public class SparqlResultRenderer {
 							.length() - 1) + "; overflow-wrap: break-word'" + ">");
 				}
 
-				if (renderJSPWikiMarkup) {
-					erg = renderExternalJSPWikiLinks(erg);
-					renderResult.append(erg);
-				}
-				else {
-					renderResult.appendJSPWikiMarkup(erg);
-				}
+				renderNode(row.getValue(var), var, user, opts, renderResult);
+
 				renderResult.appendHtml("</td>\n");
 			}
 			renderResult.appendHtml("</tr>");
@@ -429,6 +417,110 @@ public class SparqlResultRenderer {
 		renderResult.appendHtml("</table>");
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());
+	}
+
+	private boolean isSkipped(boolean isTree, int column, String var) {
+		boolean skip = false;
+		// ignore first two columns if we are in tree mode
+		if (isTree && column < 2) {
+			skip = true;
+		}
+		// ignore column 'sortValue', which should be hidden
+		if (isTree && var.equals(ResultTableHierarchy.SORT_VALUE)) {
+			skip = true;
+		}
+		return skip;
+	}
+
+	private boolean isEmpty(CachedTupleQueryResult qrt) {
+		if (qrt.getBindingSets().isEmpty()) {
+			return true;
+		}
+		if (qrt.getBindingSets().size() == 1) {
+			// some queries return one result with only blank entries, we ignore them as their rendering is weird
+			BindingSet bindings = qrt.getBindingSets().get(0);
+			boolean empty = true;
+			for (Binding binding : bindings) {
+				if (!Strings.isBlank(binding.getValue().stringValue())) {
+					empty = false;
+					break;
+				}
+			}
+			return empty;
+		}
+		return false;
+	}
+
+	public void getTreeChildren(Section<? extends SparqlType> section, String parentNodeID, UserActionContext user, RenderResult result) {
+		parentNodeID = parentNodeID.replace("sparql-id-", "");
+		final IndexedResultTableModel table = section.getObject(RESULT_TABLE);
+		final ResultTableHierarchy tree = section.getObject(RESULT_TABLE_TREE);
+		RenderOptions opts = section.get().getRenderOptions(section, user);
+		boolean isTree = opts.isTree();
+		String query = section.get().getSparqlQuery(section, user);
+		boolean renderJSPWikiMarkup = opts.isAllowJSPWikiMarkup();
+
+		CachedTupleQueryResult qrt = null;
+		try {
+			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
+					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout()));
+			qrt = section.get().postProcessResult(qrt, user, opts);
+		}
+		catch (RuntimeException e) {
+			handleRuntimeException(section, user, result, e);
+		}
+
+		if (qrt != null) {
+			List<String> variables = qrt.getBindingNames();
+			Map<String, Value> usedIDs = section.getObject(USED_IDS);
+			Collection<TableRow> parents = table.getRowsForKey(usedIDs.get(parentNodeID));
+			for (TableRow parent : parents) {
+				for (TableRow child : tree.getChildren(parent)) {
+					Value childValue = child.getValue(qrt.getBindingNames().get(0));
+					String childId = valueToID(childValue, parentNodeID);
+					usedIDs.put(childId, childValue);
+					result.appendHtml("<tr class='treetr' data-tt-id='sparql-id-").append(childId).append("'");
+					result.append(" data-tt-parent-id='sparql-id-")
+							.append(parentNodeID).append("'");
+					if (!tree.getChildren(child).isEmpty()) {
+						result.append(" data-tt-branch='true' ");
+					}
+					result.append(">");
+					int column = 0;
+					for (String var : variables) {
+						if (isSkipped(isTree, column++, var)) {
+							continue;
+						}
+
+						result.appendHtml("<td>");
+						renderNode(child.getValue(var), var, user, opts, result);
+						result.appendHtml("</td>\n");
+					}
+					result.appendHtml("</tr>");
+				}
+			}
+		}
+	}
+
+	private String valueToID(Value childValue, String parentValue) {
+		if (childValue == null) {
+			return null;
+		}
+		String valueString = childValue.stringValue() + parentValue;
+		int code = valueString.replaceAll("[\\s\"]+", "").hashCode();
+		return Integer.toString(code);
+	}
+
+	public void renderNode(Value node, String var, UserContext user, RenderOptions opts, RenderResult result) {
+		String erg = renderNode(node, var, opts.isRawOutput(), user, opts.getRdf2GoCore(), opts.getRenderMode());
+
+		if (opts.isAllowJSPWikiMarkup()) {
+			erg = renderExternalJSPWikiLinks(erg);
+			result.append(erg);
+		}
+		else {
+			result.appendJSPWikiMarkup(erg);
+		}
 	}
 
 	/**
@@ -468,123 +560,7 @@ public class SparqlResultRenderer {
 				erg.substring(matcher.end());
 	}
 
-	private boolean isSkipped(boolean isTree, int column, String var) {
-		boolean skip = false;
-		// ignore first two columns if we are in tree mode
-		if (isTree && column < 2) {
-			skip = true;
-		}
-		// ignore column 'sortValue', which should be hidden
-		if (isTree && var.equals(ResultTableHierarchy.SORT_VALUE)) {
-			skip = true;
-		}
-		return skip;
-	}
-
-	private boolean isEmpty(CachedTupleQueryResult qrt) {
-		if (qrt.getBindingSets().isEmpty()) {
-			return true;
-		}
-		if (qrt.getBindingSets().size() == 1) {
-			// some queries return one result with only blank entries, we ignore them as their rendering is weird
-			BindingSet bindings = qrt.getBindingSets().get(0);
-			boolean empty = true;
-			for (Binding binding : bindings) {
-				if (!Strings.isBlank(binding.getValue().stringValue())) {
-					empty = false;
-					break;
-				}
-			}
-			return empty;
-		}
-		return false;
-	}
-
-	private RenderMode getRenderMode(Section<?> section) {
-		Section<DefaultMarkupType> defaultMarkupTypeSection = $(section).closest(DefaultMarkupType.class).getFirst();
-		String annotation = DefaultMarkupType.getAnnotation(defaultMarkupTypeSection, SparqlMarkupType.RENDER_MODE);
-		if (annotation != null) {
-			try {
-				return RenderMode.valueOf(annotation);
-			}
-			catch (IllegalArgumentException e) {
-				Log.severe("Invalid render mode: " + annotation, e);
-			}
-		}
-		return RenderMode.HTML;
-	}
-
-	public void getTreeChildren(Section<? extends SparqlType> section, String parentNodeID, UserActionContext user, RenderResult result) {
-		parentNodeID = parentNodeID.replace("sparql-id-", "");
-		final IndexedResultTableModel table = (IndexedResultTableModel) section.getObject(RESULT_TABLE);
-		final ResultTableHierarchy tree = (ResultTableHierarchy) section.getObject(RESULT_TABLE_TREE);
-		RenderOptions opts = section.get().getRenderOptions(section, user);
-		boolean isTree = opts.isTree();
-		String query = section.get().getSparqlQuery(section, user);
-		boolean renderJSPWikiMarkup = opts.isAllowJSPWikiMarkup();
-
-		CachedTupleQueryResult qrt = null;
-		try {
-			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
-					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout()));
-			qrt = section.get().postProcessResult(qrt, user, opts);
-		}
-		catch (RuntimeException e) {
-			handleRuntimeException(section, user, result, e);
-		}
-
-		if (qrt != null) {
-			List<String> variables = qrt.getBindingNames();
-			@SuppressWarnings("unchecked") Map<String, Value> usedIDs = (Map<String, Value>) section.getObject(USED_IDS);
-			Collection<TableRow> parents = table.getRowsForKey(usedIDs.get(parentNodeID));
-			for (TableRow parent : parents) {
-				for (TableRow child : tree.getChildren(parent)) {
-					Value childValue = child.getValue(qrt.getBindingNames().get(0));
-					String childId = valueToID(childValue, parentNodeID);
-					usedIDs.put(childId, childValue);
-					result.appendHtml("<tr class='treetr' data-tt-id='sparql-id-").append(childId).append("'");
-					result.append(" data-tt-parent-id='sparql-id-")
-							.append(parentNodeID).append("'");
-					if (!tree.getChildren(child).isEmpty()) {
-						result.append(" data-tt-branch='true' ");
-					}
-					result.append(">");
-					int column = 0;
-					for (String var : variables) {
-						if (isSkipped(isTree, column++, var)) {
-							continue;
-						}
-
-						Value node = child.getValue(var);
-						String erg = renderNode(node, var, opts.isRawOutput(), user, opts.getRdf2GoCore(),
-								getRenderMode(section));
-
-						result.appendHtml("<td>");
-						if (renderJSPWikiMarkup) {
-							erg = renderExternalJSPWikiLinks(erg);
-							result.append(erg);
-						}
-						else {
-							result.appendJSPWikiMarkup(erg);
-						}
-						result.appendHtml("</td>\n");
-					}
-					result.appendHtml("</tr>");
-				}
-			}
-		}
-	}
-
-	private String valueToID(Value childValue, String parentValue) {
-		if (childValue == null) {
-			return null;
-		}
-		String valueString = childValue.stringValue() + parentValue;
-		int code = valueString.replaceAll("[\\s\"]+", "").hashCode();
-		return Integer.toString(code);
-	}
-
-	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderMode mode) {
+	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderOptions.RenderMode mode) {
 		if (node == null) {
 			return "";
 		}
