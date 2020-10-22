@@ -770,9 +770,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the previously stored Object for this key or <tt>null</tt>, if no Object was stored
 	 * @created 08.07.2011
 	 */
-	public Object getObject(String key) {
-		//noinspection RedundantCast
-		return getObject((Compiler) null, key);
+	public <O> O getObject(String key) {
+		//noinspection RedundantCast,unchecked,unchecked
+		return (O) getObject((Compiler) null, key);
 	}
 
 	/**
