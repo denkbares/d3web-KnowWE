@@ -159,20 +159,17 @@ public class SparqlFilterProviderAction extends AbstractAction {
 	}
 
 	private String getRenderedValue(Rdf2GoCompiler compiler, String columnName, Value value, UserActionContext context, RenderOptions renderOptions) {
-		String sparqlRendered = SparqlResultRenderer.getInstance()
-				.renderNode(value, columnName, renderOptions.isRawOutput(), context, compiler.getRdf2GoCore(), RenderMode.HTML);
+		RenderResult renderResult = new RenderResult(context);
+		SparqlResultRenderer.getInstance().renderNode(value, columnName, context, renderOptions, renderResult);
 		String plain;
 		if (renderOptions.isAllowJSPWikiMarkup()) {
-			RenderResult renderResult = new RenderResult(context);
-			renderResult.appendHtml(sparqlRendered);
-			RenderResult renderResult2 = new RenderResult(context);
-			renderResult2.appendHtml(Environment.getInstance()
-					.getWikiConnector()
-					.renderWikiSyntax(renderResult.toStringRaw()));
-			plain = Strings.htmlToPlain(renderResult2.toString());
+			String renderedNode = Strings.htmlToPlain(renderResult.toString());
+			String wikiRendered = Environment.getInstance().getWikiConnector()
+					.renderWikiSyntax(renderedNode);
+			plain = Strings.htmlToPlain(wikiRendered);
 		}
 		else {
-			plain = Strings.htmlToPlain(sparqlRendered);
+			plain = Strings.htmlToPlain(renderResult.toString());
 		}
 		return plain;
 	}

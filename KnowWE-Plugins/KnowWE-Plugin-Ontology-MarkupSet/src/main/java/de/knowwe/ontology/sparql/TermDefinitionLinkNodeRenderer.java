@@ -14,6 +14,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 import de.knowwe.tools.ToolUtils;
@@ -41,12 +42,11 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 			if (termDefiningSection != null) {
 				String termName = Strings.concat(":", split);
 				if (mode == RenderMode.HTML) {
-					String hrefLink = "<a href='" + KnowWEUtils.getURLLink(termDefiningSection) + "'>" + termName + "</a>";
-					return hrefLink;
+					return "<a href='" + KnowWEUtils.getURLLink(termDefiningSection) + "'>" + termName + "</a>";
 				}
-				if( mode == RenderMode.ToolMenu) {
+				if (mode == RenderMode.ToolMenu) {
 					RenderResult renderResult = new RenderResult(user);
-					ToolMenuDecoratingRenderer.renderToolMenuDecorator(termName, termDefiningSection.getID(), ToolUtils.hasToolInstances(termDefiningSection, user) , renderResult);
+					ToolMenuDecoratingRenderer.renderToolMenuDecorator(termName, termDefiningSection.getID(), ToolUtils.hasToolInstances(termDefiningSection, user), renderResult);
 					return renderResult.toString();
 				}
 			}
@@ -58,5 +58,4 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 	public boolean allowFollowUpRenderer() {
 		return false;
 	}
-
 }

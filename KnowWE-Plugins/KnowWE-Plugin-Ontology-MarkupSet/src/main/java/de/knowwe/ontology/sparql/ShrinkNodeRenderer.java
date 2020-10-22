@@ -5,6 +5,7 @@ import org.eclipse.rdf4j.model.Value;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode;
 
 public class ShrinkNodeRenderer implements SparqlResultNodeRenderer {
 
@@ -13,8 +14,7 @@ public class ShrinkNodeRenderer implements SparqlResultNodeRenderer {
 	@Override
 	public String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		if ((text.length() > maxLength) && (mode == RenderMode.HTML)) {
-			String titleText = text.replaceAll("\"", "&#34;");
-			titleText = text.replaceAll("'", "&#39;");
+			String titleText = text.replaceAll("\"", "&#34;").replaceAll("'", "&#39;");
 			RenderResult result = new RenderResult(user);
 			result.appendHtml("<span title='" + titleText + "'>");
 			result.append(text.substring(0, maxLength - 3) + "...");
@@ -28,5 +28,4 @@ public class ShrinkNodeRenderer implements SparqlResultNodeRenderer {
 	public boolean allowFollowUpRenderer() {
 		return false;
 	}
-
 }

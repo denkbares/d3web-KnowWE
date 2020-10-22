@@ -37,6 +37,8 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
+import static de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode.*;
+
 public class SparqlContentRenderer implements Renderer {
 
 	private static SparqlContentRenderer instance = null;
@@ -101,17 +103,17 @@ public class SparqlContentRenderer implements Renderer {
 
 					result.appendHtml("<td>");
 					final Resource subject = statement.getSubject();
-					result.appendHtml(sparqlResultRenderer.renderNode(subject, "", false, user, core, RenderMode.HTML));
+					result.appendHtml(sparqlResultRenderer.renderNode(subject, "", false, user, core, HTML));
 					result.appendHtml("</td>");
 
 					result.appendHtml("<td>");
 					final IRI predicate = statement.getPredicate();
-					result.appendHtml(sparqlResultRenderer.renderNode(predicate, "", false, user, core, RenderMode.HTML));
+					result.appendHtml(sparqlResultRenderer.renderNode(predicate, "", false, user, core, HTML));
 					result.appendHtml("</td>");
 
 					result.appendHtml("<td>");
 					final Value object = statement.getObject();
-					result.appendHtml(sparqlResultRenderer.renderNode(object, "", false, user, core, RenderMode.HTML));
+					result.appendHtml(sparqlResultRenderer.renderNode(object, "", false, user, core, HTML));
 					result.appendHtml("</td>");
 
 					result.appendHtml("</tr>");
@@ -121,7 +123,6 @@ public class SparqlContentRenderer implements Renderer {
 			else {
 				result.append("(No statements constructed)");
 			}
-
 		}
 		else if (sparqlString.toLowerCase().startsWith("ask")) {
 			// process sparql ask query
@@ -150,5 +151,4 @@ public class SparqlContentRenderer implements Renderer {
 			result.appendHtml("</div>");
 		}
 	}
-
 }
