@@ -128,6 +128,7 @@ public class D3webUtils {
 		Collection<Section<?>> definingSections = compiler.getTerminologyManager().getTermDefiningSections(identifier);
 		for (Section<?> definingSection : definingSections) {
 			if (definingSection.get() instanceof D3webTermDefinition) {
+				//noinspection rawtypes
 				Section<D3webTermDefinition> d3webDefinitionSection = Sections.cast(definingSection, D3webTermDefinition.class);
 				@SuppressWarnings("unchecked") NamedObject termObject
 						= d3webDefinitionSection.get().getTermObject(compiler, d3webDefinitionSection);
@@ -135,6 +136,16 @@ public class D3webUtils {
 			}
 		}
 		return null;
+	}
+
+	@Nullable
+	public static D3webCompiler getCompiler(UserContext context, Section<?> section) {
+		if (section.get() instanceof TagHandlerType) {
+			return D3webUtils.getCompiler(section.getArticle());
+		}
+		else {
+			return Compilers.getCompiler(context, section, D3webCompiler.class);
+		}
 	}
 
 	@Nullable
@@ -490,13 +501,12 @@ public class D3webUtils {
 			renderedObjects.add("<a href=\"" + toAbsolutURL(url) + "\">" + loopObject.getName()
 					+ "</a>");
 		}
-		String notificationText = "Endless loop detected in knowledge base '"
+		return "Endless loop detected in knowledge base '"
 				+ kbName
 				+ "'. The following object"
 				+ (loopObjects.size() == 1 ? " is" : "s are")
 				+ " mainly involved in the loop: " +
 				Strings.concat(",  ", renderedObjects) + ".";
-		return notificationText;
 	}
 
 	private static String toAbsolutURL(String url) {
