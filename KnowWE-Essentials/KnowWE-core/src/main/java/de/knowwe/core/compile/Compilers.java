@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +44,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -53,6 +56,8 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 17.11.2013
  */
 public class Compilers {
+
+	private static final String DEFAULT_COMPILERS = "default-compilers";
 
 	/**
 	 * Null safe comparator for compilers.
@@ -214,6 +219,99 @@ public class Compilers {
 	}
 
 	/**
+	 * Returns a {@link Compiler} that compiles the packages of the given section, and is an instance of the given
+	 * compiler class. If no such compiler exists, null is returned.
+	 * <br>
+	 * If multiple compilers exist, we check the given user context, if one of the compilers was marked as the default
+	 * compiler using @link {@link #markAsDefaultCompiler(UserContext, Compiler)}
+	 *
+	 * @param context       the user context for this call
+	 * @param section       the section for which we want the {@link Compiler}s
+	 * @param compilerClass the type of the {@link Compiler} we want
+	 * @return all {@link Compiler}s compiling the given section
+	 * @created 15.11.2013
+	 */
+	@Nullable
+	public static <C extends Compiler> C getCompiler(UserContext context, Section<?> section, Class<C> compilerClass) {
+		Collection<C> compilers = getCompilers(section, compilerClass);
+		// no need to find a default, if there is only one compiler
+		if (compilers.size() == 1) {
+			return compilers.iterator().next();
+		}
+		else if (compilers.isEmpty()) {
+			return null;
+		}
+		// check compiler names markes for default
+		List<String> defaultCompilerNames = getDefaultCompilers(context, compilerClass);
+		if (defaultCompilerNames.isEmpty()) {
+			// no defaults found? return first compiler we have...
+			return compilers.iterator().next();
+		}
+
+		// get the first match of name to available compilers
+		Map<String, List<C>> compilersByName = compilers.stream()
+				.collect(Collectors.groupingBy(Compilers::getCompilerName));
+		for (String name : defaultCompilerNames) {
+			List<C> compilersForName = compilersByName.getOrDefault(name, Collections.emptyList());
+			if (!compilersForName.isEmpty()) {
+				return compilersForName.get(0);
+			}
+		}
+
+		// we've got nothing
+		return null;
+	}
+
+	/**
+	 * Mark the given compiler as the default compiler for the given user context, for cases where multiple compilers
+	 * are present and we need to select one.
+	 *
+	 * @param context  the user context where the compiler should be marked as the default
+	 * @param compiler the compiler to mark as the default
+	 */
+	public static void markAsDefaultCompiler(@NotNull UserContext context, @NotNull Compiler compiler) {
+		List<String> defaultCompilers = getDefaultCompilers(context, compiler.getClass());
+		String compilerName = getCompilerName(compiler);
+		defaultCompilers.remove(compilerName); // remove if already present
+		defaultCompilers.add(0, compilerName); // add at first place
+	}
+
+	@NotNull
+	private static List<String> getDefaultCompilers(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
+		//noinspection unchecked
+		Map<String, List<String>> defaultCompilers = (Map<String, List<String>>) context.getSession()
+				.getAttribute(DEFAULT_COMPILERS);
+		if (defaultCompilers == null) {
+			defaultCompilers = new HashMap<>();
+			context.getSession().setAttribute(DEFAULT_COMPILERS, defaultCompilers);
+		}
+		return defaultCompilers.computeIfAbsent(compilerClass.getName(), k -> new ArrayList<>());
+	}
+
+	/**
+	 * Provides a name for the given compiler
+	 *
+	 * @param compiler the compiler to get a name for
+	 * @return the name of the given compiler
+	 */
+	@NotNull
+	public static String getCompilerName(Compiler compiler) {
+		if (compiler instanceof NamedCompiler) {
+			return ((NamedCompiler) compiler).getName();
+		}
+		else if (compiler instanceof PackageCompiler) {
+			String title = ((PackageCompiler) compiler).getCompileSection().getTitle();
+			return title == null ? "null" : title;
+		}
+		else if (compiler == null) {
+			return "null";
+		}
+		else {
+			return compiler.getClass().getSimpleName();
+		}
+	}
+
+	/**
 	 * Returns all {@link Compiler}s with the given type that compile the packages of the given section.
 	 *
 	 * @param section       the section for which we want the {@link Compiler}s
@@ -309,7 +407,6 @@ public class Compilers {
 	public static Collection<Article> getCompilingArticleObjects(Section<?> section) {
 		Collection<Article> articles = new ArrayList<>();
 		PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
-		if (packageManager == null) return Collections.emptyList();
 		Set<String> referringArticleTitles = packageManager.getCompilingArticles(section);
 		ArticleManager articleManager = section.getArticleManager();
 		if (articleManager == null) return Collections.emptyList();
