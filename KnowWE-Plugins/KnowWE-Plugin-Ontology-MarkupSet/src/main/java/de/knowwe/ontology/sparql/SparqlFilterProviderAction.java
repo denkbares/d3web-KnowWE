@@ -77,16 +77,16 @@ public class SparqlFilterProviderAction extends AbstractAction {
 
 		if (context.getWriter() != null) {
 			String filterTextQuery = context.getParameter(FILTER_TEXT_QUERY);
-			@NotNull Map<String, String> filterTexts = getFilterTexts(context, filterTextQuery);
+			@NotNull Map<String, Set<String>> filterTexts = getFilterTexts(context, filterTextQuery);
 			context.setContentType(JSON);
 			JSONArray filterTextsArray = new JSONArray();
 			filterTexts.entrySet()
 					.stream()
-					.sorted(Map.Entry.comparingByValue(COMPARATOR))
+					.sorted(Map.Entry.comparingByKey(COMPARATOR))
 					.forEach(e -> {
 						JSONArray textPair = new JSONArray();
 						textPair.put(e.getKey());
-						textPair.put(e.getValue());
+						e.getValue().forEach(textPair::put);
 						filterTextsArray.put(textPair);
 					});
 			JSONObject response = new JSONObject();
@@ -97,15 +97,15 @@ public class SparqlFilterProviderAction extends AbstractAction {
 	}
 
 	/**
-	 * Generate a map of filter texts (value text to rendered text) to be shown filtering a sparql table
+	 * Generate a map of filter texts (rendered text to set of value text) to be shown filtering a sparql table
 	 *
 	 * @param context         context of the action
 	 * @param filterTextQuery the query for which we are currently filtering the returned list
 	 * @return a map with the filter texts
 	 */
 	@NotNull
-	protected Map<String, String> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
-		Map<String, String> filterTexts = new HashMap<>();
+	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
+		Map<String, Set<String>> filterTexts = new HashMap<>();
 		Set<String> filteredOut = new HashSet<>();
 		Section<SparqlContentType> section = getSection(context, SparqlContentType.class);
 		String columnName = context.getParameter(COLUMN_NAME);
@@ -116,6 +116,7 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		if (compiler == null) return filterTexts;
 
 		RenderOptions renderOptions = section.get().getRenderOptions(section, context);
+		Set<String> addedFilterValueTexts = new HashSet<>();
 
 		CachedTupleQueryResult bindingSets = compiler.getRdf2GoCore().sparqlSelect(sparqlQuery);
 		for (BindingSet bindingSet : bindingSets) {
@@ -127,7 +128,7 @@ public class SparqlFilterProviderAction extends AbstractAction {
 
 			String valueText = value.stringValue();
 			// no need to do expensive rendering if already contained
-			if (filterTexts.containsKey(valueText) || filteredOut.contains(valueText)) continue;
+			if (addedFilterValueTexts.contains(valueText) || filteredOut.contains(valueText)) continue;
 
 			String rendered = getRenderedValue(compiler, columnName, value, context, renderOptions);
 			if (isFilteredOut(filterTextQuery, rendered)) {
@@ -135,7 +136,8 @@ public class SparqlFilterProviderAction extends AbstractAction {
 				continue;
 			}
 
-			filterTexts.put(valueText, rendered);
+			filterTexts.computeIfAbsent(rendered, k -> new HashSet<>()).add(valueText);
+			addedFilterValueTexts.add(valueText);
 			if (filterTexts.size() >= MAX_FILTER_COUNT) {
 				break;
 			}
@@ -149,9 +151,9 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		return filterTexts;
 	}
 
-	private void addEmptyIfNotFiltered(Map<String, String> filterTexts, String filterTextQuery) {
+	private void addEmptyIfNotFiltered(Map<String, Set<String>> filterTexts, String filterTextQuery) {
 		if (isFilteredOut(filterTextQuery, EMPTY)) return;
-		filterTexts.put("", EMPTY); // allow filtering for empty string
+		filterTexts.computeIfAbsent(EMPTY, k -> new HashSet<>()).add(""); // allow filtering for empty string
 	}
 
 	private boolean isFilteredOut(String filterQuery, String value) {

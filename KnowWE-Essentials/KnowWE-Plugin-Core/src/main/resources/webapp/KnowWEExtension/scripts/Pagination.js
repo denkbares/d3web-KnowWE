@@ -167,7 +167,9 @@ KNOWWE.core.plugin.pagination = function() {
           columnState.selectAll = false;
           columnState.selectedTexts = [];
           checked.each(function() {
-            columnState.selectedTexts.push(getFilterText(jq$(this)));
+            getFilterTexts(jq$(this)).forEach(text => {
+              columnState.selectedTexts.push(text);
+            });
           });
           setPaginationState(sectionId, paginationState);
         }
@@ -203,7 +205,6 @@ KNOWWE.core.plugin.pagination = function() {
     const showSpinner = () => {
       if ($tooltip) {
         $tooltip.find('.filter-input-indicator-parent').addClass("loading-texts")
-        console.log("show");
       }
     };
 
@@ -211,7 +212,6 @@ KNOWWE.core.plugin.pagination = function() {
     const hideSpinner = () => {
       if ($tooltip) {
         $tooltip.find('.filter-input-indicator-parent').removeClass("loading-texts")
-        console.log("hide");
       }
     };
 
@@ -302,20 +302,19 @@ KNOWWE.core.plugin.pagination = function() {
     // generate html for filter list
     const getFilterList = () => {
       const selectAll = columnState.selectAll;
-      const customTexts = columnState.customTexts;
-      const selectedCustomTexts = columnState.selectedCustomTexts;
-      const selectedTexts = columnState.selectedTexts.concat(customTexts);
-
+      const selectedTexts = columnState.selectedTexts;
+      const filterTexts = filterTextsJson[filterTextsProperty];
       const isSelected = (text, array) => (selectAll && !array.includes(text)) || (!selectAll && array.includes(text));
       const encodeHTML = s => jq$("<div/>").text(s).html();
+
       return "<ul class='pagination-filter-list'>\n" +
-        customTexts.concat(filterTextsJson[filterTextsProperty]).map((textPair, i) => {
-          let text = textPair[0];
-          let rendered = textPair[1];
+        filterTexts.map((textsArray, i) => {
+          let rendered = textsArray[0];
+          let texts = textsArray.slice(1);
           let id = "filter" + i;
-          return "<li class='" + (isSelected(text, selectedCustomTexts) ? "custom" : "query") + "'>" +
-            "<input type='checkbox' id='" + id + "' name='" + id + "' " + (isSelected(text, selectedTexts) ? "checked" : "") + ">" +
-            "<label for='" + id + "'>" + encodeHTML(rendered) + "</label><div style='display: none'>" + encodeHTML(text) + "</div>" +
+          return "<li class='query'>" +
+            "<input type='checkbox' id='" + id + "' name='" + id + "' " + (isSelected(texts[0], selectedTexts) ? "checked" : "") + ">" +
+            "<label for='" + id + "'>" + encodeHTML(rendered) + "</label><div style='display: none'>" + encodeHTML(JSON.stringify(texts)) + "</div>" +
             "</li>\n";
         }).join('') +
         "</ul>";
@@ -369,7 +368,7 @@ KNOWWE.core.plugin.pagination = function() {
     };
 
     const isValidState = () => columnState.selectAll || columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0;
-    const getFilterText = $checkBox => $checkBox.parent().find('div').text();
+    const getFilterTexts = $checkBox => JSON.parse($checkBox.parent().find('div').text());
 
     // init events for filter check boxes
     const initFilterList = function($tooltip) {
@@ -382,14 +381,18 @@ KNOWWE.core.plugin.pagination = function() {
 
       $tooltip.find('li input').change(function() {
         const $checkBox = jq$(this);
-        const text = getFilterText($checkBox);
+        const texts = getFilterTexts($checkBox);
         if (this.checked && !columnState.selectAll || !this.checked && columnState.selectAll) {
-          if (!columnState.selectedTexts.includes(text)) {
-            columnState.selectedTexts.push(text);
-          }
+          texts.forEach(text => {
+            if (!columnState.selectedTexts.includes(text)) {
+              columnState.selectedTexts.push(text);
+            }
+          });
         } else {
-          deleteFromArray(columnState.selectedTexts, text);
-          deleteFromArray(columnState.selectedCustomTexts, text);
+          texts.forEach(text => {
+            deleteFromArray(columnState.selectedTexts, text);
+            deleteFromArray(columnState.selectedCustomTexts, text);
+          });
         }
         updateButtonState($tooltip);
         setPaginationState(sectionId, paginationState);
