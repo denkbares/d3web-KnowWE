@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
@@ -136,6 +137,12 @@ public class ParallelScriptCompiler<C extends Compiler> {
 			// so no synchronizing is needed
 			// try current priority again, maybe new sections were added during compilation
 			setCurrentIterator();
+
+			// are we done with this priority level now? -> finished this level by throwing an event and proceed to next level
+			if (!currentIterator.hasNext()) {
+				// we throw an event as this priority level compilation is now completed
+				EventManager.getInstance().fireEvent(new CompilePriorityLevelFinishedEvent(compiler, currentPriority));
+			}
 			// switch to lower priority if necessary and possible
 			while (!currentIterator.hasNext() && Priority.decrement(currentPriority) != null) {
 				currentPriority = Priority.decrement(currentPriority);
