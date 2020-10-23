@@ -14,7 +14,7 @@ public class DecodeUrlNodeRenderer implements SparqlResultNodeRenderer {
 	@Override
 	public String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderOptions.RenderMode mode) {
 		try {
-			return URLDecoder.decode(text, StandardCharsets.UTF_8);
+			return URLDecoder.decode(text, "UTF-8");
 		}
 		catch (Exception e) {
 			return text;
