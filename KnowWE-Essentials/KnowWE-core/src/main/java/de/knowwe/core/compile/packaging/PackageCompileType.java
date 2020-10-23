@@ -44,17 +44,13 @@ public interface PackageCompileType extends Type {
 	 */
 	String[] getPackages(Section<?> section);
 
-	@SuppressWarnings("unchecked")
 	default Collection<PackageCompiler> getPackageCompilers(Section<? extends PackageCompileType> section) {
-		Collection<PackageCompiler> compilers = (Collection<PackageCompiler>)
-				section.getObject(COMPILER_STORY_KEY);
+		Collection<PackageCompiler> compilers = section.getObject(COMPILER_STORY_KEY);
 		return compilers == null ? Collections.emptyList() : Collections.unmodifiableCollection(compilers);
 	}
 
 	default void registerPackageCompiler(PackageCompiler compiler, Section<? extends PackageCompileType> section) {
-		@SuppressWarnings("unchecked")
-		Collection<PackageCompiler> compilers = (Collection<PackageCompiler>)
-				section.getObject(COMPILER_STORY_KEY);
+		Collection<PackageCompiler> compilers = section.getObject(COMPILER_STORY_KEY);
 		if (compilers == null) {
 			compilers = new ArrayList<>(5);
 			section.storeObject(COMPILER_STORY_KEY, compilers);
