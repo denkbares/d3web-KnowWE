@@ -1,16 +1,16 @@
 /*
  * Copyright (C) ${year} denkbares GmbH, Germany
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -68,10 +69,17 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		// render used packages and their erroneous pages
 		string.appendHtml("<div style='padding-top:1em;'>");
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
-		Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(section,
-				DefaultMarkupPackageCompileType.class);
-		String[] packagesToCompile = compileSection.get().getPackagesToCompile(
-				compileSection);
+		Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(section, DefaultMarkupPackageCompileType.class);
+		String[] packagesToCompile;
+		if (compileSection == null) {
+			packagesToCompile = new String[0];
+		}
+		else {
+			packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
+			for (PackageCompiler packageCompiler : compileSection.get().getPackageCompilers(compileSection)) {
+				Compilers.markAsDefaultCompiler(user, packageCompiler);
+			}
+		}
 
 		for (String packageName : packagesToCompile) {
 			renderPackage(compileSection, section, packageName, string, user);
@@ -166,7 +174,6 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		if (!(hasWarnings || hasErrors)) {
 			string.appendHtml("<br/>");
 		}
-
 	}
 
 	private void renderDefectArticleNames(Set<Article> articles, RenderResult string) {
@@ -180,5 +187,4 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		});
 		string.appendHtml("</ul>");
 	}
-
 }
