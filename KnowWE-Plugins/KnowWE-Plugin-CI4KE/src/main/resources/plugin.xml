@@ -178,6 +178,26 @@
 	</extension>
 
 	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="CompilerHasErrors">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.test.CompilerHasErrorsTest" />
+		<parameter id="name" value="CompilerHasErrors" />
+		<parameter id="description" value="CITest CompilerHasErrors" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
+		id="CompilerHasWarnings">
+		<parameter id="class"
+			value="de.d3web.we.ci4ke.test.CompilerHasWarningsTest" />
+		<parameter id="name" value="CompilerHasWarnings" />
+		<parameter id="description" value="CITest CompilerHasWarnings" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
 			   id="DashboardMetaCheck">
 		<parameter id="class"
 				   value="de.d3web.we.ci4ke.test.DashboardMetaCheck" />

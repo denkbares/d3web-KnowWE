@@ -31,6 +31,7 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.NamedCompiler;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -83,13 +84,37 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		if (NamedCompiler.class.isAssignableFrom(c)) {
 			//noinspection unchecked
 			for (NamedCompiler compiler : Compilers.getCompilers(articleManager, (Class<? extends NamedCompiler>) c)) {
-				if (namePattern.matcher(compiler.getName()).matches()) {
-					result.add(new TestObjectContainer<>(compiler.getName(), c.cast(compiler)));
+				addCompiler(result, namePattern, compiler.getName(), c.cast(compiler));
+			}
+		}
+
+		if (PackageCompiler.class.isAssignableFrom(c)) {
+			//noinspection unchecked
+			for (PackageCompiler compiler : Compilers.getCompilers(articleManager, (Class<? extends PackageCompiler>) c)) {
+				if (compiler instanceof NamedCompiler) {
+					addCompiler(result, namePattern, ((NamedCompiler) compiler).getName(), c.cast(compiler));
+				} else {
+					String title = compiler.getCompileSection().getTitle();
+					addCompiler(result, namePattern, title, c.cast(compiler));
 				}
 			}
 		}
 
 		return result;
+	}
+
+	/**
+	 * Adds the compiler to the result if its name is matching with the pattern
+	 * @param result the result to add the test object container to
+	 * @param namePattern the name pattern to check if the name matches
+	 * @param name the name for the compiler
+	 * @param cast the casted type
+	 * @param <T> the type of the compiler
+	 */
+	private <T> void addCompiler(List<TestObjectContainer<T>> result, Pattern namePattern, String name, T cast) {
+		if (namePattern.matcher(name).matches()) {
+			result.add(new TestObjectContainer<>(name, cast));
+		}
 	}
 
 	private Collection<Article> getArticlesMatchingPattern(String s) {
