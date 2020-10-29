@@ -75,7 +75,7 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<release>14</release>
+					<release>11</release>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
