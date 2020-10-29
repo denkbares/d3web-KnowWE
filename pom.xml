@@ -77,7 +77,6 @@
 				<configuration>
 					<release>14</release>
 					<encoding>UTF-8</encoding>
-					<compilerArgs>--enable-preview</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>
