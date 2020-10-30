@@ -64,6 +64,7 @@ import static org.mockito.Mockito.when;
  * @author Josua Nürnberger
  * @created 2019-01-07
  */
+@SuppressWarnings("rawtypes")
 public class GitVersioningFileProviderTest {
 
 	private String TMP_NEW_REPO = "/tmp/newRepo";
@@ -130,7 +131,8 @@ public class GitVersioningFileProviderTest {
 		fileProvider.putPageText(page, "test file text2");
 
 		List<WikiPage> versionHistory = fileProvider.getVersionHistory(page.getName());
-		assertEquals(2, versionHistory.size());
+		// now 3, because of caching. Caching does not know about empty commits
+		assertEquals(3, versionHistory.size());
 	}
 
 	@Test
@@ -291,7 +293,7 @@ public class GitVersioningFileProviderTest {
 
 		Attachment att = new Attachment(engine, "test", "dings.txt");
 		att.setAuthor(user1);
-		attachmentProvider.putAttachmentData(att, new ByteArrayInputStream("test inhalt".getBytes()));
+		attachmentProvider.putAttachmentData(att, new ByteArrayInputStream("test inhalt".getBytes(StandardCharsets.UTF_8)));
 
 		WikiPage page3 = getWikiPage(engine, "another page", user1);
 		fileProvider.putPageText(page3, "more content");
@@ -326,7 +328,7 @@ public class GitVersioningFileProviderTest {
 
 		Attachment att = new Attachment(engine, "to revert", "dingsToRevert.txt");
 		att.setAuthor(user1);
-		attachmentProvider.putAttachmentData(att, new ByteArrayInputStream("test inhalt".getBytes()));
+		attachmentProvider.putAttachmentData(att, new ByteArrayInputStream("test inhalt".getBytes(StandardCharsets.UTF_8)));
 
 		WikiPage page3 = getWikiPage(engine, "another page to revert", user1);
 		fileProvider.putPageText(page3, "more content");
@@ -353,12 +355,12 @@ public class GitVersioningFileProviderTest {
 		Attachment att4 = new Attachment(engine, name4, "keep.txt");
 		att4.setAuthor(user1);
 		att4.setAttribute(Attachment.CHANGENOTE, "created");
-		attachmentProvider.putAttachmentData(att4, new ByteArrayInputStream("keep".getBytes()));
+		attachmentProvider.putAttachmentData(att4, new ByteArrayInputStream("keep".getBytes(StandardCharsets.UTF_8)));
 		fileProvider.openCommit(user1);
 		Attachment toRevert = new Attachment(engine, name4, "revert.txt");
 		toRevert.setAuthor(user1);
-		attachmentProvider.putAttachmentData(toRevert, new ByteArrayInputStream("revert".getBytes()));
-		attachmentProvider.putAttachmentData(att4, new ByteArrayInputStream("only revert this text".getBytes()));
+		attachmentProvider.putAttachmentData(toRevert, new ByteArrayInputStream("revert".getBytes(StandardCharsets.UTF_8)));
+		attachmentProvider.putAttachmentData(att4, new ByteArrayInputStream("only revert this text".getBytes(StandardCharsets.UTF_8)));
 		fileProvider.rollback(user1);
 		Collection<Attachment> attachments = attachmentProvider.listAttachments(page4);
 		assertEquals(1, attachments.size());

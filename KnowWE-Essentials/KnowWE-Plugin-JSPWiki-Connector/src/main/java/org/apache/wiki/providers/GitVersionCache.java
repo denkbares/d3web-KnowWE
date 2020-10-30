@@ -72,6 +72,7 @@ public class GitVersionCache {
 		diffFormatter.setRepository(this.repository);
 		final ObjectId ref = this.repository.resolve(Constants.HEAD);
 		final RevWalk revWalk = new RevWalk(this.repository);
+		if(ref == null) return;
 		revWalk.sort(RevSort.REVERSE);
 		revWalk.markStart(revWalk.parseCommit(ref));
 		RevCommit commit;

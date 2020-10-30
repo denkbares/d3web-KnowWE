@@ -23,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -98,14 +98,14 @@ public class GitVersioningAttachmentProviderTest {
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		att.setAttribute(Attachment.CHANGENOTE, "add");
-		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
-		in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		att.setAttribute(Attachment.CHANGENOTE, "nothing changed");
 		attProvider.putAttachmentData(att, in);
 
 		att.setAttribute(Attachment.CHANGENOTE, "changed");
-		in = new ByteArrayInputStream("text file contents 2".getBytes(Charset.forName("UTF-8")));
+		in = new ByteArrayInputStream("text file contents 2".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 
 		List<Attachment> versionHistory = attProvider.getVersionHistory(att);
@@ -122,11 +122,11 @@ public class GitVersioningAttachmentProviderTest {
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
-		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
-		in = new ByteArrayInputStream("text file contents 2".getBytes(Charset.forName("UTF-8")));
+		in = new ByteArrayInputStream("text file contents 2".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
-		in = new ByteArrayInputStream("text file contents 3".getBytes(Charset.forName("UTF-8")));
+		in = new ByteArrayInputStream("text file contents 3".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 
 		List<Attachment> versionHistory = attProvider.getVersionHistory(att);
@@ -141,16 +141,16 @@ public class GitVersioningAttachmentProviderTest {
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
-		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
-		in = new ByteArrayInputStream("text file contents 2".getBytes(Charset.forName("UTF-8")));
+		in = new ByteArrayInputStream("text file contents 2".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
-		in = new ByteArrayInputStream("text file contents 3".getBytes(Charset.forName("UTF-8")));
+		in = new ByteArrayInputStream("text file contents 3".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 
 		att.setVersion(2);
 		InputStream attachmentData = attProvider.getAttachmentData(att);
-		String s = IOUtils.toString(attachmentData, "UTF-8");
+		String s = IOUtils.toString(attachmentData, StandardCharsets.UTF_8);
 		assertEquals("text file contents 2", s);
 	}
 
@@ -160,7 +160,7 @@ public class GitVersioningAttachmentProviderTest {
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
-		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 
 		attProvider.deleteAttachment(att);
@@ -173,11 +173,11 @@ public class GitVersioningAttachmentProviderTest {
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
-		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 		att = new Attachment(engine, "test", "testAtt2.txt");
 		att.setAuthor(AUTHOR);
-		in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 
 		WikiPage page = new WikiPage(engine, "test");
@@ -191,11 +191,11 @@ public class GitVersioningAttachmentProviderTest {
 		attProvider.initialize(engine, properties);
 		Attachment att = new Attachment(engine, "test page", "testAtt.txt");
 		att.setAuthor(AUTHOR);
-		InputStream in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 		att = new Attachment(engine, "test page", "testAtt2.txt");
 		att.setAuthor(AUTHOR);
-		in = new ByteArrayInputStream("text file contents".getBytes(Charset.forName("UTF-8")));
+		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 		WikiPage from = new WikiPage(engine, "test page");
 		from.setAuthor("UnknownAuthor");

@@ -69,6 +69,7 @@ import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
  * @author Josua Nürnberger
  * @created 2019-03-13
  */
+@SuppressWarnings("rawtypes")
 public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	private static final Logger log = Logger.getLogger(GitVersioningAttachmentProvider.class);
@@ -145,9 +146,10 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 						git.add().addFilepattern(attDir.getName()).call();
 						return null;
 					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
-					if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
-						gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(attDir.getName());
-					}
+					// not needed anymore, because new jgit version also commits directory
+//					if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
+//						gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(attDir.getName());
+//					}
 				}
 				catch (Exception e) {
 					log.error(e.getMessage(), e);
