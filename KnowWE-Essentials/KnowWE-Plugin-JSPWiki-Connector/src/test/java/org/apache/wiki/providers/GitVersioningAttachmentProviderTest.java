@@ -44,6 +44,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.denkbares.utils.Files;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -62,7 +64,7 @@ public class GitVersioningAttachmentProviderTest {
 
 	@Before
 	public void init() throws Exception {
-		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "/newRepo";
+		TMP_NEW_REPO = new File(Files.getSystemTempDir(), "newRepo").getAbsolutePath();
 //		System.out.println(TMP_NEW_REPO);
 		properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
