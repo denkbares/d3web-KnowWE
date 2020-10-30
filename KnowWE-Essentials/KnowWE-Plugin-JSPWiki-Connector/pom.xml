@@ -31,8 +31,8 @@
 	<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
 
 	<properties>
-		<!--<testsExclusionPattern>org.apache.wiki.providers.GitVersioningBenchmarkTest</testsExclusionPattern>-->
-		<testsExclusionPattern>org.apache.wiki.providers.*</testsExclusionPattern>
+		<!--<testsExclusionPattern>org/apache/wiki/providers/GitVersioningBenchmarkTest.java</testsExclusionPattern>-->
+		<testsExclusionPattern>org/apache/wiki/providers/*</testsExclusionPattern>
 	</properties>
 
 	<build>
