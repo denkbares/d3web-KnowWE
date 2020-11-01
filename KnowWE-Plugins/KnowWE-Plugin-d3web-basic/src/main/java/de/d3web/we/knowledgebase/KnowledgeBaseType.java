@@ -39,6 +39,7 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageSelection;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
@@ -102,7 +103,7 @@ public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 		MARKUP.addContentType(new KnowledgeBaseDefinition());
 
 		MARKUP.addAnnotationNameType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
-		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageTerm());
+		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageSelection());
 	}
 
 	public KnowledgeBaseType() {
