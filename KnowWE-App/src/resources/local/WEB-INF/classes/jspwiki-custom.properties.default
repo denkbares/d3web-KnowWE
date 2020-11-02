@@ -854,7 +854,7 @@ mail.smtp.port = 25
 #  the property jspwiki.use.external.logconfig=true, in that case we let log4j figure out the
 #  logging configuration to use.
 #
-jspwiki.use.external.logconfig = false
+jspwiki.use.external.logconfig = true
 #  Log4j is available at http://log4j.apache.org
 #
 #  WARNING WARNING WILL ROBINSON: If you turn on DEBUG logging, be aware
