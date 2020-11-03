@@ -173,6 +173,9 @@ public class CompilerManager {
 				Log.severe("Unexpected internal error while starting compilation.", e);
 			}
 			finally {
+				// we fire this before the synchronization, so the method awaitCompilation waits
+				// till after this event is handled completely
+				EventManager.getInstance().fireEvent(new CompilationFinishedEvent(CompilerManager.this));
 				synchronized (lock) {
 					running = null;
 					currentlyCompiledArticles.clear();
@@ -181,7 +184,6 @@ public class CompilerManager {
 							+ " after " + stopwatch.getDisplay());
 					lock.notifyAll();
 				}
-				EventManager.getInstance().fireEvent(new CompilationFinishedEvent(CompilerManager.this));
 			}
 		});
 		return true;
