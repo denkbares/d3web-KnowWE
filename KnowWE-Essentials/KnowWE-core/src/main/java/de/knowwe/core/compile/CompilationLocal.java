@@ -180,4 +180,11 @@ public final class CompilationLocal<E> {
 	private boolean invalid() {
 		return variable == null || compileId != compilerManager.getCompilationId();
 	}
+
+	/**
+	 * Manually invalidate this compilation local so the next call to get() will refresh the variable
+	 */
+	public void invalidate() {
+		this.variable = null;
+	}
 }
