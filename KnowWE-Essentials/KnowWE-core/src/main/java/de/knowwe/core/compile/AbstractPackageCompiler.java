@@ -20,8 +20,6 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
-import javax.naming.Name;
-
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.utils.Log;
@@ -76,6 +74,10 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		this.compilerManager = compilerManager;
 		this.compiledPackages = CompilationLocal.create(getCompilerManager(),
 				() -> getCompileSection().get().getPackagesToCompile(getCompileSection()));
+	}
+
+	public void refreshCompiledPackages() {
+		this.compiledPackages.invalidate();
 	}
 
 	@NotNull

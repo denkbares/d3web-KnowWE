@@ -27,6 +27,7 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
+import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.CompilationFinishedEvent;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -108,7 +109,7 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 	}
 
 	private String[] getRegisteredPackages(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) {
-		return (String[]) section.getObject(compiler, REGISTERED_PACKAGE_KEY);
+		return section.getObject(compiler, REGISTERED_PACKAGE_KEY);
 	}
 
 	private boolean compilesPackageViaPatternMatch(String packageName, Section<? extends PackageCompileType> compileSection) {
@@ -163,8 +164,9 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 	 * such a package, so knowledge of the package can properly be removed.
 	 */
 	private void cleanupPatternRegistrations(CompilerManager compilerManager) {
-		PackageManager packageManager = Compilers.getPackageRegistrationCompiler(compilerManager.getArticleManager())
-				.getPackageManager();
+		PackageRegistrationCompiler compiler = Compilers.getPackageRegistrationCompiler(compilerManager
+				.getArticleManager());
+		PackageManager packageManager = compiler.getPackageManager();
 
 		Collection<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections();
 		packageLoop:
@@ -188,6 +190,11 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 						.noneMatch(p -> p.equals(packageName));
 				if (matchedOnlyViaPattern) {
 					packageManager.removeSectionFromPackage(compileSection, packageName);
+					compileSection.get().getPackageCompilers(compileSection).forEach(c -> {
+						if (c instanceof AbstractPackageCompiler) {
+							((AbstractPackageCompiler) c).refreshCompiledPackages();
+						}
+					});
 				}
 			}
 		}
