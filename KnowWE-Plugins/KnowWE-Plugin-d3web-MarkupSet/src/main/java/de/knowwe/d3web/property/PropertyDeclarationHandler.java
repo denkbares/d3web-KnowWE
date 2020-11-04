@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Triple;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QuestionDate;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
@@ -46,19 +47,21 @@ import de.knowwe.core.report.Messages;
  */
 public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarationType> {
 
+	public static final String GENERATED_PROPERTY = "generatedProperty";
+
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<PropertyDeclarationType> section) {
 		if (Strings.isBlank(section.getText())) return Messages.noMessage();
 
 		// get NamedObject
-		Section<PropertyObjectReference> namedObjectSection = Sections.successor(section, PropertyObjectReference.class);
-		if (namedObjectSection == null) {
+		Section<PropertyObjectReference> propertyObjectSection = Sections.successor(section, PropertyObjectReference.class);
+		if (propertyObjectSection == null) {
 			return Messages.asList(Messages.syntaxError("No NamedObject found."));
 		}
-		List<NamedObject> objects = namedObjectSection.get().getTermObjects(compiler, namedObjectSection);
+		List<NamedObject> objects = propertyObjectSection.get().getTermObjects(compiler, propertyObjectSection);
 		if (objects.isEmpty()) {
 			return Messages.asList(Messages.error("No matching object(s) found for reference '"
-					+ namedObjectSection.get().getTermIdentifier(compiler, namedObjectSection) + "'"));
+					+ propertyObjectSection.get().getTermIdentifier(compiler, propertyObjectSection) + "'"));
 		}
 
 		// get Property
@@ -106,6 +109,8 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 		for (NamedObject namedObject : objects) {
 			try {
 				namedObject.getInfoStore().addValue(property, locale, value);
+				// for easier incremental compilation
+				propertyObjectSection.storeObject(compiler, GENERATED_PROPERTY, new Triple<>(property, locale, value));
 			}
 			catch (IllegalArgumentException e) {
 				return Messages.asList(Messages.syntaxError("The property '" + property.getName() +
@@ -143,27 +148,29 @@ public class PropertyDeclarationHandler implements D3webHandler<PropertyDeclarat
 
 	@Override
 	public void destroy(D3webCompiler compiler, Section<PropertyDeclarationType> s) {
-		Section<PropertyObjectReference> idobjectSection = Sections.successor(s, PropertyObjectReference.class);
-		Section<PropertyType> propertySection = Sections.successor(s, PropertyType.class);
-		if (idobjectSection == null) return;
-		NamedObject object = idobjectSection.get().getTermObject(compiler, idobjectSection);
+		Section<PropertyObjectReference> propertyObjectSection = Sections.successor(s, PropertyObjectReference.class);
+		if (propertyObjectSection == null) return;
+
+		Triple<Property<?>, Locale, Object> generatedProperty = propertyObjectSection.removeObject(compiler, GENERATED_PROPERTY);
+		if (generatedProperty == null) return;
+		// check if there are any other propertyObjectSections with the same generated property, if yes, don't destroy here
+		boolean duplicatePropertyDefinition = Sections.references(compiler, propertyObjectSection)
+				.ancestor(PropertyObjectReference.class)
+				.filter(p -> generatedProperty.equals(p.getObject(compiler, GENERATED_PROPERTY))).isNotEmpty();
+		if (duplicatePropertyDefinition) return;
+
+		NamedObject object = propertyObjectSection.get().getTermObject(compiler, propertyObjectSection);
 		if (object == null) return;
-		if (propertySection == null) return;
-		Property<?> property = propertySection.get().getProperty(propertySection);
-		if (property == null) return;
-		Section<LocaleType> localeSection = Sections.successor(s, LocaleType.class);
-		Section<PropertyContentType> contentSection = Sections.successor(s, PropertyContentType.class);
-		if (contentSection == null) return;
-		String content = contentSection.getText();
-		if (Strings.isBlank(content)) return;
-		Locale locale = Locale.ROOT;
-		if (localeSection != null) {
-			locale = localeSection.get().getLocale(localeSection);
-		}
+
 		try {
-			object.getInfoStore().remove(property, locale);
+			object.getInfoStore().remove(generatedProperty.getA(), generatedProperty.getB());
 		}
 		catch (IllegalArgumentException ignore) {
 		}
+	}
+
+	@Override
+	public boolean isIncrementalCompilationSupported(Section<PropertyDeclarationType> section) {
+		return true;
 	}
 }
