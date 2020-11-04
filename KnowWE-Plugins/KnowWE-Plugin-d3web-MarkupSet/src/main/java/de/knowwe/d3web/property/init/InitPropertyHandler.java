@@ -55,7 +55,7 @@ public class InitPropertyHandler implements D3webHandler<PropertyDeclarationType
 			return Messages.asList();
 		}
 		Property<?> property = propertySection.get().getProperty(propertySection);
-		if (property == null || !property.equals(BasicProperties.INIT)) {
+		if (!BasicProperties.INIT.equals(property)) {
 			return Messages.asList();
 		}
 
@@ -92,5 +92,10 @@ public class InitPropertyHandler implements D3webHandler<PropertyDeclarationType
 			return Messages.asList(Messages.error(e.getMessage()));
 		}
 		return Messages.asList();
+	}
+
+	@Override
+	public boolean isIncrementalCompilationSupported(Section<PropertyDeclarationType> section) {
+		return true; // just messages
 	}
 }
