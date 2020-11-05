@@ -138,9 +138,9 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	private static Map<Section<?>, Map<Message, Collection<Compiler>>> getMessageSectionsOfSubtree(Section<?> rootSection, Type messageType) {
 		Map<Section<?>, Map<Message, Collection<Compiler>>> collectedMessages = new LinkedHashMap<>();
+		Collection<Compiler> compilers = new ArrayList<>(Compilers.getCompilers(rootSection, Compiler.class));
+		compilers.add(null);
 		for (Section<?> subTreeSection : Sections.successors(rootSection)) {
-			Collection<Compiler> compilers = new ArrayList<>(Compilers.getCompilers(subTreeSection, Compiler.class));
-			compilers.add(null);
 			Map<Message, Collection<Compiler>> compilersForMessage = new LinkedHashMap<>();
 			for (Compiler compiler : compilers) {
 				Collection<Message> messages = Messages.getMessages(compiler, subTreeSection, messageType);
@@ -258,6 +258,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		// check that the found unused compiled scripts belong to types of sections that are actually in the current sub-KDOM
 		for (ScriptManager<? extends Compiler> scriptManager : unCompiledScriptManagersWithScriptsForTypeTree) {
 			for (de.knowwe.core.kdom.Type type : Types.getAllChildrenTypesRecursive(rootSection.get())) {
+				//noinspection rawtypes
 				Map map = scriptManager.getScripts(type);
 				if (map.isEmpty()) continue;
 				if ($(rootSection).successor(type.getClass()).isEmpty()) continue;
