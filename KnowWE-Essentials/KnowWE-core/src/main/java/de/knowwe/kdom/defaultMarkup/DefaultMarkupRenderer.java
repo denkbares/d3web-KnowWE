@@ -202,7 +202,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				// if we have multiple other article compilers
 				Collection<Compiler> compilers = entry.getValue();
 				if (isMultiCompiled(compilers, rootSection)) {
-					message += compilers.stream().map(DefaultMarkupRenderer::getCompilerName).distinct()
+					message += compilers.stream().map(DefaultMarkupRenderer::renderName).distinct()
 							.collect(Collectors.joining(", ", " (compiled in ", ")"));
 				}
 				messages.add(message);
@@ -216,7 +216,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		return messages;
 	}
 
-	private static String getCompilerName(Compiler compiler) {
+	private static String renderName(Compiler compiler) {
 		if (compiler instanceof NamedCompiler) {
 			final String name = ((NamedCompiler) compiler).getName();
 			if (compiler instanceof PackageCompiler) {
@@ -225,9 +225,6 @@ public class DefaultMarkupRenderer implements Renderer {
 			else {
 				return name;
 			}
-		}
-		else if (compiler instanceof PackageCompiler) {
-			return "[" + KnowWEUtils.getWikiLink(((PackageCompiler) compiler).getCompileSection()) + "]";
 		}
 		else {
 			return compiler.toString();

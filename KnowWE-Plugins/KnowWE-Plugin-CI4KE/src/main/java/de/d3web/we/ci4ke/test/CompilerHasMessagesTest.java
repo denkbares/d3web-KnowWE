@@ -87,18 +87,10 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 
 		TestingUtils.checkInterrupt();
 
-		String name;
-		if (compiler instanceof NamedCompiler) {
-			name = ((NamedCompiler) compiler).getName();
-		}
-		else {
-			name = compiler.getCompileSection().getTitle();
-		}
-
 		buffer.append(" ")
 				.append(type.toString().toLowerCase())
 				.append("s found in compiler '")
-				.append(name)
+				.append(compiler.getName())
 				.append("'");
 		if (!messages.isEmpty()) {
 			for (de.knowwe.core.report.Message message : messages) {

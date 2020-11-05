@@ -131,7 +131,6 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	@Override
 	public String toString() {
-		return this.getClass().getSimpleName() + " ("
-				+ (this instanceof NamedCompiler ? ((NamedCompiler) this).getName() : compileSection.get()) + ")";
+		return this.getClass().getSimpleName() + " (" + this.getName() + ")";
 	}
 }

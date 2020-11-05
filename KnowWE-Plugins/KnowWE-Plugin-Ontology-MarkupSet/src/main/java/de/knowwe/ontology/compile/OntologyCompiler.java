@@ -36,7 +36,6 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
-import de.knowwe.core.compile.NamedCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -61,7 +60,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 13.12.2013
  */
 public class OntologyCompiler extends AbstractPackageCompiler
-		implements Rdf2GoCompiler, IncrementalCompiler, EventListener, NamedCompiler {
+		implements Rdf2GoCompiler, IncrementalCompiler, EventListener {
 
 	static final String COMMIT_NOTIFICATION_ID = "CommitNotification";
 	private Rdf2GoCore rdf2GoCore;
@@ -133,7 +132,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	}
 
 	/**
-	 * Returns the name of this compiler, normally given in the content %%KnowledgeBase section.
+	 * Returns the name of this compiler, normally given in the content %%Ontology section.
 	 */
 	@Override
 	public String getName() {

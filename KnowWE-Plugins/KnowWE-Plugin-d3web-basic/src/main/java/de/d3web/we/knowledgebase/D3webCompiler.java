@@ -56,7 +56,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.11.2013
  */
-public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler, NamedCompiler, IncrementalCompiler {
+public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler, IncrementalCompiler {
 
 	private TerminologyManager terminologyManager;
 	private KnowledgeBase knowledgeBase;

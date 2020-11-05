@@ -64,17 +64,7 @@ public class Compilers {
 	 * For {@link NamedCompiler}s, name will be used.
 	 * For {@link PackageCompiler}
 	 */
-	public static final Comparator<Compiler> COMPARATOR = Comparator.nullsFirst(Comparator.comparing(Compilers::comparable));
-
-	private static String comparable(Compiler compiler) {
-		if (compiler == null) return null;
-		if (compiler instanceof NamedCompiler) return ((NamedCompiler) compiler).getName();
-		if (compiler instanceof PackageCompiler) {
-			Section<? extends PackageCompileType> compileSection = ((PackageCompiler) compiler).getCompileSection();
-			return compileSection.getTitle() + compileSection.getPositionInKDOM();
-		}
-		return compiler.toString();
-	}
+	public static final Comparator<Compiler> COMPARATOR = Comparator.nullsFirst(Comparator.comparing(Compilers::getCompilerName));
 
 	/**
 	 * Compiles the given {@link Section} for the given {@link Compiler} (by calling the {@link CompileScript}s of the
@@ -298,10 +288,6 @@ public class Compilers {
 	public static String getCompilerName(Compiler compiler) {
 		if (compiler instanceof NamedCompiler) {
 			return ((NamedCompiler) compiler).getName();
-		}
-		else if (compiler instanceof PackageCompiler) {
-			String title = ((PackageCompiler) compiler).getCompileSection().getTitle();
-			return title == null ? "null" : title;
 		}
 		else if (compiler == null) {
 			return "null";

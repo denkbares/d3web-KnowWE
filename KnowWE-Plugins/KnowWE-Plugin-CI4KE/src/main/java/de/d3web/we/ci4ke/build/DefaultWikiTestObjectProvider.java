@@ -75,28 +75,13 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 			result.add(new TestObjectContainer<>(web, c.cast(articleManager)));
 		}
 		if (c.equals(PackageManager.class)) {
-			Object byName = KnowWEUtils.getPackageManager(web);
-			if (byName != null) {
-				result.add(new TestObjectContainer<>(web, c.cast(byName)));
-			}
+			result.add(new TestObjectContainer<>(web, c.cast(KnowWEUtils.getPackageManager(web))));
 		}
 		final Pattern namePattern = Pattern.compile(testObjectName);
 		if (NamedCompiler.class.isAssignableFrom(c)) {
 			//noinspection unchecked
 			for (NamedCompiler compiler : Compilers.getCompilers(articleManager, (Class<? extends NamedCompiler>) c)) {
 				addCompiler(result, namePattern, compiler.getName(), c.cast(compiler));
-			}
-		}
-
-		if (PackageCompiler.class.isAssignableFrom(c)) {
-			//noinspection unchecked
-			for (PackageCompiler compiler : Compilers.getCompilers(articleManager, (Class<? extends PackageCompiler>) c)) {
-				if (compiler instanceof NamedCompiler) {
-					addCompiler(result, namePattern, ((NamedCompiler) compiler).getName(), c.cast(compiler));
-				} else {
-					String title = compiler.getCompileSection().getTitle();
-					addCompiler(result, namePattern, title, c.cast(compiler));
-				}
 			}
 		}
 

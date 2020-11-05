@@ -30,7 +30,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 12.12.2013
  */
-public interface PackageCompiler extends Compiler {
+public interface PackageCompiler extends Compiler, NamedCompiler {
 
 	@NotNull
 	Section<? extends PackageCompileType> getCompileSection();
