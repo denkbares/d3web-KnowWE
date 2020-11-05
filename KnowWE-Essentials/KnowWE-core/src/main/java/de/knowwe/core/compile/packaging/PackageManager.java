@@ -21,7 +21,6 @@
 package de.knowwe.core.compile.packaging;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -408,8 +407,17 @@ public class PackageManager {// implements EventListener {
 	 */
 	public Set<Section<? extends PackageCompileType>> getCompileSections(Section<?> section) {
 		Set<Section<? extends PackageCompileType>> compileSections = new HashSet<>();
-		for (String packageName : section.getPackageNames()) {
+		for (String packageName : getPackagesOfSection(section)) {
 			compileSections.addAll(getCompileSections(packageName));
+		}
+		for (ParsedPredicate parsedPredicate : getPackageRulesOfSection(section)) {
+			for (Section<? extends PackageCompileType> compileSection : packageCompileSections) {
+				String[] packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
+				PackagePredicateValueProvider valueProvider = new PackagePredicateValueProvider(packagesToCompile);
+				if (parsedPredicate.test(valueProvider)) {
+					compileSections.add(compileSection);
+				}
+			}
 		}
 		return Collections.unmodifiableSet(compileSections);
 	}
@@ -480,7 +488,8 @@ public class PackageManager {// implements EventListener {
 		private final Set<String> packageNames;
 
 		public PackagePredicateValueProvider(String... packageNames) {
-			this.packageNames = new HashSet<>(Arrays.asList(packageNames));
+			this.packageNames = new HashSet<>();
+			Collections.addAll(this.packageNames, packageNames);
 		}
 
 		@Override
