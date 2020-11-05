@@ -116,7 +116,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	@Override
 	public String getName() {
 		return $(getCompileSection()).successor(KnowledgeBaseDefinition.class)
-				.stream().map(s -> s.get().getTermName(s)).findAny()
+				.stream().map(s -> s.get().getTermName(s)).filter(Strings::nonBlank).findAny()
 				.orElseGet(() -> getCompileSection().getTitle());
 	}
 
