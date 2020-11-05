@@ -4,6 +4,8 @@ import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageRule;
 import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -17,10 +19,10 @@ public class PackageMarkupType extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("Package");
-		PackageTerm packageTerm = new PackageTerm();
-		packageTerm.addCompileScript(Priority.HIGHEST, new SetDefaultPackageHandler());
-		packageTerm.addCompileScript(Priority.LOWEST, new RemoveDefaultPackageHandler());
-		MARKUP.addContentType(packageTerm);
+		PackageRule packageRule = new PackageRule();
+		packageRule.addCompileScript(Priority.HIGHEST, new SetDefaultPackageHandler());
+		packageRule.addCompileScript(Priority.LOWEST, new RemoveDefaultPackageHandler());
+		MARKUP.addContentType(packageRule);
 		MARKUP.setTemplate("%%package \u00ABpackage-name\u00BB\n");
 	}
 
@@ -30,35 +32,43 @@ public class PackageMarkupType extends DefaultMarkupType {
 				DefaultMarkupPackageRegistrationScript.class);
 	}
 
-	public static class SetDefaultPackageHandler extends PackageRegistrationScript<PackageTerm> {
+	public static class SetDefaultPackageHandler extends PackageRegistrationScript<PackageRule> {
 
 		@Override
-		public void compile(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
-			String defaultPackage = section.get().getTermName(section);
-			if (!defaultPackage.isEmpty()) {
-				KnowWEUtils.getPackageManager(section).addDefaultPackage(
-						section.getArticle(), defaultPackage);
+		public void compile(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
+			PackageManager packageManager = KnowWEUtils.getPackageManager(section);
+			if (section.get().isOrdinaryPackage(section)) {
+				packageManager.addDefaultPackage(section.getArticle(), section.get().getOrdinaryPackage(section));
+			}
+			else {
+				packageManager.addDefaultPackageRule(section.getArticle(), section.get().getRule(section));
+
 			}
 		}
 
 		@Override
-		public void destroy(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
+		public void destroy(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
 
 		}
 	}
 
-	public static class RemoveDefaultPackageHandler extends PackageRegistrationScript<PackageTerm> {
+	public static class RemoveDefaultPackageHandler extends PackageRegistrationScript<PackageRule> {
 
 		@Override
-		public void compile(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
+		public void compile(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
 
 		}
 
 		@Override
-		public void destroy(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
-			String defaultPackage = section.get().getTermName(section);
-			KnowWEUtils.getPackageManager(section).removeDefaultPackage(
-					section.getArticle(), defaultPackage);
+		public void destroy(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
+			PackageManager packageManager = KnowWEUtils.getPackageManager(section);
+			if (section.get().isOrdinaryPackage(section)) {
+				packageManager.removeDefaultPackage(section.getArticle(), section.get().getOrdinaryPackage(section));
+			}
+			else {
+				packageManager.removeDefaultPackageRule(section.getArticle(), section.get().getRule(section));
+
+			}
 		}
 	}
 

@@ -19,6 +19,7 @@
 package de.d3web.we.solutionpanel;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -109,8 +110,8 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		String packageName = DefaultMarkupType.getAnnotation(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
 		if (Strings.nonBlank(packageName)) return packageName;
 
-		String[] packages = KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
-		return (packages.length == 0) ? null : packages[0];
+		Set<String> packages = KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
+		return (packages.isEmpty()) ? null : packages.iterator().next();
 	}
 
 	public static String getMaster(Section<ShowSolutionsType> section) {

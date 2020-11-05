@@ -330,49 +330,6 @@ public class DefaultMarkupType extends AbstractType {
 	}
 
 	/**
-	 * Returns the packages the given default markup section belongs to according to its @package annotations. If there
-	 * are no such annotations, the default packages for the article are returned.
-	 *
-	 * @param section the section to be check for packages
-	 * @created 11.03.2012
-	 */
-	@NotNull
-	public String[] getPackages(Section<?> section) {
-		return getPackages(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
-	}
-
-	/**
-	 * Returns the packages the given default markup section belongs to according to the defined annotations. If there
-	 * are no such annotations, the default packages for the article are returned. In case the section is part of an
-	 * article based on a compiled attachment, we also check the compiling %%Attachment markups for packages.
-	 *
-	 * @param section the section to be check for packages
-	 * @created 12.03.2012
-	 */
-	@NotNull
-	public String[] getPackages(Section<?> section, String annotation) {
-		String[] packageNames = DefaultMarkupType.getAnnotations(section, annotation);
-		if (packageNames.length == 0) {
-			packageNames = KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
-		}
-		// if we only have the default package, check if this is an article based on an compiled attachment
-		// and if yes, get packages from compiling %%Attachment markups
-		if (packageNames.length == 1 && packageNames[0].equals(PackageManager.DEFAULT_PACKAGE)) {
-			ArticleManager articleManager = section.getArticleManager();
-			if (!(articleManager instanceof DefaultArticleManager)) return packageNames;
-			AttachmentManager attachmentManager = ((DefaultArticleManager) articleManager).getAttachmentManager();
-			String[] collectedPackageNames = attachmentManager.getCompilingAttachmentSections(section
-					.getArticle())
-					.stream()
-					.map(s -> $(s).ancestor(AttachmentMarkup.class).getFirst())
-					.filter(Objects::nonNull)
-					.map(s -> s.get().getPackages(s)).flatMap(Arrays::stream).toArray(String[]::new);
-			if (collectedPackageNames.length > 0) packageNames = collectedPackageNames;
-		}
-		return packageNames;
-	}
-
-	/**
 	 * Returns the content section of all annotations sections in this section. If the section is not of type
 	 * "DefaultMarkup" an IllegalArgumentException is thrown.
 	 *

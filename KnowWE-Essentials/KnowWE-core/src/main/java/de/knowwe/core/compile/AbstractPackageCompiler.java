@@ -58,8 +58,10 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	@Override
 	public boolean isCompiling(Section<?> section) {
-		if (section == compileSection
-				|| packageManager.getCompileSections(section).contains(compileSection)) {
+		if (section == compileSection) {
+			return true;
+		}
+		if (packageManager.getCompileSections(section).contains(compileSection)) {
 			return true;
 		}
 		Section<?> compilingMarkupSection = $(section).closest(compilingType).getFirst();

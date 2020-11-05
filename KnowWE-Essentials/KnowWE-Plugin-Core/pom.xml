@@ -36,5 +36,9 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-KDOMParseUtils</artifactId>
+		</dependency>
 	</dependencies>
 </project>

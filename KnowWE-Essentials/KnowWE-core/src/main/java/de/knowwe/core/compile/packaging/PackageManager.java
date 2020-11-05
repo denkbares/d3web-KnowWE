@@ -21,6 +21,7 @@
 package de.knowwe.core.compile.packaging;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,14 +32,22 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.collections.ConcatenateCollection;
 import com.denkbares.events.EventManager;
+import com.denkbares.strings.PredicateParser;
+import com.denkbares.strings.PredicateParser.ParsedPredicate;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Manages packages and its content in KnowWE.
@@ -59,22 +68,25 @@ public class PackageManager {// implements EventListener {
 	 * For each article title, you get all default packages used in this article.
 	 */
 	private final Map<String, Set<String>> articleToDefaultPackages = new HashMap<>();
+	private final Map<String, Set<ParsedPredicate>> articleToDefaultPackageRules = new HashMap<>();
 
 	/**
 	 * For each packageName, you get all Sections in the wiki belonging to this packageName.
 	 */
-	private final Map<String, Set<Section<?>>> packageToSectionsOfPackage = new HashMap<>();
+	private final Map<String, Set<Section<? extends DefaultMarkupType>>> packageToSection = new HashMap<>();
+	private final Map<Section<? extends DefaultMarkupType>, Set<String>> sectionToPackage = new HashMap<>();
 
-	private final Set<Section<? extends PackageCompileType>> packageCompileSections = new HashSet<>();
+	private final Map<ParsedPredicate, Set<Section<? extends DefaultMarkupType>>> predicateToSection = new HashMap<>();
+	private final Map<Section<? extends DefaultMarkupType>, Set<ParsedPredicate>> sectionToPredicate = new HashMap<>();
+
+	private final Set<Section<? extends DefaultMarkupPackageCompileType>> packageCompileSections = new HashSet<>();
 
 	/**
 	 * For each package, you get all compile sections of the compilers compiling the package.
 	 */
-	private final Map<String, Set<Section<? extends PackageCompileType>>> packageToCompilingSections =
-			new HashMap<>();
+	private final Map<String, Set<Section<? extends PackageCompileType>>> packageToCompilingSections = new HashMap<>();
 
-	private final Map<String, Pair<Set<Section<?>>, Set<Section<?>>>> changedPackages =
-			new HashMap<>();
+	private final Map<String, Pair<Set<Section<?>>, Set<Section<?>>>> changedPackages = new HashMap<>();
 
 	public <C extends Compiler> PackageManager(C compiler) {
 		this.compiler = compiler;
@@ -84,7 +96,7 @@ public class PackageManager {// implements EventListener {
 	public static void addPackageAnnotation(DefaultMarkup markup) {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
-		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageTerm());
+		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageRule());
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {
@@ -93,6 +105,10 @@ public class PackageManager {// implements EventListener {
 
 	public void addDefaultPackage(Article article, String defaultPackage) {
 		articleToDefaultPackages.computeIfAbsent(article.getTitle(), k -> new HashSet<>(4)).add(defaultPackage);
+	}
+
+	public void addDefaultPackageRule(Article article, ParsedPredicate defaultPackageRule) {
+		articleToDefaultPackageRules.computeIfAbsent(article.getTitle(), k -> new HashSet<>(4)).add(defaultPackageRule);
 	}
 
 	public void removeDefaultPackage(Article article, String defaultPackage) {
@@ -105,33 +121,48 @@ public class PackageManager {// implements EventListener {
 		}
 	}
 
-	public String[] getDefaultPackages(Article article) {
+	public void removeDefaultPackageRule(Article article, ParsedPredicate defaultPackageRule) {
+		Set<ParsedPredicate> defaultPackageRules = articleToDefaultPackageRules.get(article.getTitle());
+		if (defaultPackageRules != null) {
+			defaultPackageRules.remove(defaultPackageRule);
+			if (defaultPackageRules.isEmpty()) {
+				articleToDefaultPackageRules.remove(article.getTitle());
+			}
+		}
+	}
+
+	@NotNull
+	public Set<String> getDefaultPackages(Article article) {
 		Set<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
 		if (defaultPackages == null) {
 			defaultPackages = new HashSet<>(4);
-			defaultPackages.add(DEFAULT_PACKAGE);
+			// we only use the DEFAULT package, if there is neither a default package rule nor a default package
+			if (!articleToDefaultPackageRules.containsKey(article.getTitle())) {
+				defaultPackages.add(DEFAULT_PACKAGE);
+			}
 		}
-		return defaultPackages.toArray(new String[0]);
+		return Collections.unmodifiableSet(defaultPackages);
+	}
+
+	@NotNull
+	public Set<ParsedPredicate> getDefaultPackageRules(Article article) {
+		return Collections.unmodifiableSet(articleToDefaultPackageRules.getOrDefault(article.getTitle(), Collections.emptySet()));
 	}
 
 	/**
 	 * Adds the given Section to the package with the given name.
 	 *
-	 * @param section     is the Section to add
-	 * @param packageName is the name of the package the Section is added to
+	 * @param section     the Section to add
+	 * @param packageName the name of the package the Section is added to
 	 * @created 28.12.2010
 	 */
-	public void addSectionToPackage(Section<?> section, String packageName) throws CompilerMessage {
+	public void addSectionToPackage(Section<? extends DefaultMarkupType> section, String packageName) throws CompilerMessage {
 		if (isDisallowedPackageName(packageName)) {
 			throw CompilerMessage.error("'" + packageName + "' is not allowed as a package name.");
 		}
-		packageToSectionsOfPackage.computeIfAbsent(packageName, k -> new TreeSet<>()).add(section);
+		packageToSection.computeIfAbsent(packageName, k -> new TreeSet<>()).add(section);
+		sectionToPackage.computeIfAbsent(section, k -> new HashSet<>()).add(packageName);
 		addSectionToChangedPackagesAsAdded(section, packageName);
-		section.addPackageName(packageName);
-	}
-
-	public boolean hasPackage(String packageName) {
-		return packageToSectionsOfPackage.containsKey(packageName);
 	}
 
 	private void addSectionToChangedPackagesAsAdded(Section<?> section, String packageName) {
@@ -145,6 +176,34 @@ public class PackageManager {// implements EventListener {
 	}
 
 	/**
+	 * Adds/registers the given Section to/with the given package rule.
+	 *
+	 * @param section     the Section to add/register
+	 * @param packageRule the package rule the Section is added/registerd to
+	 */
+	public void addSectionToPackageRule(Section<? extends DefaultMarkupType> section, ParsedPredicate packageRule) {
+		predicateToSection.computeIfAbsent(packageRule, k -> new HashSet<>()).add(section);
+		sectionToPredicate.computeIfAbsent(section, k -> new HashSet<>()).add(packageRule);
+		for (String packageName : packageRule.getVariables()) {
+			addSectionToChangedPackagesAsAdded(section, packageName);
+		}
+	}
+
+	@NotNull
+	public Set<String> getPackagesOfSection(Section<?> section) {
+		Section<DefaultMarkupType> nearestDefaultMarkup = $(section).closest(DefaultMarkupType.class).getFirst();
+		Set<String> packagesOfSection = sectionToPackage.getOrDefault(nearestDefaultMarkup, Collections.emptySet());
+		return Collections.unmodifiableSet(packagesOfSection);
+	}
+
+	@NotNull
+	public Set<ParsedPredicate> getPackageRulesOfSection(Section<?> section) {
+		Section<DefaultMarkupType> nearestDefaultMarkup = $(section).closest(DefaultMarkupType.class).getFirst();
+		Set<ParsedPredicate> packagesOfSection = sectionToPredicate.getOrDefault(nearestDefaultMarkup, Collections.emptySet());
+		return Collections.unmodifiableSet(packagesOfSection);
+	}
+
+	/**
 	 * Removes the given Section from the package with the given name.
 	 *
 	 * @param section     is the Section to remove
@@ -153,18 +212,48 @@ public class PackageManager {// implements EventListener {
 	 * @created 28.12.2010
 	 */
 	public boolean removeSectionFromPackage(Section<?> section, String packageName) {
-		if (!isDisallowedPackageName(packageName)) {
-			Set<Section<?>> packageSet = packageToSectionsOfPackage.get(packageName);
-			if (packageSet != null) {
-				boolean removed = packageSet.remove(section);
-				if (removed) {
+		if (isDisallowedPackageName(packageName)) return false;
+		Set<String> packageNames = sectionToPackage.get(section);
+		if (packageNames != null) {
+			packageNames.remove(packageName);
+			if (packageNames.isEmpty()) {
+				sectionToPackage.remove(section);
+			}
+		}
+		Set<Section<? extends DefaultMarkupType>> packageSet = packageToSection.get(packageName);
+		if (packageSet != null) {
+			boolean removed = packageSet.remove(section);
+			if (removed) {
+				addSectionToChangedPackagesAsRemoved(section, packageName);
+			}
+			if (packageSet.isEmpty()) {
+				packageToSection.remove(packageName);
+			}
+			return removed;
+		}
+		return false;
+	}
+
+	public boolean removeSectionFromPackageRule(Section<?> section, ParsedPredicate packageRule) {
+		Set<ParsedPredicate> packageRules = sectionToPredicate.get(section);
+		if (packageRules != null) {
+			packageRules.remove(packageRule);
+			if (packageRules.isEmpty()) {
+				sectionToPredicate.remove(section);
+			}
+		}
+		Set<Section<? extends DefaultMarkupType>> ruleSet = predicateToSection.get(packageRule);
+		if (ruleSet != null) {
+			boolean removed = ruleSet.remove(section);
+			if (removed) {
+				for (String packageName : packageRule.getVariables()) {
 					addSectionToChangedPackagesAsRemoved(section, packageName);
 				}
-				if (packageSet.isEmpty()) {
-					packageToSectionsOfPackage.remove(packageName);
-				}
-				return removed;
 			}
+			if (ruleSet.isEmpty()) {
+				predicateToSection.remove(packageRule);
+			}
+			return removed;
 		}
 		return false;
 	}
@@ -175,9 +264,12 @@ public class PackageManager {// implements EventListener {
 	 * @param s is the Section to remove
 	 * @created 28.12.2010
 	 */
-	public void removeSectionFromAllPackages(Section<?> s) {
-		for (String packageName : new ArrayList<>(s.getPackageNames())) {
+	public void removeSectionFromAllPackagesAndRules(Section<?> s) {
+		for (String packageName : new ArrayList<>(getPackagesOfSection(s))) {
 			removeSectionFromPackage(s, packageName);
+		}
+		for (ParsedPredicate packageRule : new ArrayList<>(getPackageRulesOfSection(s))) {
+			removeSectionFromPackageRule(s, packageRule);
 		}
 	}
 
@@ -195,17 +287,26 @@ public class PackageManager {// implements EventListener {
 	public Collection<Section<?>> getSectionsOfPackage(String... packageNames) {
 		// minor optimization for single packages
 		if (packageNames.length == 1) {
-			return Collections.unmodifiableCollection(
-					packageToSectionsOfPackage.getOrDefault(packageNames[0], Collections.emptySet()));
+			return Collections.unmodifiableCollection(packageToSection.getOrDefault(packageNames[0], Collections.emptySet()));
 		}
 
-		List<Set<Section<?>>> sets = new ArrayList<>();
+		List<Set<Section<? extends DefaultMarkupType>>> sets = new ArrayList<>();
 		for (String packageName : packageNames) {
-			Set<Section<?>> sections = packageToSectionsOfPackage.get(packageName);
+			Set<Section<? extends DefaultMarkupType>> sections = packageToSection.get(packageName);
 			if (sections != null) {
 				sets.add(sections);
 			}
 		}
+
+		if (!predicateToSection.isEmpty()) {
+			PackagePredicateValueProvider valueProvider = new PackagePredicateValueProvider(packageNames);
+			for (Map.Entry<ParsedPredicate, Set<Section<? extends DefaultMarkupType>>> entry : predicateToSection.entrySet()) {
+				if (entry.getKey().test(valueProvider)) {
+					sets.add(entry.getValue());
+				}
+			}
+		}
+
 		//noinspection unchecked
 		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
@@ -257,7 +358,7 @@ public class PackageManager {// implements EventListener {
 		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
 
-	public void registerPackageCompileSection(Section<? extends PackageCompileType> section) {
+	public void registerPackageCompileSection(Section<? extends DefaultMarkupPackageCompileType> section) {
 
 		packageCompileSections.add(section);
 
@@ -287,10 +388,10 @@ public class PackageManager {// implements EventListener {
 	}
 
 	public Set<String> getAllPackageNames() {
-		return Collections.unmodifiableSet(packageToSectionsOfPackage.keySet());
+		return Collections.unmodifiableSet(packageToSection.keySet());
 	}
 
-	public Collection<Section<? extends PackageCompileType>> getCompileSections() {
+	public Collection<Section<? extends DefaultMarkupPackageCompileType>> getCompileSections() {
 		return Collections.unmodifiableCollection(packageCompileSections);
 	}
 
@@ -350,10 +451,9 @@ public class PackageManager {// implements EventListener {
 	 * @created 15.11.2013
 	 * @deprecated
 	 */
-	@SuppressWarnings("DeprecatedIsStillUsed")
 	@Deprecated
 	public Set<String> getCompilingArticles() {
-		Collection<Section<? extends PackageCompileType>> compileSections = getCompileSections();
+		Collection<Section<? extends DefaultMarkupPackageCompileType>> compileSections = getCompileSections();
 		Set<String> titles = new HashSet<>();
 		for (Section<? extends PackageCompileType> sections : compileSections) {
 			titles.add(sections.getTitle());
@@ -373,5 +473,19 @@ public class PackageManager {// implements EventListener {
 			titles.add(sections.getTitle());
 		}
 		return titles;
+	}
+
+	private static class PackagePredicateValueProvider implements PredicateParser.ValueProvider {
+
+		private final Set<String> packageNames;
+
+		public PackagePredicateValueProvider(String... packageNames) {
+			this.packageNames = new HashSet<>(Arrays.asList(packageNames));
+		}
+
+		@Override
+		public @Nullable Collection<String> get(@NotNull String variable) {
+			return packageNames.contains(variable) ? List.of("true") : List.of("false");
+		}
 	}
 }

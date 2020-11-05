@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
@@ -60,14 +61,13 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 		this.addCompileScript(Priority.LOW, new PackageWithoutSectionsWarningScript());
 	}
 
-
 	@Override
 	public String[] getPackagesToCompile(Section<? extends PackageCompileType> section) {
 
 		PackageManager packageManager = Compilers.getPackageRegistrationCompiler(section).getPackageManager();
 		Set<String> allPackageNames = packageManager.getAllPackageNames();
 
-		Stream<String> packagesStream = Stream.of(getPackages(section));
+		Stream<String> packagesStream = getPackages(section).stream();
 		Stream<String> packagesFromPatternsStream = Stream.of(getPackagePatterns(section))
 				.flatMap(pattern -> allPackageNames.stream()
 						.filter(packageName -> pattern.matcher(packageName).matches()));
@@ -85,14 +85,16 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 
 	@NotNull
 	@Override
-	public String[] getPackages(Section<?> section) {
+	public Set<String> getPackages(Section<?> section) {
 		List<Section<? extends AnnotationContentType>> compileAnnotations =
 				DefaultMarkupType.getAnnotationContentSections(section, PackageManager.COMPILE_ATTRIBUTE_NAME);
 
 		if (compileAnnotations.isEmpty()) {
 			return KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
 		}
-		return $(compileAnnotations).successor(PackageTerm.class).map(s -> s.get().getTermName(s)).toArray(String[]::new);
+		return $(compileAnnotations).successor(PackageTerm.class)
+				.map(s -> s.get().getTermName(s))
+				.collect(Collectors.toSet());
 	}
 
 	public static class PackageCompileSectionRegistrationScript extends PackageRegistrationScript<DefaultMarkupPackageCompileType> {

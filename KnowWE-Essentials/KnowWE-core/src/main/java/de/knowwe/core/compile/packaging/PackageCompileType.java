@@ -3,6 +3,7 @@ package de.knowwe.core.compile.packaging;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import de.knowwe.core.compile.PackageCompiler;
@@ -42,7 +43,7 @@ public interface PackageCompileType extends Type {
 	 * @param section should always be the Section calling this method.
 	 * @return a stream of package name given for the section
 	 */
-	String[] getPackages(Section<?> section);
+	Set<String> getPackages(Section<?> section);
 
 	default Collection<PackageCompiler> getPackageCompilers(Section<? extends PackageCompileType> section) {
 		Collection<PackageCompiler> compilers = section.getObject(COMPILER_STORY_KEY);

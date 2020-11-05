@@ -26,7 +26,7 @@ public abstract class PrefixedTestCaseProvider implements TestCaseProvider {
 				PREFIX_ANNOTATION_NAME);
 		if (prefix == null) return;
 		Set<String> packagesSet = prefixDefiningSection.getPackageNames();
-		String[] packages = packagesSet.toArray(new String[packagesSet.size()]);
+		String[] packages = packagesSet.toArray(new String[0]);
 		setPrefixTestCase(prefixDefiningSection.getWeb(), prefix, packages);
 	}
 

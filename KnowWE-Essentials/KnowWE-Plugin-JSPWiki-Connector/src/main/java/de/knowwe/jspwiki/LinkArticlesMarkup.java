@@ -151,7 +151,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 
 		private Stream<Section<?>> resolvePackage(String packageName) {
 			PackageManager packageManager = KnowWEUtils.getPackageManager(section);
-			if (!packageManager.hasPackage(packageName)) {
+			if (!packageManager.getAllPackageNames().contains(packageName)) {
 				messages.add(Messages.error("Package not known: " + packageName));
 			}
 			return packageManager.getSectionsOfPackage(packageName).stream();

@@ -21,12 +21,21 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.PredicateParser;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.AttachmentManager;
+import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.CompilationFinishedEvent;
 import de.knowwe.core.compile.CompilerManager;
@@ -37,10 +46,15 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageNotCompiledWarningScript;
+import de.knowwe.core.compile.packaging.PackageRule;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.attachment.AttachmentMarkup;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Handles registration of packages both to the terminology and package manager.
@@ -58,28 +72,28 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 	@Override
 	public void compile(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) throws CompilerMessage {
 
-		String[] packageNames;
+		PackageInfo packageInfo;
 		boolean isCompileMarkup = isCompileMarkup(section);
 		if (isCompileMarkup) {
 			Section<DefaultMarkupPackageCompileType> compileSection = Sections.cast(section, DefaultMarkupPackageCompileType.class);
-			packageNames = compileSection.get().getPackagesToCompile(compileSection);
+			packageInfo = new PackageInfo(List.of(compileSection.get()
+					.getPackagesToCompile(compileSection)), Collections.emptyList());
 		}
 		else {
-			packageNames = section.get().getPackages(section);
+			packageInfo = getPackageInfo(section);
 		}
 
 		// while destroying, the default packages will already be removed, so we
 		// have to store artificially
-		storeRegisteredPackages(compiler, section, packageNames);
+		storePackageInfo(compiler, section, packageInfo);
 
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		PackageManager packageManager = compiler.getPackageManager();
-		for (String packageName : packageNames) {
-			boolean isNewPackage = packageManager.getSectionsOfPackage(packageName).isEmpty();
-			packageManager.addSectionToPackage(section, packageName);
 
+		// do term registrations of all package terms, regular packages and packages inside rules
+		List<String> allPackageNames = getAllPackageNames(packageInfo);
+		for (String packageName : allPackageNames) {
 			Identifier packageIdentifier = new Identifier(packageName);
-
 			if (isCompileMarkup) {
 				terminologyManager.registerTermDefinition(compiler, section, Package.class, packageIdentifier);
 				Compilers.recompileReferences(compiler, packageIdentifier, PackageNotCompiledWarningScript.class);
@@ -87,28 +101,96 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 			else {
 				terminologyManager.registerTermReference(compiler, section, Package.class, packageIdentifier);
 			}
+		}
+
+		// register section for all regular packages in the package manager
+		for (String packageName : packageInfo.packageNames) {
+			boolean isNewPackage = packageManager.getSectionsOfPackage(packageName).isEmpty();
+			packageManager.addSectionToPackage(section, packageName);
 
 			// Special case for package patterns: Since we don't know which new package names will match on a package
 			// pattern added in the future, we have to check and register/add as new packages get added
 			if (isNewPackage && !isCompileMarkup) {
-				for (Section<? extends PackageCompileType> compileSection : packageManager.getCompileSections()) {
+				for (Section<? extends DefaultMarkupPackageCompileType> compileSection : packageManager.getCompileSections()) {
 					if (packageManager.getSectionsOfPackage(packageName).contains(compileSection)) continue;
 					if (!compilesPackageViaPatternMatch(packageName, compileSection)) continue;
 					packageManager.addSectionToPackage(compileSection, packageName);
 					packageManager.registerPackageCompileSection(compileSection);
-					terminologyManager.registerTermDefinition(compiler, compileSection, Package.class, packageIdentifier);
+					terminologyManager.registerTermDefinition(compiler, compileSection, Package.class, new Identifier(packageName));
 					String[] packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
-					storeRegisteredPackages(compiler, compileSection, packagesToCompile);
+					storePackageInfo(compiler, compileSection, new PackageInfo(List.of(packagesToCompile), List.of()));
 				}
 			}
 		}
+
+		// register section for all package rules in the package manager
+		for (PredicateParser.ParsedPredicate packageRule : packageInfo.packageRules) {
+			packageManager.addSectionToPackageRule(section, packageRule);
+		}
 	}
 
-	private void storeRegisteredPackages(PackageRegistrationCompiler compiler, Section<?> section, String[] packagesToCompile) {
+	@NotNull
+	private List<String> getAllPackageNames(PackageInfo packageInfo) {
+		return Stream.concat(packageInfo.packageNames.stream(), packageInfo.packageRules.stream()
+				.flatMap((PredicateParser.ParsedPredicate parsedPredicate) -> parsedPredicate.getVariables().stream()))
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns the packages the given default markup section belongs to according to the defined annotations. If there
+	 * are no such annotations, the default packages for the article are returned. In case the section is part of an
+	 * article based on a compiled attachment, we also check the compiling %%Attachment markups for packages.
+	 *
+	 * @param section the section to be check for packages
+	 * @created 12.03.2012
+	 */
+	private PackageInfo getPackageInfo(Section<?> section) {
+		List<PredicateParser.ParsedPredicate> packageRules = new ArrayList<>();
+		List<String> packageNames = new ArrayList<>();
+		$(DefaultMarkupType.getAnnotationContentSection(section, PackageManager.PACKAGE_ATTRIBUTE_NAME))
+				.successor(PackageRule.class)
+				.forEach(packageRule -> {
+					if (packageRule.get().isOrdinaryPackage(packageRule)) {
+						packageNames.add(packageRule.get().getOrdinaryPackage(packageRule));
+					}
+					else {
+						packageRules.add(packageRule.get().getRule(packageRule));
+					}
+				});
+
+		if (packageNames.isEmpty() && packageRules.isEmpty()) {
+			packageNames.addAll(KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle()));
+			packageRules.addAll(KnowWEUtils.getPackageManager(section).getDefaultPackageRules(section.getArticle()));
+		}
+		// if we only have the default package, check if this is an article based on an compiled attachment
+		// and if yes, get package info from compiling %%Attachment markups
+		ArticleManager articleManager = section.getArticleManager();
+		if (packageRules.isEmpty()
+				&& packageNames.size() == 1 && packageNames.get(0).equals(PackageManager.DEFAULT_PACKAGE)
+				&& articleManager instanceof DefaultArticleManager) {
+			AttachmentManager attachmentManager = ((DefaultArticleManager) articleManager).getAttachmentManager();
+			PackageInfo attachmentMarkupPackageInfo = attachmentManager.getCompilingAttachmentSections(section
+					.getArticle())
+					.stream()
+					.map(s -> $(s).ancestor(AttachmentMarkup.class).getFirst())
+					.filter(Objects::nonNull)
+					.map(this::getPackageInfo)
+					.findFirst()
+					.orElse(new PackageInfo(List.of(), List.of()));
+			if (!attachmentMarkupPackageInfo.isEmpty()) {
+				packageNames.clear();
+				packageNames.addAll(attachmentMarkupPackageInfo.packageNames);
+				packageRules.addAll(attachmentMarkupPackageInfo.packageRules);
+			}
+		}
+		return new PackageInfo(packageNames, packageRules);
+	}
+
+	private void storePackageInfo(PackageRegistrationCompiler compiler, Section<?> section, PackageInfo packagesToCompile) {
 		section.storeObject(compiler, REGISTERED_PACKAGE_KEY, packagesToCompile);
 	}
 
-	private String[] getRegisteredPackages(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) {
+	private PackageInfo getPackageInfo(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) {
 		return section.getObject(compiler, REGISTERED_PACKAGE_KEY);
 	}
 
@@ -123,15 +205,15 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 
 	@Override
 	public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) {
-		compiler.getPackageManager().removeSectionFromAllPackages(section);
+		compiler.getPackageManager().removeSectionFromAllPackagesAndRules(section);
 
-		String[] packageNames = getRegisteredPackages(compiler, section);
-		if (packageNames == null) return;
+		PackageInfo packageInfo = getPackageInfo(compiler, section);
+		if (packageInfo == null) return;
 		boolean isCompileMarkup = isCompileMarkup(section);
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
-		for (String annotationString : packageNames) {
+		for (String packageName : getAllPackageNames(packageInfo)) {
 
-			Identifier packageIdentifier = new Identifier(annotationString);
+			Identifier packageIdentifier = new Identifier(packageName);
 			if (isCompileMarkup) {
 				terminologyManager.unregisterTermDefinition(compiler, section, Package.class, packageIdentifier);
 				Compilers.destroyAndRecompileReferences(compiler, packageIdentifier, PackageNotCompiledWarningScript.class);
@@ -168,7 +250,7 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 				.getArticleManager());
 		PackageManager packageManager = compiler.getPackageManager();
 
-		Collection<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections();
+		Collection<Section<? extends DefaultMarkupPackageCompileType>> compileSections = packageManager.getCompileSections();
 		packageLoop:
 		for (String packageName : new ArrayList<>(packageManager.getAllPackageNames())) {
 			if (!packageManager.hasChanged(packageName)) continue;
@@ -186,7 +268,7 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 
 				// if non of the directly specified packages of the compile section matches the given package name,
 				// the only other possibility is matching via pattern
-				boolean matchedOnlyViaPattern = Stream.of(compileSection.get().getPackages(compileSection))
+				boolean matchedOnlyViaPattern = compileSection.get().getPackages(compileSection).stream()
 						.noneMatch(p -> p.equals(packageName));
 				if (matchedOnlyViaPattern) {
 					packageManager.removeSectionFromPackage(compileSection, packageName);
@@ -197,6 +279,21 @@ public class DefaultMarkupPackageRegistrationScript extends PackageRegistrationS
 					});
 				}
 			}
+		}
+	}
+
+	private static final class PackageInfo {
+
+		public final List<String> packageNames;
+		public final List<PredicateParser.ParsedPredicate> packageRules;
+
+		public PackageInfo(List<String> packageNames, List<PredicateParser.ParsedPredicate> packageRules) {
+			this.packageNames = packageNames;
+			this.packageRules = packageRules;
+		}
+
+		public boolean isEmpty() {
+			return packageNames.isEmpty() && packageRules.isEmpty();
 		}
 	}
 }

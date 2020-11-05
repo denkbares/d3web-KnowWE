@@ -47,6 +47,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -76,8 +77,6 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	protected boolean isOrHasReusedSuccessor = false;
 
 	protected Article article;
-
-	private HashSet<String> packageNames = null;
 
 	/**
 	 * The unique ID of this Section (or -1, if not initialized).
@@ -374,53 +373,8 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return article == null ? null : article.getTitle();
 	}
 
-	public boolean addPackageName(String packageName) {
-		if (getPackageNames().contains(packageName)) {
-			return false;
-		}
-		else {
-			if (packageNames == null) {
-				packageNames = new HashSet<>(4);
-			}
-			packageNames.add(packageName);
-			return true;
-		}
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public boolean removePackageName(String packageName) {
-		boolean removed = packageNames != null && packageNames.remove(packageName);
-		if (packageNames != null && packageNames.isEmpty()) packageNames = null;
-		return removed;
-	}
-
 	public Set<String> getPackageNames() {
-		if (parent == null) {
-			if (packageNames == null) {
-				return Collections.emptySet();
-			}
-			else {
-				return Collections.unmodifiableSet(packageNames);
-			}
-		}
-		else {
-			Set<String> fatherPackageNames = parent.getPackageNames();
-			if (packageNames == null) {
-				return fatherPackageNames;
-			}
-			else {
-				if (fatherPackageNames.isEmpty()) {
-					return Collections.unmodifiableSet(packageNames);
-				}
-				else {
-					Set<String> tempNamespaces = new HashSet<>(fatherPackageNames.size()
-							+ packageNames.size());
-					tempNamespaces.addAll(packageNames);
-					tempNamespaces.addAll(fatherPackageNames);
-					return Collections.unmodifiableSet(tempNamespaces);
-				}
-			}
-		}
+		return KnowWEUtils.getPackageManager(this).getPackagesOfSection(this);
 	}
 
 	public String getWeb() {

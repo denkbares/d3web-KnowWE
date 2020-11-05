@@ -18,6 +18,10 @@
  */
 package de.d3web.we.quicki;
 
+import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalScript;
@@ -46,7 +50,7 @@ public class QuickInterviewDefaultPackageHandler extends DefaultGlobalScript<Typ
 		// to specify another package
 		if (annotationStrings.length == 0) {
 			PackageManager packageManager = KnowWEUtils.getPackageManager(section.getArticleManager());
-			String[] defaultPackages = packageManager.getDefaultPackages(section.getArticle());
+			@NotNull Set<String> defaultPackages = packageManager.getDefaultPackages(section.getArticle());
 			for (String defaultPackage : defaultPackages) {
 				terminologyHandler.registerTermReference(compiler,
 						section,
