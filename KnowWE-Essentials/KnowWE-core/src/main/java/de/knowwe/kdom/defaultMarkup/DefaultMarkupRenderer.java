@@ -368,6 +368,14 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		appendHeader(title, sectionID, tools, user, string);
 
+		// add compiling compilers for debug purposes
+		string.appendHtmlElement("div",
+				"\n" + Compilers.getCompilers(section, PackageCompiler.class)
+						.stream()
+						.map(PackageCompiler::getName)
+						.collect(Collectors.joining("\n")) + "\n",
+				"class", "compiler-preview", "style", "display:none");
+
 		// render pre-formatted box
 		String style = "";
 		if (!isPreFormattedStyle()) {
