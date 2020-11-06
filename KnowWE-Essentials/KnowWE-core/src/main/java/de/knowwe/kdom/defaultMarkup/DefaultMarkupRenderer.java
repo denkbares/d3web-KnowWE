@@ -28,6 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
@@ -369,12 +370,14 @@ public class DefaultMarkupRenderer implements Renderer {
 		appendHeader(title, sectionID, tools, user, string);
 
 		// add compiling compilers for debug purposes
-		string.appendHtmlElement("div",
-				"\n" + Compilers.getCompilers(section, PackageCompiler.class)
-						.stream()
-						.map(PackageCompiler::getName)
-						.collect(Collectors.joining("\n")) + "\n",
-				"class", "compiler-preview", "style", "display:none");
+		Collection<PackageCompiler> compilers = Compilers.getCompilers(section, PackageCompiler.class);
+		if (!compilers.isEmpty()) {
+			string.appendHtmlElement("div",
+					compilers.stream()
+							.map(PackageCompiler::getName)
+							.collect(Collectors.joining(";")),
+					"class", "compiler-preview", "style", "display:none");
+		}
 
 		// render pre-formatted box
 		String style = "";
