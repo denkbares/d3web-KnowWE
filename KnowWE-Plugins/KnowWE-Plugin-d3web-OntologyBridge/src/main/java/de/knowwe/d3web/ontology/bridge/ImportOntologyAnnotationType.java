@@ -34,7 +34,7 @@ public class ImportOntologyAnnotationType extends OntologyReference {
 		addCompileScript(new ImportOntologyCompileScript());
 	}
 
-	public static class ImportOntologyCompileScript extends PackageRegistrationCompiler.PackageRegistrationScript<ImportOntologyAnnotationType> {
+	public static class ImportOntologyCompileScript implements PackageRegistrationCompiler.PackageRegistrationScript<ImportOntologyAnnotationType> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<ImportOntologyAnnotationType> section) throws CompilerMessage {

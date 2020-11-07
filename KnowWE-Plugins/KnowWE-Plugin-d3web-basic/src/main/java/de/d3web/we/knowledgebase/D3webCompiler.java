@@ -34,7 +34,6 @@ import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.IncrementalCompiler;
-import de.knowwe.core.compile.NamedCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;

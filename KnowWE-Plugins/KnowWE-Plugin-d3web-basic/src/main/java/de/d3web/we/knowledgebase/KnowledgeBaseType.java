@@ -40,12 +40,14 @@ import de.knowwe.core.compile.packaging.PackageAnnotationNameType;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageSelection;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * This class defines the knowledge base markup. With this, you can specify a knowledge base that will be compiled from
@@ -110,38 +112,7 @@ public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 		super(MARKUP);
 		this.setRenderer(new KnowledgeBaseTypeRenderer());
 		this.addCompileScript(Priority.HIGHEST, new D3webCompilerRegistrationScript());
-		this.addCompileScript(Priority.HIGHEST, (D3webCompileScript<KnowledgeBaseType>) (compiler, section) -> {
-			// get required information
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
-
-			// prepare the items to be set into the knowledge base
-			String id = getAnnotation(section, ANNOTATION_ID);
-			String author = getAnnotation(section, ANNOTATION_AUTHOR);
-			String comment = getAnnotation(section, ANNOTATION_COMMENT);
-			String version = getAnnotation(section, ANNOTATION_VERSION);
-			String filename = getAnnotation(section, ANNOTATION_FILENAME);
-			String status = getAnnotation(section, ANNOTATION_STATUS);
-			String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
-
-			// register package definition
-			TerminologyManager terminologyManager = compiler.getTerminologyManager();
-			terminologyManager.registerTermDefinition(compiler, section,
-					KnowledgeBase.class, new Identifier("KNOWLEDGEBASE"));
-
-			// and write it to the knowledge base
-			if (id != null) kb.setId(id);
-			InfoStore infoStore = kb.getInfoStore();
-
-			if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
-			if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
-			if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
-			if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
-			if (status != null) infoStore.addValue(BasicProperties.STATUS, status);
-			if (affiliation != null) {
-				infoStore.addValue(BasicProperties.AFFILIATION, affiliation);
-			}
-		});
-
+		this.addCompileScript(Priority.HIGHEST, new KnowledgeBasePropertiesScript());
 	}
 
 	public String getFilename(Section<? extends KnowledgeBaseType> self) {
@@ -156,7 +127,7 @@ public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 				"unexpected internal error: no compiler created");
 	}
 
-	private static class D3webCompilerRegistrationScript extends PackageRegistrationScript<PackageCompileType> {
+	private static class D3webCompilerRegistrationScript implements PackageRegistrationScript<PackageCompileType> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageCompileType> section) {
@@ -173,6 +144,41 @@ public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 					compiler.getCompilerManager().removeCompiler(packageCompiler);
 				}
 			}
+		}
+	}
+
+	private static class KnowledgeBasePropertiesScript implements D3webCompileScript<KnowledgeBaseType> {
+		@Override
+		public void compile(D3webCompiler compiler, Section<KnowledgeBaseType> section) throws CompilerMessage {
+			// get required information
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
+
+			// prepare the items to be set into the knowledge base
+			String id = getAnnotation(section, ANNOTATION_ID);
+			String author = getAnnotation(section, ANNOTATION_AUTHOR);
+			String comment = getAnnotation(section, ANNOTATION_COMMENT);
+			String version = getAnnotation(section, ANNOTATION_VERSION);
+			String filename = getAnnotation(section, ANNOTATION_FILENAME);
+			String status = getAnnotation(section, ANNOTATION_STATUS);
+			String affiliation = getAnnotation(section, ANNOTATION_AFFILIATION);
+			String prompt = $(section).successor(KnowledgeBaseDefinition.class).mapFirst(s -> s.get().getTermName(s));
+
+			// register package definition
+			TerminologyManager terminologyManager = compiler.getTerminologyManager();
+			terminologyManager.registerTermDefinition(compiler, section,
+					KnowledgeBase.class, new Identifier("KNOWLEDGEBASE"));
+
+			// and write it to the knowledge base
+			if (id != null) kb.setId(id);
+			InfoStore infoStore = kb.getInfoStore();
+
+			if (prompt != null) infoStore.addValue(MMInfo.PROMPT, prompt);
+			if (author != null) infoStore.addValue(BasicProperties.AUTHOR, author);
+			if (comment != null) infoStore.addValue(MMInfo.DESCRIPTION, comment);
+			if (version != null) infoStore.addValue(BasicProperties.VERSION, version);
+			if (filename != null) infoStore.addValue(BasicProperties.FILENAME, filename);
+			if (status != null) infoStore.addValue(BasicProperties.STATUS, status);
+			if (affiliation != null) infoStore.addValue(BasicProperties.AFFILIATION, affiliation);
 		}
 	}
 }

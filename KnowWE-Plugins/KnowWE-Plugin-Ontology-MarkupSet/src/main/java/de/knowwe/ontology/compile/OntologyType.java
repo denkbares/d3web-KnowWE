@@ -201,7 +201,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 		compileTypeSection.removeObject(COMPILER_PRIORITY);
 	}
 
-	private static class OntologyCompilerRegistrationScript extends PackageRegistrationScript<OntologyType> {
+	private static class OntologyCompilerRegistrationScript implements PackageRegistrationScript<OntologyType> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<OntologyType> section) throws CompilerMessage {
