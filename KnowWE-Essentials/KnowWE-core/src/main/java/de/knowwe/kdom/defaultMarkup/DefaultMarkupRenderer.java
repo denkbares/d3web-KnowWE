@@ -28,7 +28,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +37,6 @@ import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -89,15 +87,14 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	private static boolean isMultiCompiled(Collection<Compiler> compilers, Section<?> rootSection) {
 		compilers.remove(null);
-		if (compilers.size() > 1) return true;
+		// only consider package compilers
+		compilers.removeIf(c -> !(c instanceof PackageCompiler));
 		if (compilers.isEmpty()) return false;
+		if (compilers.size() > 1) return true;
 
-		// if only one compiler produced the message, and the compiler a not a singleton one,
-		// return true if multiple ones of the same class are applied to the section
-		Compiler compiler = compilers.iterator().next();
-		//noinspection SimplifiableIfStatement
-		if (Environment.getInstance().isGlobalCompiler(compiler)) return false;
-		return Compilers.getCompilers(rootSection, compiler.getClass()).size() > 1;
+		// if only one compiler produced the message but multiple of these compilers compile the section,
+		// also consider as multi compiled
+		return Compilers.getCompilers(rootSection, compilers.iterator().next().getClass()).size() > 1;
 	}
 
 	protected ToolSet getTools(Section<?> section, UserContext user) {
