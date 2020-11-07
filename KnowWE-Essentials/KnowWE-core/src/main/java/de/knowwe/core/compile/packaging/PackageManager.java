@@ -23,13 +23,12 @@ package de.knowwe.core.compile.packaging;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,9 +38,10 @@ import com.denkbares.events.EventManager;
 import com.denkbares.strings.PredicateParser;
 import com.denkbares.strings.PredicateParser.ParsedPredicate;
 import com.denkbares.utils.Pair;
-import de.knowwe.core.compile.Compiler;
+import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -61,36 +61,29 @@ public class PackageManager {// implements EventListener {
 
 	public static final String DEFAULT_PACKAGE = "default";
 
-	public final Compiler compiler;
-
 	/**
 	 * For each article title, you get all default packages used in this article.
 	 */
-	private final Map<String, Set<String>> articleToDefaultPackages = new HashMap<>();
-	private final Map<String, Set<ParsedPredicate>> articleToDefaultPackageRules = new HashMap<>();
+	private final Map<String, Set<String>> articleToDefaultPackages = new LinkedHashMap<>();
+	private final Map<String, Set<ParsedPredicate>> articleToDefaultPackageRules = new LinkedHashMap<>();
 
 	/**
 	 * For each packageName, you get all Sections in the wiki belonging to this packageName.
 	 */
-	private final Map<String, Set<Section<? extends DefaultMarkupType>>> packageToSection = new HashMap<>();
-	private final Map<Section<? extends DefaultMarkupType>, Set<String>> sectionToPackage = new HashMap<>();
+	private final Map<String, Set<Section<? extends DefaultMarkupType>>> packageToSection = new LinkedHashMap<>();
+	private final Map<Section<? extends DefaultMarkupType>, Set<String>> sectionToPackage = new LinkedHashMap<>();
 
-	private final Map<ParsedPredicate, Set<Section<? extends DefaultMarkupType>>> predicateToSection = new HashMap<>();
-	private final Map<Section<? extends DefaultMarkupType>, Set<ParsedPredicate>> sectionToPredicate = new HashMap<>();
+	private final Map<ParsedPredicate, Set<Section<? extends DefaultMarkupType>>> predicateToSection = new LinkedHashMap<>();
+	private final Map<Section<? extends DefaultMarkupType>, Set<ParsedPredicate>> sectionToPredicate = new LinkedHashMap<>();
 
-	private final Set<Section<? extends DefaultMarkupPackageCompileType>> packageCompileSections = new HashSet<>();
+	private final Set<Section<? extends DefaultMarkupPackageCompileType>> packageCompileSections = new LinkedHashSet<>();
 
 	/**
 	 * For each package, you get all compile sections of the compilers compiling the package.
 	 */
-	private final Map<String, Set<Section<? extends PackageCompileType>>> packageToCompilingSections = new HashMap<>();
+	private final Map<String, Set<Section<? extends PackageCompileType>>> packageToCompilingSections = new LinkedHashMap<>();
 
-	private final Map<String, Pair<Set<Section<?>>, Set<Section<?>>>> changedPackages = new HashMap<>();
-
-	public <C extends Compiler> PackageManager(C compiler) {
-		this.compiler = compiler;
-		// EventManager.getInstance().registerListener(this);
-	}
+	private final Map<String, Pair<Set<Section<?>>, Set<Section<?>>>> changedPackages = new LinkedHashMap<>();
 
 	public static void addPackageAnnotation(DefaultMarkup markup) {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
@@ -103,11 +96,11 @@ public class PackageManager {// implements EventListener {
 	}
 
 	public void addDefaultPackage(Article article, String defaultPackage) {
-		articleToDefaultPackages.computeIfAbsent(article.getTitle(), k -> new HashSet<>(4)).add(defaultPackage);
+		articleToDefaultPackages.computeIfAbsent(article.getTitle(), k -> new LinkedHashSet<>(4)).add(defaultPackage);
 	}
 
 	public void addDefaultPackageRule(Article article, ParsedPredicate defaultPackageRule) {
-		articleToDefaultPackageRules.computeIfAbsent(article.getTitle(), k -> new HashSet<>(4)).add(defaultPackageRule);
+		articleToDefaultPackageRules.computeIfAbsent(article.getTitle(), k -> new LinkedHashSet<>(4)).add(defaultPackageRule);
 	}
 
 	public void removeDefaultPackage(Article article, String defaultPackage) {
@@ -134,7 +127,7 @@ public class PackageManager {// implements EventListener {
 	public Set<String> getDefaultPackages(Article article) {
 		Set<String> defaultPackages = articleToDefaultPackages.get(article.getTitle());
 		if (defaultPackages == null) {
-			defaultPackages = new HashSet<>(4);
+			defaultPackages = new LinkedHashSet<>(4);
 			// we only use the DEFAULT package, if there is neither a default package rule nor a default package
 			if (!articleToDefaultPackageRules.containsKey(article.getTitle())) {
 				defaultPackages.add(DEFAULT_PACKAGE);
@@ -159,18 +152,18 @@ public class PackageManager {// implements EventListener {
 		if (isDisallowedPackageName(packageName)) {
 			throw CompilerMessage.error("'" + packageName + "' is not allowed as a package name.");
 		}
-		packageToSection.computeIfAbsent(packageName, k -> new TreeSet<>()).add(section);
-		sectionToPackage.computeIfAbsent(section, k -> new HashSet<>()).add(packageName);
+		packageToSection.computeIfAbsent(packageName, k -> new LinkedHashSet<>()).add(section);
+		sectionToPackage.computeIfAbsent(section, k -> new LinkedHashSet<>()).add(packageName);
 		addSectionToChangedPackagesAsAdded(section, packageName);
 	}
 
 	private void addSectionToChangedPackagesAsAdded(Section<?> section, String packageName) {
-		changedPackages.computeIfAbsent(packageName, s -> new Pair<>(new HashSet<>(), new HashSet<>()))
+		changedPackages.computeIfAbsent(packageName, s -> new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>()))
 				.getA().add(section);
 	}
 
 	private void addSectionToChangedPackagesAsRemoved(Section<?> section, String packageName) {
-		changedPackages.computeIfAbsent(packageName, s -> new Pair<>(new HashSet<>(), new HashSet<>()))
+		changedPackages.computeIfAbsent(packageName, s -> new Pair<>(new LinkedHashSet<>(), new LinkedHashSet<>()))
 				.getB().add(section);
 	}
 
@@ -181,8 +174,8 @@ public class PackageManager {// implements EventListener {
 	 * @param packageRule the package rule the Section is added/registerd to
 	 */
 	public void addSectionToPackageRule(Section<? extends DefaultMarkupType> section, ParsedPredicate packageRule) {
-		predicateToSection.computeIfAbsent(packageRule, k -> new HashSet<>()).add(section);
-		sectionToPredicate.computeIfAbsent(section, k -> new HashSet<>()).add(packageRule);
+		predicateToSection.computeIfAbsent(packageRule, k -> new LinkedHashSet<>()).add(section);
+		sectionToPredicate.computeIfAbsent(section, k -> new LinkedHashSet<>()).add(packageRule);
 		for (String packageName : packageRule.getVariables()) {
 			addSectionToChangedPackagesAsAdded(section, packageName);
 		}
@@ -212,13 +205,7 @@ public class PackageManager {// implements EventListener {
 	 */
 	public boolean removeSectionFromPackage(Section<?> section, String packageName) {
 		if (isDisallowedPackageName(packageName)) return false;
-		Set<String> packageNames = sectionToPackage.get(section);
-		if (packageNames != null) {
-			packageNames.remove(packageName);
-			if (packageNames.isEmpty()) {
-				sectionToPackage.remove(section);
-			}
-		}
+		removePackageForSection(section, packageName);
 		Set<Section<? extends DefaultMarkupType>> packageSet = packageToSection.get(packageName);
 		if (packageSet != null) {
 			boolean removed = packageSet.remove(section);
@@ -228,9 +215,48 @@ public class PackageManager {// implements EventListener {
 			if (packageSet.isEmpty()) {
 				packageToSection.remove(packageName);
 			}
+			// if only package compile sections are left, clean up those that only are part of
+			// the package because of a pattern matching the package
+			else if (packageCompileSections.containsAll(packageSet)) {
+
+				// seems like we only have compile sections in that package left
+				for (Section<?> packageSection : new ArrayList<>(packageSet)) {
+					Section<DefaultMarkupPackageCompileType> compileSection = Sections.cast(packageSection, DefaultMarkupPackageCompileType.class);
+
+					// if non of the directly specified packages of the compile section matches the given package name,
+					// the only other possibility is matching via pattern
+					boolean matchedOnlyViaPattern = compileSection.get().getPackages(compileSection).stream()
+							.noneMatch(p -> p.equals(packageName));
+					if (matchedOnlyViaPattern) {
+						removePackageForSection(compileSection, packageName);
+						packageSet.remove(compileSection);
+
+						compileSection.get().getPackageCompilers(compileSection).forEach(c -> {
+							if (c instanceof AbstractPackageCompiler) {
+								((AbstractPackageCompiler) c).refreshCompiledPackages();
+							}
+						});
+					}
+				}
+			}
+			// check again for the case the package compile sections were vlean up
+			if (packageSet.isEmpty()) {
+				packageToSection.remove(packageName);
+			}
+
 			return removed;
 		}
 		return false;
+	}
+
+	public void removePackageForSection(Section<?> section, String packageName) {
+		Set<String> packageNames = sectionToPackage.get(section);
+		if (packageNames != null) {
+			packageNames.remove(packageName);
+			if (packageNames.isEmpty()) {
+				sectionToPackage.remove(section);
+			}
+		}
 	}
 
 	public boolean removeSectionFromPackageRule(Section<?> section, ParsedPredicate packageRule) {
@@ -260,15 +286,33 @@ public class PackageManager {// implements EventListener {
 	/**
 	 * Removes the given Section from all packages it was added to.
 	 *
-	 * @param s is the Section to remove
+	 * @param section is the Section to remove
 	 * @created 28.12.2010
 	 */
-	public void removeSectionFromAllPackagesAndRules(Section<?> s) {
-		for (String packageName : new ArrayList<>(getPackagesOfSection(s))) {
-			removeSectionFromPackage(s, packageName);
+	public void removeSectionFromAllPackagesAndRules(Section<?> section) {
+		for (String packageName : new ArrayList<>(getPackagesOfSection(section))) {
+			removeSectionFromPackage(section, packageName);
 		}
-		for (ParsedPredicate packageRule : new ArrayList<>(getPackageRulesOfSection(s))) {
-			removeSectionFromPackageRule(s, packageRule);
+		for (ParsedPredicate packageRule : new ArrayList<>(getPackageRulesOfSection(section))) {
+			removeSectionFromPackageRule(section, packageRule);
+		}
+	}
+
+	/**
+	 * Mark the given section to be removed from all packages without actually removing them (yet). This allows the
+	 * PackageManager to destroy the artifacts produced by these section while the package information for these
+	 * sections is still present.
+	 *
+	 * @param section the section to be marked for removal
+	 */
+	public void markFormRemoval(Section<DefaultMarkupType> section) {
+		for (String packageName : getPackagesOfSection(section)) {
+			addSectionToChangedPackagesAsRemoved(section, packageName);
+		}
+		for (ParsedPredicate packageRule : new ArrayList<>(getPackageRulesOfSection(section))) {
+			for (String packageName : packageRule.getVariables()) {
+				addSectionToChangedPackagesAsRemoved(section, packageName);
+			}
 		}
 	}
 
@@ -284,11 +328,6 @@ public class PackageManager {// implements EventListener {
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getSectionsOfPackage(String... packageNames) {
-		// minor optimization for single packages
-		if (packageNames.length == 1) {
-			return Collections.unmodifiableCollection(packageToSection.getOrDefault(packageNames[0], Collections.emptySet()));
-		}
-
 		List<Set<Section<? extends DefaultMarkupType>>> sets = new ArrayList<>();
 		for (String packageName : packageNames) {
 			Set<Section<? extends DefaultMarkupType>> sections = packageToSection.get(packageName);
@@ -306,8 +345,20 @@ public class PackageManager {// implements EventListener {
 			}
 		}
 
-		//noinspection unchecked
-		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
+		// if there are sections marked to be removed (but not yet removed, will happen later in compilation),
+		// we also no longer return them here, so they are not compiled again by package compilers
+		Collection<Section<?>> markedForRemoval = getRemovedSections(packageNames);
+		if (markedForRemoval.isEmpty()) {
+			//noinspection unchecked
+			return new ConcatenateCollection<>(sets.toArray(new Set[0]));
+		}
+		else {
+			Set<Section<? extends DefaultMarkupType>> cleanedSet = new LinkedHashSet<>();
+			for (Set<Section<? extends DefaultMarkupType>> set : sets) {
+				set.stream().filter(s -> !markedForRemoval.contains(s)).forEach(cleanedSet::add);
+			}
+			return Collections.unmodifiableSet(cleanedSet);
+		}
 	}
 
 	public boolean hasChanged(String... packageNames) {
@@ -362,7 +413,7 @@ public class PackageManager {// implements EventListener {
 		packageCompileSections.add(section);
 
 		for (String object : section.get().getPackagesToCompile(section)) {
-			packageToCompilingSections.computeIfAbsent(object, k -> new HashSet<>()).add(section);
+			packageToCompilingSections.computeIfAbsent(object, k -> new LinkedHashSet<>()).add(section);
 		}
 
 		EventManager.getInstance().fireEvent(new RegisteredPackageCompileSectionEvent(section));
@@ -406,7 +457,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 28.12.2010
 	 */
 	public Set<Section<? extends PackageCompileType>> getCompileSections(Section<?> section) {
-		Set<Section<? extends PackageCompileType>> compileSections = new HashSet<>();
+		Set<Section<? extends PackageCompileType>> compileSections = new LinkedHashSet<>();
 		for (String packageName : getPackagesOfSection(section)) {
 			compileSections.addAll(getCompileSections(packageName));
 		}
@@ -431,7 +482,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 28.08.2010
 	 */
 	public Set<Section<? extends PackageCompileType>> getCompileSections(String packageName) {
-		Set<Section<? extends PackageCompileType>> compilingSections = new HashSet<>();
+		Set<Section<? extends PackageCompileType>> compilingSections = new LinkedHashSet<>();
 
 		Set<Section<? extends PackageCompileType>> resolvedSections = packageToCompilingSections.get(packageName);
 		if (resolvedSections != null) {
@@ -448,7 +499,7 @@ public class PackageManager {// implements EventListener {
 	@Deprecated
 	public Set<String> getCompilingArticles(Section<?> section) {
 		Set<Section<? extends PackageCompileType>> compileSections = getCompileSections(section);
-		Set<String> titles = new HashSet<>();
+		Set<String> titles = new LinkedHashSet<>();
 		for (Section<? extends PackageCompileType> sections : compileSections) {
 			titles.add(sections.getTitle());
 		}
@@ -462,7 +513,7 @@ public class PackageManager {// implements EventListener {
 	@Deprecated
 	public Set<String> getCompilingArticles() {
 		Collection<Section<? extends DefaultMarkupPackageCompileType>> compileSections = getCompileSections();
-		Set<String> titles = new HashSet<>();
+		Set<String> titles = new LinkedHashSet<>();
 		for (Section<? extends PackageCompileType> sections : compileSections) {
 			titles.add(sections.getTitle());
 		}
@@ -476,7 +527,7 @@ public class PackageManager {// implements EventListener {
 	@Deprecated
 	public Set<String> getCompilingArticles(String packageName) {
 		Collection<Section<? extends PackageCompileType>> compileSections = getCompileSections(packageName);
-		Set<String> titles = new HashSet<>();
+		Set<String> titles = new LinkedHashSet<>();
 		for (Section<? extends PackageCompileType> sections : compileSections) {
 			titles.add(sections.getTitle());
 		}
@@ -488,7 +539,7 @@ public class PackageManager {// implements EventListener {
 		private final Set<String> packageNames;
 
 		public PackagePredicateValueProvider(String... packageNames) {
-			this.packageNames = new HashSet<>();
+			this.packageNames = new LinkedHashSet<>();
 			Collections.addAll(this.packageNames, packageNames);
 		}
 

@@ -41,7 +41,10 @@ public class PackageTerm extends SimpleReference {
 
 	public PackageTerm() {
 		super(new SimpleReferenceRegistrationScript<>(PackageRegistrationCompiler.class, false), Package.class, Priority.BELOW_DEFAULT);
-		this.addCompileScript(Priority.LOW, new PackageNotCompiledWarningScript());
+		// we need two warnings scripts for our different package registration compilers
+		this.addCompileScript(Priority.LOW, new PackageRegistrationNotCompiledWarningScript());
+		this.addCompileScript(Priority.LOW, new PackageUnregistrationNotCompiledWarningScript());
+
 		this.addCompileScript(new CheckWildCardCompileScript());
 		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\s*((?=\\s*\\S).+?)\\s*(?:\r?\n|\\z)"), 1));
 		setRenderer(StyleRenderer.PACKAGE);

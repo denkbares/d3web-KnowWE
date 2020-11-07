@@ -1,12 +1,11 @@
 package de.knowwe.core.packaging;
 
-import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
+import de.knowwe.core.compile.PackageUnregistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageRule;
-import de.knowwe.core.compile.packaging.PackageTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -32,7 +31,7 @@ public class PackageMarkupType extends DefaultMarkupType {
 				DefaultMarkupPackageRegistrationScript.class);
 	}
 
-	public static class SetDefaultPackageHandler extends PackageRegistrationScript<PackageRule> {
+	public static class SetDefaultPackageHandler implements PackageRegistrationScript<PackageRule> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
@@ -42,51 +41,26 @@ public class PackageMarkupType extends DefaultMarkupType {
 			}
 			else {
 				packageManager.addDefaultPackageRule(section.getArticle(), section.get().getRule(section));
-
 			}
 		}
 
 		@Override
 		public void destroy(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
-
+			// nothing to do
 		}
 	}
 
-	public static class RemoveDefaultPackageHandler extends PackageRegistrationScript<PackageRule> {
+	public static class RemoveDefaultPackageHandler implements PackageUnregistrationCompiler.PackageUnregistrationScript<PackageRule> {
 
 		@Override
-		public void compile(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
-
-		}
-
-		@Override
-		public void destroy(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
+		public void destroy(PackageUnregistrationCompiler compiler, Section<PackageRule> section) {
 			PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 			if (section.get().isOrdinaryPackage(section)) {
 				packageManager.removeDefaultPackage(section.getArticle(), section.get().getOrdinaryPackage(section));
 			}
 			else {
 				packageManager.removeDefaultPackageRule(section.getArticle(), section.get().getRule(section));
-
 			}
-		}
-	}
-
-	private static class PackageTermReferenceRegistrationHandler extends PackageRegistrationScript<PackageTerm> {
-
-		@Override
-		public void compile(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
-
-			String defaultPackage = section.getText();
-			compiler.getTerminologyManager().registerTermReference(compiler,
-					section, Package.class, new Identifier(defaultPackage));
-		}
-
-		@Override
-		public void destroy(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
-			String defaultPackage = section.getText();
-			compiler.getTerminologyManager().unregisterTermReference(compiler,
-					section, Package.class, new Identifier(defaultPackage));
 		}
 	}
 }

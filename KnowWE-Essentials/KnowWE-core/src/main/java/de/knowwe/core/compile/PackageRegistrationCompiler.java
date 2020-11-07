@@ -10,19 +10,22 @@ import de.knowwe.core.kdom.parsing.Section;
 public class PackageRegistrationCompiler extends DefaultGlobalCompiler {
 
 	private CompilerManager compilerManager;
-	private PackageManager packageManager;
-	private TerminologyManager terminologyManager;
+	private final PackageManager packageManager;
+	private final TerminologyManager terminologyManager;
 
 	@Override
 	public @org.jetbrains.annotations.NotNull TerminologyManager getTerminologyManager() {
 		return terminologyManager;
 	}
 
+	public PackageRegistrationCompiler() {
+		this.packageManager = new PackageManager();
+		this.terminologyManager = new TerminologyManager();
+	}
+
 	@Override
 	public void init(CompilerManager compilerManager) {
 		this.compilerManager = compilerManager;
-		this.packageManager = new PackageManager(this);
-		this.terminologyManager = new TerminologyManager();
 	}
 
 	@Override
@@ -40,19 +43,12 @@ public class PackageRegistrationCompiler extends DefaultGlobalCompiler {
 		return this.packageManager;
 	}
 
-	@Override
-	public String toString() {
-		return this.getClass().getSimpleName();
-	}
-
-	public static abstract class PackageRegistrationScript<T extends Type>
-			implements CompileScript<PackageRegistrationCompiler, T>, DestroyScript<PackageRegistrationCompiler, T> {
+	public interface PackageRegistrationScript<T extends Type>
+			extends CompileScript<PackageRegistrationCompiler, T>, DestroyScript<PackageRegistrationCompiler, T> {
 
 		@Override
-		public Class<PackageRegistrationCompiler> getCompilerClass() {
+		default Class<PackageRegistrationCompiler> getCompilerClass() {
 			return PackageRegistrationCompiler.class;
 		}
-
 	}
-
 }

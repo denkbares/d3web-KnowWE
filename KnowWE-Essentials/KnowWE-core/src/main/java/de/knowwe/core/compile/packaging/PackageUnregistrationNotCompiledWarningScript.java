@@ -3,6 +3,7 @@ package de.knowwe.core.compile.packaging;
 import java.util.Set;
 
 import de.knowwe.core.compile.PackageRegistrationCompiler;
+import de.knowwe.core.compile.PackageUnregistrationCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
@@ -12,10 +13,10 @@ import de.knowwe.core.report.Messages;
  * <p/>
  * @author Albrecht Striffler (denkbares GmbH) on 26.03.2014.
  */
-public class PackageNotCompiledWarningScript extends PackageRegistrationCompiler.PackageRegistrationScript<PackageTerm> {
+public class PackageUnregistrationNotCompiledWarningScript implements PackageUnregistrationCompiler.PackageUnregistrationScript<PackageTerm> {
 
 	@Override
-	public void compile(PackageRegistrationCompiler compiler, Section<PackageTerm> section) throws CompilerMessage {
+	public void compile(PackageUnregistrationCompiler compiler, Section<PackageTerm> section) throws CompilerMessage {
 		String packageName = section.get().getTermName(section);
 		Set<Section<? extends PackageCompileType>> compileSections = compiler.getPackageManager()
 				.getCompileSections(packageName);
@@ -30,7 +31,7 @@ public class PackageNotCompiledWarningScript extends PackageRegistrationCompiler
 	}
 
 	@Override
-	public void destroy(PackageRegistrationCompiler compiler, Section<PackageTerm> section) {
+	public void destroy(PackageUnregistrationCompiler compiler, Section<PackageTerm> section) {
 		// nothing to do
 	}
 }

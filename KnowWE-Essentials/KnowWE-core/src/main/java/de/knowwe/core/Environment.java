@@ -59,6 +59,8 @@ import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
+import de.knowwe.core.compile.PackageUnregistrationCompiler;
+import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.RootType;
@@ -204,7 +206,12 @@ public class Environment {
 
 	private void initCompilers() {
 		CompilerManager compilerManager = Compilers.getCompilerManager(DEFAULT_WEB);
-		compilerManager.addCompiler(2, new PackageRegistrationCompiler());
+		PackageManager packageManager = new PackageManager();
+
+		// we want this compiler to run before alle package compilers
+		PackageRegistrationCompiler packageRegistrationCompiler = new PackageRegistrationCompiler();
+		compilerManager.addCompiler(2, packageRegistrationCompiler);
+
 		compilerManager.addCompiler(4, new DefaultGlobalCompiler());
 
 		for (PriorityList.Group<Double, Compiler> priorityGroup : Plugins.getCompilers().getPriorityGroups()) {
@@ -213,6 +220,9 @@ public class Environment {
 				compilerManager.addCompiler(priorityGroup.getPriority(), compiler);
 			}
 		}
+
+		// we want this compiler to run after all package compilers
+		compilerManager.addCompiler(10000, new PackageUnregistrationCompiler(packageRegistrationCompiler));
 	}
 
 	/**

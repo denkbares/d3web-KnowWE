@@ -97,7 +97,7 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 				.collect(Collectors.toSet());
 	}
 
-	public static class PackageCompileSectionRegistrationScript extends PackageRegistrationScript<DefaultMarkupPackageCompileType> {
+	public static class PackageCompileSectionRegistrationScript implements PackageRegistrationScript<DefaultMarkupPackageCompileType> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) throws CompilerMessage {
@@ -113,7 +113,7 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 	/**
 	 * Script to check whether the compiled packages contain any packages
 	 */
-	public class PackageWithoutSectionsWarningScript extends PackageRegistrationScript<DefaultMarkupPackageCompileType> {
+	public class PackageWithoutSectionsWarningScript implements PackageRegistrationScript<DefaultMarkupPackageCompileType> {
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<DefaultMarkupPackageCompileType> section) {
