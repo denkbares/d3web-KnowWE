@@ -11,17 +11,19 @@ import de.knowwe.core.report.CompilerMessage;
 public class PackageUnregistrationCompiler extends DefaultGlobalCompiler {
 
 	private CompilerManager compilerManager;
-	private final PackageManager packageManager;
-	private final TerminologyManager terminologyManager;
+	private final PackageRegistrationCompiler registrationCompiler;
 
 	@Override
 	public @org.jetbrains.annotations.NotNull TerminologyManager getTerminologyManager() {
-		return terminologyManager;
+		return registrationCompiler.getTerminologyManager();
 	}
 
 	public PackageUnregistrationCompiler(PackageRegistrationCompiler registrationCompiler) {
-		this.packageManager = registrationCompiler.getPackageManager();
-		this.terminologyManager = registrationCompiler.getTerminologyManager();
+		this.registrationCompiler = registrationCompiler;
+	}
+
+	public PackageRegistrationCompiler getRegistrationCompiler() {
+		return registrationCompiler;
 	}
 
 	@Override
@@ -35,7 +37,7 @@ public class PackageUnregistrationCompiler extends DefaultGlobalCompiler {
 	}
 
 	public PackageManager getPackageManager() {
-		return this.packageManager;
+		return registrationCompiler.getPackageManager();
 	}
 
 	@Override

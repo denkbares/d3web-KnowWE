@@ -22,11 +22,11 @@ public class PackageRegistrationNotCompiledWarningScript implements PackageRegis
 				.getCompileSections(packageName);
 
 		if (compileSections.isEmpty()) {
-			Messages.storeMessage(compiler, section, this.getClass(),
+			Messages.storeMessage(compiler, section, PackageRegistrationCompiler.class,
 					Messages.warning("The package '" + packageName + "' is never used to compile knowledge."));
 		}
 		else {
-			Messages.clearMessages(compiler, section, this.getClass());
+			Messages.clearMessages(compiler, section, PackageRegistrationCompiler.class);
 		}
 	}
 
