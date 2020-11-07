@@ -68,7 +68,7 @@ public abstract class DefaultMarkupPackageScript {
 	protected PackageInfo getPackageInfo(Section<? extends DefaultMarkupType> section) {
 		List<PredicateParser.ParsedPredicate> packageRules = new ArrayList<>();
 		List<String> packageNames = new ArrayList<>();
-		$(DefaultMarkupType.getAnnotationContentSection(section, PackageManager.PACKAGE_ATTRIBUTE_NAME))
+		$(DefaultMarkupType.getAnnotationContentSections(section, PackageManager.PACKAGE_ATTRIBUTE_NAME))
 				.successor(PackageRule.class)
 				.forEach(packageRule -> {
 					if (packageRule.get().isOrdinaryPackage(packageRule)) {
