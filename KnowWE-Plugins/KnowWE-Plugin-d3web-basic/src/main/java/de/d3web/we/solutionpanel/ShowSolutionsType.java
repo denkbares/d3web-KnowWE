@@ -106,14 +106,6 @@ public class ShowSolutionsType extends DefaultMarkupType {
 		return DefaultMarkupType.getAnnotation(sec, END_USER_MODE);
 	}
 
-	public static String getPackageName(Section<ShowSolutionsType> section) {
-		String packageName = DefaultMarkupType.getAnnotation(section, PackageManager.PACKAGE_ATTRIBUTE_NAME);
-		if (Strings.nonBlank(packageName)) return packageName;
-
-		Set<String> packages = KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle());
-		return (packages.isEmpty()) ? null : packages.iterator().next();
-	}
-
 	public static String getMaster(Section<ShowSolutionsType> section) {
 		return DefaultMarkupType.getAnnotation(section, PackageManager.MASTER_ATTRIBUTE_NAME);
 	}
