@@ -116,7 +116,7 @@ public class RuleType extends AbstractType {
 		@Override
 		public void render(Section<?> sec, UserContext user, RenderResult string) {
 
-			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
+			D3webCompiler compiler = Compilers.getCompiler(user, sec, D3webCompiler.class);
 			Session session = D3webUtils.getExistingSession(compiler, user);
 
 			List<String> classes = new ArrayList<>();

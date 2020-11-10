@@ -32,8 +32,8 @@ import de.knowwe.kdom.renderer.PaginationRenderer;
  */
 public class SparqlContentDecoratingRenderer implements Renderer {
 
-	private SparqlContentRenderer contentRenderer = new SparqlContentRenderer();
-	private PaginationRenderer paginationRenderer = new PaginationRenderer(contentRenderer);
+	private final SparqlContentRenderer contentRenderer = new SparqlContentRenderer();
+	private final PaginationRenderer paginationRenderer = new PaginationRenderer(contentRenderer);
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {

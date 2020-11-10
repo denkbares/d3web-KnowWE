@@ -37,8 +37,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 
 	@Override
 	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
-		String concept = Utils.getConceptFromRequest(user);
-		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(getVisualizationRendererKey(user));
+		OntoGraphDataBuilder builder = section.getObject(getVisualizationRendererKey(user));
 		if (builder != null) {
 			builder.render(string);
 			if (builder.isTimeOut()) {
@@ -66,7 +65,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 	@Override
 	public void preRender(Section<?> section, UserContext user) {
 
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		Rdf2GoCompiler compiler = Compilers.getCompiler(user, section, Rdf2GoCompiler.class);
 		if (compiler == null) return;
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 

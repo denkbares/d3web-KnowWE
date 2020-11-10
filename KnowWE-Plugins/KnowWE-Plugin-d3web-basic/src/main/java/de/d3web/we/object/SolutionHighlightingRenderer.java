@@ -51,11 +51,12 @@ public class SolutionHighlightingRenderer implements Renderer {
 	}
 
 	private Rating.State getState(Section<?> sec, UserContext user) {
-		D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
+		D3webCompiler compiler = Compilers.getCompiler(user, sec, D3webCompiler.class);
 		if (compiler != null) {
 			Session session = D3webUtils.getExistingSession(compiler, user);
 
 			if (session != null) {
+				//noinspection rawtypes
 				Section<D3webTerm> term = Sections.cast(sec, D3webTerm.class);
 				//noinspection unchecked
 				NamedObject object = term.get().getTermObject(compiler, term);

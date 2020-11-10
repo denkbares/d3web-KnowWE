@@ -125,7 +125,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 			Section<SparqlNameReference> reference = Sections.successor(
 					DefaultMarkupType.getContentSection(section), SparqlNameReference.class);
 
-			Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+			Rdf2GoCompiler compiler = Compilers.getCompiler(user, section, Rdf2GoCompiler.class);
 			Section<SparqlMarkupType> referencedSection = reference == null ? null : reference.get()
 					.getReferencedSection(compiler, reference);
 

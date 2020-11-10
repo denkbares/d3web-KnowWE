@@ -69,8 +69,7 @@ public class CompositeRenderer implements Renderer {
 		mainRenderer.render(section, user, string);
 
 		// render post hooks of all surrounding renderers (reverse order)
-		ArrayList<SurroundingRenderer> reverseList = new ArrayList<>();
-		reverseList.addAll(renderers);
+		ArrayList<SurroundingRenderer> reverseList = new ArrayList<>(renderers);
 		Collections.reverse(reverseList);
 		for (SurroundingRenderer r : reverseList) {
 			r.renderPost(section, user, string);

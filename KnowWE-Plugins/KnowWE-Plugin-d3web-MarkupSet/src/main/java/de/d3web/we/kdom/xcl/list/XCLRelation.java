@@ -199,7 +199,7 @@ public class XCLRelation extends AbstractType {
 		public void render(Section<?> sec, UserContext user, RenderResult string) {
 
 			// get the relation, but use plain rendering if there is no compiler configured, or no relation created
-			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
+			D3webCompiler compiler = Compilers.getCompiler(user, sec, D3webCompiler.class);
 			de.d3web.xcl.XCLRelation relation = (de.d3web.xcl.XCLRelation) KnowWEUtils.getStoredObject(compiler, sec, RELATION_STORE_KEY);
 			if (relation == null) {
 				DelegateRenderer.getInstance().render(sec, user, string);

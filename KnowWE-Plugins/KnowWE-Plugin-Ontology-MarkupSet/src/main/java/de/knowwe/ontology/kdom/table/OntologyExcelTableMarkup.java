@@ -117,7 +117,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			addCompileScript(new StatementCompileScript());
 
 			setRenderer((section, user, result) -> {
-				OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+				OntologyCompiler compiler = Compilers.getCompiler(user, section, OntologyCompiler.class);
 				DelegateRenderer.getInstance().render(section, user, result);
 				Pair<Integer, Integer> counts = getCounts(section, compiler);
 				if (counts != null) {

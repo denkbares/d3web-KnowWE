@@ -142,9 +142,6 @@ public class RuleTableMarkup extends DefaultMarkupType
 		@Override
 		public void render(Section<?> sec, UserContext user, RenderResult string) {
 
-			D3webCompiler compiler = Compilers.getCompiler(sec, D3webCompiler.class);
-			Session session = null;
-
 			List<String> classes = new ArrayList<>();
 			classes.add("d3webRule");
 

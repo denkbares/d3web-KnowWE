@@ -101,7 +101,7 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 						" but not for " + section.get().getClass().getSimpleName());
 			}
 
-			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+			OntologyCompiler compiler = Compilers.getCompiler(user, section, OntologyCompiler.class);
 			if (compiler == null) return;
 			Rdf2GoCore core = compiler.getRdf2GoCore();
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();

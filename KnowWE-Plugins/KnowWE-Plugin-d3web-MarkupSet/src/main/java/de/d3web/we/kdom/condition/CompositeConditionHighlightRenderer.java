@@ -31,7 +31,7 @@ public class CompositeConditionHighlightRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
+		D3webCompiler compiler = Compilers.getCompiler(user, section, D3webCompiler.class);
 		Session session = D3webUtils.getExistingSession(compiler, user);
 		List<String> classes = new ArrayList<>();
 		if (session != null) {
