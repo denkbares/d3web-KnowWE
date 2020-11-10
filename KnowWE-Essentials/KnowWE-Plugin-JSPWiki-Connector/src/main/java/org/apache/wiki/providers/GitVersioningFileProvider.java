@@ -285,7 +285,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 //					try {
 					retryGitOperation(() -> {
 						final RevCommit revCommit = commit.call();
-						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.DELETE,
+						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.UPDATE,
 								page.getAuthor(),
 								page.getName(),
 								revCommit.getId().getName()));
