@@ -266,6 +266,18 @@ public class Compilers {
 		defaultCompilers.add(0, compilerName); // add at first place
 	}
 
+	/**
+	 * Marks the given grouping compiler and all its children compilers as default compilers for
+	 * the given user.
+	 *
+	 * @param context  the user context
+	 * @param compiler the grouping compiler to mark it and its children compilers as default
+	 */
+	public static void markSelfAndChildrenCompilersAsDefault(@NotNull UserContext context, @NotNull GroupingCompiler compiler) {
+		compiler.getChildCompilers().forEach(c -> Compilers.markAsDefaultCompiler(context, c));
+		Compilers.markAsDefaultCompiler(context, compiler);
+	}
+
 	@NotNull
 	private static List<String> getDefaultCompilers(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
 		//noinspection unchecked
