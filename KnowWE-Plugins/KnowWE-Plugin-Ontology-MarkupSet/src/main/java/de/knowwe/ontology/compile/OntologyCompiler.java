@@ -19,7 +19,7 @@
 package de.knowwe.ontology.compile;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,6 +50,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.StandardNotification;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
+import de.knowwe.rdf2go.ChangedStatementsEvent;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -74,6 +75,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	private final Set<Priority> commitTracker = ConcurrentHashMap.newKeySet();
 	private boolean caseSensitive;
 	private boolean isIncrementalBuild;
+	private volatile boolean changed;
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
@@ -208,6 +210,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	@Override
 	public void compilePackages(String[] packagesToCompile) {
 		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this));
+		this.changed = false; // reset changed flag, will be updated by ChangedEvent from core
 
 		Collection<Section<?>> sectionsOfPackage;
 		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
@@ -229,7 +232,6 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		getCompilerManager().setCurrentCompilePriority(this, Priority.INIT);
 		compile(sectionsOfPackage);
 
-		boolean changed = false;
 		if (getCommitType(this) == CommitType.onDemand) {
 			NotificationManager.addGlobalNotification(new StandardNotification("There are changes not yet committed to " +
 					"the ontology repository. Committing may take some time. If you want to commit the changes now, " +
@@ -237,7 +239,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 					Message.Type.INFO, getCommitNotificationId(this)));
 		}
 		else {
-			changed = commitOntology(this);
+			commitOntology(this);
 		}
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this, changed));
@@ -315,13 +317,20 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		return Collections.singletonList(InitializedArticlesEvent.class);
+		return List.of(InitializedArticlesEvent.class, ChangedStatementsEvent.class);
 	}
 
 	@Override
 	public void notify(Event event) {
-		if (getCommitType(this) == CommitType.onDemand) {
-			commitOntology(this);
+		if (event instanceof InitializedArticlesEvent) {
+			if (getCommitType(this) == CommitType.onDemand) {
+				commitOntology(this);
+			}
+		}
+		else if (event instanceof ChangedStatementsEvent) {
+			if (((ChangedStatementsEvent) event).getCore() == getRdf2GoCore()) {
+				this.changed = true;
+			}
 		}
 	}
 }
