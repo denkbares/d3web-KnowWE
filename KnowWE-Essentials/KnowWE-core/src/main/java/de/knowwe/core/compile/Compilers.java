@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -288,6 +289,18 @@ public class Compilers {
 			context.getSession().setAttribute(DEFAULT_COMPILERS, defaultCompilers);
 		}
 		return defaultCompilers.computeIfAbsent(compilerClass.getName(), k -> new ArrayList<>());
+	}
+
+	/**
+	 * Returns if a compiler is the default compiler for its compiler class in the specific user context
+	 *
+	 * @param context  the user context
+	 * @param compiler the compiler to check if it's the default compiler
+	 * @return true, if it is the default compiler for the user context or none default is set, otherwise false
+	 */
+	public static boolean isDefaultCompiler(@NotNull UserContext context, @NotNull Compiler compiler) {
+		Optional<String> defaultCompilerName = getDefaultCompilers(context, compiler.getClass()).stream().findFirst();
+		return defaultCompilerName.isEmpty() || defaultCompilerName.get().equals(getCompilerName(compiler));
 	}
 
 	/**
