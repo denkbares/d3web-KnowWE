@@ -2,11 +2,11 @@ package de.knowwe.core.packaging;
 
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
-import de.knowwe.core.compile.PackageUnregistrationCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageRule;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
@@ -50,10 +50,15 @@ public class PackageMarkupType extends DefaultMarkupType {
 		}
 	}
 
-	public static class RemoveDefaultPackageHandler implements PackageUnregistrationCompiler.PackageUnregistrationScript<PackageRule> {
+	public static class RemoveDefaultPackageHandler implements PackageRegistrationCompiler.PackageRegistrationScript<PackageRule> {
 
 		@Override
-		public void destroy(PackageUnregistrationCompiler compiler, Section<PackageRule> section) {
+		public void compile(PackageRegistrationCompiler compiler, Section<PackageRule> section) throws CompilerMessage {
+
+		}
+
+		@Override
+		public void destroy(PackageRegistrationCompiler compiler, Section<PackageRule> section) {
 			PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 			if (section.get().isOrdinaryPackage(section)) {
 				packageManager.removeDefaultPackage(section.getArticle(), section.get().getOrdinaryPackage(section));
