@@ -7,9 +7,6 @@ package de.knowwe.core.compile;
 
 import java.util.Collection;
 
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-
 /**
  * A compiler that consists of several child compilers
  *
@@ -21,8 +18,7 @@ public interface GroupingCompiler {
 	/**
 	 * gets all child compilers for a given section
 	 *
-	 * @param section for which compilers are returned
-	 * @return collection containing all child package compilers for this section
+	 * @return collection containing all child compilers of this compiler
 	 */
-	Collection<PackageCompiler> getChildCompilers(Section<? extends DefaultMarkupType> section);
+	Collection<Compiler> getChildCompilers();
 }
