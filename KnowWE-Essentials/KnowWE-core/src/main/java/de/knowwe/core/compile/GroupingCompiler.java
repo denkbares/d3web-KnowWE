@@ -13,7 +13,7 @@ import java.util.Collection;
  * @author Tobias Schmee (denkbares GmbH)
  * @created 11.11.20
  */
-public interface GroupingCompiler {
+public interface GroupingCompiler extends Compiler {
 
 	/**
 	 * gets all child compilers for a given section
