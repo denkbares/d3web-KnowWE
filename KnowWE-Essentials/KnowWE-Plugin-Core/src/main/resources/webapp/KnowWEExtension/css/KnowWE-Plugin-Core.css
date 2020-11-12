@@ -497,10 +497,6 @@ i.packageOpacity {
 	opacity: 1.0 !important;
 }
 
-.packageSeparator {
-	width: 15px;
-	display: inline-block;
-}
 
 /* ################################################## */
 /* -----------Navigation knowwe-pagination Styles----------- */

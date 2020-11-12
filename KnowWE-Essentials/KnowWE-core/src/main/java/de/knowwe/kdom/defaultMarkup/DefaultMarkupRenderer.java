@@ -41,10 +41,12 @@ import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.NamedCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.ScriptManager;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.packaging.PackageRule;
 import de.knowwe.core.kdom.Types;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -59,6 +61,7 @@ import de.knowwe.core.utils.progress.ProgressRenderer;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolSet;
 import de.knowwe.tools.ToolUtils;
+import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -340,9 +343,14 @@ public class DefaultMarkupRenderer implements Renderer {
 		else {
 			renderAnnotations(annotations, user, result, "div", "span");
 		}
+
+		if (DefaultMarkupType.getAnnotation(markupSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) == null) {
+			renderPackages(markupSection, result, user);
+		}
+		renderCompilers(markupSection, result);
 	}
 
-	private void renderAnnotations(List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, String parentTag, String elementTag) {
+	protected void renderAnnotations(List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, String parentTag, String elementTag) {
 		result.appendHtmlTag(parentTag, "class", "markupAnnotations", "style", "white-space:normal");
 		for (Section<AnnotationType> annotation : annotations) {
 			result.appendHtmlTag(elementTag, "class", "markupAnnotation", "data-name", annotation.get().getName());
@@ -350,6 +358,62 @@ public class DefaultMarkupRenderer implements Renderer {
 			result.appendHtmlTag("/" + elementTag);
 		}
 		result.appendHtmlTag("/" + parentTag);
+	}
+
+	/**
+	 * renders names of packages (i.e. PackageRules) for this section
+	 *
+	 * @param markupSection section for which packages should be rendered
+	 * @param result        the render result
+	 * @param user          user context
+	 */
+	private void renderPackages(Section<? extends DefaultMarkupType> markupSection, RenderResult result, UserContext user) {
+		// get all package rules
+		List<Section<PackageRule>> packageRules = $(markupSection.getArticle()).successor(DefaultMarkupType.class)
+				.filter(m -> m.get().getName().equals("Package"))
+				.successor(PackageRule.class)
+				.asList();
+
+		// render them
+		if (!packageRules.isEmpty()) {
+			result.appendHtml(Icon.PACKAGE.addClasses("packageOpacity").addStyle("margin-right: .3em").toHtml());
+			for (int i = 0; i < packageRules.size(); i++) {
+				Section<PackageRule> packageRule = packageRules.get(i);
+				if (i > 0) { // separate them with a comma
+					result.appendHtmlElement("span", ", ", "class", "packageOpacity");
+				}
+				packageRule.get().getRenderer().render(packageRule, user, result);
+			}
+		}
+	}
+
+	/**
+	 * renders all compilers that are compiled in a given section
+	 * Compilers that are present within a GroupingCompiler are not displayed here, but the GroupingCompiler is.
+	 *
+	 * @param markupSection section for which compilers should be rendered
+	 * @param result        the render result
+	 */
+	private void renderCompilers(Section<? extends DefaultMarkupType> markupSection, RenderResult result) {
+		// get all compilers
+		Collection<PackageCompiler> compilers = Compilers.getCompilers(markupSection, PackageCompiler.class);
+
+		// remove compilers from the collection that are also present in a GroupingCompiler
+		compilers.stream()
+				.filter(c -> c instanceof GroupingCompiler)
+				.map(c -> (GroupingCompiler) c)
+				.collect(Collectors.toSet())
+				.forEach(groupingCompiler -> compilers.removeAll(groupingCompiler.getChildCompilers()));
+
+		// render them
+		if (!compilers.isEmpty()) {
+			result.appendHtmlTag("span", "style", "display: block");
+			result.appendHtml(Icon.COMPILER.addClasses("packageOpacity").addStyle("margin-right: .3em").toHtml());
+			result.appendHtmlElement("span",
+					compilers.stream()
+							.map(Compilers::getCompilerName)
+							.collect(Collectors.joining(", ")), "class", "packageOpacity");
+		}
 	}
 
 	public void renderDefaultMarkupStyled(String title,

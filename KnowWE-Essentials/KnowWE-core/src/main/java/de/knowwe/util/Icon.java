@@ -87,6 +87,7 @@ public class Icon {
 	public static final Icon CIRCLE_EMPTY = new Icon("fa-type fa-circle");
 	public static final Icon TAG = new Icon("fas fa-tag");
 	public static final Icon REPEAT = new Icon("fas fa-repeat-alt");
+	public static final Icon COMPILER = new Icon("fa-type fa-microchip");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-type fa-file-alt");
