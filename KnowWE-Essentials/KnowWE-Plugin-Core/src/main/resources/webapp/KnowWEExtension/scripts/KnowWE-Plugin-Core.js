@@ -681,6 +681,76 @@ KNOWWE.core.plugin.recompile = function() {
   }
 }();
 
+
+KNOWWE.core.plugin.switchCompiler = function() {
+  function addClickAction(link) {
+    jq$(link).click(function(event) {
+      var parentSelector = jq$(this).attr('data-click-parent');
+      var parent = jq$(parentSelector);
+      var openParent = jq$('.open-click-parent');
+      // Close already open parents
+      if (!openParent.is(parent)) {
+        openParent.removeClass('open open-click-parent');
+      }
+      if (parent.hasClass('open')) {
+        parent.removeClass('open open-click-parent');
+      } else {
+        parent.addClass('open open-click-parent');
+        if (parent.find('input').length > 0) {
+          parent.find("input:first").focus();
+        }
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    });
+  }
+
+  return {
+    init: function() {
+      let pullRight = jq$('.navigation').children(".nav.nav-pills.pull-right").first();
+      let compilerSwitch = new Element('li', {
+        'id': 'compilerSwitch'
+      });
+      let link = new Element('a', {
+        'id': 'selectedCompiler',
+        'href': '#',
+        'data-click-parent': '#compilerSwitch'
+      });
+      let list = new Element('ul', {
+        'id': 'compilerList',
+        'class': 'dropdown-menu pull-right'
+      });
+      // get the inner html
+      jq$.ajax("action/GetCompilerSwitchContentAction", {
+        cache: false,
+        dataType: 'json',
+        success: function(response) {
+          link.innerHTML = response.link;
+          compilerSwitch.appendChild(link);
+          pullRight.prepend(compilerSwitch);
+          if (response.list !== "") {
+            list.innerHTML = response.list;
+            compilerSwitch.appendChild(list);
+            addClickAction(link);
+          }
+        }
+      });
+    },
+
+    setDefaultCompiler: function(name) {
+      jq$.ajax("action/SetDefaultCompilerAction?name=" + name, {
+        cache: false,
+        dataType: 'json',
+        success: function(response) {
+          window.location.reload();
+        }
+      });
+    }
+  };
+}();
+
+
 //jquery-autogrow for automatic input field resizing (customized for KnowWE renaming)
 
 (function(jq$) {
@@ -776,3 +846,8 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
   KNOWWE.core.plugin.objectinfo.lookUp(this);
 });
 
+jq$(document).ready(function() {
+  if (jq$('.navigation').exists()) {
+    KNOWWE.core.plugin.switchCompiler.init();
+  }
+});

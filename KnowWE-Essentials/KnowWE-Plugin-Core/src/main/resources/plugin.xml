@@ -613,6 +613,21 @@
 		<parameter id="script" value="KnowWE-Plugin-Core-Progress.js" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetCompilerSwitchContentAction">
+		<parameter id="class" value="de.knowwe.core.action.GetCompilerSwitchContentAction" />
+		<parameter id="name" value="GetCompilerSwitchContentAction" />
+		<parameter id="description" value="Gets the compiler switch content for the header menu." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="SetDefaultCompilerAction">
+		<parameter id="class" value="de.knowwe.core.action.SetDefaultCompilerAction" />
+		<parameter id="name" value="SetDefaultCompilerAction" />
+		<parameter id="description" value="Sets the default compiler for the user." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
 
 	<!-- extensions for basic preview rendering -->
 

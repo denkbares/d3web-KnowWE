@@ -288,7 +288,7 @@ public class Compilers {
 			defaultCompilers = new HashMap<>();
 			context.getSession().setAttribute(DEFAULT_COMPILERS, defaultCompilers);
 		}
-		return defaultCompilers.computeIfAbsent(compilerClass.getName(), k -> new ArrayList<>());
+		return defaultCompilers.computeIfAbsent(compilerClass.getName(), k -> getFallbackDefaultCompiler(context, compilerClass));
 	}
 
 	/**
@@ -301,6 +301,25 @@ public class Compilers {
 	public static boolean isDefaultCompiler(@NotNull UserContext context, @NotNull Compiler compiler) {
 		Optional<String> defaultCompilerName = getDefaultCompilers(context, compiler.getClass()).stream().findFirst();
 		return defaultCompilerName.isEmpty() || defaultCompilerName.get().equals(getCompilerName(compiler));
+	}
+
+	/**
+	 * Gets the fallback default compiler. It takes all compilers with the given type, sort them by their name and takes the first one.
+	 * This should only be used when no default compiler is set (e.g. after a server restart)
+	 *
+	 * @param context the user context
+	 * @param compilerClass the tye of the compiler we want to get the fallback for
+	 * @return the fallback compiler with the specific type
+	 */
+	private static List<String> getFallbackDefaultCompiler(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
+		List<String> fallback = new ArrayList<>();
+		Compilers.getCompilers(context.getArticleManager(), compilerClass)
+				.stream()
+				.map(Compilers::getCompilerName)
+				.sorted()
+				.findFirst()
+				.ifPresent(fallback::add);
+		return fallback;
 	}
 
 	/**

@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -69,17 +68,11 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		// render used packages and their erroneous pages
 		string.appendHtml("<div style='padding-top:1em;'>");
 		// string.append(KnowWEUtils.maskHTML("<hr>\n"));
-		Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(section, DefaultMarkupPackageCompileType.class);
-		String[] packagesToCompile;
-		if (compileSection == null) {
-			packagesToCompile = new String[0];
-		}
-		else {
-			packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
-			for (PackageCompiler packageCompiler : compileSection.get().getPackageCompilers(compileSection)) {
-				Compilers.markAsDefaultCompiler(user, packageCompiler);
-			}
-		}
+		Section<DefaultMarkupPackageCompileType> compileSection = Sections.successor(section,
+				DefaultMarkupPackageCompileType.class);
+		assert compileSection != null;
+		String[] packagesToCompile = compileSection.get().getPackagesToCompile(
+				compileSection);
 
 		for (String packageName : packagesToCompile) {
 			renderPackage(compileSection, section, packageName, string, user);
