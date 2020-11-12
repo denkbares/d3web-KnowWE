@@ -480,11 +480,11 @@ span.markupMenuItem {
 /* ################################################## */
 
 .packageOpacity {
-	opacity: 0.4;
+	color: rgba(121, 79, 64, 0.4);
 }
 
 .defaultMarkupFrame.type_Package .packageOpacity {
-	opacity: 1 !important;
+	color: rgba(121, 79, 64, 1.0)
 }
 
 /* ################################################## */

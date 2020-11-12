@@ -71,7 +71,7 @@ public class StyleRenderer implements Renderer {
 
 	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
 			"packageOpacity",
-			"color:rgb(121,79, 64);", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+			"", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
 	public static final String CONDITION_FULLFILLED = "#CFFFCF";
 	public static final String CONDITION_FALSE = "#FFCFCF";
