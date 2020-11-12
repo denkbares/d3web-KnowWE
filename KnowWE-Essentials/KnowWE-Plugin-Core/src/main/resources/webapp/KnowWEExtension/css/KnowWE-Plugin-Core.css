@@ -487,6 +487,21 @@ span.markupMenuItem {
 	color: rgba(121, 79, 64, 1.0)
 }
 
+i.packageOpacity {
+	color: unset;
+	opacity: 0.4;
+}
+
+.defaultMarkupFrame.type_Package i.packageOpacity {
+	color: unset;
+	opacity: 1.0 !important;
+}
+
+.packageSeparator {
+	width: 15px;
+	display: inline-block;
+}
+
 /* ################################################## */
 /* -----------Navigation knowwe-pagination Styles----------- */
 /* ################################################## */
