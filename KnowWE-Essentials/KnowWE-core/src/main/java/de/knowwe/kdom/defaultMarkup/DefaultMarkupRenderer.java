@@ -413,6 +413,7 @@ public class DefaultMarkupRenderer implements Renderer {
 					compilers.stream()
 							.map(Compilers::getCompilerName)
 							.collect(Collectors.joining(", ")), "class", "packageOpacity");
+			result.appendHtmlTag("/span");
 		}
 	}
 
