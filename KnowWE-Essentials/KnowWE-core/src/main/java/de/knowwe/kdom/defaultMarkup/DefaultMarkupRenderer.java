@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.DefaultMultiMap;
@@ -358,16 +359,18 @@ public class DefaultMarkupRenderer implements Renderer {
 										  UserContext user,
 										  RenderResult string) {
 
+		Collection<PackageCompiler> compilers = Compilers.getCompilers(section, PackageCompiler.class);
+		String defaultCompilerClass = getDefaultCompilerClass(section, user, compilers);
+
 		String sectionID = section.getID();
 		string.appendHtmlTag("div",
 				"id", sectionID,
-				"class", "defaultMarkupFrame toolMenuParent type_" + section.get().getName(),
+				"class", "defaultMarkupFrame toolMenuParent type_" + section.get().getName() + defaultCompilerClass,
 				"data-name", section.get().getName());
 
 		appendHeader(title, sectionID, tools, user, string);
 
 		// add compiling compilers for debug purposes
-		Collection<PackageCompiler> compilers = Compilers.getCompilers(section, PackageCompiler.class);
 		if (!compilers.isEmpty()) {
 			string.appendHtmlElement("div",
 					compilers.stream()
@@ -404,6 +407,15 @@ public class DefaultMarkupRenderer implements Renderer {
 		string.appendHtml("</div>"); // class=markupText
 		string.appendHtml("</div>"); // class=defaultMarkup
 		string.appendHtml("</div>");
+	}
+
+	@NotNull
+	private String getDefaultCompilerClass(Section<?> section, UserContext user, Collection<PackageCompiler> compilers) {
+		boolean isDefault = compilers.isEmpty() && section.getPackageNames().isEmpty();
+		for (Compiler compiler : compilers) {
+			isDefault = isDefault || Compilers.isDefaultCompiler(user, compiler);
+		}
+		return isDefault ? "" : " not-default-compiler";
 	}
 
 	protected void appendHeader(String title,
