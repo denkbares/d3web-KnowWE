@@ -335,7 +335,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 	}
 
-	protected void renderAnnotations(Section<? extends DefaultMarkupType> markupSection, List<Section<AnnotationType>> annotations, UserContext user, RenderResult result) {
+	protected void renderAnnotations(Section<? extends DefaultMarkupType> markupSection, List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, boolean renderPackagesAndCompilers) {
 		if (listAnnotations) {
 			result.append("\n\n");
 			renderAnnotations(annotations, user, result, "ul", "li");
@@ -344,10 +344,17 @@ public class DefaultMarkupRenderer implements Renderer {
 			renderAnnotations(annotations, user, result, "div", "span");
 		}
 
-		if (DefaultMarkupType.getAnnotation(markupSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) == null) {
-			renderPackages(markupSection, result, user);
+		// render package rules and compiler names if necessary
+		if (renderPackagesAndCompilers) {
+			if (DefaultMarkupType.getAnnotation(markupSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) == null) {
+				renderPackages(markupSection, result, user);
+			}
+			renderCompilers(markupSection, result);
 		}
-		renderCompilers(markupSection, result);
+	}
+
+	protected void renderAnnotations(Section<? extends DefaultMarkupType> markupSection, List<Section<AnnotationType>> annotations, UserContext user, RenderResult result) {
+		renderAnnotations(markupSection, annotations, user, result, true);
 	}
 
 	protected void renderAnnotations(List<Section<AnnotationType>> annotations, UserContext user, RenderResult result, String parentTag, String elementTag) {
