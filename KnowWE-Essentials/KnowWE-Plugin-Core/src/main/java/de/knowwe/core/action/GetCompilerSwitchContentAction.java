@@ -45,7 +45,7 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 
 		StringBuilder builderLink = new StringBuilder();
 		StringBuilder builderList = new StringBuilder();
-		builderLink.append("<span class=\"icon-ellipsis-v\"></span>");
+		builderLink.append("<span class=\"far fa-microchip\"></span>");
 		String defaultName = null;
 		for (GroupingCompiler compiler : compilers) {
 			String name = Compilers.getCompilerName(compiler);
@@ -63,7 +63,6 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 			if (defaultName.equals(name)) {
 				defaultName = name;
 				builderLink.append("<span>").append(name).append("</span>");
-//				Compilers.markSelfAndChildrenCompilersAsDefault(context, compiler);
 			}
 			else {
 				// add all other compilers to the list
