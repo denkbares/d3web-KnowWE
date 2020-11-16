@@ -1,12 +1,12 @@
 package de.knowwe.instantedit.tools;
 
-import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
@@ -14,6 +14,7 @@ import de.knowwe.core.kdom.Article;
 /**
  * Util methods involving InstantEdit.
  * <p>
+ *
  * @author Albrecht Striffler (denkbares GmbH) on 09.09.2014.
  */
 public class InstantEditUtils {
@@ -37,34 +38,28 @@ public class InstantEditUtils {
 
 	public static String createNewEnumeratedTitle(String prefix, ArticleManager articleManager, int digits) {
 
+		int current = getCurrentlyHighestNumberForPrefix(prefix, articleManager);
+		current++;
+
+		return createNewEnumeratedTitle(prefix, articleManager, digits, current);
+	}
+
+	@NotNull
+	public static String createNewEnumeratedTitle(String prefix, ArticleManager articleManager, int digits, int current) {
 		// clean up blocked names...
 		synchronized (blockedNames) {
 			// article was created, no need to block any longer
 			blockedNames.removeIf(blockedName -> articleManager.getArticle(blockedName) != null);
 		}
 
-		int highest = getCurrentlyHighestNumberForPrefix(prefix, articleManager);
-		highest++;
-		String title = prefix + fill(highest, digits);
+		String title = prefix + String.format("%0" + digits + "d", current++);
 		synchronized (blockedNames) {
-			while (blockedNames.contains(title)) {
-				int number = highest++;
-				title = prefix + fill(number, digits);
+			while (blockedNames.contains(title) || articleManager.getArticle(title) != null) {
+				title = prefix + String.format("%0" + digits + "d", current++);
 			}
 			blockedNames.add(title);
 		}
 		return title;
-	}
-
-	private static String fill(int num, int digits) {
-		if (digits <= 0) return String.valueOf(num);
-		// create variable length array of zeros
-		char[] zeros = new char[digits];
-		Arrays.fill(zeros, '0');
-		// format number as String
-		DecimalFormat df = new DecimalFormat(String.valueOf(zeros));
-
-		return df.format(num);
 	}
 
 	/**
@@ -108,5 +103,4 @@ public class InstantEditUtils {
 		});
 		return numbers;
 	}
-
 }
