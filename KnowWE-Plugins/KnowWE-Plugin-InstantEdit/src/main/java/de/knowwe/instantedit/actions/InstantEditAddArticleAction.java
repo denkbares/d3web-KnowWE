@@ -38,13 +38,21 @@ public class InstantEditAddArticleAction extends AbstractAction {
 	public void execute(UserActionContext context) throws IOException {
 
 		String title = context.getTitle();
-		String web = context.getWeb();
 		String jsonData = context.getParameter("data");
 
 		Gson g = new Gson();
 		SaveActionDTO data = g.fromJson(jsonData, SaveActionDTO.class);
-		String value = data.buildArticle();
+		String articleText = data.buildArticle();
 
+
+		if (articleText.equals("POST\n")) {
+			articleText = "";
+		}
+
+		addNewArticle(context, title, articleText);
+	}
+
+	protected void addNewArticle(UserActionContext context, String title, String articleText) throws IOException {
 		boolean canWrite = Environment.getInstance().getWikiConnector().userCanEditArticle(
 				title, context.getRequest());
 		if (!canWrite) {
@@ -52,19 +60,15 @@ public class InstantEditAddArticleAction extends AbstractAction {
 			return;
 		}
 
-		if (value.equals("POST\n")) {
-			value = "";
-		}
-
 		// we wait in case this thread (reused via the thread pool) has already a compilation going
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 
-		Article article = Environment.getInstance().getArticle(web, title);
+		Article article = Environment.getInstance().getArticle(context.getWeb(), title);
 		if (article == null) {
-			Environment.getInstance().getWikiConnector().createArticle(title, context.getUserName(), value);
+			Environment.getInstance().getWikiConnector().createArticle(title, context.getUserName(), articleText);
 		}
 		else {
-			Environment.getInstance().getWikiConnector().writeArticleToWikiPersistence(title, value, context);
+			Environment.getInstance().getWikiConnector().writeArticleToWikiPersistence(title, articleText, context);
 		}
 	}
 }
