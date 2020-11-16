@@ -3,7 +3,6 @@ package de.knowwe.instantedit.tools;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -40,13 +39,8 @@ public class InstantEditUtils {
 
 		// clean up blocked names...
 		synchronized (blockedNames) {
-			for (Iterator<String> iterator = blockedNames.iterator(); iterator.hasNext(); ) {
-				String blockedName = iterator.next();
-				if (articleManager.getArticle(blockedName) != null) {
-					// article was created, no need to block any longer
-					iterator.remove();
-				}
-			}
+			// article was created, no need to block any longer
+			blockedNames.removeIf(blockedName -> articleManager.getArticle(blockedName) != null);
 		}
 
 		int highest = getCurrentlyHighestNumberForPrefix(prefix, articleManager);
