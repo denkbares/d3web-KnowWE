@@ -377,9 +377,7 @@ public class Environment {
 		if (files == null) return Collections.emptyList();
 		List<File> pluginFiles = new ArrayList<>();
 		for (File file : files) {
-			if (file.getName().contains("KnowWE-Plugin-")
-					|| file.getName().contains("d3web-Plugin-")
-					|| file.getName().matches("^denkbares-(.+-)?Plugin-.+")) {
+			if (file.getName().contains("-Plugin-")) {
 				pluginFiles.add(file);
 			}
 		}
