@@ -20,11 +20,14 @@
 package de.knowwe.ontology.sparql;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -33,6 +36,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.utils.IndexedResultTableModel;
+import com.denkbares.semanticcore.utils.ResultTableModel;
+import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
@@ -41,6 +47,7 @@ import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 
@@ -116,11 +123,20 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		if (compiler == null) return filterTexts;
 
 		RenderOptions renderOptions = section.get().getRenderOptions(section, context);
+
 		Set<String> addedFilterValueTexts = new HashSet<>();
 
 		CachedTupleQueryResult bindingSets = compiler.getRdf2GoCore().sparqlSelect(sparqlQuery);
-		for (BindingSet bindingSet : bindingSets) {
-			Value value = bindingSet.getValue(columnName);
+		ResultTableModel table = IndexedResultTableModel.create(bindingSets);
+
+		// pre-apply filters of the other columns
+		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(section, context);
+		// but not the filters of the current columns, so we see which values can be allowed back in
+		filter.put(columnName, Collections.emptySet());
+		table = table.filter(filter);
+
+		for (TableRow row : table) {
+			Value value = row.getValue(columnName);
 			if (value == null) {
 				addEmptyIfNotFiltered(filterTexts, filterTextQuery);
 				continue;

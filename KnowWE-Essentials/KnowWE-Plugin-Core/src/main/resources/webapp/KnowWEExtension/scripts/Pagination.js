@@ -237,6 +237,7 @@ KNOWWE.core.plugin.pagination = function() {
           let data = {SectionID: sectionId};
           data[columnNameAttribute] = columnName;
           data[filterTextQueryAttribute] = filterTextQuery;
+          data["localSectionStorage"] = KNOWWE.helper.getLocalSectionStorage(sectionId, true)
           return data;
         }(),
         success: function(json) {
