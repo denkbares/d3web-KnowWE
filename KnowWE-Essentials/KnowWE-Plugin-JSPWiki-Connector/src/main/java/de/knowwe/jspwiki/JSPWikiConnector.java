@@ -141,10 +141,6 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String createArticle(String title, String author, String content) {
-		return createArticle(title, author, content, true, true);
-	}
-
-	public String createArticle(String title, String author, String content, boolean updateReferences, boolean reindex) {
 
 		if (title.contains("+")) {
 			throw new IllegalArgumentException("Character + (plus) not allowed in article title: " + title);
@@ -153,14 +149,10 @@ public class JSPWikiConnector implements WikiConnector {
 		WikiPage wp = new WikiPage(this.engine, title);
 
 		try {
-			if (updateReferences) {
-				updateReferences(title);
-			}
+			updateReferences(wp, content);
 			wp.setAuthor(author);
 			this.engine.getPageManager().putPageText(wp, content);
-			if (reindex) {
-				reindex(title);
-			}
+			reindex(title);
 		}
 		catch (ProviderException e) {
 			Log.severe(e.getMessage(), e);
@@ -179,10 +171,9 @@ public class JSPWikiConnector implements WikiConnector {
 		this.engine.getSearchManager().reindexPage(wp);
 	}
 
-	@SuppressWarnings("unchecked")
-	public void updateReferences(String title) {
-		this.engine.getReferenceManager().updateReferences(title,
-				this.engine.getReferenceManager().findCreated());
+	private void updateReferences(WikiPage page, String content) {
+		this.engine.getReferenceManager().updateReferences(page.getName(),
+				this.engine.scanWikiLinks(page, content));
 	}
 
 	@Override
