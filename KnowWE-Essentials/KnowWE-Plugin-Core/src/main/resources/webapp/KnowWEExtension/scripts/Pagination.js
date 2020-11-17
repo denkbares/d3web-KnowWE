@@ -83,6 +83,15 @@ KNOWWE.core.plugin.pagination = function() {
     return !columnState || (columnState.selectAll && columnState.selectedTexts.length === 0 && columnState.selectedCustomTexts.length === 0);
   }
 
+  function anyActiveFilter(filterState) {
+    if (!filterState.columns) return false;
+    for (let column in filterState.columns) {
+      if (!filterState.columns.hasOwnProperty(column)) continue;
+      if (!isEmpty(filterState.columns[column])) return true;
+    }
+    return false;
+  }
+
   function renderIcons($table, sectionId, sortingMode) {
     const paginationState = getPaginationState(sectionId);
 
@@ -481,6 +490,17 @@ KNOWWE.core.plugin.pagination = function() {
         setPaginationState(sectionId, paginationState);
         updateNode(sectionId)
       })
+      const clearFilter = jq$(this).parents('.knowwe-paginationWrapper').find('.clear-filter');
+      clearFilter.click(function() {
+        filterState.columns = {}
+        setPaginationState(sectionId, paginationState);
+        updateNode(sectionId)
+      })
+      if (!filterState.active) {
+        clearFilter.hide();
+      } else {
+        clearFilter.prop("disabled", !anyActiveFilter(filterState));
+      }
 
       // render sorting symbol
       renderIcons(jq$(this), sectionId, sortingMode);
