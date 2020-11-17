@@ -38,6 +38,7 @@ import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -345,7 +346,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 
 		// render package rules and compiler names if necessary
-		if (renderPackagesAndCompilers) {
+		if (renderPackagesAndCompilers && wikiHasMultipleCompilers(markupSection.getArticleManager())) {
 			if (DefaultMarkupType.getAnnotation(markupSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) == null) {
 				renderPackages(markupSection, result, user);
 			}
@@ -365,6 +366,21 @@ public class DefaultMarkupRenderer implements Renderer {
 			result.appendHtmlTag("/" + elementTag);
 		}
 		result.appendHtmlTag("/" + parentTag);
+	}
+
+	/**
+	 * Checks whether Wiki has multiple compilers of the same class
+	 *
+	 * @param articleManager ArticleManager
+	 * @return true when there are more than one compiler of every class, otherwise false
+	 */
+	private boolean wikiHasMultipleCompilers(ArticleManager articleManager) {
+		Collection<PackageCompiler> compilers = Compilers.getCompilers(articleManager, PackageCompiler.class);
+		if (compilers.size() <= 1) {
+			return false;
+		}
+		// check whether there are several instances of a specific compiler class
+		return Compilers.getCompilers(articleManager, compilers.iterator().next().getClass()).size() > 1;
 	}
 
 	/**
