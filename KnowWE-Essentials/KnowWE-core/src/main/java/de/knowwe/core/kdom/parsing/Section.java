@@ -810,19 +810,37 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	/**
-	 * @param compiler is the {@link Article} for which the Object was stored
+	 * @param compiler is the {@link Compiler} for which the Object was stored
 	 * @param key      is the key, for which the Object was stored
 	 * @return the previously stored Object for the given key and article, or
 	 * <tt>null</tt>, if no Object was stored
 	 * @created 08.07.2011
 	 */
-	public <O> O getObject(Compiler compiler, String key) {
+	public <O> O getObject(@Nullable Compiler compiler, String key) {
 		if (compiler != null && !compiler.getCompilerManager().contains(compiler)) return null;
 		Map<String, Object> storeForArticle = getStoreForCompiler(compiler);
 		if (storeForArticle == null) return null;
 		synchronized (this) {
 			//noinspection unchecked
 			return (O) storeForArticle.get(key);
+		}
+	}
+
+	/**
+	 * @param compiler is the {@link Compiler} for which the Object was stored
+	 * @param key      is the key, for which the Object was stored
+	 * @return the previously stored Object for the given key and article, or
+	 * <tt>defaultObject</tt>, if no Object was stored
+	 * @created 08.07.2011
+	 */
+	@NotNull
+	public <O> O getObjectOrDefault(@Nullable Compiler compiler, String key, @NotNull O defaultObject) {
+		O object = getObject(compiler, key);
+		if (object == null) {
+			return defaultObject;
+		}
+		else {
+			return object;
 		}
 	}
 
@@ -869,7 +887,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param object   the object to be stored
 	 * @created 08.07.2011
 	 */
-	public synchronized void storeObject(Compiler compiler, String key, Object object) {
+	public synchronized void storeObject(@Nullable Compiler compiler, String key, Object object) {
 		Map<String, Object> storeForCompiler = getStoreForCompiler(compiler);
 		if (storeForCompiler == null) {
 			storeForCompiler = new HashMap<>(4);
