@@ -21,7 +21,11 @@
 package de.knowwe.ontology.sparql;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.denkbares.strings.Strings;
@@ -33,10 +37,8 @@ import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupCompileScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
-import de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup;
 import de.knowwe.ontology.ci.RegisteredNameType;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.util.Color;
@@ -61,6 +63,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	private static final DefaultMarkup MARKUP;
 
 	public static final String MARKUP_NAME = "Sparql";
+	public static final String DISABLED_FILTERING = "disabledFiltering";
 
 	static {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
@@ -94,7 +97,9 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.getAnnotation(COLUMNSTYLE)
 				.setDocumentation("Set styles for a specific column of the SPARQL table. Any HTML/CSS style should work.<p>" +
 						"Example for setting the width of column 'Name' to 100px:<br>" +
-						"@" + COLUMNSTYLE + ": Name width 100px");
+						"@" + COLUMNSTYLE + ": Name width 100px<br>" +
+						"Example for disabling filtering for columns 'Name':<br>"
+						+ "@" + COLUMNSTYLE + ": Name filter disable");
 		MARKUP.addAnnotationRenderer(COLUMNSTYLE, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(TABLESTYLE, false);
 		MARKUP.addAnnotationRenderer(TABLESTYLE, NothingRenderer.getInstance());
@@ -131,7 +136,10 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	 * Displays an error if necessary style information is missing.
 	 * Stores the StyleOptions in the section so that they can be used.
 	 */
-	private class StyleCollectorScript extends DefaultGlobalCompiler.DefaultGlobalScript<SparqlMarkupType> {
+	private static class StyleCollectorScript extends DefaultGlobalCompiler.DefaultGlobalScript<SparqlMarkupType> {
+
+		public static final String INVALID_CSS_KEYS = "invalidCssKeys";
+
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<SparqlMarkupType> section) throws CompilerMessage {
 			section.storeObject(TABLESTYLE, new ArrayList<RenderOptions.StyleOption>());
@@ -144,29 +152,23 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		}
 
 		private void checkStyle(Section<SparqlMarkupType> markupSection, String annotationName) throws CompilerMessage {
-			String[] annotationStrings = DefaultMarkupType.getAnnotations(markupSection,
-					annotationName);
-			List<RenderOptions.StyleOption> styles = new ArrayList<>();
-			List<String> invalidCssKeys = new ArrayList<>();
+			String[] annotationStrings = DefaultMarkupType.getAnnotations(markupSection, annotationName);
 
 			for (String annotationString : annotationStrings) {
 				if (Strings.equals(annotationName, COLUMNSTYLE)) {
 					annotationString = annotationString.replaceAll("\r", "");
-					String[] lines = annotationString.split("\n");
+					String[] lines = annotationString.split("\n+");
 					if (lines.length != 1) {
 						String column = cleanStyleString(lines[0]);
 						for (int i = 1; i < lines.length; i++) {
-							String[] annoStringArray = lines[i].split(" ", 3);
+							String[] annoStringArray = Strings.trim(lines[i]).split(" +", 3);
 							for (int j = 0; j < annoStringArray.length - 1; j++) {
 								annoStringArray[j] = cleanStyleString(annoStringArray[j]);
 							}
 							if (annoStringArray.length < 2) {
 								throw CompilerMessage.error("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
 							}
-							styles.add(new RenderOptions.StyleOption(column, annoStringArray[0], annoStringArray[1]));
-							if (!cssKeyIsValid(annoStringArray[0])) {
-								invalidCssKeys.add(annoStringArray[0]);
-							}
+							handleStyle(markupSection, column, annoStringArray[0], annoStringArray[1]);
 						}
 					}
 					else {
@@ -177,10 +179,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 						if (annoStringArray.length < 3) {
 							throw CompilerMessage.error("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
 						}
-						styles.add(new RenderOptions.StyleOption(annoStringArray[0], annoStringArray[1], annoStringArray[2]));
-						if (!cssKeyIsValid(annoStringArray[1])) {
-							invalidCssKeys.add(annoStringArray[1]);
-						}
+						handleStyle(markupSection, annoStringArray[0], annoStringArray[1], annoStringArray[2]);
 					}
 				}
 				else if (Strings.equals(annotationName, TABLESTYLE)) {
@@ -188,28 +187,55 @@ public class SparqlMarkupType extends DefaultMarkupType {
 					if (annoStringArray.length < 2) {
 						throw CompilerMessage.error("The style '" + TABLESTYLE + "' does not include all necessary information. It has to consist of <styleName> <style>");
 					}
-					if (!cssKeyIsValid(annoStringArray[0])) {
-						invalidCssKeys.add(annoStringArray[0]);
-					}
-					styles.add(new RenderOptions.StyleOption("table", annoStringArray[0], annoStringArray[1]));
+					handleInvalidCssKey(markupSection, annoStringArray[0]);
+					addStyle(markupSection, annotationName, new RenderOptions.StyleOption("table", annoStringArray[0], annoStringArray[1]));
 				}
 				else if (Strings.equals(annotationName, COLUMNWIDTH)) {
 					String[] annoStringArray = annotationString.split(" ", 2);
 					if (annoStringArray.length < 2) {
 						throw CompilerMessage.error("The style '" + COLUMNWIDTH + "' does not include all necessary information. It has to consist of <columnName> <columnWidth>");
 					}
-					styles.add(new RenderOptions.StyleOption(annoStringArray[0], "max-width", annoStringArray[1]));
+					addStyle(markupSection, annotationName, new RenderOptions.StyleOption(annoStringArray[0], "max-width", annoStringArray[1]));
 				}
 			}
 
-			markupSection.storeObject(annotationName, styles);
+			Set<String> invalidCssKeys  = markupSection.getObjectOrDefault(null, INVALID_CSS_KEYS, Collections.emptySet());
 			if (!invalidCssKeys.isEmpty()) {
 				throw CompilerMessage.error(createUnknownCssExceptionMessage(invalidCssKeys));
 			}
 		}
 
+		private void handleStyle(Section<SparqlMarkupType> markupSection, String columnName, String styleName, String styleValue) {
+			if (styleName.equalsIgnoreCase("filter") && Strings.containsIgnoreCase(styleValue,"disable")) {
+				addColumnWithDisabledFilter(markupSection, columnName);
+			}
+			else {
+				addStyle(markupSection, COLUMNSTYLE, new RenderOptions.StyleOption(columnName, styleName, styleValue));
+				handleInvalidCssKey(markupSection, styleName);
+			}
+		}
+
+		private void handleInvalidCssKey(Section<SparqlMarkupType> markupSection, String styleName) {
+			if (!cssKeyIsValid(styleName)) {
+				markupSection.computeIfAbsent(null, INVALID_CSS_KEYS,
+						(compiler, sparqlMarkupTypeSection) -> new LinkedHashSet<>())
+						.add(styleName);
+			}
+		}
+
+		private void addColumnWithDisabledFilter(Section<SparqlMarkupType> markupSection, String columnName) {
+			markupSection.computeIfAbsent(null, DISABLED_FILTERING, (compiler, sparqlMarkupTypeSection) -> new HashSet<>())
+					.add(columnName);
+		}
+
+		private void addStyle(Section<SparqlMarkupType> markupSection, String annotationName, RenderOptions.StyleOption styleOption) {
+			markupSection.computeIfAbsent(null, annotationName, (compiler, sparqlMarkupTypeSection) -> new ArrayList<>())
+					.add(styleOption);
+		}
+
 		/**
 		 * check validity of a css key by regex
+		 *
 		 * @param key css key to be validated
 		 * @return true if key is valid, false if not
 		 */
@@ -217,7 +243,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 			return key.matches("[a-z]+(-?[a-z]+)*");  // a valid css solely consists of words and "-" in between
 		}
 
-		private String createUnknownCssExceptionMessage(List<String> invalidCssKeys) {
+		private String createUnknownCssExceptionMessage(Collection<String> invalidCssKeys) {
 			StringBuilder messageBuffer = new StringBuilder();
 			messageBuffer.append("The css key(s) ");
 			invalidCssKeys.forEach(messageBuffer::append);
@@ -233,10 +259,9 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		 */
 		private String cleanStyleString(String styleString) {
 			if (styleString.endsWith(":") || styleString.endsWith(";")) {
-				return styleString.substring(0, styleString.length() - 1);
+				return Strings.trim(styleString.substring(0, styleString.length() - 1));
 			}
-			return styleString;
+			return Strings.trim(styleString);
 		}
 	}
-
 }

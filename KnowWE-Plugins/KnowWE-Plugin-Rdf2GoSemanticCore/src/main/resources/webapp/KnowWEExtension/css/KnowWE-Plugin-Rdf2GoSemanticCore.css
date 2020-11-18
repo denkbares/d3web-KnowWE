@@ -2,6 +2,10 @@
 	border: 1px solid #DDD;
 }
 
+.sparqlTable .hide-filter .filter-icon {
+	display: none;
+}
+
 .sparqlTable TABLE.sparqltable {
 	 margin: 0px;
 	 margin-top: 5px;

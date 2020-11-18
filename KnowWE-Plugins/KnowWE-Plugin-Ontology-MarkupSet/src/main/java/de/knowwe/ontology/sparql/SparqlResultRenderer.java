@@ -1,6 +1,7 @@
 package de.knowwe.ontology.sparql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -318,8 +319,13 @@ public class SparqlResultRenderer {
 			if (isSkipped(isTree, column++, var)) {
 				continue;
 			}
-			renderResult.appendHtmlTag("th", "column-name", var, "filter-provider-action", SparqlFilterProviderAction.class
-					.getSimpleName());
+			List<String> attributes = new ArrayList<>(Arrays.asList(
+					"column-name", var, "filter-provider-action", SparqlFilterProviderAction.class.getSimpleName()));
+			if (opts.getColumnsWithDisabledFiltering().contains(var)) {
+				attributes.add("class");
+				attributes.add("hide-filter");
+			}
+			renderResult.appendHtmlTag("th", attributes.toArray(new String[0]));
 			renderResult.append(var.replace("_", " "));
 			renderResult.appendHtml("</th>");
 		}

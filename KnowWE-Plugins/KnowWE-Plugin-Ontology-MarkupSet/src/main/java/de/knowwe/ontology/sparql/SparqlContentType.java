@@ -21,12 +21,12 @@ package de.knowwe.ontology.sparql;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -114,6 +114,8 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
 		renderOpts.setColor(checkColor(markupSection, SparqlMarkupType.LOG_LEVEL, Color.NONE));
 		renderOpts.setColumnStyles(getStyles(markupSection, SparqlMarkupType.COLUMNSTYLE));
+		getColumnsWithDisabledFiltering(markupSection).forEach(renderOpts::disableFilterForColumn);
+		renderOpts.setColumnStyles(getStyles(markupSection, SparqlMarkupType.COLUMNSTYLE));
 		renderOpts.setTableStyles(getStyles(markupSection, SparqlMarkupType.TABLESTYLE));
 		renderOpts.setAllowJSPWikiMarkup(checkAnnotation(markupSection, SparqlMarkupType.ALLOW_JSPWIKIMARKUP, true));
 		renderOpts.setColumnWidth(getStyles(markupSection, SparqlMarkupType.COLUMNWIDTH));
@@ -121,6 +123,11 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		renderOpts.setRenderMode(getRenderMode(markupSection));
 
 		return renderOpts;
+	}
+
+	private Set<String> getColumnsWithDisabledFiltering(Section<DefaultMarkupType> markupSection) {
+		if (markupSection == null) return Collections.emptySet();
+		return markupSection.getObjectOrDefault(null, SparqlMarkupType.DISABLED_FILTERING, Collections.emptySet());
 	}
 
 	private RenderOptions.RenderMode getRenderMode(Section<?> section) {
