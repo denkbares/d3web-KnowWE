@@ -1,9 +1,12 @@
 package de.knowwe.rdf2go.sparql.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -12,40 +15,38 @@ import de.knowwe.util.Color;
 
 public class RenderOptions {
 
-	boolean zebraMode;
-	boolean rawOutput;
-	boolean sorting;
-	boolean navigation;
-	boolean border;
-	Map<String, String> sortingOrder;
-	String id;
+	private final String id;
 	private Rdf2GoCore core;
-	int navigationOffset = 1;
-	int navigationLimit = 50;
-	boolean showAll;
+
+	private boolean zebraMode = true;
+	private boolean rawOutput = false;
+	private boolean sorting = false;
+	private boolean navigation = false;
+	private boolean border = true;
+	private boolean showAll = false;
 	private boolean tree = false;
+	private boolean allowJSPWikiMarkup = true;
+	private int navigationOffset = 1;
+	private int navigationLimit = 50;
 	private long timeout = 10000;
-	private Color color;
-	private List<StyleOption> columnStyles;
-	private List<StyleOption> tableStyles;
-	private boolean allowJSPWikiMarkup;
+	private final Set<String> columnsWithDisabledFilter = new HashSet<>();
+	private Color color = Color.NONE;
+	private List<StyleOption> columnStyles = new ArrayList<>();
+	private List<StyleOption> tableStyles = new ArrayList<>();
 	private List<StyleOption> columnWidths;
 	private RenderMode renderMode = RenderMode.HTML;
+	private Map<String, String> sortingOrder = new LinkedHashMap<>();
 
 	public RenderOptions(String id) {
-		this.zebraMode = true;
-		this.rawOutput = false;
-		this.sorting = false;
-		this.navigation = false;
-		this.border = true;
-		sortingOrder = new LinkedHashMap<>();
 		this.id = id;
-		showAll = false;
- 		color = Color.NONE;
- 		this.columnStyles = new ArrayList<>();
- 		this.tableStyles = new ArrayList<>();
- 		this.allowJSPWikiMarkup = true;
- 		this.columnWidths = new ArrayList<>();
+	}
+
+	public void disableFilterForColumn(String columnName) {
+		columnsWithDisabledFilter.add(columnName);
+	}
+
+	public Set<String> getColumnsWithDisabledFiltering() {
+		return Collections.unmodifiableSet(columnsWithDisabledFilter);
 	}
 
 	public String getId() {
