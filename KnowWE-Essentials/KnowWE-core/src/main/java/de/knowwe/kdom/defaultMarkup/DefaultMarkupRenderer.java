@@ -499,7 +499,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	@NotNull
 	private String getDefaultCompilerClass(Section<?> section, UserContext user, Collection<PackageCompiler> compilers) {
-		boolean isDefault = compilers.isEmpty() && section.getPackageNames().isEmpty();
+		boolean isDefault = compilers.isEmpty() && section.getPackageNames().isEmpty() && Compilers.getCompilers(user.getArticleManager(), GroupingCompiler.class).isEmpty();
 		for (Compiler compiler : compilers) {
 			isDefault = isDefault || Compilers.isDefaultCompiler(user, compiler);
 		}
