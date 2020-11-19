@@ -20,14 +20,16 @@
 KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
 KNOWWE.core.plugin = KNOWWE.core.plugin || {};
+let doInit = true;
 
 
 (function init() {
   window.addEvent('domready', _KL.setup);
-  // ToDo: get rid of EDB check.
-  if (window.location.search !== "?page=Create_new_EDB_entry") if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
+  if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
     window.addEvent('domready', function() {
-      KNOWWE.core.plugin.dropZone.initAttachToExisting();
+      if (doInit) {
+        KNOWWE.core.plugin.dropZone.initAttachToExisting();
+      }
     });
   }
 }());
@@ -189,6 +191,11 @@ KNOWWE.core.plugin.dropZone = function() {
   }
 
   return {
+
+    // function to deactivate/activate default initialization of dropzone.
+    activateInitialization: function(activate) {
+      doInit = activate;
+    },
 
     prepareUploadData: function(event, name) {
       return prepareUploadData(event, name);
