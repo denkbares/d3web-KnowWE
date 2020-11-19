@@ -658,12 +658,10 @@ KNOWWE.core.plugin.recompile = function() {
           if (isCMD && event.altKey && event.shiftKey && (event.key === 'R' || event.key === '¸')) {
             command = "recompileAll";
             KNOWWE.notification.success("Full Recompile", "Performing recompilation of the current page and all involved compilers.");
-          }
-          else if (isCMD && event.altKey && (event.key === 'r' || event.key === '®')) {
+          } else if (isCMD && event.altKey && (event.key === 'r' || event.key === '®')) {
             command = "recompile"
             KNOWWE.notification.success("Recompile", "Recompiling the current page.");
-          }
-          else {
+          } else {
             return;
           }
           jq$.ajax({
@@ -683,6 +681,7 @@ KNOWWE.core.plugin.recompile = function() {
 
 
 KNOWWE.core.plugin.switchCompiler = function() {
+
   function addClickAction(link) {
     jq$(link).click(function(event) {
       var parentSelector = jq$(this).attr('data-click-parent');
@@ -706,6 +705,20 @@ KNOWWE.core.plugin.switchCompiler = function() {
     });
   }
 
+  let defaultCompilerPrefixKey = "default-compiler";
+
+  function getCompilerListContent(compilers, defaultCompiler) {
+    let listInnerText = "";
+    for (compiler of compilers) {
+      let icon = "far fa-circle";
+      if (compiler === defaultCompiler) {
+        icon = "far fa-dot-circle";
+      }
+      listInnerText = listInnerText + '<li><a onclick="KNOWWE.core.plugin.switchCompiler.setDefaultCompiler(\'' + compiler + '\')"><span class="' + icon + '" style="padding-right: 5px"></span><span>' + compiler + '</span></a></li>';
+    }
+    return listInnerText;
+  }
+
   return {
     init: function() {
       let pullRight = jq$('.navigation').children(".nav.nav-pills.pull-right").first();
@@ -726,13 +739,37 @@ KNOWWE.core.plugin.switchCompiler = function() {
         cache: false,
         dataType: 'json',
         success: function(response) {
-          link.innerHTML = response.link;
-          compilerSwitch.appendChild(link);
-          pullRight.prepend(compilerSwitch);
-          if (response.list !== "") {
-            list.innerHTML = response.list;
-            compilerSwitch.appendChild(list);
-            addClickAction(link);
+          if (response === null) return;
+          let storedDefaultCompiler = localStorage.getItem(defaultCompilerPrefixKey);
+          let defaultCompiler = response.defaultCompiler;
+          let compilers = response.compilers;
+          if (storedDefaultCompiler === "null" || !compilers.contains(storedDefaultCompiler)) {
+            // If default compiler is not stored yet or the stored compiler is not contained in all given compilers,
+            // store the default compiler from the server also for the client.
+            storedDefaultCompiler = defaultCompiler;
+            localStorage.setItem(defaultCompilerPrefixKey, defaultCompiler);
+          }
+          if (storedDefaultCompiler === defaultCompiler) {
+            // If the default compiler of the client and server (for the user) are the same, add the compiler switch.
+            let linkContent = '<span class="far fa-microchip"></span>' + '<span>' + defaultCompiler + '</span>';
+            if (compilers.length > 1) {
+              linkContent = linkContent + +'<span class="caret"></span>';
+            }
+            link.innerHTML = linkContent;
+
+            if (compilers.length > 1) {
+              // only add dropdown to select
+              addClickAction(link);
+              list.innerHTML = getCompilerListContent(compilers, defaultCompiler);
+              compilerSwitch.append(list);
+            }
+            compilerSwitch.appendChild(link);
+            pullRight.prepend(compilerSwitch);
+          } else {
+            // If the stored default compiler is not the same than the default compiler from the server,
+            // set the stored default compiler also for the server.
+            // This case should only happen after a restart of the server and the first page is rendered twice.
+            KNOWWE.core.plugin.switchCompiler.setDefaultCompiler(storedDefaultCompiler);
           }
         }
       });
@@ -742,7 +779,8 @@ KNOWWE.core.plugin.switchCompiler = function() {
       jq$.ajax("action/SetDefaultCompilerAction?name=" + name, {
         cache: false,
         dataType: 'json',
-        success: function(response) {
+        success: function() {
+          localStorage.setItem(defaultCompilerPrefixKey, name);
           window.location.reload();
         }
       });

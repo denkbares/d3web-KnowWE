@@ -21,7 +21,10 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,9 +46,8 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 		Collection<GroupingCompiler> compilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(context.getWeb()), GroupingCompiler.class);
 		if (compilers.isEmpty()) return;
 
-		StringBuilder builderLink = new StringBuilder();
-		StringBuilder builderList = new StringBuilder();
-		builderLink.append("<span class=\"far fa-microchip\"></span>");
+		List<String> compilerNames = new ArrayList<>();
+
 		String defaultName = null;
 		for (GroupingCompiler compiler : compilers) {
 			String name = Compilers.getCompilerName(compiler);
@@ -53,38 +55,15 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 				// sets the current selected compiler name
 				defaultName = name;
 			}
+			compilerNames.add(name);
 		}
+		Collections.sort(compilerNames);
 
-		for (GroupingCompiler compiler : (compilers)) {
-			String name = Compilers.getCompilerName(compiler);
-			if (defaultName == null) {
-				defaultName = name;
-			}
-			if (defaultName.equals(name)) {
-				defaultName = name;
-				builderLink.append("<span>").append(name).append("</span>");
-			}
-			else {
-				// add all other compilers to the list
-				builderList.append("<li>")
-						.append("<a onclick=\"KNOWWE.core.plugin.switchCompiler.setDefaultCompiler('")
-						.append(name)
-						.append("')\">")
-						.append(name)
-						.append("</a>")
-						.append("</li>");
-			}
-		}
-		if (compilers.size() > 1) {
-			// only add caret if there are more than one selectable compilers
-			builderLink.append("<span class=\"caret\"></span>\n");
-		}
-
-		// send the inner html back to the client
+		// send the compilers back to the client
 		JSONObject response = new JSONObject();
 		try {
-			response.put("link", builderLink.toString());
-			response.put("list", builderList.toString());
+			response.put("defaultCompiler", defaultName);
+			response.put("compilers", compilerNames);
 			response.write(context.getWriter());
 		}
 		catch (JSONException e) {
