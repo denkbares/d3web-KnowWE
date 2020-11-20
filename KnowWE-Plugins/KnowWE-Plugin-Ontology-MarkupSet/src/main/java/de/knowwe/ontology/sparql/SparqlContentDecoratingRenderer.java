@@ -26,42 +26,28 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.PaginationRenderer;
+import de.knowwe.rdf2go.sparql.utils.RenderOptions;
+
+import static de.knowwe.kdom.renderer.PaginationRenderer.SortingMode.*;
 
 /**
  * Created by Stefan Plehn (denkbares GmbH) on 10.12.14.
  */
 public class SparqlContentDecoratingRenderer implements Renderer {
 
-	private final SparqlContentRenderer contentRenderer = new SparqlContentRenderer();
-	private final PaginationRenderer paginationRenderer = new PaginationRenderer(contentRenderer);
-
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		boolean wantsNavigation = checkForNavigation(section);
-		if (wantsNavigation && !checkForTree(section)) {
+
+		Section<SparqlType> sparqlTypeSection = Sections.cast(section, SparqlType.class);
+		RenderOptions opts = sparqlTypeSection.get().getRenderOptions(sparqlTypeSection, user);
+		PaginationRenderer paginationRenderer = new PaginationRenderer(SparqlContentRenderer.getInstance(),
+				opts.isSorting() ? multi : off, opts.isFiltering());
+
+		if (opts.isNavigation() && !opts.isTree()) {
 			paginationRenderer.render(section, user, result);
 		}
 		else {
-			contentRenderer.render(section, user, result);
-		}
-	}
-
-	private boolean checkForNavigation(Section<?> section) {
-		Section<DefaultMarkupType> defaultMarkupSection = getDefaultMarkupSection(section);
-		return SparqlContentType.checkAnnotation(defaultMarkupSection, SparqlMarkupType.NAVIGATION, true);
-	}
-
-	private boolean checkForTree(Section<?> section) {
-		Section<DefaultMarkupType> defaultMarkupSection = getDefaultMarkupSection(section);
-		return SparqlContentType.checkAnnotation(defaultMarkupSection, SparqlMarkupType.TREE, false);
-	}
-
-	private Section<DefaultMarkupType> getDefaultMarkupSection(Section<?> section) {
-		if (section.get() instanceof DefaultMarkupType) {
-			return Sections.cast(section, DefaultMarkupType.class);
-		}
-		else {
-			return Sections.ancestor(section, DefaultMarkupType.class);
+			SparqlContentRenderer.getInstance().render(section, user, result);
 		}
 	}
 }

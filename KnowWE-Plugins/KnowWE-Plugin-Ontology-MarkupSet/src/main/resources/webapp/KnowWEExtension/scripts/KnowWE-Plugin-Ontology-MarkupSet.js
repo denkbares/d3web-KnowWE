@@ -208,7 +208,7 @@ KNOWWE.plugin.sparqlConsole.updateConsole = function(sectionID) {
 }
 
 KNOWWE.plugin.sparqlConsole.keyUpTrigger = function(event, sectionID) {
-	if (event.metaKey && event.keyCode === 13) { // render sparql when cmd + enter is pressed
+	if ((event.metaKey || event.altKey || event.ctrl) && event.keyCode === 13) { // render sparql when cmd + enter is pressed
 		KNOWWE.plugin.sparqlConsole.updateConsole(sectionID);
 	}
 }
