@@ -111,6 +111,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 
 		MARKUP.addAnnotation(ANNOTATION_SILENT_IMPORT, false);
 		MARKUP.addAnnotationIcon(ANNOTATION_SILENT_IMPORT, Icon.FILE.addTitle("Import silently (faster, but without term support)"));
+		MARKUP.addAnnotationContentType(ANNOTATION_SILENT_IMPORT, new AttachmentType(false));
 
 		MARKUP.addAnnotation(ANNOTATION_TERM_MATCHING, false, CASE_SENSITIVE, CASE_INSENSITIVE);
 
