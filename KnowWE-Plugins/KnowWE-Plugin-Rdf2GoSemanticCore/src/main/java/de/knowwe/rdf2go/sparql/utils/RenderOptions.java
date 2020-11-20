@@ -33,7 +33,7 @@ public class RenderOptions {
 	private Color color = Color.NONE;
 	private List<StyleOption> columnStyles = new ArrayList<>();
 	private List<StyleOption> tableStyles = new ArrayList<>();
-	private List<StyleOption> columnWidths;
+	private List<StyleOption> columnWidths = new ArrayList<>();
 	private RenderMode renderMode = RenderMode.HTML;
 	private Map<String, String> sortingOrder = new LinkedHashMap<>();
 

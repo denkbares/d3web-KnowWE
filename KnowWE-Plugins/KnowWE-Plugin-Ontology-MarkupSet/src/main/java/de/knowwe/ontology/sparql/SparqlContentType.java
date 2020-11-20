@@ -142,7 +142,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	}
 
 	private List<RenderOptions.StyleOption> getStyles(Section<DefaultMarkupType> markupSection, String columnstyle) {
-		return markupSection == null ? Collections.emptyList() : markupSection.getObject(columnstyle);
+		return markupSection == null ? Collections.emptyList() : markupSection.getObjectOrDefault(null, columnstyle, Collections.emptyList());
 	}
 
 	private Color checkColor(Section<DefaultMarkupType> markupSection, String logLevel, Color none) {

@@ -142,10 +142,6 @@ public class SparqlMarkupType extends DefaultMarkupType {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<SparqlMarkupType> section) throws CompilerMessage {
-			section.storeObject(TABLESTYLE, new ArrayList<RenderOptions.StyleOption>());
-			section.storeObject(COLUMNSTYLE, new ArrayList<RenderOptions.StyleOption>());
-			section.storeObject(COLUMNWIDTH, new ArrayList<RenderOptions.StyleOption>());
-
 			checkStyle(section, TABLESTYLE);
 			checkStyle(section, COLUMNSTYLE);
 			checkStyle(section, COLUMNWIDTH);
