@@ -66,8 +66,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	}
 
 	public static boolean checkAnnotation(Section<?> markupSection, String annotationName, boolean defaultValue) {
-		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
-				annotationName);
+		String annotationString = DefaultMarkupType.getAnnotation(markupSection, annotationName);
 		return annotationString == null ? defaultValue : annotationString.equals("true");
 	}
 
@@ -107,9 +106,10 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 		renderOpts.setRdf2GoCore(Rdf2GoUtils.getRdf2GoCore(markupSection));
 		renderOpts.setRawOutput(checkAnnotation(markupSection, SparqlMarkupType.RAW_OUTPUT));
-		renderOpts.setSorting(checkSortingAnnotation(markupSection, SparqlMarkupType.SORTING));
+		renderOpts.setSorting(checkAnnotation(markupSection, SparqlMarkupType.SORTING, true));
+		renderOpts.setFiltering(checkAnnotation(markupSection, SparqlMarkupType.FILTERING, true));
 		renderOpts.setZebraMode(checkAnnotation(markupSection, SparqlMarkupType.ZEBRAMODE, true));
-		renderOpts.setTree(Boolean.parseBoolean(DefaultMarkupType.getAnnotation(markupSection, SparqlMarkupType.TREE)));
+		renderOpts.setTree(checkAnnotation(markupSection, SparqlMarkupType.TREE, false));
 		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER, true));
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
 		renderOpts.setColor(checkColor(markupSection, SparqlMarkupType.LOG_LEVEL, Color.NONE));
@@ -127,7 +127,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 	private Set<String> getColumnsWithDisabledFiltering(Section<DefaultMarkupType> markupSection) {
 		if (markupSection == null) return Collections.emptySet();
-		return markupSection.getObjectOrDefault(null, SparqlMarkupType.DISABLED_FILTERING, Collections.emptySet());
+		return markupSection.getObjectOrDefault(null, SparqlMarkupType.DISABLED_FILTERING_KEY, Collections.emptySet());
 	}
 
 	private RenderOptions.RenderMode getRenderMode(Section<?> section) {
@@ -142,7 +142,8 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	}
 
 	private List<RenderOptions.StyleOption> getStyles(Section<DefaultMarkupType> markupSection, String columnstyle) {
-		return markupSection == null ? Collections.emptyList() : markupSection.getObjectOrDefault(null, columnstyle, Collections.emptyList());
+		return markupSection == null ? Collections.emptyList() : markupSection.getObjectOrDefault(null, columnstyle, Collections
+				.emptyList());
 	}
 
 	private Color checkColor(Section<DefaultMarkupType> markupSection, String logLevel, Color none) {
@@ -159,12 +160,6 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 			default:
 				return none;
 		}
-	}
-
-	private boolean checkSortingAnnotation(Section<DefaultMarkupType> markupSection, String sorting) {
-		String annotationString = DefaultMarkupType.getAnnotation(markupSection,
-				sorting);
-		return annotationString == null || annotationString.equals("true");
 	}
 
 	private boolean checkAnnotation(Section<?> markupSection, String annotationName) {

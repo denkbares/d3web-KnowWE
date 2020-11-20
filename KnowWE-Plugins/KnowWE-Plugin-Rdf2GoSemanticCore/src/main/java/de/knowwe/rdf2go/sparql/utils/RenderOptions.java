@@ -21,6 +21,7 @@ public class RenderOptions {
 	private boolean zebraMode = true;
 	private boolean rawOutput = false;
 	private boolean sorting = false;
+	private boolean filtering = false;
 	private boolean navigation = false;
 	private boolean border = true;
 	private boolean showAll = false;
@@ -97,8 +98,16 @@ public class RenderOptions {
 		return sorting;
 	}
 
+	public boolean isFiltering() {
+		return filtering;
+	}
+
 	public void setSorting(boolean sorting) {
 		this.sorting = sorting;
+	}
+
+	public void setFiltering(boolean filtering) {
+		this.filtering = filtering;
 	}
 
 	public void setRdf2GoCore(Rdf2GoCore core) {

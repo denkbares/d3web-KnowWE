@@ -50,6 +50,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String ZEBRAMODE = "zebramode";
 	public static final String TREE = "tree";
 	public static final String SORTING = "sorting";
+	public static final String FILTERING = "filtering";
 	public static final String BORDER = "border";
 	public static final String NAME = "name";
 	public static final String RENDER_QUERY = "showQuery";
@@ -63,7 +64,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	private static final DefaultMarkup MARKUP;
 
 	public static final String MARKUP_NAME = "Sparql";
-	public static final String DISABLED_FILTERING = "disabledFiltering";
+	public static final String DISABLED_FILTERING_KEY = "disabledFiltering";
 
 	static {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
@@ -82,6 +83,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(TREE, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(SORTING, false, "true", "false");
 		MARKUP.addAnnotationRenderer(SORTING, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(FILTERING, false, "true", "false");
+		MARKUP.addAnnotationRenderer(FILTERING, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(BORDER, false, "true", "false");
 		MARKUP.addAnnotationRenderer(BORDER, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(RENDER_MODE, false, "PlainText", "HTML", "ToolMenu");
@@ -220,7 +223,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		}
 
 		private void addColumnWithDisabledFilter(Section<SparqlMarkupType> markupSection, String columnName) {
-			markupSection.computeIfAbsent(null, DISABLED_FILTERING, (compiler, sparqlMarkupTypeSection) -> new HashSet<>())
+			markupSection.computeIfAbsent(null, DISABLED_FILTERING_KEY, (compiler, sparqlMarkupTypeSection) -> new HashSet<>())
 					.add(columnName);
 		}
 

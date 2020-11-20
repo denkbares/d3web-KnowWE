@@ -308,7 +308,6 @@ public class SparqlResultRenderer {
 						: " class='sparqltable")
 				.append(opts.getColor() == Color.NONE ? "" : " logLevel")
 				.append("'")
-				.append(opts.isSorting() ? " sortable='multi'" : "")
 				.append(getStyleForKey("table", tableStyle))
 				.append(">");
 
@@ -337,7 +336,9 @@ public class SparqlResultRenderer {
 				List<Pair<String, Boolean>> multiColumnSorting = PaginationRenderer.getMultiColumnSorting(section, user);
 				table = (IndexedResultTableModel) table.sort(multiColumnSorting);
 			}
-			table = (IndexedResultTableModel) table.filter(PaginationRenderer.getFilter(section, user));
+			if (opts.isFiltering()) {
+				table = (IndexedResultTableModel) table.filter(PaginationRenderer.getFilter(section, user));
+			}
 			PaginationRenderer.setResultSize(user, table.getSize());
 			int startRow = PaginationRenderer.getStartRow(section, user);
 			int count = PaginationRenderer.getCount(section, user);

@@ -92,31 +92,32 @@ KNOWWE.core.plugin.pagination = function() {
     return false;
   }
 
-  function renderIcons($table, sectionId, sortingMode) {
+  function renderIcons($table, sectionId, sortingMode, filteringActive) {
     const paginationState = getPaginationState(sectionId);
 
     $table.find("th").each(function() {
       jq$(this.firstChild).wrap('<span></span>');
     })
 
-    let $paginationTable = jq$("table[pagination=" + sectionId + "]");
-    let sorting = paginationState.sorting || [];
-    for (let i = 0; i < (sortingMode === 'multi' ? sorting.length : 1); i++) {
-      let sort = sorting[i].sort;
-      const sortingSymbolParent = $paginationTable.find("th[column-name=" + sort + "] span");
-      const sortingSymbol = jq$(sortingSymbolParent).find("." + sortingIcon);
-      if (sortingSymbol.exists()) {
-        sortingSymbol.replaceWith(getSortingSymbol(sorting[i].naturalOrder, i));
-      } else {
-        jq$(sortingSymbolParent).append(getSortingSymbol(sorting[i].naturalOrder, i));
+    if (sortingMode !== "off") {
+      let $paginationTable = jq$("table[pagination=" + sectionId + "]");
+      let sorting = paginationState.sorting || [];
+      for (let i = 0; i < (sortingMode === 'multi' ? sorting.length : 1); i++) {
+        let sort = sorting[i].sort;
+        const sortingSymbolParent = $paginationTable.find("th[column-name=" + sort + "] span");
+        const sortingSymbol = jq$(sortingSymbolParent).find("." + sortingIcon);
+        if (sortingSymbol.exists()) {
+          sortingSymbol.replaceWith(getSortingSymbol(sorting[i].naturalOrder, i));
+        } else {
+          jq$(sortingSymbolParent).append(getSortingSymbol(sorting[i].naturalOrder, i));
+        }
       }
     }
 
-    if (paginationState.filter && paginationState.filter.active) {
+    if (filteringActive && paginationState.filter && paginationState.filter.active) {
       let columns = paginationState.filter.columns || [];
       $table.find("th").each(function() {
         const $th = jq$(this);
-
         $th.prepend(getFilterSymbol(isEmpty(columns[getColumnName($th)])));
       });
     }
@@ -477,12 +478,14 @@ KNOWWE.core.plugin.pagination = function() {
         KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
       });
 
-      const sortingMode = jq$(this).attr('sortable');
+      const paginationWrapper = jq$(this).parents('.knowwe-paginationWrapper');
+      const filterActivator = paginationWrapper.find('.filter-activator');
+      const sortingMode = paginationWrapper.attr('sorting-mode'); // from markup (not user specific)
+      const filteringActive = paginationWrapper.attr('filtering') === "true"; // from markup/annotation (not user specific)
 
       // decorate "Filter" checkbox
       const paginationState = getPaginationState(sectionId);
       const filterState = getPaginationFilterState(paginationState);
-      const filterActivator = jq$(this).parents('.knowwe-paginationWrapper').find('.filter-activator');
       if (filterState.active) {
         filterActivator.prop('checked', true);
       }
@@ -491,7 +494,7 @@ KNOWWE.core.plugin.pagination = function() {
         setPaginationState(sectionId, paginationState);
         updateNode(sectionId)
       })
-      const clearFilter = jq$(this).parents('.knowwe-paginationWrapper').find('.clear-filter');
+      const clearFilter = paginationWrapper.find('.clear-filter');
       clearFilter.click(function() {
         filterState.columns = {}
         setPaginationState(sectionId, paginationState);
@@ -504,16 +507,19 @@ KNOWWE.core.plugin.pagination = function() {
       }
 
       // render sorting symbol
-      renderIcons(jq$(this), sectionId, sortingMode);
+      renderIcons(jq$(this), sectionId, sortingMode, filteringActive);
+
 
       jq$(this).find("th").each(function() {
           // make <th> clickable and therefore sortable except if
           // it's stated explicitly otherwise
           const $thElement = jq$(this);
-          if (typeof sortingMode != 'undefined') {
+          if (sortingMode !== "off") {
             enableSorting($thElement, sectionId);
           }
-          enableFiltering($thElement, sectionId);
+          if (filteringActive) {
+            enableFiltering($thElement, sectionId);
+          }
         }
       );
 

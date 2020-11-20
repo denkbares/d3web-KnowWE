@@ -2474,10 +2474,3 @@ a.action.quick2top:before {
 #morebutton a {
 	cursor: default;
 }
-
-.sparqlEditor {
-	width: 100%;
-	height: 150px;
-	margin: 0.5em 0.25em;
-	border: 1px solid #ddd;
-}

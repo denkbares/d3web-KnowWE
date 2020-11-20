@@ -275,8 +275,7 @@ public class TestCasePlayerRenderer implements Renderer {
 		string.appendHtml(PaginationRenderer.getToolSeparator());
 
 		PaginationRenderer.setResultSize(user, chronology.size());
-		boolean show = chronology.size() > PaginationRenderer.DEFAULT_SHOW_NAVIGATION_MAX_RESULTS;
-		PaginationRenderer.renderPagination(section, user, string, show);
+		PaginationRenderer.renderPagination(section, user, string);
 	}
 
 	private TerminologyObject renderHeader(Section<?> section, UserContext user, ProviderTriple selectedTriple, TableModel tableModel) {
