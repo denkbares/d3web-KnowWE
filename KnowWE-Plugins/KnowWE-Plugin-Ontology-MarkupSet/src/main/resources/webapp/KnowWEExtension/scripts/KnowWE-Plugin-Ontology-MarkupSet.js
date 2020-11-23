@@ -1,23 +1,6 @@
-/**
- * The KNOWWE global namespace object. If KNOWWE is already defined, the
- * existing KNOWWE object will not be overwritten so that defined namespaces are
- * preserved.
- */
-if (typeof KNOWWE == "undefined" || !KNOWWE) {
-  var KNOWWE = {};
-}
-
-var toSelect;
-/**
- * The KNOWWE.plugin global namespace object. If KNOWWE.plugin is already
- * defined, the existing KNOWWE.plugin object will not be overwritten so that
- * defined namespaces are preserved.
- */
-if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
-  KNOWWE.plugin = function() {
-    return {}
-  }
-}
+KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
+KNOWWE.core = KNOWWE.core || {};
+KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 
 /**
  * The KNOWWE.plugin.ontology global namespace object. If KNOWWE.plugin.ontology
@@ -25,6 +8,7 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
  * overwritten so that defined namespaces are preserved.
  */
 KNOWWE.plugin.ontology = function() {
+  // noinspection JSUnusedGlobalSymbols
   return {
     commitOntology: function(sectionID) {
       new _KA({
@@ -200,15 +184,35 @@ KNOWWE.plugin.hierarchy.init = function() {
   });
 }
 
-KNOWWE.plugin.sparqlConsole = {}
-KNOWWE.plugin.sparqlConsole.updateConsole = function(sectionID) {
-  var sparql = jq$('#' + sectionID).parent().siblings('textarea').val()
-  jq$.cookie("sparqlConsole_" + sectionID, sparql)
-  jq$('#' + sectionID).rerender();
-}
+KNOWWE.plugin.sparqlConsole = function() {
 
-KNOWWE.plugin.sparqlConsole.keyUpTrigger = function(event, sectionID) {
-  if ((event.metaKey || event.altKey || event.ctrl) && event.keyCode === 13) { // render sparql when cmd + enter is pressed
-    KNOWWE.plugin.sparqlConsole.updateConsole(sectionID);
+  return {
+    init: function() {
+      const editor = jq$(".type_SparqlConsole textarea.sparqlEditor");
+
+      editor.autosize({append: ''});
+      new TextArea(editor);
+
+      editor.on('keydown', function(event) {
+        if ((event.metaKey || event.altKey || event.ctrl) && event.key === 'Enter') { // render sparql when cmd + enter is pressed
+          KNOWWE.plugin.sparqlConsole.updateConsole(jq$(this).attr('sectionid'));
+        }
+      })
+    },
+
+    updateConsole: function(sectionID) {
+      var query = jq$('textarea.sparqlEditor[sectionid="' + sectionID + '"]').val();
+      jq$.cookie("sparqlConsole_" + sectionID, query);
+      jq$('#' + sectionID).rerender();
+    }
   }
 }
+
+
+(function init() {
+  if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
+    window.addEvent('domready', function() {
+      KNOWWE.plugin.sparqlConsole.init();
+    });
+  }
+}());
