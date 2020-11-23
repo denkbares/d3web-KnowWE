@@ -79,7 +79,7 @@ public class SparqlConsoleMarkupType extends DefaultMarkupType {
 			result.appendHtmlElement("textarea", currentSparql, "class", "sparqlEditor",
 					"placeholder", "Enter Sparql her",
 					"sectionid", $(contentSections).children().mapFirst(Section::getID));
-			result.appendHtmlElement("span", "Hit CTRL + ENTER or ALT + ENTER to update result", "class", "usage-info");
+			result.appendHtmlElement("span", "Hit CTRL + ENTER or ALT + ENTER to update the query result", "class", "usage-info");
 			// DelegateRenderer.getInstance().render(markupSection, user, result);
 			super.renderContents(markupSection, contentSections, user, result);
 		}
