@@ -189,6 +189,7 @@ KNOWWE.plugin.sparqlConsole = function() {
   return {
     init: function() {
       const editor = jq$(".type_SparqlConsole textarea.sparqlEditor");
+      if (!editor.exists()) return ;
 
       editor.autosize({append: ''});
       new TextArea(editor);
