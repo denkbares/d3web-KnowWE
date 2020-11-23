@@ -187,8 +187,12 @@ public class SparqlResultRenderer {
 			return;
 		}
 
-		query = core.prependPrefixesToQuery(core.getNamespaces(), query);
-		String queryLine = query.split("\n")[lineNumber];
+		String completeQuery = core.prependPrefixesToQuery(core.getNamespaces(), query);
+		String queryLine = completeQuery.split("\n")[lineNumber];
+
+		int lineNumbersWithoutPrefix = query.split("\n").length;
+		int lineNumbersWithPrefix = completeQuery.split("\n").length;
+		int prefixLineNumbers = lineNumbersWithPrefix - lineNumbersWithoutPrefix;
 
 		if (queryLine == null) {
 			result.append(message);
@@ -218,7 +222,7 @@ public class SparqlResultRenderer {
 				if (index >= 0) {
 					result.append(line.substring(0, index + 12))
 							.append("'").append(charAtException).append("' ")
-							.append("at line ").append(lineNumber + 1)
+							.append("at line ").append(lineNumber - prefixLineNumbers + 1)
 							.append(", column ").append(columnNumber + 1).append(".");
 				}
 				else {
@@ -465,7 +469,6 @@ public class SparqlResultRenderer {
 		RenderOptions opts = section.get().getRenderOptions(section, user);
 		boolean isTree = opts.isTree();
 		String query = section.get().getSparqlQuery(section, user);
-		boolean renderJSPWikiMarkup = opts.isAllowJSPWikiMarkup();
 
 		CachedTupleQueryResult qrt = null;
 		try {

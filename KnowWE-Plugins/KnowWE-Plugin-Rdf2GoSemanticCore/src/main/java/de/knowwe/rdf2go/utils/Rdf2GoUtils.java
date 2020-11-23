@@ -478,8 +478,6 @@ public class Rdf2GoUtils {
 	public static String createSparqlString(Rdf2GoCore core, String sparqlString) {
 		sparqlString = removeSparqlComments(sparqlString);
 		sparqlString = Strings.trim(sparqlString);
-		sparqlString = sparqlString.replaceAll("\n", " ");
-		sparqlString = sparqlString.replaceAll("\r", "");
 
 		Map<String, String> nameSpaces = core.getNamespacesMap();
 

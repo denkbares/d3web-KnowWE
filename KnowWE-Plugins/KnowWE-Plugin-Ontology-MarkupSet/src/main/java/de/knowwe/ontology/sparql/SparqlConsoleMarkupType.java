@@ -19,7 +19,6 @@
 
 package de.knowwe.ontology.sparql;
 
-
 import java.util.List;
 
 import com.denkbares.strings.Strings;
@@ -34,15 +33,21 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
+ * Provide SPARQL console where you can quickly prototype sparql queries and get its result without having to edit and
+ * saving the page all the time. Just type the query in a text area directly on the page and get its result below by
+ * hitting CTRL/ALT + ENTER.
+ *
  * @author Tobias Schmee (denkbares GmbH)
  * @created 07.10.19
  */
 public class SparqlConsoleMarkupType extends DefaultMarkupType {
 
 	private static final String RENDER_MODE = "renderMode";
-	private static DefaultMarkup MARKUP;
 	private static final String MARKUP_NAME = "SparqlConsole";
+	private static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup(MARKUP_NAME);
@@ -63,12 +68,18 @@ public class SparqlConsoleMarkupType extends DefaultMarkupType {
 	private static class SparqlConsoleMarkupRenderer extends Rdf2GoCoreCheckRenderer {
 		@Override
 		protected void renderContents(Section<? extends DefaultMarkupType> markupSection, List<Section<ContentType>> contentSections, UserContext user, RenderResult result) {
-			String currentSparql = KnowWEUtils.getCookie("sparqlConsole_" + contentSections.get(0).getChildren().get(0).getID(), user);
+			String currentSparql = KnowWEUtils.getCookie("sparqlConsole_" + contentSections.get(0)
+					.getChildren()
+					.get(0)
+					.getID(), user);
 			if (Strings.isBlank(currentSparql)) {
 				currentSparql = "";
 			}
 			currentSparql = Strings.decodeURL(currentSparql);
-			result.appendHtml("<textarea class=\"sparqlEditor\" placeholder=\"Enter Sparql here\" onkeydown=\"KNOWWE.plugin.sparqlConsole.keyUpTrigger(event,'" + contentSections.get(0).getChildren().get(0).getID() + "')\" onChange=\"KNOWWE.plugin.sparqlConsole.updateConsole('" + contentSections.get(0).getChildren().get(0).getID() + "')\">" + currentSparql +"</textarea>");
+			result.appendHtmlElement("textarea", currentSparql, "class", "sparqlEditor",
+					"placeholder", "Enter Sparql her",
+					"sectionid", $(contentSections).children().mapFirst(Section::getID));
+			result.appendHtmlElement("span", "Hit CTRL + ENTER or ALT + ENTER to update the query result", "class", "usage-info");
 			// DelegateRenderer.getInstance().render(markupSection, user, result);
 			super.renderContents(markupSection, contentSections, user, result);
 		}
