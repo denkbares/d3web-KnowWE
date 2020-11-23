@@ -80,3 +80,7 @@
 	display: inline-block;
 	padding-bottom: .5em
 }
+
+.type_SparqlConsole.defaultMarkupFrame:hover {
+	background: transparent;
+}
