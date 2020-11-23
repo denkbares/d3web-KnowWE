@@ -753,7 +753,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
             // If the default compiler of the client and server (for the user) are the same, add the compiler switch.
             let linkContent = '<span class="far fa-microchip"></span>' + '<span>' + defaultCompiler + '</span>';
             if (compilers.length > 1) {
-              linkContent = linkContent + +'<span class="caret"></span>';
+              linkContent = linkContent + '<span class="caret"></span>';
             }
             link.innerHTML = linkContent;
 
