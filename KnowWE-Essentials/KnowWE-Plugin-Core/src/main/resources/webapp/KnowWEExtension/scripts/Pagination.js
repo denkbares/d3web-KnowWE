@@ -35,8 +35,6 @@ KNOWWE.core.plugin.pagination = function() {
   const filterTextsProperty = "filter-texts";
   const paginationClickEvent = "click.pagination-filter";
 
-  let windowHeight;
-
   const getColumnName = $th => {
     return $th.attr(columnNameAttribute) || $th.text();
   };
@@ -100,11 +98,10 @@ KNOWWE.core.plugin.pagination = function() {
     })
 
     if (sortingMode !== "off") {
-      let $paginationTable = jq$("table[pagination=" + sectionId + "]");
       let sorting = paginationState.sorting || [];
       for (let i = 0; i < (sortingMode === 'multi' ? sorting.length : 1); i++) {
         let sort = sorting[i].sort;
-        const sortingSymbolParent = $paginationTable.find("th[column-name=" + sort + "] span");
+        const sortingSymbolParent = $table.find("th[column-name=" + sort + "] span");
         const sortingSymbol = jq$(sortingSymbolParent).find("." + sortingIcon);
         if (sortingSymbol.exists()) {
           sortingSymbol.replaceWith(getSortingSymbol(sorting[i].naturalOrder, i));
@@ -430,107 +427,93 @@ KNOWWE.core.plugin.pagination = function() {
     };
   }
 
-  function isShortTable() {
-    return (jq$(this).height() < jq$(window).height());
+  function isShortTable(paginationWrapper) {
+    return jq$(paginationWrapper).find("table").height() < jq$(window).height();
   }
 
-  function toggleLowerPagination(visibility) {
-    jq$(this).parents('.sparqlTable').nextAll().filter('.knowwe-paginationToolbar').css("display", visibility);
+  function toggleLowerPagination(paginationWrapper, visibility) {
+    jq$(paginationWrapper).find('.sparqlTable').nextAll().filter('.knowwe-paginationToolbar').css("display", visibility);
   }
 
-  function handlePaginationBelowTableVisibility() {
-    if (isShortTable.call(this)) {
-      toggleLowerPagination.call(this, "none");
+  function handlePaginationBelowTableVisibility(paginationWrapper) {
+    if (isShortTable(paginationWrapper)) {
+      toggleLowerPagination(paginationWrapper, "none");
     } else {
-      toggleLowerPagination.call(this, "inline-block")
+      toggleLowerPagination(paginationWrapper, "inline-block")
     }
   }
 
-  jq$(window).resize(function() {
-    if (windowHeight !== jq$(window).height()) {
-      //Do something
-      windowHeight = jq$(window).height();
-      jq$("table[pagination]").each(
-        function() {
-          handlePaginationBelowTableVisibility.call(this);
+  function decoratePagination(paginationWrapper) {
+
+    const $paginationWrapper = jq$(paginationWrapper);
+    const sectionId = $paginationWrapper.attr('id');
+
+    const $table = $paginationWrapper.find("table");
+    if (!$table.exists()) {
+      $paginationWrapper.find(".knowwe-paginationToolbar").remove();
+      return ;
+    }
+
+    //for css purposes
+    $table.addClass('knowwe-pagination');
+
+    // register count selector
+    $paginationWrapper.find("select.count").on('change', function() {
+      KNOWWE.core.plugin.pagination.setCount(this, sectionId);
+    });
+
+    // register start row change event
+    $paginationWrapper.find('input.startRow').on('change', function() {
+      KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
+    });
+
+    const filterActivator = $paginationWrapper.find('.filter-activator');
+    const sortingMode = $paginationWrapper.attr('sorting-mode'); // from markup (not user specific)
+    const filteringActive = $paginationWrapper.attr('filtering') === "true"; // from markup/annotation (not user specific)
+
+    // decoratePagination "Filter" checkbox
+    const paginationState = getPaginationState(sectionId);
+    const filterState = getPaginationFilterState(paginationState);
+    if (filterState.active) {
+      filterActivator.prop('checked', true);
+    }
+    filterActivator.change(function() {
+      filterState.active = !!this.checked;
+      setPaginationState(sectionId, paginationState);
+      updateNode(sectionId)
+    })
+    const clearFilter = $paginationWrapper.find('.clear-filter');
+    clearFilter.click(function() {
+      filterState.columns = {}
+      setPaginationState(sectionId, paginationState);
+      updateNode(sectionId)
+    })
+    if (!filterState.active) {
+      clearFilter.hide();
+    } else {
+      clearFilter.prop("disabled", !anyActiveFilter(filterState));
+    }
+
+    // render sorting symbol
+    renderIcons($table, sectionId, sortingMode, filteringActive);
+
+
+    $table.find("th").each(function() {
+        // make <th> clickable and therefore sortable except if
+        // it's stated explicitly otherwise
+        const $thElement = jq$(this);
+        if (sortingMode !== "off") {
+          enableSorting($thElement, sectionId);
         }
-      )
-    }
-  });
-
-  function decorate() {
-
-    windowHeight = jq$(window).height();
-
-    return function() {
-      const sectionId = jq$(this).attr('pagination');
-
-      //for css purposes
-      jq$(this).addClass('knowwe-pagination');
-
-      // register count selector
-      jq$('div[pagination=' + sectionId + '] .count').on('change', function() {
-        KNOWWE.core.plugin.pagination.setCount(this, sectionId);
-      });
-
-      // register start row change event
-      jq$('div[pagination=' + sectionId + '] .startRow').on('change', function() {
-        KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
-      });
-
-      const paginationWrapper = jq$(this).parents('.knowwe-paginationWrapper');
-      const filterActivator = paginationWrapper.find('.filter-activator');
-      const sortingMode = paginationWrapper.attr('sorting-mode'); // from markup (not user specific)
-      const filteringActive = paginationWrapper.attr('filtering') === "true"; // from markup/annotation (not user specific)
-
-      // decorate "Filter" checkbox
-      const paginationState = getPaginationState(sectionId);
-      const filterState = getPaginationFilterState(paginationState);
-      if (filterState.active) {
-        filterActivator.prop('checked', true);
-      }
-      filterActivator.change(function() {
-        filterState.active = !!this.checked;
-        setPaginationState(sectionId, paginationState);
-        updateNode(sectionId)
-      })
-      const clearFilter = paginationWrapper.find('.clear-filter');
-      clearFilter.click(function() {
-        filterState.columns = {}
-        setPaginationState(sectionId, paginationState);
-        updateNode(sectionId)
-      })
-      if (!filterState.active) {
-        clearFilter.hide();
-      } else {
-        clearFilter.prop("disabled", !anyActiveFilter(filterState));
-      }
-
-      // render sorting symbol
-      renderIcons(jq$(this), sectionId, sortingMode, filteringActive);
-
-
-      jq$(this).find("th").each(function() {
-          // make <th> clickable and therefore sortable except if
-          // it's stated explicitly otherwise
-          const $thElement = jq$(this);
-          if (sortingMode !== "off") {
-            enableSorting($thElement, sectionId);
-          }
-          if (filteringActive) {
-            enableFiltering($thElement, sectionId);
-          }
+        if (filteringActive) {
+          enableFiltering($thElement, sectionId);
         }
-      );
+      }
+    );
 
-      handlePaginationBelowTableVisibility.call(this);
-    }
-  }
+    handlePaginationBelowTableVisibility(paginationWrapper);
 
-  function handleNoResult(pagination) {
-    if (!pagination.find('table').exists()) {
-      pagination.find(".knowwe-paginationToolbar").remove();
-    }
+    KNOWWE.helper.observer.notify("paginationTableDecorated");
   }
 
   return {
@@ -581,11 +564,11 @@ KNOWWE.core.plugin.pagination = function() {
       const resultSize = parseInt(jq$('#' + id + " .resultSize").val());
       const count = $selected.val();
       $selected.data('current', count);
-      let startRow = parseInt(jq$('div[pagination=' + id + '] .startRow').val());
+      let startRow = parseInt(jq$('#' + id + ' .startRow').val());
       const search = /^\d+$/;
       const found = search.test(startRow);
       if (!(found)) {
-        jq$('div[pagination=' + id + '] .startRow').val('');
+        jq$('#' + id + ' .startRow').val('');
         return;
       }
 
@@ -669,22 +652,18 @@ KNOWWE.core.plugin.pagination = function() {
       if (!preventRerender) updateNode(id);
     },
 
-    decorateTable: function() {
-      handleNoResult(jq$(this));
-      const id = jq$(this).find(".knowwe-paginationToolbar").first().attr('pagination');
-      jq$(this).find("table").attr('pagination', id);
-      jq$(this).find("table[pagination]").each(decorate());
-      KNOWWE.helper.observer.notify("paginationTableDecorated");
+    decorateTable: function(paginationWrapper) {
+      if (!paginationWrapper.is(".knowwe-paginationWrapper")) {
+        paginationWrapper = paginationWrapper.find(".knowwe-paginationWrapper");
+      }
+      decoratePagination(paginationWrapper);
     },
 
     decorateTables: function() {
-      handleNoResult(jq$(this));
-      const wrappers = jq$("div.knowwe-paginationWrapper");
-      wrappers.each(function() {
-        jq$(this).find("table").attr('pagination', jq$(this).attr('id'));
+      jq$(".knowwe-paginationWrapper").each(function() {
+        decoratePagination(this);
       });
 
-      jq$("table[pagination]").each(decorate());
     }
   }
 }();
@@ -702,5 +681,5 @@ KNOWWE.core.plugin.pagination = function() {
 }());
 
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
-  KNOWWE.core.plugin.pagination.decorateTable.call(this);
+  KNOWWE.core.plugin.pagination.decorateTable(this);
 });
