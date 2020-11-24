@@ -230,9 +230,15 @@ public class PaginationRenderer implements Renderer {
 
 	private void renderFilter(Section<?> section, UserContext user, RenderResult result) {
 		renderToolBarElement(section, result, () -> {
-			String id = "filter-activator" + section.getID();
-			result.appendHtmlTag("input", "class", "filter-activator", "type", "checkbox", "id", id, "name", id);
-			result.appendHtmlElement("label", "Filter", "class", "fillText", "for", id);
+			// generate unique id in case the filter is added multiple times
+			String id = "filter-activator-" + section.getID();
+			Integer activators = (Integer) user.getRequest().getAttribute(id);
+			if (activators == null) activators = 0;
+			String uniqueId = id + "-" + activators;
+			user.getRequest().setAttribute(id, activators + 1);
+
+			result.appendHtmlTag("input", "class", "filter-activator", "type", "checkbox", "id", uniqueId, "name", uniqueId);
+			result.appendHtmlElement("label", "Filter", "class", "fillText", "for", uniqueId);
 			result.appendHtmlElement("button", "Clear Filter", "class", "clear-filter");
 		});
 	}
