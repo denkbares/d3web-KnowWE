@@ -205,12 +205,10 @@ public class PaginationRenderer implements Renderer {
 				"sorting-mode", sorting.name(), "filtering", this.supportFiltering ? "true" : "false");
 		RenderResult table = new RenderResult(user);
 		decoratedRenderer.render(section, user, table);
-		RenderResult pagination = new RenderResult(user);
 
-		renderPaginationInternal(section, user, pagination);
-		result.append(pagination);
+		renderPaginationInternal(section, user, result);
 		result.append(table);
-		result.append(pagination);
+		renderPaginationInternal(section, user, result);
 
 		result.appendHtml("</div>");
 	}
@@ -288,9 +286,7 @@ public class PaginationRenderer implements Renderer {
 
 		int fill = ((int) (Math.log10(resultSize)) - ((int) Math.log10(endRow)));
 		StringBuilder fillString = new StringBuilder();
-		for (int i = 0; i < fill; i++) {
-			fillString.append("&nbsp;");
-		}
+		fillString.append("&nbsp;".repeat(Math.max(0, fill)));
 
 		renderToolBarElement(sec, result, () -> {
 			if (count != Integer.MAX_VALUE) {
