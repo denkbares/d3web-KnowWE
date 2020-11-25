@@ -219,14 +219,15 @@ public class SparqlResultRenderer {
 			String line = scanner.nextLine();
 			if (first) {
 				int index = line.indexOf("Encountered ");
+				int lineNumberWithoutPrefix = lineNumber - prefixLineNumbers + 1;
 				if (index >= 0) {
 					result.append(line.substring(0, index + 12))
 							.append("'").append(charAtException).append("' ")
-							.append("at line ").append(lineNumber - prefixLineNumbers + 1)
+							.append("at line ").append(lineNumberWithoutPrefix)
 							.append(", column ").append(columnNumber + 1).append(".");
 				}
 				else {
-					result.append(line);
+					result.append(line.replaceAll(" line \\d+", " line " + lineNumberWithoutPrefix));
 				}
 				result.append(" Context: ").append(queryContextPrefix);
 				result.appendHtmlElement("span", charAtException, "style", "color: red; font-weight: bold");
