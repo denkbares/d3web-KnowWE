@@ -22,6 +22,8 @@ import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.RebaseCommand;
 import org.eclipse.jgit.api.RebaseResult;
+import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -69,15 +71,33 @@ public class GitAutoUpdater {
 			StopWatch stopWatch = new StopWatch();
 			stopWatch.start();
 			fileProvider.pushLock();
+
 			RevWalk revWalk = new RevWalk(fileProvider.repository);
 			ObjectId oldHead = fileProvider.repository.resolve("remotes/origin/master");
 			RevCommit oldHeadCommit = revWalk.parseCommit(oldHead);
+
+			try {
+				Status status = git.status().call();
+				if (!status.isClean()) {
+					Log.warning("Git is not clean, doing reset first");
+					try {
+						git.reset().setMode(ResetCommand.ResetType.HARD).call();
+					}
+					catch (GitAPIException e) {
+						Log.severe("Reset wasn't successful", e);
+						return;
+					}
+				}
+			} catch (GitAPIException e){
+				Log.severe("Status query wasn't successful, quiting update", e);
+				return;
+			}
 
 			FetchCommand fetch1 = git.fetch();
 			FetchResult fetch = fetch1.call();
 			Collection<TrackingRefUpdate> trackingRefUpdates = fetch.getTrackingRefUpdates();
 
-			if(trackingRefUpdates.size()>0) {
+			if(!trackingRefUpdates.isEmpty()) {
 				PullCommand pull = git.pull()
 						.setRemote("origin")
 						.setRemoteBranchName("master")
