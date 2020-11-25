@@ -645,7 +645,7 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getLinkHTMLToArticle(final String title, final String linkText) {
-		return "<a href='" + getURLLink(title) + "' >" + linkText + "</a>";
+		return "<a href='" + getURLLink(title) + "' >" + Strings.encodeHtml(linkText) + "</a>";
 	}
 
 	/**

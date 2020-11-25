@@ -188,17 +188,16 @@ KNOWWE.plugin.sparqlConsole = function() {
 
   return {
     init: function() {
-      const editor = jq$(".type_SparqlConsole textarea.sparqlEditor");
-      if (!editor.exists()) return ;
-
-      editor.autosize({append: ''});
-      new TextArea(editor);
-
-      editor.on('keydown', function(event) {
-        if ((event.metaKey || event.altKey || event.ctrl) && event.key === 'Enter') { // render sparql when cmd + enter is pressed
-          KNOWWE.plugin.sparqlConsole.updateConsole(jq$(this).attr('sectionid'));
-        }
-      })
+      jq$(".type_SparqlConsole textarea.sparqlEditor").each(function() {
+        const editor = jq$(this);
+        editor.autosize({append: ''});
+        new TextArea(editor);
+        editor.on('keydown', function(event) {
+          if ((event.metaKey || event.altKey || event.ctrl) && event.key === 'Enter') { // render sparql when cmd + enter is pressed
+            KNOWWE.plugin.sparqlConsole.updateConsole(jq$(this).attr('sectionid'));
+          }
+        })
+      });
     },
 
     updateConsole: function(sectionID) {
