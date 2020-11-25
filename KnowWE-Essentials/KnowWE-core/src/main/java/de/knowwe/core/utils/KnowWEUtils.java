@@ -47,7 +47,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -646,7 +645,7 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getLinkHTMLToArticle(final String title, final String linkText) {
-		return "<a href='" + getURLLink(title) + "' >" + linkText + "</a>";
+		return "<a href='" + getURLLink(title) + "' >" + Strings.encodeHtml(linkText) + "</a>";
 	}
 
 	/**
