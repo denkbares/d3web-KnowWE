@@ -443,9 +443,8 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 
-  function decoratePagination(paginationWrapper) {
+  function decoratePagination($paginationWrapper) {
 
-    const $paginationWrapper = jq$(paginationWrapper);
     const sectionId = $paginationWrapper.attr('id');
 
     const $table = $paginationWrapper.find("table");
@@ -511,7 +510,7 @@ KNOWWE.core.plugin.pagination = function() {
       }
     );
 
-    handlePaginationBelowTableVisibility(paginationWrapper);
+    handlePaginationBelowTableVisibility($paginationWrapper);
 
     KNOWWE.helper.observer.notify("paginationTableDecorated");
   }
@@ -652,16 +651,16 @@ KNOWWE.core.plugin.pagination = function() {
       if (!preventRerender) updateNode(id);
     },
 
-    decorateTable: function(paginationWrapper) {
-      if (!paginationWrapper.is(".knowwe-paginationWrapper")) {
-        paginationWrapper = paginationWrapper.find(".knowwe-paginationWrapper");
+    decorateTable: function($paginationWrapper) {
+      if (!$paginationWrapper.is(".knowwe-paginationWrapper")) {
+        $paginationWrapper = $paginationWrapper.find(".knowwe-paginationWrapper");
       }
-      decoratePagination(paginationWrapper);
+      decoratePagination($paginationWrapper);
     },
 
     decorateTables: function() {
       jq$(".knowwe-paginationWrapper").each(function() {
-        decoratePagination(this);
+        decoratePagination(jq$(this));
       });
 
     }
@@ -681,5 +680,5 @@ KNOWWE.core.plugin.pagination = function() {
 }());
 
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
-  KNOWWE.core.plugin.pagination.decorateTable(this);
+  KNOWWE.core.plugin.pagination.decorateTable(jq$(this));
 });
