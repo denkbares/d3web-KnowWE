@@ -52,7 +52,7 @@ public class InstantEditUtils {
 			blockedNames.removeIf(blockedName -> articleManager.getArticle(blockedName) != null);
 		}
 
-		String title = prefix + String.format("%0" + digits + "d", current++);
+		String title = prefix + String.format("%0" + Math.max(digits, 1) + "d", current++);
 		synchronized (blockedNames) {
 			while (blockedNames.contains(title) || articleManager.getArticle(title) != null) {
 				title = prefix + String.format("%0" + digits + "d", current++);
