@@ -546,13 +546,12 @@ public final class Messages {
 	}
 
 	public static Message ambiguousTermClassesError(String origTerm, Collection<Class<?>> termClasses) {
-		TreeSet<String> termClassesString = termClasses.stream()
-				.map(Class::getSimpleName)
-				.collect(Collectors.toCollection(TreeSet::new));
 		origTerm = Strings.trimQuotes(origTerm);
 		return Messages.error("The term '" + origTerm
 				+ "' is defined with ambiguous term classes: "
-				+ termClassesString);
+				+ termClasses.stream()
+				.map(Class::getSimpleName)
+				.sorted().collect(Collectors.joining(", ")));
 	}
 
 	public static Message ambiguousTermCaseWarning(Collection<?> termObjects) {
