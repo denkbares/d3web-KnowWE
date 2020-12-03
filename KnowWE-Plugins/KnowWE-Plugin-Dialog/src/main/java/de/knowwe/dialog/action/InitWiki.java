@@ -78,9 +78,6 @@ public class InitWiki extends AbstractAction {
 		if (sectionId == null) {
 			String packageName = context.getParameter(Attributes.PACKAGE);
 			PackageManager packageManager = KnowWEUtils.getPackageManager(context.getArticleManager());
-			if (packageManager == null) {
-				throw new IOException("Package manager not found");
-			}
 			Set<Section<? extends PackageCompileType>> compileSections = packageManager.getCompileSections(packageName);
 			if (compileSections.isEmpty()) {
 				throw new IOException("No knowledge base found for package '" + packageName + "'");
@@ -92,6 +89,6 @@ public class InitWiki extends AbstractAction {
 		context.getSession().setAttribute(SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS,
 				new StartCase.KnowledgeBaseProvider[] { new WikiProvider(sectionId) });
 		StartCase cmd = (StartCase) Utils.getAction(StartCase.class.getSimpleName());
-		cmd.startCase(context, new WikiProvider(sectionId), null);
+		if (cmd != null) cmd.startCase(context, new WikiProvider(sectionId), null);
 	}
 }

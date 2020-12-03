@@ -61,8 +61,8 @@ public class QuickInterviewSaveAction extends AbstractAction {
 
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		Section<?> section = Sections.get(sectionId);
-		if (section != null && KnowWEUtils.canView(section, context)) {
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+		if (KnowWEUtils.canView(section, context)) {
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(context, section);
 			if (kb == null) {
 				return;
 			}

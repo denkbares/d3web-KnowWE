@@ -81,10 +81,12 @@ public class SetSingleFindingAction extends AbstractAction {
 			return null;
 		}
 		Section<?> section = Sections.get(sectionId);
-		if (section == null || !KnowWEUtils.canView(section, context)) {
+		if (!KnowWEUtils.canView(section, context)) {
 			return null;
 		}
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context, section);
+		if (kb == null) return null;
+
 		Session session = SessionProvider.getSession(context, kb);
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
@@ -126,7 +128,7 @@ public class SetSingleFindingAction extends AbstractAction {
 			else if (valueText != null) {
 				value = new TextValue(valueText);
 			}
-			if (value != null) {
+			if (value != null && session != null) {
 				// synchronize to session as suggested for multi-threaded
 				// kernel access applications
 				Fact fact = FactFactory.createUserEnteredFact(question, value);

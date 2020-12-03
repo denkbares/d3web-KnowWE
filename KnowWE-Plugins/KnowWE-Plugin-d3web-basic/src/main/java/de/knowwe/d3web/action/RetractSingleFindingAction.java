@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -42,7 +42,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 /**
  * An action that is performed for retracting a single value e.g. in Quick
  * Interview
- * 
+ *
  * @author Martina Freiberg
  * @created 22.10.2010
  */
@@ -54,7 +54,6 @@ public class RetractSingleFindingAction extends AbstractAction {
 		if (result != null && context.getWriter() != null) {
 			context.getWriter().write(result);
 		}
-
 	}
 
 	private String retractValue(UserActionContext context) {
@@ -79,10 +78,11 @@ public class RetractSingleFindingAction extends AbstractAction {
 		}
 
 		Section<?> section = Sections.get(sectionId);
-		if (section == null || !KnowWEUtils.canView(section, context)) {
+		if (!KnowWEUtils.canView(section, context)) {
 			return null;
 		}
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(context, section);
+		if (kb == null) return null;
 		Session session = SessionProvider.getSession(context, kb);
 		// Added for KnowWE-Plugin-d3web-Debugger
 		if (context.getParameters().containsKey("KBid")) {
@@ -98,10 +98,9 @@ public class RetractSingleFindingAction extends AbstractAction {
 		}
 
 		Question question = kb.getManager().searchQuestion(objectid);
-		if (question != null) {
-
+		if (question != null && session != null) {
 			Unknown unknown = Unknown.getInstance();
-			Fact fact = FactFactory.createUserEnteredFact(question,	unknown);
+			Fact fact = FactFactory.createUserEnteredFact(question, unknown);
 			D3webUtils.setFindingSynchronized(fact, session, context);
 		}
 

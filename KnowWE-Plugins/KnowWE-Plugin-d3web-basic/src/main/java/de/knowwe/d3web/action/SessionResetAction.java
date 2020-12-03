@@ -70,7 +70,7 @@ public class SessionResetAction extends AbstractAction {
 			context.sendError(403, "Not allowed to view article of knowledge base definition");
 			return;
 		}
-		KnowledgeBase base = D3webUtils.getKnowledgeBase(section);
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(context, section);
 
 		// reset session
 		SessionProvider.removeSession(context, base);

@@ -81,7 +81,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			return;
 		}
 
-		KnowledgeBase base = getKnowledgebaseFor(section, user);
+		KnowledgeBase base = D3webUtils.getKnowledgeBase(user, section);
 		if (base == null) {
 			String msg = "Unable to find knowledge base. Please either add to a package" +
 					" used for a knowledge base or specify a master article.";
@@ -168,7 +168,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		filterUnwantedSolutions(parentSection, allSolutions);
 
 		Section<ShowSolutionsType> markup = Sections.ancestor(section, ShowSolutionsType.class);
-		boolean endUserMode = Boolean.valueOf(ShowSolutionsType.getEndUserModeFlag(markup));
+		boolean endUserMode = Boolean.parseBoolean(ShowSolutionsType.getEndUserModeFlag(markup));
 
 		// format the solutions, as grouped items
 		MultiMap<Solution, Solution> groups = KnowledgeBaseUtils.groupSolutions(allSolutions);
@@ -223,9 +223,5 @@ public class ShowSolutionsContentRenderer implements Renderer {
 			allSolutions.addAll(solutions);
 		}
 		return allSolutions;
-	}
-
-	private KnowledgeBase getKnowledgebaseFor(Section<?> section, UserContext user) {
-		return D3webUtils.getKnowledgeBase(section);
 	}
 }

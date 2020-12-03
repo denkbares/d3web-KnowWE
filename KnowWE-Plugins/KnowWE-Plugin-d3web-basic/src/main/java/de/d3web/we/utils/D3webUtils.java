@@ -275,20 +275,26 @@ public class D3webUtils {
 	}
 
 	/**
-	 * If the given section is compiled by a {@link D3webCompiler} or is a
-	 * section of the type {@link PackageCompileType} belonging to a knowledge
-	 * base markup, the knowledge base of the right {@link D3webCompiler} is
-	 * returned. If a {@link TagHandlerType} is given, the {@link KnowledgeBase}
-	 * of the same article is returned for compatibility reasons.
-	 *
-	 * @created 06.01.2014
+	 * Returns the knowledge base belonging to this section, because the section is compiled by a {@link
+	 * D3webCompiler}. If multiple compilers and knowledge bases exist for the given section, a random on is returned.
+	 * Also check out {@link #getKnowledgeBase(UserContext, Section)} for this case.
 	 */
 	public static KnowledgeBase getKnowledgeBase(Section<?> section) {
+		return getKnowledgeBase(null, section);
+	}
+
+	/**
+	 * Returns the knowledge base belonging to this section, because the section is compiled by a {@link
+	 * D3webCompiler}.
+	 * If the optional UserContext is given and the section is compiled by multiple {@link D3webCompiler}s, the
+	 * knowledge base of the compiler marked as the default is returned.
+	 */
+	public static KnowledgeBase getKnowledgeBase(UserContext user, Section<?> section) {
 		if (section.get() instanceof TagHandlerType) {
 			return D3webUtils.getKnowledgeBase(section.getArticle());
 		}
 		else {
-			D3webCompiler compiler = getCompiler(section);
+			D3webCompiler compiler = getCompiler(user, section);
 			return compiler == null ? null : compiler.getKnowledgeBase();
 		}
 	}
@@ -381,7 +387,6 @@ public class D3webUtils {
 		catch (ConcurrentModificationException e) {
 			return null;
 		}
-
 	}
 
 	/**
@@ -536,5 +541,4 @@ public class D3webUtils {
 				&& kb.getManager().getQuestions().isEmpty()
 				&& kb.getManager().getSolutions().size() <= 1);
 	}
-
 }
