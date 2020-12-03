@@ -107,7 +107,6 @@ public class QuickInterviewRenderer {
 
 	public static void renderInterview(Section<?> section, UserContext user, RenderResult result) {
 		D3webCompiler compiler = Compilers.getCompiler(user, section, D3webCompiler.class);
-
 		if (compiler == null) {
 			if (user.isRenderingPreview()) {
 				result.append("%%information Interview is not rendered in live preview. /%");
@@ -323,7 +322,7 @@ public class QuickInterviewRenderer {
 		boolean visible = isVisible(container, true);
 		boolean indicated = isThisOrFollowUpIndicated(container, true);
 		String cssClass = "";
-		String title = getDescription(container);
+		String title = Strings.encodeHtml(getDescription(container));
 		if (title == null) {
 			title = "";
 		}
@@ -392,7 +391,7 @@ public class QuickInterviewRenderer {
 		int w = 320 - d;
 		String divText = Strings.encodeHtml(getLabel(question));
 		String cssClass = "question";
-		String title = getDescription(question);
+		String title = Strings.encodeHtml(getDescription(question));
 		if (title == null) {
 			title = "";
 		}
