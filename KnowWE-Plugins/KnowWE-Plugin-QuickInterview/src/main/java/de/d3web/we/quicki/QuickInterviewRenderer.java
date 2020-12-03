@@ -21,7 +21,6 @@
 package de.d3web.we.quicki;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -107,14 +106,9 @@ public class QuickInterviewRenderer {
 	private final UserContext user;
 
 	public static void renderInterview(Section<?> section, UserContext user, RenderResult result) {
-		Collection<D3webCompiler> compilers = Compilers.getCompilers(section, D3webCompiler.class);
-		if (compilers.size() > 1) {
-			result.appendWarning("This interview belongs to multiple knowledge bases, " +
-					"only the first knowledge base (lexicographically) will be used.");
-		}
+		D3webCompiler compiler = Compilers.getCompiler(user, section, D3webCompiler.class);
 
-		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(section);
-		if (knowledgeBase == null) {
+		if (compiler == null) {
 			if (user.isRenderingPreview()) {
 				result.append("%%information Interview is not rendered in live preview. /%");
 			}
@@ -124,6 +118,7 @@ public class QuickInterviewRenderer {
 			return;
 		}
 
+		KnowledgeBase knowledgeBase = compiler.getKnowledgeBase();
 		Session session = SessionProvider.getSession(user, knowledgeBase);
 		if (session == null) {
 			result.appendWarning("No session could be started.");
@@ -131,12 +126,9 @@ public class QuickInterviewRenderer {
 		}
 
 		if (SessionProvider.hasOutDatedSession(user, knowledgeBase)) {
-			final D3webCompiler compiler = D3webUtils.getCompiler(section);
-			if (compiler != null) {
-				NotificationManager.addNotification(user,
-						new OutDatedSessionNotification(compiler.getCompileSection().getID(),
-								KnowledgeBaseUtils.getBaseName(knowledgeBase)));
-			}
+			NotificationManager.addNotification(user,
+					new OutDatedSessionNotification(compiler.getCompileSection().getID(),
+							KnowledgeBaseUtils.getBaseName(knowledgeBase)));
 		}
 		new QuickInterviewRenderer(session, section, user).render(result);
 	}
