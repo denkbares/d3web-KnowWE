@@ -91,8 +91,8 @@ import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
  */
 public class GitVersioningFileProvider extends AbstractFileProvider {
 
-	static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT = "jspwiki.gitVersioningFileProvider.remoteGit";
-	static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE = "jspwiki.gitVersioningFileProvider.autoUpdate";
+	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT = "jspwiki.gitVersioningFileProvider.remoteGit";
+	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE = "jspwiki.gitVersioningFileProvider.autoUpdate";
 	protected Repository repository;
 	private static final String GIT_DIR = ".git";
 	private static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
@@ -1039,5 +1039,19 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	public GitVersionCache getCache() {
 		return cache;
+	}
+
+	public void pauseAutoUpdate(){
+		if(autoUpdateEnabled && remoteRepo)
+			scheduler.pauseAutoUpdate();
+		else
+			log.warn("pauseAutoUpdate was called on a wiki not configured as autoUpdate");
+	}
+
+	public void resumeAutoUpdate(){
+		if(autoUpdateEnabled && remoteRepo)
+			scheduler.resumeAutoUpdate();
+		else
+			log.warn("resumeAutoUpdate was called on a wiki not configured as autoUpdate");
 	}
 }

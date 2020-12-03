@@ -20,15 +20,18 @@ public class GitAutoUpdateScheduler {
 	private static final Logger log = Logger.getLogger(GitAutoUpdateScheduler.class);
 	private static final String JSPWIKI_GIT_AUTOUPDATE_INIT_DELAY = "jspwiki.git.autoupdate.initDelay";
 	private static final String JSPWIKI_GIT_AUTOUPDATE_DELAY = "jspwiki.git.autoupdate.delay";
-	private final ScheduledExecutorService scheduler;
+	private ScheduledExecutorService scheduler;
+	private WikiEngine engine;
+	private TimerTask t;
 
 	GitAutoUpdateScheduler(){
-		scheduler = Executors.newSingleThreadScheduledExecutor();
+
 	}
 
 	public void initialize(WikiEngine engine, GitVersioningFileProvider fileProvider){
 		GitAutoUpdater updater = new GitAutoUpdater(engine, fileProvider);
-		TimerTask t = new TimerTask() {
+		this.engine = engine;
+		t = new TimerTask() {
 			boolean running = false;
 			@Override
 			public void run() {
@@ -48,12 +51,36 @@ public class GitAutoUpdateScheduler {
 				}
 			}
 		};
-		int startDelay = TextUtil.getIntegerProperty(engine.getWikiProperties(), JSPWIKI_GIT_AUTOUPDATE_INIT_DELAY, 900);
-		int delay = TextUtil.getIntegerProperty(engine.getWikiProperties(), JSPWIKI_GIT_AUTOUPDATE_DELAY, 5);
-		scheduler.scheduleAtFixedRate(t, startDelay, delay, TimeUnit.SECONDS);
+		startScheduler();
 	}
 
 	public void shutdown(){
 		this.scheduler.shutdown();
+	}
+
+	public void pauseAutoUpdate() {
+		log.info("Auto update scheduler will be paused");
+		if(this.scheduler != null && !this.scheduler.isShutdown()) {
+			shutdown();
+			try {
+				this.scheduler.awaitTermination(60, TimeUnit.SECONDS);
+			}
+			catch (InterruptedException e) {
+				log.warn("Await termination of auto update was interrupted");
+			}
+		}
+		log.info("Auto update is paused");
+	}
+
+	public void resumeAutoUpdate() {
+		log.info("Auto update will be resumed");
+		startScheduler();
+	}
+
+	private void startScheduler() {
+		scheduler = Executors.newSingleThreadScheduledExecutor();
+		int startDelay = TextUtil.getIntegerProperty(engine.getWikiProperties(), JSPWIKI_GIT_AUTOUPDATE_INIT_DELAY, 900);
+		int delay = TextUtil.getIntegerProperty(engine.getWikiProperties(), JSPWIKI_GIT_AUTOUPDATE_DELAY, 5);
+		scheduler.scheduleAtFixedRate(t, startDelay, delay, TimeUnit.SECONDS);
 	}
 }
