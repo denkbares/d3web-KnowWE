@@ -224,6 +224,8 @@ public class Compilers {
 	 */
 	@Nullable
 	public static <C extends Compiler> C getCompiler(UserContext context, Section<?> section, Class<C> compilerClass) {
+		if (context == null) return getCompiler(section, compilerClass);
+
 		Collection<C> compilers = getCompilers(section, compilerClass);
 		// no need to find a default, if there is only one compiler
 		if (compilers.size() == 1) {
@@ -304,10 +306,11 @@ public class Compilers {
 	}
 
 	/**
-	 * Gets the fallback default compiler. It takes all compilers with the given type, sort them by their name and takes the first one.
+	 * Gets the fallback default compiler. It takes all compilers with the given type, sort them by their name and takes
+	 * the first one.
 	 * This should only be used when no default compiler is set (e.g. after a server restart)
 	 *
-	 * @param context the user context
+	 * @param context       the user context
 	 * @param compilerClass the tye of the compiler we want to get the fallback for
 	 * @return the fallback compiler with the specific type
 	 */
