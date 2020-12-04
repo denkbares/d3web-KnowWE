@@ -58,6 +58,7 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 			compilerNames.add(name);
 		}
 		Collections.sort(compilerNames);
+		if (defaultName == null) defaultName = compilerNames.get(0);
 
 		// send the compilers back to the client
 		JSONObject response = new JSONObject();
