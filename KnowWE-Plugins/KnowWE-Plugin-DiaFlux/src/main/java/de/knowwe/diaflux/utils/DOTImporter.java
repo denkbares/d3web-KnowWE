@@ -33,6 +33,8 @@ import org.jgrapht.ext.ImportException;
 import org.jgrapht.ext.VertexProvider;
 import org.jgrapht.graph.AbstractBaseGraph;
 
+import com.denkbares.strings.Strings;
+
 /**
  * Copy from {@link org.jgrapht.ext.DOTImporter}, adapted a little bit for this purpose.
  *
@@ -458,14 +460,14 @@ class DOTImporter<V, E>
 		if (idChunk.endsWith(";")) {
 			idChunk = idChunk.substring(0, idChunk.length() - 1);
 		}
-		int bracketIndex = idChunk.indexOf('[');
+		int bracketIndex = Strings.indexOfUnquoted(idChunk, "[");
 		if (bracketIndex > 1) {
 			idChunk = idChunk.substring(0, bracketIndex).trim();
 		}
 		int index = 0;
 		List<String> ids = new ArrayList<>();
 		while (index < idChunk.length()) {
-			int nextSpace = idChunk.indexOf(' ', index);
+			int nextSpace = Strings.indexOf(idChunk, index, Strings.UNQUOTED, " ");
 			String chunk;
 			if (nextSpace > 0) { // is this the last chunk
 				chunk = idChunk.substring(index, nextSpace);
@@ -486,10 +488,9 @@ class DOTImporter<V, E>
 	private Map<String, String> extractAttributes(String line)
 			throws ImportException {
 		Map<String, String> attributes = new HashMap<>();
-		int bracketIndex = line.indexOf("[");
+		int bracketIndex = Strings.indexOfUnquoted(line, "[");
 		if (bracketIndex > 0) {
-			attributes =
-					splitAttributes(line.substring(bracketIndex + 1, line.lastIndexOf(']')).trim());
+			attributes = splitAttributes(line.substring(bracketIndex + 1, Strings.indexOf(line, Strings.UNQUOTED + Strings.LAST_INDEX, "]")).trim());
 		}
 		return attributes;
 	}
@@ -562,7 +563,6 @@ class DOTImporter<V, E>
 			return section.indexOf(terminator, start);
 		}
 	}
-
 }
 
 // End DOTImporter.java
