@@ -86,7 +86,7 @@ import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
-import com.denkbares.semanticcore.utils.Text;
+import com.denkbares.strings.Text;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;

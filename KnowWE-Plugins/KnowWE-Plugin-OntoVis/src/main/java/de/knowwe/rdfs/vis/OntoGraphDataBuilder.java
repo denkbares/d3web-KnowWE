@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
@@ -38,11 +37,8 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 
-import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.TupleQueryResult;
-import com.denkbares.semanticcore.utils.Sparqls;
-import com.denkbares.semanticcore.utils.Text;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;

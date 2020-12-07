@@ -44,7 +44,7 @@ import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.semanticcore.utils.Sparqls;
-import com.denkbares.semanticcore.utils.Text;
+import com.denkbares.strings.Text;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
