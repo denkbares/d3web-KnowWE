@@ -46,6 +46,7 @@ public class Icon {
 	public static final Icon FILTER = new Icon("fa-type fa-filter");
 
 	// BASICS
+	public static final Icon PIN = new Icon("fa-type fa-map-pin");
 	public static final Icon EDIT = new Icon("fa-type fa-pencil-alt");
 	public static final Icon HELP = new Icon("fa-type fa-question-circle");
 	public static final Icon INFO = new Icon("fa-type fa-info-circle");
