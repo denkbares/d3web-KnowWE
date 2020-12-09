@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -69,6 +71,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	private static final String ROW_VARIABLE2 = "${row}";
 	private static final String URL_ROW_VARIABLE = Strings.encodeURL(ROW_VARIABLE);
 	private static final String URL_ROW_VARIABLE2 = Strings.encodeURL(ROW_VARIABLE2);
+	private static final DataFormatter df = new DataFormatter();
 
 	static {
 		MARKUP = new DefaultMarkup("OntologyExcelTable");
@@ -129,8 +132,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		}
 
 		private Pair<Integer, Integer> getCounts(Section<?> section, OntologyCompiler compiler) {
-			//noinspection unchecked
-			return (Pair<Integer, Integer>) section.getObject(compiler, COUNT_KEY);
+			return section.getObject(compiler, COUNT_KEY);
 		}
 	}
 
@@ -260,8 +262,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Section<OntologyExcelTableMarkup> markupSection = Sections.ancestor(section, OntologyExcelTableMarkup.class);
 			if (markupSection == null) throw CompilerMessage.error("Unable to get markup section"); // should not happen
 
-			//noinspection unchecked
-			SoftReference<XSSFWorkbook> workbookSoftReference = (SoftReference<XSSFWorkbook>) markupSection.getObject(WORKBOOK_CACHE_KEY);
+			SoftReference<XSSFWorkbook> workbookSoftReference = markupSection.getObject(WORKBOOK_CACHE_KEY);
 			if (workbookSoftReference != null) {
 				XSSFWorkbook workbook = workbookSoftReference.get();
 				if (workbook != null) return workbook;
@@ -270,7 +271,9 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Section<? extends AnnotationContentType> contentSection = DefaultMarkupType.getAnnotationContentSection(markupSection, ANNOTATION_XLSX);
 			try {
 				WikiAttachment attachment = AttachmentType.getAttachment(Sections.successor(contentSection, AttachmentType.class));
-				if (attachment == null) throw CompilerMessage.error("Attachment specified at " + ANNOTATION_XLSX + " not found");
+				if (attachment == null) {
+					throw CompilerMessage.error("Attachment specified at " + ANNOTATION_XLSX + " not found");
+				}
 				XSSFWorkbook workbook = new XSSFWorkbook(attachment.getInputStream());
 				markupSection.storeObject(WORKBOOK_CACHE_KEY, new SoftReference<>(workbook));
 				return workbook;
@@ -330,7 +333,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		}
 
 		private Config getConfig(Section<ConfigAnnotationType> section) {
-			return (Config) section.getObject(CONFIG_KEY);
+			return section.getObject(CONFIG_KEY);
 		}
 	}
 
@@ -359,15 +362,20 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 						return cell.getDateCellValue().toString();
 					}
 					else {
-						return Double.toString(cell.getNumericCellValue());
+						return df.createFormat(cell).format(cell.getNumericCellValue());
 					}
 
 				case BOOLEAN:
 					return Boolean.toString(cell.getBooleanCellValue());
-
 				case FORMULA:
-					return cell.getCellFormula();
-
+					CellType formulaType = cell.getCachedFormulaResultType();
+					return switch (formulaType) {
+						case STRING -> cell.getStringCellValue();
+						case NUMERIC -> df.createFormat(cell).format(cell.getNumericCellValue());
+						case BOOLEAN -> Boolean.toString(cell.getBooleanCellValue());
+						case ERROR -> "#NV";
+						default -> cell.toString();
+					};
 				default:
 					return cell.toString();
 			}
