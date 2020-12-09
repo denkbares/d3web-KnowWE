@@ -39,7 +39,7 @@ public interface Term extends Type {
 	String IDENTIFIER_KEY = "identifierKey";
 
 	static Identifier getCachedIdentifier(TermCompiler compiler, Section<? extends Term> section) {
-		return (Identifier) section.getObject(compiler, IDENTIFIER_KEY);
+		return section.getObject(compiler, IDENTIFIER_KEY);
 	}
 
 	static Identifier cacheIdentifier(TermCompiler compiler, Section<? extends Term> section, Identifier identifier) {
