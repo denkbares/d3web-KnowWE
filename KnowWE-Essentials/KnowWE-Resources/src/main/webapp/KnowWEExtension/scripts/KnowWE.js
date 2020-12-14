@@ -460,6 +460,18 @@ KNOWWE.core.util = function () {
 			return jq$('#knowWEInfoTemplate').val();
 		},
 
+		canWrite: function() {
+			return jq$('#knowWEInfoCanWrite').val();
+		},
+
+		canView: function() {
+			return jq$('#knowWEInfoCanView').val();
+		},
+
+		canCreatePages: function() {
+			return jq$('#knowWEInfoCanCreatePages').val();
+		},
+
 		isAdmin: function () {
 			return jq$('#knowWEInfoAdmin').val();
 		},

@@ -96,6 +96,14 @@ KNOWWE.editCommons = function () {
 			}
 		},
 
+		/**
+		 * Check if the user has write permissions on the article. If yes, execute function "grantedFN", if not, "forbittenFN".
+		 *
+		 * @see KNOWWE.core.util.canWrite and KNOWWE.core.util.canView and so forth, which might be faster but less rigorous
+		 *
+		 * @param grantedFN the function to execute if the user has write privileges
+		 * @param forbiddenFN the function to execute of the user does NOT have write privileges
+		 */
 		executeIfPrivileged: function (grantedFN, forbiddenFN) {
 			const params = {
 				action: 'CheckCanEditPageAction'

@@ -349,6 +349,12 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public boolean userCanCreateArticles(HttpServletRequest request) {
+		Log.warning("The used WikiConnector does not support rights managment");
+		return true;
+	}
+
+	@Override
 	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest r) {
 		Log.warning("The used WikiConnector does not support user groups");
 		return false;

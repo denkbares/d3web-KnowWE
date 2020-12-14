@@ -52,6 +52,7 @@ import org.apache.wiki.WikiContext;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.WikiProvider;
+import org.apache.wiki.WikiSession;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.exceptions.WikiException;
 import org.apache.wiki.attachment.Attachment;
@@ -62,6 +63,7 @@ import org.apache.wiki.auth.SessionMonitor;
 import org.apache.wiki.auth.WikiSecurityException;
 import org.apache.wiki.auth.permissions.PagePermission;
 import org.apache.wiki.auth.permissions.PermissionFactory;
+import org.apache.wiki.auth.permissions.WikiPermission;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.preferences.Preferences;
@@ -863,36 +865,46 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public boolean userCanEditArticle(String title, HttpServletRequest request) {
 		if (ReadOnlyManager.isReadOnly()) return false;
-		return checkPermission(title, request, "edit");
+		return checkPagePermission(title, request, "edit");
 	}
 
 	@Override
 	public boolean userCanViewArticle(String title, HttpServletRequest request) {
-		return checkPermission(title, request, "view");
+		return checkPagePermission(title, request, "view");
 	}
 
 	@Override
 	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
 		if (ReadOnlyManager.isReadOnly()) return false;
-		return checkPermission(title, request, "delete");
+		return checkPagePermission(title, request, "delete");
 	}
 
-	private boolean checkPermission(String title, HttpServletRequest request, String permission) {
-		WikiPage page = new WikiPage(engine, title);
-		WikiContext context = new WikiContext(this.engine, request,
-				this.engine.getPage(title));
+	@Override
+	public boolean userCanCreateArticles(HttpServletRequest request) {
+		if (ReadOnlyManager.isReadOnly()) return false;
+		return checkWikiPermission(request, "createPages");
+	}
 
-		AuthorizationManager authmgr = engine.getAuthorizationManager();
-		PagePermission pp = PermissionFactory.getPagePermission(page,
-				permission);
+	private boolean checkPagePermission(String title, HttpServletRequest request, String permission) {
+		WikiPage page = new WikiPage(engine, title);
+		WikiSession wikiSession = WikiSession.getWikiSession(engine, request);
+
+		AuthorizationManager authorizationManager = engine.getAuthorizationManager();
+		PagePermission pp = PermissionFactory.getPagePermission(page, permission);
 		try {
-			return authmgr.checkPermission(context.getWikiSession(), pp);
+			return authorizationManager.checkPermission(wikiSession, pp);
 		}
 		catch (StackOverflowError e) {
 			// happens with very large articles
 			Log.severe("StackOverflowError while checking permissions on article '" + title + "': " + e.getMessage());
 			return false;
 		}
+	}
+
+	private boolean checkWikiPermission(HttpServletRequest request, String permissionsCSV) {
+		WikiPermission wikiPermission = new WikiPermission(engine.getApplicationName(), permissionsCSV);
+		WikiSession wikiSession = WikiSession.getWikiSession(engine, request);
+		return  engine.getAuthorizationManager().checkPermission(wikiSession, wikiPermission);
 	}
 
 	@Override
