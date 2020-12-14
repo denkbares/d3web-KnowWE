@@ -461,15 +461,15 @@ KNOWWE.core.util = function () {
 		},
 
 		canWrite: function() {
-			return jq$('#knowWEInfoCanWrite').val();
+			return jq$('#knowWEInfoCanWrite').val() === "true";
 		},
 
 		canView: function() {
-			return jq$('#knowWEInfoCanView').val();
+			return jq$('#knowWEInfoCanView').val() === "true";
 		},
 
 		canCreatePages: function() {
-			return jq$('#knowWEInfoCanCreatePages').val();
+			return jq$('#knowWEInfoCanCreatePages').val() === "true";
 		},
 
 		isAdmin: function () {
