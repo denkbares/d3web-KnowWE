@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -86,10 +87,10 @@ import com.denkbares.semanticcore.config.RdfConfig;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.semanticcore.sparql.SPARQLEndpoint;
-import com.denkbares.strings.Text;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
+import com.denkbares.strings.Text;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.d3web.core.inference.RuleSet;
@@ -124,8 +125,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	private final SparqlCache sparqlCache = new SparqlCache(this);
 
 	private final ThreadPoolExecutor sparqlThreadPool;
-
-	private final ThreadPoolExecutor shutDownThreadPool;
 
 	private final RepositoryConfig ruleSet;
 
@@ -191,9 +190,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		sparqlThreadPool = createThreadPool(
 				getMaxSparqlThreadCount(reasoning), name + "-Sparql-Thread", true);
-
-		shutDownThreadPool = createThreadPool(
-				sparqlThreadPool.getMaximumPoolSize(), name + "-Shutdown-Thread", false);
 
 		this.insertCache = new HashSet<>();
 		this.removeCache = new HashSet<>();
@@ -1395,7 +1391,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	private String verbalizeStatement(Statement statement) {
 		String statementVerbalization = Rdf2GoUtils.reduceNamespace(this, statement.toString());
 		try {
-			statementVerbalization = URLDecoder.decode(statementVerbalization, "UTF-8");
+			statementVerbalization = URLDecoder.decode(statementVerbalization, StandardCharsets.UTF_8);
 		}
 		catch (Exception ignore) {
 			// may happen, just ignore...
@@ -1480,7 +1476,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 			this.semanticCore.close();
 			this.sparqlThreadPool.shutdownNow();
-			this.shutDownThreadPool.shutdownNow();
 		}
 		else {
 			new Thread(() -> {
