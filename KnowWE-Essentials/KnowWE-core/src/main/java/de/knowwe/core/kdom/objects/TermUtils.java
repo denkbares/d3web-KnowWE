@@ -15,6 +15,7 @@ import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
 import static java.util.stream.Collectors.joining;
@@ -99,7 +100,9 @@ public class TermUtils {
 	 * @created 25.08.2013
 	 */
 	public static TermInfoSet getAllTermInfos(UserContext userContext, boolean caseSensitive, Class<?>... allowedTermClasses) {
-		final String cacheKey = "allTermInfos_" + Stream.of(allowedTermClasses).map(Class::getName).collect(joining("-"));
+		final String cacheKey = "allTermInfos_" + Stream.of(allowedTermClasses)
+				.map(Class::getName)
+				.collect(joining("-"));
 		CompilerManager compilerManager = userContext.getArticleManager().getCompilerManager();
 		String web = userContext.getWeb();
 		return CompilationLocal.getCached(cacheKey, compilerManager, () -> getAllTermInfosInternal(web, caseSensitive, allowedTermClasses));
@@ -142,5 +145,21 @@ public class TermUtils {
 				.map(compiler -> compiler.getTerminologyManager().getAllDefinedTerms())
 				.flatMap(Collection::stream)
 				.collect(toSet());
+	}
+
+	/**
+	 * Get the term name compiler dependent, if the given section has one. Returns the ordinary compile name otherwise.
+	 *
+	 * @param compiler the term compiler to get the term name for
+	 * @param section  the section to get the term name from
+	 * @return the term name of the section, compiler dependent if applicable
+	 */
+	public static String getTermName(TermCompiler compiler, Section<? extends Term> section) {
+		if (section.get() instanceof HasCompilerDependentTermName) {
+			return ((HasCompilerDependentTermName) section.get()).getTermName(compiler, section);
+		}
+		else {
+			return section.get().getTermName(section);
+		}
 	}
 }
