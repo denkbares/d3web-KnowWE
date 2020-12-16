@@ -247,7 +247,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentMarkup> section) {
-			UpdateTask updateTask = (UpdateTask) section.removeObject(compiler, UPDATE_TASK_KEY);
+			UpdateTask updateTask = section.removeObject(compiler, UPDATE_TASK_KEY);
 			if (updateTask != null) {
 				updateTask.cancel();
 			}
@@ -366,16 +366,18 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				}
 
 				URLConnection connection;
-				if("file".equals(url.getProtocol())){
+				if ("file".equals(url.getProtocol())) {
 					connection = url.openConnection();
-				}else {
-				connection = openHttpConnection(url);
+				}
+				else {
+					connection = openHttpConnection(url);
 
-				int responseCode = ((HttpURLConnection) connection).getResponseCode();
-				if (responseCode != HttpServletResponse.SC_OK) {
-					Messages.storeMessage(section, AttachmentMarkup.class, Messages.error("Invalid response code, skipping update: " + responseCode));
-					return;
-				}}
+					int responseCode = ((HttpURLConnection) connection).getResponseCode();
+					if (responseCode != HttpServletResponse.SC_OK) {
+						Messages.storeMessage(section, AttachmentMarkup.class, Messages.error("Invalid response code, skipping update: " + responseCode));
+						return;
+					}
+				}
 
 				InputStream connectionStream = getAttachmentStream(section, connection);
 
@@ -488,7 +490,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 	private static ReentrantLock getLock(Section<AttachmentMarkup> section) {
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (section) {
-			ReentrantLock lock = (ReentrantLock) section.getObject(LOCK_KEY);
+			ReentrantLock lock = section.getObject(LOCK_KEY);
 			if (lock == null) {
 				lock = new ReentrantLock();
 				section.storeObject(LOCK_KEY, lock);
@@ -535,6 +537,8 @@ public class AttachmentMarkup extends DefaultMarkupType {
 			// check if urlDateTime is equal to unix time 0
 			// if it is, the time was not set (maybe because of server settings)
 			state = State.UNKNOWN;
+			Log.warning("Unable to get valid lastModified info from http connection, " +
+					"cannot assess changes to resource without downloading it:\n" + url);
 		}
 		else {
 			state = State.UP_TO_DATE;
