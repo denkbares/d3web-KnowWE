@@ -365,6 +365,17 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Returns if the user has the rights to create new pages
+	 *
+	 * @param context the user context
+	 * @return true if the user has the rights to create new articles
+	 * @created 29.11.2013
+	 */
+	public static boolean canCreatePages(final UserContext context) {
+		return Environment.getInstance().getWikiConnector().userCanCreateArticles(context.getRequest());
+	}
+
+	/**
 	 * Returns if the user has the read access rights to the specified article.
 	 *
 	 * @param article the article to check the access rights for

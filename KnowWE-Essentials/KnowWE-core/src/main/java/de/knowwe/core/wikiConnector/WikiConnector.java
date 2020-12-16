@@ -437,6 +437,13 @@ public interface WikiConnector {
 	boolean userCanDeleteArticle(String title, HttpServletRequest request);
 
 	/**
+	 * Checks whether a user is allowed delete a given article
+	 *
+	 * @param request the request of the user
+	 */
+	boolean userCanCreateArticles(HttpServletRequest request);
+
+	/**
 	 * Checks whether the user is member of a given group.
 	 *
 	 * @param groupname the name of the group to check

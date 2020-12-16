@@ -53,10 +53,9 @@ public class InstantEditAddArticleAction extends AbstractAction {
 	}
 
 	protected void addNewArticle(UserActionContext context, String title, String articleText) throws IOException {
-		boolean canWrite = Environment.getInstance().getWikiConnector().userCanEditArticle(
-				title, context.getRequest());
+		boolean canWrite = Environment.getInstance().getWikiConnector().userCanCreateArticles(context.getRequest());
 		if (!canWrite) {
-			context.sendError(403, "You are not allowed to write this article");
+			context.sendError(403, "You are not allowed to create this article");
 			return;
 		}
 

@@ -99,7 +99,7 @@ KNOWWE.core.plugin.pagination = function() {
 
     if (sortingMode !== "off") {
       let sorting = paginationState.sorting || [];
-      for (let i = 0; i < (sortingMode === 'multi' ? sorting.length : 1); i++) {
+      for (let i = 0; i < sorting.length; i++) {
         let sort = sorting[i].sort;
         const sortingSymbolParent = $table.find("th[column-name=" + sort + "] span");
         const sortingSymbol = jq$(sortingSymbolParent).find("." + sortingIcon);

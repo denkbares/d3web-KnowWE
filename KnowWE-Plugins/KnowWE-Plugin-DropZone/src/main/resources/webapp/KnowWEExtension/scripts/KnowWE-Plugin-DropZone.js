@@ -225,14 +225,13 @@ KNOWWE.core.plugin.dropZone = function() {
       KNOWWE.core.plugin.dropZone.addDropZoneTo('div.page', "Drop attachment(s)", handleDropToExisting);
     },
 
-    addDropZoneTo: function(elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
-      if (!actionUrl) actionUrl = 'attach';
-      if (!mode) mode = "full-height";
-      if (typeof multiple === "undefined") multiple = true;
-      const canWrite = jq$('#knowWEInfoCanWrite').attr('value');
-      if (!KNOWWE.core.util.isHaddockTemplate() || typeof canWrite === 'undefined' || canWrite !== 'true') return;
+		addDropZoneTo: function (elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
+			if (!actionUrl) actionUrl = 'attach';
+			if (!mode) mode = "full-height";
+			if (typeof multiple === "undefined") multiple = true;
+			if (!KNOWWE.core.util.isHaddockTemplate() || !KNOWWE.core.util.canWrite()) return;
 
-      const elements = jq$(elementSelector);
+			const elements = jq$(elementSelector);
       attachDropZoneToElement(elements, actionUrl, multiple, title, mode);
 
       elements.each(function() {
