@@ -126,7 +126,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				String lastRunDisplay = getDisplay(sinceLastRun);
 				String lastChangeDisplay = getDisplay(sinceLastChange);
 				result.appendHtmlElement("span",
-						" (last update was " + lastRunDisplay + " ago, last change was " + lastChangeDisplay + " ago)",
+						" (last check was " + lastRunDisplay + " ago, last change was " + lastChangeDisplay + " ago)",
 						"style", "color: grey");
 			}
 		});
