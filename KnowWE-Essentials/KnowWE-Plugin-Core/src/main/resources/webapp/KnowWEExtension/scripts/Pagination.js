@@ -450,7 +450,7 @@ KNOWWE.core.plugin.pagination = function() {
     const $table = $paginationWrapper.find("table");
     if (!$table.exists()) {
       $paginationWrapper.find(".knowwe-paginationToolbar").remove();
-      return ;
+      return;
     }
 
     //for css purposes
@@ -652,7 +652,11 @@ KNOWWE.core.plugin.pagination = function() {
     },
 
     decorateTable: function($paginationWrapper) {
-      if (!$paginationWrapper.is(".knowwe-paginationWrapper")) {
+      if ($paginationWrapper.is(".knowwe-paginationWrapper")) {
+        // is() requires only one of the elements to match, so we also filter...
+        $paginationWrapper = $paginationWrapper.filter(".knowwe-paginationWrapper")
+      } else {
+        // select correct elements
         $paginationWrapper = $paginationWrapper.find(".knowwe-paginationWrapper");
       }
       decoratePagination($paginationWrapper);
