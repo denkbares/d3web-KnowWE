@@ -60,7 +60,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class OntologyCompiler extends AbstractPackageCompiler
+public class 	OntologyCompiler extends AbstractPackageCompiler
 		implements Rdf2GoCompiler, IncrementalCompiler, EventListener {
 
 	static final String COMMIT_NOTIFICATION_ID = "CommitNotification";
@@ -165,6 +165,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	 * @return the Rdf2GoCore of this compiler
 	 */
 	public Rdf2GoCore getRdf2GoCore(boolean committed) {
+
 		if (rdf2GoCore == null) {
 			// in case the compiler doesn't have anything to compile...
 			return new Rdf2GoCore(RepositoryConfigs.get(RdfConfig.class));
@@ -176,6 +177,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		// if we are currently in the process of compiling this ontology, we perform a commit
 		// on the Rdf2GoCore exactly once per priority (because the compile order is not stable inside
 		// on priority anyway)
+
 		Priority currentCompilePriority = getCompileSection()
 				.getArticleManager()
 				.getCompilerManager()

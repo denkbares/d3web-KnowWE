@@ -1,6 +1,7 @@
 package de.knowwe.core.compile;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -37,7 +39,10 @@ import de.knowwe.core.report.Messages;
  */
 public class ParallelScriptCompiler<C extends Compiler> {
 
-	private final TreeMap<Priority, ArrayList<CompilePair>> compileMap =
+	private final TreeMap<Priority, List<CompilePair>> compileMap =
+			new TreeMap<>();
+
+	private final TreeMap<Priority, List<CompilePair>> compileLog =
 			new TreeMap<>();
 
 	private final Set<CompilePair> pairSet = new HashSet<>();
@@ -84,7 +89,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 					scriptManager.getScripts(Sections.cast(section, Type.class).get());
 			for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
 				Priority priority = entry.getKey();
-				ArrayList<CompilePair> compileSet = compileMap.get(priority);
+				List<CompilePair> compileSet = compileMap.get(priority);
 				for (CompileScript<C, Type> script : entry.getValue()) {
 					if (scriptFilter.length > 0 && !ArrayUtils.contains(scriptFilter, script.getClass())) {
 						continue;
@@ -138,14 +143,9 @@ public class ParallelScriptCompiler<C extends Compiler> {
 			// try current priority again, maybe new sections were added during compilation
 			setCurrentIterator();
 
-			// are we done with this priority level now? -> finished this level by throwing an event and proceed to next level
-			if (!currentIterator.hasNext()) {
-				// we throw an event as this priority level compilation is now completed
-				EventManager.getInstance().fireEvent(new CompilePriorityLevelFinishedEvent(compiler, currentPriority));
-			}
 			// switch to lower priority if necessary and possible
-			while (!currentIterator.hasNext() && Priority.decrement(currentPriority) != null) {
-				currentPriority = Priority.decrement(currentPriority);
+			while (!currentIterator.hasNext() && Priority.decrement(this.currentPriority) != null) {
+				this.currentPriority = Priority.decrement(this.currentPriority);
 				setCurrentIterator();
 			}
 			// still no new pairs? then we are done....
@@ -180,10 +180,21 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
 			CompilePair pair = next();
-			if (pair == null) break;
+			if (pair == null) {
+				// we have finished last prio level
+				firePrioFinishedEvent(lastPriority);
+				break;
+			}
 			if (currentPriority != lastPriority) {
 				compiler.getCompilerManager().setCurrentCompilePriority(compiler, currentPriority);
+				// we are done with this priority level now -> finished this level by throwing an event and proceed to next level
+				firePrioFinishedEvent(lastPriority);
+				lastPriority = currentPriority;
 			}
+
+			// add to compile log
+			List<CompilePair> prioLog = compileLog.computeIfAbsent(currentPriority, x -> new ArrayList<>());
+			prioLog.add(pair);
 
 			threadPool.execute(() -> {
 				Section<Type> section = pair.getA();
@@ -204,6 +215,15 @@ public class ParallelScriptCompiler<C extends Compiler> {
 			});
 		}
 		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
+	}
+
+	private void firePrioFinishedEvent(Priority lastPriority) {
+		// we throw an event as this priority level compilation is now completed
+		List<Section> sectionList = compileLog.getOrDefault(lastPriority, Collections.emptyList())
+				.stream().map(Pair::getA).collect(Collectors.toList());
+		// event needs to be fired _after_ the currentPriority (and Iterator) has been incremented
+		EventManager.getInstance()
+				.fireEvent(new CompilePriorityLevelFinishedEvent(compiler, lastPriority, sectionList));
 	}
 
 	@SuppressWarnings("unchecked")
