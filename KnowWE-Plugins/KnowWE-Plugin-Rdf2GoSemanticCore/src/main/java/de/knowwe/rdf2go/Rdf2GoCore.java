@@ -885,6 +885,20 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 	}
 
+	/**
+	 * @return All statements from the statement cache, but not imported ones
+	 */
+	public Set<Statement> getStatementsFromCache() {
+		synchronized ((this.statementMutex)) {
+			Set<Statement> statements = new HashSet<>();
+			for (Entry<StatementSource, Statement> entry : this.statementCache.entrySet()) {
+				statements.add(entry.getValue());
+			}
+			return statements;
+		}
+	}
+
+
 	public long getSize() {
 		return getStatements().size();
 	}
