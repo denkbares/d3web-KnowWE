@@ -44,7 +44,7 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		Collection<GroupingCompiler> compilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(context.getWeb()), GroupingCompiler.class);
-		if (compilers.isEmpty()) return;
+		if (compilers.size() <= 1) return;
 
 		List<String> compilerNames = new ArrayList<>();
 
