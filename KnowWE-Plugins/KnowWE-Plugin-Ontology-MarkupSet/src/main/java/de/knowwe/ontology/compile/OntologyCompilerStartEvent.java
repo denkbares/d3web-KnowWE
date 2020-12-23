@@ -18,7 +18,10 @@
  */
 package de.knowwe.ontology.compile;
 
+import java.util.Collection;
+
 import de.knowwe.core.compile.CompilerStartEvent;
+import de.knowwe.core.kdom.parsing.Section;
 
 /**
  * Is fired before the {@link OntologyCompiler} starts compiling.
@@ -28,8 +31,20 @@ import de.knowwe.core.compile.CompilerStartEvent;
  */
 public class OntologyCompilerStartEvent extends CompilerStartEvent<OntologyCompiler> {
 
-	public OntologyCompilerStartEvent(OntologyCompiler compiler) {
+	private final Collection<Section<?>> added;
+	private final Collection<Section<?>> removed;
+
+	public OntologyCompilerStartEvent(OntologyCompiler compiler, Collection<Section<?>> added, Collection<Section<?>> removed) {
 		super(compiler);
+		this.added = added;
+		this.removed = removed;
 	}
 
+	public Collection<Section<?>> getAdded() {
+		return added;
+	}
+
+	public Collection<Section<?>> getRemoved() {
+		return removed;
+	}
 }

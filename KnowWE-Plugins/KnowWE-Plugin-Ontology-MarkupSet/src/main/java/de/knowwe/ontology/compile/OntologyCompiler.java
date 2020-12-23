@@ -19,6 +19,7 @@
 package de.knowwe.ontology.compile;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -211,9 +212,9 @@ public class 	OntologyCompiler extends AbstractPackageCompiler
 
 	@Override
 	public void compilePackages(String[] packagesToCompile) {
-		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this));
-		this.changed = false; // reset changed flag, will be updated by ChangedEvent from core
 
+		this.changed = false; // reset changed flag, will be updated by ChangedEvent from core
+		Collection<Section<?>> sectionsOfPackageRemoved = Collections.emptySet();
 		Collection<Section<?>> sectionsOfPackage;
 		// a complete compilation... we reset TerminologyManager and Rdf2GoCore
 		// we compile all sections of the compiled packages, not just the added ones
@@ -226,11 +227,11 @@ public class 	OntologyCompiler extends AbstractPackageCompiler
 		// an incremental compilation... destroy the removed and compile the added sections
 		else {
 			isIncrementalBuild = true;
-			sectionsOfPackage = getPackageManager().getRemovedSections(packagesToCompile);
-			destroy(sectionsOfPackage);
+			sectionsOfPackageRemoved = getPackageManager().getRemovedSections(packagesToCompile);
+			destroy(sectionsOfPackageRemoved);
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
-
+		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this, sectionsOfPackage, sectionsOfPackageRemoved));
 		getCompilerManager().setCurrentCompilePriority(this, Priority.INIT);
 		compile(sectionsOfPackage);
 

@@ -219,7 +219,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 
 	private void firePrioFinishedEvent(Priority lastPriority) {
 		// we throw an event as this priority level compilation is now completed
-		List<Section> sectionList = compileLog.getOrDefault(lastPriority, Collections.emptyList())
+		List<Section<?>> sectionList = compileLog.getOrDefault(lastPriority, Collections.emptyList())
 				.stream().map(Pair::getA).collect(Collectors.toList());
 		// event needs to be fired _after_ the currentPriority (and Iterator) has been incremented
 		EventManager.getInstance()

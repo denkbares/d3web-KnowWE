@@ -15,9 +15,9 @@ import de.knowwe.core.kdom.parsing.Section;
 public class CompilePriorityLevelFinishedEvent extends CompilerEvent<Compiler> {
 	private final Priority priority;
 
-	private final Collection<Section> compiledSections;
+	private final Collection<Section<?>> compiledSections;
 
-	public CompilePriorityLevelFinishedEvent(Compiler compiler, Priority currentPriority, Collection<Section> compiledSections) {
+	public CompilePriorityLevelFinishedEvent(Compiler compiler, Priority currentPriority, Collection<Section<?>> compiledSections) {
 		super(compiler);
 		priority = currentPriority;
 		this.compiledSections = compiledSections;
@@ -37,7 +37,7 @@ public class CompilePriorityLevelFinishedEvent extends CompilerEvent<Compiler> {
 	 *
 	 * @return compiled sections
 	 */
-	public Collection<Section> getCompiledSections() {
+	public Collection<Section<?>> getCompiledSections() {
 		return compiledSections;
 	}
 }
