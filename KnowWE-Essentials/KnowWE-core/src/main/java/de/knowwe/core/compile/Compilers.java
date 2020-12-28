@@ -335,8 +335,9 @@ public class Compilers {
 	}
 
 	/**
-	 * Gets the fallback default compiler. It takes all compilers with the given type, sort them by their name and takes
-	 * the first one.
+	 * Gets the fallback default compiler. It takes all compilers with the given type, sort them by their name and
+	 * takes the first one. If some of the compilers are grouped into a grouped compiler, they also get priority over
+	 * the ones that are not.
 	 * This should only be used when no default compiler is set (e.g. after a server restart)
 	 *
 	 * @param context       the user context
@@ -344,10 +345,24 @@ public class Compilers {
 	 * @return the fallback compiler with the specific type
 	 */
 	private static Optional<String> getFallbackDefaultCompiler(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
+		Set<Compiler> childCompilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(context.getWeb()), GroupingCompiler.class)
+				.stream()
+				.flatMap(c -> c.getChildCompilers().stream())
+				.collect(Collectors.toSet());
 		return Compilers.getCompilers(context.getArticleManager(), compilerClass)
 				.stream()
+				.sorted((Comparator<Compiler>) (c1, c2) -> {
+					if (childCompilers.contains(c1) && !childCompilers.contains(c2)) {
+						return -1;
+					}
+					else if (!childCompilers.contains(c1) && childCompilers.contains(c2)) {
+						return 1;
+					}
+					return NumberAwareComparator.CASE_INSENSITIVE
+							.compare(Compilers.getCompilerName(c1), Compilers.getCompilerName(c2));
+				})
 				.map(Compilers::getCompilerName)
-				.min(NumberAwareComparator.CASE_INSENSITIVE);
+				.findFirst();
 	}
 
 	/**
