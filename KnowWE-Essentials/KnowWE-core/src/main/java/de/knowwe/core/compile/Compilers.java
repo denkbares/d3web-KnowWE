@@ -33,6 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
@@ -234,6 +235,7 @@ public class Compilers {
 		else if (compilers.isEmpty()) {
 			return null;
 		}
+
 		// check compiler names markes for default
 		List<String> defaultCompilerNames = getDefaultCompilers(context, compilerClass);
 		if (defaultCompilerNames.isEmpty()) {
@@ -251,8 +253,9 @@ public class Compilers {
 			}
 		}
 
-		// we've got nothing
-		return null;
+		// defaultCompilerNames seem to contain compiler names that are no longer valid...
+		// just weit for it do get cleaned up automatically, return the next best compiler
+		return compilers.iterator().next();
 	}
 
 	/**
@@ -283,14 +286,30 @@ public class Compilers {
 
 	@NotNull
 	private static List<String> getDefaultCompilers(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
+		return getDefaultCompilers(context, compilerClass, false);
+	}
+
+	@NotNull
+	private static List<String> getDefaultCompilers(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass, boolean doCleanup) {
 		//noinspection unchecked
-		Map<String, List<String>> defaultCompilers = (Map<String, List<String>>) context.getSession()
+		Map<String, List<String>> defaultCompilerNamesMap = (Map<String, List<String>>) context.getSession()
 				.getAttribute(DEFAULT_COMPILERS);
-		if (defaultCompilers == null) {
-			defaultCompilers = new HashMap<>();
-			context.getSession().setAttribute(DEFAULT_COMPILERS, defaultCompilers);
+		if (defaultCompilerNamesMap == null) {
+			defaultCompilerNamesMap = new HashMap<>();
+			context.getSession().setAttribute(DEFAULT_COMPILERS, defaultCompilerNamesMap);
 		}
-		return defaultCompilers.computeIfAbsent(compilerClass.getName(), k -> getFallbackDefaultCompiler(context, compilerClass));
+
+		List<String> defaultCompilerNamesOfClass = defaultCompilerNamesMap.computeIfAbsent(compilerClass.getName(), s -> new ArrayList<>());
+		if (defaultCompilerNamesOfClass.isEmpty()) {
+			getFallbackDefaultCompiler(context, compilerClass).ifPresent(defaultCompilerNamesOfClass::add);
+		}
+		else if (doCleanup) {
+			Set<String> validCompilerNamesForClass = getCompilers(context.getArticleManager(), compilerClass).stream()
+					.map(Compilers::getCompilerName)
+					.collect(Collectors.toSet());
+			defaultCompilerNamesOfClass.removeIf(c -> !validCompilerNamesForClass.contains(c));
+		}
+		return defaultCompilerNamesOfClass;
 	}
 
 	/**
@@ -301,8 +320,18 @@ public class Compilers {
 	 * @return true, if it is the default compiler for the user context or none default is set, otherwise false
 	 */
 	public static boolean isDefaultCompiler(@NotNull UserContext context, @NotNull Compiler compiler) {
-		Optional<String> defaultCompilerName = getDefaultCompilers(context, compiler.getClass()).stream().findFirst();
-		return defaultCompilerName.isEmpty() || defaultCompilerName.get().equals(getCompilerName(compiler));
+		List<String> defaultCompilers = getDefaultCompilers(context, compiler.getClass());
+
+		// if no compiler is set and we also don't find a fallback, every compiler is the default compiler per definition
+		if (defaultCompilers.isEmpty()) return true;
+
+		// of course, if the name matches, we have a default compiler
+		String compilerName = getCompilerName(compiler);
+		if (defaultCompilers.get(0).equals(compilerName)) return true;
+
+		// try again with cleaned up version... if empty, we also have the default compiler
+		defaultCompilers = getDefaultCompilers(context, compiler.getClass(), true);
+		return defaultCompilers.isEmpty();
 	}
 
 	/**
@@ -314,15 +343,11 @@ public class Compilers {
 	 * @param compilerClass the tye of the compiler we want to get the fallback for
 	 * @return the fallback compiler with the specific type
 	 */
-	private static List<String> getFallbackDefaultCompiler(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
-		List<String> fallback = new ArrayList<>();
-		Compilers.getCompilers(context.getArticleManager(), compilerClass)
+	private static Optional<String> getFallbackDefaultCompiler(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass) {
+		return Compilers.getCompilers(context.getArticleManager(), compilerClass)
 				.stream()
 				.map(Compilers::getCompilerName)
-				.sorted()
-				.findFirst()
-				.ifPresent(fallback::add);
-		return fallback;
+				.min(NumberAwareComparator.CASE_INSENSITIVE);
 	}
 
 	/**
@@ -363,7 +388,7 @@ public class Compilers {
 			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
 		}
 		List<Compiler> allCompilers = articleManager.getCompilerManager().getCompilers();
-		Collection<C> compilers = new ArrayList<>();
+		List<C> compilers = new ArrayList<>();
 		for (Compiler compiler : allCompilers) {
 			if (compilerClass.isInstance(compiler) && compiler.isCompiling(section)) {
 				compilers.add(compilerClass.cast(compiler));
@@ -382,6 +407,8 @@ public class Compilers {
 				}
 			}
 		}
+		// make return value consistent
+		compilers.sort(Comparator.comparing(Compilers::getCompilerName, NumberAwareComparator.CASE_INSENSITIVE));
 		return compilers;
 	}
 
