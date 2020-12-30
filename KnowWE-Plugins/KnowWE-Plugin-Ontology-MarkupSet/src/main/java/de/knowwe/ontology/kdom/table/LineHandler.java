@@ -80,6 +80,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Nullable
 	public Message addStatements(OntologyCompiler compiler, Section<TableLine> section, Rdf2GoCore core, List<Statement> statements, Section<NodeProvider> subjectReference) {
 		if (subjectReference == null) {
@@ -99,6 +100,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 				if (Sections.ancestor(objectReference, TableCellContent.class) != null) {
 					Section<Predicate> propertyReference = TableUtils.getColumnHeader(objectReference, Predicate.class);
 					if (propertyReference != null) {
+						//noinspection rawtypes
 						List<Section<StatementProvider>> statementProviders = Sections.successors(
 								section, StatementProvider.class);
 						for (Section<StatementProvider> statementSection : statementProviders) {
@@ -164,14 +166,13 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 		return typeAnnotationMissing;
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected Section<NodeProvider> findSubject(Section<TableLine> section) {
-		final Section<TableCellContent> firstCell = Sections.successor(section, TableCellContent.class);
-		return Sections.successor(firstCell, NodeProvider.class);
+		return $(section).successor(TableCellContent.class).successor(NodeProvider.class).getFirst();
 	}
 
 	@Override
 	public void destroy(OntologyCompiler compiler, Section<TableLine> section) {
-		Rdf2GoCore core = compiler.getRdf2GoCore();
-		core.removeStatements(section);
+		compiler.getRdf2GoCore().removeStatements(section);
 	}
 }
