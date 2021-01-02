@@ -168,7 +168,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 
 	@SuppressWarnings("rawtypes")
 	protected Section<NodeProvider> findSubject(Section<TableLine> section) {
-		return $(section).successor(TableCellContent.class).successor(NodeProvider.class).getFirst();
+		return $(section).successor(TableCellContent.class).first().successor(NodeProvider.class).getFirst();
 	}
 
 	@Override
