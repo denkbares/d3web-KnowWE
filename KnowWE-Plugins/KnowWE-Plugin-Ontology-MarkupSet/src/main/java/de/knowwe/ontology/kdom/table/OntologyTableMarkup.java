@@ -36,6 +36,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.kdom.sectionFinder.SectionFinder;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -153,6 +154,18 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 	public static class OntologyTableTurtleObject extends Object {
 
 		public OntologyTableTurtleObject() {
+			SectionFinder objectSectionFinder = this.getSectionFinder();
+			this.setSectionFinder((text, father, type) -> {
+				// If we have a column with a locale header and no quotes are used, we consider the cell to be exactly one literal
+				// Reason: Otherwise, cells containing comma would be split at the comma, which is very likely not what we want.
+				// If we want multiple literals in one cell, we can still use quoted literals.
+				if (TableUtils.getColumnHeader(father, LocaleType.class) != null && !text.contains("\"")) {
+					return AllTextFinderTrimmed.getInstance().lookForSections(text, father, type);
+				}
+				else {
+					return objectSectionFinder.lookForSections(text, father, type);
+				}
+			});
 			// add a type that consumes the cell content as a string literal, but only if the header is language-tagged
 			addChildType(4, new UnquotedStringLiteral());
 		}
@@ -200,9 +213,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 	private static class UnquotedStringLiteral extends AbstractType implements NodeProvider<TurtleLiteralType>, SectionFinderConstraint {
 
 		public UnquotedStringLiteral() {
-			setRenderer((section, user, result) -> {
-				result.appendJSPWikiMarkup(section.getText());
-			});
+			setRenderer((section, user, result) -> result.appendJSPWikiMarkup(section.getText()));
 			setSectionFinder(new ConstraintSectionFinder(AllTextFinderTrimmed.getInstance(), this));
 		}
 
