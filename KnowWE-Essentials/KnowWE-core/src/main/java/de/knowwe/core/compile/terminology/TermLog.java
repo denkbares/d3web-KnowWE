@@ -152,7 +152,7 @@ class TermLog {
 							  Identifier termIdentifier) {
 
 		if (!termDefinitions.remove(new TermLogEntry(termDefinition, termClass, termIdentifier))) {
-			Log.warning("Trying to unregister unknown section from term log: " + termIdentifier);
+			Log.warning("Trying to unregister term log that does not exist: " + termClass.getSimpleName() + ", " + termIdentifier);
 		}
 		Messages.clearMessages(compiler, termDefinition, this.getClass());
 		handleMessagesForDefinition(compiler);
