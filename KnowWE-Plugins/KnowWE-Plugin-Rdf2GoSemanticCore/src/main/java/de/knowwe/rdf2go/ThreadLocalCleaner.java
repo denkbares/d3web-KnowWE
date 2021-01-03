@@ -25,6 +25,7 @@ public class ThreadLocalCleaner {
 			Field threadLocalsField = Thread.class.getDeclaredField("threadLocals");
 			threadLocalsField.setAccessible(true);
 			Object threadLocalTable = threadLocalsField.get(thread);
+			if (threadLocalTable == null) return; // table wasn't yet necessary/initialized, nothing to clean up
 
 			// Get a reference to the array holding the thread local variables inside the
 			// ThreadLocalMap of the current thread
