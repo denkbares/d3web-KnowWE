@@ -539,6 +539,14 @@ public class Compilers {
 		}
 	}
 
+	public static void destroyAndRecompileSubtree(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		compiler.addSubtreeToDestroy(section, scriptFilter);
+		if (Sections.isLive(section)) {
+			// the sections that have not been removed from the wiki are also compiled again
+			compiler.addSubtreeToCompile(section, scriptFilter);
+		}
+	}
+
 	// very simple method at the moment, we have it to be consistent with #destroyAndRecompileSection
 	public static void recompileSection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
 		compiler.addSectionToCompile(section, scriptFilter);

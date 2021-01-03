@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -49,8 +49,6 @@ import de.knowwe.core.report.Messages;
 public abstract class D3webTermDefinition<TermObject extends NamedObject>
 		extends AbstractType
 		implements TermDefinition, D3webTerm<TermObject>, RenamableTerm {
-
-	private static final String TERM_OBJECT_STORE_KEY = "termObjectStoreKey";
 
 	/**
 	 * Checks whether the creation of the term object can be aborted.
@@ -120,13 +118,8 @@ public abstract class D3webTermDefinition<TermObject extends NamedObject>
 
 	@Override
 	public TermObject getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<TermObject>> section) {
-		assert section.get() instanceof D3webTermDefinition;
 		//noinspection unchecked
-		return (TermObject) section.getObject(compiler, TERM_OBJECT_STORE_KEY);
-	}
-
-	public void storeTermObject(D3webCompiler compiler, Section<? extends D3webTermDefinition<TermObject>> section, TermObject object) {
-		section.storeObject(compiler, TERM_OBJECT_STORE_KEY, object);
+		return (TermObject) compiler.getKnowledgeBase().getManager().search(section.get().getTermName(section));
 	}
 
 	/*

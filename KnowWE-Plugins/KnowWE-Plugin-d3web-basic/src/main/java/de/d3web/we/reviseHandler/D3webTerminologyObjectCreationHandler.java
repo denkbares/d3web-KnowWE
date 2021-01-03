@@ -59,13 +59,10 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 			return Collections.emptySet();
 		}
 		if (abortCheck.hasErrors()) {
-			// we clear term objects from previous compilations that didn't have errors
-			section.get().storeTermObject(compiler, section, null);
 			return abortCheck.getErrors();
 		}
 
 		if (abortCheck.termExist()) {
-			section.get().storeTermObject(compiler, section, abortCheck.getNamedObject());
 			return abortCheck.getErrors();
 		}
 
@@ -73,8 +70,6 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 		TerminologyObject object = kb.getManager().search(name);
 		if (object != null) {
 			if (termObjectClass.isInstance(object)) {
-				//noinspection unchecked
-				section.get().storeTermObject(compiler, section, (TermType) object);
 				return Messages.noMessage();
 			}
 			else {
@@ -83,8 +78,7 @@ public abstract class D3webTerminologyObjectCreationHandler<TermType extends Nam
 			}
 		}
 
-		// if not available, create a new one and store it for later usage
-		section.get().storeTermObject(compiler, section, createTermObject(name, kb));
+		createTermObject(name, kb);
 		recompile(compiler, section, termIdentifier);
 		return Messages.noMessage();
 	}

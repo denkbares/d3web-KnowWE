@@ -127,7 +127,6 @@ public class QuestionLine extends AbstractType {
 	static class CreateQuestionHandler implements D3webHandler<QuestionDefinition> {
 
 		@Override
-		@SuppressWarnings("unchecked")
 		public Collection<Message> create(D3webCompiler compiler,
 										  Section<QuestionDefinition> section) {
 
@@ -137,17 +136,12 @@ public class QuestionLine extends AbstractType {
 			terminologyHandler.registerTermDefinition(compiler, section, termObjectClass,
 					identifier);
 
-			AbortCheck abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
+			AbortCheck<Question> abortCheck = section.get().canAbortTermObjectCreation(compiler, section);
 			if (abortCheck.hasErrors()) {
-				// we clear term objects from previous compilations that didn't have errors
-				section.get().storeTermObject(compiler, section, null);
 				return abortCheck.getErrors();
 			}
 
-			if (abortCheck.termExist()) {
-				section.get().storeTermObject(compiler, section, (Question) abortCheck.getNamedObject());
-			}
-			else {
+			if (!abortCheck.termExist()) {
 				KnowledgeBase kb = getKnowledgeBase(compiler);
 
 				String name = section.get().getTermName(section);
@@ -158,33 +152,31 @@ public class QuestionLine extends AbstractType {
 							"No type found for question '" + name + "'"));
 				}
 
-				Question question = null;
 				if (questionType == QuestionDefinition.QuestionType.OC) {
-					question = new QuestionOC(kb, name);
+					new QuestionOC(kb, name);
 				}
 				else if (questionType == QuestionDefinition.QuestionType.MC) {
-					question = new QuestionMC(kb, name);
+					new QuestionMC(kb, name);
 				}
 				else if (questionType == QuestionDefinition.QuestionType.NUM) {
-					question = new QuestionNum(kb, name);
+					new QuestionNum(kb, name);
 				}
 				else if (questionType == QuestionDefinition.QuestionType.YN) {
-					question = new QuestionYN(kb, name);
+					new QuestionYN(kb, name);
 				}
 				else if (questionType == QuestionDefinition.QuestionType.DATE) {
-					question = new QuestionDate(kb, name);
+					new QuestionDate(kb, name);
 				}
 				else if (questionType == QuestionDefinition.QuestionType.INFO) {
-					question = new QuestionZC(kb, name);
+					new QuestionZC(kb, name);
 				}
 				else if (questionType == QuestionDefinition.QuestionType.TEXT) {
-					question = new de.d3web.core.knowledge.terminology.QuestionText(kb, name);
+					new de.d3web.core.knowledge.terminology.QuestionText(kb, name);
 				}
 				else {
 					return Messages.asList(Messages.error(
 							"No valid question type found for question '" + identifier + "'"));
 				}
-				section.get().storeTermObject(compiler, section, question);
 			}
 
 			return Messages.noMessage();
@@ -264,13 +256,10 @@ public class QuestionLine extends AbstractType {
 
 			String[] numbers = content.split(" ");
 			if (numbers.length == 2) {
-				Double d = null;
 				try {
-					d = Double.parseDouble(numbers[0]);
-					return d;
+					return Double.parseDouble(numbers[0]);
 				}
 				catch (Exception ignored) {
-
 				}
 			}
 
@@ -286,13 +275,10 @@ public class QuestionLine extends AbstractType {
 
 			String[] numbers = content.split(" ");
 			if (numbers.length == 2) {
-				Double d = null;
 				try {
-					d = Double.parseDouble(numbers[1]);
-					return d;
+					return Double.parseDouble(numbers[1]);
 				}
 				catch (Exception ignored) {
-
 				}
 			}
 
@@ -448,9 +434,7 @@ public class QuestionLine extends AbstractType {
 				String actualTypeString = actualQuestionType == null
 						? "undefined"
 						: actualQuestionType.toString().toLowerCase();
-				String thisTypeString = thisQuestionType == null
-						? "undefined"
-						: thisQuestionType.toString().toLowerCase();
+				String thisTypeString = thisQuestionType.toString().toLowerCase();
 				if (actualQuestionType != thisQuestionType) {
 					String questionText = actualQuestionDef.get().getTermIdentifier(
 							compiler, actualQuestionDef).toString();

@@ -65,11 +65,6 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 		setRenderer(renderer);
 	}
 
-	@Override
-	public Solution getTermObject(D3webCompiler compiler, Section<? extends D3webTerm<Solution>> section) {
-		return compiler.getKnowledgeBase().getManager().searchSolution(section.get().getTermName(section));
-	}
-
 	public static class CreateSolutionHandler extends D3webTerminologyObjectCreationHandler<Solution, SolutionDefinition> {
 
 		@NotNull
@@ -98,5 +93,4 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 	protected void destroyAndRecompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier identifier) {
 		Compilers.destroyAndRecompileRegistrations(compiler, identifier);
 	}
-
 }
