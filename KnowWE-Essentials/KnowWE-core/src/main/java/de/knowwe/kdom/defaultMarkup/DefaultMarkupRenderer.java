@@ -38,7 +38,6 @@ import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
-import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -346,7 +345,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		}
 
 		// render package rules and compiler names if necessary
-		if (renderPackagesAndCompilers && wikiHasMultipleCompilers(markupSection.getArticleManager())) {
+		if (renderPackagesAndCompilers && shouldRenderPackagesAndCompilers(markupSection)) {
 			if (DefaultMarkupType.getAnnotation(markupSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) == null) {
 				renderPackages(markupSection, result, user);
 			}
@@ -369,18 +368,37 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	/**
-	 * Checks whether Wiki has multiple compilers of the same class
+	 * Check several parameters to decide whether packages and compilers should be rendered for every markup
 	 *
-	 * @param articleManager ArticleManager
+	 * @param markupSection ArticleManager
 	 * @return true when there are more than one compiler of every class, otherwise false
 	 */
-	private boolean wikiHasMultipleCompilers(ArticleManager articleManager) {
-		Collection<PackageCompiler> compilers = Compilers.getCompilers(articleManager, PackageCompiler.class);
-		if (compilers.size() <= 1) {
-			return false;
+	private boolean shouldRenderPackagesAndCompilers(Section<? extends DefaultMarkupType> markupSection) {
+
+		@NotNull Collection<PackageCompiler> compilers = Compilers.getCompilers(markupSection, PackageCompiler.class);
+		// if not compiled by a package compiler, no need to render anything
+		if (compilers.isEmpty()) return false;
+
+		// if exactly one package compiler, check whether the sections of the compiler are distributed over more than 3 articles
+		if (compilers.size() == 1) {
+			PackageCompiler compiler = compilers.iterator().next();
+			int threshold = 3;
+			List<String> articleTitles = compiler.getPackageManager()
+					.getSectionsOfPackage(compiler.getCompileSection()
+							.get()
+							.getPackagesToCompile(compiler.getCompileSection()))
+					.parallelStream().map(Section::getTitle)
+					.distinct()
+					.limit(threshold + 1)
+					.collect(Collectors.toList());
+			return articleTitles.size() > threshold;
 		}
-		// check whether there are several instances of a specific compiler class
-		return Compilers.getCompilers(articleManager, compilers.iterator().next().getClass()).size() > 1;
+
+		// if more than one package compiler, check whether there are several instances of the same compiler in the wiki
+		else {
+			return compilers.stream()
+					.anyMatch(c -> Compilers.getCompilers(markupSection.getArticleManager(), c.getClass()).size() > 1);
+		}
 	}
 
 	/**
@@ -422,6 +440,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		Collection<PackageCompiler> compilers = Compilers.getCompilers(markupSection, PackageCompiler.class);
 
 		// remove compilers from the collection that are also present in a GroupingCompiler
+		//noinspection SuspiciousMethodCalls
 		compilers.stream()
 				.filter(c -> c instanceof GroupingCompiler)
 				.map(c -> (GroupingCompiler) c)
@@ -499,7 +518,8 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	@NotNull
 	private String getDefaultCompilerClass(Section<?> section, UserContext user, Collection<PackageCompiler> compilers) {
-		boolean isDefault = (compilers.isEmpty() && section.getPackageNames().isEmpty()) || Compilers.getCompilers(user.getArticleManager(), GroupingCompiler.class).isEmpty();
+		boolean isDefault = (compilers.isEmpty() && section.getPackageNames()
+				.isEmpty()) || Compilers.getCompilers(user.getArticleManager(), GroupingCompiler.class).isEmpty();
 		for (Compiler compiler : compilers) {
 			isDefault = isDefault || Compilers.isDefaultCompiler(user, compiler);
 		}
