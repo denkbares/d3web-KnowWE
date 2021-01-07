@@ -10,11 +10,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.impl.StatementImpl;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.impl.StatementImpl;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -29,7 +29,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.kdom.OntologyUtils;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.tools.Tool;
 
@@ -83,7 +82,7 @@ public class AddStatementsAction extends AbstractAction {
 						"article '" + articleName + "' not available");
 				return;
 			}
-			OntologyCompiler compiler = findCompiler(article);
+			OntologyCompiler compiler = findCompiler(context, article);
 			if (compiler == null) {
 				context.sendError(HttpServletResponse.SC_NOT_FOUND,
 						"Article '" + articleName + "' is not compiled in an ontology");
@@ -107,9 +106,9 @@ public class AddStatementsAction extends AbstractAction {
 	/**
 	 * Returns an instance that compiles any section in this article (taking the terms as a basis)
 	 */
-	private static OntologyCompiler findCompiler(Article article) {
+	private static OntologyCompiler findCompiler(UserActionContext context, Article article) {
 		for (Section<?> section : Sections.successors(article.getRootSection(), Term.class)) {
-			OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+			OntologyCompiler compiler = Compilers.getCompiler(context, section, OntologyCompiler.class);
 			if (compiler == null) continue;
 			return compiler;
 		}
@@ -120,7 +119,7 @@ public class AddStatementsAction extends AbstractAction {
 		Statement[] statements = new Statement[array.length()];
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject stmt = array.getJSONObject(i);
-			statements[i] = new StatementImpl(
+			statements[i] = core.createStatement(
 					core.createResource(stmt.getString("subject")),
 					core.createIRI(stmt.getString("predicate")),
 					core.createNode(stmt.getString("object")));

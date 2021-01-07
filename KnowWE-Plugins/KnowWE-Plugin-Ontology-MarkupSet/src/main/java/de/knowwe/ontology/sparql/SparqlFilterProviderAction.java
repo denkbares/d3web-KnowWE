@@ -119,7 +119,7 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		if (columnName == null) return filterTexts;
 		String sparqlQuery = section.get().getSparqlQuery(section, context);
 		if (sparqlQuery == null) return filterTexts;
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		Rdf2GoCompiler compiler = Compilers.getCompiler(context, section, Rdf2GoCompiler.class);
 		if (compiler == null) return filterTexts;
 
 		RenderOptions renderOptions = section.get().getRenderOptions(section, context);

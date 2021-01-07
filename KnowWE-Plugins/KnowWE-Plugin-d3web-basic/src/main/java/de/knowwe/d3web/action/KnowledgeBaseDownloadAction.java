@@ -95,7 +95,6 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 
 		// before writing, check if the user defined a desired filename
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(compileSection);
-		//noinspection ConstantConditions
 		String desiredFilename = base.getInfoStore().getValue(BasicProperties.FILENAME);
 		if (desiredFilename != null) {
 			filename = desiredFilename;

@@ -285,7 +285,7 @@ public class FlowchartUtils {
 	 * @created 02.05.2014
 	 */
 	public static State getElementState(Section<? extends AbstractXMLType> node, UserContext user) {
-		D3webCompiler compiler = Compilers.getCompiler(node, D3webCompiler.class);
+		D3webCompiler compiler = Compilers.getCompiler(user, node, D3webCompiler.class);
 		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 		Session session = SessionProvider.getSession(user, kb);
 		DiaFluxElement el = FlowchartUtils.findObject(node, kb);

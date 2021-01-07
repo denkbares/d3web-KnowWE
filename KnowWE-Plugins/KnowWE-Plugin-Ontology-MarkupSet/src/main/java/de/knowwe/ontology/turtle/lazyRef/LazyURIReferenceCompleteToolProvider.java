@@ -19,7 +19,7 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		OntologyCompiler compiler = Compilers.getCompiler(section, OntologyCompiler.class);
+		OntologyCompiler compiler = Compilers.getCompiler(userContext, section, OntologyCompiler.class);
 		Collection<Identifier> potentiallyMatchingIdentifiers = LazyURIReference.getPotentiallyMatchingIdentifiers(
 				compiler, section);
 		Tool[] tools = new Tool[potentiallyMatchingIdentifiers.size()];
@@ -51,7 +51,7 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		Collection<Identifier> potentiallyMatchingIdentifiers = LazyURIReference.getPotentiallyMatchingIdentifiers(
-				Compilers.getCompiler(section, OntologyCompiler.class), section);
+				Compilers.getCompiler(userContext, section, OntologyCompiler.class), section);
 		return potentiallyMatchingIdentifiers != null && !potentiallyMatchingIdentifiers.isEmpty();
 	}
 

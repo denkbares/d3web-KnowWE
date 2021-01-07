@@ -47,7 +47,7 @@ public class GoToDefinitionAction extends AbstractAction {
 		String conceptName = context.getParameter("concept");
 		Section<?> section = Sections.get(sectionID);
 
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		Rdf2GoCompiler compiler = Compilers.getCompiler(context, section, Rdf2GoCompiler.class);
 		LinkToTermDefinitionProvider uriProvider;
 
 		if (compiler == null) {
@@ -58,12 +58,7 @@ public class GoToDefinitionAction extends AbstractAction {
 						.newInstance();
 			}
 			catch (Exception e) {
-				uriProvider = new LinkToTermDefinitionProvider() {
-					@Override
-					public String getLinkToTermDefinition(Identifier name, String masterArticle) {
-						return null;
-					}
-				};
+				uriProvider = (name, masterArticle) -> null;
 			}
 		}
 		else {

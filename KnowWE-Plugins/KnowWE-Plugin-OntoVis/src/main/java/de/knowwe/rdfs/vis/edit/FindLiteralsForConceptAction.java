@@ -49,7 +49,7 @@ public class FindLiteralsForConceptAction extends AbstractAction {
 
 		JSONArray literals = new JSONArray();
 
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		Rdf2GoCompiler compiler = Compilers.getCompiler(context, section, Rdf2GoCompiler.class);
 		if (compiler == null) throw new IOException("No compiler found");
 
 		Rdf2GoCore rdfRepository = compiler.getRdf2GoCore();

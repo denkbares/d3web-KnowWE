@@ -195,7 +195,7 @@ public class ObjectInfoRenderer implements Renderer {
 				Section<?> previewSection = entry.getKey();
 				Collection<Section<?>> group = entry.getValue();
 				result.appendHtml("<div class='articleName'>");
-				result.appendHtml(getNameForSection(previewSection));
+				result.appendHtml(getNameForSection(user, previewSection));
 				result.appendHtml("</div>");
 				result.appendHtml("<div class=\"previewItem\">");
 				renderTermPreview(previewSection, group, user, "definition", result);
@@ -210,10 +210,11 @@ public class ObjectInfoRenderer implements Renderer {
 		renderSectionEnd(result);
 	}
 
-	public static String getNameForSection(Section<?> previewSection) {
+	public static String getNameForSection(UserContext user, Section<?> previewSection) {
 		Type surroundingMarkupName = getSurroundingMarkupName(previewSection);
-		return surroundingMarkupName instanceof GroupingType ? ((GroupingType) surroundingMarkupName).getSurroundingMarkupName(Sections
-				.ancestor(previewSection, GroupingType.class)) : surroundingMarkupName.getName();
+		return surroundingMarkupName instanceof GroupingType
+				? ((GroupingType) surroundingMarkupName).getSurroundingMarkupName(user, Sections.ancestor(previewSection, GroupingType.class))
+				: surroundingMarkupName.getName();
 	}
 
 	public static void renderTermReferences(Identifier identifier, UserContext user, RenderResult result) {
@@ -237,7 +238,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	private static void renderGroupedByType(UserContext user, RenderResult result, Set<Section<?>> references) {
-		Map<TypeGroup, List<Section<?>>> typeGroups = groupByType(references);
+		Map<TypeGroup, List<Section<?>>> typeGroups = groupByType(user, references);
 		for (Entry<TypeGroup, List<Section<?>>> typeEntry : typeGroups.entrySet()) {
 			// prepare group information
 			List<Section<?>> groupSections = typeEntry.getValue();
@@ -314,7 +315,7 @@ public class ObjectInfoRenderer implements Renderer {
 		Map<Article, List<Section<?>>> articleGroups = groupByArticle(references);
 		for (Entry<Article, List<Section<?>>> articleEntry : articleGroups.entrySet()) {
 			RenderResult innerResult = new RenderResult(result);
-			for (Entry<TypeGroup, List<Section<?>>> typeEntry : groupByType(articleEntry.getValue()).entrySet()) {
+			for (Entry<TypeGroup, List<Section<?>>> typeEntry : groupByType(user, articleEntry.getValue()).entrySet()) {
 				renderTermReferencesPreviewsAsync(typeEntry.getValue(), user, innerResult);
 			}
 			wrapInExtendPanel(articleEntry.getKey().getTitle(),
@@ -401,13 +402,13 @@ public class ObjectInfoRenderer implements Renderer {
 		return result;
 	}
 
-	private static Map<TypeGroup, List<Section<? extends Type>>> groupByType(Collection<Section<?>> references) {
+	private static Map<TypeGroup, List<Section<? extends Type>>> groupByType(UserContext user, Collection<Section<?>> references) {
 		Comparator<TypeGroup> orderComparator = getOrderComparator(references);
 		Comparator<TypeGroup> nameComparator = Comparator.comparing(type -> type.getName() == null ? "" : type.getName());
 		Map<TypeGroup, List<Section<? extends Type>>> result = new HashMap<>();
 		for (Section<?> reference : references) {
 			Type surroundingMarkupType = getSurroundingMarkupName(reference);
-			TypeGroup typeGroup = new TypeGroup(getNameForSection(reference), surroundingMarkupType);
+			TypeGroup typeGroup = new TypeGroup(getNameForSection(user, reference), surroundingMarkupType);
 			List<Section<? extends Type>> sectionsForType = result.get(typeGroup);
 			if (sectionsForType == null) {
 				sectionsForType = new LinkedList<>();
@@ -484,7 +485,7 @@ public class ObjectInfoRenderer implements Renderer {
 		}
 
 		result.appendHtml("<div class='objectinfo preview defaultMarkupFrame" +
-				" type_").append(getNameForSection(previewSection))
+				" type_").append(getNameForSection(user, previewSection))
 				.appendHtml(" ").append(cssClass).appendHtml("'>");
 		result.appendHtml("<div class='objectinfo markupHeaderFrame headerMenu'>");
 		result.appendHtml("<div class='markupHeader'>");
@@ -688,10 +689,11 @@ public class ObjectInfoRenderer implements Renderer {
 		/**
 		 * Method to return a section specified markup name if {@link Type#getName()} would return the same name.
 		 *
+		 * @param user
 		 * @param section the section to define a specified markup name for
 		 * @return the name for the markup
 		 */
-		String getSurroundingMarkupName(Section<?> section);
+		String getSurroundingMarkupName(UserContext user, Section<?> section);
 	}
 
 	/**

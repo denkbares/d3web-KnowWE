@@ -59,7 +59,7 @@ public class OntologyDownloadAction extends AbstractAction {
 			section = $(article).successor(OntologyType.class).successor(PackageCompileType.class).getFirst();
 		}
 
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+		Rdf2GoCompiler compiler = Compilers.getCompiler(context, section, Rdf2GoCompiler.class);
 		if (compiler == null) {
 			context.sendError(HttpServletResponse.SC_NOT_FOUND, "No compiler found");
 			return;

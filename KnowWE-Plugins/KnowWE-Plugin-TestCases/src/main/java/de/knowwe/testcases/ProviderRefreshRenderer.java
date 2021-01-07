@@ -44,7 +44,7 @@ public class ProviderRefreshRenderer extends DefaultMarkupRenderer {
 	}
 
 	private void refreshProviders(Section<?> section, UserContext user) {
-		D3webCompiler compiler = Compilers.getCompiler(section, D3webCompiler.class);
+		D3webCompiler compiler = Compilers.getCompiler(user, section, D3webCompiler.class);
 		if (compiler != null) {
 			TestCaseProviderStorage providerStorage = TestCaseUtils.getTestCaseProviderStorage(
 					compiler, section);

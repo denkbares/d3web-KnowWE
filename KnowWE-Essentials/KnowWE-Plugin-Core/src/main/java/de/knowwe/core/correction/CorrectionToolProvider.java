@@ -30,6 +30,7 @@ import com.denkbares.plugin.Extension;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.ScopeExtensions;
 
@@ -46,13 +47,13 @@ public class CorrectionToolProvider extends AbstractCorrectionToolProvider {
 			new ScopeExtensions("KnowWEExtensionPoints", "CorrectionProvider");
 
 	@Override
-	public boolean hasSuggestions(Section<?> section) {
+	public boolean hasSuggestions(UserContext user, Section<?> section) {
 		Set<Suggestion> suggestions = getSuggestions(section, 1);
 		return !suggestions.isEmpty();
 	}
 
 	@Override
-	public List<Suggestion> getSuggestions(Section<?> section) {
+	public List<Suggestion> getSuggestions(UserContext user, Section<?> section) {
 		Set<Suggestion> suggestions = getSuggestions(section, 1000);
 		// Sort to list of ascending distance
 		List<Suggestion> result = new LinkedList<>(suggestions);
