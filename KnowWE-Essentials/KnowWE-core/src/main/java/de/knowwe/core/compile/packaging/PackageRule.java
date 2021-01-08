@@ -19,9 +19,15 @@
 
 package de.knowwe.core.compile.packaging;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.PredicateParser;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -114,10 +120,36 @@ public class PackageRule extends AbstractType {
 		}
 	}
 
+	/**
+	 * Checks whether the given set of package names satisfy the package rule of this section.
+	 *
+	 * @param section      the section containing the package rule
+	 * @param packageNames the package names to check
+	 * @return true if the given package names satisfy this package rule, false otherwise
+	 */
+	public boolean test(Section<PackageRule> section, String... packageNames) {
+		return section.get().getRule(section).test(new PackagePredicateValueProvider(packageNames));
+	}
+
 	private static class SyntaxType extends AbstractType {
 		public SyntaxType() {
 			setSectionFinder(AllTextFinderTrimmed.getInstance());
 			setRenderer((section, user, result) -> result.appendHtmlElement("span", section.getText(), "style", "color: grey"));
+		}
+	}
+
+	public static class PackagePredicateValueProvider implements PredicateParser.ValueProvider {
+
+		private final Set<String> packageNames;
+
+		public PackagePredicateValueProvider(String... packageNames) {
+			this.packageNames = new LinkedHashSet<>();
+			Collections.addAll(this.packageNames, packageNames);
+		}
+
+		@Override
+		public @Nullable Collection<String> get(@NotNull String variable) {
+			return packageNames.contains(variable) ? List.of("true") : List.of("false");
 		}
 	}
 }

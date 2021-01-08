@@ -31,11 +31,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.ConcatenateCollection;
 import com.denkbares.events.EventManager;
-import com.denkbares.strings.PredicateParser;
 import com.denkbares.strings.PredicateParser.ParsedPredicate;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.compile.AbstractPackageCompiler;
@@ -100,7 +98,8 @@ public class PackageManager {// implements EventListener {
 	}
 
 	public void addDefaultPackageRule(Article article, ParsedPredicate defaultPackageRule) {
-		articleToDefaultPackageRules.computeIfAbsent(article.getTitle(), k -> new LinkedHashSet<>(4)).add(defaultPackageRule);
+		articleToDefaultPackageRules.computeIfAbsent(article.getTitle(), k -> new LinkedHashSet<>(4))
+				.add(defaultPackageRule);
 	}
 
 	public void removeDefaultPackage(Article article, String defaultPackage) {
@@ -337,7 +336,7 @@ public class PackageManager {// implements EventListener {
 		}
 
 		if (!predicateToSection.isEmpty()) {
-			PackagePredicateValueProvider valueProvider = new PackagePredicateValueProvider(packageNames);
+			PackageRule.PackagePredicateValueProvider valueProvider = new PackageRule.PackagePredicateValueProvider(packageNames);
 			for (Map.Entry<ParsedPredicate, Set<Section<? extends DefaultMarkupType>>> entry : predicateToSection.entrySet()) {
 				if (entry.getKey().test(valueProvider)) {
 					sets.add(entry.getValue());
@@ -464,7 +463,7 @@ public class PackageManager {// implements EventListener {
 		for (ParsedPredicate parsedPredicate : getPackageRulesOfSection(section)) {
 			for (Section<? extends PackageCompileType> compileSection : packageCompileSections) {
 				String[] packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
-				PackagePredicateValueProvider valueProvider = new PackagePredicateValueProvider(packagesToCompile);
+				PackageRule.PackagePredicateValueProvider valueProvider = new PackageRule.PackagePredicateValueProvider(packagesToCompile);
 				if (parsedPredicate.test(valueProvider)) {
 					compileSections.add(compileSection);
 				}
@@ -532,20 +531,5 @@ public class PackageManager {// implements EventListener {
 			titles.add(sections.getTitle());
 		}
 		return titles;
-	}
-
-	private static class PackagePredicateValueProvider implements PredicateParser.ValueProvider {
-
-		private final Set<String> packageNames;
-
-		public PackagePredicateValueProvider(String... packageNames) {
-			this.packageNames = new LinkedHashSet<>();
-			Collections.addAll(this.packageNames, packageNames);
-		}
-
-		@Override
-		public @Nullable Collection<String> get(@NotNull String variable) {
-			return packageNames.contains(variable) ? List.of("true") : List.of("false");
-		}
 	}
 }
