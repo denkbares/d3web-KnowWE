@@ -54,7 +54,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class PackageRule extends AbstractType {
 
-	private static final PredicateParser predicateParser = getPredicateParser();
+	private static final PredicateParser PREDICATE_PARSER = getPredicateParser();
 	private static final PredicateParser.ParsedPredicate DEFAULT = generateDefault();
 
 	@NotNull
@@ -68,7 +68,7 @@ public class PackageRule extends AbstractType {
 	@NotNull
 	private static PredicateParser.ParsedPredicate generateDefault() {
 		try {
-			return predicateParser.parse(PackageManager.DEFAULT_PACKAGE);
+			return PREDICATE_PARSER.parse(PackageManager.DEFAULT_PACKAGE);
 		}
 		catch (PredicateParser.ParseException e) {
 			throw new IllegalStateException(e);
@@ -86,7 +86,7 @@ public class PackageRule extends AbstractType {
 			@Override
 			public void compile(DefaultGlobalCompiler compiler, Section<PackageRule> section) throws CompilerMessage {
 				try {
-					predicateParser.parse(section.getText());
+					PREDICATE_PARSER.parse(section.getText());
 				}
 				catch (PredicateParser.ParseException e) {
 					throw CompilerMessage.error("Unable to parse package rule: " + e.getMessage());
@@ -111,8 +111,12 @@ public class PackageRule extends AbstractType {
 
 	@NotNull
 	public PredicateParser.ParsedPredicate getRule(Section<PackageRule> section) {
+		return parseRule(section.getText());
+	}
+
+	public static PredicateParser.ParsedPredicate parseRule(String packageRule) {
 		try {
-			return predicateParser.parse(section.getText());
+			return PREDICATE_PARSER.parse(packageRule);
 		}
 		catch (PredicateParser.ParseException e) {
 			// we don't need error handling here, because we already show KDOM messages to the user for invalid rules
@@ -128,7 +132,7 @@ public class PackageRule extends AbstractType {
 	 * @return true if the given package names satisfy this package rule, false otherwise
 	 */
 	public boolean test(Section<PackageRule> section, String... packageNames) {
-		return section.get().getRule(section).test(new PackagePredicateValueProvider(packageNames));
+		return section.get().getRule(section).test(new PackagesValueProvider(packageNames));
 	}
 
 	private static class SyntaxType extends AbstractType {
@@ -138,11 +142,11 @@ public class PackageRule extends AbstractType {
 		}
 	}
 
-	public static class PackagePredicateValueProvider implements PredicateParser.ValueProvider {
+	public static class PackagesValueProvider implements PredicateParser.ValueProvider {
 
 		private final Set<String> packageNames;
 
-		public PackagePredicateValueProvider(String... packageNames) {
+		public PackagesValueProvider(String... packageNames) {
 			this.packageNames = new LinkedHashSet<>();
 			Collections.addAll(this.packageNames, packageNames);
 		}

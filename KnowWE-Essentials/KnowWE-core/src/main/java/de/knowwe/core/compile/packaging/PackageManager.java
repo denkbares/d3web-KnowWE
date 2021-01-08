@@ -336,7 +336,7 @@ public class PackageManager {// implements EventListener {
 		}
 
 		if (!predicateToSection.isEmpty()) {
-			PackageRule.PackagePredicateValueProvider valueProvider = new PackageRule.PackagePredicateValueProvider(packageNames);
+			PackageRule.PackagesValueProvider valueProvider = new PackageRule.PackagesValueProvider(packageNames);
 			for (Map.Entry<ParsedPredicate, Set<Section<? extends DefaultMarkupType>>> entry : predicateToSection.entrySet()) {
 				if (entry.getKey().test(valueProvider)) {
 					sets.add(entry.getValue());
@@ -463,7 +463,7 @@ public class PackageManager {// implements EventListener {
 		for (ParsedPredicate parsedPredicate : getPackageRulesOfSection(section)) {
 			for (Section<? extends PackageCompileType> compileSection : packageCompileSections) {
 				String[] packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
-				PackageRule.PackagePredicateValueProvider valueProvider = new PackageRule.PackagePredicateValueProvider(packagesToCompile);
+				PackageRule.PackagesValueProvider valueProvider = new PackageRule.PackagesValueProvider(packagesToCompile);
 				if (parsedPredicate.test(valueProvider)) {
 					compileSections.add(compileSection);
 				}
