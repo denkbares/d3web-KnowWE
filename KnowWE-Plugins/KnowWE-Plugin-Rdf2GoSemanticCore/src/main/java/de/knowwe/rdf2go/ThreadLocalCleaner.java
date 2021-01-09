@@ -18,14 +18,23 @@ public class ThreadLocalCleaner {
 	 * need them anymore, e.g. when the thread has ended in some way
 	 */
 	public static void cleanThreadLocals() {
-		try {
+		Thread thread = Thread.currentThread();
+		cleanThreadLocals(thread);
+	}
 
+	/**
+	 * Cleans all thread local entries of the given thread, so be sure you don't
+	 * need them anymore, e.g. when the thread has ended in some way
+	 *
+	 * @param thread the thread to clean the thread locals for
+	 */
+	public static void cleanThreadLocals(Thread thread) {
+		try {
 			// Get a reference to the thread locals table of the current thread
-			Thread thread = Thread.currentThread();
 			Field threadLocalsField = Thread.class.getDeclaredField("threadLocals");
 			threadLocalsField.setAccessible(true);
 			Object threadLocalTable = threadLocalsField.get(thread);
-			if (threadLocalTable == null) return; // table wasn't yet necessary/initialized, nothing to clean up
+			if (threadLocalTable == null) return;
 
 			// Get a reference to the array holding the thread local variables inside the
 			// ThreadLocalMap of the current thread
@@ -45,12 +54,14 @@ public class ThreadLocalCleaner {
 				Object entry = Array.get(table, i);
 				if (entry != null) {
 					// Get a reference to the thread local object and remove it from the table
-					@SuppressWarnings("rawtypes") ThreadLocal threadLocal = (ThreadLocal)referentField.get(entry);
-					if(threadLocal != null)
+					@SuppressWarnings("rawtypes") ThreadLocal threadLocal = (ThreadLocal) referentField.get(entry);
+					if (threadLocal != null) {
 						threadLocal.remove();
+					}
 				}
 			}
-		} catch(Exception e) {
+		}
+		catch (Exception e) {
 			// We will tolerate an exception here and just log it
 			throw new IllegalStateException(e);
 		}
