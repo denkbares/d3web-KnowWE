@@ -20,6 +20,7 @@ package de.d3web.we.knowledgebase;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -82,11 +83,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	@Override
 	public @NotNull TerminologyManager getTerminologyManager() {
-		if (terminologyManager == null) {
-			// in case the compiler doesn't have anything to compile...
-			return new TerminologyManager();
-		}
-		return terminologyManager;
+		// in case the compiler doesn't have anything to compile, create fake
+		return Objects.requireNonNullElseGet(terminologyManager, TerminologyManager::new);
 	}
 
 	public KnowledgeBase getKnowledgeBase() {
@@ -169,6 +167,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		}
 
 		destroyScriptCompiler.destroy();
+		getTerminologyManager().cleanupStaleSection();
+
 		compileScriptCompiler.compile();
 
 		isIncrementalBuild = true;

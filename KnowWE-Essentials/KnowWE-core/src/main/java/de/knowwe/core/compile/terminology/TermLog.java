@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -36,10 +38,9 @@ import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-
-import static java.util.stream.Collectors.toSet;
 
 /**
  * This is an auxiliary data-structure to store the definitions and references
@@ -97,7 +98,6 @@ class TermLog {
 			else if (multiDefinitionMode == MultiDefinitionMode.error) {
 				messages.add(Messages.error(getMultiDefinitionText(term)));
 			}
-
 		}
 		for (TermLogEntry termDefinition : termDefinitions) {
 			Messages.storeMessages(compiler, termDefinition.getSection(), this.getClass(), messages);
@@ -176,15 +176,15 @@ class TermLog {
 	}
 
 	public Set<Section<?>> getDefinitions() {
-		return Collections.unmodifiableSet(termDefinitions.stream().map(TermLogEntry::getSection).collect(toSet()));
+		return termDefinitions.stream().map(TermLogEntry::getSection).collect(java.util.stream.Collectors.toUnmodifiableSet());
 	}
 
 	public Set<Section<?>> getReferences() {
-		return Collections.unmodifiableSet(termReferences.stream().map(TermLogEntry::getSection).collect(toSet()));
+		return termReferences.stream().map(TermLogEntry::getSection).collect(java.util.stream.Collectors.toUnmodifiableSet());
 	}
 
 	Set<Class<?>> getTermClasses() {
-		return Collections.unmodifiableSet(termDefinitions.stream().map(TermLogEntry::getTermClass).collect(toSet()));
+		return termDefinitions.stream().map(TermLogEntry::getTermClass).collect(java.util.stream.Collectors.toUnmodifiableSet());
 	}
 
 	Collection<Identifier> getTermIdentifiers() {
@@ -200,4 +200,18 @@ class TermLog {
 		return termDefinitions.isEmpty() && termReferences.isEmpty();
 	}
 
+	public int cleanupStaleSections() {
+		AtomicInteger counter = new AtomicInteger();
+		termDefinitions.removeIf(l -> {
+			boolean remove = !Sections.isLive(l.getSection());
+			if (remove) counter.incrementAndGet();
+			return remove;
+		});
+		termReferences.removeIf(l -> {
+			boolean remove = !Sections.isLive(l.getSection());
+			if (remove) counter.incrementAndGet();
+			return remove;
+		});
+		return counter.get();
+	}
 }

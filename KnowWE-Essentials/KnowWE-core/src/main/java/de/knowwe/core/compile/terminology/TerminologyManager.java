@@ -35,7 +35,9 @@ import com.denkbares.events.EventManager;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Type;
@@ -276,6 +278,21 @@ public class TerminologyManager {
 		}
 		EventManager.getInstance()
 				.fireEvent(new TermDefinitionUnregisteredEvent(compiler, termIdentifier));
+	}
+
+	/**
+	 * Clean up term registrations of sections that no longer belong to an active (or live) article.<br>
+	 * This is good idea as an insurance against memory leaks and unclean incremental compilation, but requires
+	 * some performance overhead. It would be better and faster if this is not necessary (properly unregister all term
+	 * registrations via destroy in the CompileScript), but as long as performance is not an issues, we should do it to
+	 * be safe.
+	 */
+	public void cleanupStaleSection() {
+		Stopwatch stopwatch = new Stopwatch();
+		int counter = termLogManager.cleanupStaleSections();
+		if (counter > 0) {
+			stopwatch.log("Cleaned up " + Strings.pluralOf(counter, "stale term registration"));
+		}
 	}
 
 	public synchronized void unregisterTermReference(Compiler compiler, Section<?> termReference, Class<?> termClass, Identifier termIdentifier) {

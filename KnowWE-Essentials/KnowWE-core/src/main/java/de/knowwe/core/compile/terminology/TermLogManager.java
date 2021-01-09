@@ -53,4 +53,8 @@ class TermLogManager {
 	public Set<Entry<Identifier, TermLog>> entrySet() {
 		return termLogs.entrySet();
 	}
+
+	public int cleanupStaleSections() {
+		return termLogs.values().parallelStream().mapToInt(TermLog::cleanupStaleSections).sum();
+	}
 }

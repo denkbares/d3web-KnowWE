@@ -229,6 +229,7 @@ public class 	OntologyCompiler extends AbstractPackageCompiler
 			isIncrementalBuild = true;
 			sectionsOfPackageRemoved = getPackageManager().getRemovedSections(packagesToCompile);
 			destroy(sectionsOfPackageRemoved);
+			getTerminologyManager().cleanupStaleSection();
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
 		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this, sectionsOfPackage, sectionsOfPackageRemoved));
