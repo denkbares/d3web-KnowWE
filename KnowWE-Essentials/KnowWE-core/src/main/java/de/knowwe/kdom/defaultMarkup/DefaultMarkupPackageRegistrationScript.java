@@ -103,7 +103,7 @@ public class DefaultMarkupPackageRegistrationScript extends DefaultMarkupPackage
 
 	@Override
 	public void destroy(PackageRegistrationCompiler compiler, Section<DefaultMarkupType> section) {
-		compiler.getPackageManager().markFormRemoval(section);
+		compiler.getPackageManager().markForRemoval(section);
 	}
 
 	@Override

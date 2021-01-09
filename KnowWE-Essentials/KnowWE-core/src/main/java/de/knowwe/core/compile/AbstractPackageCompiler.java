@@ -102,7 +102,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	@Override
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
 		String[] packagesToCompile = getCompiledPackages();
-		if (newlyCreated || (getPackageManager().hasChanged(packagesToCompile) && hasChangedForCompiler(packagesToCompile))) {
+		if (newlyCreated || hasChangedForCompiler(packagesToCompile)) {
 			newlyCreated = false;
 			Stopwatch stopwatch = new Stopwatch();
 			compilePackages(packagesToCompile);

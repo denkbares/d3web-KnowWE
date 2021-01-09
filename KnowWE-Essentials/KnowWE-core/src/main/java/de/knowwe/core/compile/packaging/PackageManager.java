@@ -82,6 +82,8 @@ public class PackageManager {// implements EventListener {
 	private final Map<String, Set<Section<? extends PackageCompileType>>> packageToCompilingSections = new LinkedHashMap<>();
 
 	private final Map<String, Pair<Set<Section<?>>, Set<Section<?>>>> changedPackages = new LinkedHashMap<>();
+	private final Set<Section<?>> addedPredicateSections = new LinkedHashSet<>();
+	private final Set<Section<?>> removedPredicateSections = new LinkedHashSet<>();
 
 	public static void addPackageAnnotation(DefaultMarkup markup) {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
@@ -175,9 +177,7 @@ public class PackageManager {// implements EventListener {
 	public void addSectionToPackageRule(Section<? extends DefaultMarkupType> section, ParsedPredicate packageRule) {
 		predicateToSection.computeIfAbsent(packageRule, k -> new LinkedHashSet<>()).add(section);
 		sectionToPredicate.computeIfAbsent(section, k -> new LinkedHashSet<>()).add(packageRule);
-		for (String packageName : packageRule.getVariables()) {
-			addSectionToChangedPackagesAsAdded(section, packageName);
-		}
+		addedPredicateSections.add(section);
 	}
 
 	@NotNull
@@ -273,9 +273,7 @@ public class PackageManager {// implements EventListener {
 		if (ruleSet != null) {
 			boolean removed = ruleSet.remove(section);
 			if (removed) {
-				for (String packageName : packageRule.getVariables()) {
-					addSectionToChangedPackagesAsRemoved(section, packageName);
-				}
+				removedPredicateSections.remove(section);
 			}
 			if (ruleSet.isEmpty()) {
 				predicateToSection.remove(packageRule);
@@ -307,14 +305,16 @@ public class PackageManager {// implements EventListener {
 	 *
 	 * @param section the section to be marked for removal
 	 */
-	public void markFormRemoval(Section<DefaultMarkupType> section) {
+	public void markForRemoval(Section<DefaultMarkupType> section) {
+		// in case it is a section with ordinary packages
 		for (String packageName : getPackagesOfSection(section)) {
 			addSectionToChangedPackagesAsRemoved(section, packageName);
 		}
-		for (ParsedPredicate packageRule : new ArrayList<>(getPackageRulesOfSection(section))) {
-			for (String packageName : packageRule.getVariables()) {
-				addSectionToChangedPackagesAsRemoved(section, packageName);
-			}
+
+		// in case it has package rules
+		Set<ParsedPredicate> predicates = getPackageRulesOfSection(section);
+		if (!predicates.isEmpty()) {
+			removedPredicateSections.add(section);
 		}
 	}
 
@@ -363,13 +363,6 @@ public class PackageManager {// implements EventListener {
 		}
 	}
 
-	public boolean hasChanged(String... packageNames) {
-		for (String packageName : packageNames) {
-			if (changedPackages.containsKey(packageName)) return true;
-		}
-		return false;
-	}
-
 	/**
 	 * Returns all sections added to the given packages since the changes were last cleared with {@link
 	 * #clearChangedPackages()}. The sections don't have a particular order.
@@ -379,6 +372,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getAddedSections(String... packageNames) {
+		// first check the section with ordinary packages
 		List<Set<Section<?>>> sets = new ArrayList<>();
 		for (String packageName : packageNames) {
 			Pair<Set<Section<?>>, Set<Section<?>>> pair = changedPackages.get(packageName);
@@ -386,8 +380,27 @@ public class PackageManager {// implements EventListener {
 				sets.add(pair.getA());
 			}
 		}
+
+		// check the sections registered with package rules...
+		addChangedPredicateSections(this.addedPredicateSections, sets, packageNames);
+
 		//noinspection unchecked
 		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
+	}
+
+	private void addChangedPredicateSections(Set<Section<?>> addedPredicateSections, List<Set<Section<?>>> sets, String... packageNames) {
+		Set<Section<?>> predicateSections = new LinkedHashSet<>();
+		PackageRule.PackagesValueProvider valueProvider = new PackageRule.PackagesValueProvider(packageNames);
+		for (Section<?> addedPredicateSection : addedPredicateSections) {
+			Set<ParsedPredicate> packageRulesOfSection = getPackageRulesOfSection(addedPredicateSection);
+			for (ParsedPredicate parsedPredicate : packageRulesOfSection) {
+				if (parsedPredicate.test(valueProvider)) {
+					predicateSections.add(addedPredicateSection);
+					break;
+				}
+			}
+		}
+		if (!predicateSections.isEmpty()) sets.add(predicateSections);
 	}
 
 	/**
@@ -399,6 +412,7 @@ public class PackageManager {// implements EventListener {
 	 * @created 15.12.2013
 	 */
 	public Collection<Section<?>> getRemovedSections(String... packageNames) {
+		// first check the section with ordinary packages
 		List<Set<Section<?>>> sets = new ArrayList<>();
 		for (String packageName : packageNames) {
 			Pair<Set<Section<?>>, Set<Section<?>>> pair = changedPackages.get(packageName);
@@ -406,6 +420,10 @@ public class PackageManager {// implements EventListener {
 				sets.add(pair.getB());
 			}
 		}
+
+		// check the sections registered with package rules...
+		addChangedPredicateSections(this.removedPredicateSections, sets, packageNames);
+
 		//noinspection unchecked
 		return new ConcatenateCollection<>(sets.toArray(new Set[0]));
 	}
@@ -449,6 +467,8 @@ public class PackageManager {// implements EventListener {
 
 	public void clearChangedPackages() {
 		this.changedPackages.clear();
+		this.removedPredicateSections.clear();
+		this.addedPredicateSections.clear();
 	}
 
 	/**
