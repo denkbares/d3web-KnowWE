@@ -216,25 +216,28 @@ public class PackageManager {// implements EventListener {
 			}
 			// if only package compile sections are left, clean up those that only are part of
 			// the package because of a pattern matching the package
-			else if (packageCompileSections.containsAll(packageSet)) {
+			else {
+				//noinspection SuspiciousMethodCalls
+				if (packageCompileSections.containsAll(packageSet)) {
 
-				// seems like we only have compile sections in that package left
-				for (Section<?> packageSection : new ArrayList<>(packageSet)) {
-					Section<DefaultMarkupPackageCompileType> compileSection = Sections.cast(packageSection, DefaultMarkupPackageCompileType.class);
+					// seems like we only have compile sections in that package left
+					for (Section<?> packageSection : new ArrayList<>(packageSet)) {
+						Section<DefaultMarkupPackageCompileType> compileSection = Sections.cast(packageSection, DefaultMarkupPackageCompileType.class);
 
-					// if non of the directly specified packages of the compile section matches the given package name,
-					// the only other possibility is matching via pattern
-					boolean matchedOnlyViaPattern = compileSection.get().getPackages(compileSection).stream()
-							.noneMatch(p -> p.equals(packageName));
-					if (matchedOnlyViaPattern) {
-						removePackageForSection(compileSection, packageName);
-						packageSet.remove(compileSection);
+						// if non of the directly specified packages of the compile section matches the given package name,
+						// the only other possibility is matching via pattern
+						boolean matchedOnlyViaPattern = compileSection.get().getPackages(compileSection).stream()
+								.noneMatch(p -> p.equals(packageName));
+						if (matchedOnlyViaPattern) {
+							removePackageForSection(compileSection, packageName);
+							packageSet.remove(compileSection);
 
-						compileSection.get().getPackageCompilers(compileSection).forEach(c -> {
-							if (c instanceof AbstractPackageCompiler) {
-								((AbstractPackageCompiler) c).refreshCompiledPackages();
-							}
-						});
+							compileSection.get().getPackageCompilers(compileSection).forEach(c -> {
+								if (c instanceof AbstractPackageCompiler) {
+									((AbstractPackageCompiler) c).refreshCompiledPackages();
+								}
+							});
+						}
 					}
 				}
 			}
