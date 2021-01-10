@@ -202,13 +202,13 @@ class TermLog {
 
 	public int cleanupStaleSections() {
 		AtomicInteger counter = new AtomicInteger();
-		termDefinitions.removeIf(l -> {
-			boolean remove = !Sections.isLive(l.getSection());
+		termDefinitions.removeIf(log -> {
+			boolean remove = !Sections.isLive(log.getSection());
 			if (remove) counter.incrementAndGet();
 			return remove;
 		});
-		termReferences.removeIf(l -> {
-			boolean remove = !Sections.isLive(l.getSection());
+		termReferences.removeIf(log -> {
+			boolean remove = !Sections.isLive(log.getSection());
 			if (remove) counter.incrementAndGet();
 			return remove;
 		});

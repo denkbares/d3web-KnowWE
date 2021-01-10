@@ -262,8 +262,9 @@ public class DefaultArticleManager implements ArticleManager {
 	public boolean isLive(Section<?> section) {
 		//noinspection SimplifiableIfStatement
 		if (section == null || section.getTitle() == null) return false;
-		return getArticle(section.getTitle()) == section.getArticle()
-				&& !deleteAfterCompile.contains(section.getTitle().toLowerCase());
+		if (getArticle(section.getTitle()) != section.getArticle()) return false;
+		if (deleteAfterCompile.isEmpty()) return true;
+		return !deleteAfterCompile.contains(section.getTitle().toLowerCase());
 	}
 
 	@Override
