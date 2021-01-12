@@ -223,11 +223,7 @@ KNOWWE.core.plugin.progress = function() {
               bar.find(".long-progress-bar").progressbar({value: percent});
               bar.find(".long-progress-bar-percent").text(percent + " %");
               bar.find(".long-progress-bar-message").text(message);
-              if (report) {
-                bar.find(".long-progress-report").html(report);
-              } else {
-                bar.find(".long-progress-report").remove();
-              }
+              bar.find(".long-progress-report").html(report);
 
               if (!running) {
                 var closeFunction = function(event) {

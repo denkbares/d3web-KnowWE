@@ -441,6 +441,10 @@ span.markupMenuItem {
 	vertical-align: -7px;
 }
 
+.long-progress-report {
+	margin-bottom: 5px;
+}
+
 .defaultMarkup .markupText .long-progress-report a.action {
 	position: relative;
 	display: inline-block;
