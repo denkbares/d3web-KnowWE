@@ -29,6 +29,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -192,6 +194,18 @@ public class PackageManager {// implements EventListener {
 		Section<DefaultMarkupType> nearestDefaultMarkup = $(section).closest(DefaultMarkupType.class).getFirst();
 		Set<ParsedPredicate> packagesOfSection = sectionToPredicate.getOrDefault(nearestDefaultMarkup, Collections.emptySet());
 		return Collections.unmodifiableSet(packagesOfSection);
+	}
+
+	/**
+	 * Gets all package statements of a section.
+	 * It collects the package rules as the condition string and the package names of the section.
+	 * @param section the section to get all package statements for
+	 * @return the package statements (rules and package names)
+	 */
+	@NotNull
+	public Set<String> getPackageStatementsOfSection(Section<?> section) {
+		return Stream.concat(getPackagesOfSection(section).stream(), getPackageRulesOfSection(section).stream()
+				.map(ParsedPredicate::getCondition)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	/**
