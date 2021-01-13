@@ -150,7 +150,7 @@ public class Compilers {
 	 */
 	@Nullable
 	public static <C extends Compiler> C getCompiler(Section<?> section, Class<C> compilerClass) {
-		Collection<C> compilers = getCompilers(section, compilerClass, true);
+		Collection<C> compilers = getCompilers(null, section, compilerClass, true);
 		if (compilers.isEmpty()) {
 			return null;
 		}
@@ -394,10 +394,25 @@ public class Compilers {
 	 */
 	@NotNull
 	public static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass) {
-		return getCompilers(section, compilerClass, false);
+		return getCompilers(null, section, compilerClass, false);
 	}
 
-	private static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass, boolean firstOnly) {
+	/**
+	 * Returns all {@link Compiler}s with the given type that compile the packages of the given section. The compiler(s)
+	 * marked as default compiler will be first in the collection.
+	 *
+	 * @param context       the user context to get the default compilers
+	 * @param section       the section for which we want the {@link Compiler}s
+	 * @param compilerClass the type of the {@link Compiler} we want
+	 * @return all {@link Compiler}s compiling the given section
+	 * @created 15.11.2013
+	 */
+	@NotNull
+	public static <C extends Compiler> Collection<C> getCompilers(UserContext context, Section<?> section, Class<C> compilerClass) {
+		return getCompilers(context, section, compilerClass, false);
+	}
+
+	private static <C extends Compiler> Collection<C> getCompilers(@Nullable UserContext context, Section<?> section, Class<C> compilerClass, boolean firstOnly) {
 		ArticleManager articleManager = section.getArticleManager();
 		if (articleManager == null) { // can happen in preview
 			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
@@ -409,6 +424,7 @@ public class Compilers {
 				compilers.add(compilerClass.cast(compiler));
 			}
 		}
+
 		// if we only want one compiler but there are multiple, make sure to check if the section is a (or successor of)
 		// package compile section... if yes, we want the associated compiler
 		if (firstOnly && compilers.size() > 1) {
@@ -422,8 +438,30 @@ public class Compilers {
 				}
 			}
 		}
-		// make return value consistent
-		compilers.sort(Comparator.comparing(Compilers::getCompilerName, NumberAwareComparator.CASE_INSENSITIVE));
+
+		if (context != null) {
+			// sort by order of default compilers, as far as possible/available, otherwise, sort by name
+			Map<String, Integer> compilerOrder = new HashMap<>();
+			@NotNull List<String> defaultCompilers = getDefaultCompilers(context, compilerClass);
+			for (int i = 0; i < defaultCompilers.size(); i++) {
+				compilerOrder.put(defaultCompilers.get(i), i);
+			}
+			compilers.sort((o1, o2) -> {
+				String n1 = getCompilerName(o1);
+				String n2 = getCompilerName(o2);
+				int compare = compilerOrder.getOrDefault(n1, Integer.MAX_VALUE)
+						.compareTo(compilerOrder.getOrDefault(n2, Integer.MAX_VALUE));
+				if (compare == 0) {
+					compare = n1.compareTo(n2);
+				}
+				return compare;
+			});
+		}
+		else {
+			// make return value consistent, sort by name
+			compilers.sort(Comparator.comparing(Compilers::getCompilerName, NumberAwareComparator.CASE_INSENSITIVE));
+		}
+
 		return compilers;
 	}
 
@@ -438,7 +476,7 @@ public class Compilers {
 	 */
 	@NotNull
 	public static <C extends Compiler> Collection<C> getCompilersWithCompileScript(Section<?> section, Class<C> compilerClass) {
-		Collection<C> compilers = getCompilers(section, compilerClass, false);
+		Collection<C> compilers = getCompilers(null, section, compilerClass, false);
 		ArrayList<C> filteredCompilers = new ArrayList<>(compilers.size());
 		for (C compiler : compilers) {
 			if (!CompilerManager.getScriptManager(compiler).getScripts(section.get()).isEmpty()) {
