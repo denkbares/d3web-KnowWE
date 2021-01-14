@@ -64,7 +64,8 @@ public class Utils {
 	 * @created 14.12.2010
 	 */
 	public static Locale parseLocale(String localeString) {
-		return Locales.parseLocale(localeString);
+		Locale locale = Locales.parseLocale(localeString);
+		return locale == null ? Locale.ROOT : locale;
 	}
 
 	public static void redirectToErrorPage(UserActionContext context, Throwable e) throws IOException {

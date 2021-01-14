@@ -34,10 +34,6 @@ public class AcceptLanguage implements Comparable<AcceptLanguage> {
 	 */
 	private final float qualityFactor;
 
-	/**
-	 * @param locale
-	 * @param qualityFactor
-	 */
 	public AcceptLanguage(Locale locale, float qualityFactor) {
 		super();
 		this.locale = locale;
@@ -129,8 +125,6 @@ public class AcceptLanguage implements Comparable<AcceptLanguage> {
 	 * </ul>
 	 * 
 	 * @created 14.12.2010
-	 * @param request
-	 * @return
 	 */
 	public static List<AcceptLanguage> parseLanguagesFromHttpRequest(HttpServletRequest request) {
 		if (request == null) {
@@ -154,7 +148,7 @@ public class AcceptLanguage implements Comparable<AcceptLanguage> {
 			}
 			else if (splitLang.length == 2) {// quality factor string starts
 												// with "q="
-				Float qualityFactor = Float.parseFloat(splitLang[1].substring(2));
+				float qualityFactor = Float.parseFloat(splitLang[1].substring(2));
 				acceptedLanguages.add(new AcceptLanguage(splitLang[0], qualityFactor));
 			}
 		}
@@ -168,8 +162,6 @@ public class AcceptLanguage implements Comparable<AcceptLanguage> {
 	 * of the {@link HttpServletRequest}.
 	 * 
 	 * @created 15.12.2010
-	 * @param request
-	 * @param kb
 	 * @return The {@link Locale} from the {@link KnowledgeBase} which is
 	 *         best-matched by the Accept-Languages
 	 */
