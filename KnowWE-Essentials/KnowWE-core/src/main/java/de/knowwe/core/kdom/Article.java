@@ -20,6 +20,7 @@
 
 package de.knowwe.core.kdom;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.events.EventManager;
@@ -85,7 +86,7 @@ public final class Article {
 	/**
 	 * Constructor: starts recursive parsing by creating new Section object
 	 */
-	private Article(String text, String title, String web, boolean fullParse, boolean temporary) {
+	private Article(@NotNull String text, @NotNull String title, @NotNull String web, boolean fullParse, boolean temporary) {
 
 		long start = System.currentTimeMillis();
 		this.title = title;
@@ -245,7 +246,9 @@ public final class Article {
 		if (web == null) {
 			return other.web == null;
 		}
-		else return web.equals(other.web);
+		else {
+			return web.equals(other.web);
+		}
 	}
 
 	public void setArticleManager(ArticleManager articleManager) {
