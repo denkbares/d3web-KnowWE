@@ -57,6 +57,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 
 		CIDashboard dashboard = CIDashboardManager.getDashboard(Sections.cast(section, CIDashboardType.class));
 		if (dashboard == null) {
+			// can happen when viewing older article versions
 			string.append("%%information Dashboard not available /%");
 		}
 
