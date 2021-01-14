@@ -55,8 +55,10 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 	@Override
 	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 
-		CIDashboard dashboard = CIDashboardManager.getDashboard(Sections.cast(section,
-				CIDashboardType.class));
+		CIDashboard dashboard = CIDashboardManager.getDashboard(Sections.cast(section, CIDashboardType.class));
+		if (dashboard == null) {
+			string.append("%%information Dashboard not available /%");
+		}
 
 		string.append(renderDashboardContents(user, dashboard));
 	}
