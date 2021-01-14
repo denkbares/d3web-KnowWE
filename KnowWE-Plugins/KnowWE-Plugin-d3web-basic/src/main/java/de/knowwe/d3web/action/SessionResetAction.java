@@ -71,6 +71,10 @@ public class SessionResetAction extends AbstractAction {
 			return;
 		}
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(context, section);
+		if (base == null) {
+			context.sendError(404, "Knowledge base not found, try refreshing");
+			return;
+		}
 
 		// reset session
 		SessionProvider.removeSession(context, base);
