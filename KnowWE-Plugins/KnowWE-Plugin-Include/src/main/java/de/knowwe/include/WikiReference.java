@@ -262,6 +262,12 @@ public class WikiReference extends AbstractType {
 			return null;
 		}
 
+		if (articleManager == null) {
+			Messages.storeMessage(articleReference, WikiReference.class, Messages.error("Unable to get resolve reference in preview mode"));
+			return null;
+		}
+
+
 		Article targetArticle = articleManager.getArticle(targetArticleName);
 
 		// warning if article not found
