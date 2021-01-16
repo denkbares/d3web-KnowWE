@@ -129,7 +129,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		}
 	}
 
-	private CompilePair next() {
+	private CompilePair next(Step step) {
 		if (currentIterator == null) {
 			// happens only at the start, no synchronizing needed
 			setCurrentIterator();
@@ -145,11 +145,13 @@ public class ParallelScriptCompiler<C extends Compiler> {
 
 			// switch to lower priority if necessary and possible
 			while (!currentIterator.hasNext() && Priority.decrement(this.currentPriority) != null) {
+				firePrioStepFinishedEvent(currentPriority, step);
 				this.currentPriority = Priority.decrement(this.currentPriority);
 				setCurrentIterator();
 			}
 			// still no new pairs? then we are done....
 			if (!currentIterator.hasNext()) {
+				firePrioStepFinishedEvent(currentPriority, step);
 				return null;
 			}
 			this.threadPool = CompilerManager.createExecutorService();
@@ -179,16 +181,13 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		Priority lastPriority = Priority.INIT;
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
-			CompilePair pair = next();
+			CompilePair pair = next(Step.compile);
 			if (pair == null) {
-				// we have finished last prio level
-				firePrioFinishedEvent(lastPriority);
 				break;
 			}
 			if (currentPriority != lastPriority) {
 				compiler.getCompilerManager().setCurrentCompilePriority(compiler, currentPriority);
 				// we are done with this priority level now -> finished this level by throwing an event and proceed to next level
-				firePrioFinishedEvent(lastPriority);
 				lastPriority = currentPriority;
 			}
 
@@ -217,19 +216,29 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
 	}
 
-	private void firePrioFinishedEvent(Priority lastPriority) {
-		// we throw an event as this priority level compilation is now completed
-		List<Section<?>> sectionList = compileLog.getOrDefault(lastPriority, Collections.emptyList())
-				.stream().map(Pair::getA).collect(Collectors.toList());
-		// event needs to be fired _after_ the currentPriority (and Iterator) has been incremented
-		EventManager.getInstance()
-				.fireEvent(new CompilePriorityLevelFinishedEvent(compiler, lastPriority, sectionList));
+	private void firePrioStepFinishedEvent(Priority lastPriority, Step step) {
+		if (step == Step.compile) {
+			// we throw an event as this priority level compilation is now completed
+			List<Section<?>> sectionList = compileLog.getOrDefault(lastPriority, Collections.emptyList())
+					.stream().map(Pair::getA).collect(Collectors.toList());
+			// event needs to be fired _after_ the currentPriority (and Iterator) has been incremented
+			EventManager.getInstance()
+					.fireEvent(new CompilePriorityLevelFinishedEvent(compiler, lastPriority, sectionList));
+		}
+		else {
+			// we need a destroy finished event one day? -> goes here
+		}
+	}
+
+	enum Step {
+		compile,
+		destroy;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void destroy() {
 		while (true) {
-			CompilePair pair = next();
+			CompilePair pair = next(Step.destroy);
 			if (pair == null) break;
 			if (pair.getB() instanceof DestroyScript) {
 				threadPool.execute(() -> {
