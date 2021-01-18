@@ -775,7 +775,8 @@ public class DOTRenderer {
 			Log.finest("Finished augmenting SVG: " + svg.getAbsolutePath());
 		}
 		catch (JDOMException e) {
-			Log.warning("Exception while augmenting SVG " + svg.getAbsolutePath(), e);
+			Log.warning("Exception while augmenting SVG " + svg.getAbsolutePath() + ": " + e.getClass()
+					.getSimpleName() + ": " + e.getMessage());
 		}
 	}
 
