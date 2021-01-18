@@ -167,7 +167,7 @@ public class AcceptLanguage implements Comparable<AcceptLanguage> {
 	 */
 	public static Locale getInitLocale(HttpServletRequest request, KnowledgeBase kb) {
 		if (request == null || kb == null) {
-			throw new IllegalArgumentException("request or kb was null!");
+			return Locale.ROOT;
 		}
 		List<AcceptLanguage> acceptedLanguages = parseLanguagesFromHttpRequest(request);
 		Set<Locale> kbLocales = KnowledgeBaseUtils.getAvailableLocales(kb);
