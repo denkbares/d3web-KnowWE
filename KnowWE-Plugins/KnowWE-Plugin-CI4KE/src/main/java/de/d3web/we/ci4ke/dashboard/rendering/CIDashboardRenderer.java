@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TreeSet;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.d3web.testing.BuildResult;
@@ -59,6 +61,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		if (dashboard == null) {
 			// can happen when viewing older article versions
 			string.append("%%information Dashboard not available /%");
+			return;
 		}
 
 		string.append(renderDashboardContents(user, dashboard));
