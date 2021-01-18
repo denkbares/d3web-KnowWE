@@ -54,6 +54,10 @@ public class GetInterview extends AbstractAction {
 		KnowledgeBase base = (KnowledgeBase) context.getSession().getAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE);
 
+		if (base == null) {
+			failUnexpected(context, "No knowledge base found");
+		}
+
 		StartCase.KnowledgeBaseProvider[] providers = (StartCase.KnowledgeBaseProvider[]) context.getSession()
 				.getAttribute(SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS);
 		// create {@link OutDatedSessionNotification} if necessary
