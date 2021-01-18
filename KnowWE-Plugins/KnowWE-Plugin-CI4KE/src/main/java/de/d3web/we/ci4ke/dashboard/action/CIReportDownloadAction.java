@@ -6,6 +6,7 @@ package de.d3web.we.ci4ke.dashboard.action;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
@@ -70,11 +71,11 @@ public class CIReportDownloadAction extends AbstractAction {
 			// write to output stream
 			String content = writer.toString();
 			String fileName = name + " " + latestBuild.getBuildNumber() + ".html";
-			byte[] contentBytes = content.getBytes("UTF-8");
+			byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
 			context.setContentLength(contentBytes.length);
 			context.setContentType("application/xhtml+xml; charset=UTF-8");
 			context.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
-			context.getWriter().write(new String(contentBytes, "UTF-8"));
+			context.getWriter().write(new String(contentBytes, StandardCharsets.UTF_8));
 
 		}
 		catch (TransformerException | ParserConfigurationException e) {

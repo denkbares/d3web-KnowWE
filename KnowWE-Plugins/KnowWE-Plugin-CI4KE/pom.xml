@@ -57,10 +57,6 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
 		</dependency>
 		<dependency>
@@ -87,6 +83,10 @@
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.saxon</groupId>
+			<artifactId>Saxon-HE</artifactId>
 		</dependency>
 	</dependencies>
 
