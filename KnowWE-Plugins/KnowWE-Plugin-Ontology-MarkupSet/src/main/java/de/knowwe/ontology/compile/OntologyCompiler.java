@@ -55,6 +55,8 @@ import de.knowwe.rdf2go.ChangedStatementsEvent;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
+import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.compile;
+import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.destroy;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
@@ -88,7 +90,7 @@ public class 	OntologyCompiler extends AbstractPackageCompiler
 		}
 		this.multiDefinitionMode = multiDefMode == null ? MultiDefinitionMode.ignore : multiDefMode;
 		this.referenceValidationMode = referenceValidationMode == null ? ReferenceValidationMode.error : referenceValidationMode;
-		this.scriptCompiler = new ParallelScriptCompiler<>(this);
+		this.scriptCompiler = new ParallelScriptCompiler<>(this, compile);
 		this.ruleSet = ruleSet;
 		this.caseSensitive = true;
 		this.isIncrementalBuild = false;
@@ -250,8 +252,8 @@ public class 	OntologyCompiler extends AbstractPackageCompiler
 
 		completeCompilation = false;
 		commitTracker.clear();
-		destroyScriptCompiler = new ParallelScriptCompiler<>(this);
-		scriptCompiler = new ParallelScriptCompiler<>(this);
+		destroyScriptCompiler = new ParallelScriptCompiler<>(this, destroy);
+		scriptCompiler = new ParallelScriptCompiler<>(this, compile);
 	}
 
 	private void compile(Collection<Section<?>> sectionsOfPackage) {
@@ -261,14 +263,14 @@ public class 	OntologyCompiler extends AbstractPackageCompiler
 				scriptCompiler.addSubtree(section);
 			}
 		}
-		scriptCompiler.compile();
+		scriptCompiler.run();
 	}
 
 	private void destroy(Collection<Section<?>> sectionsOfPackage) {
 		for (Section<?> section : sectionsOfPackage) {
 			destroyScriptCompiler.addSubtree(section);
 		}
-		destroyScriptCompiler.destroy();
+		destroyScriptCompiler.run();
 	}
 
 	static CommitType getCommitType(OntologyCompiler compiler) {

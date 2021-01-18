@@ -24,6 +24,9 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 
+import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.compile;
+import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.destroy;
+
 /**
  * For the given {@link Section}s and {@link Compiler} it gets all
  * {@link CompileScript}s and then compiles all Sections in the order, given by Priority of the
@@ -39,6 +42,11 @@ import de.knowwe.core.report.Messages;
  */
 public class ParallelScriptCompiler<C extends Compiler> {
 
+	public enum Mode {
+		compile,
+		destroy
+	}
+
 	private final TreeMap<Priority, List<CompilePair>> compileMap =
 			new TreeMap<>();
 
@@ -53,16 +61,27 @@ public class ParallelScriptCompiler<C extends Compiler> {
 
 	private ExecutorService threadPool;
 
+	private final Mode step;
 	private final Class<?>[] typeFilter;
 
 	private final C compiler;
 
 	private final ScriptManager<C> scriptManager;
 
+	/**
+	 * Creates a new script compiler that runs scripts of the same priority in parallel.
+	 * Every instance calls either compile or destroy an all compile scripts, dependent on the {@link Mode} that
+	 * is given in the constructor.
+	 *
+	 * @param compiler   the parent @link {@link Compiler} this script compiler belongs to
+	 * @param mode       the step/mode of the compilation, either <tt>compile</tt> or <tt>destroy</tt>
+	 * @param typeFilter optional filters for compile script that should be run
+	 */
 	@SuppressWarnings("unchecked")
-	public ParallelScriptCompiler(C compiler, Class<?>... typeFilter) {
+	public ParallelScriptCompiler(C compiler, Mode mode, Class<?>... typeFilter) {
 		this.compiler = compiler;
 		scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
+		this.step = mode;
 		this.typeFilter = typeFilter;
 		for (Priority p : Priority.getRegisteredPriorities()) {
 			compileMap.put(p, new ArrayList<>());
@@ -129,7 +148,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		}
 	}
 
-	private CompilePair next(Step step) {
+	private CompilePair next() {
 		if (currentIterator == null) {
 			// happens only at the start, no synchronizing needed
 			setCurrentIterator();
@@ -145,13 +164,13 @@ public class ParallelScriptCompiler<C extends Compiler> {
 
 			// switch to lower priority if necessary and possible
 			while (!currentIterator.hasNext() && Priority.decrement(this.currentPriority) != null) {
-				firePrioStepFinishedEvent(currentPriority, step);
+				firePrioStepFinishedEvent(currentPriority);
 				this.currentPriority = Priority.decrement(this.currentPriority);
 				setCurrentIterator();
 			}
 			// still no new pairs? then we are done....
 			if (!currentIterator.hasNext()) {
-				firePrioStepFinishedEvent(currentPriority, step);
+				firePrioStepFinishedEvent(currentPriority);
 				return null;
 			}
 			this.threadPool = CompilerManager.createExecutorService();
@@ -177,11 +196,23 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		}
 	}
 
-	public void compile() {
+	public void run() {
+		if (step == compile) {
+			compile();
+		}
+		else if (step == destroy) {
+			destroy();
+		}
+		else {
+			throw new UnsupportedOperationException("Unknown and unhandled " + Mode.class.getSimpleName() + ": " + step);
+		}
+	}
+
+	private void compile() {
 		Priority lastPriority = Priority.INIT;
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
-			CompilePair pair = next(Step.compile);
+			CompilePair pair = next();
 			if (pair == null) {
 				break;
 			}
@@ -216,8 +247,8 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
 	}
 
-	private void firePrioStepFinishedEvent(Priority lastPriority, Step step) {
-		if (step == Step.compile) {
+	private void firePrioStepFinishedEvent(Priority lastPriority) {
+		if (step == compile) {
 			// we throw an event as this priority level compilation is now completed
 			List<Section<?>> sectionList = compileLog.getOrDefault(lastPriority, Collections.emptyList())
 					.stream().map(Pair::getA).collect(Collectors.toList());
@@ -230,15 +261,10 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		}
 	}
 
-	enum Step {
-		compile,
-		destroy;
-	}
-
 	@SuppressWarnings("unchecked")
-	public void destroy() {
+	private void destroy() {
 		while (true) {
-			CompilePair pair = next(Step.destroy);
+			CompilePair pair = next();
 			if (pair == null) break;
 			if (pair.getB() instanceof DestroyScript) {
 				threadPool.execute(() -> {
