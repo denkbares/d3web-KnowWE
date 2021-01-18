@@ -29,6 +29,7 @@ public class GetAvailableKnowledgeBases extends AbstractAction {
 		HttpSession session = context.getSession();
 		StartCase.KnowledgeBaseProvider[] providers = (StartCase.KnowledgeBaseProvider[]) session.getAttribute(
 				SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS);
+		if (providers == null) providers = new StartCase.KnowledgeBaseProvider[0];
 
 		context.setContentType("text/xml");
 		Writer writer = context.getWriter();

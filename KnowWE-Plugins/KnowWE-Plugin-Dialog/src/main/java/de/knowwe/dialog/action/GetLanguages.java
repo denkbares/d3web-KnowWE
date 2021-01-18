@@ -36,6 +36,10 @@ public class GetLanguages extends AbstractAction {
 		KnowledgeBase kb = (KnowledgeBase) context.getSession().getAttribute(
 				SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE);
 
+		if (kb == null) {
+			failUnexpected(context, "No knowledge base found");
+		}
+
 		// Get available languages
 		Set<Locale> locales = KnowledgeBaseUtils.getAvailableLocales(kb);
 
