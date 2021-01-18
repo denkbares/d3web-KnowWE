@@ -437,6 +437,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	public static String renderPreview(WikiContext wikiContext, String content) {
+		if (content == null) return "";
 
 		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
 		if (httpRequest == null) {
