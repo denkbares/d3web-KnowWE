@@ -42,6 +42,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		List<Tool> tools = new LinkedList<>();
 		for (RDFFormat syntax : RDFParserRegistry.getInstance().getKeys()) {
+			if ("Blind ZIP".equals(syntax.getName())) continue;
 			Tool tool = getDownloadTool(section, syntax);
 			if (tool != null) tools.add(tool);
 		}
