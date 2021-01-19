@@ -60,19 +60,56 @@ public final class Article {
 	private final boolean fullParse;
 	private boolean temporary;
 
+	/**
+	 * Create a new article by parsing the given text into a section tree (KDOM). Use this method if you want to add the
+	 * article to an article manager.
+	 *
+	 * @param text      the text of the article
+	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
+	 * @param web       the web the article belongs to (currently unused)
+	 */
 	public static Article createArticle(String text, String title, String web) {
 		return createArticle(text, title, web, false);
 	}
 
-	public static Article createEmptyArticle(String title, String web) {
-		return new Article(title, web);
-	}
-
+	/**
+	 * Create a new article by parsing the given text into a section tree (KDOM). Use this method if you want to add the
+	 * article to an article manager.
+	 *
+	 * @param text      the text of the article
+	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
+	 * @param web       the web the article belongs to (currently unused)
+	 * @param fullParse whether we should perform a full parse of the text or reuse section from previous article
+	 *                  versions if possible
+	 */
 	public static Article createArticle(String text, String title, String web, boolean fullParse) {
 		return createArticle(text, title, web, fullParse, false);
 	}
 
-	public static Article createArticle(String text, String title, String web, boolean fullParse, boolean temporary) {
+	/**
+	 * Create a new temporary article by parsing the given text into a section tree (KDOM). Use this method if and only
+	 * if the article will not be added to an article manager.
+	 *
+	 * @param text      the text of the article
+	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
+	 * @param web       the web the article belongs to (currently unused)
+	 */
+	public static Article createTemporaryArticle(String text, String title, String web) {
+		return createArticle(text, title, web, true, true);
+	}
+
+	/**
+	 * Create a new article by parsing the given text into a section tree (KDOM)
+	 *
+	 * @param text      the text of the article
+	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
+	 * @param web       the web the article belongs to (currently unused)
+	 * @param fullParse whether we should perform a full parse of the text or reuse section from previous article
+	 *                  versions if possible
+	 * @param temporary whether this is a temporary article not (temporary articles must not be added to an article
+	 *                  manager and articles that are not added to an article manager must be marked temporary)
+	 */
+	private static Article createArticle(String text, String title, String web, boolean fullParse, boolean temporary) {
 		Article article = null;
 		try {
 			article = new Article(text, title, web, fullParse, temporary);
@@ -83,9 +120,6 @@ public final class Article {
 		return article;
 	}
 
-	/**
-	 * Constructor: starts recursive parsing by creating new Section object
-	 */
 	private Article(@NotNull String text, @NotNull String title, @NotNull String web, boolean fullParse, boolean temporary) {
 
 		long start = System.currentTimeMillis();
@@ -264,6 +298,10 @@ public final class Article {
 	 */
 	@Nullable
 	public ArticleManager getArticleManager() {
+		if (articleManager == null && !temporary) {
+			Log.severe("Article without ArticleManager that is not temporary! This combination is not allowed due to section id life-cycle and has to be fixed!",
+					new IllegalStateException(""));
+		}
 		return articleManager;
 	}
 

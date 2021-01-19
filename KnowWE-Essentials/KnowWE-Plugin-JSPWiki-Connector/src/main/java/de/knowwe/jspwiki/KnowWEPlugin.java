@@ -307,7 +307,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			}
 			else {
 				// just create/sectionize temp version of the article that is NOT added and compiled to the article manager
-				article = Article.createArticle(content, title, Environment.DEFAULT_WEB);
+				article = Article.createTemporaryArticle(content, title, Environment.DEFAULT_WEB);
 			}
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
@@ -454,7 +454,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		includeDOMResources(wikiContext);
 		RenderResult renderResult = new RenderResult(userContext.getRequest());
 		String title = wikiContext.getRealPage().getName();
-		Article article = Article.createArticle(content, title, Environment.DEFAULT_WEB, false, true);
+		Article article = Article.createTemporaryArticle(content, title, Environment.DEFAULT_WEB);
 
 		List<PageAppendHandler> appendHandlers = Environment.getInstance()
 				.getAppendHandlers();

@@ -97,7 +97,7 @@ public class LoadFlowchartAction extends AbstractAction {
 	//
 	public static Section<RootType> sectionizeArticle(String text) {
 		Section<RootType> rootSection = Section.createSection(text, RootType.getInstance(), null);
-		Article article = Article.createArticle("", "DiaFluxHelper", "default_web", true);
+		Article article = Article.createTemporaryArticle("", "DiaFluxHelper", "default_web");
 		rootSection.setArticle(article);
 		RootType.getInstance().getParser().parse(text, rootSection);
 		return rootSection;
