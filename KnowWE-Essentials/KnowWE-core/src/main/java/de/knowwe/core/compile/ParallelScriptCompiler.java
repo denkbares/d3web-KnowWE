@@ -1,6 +1,7 @@
 package de.knowwe.core.compile;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -250,11 +251,17 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	private void firePrioStepFinishedEvent(Priority lastPriority) {
 		if (step == compile) {
 			// we throw an event as this priority level compilation is now completed
-			List<Section<?>> sectionList = compileLog.getOrDefault(lastPriority, Collections.emptyList())
+
+			List<Section<?>> sectionListThisPrio = compileLog.getOrDefault(lastPriority, Collections.emptyList())
 					.stream().map(Pair::getA).collect(Collectors.toList());
+			List<Section<?>> allSectionCompiledUpToNow = compileLog.keySet()
+					.stream()
+					.map(compileLog::get)
+					.flatMap(Collection::stream)
+					.map(Pair::getA).collect(Collectors.toList());
 			// event needs to be fired _after_ the currentPriority (and Iterator) has been incremented
 			EventManager.getInstance()
-					.fireEvent(new CompilePriorityLevelFinishedEvent(compiler, lastPriority, sectionList));
+					.fireEvent(new CompilePriorityLevelFinishedEvent(compiler, lastPriority, sectionListThisPrio, !allSectionCompiledUpToNow.isEmpty()));
 		}
 		else {
 			// we need a destroy finished event one day? -> goes here

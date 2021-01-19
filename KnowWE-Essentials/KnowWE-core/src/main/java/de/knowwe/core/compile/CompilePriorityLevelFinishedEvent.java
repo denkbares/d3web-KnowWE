@@ -9,18 +9,21 @@ import de.knowwe.core.kdom.parsing.Section;
  * Event that is thrown when a compiler has finished a certain stage,
  * i.e. all registered compile scripts of that particular priority level are finished
  *
+ * NOTE: The event is _NOT thrown_ if there were no script registered/executed for a specific Priority.
+ *
  * @author Jochen Reutelshoefer (denkbares GmbH)
  * @created 23.10.20.
  */
 public class CompilePriorityLevelFinishedEvent extends CompilerEvent<Compiler> {
 	private final Priority priority;
+	private final Collection<Section<?>> compiledSectionsCurrentPriority;
+	private final boolean hasCompiledAnySectionUpToNow;
 
-	private final Collection<Section<?>> compiledSections;
-
-	public CompilePriorityLevelFinishedEvent(Compiler compiler, Priority currentPriority, Collection<Section<?>> compiledSections) {
+	public CompilePriorityLevelFinishedEvent(Compiler compiler, Priority currentPriority, Collection<Section<?>> compiledSections, boolean hasCompiledAnySectionUpToNow) {
 		super(compiler);
 		priority = currentPriority;
-		this.compiledSections = compiledSections;
+		this.compiledSectionsCurrentPriority = compiledSections;
+		this.hasCompiledAnySectionUpToNow = hasCompiledAnySectionUpToNow;
 	}
 
 	/**
@@ -37,7 +40,16 @@ public class CompilePriorityLevelFinishedEvent extends CompilerEvent<Compiler> {
 	 *
 	 * @return compiled sections
 	 */
-	public Collection<Section<?>> getCompiledSections() {
-		return compiledSections;
+	public Collection<Section<?>> getCompiledSectionsCurrentPriority() {
+		return compiledSectionsCurrentPriority;
+	}
+
+	/**
+	 * Tells whether there have sections been already compiled up to now
+	 *
+	 * @return whether sections have been compiled by now
+	 */
+	public boolean hasCompiledAnySectionUpToNow() {
+		return hasCompiledAnySectionUpToNow;
 	}
 }
