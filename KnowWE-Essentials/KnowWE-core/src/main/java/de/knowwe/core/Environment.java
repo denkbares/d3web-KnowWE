@@ -545,11 +545,7 @@ public class Environment {
 	public Article buildAndRegisterArticle(String web, String title, String content) {
 
 		// create article with the new content
-		Article article = Article.createArticle(content, title, web);
-
-		this.getArticleManager(web).registerArticle(article);
-
-		return article;
+		return this.getArticleManager(web).registerArticle(title, content);
 	}
 
 	/**
@@ -603,7 +599,6 @@ public class Environment {
 	 */
 	@Deprecated
 	public TerminologyManager getTerminologyManager(String defaultWeb, String master) {
-		//noinspection deprecation
 		return KnowWEUtils.getTerminologyManager((master == null)
 				? null
 				: KnowWEUtils.getArticleManager(defaultWeb).getArticle(master));

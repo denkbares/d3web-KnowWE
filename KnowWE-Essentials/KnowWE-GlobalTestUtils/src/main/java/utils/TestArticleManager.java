@@ -36,7 +36,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class TestArticleManager {
 
-	private static final TestArticleManager instance = new TestArticleManager();
+	private static TestArticleManager instance = null;
 
 	/**
 	 * Private Constructor insures noninstantiabilty.
@@ -46,6 +46,10 @@ public class TestArticleManager {
 	}
 
 	public static TestArticleManager getInstance() {
+		if (instance == null) {
+			//noinspection InstantiationOfUtilityClass
+			instance = new TestArticleManager();
+		}
 		return instance;
 	}
 
@@ -87,7 +91,7 @@ public class TestArticleManager {
 		ArticleManager articleManager = KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB);
 		Collection<Article> articles = articleManager.getArticles();
 		for (Article article : new ArrayList<>(articles)) {
-			articleManager.deleteArticle(article);
+			articleManager.deleteArticle(article.getTitle());
 		}
 	}
 }

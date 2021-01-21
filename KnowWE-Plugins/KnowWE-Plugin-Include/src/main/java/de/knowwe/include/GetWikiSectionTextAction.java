@@ -36,7 +36,7 @@ public class GetWikiSectionTextAction extends GetSectionTextAction {
 			return;
 		}
 
-		Article auxiliaryArticle = Article.createArticle("%%include\n[" + wikiReference + "]\n%", "AuxArticle", "AuxWeb");
+		Article auxiliaryArticle = Article.createTemporaryArticle("%%include\n[" + wikiReference + "]\n%", "AuxArticle", "AuxWeb");
 		try {
 
 			Section<WikiReference> wikiReferenceSection = Sections.successor(auxiliaryArticle.getRootSection(), WikiReference.class);

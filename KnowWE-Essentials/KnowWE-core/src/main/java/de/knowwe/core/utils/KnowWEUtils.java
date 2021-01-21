@@ -1186,7 +1186,7 @@ public class KnowWEUtils {
 		final Article oldArticle = manager.getArticle(oldArticleTitle);
 		manager.open();
 		try {
-			manager.deleteArticle(oldArticle);
+			manager.deleteArticle(oldArticleTitle);
 			Environment.getInstance().buildAndRegisterArticle(
 					Environment.DEFAULT_WEB, newArticleTitle, oldArticle.getText());
 		}
@@ -1280,8 +1280,7 @@ public class KnowWEUtils {
 		articleManager.open();
 		try {
 			for (Article article : articles) {
-				Article newKbArticle = Article.createArticle(article.getText(), article.getTitle(), article.getWeb());
-				articleManager.registerArticle(newKbArticle);
+				articleManager.registerArticle(article.getTitle(), article.getText());
 			}
 		}
 		finally {

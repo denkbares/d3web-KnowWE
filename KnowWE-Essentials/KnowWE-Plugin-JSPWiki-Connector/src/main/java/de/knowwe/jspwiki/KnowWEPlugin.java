@@ -499,8 +499,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			wikiPages.parallelStream().forEach(o -> {
 				WikiPage wp = (WikiPage) o;
 				String content = engine.getPureText(wp.getName(), wp.getVersion());
-				Article article = Article.createArticle(content, wp.getName(), Environment.DEFAULT_WEB);
-				articleManager.queueArticle(article);
+				articleManager.queueArticle(wp.getName(), content);
 			});
 			stopwatchSectionizing.log("Sectionized all articles");
 		}
@@ -572,7 +571,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (articleToDelete != null) {
 				// somehow the event is fired twice...
 				// don't call deleteArticle if the article is already deleted
-				articleManager.deleteArticle(articleToDelete);
+				articleManager.deleteArticle(e.getPageName());
 			}
 		}
 		else if (event instanceof WikiPageRenameEvent) {

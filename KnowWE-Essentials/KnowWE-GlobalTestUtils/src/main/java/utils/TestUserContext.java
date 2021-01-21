@@ -74,7 +74,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	 * @param articleName the name of the article to be created.
 	 */
 	public TestUserContext(String articleName) {
-		this(Article.createArticle("", articleName, Environment.DEFAULT_WEB));
+		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
 	}
 
 	public TestUserContext(Article article, boolean isAdmin, boolean isAsserted) {

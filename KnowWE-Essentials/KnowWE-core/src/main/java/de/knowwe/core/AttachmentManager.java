@@ -3,7 +3,6 @@ package de.knowwe.core;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -113,7 +112,7 @@ public class AttachmentManager implements EventListener {
 
 		for (String attachmentPath : getRemovedPathsOfArticle(outdatedAttachmentSections, currentAttachmentSections)) {
 			Set<Section<AttachmentType>> values = pathToSectionsMap.getValues(attachmentPath);
-			if (values != null && !values.isEmpty()) return;
+			if (!values.isEmpty()) return;
 			deleteAttachmentArticle(attachmentPath);
 		}
 
@@ -121,14 +120,12 @@ public class AttachmentManager implements EventListener {
 
 	private Set<Section<AttachmentType>> addAttachmentSectionsOfNewArticle(Article article) {
 		registerCompiledAttachmentSections(article);
-		Set<Section<AttachmentType>> addedAttachmentSections = articleTitleToSectionsMap.getValues(article.getTitle());
-		return addedAttachmentSections == null ? Collections.emptySet() : addedAttachmentSections;
+		return articleTitleToSectionsMap.getValues(article.getTitle());
 	}
 
 	@NotNull
 	private Set<Section<AttachmentType>> removeAttachmentSectionsOfLastArticleVersion(Article article) {
 		Set<Section<AttachmentType>> lastVersionAttachments = articleTitleToSectionsMap.removeKey(article.getTitle());
-		if (lastVersionAttachments == null) lastVersionAttachments = Collections.emptySet();
 		for (Section<AttachmentType> attachmentSection : lastVersionAttachments) {
 			pathToSectionsMap.removeValue(attachmentSection);
 		}
@@ -146,8 +143,7 @@ public class AttachmentManager implements EventListener {
 	}
 
 	private Set<String> getDiff(Set<Section<AttachmentType>> addAll, Set<Section<AttachmentType>> removeAll) {
-		Set<String> registrationCandidates = new HashSet<>();
-		registrationCandidates.addAll(toPaths(addAll));
+		Set<String> registrationCandidates = new HashSet<>(toPaths(addAll));
 		registrationCandidates.removeAll(toPaths(removeAll));
 		return registrationCandidates;
 	}
@@ -182,13 +178,11 @@ public class AttachmentManager implements EventListener {
 			WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(attachmentPath);
 			if (attachment == null) return;
 			String attachmentText = Strings.readStream(attachment.getInputStream());
-			Article attachmentArticle = Article.createArticle(
-					attachmentText, attachmentPath, articleManager.getWeb());
 			if (allArticlesInitialized) {
-				articleManager.registerArticle(attachmentArticle);
+				articleManager.registerArticle(attachmentPath, attachmentText);
 			}
 			else {
-				((DefaultArticleManager) articleManager).queueArticle(attachmentArticle);
+				((DefaultArticleManager) articleManager).queueArticle(attachmentPath, attachmentText);
 			}
 		}
 		catch (IOException e) {
@@ -208,12 +202,11 @@ public class AttachmentManager implements EventListener {
 	}
 
 	private void deleteAttachmentArticle(String attachmentPath) {
-		articleManager.deleteArticle(articleManager.getArticle(attachmentPath));
+		articleManager.deleteArticle(attachmentPath);
 	}
 
 	private boolean isCompiledAttachment(String attachmentPath) {
 		Set<Section<AttachmentType>> attachmentTypeSections = pathToSectionsMap.getValues(attachmentPath);
-		if (attachmentTypeSections == null) return false;
 		for (Section<AttachmentType> markupSection : attachmentTypeSections) {
 			if (Sections.isLive(markupSection)) return true;
 		}

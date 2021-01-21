@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -107,13 +107,12 @@ public class TestUtils {
 	/**
 	 * Creates an @link{UserActionContext} for test purposes. Both parameters
 	 * are optional (in case you don't need the Action...)
-	 * 
-	 * @created Apr 28, 2011
+	 *
 	 * @param actionName <strong>optional:</strong> The name of the desired
-	 *        Action
-	 * @param path <strong>optional:</strong> special path (very unlikely that
-	 *        you need this)
-	 * @return
+	 *                   Action
+	 * @param path       <strong>optional:</strong> special path (very unlikely that
+	 *                   you need this)
+	 * @created Apr 28, 2011
 	 */
 	public static UserActionContext createTestActionContext(String actionName, String path) {
 		Map<String, String> map = new HashMap<>();
@@ -136,10 +135,8 @@ public class TestUtils {
 	/**
 	 * Called by the Core-Junit-Tests
 	 */
-	public static void processAndUpdateArticleJunit(String username, String content,
-			String topic, String web) {
-		Environment.getInstance().getArticleManager(web).registerArticle(
-				Article.createArticle(content, topic, web, true));
+	public static void processAndUpdateArticleJunit(String username, String content, String topic, String web) {
+		Environment.getInstance().getArticleManager(web).registerArticle(topic, content);
 	}
 
 	public static String createKnowWEExtensionPath() {

@@ -76,7 +76,7 @@ public class AttachmentType extends AbstractType {
 			@Override
 			public void destroy(DefaultGlobalCompiler compiler, Section<AttachmentType> section) {
 				// clean up listener
-				AttachmentChangedListener listener = (AttachmentChangedListener) section.removeObject(compiler, LISTENER_KEY);
+				AttachmentChangedListener listener = section.removeObject(compiler, LISTENER_KEY);
 				if (listener != null) listener.destroy();
 			}
 		});
@@ -179,13 +179,12 @@ public class AttachmentType extends AbstractType {
 			if (thisAttachmentPath.startsWith(eventAttachmentPath)) {
 				Article article = section.getArticle();
 				ArticleManager articleManager = article.getArticleManager();
-
+				if (articleManager == null) return;
 				boolean alreadyQueued = articleManager.getQueuedArticles()
 						.stream().anyMatch(a -> a.getTitle().equals(article.getTitle()));
 				if (!alreadyQueued) {
 					// basically, do a full parse...
-					Article newArticle = Article.createArticle(article.getText(), article.getTitle(), web);
-					articleManager.registerArticle(newArticle);
+					articleManager.registerArticle(article.getTitle(), article.getText());
 				}
 			}
 		}

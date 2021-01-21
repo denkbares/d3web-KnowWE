@@ -51,14 +51,14 @@ public interface ArticleManager {
 	 * Registers a changed or new article in the manager and also compiles it. If this manager already contains an
 	 * article with the same name/title, the existing article will be replaced by the new one.
 	 */
-	void registerArticle(Article article);
+	Article registerArticle(String title, String content);
 
 	/**
 	 * Deletes the given article from this article manager
 	 *
-	 * @param article the article to delete
+	 * @param title the article to delete
 	 */
-	void deleteArticle(Article article);
+	void deleteArticle(String title);
 
 	/**
 	 * Provides an immutable snapshot of the internal queue of registered/queued, but not yet compiled articles. If

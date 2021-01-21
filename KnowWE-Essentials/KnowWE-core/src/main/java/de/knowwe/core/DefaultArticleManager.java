@@ -106,11 +106,14 @@ public class DefaultArticleManager implements ArticleManager {
 	 * ArticleManager#commit()}.<p>
 	 * <b>Attention:</b> Do not call this method synchronously from within a compilation thread.
 	 *
-	 * @param article is the changed or new article to register
+	 * @param title   is the changed or new article to register
+	 * @param content is the changed or new article to register
+	 * @return the article we just generated and registered
 	 * @created 20.12.2013
 	 */
 	@Override
-	public void registerArticle(Article article) {
+	public Article registerArticle(String title, String content) {
+		Article article = Article.createArticle(content, title, this);
 		open();
 		try {
 			queueArticle(article);
@@ -118,18 +121,23 @@ public class DefaultArticleManager implements ArticleManager {
 		finally {
 			commit();
 		}
+		return article;
 	}
 
 	/**
 	 * Queues up an article for registration (and compilation). The article will be compiled the next time {@link
 	 * #open()} and {@link #commit()} are called.<p>
 	 * This method can be used, to queue up multiple articles using different threads. {@link
-	 * #registerArticle(Article)}
+	 * #registerArticle(String, String)}
 	 * does not allow that, because a deadlock will happen at the internal call of {@link #open()}.<p>
 	 * To compile directly after using this method (in a try-block!), you need to call {@link #open()} before, and
 	 * {@link #commit()} afterwards (in the finally-block!).
 	 */
-	public void queueArticle(Article article) {
+	public void queueArticle(String title, String content) {
+		queueArticle(Article.createArticle(content, title, this));
+	}
+
+	private void queueArticle(Article article) {
 		Objects.requireNonNull(article);
 		if (article.isTemporary()) {
 			throw new IllegalArgumentException("Cannot add a temporary article to an article manager!");
@@ -156,8 +164,6 @@ public class DefaultArticleManager implements ArticleManager {
 		// in case an article with the same name gets added in the same compilation window
 		deleteAfterCompile.remove(title.toLowerCase());
 
-		article.setArticleManager(this);
-
 		EventManager.getInstance().fireEvent(new ArticleRegisteredEvent(article));
 		article.clearLastVersion();
 	}
@@ -173,22 +179,22 @@ public class DefaultArticleManager implements ArticleManager {
 	 * Deletes the given article from the article map and invalidates all
 	 * knowledge content that was in the article.
 	 *
-	 * @param article The article to delete
+	 * @param title The article to delete
 	 */
 	@Override
-	public void deleteArticle(Article article) {
+	public void deleteArticle(String title) {
 
 		open();
 		try {
-			registerArticle(Article.createArticle("", article.getTitle(), web));
+			registerArticle(title, "");
 
-			deleteAfterCompile.add(article.getTitle().toLowerCase());
+			deleteAfterCompile.add(title.toLowerCase());
 		}
 		finally {
 			commit();
 		}
 
-		Log.info("-> Deleted article '" + article.getTitle() + "'" + " from " + web);
+		Log.info("-> Deleted article '" + title + "'" + " from " + web);
 	}
 
 	@Override

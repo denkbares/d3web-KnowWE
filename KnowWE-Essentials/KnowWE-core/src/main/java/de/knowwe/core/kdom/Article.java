@@ -42,6 +42,7 @@ import de.knowwe.event.KDOMCreatedEvent;
 public final class Article {
 
 	public static final int LOG_THRESHOLD = 50;
+	private final ArticleManager articleManager;
 	/**
 	 * Name of this article (topic-name)
 	 */
@@ -58,18 +59,17 @@ public final class Article {
 	private Article lastVersion;
 
 	private final boolean fullParse;
-	private boolean temporary;
 
 	/**
 	 * Create a new article by parsing the given text into a section tree (KDOM). Use this method if you want to add the
 	 * article to an article manager.
 	 *
-	 * @param text      the text of the article
-	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
-	 * @param web       the web the article belongs to (currently unused)
+	 * @param text  the text of the article
+	 * @param title the title or name of the article, displayed at the top (and in the URL usually)
+	 * @param manager   the article manager the article belongs to
 	 */
-	public static Article createArticle(String text, String title, String web) {
-		return createArticle(text, title, web, false);
+	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager) {
+		return createArticle(text, title, manager, false);
 	}
 
 	/**
@@ -78,24 +78,24 @@ public final class Article {
 	 *
 	 * @param text      the text of the article
 	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
-	 * @param web       the web the article belongs to (currently unused)
+	 * @param manager   the article manager the article belongs to
 	 * @param fullParse whether we should perform a full parse of the text or reuse section from previous article
 	 *                  versions if possible
 	 */
-	public static Article createArticle(String text, String title, String web, boolean fullParse) {
-		return createArticle(text, title, web, fullParse, false);
+	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager, boolean fullParse) {
+		return createArticle(text, title, manager.getWeb(), manager, fullParse);
 	}
 
 	/**
 	 * Create a new temporary article by parsing the given text into a section tree (KDOM). Use this method if and only
 	 * if the article will not be added to an article manager.
 	 *
-	 * @param text      the text of the article
-	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
-	 * @param web       the web the article belongs to (currently unused)
+	 * @param text  the text of the article
+	 * @param title the title or name of the article, displayed at the top (and in the URL usually)
+	 * @param web   the web the article belongs to (currently unused)
 	 */
 	public static Article createTemporaryArticle(String text, String title, String web) {
-		return createArticle(text, title, web, true, true);
+		return createArticle(text, title, web, null, true);
 	}
 
 	/**
@@ -104,15 +104,14 @@ public final class Article {
 	 * @param text      the text of the article
 	 * @param title     the title or name of the article, displayed at the top (and in the URL usually)
 	 * @param web       the web the article belongs to (currently unused)
+	 * @param manager   the article manager the article belongs to
 	 * @param fullParse whether we should perform a full parse of the text or reuse section from previous article
 	 *                  versions if possible
-	 * @param temporary whether this is a temporary article not (temporary articles must not be added to an article
-	 *                  manager and articles that are not added to an article manager must be marked temporary)
 	 */
-	private static Article createArticle(String text, String title, String web, boolean fullParse, boolean temporary) {
+	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
 		Article article = null;
 		try {
-			article = new Article(text, title, web, fullParse, temporary);
+			article = new Article(text, title, web, manager, fullParse);
 		}
 		catch (Exception e) {
 			Log.severe("Exception while creating article", e);
@@ -120,14 +119,14 @@ public final class Article {
 		return article;
 	}
 
-	private Article(@NotNull String text, @NotNull String title, @NotNull String web, boolean fullParse, boolean temporary) {
+	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse) {
 
 		long start = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
 		this.text = text;
-		this.temporary = temporary;
-		this.lastVersion = Environment.isInitialized() && !temporary ? Environment.getInstance()
+		this.articleManager = manager;
+		this.lastVersion = Environment.isInitialized() && articleManager != null ? Environment.getInstance()
 				.getArticle(web, title) : null;
 
 		this.fullParse = fullParse
@@ -143,20 +142,6 @@ public final class Article {
 		else {
 			Log.info("Sectionized article '" + title + "' in " + time + "ms");
 		}
-	}
-
-	/**
-	 * Constructor to create an empty article. This constructor is intended to be used in test scenarios. Under normally
-	 * "user edits' an article" conditions, this constructor shall not be used.
-	 */
-	private Article(String title, String web) {
-		this.title = title;
-		this.web = web;
-		this.lastVersion = null;
-		this.fullParse = false;
-		this.rootSection = Section.createSection("", getRootType(), null);
-		this.rootSection.setArticle(this);
-		this.text = "";
 	}
 
 	public void clearLastVersion() {
@@ -229,8 +214,6 @@ public final class Article {
 		return rootSection;
 	}
 
-	private ArticleManager articleManager;
-
 	public String collectTextsFromLeaves() {
 		return this.rootSection.collectTextsFromLeaves();
 	}
@@ -285,10 +268,6 @@ public final class Article {
 		}
 	}
 
-	public void setArticleManager(ArticleManager articleManager) {
-		this.articleManager = articleManager;
-	}
-
 	/**
 	 * Provides the {@link ArticleManager} this article belongs to.
 	 * <p>Attention:</p> Articles will not always be added to an article manager, e.g. when creating temp articles for
@@ -298,14 +277,10 @@ public final class Article {
 	 */
 	@Nullable
 	public ArticleManager getArticleManager() {
-		if (articleManager == null && !temporary) {
-			Log.severe("Article without ArticleManager that is not temporary! This combination is not allowed due to section id life-cycle and has to be fixed!",
-					new IllegalStateException(""));
-		}
 		return articleManager;
 	}
 
 	public boolean isTemporary() {
-		return temporary;
+		return articleManager == null;
 	}
 }

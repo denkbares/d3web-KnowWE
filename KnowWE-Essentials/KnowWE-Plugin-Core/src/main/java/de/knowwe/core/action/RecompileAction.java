@@ -56,7 +56,7 @@ public class RecompileAction extends AbstractAction {
 			recompile(articleManager, getCompilerArticles(article));
 		}
 		else if ("recompile".equals(command)) {
-			articleManager.registerArticle(cloneArticle(article));
+			articleManager.registerArticle(article.getTitle(), article.getText());
 		}
 		else {
 			failUnexpected(context, "Unknown command for RecompileAction: " + command);
@@ -66,7 +66,7 @@ public class RecompileAction extends AbstractAction {
 	public static void recompile(@NotNull ArticleManager articleManager, Stream<Article> compilerArticles) {
 		articleManager.open();
 		try {
-			compilerArticles.forEach(article -> articleManager.registerArticle(cloneArticle(article)));
+			compilerArticles.forEach(article -> articleManager.registerArticle(article.getTitle(), article.getText()));
 		}
 		finally {
 			articleManager.commit();
@@ -82,9 +82,4 @@ public class RecompileAction extends AbstractAction {
 				.map(c -> c.getCompileSection().getArticle());
 	}
 
-	private static Article cloneArticle(Article compilerArticle) {
-		return Article.createArticle(compilerArticle.getText(), compilerArticle
-				.getTitle(), compilerArticle
-				.getWeb());
-	}
 }
