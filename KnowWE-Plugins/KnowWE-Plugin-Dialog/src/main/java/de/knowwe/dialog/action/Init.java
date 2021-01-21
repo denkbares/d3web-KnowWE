@@ -60,7 +60,7 @@ public class Init extends AbstractAction {
 		}
 
 		@Override
-		public synchronized KnowledgeBase getKnowledgeBase() throws IOException {
+		public synchronized KnowledgeBase getKnowledgeBase(UserActionContext context) throws IOException {
 			// check if file exists
 			if (!knowledgeBaseFile.exists()) {
 				throw new FileNotFoundException("cannot find knowledge base file '"
@@ -97,17 +97,17 @@ public class Init extends AbstractAction {
 		}
 
 		@Override
-		public String getName() {
+		public String getName(UserActionContext context) {
 			return kbInfo.getName();
 		}
 
 		@Override
-		public String getDescription() {
+		public String getDescription(UserActionContext context) {
 			return kbInfo.getDescription();
 		}
 
 		@Override
-		public Resource getFavIcon() {
+		public Resource getFavIcon(UserActionContext context) {
 			return kbInfo.getFavIcon();
 		}
 	}

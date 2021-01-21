@@ -36,7 +36,7 @@ public class InitWiki extends AbstractAction {
 		}
 
 		@Override
-		public KnowledgeBase getKnowledgeBase() throws IOException {
+		public KnowledgeBase getKnowledgeBase(UserActionContext context) throws IOException {
 			Section<?> section = Sections.get(sectionId);
 			if (section == null) {
 				throw new IOException(
@@ -52,18 +52,18 @@ public class InitWiki extends AbstractAction {
 		}
 
 		@Override
-		public String getName() throws IOException {
-			return getKnowledgeBase().getName();
+		public String getName(UserActionContext context) throws IOException {
+			return getKnowledgeBase(context).getName();
 		}
 
 		@Override
-		public String getDescription() throws IOException {
-			return getKnowledgeBase().getInfoStore().getValue(MMInfo.DESCRIPTION);
+		public String getDescription(UserActionContext context) throws IOException {
+			return getKnowledgeBase(context).getInfoStore().getValue(MMInfo.DESCRIPTION);
 		}
 
 		@Override
-		public Resource getFavIcon() throws IOException {
-			return getKnowledgeBase().getResource("favicon.png");
+		public Resource getFavIcon(UserActionContext context) throws IOException {
+			return getKnowledgeBase(context).getResource("favicon.png");
 		}
 
 		public String getSectionId() {

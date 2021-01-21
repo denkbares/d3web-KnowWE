@@ -102,23 +102,27 @@ public class StartCase extends AbstractAction implements EventListener {
 
 		/**
 		 * Returns the display name of the knowledge base.
+		 * @param context
 		 */
-		String getName() throws IOException;
+		String getName(UserActionContext context) throws IOException;
 
 		/**
 		 * Returns the description of the knowledge base.
+		 * @param context
 		 */
-		String getDescription() throws IOException;
+		String getDescription(UserActionContext context) throws IOException;
 
 		/**
 		 * Returns the icon of the knowledge base.
+		 * @param context
 		 */
-		Resource getFavIcon() throws IOException;
+		Resource getFavIcon(UserActionContext context) throws IOException;
 
 		/**
 		 * Returns the knowledge base. If required the base is loaded on demand here.
+		 * @param context
 		 */
-		KnowledgeBase getKnowledgeBase() throws IOException;
+		KnowledgeBase getKnowledgeBase(UserActionContext context) throws IOException;
 	}
 
 	@Override
@@ -146,7 +150,7 @@ public class StartCase extends AbstractAction implements EventListener {
 
 		Session session;
 		try {
-			KnowledgeBase base = provider.getKnowledgeBase();
+			KnowledgeBase base = provider.getKnowledgeBase(context);
 			httpSession.setAttribute(SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE, base);
 			if (Strings.isBlank(protocolPath)) {
 				session = startCase(context, base, startInfo);

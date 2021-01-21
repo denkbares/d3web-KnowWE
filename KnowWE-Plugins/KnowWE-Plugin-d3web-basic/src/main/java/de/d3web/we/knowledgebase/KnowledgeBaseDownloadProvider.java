@@ -66,7 +66,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 			return null;
 		}
 		// check if knowledge base is empty
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compileSection);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(userContext, compileSection);
 		if (D3webUtils.isEmpty(kb)) {
 			return null;
 		}

@@ -75,7 +75,7 @@ public class ExecuteCasesAction extends AbstractAction {
 		Date lastExecuted = status.getLastExecuted();
 		if (session != status.getSession() || lastExecuted == null
 				|| lastExecuted.after(endDate) || lastExecuted.equals(endDate)) {
-			session = SessionFactory.createSession(D3webUtils.getKnowledgeBase(playerSection), testCase.getStartDate());
+			session = SessionFactory.createSession(D3webUtils.getKnowledgeBase(context, playerSection), testCase.getStartDate());
 			provider.storeSession(session, context);
 			lastExecuted = null;
 		}

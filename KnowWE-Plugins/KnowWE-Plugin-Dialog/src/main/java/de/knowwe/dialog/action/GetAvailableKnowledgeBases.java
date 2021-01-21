@@ -36,14 +36,14 @@ public class GetAvailableKnowledgeBases extends AbstractAction {
 		writer.write("<bases>\n");
 		int index = 0;
 		for (StartCase.KnowledgeBaseProvider provider : providers) {
-			String name = Utils.encodeXML(provider.getName());
+			String name = Utils.encodeXML(provider.getName(context));
 			String icon = Utils.encodeXML("GetAvailableKnowledgeBaseFavIcon?index=" + index++);
 			writer.write("\t<base");
 			writer.write(" name='" + name + "'");
-			if (provider.getDescription() != null) {
-				writer.write(" description='" + Utils.encodeXML(provider.getDescription()) + "'");
+			if (provider.getDescription(context) != null) {
+				writer.write(" description='" + Utils.encodeXML(provider.getDescription(context)) + "'");
 			}
-			if (provider.getFavIcon() != null) {
+			if (provider.getFavIcon(context) != null) {
 				writer.write(" icon='" + icon + "'");
 			}
 			writer.write("></base>\n");

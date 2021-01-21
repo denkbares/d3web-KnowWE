@@ -63,9 +63,9 @@ public class GetInterview extends AbstractAction {
 		// create {@link OutDatedSessionNotification} if necessary
 		if (providers != null && providers.length == 1 && providers[0] instanceof InitWiki.WikiProvider) {
 			InitWiki.WikiProvider wikiProvider = (InitWiki.WikiProvider) providers[0];
-			if (SessionProvider.hasOutDatedSession(context, wikiProvider.getKnowledgeBase())) {
+			if (SessionProvider.hasOutDatedSession(context, wikiProvider.getKnowledgeBase(context))) {
 				NotificationManager.addNotification(context, new OutDatedSessionNotification(
-						wikiProvider.getSectionId(), KnowledgeBaseUtils.getBaseName(wikiProvider.getKnowledgeBase())));
+						wikiProvider.getSectionId(), KnowledgeBaseUtils.getBaseName(wikiProvider.getKnowledgeBase(context))));
 			}
 		}
 

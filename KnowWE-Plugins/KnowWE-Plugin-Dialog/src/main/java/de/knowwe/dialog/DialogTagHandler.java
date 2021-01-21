@@ -54,7 +54,7 @@ public class DialogTagHandler extends AbstractTagHandler {
 		Locale locale = Locale.getDefault();
 		if (user != null && user.getRequest() != null) {
 			// get the "most preferred" language out of HTTP-Request
-			KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+			KnowledgeBase kb = D3webUtils.getKnowledgeBase(user, section);
 			locale = AcceptLanguage.getInitLocale(user.getRequest(), kb);
 		}
 

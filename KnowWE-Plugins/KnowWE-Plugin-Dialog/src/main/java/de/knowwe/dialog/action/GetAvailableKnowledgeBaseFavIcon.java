@@ -25,7 +25,7 @@ public class GetAvailableKnowledgeBaseFavIcon extends AbstractAction {
 				SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BASE_PROVIDERS);
 
 		StartCase.KnowledgeBaseProvider provider = providers[index];
-		Resource resource = provider.getFavIcon();
+		Resource resource = provider.getFavIcon(context);
 		Multimedia.deliverFile(context, resource);
 	}
 

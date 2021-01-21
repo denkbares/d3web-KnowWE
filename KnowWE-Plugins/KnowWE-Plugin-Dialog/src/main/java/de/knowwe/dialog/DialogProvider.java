@@ -44,7 +44,7 @@ public class DialogProvider implements ToolProvider {
 	 */
 	@Nullable
 	public static String getRunURL(Section<?> section, UserContext userContext) {
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(section);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(userContext, section);
 		if (D3webUtils.isEmpty(kb)) return null;
 
 		Locale locale = Locale.getDefault();
