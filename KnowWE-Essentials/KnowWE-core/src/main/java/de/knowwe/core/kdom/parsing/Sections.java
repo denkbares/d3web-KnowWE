@@ -881,6 +881,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * of outdated article objects (because of changes) are for example not live.
 	 */
 	public static boolean isLive(Section<?> section) {
+		if (section == null) return false;
 		ArticleManager manager = section.getArticleManager();
 		return (manager != null) && manager.isLive(section);
 	}
