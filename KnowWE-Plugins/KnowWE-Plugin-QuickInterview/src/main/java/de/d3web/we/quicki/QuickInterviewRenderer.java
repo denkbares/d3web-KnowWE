@@ -139,7 +139,7 @@ public class QuickInterviewRenderer {
 		this.session = c;
 		this.web = section.getWeb();
 		this.section = section;
-		this.kbSectionId = Objects.requireNonNull(D3webUtils.getCompiler(section)).getCompileSection().getID();
+		this.kbSectionId = Objects.requireNonNull(D3webUtils.getCompiler(user, section)).getCompileSection().getID();
 		this.namespace = kb.getId();
 		this.rb = D3webUtils.getD3webBundle(user);
 		this.user = user;

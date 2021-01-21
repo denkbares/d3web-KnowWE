@@ -22,7 +22,7 @@ public class DialogProvider implements ToolProvider {
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(D3webUtils.getCompiler(section));
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(D3webUtils.getCompiler(userContext, section));
 		return !D3webUtils.isEmpty(kb);
 	}
 

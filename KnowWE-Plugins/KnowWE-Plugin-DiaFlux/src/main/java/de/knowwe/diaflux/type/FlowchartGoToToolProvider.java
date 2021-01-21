@@ -47,7 +47,7 @@ public class FlowchartGoToToolProvider implements ToolProvider {
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 
 		TreeSet<Tool> tools = new TreeSet<>();
-		D3webCompiler compiler = D3webUtils.getCompiler(section);
+		D3webCompiler compiler = D3webUtils.getCompiler(userContext, section);
 		if (compiler == null) return ToolUtils.emptyToolArray();
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();
 		if (section.get() instanceof StartNodeDef || section.get() instanceof ExitNodeDef) {
