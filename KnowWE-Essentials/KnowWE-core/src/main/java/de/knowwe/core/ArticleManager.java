@@ -48,7 +48,8 @@ public interface ArticleManager {
 	Collection<Article> getArticles();
 
 	/**
-	 * Registers a changed or new article in the manager and also compiles it. If this manager already contains an
+	 * Creates and registers a changed or new article in the manager and also compiles it. If this manager already
+	 * contains an
 	 * article with the same name/title, the existing article will be replaced by the new one.
 	 */
 	Article registerArticle(String title, String content);
@@ -62,8 +63,7 @@ public interface ArticleManager {
 
 	/**
 	 * Provides an immutable snapshot of the internal queue of registered/queued, but not yet compiled articles. If
-	 * there
-	 * currently is no open registration frame, the list will always be empty.
+	 * there currently is no open registration frame, the list will always be empty.
 	 *
 	 * @return the queued articles of the current compilation frame
 	 */
