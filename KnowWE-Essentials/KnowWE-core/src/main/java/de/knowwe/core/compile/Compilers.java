@@ -169,7 +169,7 @@ public class Compilers {
 	 */
 	@Nullable
 	public static <C extends Compiler> C getCompiler(ArticleManager manager, Class<C> compilerClass) {
-		Collection<C> compilers = getCompilers(manager, compilerClass, true);
+		Collection<C> compilers = getCompilers(null, manager, compilerClass, true);
 		if (compilers.isEmpty()) {
 			return null;
 		}
@@ -441,21 +441,7 @@ public class Compilers {
 
 		if (context != null) {
 			// sort by order of default compilers, as far as possible/available, otherwise, sort by name
-			Map<String, Integer> compilerOrder = new HashMap<>();
-			@NotNull List<String> defaultCompilers = getDefaultCompilers(context, compilerClass);
-			for (int i = 0; i < defaultCompilers.size(); i++) {
-				compilerOrder.put(defaultCompilers.get(i), i);
-			}
-			compilers.sort((o1, o2) -> {
-				String n1 = getCompilerName(o1);
-				String n2 = getCompilerName(o2);
-				int compare = compilerOrder.getOrDefault(n1, Integer.MAX_VALUE)
-						.compareTo(compilerOrder.getOrDefault(n2, Integer.MAX_VALUE));
-				if (compare == 0) {
-					compare = n1.compareTo(n2);
-				}
-				return compare;
-			});
+			sortByDefaultCompilersAndName(compilers, context, compilerClass);
 		}
 		else {
 			// make return value consistent, sort by name
@@ -463,6 +449,24 @@ public class Compilers {
 		}
 
 		return compilers;
+	}
+
+	private static <C extends Compiler> void sortByDefaultCompilersAndName(List<C> compilers, @NotNull UserContext context, Class<C> compilerClass) {
+		Map<String, Integer> compilerOrder = new HashMap<>();
+		@NotNull List<String> defaultCompilers = getDefaultCompilers(context, compilerClass);
+		for (int i = 0; i < defaultCompilers.size(); i++) {
+			compilerOrder.put(defaultCompilers.get(i), i);
+		}
+		compilers.sort((o1, o2) -> {
+			String n1 = getCompilerName(o1);
+			String n2 = getCompilerName(o2);
+			int compare = compilerOrder.getOrDefault(n1, Integer.MAX_VALUE)
+					.compareTo(compilerOrder.getOrDefault(n2, Integer.MAX_VALUE));
+			if (compare == 0) {
+				compare = n1.compareTo(n2);
+			}
+			return compare;
+		});
 	}
 
 	/**
@@ -487,6 +491,21 @@ public class Compilers {
 	}
 
 	/**
+	 * Returns all {@link Compiler}s of a given ArticleManager and class. If a context is given, the default compiler
+	 * will be the first element in the returned list.
+	 *
+	 * @param context       the user context to get the default compilers
+	 * @param manager       the {@link ArticleManager} for which we want the {@link Compiler}
+	 * @param compilerClass the type of the {@link Compiler} we want
+	 * @return all {@link AbstractPackageCompiler}s compiling the given section
+	 * @created 15.11.2013
+	 */
+	@NotNull
+	public static <C extends Compiler> List<C> getCompilers(UserContext context, ArticleManager manager, Class<C> compilerClass) {
+		return getCompilers(context, manager, compilerClass, false);
+	}
+
+	/**
 	 * Returns all {@link Compiler}s of a given ArticleManager and class.
 	 *
 	 * @param manager       the {@link ArticleManager} for which we want the {@link Compiler}
@@ -495,18 +514,21 @@ public class Compilers {
 	 * @created 15.11.2013
 	 */
 	@NotNull
-	public static <C extends Compiler> Collection<C> getCompilers(ArticleManager manager, Class<C> compilerClass) {
-		return getCompilers(manager, compilerClass, false);
+	public static <C extends Compiler> List<C> getCompilers(ArticleManager manager, Class<C> compilerClass) {
+		return getCompilers(null, manager, compilerClass, false);
 	}
 
-	private static <C extends Compiler> Collection<C> getCompilers(ArticleManager manager, Class<C> compilerClass, boolean firstOnly) {
+	private static <C extends Compiler> List<C> getCompilers(@Nullable UserContext context, ArticleManager manager, Class<C> compilerClass, boolean firstOnly) {
 		List<Compiler> allCompilers = manager.getCompilerManager().getCompilers();
-		Collection<C> compilers = new ArrayList<>();
+		List<C> compilers = new ArrayList<>();
 		for (Compiler compiler : allCompilers) {
 			if (compilerClass.isInstance(compiler)) {
 				compilers.add(compilerClass.cast(compiler));
 				if (firstOnly) break;
 			}
+		}
+		if (context != null) {
+			sortByDefaultCompilersAndName(compilers, context, compilerClass);
 		}
 		return compilers;
 	}
