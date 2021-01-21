@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -169,7 +168,6 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Message error(String message) {
-		//noinspection deprecation
 		return new Message(Message.Type.ERROR, message);
 	}
 
@@ -182,7 +180,6 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Message error(String message, Exception e) {
-		//noinspection deprecation
 		return new Message(Message.Type.ERROR, message, e);
 	}
 
@@ -227,7 +224,7 @@ public final class Messages {
 		}
 
 		Map<Compiler, Object> messagesOfAllTypesBySourceByTitle = section.getObjects(MESSAGE_KEY);
-		if (messagesOfAllTypesBySourceByTitle == null || messagesOfAllTypesBySourceByTitle.isEmpty()) {
+		if (messagesOfAllTypesBySourceByTitle.isEmpty()) {
 			return Collections.emptyMap();
 		}
 
@@ -372,7 +369,7 @@ public final class Messages {
 
 	private static void getMessagesMapFromSubtree(Map<Compiler, Collection<Message>> allMessagesOfSubtree, Section<?> section, Message.Type... types) {
 		getMessagesMap(section, types).entrySet().stream()
-				.sorted(Comparator.comparing(Entry::getKey, Compilers.COMPARATOR))
+				.sorted(Entry.comparingByKey(Compilers.COMPARATOR))
 				.forEach(e -> allMessagesOfSubtree.computeIfAbsent(e.getKey(), c -> new ArrayList<>())
 						.addAll(e.getValue())
 				);
@@ -425,14 +422,12 @@ public final class Messages {
 	 * given Section and article. The Collections are mapped by the String
 	 * <tt>source.getName()</tt>.
 	 */
-	@SuppressWarnings("unchecked")
 	private static Map<String, Collection<Message>> getMessagesMap(Compiler compiler, Section<?> sec) {
-		return (Map<String, Collection<Message>>) sec.getObject(compiler, MESSAGE_KEY);
+		return sec.getObject(compiler, MESSAGE_KEY);
 	}
 
-	@SuppressWarnings("unchecked")
 	private static Map<String, Collection<Message>> removeMessagesMap(Compiler compiler, Section<?> sec) {
-		return (Map<String, Collection<Message>>) sec.removeObject(compiler, MESSAGE_KEY);
+		return sec.removeObject(compiler, MESSAGE_KEY);
 	}
 
 	private static void addAllMessagesOfTypes(Collection<Message> source, Collection<Message> target, Message.Type... types) {
@@ -496,13 +491,11 @@ public final class Messages {
 		}
 		name = Strings.trimQuotes(name);
 		String message = type + " '" + name + "' not found";
-		switch (messageType) {
-			case WARNING:
-				return Messages.warning(message);
-			case INFO:
-				return Messages.info(message);
-		}
-		return Messages.error(message);
+		return switch (messageType) {
+			case WARNING -> Messages.warning(message);
+			case INFO -> Messages.info(message);
+			default -> Messages.error(message);
+		};
 	}
 
 	/**
@@ -513,7 +506,6 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Message info(String message) {
-		//noinspection deprecation
 		return new Message(Message.Type.INFO, message);
 	}
 
@@ -742,7 +734,6 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Message warning(String message) {
-		//noinspection deprecation
 		return new Message(Message.Type.WARNING, message);
 	}
 
