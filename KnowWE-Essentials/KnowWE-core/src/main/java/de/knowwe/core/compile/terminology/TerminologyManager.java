@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -121,9 +122,15 @@ public class TerminologyManager {
 	 * @param termIdentifier is the term for which the section is registered
 	 */
 	public void registerTermDefinition(
-			TermCompiler compiler,
-			Section<?> termDefinition,
-			Class<?> termClass, Identifier termIdentifier) {
+			@NotNull TermCompiler compiler,
+			@NotNull Section<?> termDefinition,
+			@NotNull Class<?> termClass,
+			@NotNull Identifier termIdentifier) {
+
+		Objects.requireNonNull(compiler);
+		Objects.requireNonNull(termDefinition);
+		Objects.requireNonNull(termClass);
+		Objects.requireNonNull(termIdentifier);
 
 		Compiler messageCompiler = compiler instanceof AbstractPackageCompiler
 				? (AbstractPackageCompiler) compiler : null;
@@ -172,9 +179,14 @@ public class TerminologyManager {
 	}
 
 	public synchronized void registerTermReference(
-			Compiler compiler,
-			Section<?> termReference,
-			Class<?> termClass, Identifier termIdentifier) {
+			@NotNull Compiler compiler,
+			@NotNull Section<?> termReference,
+			@NotNull Class<?> termClass,
+			@NotNull Identifier termIdentifier) {
+		Objects.requireNonNull(compiler);
+		Objects.requireNonNull(termReference);
+		Objects.requireNonNull(termClass);
+		Objects.requireNonNull(termIdentifier);
 
 		TermLog termLog = termLogManager.getLog(termIdentifier);
 		if (termLog == null) {
