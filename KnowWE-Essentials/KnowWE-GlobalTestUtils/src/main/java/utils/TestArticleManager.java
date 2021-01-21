@@ -36,7 +36,8 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public class TestArticleManager {
 
-	private static TestArticleManager instance = null;
+	@SuppressWarnings("InstantiationOfUtilityClass")
+	private static final TestArticleManager instance = new TestArticleManager();
 
 	/**
 	 * Private Constructor insures noninstantiabilty.
@@ -46,10 +47,6 @@ public class TestArticleManager {
 	}
 
 	public static TestArticleManager getInstance() {
-		if (instance == null) {
-			//noinspection InstantiationOfUtilityClass
-			instance = new TestArticleManager();
-		}
 		return instance;
 	}
 
