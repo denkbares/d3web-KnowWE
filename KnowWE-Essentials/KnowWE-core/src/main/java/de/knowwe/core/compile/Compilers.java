@@ -227,41 +227,8 @@ public class Compilers {
 	public static <C extends Compiler> C getCompiler(UserContext context, Section<?> section, Class<C> compilerClass) {
 		if (context == null) return getCompiler(section, compilerClass);
 
-		Collection<C> compilers = getCompilers(section, compilerClass);
-		// no need to find a default, if there is only one compiler
-		if (compilers.size() == 1) {
-			return compilers.iterator().next();
-		}
-		else if (compilers.isEmpty()) {
-			return null;
-		}
-
-		// Special case: if we check for a successor of a compile section (like %%Ontology or %%KnowledgeBase), just
-		// return the first compiler and disregard default compilers. The other method already sorts the compiler of the
-		// compile section to the start of the returned list
-		if ($(section).closest(PackageCompileType.class).isNotEmpty()) {
-			return compilers.iterator().next();
-		}
-
-		// check compiler names markes for default
-		List<String> defaultCompilerNames = getDefaultCompilers(context, compilerClass);
-		if (defaultCompilerNames.isEmpty()) {
-			// no defaults found? return first compiler we have...
-			return compilers.iterator().next();
-		}
-
-		// get the first match of name to available compilers
-		Map<String, List<C>> compilersByName = compilers.stream()
-				.collect(Collectors.groupingBy(Compilers::getCompilerName));
-		for (String name : defaultCompilerNames) {
-			List<C> compilersForName = compilersByName.getOrDefault(name, Collections.emptyList());
-			if (!compilersForName.isEmpty()) {
-				return compilersForName.get(0);
-			}
-		}
-
-		// defaultCompilerNames seem to contain compiler names that are no longer valid...
-		// just weit for it do get cleaned up automatically, return the next best compiler
+		Collection<C> compilers = getCompilers(context, section, compilerClass);
+		if (compilers.isEmpty()) return null;
 		return compilers.iterator().next();
 	}
 
@@ -425,11 +392,15 @@ public class Compilers {
 	 */
 	@NotNull
 	public static <C extends Compiler> Collection<C> getCompilers(@Nullable UserContext context, Section<?> section, Class<C> compilerClass) {
+
+		// GET ALL COMPILERS
 		ArticleManager articleManager = section.getArticleManager();
-		if (articleManager == null) { // can happen in preview
+		if (articleManager == null) { // can happen in preview, use fall back
 			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
 		}
 		List<Compiler> allCompilers = articleManager.getCompilerManager().getCompilers();
+
+		// FILTER TO CORRECT TYPE
 		List<C> compilers = new ArrayList<>();
 		for (Compiler compiler : allCompilers) {
 			if (compilerClass.isInstance(compiler) && compiler.isCompiling(section)) {
