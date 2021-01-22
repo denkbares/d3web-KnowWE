@@ -150,7 +150,7 @@ public class Compilers {
 	 */
 	@Nullable
 	public static <C extends Compiler> C getCompiler(Section<?> section, Class<C> compilerClass) {
-		Collection<C> compilers = getCompilers(null, section, compilerClass, true);
+		Collection<C> compilers = getCompilers(null, section, compilerClass);
 		if (compilers.isEmpty()) {
 			return null;
 		}
@@ -234,6 +234,13 @@ public class Compilers {
 		}
 		else if (compilers.isEmpty()) {
 			return null;
+		}
+
+		// Special case: if we check for a successor of a compile section (like %%Ontology or %%KnowledgeBase), just
+		// return the first compiler and disregard default compilers. The other method already sorts the compiler of the
+		// compile section to the start of the returned list
+		if ($(section).closest(PackageCompileType.class).isNotEmpty()) {
+			return compilers.iterator().next();
 		}
 
 		// check compiler names markes for default
@@ -394,12 +401,21 @@ public class Compilers {
 	 */
 	@NotNull
 	public static <C extends Compiler> Collection<C> getCompilers(Section<?> section, Class<C> compilerClass) {
-		return getCompilers(null, section, compilerClass, false);
+		return getCompilers(null, section, compilerClass);
 	}
 
 	/**
-	 * Returns all {@link Compiler}s with the given type that compile the packages of the given section. The compiler(s)
-	 * marked as default compiler will be first in the collection.
+	 * Returns all {@link Compiler}s with the given class that compile the given section. The returned list of compiler
+	 * will be sorted according to the following priorities:
+	 *
+	 * <ul>
+	 *     <li>If the given section is a successor of a compile section, the compiler(s) of the compile section will be
+	 *     the first to be returned, as long as they match the desired compiler class.</li>
+	 *     <li>If a UserContext is given and matching default compilers are specified for it, the default compiler(s)
+	 *     will be the first ones returned</li>
+	 *     <li>Otherwise or in case there are multiple compilers of the variants described above, the compilers are
+	 *     sorted by name</li>
+	 * </ul>
 	 *
 	 * @param context       the user context to get the default compilers
 	 * @param section       the section for which we want the {@link Compiler}s
@@ -408,11 +424,7 @@ public class Compilers {
 	 * @created 15.11.2013
 	 */
 	@NotNull
-	public static <C extends Compiler> Collection<C> getCompilers(UserContext context, Section<?> section, Class<C> compilerClass) {
-		return getCompilers(context, section, compilerClass, false);
-	}
-
-	private static <C extends Compiler> Collection<C> getCompilers(@Nullable UserContext context, Section<?> section, Class<C> compilerClass, boolean firstOnly) {
+	public static <C extends Compiler> Collection<C> getCompilers(@Nullable UserContext context, Section<?> section, Class<C> compilerClass) {
 		ArticleManager articleManager = section.getArticleManager();
 		if (articleManager == null) { // can happen in preview
 			articleManager = Environment.getInstance().getArticleManager(section.getWeb());
@@ -425,20 +437,7 @@ public class Compilers {
 			}
 		}
 
-		// if we only want one compiler but there are multiple, make sure to check if the section is a (or successor of)
-		// package compile section... if yes, we want the associated compiler
-		if (firstOnly && compilers.size() > 1) {
-			Section<PackageCompileType> compileSection = $(section).closest(PackageCompileType.class).getFirst();
-			if (compileSection != null) {
-				Collection<PackageCompiler> packageCompilers = compileSection.get().getPackageCompilers(compileSection);
-				for (PackageCompiler packageCompiler : packageCompilers) {
-					if (compilerClass.isInstance(packageCompiler)) {
-						return Collections.singletonList(compilerClass.cast(packageCompiler));
-					}
-				}
-			}
-		}
-
+		// SORTING
 		if (context != null) {
 			// sort by order of default compilers, as far as possible/available, otherwise, sort by name
 			sortByDefaultCompilersAndName(compilers, context, compilerClass);
@@ -446,6 +445,22 @@ public class Compilers {
 		else {
 			// make return value consistent, sort by name
 			compilers.sort(Comparator.comparing(Compilers::getCompilerName, NumberAwareComparator.CASE_INSENSITIVE));
+		}
+
+		// if we have a section that is a successor of a compile type (e.g. %%Ontology or %%KnowledgeBase), then we sort
+		// the compiler of that section to the start of the list, because very likely we want exactly that one
+		// especially if we just want one compiler
+		Section<PackageCompileType> compileSection = $(section).closest(PackageCompileType.class).getFirst();
+		if (compileSection != null) {
+			List<C> packageCompilers = new ArrayList<>();
+			for (PackageCompiler c : compileSection.get().getPackageCompilers(compileSection)) {
+				if (compilerClass.isInstance(c)) {
+					packageCompilers.add((compilerClass.cast(c)));
+				}
+			}
+			packageCompilers.sort(Comparator.comparing(Compilers::getCompilerName, NumberAwareComparator.CASE_INSENSITIVE));
+			compilers.removeAll(packageCompilers);
+			compilers.addAll(0, packageCompilers);
 		}
 
 		return compilers;
@@ -480,7 +495,7 @@ public class Compilers {
 	 */
 	@NotNull
 	public static <C extends Compiler> Collection<C> getCompilersWithCompileScript(Section<?> section, Class<C> compilerClass) {
-		Collection<C> compilers = getCompilers(null, section, compilerClass, false);
+		Collection<C> compilers = getCompilers(null, section, compilerClass);
 		ArrayList<C> filteredCompilers = new ArrayList<>(compilers.size());
 		for (C compiler : compilers) {
 			if (!CompilerManager.getScriptManager(compiler).getScripts(section.get()).isEmpty()) {
