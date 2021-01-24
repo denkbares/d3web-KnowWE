@@ -88,9 +88,13 @@ public class PackageManager {// implements EventListener {
 	private final Set<Section<?>> removedPredicateSections = new LinkedHashSet<>();
 
 	public static void addPackageAnnotation(DefaultMarkup markup) {
+		addPackageAnnotation(markup, true);
+	}
+
+	public static void addPackageAnnotation(DefaultMarkup markup, boolean warnForNotCompiledPackage) {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
-		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageRule());
+		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageRule(warnForNotCompiledPackage));
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {

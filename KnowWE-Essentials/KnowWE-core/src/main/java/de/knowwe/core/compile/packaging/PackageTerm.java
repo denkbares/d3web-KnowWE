@@ -40,10 +40,16 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class PackageTerm extends SimpleReference {
 
 	public PackageTerm() {
+		this(true);
+	}
+
+	public PackageTerm(boolean warnForNotCompiledPackage) {
 		super(new SimpleReferenceRegistrationScript<>(PackageRegistrationCompiler.class, false), Package.class, Priority.BELOW_DEFAULT);
-		// we need two warnings scripts for our different package registration compilers
-		this.addCompileScript(Priority.LOW, new PackageRegistrationNotCompiledWarningScript());
-		this.addCompileScript(Priority.LOW, new PackageUnregistrationNotCompiledWarningScript());
+		if (warnForNotCompiledPackage) {
+			// we need two warnings scripts for our different package registration compilers
+			this.addCompileScript(Priority.LOW, new PackageRegistrationNotCompiledWarningScript());
+			this.addCompileScript(Priority.LOW, new PackageUnregistrationNotCompiledWarningScript());
+		}
 
 		this.addCompileScript(new CheckWildCardCompileScript());
 		this.setSectionFinder(new RegexSectionFinder(Pattern.compile("\\s*((?=\\s*\\S).+?)\\s*(?:\r?\n|\\z)"), 1));

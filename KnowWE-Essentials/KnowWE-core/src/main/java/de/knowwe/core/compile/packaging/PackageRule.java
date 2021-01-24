@@ -76,8 +76,12 @@ public class PackageRule extends AbstractType {
 	}
 
 	public PackageRule() {
+		this(true);
+	}
+
+	public PackageRule(boolean warnForNotCompiledPackage) {
 		setSectionFinder(AllTextFinderTrimmed.getInstance());
-		PackageTerm packageTerm = new PackageTerm();
+		PackageTerm packageTerm = new PackageTerm(warnForNotCompiledPackage);
 		// we create a term for quoted elements or optionally for everything except the control tokens of PredicateParser
 		packageTerm.setSectionFinder(new RegexSectionFinder(Pattern.compile(Patterns.QUOTED + "|\\b(?:(?!AND|OR|NOT)[^|&!<>()=~\\s]+)\\b")));
 		addChildType(packageTerm);
