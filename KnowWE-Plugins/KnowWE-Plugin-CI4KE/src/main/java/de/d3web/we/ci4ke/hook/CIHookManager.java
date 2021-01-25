@@ -20,10 +20,14 @@
 
 package de.d3web.we.ci4ke.hook;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
+import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.knowwe.core.kdom.Article;
 
@@ -41,11 +45,15 @@ public class CIHookManager {
 		for (String monitoredArticle : hook.getMonitoredArticles()) {
 			hooks.put(monitoredArticle, hook);
 		}
+		Log.info(hooks.valueSet().stream().map(CIHook::toString).collect(Collectors.joining(", ")));
 	}
 
 	public static synchronized void unregisterHook(CIHook hook) {
 		for (String monitoredArticle : hook.getMonitoredArticles()) {
-			hooks.removeKey(monitoredArticle);
+			Set<CIHook> ciHooks = hooks.removeKey(monitoredArticle);
+			Log.info("Removed CI trigger hooks: " + ciHooks.stream()
+					.map(CIHook::toString)
+					.collect(Collectors.joining(", ")));
 		}
 	}
 
@@ -56,6 +64,7 @@ public class CIHookManager {
 	 */
 	public static synchronized void triggerHooks(Article monitoredArticle) {
 		Set<CIHook> hookSet = hooks.getValues(monitoredArticle.getTitle());
+		List<String> triggered = new ArrayList<>();
 		for (final CIHook hook : hookSet) {
 			int compilationId = getCurrentCompilationId(hook);
 			// avoid triggering the same hook multiple times for the same compilation
@@ -63,14 +72,17 @@ public class CIHookManager {
 			if (hook.getLastTrigger() == compilationId) continue;
 			hook.setLastTrigger(compilationId);
 			CIBuildManager.getInstance().startBuild(hook.getDashboard());
+			triggered.add(hook.getDashboard().getDashboardName());
 		}
+		Log.info("Triggered the following dash boards: " + String.join(", ", triggered));
 	}
 
 	public static int getCurrentCompilationId(CIHook hook) {
+		//noinspection ConstantConditions
 		return hook.getDashboard()
-						.getDashboardSection()
-						.getArticleManager()
-						.getCompilerManager()
-						.getCompilationId();
+				.getDashboardSection()
+				.getArticleManager()
+				.getCompilerManager()
+				.getCompilationId();
 	}
 }

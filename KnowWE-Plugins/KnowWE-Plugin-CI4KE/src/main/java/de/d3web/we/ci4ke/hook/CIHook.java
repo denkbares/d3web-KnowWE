@@ -37,6 +37,6 @@ public class CIHook {
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " (" + dashboard + ")";
+		return getClass().getSimpleName() + " (" + dashboard + "): " + monitoredArticles;
 	}
 }
