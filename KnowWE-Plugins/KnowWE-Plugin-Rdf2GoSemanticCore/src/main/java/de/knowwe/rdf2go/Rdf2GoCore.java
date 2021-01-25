@@ -509,7 +509,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				Set<Statement> removeCopy = new HashSet<>(this.removeCache);
 				this.removeCache.removeAll(this.insertCache);
 				this.insertCache.removeAll(removeCopy);
-				stopwatch.log("Hazard filtering");
+				if (stopwatch.getTime() > 10) stopwatch.log("Hazard filtering");
 
 				// check again
 				removeSize = this.removeCache.size();
