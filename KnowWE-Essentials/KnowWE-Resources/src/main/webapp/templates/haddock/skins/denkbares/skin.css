@@ -2258,11 +2258,11 @@ div.coverflow .knob {
 .defaultMarkupFrame {
 	#display: inline-block;
 	max-width: 100%;
-	border-right: 1px solid white;
-	border-left: 1px solid white;
-	border-bottom: 1px solid white;
-	margin: 0 0 -0.5em 0;
-	padding: 0 0 0.5em 0;
+	border-right: 0 solid transparent;
+	border-left: 0 solid transparent;
+	border-bottom: 0 solid transparent;
+	margin: 0 0 0.5em 0;
+	padding: 0;
 }
 
 @media screen, projection {
