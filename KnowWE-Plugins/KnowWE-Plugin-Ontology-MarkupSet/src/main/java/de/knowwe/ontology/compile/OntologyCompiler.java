@@ -188,9 +188,11 @@ public class 	OntologyCompiler extends AbstractPackageCompiler
 		if (currentCompilePriority != null && !commitTracker.contains(currentCompilePriority)) {
 			synchronized (commitTracker) {
 				if (!commitTracker.contains(currentCompilePriority)) {
+					long before = System.currentTimeMillis();
 					rdf2GoCore.commit();
 					commitTracker.add(currentCompilePriority);
-					Log.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements.");
+					long after = System.currentTimeMillis();
+					Log.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements in "+ (after-before) +"ms");
 				}
 			}
 		}
