@@ -12,10 +12,12 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.denkbares.strings.Identifier;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Predicates;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -66,8 +68,8 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDE);
 		MARKUP.addAnnotation(ANNOTATION_MARKUP);
 		MARKUP.addAnnotation(ANNOTATION_ARTICLE);
-		MARKUP.getAnnotation("package")
-				.setDocumentation("Specify a package name to show all articles which use this package.");
+		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME)
+				.setDocumentation("Specify a package name to show all articles which declare this package.");
 		MARKUP.getAnnotation(ANNOTATION_ARTICLE)
 				.setDocumentation("Specify a regex regarding the article names to show in this list.");
 		MARKUP.getAnnotation(ANNOTATION_EXCLUDE).setDocumentation("Specify a regex regarding the article names to " +
@@ -154,7 +156,8 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			if (!packageManager.getAllPackageNames().contains(packageName)) {
 				messages.add(Messages.error("Package not known: " + packageName));
 			}
-			return packageManager.getSectionsOfPackage(packageName).stream();
+			return Sections.registrations(Compilers.getPackageRegistrationCompiler(section),
+					new Identifier(packageName)).map(s -> (Section<?>) s);
 		}
 
 		private Stream<Section<?>> applyMarkup(Stream<Article> source) {
