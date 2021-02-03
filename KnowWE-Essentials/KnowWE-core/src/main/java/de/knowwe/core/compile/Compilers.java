@@ -265,6 +265,11 @@ public class Compilers {
 
 	@NotNull
 	private static List<String> getDefaultCompilers(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass, boolean doCleanup) {
+		if(context.getSession() == null) {
+			// hotfix for NPE
+			return Collections.emptyList();
+		}
+
 		//noinspection unchecked
 		Map<String, List<String>> defaultCompilerNamesMap = (Map<String, List<String>>) context.getSession()
 				.getAttribute(DEFAULT_COMPILERS);
