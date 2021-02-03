@@ -369,7 +369,13 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 					return Boolean.toString(cell.getBooleanCellValue());
 				case FORMULA:
 					CellType formulaType = cell.getCachedFormulaResultType();
-					return null;
+					return switch (formulaType) {
+						case STRING -> cell.getStringCellValue();
+						case NUMERIC -> df.createFormat(cell).format(cell.getNumericCellValue());
+						case BOOLEAN -> Boolean.toString(cell.getBooleanCellValue());
+						case ERROR -> "#NV";
+						default -> cell.toString();
+					};
 				default:
 					return cell.toString();
 			}
