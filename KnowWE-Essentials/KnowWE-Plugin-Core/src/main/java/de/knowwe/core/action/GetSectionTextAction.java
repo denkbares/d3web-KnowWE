@@ -12,8 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Streams;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -22,7 +24,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
- * Returns the text of a specified section as a text file.
+ * Returns the text of a specified section or article as a text file.
  *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 23.06.16
@@ -35,6 +37,16 @@ public class GetSectionTextAction extends AbstractAction {
 		String sectionText;
 		String title = context.getParameter("title");
 		if (title == null) title = context.getParameter("article");
+		ArticleManager articleManager = context.getArticleManager();
+		Article article = null;
+		if (title != null) {
+			article = articleManager.getArticle(title);
+			if (article == null) {
+				failUnexpected(context, "Article with title '" + title + "' not found!");
+				return;
+			}
+		}
+
 		final String name = context.getParameter("name");
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		String fileName = null;
@@ -45,12 +57,14 @@ public class GetSectionTextAction extends AbstractAction {
 			referencedSection = Sections.get(sectionId);
 			fileName = referencedSection.getID();
 		}
-		else if (title != null && name != null) {
-			referencedSection = $(context.getArticleManager()
-					.getArticle(title)).successor(DefaultMarkupType.class)
+		else if (article != null && name != null) {
+			referencedSection = $(article).successor(DefaultMarkupType.class)
 					.filter(markupSection -> name.equals(DefaultMarkupType.getAnnotation(markupSection, "name")))
 					.getFirst();
 			fileName = name;
+		}
+		else if (article != null) {
+			referencedSection = context.getArticleManager().getArticle(title).getRootSection();
 		}
 
 		if (referencedSection != null) {
@@ -61,12 +75,12 @@ public class GetSectionTextAction extends AbstractAction {
 						.getLastModifiedDate(referencedSection.getTitle(), -1).toInstant();
 			}
 			else {
-				context.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to view/download section");
+				fail(context, HttpServletResponse.SC_FORBIDDEN, "Not authorized to view/download section");
 				return;
 			}
 		}
 		else {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND, "No valid section id or title and name given");
+			fail(context, HttpServletResponse.SC_NOT_FOUND, "No valid section id or title and name given");
 			return;
 		}
 
@@ -79,7 +93,8 @@ public class GetSectionTextAction extends AbstractAction {
 			Strings.writeFile(tempTextFile.getPath(), sectionText);
 
 			context.setContentType(BINARY);
-			context.setHeader("Last-Modified", DateTimeFormatter.RFC_1123_DATE_TIME.withZone(ZoneOffset.UTC).format(lastModified));
+			context.setHeader("Last-Modified", DateTimeFormatter.RFC_1123_DATE_TIME.withZone(ZoneOffset.UTC)
+					.format(lastModified));
 			context.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + ".txt\"");
 
 			FileInputStream in = new FileInputStream(tempTextFile);
