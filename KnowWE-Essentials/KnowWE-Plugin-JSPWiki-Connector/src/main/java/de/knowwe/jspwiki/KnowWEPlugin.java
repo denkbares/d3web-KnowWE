@@ -312,13 +312,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			RenderResult renderResult = new RenderResult(userContext.getRequest());
 
-			// this can happen, if the article was registered to the manager in a compilation frame opened
-			// before the call of this preTranslate method, e.g. in an action with Sections#replace(...).
-			// in this case, the article will not be compiled at this moment and rendering does not make sense and can
-			// cause exceptions.
-			boolean isQueuedForCompilation = articleManager.getQueuedArticles().contains(article);
-
-			if (article != null && !isQueuedForCompilation) {
+			if (article != null) {
 				long start = System.currentTimeMillis();
 				render(userContext, article, renderResult);
 				Log.info("Rendered article '" + article.getTitle() + "' in "
@@ -377,12 +371,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 		String title = wikiContext.getRealPage().getName();
 
-		CompilerManager compilerManager = Compilers.getCompilerManager(Environment.DEFAULT_WEB);
-		if (compilerManager.isCompiling(title)) {
-			// it is possible, that compilation of this article was triggered independently from calling this method...
-			compilerManager.awaitTermination();
-		}
-
 		String originalText = "";
 		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
 		if (article != null) {
@@ -396,6 +384,13 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
 				throw new UpdateNotAllowedException();
 			}
+
+			CompilerManager compilerManager = Compilers.getCompilerManager(Environment.DEFAULT_WEB);
+			if (compilerManager.isCompiling(title)) {
+				// it is possible, that compilation of this article was triggered independently from calling this method...
+				compilerManager.awaitTermination();
+			}
+
 			EventManager.getInstance().fireEvent(new ArticleUpdateEvent(title, wikiContext.getRealPage().getAuthor()));
 			defaultArticleManager.open();
 			try {
