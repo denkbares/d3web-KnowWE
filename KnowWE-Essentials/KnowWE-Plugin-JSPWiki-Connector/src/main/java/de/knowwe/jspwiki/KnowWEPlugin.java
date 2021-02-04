@@ -98,7 +98,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String FULL_PARSE_FIRED = "fullParseFired";
 	public static final String RENDER_MODE = "renderMode";
 	public static final String PREVIEW = "preview";
-	public static final int RENDER_WAIT_TIMEOUT = 20000;
+	public static final int RENDER_WAIT_TIMEOUT = 10000;
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
@@ -352,7 +352,8 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 			renderPostPageAppendHandler(userContext, article, renderResult, appendHandlers);
 		}
 		else {
-			renderResult.appendHtmlElement("span", "Timed out while waiting for knowledge to be compiled, please try again later...", "class", "warning");
+			renderResult.appendHtmlElement("span", "Compiling, please wait...", "class", "warning");
+			renderResult.appendHtmlElement("script", "setTimeout(function() {window.location.reload()}, 0)");
 		}
 	}
 
