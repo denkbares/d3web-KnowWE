@@ -51,22 +51,22 @@ public class RecompileAction extends AbstractAction {
 			failUnexpected(context, "No article found for title '" + title + ", unable to recompile");
 			return;
 		}
-		ArticleManager articleManager = context.getArticleManager();
-		if ("recompileAll".equals(command)) {
-			recompile(articleManager, getCompilerArticles(article));
-		}
-		else if ("recompile".equals(command)) {
-			articleManager.registerArticle(article.getTitle(), article.getText());
-		}
-		else {
+		boolean all = "recompileAll".equals(command);
+		boolean equals = "recompile".equals(command);
+		if (!all && !equals) {
 			failUnexpected(context, "Unknown command for RecompileAction: " + command);
 		}
-	}
 
-	public static void recompile(@NotNull ArticleManager articleManager, Stream<Article> compilerArticles) {
+		ArticleManager articleManager = context.getArticleManager();
 		articleManager.open();
 		try {
-			compilerArticles.forEach(article -> articleManager.registerArticle(article.getTitle(), article.getText()));
+			if (all) {
+				getCompilerArticles(article)
+						.forEach(article1 -> articleManager.registerArticle(article1.getTitle(), article1.getText()));
+			}
+			else {
+				articleManager.registerArticle(article.getTitle(), article.getText());
+			}
 		}
 		finally {
 			articleManager.commit();
@@ -75,11 +75,11 @@ public class RecompileAction extends AbstractAction {
 
 	@NotNull
 	public static Stream<Article> getCompilerArticles(Article article) {
-		return $(article).successor(DefaultMarkupType.class)
+		Stream<Article> compileArticles = $(article).successor(DefaultMarkupType.class)
 				.map(s -> Compilers.getCompilers(s, PackageCompiler.class))
 				.flatMap(Collection::stream)
 				.distinct()
 				.map(c -> c.getCompileSection().getArticle());
+		return Stream.concat(Stream.of(article), compileArticles);
 	}
-
 }
