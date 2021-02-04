@@ -664,15 +664,20 @@ KNOWWE.core.plugin.recompile = function() {
           } else {
             return;
           }
+
+          event.preventDefault();
+          event.stopPropagation();
+
           jq$.ajax({
             url: "action/RecompileAction",
             data: {
               command: command,
               title: KNOWWE.helper.getPagename()
             },
+          }).success(function() {
+            // just refresh, server will wait for compilation to finish before rendering
+            window.location.reload();
           });
-          // just refresh, server will wait for compilation to finish before rendering
-          window.location.reload();
         }
       );
     }
