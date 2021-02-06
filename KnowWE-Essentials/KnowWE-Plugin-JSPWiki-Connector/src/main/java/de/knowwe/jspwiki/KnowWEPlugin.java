@@ -98,7 +98,9 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	private static final String FULL_PARSE_FIRED = "fullParseFired";
 	public static final String RENDER_MODE = "renderMode";
 	public static final String PREVIEW = "preview";
-	public static final int RENDER_WAIT_TIMEOUT = 10000;
+	private static final int DEFAULT_RENDER_WAIT_TIMEOUT_SECONDS = 5;
+	private static final String COMPILATION_TIMEOUT = "compilationTimeout";
+	private static final String INITIAL_WAIT_ON = "initialWaitOn";
 
 	private boolean wikiEngineInitialized = false;
 	private final List<String> supportArticleNames;
@@ -337,24 +339,47 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) throws InterruptedException {
+		Integer compilationTimeout = (Integer) userContext.getSession().getAttribute(COMPILATION_TIMEOUT);
+		if (compilationTimeout == null) compilationTimeout = DEFAULT_RENDER_WAIT_TIMEOUT_SECONDS;
+
+		// if we waited for compilation on another article, don't wait again here
+		String initialWaitOn = (String) userContext.getSession().getAttribute(INITIAL_WAIT_ON);
+		if (initialWaitOn != null && !initialWaitOn.equals(article.getTitle())) {
+			compilationTimeout = 0;
+		}
 
 		if (isSupportArticle(article.getTitle())
 				|| article.getArticleManager() == null
-				|| article.getArticleManager().getCompilerManager().awaitTermination(RENDER_WAIT_TIMEOUT)) {
+				|| article.getArticleManager().getCompilerManager().awaitTermination(compilationTimeout * 1000)) {
 
-			List<PageAppendHandler> appendHandlers = Environment.getInstance()
-					.getAppendHandlers();
+			// reset timeout if compilation has finished
+			if (!isSupportArticle(article.getTitle()) && article.getArticleManager() != null) {
+				userContext.getSession().setAttribute(COMPILATION_TIMEOUT, DEFAULT_RENDER_WAIT_TIMEOUT_SECONDS);
+				userContext.getSession().removeAttribute(INITIAL_WAIT_ON);
+			}
 
-			renderPrePageAppendHandler(userContext, article, renderResult, appendHandlers);
-
-			renderPage(userContext, article, renderResult);
-
-			renderPostPageAppendHandler(userContext, article, renderResult, appendHandlers);
+			renderArticle(userContext, article, renderResult);
 		}
 		else {
-			renderResult.appendHtmlElement("span", "Compiling, please wait...", "class", "warning");
-			renderResult.appendHtmlElement("script", "setTimeout(function() {window.location.reload()}, 0)");
+			// increase to reduce flickering
+			userContext.getSession().setAttribute(COMPILATION_TIMEOUT, DEFAULT_RENDER_WAIT_TIMEOUT_SECONDS * 2);
+			userContext.getSession().setAttribute(INITIAL_WAIT_ON, article.getTitle());
+
+			renderResult.appendHtmlElement("span", "Compilation still ongoing, please wait...\n" +
+							"You are currently viewing a preview of the page, compilation messages and parts of the content might still be missing!",
+					"class", "warning");
+			renderResult.appendHtmlElement("script", "_KU.showProcessingIndicator();setTimeout(function() {window.location.reload()}, 0)");
+			Article temporaryArticle = Article.createTemporaryArticle(article.getText(), article.getTitle(), article.getWeb());
+			renderArticle(userContext, temporaryArticle, renderResult);
 		}
+	}
+
+	private void renderArticle(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
+		List<PageAppendHandler> appendHandlers = Environment.getInstance().getAppendHandlers();
+		renderPrePageAppendHandler(userContext, article, renderResult, appendHandlers);
+		article.getRootType().getRenderer().render(article.getRootSection(), userContext, renderResult);
+		EventManager.getInstance().fireEvent(new PageRenderedEvent(article.getTitle(), userContext));
+		renderPostPageAppendHandler(userContext, article, renderResult, appendHandlers);
 	}
 
 	private static DefaultArticleManager getDefaultArticleManager() {
@@ -543,13 +568,6 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		return wikiPages;
 	}
 
-	private void renderPage(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {
-		article.getRootType().getRenderer().render(article.getRootSection(), userContext,
-				renderResult);
-		EventManager.getInstance().fireEvent(
-				new PageRenderedEvent(article.getTitle(), userContext));
-	}
-
 	/**
 	 * Handles events passed from JSPWiki
 	 */
@@ -596,9 +614,10 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 
 			GitVersioningWikiEvent gitEvent = (GitVersioningWikiEvent) event;
 			ArticleUpdateEvent articleUpdateEvent;
-			if(event instanceof GitRefreshCacheEvent){
+			if (event instanceof GitRefreshCacheEvent) {
 				articleUpdateEvent = new ArticleRefreshEvent(gitEvent.getPages(), gitEvent.getType());
-			} else {
+			}
+			else {
 				articleUpdateEvent = new ArticleUpdateEvent(gitEvent.getPages(), gitEvent.getAuthor());
 				articleUpdateEvent.setVersion(gitEvent.getGitCommitRev());
 			}
