@@ -124,21 +124,15 @@ class SparqlCallable implements Callable<Object> {
 
 	private Object executeQuery() {
 		int timeOutSeconds = (int) Math.min(this.timeOutMillis / 1000, Integer.MAX_VALUE);
-		switch (this.type) {
-			case SELECT:
-				return (preparedSelectQuery == null)
-						? executeSelect(timeOutSeconds, new Stopwatch())
-						: executeSelect(timeOutSeconds, new Stopwatch(), preparedSelectQuery);
-
-			case ASK:
-				return (preparedAskQuery == null)
-						? executeAsk(timeOutSeconds, new Stopwatch())
-						: executeAsk(timeOutSeconds, new Stopwatch(), preparedAskQuery);
-
-			case CONSTRUCT:
-			default:
-				throw new NotImplementedException("query type is not supported yet: " + type);
-		}
+		return switch (this.type) {
+			case SELECT -> (preparedSelectQuery == null)
+					? executeSelect(timeOutSeconds, new Stopwatch())
+					: executeSelect(timeOutSeconds, new Stopwatch(), preparedSelectQuery);
+			case ASK -> (preparedAskQuery == null)
+					? executeAsk(timeOutSeconds, new Stopwatch())
+					: executeAsk(timeOutSeconds, new Stopwatch(), preparedAskQuery);
+			default -> throw new NotImplementedException("query type is not supported yet: " + type);
+		};
 	}
 
 	@NotNull
