@@ -4,13 +4,14 @@
 
 package de.knowwe.ontology.compile.provider;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.report.Message;
@@ -58,112 +59,112 @@ public class StatementProviderResult {
 		return this;
 	}
 
-	public StatementProviderResult addStatement(Resource subject, URI predicate, Value object) {
+	public StatementProviderResult addStatement(Resource subject, IRI predicate, Value object) {
 		addStatement(core.createStatement(subject, predicate, object));
 		return this;
 	}
 
-	public StatementProviderResult addStatement(Resource subject, java.net.URI predicate, Value object) {
+	public StatementProviderResult addStatement(Resource subject, URI predicate, Value object) {
 		addStatement(subject, core.createIRI(predicate.toString()), object);
 		return this;
 	}
 
-	public StatementProviderResult addStatement(String subject, java.net.URI predicate, Value object) {
+	public StatementProviderResult addStatement(String subject, URI predicate, Value object) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), object);
 		return this;
 	}
 
-	public StatementProviderResult addStatement(String subject, java.net.URI predicate, java.net.URI object) {
+	public StatementProviderResult addStatement(String subject, URI predicate, URI object) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createIRI(object.toString()));
 		return this;
 	}
 
-	public StatementProviderResult addStatement(URI subject, java.net.URI predicate, java.net.URI object) {
+	public StatementProviderResult addStatement(IRI subject, URI predicate, URI object) {
 		addStatement(subject, core.createIRI(predicate.toString()), core.createIRI(object.toString()));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(java.net.URI subject, java.net.URI predicate, String literal) {
+	public StatementProviderResult addLiteralStatement(URI subject, URI predicate, String literal) {
 		addStatement(core.createIRI(subject.toString()), core.createIRI(predicate.toString()), core.createLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(String subject, java.net.URI predicate, String literal) {
+	public StatementProviderResult addLiteralStatement(String subject, URI predicate, String literal) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(java.net.URI subject, java.net.URI predicate, boolean literal) {
+	public StatementProviderResult addLiteralStatement(URI subject, URI predicate, boolean literal) {
 		addStatement(core.createIRI(subject.toString()), core.createIRI(predicate.toString()), core.createDatatypeLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(String subject, java.net.URI predicate, boolean literal) {
+	public StatementProviderResult addLiteralStatement(String subject, URI predicate, boolean literal) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createDatatypeLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(java.net.URI subject, java.net.URI predicate, double literal) {
+	public StatementProviderResult addLiteralStatement(URI subject, URI predicate, double literal) {
 		addStatement(core.createIRI(subject.toString()), core.createIRI(predicate.toString()), core.createDatatypeLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(String subject, java.net.URI predicate, double literal) {
+	public StatementProviderResult addLiteralStatement(String subject, URI predicate, double literal) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createDatatypeLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(java.net.URI subject, java.net.URI predicate, int literal) {
+	public StatementProviderResult addLiteralStatement(URI subject, URI predicate, int literal) {
 		addStatement(core.createIRI(subject.toString()), core.createIRI(predicate.toString()), core.createDatatypeLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(String subject, java.net.URI predicate, int literal) {
+	public StatementProviderResult addLiteralStatement(String subject, URI predicate, int literal) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createDatatypeLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(URI subject, java.net.URI predicate, String literal) {
+	public StatementProviderResult addLiteralStatement(IRI subject, URI predicate, String literal) {
 		addStatement(subject, core.createIRI(predicate.toString()), core.createLiteral(literal));
 		return this;
 	}
 
-	public StatementProviderResult addLiteralStatement(URI subject, java.net.URI predicate, Literal literal) {
+	public StatementProviderResult addLiteralStatement(IRI subject, URI predicate, Literal literal) {
 		addStatement(subject, core.createIRI(predicate.toString()), literal);
 		return this;
 	}
 
-	public StatementProviderResult addResourceStatement(java.net.URI subject, java.net.URI predicate, java.net.URI object) {
+	public StatementProviderResult addResourceStatement(URI subject, URI predicate, URI object) {
 		addStatement(core.createIRI(subject.toString()), core.createIRI(predicate.toString()), core.createIRI(object.toString()));
 		return this;
 	}
 
-	public StatementProviderResult addResourceStatement(java.net.URI subject, java.net.URI predicate, URI object) {
+	public StatementProviderResult addResourceStatement(URI subject, URI predicate, IRI object) {
 		addStatement(core.createIRI(subject.toString()), core.createIRI(predicate.toString()), object);
 		return this;
 	}
 
-	public StatementProviderResult addResourceStatement(String subject, java.net.URI predicate, java.net.URI object) {
+	public StatementProviderResult addResourceStatement(String subject, URI predicate, URI object) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createIRI(object.toString()));
 		return this;
 	}
 
-	public StatementProviderResult addResourceStatement(String subject, java.net.URI predicate, URI object) {
+	public StatementProviderResult addResourceStatement(String subject, URI predicate, IRI object) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), object);
 		return this;
 	}
 
-	public StatementProviderResult addResourceStatement(java.net.URI subject, java.net.URI predicate, String object) {
+	public StatementProviderResult addResourceStatement(URI subject, URI predicate, String object) {
 		addStatement(core.createIRI(subject.toString()), core.createIRI(predicate.toString()), core.createIRI(object));
 		return this;
 	}
 
-	public StatementProviderResult addResourceStatement(String subject, java.net.URI predicate, String object) {
+	public StatementProviderResult addResourceStatement(String subject, URI predicate, String object) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createIRI(object));
 		return this;
 	}
 
-	public StatementProviderResult addStatement(java.net.URI subject, java.net.URI predicate, java.net.URI object) {
+	public StatementProviderResult addStatement(URI subject, URI predicate, URI object) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createIRI(object));
 		return this;
 	}
