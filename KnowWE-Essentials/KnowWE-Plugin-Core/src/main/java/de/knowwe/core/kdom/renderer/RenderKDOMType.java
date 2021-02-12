@@ -77,7 +77,8 @@ public class RenderKDOMType extends DefaultMarkupType {
 		public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
 
 			String html = "";
-			html += "<table class='renderKDOMTable wikitable' article='" + section.getTitle() + "'>";
+			html += "<table class='renderKDOMTable wikitable sticky-header' article='" + section.getTitle() + "'>";
+			html += "<thead>";
 			html += "<tr>";
 			html += "<th>Type</th>";
 			html += "<th>ID</th>";
@@ -87,6 +88,8 @@ public class RenderKDOMType extends DefaultMarkupType {
 			html += "<th>Renderer</th>";
 			html += "<th>Text</th>";
 			html += "</tr>";
+			html += "</thead>";
+			html += "<tbody>";
 
 			// prepare filter predicate for the displayed sections
 			Predicate<Section<?>> filter = getSectionFilter(Sections.cast(section, RenderKDOMType.class));
@@ -95,7 +98,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 			string.appendHtml(html);
 			renderSubtree(section.getArticle().getRootSection(), string, filter);
 
-			string.appendHtml("</table>");
+			string.appendHtml("</tbody></table>");
 		}
 
 		private void renderSubtree(Section<?> s, RenderResult string, Predicate<Section<?>> filter) {
@@ -119,7 +122,7 @@ public class RenderKDOMType extends DefaultMarkupType {
 			string.appendHtml("<td>" + s.getText().length() + "</td>");
 			string.appendHtml("<td>" + s.getOffsetInParent() + "</td>");
 			string.appendHtml("<td>" + s.getChildren().size() + "</td>");
-			Class renderer = s.get().getRenderer().getClass();
+			Class<?> renderer = s.get().getRenderer().getClass();
 			String rendererEntry = (renderer.equals(DelegateRenderer.class)) ? "" : renderer.getSimpleName();
 			string.appendHtml("<td>").append(rendererEntry).appendHtml("</td>");
 
