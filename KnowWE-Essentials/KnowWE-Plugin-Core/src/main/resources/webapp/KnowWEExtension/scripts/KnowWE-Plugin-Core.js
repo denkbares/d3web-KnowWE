@@ -894,3 +894,14 @@ jq$(document).ready(function() {
     KNOWWE.core.plugin.switchCompiler.init();
   }
 });
+
+jq$(document).ready(function() {
+  jq$(".haddock table.sticky-header").floatThead({
+    top: function() {
+      let rect = jq$(".header")[0].getBoundingClientRect();
+      return rect.top + rect.height;
+    },
+    zIndex: 800, // has to be < than wiki header, which is 1001
+    debug: true
+  });
+});
