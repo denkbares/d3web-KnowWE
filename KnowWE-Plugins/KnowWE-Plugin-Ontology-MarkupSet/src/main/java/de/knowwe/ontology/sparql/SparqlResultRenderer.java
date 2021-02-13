@@ -309,13 +309,14 @@ public class SparqlResultRenderer {
 		renderResult.appendHtmlTag("div", "style", "overflow-x: auto");
 		renderResult.appendHtml("<table id='").append(tableID).appendHtml("'")
 				.append(isTree
-						? " class='sparqltable sparqltreetable"
-						: " class='sparqltable")
+						? " class='sticky-header sparqltable sparqltreetable"
+						: " class='sticky-header sparqltable")
 				.append(opts.getColor() == Color.NONE ? "" : " logLevel")
 				.append("'")
 				.append(getStyleForKey("table", tableStyle))
 				.append(">");
 
+		renderResult.appendHtml("<thead>");
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 
 		int column = 0;
@@ -334,6 +335,8 @@ public class SparqlResultRenderer {
 			renderResult.appendHtml("</th>");
 		}
 		renderResult.appendHtml("</tr>");
+		renderResult.appendHtml("</thead>");
+		renderResult.appendHtml("<tbody>");
 		IndexedResultTableModel table = IndexedResultTableModel.create(qrt);
 		Iterator<TableRow> iterator;
 		if (isNavigation) {
@@ -425,7 +428,7 @@ public class SparqlResultRenderer {
 			}
 			renderResult.appendHtml("</tr>");
 		}
-
+		renderResult.appendHtml("</tbody>");
 		renderResult.appendHtml("</table>");
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());

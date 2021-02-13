@@ -34,7 +34,7 @@
 	border: 1px solid white;
 }
 
-.sparqlTable .border .sparqltable tr:first-child {
+.sparqlTable .border .sparqltable thead tr:first-child {
 	background-color: #EEE;
 }
 
