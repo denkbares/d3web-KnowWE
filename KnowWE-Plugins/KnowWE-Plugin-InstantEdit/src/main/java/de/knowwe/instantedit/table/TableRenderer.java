@@ -14,7 +14,7 @@ import de.knowwe.tools.ToolMenuDecoratingRenderer;
  */
 public final class TableRenderer implements Renderer {
 
-	private class IconRenderer implements Renderer {
+	private static class IconRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult out) {
