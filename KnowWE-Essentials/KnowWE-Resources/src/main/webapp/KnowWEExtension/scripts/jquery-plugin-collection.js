@@ -1363,6 +1363,75 @@ jQuery.fn.insertAt = function(index, element) {
 })(jQuery);
 
 
+//jquery-autogrow for automatic input field resizing (customized for KnowWE renaming)
+
+(function(jq$) {
+  let inherit;
+  inherit = ['font', 'letter-spacing'];
+  return jq$.fn.autoGrowRenameField = function(options) {
+    let comfortZone, remove, _ref;
+    remove = (options === 'remove' || options === false) || !!(options != null ? options.remove : void 0);
+    comfortZone = (_ref = options != null ? options.comfortZone : void 0) != null ? _ref : options;
+    if (comfortZone != null) {
+      comfortZone = +comfortZone;
+    }
+    return this.each(function() {
+      let check, cz, input, growWithSpan, prop, styles, testSubject, _i, _j, _len, _len1;
+      input = jq$(this);
+      growWithSpan = input.closest("span.toolMenuDecorated");
+      testSubject = input.next().filter('div.autogrow');
+      if (testSubject.length && remove) {
+        input.unbind('input.autogrow');
+        return testSubject.remove();
+      } else if (testSubject.length) {
+        styles = {};
+        for (_i = 0, _len = inherit.length; _i < _len; _i++) {
+          prop = inherit[_i];
+          styles[prop] = input.css(prop);
+        }
+        testSubject.css(styles);
+        if (comfortZone != null) {
+          check = function() {
+            testSubject.text(input.val());
+            growWithSpan.width(testSubject.width() + comfortZone);
+            return input.width(testSubject.width() + comfortZone);
+          };
+          input.unbind('input.autogrow');
+          input.bind('input.autogrow', check);
+          return check();
+        }
+      } else if (!remove) {
+
+        input.css('min-width', '15px');
+        growWithSpan.css('min-width', '15px');
+        growWithSpan.css('padding-right', '10px');
+
+        styles = {
+          position: 'absolute',
+          top: -99999,
+          left: -99999,
+          width: 'auto',
+          visibility: 'hidden'
+        };
+        for (_j = 0, _len1 = inherit.length; _j < _len1; _j++) {
+          prop = inherit[_j];
+          styles[prop] = input.css(prop);
+        }
+        testSubject = jq$('<div class="autogrow"/>').css(styles);
+        testSubject.insertAfter(input);
+        cz = comfortZone != null ? comfortZone : 70;
+        check = function() {
+          testSubject.text(input.val());
+          growWithSpan.width(testSubject.width() + cz);
+          return input.width(testSubject.width() + cz);
+        };
+        input.bind('input.autogrow', check);
+        return check();
+      }
+    });
+  };
+})(typeof Zepto !== "undefined" && Zepto !== null ? Zepto : jQuery);
+
 /** @preserve jQuery.floatThead 2.2.1 - https://mkoryak.github.io/floatThead/ - Copyright (c) 2012 - 2020 Misha Koryak **/
 // @license MIT
 
