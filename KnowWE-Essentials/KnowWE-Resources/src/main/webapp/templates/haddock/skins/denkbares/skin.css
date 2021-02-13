@@ -560,6 +560,10 @@ td .information, td .info, td .warning, td .error {
 	overflow: auto;
 }
 
+.editarea .wikitable tr:first-child td {
+	border-top: 1px solid #ddd;
+}
+
 .wikitable > thead > tr > th, .wikitable > tbody > tr > th,
 .wikitable > tfoot > tr > th, .wikitable > thead > tr > td,
 .wikitable > tbody > tr > td, .wikitable > tfoot > tr > td,
