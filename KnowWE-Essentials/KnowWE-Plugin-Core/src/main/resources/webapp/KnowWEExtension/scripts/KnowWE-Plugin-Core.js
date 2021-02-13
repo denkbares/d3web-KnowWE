@@ -795,7 +795,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
   };
 }();
 
-KNOWWE.core.plugin.stickyTables = function() {
+KNOWWE.core.plugin.stickyTableHeaders = function() {
   return {
     init: function() {
       jq$(".haddock table.sticky-header, .haddock .wikitable").floatThead({
@@ -804,6 +804,10 @@ KNOWWE.core.plugin.stickyTables = function() {
           return rect.top + rect.height;
         },
         zIndex: 800, // has to be < than wiki header, which is 1001
+      });
+      jq$(".haddock .header").on("transitionend", function() {
+        // trigger scroll event to make sure sticky position gets recalculated when the header has transitioned
+        window.dispatchEvent(new CustomEvent('scroll'));
       });
     }
   }
@@ -832,10 +836,10 @@ KNOWWE.core.plugin.stickyTables = function() {
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
   KNOWWE.tooltips.enrich(this);
   KNOWWE.core.plugin.objectinfo.lookUp(this);
-  KNOWWE.core.plugin.stickyTables.init();
+  KNOWWE.core.plugin.stickyTableHeaders.init();
 });
 
 jq$(document).ready(function() {
   KNOWWE.core.plugin.switchCompiler.init();
-  KNOWWE.core.plugin.stickyTables.init();
+  KNOWWE.core.plugin.stickyTableHeaders.init();
 });
