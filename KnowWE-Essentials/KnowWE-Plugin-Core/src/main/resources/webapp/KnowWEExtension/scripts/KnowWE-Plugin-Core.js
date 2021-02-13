@@ -798,13 +798,12 @@ KNOWWE.core.plugin.switchCompiler = function() {
 KNOWWE.core.plugin.stickyTables = function() {
   return {
     init: function() {
-      jq$(".haddock table.sticky-header").floatThead({
+      jq$(".haddock table.sticky-header, .haddock .wikitable").floatThead({
         top: function() {
           let rect = jq$(".header")[0].getBoundingClientRect();
           return rect.top + rect.height;
         },
         zIndex: 800, // has to be < than wiki header, which is 1001
-        debug: true
       });
     }
   }
