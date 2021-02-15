@@ -798,7 +798,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
 KNOWWE.core.plugin.stickyTableHeaders = function() {
   return {
     init: function() {
-      jq$(".haddock table.sticky-header, .haddock .wikitable").floatThead({
+      jq$(".haddock table.sticky-header, .haddock .wikitable").not('.renderKDOMTable').floatThead({
         top: function() {
           let rect = jq$(".header")[0].getBoundingClientRect();
           return rect.top + rect.height;
