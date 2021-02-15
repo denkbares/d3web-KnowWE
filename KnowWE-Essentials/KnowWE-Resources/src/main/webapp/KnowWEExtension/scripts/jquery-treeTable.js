@@ -183,6 +183,8 @@
 			} else {
 				this.expand();
 			}
+			// page size changes, update listeners
+			window.dispatchEvent(new CustomEvent('resize'));
 			return this;
 		};
 
