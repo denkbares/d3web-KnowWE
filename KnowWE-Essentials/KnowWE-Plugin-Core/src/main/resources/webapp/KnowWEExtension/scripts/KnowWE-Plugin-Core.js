@@ -559,19 +559,19 @@ KNOWWE.kdomtreetable.setOverflow = function() {
 };
 
 KNOWWE.kdomtreetable.revealRenderKDOMTable = function(id) {
-  const treetable = jq$('.renderKDOMTable.wikitable.treetable')[0];
-  const markedtitle = jq$(treetable).find('td[style="color: rgb(0, 0, 255);"]');
+  const treetable = jq$('.renderKDOMTable.wikitable.treetable').not(".floatThead-table");
+  const markedtitle = treetable.find('td[style="color: rgb(0, 0, 255);"]');
   if (typeof markedtitle != "undefined" || markedtitle != null) {
     for (let i = 0; i < markedtitle.size(); i++) {
       jq$(markedtitle[i]).removeAttr("style");
     }
   }
 
-  const tablerow = jq$(treetable).find('tr[data-tt-id="kdom-row-' + id + '"]')[0];
-  jq$(treetable).treetable("reveal", "kdom-row-" + id);
-  jq$(tablerow).find("td").first().css("color", "rgb(0, 0, 255)");
+  const tablerow = treetable.find('tr[data-tt-id="kdom-row-' + id + '"]');
+  treetable.treetable("reveal", "kdom-row-" + id);
+  tablerow.find("td").first().css("color", "rgb(0, 0, 255)");
   jq$('html, body').animate({
-    scrollTop: (jq$(tablerow).offset().top - 250)
+    scrollTop: (tablerow.offset().top - 250)
   }, 400);
 };
 
