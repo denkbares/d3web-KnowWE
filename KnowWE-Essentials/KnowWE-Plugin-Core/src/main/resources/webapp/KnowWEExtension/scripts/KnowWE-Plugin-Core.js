@@ -805,8 +805,13 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
         },
         zIndex: 800, // has to be < than wiki header, which is 1001
       });
+
+      // trigger scroll and resize event to make sure sticky position gets recalculated when page height changes
       jq$(".haddock .header").on("transitionend", function() {
-        // trigger scroll and resize event to make sure sticky position gets recalculated when the header has transitioned
+        window.dispatchEvent(new CustomEvent('resize'));
+        window.dispatchEvent(new CustomEvent('scroll'));
+      });
+      KNOWWE.helper.observer.subscribe("afterRerender", function() {
         window.dispatchEvent(new CustomEvent('resize'));
         window.dispatchEvent(new CustomEvent('scroll'));
       });
