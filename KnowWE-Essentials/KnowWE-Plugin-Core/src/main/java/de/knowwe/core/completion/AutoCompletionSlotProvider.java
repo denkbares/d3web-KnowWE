@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.user.UserContext;
 
 /**
  * @author Jochen Reutelshoefer (denkbares GmbH)
@@ -31,16 +30,14 @@ import de.knowwe.core.user.UserContext;
  */
 public interface AutoCompletionSlotProvider {
 
-    String EXTENSION_POINT_COMPLETION_PROVIDER = "AutoCompletionSlotProvider" ;
+	String EXTENSION_POINT_COMPLETION_PROVIDER = "AutoCompletionSlotProvider";
 
 	/**
 	 * Initializes the AutoCompletionSlotProvider to be ready for use
 	 *
 	 * @param section the section the slot is rendered for
-	 * @param user the user context
-	 * @throws IOException
 	 */
-	void init(Section<?> section, UserContext user) throws IOException;
+	void init(Section<?> section);
 
 	/**
 	 * Renders a AutoCompletionSlot as HTML
@@ -48,5 +45,5 @@ public interface AutoCompletionSlotProvider {
 	 * @param content The html result stream where the slot is appended
 	 * @param section the section the slot is rendered for
 	 */
-    void renderAutoCompletionSlot(RenderResult content, Section<?> section);
+	void renderAutoCompletionSlot(RenderResult content, Section<?> section);
 }
