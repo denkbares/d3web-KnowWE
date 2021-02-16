@@ -23,10 +23,13 @@ package de.d3web.we.ci4ke.test;
 import de.knowwe.core.report.Message;
 
 /**
+ * Shows error of a specified compiler and all compiler independent errors.
+ *
  * @author Veronika Sehne (denkbares GmbH)
  * @created 22.10.20
  */
-public class CompilerHasErrorsTest extends CompilerHasMessagesTest{
+public class CompilerHasErrorsTest extends CompilerHasMessagesTest {
+
 	public CompilerHasErrorsTest() {
 		super(Message.Type.ERROR);
 	}

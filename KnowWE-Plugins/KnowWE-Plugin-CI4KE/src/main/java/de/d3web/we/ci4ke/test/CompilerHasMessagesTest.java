@@ -37,7 +37,6 @@ import de.d3web.testing.TestSpecification;
 import de.d3web.testing.TestingUtils;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.NamedCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -88,11 +87,13 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		TestingUtils.checkInterrupt();
 
 		buffer.append(" ")
-				.append(type.toString().toLowerCase())
-				.append("s found in compiler '")
+				.append(Strings.capitalize(type.toString().toLowerCase()))
+				.append("s found in compiler [")
 				.append(compiler.getName())
-				.append("'");
+				.append("|")
+				.append(KnowWEUtils.getWikiLink(compiler.getCompileSection()));
 		if (!messages.isEmpty()) {
+			buffer.append("]\n");
 			for (de.knowwe.core.report.Message message : messages) {
 				if (message.getType() == Message.Type.ERROR) {
 					hasError = true;
@@ -164,7 +165,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 					for (Message message : listEntry.getValue()) {
 						String verbalization = message.getVerbalization();
 						if (message.getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
-							verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization);
+							verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization.replaceAll("[\\[\\]|]", ""));
 						}
 						buffer.append("\n* ")
 								.append("[")

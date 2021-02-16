@@ -23,10 +23,12 @@ package de.d3web.we.ci4ke.test;
 import de.knowwe.core.report.Message;
 
 /**
+ * Shows warnings of a specified compiler and all compiler independent errors.
+ *
  * @author Veronika Sehne (denkbares GmbH)
  * @created 22.10.20
  */
-public class CompilerHasWarningsTest extends CompilerHasMessagesTest{
+public class CompilerHasWarningsTest extends CompilerHasMessagesTest {
 	public CompilerHasWarningsTest() {
 		super(Message.Type.WARNING);
 	}
