@@ -45,22 +45,27 @@ public class GetWikiSectionTextAction extends GetSectionTextAction {
 				return;
 			}
 
-			Section<?> headerSection = WikiReference.findReferencedSection(wikiReferenceSection, KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB));
-			if (headerSection != null && headerSection.get() instanceof HeaderType) {
-				List<Section<? extends Type>> sectionList = JSPWikiMarkupUtils.getContent(Sections.cast(headerSection, HeaderType.class));
+			Section<?> referencedSection = WikiReference.findReferencedSection(wikiReferenceSection, KnowWEUtils.getArticleManager(Environment.DEFAULT_WEB));
+			if (referencedSection != null) {
 				StringBuilder sectionText = new StringBuilder();
 				Instant lastModified = Environment.getInstance()
 						.getWikiConnector()
-						.getLastModifiedDate(headerSection.getTitle(), -1)
+						.getLastModifiedDate(referencedSection.getTitle(), -1)
 						.toInstant();
-				for (Section<? extends Type> subSection : sectionList) {
-					if (KnowWEUtils.canView(subSection, context)) {
-						sectionText.append(subSection.getText());
+				if (referencedSection.get() instanceof HeaderType) {
+					List<Section<? extends Type>> sectionList = JSPWikiMarkupUtils.getContent(Sections.cast(referencedSection, HeaderType.class));
+					for (Section<? extends Type> subSection : sectionList) {
+						if (KnowWEUtils.canView(subSection, context)) {
+							sectionText.append(subSection.getText());
+						}
+						else {
+							context.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to view/download section");
+							return;
+						}
 					}
-					else {
-						context.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to view/download section");
-						return;
-					}
+				}
+				else {
+					sectionText.append(referencedSection.getText());
 				}
 				writeFile(context, sectionText.toString(), wikiReference, lastModified);
 			}
