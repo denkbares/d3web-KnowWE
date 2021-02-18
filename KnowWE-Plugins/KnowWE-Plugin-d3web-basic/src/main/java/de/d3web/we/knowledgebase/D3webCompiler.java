@@ -193,7 +193,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 			Log.info("The following " + Strings.pluralOf(failedScriptsCount, "script")
 					+ " prevented incremental compilation: "
 					+ Stream.concat(failedCompileScripts.stream(), failedDestroyScripts.stream())
-					.map(Class::getSimpleName).sorted().collect(Collectors.joining(", ")));
+					.map(c -> Strings.isBlank(c.getSimpleName()) ? c.getName() : c.getSimpleName())
+					.sorted().collect(Collectors.joining(", ")));
 		}
 	}
 
