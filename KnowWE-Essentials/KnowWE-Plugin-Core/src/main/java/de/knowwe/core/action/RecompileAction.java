@@ -25,10 +25,12 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.event.FullParseEvent;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -65,7 +67,8 @@ public class RecompileAction extends AbstractAction {
 						.forEach(article1 -> articleManager.registerArticle(article1.getTitle(), article1.getText()));
 			}
 			else {
-				articleManager.registerArticle(article.getTitle(), article.getText());
+				Article recompiledArticle = articleManager.registerArticle(article.getTitle(), article.getText());
+				EventManager.getInstance().fireEvent(new FullParseEvent(recompiledArticle));
 			}
 		}
 		finally {
