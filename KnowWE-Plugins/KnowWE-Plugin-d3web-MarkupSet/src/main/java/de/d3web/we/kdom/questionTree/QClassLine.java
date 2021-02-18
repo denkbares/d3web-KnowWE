@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -28,6 +28,7 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.QASet;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
+import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionnaireDefinition;
 import de.d3web.we.reviseHandler.D3webHandler;
@@ -73,32 +74,40 @@ public class QClassLine extends AbstractType {
 					new AllTextFinderTrimmed());
 			csf.addConstraint(SingleChildConstraint.getInstance());
 			setSectionFinder(csf);
-			this.addCompileScript(Priority.ABOVE_DEFAULT, new DashTreeTermRelationScript<D3webCompiler>() {
-				@Override
-				protected void createObjectRelations(Section<TermDefinition> parentSection, D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
-					QASet parentQASet = (QASet) D3webUtils.getTermObject(compiler, parentIdentifier);
-					if (parentQASet == null) return;
-					QASet rootQASet = parentQASet.getKnowledgeBase().getRootQASet();
-					TerminologyObject[] parents = parentQASet.getParents();
-					if (parents.length == 0 && parentQASet != rootQASet) {
-						rootQASet.addChild(parentQASet);
-					}
-					for (Identifier childIdentifier : childrenIdentifier) {
-						NamedObject namedObject = D3webUtils.getTermObject(compiler, childIdentifier);
-						if (!(namedObject instanceof QASet)) continue;
-						QASet childQASet = (QASet) namedObject;
-						rootQASet.removeChild(childQASet);
-						parentQASet.addChild(childQASet);
-					}
-				}
-
-				@Override
-				public Class<D3webCompiler> getCompilerClass() {
-					return D3webCompiler.class;
-				}
-			});
+			this.addCompileScript(Priority.ABOVE_DEFAULT, new D3webCompilerDashTreeTermRelationScript());
 		}
 
+	}
+
+	private static class D3webCompilerDashTreeTermRelationScript extends DashTreeTermRelationScript<D3webCompiler> implements D3webCompileScript<TermDefinition> {
+
+		@Override
+		protected void createObjectRelations(Section<TermDefinition> parentSection, D3webCompiler compiler, Identifier parentIdentifier, List<Identifier> childrenIdentifier) {
+			QASet parentQASet = (QASet) D3webUtils.getTermObject(compiler, parentIdentifier);
+			if (parentQASet == null) return;
+			QASet rootQASet = parentQASet.getKnowledgeBase().getRootQASet();
+			TerminologyObject[] parents = parentQASet.getParents();
+			if (parents.length == 0 && parentQASet != rootQASet) {
+				rootQASet.addChild(parentQASet);
+			}
+			for (Identifier childIdentifier : childrenIdentifier) {
+				NamedObject namedObject = D3webUtils.getTermObject(compiler, childIdentifier);
+				if (!(namedObject instanceof QASet)) continue;
+				QASet childQASet = (QASet) namedObject;
+				rootQASet.removeChild(childQASet);
+				parentQASet.addChild(childQASet);
+			}
+		}
+
+		@Override
+		public Class<D3webCompiler> getCompilerClass() {
+			return D3webCompiler.class;
+		}
+
+		@Override
+		public boolean isIncrementalCompilationSupported(Section<TermDefinition> section) {
+			return true; // nothing to do here, the relation gets removed together with the element
+		}
 	}
 
 	private void initSectionFinder() {
@@ -176,7 +185,6 @@ public class QClassLine extends AbstractType {
 								return Messages.noMessage();
 							}
 						}
-
 					}
 					return Messages.asList(Messages.objectCreationError(
 							"Init priority"));
@@ -196,7 +204,6 @@ public class QClassLine extends AbstractType {
 					}
 				}
 			});
-
 		}
 
 		public Double getNumber(Section<InitNumber> s) {
@@ -212,7 +219,5 @@ public class QClassLine extends AbstractType {
 			}
 			return null;
 		}
-
 	}
-
 }
