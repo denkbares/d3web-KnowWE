@@ -19,6 +19,7 @@
 package de.knowwe.core.utils.progress;
 
 import com.denkbares.progress.ReadableProgressListener;
+import com.denkbares.utils.Stopwatch;
 
 /**
  * A simple ProgressListener that stores the updated values to be pulled by ajax
@@ -81,5 +82,7 @@ public interface AjaxProgressListener extends ReadableProgressListener {
 	 * Returns the ID for the this listener.
 	 */
 	String getId();
+
+	long getRuntimeMillis();
 
 }

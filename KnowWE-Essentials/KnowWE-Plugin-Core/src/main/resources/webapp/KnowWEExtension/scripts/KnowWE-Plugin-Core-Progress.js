@@ -197,6 +197,7 @@ KNOWWE.core.plugin.progress = function() {
               var opId = json[i].operationID;
               if (!isProgressShown(opId)) continue;
               var progress = json[i].progress;
+              var runtime = json[i].runtime;
               var message = json[i].message;
               var report = json[i].report;
               var error = json[i].error;
@@ -221,7 +222,7 @@ KNOWWE.core.plugin.progress = function() {
 
               var percent = Math.floor(progress * 100);
               bar.find(".long-progress-bar").progressbar({value: percent});
-              bar.find(".long-progress-bar-percent").text(percent + " %");
+              bar.find(".long-progress-bar-percent").text(percent + " % after " + runtime);
               bar.find(".long-progress-bar-message").text(message);
               bar.find(".long-progress-report").html(report);
 

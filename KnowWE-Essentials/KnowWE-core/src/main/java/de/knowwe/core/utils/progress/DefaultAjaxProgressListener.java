@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.utils.progress;
 
+import com.denkbares.utils.Stopwatch;
+
 /**
  * A simple ProgressListener that stores the updated values to be pulled by ajax requests.
  *
@@ -26,13 +28,12 @@ package de.knowwe.core.utils.progress;
  */
 public class DefaultAjaxProgressListener implements AjaxProgressListener {
 
-
+	private final Stopwatch stopwatch = new Stopwatch().reset();
 	private String currentMessage = "";
 	private float currentProgress = 0;
 	private String error = null;
 	private boolean running = false;
 	private String id;
-
 
 	@Override
 	public String getMessage() {
@@ -67,6 +68,11 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 
 	@Override
 	public void setRunning(boolean running) {
+		if (running) {
+			this.stopwatch.start();
+		} else {
+			this.stopwatch.pause();
+		}
 		this.running = running;
 	}
 
@@ -78,5 +84,10 @@ public class DefaultAjaxProgressListener implements AjaxProgressListener {
 	@Override
 	public String getId() {
 		return this.id;
+	}
+
+	@Override
+	public long getRuntimeMillis() {
+		return this.stopwatch.getTime();
 	}
 }
