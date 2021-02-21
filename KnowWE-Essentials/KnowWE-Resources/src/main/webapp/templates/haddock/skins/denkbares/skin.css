@@ -541,6 +541,11 @@ td .information, td .info, td .warning, td .error {
 	vertical-align: top;
 }
 
+.wikitable thead tr {
+	background-color: #eee;
+	border-bottom: 1px solid #ddd;
+}
+
 .wikitable * td {
 	border: 1px solid #ddd;
 	vertical-align: top;
