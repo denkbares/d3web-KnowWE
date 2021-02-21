@@ -1834,7 +1834,9 @@ jQuery.fn.insertAt = function(index, element) {
       var $floatContainer = $('<div>').css(opts.floatContainerCss).attr('aria-hidden', 'true');
       var floatTableHidden = false; //this happens when the table is hidden and we do magic when making it visible
       var $newHeader = $("<thead/>");
-      var $sizerRow = $('<tr class="size-row"/>');
+      // original class here is "size-row", but there is a name collision with jswpiki/haddock,
+      // where all elements with classes containing size* will be inline-block...
+      var $sizerRow = $('<tr class="sticky-thead-s-row"/>');
       var $sizerCells = $([]);
       var $tableCells = $([]); //used for sizing - either $sizerCells or $tableColGroup cols. $tableColGroup cols are only created in chrome for borderCollapse:collapse because of a chrome bug.
       var $headerCells = $([]);
