@@ -806,14 +806,29 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
         zIndex: 800, // has to be < than wiki header, which is 1001
       });
 
+      function update() {
+        window.dispatchEvent(new CustomEvent('resize'));
+        window.dispatchEvent(new CustomEvent('scroll'));
+      }
+
       // trigger scroll and resize event to make sure sticky position gets recalculated when page height changes
-      jq$(".haddock .header").on("transitionend", function() {
-        window.dispatchEvent(new CustomEvent('resize'));
-        window.dispatchEvent(new CustomEvent('scroll'));
+      KNOWWE.helper.observer.subscribe("afterRerender", update);
+      jq$(".haddock .header").on("transitionend", update);
+
+      // special handling for sidebar, we want to continuously update while animating
+      let transitionOngoing = false
+      jq$(".haddock .sidebar").on("transitionstart", function() {
+        transitionOngoing = true;
+        function continuousUpdate() {
+          if (!transitionOngoing) return;
+          window.dispatchEvent(new CustomEvent('scroll'));
+          window.requestAnimationFrame(continuousUpdate);
+        }
+        window.requestAnimationFrame(continuousUpdate);
       });
-      KNOWWE.helper.observer.subscribe("afterRerender", function() {
-        window.dispatchEvent(new CustomEvent('resize'));
-        window.dispatchEvent(new CustomEvent('scroll'));
+      jq$(".haddock .sidebar").on("transitionend transitioncancel", function() {
+        transitionOngoing = false;
+        update();
       });
     }
   }
