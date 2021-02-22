@@ -28,13 +28,12 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.NotNull;
-
-import com.denkbares.utils.Log;
 
 import static org.apache.wiki.WikiProvider.LATEST_VERSION;
 
@@ -75,8 +74,10 @@ public class GitVersionCache {
 		if(ref == null) return;
 		revWalk.sort(RevSort.REVERSE);
 		revWalk.markStart(revWalk.parseCommit(ref));
+		revWalk.setRevFilter(RevFilter.NO_MERGES);
 		RevCommit commit;
 		while ((commit = revWalk.next()) != null) {
+			log.debug(""+commit.getParentCount()+" " + commit.getFullMessage());
 			final RevCommit[] parents = commit.getParents();
 			RevTree tree = commit.getTree();
 			if (parents.length > 0) {
@@ -127,7 +128,7 @@ public class GitVersionCache {
 	}
 
 	void mapMove(RevCommit commit, String oldPath, String newPath) throws IOException {
-		Log.finest("move " + oldPath + " -> " + newPath);
+		log.debug("move " + oldPath + " -> " + newPath);
 		String key;
 		String newKey;
 		Map<String, List<GitCacheItem>> cache;
@@ -160,7 +161,7 @@ public class GitVersionCache {
 	}
 
 	void mapCommit(RevCommit commit, String path, boolean delete) throws IOException {
-		Log.finest("commit " + (delete ? "delete " : "") + path);
+		log.debug("commit " + (delete ? "delete " : "") + path);
 		Map<String, List<GitCacheItem>> cache;
 		GitCacheItem toCache;
 		String key;
@@ -173,14 +174,14 @@ public class GitVersionCache {
 			String attachmentName = TextUtil.urlDecodeUTF8(split[1]);
 			key = parentName + "/" + attachmentName;
 			toCache = new AttachmentCacheItem(parentName, attachmentName, commit.getFullMessage(),
-					commit.getCommitterIdent().getName(),
+					commit.getAuthorIdent().getName(),
 					new Date(1000L * commit.getCommitTime()), size, delete, commit.getId());
 		}
 		else {
 			cache = this.pageRevisionCache;
 			key = TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, ""));
 			toCache = new PageCacheItem(key, commit.getFullMessage(),
-					commit.getCommitterIdent().getName(),
+					commit.getAuthorIdent().getName(),
 					new Date(1000L * commit.getCommitTime()), size, delete, commit.getId());
 		}
 
@@ -274,6 +275,7 @@ public class GitVersionCache {
 		att.setAuthor(gitCacheItem.getAuthor());
 		att.setSize(gitCacheItem.getSize());
 		att.setLastModified(gitCacheItem.getDate());
+		att.setAttribute(WikiPage.CHANGENOTE, gitCacheItem.getFullMessage());
 		return att;
 	}
 
@@ -331,6 +333,7 @@ public class GitVersionCache {
 		page.setLastModified(item.getDate());
 		page.setVersion(item.getVersion());
 		page.setSize(item.getSize());
+		page.setAttribute(WikiPage.CHANGENOTE, item.getFullMessage());
 		return page;
 	}
 

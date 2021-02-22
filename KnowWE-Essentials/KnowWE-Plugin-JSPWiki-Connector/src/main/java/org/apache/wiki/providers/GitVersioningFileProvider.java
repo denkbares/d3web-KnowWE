@@ -22,6 +22,7 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -81,8 +82,6 @@ import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
 import org.jetbrains.annotations.NotNull;
 
-import com.denkbares.utils.Log;
-
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 
 /**
@@ -93,6 +92,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT = "jspwiki.gitVersioningFileProvider.remoteGit";
 	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE = "jspwiki.gitVersioningFileProvider.autoUpdate";
+	public static final String JSPWIKI_GIT_COMMENT_STRATEGY = "jspwiki.git.commentStrategy";
 	protected Repository repository;
 	private static final String GIT_DIR = ".git";
 	private static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
@@ -120,6 +120,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	private boolean remoteRepo = false;
 	private boolean autoUpdateEnabled = false;
+	private GitCommentStrategy gitCommentStrategy;
 
 	/**
 	 * {@inheritDoc}
@@ -135,6 +136,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		final File pageDir = new File(this.filesystemPath);
 		final File gitDir = new File(pageDir.getAbsolutePath() + File.separator + GIT_DIR);
 		autoUpdateEnabled = TextUtil.getBooleanProperty(properties, JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE, false);
+		setGitCommentStrategy(properties);
 		if (!RepositoryCache.FileKey.isGitRepository(gitDir, FS.DETECTED)) {
 			final String remoteURL = TextUtil.getStringProperty(properties, JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT, "");
 			if (!"".equals(remoteURL)) {
@@ -178,10 +180,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			catch (IOException e) {
 				if (e.getMessage().toLowerCase().contains("command not found")) {
 					dontUseHack = true;
-					Log.warning("Can't find git in PATH");
+					log.warn("Can't find git in PATH");
 				}
 				else {
-					Log.severe(e.getMessage(), e);
+					log.error(e.getMessage(), e);
 				}
 			}
 		}
@@ -213,6 +215,18 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 	}
 
+	private void setGitCommentStrategy(Properties properties) {
+		String commentStrategyClassName = TextUtil.getStringProperty(properties, JSPWIKI_GIT_COMMENT_STRATEGY, "org.apache.wiki.providers.ChangeNoteStrategy");
+		try {
+			Class<?> commentStrategyClass = Class.forName(commentStrategyClassName);
+			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor().newInstance(new Object[]{});
+		}
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+			log.error("Comment strategy not found " +commentStrategyClassName, e);
+			gitCommentStrategy = new ChangeNoteStrategy();
+		}
+	}
+
 	private void doBinaryGC(File pageDir) {
 		try {
 			StopWatch sw = new StopWatch();
@@ -226,10 +240,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			log.info("binary gc took " + sw.toString());
 		}
 		catch (InterruptedException e) {
-			Log.warning("External git process didn't end in 2 minutes, therefore cancel it");
+			log.warn("External git process didn't end in 2 minutes, therefore cancel it");
 		}
 		catch (IOException e) {
-			Log.severe("Error executing external git: " + e.getMessage(), e);
+			log.error("Error executing external git: " + e.getMessage(), e);
 		}
 	}
 
@@ -271,8 +285,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					final CommitCommand commit = git
 							.commit()
 							.setOnly(changedFile.getName());
-					if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
-						commit.setMessage((String) page.getAttribute(WikiPage.CHANGENOTE));
+					String comment = gitCommentStrategy.getComment(page);
+					if (!comment.isEmpty()) {
+						commit.setMessage(comment);
 					}
 					else if (addFile) {
 						commit.setMessage("Added page");
@@ -387,7 +402,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			return pageFile.exists() && pageFile.getCanonicalPath().equals(pageFile.getAbsolutePath());
 		}
 		catch (IOException e) {
-			Log.warning("Could not evaluate canonical path", e);
+			log.warn("Could not evaluate canonical path", e);
 		}
 		return pageFile.exists();
 	}
@@ -440,7 +455,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					page.setSize(file.length());
 					page.setLastModified(new Date(file.lastModified()));
 					this.refreshCacheList.add(pageName);
-					Log.info("File not in repo but getPageInfo " + pageName);
+					log.info("File not in repo but getPageInfo " + pageName);
 					return page;
 				}
 				else if (version == WikiPageProvider.LATEST_VERSION) {
@@ -488,65 +503,17 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					resultingPages.put(fileName, page);
 				}
 				else {
-					Log.warning("Datei " + fileName + " wurde nicht im Cache gefunden! Versuche über VersionHistory");
+					log.warn("Datei " + fileName + " wurde nicht im Cache gefunden! Versuche über VersionHistory");
 					List<WikiPage> versionHistory = getVersionHistory(pageName);
 					if (versionHistory != null && !versionHistory.isEmpty()) {
 						resultingPages.put(fileName, versionHistory.get(versionHistory.size() - 1));
-						Log.info("Datei " + fileName + " wurde gefunden");
+						log.info("Datei " + fileName + " wurde gefunden");
 					}
 					else {
-						Log.severe("Datei " + fileName + " wurde nicht im Repository gefunden!");
+						log.error("Datei " + fileName + " wurde nicht im Repository gefunden!");
 					}
 				}
 			}
-//			try {
-//				final ObjectReader objectReader = this.repository.newObjectReader();
-//				final CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
-//				final CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
-//				final DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-//				diffFormatter.setRepository(this.repository);
-//				final ObjectId ref = this.repository.resolve(Constants.HEAD);
-//				final RevWalk revWalk = new RevWalk(this.repository);
-//				revWalk.markStart(revWalk.lookupCommit(ref));
-//				RevCommit commit;
-//				while ((commit = revWalk.next()) != null) {
-//					final RevCommit[] parents = commit.getParents();
-//					if (parents.length > 0) {
-//						commit.getTree();
-//						oldTreeParser.reset(objectReader, commit.getParent(0)
-//								.getTree());
-//						newTreeParser.reset(objectReader, commit.getTree());
-//						List<DiffEntry> diffs = diffFormatter.scan(oldTreeParser, newTreeParser);
-//						RenameDetector rd = new RenameDetector(repository);
-//						rd.addAll(diffs);
-//						diffs = rd.compute();
-//						for (final DiffEntry diff : diffs) {
-//							String path = null;
-//							if (diff.getChangeType() == DiffEntry.ChangeType.MODIFY) {
-//								path = diff.getOldPath();
-//							}
-//							else if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
-//								path = diff.getNewPath();
-//							}
-//							if (path != null) {
-//								mapCommit(resultingPages, files, commit, path);
-//							}
-//						}
-//					}
-//					else {
-//						final TreeWalk tw = new TreeWalk(this.repository);
-//						tw.reset(commit.getTree());
-//						tw.setRecursive(false);
-//						while (tw.next()) {
-//							mapCommit(resultingPages, files, commit, tw.getPathString());
-//						}
-//					}
-//				}
-//			}
-//			catch (final IOException e) {
-//				Log.severe(e.getMessage(), e);
-//				throw new ProviderException("Can't load all pages from repository: " + e.getMessage(), e);
-//			}
 			return resultingPages.values();
 		}
 		finally {
@@ -788,8 +755,13 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				}
 				else {
 					final CommitCommand commitCommand = git.commit()
-							.setOnly(file.getName())
-							.setMessage("removed page");
+							.setOnly(file.getName());
+					String comment = gitCommentStrategy.getComment(page);
+					if(comment.isEmpty()) {
+						commitCommand.setMessage("removed page");
+					} else {
+						commitCommand.setMessage(comment);
+					}
 					addUserInfo(this.m_engine, page.getAuthor(), commitCommand);
 
 					retryGitOperation(() -> {
@@ -851,8 +823,13 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				else {
 					final CommitCommand commitCommand = git.commit()
 							.setOnly(toFile.getName())
-							.setOnly(fromFile.getName())
-							.setMessage("renamed page " + from + " to " + to);
+							.setOnly(fromFile.getName());
+					String comment = gitCommentStrategy.getComment(from);
+					if(comment.isEmpty()) {
+							commitCommand.setMessage("renamed page " + from + " to " + to);
+					} else {
+						commitCommand.setMessage(comment);
+					}
 					addUserInfo(this.m_engine, from.getAuthor(), commitCommand);
 					retryGitOperation(() -> {
 						final RevCommit revCommit = commitCommand.call();
@@ -885,12 +862,18 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	public void commit(final String user, final String commitMsg) {
-		Log.info("start commit");
+		log.info("start commit");
 		try {
 			canWriteFileLock();
 			commitLock();
 			final Git git = new Git(this.repository);
-			final CommitCommand commitCommand = git.commit().setMessage(commitMsg);
+			final CommitCommand commitCommand = git.commit();
+			String comment = gitCommentStrategy.getCommentForUser(user);
+			if(comment.isEmpty()) {
+				commitCommand.setMessage(commitMsg);
+			} else {
+				commitCommand.setMessage(comment);
+			}
 			addUserInfo(this.m_engine, user, commitCommand);
 			if (this.openCommits.containsKey(user)) {
 				final Set<String> paths = this.openCommits.get(user);
@@ -905,13 +888,13 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 								user,
 								this.openCommits.get(user),
 								revCommit.getId().getName()));
-						cache.executeCacheCommands(user, commitMsg, revCommit.getId());
+						cache.executeCacheCommands(user, commitCommand.getMessage(), revCommit.getId());
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 
 					this.openCommits.remove(user);
 					final PageManager pm = this.m_engine.getPageManager();
-					Log.info("Start refresh");
+					log.info("Start refresh");
 					for (final String path : this.refreshCacheList) {
 						// decide whether page or attachment
 						refreshCache(pm, path);
@@ -919,7 +902,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					this.refreshCacheList.clear();
 				}
 				catch (final Exception e) {
-					Log.severe(e.getMessage(), e);
+					log.error(e.getMessage(), e);
 				}
 			}
 		}
@@ -976,7 +959,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				this.openCommits.remove(user);
 			}
 			catch (final Exception e) {
-				Log.severe(e.getMessage(), e);
+				log.error(e.getMessage(), e);
 			}
 		}
 		finally {
@@ -995,7 +978,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			pm.deleteVersion(page);
 		}
 		catch (final ProviderException e) {
-			Log.severe(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 		}
 	}
 
@@ -1053,5 +1036,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			scheduler.resumeAutoUpdate();
 		else
 			log.warn("resumeAutoUpdate was called on a wiki not configured as autoUpdate");
+	}
+
+	GitCommentStrategy getGitCommentStrategy() {
+		return gitCommentStrategy;
 	}
 }

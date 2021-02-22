@@ -79,6 +79,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	private String storageDir;
 	private GitVersioningFileProvider gitVersioningFileProvider;
 	private GitVersionCache cache;
+	private GitCommentStrategy gitCommentStrategy;
 
 	@Override
 	public void initialize(WikiEngine engine, Properties properties) throws NoRequiredPropertyException, IOException {
@@ -97,6 +98,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			gitVersioningFileProvider = (GitVersioningFileProvider) provider;
 			repository = ((GitVersioningFileProvider) provider).getRepository();
 			cache = gitVersioningFileProvider.getCache();
+			gitCommentStrategy = ((GitVersioningFileProvider)provider).getGitCommentStrategy();
 		}
 		else {
 			throw new NoRequiredPropertyException("GitVersioningFileProvider is not configured", "jspwiki.pageProvider");
@@ -219,11 +221,19 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	private void setMessage(Attachment att, CommitCommand commitCommand) {
 		String changeNote = (String) att.getAttribute(Attachment.CHANGENOTE);
-		if (changeNote != null && !"".equals(changeNote)) {
-			commitCommand.setMessage(changeNote);
+		String comment = gitCommentStrategy.getComment(att);
+		if(comment.isEmpty()) {
+			comment = gitCommentStrategy.getCommentForUser(att.getAuthor());
 		}
-		else {
-			commitCommand.setMessage("-");
+		if (comment.isEmpty()) {
+			if (changeNote != null && !"".equals(changeNote)) {
+				commitCommand.setMessage(changeNote);
+			}
+			else {
+				commitCommand.setMessage("-");
+			}
+		} else {
+			commitCommand.setMessage(comment);
 		}
 	}
 
@@ -702,7 +712,12 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
 
 					if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
-						commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
+						String comment = gitCommentStrategy.getComment(oldParent);
+						if(comment.isEmpty()) {
+							commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
+						} else {
+							commit.setMessage(comment);
+						}
 						try {
 							gitVersioningFileProvider.commitLock();
 							GitVersioningFileProvider.retryGitOperation(() -> {
