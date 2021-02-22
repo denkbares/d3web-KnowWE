@@ -382,6 +382,9 @@ public class DefaultMarkupRenderer implements Renderer {
 		// if exactly one package compiler, check whether the sections of the compiler are distributed over more than 3 articles
 		if (compilers.size() == 1) {
 			PackageCompiler compiler = compilers.iterator().next();
+			if (isOnlyCompilerOfTypeInWiki(compiler)) {
+				return false;
+			}
 			int threshold = 3;
 			List<String> articleTitles = compiler.getPackageManager()
 					.getSectionsOfPackage(compiler.getCompileSection()
@@ -396,9 +399,12 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		// if more than one package compiler, check whether there are several instances of the same compiler in the wiki
 		else {
-			return compilers.stream()
-					.anyMatch(c -> Compilers.getCompilers(markupSection.getArticleManager(), c.getClass()).size() > 1);
+			return !compilers.stream().allMatch(this::isOnlyCompilerOfTypeInWiki);
 		}
+	}
+
+	private boolean isOnlyCompilerOfTypeInWiki(PackageCompiler c) {
+		return Compilers.getCompilers(c.getCompileSection().getArticleManager(), c.getClass()).size() == 1;
 	}
 
 	/**
