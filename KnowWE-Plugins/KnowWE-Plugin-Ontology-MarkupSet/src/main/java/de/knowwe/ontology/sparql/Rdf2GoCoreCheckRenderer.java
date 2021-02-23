@@ -43,6 +43,9 @@ public class Rdf2GoCoreCheckRenderer extends DefaultMarkupRenderer {
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		Rdf2GoCore rdf2GoCore = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
 				DefaultMarkupType.class));
+		// somehow, renaming will cause a render where the compile is not yet available... simple fix for now
+		if (user.getParameter("action") != null) return;
+
 		if (rdf2GoCore == null) {
 			if (user.isRenderingPreview()) {
 				result.append("%%information No rendering in live preview. /%");
