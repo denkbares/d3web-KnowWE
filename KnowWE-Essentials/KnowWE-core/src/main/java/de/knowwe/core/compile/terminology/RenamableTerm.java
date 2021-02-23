@@ -23,6 +23,7 @@ import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * This interface provides functionality for renaming terms. Therefore you have to implement it, if you want renaming to
@@ -69,6 +70,7 @@ public interface RenamableTerm extends Term {
 	 * @return true if the term can be renamed
 	 */
 	default boolean allowRename(Section<? extends RenamableTerm> section) {
-		return true;
+		// by default we always allow rename, except for attachment articles (instead, the attachment source should be edited)
+		return !KnowWEUtils.isAttachmentArticle(section.getArticle());
 	}
 }
