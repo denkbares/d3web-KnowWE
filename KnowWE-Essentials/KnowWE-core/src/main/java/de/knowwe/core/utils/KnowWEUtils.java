@@ -53,6 +53,7 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.AttachmentManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
@@ -540,6 +541,19 @@ public class KnowWEUtils {
 		return Environment.getInstance()
 				.getWikiConnector()
 				.userIsMemberOfGroup(groupName, user.getRequest());
+	}
+
+	/**
+	 * Checks whether the given article is compiled via an %%Attachment markup using the @compile: true flag.
+	 *
+	 * @param article the article to check
+	 * @return true if the given article is an attachment article, false otherwise
+	 */
+	public static boolean isAttachmentArticle(Article article) {
+		ArticleManager articleManager = article.getArticleManager();
+		if (!(articleManager instanceof DefaultArticleManager)) return false;
+		AttachmentManager attachmentManager = ((DefaultArticleManager) articleManager).getAttachmentManager();
+		return attachmentManager.isAttachmentArticle(article);
 	}
 
 	/**

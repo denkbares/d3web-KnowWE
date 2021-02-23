@@ -73,12 +73,10 @@ public class AttachmentManager implements EventListener {
 		else if (event instanceof ArticleRegisteredEvent) {
 			Article article = ((ArticleRegisteredEvent) event).getArticle();
 			handleArticleUpdate(article);
-
 		}
 		else if (event instanceof FullParseEvent) {
 			Article article = ((FullParseEvent) event).getArticle();
 			doFullParseOfCompiledAttachments(article);
-
 		}
 		else if (event instanceof InitializedArticlesEvent) {
 			allArticlesInitialized = true;
@@ -115,7 +113,6 @@ public class AttachmentManager implements EventListener {
 			if (!values.isEmpty()) return;
 			deleteAttachmentArticle(attachmentPath);
 		}
-
 	}
 
 	private Set<Section<AttachmentType>> addAttachmentSectionsOfNewArticle(Article article) {
@@ -170,7 +167,6 @@ public class AttachmentManager implements EventListener {
 		if (isCompiledAttachment(attachmentPath)) {
 			createAndRegisterAttachmentArticle(attachmentPath);
 		}
-
 	}
 
 	private void createAndRegisterAttachmentArticle(String attachmentPath) {
@@ -221,5 +217,15 @@ public class AttachmentManager implements EventListener {
 	 */
 	public Set<Section<AttachmentType>> getCompilingAttachmentSections(Article article) {
 		return pathToSectionsMap.getValues(article.getTitle());
+	}
+
+	/**
+	 * Checks whether the given article is compiled via an %%Attachment markup using the @compile: true flag.
+	 *
+	 * @param article the article to check
+	 * @return true if the given article is an attachment article, false otherwise
+	 */
+	public boolean isAttachmentArticle(Article article) {
+		return !pathToSectionsMap.getValues(article.getTitle()).isEmpty();
 	}
 }
