@@ -38,6 +38,7 @@ import de.knowwe.core.kdom.objects.SimpleReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
@@ -111,7 +112,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 
 	@NotNull
 	@Override
-	public StatementProviderResult getStatements(OntologyCompiler compiler, Section<? extends Object> section) {
+	public StatementProviderResult getStatements(OntologyCompiler compiler, Section<? extends Object> section) throws CompilerMessage {
 
 		StatementProviderResult result = new StatementProviderResult(compiler);
 		/*
@@ -163,7 +164,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	}
 
 	@Nullable
-	protected Resource findSubject(OntologyCompiler core, StatementProviderResult result, Section<? extends Object> section) {
+	protected Resource findSubject(OntologyCompiler core, StatementProviderResult result, Section<? extends Object> section) throws CompilerMessage {
 		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section, PredicateSentence.class);
 		assert predSentenceSection != null;
 
