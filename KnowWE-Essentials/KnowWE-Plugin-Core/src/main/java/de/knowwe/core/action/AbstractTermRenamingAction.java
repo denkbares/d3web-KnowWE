@@ -40,8 +40,11 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 				if (Environment.getInstance().getWikiConnector().userCanEditArticle(title, context.getRequest())) {
 					Map<String, String> nodesMap = new HashMap<>();
 					for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
-						nodesMap.put(termSection.getID(),
-								termSection.get().getSectionTextAfterRename(termSection, term, replacement));
+						String sectionTextAfterRename = termSection.get()
+								.getSectionTextAfterRename(termSection, term, replacement);
+						if (!sectionTextAfterRename.equals(termSection.getText())) {
+							nodesMap.put(termSection.getID(), sectionTextAfterRename);
+						}
 					}
 					Sections.replace(context, nodesMap).sendErrors(context);
 					success.add(title);
