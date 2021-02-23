@@ -689,7 +689,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 						if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
 							gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(oldPath);
 							gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(newPath);
-							cache.addCacheCommand(oldParent.getAuthor(), new CacheCommand.MoveAttachment(oldParent.getName(), newParent, file));
+							cache.addCacheCommand(oldParent.getAuthor(), new CacheCommand.MoveAttachment(oldParent, newParent, file));
 						}
 						else {
 							commit.setOnly(oldPath);

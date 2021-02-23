@@ -1,6 +1,7 @@
 package org.apache.wiki.providers;
 
 import java.io.File;
+import java.util.Objects;
 
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.attachment.Attachment;
@@ -9,59 +10,109 @@ import org.apache.wiki.attachment.Attachment;
  * @author Josua Nürnberger (Feanor GmbH)
  * @created 13.12.19
  */
-public class CacheCommand {
+class CacheCommand {
 
-	public static class AddPageVersion extends CacheCommand {
-		final WikiPage page;
+	final WikiPage page;
 
+	CacheCommand(WikiPage page) {
+		this.page = page;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || !(o instanceof CacheCommand)) return false;
+		CacheCommand that = (CacheCommand) o;
+		if(that instanceof MoveAttachment) {
+			if (this instanceof AddAttachmentVersion || this instanceof DeleteAttachmentVersion) {
+				return page.getName().equals(that.page.getName()) ||
+						((Attachment)this.page).getParentName().equals(((MoveAttachment) that).newParent);
+			}
+		}
+		if(that instanceof MovePage){
+				return page.getName().equals(that.page.getName()) ||
+						page.getName().equals(((MovePage) that).to);
+		}
+		return page.getName().equals(that.page.getName());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(page);
+	}
+
+	static class AddPageVersion extends CacheCommand {
 		AddPageVersion(WikiPage page) {
-			this.page = page;
+			super(page);
 		}
 	}
 
-	public static class DeletePageVersion extends CacheCommand {
-		final WikiPage page;
-
+	static class DeletePageVersion extends CacheCommand {
 		DeletePageVersion(WikiPage page) {
-			this.page = page;
+			super(page);
 		}
 	}
 
-	public static class AddAttachmentVersion extends CacheCommand {
-		final Attachment att;
+	static class AddAttachmentVersion extends CacheCommand {
 
 		AddAttachmentVersion(Attachment att) {
-			this.att = att;
+			super(att);
 		}
 	}
 
-	public static class DeleteAttachmentVersion extends CacheCommand {
-		final Attachment att;
-
+	static class DeleteAttachmentVersion extends CacheCommand {
 		DeleteAttachmentVersion(Attachment att) {
-			this.att = att;
+			super(att);
 		}
 	}
 
-	public static class MovePage extends CacheCommand {
-		final WikiPage from;
+	static class MovePage extends CacheCommand {
 		final String to;
 
 		MovePage(WikiPage from, String to) {
-			this.from = from;
+			super(from);
 			this.to = to;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || !(o instanceof CacheCommand)) return false;
+			CacheCommand that = (CacheCommand) o;
+			return page.getName().equals(that.page.getName()) ||
+					this.to.equals(that.page.getName());
+
 		}
 	}
 
-	public static class MoveAttachment extends CacheCommand {
-		final String oldParent;
+	static class MoveAttachment extends CacheCommand {
 		final String newParent;
 		final File file;
 
-		MoveAttachment(String oldParent, String newParent, File file) {
-			this.oldParent = oldParent;
+		MoveAttachment(WikiPage oldParent, String newParent, File file) {
+			super(oldParent);
 			this.newParent = newParent;
 			this.file = file;
+		}
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || !(o instanceof CacheCommand)) return false;
+			CacheCommand that = (CacheCommand) o;
+			if(that instanceof AddAttachmentVersion || that instanceof DeleteAttachmentVersion){
+				Attachment att = (Attachment) that.page;
+				return page.getName().equals(att.getParentName()) && file.getName().equals(att.getFileName());
+			} else if (that instanceof MoveAttachment){
+				return page.getName().equals(that.page.getName()) && file.getName().equals(((MoveAttachment) that).file.getName());
+			}
+			else {
+				return false;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(page);
 		}
 	}
 }

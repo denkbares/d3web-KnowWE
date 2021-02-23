@@ -365,7 +365,19 @@ public class GitVersionCache {
 
 	public void addCacheCommand(String user, CacheCommand command) {
 		if (this.cacheCommands.containsKey(user)) {
-			this.cacheCommands.get(user).add(command);
+			List<CacheCommand> cacheCommands = this.cacheCommands.get(user);
+			if(command instanceof CacheCommand.MoveAttachment || command instanceof CacheCommand.MovePage){
+				if(cacheCommands.contains(command)){
+					int i = cacheCommands.indexOf(command);
+					CacheCommand prevCommand = cacheCommands.get(i);
+					cacheCommands.remove(command);
+					command.page.setVersion(prevCommand.page.getVersion());
+				}
+				cacheCommands.add(command);
+			}
+			if(!cacheCommands.contains(command)){
+				cacheCommands.add(command);
+			}
 		}
 		else {
 			List<CacheCommand> commands = new ArrayList<>();
@@ -379,25 +391,26 @@ public class GitVersionCache {
 		if (cacheCommands != null) {
 			for (CacheCommand cmd : cacheCommands) {
 				if (cmd instanceof CacheCommand.AddPageVersion) {
-					this.addPageVersion(((CacheCommand.AddPageVersion) cmd).page, commitMsg, id);
+					this.addPageVersion(cmd.page, commitMsg, id);
 				}
 				else if (cmd instanceof CacheCommand.DeletePageVersion) {
-					this.deletePage(((CacheCommand.DeletePageVersion) cmd).page, commitMsg, id);
+					this.deletePage(cmd.page, commitMsg, id);
 				}
 				else if (cmd instanceof CacheCommand.MovePage) {
-					this.movePage(((CacheCommand.MovePage) cmd).from, ((CacheCommand.MovePage) cmd).to, commitMsg, id);
+					this.movePage(cmd.page, ((CacheCommand.MovePage) cmd).to, commitMsg, id);
 				}
 				else if (cmd instanceof CacheCommand.AddAttachmentVersion) {
-					this.addAttachmentVersion(((CacheCommand.AddAttachmentVersion) cmd).att, commitMsg, id);
+					this.addAttachmentVersion((Attachment) cmd.page, commitMsg, id);
 				}
 				else if (cmd instanceof CacheCommand.DeleteAttachmentVersion) {
-					this.deleteAttachment(((CacheCommand.DeleteAttachmentVersion) cmd).att, commitMsg, id);
+					this.deleteAttachment((Attachment) cmd.page, commitMsg, id);
 				}
 				else if (cmd instanceof CacheCommand.MoveAttachment) {
-					this.moveAttachments(((CacheCommand.MoveAttachment) cmd).oldParent, ((CacheCommand.MoveAttachment) cmd).newParent,
+					this.moveAttachments(cmd.page.getName(), ((CacheCommand.MoveAttachment) cmd).newParent,
 							new File[] { ((CacheCommand.MoveAttachment) cmd).file }, id, commitMsg, user);
 				}
 			}
+			this.cacheCommands.remove(user);
 		}
 	}
 
