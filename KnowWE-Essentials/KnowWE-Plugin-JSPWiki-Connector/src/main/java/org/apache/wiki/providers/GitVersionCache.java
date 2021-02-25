@@ -390,6 +390,16 @@ public class GitVersionCache {
 		List<CacheCommand> cacheCommands = this.cacheCommands.get(user);
 		if (cacheCommands != null) {
 			for (CacheCommand cmd : cacheCommands) {
+				String name;
+				if(cmd.page instanceof Attachment) {
+					name = getAttachmentKey((Attachment) cmd.page);
+				} else {
+					name = cmd.page.getName();
+				}
+				if(this.pageRevisionCache.containsKey(name)){
+					List<GitCacheItem> gitCacheItems = this.pageRevisionCache.get(name);
+					gitCacheItems.removeIf(item -> item.getId() == null);
+				}
 				if (cmd instanceof CacheCommand.AddPageVersion) {
 					this.addPageVersion(cmd.page, commitMsg, id);
 				}

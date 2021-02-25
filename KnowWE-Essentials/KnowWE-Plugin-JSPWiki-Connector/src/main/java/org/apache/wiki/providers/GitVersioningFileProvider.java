@@ -277,24 +277,29 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
 				}
 
+				String comment = gitCommentStrategy.getComment(page);
+				if (comment.isEmpty()) {
+					if (addFile) {
+						comment = "Added page";
+					}
+					else {
+						comment = "-";
+					}
+				}
+
 				if (this.openCommits.containsKey(page.getAuthor())) {
 					this.openCommits.get(page.getAuthor()).add(changedFile.getName());
+					if(addFile){
+						cache.addPageVersion(page, comment, null);
+					}
 					cache.addCacheCommand(page.getAuthor(), new CacheCommand.AddPageVersion(page));
+
 				}
 				else {
 					final CommitCommand commit = git
 							.commit()
 							.setOnly(changedFile.getName());
-					String comment = gitCommentStrategy.getComment(page);
-					if (!comment.isEmpty()) {
-						commit.setMessage(comment);
-					}
-					else if (addFile) {
-						commit.setMessage("Added page");
-					}
-					else {
-						commit.setMessage("-");
-					}
+					commit.setMessage(comment);
 					addUserInfo(this.m_engine, page.getAuthor(), commit);
 					commit.setAllowEmpty(true);
 //					try {
