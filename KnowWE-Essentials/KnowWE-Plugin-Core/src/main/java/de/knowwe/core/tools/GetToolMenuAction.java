@@ -51,7 +51,7 @@ public class GetToolMenuAction extends AbstractAction {
 		String identifier = context.getParameter(IDENTIFIER);
 
 		Section<? extends Type> section = getSection(context, identifier);
-		if (section.getArticleManager() == null) return; // not tools in preview
+		if (section == null || section.getArticleManager() == null) return; // not tools in preview
 		ToolSet tools = getTools(context, section);
 		if (!tools.hasTools()) return;
 
