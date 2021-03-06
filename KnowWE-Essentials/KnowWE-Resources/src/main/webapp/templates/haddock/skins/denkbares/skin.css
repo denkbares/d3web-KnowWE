@@ -1162,6 +1162,7 @@ th.changenote, td.changenote {
 
 .navigation ul {
 	margin: 0;
+	padding-inline-start: 0;
 }
 
 .header > .navigation .nav > li > a > .badge {
