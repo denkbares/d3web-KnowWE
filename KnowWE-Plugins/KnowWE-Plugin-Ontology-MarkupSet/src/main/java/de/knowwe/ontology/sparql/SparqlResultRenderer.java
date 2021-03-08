@@ -271,10 +271,8 @@ public class SparqlResultRenderer {
 		}
 
 		boolean zebraMode = opts.isZebraMode();
-		boolean rawOutput = opts.isRawOutput();
 		boolean isTree = opts.isTree();
 		boolean isNavigation = opts.isNavigation();
-		boolean renderJSPWikiMarkup = opts.isAllowJSPWikiMarkup();
 		List<RenderOptions.StyleOption> columnStyle = opts.getColumnStyles();
 		List<RenderOptions.StyleOption> tableStyle = opts.getTableStyles();
 		List<RenderOptions.StyleOption> columnWidths = opts.getColumnWidths();
