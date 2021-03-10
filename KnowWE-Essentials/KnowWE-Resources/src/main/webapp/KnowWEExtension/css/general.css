@@ -224,12 +224,6 @@ code.box {
 	padding: 5px 20px 5px 45px;
 }
 
-.info {
-	background: #FFF6BF url(../images/msg_info.png) center no-repeat;
-	background-position: 10px 50%; /* x-pos y-pos */
-	padding: 5px 20px 5px 45px;
-}
-
 .hint {
 	display: none;
 	position: absolute;

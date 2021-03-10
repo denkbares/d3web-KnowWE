@@ -490,9 +490,13 @@ td .information, td .info, td .warning, td .error {
 .defaultMarkup .markupText .warning,
 .defaultMarkup .markupText .info,
 .defaultMarkup .markupText .information {
-	padding: 5px 20px 5px 45px;
-	margin: 0px;
+	margin: 0;
 	min-height: 32px;
+}
+
+.defaultMarkup .markupText .error,
+.defaultMarkup .markupText .warning {
+	padding: 5px 20px 5px 45px;
 }
 
 .defaultMarkup .markupText .error.singleLine,
