@@ -57,6 +57,7 @@ import de.knowwe.core.kdom.basicType.URLType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -69,6 +70,7 @@ import de.knowwe.util.CredentialProvider;
 import de.knowwe.util.CredentialProviders;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
+import static de.knowwe.core.report.Message.Type.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -164,6 +166,12 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		super(markup);
 		addCompileScript(new UpdateTaskRegistrationScript());
 		setRenderer(new DefaultMarkupRenderer() {
+
+			@Override
+			public void renderMessages(Section<?> section, RenderResult string, UserContext context) {
+				renderMessageBlock(section, string, context, ERROR, WARNING, INFO);
+			}
+
 			@Override
 			protected void renderContents(Section<? extends DefaultMarkupType> markupSection, List<Section<ContentType>> contentSections, UserContext user, RenderResult result) {
 				if (getLock(Sections.cast(markupSection, AttachmentMarkup.class)).isLocked()) {
@@ -400,7 +408,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 							}
 							else {
 								Messages.storeMessage(annotationContent, AttachmentMarkup.class,
-										Messages.warning("Replacement regex /" + parsedReplacement[0]
+										Messages.info("Replacement regex /" + parsedReplacement[0]
 												+ "/ does not match to any text in this attachment."));
 							}
 						}
@@ -411,7 +419,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 							}
 							else {
 								Messages.storeMessage(annotationContent, AttachmentMarkup.class,
-										Messages.warning("Replacement pattern '" + parsedReplacement[0]
+										Messages.info("Replacement pattern '" + parsedReplacement[0]
 												+ "' does not match to any text in this attachment."));
 							}
 						}
