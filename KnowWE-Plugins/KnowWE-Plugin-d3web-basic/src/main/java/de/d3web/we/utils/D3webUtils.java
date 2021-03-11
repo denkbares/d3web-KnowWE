@@ -59,6 +59,7 @@ import de.d3web.core.records.io.SessionPersistenceManager;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Fact;
+import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.indication.inference.PSMethodUserSelected;
 import de.d3web.scoring.Score;
@@ -108,8 +109,8 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Return an existing session for the given user context and knowledge base. If, for the given compiler, we
-	 * don't yet have a session, we don't create one, but return null.
+	 * Return an existing session for the given user context and knowledge base. If, for the given compiler, we don't
+	 * yet have a session, we don't create one, but return null.
 	 *
 	 * @param compiler the compiler for which we want a session
 	 * @param context  the user context for which we want the session
@@ -206,9 +207,8 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Deletes a terminology object and all potential children from the
-	 * knowledge base. Before the deletion the corresponding knowledge instances
-	 * (KnowledgeSlices) are also removed.
+	 * Deletes a terminology object and all potential children from the knowledge base. Before the deletion the
+	 * corresponding knowledge instances (KnowledgeSlices) are also removed.
 	 *
 	 * @param object the object to be removed
 	 */
@@ -248,18 +248,16 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Utility method to get a {@link KnowledgeBase} for an article specified by
-	 * its web and topic. If no such knowledge base exists, a new knowledge base
-	 * is created for the article and returned.
+	 * Utility method to get a {@link KnowledgeBase} for an article specified by its web and topic. If no such knowledge
+	 * base exists, a new knowledge base is created for the article and returned.
 	 *
 	 * @param web   the web of the article the knowledge base is compiled
 	 * @param title the title of the article the knowledge base is compiled
 	 * @return the knowledge base if such one exists, null otherwise
 	 * @throws NullPointerException if web or topic is null
 	 * @created 15.12.2010
-	 * @deprecated it is possible that there are multiple knowledge bases on one
-	 * page, this method will always only return the first one. You
-	 * can use
+	 * @deprecated it is possible that there are multiple knowledge bases on one page, this method will always only
+	 * return the first one. You can use
 	 */
 	@Deprecated
 	public static KnowledgeBase getKnowledgeBase(String web, String title) {
@@ -275,17 +273,16 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Returns the knowledge base belonging to this section, because the section is compiled by a {@link
-	 * D3webCompiler}. If multiple compilers and knowledge bases exist for the given section, a random on is returned.
-	 * Also check out {@link #getKnowledgeBase(UserContext, Section)} for this case.
+	 * Returns the knowledge base belonging to this section, because the section is compiled by a {@link D3webCompiler}.
+	 * If multiple compilers and knowledge bases exist for the given section, a random on is returned. Also check out
+	 * {@link #getKnowledgeBase(UserContext, Section)} for this case.
 	 */
 	public static KnowledgeBase getKnowledgeBase(Section<?> section) {
 		return getKnowledgeBase(null, section);
 	}
 
 	/**
-	 * Returns the knowledge base belonging to this section, because the section is compiled by a {@link
-	 * D3webCompiler}.
+	 * Returns the knowledge base belonging to this section, because the section is compiled by a {@link D3webCompiler}.
 	 * If the optional UserContext is given and the section is compiled by multiple {@link D3webCompiler}s, the
 	 * knowledge base of the compiler marked as the default is returned.
 	 */
@@ -300,10 +297,9 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Returns the current value of a specific {@link ValueObject} within the
-	 * specified {@link Session}. If the value is currently being calculated,
-	 * the method immediately returns with "null" as value, instead of waiting
-	 * for the results of the current propagation.
+	 * Returns the current value of a specific {@link ValueObject} within the specified {@link Session}. If the value is
+	 * currently being calculated, the method immediately returns with "null" as value, instead of waiting for the
+	 * results of the current propagation.
 	 *
 	 * @param session the session to read the value from
 	 * @param object  the object to read the value for
@@ -339,7 +335,13 @@ public class D3webUtils {
 				// the fact gets retracted instead, allowing to take back an answer completely.
 				Fact existingFact = session.getBlackboard().getValueFact(fact.getTerminologyObject(),
 						PSMethodUserSelected.getInstance());
-				if (Unknown.getInstance().equals(fact.getValue()) && fact.equals(existingFact)) {
+				if (UndefinedValue.isUndefinedValue(fact.getValue())) {
+					// only retract if there is an existing user fact, otherwise ignore this request
+					if (existingFact != null) {
+						session.getBlackboard().removeValueFact(existingFact);
+					}
+				}
+				else if (Unknown.getInstance().equals(fact.getValue()) && fact.equals(existingFact)) {
 					session.getBlackboard().removeValueFact(existingFact);
 				}
 				else {
@@ -358,10 +360,9 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Returns the current value of a specific {@link Solution} within the
-	 * specified {@link Session}. If the value is currently being calculated,
-	 * the method immediately returns with "null" as value, instead of waiting
-	 * for the results of the current propagation.
+	 * Returns the current value of a specific {@link Solution} within the specified {@link Session}. If the value is
+	 * currently being calculated, the method immediately returns with "null" as value, instead of waiting for the
+	 * results of the current propagation.
 	 *
 	 * @param session  the session to read the value from
 	 * @param solution the object to read the value for
@@ -390,16 +391,14 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Returns all {@link Solution} instances, that hold the specified
-	 * {@link Rating} in the specified session. If the value of any solution
-	 * currently is being calculated, the method immediately returns with "null"
-	 * instead of the list, not waiting for the results of the current
-	 * propagation.
+	 * Returns all {@link Solution} instances, that hold the specified {@link Rating} in the specified session. If the
+	 * value of any solution currently is being calculated, the method immediately returns with "null" instead of the
+	 * list, not waiting for the results of the current propagation.
 	 *
 	 * @param session the session to read the current values from
 	 * @param state   the Rating the diagnoses must have to be returned
-	 * @return a list of diagnoses in this case that have the state 'state' or
-	 * null if any of these solutions is currently being calculated
+	 * @return a list of diagnoses in this case that have the state 'state' or null if any of these solutions is
+	 * currently being calculated
 	 */
 	public static List<Solution> getSolutionsNonBlocking(Session session, Rating.State state) {
 		try {
@@ -411,15 +410,13 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Returns all {@link Question} instances, that have been answered (or
-	 * assigned with a value) in the specified session. If the value of any
-	 * solution currently is being calculated, the method immediately returns
-	 * with "null" instead of the list, not waiting for the results of the
-	 * current propagation.
+	 * Returns all {@link Question} instances, that have been answered (or assigned with a value) in the specified
+	 * session. If the value of any solution currently is being calculated, the method immediately returns with "null"
+	 * instead of the list, not waiting for the results of the current propagation.
 	 *
 	 * @param session the session to read the current answers from
-	 * @return a list of diagnoses in this case that have the state 'state' or
-	 * null if any of these solutions is currently being calculated
+	 * @return a list of diagnoses in this case that have the state 'state' or null if any of these solutions is
+	 * currently being calculated
 	 */
 	public static List<Question> getAnsweredQuestionsNonBlocking(Session session) {
 		try {
@@ -528,9 +525,8 @@ public class D3webUtils {
 	}
 
 	/**
-	 * Checks if the knowledge base is empty. A knowledge base is empty, if
-	 * there are no knowledge slices. no questions and at most one solution
-	 * (root solution).
+	 * Checks if the knowledge base is empty. A knowledge base is empty, if there are no knowledge slices. no questions
+	 * and at most one solution (root solution).
 	 *
 	 * @created 19.04.2013
 	 */

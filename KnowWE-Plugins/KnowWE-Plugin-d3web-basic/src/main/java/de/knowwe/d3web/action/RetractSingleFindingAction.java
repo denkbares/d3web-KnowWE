@@ -23,13 +23,16 @@ package de.knowwe.d3web.action;
 import java.io.IOException;
 import java.util.Collection;
 
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Question;
+import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.session.Session;
+import de.d3web.core.session.Value;
 import de.d3web.core.session.blackboard.Fact;
 import de.d3web.core.session.blackboard.FactFactory;
+import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
-import com.denkbares.strings.Strings;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
@@ -40,8 +43,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
- * An action that is performed for retracting a single value e.g. in Quick
- * Interview
+ * An action that is performed for retracting a single value e.g. in Quick Interview
  *
  * @author Martina Freiberg
  * @created 22.10.2010
@@ -99,7 +101,7 @@ public class RetractSingleFindingAction extends AbstractAction {
 
 		Question question = kb.getManager().searchQuestion(objectid);
 		if (question != null && session != null) {
-			Unknown unknown = Unknown.getInstance();
+			Value unknown = BasicProperties.isUnknownVisible(question) ? Unknown.getInstance() : UndefinedValue.getInstance();
 			Fact fact = FactFactory.createUserEnteredFact(question, unknown);
 			D3webUtils.setFindingSynchronized(fact, session, context);
 		}
