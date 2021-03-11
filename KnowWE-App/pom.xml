@@ -351,6 +351,10 @@
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
+					<artifactId>d3web-Plugin-ASP</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Admin-Utils</artifactId>
 				</dependency>
 				<dependency>
@@ -384,6 +388,10 @@
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-ASP</artifactId>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>

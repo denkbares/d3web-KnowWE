@@ -362,6 +362,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
+				<artifactId>d3web-Plugin-ASP</artifactId>
+				<version>${d3web.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
 				<artifactId>d3web-Plugin-CostBenefit-AStar</artifactId>
 				<version>${d3web.version}</version>
 			</dependency>
@@ -518,6 +523,11 @@
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-TimeDBScript</artifactId>
+				<version>${knowwe.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-ASP</artifactId>
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
