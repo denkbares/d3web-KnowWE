@@ -44,7 +44,12 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		Collection<GroupingCompiler> compilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(context.getWeb()), GroupingCompiler.class);
-		if (compilers.size() <= 1) return;
+		JSONObject response = new JSONObject();
+
+		if (compilers.size() <= 1) {
+			response.write(context.getWriter());
+			return;
+		}
 
 		List<String> compilerNames = new ArrayList<>();
 
@@ -61,10 +66,9 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 		if (defaultName == null) defaultName = compilerNames.get(0);
 
 		// send the compilers back to the client
-		JSONObject response = new JSONObject();
+		response.put("defaultCompiler", defaultName);
+		response.put("compilers", compilerNames);
 		try {
-			response.put("defaultCompiler", defaultName);
-			response.put("compilers", compilerNames);
 			response.write(context.getWriter());
 		}
 		catch (JSONException e) {

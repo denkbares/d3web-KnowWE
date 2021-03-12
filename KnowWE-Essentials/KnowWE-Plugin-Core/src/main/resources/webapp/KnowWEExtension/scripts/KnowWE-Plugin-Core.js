@@ -746,7 +746,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
         cache: false,
         dataType: 'json',
         success: function(response) {
-          if (response === null) return;
+          if (Object.keys(response).length === 0) return;
           let storedDefaultCompiler = localStorage.getItem(defaultCompilerPrefixKey);
           let defaultCompiler = response.defaultCompiler;
           let compilers = response.compilers;
