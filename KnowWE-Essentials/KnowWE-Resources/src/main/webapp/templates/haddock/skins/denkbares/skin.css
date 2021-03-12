@@ -540,7 +540,6 @@ td .information, td .info, td .warning, td .error {
 }
 
 .wikitable * th {
-	border: 1px solid #ddd;
 	background-color: #eee;
 	vertical-align: top;
 }
@@ -551,7 +550,6 @@ td .information, td .info, td .warning, td .error {
 }
 
 .wikitable * td {
-	border: 1px solid #ddd;
 	vertical-align: top;
 	text-align: left;
 	/*word-wrap:break-word;*/
