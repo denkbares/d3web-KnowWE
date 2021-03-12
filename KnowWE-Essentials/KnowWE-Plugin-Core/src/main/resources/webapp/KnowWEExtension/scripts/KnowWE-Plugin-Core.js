@@ -838,8 +838,8 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
 /* ------------- Onload Events ---------------------------------- */
 /* ############################################################### */
 (function init() {
-
   window.addEvent('domready', _KL.setup);
+
   if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
     window.addEvent('domready', function() {
       KNOWWE.tooltips.enrich();
@@ -848,10 +848,10 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
       KNOWWE.kdomtreetable.init();
       KNOWWE.core.plugin.recompile.init();
     });
+    jq$(window).on('hashchange', function() {
+      KNOWWE.core.plugin.objectinfo.highlighAnchor();
+    });
   }
-  jq$(window).on('hashchange', function() {
-    KNOWWE.core.plugin.objectinfo.highlighAnchor();
-  });
 }());
 
 KNOWWE.helper.observer.subscribe("afterRerender", function() {
