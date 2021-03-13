@@ -327,6 +327,30 @@ public class D3webUtils {
 		}
 	}
 
+	/**
+	 * Returns if the current value of a specific {@link ValueObject} within the specified {@link Session} has been set
+	 * by the user.
+	 *
+	 * @param session the session to read the value from
+	 * @param object  the object to read the value for
+	 * @return if the value of the value object has been set by the user
+	 */
+	public static boolean isUserSet(Session session, ValueObject object) {
+		// variant 1: conservative
+		// ... (see #getValueNonBlocking above)
+
+		// variant 2: aggressive
+		// access the value without synchronization but catch the expected error
+		// if this access violates concurrency
+		try {
+			Fact fact = session.getBlackboard().getValueFact(object);
+			return (fact != null) && (fact.getPSMethod() instanceof PSMethodUserSelected);
+		}
+		catch (ConcurrentModificationException e) {
+			return false;
+		}
+	}
+
 	public static void setFindingSynchronized(Fact fact, Session session, UserContext context) {
 		try {
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter

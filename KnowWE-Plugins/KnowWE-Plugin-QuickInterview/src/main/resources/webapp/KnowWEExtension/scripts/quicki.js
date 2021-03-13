@@ -242,7 +242,7 @@ KNOWWE.plugin.quicki = function() {
        * and send
        */
       if (el.className === 'answerMC') {
-        el.className = 'answerMCClicked';
+        el.className = 'answerMCClicked answerSelected';
 
         // if not already contained, attach value
         if (mcanswervals.indexOf("#####" + toreplace) === -1) {
@@ -258,14 +258,15 @@ KNOWWE.plugin.quicki = function() {
 
       }
       /* already clicked mc answer */
-      else if (el.className === 'answerMCClicked') {
+      else if (el.classList.contains('answerMCClicked')) {
+        var wasUserSelected = el.classList.contains('answerSelected');
         el.className = 'answerMC';
 
         // save mcvalues
         var mcvalsOld = mcanswervals.substring(0, mcanswervals.length - 5);
 
-        // if value is alerady contained, remove it
-        if (mcanswervals.indexOf(toreplace) !== -1) {
+        // if value is already contained, remove it (if it was user selected, otherwise the value is confirmed)
+        if (wasUserSelected && mcanswervals.indexOf(toreplace) !== -1) {
           mcanswervals = mcanswervals.replace(toreplace, '');
         }
 
@@ -291,15 +292,15 @@ KNOWWE.plugin.quicki = function() {
      */
     answerClicked: function(event) {
       var el = _KE.target(event); 	// get the clicked element
-      if (el.className.toLowerCase() === "answerunknown") return;
-      if (el.className.toLowerCase() === "answerunknownclicked") return;
-      if (el.className.toLowerCase() === "answermc") return;
-      if (el.className.toLowerCase() === "answermcclicked") return;
+      if (el.classList.contains("answerunknown")) return;
+      if (el.classList.contains("answerunknownClicked")) return;
+      if (el.classList.contains("answerMC")) return;
+      if (el.classList.contains("answerMCClicked")) return;
       var retract = false;
 
       // if already clicked, it needs to be de-highlighted and val
       // retracted
-      if (el.className === 'answerClicked') {
+      if (el.classList.contains('answerSelected')) {
         retract = true;
       }
       _KE.cancel(event);
@@ -499,8 +500,8 @@ KNOWWE.plugin.quicki = function() {
      */
     toggleAnswerHighlighting: function(answerEl, type, retract) {
 
-      if (answerEl.className.toLowerCase() === "answerunknownclicked") return;
-      if (answerEl.className.toLowerCase() === "answerunknown") return;
+      if (answerEl.classList.contains("answerunknownClicked")) return;
+      if (answerEl.classList.contains("answerunknown")) return;
 
       var relClicked = eval("(" + answerEl.getAttribute('rel') + ")");
 
@@ -527,17 +528,17 @@ KNOWWE.plugin.quicki = function() {
         // code
         // thus if un-highlighting is not correct, highlight again here
         if (!retract) {
-          answerEl.className = 'answerClicked';
+          answerEl.className = 'answerClicked answerSelected';
         }
       }
 
       // otherwise just toggle highlighting
       else {
         // to highlight/unhighlight an answer if clicked on, generally
-        if (answerEl.className === 'answerClicked') {
+        if (answerEl.classList.contains('answerClicked')) {
           answerEl.className = 'answer';
         } else if (answerEl.className === 'answer') {
-          answerEl.className = 'answerClicked';
+          answerEl.className = 'answerClicked  answerSelected';
         }
       }
     },
@@ -556,7 +557,7 @@ KNOWWE.plugin.quicki = function() {
         var relElement = eval("(" + element.getAttribute('rel') + ")");
         if (relElement.qid === questionID) {
 
-          if (element.className !== "answerunknownClicked") {
+          if (!element.classList.contains("answerunknownClicked")) {
             element.className = "answer";
           }
         }

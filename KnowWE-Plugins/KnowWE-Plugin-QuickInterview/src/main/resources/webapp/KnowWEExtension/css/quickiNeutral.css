@@ -137,6 +137,12 @@
 	cursor: pointer;
 }
 
+.quickinterview .answerClicked.answerDerived,
+.quickinterview .answerMCClicked.answerDerived {
+	border-top: 2px dotted #ACC0D6;
+	border-bottom: 2px dotted #ACC0D6;
+}
+
 /* answer mc styling */
 .quickinterview .answerMC {
 	float: left;

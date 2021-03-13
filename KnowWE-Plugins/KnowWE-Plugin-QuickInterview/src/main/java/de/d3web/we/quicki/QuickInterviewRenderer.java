@@ -516,7 +516,9 @@ public class QuickInterviewRenderer {
 			Value value = D3webUtils.getValueNonBlocking(session, q);
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
-				cssclass = "answerClicked";
+				cssclass = D3webUtils.isUserSet(session, q)
+						? "answerClicked answerSelected"
+						: "answerClicked answerDerived";
 			}
 
 			String label = getLabel(choice);
@@ -710,7 +712,9 @@ public class QuickInterviewRenderer {
 			Value value = D3webUtils.getValueNonBlocking(session, q);
 			if (value != null && UndefinedValue.isNotUndefinedValue(value)
 					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
-				cssclass = "answerMCClicked";
+				cssclass = D3webUtils.isUserSet(session, q)
+						? "answerMCClicked answerSelected"
+						: "answerMCClicked answerDerived";
 			}
 
 			String label = getLabel(choice);
