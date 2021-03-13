@@ -258,7 +258,6 @@
 /* styling of interview elements that occur repeated times */
 .quickinterview .alreadyDefined {
 	background-color: transparent;
-	font-color: #666;
 	color: #666;
 	clear: both;
 	margin-right: 10px;
@@ -291,7 +290,7 @@
 
 .quickinterview .reset {
 	position: absolute;
-	right: 0px;
+	right: 0;
 	top: 3px;
 }
 
