@@ -521,6 +521,11 @@ public class QuickInterviewRenderer {
 						: "answerClicked answerDerived";
 			}
 
+			// if disabled, do not offer to the user
+			if (!Interview.get(session).isAvailable(choice)) {
+				cssclass += " answerDisabled";
+			}
+
 			String label = getLabel(choice);
 			appendEnclosingTagOnClick("span", label, cssclass,
 					jscall, null, null,
@@ -715,6 +720,11 @@ public class QuickInterviewRenderer {
 				cssclass = D3webUtils.isUserSet(session, q)
 						? "answerMCClicked answerSelected"
 						: "answerMCClicked answerDerived";
+			}
+
+			// if disabled, do not offer to the user
+			if (!Interview.get(session).isAvailable(choice)) {
+				cssclass += " answerDisabled";
 			}
 
 			String label = getLabel(choice);

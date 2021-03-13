@@ -107,7 +107,7 @@
 }
 
 .quickinterview .tdquestion {
-	width: 320;
+	/*width: 320px;*/
 }
 
 /* styling for indicated questions/questionnaires */
@@ -141,6 +141,14 @@
 .quickinterview .answerMCClicked.answerDerived {
 	border-top: 2px dotted #ACC0D6;
 	border-bottom: 2px dotted #ACC0D6;
+}
+
+.quickinterview .answer.answerDisabled,
+.quickinterview .answerMC.answerDisabled,
+.quickinterview .answerClicked.answerDisabled,
+.quickinterview .answerMCClicked.answerDisabled {
+	color: #999;
+	cursor: default;
 }
 
 /* answer mc styling */

@@ -53,11 +53,11 @@ KNOWWE.plugin.quicki = function() {
     initialize: function() {
 
       // select all elements with class="answer"
-      jq$('.answer').unbind('click').click(function(event) {
+      jq$('.answer:not(.answerDisabled)').unbind('click').click(function(event) {
         KNOWWE.plugin.quicki.answerClicked(event);
       });
       // select all elements with class="answerClicked"
-      jq$('.answerClicked').unbind('click').click(function(event) {
+      jq$('.answerClicked:not(.answerDisabled)').unbind('click').click(function(event) {
         KNOWWE.plugin.quicki.answerClicked(event);
       });
 
@@ -68,11 +68,11 @@ KNOWWE.plugin.quicki = function() {
       });
 
       // select all elements with class="answerMC"
-      jq$('.answerMC').unbind('click').click(function(event) {
+      jq$('.answerMC:not(.answerDisabled)').unbind('click').click(function(event) {
         KNOWWE.plugin.quicki.answerMCCollect(event);
       });
       // select all elements with class="answerMCClicked"
-      jq$('.answerMCClicked').unbind('click').click(function(event) {
+      jq$('.answerMCClicked:not(.answerDisabled)').unbind('click').click(function(event) {
         KNOWWE.plugin.quicki.answerMCCollect(event);
       });
 
