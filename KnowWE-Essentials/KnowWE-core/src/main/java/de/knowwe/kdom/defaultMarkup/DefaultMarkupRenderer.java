@@ -257,12 +257,13 @@ public class DefaultMarkupRenderer implements Renderer {
 		// check that the found unused compiled scripts belong to types of sections that are actually in the current sub-KDOM
 		for (ScriptManager<? extends Compiler> scriptManager : unCompiledScriptManagersWithScriptsForTypeTree) {
 			for (de.knowwe.core.kdom.Type type : Types.getAllChildrenTypesRecursive(rootSection.get())) {
-				//noinspection rawtypes
-				Map map = scriptManager.getScripts(type);
-				if (map.isEmpty()) continue;
 				if ($(rootSection).successor(type.getClass()).isEmpty()) continue;
+				// skip if the compiler should be ignored
 				Class<? extends Compiler> compilerClass = scriptManager.getCompilerClass();
-				if (ScriptManager.IgnoreNotCompiledSections.class.isAssignableFrom(compilerClass)) continue;
+				if (ScriptManager.IgnoreNotCompiledSections.isIgnored(compilerClass)) continue;
+				// also skip if there are no compile scripts, or all compile-script instances are ignored
+				if (scriptManager.scripts(type).allMatch(ScriptManager.IgnoreNotCompiledSections::isIgnored)) continue;
+				// otherwise add the error message
 				messages.add("This section has " + compilerClass.getSimpleName() + " knowledge, "
 						+ "but does not belong to package compiled by one.");
 			}

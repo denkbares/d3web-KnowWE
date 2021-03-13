@@ -8,11 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import com.denkbares.collections.PriorityList;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
-import com.denkbares.collections.PriorityList;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.event.InitEvent;
 
@@ -93,6 +94,13 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		}
 	}
 
+	@SuppressWarnings({
+			"rawtypes", "unchecked" })
+	public <T extends Type> Stream<CompileScript<C, T>> scripts(T type) {
+		ScriptList list = scripts.get(type);
+		return (list == null) ? Stream.empty() : list.stream();
+	}
+
 	public Collection<Type> getTypes() {
 		return Collections.unmodifiableSet(scripts.keySet());
 	}
@@ -145,10 +153,22 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	}
 
 	/**
-	 * Marker interface for compilers, declaring that it is ok, that some section containing knowledge for that compiler
-	 * are currently not compiled.
+	 * Marker interface for (whole) compilers or single compile scripts, declaring that it is ok, that some section
+	 * containing knowledge for that compiler are currently not compiled.
+	 * <p>
+	 * TODO: migrate this marker interface into a java annotation
 	 */
 	public interface IgnoreNotCompiledSections {
+		static boolean isIgnored(Class<?> compilerOrScript) {
+			return ScriptManager.IgnoreNotCompiledSections.class.isAssignableFrom(compilerOrScript);
+		}
 
+		static boolean isIgnored(Compiler compiler) {
+			return isIgnored(compiler.getClass());
+		}
+
+		static boolean isIgnored(CompileScript<?, ?> script) {
+			return isIgnored(script.getClass());
+		}
 	}
 }
