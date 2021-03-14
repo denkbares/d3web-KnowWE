@@ -474,7 +474,7 @@ a.footnote {
 	background-repeat: no-repeat;
 }
 
-.haddock .warning, .haddock .error{
+.haddock .warning, .haddock .error {
 	padding: 5px 20px 5px 45px;
 }
 
@@ -973,9 +973,17 @@ a.tool:hover {
 }
 
 .searchword, .searchmatch {
-	background-color: #f93;
+	background-color: #f936;
+	border-radius: 4px;
 	color: black;
 	text-decoration: inherit;
+}
+
+.haddock mark, .haddock .mark, .haddock .highlight {
+	background-color: #f936;
+	border-radius: 4px;
+	color: black;
+	padding: 0;
 }
 
 /* +++ 455 Footer +++ */
@@ -2530,7 +2538,7 @@ li.findpages .btn {
 	z-index: 1001;
 }
 
-.fixed-header>.header.scrolling-down {
+.fixed-header > .header.scrolling-down {
 	top: 42px;
 }
 
