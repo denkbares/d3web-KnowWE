@@ -803,7 +803,7 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
           let rect = jq$(".header")[0].getBoundingClientRect();
           return rect.top + rect.height;
         },
-        zIndex: 800, // has to be < than wiki header, which is 1001
+        zIndex: 400, // has to be < than wiki header, which is 1001
       });
 
       function update() {
