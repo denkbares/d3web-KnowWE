@@ -1411,6 +1411,10 @@ a.toc:hover {
 	font-size: 1.4em;
 }
 
+.page-content h4 {
+	margin-top: 22px;
+}
+
 .toc ul {
 	padding-left: 0;
 	list-style: none;
