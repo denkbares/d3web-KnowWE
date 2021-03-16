@@ -2161,6 +2161,46 @@ String.prototype.toLogger = function(indent) {
   return space + '"' + this + '"';
 };
 
+/**
+ * Function: String.copyToClipboard()
+ * Copies the content of this String instance to the system clipboard.
+ */
+String.prototype.copyToClipboard = function() {
+  const aux = document.createElement("input");
+  aux.setAttribute("value", this);
+  document.body.appendChild(aux);
+  aux.select();
+  document.execCommand("copy");
+  document.body.removeChild(aux);
+};
+
+/**
+ * Selects the text within the html document, als the user would select the text manually.
+ * The text can afterward e.g. copied to the clipboard.
+ *
+ * Parameters:
+ *     copyToClipboard - (option) if specified as non-false, the selected html text is also copied to the clipboard
+ */
+Element.prototype.selectHtmlText = function(copyToClipboard) {
+  if (document.body.createTextRange) {
+    const range = document.body.createTextRange();
+    range.moveToElementText(this);
+    range.select();
+  } else if (window.getSelection) {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(this);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+  // stop if browser does not support
+  else return;
+  // if desired, copy the selection to the clopboard, if selection was successfull
+  if (copyToClipboard) {
+    document.execCommand("copy");
+  }
+};
+
 /*
  * Date Format 1.2.3
  * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
