@@ -440,4 +440,7 @@ public class GitVersionCache {
 		String key = getAttachmentKey(att);
 		attachmentRevisionCache.remove(key);
 	}
+	public void reset(WikiPage page) {
+		pageRevisionCache.remove(page.getName());
+	}
 }

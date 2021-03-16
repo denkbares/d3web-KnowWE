@@ -737,6 +737,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	@Override
 	public void deleteVersion(final WikiPage pageName, final int version) {
 		// Can't delete version from git
+		if(version == LATEST_VERSION){
+			this.cache.reset(pageName);
+		}
 	}
 
 	@Override
