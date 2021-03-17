@@ -356,7 +356,7 @@ KNOWWE.plugin.quicki = function() {
           const available = response[choiceName];
           if (!available) {
             // never hide the selected choice
-            if (option.defaultSelected) {
+            if (!option.defaultSelected) {
               option.setAttribute("hidden", "");
             }
             // additionally set disabled
