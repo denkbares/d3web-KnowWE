@@ -62,7 +62,6 @@ import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
-import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.interview.Interview;
 import de.d3web.interview.inference.PSMethodInterview;
@@ -514,7 +513,7 @@ public class QuickInterviewRenderer {
 			// if a value was already set, get the value and set corresponding css class
 			Value value = D3webUtils.getValueNonBlocking(session, q);
 			boolean userSelected = false;
-			if (isAnsweredinCase(value, new ChoiceValue(choice))) {
+			if (containsChoice(value, choice)) {
 				userSelected = D3webUtils.isUserSet(session, q);
 				cssclass = userSelected ? "answerClicked answerSelected" : "answerClicked answerDerived";
 			}
@@ -715,7 +714,7 @@ public class QuickInterviewRenderer {
 
 			Value value = D3webUtils.getValueNonBlocking(session, q);
 			boolean userSelected = false;
-			if (isAnsweredinCase(value, new ChoiceValue(choice))) {
+			if (containsChoice(value, choice)) {
 				userSelected = D3webUtils.isUserSet(session, q);
 				cssclass = userSelected ? "answerMCClicked answerSelected" : "answerMCClicked answerDerived";
 			}
@@ -818,25 +817,22 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Checks, whether an answer value was already processed in the current session
+	 * Checks, whether specified choice value is part of a specified value.
 	 *
-	 * @param sessionValue the sessionValue
-	 * @param value        the value to be checked
-	 * @return true if the given session value contains the checked value (MC Questions) or if the session value equals
-	 * the value
-	 * @created 27.08.2010
+	 * @param value  the value to check if the choice is contained
+	 * @param choice the choice to be checked if it is contained in the value
+	 * @return true if the given value contains the choice
 	 */
-	private boolean isAnsweredinCase(Value sessionValue, Value value) {
-		// undefined values are never answered in the session
-		if (sessionValue == null) return false;
-		if (UndefinedValue.isUndefinedValue(sessionValue)) return false;
-
-		// test for MC values separately
-		if (sessionValue instanceof MultipleChoiceValue) {
-			return ((MultipleChoiceValue) sessionValue).contains(value);
+	private boolean containsChoice(Value value, Choice choice) {
+		if (value instanceof ChoiceValue) {
+			String choiceName = ((ChoiceValue) value).getAnswerChoiceID();
+			return Objects.equals(choiceName, choice.getName());
+		}
+		if (value instanceof MultipleChoiceValue) {
+			return ((MultipleChoiceValue) value).contains(choice);
 		}
 		else {
-			return sessionValue.equals(value);
+			return false;
 		}
 	}
 
