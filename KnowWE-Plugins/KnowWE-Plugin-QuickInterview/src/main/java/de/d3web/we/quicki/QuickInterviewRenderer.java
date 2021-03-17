@@ -445,13 +445,6 @@ public class QuickInterviewRenderer {
 
 	private void renderTextAnswers(Question q, RenderResult sb) {
 
-		// if answer has already been answered write value into the field
-		Value value = D3webUtils.getValueNonBlocking(session, q);
-		String valueString = "";
-		if (value instanceof TextValue) {
-			valueString = value.toString();
-		}
-
 		String id = getID();
 		String jscall = " rel=\"{oid: '" + id + "', " + "web:'" + web + "',"
 				+ "ns:'" + namespace + "'," + "type:'text', " + "qtext:'"
@@ -459,11 +452,26 @@ public class QuickInterviewRenderer {
 
 		String inputSize = getInputSize();
 		if (inputSize == null) inputSize = "18";
+
+		// if answer has already been answered write value into the field
+		Value value = D3webUtils.getValueNonBlocking(session, q);
+		String valueString = "";
+		String placeHolder = "";
+		if (value instanceof TextValue) {
+			String text = value.toString();
+			// set user answers as text content, but derived answers as placeholder
+			if (D3webUtils.isUserSet(session, q)) {
+				valueString = text;
+			}
+			else {
+				placeHolder = text;
+			}
+		}
+
 		// assemble the input field
 		sb.appendHtml("<input qid='\" + id + \"' class='inputtextvalue'  style='display: inline;' type='text' "
-				+ "value='"
-				+ Strings.encodeHtml(valueString)
-				+ "' "
+				+ "value='" + Strings.encodeHtml(valueString) + "' "
+				+ "placeholder='" + Strings.encodeHtml(placeHolder) + "' "
 				+ "size='" + inputSize + "' " + jscall + " \n/>");
 		// "<div class='dateformatdesc'>()</div>");
 
@@ -548,21 +556,14 @@ public class QuickInterviewRenderer {
 	 */
 	private void renderNumAnswers(Question q, RenderResult sb) {
 
-		// if answer has already been answered write value into the field
-		Value value = D3webUtils.getValueNonBlocking(session, q);
-		String valueString = "";
-		if (value instanceof NumValue) {
-			valueString = trimPZ(((NumValue) value).getDouble());
-		}
-
 		String id = getID();
 		double rangeMax = Double.MAX_VALUE;
 		double rangeMin = Double.MIN_VALUE;
 
-		NumericalInterval rangeValue = q.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE);
-		if (rangeValue != null) {
-			rangeMax = rangeValue.getRight();
-			rangeMin = rangeValue.getLeft();
+		NumericalInterval range = q.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE);
+		if (range != null) {
+			rangeMax = range.getRight();
+			rangeMin = range.getLeft();
 		}
 
 		// assemble the JS call
@@ -581,18 +582,31 @@ public class QuickInterviewRenderer {
 					+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
 		}
 
-		NumericalInterval range = q.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE);
-		String rangeString = " ";
+		String placeholder = "";
 		if (range != null) {
-			rangeString = "placeholder='" + trimPZ(range.getLeft()) + " - "
-					+ trimPZ(range.getRight()) + "' ";
+			placeholder = trimPZ(range.getLeft()) + " - " + trimPZ(range.getRight());
+		}
+
+		// if answer has already been answered write value into the field
+		Value value = D3webUtils.getValueNonBlocking(session, q);
+		String valueString = "";
+		if (value instanceof NumValue) {
+			String text = trimPZ(((NumValue) value).getDouble());
+			// set user answers as text content, but derived answers as placeholder
+			if (D3webUtils.isUserSet(session, q)) {
+				valueString = text;
+			}
+			else {
+				placeholder = text;
+			}
 		}
 
 		String inputSize = getInputSize();
 		if (inputSize == null) inputSize = "7";
+
 		// assemble the input field
-		sb.appendHtml("<input qid='" + id + "' class='numinput' type='text' "
-				+ rangeString + "value='" + valueString + "' " + "size='" + inputSize + "' " + jscall + " />");
+		sb.appendHtml("<input qid='" + id + "' class='numinput' type='text' " +
+				"placeholder='" + placeholder + "' value='" + valueString + "' size='" + inputSize + "' " + jscall + " />");
 
 		// print the units
 		appendUnit(q, sb);
@@ -650,13 +664,6 @@ public class QuickInterviewRenderer {
 	 */
 	private void renderDateAnswers(Question q, RenderResult sb) {
 
-		// if answer has already been answered write value into the field
-		Value value = D3webUtils.getValueNonBlocking(session, q);
-		String valueString = "";
-		if (value instanceof DateValue) {
-			valueString = ValueUtils.getDateVerbalization((QuestionDate) q, (DateValue) value, ValueUtils.TimeZoneDisplayMode.NEVER);
-		}
-
 		String id = getID();
 
 		// assemble the JS call
@@ -666,12 +673,26 @@ public class QuickInterviewRenderer {
 
 		String placeHolder = DateValue.getDefaultDateFormat().toPattern();
 
+		// if answer has already been answered write value into the field
+		Value value = D3webUtils.getValueNonBlocking(session, q);
+		String valueString = "";
+		if (value instanceof DateValue) {
+			String text = ValueUtils.getDateVerbalization((QuestionDate) q, (DateValue) value, ValueUtils.TimeZoneDisplayMode.NEVER);
+			// set user answers as text content, but derived answers as placeholder
+			if (D3webUtils.isUserSet(session, q)) {
+				valueString = text;
+			}
+			else {
+				placeHolder = text;
+			}
+		}
+
 		// assemble the input field
 		String title = "Use the following date format:\n"
 				+ placeHolder + "\nTime is optional, "
 				+ "if you use time, seconds and milliseconds are optional.";
-		sb.appendHtml("<input qid='" + id + "' class='inputdate'  style='display: inline;' type='dateValue' " + "value='" + valueString + "' placeholder='"
-				+ placeHolder + "' title='" + title + "' " + jscall + " />");
+		sb.appendHtml("<input qid='" + id + "' class='inputdate'  style='display: inline;' type='dateValue' " + "value='" + valueString +
+				"' placeholder='" + placeHolder + "' title='" + title + "' " + jscall + " />");
 
 		// print the units
 		appendUnit(q, sb);

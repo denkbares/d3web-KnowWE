@@ -368,7 +368,7 @@ KNOWWE.plugin.quicki = function() {
       // empty values should not be sent!
       if (inputtext === '') {
         KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
-          {action: 'SetSingleFindingAction', ValueID: 'MaU'});
+          {action: 'RetractSingleFindingAction'});
         return;
       }
 
@@ -432,7 +432,7 @@ KNOWWE.plugin.quicki = function() {
 
       if (!inputtext) {
         KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
-          {action: 'SetSingleFindingAction', ValueID: 'MaU'});
+          {action: 'RetractSingleFindingAction'});
         return;
       }
       // either yyyy-MM-dd or dd.MM.yyyy, separator either - or .
@@ -465,7 +465,7 @@ KNOWWE.plugin.quicki = function() {
 
       if (!inputtext) {
         KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.oid, rel.qtext,
-          {action: 'SetSingleFindingAction', ValueID: 'MaU'});
+          {action: 'RetractSingleFindingAction'});
         return;
       }
       // send KNOWWE request as SingleFindingAction with given value
