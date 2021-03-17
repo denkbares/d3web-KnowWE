@@ -31,6 +31,8 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Functions;
@@ -51,6 +53,7 @@ import de.d3web.core.knowledge.terminology.QuestionOC;
 import de.d3web.core.knowledge.terminology.QuestionText;
 import de.d3web.core.knowledge.terminology.QuestionZC;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
+import de.d3web.core.knowledge.terminology.info.ChoiceDisplay;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
 import de.d3web.core.knowledge.terminology.info.NumericalInterval;
 import de.d3web.core.manage.KnowledgeBaseUtils;
@@ -62,6 +65,7 @@ import de.d3web.core.session.values.DateValue;
 import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
+import de.d3web.core.session.values.UndefinedValue;
 import de.d3web.core.session.values.Unknown;
 import de.d3web.interview.Interview;
 import de.d3web.interview.inference.PSMethodInterview;
@@ -403,19 +407,20 @@ public class QuickInterviewRenderer {
 				+ Strings.encodeHtml(parent.getName()) + "' " + "class='" + cssClass + "' "
 				+ title + "style='width: " + w
 				+ "px; display: inline-block;' >").append(divText).appendHtml("</div>");
-		// }
 		sb.appendHtml("</td><td>");
 
 		if (question instanceof QuestionOC) {
-			List<Choice> list = ((QuestionChoice) question)
-					.getAllAlternatives();
-			renderOCChoiceAnswers(question, list, sb);
+			QuestionChoice questionOC = (QuestionChoice) question;
+			if (BasicProperties.getChoiceDisplay(questionOC) == ChoiceDisplay.filter) {
+				renderOCChoiceDropDown(questionOC, sb);
+			}
+			else {
+				renderOCChoiceAnswers(questionOC, sb);
+			}
 		}
 		else if (question instanceof QuestionMC) {
 			QuestionMC questionMC = (QuestionMC) question;
-			List<Choice> list = questionMC.getAllAlternatives();
-			MultipleChoiceValue mcVal = MultipleChoiceValue.fromChoices(list);
-			renderMCChoiceAnswers(questionMC, mcVal, sb);
+			renderMCChoiceAnswers(questionMC, sb);
 		}
 		else if (question instanceof QuestionNum) {
 			renderNumAnswers(question, sb);
@@ -489,18 +494,50 @@ public class QuickInterviewRenderer {
 	}
 
 	/**
-	 * Assembles the HTML for rendering a one choice question
-	 *
-	 * @param q    the question
-	 * @param list the list of possible choices
-	 * @created 21.08.2010
+	 * Assembles the HTML for rendering a one choice question, as a dropdown list
 	 */
-	private void renderOCChoiceAnswers(Question q, List<Choice> list,
-									   RenderResult sb) {
+	private void renderOCChoiceDropDown(QuestionChoice question, RenderResult html) {
+		// prepare some information on the actial value
+		Value value = D3webUtils.getValueNonBlocking(session, question);
+		boolean userSelected = D3webUtils.isUserSet(session, question);
+
+		// render the dropdown with the choices
+		String css = userSelected ? "answerDropdown answerSelected" : "answerDropdown answerDerived";
+		html.appendHtmlTag("select", "class", css, "data-qid", question.getName());
+
+		// if unknown is hidden, but the user has selected a value, add empty field to enable to retract the value
+		boolean noValue = value == null || UndefinedValue.isUndefinedValue(value);
+		boolean hasUnknown = BasicProperties.isUnknownVisible(question);
+		if (!hasUnknown && userSelected) {
+			html.appendHtml("<option " + getRelData(question, null) + "></option>");
+		}
+
+		for (Choice choice : question.getAllAlternatives()) {
+			boolean selected = containsChoice(value, choice);
+			html.appendHtml("<option " +
+					"data-cid='" + Strings.encodeHtml(choice.getName()) + "' " + getRelData(question, choice) +
+					(selected ? " selected" : "") + ">" + Strings.encodeHtml(getLabel(choice)) + "</option>");
+		}
+
+		// if unknown is visible, render unknown as well
+		if (hasUnknown) {
+			String unknownPrompt = MMInfo.getUnknownPrompt(question, getSelectedLanguage());
+			html.appendHtml("<option " + getRelData(question, null) +
+					(noValue ? " selected" : "") + ">" + Strings.encodeHtml(unknownPrompt) + "</option>");
+		}
+
+		// close the dropdown
+		html.appendHtmlTag("/select");
+	}
+
+	/**
+	 * Assembles the HTML for rendering a one choice question
+	 */
+	private void renderOCChoiceAnswers(QuestionChoice q, RenderResult sb) {
 
 		// go through all choices = answer alternatives
 		boolean first = true;
-		for (Choice choice : list) {
+		for (Choice choice : q.getAllAlternatives()) {
 			if (first) {
 				first = false;
 			}
@@ -509,14 +546,6 @@ public class QuickInterviewRenderer {
 			}
 
 			String cssclass = "answer";
-
-			// assemble JS string
-			String jscall = " rel=\"{oid:'"
-					+ Strings.encodeHtml(choice.getName().replace("'", "\\'")) + "', "
-					+ "web:'" + web + "', " + "ns:'" + namespace + "', "
-					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
-					+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
-					+ "type:'oc', " + "}\" ";
 
 			// if a value was already set, get the value and set corresponding css class
 			Value value = D3webUtils.getValueNonBlocking(session, q);
@@ -534,18 +563,24 @@ public class QuickInterviewRenderer {
 
 			String label = getLabel(choice);
 			appendEnclosingTagOnClick("span", label, cssclass,
-					jscall, null, null,
+					getRelData(q, choice), null, null,
 					getDescription(choice), sb);
-
-			// System.out.println(getEnclosingTagOnClick("div", "" +
-			// choice.getName() + " ",
-			// cssclass, jscall, null, spanid));
-
-			// for having a separator between answer alternatives (img, text...)
-			// sb.append("\n<div class='separator'></div>");
 		}
 
 		renderAnswerUnknown(q, "oc", sb);
+	}
+
+	@NotNull
+	private String getRelData(QuestionChoice question, Choice choice) {
+		String type = (question instanceof QuestionMC) ? "mc" : "oc";
+		String value = (choice == null) ? "null" : "'" + Strings.encodeURL(choice.getName()) + "'";
+		String oid = (choice == null) ? "null"
+				: "'" + Strings.encodeHtml(choice.getName().replace("'", "\\'")) + "'";
+		return " rel=\"{"
+				+ "oid:" + oid + ", "
+				+ "web:'" + web + "', " + "ns:'" + namespace + "', "
+				+ "qid:'" + Strings.encodeURL(question.getName()) + "', "
+				+ "choice:" + value + ", type:'" + type + "', " + "}\" ";
 	}
 
 	/**
@@ -712,12 +747,11 @@ public class QuickInterviewRenderer {
 	 *
 	 * @created 01.09.2010
 	 */
-	private void renderMCChoiceAnswers(QuestionChoice q,
-									   MultipleChoiceValue mcval, RenderResult sb) {
+	private void renderMCChoiceAnswers(QuestionChoice q, RenderResult sb) {
 
 		sb.appendHtml("<div class='answers'>");
 		boolean first = true;
-		for (Choice choice : mcval.asChoiceList(q)) {
+		for (Choice choice : q.getAllAlternatives()) {
 			if (first) {
 				first = false;
 			}
@@ -726,13 +760,6 @@ public class QuickInterviewRenderer {
 			}
 
 			String cssclass = "answerMC";
-			String jscall = " rel=\"{oid:'"
-					+ Strings.encodeHtml(choice.getName().replace("'", "\\'")) + "', "
-					+ "web:'" + web + "', " + "ns:'" + namespace + "', "
-					+ "qid:'" + Strings.encodeURL(q.getName()) + "', "
-					+ "type:'mc', " + "choice:'"
-					+ Strings.encodeURL(choice.getName()) + "', " + "}\" ";
-
 			Value value = D3webUtils.getValueNonBlocking(session, q);
 			boolean userSelected = false;
 			if (containsChoice(value, choice)) {
@@ -748,7 +775,7 @@ public class QuickInterviewRenderer {
 
 			String label = getLabel(choice);
 			appendEnclosingTagOnClick("span", "" + label + "", cssclass,
-					jscall, null, null,
+					getRelData(q, choice), null, null,
 					getDescription(choice), sb);
 		}
 

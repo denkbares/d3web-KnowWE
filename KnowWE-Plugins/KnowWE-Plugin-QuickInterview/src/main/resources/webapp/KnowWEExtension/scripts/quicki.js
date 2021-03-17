@@ -60,6 +60,12 @@ KNOWWE.plugin.quicki = function() {
       jq$('.answerClicked:not(.answerDisabled)').unbind('click').click(function(event) {
         KNOWWE.plugin.quicki.answerClicked(event);
       });
+      jq$('.answerDropdown').unbind('change').change(function(event) {
+        KNOWWE.plugin.quicki.answerDropDownSelected(event);
+      });
+      jq$('.answerDropdown').unbind('focus').focus(function(event) {
+        KNOWWE.plugin.quicki.updateDropDownChoices(event);
+      });
 
       // select all elements with class="(.*)answerunknown(.*)"
       // ---> class="answerunknown" and class="answerunknownClicked"
@@ -321,6 +327,74 @@ KNOWWE.plugin.quicki = function() {
       else {
         KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid,
           {action: 'SetSingleFindingAction', ValueID: rel.choice});
+      }
+    },
+
+    /**
+     * Function: called when a select is focused, to update the availability of the contained choice options
+     */
+    updateDropDownChoices: function(event) {
+      var select = _KE.target(event); 	// get the clicked element
+      var qid = select.getAttribute("data-qid");
+      if (!qid) return;
+
+      jq$.ajax({
+        url: 'action/QuickInterviewGetChoiceAvailability',
+        type: 'post',
+        cache: false,
+        async: false, // wait for the result to avoid popup-flickering
+        data: {"SectionID": sectionId(event), "ObjectID": qid}
+      }).success(function(response) {
+        console.info("QuickInterviewGetChoiceAvailability: ", response);
+        if (!response) return;
+        for (let option of select.options) {
+          const choiceName = option.getAttribute("data-cid");
+          if (!choiceName) continue;
+          if (!(choiceName in response)) continue;
+
+          // check if not available, the hide
+          const available = response[choiceName];
+          if (!available) {
+            // never hide the selected choice
+            if (option.defaultSelected) {
+              option.setAttribute("hidden", "");
+            }
+            // additionally set disabled
+            // 1.: to show but disable currently selected (defaultSelected) option
+            // 2.: forces the popup to update, where setting only "hidden" does not
+            option.setAttribute("disabled", "");
+          }
+        }
+      });
+    },
+
+    /**
+     * Function: called when a choice is selected from a drow-down field
+     */
+    answerDropDownSelected: function(event) {
+      var select = _KE.target(event); 	// get the clicked element
+      var retract = false;
+
+      // if already clicked, it needs to be de-highlighted and val
+      // retracted
+      // if (el.classList.contains('answerSelected')) {
+      //   retract = true;
+      // }
+      _KE.cancel(event);
+
+      var option = select.selectedOptions[0];
+      if (!option) return;
+
+      var rel = eval("(" + option.getAttribute('rel') + ")");
+      if (!rel) return;
+      var type = rel.type;
+
+      if (rel.choice) {
+        KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid,
+          {action: 'SetSingleFindingAction', ValueID: rel.choice});
+      } else {
+        KNOWWE.plugin.quicki.send(sectionId(event), rel.web, rel.ns, rel.qid, rel.qid,
+          {action: 'RetractSingleFindingAction'});
       }
     },
     /**

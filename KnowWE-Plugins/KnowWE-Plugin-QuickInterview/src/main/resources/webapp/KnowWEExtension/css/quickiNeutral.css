@@ -151,6 +151,16 @@
 	cursor: default;
 }
 
+/* styling of input box */
+.quickinterview .answerDropdown {
+	padding: 3px 0;
+	float: left;
+	margin-left: 0;
+	cursor: pointer;
+	min-width: 80px;
+}
+
+
 /* answer mc styling */
 .quickinterview .answerMC {
 	float: left;
@@ -192,6 +202,8 @@
 	float: left;
 	margin-left: 0;
 	cursor: pointer;
+	min-width: 80px;
+	text-align: right;
 }
 
 /* error message when input is out of range */
@@ -228,6 +240,8 @@
 	float: left;
 	margin-left: 0;
 	cursor: pointer;
+	min-width: 80px;
+	text-align: right;
 }
 
 /* styling of input box text answers */

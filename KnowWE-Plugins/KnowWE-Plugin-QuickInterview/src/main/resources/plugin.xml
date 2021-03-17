@@ -53,6 +53,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="QuickInterviewGetChoiceAvailability">
+		<parameter id="class" value="de.d3web.we.quicki.QuickInterviewGetChoiceAvailability" />
+		<parameter id="name" value="QuickInterviewGetChoiceAvailability" />
+		<parameter id="description" value="Action for accessing the availability state of the choices of a question" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="QuickInterviewToolProvider">
 		<parameter id="class" value="de.d3web.we.quicki.QuickInterviewToolProvider" />
 		<parameter id="name" value="QuickInterviewToolProvider" />
