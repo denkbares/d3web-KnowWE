@@ -20,6 +20,7 @@
 package de.knowwe.core.tools;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -53,11 +54,11 @@ public class CompositeEditToolProvider implements ToolProvider {
 			Section<Term> termSection = Sections.cast(section, Term.class);
 
 			List<Tool> tools = new ArrayList<>();
-			List<Identifier> identifiers = getIdentifiers(section, termSection);
+			Collection<Identifier> identifiers = getIdentifiers(section, termSection);
 
 			for (Identifier identifier : identifiers) {
 				if (identifiers.size() > 1) {
-					tools.add(getCompositeEditTool(section, CompositeEditToolProvider.SHOW_INFO + " (" + identifier.toExternalForm() + ")", identifier));
+					tools.add(getCompositeEditTool(section, getToolText(identifier), identifier));
 				}
 				else {
 					tools.add(getCompositeEditTool(section, identifier));
@@ -69,7 +70,12 @@ public class CompositeEditToolProvider implements ToolProvider {
 	}
 
 	@NotNull
-	protected List<Identifier> getIdentifiers(Section<?> section, Section<Term> termSection) {
+	protected String getToolText(Identifier identifier) {
+		return CompositeEditToolProvider.SHOW_INFO + " (" + identifier.toExternalForm() + ")";
+	}
+
+	@NotNull
+	protected Collection<Identifier> getIdentifiers(Section<?> section, Section<Term> termSection) {
 		return Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
 				.stream()
 				.map(c -> getTermIdentifier(c, termSection))
