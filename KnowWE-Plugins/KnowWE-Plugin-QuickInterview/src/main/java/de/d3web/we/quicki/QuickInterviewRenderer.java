@@ -511,18 +511,17 @@ public class QuickInterviewRenderer {
 					+ "choice:'" + Strings.encodeURL(choice.getName()) + "', "
 					+ "type:'oc', " + "}\" ";
 
-			// if a value was already set, get the value and set corresponding
-			// css class
+			// if a value was already set, get the value and set corresponding css class
 			Value value = D3webUtils.getValueNonBlocking(session, q);
-			if (value != null && UndefinedValue.isNotUndefinedValue(value)
-					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
-				cssclass = D3webUtils.isUserSet(session, q)
-						? "answerClicked answerSelected"
-						: "answerClicked answerDerived";
+			boolean userSelected = false;
+			if (isAnsweredinCase(value, new ChoiceValue(choice))) {
+				userSelected = D3webUtils.isUserSet(session, q);
+				cssclass = userSelected ? "answerClicked answerSelected" : "answerClicked answerDerived";
 			}
 
 			// if disabled, do not offer to the user
-			if (!Interview.get(session).isAvailable(choice)) {
+			// (but always enabled user set choices, to enable to retract them)
+			if (!userSelected && !Interview.get(session).isAvailable(choice)) {
 				cssclass += " answerDisabled";
 			}
 
@@ -715,15 +714,15 @@ public class QuickInterviewRenderer {
 					+ Strings.encodeURL(choice.getName()) + "', " + "}\" ";
 
 			Value value = D3webUtils.getValueNonBlocking(session, q);
-			if (value != null && UndefinedValue.isNotUndefinedValue(value)
-					&& isAnsweredinCase(value, new ChoiceValue(choice))) {
-				cssclass = D3webUtils.isUserSet(session, q)
-						? "answerMCClicked answerSelected"
-						: "answerMCClicked answerDerived";
+			boolean userSelected = false;
+			if (isAnsweredinCase(value, new ChoiceValue(choice))) {
+				userSelected = D3webUtils.isUserSet(session, q);
+				cssclass = userSelected ? "answerMCClicked answerSelected" : "answerMCClicked answerDerived";
 			}
 
 			// if disabled, do not offer to the user
-			if (!Interview.get(session).isAvailable(choice)) {
+			// (but always enabled user set choices, to enable to retract them)
+			if (!userSelected && !Interview.get(session).isAvailable(choice)) {
 				cssclass += " answerDisabled";
 			}
 
@@ -828,6 +827,10 @@ public class QuickInterviewRenderer {
 	 * @created 27.08.2010
 	 */
 	private boolean isAnsweredinCase(Value sessionValue, Value value) {
+		// undefined values are never answered in the session
+		if (sessionValue == null) return false;
+		if (UndefinedValue.isUndefinedValue(sessionValue)) return false;
+
 		// test for MC values separately
 		if (sessionValue instanceof MultipleChoiceValue) {
 			return ((MultipleChoiceValue) sessionValue).contains(value);
