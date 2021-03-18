@@ -157,20 +157,24 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
-		id="ArticleHasWarnings">
-		<parameter id="class"
-			value="de.d3web.we.ci4ke.test.ArticleHasWarningsTest" />
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="ArticleHasWarnings">
+		<parameter id="class" value="de.d3web.we.ci4ke.test.ArticleHasWarningsTest" />
 		<parameter id="name" value="ArticleHasWarnings" />
 		<parameter id="description" value="CITest ArticleHasWarnings" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
-	
-	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test"
-		id="ArticleContains">
-		<parameter id="class"
-			value="de.d3web.we.ci4ke.test.ArticleContainsTest" />
+
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="ArticleHasMarkupErrors">
+		<parameter id="class" value="de.d3web.we.ci4ke.test.ArticleHasMarkupErrorsTest" />
+		<parameter id="name" value="ArticleHasMarkupErrors" />
+		<parameter id="description" value="CITest ArticleHasMarkupErrors" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+	<extension plugin-id="d3web-Plugin-TestingFramework" point-id="Test" id="ArticleContains">
+		<parameter id="class" value="de.d3web.we.ci4ke.test.ArticleContainsTest" />
 		<parameter id="name" value="ArticleContains" />
 		<parameter id="description" value="CITest ArticleContains" />
 		<parameter id="version" value="1.0" />
