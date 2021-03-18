@@ -411,7 +411,7 @@ public class QuickInterviewRenderer {
 
 		if (question instanceof QuestionOC) {
 			QuestionChoice questionOC = (QuestionChoice) question;
-			if (BasicProperties.getChoiceDisplay(questionOC) == ChoiceDisplay.filter) {
+			if (renderChoiceAnswerAsDropDown(questionOC)) {
 				renderOCChoiceDropDown(questionOC, sb);
 			}
 			else {
@@ -508,8 +508,8 @@ public class QuickInterviewRenderer {
 		// if unknown is hidden, but the user has selected a value, add empty field to enable to retract the value
 		boolean noValue = value == null || UndefinedValue.isUndefinedValue(value);
 		boolean hasUnknown = BasicProperties.isUnknownVisible(question);
-		if (!hasUnknown && userSelected) {
-			html.appendHtml("<option " + getRelData(question, null) + "></option>");
+		if (noValue || (!hasUnknown && userSelected)) {
+			html.appendHtml("<option " + getRelData(question, null) + (noValue ? " selected" : "") + "></option>");
 		}
 
 		for (Choice choice : question.getAllAlternatives()) {
@@ -520,10 +520,11 @@ public class QuickInterviewRenderer {
 		}
 
 		// if unknown is visible, render unknown as well
-		if (hasUnknown) {
+		boolean isUnknown = Unknown.assignedTo(value);
+		if (hasUnknown || isUnknown) {
 			String unknownPrompt = MMInfo.getUnknownPrompt(question, getSelectedLanguage());
 			html.appendHtml("<option " + getRelData(question, null) +
-					(noValue ? " selected" : "") + ">" + Strings.encodeHtml(unknownPrompt) + "</option>");
+					(isUnknown ? " selected" : "") + ">" + Strings.encodeHtml(unknownPrompt) + "</option>");
 		}
 
 		// close the dropdown
@@ -591,35 +592,19 @@ public class QuickInterviewRenderer {
 	 */
 	private void renderNumAnswers(Question q, RenderResult sb) {
 
+		// assemble rel-data for js processing
 		String id = getID();
-		double rangeMax = Double.MAX_VALUE;
-		double rangeMin = Double.MIN_VALUE;
-
 		NumericalInterval range = q.getInfoStore().getValue(BasicProperties.QUESTION_NUM_RANGE);
-		if (range != null) {
-			rangeMax = range.getRight();
-			rangeMin = range.getLeft();
-		}
+		double rangeMin = ((range != null) && (range.getLeft() > Double.MIN_VALUE)) ? range.getLeft() : Double.NaN;
+		double rangeMax = ((range != null) && (range.getRight() < Double.MAX_VALUE)) ? range.getRight() : Double.NaN;
+		String relData = " rel=\"{oid: '" + id + "', " + "web:'" + web + "',ns:'" + namespace + "'," +
+				"type:'num', " + "rangeMin:'" + rangeMin + "', " + "rangeMax:'" + rangeMax + "', "
+				+ "qtext:'" + Strings.encodeURL(q.getName()) + "'}\" ";
 
-		// assemble the JS call
-		String jscall;
-		if (rangeMin != Double.MIN_VALUE && rangeMax != Double.MAX_VALUE) {
-			jscall = " rel=\"{oid: '" + id + "', " + "web:'" + web + "',"
-					+ "ns:'" + namespace + "'," + "type:'num', " + "rangeMin:'"
-					+ rangeMin + "', " + "rangeMax:'" + rangeMax + "', "
-					+ "qtext:'" + Strings.encodeURL(q.getName()) + "', "
-					+ "}\" ";
-		}
-		else {
-			jscall = " rel=\"{oid: '" + id + "', " + "web:'" + web + "',"
-					+ "ns:'" + namespace + "'," + "type:'num', "
-					+ "rangeMin:'NaN', " + "rangeMax:'NaN', " + "qtext:'"
-					+ Strings.encodeURL(q.getName()) + "', " + "}\" ";
-		}
-
+		// prepare placeholder with value range
 		String placeholder = "";
-		if (range != null) {
-			placeholder = trimPZ(range.getLeft()) + " - " + trimPZ(range.getRight());
+		if (Double.isFinite(rangeMin) && Double.isFinite(rangeMax)) {
+			placeholder = trimPZ(rangeMin) + " - " + trimPZ(rangeMax);
 		}
 
 		// if answer has already been answered write value into the field
@@ -641,7 +626,7 @@ public class QuickInterviewRenderer {
 
 		// assemble the input field
 		sb.appendHtml("<input qid='" + id + "' class='numinput' type='text' " +
-				"placeholder='" + placeholder + "' value='" + valueString + "' size='" + inputSize + "' " + jscall + " />");
+				"placeholder='" + placeholder + "' value='" + valueString + "' size='" + inputSize + "' " + relData + " />");
 
 		// print the units
 		appendUnit(q, sb);
@@ -796,6 +781,13 @@ public class QuickInterviewRenderer {
 	private boolean renderChoiceAnswerAsList() {
 		return this.config.containsKey("answers")
 				&& this.config.get("answers").equals("list");
+	}
+
+	private boolean renderChoiceAnswerAsDropDown(QuestionChoice question) {
+		if (question instanceof QuestionMC) return false;
+		if (question instanceof QuestionZC) return false;
+		ChoiceDisplay display = BasicProperties.getChoiceDisplay(question);
+		return display == ChoiceDisplay.filter || display == ChoiceDisplay.dropdown;
 	}
 
 	/**
