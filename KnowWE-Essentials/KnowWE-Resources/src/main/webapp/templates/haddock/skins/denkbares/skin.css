@@ -2473,10 +2473,17 @@ li.findpages .btn {
 	background-color: black;
 }
 
-#rightPanel {
+.knowwe #rightPanel {
 	border: none;
 	position: fixed;
 	transition: top .1s ease-in-out;
+	background-color: #F9F9F9;
+	bottom: 0;
+}
+
+.haddock #rightPanel {
+	border: none;
+	position: fixed;
 	background-color: #F9F9F9;
 	bottom: 0;
 }

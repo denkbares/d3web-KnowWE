@@ -126,11 +126,12 @@ KNOWWE.core.plugin.rightPanel = function () {
 				} else {
 					// HaddockTemplate on the right
 					let $header = jq$('.header');
-					jq$('#rightPanel').css({
-						position: 'fixed',
-						top: $header.position().top + $header.height() + 'px',
-						height: (document.documentElement.clientHeight - ($header.position().top + $header.height() + footerHeightVisible)) + 'px'
-					});
+					let $navigation = $header.find('.navigation');
+					let isFixedHeader = $header.hasClass("scrolling-down");
+					let position = isFixedHeader ? "fixed" : "absolute";
+					let top = isFixedHeader ? $navigation.height() : 0;
+					let height = document.documentElement.clientHeight - ($navigation.position().top + $navigation.height() + footerHeightVisible);
+					jq$('#rightPanel').css({position: position, top: top + 'px', height: height + 'px'});
 				}
 			}
 		}
@@ -480,35 +481,6 @@ KNOWWE.core.plugin.rightPanel = function () {
 		bindRightPanelToggleButton();
 	}
 
-	function yoyo() {
-
-		let scrollY, lastScrollY = 0, busy;
-
-		function update() {
-			scrollY = window.getScroll().y;
-			// Limit scroll top to counteract iOS / OSX bounce.
-			scrollY = scrollY.limit(0, window.getScrollSize().y - window.getSize().y);
-			let headerHeight = jq$('.header').outerHeight();
-			if (Math.abs(lastScrollY - scrollY) > headerHeight /* minimum difference */) {
-				if (scrollY > lastScrollY && scrollY > headerHeight) {
-					jq$('#rightPanel').addClass("yoyo");
-				} else {
-					jq$('#rightPanel').removeClass("yoyo");
-				}
-				lastScrollY = scrollY;
-			}
-			busy = false;
-		}
-		function handleEvent() {
-			if (!busy) {
-				busy = true;
-				requestAnimationFrame(update);
-			}
-		}
-		window.addEvents({scroll: handleEvent, resize: handleEvent});
-		update(); //first run: set height of the spacer
-	}
-
 	function bindRightPanelToggleButton() {
 		jq$('#rightPanel-toggle-button').unbind('click').click(function () {
 			const $this = jq$(this);
@@ -538,11 +510,12 @@ KNOWWE.core.plugin.rightPanel = function () {
 				initRightPanel(true);
 			}
 			initRightPanelToggleButton(isShown);
-			if (KNOWWE.core.util.isHaddockTemplate()) {
-				yoyo();
-			}
-			jq$(window).scroll(rightPanelScroll);
+			jq$(window).scroll(function() {
+				// wait for animation frame since we check for changes also done on scroll... we make sure we see these changes
+				window.requestAnimationFrame(rightPanelScroll);
+			});
 			jq$('.header').on("transitionend", rightPanelScroll);
+			setTimeout(rightPanelScroll, 0);
 		},
 
 		addToolToRightPanel: function (title, id, pluginDiv) {
