@@ -2545,7 +2545,7 @@ li.findpages .btn {
 	display: none;
 }
 
-.header {
+.haddock .fixed-header > .header, .header {
 	z-index: 1001;
 }
 
