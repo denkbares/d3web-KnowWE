@@ -2545,8 +2545,20 @@ li.findpages .btn {
 	display: none;
 }
 
-.fixed-header > .header {
+.header {
 	z-index: 1001;
+}
+
+.header  .navigation {
+	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);
+	background-color: #f9f9f9;
+}
+
+.header .breadcrumb {
+	position: relative;
+	width: 100%;
+	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);
+	background-color: white;
 }
 
 @media only screen and (max-width: 768px) {
