@@ -520,21 +520,14 @@ KNOWWE.core.util = function () {
 			return KNOWWE.core.util.isKnowWETemplate() ? '#morepopup' : '#more ul';
 		},
 		getEditButton: function () {
-			let pageActions;
-			let editAction;
 			if (KNOWWE.core.util.getTemplate() === 'KnowWE') {
 				let actions = jq$('#actionsTop');
 				if (!actions.exists()) return;
-				pageActions = actions[0].getElementsByTagName('ul')[0];
-				editAction = pageActions.getElementsByTagName('li')[0];
+				return actions[0].getElementsByTagName('ul')[0].getElementsByTagName('li')[0];
 
 			} else {
-				let actions = jq$('.nav-pills:nth-child(2)');
-				if (!actions.exists()) return;
-				pageActions = actions[0];
-				editAction = pageActions.children[2];
+				return jq$('#edit')[0];
 			}
-			return editAction;
 		}
 	}
 }();
