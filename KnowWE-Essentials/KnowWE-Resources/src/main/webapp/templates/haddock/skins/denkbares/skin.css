@@ -2592,10 +2592,6 @@ li.findpages .btn {
 	color: black;
 }
 
-.edit-mode .fixed-header > .header {
-	position: absolute;
-}
-
 .dropdown-menu .form-control {
 	width: 100%;
 }
