@@ -304,7 +304,7 @@ public class SparqlResultRenderer {
 			//renderResult.append("%%warning The specified flags 'tree' and 'navigation' are not compatible.\n");
 		}
 
-		renderResult.appendHtmlTag("div", "style", "overflow-x: auto");
+		renderResult.appendHtmlTag("div", "style", "overflow-x: auto", "class", "scroll-parent");
 		renderResult.appendHtml("<table id='").append(tableID).appendHtml("'")
 				.append(isTree
 						? " class='sticky-header sparqltable sparqltreetable"

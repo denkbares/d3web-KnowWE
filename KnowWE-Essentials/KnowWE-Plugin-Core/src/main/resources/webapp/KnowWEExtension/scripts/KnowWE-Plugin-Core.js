@@ -800,8 +800,12 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
     init: function() {
       jq$(".haddock table.sticky-header, .haddock .wikitable").not('.renderKDOMTable').floatThead({
         top: function() {
-          let rect = jq$(".header")[0].getBoundingClientRect();
+          let $header = jq$(".header .navigation");
+          let rect = $header[0].getBoundingClientRect();
           return rect.top + rect.height;
+        },
+        responsiveContainer: function($table){
+          return $table.closest('.zebra-table, .scroll-parent');
         },
         zIndex: 400, // has to be < than wiki header, which is 1001
       });
