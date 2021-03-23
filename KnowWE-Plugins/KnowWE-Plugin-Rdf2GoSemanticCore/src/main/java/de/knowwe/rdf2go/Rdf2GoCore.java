@@ -49,6 +49,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -136,6 +137,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public Rdf2GoCore(String lns, RepositoryConfig reasoning) {
 		this("Rdf2GoCore", lns, reasoning);
 	}
+
+
+
 
 	/**
 	 * Initializes the Rdf2GoCore with the specified arguments. Please note that the RuleSet argument only has an effect
@@ -889,10 +893,22 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return All statements from the statement cache, but not imported ones
 	 */
 	public Set<Statement> getStatementsFromCache() {
+		return getStatementsFromCache(s -> true);
+	}
+
+	/**
+	 * All statements from the statement cache that complies to the given filter predicate (but not imported ones)
+	 *
+	 * @param sourceFilter filters the Statements according to StatementSource
+	 * @return Statements complying to that filter
+	 */
+	public Set<Statement> getStatementsFromCache(Predicate<StatementSource> sourceFilter) {
 		synchronized ((this.statementMutex)) {
 			Set<Statement> statements = new HashSet<>();
 			for (Entry<StatementSource, Statement> entry : this.statementCache.entrySet()) {
-				statements.add(entry.getValue());
+				if(sourceFilter.test(entry.getKey())) {
+					statements.add(entry.getValue());
+				}
 			}
 			return statements;
 		}
