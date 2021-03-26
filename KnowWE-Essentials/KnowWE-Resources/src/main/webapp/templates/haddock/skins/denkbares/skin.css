@@ -777,6 +777,7 @@ a.tool:hover {
 	padding: 0;
 	font-weight: initial;
 	font-size: initial;
+	display: inline;
 	clear: none;
 }
 
