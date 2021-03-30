@@ -68,7 +68,7 @@ public class NamedObjectReference extends D3webTermReference<NamedObject> {
 	@NotNull
 	private static Set<NamedObject> findTermObjects(D3webCompiler compiler, Section<? extends D3webTerm<NamedObject>> section) {
 		if (section == null) return Collections.emptySet();
-		String termIdentifier = section.get().getTermIdentifier(compiler, section).toString();
+		String termIdentifier = section.get().getTermName(section);
 		KnowledgeBase knowledgeBase = D3webUtils.getKnowledgeBase(compiler);
 		return NamedObjectFinderManager.getInstance().find(knowledgeBase, termIdentifier);
 	}

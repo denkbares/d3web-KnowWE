@@ -158,17 +158,14 @@ public class ShowOtherExistingValuesWildCard extends AbstractType implements Nod
 				else {
 					// handle non-literal values
 					Identifier identifier = core.toIdentifier(core.createIRI(value.toString()));
-					String valueTextToShow = identifier
-							.toExternalForm()
-							.replace("#", ":");
-					if (terminologyManager != null) {
-						Section<? extends Type> termDefiningSection = terminologyManager.getTermDefiningSection(identifier);
+					Section<? extends Type> termDefiningSection = terminologyManager.getTermDefiningSection(identifier);
+					if (termDefiningSection != null) {
 						termDefiningSection.get().getRenderer().render(termDefiningSection, user, result);
+					}
 						/*
 						ToolMenuDecoratingRenderer.renderToolMenuDecorator(valueTextToShow, termDefiningSection.getID(), ToolUtils
 								.hasToolInstances(termDefiningSection, user), result);
 								*/
-					}
 				}
 				first = false;
 			}

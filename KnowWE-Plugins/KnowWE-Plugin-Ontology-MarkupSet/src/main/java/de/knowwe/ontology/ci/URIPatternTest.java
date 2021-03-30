@@ -61,7 +61,7 @@ public class URIPatternTest extends AbstractTest<OntologyCompiler> {
 			boolean isIgnored = false;
 			for (String[] ignore : ignores) {
 				if (ignore.length != 1) continue;
-				if (identifier.toExternalForm().matches(ignore[0])) {
+				if (identifier.toPrettyPrint().matches(ignore[0])) {
 					isIgnored = true;
 					break;
 				}

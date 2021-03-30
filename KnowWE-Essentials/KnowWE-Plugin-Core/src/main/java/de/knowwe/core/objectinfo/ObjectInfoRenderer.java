@@ -376,7 +376,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 	public static void renderHeader(Identifier identifier, UserContext user, RenderResult result) {
 		result.appendHtmlTag("span", "id", "objectinfo-src", "class", "objectinfo-header-name");
-		result.append(identifier.toExternalForm());
+		result.append(identifier.toPrettyPrint());
 		result.appendHtmlTag("/span");
 		result.appendHtmlTag("span", "class", "objectinfo-header-class");
 		String termObjectClassesVerbalization = getTermObjectClassesVerbalization(user, identifier);

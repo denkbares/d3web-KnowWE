@@ -80,7 +80,7 @@ public class TermInfoToolProvider implements ToolProvider {
 				.map(c -> getIdentifier(c, section))
 				.filter(Objects::nonNull)
 				.findFirst();
-		if (!identifierOpt.isPresent()) return ToolUtils.emptyToolArray();
+		if (identifierOpt.isEmpty()) return ToolUtils.emptyToolArray();
 		Identifier identifier = identifierOpt.get();
 
 		// get sorted list of all defining articles
@@ -182,7 +182,7 @@ public class TermInfoToolProvider implements ToolProvider {
 
 	private Article getHomeArticle(ArticleManager manager, Identifier identifier, String prefix) {
 		// check for original name
-		Article article = manager.getArticle(prefix + identifier.toExternalForm());
+		Article article = manager.getArticle(prefix + identifier.toPrettyPrint());
 		if (article != null) return article;
 
 		// check if concatenated with space

@@ -83,8 +83,7 @@ class TermLog {
 		Collection<Message> messages = new ArrayList<>(2);
 		if (termDefinitions.size() > 1) {
 			Set<Class<?>> termClasses = getTermClasses();
-			String term = termDefinitions.iterator()
-					.next().getTermIdentifier().toExternalForm();
+			String term = termDefinitions.iterator().next().getTermIdentifier().toPrettyPrint();
 			if (termClasses.size() > 1) {
 				messages.add(Messages.ambiguousTermClassesError(term, termClasses));
 			}
@@ -125,9 +124,8 @@ class TermLog {
 											Identifier termIdentifier, Class<?> termClass) {
 
 		Collection<Message> msgs = new ArrayList<>(2);
-		String externalForm = termIdentifier.toExternalForm();
 		for (TermLogEntry termDefinition : termDefinitions) {
-			if (!termDefinition.getTermIdentifier().toExternalForm().equals(externalForm)) {
+			if (!termDefinition.getTermIdentifier().equals(termIdentifier)) {
 				msgs.add(Messages.ambiguousTermCaseWarning(getTermIdentifiers()));
 				break;
 			}

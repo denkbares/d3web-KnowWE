@@ -76,6 +76,7 @@ public class GetValueObject implements ExpressionResolver {
 				continue;
 			}
 			Session session = SessionProvider.getSession(context, kb);
+			assert session != null;
 			Value value = session.getBlackboard().getValue(valueObject);
 			try {
 				resultJsonObject.put(INFO, "simpleValue");
@@ -115,8 +116,7 @@ public class GetValueObject implements ExpressionResolver {
 		boolean sameTerm = false;
 		Collection<Identifier> allDefinedTerms = terminologyManager.getAllDefinedTerms();
 		for (Identifier allDefinedTerm : allDefinedTerms) {
-			sameTerm = exprIdentifier.toExternalForm().toLowerCase().equals(
-					allDefinedTerm.toExternalForm().toLowerCase());
+			sameTerm = exprIdentifier.equals(allDefinedTerm);
 			if (sameTerm) return sameTerm;
 		}
 		return sameTerm;

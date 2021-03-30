@@ -32,11 +32,10 @@ public class LazyURIReferenceCompleteToolProvider implements ToolProvider {
 	}
 
 	private Tool createModificationTool(Section<?> section, Identifier identifier) {
-		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(section,
-				DefaultMarkupType.class);
+		Section<DefaultMarkupType> defaultMarkup = Sections.ancestor(section, DefaultMarkupType.class);
+		assert defaultMarkup != null;
 		String defaultMarkupID = defaultMarkup.getID();
-
-		String insertString = identifier.toExternalForm().replaceFirst("#", ":");
+		String insertString = identifier.toPrettyPrint().replaceFirst("\\.", ":");
 		String jsAction = "KNOWWE.plugin.ontology.expandLazyReference('" + section.getID()
 				+ "','" + insertString + "','" + defaultMarkupID + "')";
 		return new DefaultTool(

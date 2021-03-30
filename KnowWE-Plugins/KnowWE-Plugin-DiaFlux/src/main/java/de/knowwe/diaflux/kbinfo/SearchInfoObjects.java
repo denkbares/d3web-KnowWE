@@ -80,7 +80,7 @@ public class SearchInfoObjects extends AbstractAction {
 			if (index >= count) break;
 			index++;
 			page.append("\t<match>");
-			page.append(GetInfoObjects.encodeXML(identifier.toExternalForm()));
+			page.append(GetInfoObjects.encodeXML(identifier.toPrettyPrint()));
 			page.append("</match>\n");
 		}
 		page.append("</matches>\n");
@@ -94,8 +94,7 @@ public class SearchInfoObjects extends AbstractAction {
 		if (classesString == null) {
 			classesString = "article,flowchart,solution,question,qset";
 		}
-		classes = new HashSet<>();
-		classes.addAll(Arrays.asList(classesString.toLowerCase().split(",")));
+		classes = new HashSet<>(Arrays.asList(classesString.toLowerCase().split(",")));
 
 		Set<Identifier> result = new HashSet<>();
 		Set<Section<?>> processed = new HashSet<>();
