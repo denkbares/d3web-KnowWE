@@ -135,7 +135,7 @@ class TermLog {
 			boolean assignable = termClass.isAssignableFrom(termClassOfDefinition);
 			if (!assignable) {
 				msgs.add(Messages.error("The term '"
-						+ Strings.trimQuotes(termIdentifier.toString())
+						+ Strings.trimQuotes(termIdentifier.toPrettyPrint())
 						+ "' is registered with the type '" + termClassOfDefinition.getSimpleName()
 						+ "' which is incompatible to the type '" + termClass.getSimpleName()
 						+ "' of this reference."));

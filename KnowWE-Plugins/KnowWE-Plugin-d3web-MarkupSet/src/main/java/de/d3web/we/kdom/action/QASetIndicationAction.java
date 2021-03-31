@@ -95,13 +95,13 @@ public class QASetIndicationAction extends D3webRuleAction<QASetIndicationAction
 					if (Question.class.isAssignableFrom(objectClazz) || QContainer.class.isAssignableFrom(objectClazz)) {
 						throw new CompilerMessage();
 					}
-					throw CompilerMessage.error(termIdentifier + "is defined as: "
+					throw CompilerMessage.error(Strings.trimQuotes(termIdentifier.toPrettyPrint()) + "is defined as: "
 							+ objectClazz.getName()
 							+ " - expected was Question or Questionnaire");
 				}
 			}
 			throw CompilerMessage.error("Could not find '"
-					+ Strings.trimQuotes(termIdentifier.toString())
+					+ Strings.trimQuotes(termIdentifier.toPrettyPrint())
 					+ "' - expected was Question or Questionnaire");
 		}
 	}

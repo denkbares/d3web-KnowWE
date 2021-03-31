@@ -437,7 +437,7 @@ public class QuestionLine extends AbstractType {
 				String thisTypeString = thisQuestionType.toString().toLowerCase();
 				if (actualQuestionType != thisQuestionType) {
 					String questionText = actualQuestionDef.get().getTermIdentifier(
-							compiler, actualQuestionDef).toString();
+							compiler, actualQuestionDef).toPrettyPrint();
 					questionText = Strings.trimQuotes(questionText);
 					String warningText = "The question '" + questionText + "' is already defined with the type '"
 							+ actualTypeString + "'. This type definition '" + thisTypeString + "' will be ignored.";

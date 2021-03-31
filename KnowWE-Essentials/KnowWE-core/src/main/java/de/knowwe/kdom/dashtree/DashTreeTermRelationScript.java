@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -116,7 +117,7 @@ public abstract class DashTreeTermRelationScript<T extends TermCompiler> impleme
 					// we fail gracefully and just add all checked as winners...
 					winners = new TreeSet<>(checked);
 					msgs.add(Messages.warning("The order of the following objects is in conflict: "
-							+ Strings.concat(", ", winners)
+							+ winners.stream().map(Identifier::toPrettyPrint).collect(Collectors.joining(", "))
 							+ ". Check all places where these objects are defined to resolve the conflict."));
 				}
 				else {
