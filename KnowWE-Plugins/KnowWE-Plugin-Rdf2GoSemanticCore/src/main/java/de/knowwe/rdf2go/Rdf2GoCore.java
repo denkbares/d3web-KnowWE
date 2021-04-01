@@ -339,24 +339,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 	}
 
-	/**
-	 * De-resolves a specified uri to a short uri name. If there is no matching namespace, the full uri is returned.
-	 *
-	 * @param uri the uri to be de-resolved
-	 * @return the short uri name
-	 * @created 13.11.2013
-	 */
-	public IRI toShortIRI(java.net.URI uri) {
-		return toShortIRI(getValueFactory().createIRI(uri.toString()));
-	}
-
-	/**
-	 * De-resolves a specified uri to a short uri name. If there is no matching namespace, the full uri is returned.
-	 *
-	 * @param iri the uri to be de-resolved
-	 * @return the short uri name
-	 * @created 13.11.2013
-	 */
+	@Override
+	@NotNull
 	public IRI toShortIRI(IRI iri) {
 		String uriText = iri.toString();
 		int length = 0;
