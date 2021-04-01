@@ -81,7 +81,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 			TerminologyManager terminologyManager = compiler.getTerminologyManager();
 			Identifier termIdentifier = s.get().getTermIdentifier(compiler, s);
 			if (terminologyManager.isDefinedTerm(termIdentifier)) {
-				messages.add(Messages.objectAlreadyDefinedError(termIdentifier.toString(), s));
+				messages.add(Messages.objectAlreadyDefinedError(termIdentifier.toPrettyPrint(), s));
 			}
 			terminologyManager.registerTermDefinition(compiler, s,
 					s.get().getTermObjectClass(compiler, s), termIdentifier);

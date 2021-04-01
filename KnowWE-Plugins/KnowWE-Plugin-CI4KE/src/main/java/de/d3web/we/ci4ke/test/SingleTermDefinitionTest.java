@@ -62,12 +62,12 @@ public class SingleTermDefinitionTest extends AbstractTest<Article> {
 
 		for (Identifier termIdentifier : terms) {
 
-			if (TestingUtils.isIgnored(termIdentifier.toString(), ignorePatterns)) continue;
+			if (TestingUtils.isIgnored(termIdentifier.toPrettyPrint(), ignorePatterns)) continue;
 
 			Collection<Section<?>> sections = manager.getTermDefiningSections(termIdentifier);
 			
 			if (sections.size() > 1) {
-				multipleDefs.put(termIdentifier.toString(), sections);
+				multipleDefs.put(termIdentifier.toPrettyPrint(), sections);
 			}
 			
 		}
