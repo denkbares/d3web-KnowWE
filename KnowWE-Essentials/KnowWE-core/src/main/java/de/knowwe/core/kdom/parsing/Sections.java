@@ -243,8 +243,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	@NotNull
 	public static Sections<? extends Type> definitions(@NotNull TerminologyManager manager, @Nullable Identifier identifier) {
-		//noinspection rawtypes,unchecked
-		return new Sections(manager.getTermDefiningSections(identifier));
+		return $(manager.getTermDefiningSections(identifier).stream().sorted().map(s -> Sections.cast(s, Type.class)));
 	}
 
 	@NotNull
@@ -261,8 +260,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	@NotNull
 	public static Sections<? extends Type> references(@NotNull TerminologyManager manager, @Nullable Identifier identifier) {
-		//noinspection rawtypes,unchecked
-		return new Sections(manager.getTermReferenceSections(identifier));
+		return $(manager.getTermReferenceSections(identifier).stream().sorted().map(s -> Sections.cast(s, Type.class)));
 	}
 
 	/**
