@@ -30,6 +30,7 @@ import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import de.knowwe.core.compile.CompilationLocal;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
@@ -180,13 +181,15 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 	@Nullable
 	public static Namespace getDefaultNamespace(OntologyCompiler compiler) {
 		if (compiler == null) return null;
-		Section<OntologyType> ontologyTypeSection = compiler.getCompileSection();
-		Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
-		if (annotationContentSection == null) return null;
-		Section<AbbreviationDefinition> abbreviationDefinition = Sections.successor(annotationContentSection, AbbreviationDefinition.class);
-		if (abbreviationDefinition == null) return null;
-		String abbreviation = abbreviationDefinition.get().getTermName(abbreviationDefinition);
-		return new Namespace(abbreviation, compiler.getRdf2GoCore().getNamespacesMap().get(abbreviation));
+		return CompilationLocal.getCached(compiler, compiler.getCompileSection(), "defaultNamespace", () -> {
+			Section<OntologyType> ontologyTypeSection = compiler.getCompileSection();
+			Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
+			if (annotationContentSection == null) return null;
+			Section<AbbreviationDefinition> abbreviationDefinition = Sections.successor(annotationContentSection, AbbreviationDefinition.class);
+			if (abbreviationDefinition == null) return null;
+			String abbreviation = abbreviationDefinition.get().getTermName(abbreviationDefinition);
+			return new Namespace(abbreviation, compiler.getRdf2GoCore().getNamespacesMap().get(abbreviation));
+		});
 	}
 
 	public static int getCompilerPriority(Section<? extends PackageCompileType> compileTypeSection) {
