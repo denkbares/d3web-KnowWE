@@ -49,13 +49,9 @@ public final class CompilationLocal<E> {
 	private volatile int compileId = -1;
 	private volatile E variable = null;
 
-	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> cache = Collections.synchronizedMap(new WeakHashMap<>());
-	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> weakCache = Collections.synchronizedMap(new WeakHashMap<>());
+	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> cache = new ConcurrentHashMap<>();
+	private static final Map<CompilerManager, Map<Object, CompilationLocal<?>>> weakCache = new ConcurrentHashMap<>();
 
-	/*
-	 * Be more memory friendly by making sure the CompilationLocals cached here in this class are cleaned up as soon as
-	 * the next compilation starts, instead of when the CompilationLocals are accessed.
-	 */
 	static {
 		EventManager.getInstance().registerListener(new EventListener() {
 			@Override
