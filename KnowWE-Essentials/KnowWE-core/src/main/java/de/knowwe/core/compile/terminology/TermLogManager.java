@@ -41,12 +41,16 @@ class TermLogManager {
 	}
 
 	public TermLog getLog(Identifier termIdentifier) {
-		termIdentifier.setCaseSensitive(caseSensitive);
+		if (termIdentifier.isCaseSensitive() != caseSensitive) {
+			termIdentifier = new Identifier(caseSensitive, termIdentifier.getPathElements());
+		}
 		return termLogs.get(termIdentifier);
 	}
 
 	public void putLog(Identifier termIdentifier, TermLog termLog) {
-		termIdentifier.setCaseSensitive(caseSensitive);
+		if (termIdentifier.isCaseSensitive() != caseSensitive) {
+			termIdentifier = new Identifier(caseSensitive, termIdentifier.getPathElements());
+		}
 		termLogs.put(termIdentifier, termLog);
 	}
 
