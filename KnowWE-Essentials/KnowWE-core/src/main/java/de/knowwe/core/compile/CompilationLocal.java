@@ -152,7 +152,6 @@ public final class CompilationLocal<E> {
 		removeCache(compiler.getCompilerManager(), new CacheWrapper(compiler, section, cacheKey));
 	}
 
-
 	/**
 	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. The object
 	 * stays valid until a new compilation is started by the given compilation manager. As soon as the object provided
@@ -239,6 +238,17 @@ public final class CompilationLocal<E> {
 		@Override
 		public int hashCode() {
 			return Objects.hash(compiler, section, key);
+		}
+
+		@Override
+		public String toString() {
+			return "CacheWrapper{" +
+					"compiler=" + Compilers.getCompilerName(compiler) +
+					(section == null ? "" : ", section=" + section.getTitle() + ":" + section.get()
+							.getClass()
+							.getSimpleName()) +
+					", key=" + key +
+					'}';
 		}
 	}
 }
