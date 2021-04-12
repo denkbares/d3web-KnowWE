@@ -91,6 +91,7 @@ public final class CompilationLocal<E> {
 				compilationLocal = section.getObject(compiler, key);
 				if (compilationLocal == null) {
 					compilationLocal = create(compiler.getCompilerManager(), supplier);
+					section.storeObject(compiler, key, compilationLocal);
 				}
 			}
 		}
