@@ -21,13 +21,11 @@ package de.knowwe.core.compile.terminology;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -174,24 +172,27 @@ class TermLog {
 	}
 
 	public Set<Section<?>> getDefinitions() {
-		return termDefinitions.stream().map(TermLogEntry::getSection).collect(java.util.stream.Collectors.toUnmodifiableSet());
+		return extractFromEntry(termDefinitions, TermLogEntry::getSection, termDefinitions.size());
 	}
 
 	public Set<Section<?>> getReferences() {
-		return termReferences.stream().map(TermLogEntry::getSection).collect(java.util.stream.Collectors.toUnmodifiableSet());
+		return extractFromEntry(termReferences, TermLogEntry::getSection, termReferences.size());
 	}
 
 	Set<Class<?>> getTermClasses() {
-		return termDefinitions.stream().map(TermLogEntry::getTermClass).collect(java.util.stream.Collectors.toUnmodifiableSet());
+		return extractFromEntry(termDefinitions, TermLogEntry::getTermClass, 4);
 	}
 
 	Collection<Identifier> getTermIdentifiers() {
-		// Identifiers hash is case insensitive, here we are case sensitive and have to hash by external form first...
-		Map<String, Identifier> identifierMap = new HashMap<>(termDefinitions.size());
-		for (TermLogEntry termDefinition : termDefinitions) {
-			identifierMap.put(termDefinition.getTermIdentifier().toExternalForm(), termDefinition.getTermIdentifier());
+		return extractFromEntry(termDefinitions, TermLogEntry::getTermIdentifier, 4);
+	}
+
+	private <E> Set<E> extractFromEntry(Collection<TermLogEntry> entries, Function<TermLogEntry, E> supplier, int size) {
+		Set<E> result = new HashSet<>(size);
+		for (TermLogEntry termDefinition : entries) {
+			result.add(supplier.apply(termDefinition));
 		}
-		return Collections.unmodifiableCollection(identifierMap.values());
+		return Collections.unmodifiableSet(result);
 	}
 
 	public boolean isEmpty() {
