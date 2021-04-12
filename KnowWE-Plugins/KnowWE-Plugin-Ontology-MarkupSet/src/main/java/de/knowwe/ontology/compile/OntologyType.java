@@ -181,7 +181,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 	@Nullable
 	public static Namespace getDefaultNamespace(OntologyCompiler compiler) {
 		if (compiler == null) return null;
-		return CompilationLocal.getCached(compiler, compiler.getCompileSection(), "defaultNamespace", () -> {
+		return CompilationLocal.getCached(compiler, "defaultNamespace", () -> {
 			Section<OntologyType> ontologyTypeSection = compiler.getCompileSection();
 			Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
 			if (annotationContentSection == null) return null;
