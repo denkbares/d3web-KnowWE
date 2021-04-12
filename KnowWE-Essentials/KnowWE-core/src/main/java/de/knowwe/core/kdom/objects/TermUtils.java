@@ -105,7 +105,7 @@ public class TermUtils {
 				.collect(joining("-"));
 		CompilerManager compilerManager = userContext.getArticleManager().getCompilerManager();
 		String web = userContext.getWeb();
-		return CompilationLocal.getCached(cacheKey, compilerManager, () -> getAllTermInfosInternal(web, caseSensitive, allowedTermClasses));
+		return CompilationLocal.getCached(compilerManager, cacheKey, () -> getAllTermInfosInternal(web, caseSensitive, allowedTermClasses));
 	}
 
 	/**

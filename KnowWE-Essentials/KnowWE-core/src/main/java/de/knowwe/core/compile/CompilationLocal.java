@@ -99,17 +99,36 @@ public final class CompilationLocal<E> {
 
 	/**
 	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. The object
-	 * is valid until a new compilation is started by the given CompilerManager. The cache ist cleared (including the
-	 * keys) for the given CompilationManager as soon as the next compilation starts. Use method {@link
-	 * #removeCache(Object, CompilerManager)} if it should be cleaned up even sooner.
+	 * is valid until a new compilation is started by the CompilerManager of the given Compiler. The cache ist cleared
+	 * (including the keys) for the given Compiler's CompilationManager as soon as the next compilation starts. Use
+	 * method {@link #removeCache(Compiler, Object)} if it should be cleaned up even sooner.
 	 *
-	 * @param cacheKey        the object by which the supplier/result is cached
-	 * @param compilerManager the CompilerManager the cache refers to
-	 * @param supplier        the supplier generating the object to be cached
-	 * @param <L>             the type of the object to be generated
+	 * @param cacheKey the object by which the supplier/result is cached
+	 * @param compiler the Compiler the cache refers to
+	 * @param supplier the supplier generating the object to be cached
+	 * @param <L>      the type of the object to be generated
 	 * @return a cached or newly generated instance of the object provided by the supplier
 	 */
-	public static <L> L getCached(@NotNull Object cacheKey, @NotNull CompilerManager compilerManager, @NotNull Supplier<L> supplier) {
+	public static <L> L getCached(@NotNull Compiler compiler, @NotNull Object cacheKey, @NotNull Supplier<L> supplier) {
+		//noinspection unchecked
+		return (L) cache.computeIfAbsent(compiler.getCompilerManager(), cm -> new ConcurrentHashMap<>())
+				.computeIfAbsent(toCompilerCacheKey(compiler, cacheKey),
+						ck -> new CompilationLocal<>(compiler.getCompilerManager(), supplier)).get();
+	}
+
+	/**
+	 * Get the object provided by the supplier either freshly generated, or if still valid, from the cache. The object
+	 * is valid until a new compilation is started by the given CompilerManager. The cache ist cleared (including the
+	 * keys) for the given CompilationManager as soon as the next compilation starts. Use method {@link
+	 * #removeCache(CompilerManager, Object)} if it should be cleaned up even sooner.
+	 *
+	 * @param <L>             the type of the object to be generated
+	 * @param compilerManager the CompilerManager the cache refers to
+	 * @param cacheKey        the object by which the supplier/result is cached
+	 * @param supplier        the supplier generating the object to be cached
+	 * @return a cached or newly generated instance of the object provided by the supplier
+	 */
+	public static <L> L getCached(@NotNull CompilerManager compilerManager, @NotNull Object cacheKey, @NotNull Supplier<L> supplier) {
 		//noinspection unchecked
 		return (L) cache.computeIfAbsent(compilerManager, cm -> new ConcurrentHashMap<>())
 				.computeIfAbsent(cacheKey, ck -> new CompilationLocal<>(compilerManager, supplier)).get();
@@ -118,11 +137,28 @@ public final class CompilationLocal<E> {
 	/**
 	 * Removes the object cached by the given cacheKey and CompilerManager from the cache. Use this to clear up memory.
 	 *
-	 * @param cacheKey        the object by which the supplier/result is cached
 	 * @param compilerManager the CompilerManager the cache refers to
+	 * @param cacheKey        the object by which the supplier/result is cached
 	 */
-	public static void removeCache(@NotNull Object cacheKey, @NotNull CompilerManager compilerManager) {
+	public static void removeCache(@NotNull CompilerManager compilerManager, @NotNull Object cacheKey) {
 		cache.getOrDefault(compilerManager, Collections.emptyMap()).remove(cacheKey);
+	}
+
+	/**
+	 * Removes the object cached by the given cacheKey and CompilerManager from the cache. Use this to clear up memory.
+	 *
+	 * @param cacheKey the object by which the supplier/result is cached
+	 * @param compiler the Compiler the cache refers to
+	 */
+	public static void removeCache(@NotNull Compiler compiler, @NotNull Object cacheKey) {
+		cache.getOrDefault(compiler.getCompilerManager(), Collections.emptyMap())
+				.remove(toCompilerCacheKey(compiler, cacheKey));
+	}
+
+	@NotNull
+	private static Object toCompilerCacheKey(@NotNull Compiler compiler, @NotNull Object cacheKey) {
+		cacheKey += "_" + Compilers.getCompilerName(compiler);
+		return cacheKey;
 	}
 
 	/**
@@ -131,13 +167,13 @@ public final class CompilationLocal<E> {
 	 * as the cacheKey is no longer used/referenced elsewhere and garbage collected, the cached object is also cleaned
 	 * up. The cacheKey and object are additionally cleaned up, as soon as the next compilation starts.
 	 *
-	 * @param cacheKey        the object by which the supplier/result is cached
-	 * @param compilerManager the CompilerManager the cache refers to
-	 * @param supplier        the supplier generating the object to be cached
 	 * @param <L>             the type of the object to be generated
+	 * @param compilerManager the CompilerManager the cache refers to
+	 * @param cacheKey        the object by which the supplier/result is cached
+	 * @param supplier        the supplier generating the object to be cached
 	 * @return a cached or newly generated instance of the object provided by the supplier
 	 */
-	public static <L> L getWeaklyCached(@NotNull Object cacheKey, @NotNull CompilerManager compilerManager, @NotNull Supplier<L> supplier) {
+	public static <L> L getWeaklyCached(@NotNull CompilerManager compilerManager, @NotNull Object cacheKey, @NotNull Supplier<L> supplier) {
 		//noinspection unchecked
 		return (L) weakCache.computeIfAbsent(compilerManager, cm -> Collections.synchronizedMap(new WeakHashMap<>()))
 				.computeIfAbsent(cacheKey, ck -> new CompilationLocal<>(compilerManager, supplier)).get();
