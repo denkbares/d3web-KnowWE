@@ -144,6 +144,28 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Maps the sections to the results of the mapper function. Returns a new Sections object.
+	 *
+	 * @param mapper the function to map/convert the sections to the desired results
+	 * @param <R>    the result type
+	 * @return a Sections instance with all the mapped functions
+	 */
+	public <R extends Type> Sections<R> mapTo(Function<Section<T>, Section<R>> mapper) {
+		return $(stream().map(mapper));
+	}
+
+	/**
+	 * Maps the sections to the results of the mapper function. Returns a new Sections object.
+	 *
+	 * @param mapper the function to map/convert the sections to the desired results
+	 * @param <R>    the result type
+	 * @return a Sections instance with all the mapped functions
+	 */
+	public <R extends Type> Sections<R> flatMapTo(Function<Section<T>, Stream<Section<R>>> mapper) {
+		return $(stream().flatMap(mapper));
+	}
+
+	/**
 	 * Maps the available sections to the result of the mapper function, returning the first non-null value. If there is
 	 * no section, or all sections are mapped to <tt>null</tt> is returned.
 	 *
