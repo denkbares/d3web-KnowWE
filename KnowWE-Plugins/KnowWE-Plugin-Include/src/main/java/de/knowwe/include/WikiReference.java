@@ -133,7 +133,7 @@ public class WikiReference extends AbstractType {
 
 		// find link name
 		addChildType(LinkName.matchLinkName());
-		addChildType(new KeywordType(Pattern.compile("\\s*[\\[\\]\\|]\\s*")));
+		addChildType(new KeywordType(Pattern.compile("\\s*[\\[\\]|]\\s*")));
 		addChildType(LinkName.matchStaticText());
 
 		// grap all link characters with whitespaces
@@ -263,7 +263,7 @@ public class WikiReference extends AbstractType {
 		}
 
 		if (articleManager == null) {
-			Messages.storeMessage(articleReference, WikiReference.class, Messages.error("Unable to get resolve reference in preview mode"));
+			Messages.storeMessage(articleReference, WikiReference.class, Messages.warning("Unable to resolve references in preview mode"));
 			return null;
 		}
 
