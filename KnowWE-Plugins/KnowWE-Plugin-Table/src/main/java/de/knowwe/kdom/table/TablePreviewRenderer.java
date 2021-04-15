@@ -87,7 +87,6 @@ public class TablePreviewRenderer extends AbstractPreviewRenderer {
 			else if ($(relevantSubSections).ancestor(row.get().getClass()).anyMatch(s -> s == row)) {
 				result.append(row, user);
 				foundRow = true;
-				break;
 			}
 		}
 		if (!foundRow) {
