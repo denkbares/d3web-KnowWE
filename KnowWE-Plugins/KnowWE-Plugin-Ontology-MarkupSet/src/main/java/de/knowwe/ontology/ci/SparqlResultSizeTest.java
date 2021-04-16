@@ -26,7 +26,7 @@ import com.denkbares.semanticcore.TupleQueryResult;
 import de.d3web.testing.Message;
 import de.d3web.testing.ResultSizeTest;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.ontology.ci.provider.SparqlQuerySection;
+import de.knowwe.ontology.ci.provider.SparqlTestObject;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -39,15 +39,15 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshöfer
  * @created 08.01.2014
  */
-public class SparqlResultSizeTest extends SparqlTest<SparqlQuerySection> implements ResultSizeTest {
+public class SparqlResultSizeTest extends SparqlTest<SparqlTestObject> implements ResultSizeTest {
 
 	public SparqlResultSizeTest() {
 		getParameters().forEach(this::addParameter);
 	}
 
 	@Override
-	public Class<SparqlQuerySection> getTestObjectClass() {
-		return SparqlQuerySection.class;
+	public Class<SparqlTestObject> getTestObjectClass() {
+		return SparqlTestObject.class;
 	}
 
 	@Override
@@ -56,13 +56,13 @@ public class SparqlResultSizeTest extends SparqlTest<SparqlQuerySection> impleme
 	}
 
 	@Override
-	public Message execute(SparqlQuerySection query, String[] args, String[]... ignores) throws InterruptedException {
+	public Message execute(SparqlTestObject testObject, String[] args, String[]... ignores) throws InterruptedException {
 		Comparator comparator = getComparator(args, 0);
 		int number = comparator.getNumber();
 		Message.Type messageType = comparator.getMessageType();
 
-		Section<SparqlContentType> contentSection = query.getSection();
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(contentSection);
+		Section<SparqlContentType> contentSection = testObject.getSection();
+		Rdf2GoCore core = testObject.getCompiler().getRdf2GoCore();
 
 		if (core == null) {
 			return new Message(Message.Type.ERROR, "No repository found for section: " + contentSection);

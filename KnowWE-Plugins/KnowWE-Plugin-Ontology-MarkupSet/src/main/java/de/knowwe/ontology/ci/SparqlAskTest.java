@@ -21,7 +21,7 @@ package de.knowwe.ontology.ci;
 
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter;
-import de.knowwe.ontology.ci.provider.SparqlQuerySection;
+import de.knowwe.ontology.ci.provider.SparqlTestObject;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -29,7 +29,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Jochen Reutelshoefer (denkbares GmbH)
  * @created 01.03.16.
  */
-public class SparqlAskTest extends SparqlTest<SparqlQuerySection> {
+public class SparqlAskTest extends SparqlTest<SparqlTestObject> {
 
 	public static final String WARNING = "warning";
 
@@ -41,8 +41,8 @@ public class SparqlAskTest extends SparqlTest<SparqlQuerySection> {
 	}
 
 	@Override
-	public Class<SparqlQuerySection> getTestObjectClass() {
-		return SparqlQuerySection.class;
+	public Class<SparqlTestObject> getTestObjectClass() {
+		return SparqlTestObject.class;
 	}
 
 	@Override
@@ -51,21 +51,20 @@ public class SparqlAskTest extends SparqlTest<SparqlQuerySection> {
 	}
 
 	@Override
-	public Message execute(SparqlQuerySection query, String[] args, String[]... ignores) throws InterruptedException {
+	public Message execute(SparqlTestObject testObject, String[] args, String[]... ignores) throws InterruptedException {
 		Boolean expectedTruthValue = Boolean.parseBoolean(args[0]);
 		Message.Type messageTypeTestFailed = Message.Type.FAILURE;
 		if (args.length > 1 && args[1] != null && WARNING.equalsIgnoreCase(args[1])) {
 			messageTypeTestFailed = Message.Type.WARNING;
 		}
 
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCoreForDefaultMarkupSubSection(query.getSection());
+		Rdf2GoCore core = testObject.getCompiler().getRdf2GoCore();
 
 		if (core == null) {
-			return new Message(Message.Type.ERROR,
-					"No repository found for section: " + query.getSection());
+			return new Message(Message.Type.ERROR, "No repository found for section: " + testObject.getSection());
 		}
 
-		String sparqlString = Rdf2GoUtils.createSparqlString(core, query.getSection().getText());
+		String sparqlString = Rdf2GoUtils.createSparqlString(core, testObject.getSection().getText());
 
 		boolean result = sparqlAsk(core, sparqlString);
 
@@ -73,9 +72,7 @@ public class SparqlAskTest extends SparqlTest<SparqlQuerySection> {
 			return new Message(Message.Type.SUCCESS);
 		}
 		else {
-			return new Message(messageTypeTestFailed,
-					"Sparql ASK expected  " + expectedTruthValue + " but was: " + result);
+			return new Message(messageTypeTestFailed, "Sparql ASK expected  " + expectedTruthValue + " but was: " + result);
 		}
 	}
-
 }

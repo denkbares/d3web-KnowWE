@@ -20,6 +20,10 @@ package de.knowwe.ontology.ci.provider;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.denkbares.collections.ConcatenateCollection;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -27,6 +31,7 @@ import de.knowwe.ontology.ci.ExpectedSparqlResultTableMarkup;
 import de.knowwe.ontology.ci.RegisteredNameType;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.ontology.sparql.SparqlMarkupType;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -36,8 +41,11 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class SparqlTestObjectProviderUtils {
 
+	private static final String SPLIT_SYMBOL = "@";
+
 	public static Collection<Section<SparqlContentType>> getSparqlQueryContentSection(String sectionName) {
-		return $(getSectionsForNameGlobal(sectionName, SparqlMarkupType.class)).successor(SparqlContentType.class).asList();
+		return $(getSectionsForNameGlobal(sectionName, SparqlMarkupType.class)).successor(SparqlContentType.class)
+				.asList();
 	}
 
 	public static Collection<Section<SparqlMarkupType>> getSparqlQuerySection(String sectionName) {
@@ -55,6 +63,17 @@ public class SparqlTestObjectProviderUtils {
 	}
 
 	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(String sparqlName, Class<T> clazz) {
-		return RegisteredNameType.getNamedMarkupSections(sparqlName, clazz);
+		return new ConcatenateCollection<>(RegisteredNameType.getNamedMarkupSections(sparqlName, clazz),
+				RegisteredNameType.getNamedMarkupSections(sparqlName.split(SPLIT_SYMBOL)[0], clazz));
+	}
+
+	@Nullable
+	public static Rdf2GoCompiler getCompiler(Section<SparqlContentType> section, String name) {
+		String[] split = name.split(SPLIT_SYMBOL);
+		return Compilers.getCompilers(section, Rdf2GoCompiler.class)
+				.stream()
+				.filter(c -> split.length < 2 || Compilers.getCompilerName(c).equals(split[1]))
+				.findFirst()
+				.orElse(Compilers.getCompiler(section, Rdf2GoCompiler.class));
 	}
 }
