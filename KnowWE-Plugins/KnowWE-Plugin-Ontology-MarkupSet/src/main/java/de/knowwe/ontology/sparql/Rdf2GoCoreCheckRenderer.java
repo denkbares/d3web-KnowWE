@@ -41,7 +41,7 @@ public class Rdf2GoCoreCheckRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		Rdf2GoCore rdf2GoCore = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
+		Rdf2GoCore rdf2GoCore = Rdf2GoUtils.getRdf2GoCore(user, Sections.cast(section,
 				DefaultMarkupType.class));
 		// somehow, renaming will cause a render where the compile is not yet available... simple fix for now
 		if (user.getParameter("action") != null) return;

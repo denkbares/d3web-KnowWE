@@ -93,7 +93,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 	@Nullable
 	public String getSparqlQuery(Section<? extends SparqlType> section, UserContext context) {
 		Section<SparqlMarkupType> markupSection = Sections.ancestor(section, SparqlMarkupType.class);
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(context, markupSection);
 		if (core == null) return null;
 		return Rdf2GoUtils.createSparqlString(core, section.getText());
 	}
@@ -104,7 +104,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		RenderOptions renderOpts = new RenderOptions(section.getID());
 		Section<DefaultMarkupType> markupSection = $(section).closest(DefaultMarkupType.class).getFirst();
 
-		renderOpts.setRdf2GoCore(Rdf2GoUtils.getRdf2GoCore(markupSection));
+		renderOpts.setRdf2GoCore(Rdf2GoUtils.getRdf2GoCore(context, markupSection));
 		renderOpts.setRawOutput(checkAnnotation(markupSection, SparqlMarkupType.RAW_OUTPUT));
 		renderOpts.setSorting(checkAnnotation(markupSection, SparqlMarkupType.SORTING, true));
 		renderOpts.setFiltering(checkAnnotation(markupSection, SparqlMarkupType.FILTERING, true));
@@ -152,14 +152,11 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		if (logLevelString == null) {
 			return none;
 		}
-		switch (logLevelString.toLowerCase()) {
-			case "warning":
-				return Color.WARNING;
-			case "error":
-				return Color.ERROR;
-			default:
-				return none;
-		}
+		return switch (logLevelString.toLowerCase()) {
+			case "warning" -> Color.WARNING;
+			case "error" -> Color.ERROR;
+			default -> none;
+		};
 	}
 
 	private boolean checkAnnotation(Section<?> markupSection, String annotationName) {

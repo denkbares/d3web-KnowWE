@@ -22,7 +22,7 @@ public class ClearCachedSparqlAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 		Section<SparqlType> section = getSection(context, SparqlType.class);
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(section);
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(context, section);
 		if (core == null) {
 			fail(context, HttpServletResponse.SC_NOT_FOUND,
 					"The referenced section has no repository. " +

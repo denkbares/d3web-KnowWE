@@ -55,8 +55,12 @@ public class ShowNamespacesType extends DefaultMarkupType {
 				return;
 			}
 
-			Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(Sections.cast(section,
+			Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(user, Sections.cast(section,
 					ShowNamespacesType.class));
+			if (core == null) {
+				string.append("%%Warning No Compiler found /%");
+				return;
+			}
 
 			Map<String, String> namespaces = core.getNamespacesMap();
 

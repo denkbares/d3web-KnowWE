@@ -133,7 +133,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 		Section<SparqlVisualizationType> section = Sections.ancestor(content, SparqlVisualizationType.class);
 		if (section == null) return;
 
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(section);
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(user, section);
 		if (core == null) return;
 
 		List<Message> messages = new ArrayList<>();

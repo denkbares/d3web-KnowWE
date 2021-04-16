@@ -54,7 +54,7 @@ public class SparqlContentRenderer implements Renderer {
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		Section<SparqlType> sparqlTypeSection = Sections.cast(section, SparqlType.class);
 		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(markupSection);
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(user, markupSection);
 		if (core == null) {
 			// we render an empty div, otherwise the ajax rerendering does not
 			// work properly

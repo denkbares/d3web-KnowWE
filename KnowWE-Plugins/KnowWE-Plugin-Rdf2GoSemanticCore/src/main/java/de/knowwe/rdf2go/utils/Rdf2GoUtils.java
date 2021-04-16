@@ -49,6 +49,7 @@ import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyTree;
@@ -65,6 +66,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -219,12 +221,17 @@ public class Rdf2GoUtils {
 		return labels.get(bestLocale);
 	}
 
-	public static Rdf2GoCore getRdf2GoCore(Section<?> section) {
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+	@Nullable
+	public static Rdf2GoCore getRdf2GoCore(@Nullable UserContext context, Section<?> section) {
+		Rdf2GoCompiler compiler = Compilers.getCompiler(context, section, Rdf2GoCompiler.class);
 		if (compiler != null) {
 			return compiler.getRdf2GoCore();
 		}
 		return null;
+	}
+
+	public static Rdf2GoCore getRdf2GoCore(Section<?> section) {
+		return getRdf2GoCore(null, section);
 	}
 
 	public static Statement[] toArray(Collection<Statement> statements) {

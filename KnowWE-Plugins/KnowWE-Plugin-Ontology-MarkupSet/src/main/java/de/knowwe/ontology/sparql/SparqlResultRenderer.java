@@ -165,7 +165,7 @@ public class SparqlResultRenderer {
 	private static void appendMalformedQueryMessage(Section<? extends SparqlType> section, String message, UserContext user, RenderResult result) {
 		message = Strings.encodeHtml(message);
 		String query = section.get().getSparqlQuery(section, user);
-		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(section);
+		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(user, section);
 		if (query == null || core == null || Strings.trim(query).isEmpty()) {
 			result.append(message);
 			return;
