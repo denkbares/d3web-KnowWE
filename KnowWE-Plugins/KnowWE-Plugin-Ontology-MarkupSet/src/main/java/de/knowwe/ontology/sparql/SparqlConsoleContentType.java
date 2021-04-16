@@ -45,7 +45,7 @@ public class SparqlConsoleContentType extends AbstractType implements SparqlType
 	@Override
 	public String getSparqlQuery(Section<? extends SparqlType> section, UserContext context) {
 		String cookie = KnowWEUtils.getCookie("sparqlConsole_" + section.getID(), context);
-		Rdf2GoCore core = Rdf2GoCore.getInstance(section);
+		Rdf2GoCore core = Rdf2GoCore.getInstance(context, section);
 		if (Strings.isBlank(cookie) || core == null) {
 			return "SELECT * WHERE { ?x ?y ?z } LIMIT 0"; // A query that always returns empty
 		}
@@ -58,7 +58,7 @@ public class SparqlConsoleContentType extends AbstractType implements SparqlType
 	@Override
 	public RenderOptions getRenderOptions(Section<? extends SparqlType> section, UserContext context) {
 		RenderOptions renderOpts = new RenderOptions(section.getID());
-		renderOpts.setRdf2GoCore(Rdf2GoCore.getInstance(section));
+		renderOpts.setRdf2GoCore(Rdf2GoCore.getInstance(context, section));
 		renderOpts.setNavigation(true);
 		return renderOpts;
 	}

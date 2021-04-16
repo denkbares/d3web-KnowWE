@@ -102,6 +102,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.SparqlType;
@@ -283,12 +284,16 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		this(null, ruleSet);
 	}
 
-	public static Rdf2GoCore getInstance(Section<?> section) {
-		Rdf2GoCompiler compiler = Compilers.getCompiler(section, Rdf2GoCompiler.class);
+	public static Rdf2GoCore getInstance(@Nullable UserContext context, Section<?> section) {
+		Rdf2GoCompiler compiler = Compilers.getCompiler(context, section, Rdf2GoCompiler.class);
 		if (compiler == null) {
 			return null;
 		}
 		return getInstance(compiler);
+	}
+
+	public static Rdf2GoCore getInstance(Section<?> section) {
+		return getInstance(null, section);
 	}
 
 	/**
