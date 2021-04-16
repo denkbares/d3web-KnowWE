@@ -23,12 +23,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -240,10 +242,21 @@ public class Compilers {
 	 * @param compiler the compiler to mark as the default
 	 */
 	public static void markAsDefaultCompiler(@NotNull UserContext context, @NotNull Compiler compiler) {
-		List<String> defaultCompilers = getDefaultCompilers(context, compiler.getClass());
 		String compilerName = getCompilerName(compiler);
-		defaultCompilers.remove(compilerName); // remove if already present
-		defaultCompilers.add(0, compilerName); // add at first place
+		Set<Class<? extends Compiler>> compilerClasses = new HashSet<>();
+		compilerClasses.add(compiler.getClass());
+		addCompilerClasses(compilerClasses, ClassUtils.getAllInterfaces(compiler.getClass()));
+		addCompilerClasses(compilerClasses, ClassUtils.getAllSuperclasses(compiler.getClass()));
+		for (Class<? extends Compiler> compilerClass : compilerClasses) {
+			List<String> defaultCompilers = getDefaultCompilers(context, compilerClass);
+			defaultCompilers.remove(compilerName); // remove if already present
+			defaultCompilers.add(0, compilerName); // add at first place
+		}
+	}
+
+	private static void addCompilerClasses(Set<Class<? extends Compiler>> allClasses, List<Class<?>> classesToAdd) {
+		//noinspection unchecked
+		classesToAdd.stream().filter(Compiler.class::isAssignableFrom).map(c -> (Class<? extends Compiler>) c).forEach(allClasses::add);
 	}
 
 	/**
@@ -265,20 +278,20 @@ public class Compilers {
 
 	@NotNull
 	private static List<String> getDefaultCompilers(@NotNull UserContext context, @NotNull Class<? extends Compiler> compilerClass, boolean doCleanup) {
-		if(context.getSession() == null) {
+		if (context.getSession() == null) {
 			// hotfix for NPE
 			return Collections.emptyList();
 		}
 
 		//noinspection unchecked
-		Map<String, List<String>> defaultCompilerNamesMap = (Map<String, List<String>>) context.getSession()
+		Map<Class<?>, List<String>> defaultCompilerNamesMap = (Map<Class<?>, List<String>>) context.getSession()
 				.getAttribute(DEFAULT_COMPILERS);
 		if (defaultCompilerNamesMap == null) {
 			defaultCompilerNamesMap = new HashMap<>();
 			context.getSession().setAttribute(DEFAULT_COMPILERS, defaultCompilerNamesMap);
 		}
 
-		List<String> defaultCompilerNamesOfClass = defaultCompilerNamesMap.computeIfAbsent(compilerClass.getName(), s -> new ArrayList<>());
+		List<String> defaultCompilerNamesOfClass = defaultCompilerNamesMap.computeIfAbsent(compilerClass, s -> new ArrayList<>());
 		if (defaultCompilerNamesOfClass.isEmpty()) {
 			getFallbackDefaultCompiler(context, compilerClass).ifPresent(defaultCompilerNamesOfClass::add);
 		}
