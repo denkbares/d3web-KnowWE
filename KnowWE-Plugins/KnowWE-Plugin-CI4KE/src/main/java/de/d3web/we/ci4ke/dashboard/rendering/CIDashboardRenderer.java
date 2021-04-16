@@ -23,8 +23,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TreeSet;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.d3web.testing.BuildResult;
@@ -184,7 +182,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 		boolean buildOutdated = isDashBoardModifiedAfterLatestBuild(dashboardSection);
 		if (buildOutdated) {
 			RenderResult warningString = new RenderResult(string);
-			warningString.append("Dashboard has been modified. Latest build is not up to date. (Consider to trigger new build: ");
+			warningString.append("Dashboard has been modified. Latest build is not up to date. (Consider triggering a new build: ");
 			Tool buildTool = CIDashboardToolProvider.getStartNewBuildTool(dashboardName,
 					dashboardSection.getTitle());
 			String id = "modified-warning_" + dashboardName;
