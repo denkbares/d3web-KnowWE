@@ -19,10 +19,12 @@
 package de.knowwe.ontology.ci.provider;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.denkbares.collections.ConcatenateCollection;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -63,8 +65,10 @@ public class SparqlTestObjectProviderUtils {
 	}
 
 	public static <T extends Type> Collection<Section<T>> getSectionsForNameGlobal(String sparqlName, Class<T> clazz) {
-		return new ConcatenateCollection<>(RegisteredNameType.getNamedMarkupSections(sparqlName, clazz),
-				RegisteredNameType.getNamedMarkupSections(sparqlName.split(SPLIT_SYMBOL)[0], clazz));
+		return Stream.of(RegisteredNameType.getNamedMarkupSections(sparqlName, clazz),
+				RegisteredNameType.getNamedMarkupSections(sparqlName.split(SPLIT_SYMBOL)[0], clazz))
+				.flatMap(Collection::stream)
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	@Nullable
