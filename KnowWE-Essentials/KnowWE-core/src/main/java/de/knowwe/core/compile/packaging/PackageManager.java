@@ -58,6 +58,7 @@ public class PackageManager {// implements EventListener {
 	public static final String PACKAGE_ATTRIBUTE_NAME = "package";
 	public static final String MASTER_ATTRIBUTE_NAME = "master";
 	public static final String COMPILE_ATTRIBUTE_NAME = "uses";
+	public static final String EXCLUDE_PACKAGE_ATTRIBUTE_NAME = "excludePackage";
 
 	public static final String DEFAULT_PACKAGE = "default";
 
@@ -95,6 +96,10 @@ public class PackageManager {// implements EventListener {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
 		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageRule(warnForNotCompiledPackage));
+	}
+
+	public static void addExcludePackageAnnotation(DefaultMarkup markup) {
+		markup.addAnnotation(PackageManager.EXCLUDE_PACKAGE_ATTRIBUTE_NAME, false);
 	}
 
 	private boolean isDisallowedPackageName(String packageName) {
