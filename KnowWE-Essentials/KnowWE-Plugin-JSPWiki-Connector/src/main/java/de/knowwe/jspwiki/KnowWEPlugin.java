@@ -659,19 +659,14 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 				}
 			}
 			if (ctx == null || !ctx.toString().contains(resource)) {
-				if (!resource.contains("://")) {
-					resource = script.getPath(resource);
-				}
-				TemplateManager.addResourceRequest(
-						wikiContext, script.name(), resource);
+				TemplateManager.addResourceRequest(wikiContext, script.name(), script.getPath(resource));
 			}
 		}
 
 		List<String> css = loader.getStylesheetIncludes();
 		for (String resource : css) {
 			if (ctx == null || !ctx.toString().contains(resource)) {
-				TemplateManager.addResourceRequest(wikiContext,
-						stylesheet.name(), stylesheet.getPath(resource));
+				TemplateManager.addResourceRequest(wikiContext, stylesheet.name(), stylesheet.getPath(resource));
 			}
 		}
 	}
