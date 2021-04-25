@@ -21,12 +21,14 @@
 package de.knowwe.ontology.sparql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -47,9 +49,10 @@ public class SparqlMarkupType extends DefaultMarkupType {
 
 	public static final String RAW_OUTPUT = "rawOutput";
 	public static final String NAVIGATION = "navigation";
-	public static final String ZEBRAMODE = "zebramode";
+	public static final String ZEBRA_MODE = "zebramode";
 	public static final String TREE = "tree";
 	public static final String SORTING = "sorting";
+	public static final String COLUMN_SORTING = "columnSorting";
 	public static final String FILTERING = "filtering";
 	public static final String BORDER = "border";
 	public static final String NAME = "name";
@@ -57,10 +60,10 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String RENDER_MODE = "renderMode";
 	public static final String TIMEOUT = "timeout";
 	public static final String LOG_LEVEL = "logLevel";
-	public static final String COLUMNSTYLE = "columnStyle";  // usage: @columnStyle: columnName style value
-	public static final String TABLESTYLE = "tableStyle";  // usage: @tableStyle: style value
-	public static final String ALLOW_JSPWIKIMARKUP = "allowJSPWikiMarkup";
-	public static final String COLUMNWIDTH = "columnWidth";
+	public static final String COLUMN_STYLE = "columnStyle";  // usage: @columnStyle: columnName style value
+	public static final String TABLE_STYLE = "tableStyle";  // usage: @tableStyle: style value
+	public static final String ALLOW_JSPWIKI_MARKUP = "allowJSPWikiMarkup";
+	public static final String COLUMN_WIDTH = "columnWidth";
 	private static final DefaultMarkup MARKUP;
 
 	public static final String MARKUP_NAME = "Sparql";
@@ -74,8 +77,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(NAVIGATION, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(RENDER_QUERY, false, "true", "false");
 		MARKUP.addAnnotationRenderer(RENDER_QUERY, NothingRenderer.getInstance());
-		MARKUP.addAnnotation(ZEBRAMODE, false, "true", "false");
-		MARKUP.addAnnotationRenderer(ZEBRAMODE, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(ZEBRA_MODE, false, "true", "false");
+		MARKUP.addAnnotationRenderer(ZEBRA_MODE, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(LOG_LEVEL, false, Color.WARNING.name(),
 				Color.ERROR.name());
 		MARKUP.addAnnotationRenderer(LOG_LEVEL, NothingRenderer.getInstance());
@@ -96,24 +99,32 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotation(NAME, false);
 		MARKUP.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
 		MARKUP.addAnnotationContentType(NAME, new RegisteredNameType(SparqlMarkupType.class));
-		MARKUP.addAnnotation(COLUMNSTYLE, false);
-		MARKUP.getAnnotation(COLUMNSTYLE)
+		MARKUP.addAnnotation(COLUMN_SORTING, false, Pattern.compile("\\H+\\h+(" + Arrays.stream(RenderOptions.ColumnSortingType
+				.values()).map(Enum::name).collect(Collectors.joining("|")) + ")"));
+		MARKUP.getAnnotation(COLUMN_SORTING)
+				.setDocumentation("By default, columns are sorted lexicographically according to their XSD type. Use this annotation to try and force a different sorting criteria.<p>" +
+						"Example for sorting a column 'Formatted_Date' containing a date and additional style and text by that date:<br>" +
+						"@" + COLUMN_SORTING + ": Formatted_Date date<br>" +
+						"Example for sorting a column 'Name' according to their XSD type (this is the default for all columns anyway):<br>"
+						+ "@" + COLUMN_SORTING + ": Name value");
+		MARKUP.addAnnotation(COLUMN_STYLE, false);
+		MARKUP.getAnnotation(COLUMN_STYLE)
 				.setDocumentation("Set styles for a specific column of the SPARQL table. Any HTML/CSS style should work.<p>" +
 						"Example for setting the width of column 'Name' to 100px:<br>" +
-						"@" + COLUMNSTYLE + ": Name width 100px<br>" +
+						"@" + COLUMN_STYLE + ": Name width 100px<br>" +
 						"Example for disabling filtering for columns 'Name':<br>"
-						+ "@" + COLUMNSTYLE + ": Name filter disable");
-		MARKUP.addAnnotationRenderer(COLUMNSTYLE, NothingRenderer.getInstance());
-		MARKUP.addAnnotation(TABLESTYLE, false);
-		MARKUP.addAnnotationRenderer(TABLESTYLE, NothingRenderer.getInstance());
-		MARKUP.getAnnotation(TABLESTYLE)
+						+ "@" + COLUMN_STYLE + ": Name filter disable");
+		MARKUP.addAnnotationRenderer(COLUMN_STYLE, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(TABLE_STYLE, false);
+		MARKUP.addAnnotationRenderer(TABLE_STYLE, NothingRenderer.getInstance());
+		MARKUP.getAnnotation(TABLE_STYLE)
 				.setDocumentation("Set styles for the SPARQL table. Any HTML/CSS style should work.<p>" +
 						"Example for setting the width of the table to 1000px:<br>" +
-						"@" + TABLESTYLE + ": width 1000px");
-		MARKUP.addAnnotation(ALLOW_JSPWIKIMARKUP, false);
-		MARKUP.addAnnotationRenderer(ALLOW_JSPWIKIMARKUP, NothingRenderer.getInstance());
-		MARKUP.addAnnotation(COLUMNWIDTH, false);
-		MARKUP.addAnnotationRenderer(COLUMNWIDTH, NothingRenderer.getInstance());
+						"@" + TABLE_STYLE + ": width 1000px");
+		MARKUP.addAnnotation(ALLOW_JSPWIKI_MARKUP, false);
+		MARKUP.addAnnotationRenderer(ALLOW_JSPWIKI_MARKUP, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(COLUMN_WIDTH, false);
+		MARKUP.addAnnotationRenderer(COLUMN_WIDTH, NothingRenderer.getInstance());
 		PackageManager.addPackageAnnotation(MARKUP);
 	}
 
@@ -145,16 +156,16 @@ public class SparqlMarkupType extends DefaultMarkupType {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<SparqlMarkupType> section) throws CompilerMessage {
-			checkStyle(section, TABLESTYLE);
-			checkStyle(section, COLUMNSTYLE);
-			checkStyle(section, COLUMNWIDTH);
+			checkStyle(section, TABLE_STYLE);
+			checkStyle(section, COLUMN_STYLE);
+			checkStyle(section, COLUMN_WIDTH);
 		}
 
 		private void checkStyle(Section<SparqlMarkupType> markupSection, String annotationName) throws CompilerMessage {
 			String[] annotationStrings = DefaultMarkupType.getAnnotations(markupSection, annotationName);
 
 			for (String annotationString : annotationStrings) {
-				if (Strings.equals(annotationName, COLUMNSTYLE)) {
+				if (Strings.equals(annotationName, COLUMN_STYLE)) {
 					annotationString = annotationString.replaceAll("\r", "");
 					String[] lines = annotationString.split("\n+");
 					if (lines.length != 1) {
@@ -165,7 +176,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 								annoStringArray[j] = cleanStyleString(annoStringArray[j]);
 							}
 							if (annoStringArray.length < 2) {
-								throw CompilerMessage.error("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
+								throw CompilerMessage.error("The style '" + COLUMN_STYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
 							}
 							handleStyle(markupSection, column, annoStringArray[0], annoStringArray[1]);
 						}
@@ -176,40 +187,40 @@ public class SparqlMarkupType extends DefaultMarkupType {
 							annoStringArray[i] = cleanStyleString(annoStringArray[i]);
 						}
 						if (annoStringArray.length < 3) {
-							throw CompilerMessage.error("The style '" + COLUMNSTYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
+							throw CompilerMessage.error("The style '" + COLUMN_STYLE + "' does not include all necessary information. It has to consist of <columnName> <styleName> <style>");
 						}
 						handleStyle(markupSection, annoStringArray[0], annoStringArray[1], annoStringArray[2]);
 					}
 				}
-				else if (Strings.equals(annotationName, TABLESTYLE)) {
+				else if (Strings.equals(annotationName, TABLE_STYLE)) {
 					String[] annoStringArray = annotationString.split(" ", 2);
 					if (annoStringArray.length < 2) {
-						throw CompilerMessage.error("The style '" + TABLESTYLE + "' does not include all necessary information. It has to consist of <styleName> <style>");
+						throw CompilerMessage.error("The style '" + TABLE_STYLE + "' does not include all necessary information. It has to consist of <styleName> <style>");
 					}
 					handleInvalidCssKey(markupSection, annoStringArray[0]);
 					addStyle(markupSection, annotationName, new RenderOptions.StyleOption("table", annoStringArray[0], annoStringArray[1]));
 				}
-				else if (Strings.equals(annotationName, COLUMNWIDTH)) {
+				else if (Strings.equals(annotationName, COLUMN_WIDTH)) {
 					String[] annoStringArray = annotationString.split(" ", 2);
 					if (annoStringArray.length < 2) {
-						throw CompilerMessage.error("The style '" + COLUMNWIDTH + "' does not include all necessary information. It has to consist of <columnName> <columnWidth>");
+						throw CompilerMessage.error("The style '" + COLUMN_WIDTH + "' does not include all necessary information. It has to consist of <columnName> <columnWidth>");
 					}
 					addStyle(markupSection, annotationName, new RenderOptions.StyleOption(annoStringArray[0], "max-width", annoStringArray[1]));
 				}
 			}
 
-			Set<String> invalidCssKeys  = markupSection.getObjectOrDefault(null, INVALID_CSS_KEYS, Collections.emptySet());
+			Set<String> invalidCssKeys = markupSection.getObjectOrDefault(null, INVALID_CSS_KEYS, Collections.emptySet());
 			if (!invalidCssKeys.isEmpty()) {
 				throw CompilerMessage.error(createUnknownCssExceptionMessage(invalidCssKeys));
 			}
 		}
 
 		private void handleStyle(Section<SparqlMarkupType> markupSection, String columnName, String styleName, String styleValue) {
-			if (styleName.equalsIgnoreCase("filter") && Strings.containsIgnoreCase(styleValue,"disable")) {
+			if (styleName.equalsIgnoreCase("filter") && Strings.containsIgnoreCase(styleValue, "disable")) {
 				addColumnWithDisabledFilter(markupSection, columnName);
 			}
 			else {
-				addStyle(markupSection, COLUMNSTYLE, new RenderOptions.StyleOption(columnName, styleName, styleValue));
+				addStyle(markupSection, COLUMN_STYLE, new RenderOptions.StyleOption(columnName, styleName, styleValue));
 				handleInvalidCssKey(markupSection, styleName);
 			}
 		}

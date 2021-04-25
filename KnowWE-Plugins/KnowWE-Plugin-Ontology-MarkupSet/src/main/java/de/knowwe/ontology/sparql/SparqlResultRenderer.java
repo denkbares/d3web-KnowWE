@@ -439,8 +439,8 @@ public class SparqlResultRenderer {
 	}
 
 	private Comparator<Value> createValueComparator(RenderOptions opts, String column, boolean ascending) {
-		// TODO
-		return ascending ? new ValueComparator() : new ValueComparator().reversed();
+		ValueComparator comparator = opts.getColumnSorting(column);
+		return ascending ? comparator : comparator.reversed();
 	}
 
 	@SuppressWarnings("RedundantIfStatement")
