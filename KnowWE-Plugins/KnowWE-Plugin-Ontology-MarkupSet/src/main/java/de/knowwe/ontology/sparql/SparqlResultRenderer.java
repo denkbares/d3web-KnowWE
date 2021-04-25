@@ -3,6 +3,7 @@ package de.knowwe.ontology.sparql;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -29,6 +30,8 @@ import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.utils.IndexedResultTableModel;
 import com.denkbares.semanticcore.utils.ResultTableHierarchy;
 import com.denkbares.semanticcore.utils.TableRow;
+import com.denkbares.semanticcore.utils.TableRowComparator;
+import com.denkbares.semanticcore.utils.ValueComparator;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
@@ -171,13 +174,13 @@ public class SparqlResultRenderer {
 			return;
 		}
 
-		Matcher lineMatcher = Pattern.compile("(?:at line )(\\d+)").matcher(message);
+		Matcher lineMatcher = Pattern.compile("at line (\\d+)").matcher(message);
 		int lineNumber = -1;
 		if (lineMatcher.find()) {
 			lineNumber = Integer.parseInt(lineMatcher.group(1)) - 1;
 		}
 
-		Matcher columnMatcher = Pattern.compile("(?:, column )(\\d+)").matcher(message);
+		Matcher columnMatcher = Pattern.compile(", column (\\d+)").matcher(message);
 		int columnNumber = -1;
 		if (columnMatcher.find()) {
 			columnNumber = Integer.parseInt(columnMatcher.group(1)) - 1;
@@ -339,8 +342,11 @@ public class SparqlResultRenderer {
 		Iterator<TableRow> iterator;
 		if (isNavigation) {
 			if (opts.isSorting()) {
-				List<Pair<String, Boolean>> multiColumnSorting = PaginationRenderer.getMultiColumnSorting(section, user);
-				table = (IndexedResultTableModel) table.sort(multiColumnSorting);
+				List<Pair<String, Comparator<Value>>> columnComparators =
+						PaginationRenderer.getMultiColumnSorting(section, user).stream()
+								.map(p -> new Pair<>(p.getA(), createValueComparator(opts, p.getA(), p.getB())))
+								.collect(Collectors.toList());
+				table = (IndexedResultTableModel) table.sort(new TableRowComparator(columnComparators));
 			}
 			if (opts.isFiltering()) {
 				table = (IndexedResultTableModel) table.filter(PaginationRenderer.getFilter(section, user));
@@ -432,6 +438,12 @@ public class SparqlResultRenderer {
 		return new SparqlRenderResult(renderResult.toStringRaw());
 	}
 
+	private Comparator<Value> createValueComparator(RenderOptions opts, String column, boolean ascending) {
+		// TODO
+		return ascending ? new ValueComparator() : new ValueComparator().reversed();
+	}
+
+	@SuppressWarnings("RedundantIfStatement")
 	private boolean isSkipped(boolean isTree, int column, String var) {
 		boolean skip = false;
 		// ignore first two columns if we are in tree mode
