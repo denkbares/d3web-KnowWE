@@ -106,23 +106,37 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 
 		renderOpts.setRdf2GoCore(Rdf2GoUtils.getRdf2GoCore(context, markupSection));
 		renderOpts.setRawOutput(checkAnnotation(markupSection, SparqlMarkupType.RAW_OUTPUT));
+		setColumnSorting(markupSection, renderOpts);
 		renderOpts.setSorting(checkAnnotation(markupSection, SparqlMarkupType.SORTING, true));
 		renderOpts.setFiltering(checkAnnotation(markupSection, SparqlMarkupType.FILTERING, true));
-		renderOpts.setZebraMode(checkAnnotation(markupSection, SparqlMarkupType.ZEBRAMODE, true));
+		renderOpts.setZebraMode(checkAnnotation(markupSection, SparqlMarkupType.ZEBRA_MODE, true));
 		renderOpts.setTree(checkAnnotation(markupSection, SparqlMarkupType.TREE, false));
 		renderOpts.setBorder(checkAnnotation(markupSection, SparqlMarkupType.BORDER, true));
 		renderOpts.setNavigation(checkAnnotation(markupSection, SparqlMarkupType.NAVIGATION, true));
 		renderOpts.setColor(checkColor(markupSection, SparqlMarkupType.LOG_LEVEL, Color.NONE));
-		renderOpts.setColumnStyles(getStyles(markupSection, SparqlMarkupType.COLUMNSTYLE));
+		renderOpts.setColumnStyles(getStyles(markupSection, SparqlMarkupType.COLUMN_STYLE));
 		getColumnsWithDisabledFiltering(markupSection).forEach(renderOpts::disableFilterForColumn);
-		renderOpts.setColumnStyles(getStyles(markupSection, SparqlMarkupType.COLUMNSTYLE));
-		renderOpts.setTableStyles(getStyles(markupSection, SparqlMarkupType.TABLESTYLE));
-		renderOpts.setAllowJSPWikiMarkup(checkAnnotation(markupSection, SparqlMarkupType.ALLOW_JSPWIKIMARKUP, true));
-		renderOpts.setColumnWidth(getStyles(markupSection, SparqlMarkupType.COLUMNWIDTH));
+		renderOpts.setColumnStyles(getStyles(markupSection, SparqlMarkupType.COLUMN_STYLE));
+		renderOpts.setTableStyles(getStyles(markupSection, SparqlMarkupType.TABLE_STYLE));
+		renderOpts.setAllowJSPWikiMarkup(checkAnnotation(markupSection, SparqlMarkupType.ALLOW_JSPWIKI_MARKUP, true));
+		renderOpts.setColumnWidth(getStyles(markupSection, SparqlMarkupType.COLUMN_WIDTH));
 		renderOpts.setTimeout(getTimeout(markupSection));
 		renderOpts.setRenderMode(getRenderMode(markupSection));
 
 		return renderOpts;
+	}
+
+	private void setColumnSorting(Section<DefaultMarkupType> markupSection, RenderOptions renderOpts) {
+		for (String annotation : DefaultMarkupType.getAnnotations(markupSection, SparqlMarkupType.COLUMN_SORTING)) {
+			String[] split = annotation.split("\\h+");
+			if (split.length != 2) continue;
+			try {
+				renderOpts.setColumnSorting(split[0], RenderOptions.ColumnSortingType.valueOf(split[1]));
+			}
+			catch (IllegalArgumentException e) {
+				// nothing to do, error message should already be shown due do invalid annotation format
+			}
+		}
 	}
 
 	private Set<String> getColumnsWithDisabledFiltering(Section<DefaultMarkupType> markupSection) {

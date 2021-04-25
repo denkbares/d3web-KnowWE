@@ -2,6 +2,7 @@ package de.knowwe.rdf2go.sparql.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +11,9 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.semanticcore.utils.DefaultValueComparator;
+import com.denkbares.semanticcore.utils.ValueAsDateComparator;
+import com.denkbares.semanticcore.utils.ValueComparator;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.util.Color;
 
@@ -31,12 +35,34 @@ public class RenderOptions {
 	private int navigationLimit = 50;
 	private long timeout = 10000;
 	private final Set<String> columnsWithDisabledFilter = new HashSet<>();
+	private final Map<String, ColumnSortingType> columnComparators = new HashMap<>();
 	private Color color = Color.NONE;
 	private List<StyleOption> columnStyles = new ArrayList<>();
 	private List<StyleOption> tableStyles = new ArrayList<>();
 	private List<StyleOption> columnWidths = new ArrayList<>();
 	private RenderMode renderMode = RenderMode.HTML;
 	private Map<String, String> sortingOrder = new LinkedHashMap<>();
+
+	public enum ColumnSortingType {
+		/**
+		 * Try to sort column as a date
+		 */
+		date(new ValueAsDateComparator()),
+		/**
+		 * Sort column as a normal value (default)
+		 */
+		value(new DefaultValueComparator());
+
+		private final ValueComparator valueComparator;
+
+		ColumnSortingType(ValueComparator valueComparator) {
+			this.valueComparator = valueComparator;
+		}
+
+		public ValueComparator getComparator() {
+			return this.valueComparator;
+		}
+	}
 
 	public RenderOptions(String id) {
 		this.id = id;
@@ -180,6 +206,14 @@ public class RenderOptions {
 
 	public void setColor(Color color) {
 		this.color = color;
+	}
+
+	public void setColumnSorting(String column, ColumnSortingType comparatorType) {
+		columnComparators.put(column, comparatorType);
+	}
+
+	public ValueComparator getColumnSorting(String column) {
+		return columnComparators.getOrDefault(column, ColumnSortingType.value).getComparator();
 	}
 
 	public void setColumnStyles(@NotNull List<StyleOption> styles) {

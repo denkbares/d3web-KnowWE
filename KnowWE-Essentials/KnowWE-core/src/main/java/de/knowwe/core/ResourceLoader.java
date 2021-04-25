@@ -63,11 +63,16 @@ public class ResourceLoader {
 		/**
 		 * Returns the path where the specified resource is stored on the server.
 		 *
-		 * @param filename the file to get the path for
+		 * @param resource the file to get the path for
 		 * @return the path pointing to the specified file (including the file name)
 		 */
-		public String getPath(String filename) {
-			return defaultPath + filename;
+		public String getPath(String resource) {
+			if (resource.contains("://")) {
+				return resource;
+			}
+			else {
+				return defaultPath + resource;
+			}
 		}
 
 		/**
@@ -190,13 +195,7 @@ public class ResourceLoader {
 	 * @param file The resource file that should be added
 	 */
 	public void add(String file) {
-		Type type = Type.detect(file);
-		List<String> list = this.getList(type);
-
-		if (!list.contains(file)) {
-			checkFileType(file, type);
-			list.add(file);
-		}
+		add(file, Type.detect(file));
 	}
 
 	/**
@@ -245,10 +244,7 @@ public class ResourceLoader {
 	 * @param file The resource file that should be removed.
 	 */
 	public void remove(String file, Type type) {
-		List<String> tmp = this.getList(type);
-		if (tmp.contains(file)) {
-			tmp.remove(file);
-		}
+		this.getList(type).remove(file);
 	}
 
 	/**
@@ -270,13 +266,9 @@ public class ResourceLoader {
 	}
 
 	private List<String> getList(Type type) {
-		switch (type) {
-			case script:
-				return this.scripts;
-			case stylesheet:
-				return this.stylesheets;
-			default:
-				throw new IllegalStateException();
-		}
+		return switch (type) {
+			case script -> this.scripts;
+			case stylesheet -> this.stylesheets;
+		};
 	}
 }
