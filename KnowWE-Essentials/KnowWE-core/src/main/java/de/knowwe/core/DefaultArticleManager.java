@@ -92,6 +92,7 @@ public class DefaultArticleManager implements ArticleManager {
 	 */
 	@Override
 	public Article getArticle(String title) {
+		if (title == null) return null;
 		return articleMap.get(title.toLowerCase());
 	}
 
