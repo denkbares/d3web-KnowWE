@@ -101,6 +101,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotationContentType(NAME, new RegisteredNameType(SparqlMarkupType.class));
 		MARKUP.addAnnotation(COLUMN_SORTING, false, Pattern.compile("\\H+\\h+(" + Arrays.stream(RenderOptions.ColumnSortingType
 				.values()).map(Enum::name).collect(Collectors.joining("|")) + ")"));
+		MARKUP.addAnnotationRenderer(COLUMN_SORTING, NothingRenderer.getInstance());
 		MARKUP.getAnnotation(COLUMN_SORTING)
 				.setDocumentation("By default, columns are sorted lexicographically according to their XSD type. Use this annotation to try and force a different sorting criteria.<p>" +
 						"Example for sorting a column 'Formatted_Date' containing a date and additional style and text by that date:<br>" +
