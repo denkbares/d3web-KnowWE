@@ -41,6 +41,7 @@ import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -55,7 +56,7 @@ public class SparqlResultRenderer {
 	private static final String RESULT_TABLE = "resultTable";
 	private static final String RESULT_TABLE_TREE = "resultTableTree";
 	private static final String USED_IDS = "usedIDs";
-	private static final Pattern ARTICLE_LINK_PATTERN = Pattern.compile("\\[\\h*(?:([^|]+)\\h*\\|\\h*)?(\\w+?://[^]|]+)\\h*]");
+	private static final Pattern ARTICLE_LINK_PATTERN = Pattern.compile("\\[\\h*(?:([^|]+)\\h*\\|\\h*)?((\\w+?://)?[^]|]+)\\h*]");
 
 	private static SparqlResultRenderer instance = null;
 
@@ -539,7 +540,7 @@ public class SparqlResultRenderer {
 		String erg = renderNode(node, var, opts.isRawOutput(), user, opts.getRdf2GoCore(), opts.getRenderMode());
 
 		if (opts.isAllowJSPWikiMarkup()) {
-			erg = renderExternalJSPWikiLinks(erg);
+			erg = renderExternalJSPWikiLinks(user, erg);
 			result.append(erg);
 		}
 		else {
@@ -550,20 +551,28 @@ public class SparqlResultRenderer {
 	/**
 	 * JSPWiki seems to ignore links embedded in tables, we parse them manually
 	 */
-	private String renderExternalJSPWikiLinks(String erg) {
+	private String renderExternalJSPWikiLinks(UserContext user, String erg) {
 		StringBuilder links = new StringBuilder();
 		final Matcher matcher = ARTICLE_LINK_PATTERN.matcher(erg);
 		int index = 0;
 		while (matcher.find()) {
 			links.append(erg, index, matcher.start());
 
-			final String linkLabel = Strings.trim(matcher.group(1));
-			final String linkUrl = Strings.trim(matcher.group(2));
+			String linkUrl = Strings.trim(matcher.group(2));
+			String linkLabel = matcher.group(1) == null ? linkUrl : Strings.trim(matcher.group(1));
+			boolean pageExists = user.getArticleManager() != null
+					&& user.getArticleManager().getArticle(matcher.group(2)) != null;
+			boolean internal = matcher.group(3) == null;
+			if (internal && pageExists) {
+				linkUrl = KnowWEUtils.getURLLink(linkUrl);
+			} else {
+				linkUrl = KnowWEUtils.getURLLink(linkUrl).replaceFirst("^Wiki.jsp", "Edit.jsp");
+			}
 
-			links.append("<a class='external' href='")
+			links.append("<a ").append(internal ? (pageExists ? "" : "class='createpage'") : "class='external' ").append("href='")
 					.append(linkUrl)
 					.append("'>")
-					.append(linkLabel == null ? linkUrl : linkLabel)
+					.append(linkLabel)
 					.append("</a>");
 
 			index = matcher.end();
