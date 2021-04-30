@@ -88,11 +88,10 @@ public class TableUtils {
 	 */
 	public static int getColumn(Section<?> columnSection) {
 		Section<?> tableCell = getTableCell(columnSection);
-		Integer index = (Integer) tableCell.getObject(COLUMN_INDEX_KEY);
+		Integer index = tableCell.getObject(COLUMN_INDEX_KEY);
 		if (index == null) {
 			Section<?> tableLine = getTableLine(tableCell);
 			List<Section<TableCell>> tableCells = Sections.successors(tableLine, TableCell.class);
-			//noinspection SuspiciousMethodCalls
 			index = tableCells.indexOf(tableCell);
 			tableCell.storeObject(COLUMN_INDEX_KEY, index);
 		}
@@ -135,8 +134,7 @@ public class TableUtils {
 		Section<TableLine> tableLine = getTableLine(rowSection);
 		Section<Table> table = Sections.ancestor(tableLine, Table.class);
 		if (table == null) return -1;
-		//noinspection unchecked
-		Map<String, Integer> rowNumbering = (Map<String, Integer>) table.getObject(ROW_NUMBERING_KEY);
+		Map<String, Integer> rowNumbering = table.getObject(ROW_NUMBERING_KEY);
 		if (rowNumbering == null || !rowNumbering.containsKey(tableLine.getID())) {
 			List<Section<TableLine>> lines = Sections.children(table, TableLine.class);
 			if (lines.size() > 10) {
@@ -222,8 +220,7 @@ public class TableUtils {
 	 */
 	public static <T extends Type> Section<T> getColumnHeader(Section<?> columnSection, Class<T> headerType) {
 		Section<?> tableCell = getTableCell(columnSection);
-		@SuppressWarnings("unchecked")
-		Sections<TableCell> headerCell = (Sections<TableCell>) tableCell.getObject(COLUMN_HEADER_KEY);
+		Sections<TableCell> headerCell = tableCell.getObject(COLUMN_HEADER_KEY);
 		if (headerCell == null) {
 			headerCell = $(columnSection)
 					.ancestor(Table.class)
