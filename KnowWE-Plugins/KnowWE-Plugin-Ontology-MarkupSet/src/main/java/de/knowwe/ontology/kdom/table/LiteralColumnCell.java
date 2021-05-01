@@ -27,6 +27,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.strings.Text;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.LocaleType;
@@ -35,33 +36,56 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SectionFinderConstraint;
+import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.table.TableCellContent;
 import de.knowwe.kdom.table.TableUtils;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.provider.NodeProvider;
+import de.knowwe.ontology.turtle.TaggedText;
 import de.knowwe.ontology.turtle.TurtleLiteralType;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
- * High-priority node provider, that matches the whole cell content, potentially quoted, but only for cells in
- * columns with a language-tagged header. It over-rules the other cell types, and always returns tagged string
- * literals.
+ * High-priority node provider, for columns with known string literal cells. The language tag can either be given in
+ * the column header or as the usual tagged text, e.g. "text"@lang
  */
-public class UnquotedStringLiteral extends AbstractType implements NodeProvider<TurtleLiteralType>, SectionFinderConstraint {
+public class LiteralColumnCell extends AbstractType implements NodeProvider<TurtleLiteralType>, SectionFinderConstraint {
 
 	private static final Set<String> LITERAL_PROPERTIES = Set.of("rdfs:label", "skos:prefLabel", "skos:altLabel", "skos:hiddenLabel");
 
-	public UnquotedStringLiteral() {
-		setRenderer((section, user, result) -> result.appendJSPWikiMarkup(section.getText()));
+	public LiteralColumnCell() {
+		setRenderer((section, user, result) -> {
+			Section<TaggedText> taggedText = $(section).successor(TaggedText.class).getFirst();
+			if (taggedText == null) {
+				StyleRenderer.PROMPT.render(section, user, result);
+			} else {
+				result.append(taggedText, user);
+			}
+		});
+		TaggedText type = new TaggedText();
+		type.setSectionFinder(AllTextFinderTrimmed.getInstance());
+		addChildType(type);
 		setSectionFinder(new ConstraintSectionFinder(AllTextFinderTrimmed.getInstance(), this));
 	}
 
 	@Override
 	public Value getNode(OntologyCompiler core, Section<? extends TurtleLiteralType> section) {
 		Section<LocaleType> locale = TableUtils.getColumnHeader(section, LocaleType.class);
-		Locale lang = locale == null ? Locale.ROOT : locale.get().getLocale(locale);
-		String text = Strings.unquote(section.getText());
+		Locale lang;
+		String text;
+		if (locale == null) {
+			Text taggedText = $(section).successor(TaggedText.class)
+					.map(s -> s.get().getTaggedText(s))
+					.findFirst()
+					.orElse(new Text(Strings.unquote(section.getText()), Locale.ROOT));
+			lang = taggedText.getLanguage();
+			text = taggedText.getString();
+		}
+		else {
+			lang = locale.get().getLocale(locale);
+			text = Strings.unquote(section.getText());
+		}
 		// unescape jspwiki text (forced returns and escaped characters) and create the literal
 		text = text.replace("\\\\", "\n").replaceAll("~(.)", "$1");
 		return core.getRdf2GoCore().createLanguageTaggedLiteral(text, lang);

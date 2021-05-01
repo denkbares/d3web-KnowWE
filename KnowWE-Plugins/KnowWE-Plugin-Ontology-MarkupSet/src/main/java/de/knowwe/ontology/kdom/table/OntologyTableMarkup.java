@@ -157,7 +157,7 @@ public class OntologyTableMarkup extends DefaultMarkupType {
 				}
 			});
 			// add a type that consumes the cell content as a string literal, but only if the header is language-tagged
-			addChildType(4, new UnquotedStringLiteral());
+			addChildType(4, new LiteralColumnCell());
 		}
 
 		@Override

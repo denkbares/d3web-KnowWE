@@ -21,7 +21,7 @@ import de.knowwe.kdom.renderer.TooltipRenderer;
  */
 public class LocaleType extends AbstractType {
 
-	private static final String LOCALE_REGEX = "\\w{2,}(?:[.\\-_]\\w{2,})?";
+	public static final String LOCALE_REGEX = "\\w{2,}(?:[.\\-_]\\w{2,})?";
 
 	public LocaleType() {
 		this("");
@@ -41,8 +41,10 @@ public class LocaleType extends AbstractType {
 	}
 
 	public Locale getLocale(Section<LocaleType> s) {
-		String text = s.getText();
+		return parseLocale(s.getText());
+	}
 
+	public static Locale parseLocale(String text) {
 		// parse with common locale specification
 		text = text.replace('.', '_').replace('-', '_');
 		Locale locale = Locales.parseLocale(text);
