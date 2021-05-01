@@ -46,6 +46,7 @@ public class RenderResult {
 	private final String[] maskedHtml;
 	private final StringBuilder builder = new StringBuilder();
 
+	@SuppressWarnings("rawtypes")
 	private List<Pair<SectionFilter, Renderer>> customRenderers = Collections.emptyList();
 
 	public RenderResult(UserContext context) {
@@ -70,6 +71,7 @@ public class RenderResult {
 		this.customRenderers = parent.customRenderers;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void addCustomRenderer(SectionFilter filter, Renderer renderer) {
 		List<Pair<SectionFilter, Renderer>> newList = new ArrayList<>(customRenderers.size() + 1);
 		newList.add(0, new Pair<>(filter, renderer));
@@ -171,7 +173,9 @@ public class RenderResult {
 	public RenderResult append(Section<?> section, UserContext user) {
 		if (section != null) {
 			Renderer renderer = DelegateRenderer.getRenderer(section, user);
+			//noinspection rawtypes
 			for (Pair<SectionFilter, Renderer> pair : customRenderers) {
+				//noinspection unchecked
 				if (pair.getA().accept(section)) {
 					renderer = pair.getB();
 					break;
@@ -206,16 +210,15 @@ public class RenderResult {
 
 	/**
 	 * Appends the specified string encoded as html entities, using {@link Strings#encodeHtml(String)}.
-	 *
-	 * @param text the text to be appended
-	 * @return a reference to this object.
-	 * @created 20.08.2013
 	 */
 	public RenderResult appendEntityEncoded(String text) {
 		builder.append(Strings.encodeHtml(text));
 		return this;
 	}
 
+	/**
+	 * Append JSPWiki markup and mask it, so it is NOT rendered as JSPWiki markup
+	 */
 	public RenderResult appendJSPWikiMarkup(RenderResult result) {
 		StringBuilder tempBuilder = new StringBuilder(result.builder);
 		KnowWEUtils.maskJSPWikiMarkup(tempBuilder);
@@ -223,6 +226,9 @@ public class RenderResult {
 		return this;
 	}
 
+	/**
+	 * Append JSPWiki markup and mask it, so it is NOT rendered as JSPWiki markup
+	 */
 	public RenderResult appendJSPWikiMarkup(String markup) {
 		builder.append(KnowWEUtils.maskJSPWikiMarkup(markup));
 		return this;
