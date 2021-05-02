@@ -16,6 +16,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -71,7 +72,7 @@ public class OntologyDownloadAction extends AbstractAction {
 		String mimeType = syntax.getDefaultMIMEType() + "; charset=UTF-8";
 		context.setContentType(mimeType);
 		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-
+		Stopwatch stopwatch = new Stopwatch();
 		try (OutputStream outputStream = context.getOutputStream()) {
 			if (syntax == RDFFormat.TURTLE) {
 				// pretty formatted turtle doesn't always work, we try first and do fallback in case it does not work
@@ -99,5 +100,6 @@ public class OntologyDownloadAction extends AbstractAction {
 				rdf2GoCore.writeModel(outputStream, syntax);
 			}
 		}
+		stopwatch.log("Exported " + filename);
 	}
 }
