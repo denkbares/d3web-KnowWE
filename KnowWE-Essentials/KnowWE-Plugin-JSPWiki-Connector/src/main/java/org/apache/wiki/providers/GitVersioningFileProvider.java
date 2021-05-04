@@ -233,7 +233,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			sw.start();
 			log.info("binary gc start");
 			ProcessBuilder pb = new ProcessBuilder();
-			pb.inheritIO().command("git", "gc").directory(pageDir);
+			pb.inheritIO().command("git", "gc", "--prune=now").directory(pageDir);
 			Process git_gc = pb.start();
 			git_gc.waitFor(2, TimeUnit.MINUTES);
 			sw.stop();
@@ -389,7 +389,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			stopwatch.start();
 		}
 		try {
-			git.gc().setAggressive(aggressive).call();
+			git.gc()
+					.setAggressive(aggressive)
+					.setExpire(null)
+					.call();
+
 		}
 		catch (final GitAPIException e) {
 			log.warn("Git gc not successful: " + e.getMessage());

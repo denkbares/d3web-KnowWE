@@ -118,7 +118,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		return mangleName(page) + DIR_EXTENSION;
 	}
 
-	private File findAttachmentDir(Attachment att) throws ProviderException {
+	public File findAttachmentDir(Attachment att) throws ProviderException {
 		return findPageDir(att.getParentName());
 	}
 
