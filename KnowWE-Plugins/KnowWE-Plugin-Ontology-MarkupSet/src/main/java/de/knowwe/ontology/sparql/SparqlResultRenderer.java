@@ -565,7 +565,7 @@ public class SparqlResultRenderer {
 			boolean internal = matcher.group(3) == null;
 			if (internal && pageExists) {
 				linkUrl = KnowWEUtils.getURLLink(linkUrl);
-			} else {
+			} else if (internal) {
 				linkUrl = KnowWEUtils.getURLLink(linkUrl).replaceFirst("^Wiki.jsp", "Edit.jsp");
 			}
 
