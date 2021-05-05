@@ -51,6 +51,7 @@ import de.knowwe.core.report.Messages;
 public class CompilerManager {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
+	private static final String KNOWWE_COMPILER_THREADS_COUNT = "knowwe.compiler.threads.count";
 	private volatile int compilationCount = 0;
 
 	private final PriorityList<Double, Compiler> compilers;
@@ -89,9 +90,7 @@ public class CompilerManager {
 	}
 
 	static ExecutorService createExecutorService() {
-		// we need at least to threads here, because one thread is used to start compilation
-		// and the rest for compiling the individual compilers
-		int threadCount = Runtime.getRuntime().availableProcessors() + 1;
+		int threadCount = getCompilerThreadCount();
 		ExecutorService pool = Executors.newFixedThreadPool(threadCount, new ThreadFactory() {
 			private final AtomicLong number = new AtomicLong(1);
 			@Override
@@ -104,6 +103,19 @@ public class CompilerManager {
 		});
 		Log.fine("Created multi core thread pool of size " + threadCount);
 		return pool;
+	}
+
+	private static int getCompilerThreadCount() {
+		// we need at least two threads here, because one thread is used to start compilation
+		// and the rest for compiling the individual compilers
+		final int defaultThreadCount = Runtime.getRuntime().availableProcessors() + 1;
+		final String threadCount = System.getProperty(KNOWWE_COMPILER_THREADS_COUNT, String.valueOf(defaultThreadCount));
+		try {
+			return Integer.parseInt(threadCount);
+		}
+		catch (NumberFormatException e) {
+			return defaultThreadCount;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
