@@ -37,12 +37,19 @@
 
 /* +++ 010 LAYOUT of main ID blocks +++ */
 .header, .footer {
-	background-color: #162746;
+	background-color: white;
+	color: black
+}
+
+a, a.logo, .pagename a, .icon-search, .icon-user {
+	color: #173a64;
 }
 
 .footer {
 	z-index: 750;
 	padding: 8px;
+	background-color: rgba(195, 195, 195, 0.2);
+	box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.075);
 }
 
 b.roundedCorners {
@@ -377,7 +384,7 @@ img.attlink {
 
 a.logo {
 	display: block;
-	width: 130px;
+	width: 160px;
 	height: 47px;
 	/*overflow: hidden;*/
 	white-space: nowrap;
@@ -389,14 +396,14 @@ a.logo {
 	right: auto;
 	letter-spacing: 0;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Liberation Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-	font-size: 28px;
-	padding-left: 0;
+	font-size: 40px;
+	padding: 0;
 	font-weight: normal;
 }
 
 a.logo:hover {
 	text-decoration: none;
-	color: inherit;
+	color: #173a64;
 }
 
 /*.applicationlogo a:hover {
@@ -1177,8 +1184,8 @@ th.changenote, td.changenote {
 }
 
 .header > .navigation .nav > li > a > .badge {
-	background: rgba(255, 255, 255, 0.4);
-	color: #fff;
+	background: rgba(0, 0, 0, 0.4);
+	color: white;
 }
 
 #header-spacer {
@@ -2527,6 +2534,7 @@ li.findpages .btn {
 .content:after {
 	max-width: 300px;
 	z-index: 500;
+	background-color: #f8f9fb;
 }
 
 .page {
