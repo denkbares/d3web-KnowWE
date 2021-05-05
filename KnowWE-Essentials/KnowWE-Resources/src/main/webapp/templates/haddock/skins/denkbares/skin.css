@@ -1004,7 +1004,8 @@ a.tool:hover {
 
 /* +++ 460 Header +++ */
 .breadcrumb {
-	color: white;
+	margin-top: 5px;
+	color: black;
 }
 
 .breadcrumb a, .breadcrumb .divider {
