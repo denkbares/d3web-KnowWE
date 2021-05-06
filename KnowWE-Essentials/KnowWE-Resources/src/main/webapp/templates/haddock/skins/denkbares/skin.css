@@ -45,6 +45,19 @@ a, a.logo, .pagename a, .icon-search, .icon-user {
 	color: #173a64;
 }
 
+a.logo.pull-left {
+	/* Hides the text. */
+	text-indent: 150%;
+	white-space: nowrap;
+	overflow: hidden;
+	/* Shows image */
+	margin-left: -3px;
+	margin-top: 7px;
+	background: url(../../../../KnowWEExtension/images/knowwe_logo.png) no-repeat;
+	background-size: contain;
+	height: 50px;
+}
+
 .footer {
 	z-index: 750;
 	padding: 8px;
