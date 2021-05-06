@@ -65,6 +65,18 @@ a.logo.pull-left {
 	box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.075);
 }
 
+.haddock h2, .haddock .h2 {
+	font-size: 32px
+}
+
+.haddock h3, .haddock .h3 {
+	font-size: 26px;
+}
+
+.haddock h4, .haddock .h4 {
+	font-size: 20px;
+}
+
 b.roundedCorners {
 }
 
