@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -71,10 +71,10 @@ public class DummyPageProvider {
 
 	private final TreeMap<String, String> articles = new TreeMap<>();
 
-	private final HashMap<String, WikiAttachment> allAttachments = new HashMap<>();
-	private final HashMap<String, WikiAttachment> rootAttachments = new HashMap<>();
+	private final Map<String, WikiAttachment> allAttachments = new ConcurrentHashMap<>();
+	private final Map<String, WikiAttachment> rootAttachments = new ConcurrentHashMap<>();
 
-	private final HashMap<String, Integer> attachmentVersionCache = new HashMap<>();
+	private final Map<String, Integer> attachmentVersionCache = new ConcurrentHashMap<>();
 
 	private final Date startupDate;
 
@@ -253,7 +253,7 @@ public class DummyPageProvider {
 	}
 
 	public Map<String, String> getAllArticles() {
-		return Collections.unmodifiableMap(articles);
+		return Map.copyOf(articles);
 	}
 
 	public String getArticle(String title) {
@@ -261,11 +261,11 @@ public class DummyPageProvider {
 	}
 
 	public Map<String, WikiAttachment> getAllAttachments() {
-		return Collections.unmodifiableMap(allAttachments);
+		return Map.copyOf(allAttachments);
 	}
 
 	public Map<String, WikiAttachment> getRootAttachments() {
-		return Collections.unmodifiableMap(rootAttachments);
+		return Map.copyOf(rootAttachments);
 	}
 
 	public WikiAttachment getAttachment(String path) {
