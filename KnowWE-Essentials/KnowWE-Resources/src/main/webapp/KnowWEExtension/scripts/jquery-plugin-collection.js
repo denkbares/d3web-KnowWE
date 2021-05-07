@@ -73,7 +73,7 @@
   };
 
   jq$.fn.copyToClipboard = function(text) {
-    const $temp = jq$("<input>");
+    const $temp = jq$("<textarea>");
     // in case we have a model dialog, we append to that one, otherwise the select() will not work
     let $parent = jq$(".ui-dialog");
     if (!$parent.exists()) {
