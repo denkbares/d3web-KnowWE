@@ -75,7 +75,7 @@ public class AsynchronousActionTool extends DefaultTool {
 				"jq$.ajax({url : 'action/" + action.getSimpleName() + "', " +
 				"cache : false, " +
 				"data : " + createData(section, params) + "," +
-				"success : function() {" + successFunction + "}," +
+				"success : function(response) {" + successFunction + "}," +
 				"error: function(xhr) {KNOWWE.notification.error_jqXHR(xhr);KNOWWE.editCommons.hideAjaxLoader();} })";
 	}
 
