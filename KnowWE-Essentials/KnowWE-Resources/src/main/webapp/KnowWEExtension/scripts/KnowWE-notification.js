@@ -243,11 +243,13 @@ KNOWWE.notification = function () {
 			// quit: other notifications? show them!
 			if (index > 0) {
 				KNOWWE.notification._select(index - 1);
-			} else if (index === 0 && messages.length > 1) {
+			}
+			else if (index === 0 && messages.length > 0) {
 				KNOWWE.notification._select(index);
 				// quit: no other notifications? hide notification
 				// bar!
-			} else {
+			}
+			else {
 				jq$('#KnowWENotificationDom').hide();
 			}
 
