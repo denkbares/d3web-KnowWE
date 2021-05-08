@@ -34,6 +34,8 @@ public class CopyToClipboardTool extends DefaultTool {
 
 	public CopyToClipboardTool(String title, String description, String text) {
 		super(Icon.COPY_TO_CLIPBOARD, title, description,
-				"jq$(this).copyToClipboard('" + Strings.encodeHtml(text) + "');", Tool.CATEGORY_EDIT);
+				"jq$(this).copyToClipboard('" + Strings.encodeHtml(text) + "');"
+				+ "KNOWWE.notification.success(null, 'Copied term to clipboard', 'term.copy', 3000);",
+				Tool.CATEGORY_EDIT);
 	}
 }
