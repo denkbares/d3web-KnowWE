@@ -11,7 +11,7 @@ Interview.downloadProtocol = function(saveAs) {
   } else {
     new Ajax.Request(url, {
       onSuccess: function() {
-        KNOWWE.notification.success(null, Translate.get("use_button_save_successful"), "dialog.save.success", false);
+        KNOWWE.notification.success(null, Translate.get("use_button_save_successful"), "dialog.save.success");
         setTimeout(function() {
           KNOWWE.notification.removeNotification("dialog.save.success");
         }, 3000);

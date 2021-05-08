@@ -13,6 +13,7 @@ KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.notification = function () {
 
 	const messages = [];
+	const repeatedMessageCounter = {};
 	let idGenerator = 0;
 
 	return {
@@ -23,16 +24,40 @@ KNOWWE.notification = function () {
 			KNOWWE.notification.error(title, _KA.xhrExtractMessage(jqXHR));
 		},
 
-		error: function (title, details, id, fromServer) {
-			KNOWWE.notification._add('error', title, details, id, fromServer);
+		/**
+		 * Show an error message (red)
+		 *
+		 * @param title bold text at start of the message
+		 * @param details actual message text (normal font)
+		 * @param id id of the message (allows to remove message)
+		 * @param autoHideMillis optional number > 0 in milli seconds, after which the message will hide automatically
+		 */
+		error: function (title, details, id, autoHideMillis) {
+			KNOWWE.notification._add('error', title, details, id, autoHideMillis);
 		},
 
-		warn: function (title, details, id, fromServer) {
-			KNOWWE.notification._add('warn', title, details, id, fromServer);
+		/**
+		 * Show a warning message (yellow)
+		 *
+		 * @param title bold text at start of the message
+		 * @param details actual message text (normal font)
+		 * @param id id of the message (allows to remove message)
+		 * @param autoHideMillis optional number > 0 in milli seconds, after which the message will hide automatically
+		 */
+		warn: function (title, details, id, autoHideMillis) {
+			KNOWWE.notification._add('warn', title, details, id, autoHideMillis);
 		},
 
-		success: function (title, details, id, fromServer) {
-			KNOWWE.notification._add('success', title, details, id, fromServer);
+		/**
+		 * Show a success message (green)
+		 *
+		 * @param title bold text at start of the message
+		 * @param details actual message text (normal font)
+		 * @param id id of the message (allows to remove message)
+		 * @param autoHideMillis optional number > 0 in milli seconds, after which the message will hide automatically
+		 */
+		success: function (title, details, id, autoHideMillis) {
+			KNOWWE.notification._add('success', title, details, id, autoHideMillis);
 		},
 
 		_getDom: function () {
@@ -82,7 +107,7 @@ KNOWWE.notification = function () {
 			return jq$('#KnowWENotificationDom');
 		},
 
-		_add: function (severity, title, details, id, fromServer) {
+		_add: function (severity, title, details, id, autoHideMillis, fromServer) {
 			if (!id) id = idGenerator++;
 			let duplicate = false;
 			let i = 0;
@@ -106,6 +131,18 @@ KNOWWE.notification = function () {
 			} else {
 				messages.push(message);
 				KNOWWE.notification._select(messages.length - 1);
+			}
+
+			if (autoHideMillis > 0) {
+				if (!repeatedMessageCounter.hasOwnProperty(id)) {
+					repeatedMessageCounter[id] = 0
+				}
+				repeatedMessageCounter[id] += 1;
+				let currentMessageCounter = repeatedMessageCounter[id];
+				setTimeout(function() {
+					if (currentMessageCounter !== repeatedMessageCounter[id]) return;
+					KNOWWE.notification.removeNotification(id)
+				}, autoHideMillis);
 			}
 		},
 
@@ -265,16 +302,19 @@ KNOWWE.notification = function () {
 									KNOWWE.notification.error(null,
 										notification.message,
 										notification.id,
+										0,
 										true);
 								} else if (notification.type === "warning") {
 									KNOWWE.notification.warn(null,
 										notification.message,
 										notification.id,
+										0,
 										true);
 								} else {
 									KNOWWE.notification.success(null,
 										notification.message,
 										notification.id,
+										0,
 										true);
 								}
 							}
