@@ -71,7 +71,6 @@ KNOWWE.notification = function () {
 				// message
 				message = jq$('<div></div>').attr({
 					id: 'KnowWENotificationMessage',
-					style: 'width: 95%;'
 				});
 
 				// title + message -> wrapper
@@ -83,16 +82,12 @@ KNOWWE.notification = function () {
 				counter = jq$('<div></div>').attr(
 					{
 						id: 'KnowWENotificationCounter',
-						style: 'padding: 5px; ' + 'position: fixed; '
-							+ 'top: 0px; ' + 'right: 25px;'
 					});
 
 				// quit
 				quit = jq$('<div></div>').attr(
 					{
 						id: 'KnowWENotificationQuit',
-						style: 'padding: 5px; ' + 'position: fixed; '
-							+ 'top: 0px; ' + 'right: 10px;'
 					});
 
 				// dom
@@ -141,7 +136,7 @@ KNOWWE.notification = function () {
 				let currentMessageCounter = repeatedMessageCounter[id];
 				setTimeout(function() {
 					if (currentMessageCounter !== repeatedMessageCounter[id]) return;
-					KNOWWE.notification.removeNotification(id)
+				  KNOWWE.notification.removeNotification(id)
 				}, autoHideMillis);
 			}
 		},
@@ -155,31 +150,8 @@ KNOWWE.notification = function () {
 			const message = messages[index];
 			const dom = KNOWWE.notification._getDom();
 
-			// set colors
-			let startColor = '#fff6c3';
-			let endColor = '#f9eba5';
-			if (message.severity === 'error') {
-				startColor = '#efd5d3';
-				endColor = '#e6bbb8';
-			}
-
-			if (message.severity === 'success') {
-				startColor = "rgba(186, 219, 189, 0.72)";
-				endColor = "rgba(167, 249, 168, 0.72)";
-			}
-
 			// css
-			dom.attr({
-				style: 'opacity:0.95;' + 'position:fixed;' + 'z-index:2000;'
-					+ 'border-bottom:1px solid #7a7a7a;' + 'top:0px;' + 'left:0px;'
-					+ 'right:0px;' + 'width:100%;' + 'padding:5px;' + 'background-color: #f9eba5;'
-					+ 'background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(' + startColor
-					+ '), to(' + endColor + '));' + 'background-image: -webkit-linear-gradient(top, '
-					+ startColor + ',' + endColor + ');' + 'background-image: -moz-linear-gradient(top, '
-					+ startColor + ',' + endColor + ');' + 'background-image: -ms-linear-gradient(top, '
-					+ startColor + ',' + endColor + ');' + 'background-image: -o-linear-gradient(top, '
-					+ startColor + ',' + endColor + ');'
-			});
+			dom.addClass("notification-" + message.severity);
 
 			// title
 			if (message.title) {
@@ -192,25 +164,21 @@ KNOWWE.notification = function () {
 
 			// counter
 			if (messages.length > 1) {
+				let showNext = index < messages.length - 1;
+				let showPrev = index > 0;
+
 				let counterHTML = "";
-				const counter = '&nbsp;<span>(' + (index + 1) + '/'
+				const counter = '<span class="notification-counter">(' + (index + 1) + '/'
 					+ messages.length + ')</span>';
-				const next = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
-					+ (index + 1) + ');">&gt;</a>';
-				const prev = '&nbsp;<a href="#" onclick="KNOWWE.notification._select('
-					+ (index - 1) + ');">&lt;</a>';
-				if (index === 0) {
-					counterHTML += counter;
-					counterHTML += next;
-				} else if (index >= 0
-					&& index < messages.length - 1) {
-					counterHTML += prev;
-					counterHTML += counter;
-					counterHTML += next;
-				} else if (index === messages.length - 1) {
-					counterHTML += prev;
-					counterHTML += counter;
-				}
+				const next = '<a class="next-notification' + (showNext ? '' : ' inactive') + '" href="#" onclick="KNOWWE.notification._select('
+					+ (index + 1) + ');"><i class="far fa-angle-right"></i></a>';
+				const prev = '<a class="prev-notification' + (showPrev ? '' : ' inactive') + '" href="#" onclick="KNOWWE.notification._select('
+					+ (index - 1) + ');"><i class="far fa-angle-left"></i></a>';
+
+        counterHTML += prev;
+        counterHTML += counter;
+        counterHTML += next;
+					
 				jq$('#KnowWENotificationCounter').html(counterHTML);
 			} else {
 				jq$('#KnowWENotificationCounter').html("");
@@ -219,7 +187,7 @@ KNOWWE.notification = function () {
 			jq$('#KnowWENotificationQuit')
 				.html(
 					'<span><a onclick="KNOWWE.notification.removeNotification(\''
-					+ message.id + '\')' + '">X</a></span>');
+					+ message.id + '\')' + '"><i class="far fa-times"></i></a></span>');
 
 			// show notification bar
 			jq$('#KnowWENotificationDom').show();

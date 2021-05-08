@@ -33,6 +33,88 @@ used colors
 
 #KnowWENotificationMessage {
 	white-space: pre-wrap;
+	font-weight: 600;
+}
+
+#KnowWENotificationDom {
+	color: white;
+	position: fixed;
+	z-index: 2000;
+	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.15);
+	top: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	padding: 5px 7px;
+}
+
+#KnowWENotificationDom.notification-success {
+	background-color: #1aa52a;
+}
+
+#KnowWENotificationDom.notification-success #KnowWENotificationQuit a {
+	color:  #1aa52a;
+}
+
+#KnowWENotificationDom.notification-warn {
+	background-color: #eaaf11;
+}
+
+#KnowWENotificationDom.notification-warn #KnowWENotificationQuit a {
+	color:  #eaaf11;
+}
+
+#KnowWENotificationDom.notification-error {
+	background-color: #e04308;
+}
+
+#KnowWENotificationDom.notification-error #KnowWENotificationQuit a {
+	color:  #e04308;
+	user-select: none;
+}
+
+#KnowWENotificationQuit a {
+	position: fixed;
+	top: 0;
+	right: 6px;
+}
+
+#KnowWENotificationQuit a {
+	padding: 0 7px;
+	margin-top: 5px;
+	background-color: white;
+	border-radius: 3px;
+}
+
+#KnowWENotificationCounter a {
+	color: white;
+}
+
+#KnowWENotificationCounter {
+	padding: 5px;
+	position: fixed;
+	top: 0;
+	right: 33px;
+	font-weight: 600;
+	user-select: none;
+}
+
+#KnowWENotificationCounter .next-notification, #KnowWENotificationCounter .prev-notification {
+    padding: 5px 10px;
+}
+
+#KnowWENotificationCounter .notification-counter {
+    position: relative;
+    top: -1px;
+}
+
+#KnowWENotificationCounter .inactive {
+	pointer-events: none;
+	opacity: 0.4;
+}
+
+#KnowWENotificationMessage {
+	margin-right: 120px;
 }
 
 .fa-pencil.image-icon {
@@ -50,7 +132,7 @@ used colors
 
 textarea {
 	line-height: 16px;
-	/* we need to set this, because without a set line-height, 
+	/* we need to set this, because without a set line-height,
 	scrolling of the textarea does not work after changing the selection in TextArea.js*/
 }
 
