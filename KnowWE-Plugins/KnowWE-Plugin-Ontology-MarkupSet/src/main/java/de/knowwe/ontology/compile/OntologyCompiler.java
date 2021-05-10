@@ -236,7 +236,7 @@ public class 	OntologyCompiler extends AbstractPackageCompiler
 			getTerminologyManager().cleanupStaleSection();
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
-		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this, sectionsOfPackage, sectionsOfPackageRemoved));
+		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this, sectionsOfPackage, sectionsOfPackageRemoved, completeCompilation));
 		getCompilerManager().setCurrentCompilePriority(this, Priority.INIT);
 		compile(sectionsOfPackage);
 
