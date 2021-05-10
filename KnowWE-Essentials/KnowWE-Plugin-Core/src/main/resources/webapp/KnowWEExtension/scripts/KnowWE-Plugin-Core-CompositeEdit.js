@@ -695,9 +695,9 @@ KNOWWE.plugin.compositeEditTool = function () {
 		}
 	}
 
-	function createCompositeEditDialog(identifier, divMarkupText) {
+	function createCompositeEditDialog(identifier, divMarkupText, action) {
 		const params = {
-			action: 'CompositeEditOpenDialogAction',
+			action: action,
 			termIdentifier: identifier
 		};
 
@@ -974,11 +974,15 @@ KNOWWE.plugin.compositeEditTool = function () {
 		},
 
 		openCompositeEditDialog: function (identifier) {
+			this.openDialog(identifier, 'CompositeEditOpenDialogAction');
+		},
+
+		openDialog: function (identifier, action) {
 			closeOldDialog();
 			resetVariables();
 			_KU.showProcessingIndicator();
 			const divMarkupText = buildDefaultMarkupStructure();
-			const options = createCompositeEditDialog(identifier, divMarkupText);
+			const options = createCompositeEditDialog(identifier, divMarkupText, action);
 			new _KA(options).send();
 			appendDialogToHtmlBody();
 		},
@@ -1006,7 +1010,20 @@ KNOWWE.plugin.compositeEditTool = function () {
 					enableCompositeEditMode();
 				}
 			}
+		},
+
+		closeOldDialog: function() {
+		if (typeof _CE.dialogDiv !== 'undefined') {
+			jq$(_CE.dialogDiv).dialog("close");
+			jq$(_CE.dialogDiv).dialog("destroy").remove();
 		}
+	},
+
+	resetVariables: function() {
+		_CE.cancelCache = {};
+		_CE.editableSections = [];
+		_CE.enabled = true;
+	},
 
 
 	}

@@ -311,7 +311,7 @@ public class ObjectInfoRenderer implements Renderer {
 	private static void renderGroupOfSingleType(UserContext user, List<Section<?>> groupSections, RenderResult groupResult) {
 	}
 
-	private static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result) {
+	public static void renderGroupedByArticle(Set<Section<?>> references, UserContext user, RenderResult result) {
 		Map<Article, List<Section<?>>> articleGroups = groupByArticle(references);
 		for (Entry<Article, List<Section<?>>> articleEntry : articleGroups.entrySet()) {
 			RenderResult innerResult = new RenderResult(result);
