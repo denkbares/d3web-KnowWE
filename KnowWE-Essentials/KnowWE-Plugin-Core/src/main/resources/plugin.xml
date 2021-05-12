@@ -372,6 +372,7 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="TermReference" />
 		<parameter id="scope" value="TermDefinition" />
+		<parameter id="scope" value="*/PackageTerm" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler" id="ProcessingStateAppendHandler">
