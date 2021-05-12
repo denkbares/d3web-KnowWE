@@ -71,7 +71,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 	@NotNull
 	protected String getToolText(Identifier identifier) {
-		return CompositeEditToolProvider.SHOW_INFO + " (" + identifier.toExternalForm() + ")";
+		return CompositeEditToolProvider.SHOW_INFO + " (" + identifier.toPrettyPrint() + ")";
 	}
 
 	@NotNull
