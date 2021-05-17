@@ -396,6 +396,10 @@
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-COOM</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Todos</artifactId>
 				</dependency>
 				<dependency>

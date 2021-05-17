@@ -537,6 +537,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
+				<artifactId>KnowWE-Plugin-COOM</artifactId>
+				<version>${knowwe.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Todos</artifactId>
 				<version>${knowwe.version}</version>
 			</dependency>
@@ -654,7 +659,12 @@
 			<dependency>
 				<groupId>org.jgrapht</groupId>
 				<artifactId>jgrapht-ext</artifactId>
-				<version>1.0.0</version>
+				<version>1.4.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jgrapht</groupId>
+				<artifactId>jgrapht-io</artifactId>
+				<version>1.4.0</version>
 			</dependency>
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
