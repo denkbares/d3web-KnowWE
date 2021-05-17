@@ -198,6 +198,12 @@ KNOWWE.core.util = function () {
 		updateProcessingState: function (delta) {
 			activityCounter += delta;
 			const indicator = jq$('#KnowWEProcessingIndicator');
+			if (!indicator.exists()) {
+				// fallback, happens for example on Edit.jsp
+				jq$('body').append("<div id='KnowWEProcessingIndicator' class='ajaxloader' style='display:none'>"
+					+ "<img src='KnowWEExtension/images/ajax-100.gif' alt='loading'/>"
+					+ "</div>")
+			}
 			if (activityCounter > 0) {
 				// to reduce flicker, we wait a bit
 				window.setTimeout(function () {
