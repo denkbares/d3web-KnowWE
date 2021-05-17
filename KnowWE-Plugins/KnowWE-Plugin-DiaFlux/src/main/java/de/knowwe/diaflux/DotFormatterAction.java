@@ -3,7 +3,6 @@ package de.knowwe.diaflux;
 import java.io.IOException;
 
 import org.jetbrains.annotations.NotNull;
-import org.jgrapht.ext.ImportException;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -31,14 +30,7 @@ public class DotFormatterAction extends AbstractAction {
 		String unpositioned = new MarkupToDotConverter().toDot(removeDiaFluxSectionType(markup));
 		String positioned = new GraphvizConnector().execute(unpositioned);
 		// outputFile.dot -> wiki-markup
-		String content;
-		try {
-			content = new DotToMarkupConverter().toMarkup(positioned).toString();
-		}
-		catch (ImportException e) {
-			throw new IOException("ImportException: " + e.getLocalizedMessage());
-		}
-		return content;
+		return new DotToMarkupConverter().toMarkup(positioned).toString();
 	}
 
 	@Override

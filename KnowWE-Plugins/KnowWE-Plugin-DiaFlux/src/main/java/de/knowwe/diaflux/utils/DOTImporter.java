@@ -25,18 +25,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
-import org.jgrapht.ext.EdgeProvider;
-import org.jgrapht.ext.GraphImporter;
-import org.jgrapht.ext.ImportException;
-import org.jgrapht.ext.VertexProvider;
 import org.jgrapht.graph.AbstractBaseGraph;
+import org.jgrapht.io.EdgeProvider;
+import org.jgrapht.io.VertexProvider;
+import org.jgrapht.io.Attribute;
+import org.jgrapht.io.DefaultAttribute;
+import org.jgrapht.nio.GraphImporter;
+import org.jgrapht.nio.ImportException;
 
 import com.denkbares.strings.Strings;
 
 /**
- * Copy from {@link org.jgrapht.ext.DOTImporter}, adapted a little bit for this purpose.
+ * Copy from {@link org.jgrapht.nio.DOTImporter}, adapted a little bit for this purpose.
  *
  * @param <V> the graph vertex type
  * @param <E> the graph edge type
@@ -203,7 +204,7 @@ class DOTImporter<V, E>
 
 			int i = 0;
 			if (graph instanceof AbstractBaseGraph
-					&& ((AbstractBaseGraph<V, E>) graph).isAllowingMultipleEdges()
+					&& ((AbstractBaseGraph<V, E>) graph).getType().isAllowingMultipleEdges()
 					&& headerParts[i].equals("strict")) {
 				throw new ImportException("graph defines strict but Multigraph given.");
 			}
@@ -211,13 +212,13 @@ class DOTImporter<V, E>
 				i = i + 1;
 			}
 
-			if ((graph instanceof DirectedGraph) && headerParts[i].equals("graph")) {
+			/*if ((graph instanceof DirectedGraph) && headerParts[i].equals("graph")) {
 				throw new ImportException("input asks for undirected graph and directed graph provided.");
 			}
 			else if (!(graph instanceof DirectedGraph) && headerParts[i].equals("digraph")) {
 				throw new ImportException("input asks for directed graph but undirected graph provided.");
 			}
-			else if (!headerParts[i].equals("graph") && !headerParts[i].equals("digraph")) {
+			else*/ if (!headerParts[i].equals("graph") && !headerParts[i].equals("digraph")) {
 				throw new ImportException("unknown graph type");
 			}
 
@@ -274,13 +275,13 @@ class DOTImporter<V, E>
 		if (position < (input.length() - 1)) {
 			char next = input.charAt(position + 1);
 			if (current == '-') {
-				if ((next == '-') && (graph instanceof DirectedGraph)) {
+				/*if ((next == '-') && (graph instanceof DirectedGraph)) {
 					throw new ImportException("graph is directed but undirected edge found");
 				}
 				else if ((next == '>') && !(graph instanceof DirectedGraph)) {
 					throw new ImportException("graph is undirected but directed edge found");
 				}
-				else if ((next == '-') || (next == '>')) {
+				else*/ if ((next == '-') || (next == '>')) {
 					return EDGE;
 				}
 			}
@@ -405,7 +406,7 @@ class DOTImporter<V, E>
 
 	private void processCompleteNode(String node)
 			throws ImportException {
-		Map<String, String> attributes = extractAttributes(node);
+		Map<String, Attribute> attributes = extractAttributes(node);
 
 		String id = node.trim();
 		int bracketIndex = node.indexOf('[');
@@ -429,7 +430,7 @@ class DOTImporter<V, E>
 
 	private void processCompleteEdge(String edge)
 			throws ImportException {
-		Map<String, String> attributes = extractAttributes(edge);
+		Map<String, Attribute> attributes = extractAttributes(edge);
 
 		List<String> ids = extractEdgeIds(edge);
 
@@ -438,7 +439,7 @@ class DOTImporter<V, E>
 			V v1 = getVertex(ids.get(i));
 			V v2 = getVertex(ids.get(i + 1));
 
-			E resultEdge = edgeProvider.buildEdge(v1, v2, attributes.get("label"), attributes);
+			E resultEdge = edgeProvider.buildEdge(v1, v2, attributes.get("label").getValue(), attributes);
 			graph.addEdge(v1, v2, resultEdge);
 		}
 	}
@@ -485,9 +486,9 @@ class DOTImporter<V, E>
 		return ids;
 	}
 
-	private Map<String, String> extractAttributes(String line)
+	private Map<String, Attribute> extractAttributes(String line)
 			throws ImportException {
-		Map<String, String> attributes = new HashMap<>();
+		Map<String, Attribute> attributes = new HashMap<>();
 		int bracketIndex = Strings.indexOfUnquoted(line, "[");
 		if (bracketIndex > 0) {
 			attributes = splitAttributes(line.substring(bracketIndex + 1, Strings.indexOf(line, Strings.UNQUOTED + Strings.LAST_INDEX, "]")).trim());
@@ -495,10 +496,10 @@ class DOTImporter<V, E>
 		return attributes;
 	}
 
-	private Map<String, String> splitAttributes(String section)
+	private Map<String, Attribute> splitAttributes(String section)
 			throws ImportException {
 		int index = 0;
-		Map<String, String> result = new HashMap<>();
+		Map<String, Attribute> result = new HashMap<>();
 		while (index < section.length()) {
 			// skip any leading white space
 			index = skipWhiteSpace(section, index);
@@ -531,7 +532,7 @@ class DOTImporter<V, E>
 				endChar = section.length();
 			}
 
-			String value = section.substring(start, endChar);
+			Attribute value = DefaultAttribute.createAttribute(section.substring(start, endChar));
 			result.put(key, value);
 			if (endChar < section.length() && section.charAt(endChar) == '"') {
 				endChar++;

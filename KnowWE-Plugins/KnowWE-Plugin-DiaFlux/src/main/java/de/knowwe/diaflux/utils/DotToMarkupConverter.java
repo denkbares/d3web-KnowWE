@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Set;
 
-import org.jgrapht.ext.ImportException;
 import org.jgrapht.graph.DirectedMultigraph;
 
 /**
@@ -23,38 +22,38 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 	private static final DOTImporter<LabeledNode, Edge> doti = new DOTImporter<>((s, map) -> {
 		if ("graph".equals(s)) {
 			Header h = new Header();
-			String[] dims = map.get("bb").split(",");
+			String[] dims = map.get("bb").getValue().split(",");
 			h.width = Double.parseDouble(dims[2]) * 2;
 			h.height = Double.parseDouble(dims[3]);
-			h.label = map.get("label");
-			h.autostart = Boolean.parseBoolean(map.get("autostart"));
-			h.fcid = map.get("fcid");
+			h.label = map.get("label").getValue();
+			h.autostart = Boolean.parseBoolean(map.get("autostart").getValue());
+			h.fcid = map.get("fcid").getValue();
 			return h;
 		}
 		if (map.get("fcid") == null) {
 			return null;
 		}
 		Node n = new Node();
-		String[] pos = map.get("pos").split(",");
+		String[] pos = map.get("pos").getValue().split(",");
 		n.posx = Double.parseDouble(pos[0]);
 		n.posy = Double.parseDouble(pos[1]);
-		n.fcid = map.get("fcid");
-		n.label = map.get("label");
-		n.type = map.get("type");
+		n.fcid = map.get("fcid").getValue();
+		n.label = map.get("label").getValue();
+		n.type = map.get("type").getValue();
 		// Will be null, if not available
-		n.markup = map.get("markup");
+		n.markup = map.get("markup").getValue();
 		// Skip width and height
 
 		return n;
 	}, (node, v1, s, map) -> {
 		// s is null
 		Edge e = new Edge();
-		e.fcid = map.get("fcid");
+		e.fcid = map.get("fcid").getValue();
 		// ignore pos
 		e.origin = node;
 		e.target = v1;
-		e.guard = map.get("guard");
-		e.markup = map.get("markup");
+		e.guard = map.get("guard").getValue();
+		e.markup = map.get("markup").getValue();
 		return e;
 	});
 
@@ -66,7 +65,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 		return "<![CDATA[" + text + "]]>";
 	}
 
-	public StringBuilder toMarkup(String dotfile) throws IOException, ImportException {
+	public StringBuilder toMarkup(String dotfile) throws IOException {
 		idCounter = 1;
 		graph = new DirectedMultigraph<>(Edge.class);
 		doti.importGraph(graph, new StringReader(dotfile.replace("\r", "")));
@@ -76,7 +75,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 		return convert();
 	}
 
-	private void findHeader() throws ImportException {
+	private void findHeader() throws IOException {
 		for (LabeledNode n : graph.vertexSet()) {
 			if (n instanceof Header) {
 				h = (Header) n;
@@ -84,7 +83,7 @@ public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 			}
 		}
 		if (h == null) {
-			throw new ImportException("Head of graph is missing.");
+			throw new IOException("Head of graph is missing.");
 		}
 		graph.removeVertex(h);
 	}

@@ -89,5 +89,21 @@
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-ext</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht-io</artifactId>
+			<exclusions>
+				<!-- Incompatible with COOM -->
+				<exclusion>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4-runtime</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>4.9.2</version>
+		</dependency>
 	</dependencies>
 </project>
