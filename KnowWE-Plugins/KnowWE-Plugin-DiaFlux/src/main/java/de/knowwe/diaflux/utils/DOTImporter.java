@@ -36,6 +36,8 @@ import org.jgrapht.nio.ImportException;
 
 import com.denkbares.strings.Strings;
 
+import static de.knowwe.diaflux.utils.DotToMarkupConverter.getAttrValue;
+
 /**
  * Copy from {@link org.jgrapht.nio.DOTImporter}, adapted a little bit for this purpose.
  *
@@ -439,7 +441,7 @@ class DOTImporter<V, E>
 			V v1 = getVertex(ids.get(i));
 			V v2 = getVertex(ids.get(i + 1));
 
-			E resultEdge = edgeProvider.buildEdge(v1, v2, attributes.get("label").getValue(), attributes);
+			E resultEdge = edgeProvider.buildEdge(v1, v2, getAttrValue(attributes, "label"), attributes);
 			graph.addEdge(v1, v2, resultEdge);
 		}
 	}

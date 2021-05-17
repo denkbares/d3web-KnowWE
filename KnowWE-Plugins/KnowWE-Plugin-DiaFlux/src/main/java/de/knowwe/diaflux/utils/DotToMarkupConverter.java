@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Set;
 
 import org.jgrapht.graph.DirectedMultigraph;
+import org.jgrapht.io.Attribute;
 
 /**
  * Converts a dotfile to DiaFlux-Markup. A dotfile should contain only ONE flow. An object of this class can be reused
@@ -19,41 +21,46 @@ import org.jgrapht.graph.DirectedMultigraph;
  */
 public class DotToMarkupConverter extends AbstractDiaFluxConverter {
 
+	public static String getAttrValue(Map<String, Attribute> attributes, String key) {
+		Attribute attribute = attributes.get(key);
+		return (attribute == null) ? null : attribute.getValue();
+	}
+
 	private static final DOTImporter<LabeledNode, Edge> doti = new DOTImporter<>((s, map) -> {
 		if ("graph".equals(s)) {
 			Header h = new Header();
-			String[] dims = map.get("bb").getValue().split(",");
+			String[] dims = getAttrValue(map, "bb").split(",");
 			h.width = Double.parseDouble(dims[2]) * 2;
 			h.height = Double.parseDouble(dims[3]);
-			h.label = map.get("label").getValue();
-			h.autostart = Boolean.parseBoolean(map.get("autostart").getValue());
-			h.fcid = map.get("fcid").getValue();
+			h.label = getAttrValue(map, "label");
+			h.autostart = Boolean.parseBoolean(getAttrValue(map, "autostart"));
+			h.fcid = getAttrValue(map, "fcid");
 			return h;
 		}
 		if (map.get("fcid") == null) {
 			return null;
 		}
 		Node n = new Node();
-		String[] pos = map.get("pos").getValue().split(",");
+		String[] pos = getAttrValue(map, "pos").split(",");
 		n.posx = Double.parseDouble(pos[0]);
 		n.posy = Double.parseDouble(pos[1]);
-		n.fcid = map.get("fcid").getValue();
-		n.label = map.get("label").getValue();
-		n.type = map.get("type").getValue();
+		n.fcid = getAttrValue(map, "fcid");
+		n.label = getAttrValue(map, "label");
+		n.type = getAttrValue(map, "type");
 		// Will be null, if not available
-		n.markup = map.get("markup").getValue();
+		n.markup = getAttrValue(map, "markup");
 		// Skip width and height
 
 		return n;
 	}, (node, v1, s, map) -> {
 		// s is null
 		Edge e = new Edge();
-		e.fcid = map.get("fcid").getValue();
+		e.fcid = getAttrValue(map, "fcid");
 		// ignore pos
 		e.origin = node;
 		e.target = v1;
-		e.guard = map.get("guard").getValue();
-		e.markup = map.get("markup").getValue();
+		e.guard = getAttrValue(map, "guard");
+		e.markup = getAttrValue(map, "markup");
 		return e;
 	});
 
