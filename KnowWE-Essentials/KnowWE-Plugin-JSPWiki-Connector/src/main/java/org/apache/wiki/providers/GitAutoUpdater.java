@@ -43,7 +43,15 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.utils.Log;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.kdom.Article;
+import de.knowwe.event.FullParseEvent;
+
+import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
@@ -110,6 +118,7 @@ public class GitAutoUpdater {
 					log.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
 				}
 				ObjectId newHead = fileProvider.repository.resolve(Constants.HEAD);
+				String title = null;
 				if (!oldHeadCommit.equals(newHead)) {
 					RevCommit newHeadCommit = revWalk.parseCommit(newHead);
 
@@ -138,8 +147,20 @@ public class GitAutoUpdater {
 							mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, refreshedPages);
 						}
 					}
-					if (!refreshedPages.isEmpty())
-						WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
+					ArticleManager articleManager = getDefaultArticleManager();
+					try{
+						articleManager.open();
+						if (!refreshedPages.isEmpty())
+							WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
+					} finally {
+						articleManager.commit();
+						Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+					}
+					title = refreshedPages.stream().filter(p->p.contains("GVA_Gesamt") && p.contains("vm_gva_objekte")).findFirst().orElse(null);
+				}
+				if(title != null){
+					Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
+					EventManager.getInstance().fireEvent(new FullParseEvent(article));
 				}
 				stopWatch.stop();
 				Log.info("Update of wiki lasts "+ stopWatch);
