@@ -38,6 +38,15 @@ if (typeof KNOWWE == "undefined" || !KNOWWE) {
  */
 KNOWWE.core = function () {
 	return {
+		cleanupUrlParameters: function() {
+			const url = new URL(window.location);
+			let token = 'SAMLart';  // ldap login tokens are no longer needed after page load
+			if (url.searchParams.has(token)) {
+			  url.searchParams.delete(token);
+			  history.replaceState(null, null, url)
+			}
+		},
+
 		/**
 		 * Function: init
 		 * Core init functions.
@@ -792,6 +801,8 @@ const _KU = KNOWWE.core.util;
 /* ------------- Onload Events  ---------------------------------- */
 /* ############################################################### */
 (function init() {
+
+	KNOWWE.core.cleanupUrlParameters();
 
 	window.addEvent('domready', _KL.setup);
 
