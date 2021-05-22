@@ -34,6 +34,7 @@ import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -471,6 +472,10 @@ public class CIRenderer {
 			else {
 				renderResult.appendHtml("\n<br><span>" + Strings.pluralOf(successfullyTestedObjects,"test object") + " tested successfully</span>");
 			}
+		}
+
+		if (testResult.getRunTimeMillis() >= 0) {
+			renderResult.appendHtml("\n<br><span style='color: grey'>Runtime: " + Stopwatch.getDisplay(testResult.getRunTimeMillis()) + "</span>");
 		}
 	}
 
