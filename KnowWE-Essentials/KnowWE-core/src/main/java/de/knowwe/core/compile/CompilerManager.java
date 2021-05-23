@@ -13,9 +13,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jetbrains.annotations.NotNull;
@@ -52,6 +51,8 @@ public class CompilerManager {
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
 	private static final String KNOWWE_COMPILER_THREADS_COUNT = "knowwe.compiler.threads.count";
+	// number of threads that are not used for compilers themselves, but for operational handling of compilation process
+	private static final int OPERATIONAL_THREAD_COUNT = 1;
 	private volatile int compilationCount = 0;
 
 	private final PriorityList<Double, Compiler> compilers;
@@ -60,12 +61,13 @@ public class CompilerManager {
 	private final ArticleManager articleManager;
 
 	private Iterator<Group<Double, Compiler>> running = null;
-	private final ExecutorService threadPool;
+	private final ThreadPoolExecutor threadPool;
 	private final Object lock = new Object();
+	private final Set<String> currentlyCompiledArticles = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private final Map<Compiler, Priority> currentlyCompiledPriority = new ConcurrentHashMap<>();
+	private final Set<Compiler> waitingCompilers = new CountingSet<>();
+	private static final AtomicLong compileThreadNumber = new AtomicLong(1);
 	private static final Map<Thread, Object> compileThreads = Collections.synchronizedMap(new WeakHashMap<>());
-	private static final Set<String> currentlyCompiledArticles = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	private static final Map<Compiler, Priority> currentlyCompiledPriority = new ConcurrentHashMap<>();
-	private static final Set<Compiler> waitingCompilers = new CountingSet<>();
 
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
@@ -89,26 +91,20 @@ public class CompilerManager {
 		return compileThreads.containsKey(Thread.currentThread());
 	}
 
-	static ExecutorService createExecutorService() {
+	static ThreadPoolExecutor createExecutorService() {
 		int threadCount = getCompilerThreadCount();
-		ExecutorService pool = Executors.newFixedThreadPool(threadCount, new ThreadFactory() {
-			private final AtomicLong number = new AtomicLong(1);
-			@Override
-			public Thread newThread(@NotNull Runnable runnable) {
-				Thread thread = new Thread(runnable, "KnowWE-Compiler-" + number.getAndIncrement());
-				thread.setDaemon(true);
-				compileThreads.put(thread, null);
-				return thread;
-			}
+		ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount, runnable -> {
+			Thread thread = new Thread(runnable, "KnowWE-Compiler-" + compileThreadNumber.getAndIncrement());
+			thread.setDaemon(true);
+			compileThreads.put(thread, null);
+			return thread;
 		});
 		Log.fine("Created multi core thread pool of size " + threadCount);
 		return pool;
 	}
 
 	private static int getCompilerThreadCount() {
-		// we need at least two threads here, because one thread is used to start compilation
-		// and the rest for compiling the individual compilers
-		final int defaultThreadCount = Runtime.getRuntime().availableProcessors() + 1;
+		final int defaultThreadCount = Runtime.getRuntime().availableProcessors() + OPERATIONAL_THREAD_COUNT;
 		final String threadCount = System.getProperty(KNOWWE_COMPILER_THREADS_COUNT, String.valueOf(defaultThreadCount));
 		try {
 			return Integer.parseInt(threadCount);
@@ -116,6 +112,24 @@ public class CompilerManager {
 		catch (NumberFormatException e) {
 			return defaultThreadCount;
 		}
+	}
+
+	/**
+	 * Get the current maximum number of compilers that are allowed to compile in parallel
+	 */
+	private int getMaxCompilationThreadCount() {
+		return threadPool.getMaximumPoolSize() - OPERATIONAL_THREAD_COUNT;
+	}
+
+	/**
+	 * Set the maximum number of compilers that are allowed to compile in parallel. Can be changed at any time, but must
+	 * not be < 1. Only change if you know what you are doing.
+	 */
+	private void setMaxCompilationThreadCount(int threadCount) {
+		if (threadCount < 1) throw new IllegalArgumentException("Thread count has to be >= 1");
+		threadCount += OPERATIONAL_THREAD_COUNT;
+		threadPool.setMaximumPoolSize(threadCount);
+		threadPool.setCorePoolSize(threadCount);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -299,6 +313,7 @@ public class CompilerManager {
 	/**
 	 * Returns the compile priority the given Compiler currently operates in or <tt>null</tt>, if the compiler currently
 	 * is not compiling.
+	 *
 	 * @param compiler the compiler for which to check the compilation priority
 	 */
 	@Nullable
@@ -320,12 +335,21 @@ public class CompilerManager {
 					// deadlock detection: if all remaining compilers are waiting, throw an error
 					// might be a bit to conservative, if a compiler uses multiple threads and only a subset of them is waiting, but we accept this for now
 					if (waitingCompilers.containsAll(currentlyCompiledPriority.keySet())) {
-						throw new InterruptedException("deadlock detected, terminate waiting for compiler: " +
+						throw new InterruptedException("Deadlock detected, terminate waiting for compiler: " +
 								compiler.getClass().getSimpleName() + " @priority: " + priority);
 					}
 
-					// otherwise wait for notification
-					lock.wait();
+					// in case we have a small CPU and only a few compile threads
+					int threadCount = getMaxCompilationThreadCount();
+					if (waitingCompilers.size() >= threadCount) {
+						int newThreadCount = threadCount + 1;
+						setMaxCompilationThreadCount(newThreadCount);
+						Log.warning("All compile threads are occupied with waiting compilers, increasing thread count to " + newThreadCount + ".\n"
+								+ "Consider using system property " + KNOWWE_COMPILER_THREADS_COUNT + " to set thread count to this number at startup.");
+					}
+
+					// otherwise wait for notification...
+					lock.wait(1000);
 				}
 			}
 			finally {
