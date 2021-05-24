@@ -43,5 +43,4 @@ public interface CompileScript<C extends Compiler, T extends Type> {
 	 * @return the compiler class of this script
 	 */
 	Class<C> getCompilerClass();
-
 }
