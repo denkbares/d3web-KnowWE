@@ -103,6 +103,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 			"http://www.w3.org/2001/XMLSchema#base64Binary",
 			"http://www.w3.org/2001/XMLSchema#boolean",
 			"http://www.w3.org/2001/XMLSchema#byte",
+			"http://www.w3.org/2001/XMLSchema#date",
 			"http://www.w3.org/2001/XMLSchema#dateTime",
 			"http://www.w3.org/2001/XMLSchema#dateTimeStamp",
 			"http://www.w3.org/2001/XMLSchema#decimal",
