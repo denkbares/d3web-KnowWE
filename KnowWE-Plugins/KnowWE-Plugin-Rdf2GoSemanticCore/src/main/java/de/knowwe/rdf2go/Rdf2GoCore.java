@@ -28,6 +28,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -612,13 +613,22 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * Creates a xsd:dateTime datatype literal with the specified dateTime value.
+	 * Creates a xsd:date datatype literal with the specified date value.
 	 *
 	 * @param dateValue the value of the literal
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(LocalDate dateValue) {
-		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE), XMLSchema.DATETIME);
+		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE), XMLSchema.DATE);
+	}
+	/**
+	 * Creates a xsd:dateTime datatype literal with the specified dateTime value.
+	 *
+	 * @param dateValue the value of the literal
+	 * @return a datatype literal for the specified value
+	 */
+	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(LocalDateTime dateValue) {
+		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), XMLSchema.DATETIME);
 	}
 
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(String literal, IRI datatype) {
