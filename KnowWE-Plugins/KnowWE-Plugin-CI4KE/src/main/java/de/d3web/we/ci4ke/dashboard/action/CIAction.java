@@ -56,7 +56,7 @@ public class CIAction extends AbstractAction {
 				KnowWEUtils.getArticleManager(web),
 				dashboardName);
 		if (dashboard == null) {
-			context.sendError(409, "<message will be inserted in JS>");
+			//context.sendError(404, "<message will be inserted in JS>");
 			// NOTE: on current ajax handling this message text will will
 			// not be shown. but a list mapping error codes to message texts
 			// is managed in JS
