@@ -72,6 +72,8 @@ public class DefaultMarkupRenderer implements Renderer {
 	private ToolsRenderMode renderMode = ToolsRenderMode.MENU;
 	private boolean preFormattedStyle = true;
 	private boolean listAnnotations = false;
+	private boolean renderHeader = true;
+	private boolean framed = true;
 
 	public enum ToolsRenderMode {
 		MENU, TOOLBAR
@@ -480,10 +482,12 @@ public class DefaultMarkupRenderer implements Renderer {
 		String sectionID = section.getID();
 		string.appendHtmlTag("div",
 				"id", sectionID,
-				"class", "defaultMarkupFrame toolMenuParent type_" + section.get().getName() + defaultCompilerClass,
+				"class", "defaultMarkupFrame toolMenuParent type_" + section.get()
+						.getName() + defaultCompilerClass + (framed ? "" : " noFrame"),
 				"data-name", section.get().getName());
-
-		appendHeader(title, sectionID, tools, user, string);
+		if (renderHeader) {
+			appendHeader(title, sectionID, tools, user, string);
+		}
 
 		// add compiling compilers for debug purposes
 		if (!compilers.isEmpty()) {
@@ -703,5 +707,41 @@ public class DefaultMarkupRenderer implements Renderer {
 	 */
 	public void setListAnnotations(boolean listAnnotations) {
 		this.listAnnotations = listAnnotations;
+	}
+
+	/**
+	 * Defines whether the header (including tools etc.) is rendered or not
+	 *
+	 * @param renderHeader boolean deciding whether header is rendered
+	 */
+	public void setRenderHeader(boolean renderHeader) {
+		this.renderHeader = renderHeader;
+	}
+
+	/**
+	 * Returns a boolean that defines whether the header is rendered or not
+	 *
+	 * @return true if header is rendered, false otherwise
+	 */
+	public boolean isRenderHeader() {
+		return this.renderHeader;
+	}
+
+	/**
+	 * Returns a boolean that defines whether a frame is rendered around the markup or not
+	 *
+	 * @return true if frame is rendered, false otherwise
+	 */
+	public boolean isFramed() {
+		return this.framed;
+	}
+
+	/**
+	 * Defines whether a frame around the markup is rendered or not
+	 *
+	 * @param framed boolean deciding whether frame is rendered
+	 */
+	public void setFramed(boolean framed) {
+		this.framed = framed;
 	}
 }
