@@ -2332,6 +2332,12 @@ div.coverflow .knob {
 	}
 }
 
+@media screen, projection {
+	.noFrame.defaultMarkupFrame:hover {
+		background-color: transparent;
+	}
+}
+
 .defaultMarkupFrame > .defaultMarkup .markupText {
 	#padding-right: 120px;
 }

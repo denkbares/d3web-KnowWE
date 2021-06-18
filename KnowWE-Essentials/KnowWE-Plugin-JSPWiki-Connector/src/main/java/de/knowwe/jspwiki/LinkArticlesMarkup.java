@@ -25,6 +25,7 @@ import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.utils.Scope;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
@@ -60,6 +61,8 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 	public static final String ANNOTATION_EXCLUDE = "exclude";
 	public static final String ANNOTATION_TEMPLATE = "template";
 	public static final String ANNOTATION_MARKUP = "markup";
+	private static final String ANNOTATION_FRAME = "frame";
+	private static final String ANNOTATION_HEADER = "header";
 
 	static {
 		MARKUP = new DefaultMarkup("LinkArticles");
@@ -68,6 +71,8 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDE);
 		MARKUP.addAnnotation(ANNOTATION_MARKUP);
 		MARKUP.addAnnotation(ANNOTATION_ARTICLE);
+		MARKUP.addAnnotation(ANNOTATION_FRAME);
+		MARKUP.addAnnotation(ANNOTATION_HEADER);
 		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME)
 				.setDocumentation("Specify a package name to show all articles which declare this package.");
 		MARKUP.getAnnotation(ANNOTATION_ARTICLE)
@@ -79,6 +84,10 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		MARKUP.getAnnotation(ANNOTATION_TEMPLATE)
 				.setDocumentation("Set a template how each Link-Label should be adapted, e.g.\n"
 						+ "@template: * link.replace(\"\u00ABregex\u00BB\", \"\u00ABreplacement\u00BB\")");
+		MARKUP.getAnnotation(ANNOTATION_FRAME)
+				.setDocumentation("Specify whether the markup has a frame that turns grey when mouse is over.");
+		MARKUP.getAnnotation(ANNOTATION_HEADER)
+				.setDocumentation("Specify whether the header (containing the tools etc.) is rendered or not.");
 		MARKUP.setTemplate("%%LinkArticles \n" +
 				"@package: \u00ABpackage-name\u00BB\n" +
 				"@markup: \u00ABmarkup-name\u00BB\n" +
@@ -90,20 +99,28 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 	public LinkArticlesMarkup() {
 		super(MARKUP);
 		this.setRenderer((section, user, out) ->
-				new RenderWorker(Sections.cast(section, LinkArticlesMarkup.class)).render(out));
+				new RenderWorker(Sections.cast(section, LinkArticlesMarkup.class)).render(Sections.cast(section, LinkArticlesMarkup.class), user, out));
 	}
 
-	private static class RenderWorker {
+	private static class RenderWorker extends DefaultMarkupRenderer {
 
 		private final Section<LinkArticlesMarkup> section;
 		private final Collection<Message> messages = new LinkedHashSet<>();
 
 		private RenderWorker(Section<LinkArticlesMarkup> section) {
 			this.section = section;
+			setRenderOptions(section);
 		}
 
-		public void render(RenderResult out) {
+		private void setRenderOptions(Section<LinkArticlesMarkup> section) {
+			String renderHeader = DefaultMarkupType.getAnnotation(section, ANNOTATION_HEADER);
+			setRenderHeader(!"false".equals(renderHeader));
+			String renderFrame = DefaultMarkupType.getAnnotation(section, ANNOTATION_FRAME);
+			setFramed(!"false".equals(renderFrame));
+		}
 
+		@Override
+		public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult result) {
 			// prepare articles
 			Stream<Article> articles = applyPackage();
 			articles = applyArticle(articles);
@@ -112,7 +129,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			// prepare linked sections
 			List<Section<?>> sections = applyMarkup(articles).collect(Collectors.toList());
 			if (sections.isEmpty()) {
-				out.appendHtmlTag("span", "style", "color: #888")
+				result.appendHtmlTag("span", "style", "color: #888")
 						.append("-- (no entries)").appendHtmlTag("/span");
 			}
 
@@ -127,11 +144,12 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			}
 
 			// and finally render messages and links
-			out.appendHtml("<div>\n");
-			DefaultMarkupRenderer.renderMessageBlock(out, messages);
+			result.appendHtml("<div>\n");
+			DefaultMarkupRenderer.renderMessageBlock(result, messages);
 			sections.sort(Comparator.comparing(Section::getTitle, NumberAwareComparator.CASE_INSENSITIVE));
-			sections.forEach(sec -> templateResult.appendLink(out, sec));
-			out.appendHtml("</div>");
+			sections.forEach(sec -> templateResult.appendLink(result, sec));
+			result.appendHtml("</div>");
+			super.renderContentsAndAnnotations(section, user, result);
 		}
 
 		private Stream<Article> applyPackage() {
