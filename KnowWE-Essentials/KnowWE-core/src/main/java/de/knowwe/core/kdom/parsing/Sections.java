@@ -633,6 +633,37 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
+	 * Returns the siblings of the first section in this sections object in reverse order, starting with the sibling
+	 * directly prior to the given section.
+	 *
+	 * @return the sections before the first section in this sections object
+	 */
+	public Sections<Type> siblingsBefore() {
+		List<? extends Section<?>> siblings = first().parent().children().asList();
+		int i = siblings.indexOf(getFirst());
+		if (i < 0) throw new IllegalArgumentException("Invalid KDOM, cannot find section in list of parents children");
+		//noinspection unchecked
+		List<Section<Type>> list = (List<Section<Type>>) siblings.subList(0, i);
+		Collections.reverse(list);
+		return $(list);
+	}
+
+	/**
+	 * Returns the siblings of the first section in this sections object, starting with the sibling
+	 * directly after the first section in this sections object
+	 *
+	 * @return the sections after the first section in this sections object
+	 */
+	public Sections<Type> siblingsAfter() {
+		List<? extends Section<?>> siblings = first().parent().children().asList();
+		int i = siblings.indexOf(getFirst());
+		if (i < 0) throw new IllegalArgumentException("Invalid KDOM, cannot find section in list of parents children");
+		//noinspection unchecked
+		List<Section<Type>> list = (List<Section<Type>>) siblings.subList(i + 1, siblings.size());
+		return $(list);
+	}
+
+	/**
 	 * Casts the whole Sections to contain only elements of a particular type. Please note that the elements are not
 	 * casted immediately, but sequentially as they will be accessed. Therefore this method does not throw a
 	 * ClassCastException, but such an exception will be thrown during iterating the sections.
