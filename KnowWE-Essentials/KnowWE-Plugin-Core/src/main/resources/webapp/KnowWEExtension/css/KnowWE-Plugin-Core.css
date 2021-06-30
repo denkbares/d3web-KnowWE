@@ -685,7 +685,7 @@ table.knowwe-pagination th img.filter:hover {
 }
 
 .haddock a.anchor {
-	display: inline-block;
+	display: inline;
 	position: relative;
 	top: -71px;
 	visibility: hidden;
