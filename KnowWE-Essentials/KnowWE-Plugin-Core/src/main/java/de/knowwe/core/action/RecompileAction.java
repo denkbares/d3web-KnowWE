@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.EventManager;
+import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
@@ -63,10 +64,12 @@ public class RecompileAction extends AbstractAction {
 		articleManager.open();
 		try {
 			if (all) {
+				Log.info("Starting FULL recompilation for article " + article.getTitle());
 				getCompilerArticles(article)
 						.forEach(article1 -> articleManager.registerArticle(article1.getTitle(), article1.getText()));
 			}
 			else {
+				Log.info("Starting recompilation of article " + article.getTitle());
 				Article recompiledArticle = articleManager.registerArticle(article.getTitle(), article.getText());
 				EventManager.getInstance().fireEvent(new FullParseEvent(recompiledArticle));
 			}
