@@ -944,6 +944,10 @@ public class KnowWEUtils {
 		return link;
 	}
 
+	public static String cleanWikiPageName(String name) {
+		return name.replace("+", "_").replaceAll("[\\\\/:]+", "-");
+	}
+
 	public static String readFile(final String fileName) {
 		try {
 			return Strings.readFile(fileName);
