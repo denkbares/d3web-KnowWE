@@ -641,7 +641,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public Sections<Type> siblingsBefore() {
 		List<? extends Section<?>> siblings = first().parent().children().asList();
 		int i = siblings.indexOf(getFirst());
-		if (i < 0) throw new IllegalArgumentException("Invalid KDOM, cannot find section in list of parents children");
+		if (i < 0) throw new IllegalArgumentException("Invalid KDOM, cannot find section in children of parent");
 		//noinspection unchecked
 		List<Section<Type>> list = (List<Section<Type>>) siblings.subList(0, i);
 		Collections.reverse(list);
@@ -657,7 +657,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public Sections<Type> siblingsAfter() {
 		List<? extends Section<?>> siblings = first().parent().children().asList();
 		int i = siblings.indexOf(getFirst());
-		if (i < 0) throw new IllegalArgumentException("Invalid KDOM, cannot find section in list of parents children");
+		if (i < 0) throw new IllegalArgumentException("Invalid KDOM, cannot find section in children of parent");
 		//noinspection unchecked
 		List<Section<Type>> list = (List<Section<Type>>) siblings.subList(i + 1, siblings.size());
 		return $(list);
