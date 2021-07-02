@@ -64,13 +64,11 @@ public class GitAutoUpdater {
 	private final GitVersioningFileProvider fileProvider;
 	private final WikiEngine engine;
 	private final Repository repository;
-	private final GitVersionCache cache;
 
 	public GitAutoUpdater(WikiEngine engine, GitVersioningFileProvider fileProvider) {
 		this.fileProvider = fileProvider;
 		repository = fileProvider.repository;
 		this.engine = engine;
-		cache = fileProvider.getCache();
 	}
 
 	public void update() {
@@ -117,6 +115,8 @@ public class GitAutoUpdater {
 				if (!successful) {
 					log.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
 				}
+				GitVersioningUtils.gitGc(true, fileProvider.needsWindowsHack(),repository, false);
+				fileProvider.getCache().initializeCache();
 				ObjectId newHead = fileProvider.repository.resolve(Constants.HEAD);
 				String title = null;
 				if (!oldHeadCommit.equals(newHead)) {
@@ -136,7 +136,7 @@ public class GitAutoUpdater {
 					Iterator<RevCommit> iterator = revWalk.iterator();
 					boolean parse = false;
 					Set<String> refreshedPages = new TreeSet<>();
-					resetCiBuildCache();
+//					resetCiBuildCache();
 					while (iterator.hasNext()){
 						RevCommit commit = iterator.next();
 						if(commit.equals(oldHeadCommit)) {
@@ -147,6 +147,7 @@ public class GitAutoUpdater {
 							mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, refreshedPages);
 						}
 					}
+
 					ArticleManager articleManager = getDefaultArticleManager();
 					try{
 						articleManager.open();
@@ -154,6 +155,10 @@ public class GitAutoUpdater {
 							WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
 					} finally {
 						articleManager.commit();
+						try {
+							Thread.sleep(500);
+						}
+						catch (InterruptedException ignored) {}
 						Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
 					}
 					title = refreshedPages.stream().filter(p->p.contains("GVA_Gesamt") && p.contains("vm_gva_objekte")).findFirst().orElse(null);
@@ -180,15 +185,6 @@ public class GitAutoUpdater {
 		}
 	}
 
-	private void resetCiBuildCache() {
-		List<Attachment> allLatestAttachments = this.cache.getAllLatestAttachments();
-		for (Attachment att : allLatestAttachments){
-			if(att.getFileName().contains("ci-build")){
-				this.cache.reset(att);
-			}
-		}
-	}
-
 	private void mapRevCommit(ObjectReader objectReader, CanonicalTreeParser oldTreeParser, CanonicalTreeParser newTreeParser, DiffFormatter diffFormatter, RevCommit commit, Collection<String> refreshedPages) throws IOException {
 		final RevCommit[] parents = commit.getParents();
 		RevTree tree = commit.getTree();
@@ -205,7 +201,7 @@ public class GitAutoUpdater {
 				if (diff.getChangeType() == DiffEntry.ChangeType.MODIFY) {
 					path = diff.getOldPath();
 					if (path != null) {
-						cache.mapCommit(commit, path);
+//						cache.mapCommit(commit, path);
 						String toUpdate = refreshWikiCache(path);
 						choosePageForEvent(refreshedPages, toUpdate);
 					}
@@ -213,18 +209,18 @@ public class GitAutoUpdater {
 				else if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
 					path = diff.getNewPath();
 					if (path != null) {
-						cache.mapCommit(commit, path);
+//						cache.mapCommit(commit, path);
 						String toUpdate = refreshWikiCache(path);
 						choosePageForEvent(refreshedPages, toUpdate);
 					}
 				}
 				else if (diff.getChangeType() == DiffEntry.ChangeType.DELETE) {
-					cache.mapDelete(commit, diff.getOldPath());
+//					cache.mapDelete(commit, diff.getOldPath());
 					String toUpdate = refreshWikiCache(diff.getOldPath());
 					choosePageForEvent(refreshedPages, toUpdate);
 				}
 				else if (diff.getChangeType() == DiffEntry.ChangeType.RENAME) {
-					cache.mapMove(commit, diff.getOldPath(), diff.getNewPath());
+//					cache.mapMove(commit, diff.getOldPath(), diff.getNewPath());
 					String toDelete = refreshWikiCache(diff.getOldPath());
 					choosePageForEvent(refreshedPages, toDelete);
 					String toAdd = refreshWikiCache(diff.getNewPath());
@@ -238,7 +234,7 @@ public class GitAutoUpdater {
 			tw.reset(tree);
 			tw.setRecursive(true);
 			while (tw.next()) {
-				cache.mapCommit(commit, tw.getPathString());
+//				cache.mapCommit(commit, tw.getPathString());
 				String toUpdate = refreshWikiCache(tw.getPathString());
 				choosePageForEvent(refreshedPages, toUpdate);
 			}

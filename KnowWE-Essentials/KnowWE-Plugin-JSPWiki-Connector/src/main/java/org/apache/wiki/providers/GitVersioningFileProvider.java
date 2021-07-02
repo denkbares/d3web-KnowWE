@@ -38,13 +38,11 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.PageManager;
@@ -83,6 +81,7 @@ import org.eclipse.jgit.util.FS;
 import org.jetbrains.annotations.NotNull;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
+import static org.apache.wiki.providers.GitVersioningUtils.gitGc;
 
 /**
  * @author Josua Nürnberger
@@ -187,26 +186,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				}
 			}
 		}
-		if (windowsGitHackNeeded && !dontUseHack) {
-			doBinaryGC(pageDir);
-		}
-		else {
-			final Git git = new Git(this.repository);
-			try {
-				log.info("Beginn Git gc");
-				final StopWatch stopWatch = new StopWatch();
-				stopWatch.start();
-				final Properties gcRes = git.gc().setAggressive(true).call();
-				stopWatch.stop();
-				log.info("Init gc took " + stopWatch);
-				for (final Map.Entry<Object, Object> entry : gcRes.entrySet()) {
-					log.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
-				}
-			}
-			catch (final GitAPIException e) {
-				log.error("Git GC not successful: " + e.getMessage());
-			}
-		}
+		gitGc(true, windowsGitHackNeeded&&!dontUseHack, repository, true);
 		this.repository.autoGC(new TextProgressMonitor());
 		this.cache = new GitVersionCache(engine, this.repository);
 		cache.initializeCache();
@@ -227,24 +207,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 	}
 
-	private void doBinaryGC(File pageDir) {
-		try {
-			StopWatch sw = new StopWatch();
-			sw.start();
-			log.info("binary gc start");
-			ProcessBuilder pb = new ProcessBuilder();
-			pb.inheritIO().command("git", "gc", "--prune=now").directory(pageDir);
-			Process git_gc = pb.start();
-			git_gc.waitFor(2, TimeUnit.MINUTES);
-			sw.stop();
-			log.info("binary gc took " + sw.toString());
-		}
-		catch (InterruptedException e) {
-			log.warn("External git process didn't end in 2 minutes, therefore cancel it");
-		}
-		catch (IOException e) {
-			log.error("Error executing external git: " + e.getMessage(), e);
-		}
+	boolean needsWindowsHack(){
+		return windowsGitHackNeeded && !dontUseHack;
 	}
 
 	public Repository getRepository() {
@@ -363,44 +327,13 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	void periodicalGitGC(final Git git) {
 		final long l = this.commitCount.incrementAndGet();
 		if (l % 2000 == 0) {
-			if (windowsGitHackNeeded && !dontUseHack) {
-				doBinaryGC(git.getRepository().getWorkTree());
-			}
-			else {
-				doGC(git, true);
-			}
+			GitVersioningUtils.gitGc(true, windowsGitHackNeeded && !dontUseHack,repository, true);
 		}
 		else if (l % 500 == 0) {
-			if (windowsGitHackNeeded && !dontUseHack) {
-				doBinaryGC(git.getRepository().getWorkTree());
-			}
-			else {
-				doGC(git, false);
-			}
+			GitVersioningUtils.gitGc(false, windowsGitHackNeeded && !dontUseHack,repository, false);
 		}
 		else if (l % 100 == 0) {
 			this.repository.autoGC(new TextProgressMonitor());
-		}
-	}
-
-	private void doGC(final Git git, final boolean aggressive) {
-		final StopWatch stopwatch = new StopWatch();
-		if (log.isDebugEnabled()) {
-			stopwatch.start();
-		}
-		try {
-			git.gc()
-					.setAggressive(aggressive)
-					.setExpire(null)
-					.call();
-
-		}
-		catch (final GitAPIException e) {
-			log.warn("Git gc not successful: " + e.getMessage());
-		}
-		if (log.isDebugEnabled()) {
-			stopwatch.stop();
-			log.debug("gc took " + stopwatch);
 		}
 	}
 
@@ -741,9 +674,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	@Override
 	public void deleteVersion(final WikiPage pageName, final int version) {
 		// Can't delete version from git
-		if(version == LATEST_VERSION){
-			this.cache.reset(pageName);
-		}
+//		if(version == LATEST_VERSION){
+//			this.cache.reset(pageName);
+//		}
 	}
 
 	@Override

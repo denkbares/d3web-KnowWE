@@ -27,13 +27,18 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.user.UserProfile;
 import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -82,6 +87,58 @@ public class GitVersioningUtils {
 				commit.setCommitter(author, "");
 			}
 		}
+	}
+
+	public static void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
+		if (windowsGitHack) {
+			doBinaryGC(repository.getDirectory(), prune);
+		}
+		else {
+			doGC(repository, aggressive, prune);
+		}
+	}
+
+	private static void doBinaryGC(File pageDir, boolean prune) {
+		try {
+			StopWatch sw = new StopWatch();
+			sw.start();
+			log.info("binary gc start");
+			ProcessBuilder pb = new ProcessBuilder();
+			pb.inheritIO().command("git", "gc", prune?"--prune=now":"").directory(pageDir);
+			Process git_gc = pb.start();
+			git_gc.waitFor(2, TimeUnit.MINUTES);
+			sw.stop();
+			log.info("binary gc took " + sw.toString());
+		}
+		catch (InterruptedException e) {
+			log.warn("External git process didn't end in 2 minutes, therefore cancel it");
+		}
+		catch (IOException e) {
+			log.error("Error executing external git: " + e.getMessage(), e);
+		}
+	}
+
+	private static void doGC(final Repository repository, final boolean aggressive, boolean prune) {
+		final StopWatch stopwatch = new StopWatch();
+		stopwatch.start();
+		final Git git = new Git(repository);
+		try {
+			log.info("Beginn Git gc");
+			GarbageCollectCommand gc = git.gc()
+					.setAggressive(aggressive);
+			if(prune)
+					gc.setExpire(null);
+			final Properties gcRes = gc.call();
+			for (final Map.Entry<Object, Object> entry : gcRes.entrySet()) {
+				log.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
+			}
+
+		}
+		catch (final GitAPIException e) {
+			log.warn("Git gc not successful: " + e.getMessage());
+		}
+		stopwatch.stop();
+		log.info("gc took " + stopwatch);
 	}
 
 	public static List<DiffEntry> getDiffEntries(ObjectId oldCommit, ObjectId newCommit, Repository repository) throws IOException {

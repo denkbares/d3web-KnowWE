@@ -47,22 +47,22 @@ public class GitVersionCache {
 	private final Repository repository;
 	private static final Logger log = Logger.getLogger(GitVersionCache.class);
 
-	private final Map<String, List<GitCacheItem>> pageRevisionCache;
-	private final Map<String, List<GitCacheItem>> attachmentRevisionCache;
-	private final Map<String, List<CacheCommand>> cacheCommands;
+	private Map<String, List<GitCacheItem>> pageRevisionCache;
+	private Map<String, List<GitCacheItem>> attachmentRevisionCache;
+	private Map<String, List<CacheCommand>> cacheCommands;
 
 	public GitVersionCache(WikiEngine engine, Repository repository) {
 		this.engine = engine;
 		this.repository = repository;
-		pageRevisionCache = new TreeMap<>();
-		attachmentRevisionCache = new TreeMap<>();
-		cacheCommands = new HashMap<>();
 	}
 
 	void initializeCache() throws IOException {
+		pageRevisionCache = new TreeMap<>();
+		attachmentRevisionCache = new TreeMap<>();
+		cacheCommands = new HashMap<>();
 		StopWatch sw = new StopWatch();
 		sw.start();
-		log.debug("Getting all git revisions for cache...");
+		log.info("Getting all git revisions for cache...");
 
 		final ObjectReader objectReader = this.repository.newObjectReader();
 		final CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
