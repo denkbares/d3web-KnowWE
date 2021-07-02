@@ -25,7 +25,8 @@ KNOWWE.core.plugin.objectinfo = function() {
 
   function scrollIntoView($element) {
     jq$('html, body').animate({
-      scrollTop: $element.offset().top - (jq$('.navigation').height() + 5)
+      // we have to scroll a but further to move past static wiki header and also some generic stuff like table headers
+      scrollTop: $element.offset().top - (jq$('.navigation').height() + 110)
     }, 0);
   }
 
