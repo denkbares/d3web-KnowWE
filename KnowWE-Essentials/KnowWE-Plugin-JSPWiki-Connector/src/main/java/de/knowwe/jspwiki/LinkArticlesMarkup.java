@@ -22,6 +22,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -31,6 +32,7 @@ import de.knowwe.core.utils.Scope;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.util.Icon;
 
 import static com.denkbares.strings.Strings.*;
@@ -69,10 +71,13 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		PackageManager.addPackageAnnotation(MARKUP);
 		MARKUP.addAnnotation(ANNOTATION_TEMPLATE);
 		MARKUP.addAnnotation(ANNOTATION_EXCLUDE);
+		MARKUP.addAnnotationRenderer(ANNOTATION_EXCLUDE, StyleRenderer.ANNOTATION);
 		MARKUP.addAnnotation(ANNOTATION_MARKUP);
 		MARKUP.addAnnotation(ANNOTATION_ARTICLE);
 		MARKUP.addAnnotation(ANNOTATION_FRAME);
+		MARKUP.addAnnotationRenderer(ANNOTATION_FRAME, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(ANNOTATION_HEADER);
+		MARKUP.addAnnotationRenderer(ANNOTATION_HEADER, NothingRenderer.getInstance());
 		MARKUP.getAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME)
 				.setDocumentation("Specify a package name to show all articles which declare this package.");
 		MARKUP.getAnnotation(ANNOTATION_ARTICLE)
