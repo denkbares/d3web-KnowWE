@@ -11,10 +11,9 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public class TermInfoSet implements Collection<TermInfo> {
@@ -72,6 +71,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 		}
 
 		@Override
+		@NotNull
 		public Collection<TermCompiler> getTermCompilers() {
 			return Collections.unmodifiableCollection(termCompilers);
 		}
@@ -181,7 +181,6 @@ public class TermInfoSet implements Collection<TermInfo> {
 		for (TermCompiler terminologyManager : terminologyManagers) {
 			addTermManagerIfMatches(identifier, terminologyManager);
 		}
-
 	}
 
 	private void addTermManagerIfMatches(Identifier termIdentifier, TermCompiler termCompiler) {
@@ -206,10 +205,14 @@ public class TermInfoSet implements Collection<TermInfo> {
 		}
 	}
 
-	public void initAllTerms(String web) {
-		ArticleManager articleManager = Environment.getInstance().getArticleManager(web);
-		Collection<TermCompiler> compilers = Compilers.getCompilers(articleManager, TermCompiler.class);
+	public void initAllTerms(UserContext userContext, boolean defaultOnly) {
+		Collection<TermCompiler> compilers = Compilers.getCompilers(userContext, userContext.getArticleManager(), TermCompiler.class);
 		for (TermCompiler compiler : compilers) {
+			if (defaultOnly) {
+				if (!Compilers.isDefaultCompiler(userContext, compiler)) {
+					continue;
+				}
+			}
 			addAllMatchingTermInfos(compiler);
 		}
 	}
@@ -234,7 +237,6 @@ public class TermInfoSet implements Collection<TermInfo> {
 		// if the term has no definitions, there aren't any term classes either
 		// we still might want the references
 		return termManager.getTerminologyManager().isUndefinedTerm(identifier);
-
 	}
 
 	public TermInfo getTermInfo(Identifier identifier) {

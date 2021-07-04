@@ -3,27 +3,23 @@ package de.knowwe.core.kdom.objects;
 import java.util.Collection;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
-import de.knowwe.core.compile.CompilationLocal;
-import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 
 public class TermUtils {
 
-	private static final Pattern CONTROL_PATTERN = Pattern.compile("(?:^&REF)");
+	private static final Pattern CONTROL_PATTERN = Pattern.compile("^&REF");
 
 	/**
 	 * Returns if a specified term usually requires quotes. This method can only
@@ -58,30 +54,10 @@ public class TermUtils {
 		return termName;
 	}
 
-	/**
-	 * Returns a Collection of all defining {@link TerminologyManager}
-	 * definitions for all {@link Identifier}. You may specify if the managers
-	 * are collected case insensitive of case sensitive.
-	 *
-	 * @param web                the web to collect the definitions for
-	 * @param caseSensitive      whether the managers are collected case insensitive
-	 *                           of case sensitive
-	 * @param allowedTermClasses a set of classes the matched definitions shall
-	 *                           be type of. The method only returns term managers matching at
-	 *                           least one of these classes.
-	 * @return the collection of all term managers for all terms
-	 * @created 25.08.2013
-	 * @deprecated please use the faster, cached version of this call: {@link #getAllTermInfos(UserContext, boolean, Class[])}
-	 */
-	@Deprecated
-	public static TermInfoSet getAllTermInfos(String web, boolean caseSensitive, Class<?>... allowedTermClasses) {
-		return getAllTermInfosInternal(web, caseSensitive, allowedTermClasses);
-	}
-
 	@NotNull
-	private static TermInfoSet getAllTermInfosInternal(String web, boolean caseSensitive, Class<?>[] allowedTermClasses) {
+	private static TermInfoSet getAllTermInfosInternal(UserContext userContext, boolean caseSensitive, boolean defaultOnly, Class<?>[] allowedTermClasses) {
 		TermInfoSet result = new TermInfoSet(caseSensitive, allowedTermClasses);
-		result.initAllTerms(web);
+		result.initAllTerms(userContext, defaultOnly);
 		return result;
 	}
 
@@ -100,12 +76,7 @@ public class TermUtils {
 	 * @created 25.08.2013
 	 */
 	public static TermInfoSet getAllTermInfos(UserContext userContext, boolean caseSensitive, Class<?>... allowedTermClasses) {
-		final String cacheKey = "allTermInfos_" + Stream.of(allowedTermClasses)
-				.map(Class::getName)
-				.collect(joining("-"));
-		CompilerManager compilerManager = userContext.getArticleManager().getCompilerManager();
-		String web = userContext.getWeb();
-		return CompilationLocal.getCached(compilerManager, cacheKey, () -> getAllTermInfosInternal(web, caseSensitive, allowedTermClasses));
+		return getAllTermInfosInternal(userContext, caseSensitive, true, allowedTermClasses);
 	}
 
 	/**
