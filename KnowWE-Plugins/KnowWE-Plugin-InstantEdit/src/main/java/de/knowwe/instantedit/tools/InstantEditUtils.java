@@ -33,7 +33,7 @@ public class InstantEditUtils {
 	}
 
 	public static String createNewEnumeratedTitle(String prefix, ArticleManager articleManager) {
-		return createNewEnumeratedTitle(prefix, articleManager, -1);
+		return createNewEnumeratedTitle(prefix, articleManager, 1);
 	}
 
 	public static String createNewEnumeratedTitle(String prefix, ArticleManager articleManager, int digits) {
@@ -52,7 +52,8 @@ public class InstantEditUtils {
 			blockedNames.removeIf(blockedName -> articleManager.getArticle(blockedName) != null);
 		}
 
-		String title = prefix + String.format("%0" + Math.max(digits, 1) + "d", current++);
+		digits = Math.max(digits, 1);
+		String title = prefix + String.format("%0" + digits + "d", current++);
 		synchronized (blockedNames) {
 			while (blockedNames.contains(title) || articleManager.getArticle(title) != null) {
 				title = prefix + String.format("%0" + digits + "d", current++);
