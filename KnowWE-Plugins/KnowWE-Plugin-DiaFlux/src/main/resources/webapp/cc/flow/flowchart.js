@@ -49,7 +49,7 @@ Flowchart.loadFlowchart = function(kdomid, parent) {
 					xml = Flowchart.parseXML(this.responseText);
 				}
 				Flowchart.update(parent, kdomid, xml);
-				KNOWWE.core.plugin.objectinfo.highlighAnchor();
+				KNOWWE.core.plugin.objectinfo.highlightAnchor();
 			},
 			onError : function() {
 				//TODO handle error

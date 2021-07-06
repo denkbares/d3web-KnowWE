@@ -52,10 +52,10 @@ KNOWWE.core.plugin.objectinfo = function() {
       });
 
       // highlight section navigation via anchors
-      KNOWWE.core.plugin.objectinfo.highlighAnchor();
+      KNOWWE.core.plugin.objectinfo.highlightAnchor();
     },
 
-    highlighAnchor: function() {
+    highlightAnchor: function() {
       if (!window.location.hash) return;
 
       jq$('.anchor-highlight').removeClass("highlight").removeClass("anchor-highlight");
@@ -66,14 +66,14 @@ KNOWWE.core.plugin.objectinfo = function() {
       if (section.exists()) {
         section.addClass('highlight');
         section.addClass('anchor-highlight');
-        scrollIntoView(section);
+        scrollIntoView(section, 100);
         return;
       }
 
       // section not found, try highlighting from anchor to anchor-end
       const anchor = jq$('.anchor[name="' + name + '"]');
       if (anchor.exists()) {
-        scrollIntoView(anchor.parent());
+        scrollIntoView(anchor.parent(), 100);
         const endSelector = '.anchor,.anchor-end[name="' + name + '"]';
         if (!anchor.nextAll(endSelector).exists()) return;
         let next = anchor.next();
@@ -86,7 +86,12 @@ KNOWWE.core.plugin.objectinfo = function() {
 
       section = jq$('#' + sectionId);
       if (section.exists()) {
-        scrollIntoView(section);
+        scrollIntoView(section, 100);
+      }
+
+      section = jq$('#' + name); // ordinary JSPWiki links
+      if (section.exists()) {
+        scrollIntoView(section, 100);
       }
     },
 
@@ -854,7 +859,7 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
       KNOWWE.core.plugin.recompile.init();
     });
     jq$(window).on('hashchange', function() {
-      KNOWWE.core.plugin.objectinfo.highlighAnchor();
+      KNOWWE.core.plugin.objectinfo.highlightAnchor();
     });
   }
 }());
