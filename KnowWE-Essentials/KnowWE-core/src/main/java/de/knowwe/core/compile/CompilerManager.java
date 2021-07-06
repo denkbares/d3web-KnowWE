@@ -1,5 +1,8 @@
 package de.knowwe.core.compile;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -336,7 +339,9 @@ public class CompilerManager {
 					// might be a bit to conservative, if a compiler uses multiple threads and only a subset of them is waiting, but we accept this for now
 					if (waitingCompilers.containsAll(currentlyCompiledPriority.keySet())) {
 						throw new InterruptedException("Deadlock detected, terminate waiting for compiler: " +
-								compiler.getClass().getSimpleName() + " @priority: " + priority);
+								compiler.getClass().getSimpleName() + " @priority: " + priority +
+								"\nThread-Count: " + getMaxCompilationThreadCount() +
+								"\nThread-Dump:\n" + threadDump());
 					}
 
 					// in case we have a small CPU and only a few compile threads
@@ -355,6 +360,20 @@ public class CompilerManager {
 			finally {
 				waitingCompilers.remove(compiler);
 			}
+		}
+	}
+
+	private static String threadDump() {
+		try {
+			StringBuilder threadDump = new StringBuilder(System.lineSeparator());
+			ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+			for (ThreadInfo threadInfo : threadMXBean.dumpAllThreads(true, true)) {
+				threadDump.append(threadInfo.toString());
+			}
+			return threadDump.toString();
+		}
+		catch (Throwable e) {
+			return "Unable to generate thread dump due to exception: " + e.getClass() + ": " + e.getMessage();
 		}
 	}
 
