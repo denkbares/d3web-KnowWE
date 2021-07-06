@@ -23,13 +23,6 @@ KNOWWE.core.plugin = KNOWWE.core.plugin || {}
 
 KNOWWE.core.plugin.objectinfo = function() {
 
-  function scrollIntoView($element) {
-    jq$('html, body').animate({
-      // we have to scroll a but further to move past static wiki header and also some generic stuff like table headers
-      scrollTop: $element.offset().top - (jq$('.navigation').height() + 110)
-    }, 0);
-  }
-
   return {
 
     init: function() {
@@ -50,49 +43,6 @@ KNOWWE.core.plugin.objectinfo = function() {
           }
         }
       });
-
-      // highlight section navigation via anchors
-      KNOWWE.core.plugin.objectinfo.highlightAnchor();
-    },
-
-    highlightAnchor: function() {
-      if (!window.location.hash) return;
-
-      jq$('.anchor-highlight').removeClass("highlight").removeClass("anchor-highlight");
-      const name = window.location.hash.substring(1);
-      const sectionId = name.substr(name.lastIndexOf("-") + 1).toLowerCase();
-      // first, try to find section directly
-      let section = jq$('[sectionid="' + sectionId + '"]');
-      if (section.exists()) {
-        section.addClass('highlight');
-        section.addClass('anchor-highlight');
-        scrollIntoView(section, 100);
-        return;
-      }
-
-      // section not found, try highlighting from anchor to anchor-end
-      const anchor = jq$('.anchor[name="' + name + '"]');
-      if (anchor.exists()) {
-        scrollIntoView(anchor.parent(), 100);
-        const endSelector = '.anchor,.anchor-end[name="' + name + '"]';
-        if (!anchor.nextAll(endSelector).exists()) return;
-        let next = anchor.next();
-        while (!next.is(endSelector)) {
-          next.addClass('highlight');
-          next.addClass('anchor-highlight');
-          next = next.next();
-        }
-      }
-
-      section = jq$('#' + sectionId);
-      if (section.exists()) {
-        scrollIntoView(section, 100);
-      }
-
-      section = jq$('#' + name); // ordinary JSPWiki links
-      if (section.exists()) {
-        scrollIntoView(section, 100);
-      }
     },
 
     /**
@@ -213,6 +163,85 @@ KNOWWE.core.plugin.objectinfo = function() {
 
         }
       });
+    }
+  }
+}();
+
+/**
+ * Handle anchors
+ * @type {{init: KNOWWE.plugin.anchor.init}}
+ */
+KNOWWE.plugin.anchor = function() {
+
+
+  function getFloatingTableHeaderHeight($element) {
+    let $tableHeader = $element.parents("table.sticky-header").find("thead");
+    if ($tableHeader.exists()) {
+      return $tableHeader.height();
+    } else {
+      return 0;
+    }
+  }
+
+  function scrollIntoView($element) {
+    let headerHeight = jq$('.navigation').height();
+    let elementOffset = $element.offset().top;
+    let scrollTop = elementOffset
+      // header will be fixed to the top, so we have to scroll a bit further
+      - headerHeight
+      // 10 additional margin
+      - 10
+      // if the hash anchor is inside a table, scroll additional 100px to also account for fixed table header
+      - getFloatingTableHeaderHeight($element);
+    jq$('html, body').animate({
+      scrollTop: scrollTop
+    }, 0);
+    console.log("Scrolled " + scrollTop)
+  }
+
+
+  return {
+
+    init: function() {
+      if (!window.location.hash) return;
+
+      jq$('.anchor-highlight').removeClass("highlight").removeClass("anchor-highlight");
+      const name = window.location.hash.substring(1);
+      const sectionId = name.substr(name.lastIndexOf("-") + 1).toLowerCase();
+      // first, try to find section directly
+      let section = jq$('[sectionid="' + sectionId + '"]');
+      if (section.exists()) {
+        section.addClass('highlight');
+        section.addClass('anchor-highlight');
+        scrollIntoView(section);
+        return;
+      }
+
+      // section not found, try highlighting from anchor to anchor-end
+      const anchor = jq$('.anchor[name="' + name + '"]');
+      if (anchor.exists()) {
+        scrollIntoView(anchor.parent());
+        const endSelector = '.anchor,.anchor-end[name="' + name + '"]';
+        if (!anchor.nextAll(endSelector).exists()) return;
+        let next = anchor.next();
+        while (!next.is(endSelector)) {
+          next.addClass('highlight');
+          next.addClass('anchor-highlight');
+          next = next.next();
+        }
+      }
+
+      section = jq$('#' + sectionId);
+      if (section.exists()) {
+        scrollIntoView(section);
+      }
+
+      section = jq$('#' + name); // ordinary JSPWiki hash anchor links
+      if (section.exists()) {
+        setTimeout(function() { // deferred, so normal hash anchor scroll has already happened
+          scrollIntoView(section);
+        }, 0);
+      }
     }
   }
 }();
@@ -810,7 +839,7 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
           let rect = $header[0].getBoundingClientRect();
           return rect.top + rect.height;
         },
-        responsiveContainer: function($table){
+        responsiveContainer: function($table) {
           return $table.closest('.zebra-table, .scroll-parent');
         },
         zIndex: 400, // has to be < than wiki header, which is 1001
@@ -829,11 +858,13 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
       let transitionOngoing = false
       jq$(".haddock .sidebar").on("transitionstart", function() {
         transitionOngoing = true;
+
         function continuousUpdate() {
           if (!transitionOngoing) return;
           window.dispatchEvent(new CustomEvent('scroll'));
           window.requestAnimationFrame(continuousUpdate);
         }
+
         window.requestAnimationFrame(continuousUpdate);
       });
       jq$(".haddock .sidebar").on("transitionend transitioncancel", function() {
@@ -857,9 +888,10 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
       KNOWWE.core.plugin.renderKDOM();
       KNOWWE.kdomtreetable.init();
       KNOWWE.core.plugin.recompile.init();
+      KNOWWE.plugin.anchor.init();
     });
     jq$(window).on('hashchange', function() {
-      KNOWWE.core.plugin.objectinfo.highlightAnchor();
+      KNOWWE.plugin.anchor.init();
     });
   }
 }());
