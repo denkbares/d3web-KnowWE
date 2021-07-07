@@ -136,6 +136,12 @@ public class OntologyBridge {
 	/**
 	 * Provides the {@link D3webCompiler} that links to the given {@link OntologyCompiler}. This is the reverse of the
 	 * method {@link #getOntology(D3webCompiler)}.
+	 * <p>
+	 * <b>Attention: Do not use this method in a CompileScript or in util methods that are commonly used in
+	 * CompileScripts!</b><br>
+	 * If the method is used in CompileScripts and further on in the stack {@link #getOntology(Section)} is called, the
+	 * OntologyCompiler might wait on itself and cause a deadlock.
+	 * </p>
 	 *
 	 * @param ontologyCompiler the ontology compiler for which to get the linking d3web compiler
 	 * @return the d3web compiler linking to the given ontology compiler
