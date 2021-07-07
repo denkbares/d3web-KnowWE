@@ -57,6 +57,7 @@ public class CompilerManager {
 	// number of threads that are not used for compilers themselves, but for operational handling of compilation process
 	private static final int OPERATIONAL_THREAD_COUNT = 1;
 	private volatile int compilationCount = 0;
+	private volatile int lastThreadDumpThrown = -1;
 
 	private final PriorityList<Double, Compiler> compilers;
 	// just a fast cache for the contains() method
@@ -68,7 +69,7 @@ public class CompilerManager {
 	private final Object lock = new Object();
 	private final Set<String> currentlyCompiledArticles = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final Map<Compiler, Priority> currentlyCompiledPriority = new ConcurrentHashMap<>();
-	private final Set<Compiler> waitingCompilers = new CountingSet<>();
+	private final Set<Compiler> awaitedCompilers = new CountingSet<>();
 	private static final AtomicLong compileThreadNumber = new AtomicLong(1);
 	private static final Map<Thread, Object> compileThreads = Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -191,6 +192,7 @@ public class CompilerManager {
 			setCompiling(removed);
 			running = compilers.groupIterator();
 			compilationCount++;
+			noRunningCompileThreadsFoundSince.reset();
 		}
 		threadPool.execute(() -> {
 			Stopwatch stopwatch = new Stopwatch();
@@ -271,10 +273,9 @@ public class CompilerManager {
 					finally {
 						// and notify that the compiler has finished
 						synchronized (lock) {
-							// 1- update all required compiler flags
+							// 1 - update all required compiler flags
 							activeCompilers.remove(compiler);
-							Log.fine(compiler.getClass().getSimpleName() +
-									" finished after " + stopwatch.getDisplay());
+							Log.fine(compiler.getClass().getSimpleName() + " finished after " + stopwatch.getDisplay());
 							clearCurrentCompilePriority(compiler);
 							// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
 							// always notify all, as the clear is usually a noop (if the compiler has cleared before)
@@ -331,35 +332,112 @@ public class CompilerManager {
 
 		synchronized (lock) {
 			try {
-				waitingCompilers.add(compiler);
+				awaitedCompilers.add(compiler);
 				while (true) {
 					if (!shouldWait(compiler, priority)) return;
 
-					// deadlock detection: if all remaining compilers are waiting, throw an error
-					// might be a bit to conservative, if a compiler uses multiple threads and only a subset of them is waiting, but we accept this for now
-					if (waitingCompilers.containsAll(currentlyCompiledPriority.keySet())) {
-						throw new InterruptedException("Deadlock detected, terminate waiting for compiler: " +
-								compiler.getClass().getSimpleName() + " @priority: " + priority +
-								"\nThread-Count: " + getMaxCompilationThreadCount() +
-								"\nThread-Dump:\n" + threadDump());
-					}
-
-					// in case we have a small CPU and only a few compile threads
+					// in case we have a small CPU and only a few compile threads -> increase compile threads until we
+					// have at least as much compile threads as compilers potentially running at the same time in the
+					// current wiki
 					int threadCount = getMaxCompilationThreadCount();
-					if (waitingCompilers.size() >= threadCount) {
+					if (awaitedCompilers.size() >= threadCount) {
 						int newThreadCount = threadCount + 1;
 						setMaxCompilationThreadCount(newThreadCount);
 						Log.warning("All compile threads are occupied with waiting compilers, increasing thread count to " + newThreadCount + ".\n"
 								+ "Consider using system property " + KNOWWE_COMPILER_THREADS_COUNT + " to set thread count to this number at startup.");
 					}
 
+					else if (deadlockDetected()) {
+						throwInterruptException(compiler, priority);
+					}
+
 					// otherwise wait for notification...
-					lock.wait(1000);
+					// we use a timeout to have a chance of detecting dead locks
+					lock.wait(5000);
 				}
 			}
 			finally {
-				waitingCompilers.remove(compiler);
+				awaitedCompilers.remove(compiler);
 			}
+		}
+	}
+
+	private void throwInterruptException(@NotNull Compiler compiler, @NotNull Priority priority) throws InterruptedException {
+		String message = "Deadlock detected, terminate waiting for compiler: " +
+				compiler.getClass().getSimpleName() + " @priority: " + priority;
+		if (this.lastThreadDumpThrown != this.compilationCount) { // avoid slow spam
+			message += "\nThread-Count: " + getMaxCompilationThreadCount() +
+					"\nThread-Dump:\n" +
+					threadDump() +
+					"Thread-Dump-End!";
+			this.lastThreadDumpThrown = this.compilationCount;
+		}
+		throw new InterruptedException(message);
+	}
+
+	private boolean deadlockDetected() {
+		return allCurrentlyCompilingCompilersAwaited() || noRunningCompileThreads();
+	}
+
+	/**
+	 * Check if all remaining compiling compilers are awaited. A bit conservative, but also easy/fast to check, so do
+	 * it.
+	 *
+	 * @return true if all compilers are currently awaited by other compilers
+	 */
+	private boolean allCurrentlyCompilingCompilersAwaited() {
+		boolean allAwaiting = awaitedCompilers.containsAll(currentlyCompiledPriority.keySet());
+		if (allAwaiting) {
+			Log.severe("All remaining compiling compilers are awaited by other compilers");
+		}
+		return allAwaiting;
+	}
+
+	private static final long DEADLOCK_TIMEOUT = 30 * 1000; // 30 seconds
+	private final Stopwatch noRunningCompileThreadsFoundSince = new Stopwatch().reset();
+	private final Stopwatch timeSinceLastMessage = new Stopwatch().reset();
+
+	/**
+	 * Check if there are running compile thread. We don't check the current thread (calling this method), because that
+	 * one is of course always in state running.
+	 * <br>
+	 * Possible issues (we will have to wait and see):
+	 * <ul>
+	 *     <li>When the compilation gets going, it is possible that all known compile threads are blocked for a short
+	 *     time, while more compile threads are still available and get started from the executor service -> we require
+	 *     that all threads are blocked for a certain amount of time (DEADLOCK_TIMEOUT)</li>
+	 *     <li>Compile threads, that are not known here -> make them known here, similar to {@link ParallelScriptCompiler}</li>
+	 *     <li>Some legitimate external factor blocking a compile thread that others compile threads are waiting for,
+	 *     like an accessed resource being blocked -> at the moment I would say, that compile threads should
+	 *     not be blocked by anything outside the compile mechanism (other compile threads blocking the resource would be
+	 *     ok in the context of this method)</li>
+	 *     <li>Two waiting threads have a wait-timeout at the same time and check the compile threads at the same time
+	 *     -> should still be fine, because only one thread can enter the synchronized block here, the other one will
+	 *     correctly show blocked state again</li>
+	 * </ul>
+	 *
+	 * @return true if there are other running compiling threads
+	 */
+	private boolean noRunningCompileThreads() {
+		synchronized (compileThreads) {
+			Thread currentThread = Thread.currentThread();
+			boolean anyRunning = compileThreads.keySet().stream()
+					.filter(t -> t != currentThread)
+					.anyMatch(t -> t.getState() == Thread.State.RUNNABLE);
+
+			if (anyRunning) {
+				noRunningCompileThreadsFoundSince.reset();
+			}
+			else {
+				noRunningCompileThreadsFoundSince.resume();
+				timeSinceLastMessage.resume();
+				if (timeSinceLastMessage.getTime() > DEADLOCK_TIMEOUT / 3) {
+					Log.warning("Non of the known compile threads is currently in state RUNNABLE. This may be an indication for a deadlock.");
+					timeSinceLastMessage.reset().resume();
+				}
+			}
+
+			return noRunningCompileThreadsFoundSince.getTime() > DEADLOCK_TIMEOUT;
 		}
 	}
 
