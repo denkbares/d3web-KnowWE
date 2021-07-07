@@ -142,7 +142,7 @@ public class OntologyBridge {
 	 * If the method is used in CompileScripts and further on in the stack {@link #getOntology(Section)} is called, the
 	 * OntologyCompiler might wait on itself and cause a deadlock.<br>
 	 * If it the method has to be used, at least make sure, that {@link #getOntology(Section)} is not used further on in
-	 * the stack.
+	 * the stack with the {@link D3webCompiler} returned in this method.
 	 * </p>
 	 *
 	 * @param ontologyCompiler the ontology compiler for which to get the linking d3web compiler
