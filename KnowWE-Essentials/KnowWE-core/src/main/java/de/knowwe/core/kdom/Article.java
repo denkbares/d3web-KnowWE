@@ -136,7 +136,7 @@ public final class Article {
 		sectionizeArticle(text);
 
 		long time = System.currentTimeMillis() - start;
-		if (time < LOG_THRESHOLD && articleManager != null && !articleManager.isInitialized()) {
+		if (time < LOG_THRESHOLD && articleManager != null && !articleManager.isInitialized() || articleManager == null) {
 			Log.fine("Sectionized article '" + title + "' in " + time + "ms");
 		}
 		else {
