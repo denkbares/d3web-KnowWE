@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -108,10 +109,20 @@ public class TermUtils {
 	 * @param web the web for which the identifiers should be returned
 	 * @return a set of all term identifiers
 	 */
+	@NotNull
 	public static Set<Identifier> getTermIdentifiers(String web) {
-		// gathering all terms
-		return Compilers.getCompilers(Environment.getInstance()
-				.getArticleManager(web), TermCompiler.class)
+		return getTermIdentifiers(Environment.getInstance().getArticleManager(web));
+	}
+
+	/**
+	 * Simple method returning a set of all term identifiers of a given article manager.
+	 *
+	 * @param articleManager the article manager to get all terms from
+	 * @return a set of all term identifiers
+	 */
+	@NotNull
+	public static Set<Identifier> getTermIdentifiers(ArticleManager articleManager) {
+		return Compilers.getCompilers(articleManager, TermCompiler.class)
 				.stream()
 				.map(compiler -> compiler.getTerminologyManager().getAllDefinedTerms())
 				.flatMap(Collection::stream)
