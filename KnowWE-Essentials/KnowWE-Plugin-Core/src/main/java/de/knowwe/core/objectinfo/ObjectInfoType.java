@@ -21,17 +21,12 @@ package de.knowwe.core.objectinfo;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
-
 /**
- * 
  * @author stefan
  * @created 09.12.2013
  */
 public class ObjectInfoType extends DefaultMarkupType {
 
-	/**
-	 * @param markup
-	 */
 	private static final DefaultMarkup MARKUP;
 
 	static {

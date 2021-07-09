@@ -20,22 +20,21 @@ package de.knowwe.core.action;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
-import de.knowwe.core.Attributes;
-import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -53,9 +52,10 @@ import de.knowwe.notification.StandardNotification;
  */
 public class TermRenamingAction extends AbstractTermRenamingAction {
 
-	public static final String TERMNAME = "termname";
-	public static final String REPLACEMENT = "termreplacement";
-	public static final String SECTIONID = "sectionid";
+	public static final String TERM_NAME = "termName";
+	public static final String REPLACEMENT = "termReplacement";
+	public static final String SECTION_ID = "sectionId";
+	public static final String FORCE = "force";
 
 	protected Identifier createReplacingIdentifier(Identifier oldIdentifier, String text) {
 		String[] pathElements = oldIdentifier.getPathElements();
@@ -66,86 +66,59 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String web = context.getParameter(Attributes.WEB);
-		String term = context.getParameter(TERMNAME);
+		String term = context.getParameter(TERM_NAME);
 		String replacement = context.getParameter(REPLACEMENT);
-		String force = context.getParameter("force");
-		String sectionId = context.getParameter(SECTIONID);
+		String force = context.getParameter(FORCE);
+		String sectionId = context.getParameter(SECTION_ID);
 
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacementIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
-		if (force.equals("false") && TermUtils.getTermIdentifiers(web).contains(replacementIdentifier)) {
-			writeAlreadyExistsResponse(context, term, replacementIdentifier);
+		ArticleManager mgr = context.getArticleManager();
+
+		if ("false".equals(force) && TermUtils.getTermIdentifiers(mgr).contains(replacementIdentifier)) {
+			writeAlreadyExistsResponse(context, termIdentifier, replacementIdentifier);
 			return;
 		}
 
 		Collection<TermCompiler> compilers = Compilers.getCompilers(Sections.get(sectionId), TermCompiler.class);
-		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = getAllTermSections(compilers, termIdentifier);
+		Collection<RenamingCommand> renamingCommands = getRenamingCommands(termIdentifier, replacementIdentifier, compilers);
 
-		ArticleManager mgr = Environment.getInstance().getArticleManager(web);
-		Set<String> failures = new HashSet<>();
-		Set<String> success = new HashSet<>();
-		Set<String> articlesWithoutEditRights = getArticlesWithoutEditRights(allTerms, context);
-		if (articlesWithoutEditRights.isEmpty()) {
+		checkEditRights(context, renamingCommands);
+
+		for (RenamingCommand command : renamingCommands) {
 			EventManager.getInstance()
-					.fireEvent(new TermRenamingStartEvent(mgr, context, termIdentifier, replacementIdentifier));
-			renameTerms(allTerms, termIdentifier, replacementIdentifier, mgr, context, failures, success);
-			Compilers.awaitTermination(mgr.getCompilerManager());
-			EventManager.getInstance()
-					.fireEvent(new TermRenamingFinishEvent(mgr, context, termIdentifier, replacementIdentifier));
-			writeResponse(failures, success, termIdentifier, replacementIdentifier, context);
+					.fireEvent(new TermRenamingStartEvent(mgr, context, command.termIdentifier, command.replacementIdentifier));
 		}
-		else {
+
+		executeRenamingCommands(context, renamingCommands);
+
+		Compilers.awaitTermination(mgr.getCompilerManager());
+
+		for (RenamingCommand command : renamingCommands) {
+			EventManager.getInstance()
+					.fireEvent(new TermRenamingFinishEvent(mgr, context, command.termIdentifier, command.replacementIdentifier));
+		}
+
+		writeResponse(context);
+	}
+
+	@NotNull
+	protected Collection<RenamingCommand> getRenamingCommands(Identifier termIdentifier, Identifier replacementIdentifier, Collection<TermCompiler> compilers) {
+		Map<Article, Set<Section<? extends RenamableTerm>>> registrationsByArticle = getRegistrationsByArticle(compilers, termIdentifier);
+		return List.of(new RenamingCommand(termIdentifier, replacementIdentifier, registrationsByArticle));
+	}
+
+	private void checkEditRights(UserActionContext context, Collection<RenamingCommand> renamingCommands) throws IOException {
+		Set<Article> articlesWithoutEditRights = renamingCommands.stream()
+				.flatMap(c -> getArticlesWithoutEditRights(c.registrationsByArticle, context).stream())
+				.collect(Collectors.toSet());
+
+		if (!articlesWithoutEditRights.isEmpty()) {
 			String errorMessage = "You are not allowed to rename this term, because you do not have permission to " +
 					"edit all articles on which this term occurs: \n" + Strings.concat(", ", articlesWithoutEditRights);
 			NotificationManager.addNotification(context, new StandardNotification(errorMessage, Message.Type.ERROR));
-			context.sendError(403, errorMessage);
-		}
-	}
-
-	protected void writeResponse(Set<String> failures, Set<String> success,
-								 Identifier termIdentifier, Identifier replacement,
-								 UserActionContext context) throws IOException {
-
-		JSONObject response = new JSONObject();
-		try {
-			// the new external form of the TermIdentifier
-			String[] pathElements = termIdentifier.getPathElements();
-			String newLastPathElement = replacement.getLastPathElement();
-			pathElements[pathElements.length - 1] = newLastPathElement;
-			response.put("newTermIdentifier", new Identifier(
-					pathElements).toExternalForm());
-
-			// the new object name
-			response.put("newObjectName", new Identifier(
-					newLastPathElement).toExternalForm());
-
-			String title = context.getTitle();
-			if (title.equals("ObjectInfoPage")) {
-				response.put("objectinfopage", true);
-			}
-
-			// renamed Articles
-			StringBuilder renamedArticles = new StringBuilder();
-			// successes
-			for (String article : success) {
-				renamedArticles.append("##");
-				renamedArticles.append(article);
-			}
-			renamedArticles.append("###");
-			// failures
-			for (String article : failures) {
-				renamedArticles.append("##");
-				renamedArticles.append(article);
-			}
-			response.append("alreadyexists", false);
-			response.accumulate("renamedArticles", renamedArticles);
-
-			response.write(context.getWriter());
-		}
-		catch (JSONException e) {
-			throw new IOException(e.getMessage());
+			fail(context, 403, errorMessage);
 		}
 	}
 }

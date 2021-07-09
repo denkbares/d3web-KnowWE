@@ -25,114 +25,6 @@ KNOWWE.core.plugin.objectinfo = function() {
 
   return {
 
-    init: function() {
-      // init renaming form button
-      jq$('#objectinfo-replace-button').click(
-        KNOWWE.core.plugin.objectinfo.renameFunction);
-
-      // we have to suspend the enter event to prevent multiple
-      // confirm dialogs after when confirming the dialogs with enter...
-      let suspend = false;
-      jq$('#objectinfo-replacement').keyup(function(event) {
-        if (event.keyCode === 13 && !suspend) {
-          suspend = true;
-          if (confirm("Are you sure you want to rename this term?")) {
-            KNOWWE.core.plugin.objectinfo.renameFunction();
-          } else {
-            suspend = false;
-          }
-        }
-      });
-    },
-
-    /**
-     * Function: createHomePage Used in the ObjectInfoToolProvider for
-     * creating homepages for KnowWEObjects
-     */
-    createHomePage: function() {
-      objectName = _KS('#objectinfo-src');
-      if (objectName) {
-        const params = {
-          action: 'CreateObjectHomePageAction',
-          objectname: objectName.innerHTML
-        };
-
-        const options = {
-          url: KNOWWE.core.util.getURL(params),
-          response: {
-            action: 'none',
-            fn: function() {
-              window.location = "Wiki.jsp?page="
-                + objectName.innerHTML
-            }
-          }
-        };
-        new _KA(options).send();
-      }
-
-    },
-
-    renameFunction: function() {
-      KNOWWE.core.plugin.objectinfo.renameTerm(false);
-    },
-
-    /**
-     * Renames all occurrences of a specific term.
-     */
-    renameTerm: function(forceRename) {
-      if (forceRename == null)
-        forceRename = false;
-      // TODO shouldn't these 3 be vars?
-      objectname = jq$('#objectinfo-target');
-      replacement = jq$('#objectinfo-replacement');
-      web = jq$('#objectinfo-web');
-      if (objectname && replacement && web) {
-        const changeNote = 'Renaming: "' + objectname.val() + '" -> "'
-          + replacement.val() + '"';
-        const params = {
-          action: jq$(replacement).attr('action'),
-          termname: objectname.val(),
-          termreplacement: replacement.val(),
-          KWikiWeb: web.val(),
-          KWikiChangeNote: changeNote,
-          force: forceRename ? "true" : "false"
-        };
-        const options = {
-          url: KNOWWE.core.util.getURL(params),
-          response: {
-            action: 'none',
-            fn: function() {
-              const jsonResponse = JSON.parse(this.responseText);
-              const alreadyexists = jsonResponse.alreadyexists;
-              const same = jsonResponse.same;
-              if (same === 'true') {
-                alert('The term has not changed.');
-              } else {
-                if (alreadyexists === 'true') {
-                  if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
-                    KNOWWE.core.plugin.objectinfo
-                      .renameTerm(true);
-                  }
-                } else {
-                  window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
-                    + encodeURIComponent(jsonResponse.newObjectName)
-                    + "&termIdentifier="
-                    + encodeURIComponent(jsonResponse.newTermIdentifier);
-                }
-              }
-              KNOWWE.core.util.updateProcessingState(-1);
-            },
-            onError: function() {
-              KNOWWE.core.util.updateProcessingState(-1);
-            }
-          }
-        };
-        KNOWWE.core.util.updateProcessingState(1);
-        new _KA(options).send();
-      }
-
-    },
-
     /**
      * shows a list of similar terms
      */
@@ -257,50 +149,50 @@ KNOWWE.plugin.renaming = function() {
   /**
    * Renames all occurrences of a specific term.
    */
-  function renameTerms(oldValue, replacement, sectionId, forceRename) {
-    if (forceRename == null)
-      forceRename = false;
-    if (oldValue && (replacement || replacement === "")) {
-      const changeNote = 'Renaming: "' + oldValue + '" -> "'
-        + replacement + '"';
+  function renameTerms(options) {
+    let forceRename = options.forceRename || false;
+    let termName = options.termName;
+    let termReplacement = options.termReplacement;
+    let sectionId = options.sectionId;
+    if (termName && (termReplacement || termReplacement === "")) {
+
+      const changeNote = 'Renaming: "' + termName + '" -> "' + termReplacement + '"';
       const params = {
-        action: "TermRenamingAction",
-        termname: oldValue,
-        termreplacement: replacement,
-        sectionid: sectionId,
-        force: forceRename ? "true" : "false"
+        action: options.action,
+        termName: termName,
+        termReplacement: termReplacement,
+        sectionId: sectionId,
+        changeNote: changeNote,
+        force: forceRename
       };
+
       KNOWWE.core.util.updateProcessingState(1);
+
       jq$.ajax({
         type: "post", url: KNOWWE.core.util.getURL(params),
-        success: function(data, text, request) {
 
+        success: function(data, text, request) {
           const jsonResponse = JSON.parse(data);
-          const alreadyexists = jsonResponse.alreadyexists;
-          const noForce = jsonResponse.noForce;
-          const same = jsonResponse.same;
-          if (same === 'true') {
+          if (jsonResponse.same) {
             alert('The term has not changed.');
           } else {
-            if (alreadyexists === 'true') {
-              if (noForce === 'true') {
+            if (jsonResponse.alreadyExists) {
+              if (jsonResponse.noForce) {
                 alert('A term with this name already exists!');
                 KNOWWE.core.util.reloadPage(request);
               } else if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
-                renameTerms(oldValue, replacement, sectionId, true);
+                renameTerms({
+                  termName: termName,
+                  termReplacement: termReplacement,
+                  sectionId: sectionId,
+                  forceRename: true
+                });
               } else {
                 KNOWWE.core.util.reloadPage(request);
               }
             } else {
-              if (jsonResponse.objectinfopage === true) {
-                window.location.href = "Wiki.jsp?page=ObjectInfoPage&objectname="
-                  + encodeURIComponent(jsonResponse.newObjectName)
-                  + "&termIdentifier="
-                  + encodeURIComponent(jsonResponse.newTermIdentifier);
-              } else {
-                KNOWWE.helper.observer.notify("renamed");
-                KNOWWE.core.util.reloadPage(request);
-              }
+              KNOWWE.helper.observer.notify("renamed");
+              KNOWWE.core.util.reloadPage(request);
             }
           }
         },
@@ -328,15 +220,11 @@ KNOWWE.plugin.renaming = function() {
         fn: function() {
           const jsonResponse = JSON.parse(this.responseText);
           callback(jsonResponse);
-
-
         },
         onError: function() {
           KNOWWE.core.util.updateProcessingState(-1);
         }
-
       }
-
     };
     new _KA(options).send();
     KNOWWE.core.util.updateProcessingState(1);
@@ -411,43 +299,41 @@ KNOWWE.plugin.renaming = function() {
 
   // noinspection JSUnusedGlobalSymbols
   return {
-    renameTerm: function(sectionId, options) {
+    renameTerm: function(sectionId, opts) {
       setViewRoot();
+      let options = opts || {};
+      let infoActionName = options.infoActionName || "GetRenamingInfoAction";
+      let renamingActionName = options.renamingActionName || "TermRenamingAction";
 
-      let actionName;
-      if (options && options.actionName) {
-        actionName = options.actionName;
-      } else {
-        actionName = "GetRenamingInfoAction"
-      }
+      getRenamingInfo(sectionId, infoActionName, function(jsonResponse) {
 
-      getRenamingInfo(sectionId, actionName, function(jsonResponse) {
+        const clickedTerm = jq$(viewRoot + "[toolmenuidentifier=" + sectionId + "]").first().parent();
+        clickedTerm.addClass("tool-menu-click");
 
-        if (!options) options = {
-          toolMenuSection: sectionId,
-          oldIdentifier: jsonResponse.termIdentifier,
-        }
-
-        const clickedTerm = jq$(viewRoot + "[toolmenuidentifier=" + options.toolMenuSection + "]").first().parent();
-        clickedTerm.addClass("click");
-
-        jq$(".click").editable(function(value) {
-          renameTerms(jsonResponse.termIdentifier, value, sectionId, false);
+        jq$(".tool-menu-click").editable(function(value) {
+          renameTerms({
+            sectionId: sectionId,
+            termName: jsonResponse.termIdentifier,
+            termReplacement: value,
+            action: renamingActionName,
+            forceRename: false
+          });
           return value;
         }, {
           style: "inherit",
+          height: "20px",
           onreset: cancelEdit,
           afterreset: afterCancelEdit,
           select: true
-
         });
-        jq$('.click').trigger("click");
-        //replace edit field value with sectionText for encoding reasons
+
+        jq$('.tool-menu-click').trigger("click");
+        // replace edit field value with sectionText for encoding reasons
         clickedTerm.find("input").val(jsonResponse.lastPathElement).select().autoGrowRenameField(5);
 
         initializeOtherOccurencesHashMap(jsonResponse.sectionIds);
         saveOriginalsAndPrepareForEdit(jsonResponse.lastPathElement);
-        jq$(".click input").keyup(function() {
+        jq$(".tool-menu-click input").keyup(function() {
           showCurrentEditOnOtherOccurences(jq$(this).val());
         });
       });
@@ -884,7 +770,6 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
   if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
     window.addEvent('domready', function() {
       KNOWWE.tooltips.enrich();
-      KNOWWE.core.plugin.objectinfo.init();
       KNOWWE.core.plugin.renderKDOM();
       KNOWWE.kdomtreetable.init();
       KNOWWE.core.plugin.recompile.init();

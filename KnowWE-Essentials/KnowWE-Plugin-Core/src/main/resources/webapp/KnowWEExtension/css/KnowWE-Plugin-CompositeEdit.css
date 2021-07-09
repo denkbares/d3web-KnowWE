@@ -173,7 +173,7 @@
 	left: -15px;
 }
 
-.click input {
+.tool-menu-click input {
 	background-color: #F5FAFF;
 	transition: width 100ms linear;
 }

@@ -265,15 +265,6 @@
 		<parameter id="script" value="KnowWE-Plugin-Core.js" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="ObjectInfoToolProvider">
-		<parameter id="class" value="de.knowwe.core.tools.ObjectInfoToolProvider" />
-		<parameter id="name" value="ObjectInfoToolProvider" />
-		<parameter id="description" value="Offers some tools for the ObjectInfoTagHandler." />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="3" />
-		<parameter id="scope" value="TagHandlerType/ObjectInfo" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="GetToolMenuAction">
 		<parameter id="class" value="de.knowwe.core.tools.GetToolMenuAction" />
 		<parameter id="name" value="GetToolMenuAction" />
@@ -302,14 +293,6 @@
 		<parameter id="class" value="de.knowwe.core.action.GetRenamingInfoAction" />
 		<parameter id="name" value="GetRenamingInfoAction" />
 		<parameter id="description" value="Action GetInfosForInlineTermRenamingAction" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="InlineTermRenamingAction">
-		<parameter id="class" value="de.knowwe.core.objectinfo.InlineTermRenamingAction" />
-		<parameter id="name" value="InlineTermRenamingAction" />
-		<parameter id="description" value="Action InlineTermRenamingAction" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>

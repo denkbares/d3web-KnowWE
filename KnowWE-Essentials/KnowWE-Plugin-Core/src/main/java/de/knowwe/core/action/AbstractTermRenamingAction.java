@@ -20,6 +20,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.RenamableTerm;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
+import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -30,27 +31,27 @@ import de.knowwe.core.utils.KnowWEUtils;
  */
 public abstract class AbstractTermRenamingAction extends AbstractAction {
 
-	protected void renameTerms(
-			Map<String, Set<Section<? extends RenamableTerm>>> allTerms, Identifier term,
-			Identifier replacement, ArticleManager mgr, UserActionContext context,
-			Set<String> failures, Set<String> success) throws IOException {
+	public static final String ALREADY_EXISTS = "alreadyExists";
+	public static final String SAME = "same";
+	public static final String NO_FORCE = "noForce";
+
+	protected void executeRenamingCommands(UserActionContext context, Collection<RenamingCommand> renamingCommands) throws IOException {
+
+		Map<Article, Map<String, String>> nodesMapByArticle = new HashMap<>();
+		for (RenamingCommand renamingCommand : renamingCommands) {
+			appendReplacements(renamingCommand, nodesMapByArticle);
+		}
+
+		performRenaming(nodesMapByArticle, context);
+	}
+
+	protected void performRenaming(Map<Article, Map<String, String>> nodesMapByArticle, UserActionContext context) throws IOException {
+		ArticleManager mgr = context.getArticleManager();
 		mgr.open();
 		try {
-			for (String title : allTerms.keySet()) {
-				if (Environment.getInstance().getWikiConnector().userCanEditArticle(title, context.getRequest())) {
-					Map<String, String> nodesMap = new HashMap<>();
-					for (Section<? extends RenamableTerm> termSection : allTerms.get(title)) {
-						String sectionTextAfterRename = termSection.get()
-								.getSectionTextAfterRename(termSection, term, replacement);
-						if (!sectionTextAfterRename.equals(termSection.getText())) {
-							nodesMap.put(termSection.getID(), sectionTextAfterRename);
-						}
-					}
-					Sections.replace(context, nodesMap).sendErrors(context);
-					success.add(title);
-				}
-				else {
-					failures.add(title);
+			for (Article article : nodesMapByArticle.keySet()) {
+				if (userCanEditArticle(context, article)) {
+					Sections.replace(context, nodesMapByArticle.get(article)).sendErrors(context);
 				}
 			}
 		}
@@ -59,51 +60,86 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 		}
 	}
 
-	protected Map<String, Set<Section<? extends RenamableTerm>>> getAllTermSections(Collection<TermCompiler> compilers, Identifier termIdentifier) {
-		Map<String, Set<Section<? extends RenamableTerm>>> allTerms = new HashMap<>();
-		Consumer<Section<?>> addIfRenamable = (sec) -> {
-			if (sec.get() instanceof RenamableTerm) {
-				allTerms.computeIfAbsent(sec.getTitle(), k -> new HashSet<>())
-						.add(Sections.cast(sec, RenamableTerm.class));
+	private boolean userCanEditArticle(UserActionContext context, Article article) {
+		return Environment.getInstance()
+				.getWikiConnector()
+				.userCanEditArticle(article.getTitle(), context.getRequest());
+	}
+
+	protected void appendReplacements(RenamingCommand renamingCommand, Map<Article, Map<String, String>> nodesMapByArticle) {
+		Map<Article, Set<Section<? extends RenamableTerm>>> registrations = renamingCommand.registrationsByArticle;
+		for (Article article : registrations.keySet()) {
+			Map<String, String> nodesMap = nodesMapByArticle.computeIfAbsent(article, k -> new HashMap<>());
+			for (Section<? extends RenamableTerm> termSection : registrations.get(article)) {
+				String sectionTextAfterRename = termSection.get()
+						.getSectionTextAfterRename(termSection, renamingCommand.termIdentifier, renamingCommand.replacementIdentifier);
+				if (!sectionTextAfterRename.equals(termSection.getText())) {
+					nodesMap.put(termSection.getID(), sectionTextAfterRename);
+				}
+			}
+		}
+	}
+
+	protected Map<Article, Set<Section<? extends RenamableTerm>>> getRegistrationsByArticle(Collection<TermCompiler> compilers, Identifier termIdentifier) {
+		Map<Article, Set<Section<? extends RenamableTerm>>> registrationsByArticle = new HashMap<>();
+		Consumer<Section<?>> addIfRenamable = (section) -> {
+			if (section.get() instanceof RenamableTerm) {
+				registrationsByArticle.computeIfAbsent(section.getArticle(), k -> new HashSet<>())
+						.add(Sections.cast(section, RenamableTerm.class));
 			}
 		};
 
 		for (TermCompiler compiler : compilers) {
-
 			TerminologyManager manager = compiler.getTerminologyManager();
 			manager.getTermDefiningSections(termIdentifier).forEach(addIfRenamable);
 			manager.getTermReferenceSections(termIdentifier).forEach(addIfRenamable);
 		}
-		return allTerms;
+		return registrationsByArticle;
 	}
 
-	protected Set<String> getArticlesWithoutEditRights(Map<String, Set<Section<? extends RenamableTerm>>> allTerms, UserActionContext context) {
-		Set<String> noEditRightsOnThisArticles = new HashSet<>();
-		for (Map.Entry<String, Set<Section<? extends RenamableTerm>>> sectionsMap : allTerms.entrySet()) {
+	protected Set<Article> getArticlesWithoutEditRights(Map<Article, Set<Section<? extends RenamableTerm>>> termsByArticle, UserActionContext context) {
+		Set<Article> noEditRightsOnThisArticles = new HashSet<>();
+		for (Map.Entry<Article, Set<Section<? extends RenamableTerm>>> sectionsMap : termsByArticle.entrySet()) {
 			Set<Section<? extends RenamableTerm>> sectionsSet = sectionsMap.getValue();
 			for (Section<? extends RenamableTerm> section : sectionsSet) {
 				if (!KnowWEUtils.canWrite(section, context)) {
-					noEditRightsOnThisArticles.add(section.getTitle());
+					noEditRightsOnThisArticles.add(section.getArticle());
 				}
 			}
 		}
 		return noEditRightsOnThisArticles;
 	}
 
-	protected void writeAlreadyExistsResponse(UserActionContext context, String term, Identifier identifier) throws IOException {
+	protected void writeResponse(UserActionContext context) throws IOException {
 		JSONObject response = new JSONObject();
-		response.put("alreadyexists", "true");
-		boolean sameTerm = identifier.equals(new Identifier(term));
-		response.put("same", String.valueOf(sameTerm));
+		response.append(ALREADY_EXISTS, false);
 		response.write(context.getWriter());
 	}
 
-	protected void writeAlreadyExistsNoForceResponse(UserActionContext context, String term, Identifier identifier) throws IOException {
+	protected void writeAlreadyExistsResponse(UserActionContext context, Identifier termIdentifier, Identifier replacementIdentifier) throws IOException {
 		JSONObject response = new JSONObject();
-		response.put("alreadyexists", "true");
-		response.put("noForce", "true");
-		boolean sameTerm = identifier.equals(new Identifier(term));
-		response.put("same", String.valueOf(sameTerm));
+		response.put(ALREADY_EXISTS, true);
+		response.put(SAME, termIdentifier.equals(replacementIdentifier));
 		response.write(context.getWriter());
+	}
+
+	protected void writeAlreadyExistsNoForceResponse(UserActionContext context, Identifier termIdentifier, Identifier replacementIdentifier) throws IOException {
+		JSONObject response = new JSONObject();
+		response.put(ALREADY_EXISTS, true);
+		response.put(SAME, termIdentifier.equals(replacementIdentifier));
+		response.put(NO_FORCE, true);
+		response.write(context.getWriter());
+	}
+
+	public static class RenamingCommand {
+		public final Identifier termIdentifier;
+		public final Identifier replacementIdentifier;
+		public final Map<Article, Set<Section<? extends RenamableTerm>>> registrationsByArticle;
+
+		public RenamingCommand(Identifier termIdentifier, Identifier replacementIdentifier, Map<Article, Set<Section<? extends RenamableTerm>>> registrationsByArticle) {
+			this.termIdentifier = termIdentifier;
+			this.replacementIdentifier = replacementIdentifier;
+			this.registrationsByArticle = registrationsByArticle;
+		}
 	}
 }
