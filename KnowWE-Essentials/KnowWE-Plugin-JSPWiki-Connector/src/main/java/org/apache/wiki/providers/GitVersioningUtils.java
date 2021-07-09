@@ -90,6 +90,7 @@ public class GitVersioningUtils {
 	}
 
 	public static void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
+		Log.info("Start git gc");
 		if (windowsGitHack) {
 			doBinaryGC(repository.getDirectory(), prune);
 		}
