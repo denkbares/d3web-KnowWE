@@ -85,7 +85,7 @@ class TermLog {
 			if (termClasses.size() > 1) {
 				messages.add(Messages.ambiguousTermClassesError(term, termClasses));
 			}
-			Collection<Identifier> termIdentifiers = getTermIdentifiers();
+			Collection<Identifier> termIdentifiers = getDefinitionIdentifiers();
 			if (termIdentifiers.size() > 1) {
 				messages.add(Messages.ambiguousTermCaseWarning(termIdentifiers));
 			}
@@ -124,7 +124,7 @@ class TermLog {
 		Collection<Message> msgs = new ArrayList<>(2);
 		for (TermLogEntry termDefinition : termDefinitions) {
 			if (!termDefinition.getTermIdentifier().equals(termIdentifier)) {
-				msgs.add(Messages.ambiguousTermCaseWarning(getTermIdentifiers()));
+				msgs.add(Messages.ambiguousTermCaseWarning(getDefinitionIdentifiers()));
 				break;
 			}
 		}
@@ -183,8 +183,12 @@ class TermLog {
 		return extractFromEntry(termDefinitions, TermLogEntry::getTermClass, 4);
 	}
 
-	Collection<Identifier> getTermIdentifiers() {
+	Collection<Identifier> getDefinitionIdentifiers() {
 		return extractFromEntry(termDefinitions, TermLogEntry::getTermIdentifier, 4);
+	}
+
+	Collection<Identifier> getReferencesIdentifiers() {
+		return extractFromEntry(termReferences, TermLogEntry::getTermIdentifier, 4);
 	}
 
 	private <E> Set<E> extractFromEntry(Collection<TermLogEntry> entries, Function<TermLogEntry, E> supplier, int size) {

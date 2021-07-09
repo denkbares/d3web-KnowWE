@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -173,7 +174,7 @@ public class TerminologyManager {
 			termIdentifiers = Collections.emptyList();
 		}
 		else {
-			termIdentifiers = termLog.getTermIdentifiers();
+			termIdentifiers = termLog.getDefinitionIdentifiers();
 		}
 		return Collections.unmodifiableCollection(termIdentifiers);
 	}
@@ -335,31 +336,60 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * Returns all local terms of the given class (e.g. Question, String,...), that are compiled in
+	 * Returns all known and defined terms of the given class (e.g. Question, String,...), that are compiled in
 	 * the article with the given title.
 	 *
 	 * @created 03.11.2010
 	 */
 	public synchronized Collection<Identifier> getAllDefinedTerms(Class<?> termClass) {
-		return getAllDefinedTermLogEntries(termClass).stream()
-				.map(TermLog::getTermIdentifiers)
+		return getAllTermLogEntries(termClass, true).stream()
+				.map(TermLog::getDefinitionIdentifiers)
 				.flatMap(Collection::stream)
 				.collect(Collectors.toSet());
 	}
 
-	private synchronized Collection<TermLog> getAllDefinedTermLogEntries(Class<?> termClass) {
+	/**
+	 * Returns known terms of this {@link TerminologyManager}
+	 *
+	 * @created 03.11.2010
+	 */
+	public synchronized Collection<Identifier> getAllTerms() {
+		return getAllTerms(null);
+	}
+
+	/**
+	 * Returns all local terms of the given class (e.g. Question, String,...), that are compiled in
+	 * the article with the given title.
+	 *
+	 * @created 03.11.2010
+	 */
+	public synchronized Collection<Identifier> getAllTerms(Class<?> termClass) {
+		return getAllTermLogEntries(termClass, false).stream()
+				.flatMap(termLog -> Stream.concat(termLog.getDefinitionIdentifiers()
+						.stream(), termLog.getReferencesIdentifiers().stream()))
+				.collect(Collectors.toSet());
+	}
+
+	private synchronized Collection<TermLog> getAllTermLogEntries(Class<?> termClass, boolean defined) {
 		Collection<TermLog> filteredLogEntries = new HashSet<>();
 		for (Entry<Identifier, TermLog> managerEntry : termLogManager.entrySet()) {
-			Set<Class<?>> termClasses = managerEntry.getValue().getTermClasses();
-			if (termClasses.size() != 1) continue;
-			boolean hasTermDefOfType = managerEntry.getValue().getDefiningSection() != null
-					&& (termClass == null || termClass.isAssignableFrom(termClasses.iterator()
-					.next()));
-			if (hasTermDefOfType) {
+			boolean include = checkDefinedState(defined, managerEntry)
+					&& checkTermClass(termClass, managerEntry);
+			if (include) {
 				filteredLogEntries.add(managerEntry.getValue());
 			}
 		}
 		return filteredLogEntries;
+	}
+
+	private boolean checkDefinedState(boolean defined, Entry<Identifier, TermLog> managerEntry) {
+		return !defined || managerEntry.getValue().getDefiningSection() != null;
+	}
+
+	private boolean checkTermClass(Class<?> termClass, Entry<Identifier, TermLog> managerEntry) {
+		return termClass == null
+				|| (managerEntry.getValue().getTermClasses().size() == 1
+				&& termClass.isAssignableFrom(managerEntry.getValue().getTermClasses().iterator().next()));
 	}
 
 	/**
