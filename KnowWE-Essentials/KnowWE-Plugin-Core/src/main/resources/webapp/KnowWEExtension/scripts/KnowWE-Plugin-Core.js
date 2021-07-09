@@ -171,8 +171,7 @@ KNOWWE.plugin.renaming = function() {
       jq$.ajax({
         type: "post", url: KNOWWE.core.util.getURL(params),
 
-        success: function(data, text, request) {
-          const jsonResponse = JSON.parse(data);
+        success: function(jsonResponse, text, request) {
           if (jsonResponse.same) {
             alert('The term has not changed.');
           } else {
@@ -181,12 +180,8 @@ KNOWWE.plugin.renaming = function() {
                 alert('A term with this name already exists!');
                 KNOWWE.core.util.reloadPage(request);
               } else if (confirm('A term with this name already exists, are you sure you want to merge both terms?')) {
-                renameTerms({
-                  termName: termName,
-                  termReplacement: termReplacement,
-                  sectionId: sectionId,
-                  forceRename: true
-                });
+                options.forceRename = true;
+                renameTerms(options);
               } else {
                 KNOWWE.core.util.reloadPage(request);
               }

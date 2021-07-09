@@ -111,12 +111,14 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 	}
 
 	protected void writeResponse(UserActionContext context) throws IOException {
+		context.setContentType(Action.JSON);
 		JSONObject response = new JSONObject();
-		response.append(ALREADY_EXISTS, false);
+		response.put(ALREADY_EXISTS, false);
 		response.write(context.getWriter());
 	}
 
 	protected void writeAlreadyExistsResponse(UserActionContext context, Identifier termIdentifier, Identifier replacementIdentifier) throws IOException {
+		context.setContentType(Action.JSON);
 		JSONObject response = new JSONObject();
 		response.put(ALREADY_EXISTS, true);
 		response.put(SAME, termIdentifier.equals(replacementIdentifier));
@@ -124,6 +126,7 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 	}
 
 	protected void writeAlreadyExistsNoForceResponse(UserActionContext context, Identifier termIdentifier, Identifier replacementIdentifier) throws IOException {
+		context.setContentType(Action.JSON);
 		JSONObject response = new JSONObject();
 		response.put(ALREADY_EXISTS, true);
 		response.put(SAME, termIdentifier.equals(replacementIdentifier));
