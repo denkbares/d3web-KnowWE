@@ -58,3 +58,15 @@
 .readOnlyMessage {
     display: none;
 }
+
+.type_LinkArticles .markupText > div > p {
+    display: none;
+}
+
+.type_LinkArticles .markupText {
+    white-space: normal;
+}
+
+.type_LinkArticles .markupText ul {
+    padding: 1em 2em;
+}
