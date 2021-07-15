@@ -1,6 +1,8 @@
 package org.apache.wiki.providers;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -72,6 +74,10 @@ public class GitAutoUpdater {
 	}
 
 	public void update() {
+		if(Files.exists(Paths.get(fileProvider.getFilesystemPath(), "lock.wc"))){
+			log.info("Not updating, because of filesystem lock");
+			return;
+		}
 		Git git = new Git(fileProvider.repository);
 		try {
 			StopWatch stopWatch = new StopWatch();
