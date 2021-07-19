@@ -146,7 +146,6 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 
 	private void appendMessages(PackageCompiler compiler, Map<String, List<Section<?>>> sectionsByTitle, List<Pattern> ignorePatterns, StringBuilder buffer) {
 		for (Map.Entry<String, List<Section<?>>> entry : sectionsByTitle.entrySet()) {
-			String title = entry.getKey();
 			Map<? extends Section<?>, List<Message>> messagesBySection = entry.getValue()
 					.stream()
 					.collect(Collectors.toMap(s -> s, s -> new ConcatenateCollection<>(Messages.getMessagesFromSubtree(compiler, s, type), Messages
@@ -157,7 +156,9 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 			int sum = messagesBySection.values().stream().mapToInt(Collection::size).sum();
 			if (sum > 0) {
 				buffer.append("\n\n__[")
-						.append(title)
+						.append(entry.getKey())
+						.append("|")
+						.append(KnowWEUtils.getWikiLink(entry.getValue().get(0)))
 						.append("]__ has ")
 						.append(Strings.pluralOf(sum, type.name().toLowerCase()))
 						.append(":");
@@ -166,13 +167,16 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 						String verbalization = message.getVerbalization();
 						if (message.getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
 							verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization.replaceAll("[\\[\\]|]", ""));
+							buffer.append("\n* ")
+									.append("[")
+									.append(verbalization)
+									.append("|")
+									.append(KnowWEUtils.getWikiLink(listEntry.getKey()))
+									.append("]");
 						}
-						buffer.append("\n* ")
-								.append("[")
-								.append(verbalization)
-								.append("|")
-								.append(KnowWEUtils.getWikiLink(listEntry.getKey()))
-								.append("]");
+						else {
+							buffer.append("\n* ").append(message.getVerbalization());
+						}
 					}
 				}
 			}
