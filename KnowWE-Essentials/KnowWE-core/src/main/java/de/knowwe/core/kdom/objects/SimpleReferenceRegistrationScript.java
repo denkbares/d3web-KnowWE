@@ -19,6 +19,7 @@
 package de.knowwe.core.kdom.objects;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.compile.CompileScript;
@@ -31,6 +32,8 @@ import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
 /**
+ * Default compile script registering a term section in a term compiler
+ *
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.02.2012
  */
@@ -38,19 +41,27 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler, T extends
 
 	private final Class<C> compilerClass;
 
-	private final boolean validate;
+	private final BiFunction<C, Section<T>, Boolean> validate;
+
+	public SimpleReferenceRegistrationScript(Class<C> compilerClass) {
+		this(compilerClass, true);
+	}
 
 	/**
 	 * Creates a new compile script for the given compiler. If validate is set to false, the script will register
 	 * without checking for the validity of the reference (e.g. does a definition exist?).
 	 */
 	public SimpleReferenceRegistrationScript(Class<C> compilerClass, boolean validate) {
-		this.compilerClass = compilerClass;
-		this.validate = validate;
+		this(compilerClass, (c, t) -> validate);
 	}
 
-	public SimpleReferenceRegistrationScript(Class<C> compilerClass) {
-		this(compilerClass, true);
+	/**
+	 * Creates a new compile script for the given compiler. If the validate function returns false, the script will register
+	 * without checking for the validity of the reference (e.g. does a definition exist?).
+	 */
+	public SimpleReferenceRegistrationScript(Class<C> compilerClass, BiFunction<C, Section<T>, Boolean> validate) {
+		this.compilerClass = compilerClass;
+		this.validate = validate;
 	}
 
 	@Override
@@ -77,7 +88,7 @@ public class SimpleReferenceRegistrationScript<C extends TermCompiler, T extends
 			Class<?> termClass = section.get().getTermObjectClass(compiler, section);
 			Identifier termIdentifier = section.get().getTermIdentifier(compiler, section);
 			manager.registerTermReference(compiler, section, termClass, termIdentifier);
-			if (validate) {
+			if (validate.apply(compiler, section)) {
 				Collection<Message> messages = validateReference(compiler, section);
 				if (messages.isEmpty()) {
 					Messages.clearMessages(compiler, section, getClass());
