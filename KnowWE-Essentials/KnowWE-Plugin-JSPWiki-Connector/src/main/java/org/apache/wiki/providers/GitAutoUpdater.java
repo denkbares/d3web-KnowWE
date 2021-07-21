@@ -27,6 +27,7 @@ import org.eclipse.jgit.api.RebaseResult;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RenameDetector;
@@ -122,61 +123,81 @@ public class GitAutoUpdater {
 						.setRemoteBranchName("master")
 						.setStrategy(MergeStrategy.RESOLVE)
 						.setRebase(true);
-				PullResult pullResult = pull.call();
-				RebaseResult rebaseResult = pullResult.getRebaseResult();
-				boolean successful = rebaseResult.getStatus().isSuccessful();
-				if (!successful) {
-					log.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
+				PullResult pullResult = null;
+				try {
+					pullResult = pull.call();
+				} catch (JGitInternalException ie){
+					log.error("internal jgit error", ie);
+//					pullResult = pull.call();
+				}
+				if(pullResult != null) {
+					RebaseResult rebaseResult = pullResult.getRebaseResult();
+					boolean successful = rebaseResult.getStatus().isSuccessful();
+					if (!successful) {
+						log.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
+					}
 				}
 				GitVersioningUtils.gitGc(true, fileProvider.needsWindowsHack(),repository, false);
 				fileProvider.getCache().initializeCache();
+				fileProvider.pushUnlock();
 				ObjectId newHead = fileProvider.repository.resolve(Constants.HEAD);
 				String title = null;
 				if (!oldHeadCommit.equals(newHead)) {
-					RevCommit newHeadCommit = revWalk.parseCommit(newHead);
+					log.info("Read changes after rebase");
+					try {
+						fileProvider.canWriteFileLock();
+						RevCommit newHeadCommit = revWalk.parseCommit(newHead);
 
-					Iterable<RevCommit> call = git.log().addRange(oldHeadCommit, newHeadCommit).call();
+						Iterable<RevCommit> call = git.log().addRange(oldHeadCommit, newHeadCommit).call();
 
-					final ObjectReader objectReader = this.repository.newObjectReader();
-					final CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
-					final CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
-					final DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
-					diffFormatter.setRepository(this.repository);
-					revWalk.reset();
-					revWalk.sort(RevSort.REVERSE);
-					revWalk.markStart(newHeadCommit);
-					revWalk.parseCommit(oldHead);
-					Iterator<RevCommit> iterator = revWalk.iterator();
-					boolean parse = false;
-					Set<String> refreshedPages = new TreeSet<>();
-//					resetCiBuildCache();
-					while (iterator.hasNext()){
-						RevCommit commit = iterator.next();
-						if(commit.equals(oldHeadCommit)) {
-							parse = true;
-							continue;
+						final ObjectReader objectReader = this.repository.newObjectReader();
+						final CanonicalTreeParser oldTreeParser = new CanonicalTreeParser();
+						final CanonicalTreeParser newTreeParser = new CanonicalTreeParser();
+						final DiffFormatter diffFormatter = new DiffFormatter(DisabledOutputStream.INSTANCE);
+						diffFormatter.setRepository(this.repository);
+						revWalk.reset();
+						revWalk.sort(RevSort.REVERSE);
+						revWalk.markStart(newHeadCommit);
+						revWalk.parseCommit(oldHead);
+						Iterator<RevCommit> iterator = revWalk.iterator();
+						boolean parse = false;
+						Set<String> refreshedPages = new TreeSet<>();
+	//					resetCiBuildCache();
+						while (iterator.hasNext()) {
+							RevCommit commit = iterator.next();
+							if (commit.equals(oldHeadCommit)) {
+								parse = true;
+								continue;
+							}
+							if (parse) {
+								mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, refreshedPages);
+							}
 						}
-						if(parse) {
-							mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, refreshedPages);
+						log.info("Beginn compile");
+						ArticleManager articleManager = getDefaultArticleManager();
+						try{
+							articleManager.open();
+							if (!refreshedPages.isEmpty())
+								WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
+						} finally {
+							log.info("Commit compile");
+							articleManager.commit();
+							try {
+								Thread.sleep(500);
+							}
+							catch (InterruptedException ignored) {}
+							Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+							log.info("Compile ends");
 						}
+
+						title = refreshedPages.stream().filter(p->p.contains("GVA_Gesamt") && p.contains("vm_gva_objekte")).findFirst().orElse(null);
 					}
-
-					ArticleManager articleManager = getDefaultArticleManager();
-					try{
-						articleManager.open();
-						if (!refreshedPages.isEmpty())
-							WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
-					} finally {
-						articleManager.commit();
-						try {
-							Thread.sleep(500);
-						}
-						catch (InterruptedException ignored) {}
-						Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+					finally {
+						fileProvider.writeFileUnlock();
 					}
-					title = refreshedPages.stream().filter(p->p.contains("GVA_Gesamt") && p.contains("vm_gva_objekte")).findFirst().orElse(null);
 				}
 				if(title != null){
+					log.info("do full parse");
 					Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
 					EventManager.getInstance().fireEvent(new FullParseEvent(article));
 				}
@@ -194,7 +215,9 @@ public class GitAutoUpdater {
 			}
 		}
 		finally {
-			fileProvider.pushUnlock();
+			try {
+				fileProvider.pushUnlock();
+			} catch (IllegalMonitorStateException ignoring){}
 			running = false;
 		}
 	}
