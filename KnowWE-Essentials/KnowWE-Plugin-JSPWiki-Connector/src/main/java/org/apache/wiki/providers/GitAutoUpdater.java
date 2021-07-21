@@ -66,6 +66,7 @@ public class GitAutoUpdater {
 	private final GitVersioningFileProvider fileProvider;
 	private final WikiEngine engine;
 	private final Repository repository;
+	private static boolean running;
 
 	public GitAutoUpdater(WikiEngine engine, GitVersioningFileProvider fileProvider) {
 		this.fileProvider = fileProvider;
@@ -73,13 +74,19 @@ public class GitAutoUpdater {
 		this.engine = engine;
 	}
 
+	public static boolean running() {
+		return running;
+	}
+
 	public void update() {
+		running = true;
 		if(Files.exists(Paths.get(fileProvider.getFilesystemPath(), "lock.wc"))){
 			log.info("Not updating, because of filesystem lock");
 			return;
 		}
 		Git git = new Git(fileProvider.repository);
 		try {
+			Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
 			StopWatch stopWatch = new StopWatch();
 			stopWatch.start();
 			fileProvider.pushLock();
@@ -188,6 +195,7 @@ public class GitAutoUpdater {
 		}
 		finally {
 			fileProvider.pushUnlock();
+			running = false;
 		}
 	}
 
