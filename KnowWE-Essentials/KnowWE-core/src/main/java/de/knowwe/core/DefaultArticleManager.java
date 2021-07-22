@@ -64,6 +64,7 @@ public class DefaultArticleManager implements ArticleManager {
 	private final Set<Article> added = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	private final Set<Article> removed = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+	private final Object lock = new Object();
 	private boolean initialized;
 
 	public DefaultArticleManager(String web) {
@@ -73,7 +74,33 @@ public class DefaultArticleManager implements ArticleManager {
 	}
 
 	public void setInitialized(boolean initialized) {
-		this.initialized = initialized;
+		synchronized (lock) {
+			this.initialized = initialized;
+			lock.notifyAll();
+		}
+	}
+
+	@Override
+	public boolean isInitialized() {
+		synchronized (lock) {
+			return initialized;
+		}
+	}
+
+	public void awaitInitialization() {
+		if (isInitialized()) return;
+		synchronized (lock) {
+			while (true) {
+				if (isInitialized()) return;
+				try {
+					lock.wait();
+				}
+				catch (InterruptedException e) {
+					Log.warning("Waiting for initialization was interrupted");
+					return;
+				}
+			}
+		}
 	}
 
 	public AttachmentManager getAttachmentManager() {
@@ -272,11 +299,6 @@ public class DefaultArticleManager implements ArticleManager {
 		if (getArticle(section.getTitle()) != section.getArticle()) return false;
 		if (deleteAfterCompile.isEmpty()) return true;
 		return !deleteAfterCompile.contains(section.getTitle().toLowerCase());
-	}
-
-	@Override
-	public boolean isInitialized() {
-		return initialized;
 	}
 
 	/**
