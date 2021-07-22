@@ -40,6 +40,7 @@ import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
+import de.knowwe.core.compile.terminology.TerminologyExtension;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.objects.SimpleDefinitionRegistrationScript;
@@ -47,6 +48,7 @@ import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Messages;
+import de.knowwe.plugin.Plugins;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -201,7 +203,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private void fullCompilation(String[] packagesToCompile) {
 		knowledgeBase = KnowledgeBaseUtils.createKnowledgeBase();
 		knowledgeBase.setId(getKnowledgeBaseId());
-		terminologyManager = new TerminologyManager(caseSensitive);
+		terminologyManager = createTerminologyManager();
 
 		EventManager.getInstance().fireEvent(new D3webCompilerStartEvent(this));
 
@@ -218,6 +220,15 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		isIncrementalBuild = false;
 
 		knowledgeBase.initPluggedPSMethods();
+	}
+
+	@NotNull
+	private TerminologyManager createTerminologyManager() {
+		TerminologyManager terminologyManager = new TerminologyManager(caseSensitive);
+		// extension point for plugins defining predefined terminology
+		TerminologyExtension terminologyExtension = Plugins.getTerminologyExtension(this);
+		if (terminologyExtension != null) terminologyManager.registerOccupiedTerm(terminologyExtension);
+		return terminologyManager;
 	}
 
 	private String getKnowledgeBaseId() {

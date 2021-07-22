@@ -38,6 +38,7 @@ import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Priority;
+import de.knowwe.core.compile.terminology.TerminologyExtension;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.SectionizerModule;
@@ -415,5 +416,28 @@ public class Plugins {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Get the terminology extension (reserved terms) of the given compiler
+	 *
+	 * @param compiler the compiler to get the reserved terms for
+	 * @return the reserved terms for the compiler
+	 */
+	public static TerminologyExtension getTerminologyExtension(Compiler compiler) {
+		TerminologyExtension terminologyExtension = null;
+		Extension[] extensions = PluginManager.getInstance().getExtensions(
+				Plugins.EXTENDED_PLUGIN_ID,
+				Plugins.EXTENDED_POINT_Terminology);
+		for (Extension extension : extensions) {
+			String scope = extension.getParameter("scope");
+			if (compiler.getClass().getSimpleName().equals(scope) || compiler.getClass().getName().equals(scope)) {
+				Object o = extension.getSingleton();
+				if (o instanceof TerminologyExtension) {
+					terminologyExtension = (TerminologyExtension) o;
+				}
+			}
+		}
+		return terminologyExtension;
 	}
 }

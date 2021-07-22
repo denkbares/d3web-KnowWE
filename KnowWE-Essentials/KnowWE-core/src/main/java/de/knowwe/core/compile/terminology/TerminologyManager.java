@@ -34,8 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.events.EventManager;
-import com.denkbares.plugin.Extension;
-import com.denkbares.plugin.PluginManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -47,7 +45,6 @@ import de.knowwe.core.kdom.objects.TermReference;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
-import de.knowwe.plugin.Plugins;
 
 /**
  * This class manages the definition and usage of terms. A term represents some kind of object. For
@@ -73,19 +70,9 @@ public class TerminologyManager {
 
 	public TerminologyManager(boolean caseSensitive) {
 		termLogManager = new TermLogManager(caseSensitive);
-		// extension point for plugins defining predefined terminology
-		Extension[] extensions = PluginManager.getInstance().getExtensions(
-				Plugins.EXTENDED_PLUGIN_ID,
-				Plugins.EXTENDED_POINT_Terminology);
-		for (Extension extension : extensions) {
-			Object o = extension.getSingleton();
-			if (o instanceof TerminologyExtension) {
-				registerOccupiedTerm(((TerminologyExtension) o));
-			}
-		}
 	}
 
-	private void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
+	public void registerOccupiedTerm(TerminologyExtension terminologyExtension) {
 		for (String occupiedTermInExternalForm : terminologyExtension.getTermNames()) {
 			occupiedTerms.add(Identifier.fromExternalForm(occupiedTermInExternalForm));
 		}
