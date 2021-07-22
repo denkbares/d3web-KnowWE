@@ -34,11 +34,14 @@ import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
+import de.knowwe.core.compile.terminology.TermCompiler.ReferenceValidationMode;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+
+import static de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode.*;
 
 /**
  * This is an auxiliary data-structure to store the definitions and references
@@ -71,28 +74,33 @@ class TermLog {
 	private void handleMessagesForDefinition(Compiler compiler) {
 
 		MultiDefinitionMode multiDefinitionMode;
+		ReferenceValidationMode validationMode;
 		if (compiler instanceof TermCompiler) {
 			multiDefinitionMode = ((TermCompiler) compiler).getMultiDefinitionRegistrationMode();
+			validationMode = ((TermCompiler) compiler).getReferenceValidationMode();
 		}
 		else {
-			multiDefinitionMode = MultiDefinitionMode.ignore;
+			multiDefinitionMode = ignore;
+			validationMode = ReferenceValidationMode.ignore;
 		}
 
 		Collection<Message> messages = new ArrayList<>(2);
 		if (termDefinitions.size() > 1) {
-			Set<Class<?>> termClasses = getTermClasses();
 			String term = termDefinitions.iterator().next().getTermIdentifier().toPrettyPrint();
-			if (termClasses.size() > 1) {
-				messages.add(Messages.ambiguousTermClassesError(term, termClasses));
+			if (validationMode != ReferenceValidationMode.ignore) {
+				Set<Class<?>> termClasses = getTermClasses();
+				if (termClasses.size() > 1) {
+					messages.add(Messages.ambiguousTermClassesError(term, termClasses));
+				}
 			}
 			Collection<Identifier> termIdentifiers = getDefinitionIdentifiers();
 			if (termIdentifiers.size() > 1) {
 				messages.add(Messages.ambiguousTermCaseWarning(termIdentifiers));
 			}
-			if (multiDefinitionMode == MultiDefinitionMode.warn) {
+			if (multiDefinitionMode == warn) {
 				messages.add(Messages.warning(getMultiDefinitionText(term)));
 			}
-			else if (multiDefinitionMode == MultiDefinitionMode.error) {
+			else if (multiDefinitionMode == error) {
 				messages.add(Messages.error(getMultiDefinitionText(term)));
 			}
 		}
