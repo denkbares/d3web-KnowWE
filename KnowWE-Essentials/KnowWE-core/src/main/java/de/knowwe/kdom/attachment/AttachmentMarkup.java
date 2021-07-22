@@ -47,6 +47,7 @@ import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
+import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.compile.DefaultGlobalCompiler;
@@ -198,7 +199,9 @@ public class AttachmentMarkup extends DefaultMarkupType {
 				return;
 			}
 			// only perform section update if articles are initialized in case we reference articles from this wiki
-			if (Objects.requireNonNull(section.getArticleManager()).isInitialized()) {
+			ArticleManager articleManager = section.getArticleManager();
+			if (articleManager instanceof DefaultArticleManager) {
+				((DefaultArticleManager) articleManager).awaitInitialization();
 				performUpdate(section);
 			}
 		}
@@ -239,7 +242,7 @@ public class AttachmentMarkup extends DefaultMarkupType {
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentMarkup> section) {
 
-			if (section.hasErrorInSubtree() || section.getArticleManager() == null) return;
+			if (section.getArticleManager() == null) return;
 			if (DefaultMarkupType.getAnnotation(section, INTERVAL_ANNOTATION) == null) return;
 			if (DefaultMarkupType.getAnnotation(section, URL_ANNOTATION) == null) return;
 
