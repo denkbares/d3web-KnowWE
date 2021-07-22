@@ -193,7 +193,6 @@
 		<parameter-def id="description" />
 		<parameter-def id="version" />
 		<parameter-def id="priority" type="number" />
-		<parameter-def id="scope" multiplicity="none-or-one" />
 	</extension-point>
 
 	<extension-point id="IncrementalCompileScript">

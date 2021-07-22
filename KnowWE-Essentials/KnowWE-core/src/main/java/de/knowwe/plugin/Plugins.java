@@ -430,10 +430,10 @@ public class Plugins {
 				Plugins.EXTENDED_PLUGIN_ID,
 				Plugins.EXTENDED_POINT_Terminology);
 		for (Extension extension : extensions) {
-			String scope = extension.getParameter("scope");
-			if (compiler.getClass().getSimpleName().equals(scope) || compiler.getClass().getName().equals(scope)) {
-				Object o = extension.getSingleton();
-				if (o instanceof TerminologyExtension) {
+			Object o = extension.getSingleton();
+			if (o instanceof TerminologyExtension) {
+				Class<? extends Compiler> compilerClass = ((TerminologyExtension) o).getCompilerClass();
+				if (compilerClass.isInstance(compiler)) {
 					terminologyExtension = (TerminologyExtension) o;
 				}
 			}
