@@ -73,16 +73,8 @@ class TermLog {
 
 	private void handleMessagesForDefinition(Compiler compiler) {
 
-		MultiDefinitionMode multiDefinitionMode;
-		ReferenceValidationMode validationMode;
-		if (compiler instanceof TermCompiler) {
-			multiDefinitionMode = ((TermCompiler) compiler).getMultiDefinitionRegistrationMode();
-			validationMode = ((TermCompiler) compiler).getReferenceValidationMode();
-		}
-		else {
-			multiDefinitionMode = ignore;
-			validationMode = ReferenceValidationMode.ignore;
-		}
+		ReferenceValidationMode validationMode = getReferenceValidationMode(compiler);
+		MultiDefinitionMode multiDefinitionMode = getMultiDefinitionMode(compiler);
 
 		Collection<Message> messages = new ArrayList<>(2);
 		if (termDefinitions.size() > 1) {
@@ -113,6 +105,30 @@ class TermLog {
 	}
 
 	@NotNull
+	private ReferenceValidationMode getReferenceValidationMode(Compiler compiler) {
+		ReferenceValidationMode validationMode;
+		if (compiler instanceof TermCompiler) {
+			validationMode = ((TermCompiler) compiler).getReferenceValidationMode();
+		}
+		else {
+			validationMode = ReferenceValidationMode.ignore;
+		}
+		return validationMode;
+	}
+
+	@NotNull
+	private MultiDefinitionMode getMultiDefinitionMode(Compiler compiler) {
+		MultiDefinitionMode multiDefinitionMode;
+		if (compiler instanceof TermCompiler) {
+			multiDefinitionMode = ((TermCompiler) compiler).getMultiDefinitionRegistrationMode();
+		}
+		else {
+			multiDefinitionMode = ignore;
+		}
+		return multiDefinitionMode;
+	}
+
+	@NotNull
 	private String getMultiDefinitionText(String term) {
 		return "The term '" + term + "' has multiple definitions.";
 	}
@@ -128,6 +144,9 @@ class TermLog {
 	private void handleMessagesForReference(Compiler compiler,
 											Section<?> section,
 											Identifier termIdentifier, Class<?> termClass) {
+
+		ReferenceValidationMode validationMode = getReferenceValidationMode(compiler);
+		if (validationMode == ReferenceValidationMode.ignore) return;
 
 		Collection<Message> msgs = new ArrayList<>(2);
 		for (TermLogEntry termDefinition : termDefinitions) {
