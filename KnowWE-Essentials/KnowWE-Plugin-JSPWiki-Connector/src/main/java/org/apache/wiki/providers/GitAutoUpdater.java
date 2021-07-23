@@ -86,10 +86,14 @@ public class GitAutoUpdater {
 			return;
 		}
 		Git git = new Git(fileProvider.repository);
+		ArticleManager articleManager = getDefaultArticleManager();
 		try {
 			Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+
 			StopWatch stopWatch = new StopWatch();
 			stopWatch.start();
+
+			articleManager.open();
 			fileProvider.pushLock();
 
 			RevWalk revWalk = new RevWalk(fileProvider.repository);
@@ -174,21 +178,10 @@ public class GitAutoUpdater {
 							}
 						}
 						log.info("Beginn compile");
-						ArticleManager articleManager = getDefaultArticleManager();
-						try{
-							articleManager.open();
-							if (!refreshedPages.isEmpty())
-								WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
-						} finally {
-							log.info("Commit compile");
-							articleManager.commit();
-							try {
-								Thread.sleep(500);
-							}
-							catch (InterruptedException ignored) {}
-							Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
-							log.info("Compile ends");
-						}
+
+//							articleManager.open();
+						if (!refreshedPages.isEmpty())
+							WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
 
 						title = refreshedPages.stream().filter(p->p.contains("GVA_Gesamt") && p.contains("vm_gva_objekte")).findFirst().orElse(null);
 					}
@@ -218,6 +211,14 @@ public class GitAutoUpdater {
 			try {
 				fileProvider.pushUnlock();
 			} catch (IllegalMonitorStateException ignoring){}
+			log.info("Commit compile");
+			articleManager.commit();
+			try {
+				Thread.sleep(500);
+			}
+			catch (InterruptedException ignored) {}
+			Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
+			log.info("Compile ends");
 			running = false;
 		}
 	}
