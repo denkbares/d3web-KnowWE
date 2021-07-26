@@ -29,6 +29,10 @@
 	clear: left;
 }
 
+.defaultMarkupFrame.frameless, .defaultMarkupFrame.headerless {
+	border: none;
+}
+
 .defaultMarkup {
 	position: relative;
 	background-color: #F9F9F9;
@@ -44,8 +48,16 @@
 	padding: 3px 3px 3px 3px;
 }
 
-.defaultMarkup .markupAnnotation {
+.defaultMarkup .markupAnnotation, .defaultMarkup .compilerAnnotations {
 	display: block;
+}
+
+.frameless .markupAnnotation, .frameless .compilerAnnotations {
+	display: none;
+}
+
+.frameless .markupHeader, .headerless .markupHeader {
+	display: none;
 }
 
 .defaultMarkup .markupText .header {

@@ -68,5 +68,9 @@
 }
 
 .type_LinkArticles .markupText ul {
-    padding: 1em 2em;
+    padding-left: 2em;
+}
+
+.type_LinkArticles.frameless .markupAnnotations {
+    display: none;
 }

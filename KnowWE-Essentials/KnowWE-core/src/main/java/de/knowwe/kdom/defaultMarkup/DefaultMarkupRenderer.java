@@ -458,7 +458,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 		// render them
 		if (!compilers.isEmpty()) {
-			result.appendHtmlTag("span", "style", "display: block");
+			result.appendHtmlTag("span", "class", "compilerAnnotations");
 			result.appendHtml(Icon.COMPILER.addClasses("packageOpacity").addStyle("margin-right: .3em").toHtml());
 			result.appendHtmlElement("span",
 					compilers.stream()
@@ -483,7 +483,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		string.appendHtmlTag("div",
 				"id", sectionID,
 				"class", "defaultMarkupFrame toolMenuParent type_" + section.get()
-						.getName() + defaultCompilerClass + (framed ? "" : " noFrame"),
+						.getName() + defaultCompilerClass + (framed ? "" : " frameless") + (renderHeader ? "" : " headerless"),
 				"data-name", section.get().getName());
 		if (renderHeader) {
 			appendHeader(title, sectionID, tools, user, string);
