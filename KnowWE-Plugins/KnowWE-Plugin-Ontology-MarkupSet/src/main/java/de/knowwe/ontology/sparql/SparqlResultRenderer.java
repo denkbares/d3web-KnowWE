@@ -540,7 +540,7 @@ public class SparqlResultRenderer {
 		String erg = renderNode(node, var, opts.isRawOutput(), user, opts.getRdf2GoCore(), opts.getRenderMode());
 
 		if (opts.isAllowJSPWikiMarkup()) {
-			erg = renderExternalJSPWikiLinks(user, erg);
+			erg = renderValidJspWikiLinks(user, erg);
 			result.append(erg);
 		}
 		else {
@@ -551,12 +551,12 @@ public class SparqlResultRenderer {
 	/**
 	 * JSPWiki seems to ignore links embedded in tables, we parse them manually
 	 */
-	private String renderExternalJSPWikiLinks(UserContext user, String erg) {
+	private String renderValidJspWikiLinks(UserContext user, String text) {
 		StringBuilder links = new StringBuilder();
-		final Matcher matcher = ARTICLE_LINK_PATTERN.matcher(erg);
+		final Matcher matcher = ARTICLE_LINK_PATTERN.matcher(text);
 		int index = 0;
 		while (matcher.find()) {
-			links.append(erg, index, matcher.start());
+			links.append(text, index, matcher.start());
 
 			String linkUrl = Strings.trim(matcher.group(2));
 			String linkLabel = matcher.group(1) == null ? linkUrl : Strings.trim(matcher.group(1));
@@ -566,10 +566,10 @@ public class SparqlResultRenderer {
 			if (internal && pageExists) {
 				linkUrl = KnowWEUtils.getURLLink(linkUrl);
 			} else if (internal) {
-				linkUrl = KnowWEUtils.getURLLink(linkUrl).replaceFirst("^Wiki.jsp", "Edit.jsp");
+				continue; // probably not a link, just ignore
 			}
 
-			links.append("<a ").append(internal ? (pageExists ? "" : "class='createpage'") : "class='external' ").append("href='")
+			links.append("<a ").append(internal ? "" : "class='external' ").append("href='")
 					.append(linkUrl)
 					.append("'>")
 					.append(linkLabel)
@@ -578,11 +578,11 @@ public class SparqlResultRenderer {
 			index = matcher.end();
 		}
 		if (index > 0) {
-			links.append(erg, index, erg.length());
+			links.append(text, index, text.length());
 			return links.toString();
 		}
 		else {
-			return erg;
+			return text;
 		}
 	}
 
