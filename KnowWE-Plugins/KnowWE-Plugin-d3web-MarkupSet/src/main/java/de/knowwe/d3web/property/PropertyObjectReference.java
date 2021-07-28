@@ -180,9 +180,18 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 		@Override
 		public void compile(D3webCompiler compiler, Section<QuestionReference> section) {
 			if (section.getText().isEmpty()) {
-				Messages.clearMessages(compiler, section,
-						SimpleReferenceRegistrationScript.class);
+				Messages.clearMessages(compiler, section, SimpleReferenceRegistrationScript.class);
 			}
+		}
+
+		@Override
+		public void destroy(D3webCompiler compiler, Section<QuestionReference> section) {
+			// nothing to do
+		}
+
+		@Override
+		public boolean isIncrementalCompilationSupported(Section<QuestionReference> section) {
+			return true;
 		}
 	}
 
