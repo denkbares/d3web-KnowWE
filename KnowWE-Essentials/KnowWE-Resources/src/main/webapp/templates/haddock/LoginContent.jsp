@@ -49,10 +49,6 @@
 
 %>
 
-<script>
-    document.body.classList.add("haddock")
-</script>
-
 <c:set var="allowsCookieAuthentication" value="<%= mgr.allowsCookieAuthentication() %>" />
 <div class="page-content">
 
