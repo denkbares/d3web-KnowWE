@@ -457,7 +457,17 @@ KNOWWE.core.util = function () {
 		/////// Template Specific Helper Methods /////////
 		//////////////////////////////////////////////////
 		getTemplate: function () {
-			return jq$('#knowWEInfoTemplate').val();
+			let $templateElement = jq$("#template-info");
+			if ($templateElement) {
+				return $templateElement.data("template");
+      }
+			// fallback 1
+			$templateElement = jq$('#knowWEInfoTemplate');
+			if ($templateElement.exists()) {
+				return $templateElement.val();
+			}
+			// fallback 2
+      return "KnowWE";
 		},
 
 		canWrite: function() {
