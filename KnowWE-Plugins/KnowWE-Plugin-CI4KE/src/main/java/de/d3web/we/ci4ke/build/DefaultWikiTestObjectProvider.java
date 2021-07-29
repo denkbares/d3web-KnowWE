@@ -29,9 +29,9 @@ import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
+import de.knowwe.core.WikiAttachmentPair;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.NamedCompiler;
-import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -76,6 +76,18 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 		}
 		if (c.equals(PackageManager.class)) {
 			result.add(new TestObjectContainer<>(web, c.cast(KnowWEUtils.getPackageManager(web))));
+		}
+		if (c.equals(WikiAttachmentPair.class)) {
+			String[] attachments = testObjectName.split(",");
+			if (attachments.length == 2) {
+				WikiAttachmentPair attachmentPair = new WikiAttachmentPair(attachments[0], attachments[1]);
+				if (attachmentPair.getFirstAttachment() != null && attachmentPair.getSecondAttachment() != null) {
+					result.add(new TestObjectContainer<>(web, c.cast(attachmentPair)));
+				}
+			}
+			else {
+				Log.severe("The two attachment paths need to be separated with comma");
+			}
 		}
 		final Pattern namePattern = Pattern.compile(testObjectName);
 		if (NamedCompiler.class.isAssignableFrom(c)) {
