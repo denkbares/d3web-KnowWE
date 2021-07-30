@@ -137,7 +137,7 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 						zoom, isFramed, false);
 				continue;
 			}
-			// if the include uses a explicit header declaration
+			// if the include uses an explicit header declaration
 			// with (*, #, or - in front), we render our own header
 			// (if not preceded with "-")
 			// and suppress the existing one
