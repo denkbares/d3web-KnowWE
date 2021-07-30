@@ -71,6 +71,7 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 		for (Article article : registrations.keySet()) {
 			Map<String, String> nodesMap = nodesMapByArticle.computeIfAbsent(article, k -> new HashMap<>());
 			for (Section<? extends RenamableTerm> termSection : registrations.get(article)) {
+				if (!termSection.get().allowRename(termSection)) continue;
 				String sectionTextAfterRename = termSection.get()
 						.getSectionTextAfterRename(termSection, renamingCommand.termIdentifier, renamingCommand.replacementIdentifier);
 				if (!sectionTextAfterRename.equals(termSection.getText())) {
