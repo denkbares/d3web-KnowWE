@@ -81,8 +81,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			return;
 		}
 
-		Collection<String> articlesWithWrongVersion = getArticlesOfKnowledgebaseLoadedWithWrongVersion(
-				compileSection);
+		Collection<String> articlesWithWrongVersion = getArticlesOfKnowledgeBaseLoadedWithWrongVersion(compileSection);
 
 		if (!articlesWithWrongVersion.isEmpty()) {
 			context.sendError(409,
@@ -95,6 +94,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 
 		// before writing, check if the user defined a desired filename
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(context, compileSection);
+		if (base == null) failUnexpected(context, "Unable to find knowledge base on page " + section.getTitle());
 		String desiredFilename = base.getInfoStore().getValue(BasicProperties.FILENAME);
 		if (desiredFilename != null) {
 			filename = desiredFilename;
@@ -134,24 +134,23 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		return home;
 	}
 
-	private Collection<String> getArticlesOfKnowledgebaseLoadedWithWrongVersion(Section<PackageCompileType> section) {
+	private Collection<String> getArticlesOfKnowledgeBaseLoadedWithWrongVersion(Section<PackageCompileType> section) {
 		PackageManager packageManager = KnowWEUtils.getPackageManager(section);
 		String[] compiledPackages = section.get().getPackagesToCompile(section);
 		Set<Section<?>> compiledSections = new HashSet<>();
 		for (String compiledPackage : compiledPackages) {
 			compiledSections.addAll(packageManager.getSectionsOfPackage(compiledPackage));
 		}
-		Set<Article> articlesOfKnowledgebase = new HashSet<>();
+		Set<Article> articlesOfKnowledgeBase = new HashSet<>();
 		for (Section<?> compiledSection : compiledSections) {
-			articlesOfKnowledgebase.add(compiledSection.getArticle());
+			articlesOfKnowledgeBase.add(compiledSection.getArticle());
 		}
 		List<String> wrongVersionTitles = new LinkedList<>();
-		for (Article article : articlesOfKnowledgebase) {
+		for (Article article : articlesOfKnowledgeBase) {
 			String articleText = article.getRootSection().getText();
 			String connectorVersionOfArticleText = Environment.getInstance()
 					.getWikiConnector()
-					.getArticleText(
-							article.getTitle(), -1);
+					.getArticleText(article.getTitle());
 			if (!articleText.equals(connectorVersionOfArticleText)) {
 				wrongVersionTitles.add(article.getTitle());
 			}
