@@ -313,9 +313,7 @@ public class DefaultArticleManager implements ArticleManager {
 				synchronized (added) {
 					synchronized (originalArticleMap) {
 						if (!originalArticleMap.isEmpty()) {
-							for (Map.Entry<String, Article> entry : originalArticleMap.entrySet()) {
-								articleMap.put(entry.getKey(), entry.getValue());
-							}
+							articleMap.putAll(originalArticleMap);
 						}
 						for (Article changed : added) {
 							if (!originalArticleMap.containsKey(changed.getTitle().toLowerCase())) {
