@@ -70,7 +70,7 @@ public interface RenamableTerm extends Term {
 	 * @return true if the term can be renamed
 	 */
 	default boolean allowRename(Section<? extends RenamableTerm> section) {
-		// by default we always allow rename, except for attachment articles (instead, the attachment source should be edited)
+		// by default, we always allow renaming, except for attachment articles (instead, the attachment source should be edited)
 		return !KnowWEUtils.isAttachmentArticle(section.getArticle());
 	}
 }
