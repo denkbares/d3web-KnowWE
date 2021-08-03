@@ -78,16 +78,7 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 			result.add(new TestObjectContainer<>(web, c.cast(KnowWEUtils.getPackageManager(web))));
 		}
 		if (c.equals(WikiAttachmentPair.class)) {
-			String[] attachments = testObjectName.split(",");
-			if (attachments.length == 2) {
-				WikiAttachmentPair attachmentPair = new WikiAttachmentPair(attachments[0], attachments[1]);
-				if (attachmentPair.getFirstAttachment() != null && attachmentPair.getSecondAttachment() != null) {
-					result.add(new TestObjectContainer<>(web, c.cast(attachmentPair)));
-				}
-			}
-			else {
-				Log.severe("The two attachment paths need to be separated with comma");
-			}
+			result.add(new TestObjectContainer<>(web, c.cast(new WikiAttachmentPair(testObjectName))));
 		}
 		final Pattern namePattern = Pattern.compile(testObjectName);
 		if (NamedCompiler.class.isAssignableFrom(c)) {
@@ -102,11 +93,12 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 
 	/**
 	 * Adds the compiler to the result if its name is matching with the pattern
-	 * @param result the result to add the test object container to
+	 *
+	 * @param result      the result to add the test object container to
 	 * @param namePattern the name pattern to check if the name matches
-	 * @param name the name for the compiler
-	 * @param cast the casted type
-	 * @param <T> the type of the compiler
+	 * @param name        the name for the compiler
+	 * @param cast        the casted type
+	 * @param <T>         the type of the compiler
 	 */
 	private <T> void addCompiler(List<TestObjectContainer<T>> result, Pattern namePattern, String name, T cast) {
 		if (namePattern.matcher(name).matches()) {

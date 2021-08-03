@@ -7,8 +7,8 @@ package de.knowwe.core;
 
 import java.io.IOException;
 
-import com.denkbares.utils.Log;
-import de.knowwe.core.utils.KnowWEUtils;
+import org.jetbrains.annotations.NotNull;
+
 import de.knowwe.core.wikiConnector.WikiAttachment;
 
 /**
@@ -19,39 +19,37 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class WikiAttachmentPair {
 
-	private final WikiAttachment firstAttachment;
-	private final WikiAttachment secondAttachment;
+	private final String testObjectName;
 
-	public WikiAttachmentPair(String firstAttachmentPath, String secondAttachmentPath) {
-		this.firstAttachment = createAttachment(firstAttachmentPath);
-		this.secondAttachment = createAttachment(secondAttachmentPath);
+	public WikiAttachmentPair(String testObjectName) {
+		this.testObjectName = testObjectName;
 	}
 
-	/**
-	 * Creates a WikiAttachment from the path where it is placed
-	 *
-	 * @param attachmentPath path to the attachment
-	 * @return attachment
-	 */
-	private WikiAttachment createAttachment(String attachmentPath) {
-		// title is usually the last path of the String
-		String[] pathComponents = attachmentPath.split("/");
-		String title = pathComponents.length > 0 ? pathComponents[pathComponents.length - 1] : attachmentPath;
-		try {
-			return KnowWEUtils.getAttachment(title, attachmentPath);
+	@NotNull
+	public WikiAttachment getFirstAttachment() throws IOException {
+		return getWikiAttachment(getAttachmentPaths()[0]);
+	}
+
+	@NotNull
+	public WikiAttachment getSecondAttachment() throws IOException {
+		return getWikiAttachment(getAttachmentPaths()[1]);
+	}
+
+	@NotNull
+	private WikiAttachment getWikiAttachment(String attachmentPath) throws IOException {
+		WikiAttachment attachment = Environment.getInstance().getWikiConnector().getAttachment(attachmentPath);
+		if (attachment == null) throw new IOException(attachmentPath + " is not a valid attachment path");
+		return attachment;
+	}
+
+	@NotNull
+	private String[] getAttachmentPaths() throws IOException {
+		String[] paths = testObjectName.split("\\s*[,;]\\s*");
+		if (paths.length != 2) {
+			throw new IOException("Expected two attachment paths separated by a comma, but got: " + testObjectName);
 		}
-		catch (IOException e) {
-			Log.severe("Problems reading an attachment file in " + attachmentPath + ". " + e);
-		}
-		return null;
+		return paths;
 	}
 
-	public WikiAttachment getFirstAttachment() {
-		return firstAttachment;
-	}
-
-	public WikiAttachment getSecondAttachment() {
-		return secondAttachment;
-	}
 }
 
