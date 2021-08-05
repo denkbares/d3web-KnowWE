@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2020 denkbares GmbH, Germany
+  ~ Copyright (C) 2021 denkbares GmbH, Germany
   ~
   ~ This is free software; you can redistribute it and/or modify it under the
   ~ terms of the GNU Lesser General Public License as published by the Free
@@ -51,6 +51,28 @@
 		<module>KnowWE-App</module>
 		<module>KnowWE-Plugins</module>
 	</modules>
+
+	<profiles>
+		<profile>
+			<id>dependency-check</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>6.2.2</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>aggregate</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<url>https://www.d3web.de/</url>
 
