@@ -35,6 +35,7 @@ import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
+import de.d3web.testing.AbstractTest;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
@@ -421,9 +422,10 @@ public class CIRenderer {
 	}
 
 	private void appendMessage(UserContext context, TestResult testResult, RenderResult renderResult) {
-		Collection<String> testObjectNames = testResult.getTestObjectsWithUnexpectedOutcome();
+		Collection<String> failedTests = testResult.getTestObjectsWithUnexpectedOutcome();
 		CountingSet<Message.Type> typeCount = new CountingSet<>();
-		for (String testObjectName : testObjectNames) {
+		Test<?> test = TestManager.findTest(testResult.getTestName());
+		for (String testObjectName : failedTests) {
 			de.d3web.testing.Message message = testResult.getMessageForTestObject(testObjectName);
 			typeCount.add((message == null) ? Type.ABORTED : message.getType());
 			if (message == null) continue;
@@ -432,15 +434,17 @@ public class CIRenderer {
 					continue;
 				}
 			}
+			doRenderResults(context, testResult, renderResult, test, testObjectName, message);
+		}
 
-			Test<?> test = TestManager.findTest(testResult.getTestName());
-			if (test instanceof ResultRenderer) {
-				((ResultRenderer) test).renderResultMessage(context, testObjectName, message, testResult, renderResult);
-			}
-			else {
-				renderResultMessageDefault(context, testObjectName, testResult, message, renderResult);
+		if (failedTests.isEmpty() && test instanceof AbstractTest &&
+				((AbstractTest<?>) test).renderResultsOfSucceededTests()) {
+			for (String succeededTests : testResult.getTestObjectsWithExpectedOutcome()) {
+				de.d3web.testing.Message message = testResult.getMessageForTestObject(succeededTests);
+				doRenderResults(context, testResult, renderResult, test, succeededTests, message);
 			}
 		}
+
 		if (typeCount.getCount(Type.ABORTED) > ABORT_CUTOFF) {
 			renderResult.appendHtml("\n<br><br><span>There are some additional omitted messages of aborted test objects...</span><br>");
 		}
@@ -470,12 +474,21 @@ public class CIRenderer {
 				renderResult.appendHtml("\n<br><span>No test objects could be found</span>");
 			}
 			else {
-				renderResult.appendHtml("\n<br><span>" + Strings.pluralOf(successfullyTestedObjects,"test object") + " tested successfully</span>");
+				renderResult.appendHtml("\n<br><span>" + Strings.pluralOf(successfullyTestedObjects, "test object") + " tested successfully</span>");
 			}
 		}
 
 		if (testResult.getRunTimeMillis() >= 0) {
 			renderResult.appendHtml("\n<br><span style='color: grey'>Runtime: " + Stopwatch.getDisplay(testResult.getRunTimeMillis()) + "</span>");
+		}
+	}
+
+	private void doRenderResults(UserContext context, TestResult testResult, RenderResult renderResult, Test<?> test, String testObjectName, Message message) {
+		if (test instanceof ResultRenderer) {
+			((ResultRenderer) test).renderResultMessage(context, testObjectName, message, testResult, renderResult);
+		}
+		else {
+			renderResultMessageDefault(context, testObjectName, testResult, message, renderResult);
 		}
 	}
 
