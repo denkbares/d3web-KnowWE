@@ -52,28 +52,6 @@
 		<module>KnowWE-Plugins</module>
 	</modules>
 
-	<profiles>
-		<profile>
-			<id>dependency-check</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.owasp</groupId>
-						<artifactId>dependency-check-maven</artifactId>
-						<version>6.2.2</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>aggregate</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
 	<url>https://www.d3web.de/</url>
 
 	<issueManagement>
@@ -1070,6 +1048,25 @@
 					<url>https://repo.denkbares.com/repo-des/</url>
 				</repository>
 			</repositories>
+		</profile>
+		<profile>
+			<id>dependency-check</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>6.2.2</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>aggregate</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 
