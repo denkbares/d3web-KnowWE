@@ -66,13 +66,17 @@ public class CIBuildManager implements EventListener {
 	}
 
 	private static final AtomicLong executorNumber = new AtomicLong();
-	private static final ExecutorService ciBuildExecutor = Executors.newFixedThreadPool(2,
+	private static final ExecutorService CI_BUILD_EXECUTOR = Executors.newCachedThreadPool(
 			r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet()));
+	private static final AtomicLong THREAD_NUMBER = new AtomicLong();
+	private static final ExecutorService DEFAULT_TEST_EXECUTOR = Executors.newFixedThreadPool(
+			(int) Math.max(2, Runtime.getRuntime().availableProcessors() * 0.6),
+			r -> new Thread(r, "CI-Test-Executor-" + THREAD_NUMBER.incrementAndGet()));
 
 	static {
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
 			Log.info("Shutting down CI build executor.");
-			ciBuildExecutor.shutdown();
+			CI_BUILD_EXECUTOR.shutdown();
 		});
 	}
 
@@ -102,7 +106,7 @@ public class CIBuildManager implements EventListener {
 			providers.addAll(pluggedProviders);
 
 			listener = new DefaultAjaxProgressListener();
-			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), listener);
+			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), listener, DEFAULT_TEST_EXECUTOR);
 		}
 
 		@Override
@@ -151,7 +155,7 @@ public class CIBuildManager implements EventListener {
 		CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard));
 		ciBuildQueue.put(dashboard, ciBuildFuture);
 		// the future will remove itself in method done().
-		ciBuildExecutor.execute(ciBuildFuture);
+		CI_BUILD_EXECUTOR.execute(ciBuildFuture);
 	}
 
 	private static void deleteAttachmentTempFiles(BuildResult build) {
