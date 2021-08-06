@@ -12,10 +12,15 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
+
+import com.denkbares.collections.PartialHierarchyException;
+import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Log;
 import com.denkbares.utils.Predicates;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -65,6 +70,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 	public static final String ANNOTATION_MARKUP = "markup";
 	private static final String ANNOTATION_FRAME = "frame";
 	private static final String ANNOTATION_HEADER = "header";
+	private static final String ANNOTATION_PREFIX_REDUCTION = "prefixReduction";
 
 	static {
 		MARKUP = new DefaultMarkup("LinkArticles");
@@ -74,6 +80,9 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(ANNOTATION_EXCLUDE, StyleRenderer.ANNOTATION);
 		MARKUP.addAnnotation(ANNOTATION_MARKUP);
 		MARKUP.addAnnotation(ANNOTATION_ARTICLE);
+		MARKUP.addAnnotation(ANNOTATION_PREFIX_REDUCTION, false, "true", "false");
+		MARKUP.getAnnotation(ANNOTATION_PREFIX_REDUCTION)
+				.setDocumentation("Shortens the displayed page title if the title form a prefix hierarchy, that is, the title of the child article has the title of its parent article as prefix.");
 		MARKUP.addAnnotation(ANNOTATION_FRAME);
 		MARKUP.addAnnotationRenderer(ANNOTATION_FRAME, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(ANNOTATION_HEADER);
@@ -107,10 +116,11 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 				new RenderWorker(Sections.cast(section, LinkArticlesMarkup.class)).render(Sections.cast(section, LinkArticlesMarkup.class), user, out));
 	}
 
-	private static class RenderWorker extends DefaultMarkupRenderer {
+	private static final class RenderWorker extends DefaultMarkupRenderer {
 
 		private final Section<LinkArticlesMarkup> section;
 		private final Collection<Message> messages = new LinkedHashSet<>();
+		private boolean prefixReduction = false;
 
 		private RenderWorker(Section<LinkArticlesMarkup> section) {
 			this.section = section;
@@ -122,6 +132,8 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			setRenderHeader(!"false".equals(renderHeader));
 			String renderFrame = DefaultMarkupType.getAnnotation(section, ANNOTATION_FRAME);
 			setFramed(!"false".equals(renderFrame));
+			String prefixReductionValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_PREFIX_REDUCTION);
+			prefixReduction = "true".equals(prefixReductionValue);
 		}
 
 		@Override
@@ -140,7 +152,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 
 			// prepare template
 			String template = DefaultMarkupType.getAnnotation(section, ANNOTATION_TEMPLATE);
-			TemplateResult templateResult = new TemplateResult(template);
+			TemplateResult templateResult = new TemplateResult(template, prefixReduction);
 			try {
 				templateResult.compile();
 			}
@@ -152,7 +164,23 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			result.appendHtml("<div>\n");
 			DefaultMarkupRenderer.renderMessageBlock(result, messages);
 			sections.sort(Comparator.comparing(Section::getTitle, NumberAwareComparator.CASE_INSENSITIVE));
-			sections.forEach(sec -> templateResult.appendLink(result, sec));
+
+			// for the prefix reduction mode, we need to create the hierarchy of articles
+			final PartialHierarchyTree<String> tree = new PartialHierarchyTree<>(String::startsWith);
+			if (this.prefixReduction) {
+				// prepare prefix hierarchy
+				sections.stream().map(s -> s.getArticle().getTitle()).forEach(t -> {
+					try {
+						tree.insert(t);
+					}
+					catch (PartialHierarchyException e) {
+						Log.severe(e.getMessage());
+					}
+				});
+			}
+
+			// create links
+			sections.forEach(sec -> templateResult.appendLink(result, sec, tree));
 			result.appendHtml("</div>");
 			super.renderContentsAndAnnotations(section, user, result);
 		}
@@ -240,26 +268,23 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 
 		private String template;
 		private String prefix;
-		private String suffix;
 		private String oldString;
 		private String newString;
+		private final boolean prefixReduction;
 
-		public TemplateResult(String template) {
+		TemplateResult(String template, boolean prefixReduction) {
 			this.template = template;
+			this.prefixReduction = prefixReduction;
 		}
 
 		public void compile() throws ParseException {
 			//annotation template
 			prefix = "*";
-			suffix = "";
 			oldString = "";
 			newString = "";
 			if (Strings.isBlank(template)) return;
 
 			if (template.contains("link")) {
-				if (template.endsWith("\\")) {
-					suffix = "\\\\";
-				}
 				if (template.matches(".* link.*")) {
 					prefix = template.substring(0, template.indexOf(" link"));
 				}
@@ -281,23 +306,43 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 			}
 		}
 
-		public void appendLink(RenderResult out, Section<?> section) {
-			String title = section.getTitle();
-			if (title == null) return;
-			boolean off = Strings.startsWithIgnoreCase(section.getText(), "%%off:");
+		void appendLink(RenderResult out, Section<?> currentSection, PartialHierarchyTree<String> tree) {
+			String currentTitle = currentSection.getTitle();
+			if (currentTitle == null) return;
+			boolean off = Strings.startsWithIgnoreCase(currentSection.getText(), "%%off:");
 
 			out.append(prefix);
-			out.appendHtmlTag("a", "href", KnowWEUtils.getURLLink(section));
+			out.appendHtmlTag("a", "href", KnowWEUtils.getURLLink(currentSection));
 			if (off) out.appendHtmlTag("span", "style", "color: #888; text-decoration: line-through");
-			out.append(title.replaceAll(oldString, newString));
+			String displayTitleCurrent = getDisplayTitle(currentTitle);
+
+			// handle prefix reduction
+			if (this.prefixReduction) {
+				// we are in prefix reduction mode, hence we need to find the node, its parent and its depth
+				PartialHierarchyTree.Node<String> currentTreeNode = tree.find(currentTitle);
+				Collection<PartialHierarchyTree.Node<String>> parents = currentTreeNode.getParents();
+				if (parents.size() > 1) {
+					throw new IllegalStateException("We may only have one parent here as article names are unique!");
+				}
+				String parentTitle = ""; // a top level element does not have a parent
+				if (parents.size() == 1) {
+					PartialHierarchyTree.Node<String> parent = parents.iterator().next();
+					parentTitle = parent.getData();
+				}
+				displayTitleCurrent = createIndentation(tree.getMaxDepthLevel(currentTreeNode))
+						+ getDisplayTitle(displayTitleCurrent).substring(getDisplayTitle(parentTitle).length()).trim();
+			}
+
+			// actually render the title
+			out.append(displayTitleCurrent);
 			if (off) out.appendHtmlTag("/span");
 			out.appendHtmlTag("/a");
 
 			// render if the section is erroneous
-			if (section.get() instanceof DefaultMarkupType) {
-				int errors = DefaultMarkupRenderer.getMessageStrings(section, Message.Type.ERROR, null).size();
+			if (currentSection.get() instanceof DefaultMarkupType) {
+				int errors = DefaultMarkupRenderer.getMessageStrings(currentSection, Message.Type.ERROR, null).size();
 				int warnings = errors > 0 ? 0 :
-						DefaultMarkupRenderer.getMessageStrings(section, Message.Type.WARNING, null).size();
+						DefaultMarkupRenderer.getMessageStrings(currentSection, Message.Type.WARNING, null).size();
 				if (errors > 0) {
 					out.append(" (")
 							.appendHtml(Icon.ERROR.toHtml())
@@ -314,6 +359,16 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 				}
 			}
 			out.append("\n");
+		}
+
+		private String createIndentation(int indentationLevel) {
+			// indent via underscore
+			return "-".repeat(Math.max(0, indentationLevel));
+		}
+
+		@NotNull
+		private String getDisplayTitle(@NotNull String title) {
+			return title.replaceAll(oldString, newString);
 		}
 	}
 }
