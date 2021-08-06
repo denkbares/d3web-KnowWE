@@ -345,8 +345,7 @@ public class TerminologyManager {
 	}
 
 	/**
-	 * Returns all local terms of the given class (e.g. Question, String,...), that are compiled in
-	 * the article with the given title.
+	 * Returns all terms of the given class (e.g. Question, String,...) known in this TerminologyManager
 	 *
 	 * @created 03.11.2010
 	 */
