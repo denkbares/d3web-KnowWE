@@ -16,6 +16,7 @@ import com.denkbares.collections.N2MMap;
 import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
+import de.knowwe.core.compile.CompilationLocal;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.parsing.Section;
@@ -108,7 +109,8 @@ public class OntologyBridge {
 	public static OntologyCompiler getOntology(@NotNull D3webCompiler d3webCompiler, Priority priorityToAwait) {
 		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) throw new IllegalArgumentException("No ontology linked to the given d3web compiler");
-		OntologyCompiler compiler = Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class);
+		OntologyCompiler compiler = CompilationLocal.getCached(d3webCompiler, OntologyCompiler.class + ":" + ontologyId,
+				() -> Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class));
 		if (compiler == null) throw new IllegalStateException("Ontology compiler not yet available");
 		try {
 			compiler.getCompilerManager().awaitCompilePriorityCompleted(compiler, priorityToAwait);
@@ -154,7 +156,8 @@ public class OntologyBridge {
 		if (d3webId == null) {
 			throw new IllegalArgumentException("The given ontology is not linked to any d3web compiler");
 		}
-		D3webCompiler compiler = Compilers.getCompiler(Sections.get(d3webId), D3webCompiler.class);
+		D3webCompiler compiler = CompilationLocal.getCached(ontologyCompiler, D3webCompiler.class + ":" + d3webId,
+				() -> Compilers.getCompiler(Sections.get(d3webId), D3webCompiler.class));
 		if (compiler == null) {
 			// should not happen
 			throw new IllegalArgumentException("Mapping not up to date, this is probably a failure of the OntologyBridge");
