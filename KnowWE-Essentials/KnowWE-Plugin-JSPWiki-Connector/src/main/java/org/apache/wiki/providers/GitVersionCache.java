@@ -19,6 +19,7 @@ import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RenameDetector;
+import org.eclipse.jgit.ignore.IgnoreNode;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -46,14 +47,16 @@ public class GitVersionCache {
 	private final WikiEngine engine;
 	private final Repository repository;
 	private static final Logger log = Logger.getLogger(GitVersionCache.class);
+	private final IgnoreNode ignoreNode;
 
 	private Map<String, List<GitCacheItem>> pageRevisionCache;
 	private Map<String, List<GitCacheItem>> attachmentRevisionCache;
 	private Map<String, List<CacheCommand>> cacheCommands;
 
-	public GitVersionCache(WikiEngine engine, Repository repository) {
+	public GitVersionCache(WikiEngine engine, Repository repository, IgnoreNode ignoreNode) {
 		this.engine = engine;
 		this.repository = repository;
+		this.ignoreNode = ignoreNode;
 	}
 
 	void initializeCache() throws IOException {
@@ -162,6 +165,9 @@ public class GitVersionCache {
 
 	void mapCommit(RevCommit commit, String path, boolean delete) throws IOException {
 		log.debug("commit " + (delete ? "delete " : "") + path);
+		Boolean ignored = ignoreNode.checkIgnored(path, false);
+		if(ignored != null && ignored)
+			return;
 		Map<String, List<GitCacheItem>> cache;
 		GitCacheItem toCache;
 		String key;

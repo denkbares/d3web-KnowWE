@@ -65,6 +65,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.LockFailedException;
+import org.eclipse.jgit.ignore.IgnoreNode;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
@@ -101,6 +102,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private final ReentrantLock commitLock = new ReentrantLock();
 	private GitVersionCache cache;
 	private final GitAutoUpdateScheduler scheduler;
+	private IgnoreNode ignoreNode;
 
 	private AtomicLong commitCount;
 
@@ -188,7 +190,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 		gitGc(true, windowsGitHackNeeded&&!dontUseHack, repository, true);
 		this.repository.autoGC(new TextProgressMonitor());
-		this.cache = new GitVersionCache(engine, this.repository);
+		ignoreNode = new IgnoreNode();
+		ignoreNode.parse(new FileInputStream(pageDir+"/.gitignore"));
+		this.cache = new GitVersionCache(engine, this.repository, ignoreNode);
 		cache.initializeCache();
 		if(autoUpdateEnabled && remoteRepo){
 			scheduler.initialize(engine, this);
@@ -565,6 +569,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			if (page.exists()) {
 				List<WikiPage> versionHistory = cache.getPageHistory(pageName);
 				if (versionHistory != null) {
+					Collections.reverse(versionHistory);
 					return versionHistory;
 				}
 				else {
@@ -585,6 +590,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					}
 				}
 			}
+			Collections.reverse(pageVersions);
 			return pageVersions;
 		}
 		finally {
