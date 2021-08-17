@@ -81,6 +81,6 @@ public class GitAutoUpdateScheduler {
 		scheduler = Executors.newSingleThreadScheduledExecutor();
 		int startDelay = resume?0: TextUtil.getIntegerProperty(engine.getWikiProperties(), JSPWIKI_GIT_AUTOUPDATE_INIT_DELAY, 900);
 		int delay = TextUtil.getIntegerProperty(engine.getWikiProperties(), JSPWIKI_GIT_AUTOUPDATE_DELAY, 5);
-		scheduler.scheduleAtFixedRate(t, startDelay, delay, TimeUnit.SECONDS);
+		scheduler.scheduleWithFixedDelay(t, startDelay, delay, TimeUnit.SECONDS);
 	}
 }
