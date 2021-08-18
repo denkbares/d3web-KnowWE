@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
-import org.jetbrains.annotations.NotNull;
 import org.eclipse.rdf4j.model.Value;
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -29,9 +29,9 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompileScript;
 import de.knowwe.ontology.compile.OntologyCompiler;
+import de.knowwe.ontology.compile.provider.URIProvider;
 import de.knowwe.ontology.kdom.resource.Resource;
 import de.knowwe.ontology.turtle.TurtleURI;
-import de.knowwe.ontology.compile.provider.URIProvider;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -62,7 +62,7 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 
 	@NotNull
 	private Identifier getTermIdentifier(Rdf2GoCompiler compiler, Section<? extends LazyURIReference> section) {
-		Identifier identifier = (Identifier) section.getObject(compiler, IDENTIFIER_KEY);
+		Identifier identifier = section.getObject(compiler, IDENTIFIER_KEY);
 		if (identifier == null) {
 			Collection<Identifier> potentiallyMatchingIdentifiers = getPotentiallyMatchingIdentifiers(compiler, section);
 
@@ -100,7 +100,7 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 
 	private boolean resolveToEqualNS(Rdf2GoCompiler compiler, Collection<Identifier> potentiallyMatchingIdentifiers) {
 		Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
-		if(potentiallyMatchingIdentifiers.size() == 2) {
+		if (potentiallyMatchingIdentifiers.size() == 2) {
 			String localNS = rdf2GoCore.getLocalNamespace();
 			String defaultNS = rdf2GoCore.getNamespacesMap().get("");
 			Iterator<Identifier> iterator = potentiallyMatchingIdentifiers.iterator();
@@ -126,9 +126,6 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 		// this should only fail if the section is compiled by different compilers and the lazy uri is resolved
 		// differently by the compilers
 		Map<Compiler, Object> objects = section.getObjects(IDENTIFIER_KEY);
-		if (objects == null) {
-			throw new IllegalStateException("Cannot get identifier for section " + section + " before compilation");
-		}
 		Set<Identifier> identifiers = new HashSet<>(objects.size());
 		for (Object identifier : objects.values()) {
 			if (identifier instanceof Identifier) {
@@ -167,7 +164,7 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<LazyURIReference> section) {
-			Identifier identifier = (Identifier) section.removeObject(compiler, IDENTIFIER_KEY);
+			Identifier identifier = section.removeObject(compiler, IDENTIFIER_KEY);
 			compiler.getTerminologyManager().unregisterTermReference(compiler,
 					section, getTermObjectClass(compiler, section), identifier);
 			compiler.getTerminologyManager().unregisterTermReference(compiler,
