@@ -102,7 +102,10 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			repository = ((GitVersioningFileProvider) provider).getRepository();
 			File baseDir = new File(((GitVersioningFileProvider) provider).getFilesystemPath());
 			ignoreNode = new IgnoreNode();
-			ignoreNode.parse(new FileInputStream(baseDir+"/.gitignore"));
+			File gitignoreFile = new File(baseDir+"/.gitignore");
+			if(gitignoreFile.exists()) {
+				ignoreNode.parse(new FileInputStream(gitignoreFile));
+			}
 			cache = gitVersioningFileProvider.getCache();
 			gitCommentStrategy = ((GitVersioningFileProvider)provider).getGitCommentStrategy();
 		}

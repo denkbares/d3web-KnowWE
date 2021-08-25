@@ -191,7 +191,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		gitGc(true, windowsGitHackNeeded&&!dontUseHack, repository, true);
 		this.repository.autoGC(new TextProgressMonitor());
 		ignoreNode = new IgnoreNode();
-		ignoreNode.parse(new FileInputStream(pageDir+"/.gitignore"));
+		File gitignoreFile = new File(pageDir+"/.gitignore");
+		if(gitignoreFile.exists()) {
+			ignoreNode.parse(new FileInputStream(gitignoreFile));
+		}
 		this.cache = new GitVersionCache(engine, this.repository, ignoreNode);
 		cache.initializeCache();
 		if(autoUpdateEnabled && remoteRepo){
