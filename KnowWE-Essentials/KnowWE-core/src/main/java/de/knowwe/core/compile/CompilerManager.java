@@ -95,7 +95,7 @@ public class CompilerManager {
 		return compileThreads.containsKey(Thread.currentThread());
 	}
 
-	static ThreadPoolExecutor createExecutorService() {
+	public static ThreadPoolExecutor createExecutorService() {
 		int threadCount = getCompilerThreadCount();
 		ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount, runnable -> {
 			Thread thread = new Thread(runnable, "KnowWE-Compiler-" + compileThreadNumber.getAndIncrement());

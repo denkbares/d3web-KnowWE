@@ -18,10 +18,14 @@
  */
 package de.d3web.we.knowledgebase;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +38,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.CompileScript;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.ScriptCompiler;
@@ -47,6 +52,7 @@ import de.knowwe.core.kdom.objects.SimpleDefinitionRegistrationScript;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.plugin.Plugins;
 
@@ -60,6 +66,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler, IncrementalCompiler {
 
+	private final ThreadPoolExecutor threadPool;
 	private TerminologyManager terminologyManager;
 	private KnowledgeBase knowledgeBase;
 	private final Section<? extends PackageCompileType> compileSection;
@@ -68,6 +75,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private D3webScriptCompiler destroyScriptCompiler;
 	private final boolean allowIncrementalCompilation = true;
 	private boolean isIncrementalBuild = false;
+	private final List<Future<?>> futures;
 
 	public D3webCompiler(PackageManager packageManager,
 						 Section<? extends PackageCompileType> compileSection,
@@ -76,6 +84,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		super(packageManager, compileSection, compilingType);
 		this.compileSection = compileSection;
 		this.caseSensitive = caseSensitive;
+		this.threadPool = CompilerManager.createExecutorService();
+		this.futures = new ArrayList<>();
 	}
 
 	@Override
@@ -136,7 +146,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		if (!tryIncrementalCompilation(packagesToCompile)) {
 			fullCompilation(packagesToCompile);
 		}
-
+		awaitParallelScripts();
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 	}
 
@@ -284,6 +294,47 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 			throw new IllegalStateException("Non-incremental script was added during incremental compilation. " +
 					"Please inform your administrator and try refresh of the knowledge base to recover.");
 		}
+	}
+
+	@FunctionalInterface
+	public interface ParallelScript {
+		void run() throws CompilerMessage;
+	}
+
+	/**
+	 * Runs the given script in parallel. The method will return immediately, but we wait for all scripts to finished
+	 * before the compilation is finished. This can be useful for parts of the compilation that are resource intensive,
+	 * but no other scripts/work depend on their output.
+	 *
+	 * @param section the section to store possible compiler messages for
+	 * @param script  the script to execute in parallel
+	 */
+	public void runInParallel(Section<?> section, ParallelScript script) {
+		this.futures.add(threadPool.submit(() -> {
+			try {
+				script.run();
+			}
+			catch (CompilerMessage e) {
+				Messages.storeMessages(this, section, ParallelScript.class, e.getMessages());
+			}
+		}));
+	}
+
+	private void awaitParallelScripts() {
+		// all futures will be added at this point, just make sure all have finished
+		for (Future<?> future : futures) {
+			try {
+				future.get();
+			}
+			catch (InterruptedException e) {
+				Log.warning("Parallel script execution was interrupted", e);
+			}
+			catch (ExecutionException e) {
+				Log.severe("Parallel script execution failed", e);
+			}
+		}
+		// cleanup
+		futures.clear();
 	}
 
 	private static class D3webScriptCompiler extends ScriptCompiler<D3webCompiler> {
