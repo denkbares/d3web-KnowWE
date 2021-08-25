@@ -181,14 +181,14 @@ public class GitVersionCache {
 			key = parentName + "/" + attachmentName;
 			toCache = new AttachmentCacheItem(parentName, attachmentName, commit.getFullMessage(),
 					commit.getAuthorIdent().getName(),
-					new Date(1000L * commit.getCommitTime()), size, delete, commit.getId());
+					commit.getAuthorIdent().getWhen(), size, delete, commit.getId());
 		}
 		else {
 			cache = this.pageRevisionCache;
 			key = TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, ""));
 			toCache = new PageCacheItem(key, commit.getFullMessage(),
 					commit.getAuthorIdent().getName(),
-					new Date(1000L * commit.getCommitTime()), size, delete, commit.getId());
+					commit.getAuthorIdent().getWhen(), size, delete, commit.getId());
 		}
 
 		putInCache(cache, toCache, key);
