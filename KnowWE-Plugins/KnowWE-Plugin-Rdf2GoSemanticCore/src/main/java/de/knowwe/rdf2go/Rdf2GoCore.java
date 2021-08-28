@@ -63,7 +63,7 @@ import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
-import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -139,9 +139,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public Rdf2GoCore(String lns, RepositoryConfig reasoning) {
 		this("Rdf2GoCore", lns, reasoning);
 	}
-
-
-
 
 	/**
 	 * Initializes the Rdf2GoCore with the specified arguments. Please note that the RuleSet argument only has an effect
@@ -589,7 +586,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(boolean boolValue) {
-		return createDatatypeLiteral(String.valueOf(boolValue), XMLSchema.BOOLEAN);
+		return createDatatypeLiteral(String.valueOf(boolValue), XSD.BOOLEAN);
 	}
 
 	/**
@@ -599,7 +596,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(int intValue) {
-		return createDatatypeLiteral(String.valueOf(intValue), XMLSchema.INTEGER);
+		return createDatatypeLiteral(String.valueOf(intValue), XSD.INTEGER);
 	}
 
 	/**
@@ -609,7 +606,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(double doubleValue) {
-		return createDatatypeLiteral(String.valueOf(doubleValue), XMLSchema.DOUBLE);
+		return createDatatypeLiteral(String.valueOf(doubleValue), XSD.DOUBLE);
 	}
 
 	/**
@@ -619,8 +616,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(LocalDate dateValue) {
-		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE), XMLSchema.DATE);
+		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE), XSD.DATE);
 	}
+
 	/**
 	 * Creates a xsd:dateTime datatype literal with the specified dateTime value.
 	 *
@@ -628,7 +626,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(LocalDateTime dateValue) {
-		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), XMLSchema.DATETIME);
+		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), XSD.DATETIME);
 	}
 
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(String literal, IRI datatype) {
@@ -905,14 +903,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		synchronized ((this.statementMutex)) {
 			Set<Statement> statements = new HashSet<>();
 			for (Entry<StatementSource, Statement> entry : this.statementCache.entrySet()) {
-				if(sourceFilter.test(entry.getKey())) {
+				if (sourceFilter.test(entry.getKey())) {
 					statements.add(entry.getValue());
 				}
 			}
 			return statements;
 		}
 	}
-
 
 	public long getSize() {
 		return getStatements().size();
@@ -1205,7 +1202,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	@Override
-	public TupleQuery prepareSelect(Collection<Namespace> namespaces, String query)throws RepositoryException, MalformedQueryException  {
+	public TupleQuery prepareSelect(Collection<Namespace> namespaces, String query) throws RepositoryException, MalformedQueryException {
 		return semanticCore.prepareSelect(namespaces, query);
 	}
 
@@ -1222,9 +1219,15 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				SparqlCallable callable = newSparqlCallable(query, type, Long.MAX_VALUE, true, preparedAsk, preparedSelect, bindings);
 				Object result = callable.call();
 				if (stopwatch.getTime() > 10) {
+					String usedQuery = query == null
+							? preparedSelect == null
+							? preparedAsk == null
+							? "null" : preparedAsk.getQueryString()
+							: preparedSelect.getQueryString()
+							: query;
 					Log.warning("Slow compile time SPARQL query detected. Query finished after "
 							+ stopwatch.getDisplay()
-							+ ": " + Rdf2GoUtils.getReadableQuery(query, type) + "...");
+							+ ": " + Rdf2GoUtils.getReadableQuery(usedQuery, type) + "...");
 				}
 				return result;
 			}
