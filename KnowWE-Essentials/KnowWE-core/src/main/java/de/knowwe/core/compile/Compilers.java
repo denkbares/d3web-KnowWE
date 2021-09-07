@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -287,7 +288,7 @@ public class Compilers {
 		Map<Class<?>, List<String>> defaultCompilerNamesMap = (Map<Class<?>, List<String>>) context.getSession()
 				.getAttribute(DEFAULT_COMPILERS);
 		if (defaultCompilerNamesMap == null) {
-			defaultCompilerNamesMap = new HashMap<>();
+			defaultCompilerNamesMap = new ConcurrentHashMap<>();
 			context.getSession().setAttribute(DEFAULT_COMPILERS, defaultCompilerNamesMap);
 		}
 
