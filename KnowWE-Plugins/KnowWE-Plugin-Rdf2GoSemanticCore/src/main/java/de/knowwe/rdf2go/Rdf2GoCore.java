@@ -200,6 +200,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		initDefaultNamespaces();
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	public static Rdf2GoCore getInstance(Rdf2GoCompiler compiler) {
 		return compiler.getRdf2GoCore();
 	}
