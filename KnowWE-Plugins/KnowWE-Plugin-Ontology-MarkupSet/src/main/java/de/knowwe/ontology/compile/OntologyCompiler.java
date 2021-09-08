@@ -132,6 +132,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	/**
 	 * Returns true, if the last compilation of the compiler was done incrementally, false otherwise
 	 */
+	@Override
 	public boolean isIncrementalBuild() {
 		return isIncrementalBuild;
 	}

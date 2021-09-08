@@ -109,6 +109,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	/**
 	 * Returns true, if the last compilation of the compiler was done incrementally, false otherwise
 	 */
+	@Override
 	public boolean isIncrementalBuild() {
 		return isIncrementalBuild;
 	}
