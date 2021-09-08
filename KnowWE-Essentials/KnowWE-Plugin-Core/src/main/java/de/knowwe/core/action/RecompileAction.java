@@ -20,15 +20,22 @@
 package de.knowwe.core.action;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.EventManager;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.FullParseEvent;
@@ -60,13 +67,31 @@ public class RecompileAction extends AbstractAction {
 			failUnexpected(context, "Unknown command for RecompileAction: " + command);
 		}
 
-		ArticleManager articleManager = context.getArticleManager();
+		recompile(article, all);
+	}
+
+	/**
+	 * Recompiles the given article, optionally including all compilers compiling the given article
+	 *
+	 * @param article      the article to recompile
+	 * @param recompileAll whether the compilers compiling anything on the articles should also recompile
+	 */
+	public static void recompile(Article article, boolean recompileAll) {
+		ArticleManager articleManager = article.getArticleManager();
+		Objects.requireNonNull(articleManager);
 		articleManager.open();
 		try {
-			if (all) {
-				Log.info("Starting FULL recompilation for article " + article.getTitle());
-				getCompilerArticles(article)
-						.forEach(article1 -> articleManager.registerArticle(article1.getTitle(), article1.getText()));
+			if (recompileAll) {
+				List<Article> articlesToRecompile = getCompilerArticles(article).collect(Collectors.toList());
+				Log.info("Starting FULL recompilation for article " + article.getTitle() +
+						"\nRecompiling the following " + Strings.pluralOf(articlesToRecompile.size(), "article") + ": " +
+						articlesToRecompile.stream()
+								.map(Article::getTitle)
+								.collect(Collectors.joining(", ")));
+				for (Article recompileArticle : articlesToRecompile) {
+					articleManager.registerArticle(recompileArticle.getTitle(), recompileArticle.getText());
+					EventManager.getInstance().fireEvent(new FullParseEvent(recompileArticle));
+				}
 			}
 			else {
 				Log.info("Starting recompilation of article " + article.getTitle());
@@ -81,11 +106,34 @@ public class RecompileAction extends AbstractAction {
 
 	@NotNull
 	public static Stream<Article> getCompilerArticles(Article article) {
+		List<GroupingCompiler> groupingCompilers = Compilers.getCompilers(article.getArticleManager(), GroupingCompiler.class);
 		Stream<Article> compileArticles = $(article).successor(DefaultMarkupType.class)
 				.map(s -> Compilers.getCompilers(s, PackageCompiler.class))
 				.flatMap(Collection::stream)
 				.distinct()
+				.flatMap(c -> getGroupedPackageCompilers(groupingCompilers, c))
+				.distinct()
 				.map(c -> c.getCompileSection().getArticle());
-		return Stream.concat(Stream.of(article), compileArticles);
+		return Stream.concat(Stream.of(article), compileArticles).distinct();
+	}
+
+	@NotNull
+	private static Stream<PackageCompiler> getGroupedPackageCompilers(List<GroupingCompiler> groupingCompilers, PackageCompiler c) {
+		List<Stream<PackageCompiler>> streams = new ArrayList<>();
+		streams.add(Stream.of(c));
+		if (c instanceof GroupingCompiler) {
+			streams.add(toPackageCompilers(((GroupingCompiler) c).getChildCompilers().stream()));
+		}
+		for (GroupingCompiler groupingCompiler : groupingCompilers) {
+			if (groupingCompiler.getChildCompilers().contains(c)) {
+				streams.add(toPackageCompilers(Stream.of(groupingCompiler)));
+				streams.add(toPackageCompilers(groupingCompiler.getChildCompilers().stream()));
+			}
+		}
+		return streams.stream().flatMap(Function.identity());
+	}
+
+	private static Stream<PackageCompiler> toPackageCompilers(Stream<de.knowwe.core.compile.Compiler> compilerStream) {
+		return compilerStream.filter(pc -> pc instanceof PackageCompiler).map(pc -> (PackageCompiler) pc);
 	}
 }
