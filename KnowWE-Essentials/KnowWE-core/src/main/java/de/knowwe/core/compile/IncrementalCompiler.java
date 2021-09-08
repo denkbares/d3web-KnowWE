@@ -37,7 +37,7 @@ public interface IncrementalCompiler extends Compiler {
 	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is given, all scripts
 	 * available for the type of the section and the compiler are added.
 	 *
-	 * @param section     the section to additionally destroy
+	 * @param section      the section to additionally destroy
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
@@ -50,7 +50,7 @@ public interface IncrementalCompiler extends Compiler {
 	 * Optionally you can add a filter to only add scripts of the given classes. If no filter is given, all scripts
 	 * available for the type of the section and the compiler are added.
 	 *
-	 * @param section     the section to additionally compile
+	 * @param section      the section to additionally compile
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
@@ -82,4 +82,12 @@ public interface IncrementalCompiler extends Compiler {
 	 */
 	void addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter);
 
+	/**
+	 * Check whether this compiler's last build was done incrementally
+	 *
+	 * @return true, if we currently have an incremental build, false otherwise (e.g. full build)
+	 */
+	default boolean isIncrementalBuild() {
+		return true;
+	}
 }
