@@ -63,7 +63,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class 	OntologyCompiler extends AbstractPackageCompiler
+public class OntologyCompiler extends AbstractPackageCompiler
 		implements Rdf2GoCompiler, IncrementalCompiler, EventListener {
 
 	static final String COMMIT_NOTIFICATION_ID = "CommitNotification";
