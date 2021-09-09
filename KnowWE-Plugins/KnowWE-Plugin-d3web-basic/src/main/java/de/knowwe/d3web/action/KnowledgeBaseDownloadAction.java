@@ -69,7 +69,8 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 		}
 
 		context.setContentType(BINARY);
-		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+		context.getResponse().addHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+		context.getResponse().addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
 
 		// write the timestamp of the creation (Now!) into the knowledge base
 		base.getInfoStore().addValue(BasicProperties.CREATED, new Date());

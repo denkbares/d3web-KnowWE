@@ -20,6 +20,7 @@ package de.d3web.we.knowledgebase;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -76,6 +77,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private final boolean allowIncrementalCompilation = true;
 	private boolean isIncrementalBuild = false;
 	private final List<Future<?>> futures;
+	private Date buildDate = new Date();
 
 	public D3webCompiler(PackageManager packageManager,
 						 Section<? extends PackageCompileType> compileSection,
@@ -149,6 +151,14 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		}
 		awaitParallelScripts();
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
+		this.buildDate = new Date();
+	}
+
+	/**
+	 * The date of the last build of this compile
+	 */
+	public Date getLastModified() {
+		return buildDate;
 	}
 
 	/**

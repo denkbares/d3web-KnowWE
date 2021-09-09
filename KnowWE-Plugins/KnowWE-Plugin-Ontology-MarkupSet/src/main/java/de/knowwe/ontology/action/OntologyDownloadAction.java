@@ -88,7 +88,8 @@ public class OntologyDownloadAction extends AbstractAction {
 		}
 
 		context.setContentType(mimeType);
-		context.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+		context.getResponse().addHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+		context.getResponse().addHeader("Last-Modified", org.apache.http.client.utils.DateUtils.formatDate(compiler.getLastModified()));
 		Stopwatch stopwatch = new Stopwatch();
 		try (OutputStream outputStream = context.getOutputStream()) {
 			if (syntax == RDFFormat.TURTLE) {

@@ -20,6 +20,7 @@ package de.knowwe.ontology.compile;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -79,6 +80,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	private boolean caseSensitive;
 	private boolean isIncrementalBuild;
 	private volatile boolean changed;
+	private Date buildDate = new Date();
 
 	public OntologyCompiler(PackageManager manager,
 							Section<? extends PackageCompileType> compileSection,
@@ -193,7 +195,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 					rdf2GoCore.commit();
 					commitTracker.add(currentCompilePriority);
 					long after = System.currentTimeMillis();
-					Log.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements in "+ (after-before) +"ms");
+					Log.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements in " + (after - before) + "ms");
 				}
 			}
 		}
@@ -237,7 +239,8 @@ public class OntologyCompiler extends AbstractPackageCompiler
 			getTerminologyManager().cleanupStaleSection();
 			sectionsOfPackage = getPackageManager().getAddedSections(packagesToCompile);
 		}
-		EventManager.getInstance().fireEvent(new OntologyCompilerStartEvent(this, sectionsOfPackage, sectionsOfPackageRemoved, completeCompilation));
+		EventManager.getInstance()
+				.fireEvent(new OntologyCompilerStartEvent(this, sectionsOfPackage, sectionsOfPackageRemoved, completeCompilation));
 		getCompilerManager().setCurrentCompilePriority(this, Priority.INIT);
 		compile(sectionsOfPackage);
 
@@ -252,11 +255,18 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		}
 
 		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this, changed));
-
+		buildDate = new Date();
 		completeCompilation = false;
 		commitTracker.clear();
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this, destroy);
 		scriptCompiler = new ParallelScriptCompiler<>(this, compile);
+	}
+
+	/**
+	 * The date of the last build of this compile
+	 */
+	public Date getLastModified() {
+		return buildDate;
 	}
 
 	private void compile(Collection<Section<?>> sectionsOfPackage) {
