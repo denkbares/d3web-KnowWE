@@ -553,11 +553,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				else {
 					Log.info("Removed " + removeSize + " statements from and added "
 							+ insertSize
-							+ " statements to " + Rdf2GoCore.class.getSimpleName() + " in "
+							+ " statements to " + Rdf2GoCore.class.getSimpleName() + " " + getName() + " in "
 							+ connectionStopwatch.getDisplay() + ".");
 				}
 
-				Log.info("Current number of statements: " + this.statementCache.size());
+				Log.info("Current number of statements in " + Rdf2GoCore.class.getSimpleName() + " " + getName() + ": " + this.statementCache.size());
 
 				// Reset caches
 				this.removeCache = new HashSet<>();
