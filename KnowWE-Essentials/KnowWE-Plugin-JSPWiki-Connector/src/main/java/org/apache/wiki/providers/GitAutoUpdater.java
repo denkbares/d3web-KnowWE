@@ -138,7 +138,12 @@ public class GitAutoUpdater {
 					RebaseResult rebaseResult = pullResult.getRebaseResult();
 					boolean successful = rebaseResult.getStatus().isSuccessful();
 					if (!successful) {
-						log.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
+						log.error("unsuccessful pull " +rebaseResult.getStatus());
+						if(rebaseResult.getConflicts() != null) {
+							log.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
+						} else {
+							log.error("unsuccessful pull " + rebaseResult.getFailingPaths());
+						}
 					}
 				}
 				GitVersioningUtils.gitGc(true, fileProvider.needsWindowsHack(),repository, false);
