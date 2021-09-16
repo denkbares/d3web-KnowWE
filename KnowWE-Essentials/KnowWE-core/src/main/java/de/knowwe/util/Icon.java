@@ -123,6 +123,7 @@ public class Icon {
 	public static final Icon GRIP_LINES_VERTICAL = new Icon("fa-type fa-grip-lines-vertical");
 	public static final Icon INTERNAL_UNIT_FAILURE = new Icon("fa-type fa-times-square");
 	public static final Icon TACHOMETER = new Icon("fa-type fa-tachometer");
+	public static final Icon LOCK = new Icon("fa-type fa-lock");
 
 	public static final Icon LOW_PRIO = new Icon("fa-type fa-exclamation-circle knowwe-lowprio");
 	public static final Icon HIGH_PRIO = new Icon("fa-type fa-exclamation-circle knowwe-highprio");
