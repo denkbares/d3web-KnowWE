@@ -417,7 +417,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	 * @param result        the render result
 	 * @param user          user context
 	 */
-	private void renderPackages(Section<? extends DefaultMarkupType> markupSection, RenderResult result, UserContext user) {
+	protected void renderPackages(Section<? extends DefaultMarkupType> markupSection, RenderResult result, UserContext user) {
 		// get all package rules
 		List<Section<PackageRule>> packageRules = $(markupSection.getArticle()).successor(DefaultMarkupType.class)
 				.filter(m -> m.get().getName().equals("Package"))
@@ -444,7 +444,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	 * @param markupSection section for which compilers should be rendered
 	 * @param result        the render result
 	 */
-	private void renderCompilers(Section<? extends DefaultMarkupType> markupSection, RenderResult result) {
+	protected void renderCompilers(Section<? extends DefaultMarkupType> markupSection, RenderResult result) {
 		// get all compilers
 		Collection<PackageCompiler> compilers = Compilers.getCompilers(markupSection, PackageCompiler.class);
 
