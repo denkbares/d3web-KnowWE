@@ -34,11 +34,9 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import com.denkbares.collections.DefaultMultiMap;
-import com.denkbares.collections.MultiMap;
-import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
@@ -57,7 +55,7 @@ public final class Messages {
 	/**
 	 * This set holds all Sections with Messages.
 	 */
-	private static final MultiMap<Message.Type, Section<?>> sectionsWithMessages = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());
+	private static final Map<Message.Type, Set<Section<?>>> sectionsWithMessages = new ConcurrentHashMap<>();
 
 	/**
 	 * Wraps a single or more {@link Message}s into a Collection to be returned by the {@link CompileScript}
@@ -116,16 +114,8 @@ public final class Messages {
 	 * @param compiler the compiler for which the messages should be removed
 	 */
 	public static void clearMessages(Compiler compiler) {
-		for (Message.Type type : Message.Type.values()) {
-			// would be better if we also hash by compiler... not sure if worth the effort though...
-			ArrayList<Section<?>> sections;
-			synchronized (sectionsWithMessages) {
-				// even synchronized collections need manual synchronization for iterating of the entries
-				sections = new ArrayList<>(sectionsWithMessages.getValues(type));
-			}
-			for (Section<?> section : sections) {
-				clearMessages(compiler, section);
-			}
+		for (Section<?> section : getSectionsWithMessages()) {
+			clearMessages(compiler, section);
 		}
 	}
 
@@ -265,13 +255,16 @@ public final class Messages {
 	 * Checks if there are any messages of the specified type, for any compiler and/or independent of any compiler.
 	 *
 	 * @param section the root section of the subtree to be checked
-	 * @param types   the error messages considered
+	 * @param types   the type of messages to be considered... leave empty to consider any type
 	 * @return if there are any such messages
 	 * @created 06.02.2014
 	 */
 	public static boolean hasMessages(Section<? extends Type> section, Message.Type... types) {
+		if (types.length == 0) types = Message.Type.values();
 		for (Message.Type type : types) {
-			if (sectionsWithMessages.contains(type, section)) return true;
+			if (sectionsWithMessages.getOrDefault(type, Collections.emptySet()).contains(section)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -599,7 +592,7 @@ public final class Messages {
 	 * use this Method a second time with the same parameters, the first Collection gets overwritten!</b>
 	 *
 	 * @param compiler the {@link Compiler} the {@link Message}s are stored for
-	 * @param section  is the is the {@link Section} the {@link Message}s are stored for
+	 * @param section  is the {@link Section} the {@link Message}s are stored for
 	 * @param source   is the Class the messages originate from
 	 * @param messages is the Collection of messages you want so store
 	 */
@@ -624,7 +617,9 @@ public final class Messages {
 				messagesMap.put(sourceKey, Collections.unmodifiableCollection(messages));
 				// store section for type collections
 				for (Message message : messages) {
-					sectionsWithMessages.put(message.getType(), section);
+					sectionsWithMessages
+							.computeIfAbsent(message.getType(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()))
+							.add(section);
 				}
 			}
 		}
@@ -665,7 +660,7 @@ public final class Messages {
 		}
 		for (Message.Type type : Message.Type.values()) {
 			if (!availableTypes.contains(type)) {
-				sectionsWithMessages.remove(type, section);
+				removeSectionFromMessageTracking(type, section);
 			}
 		}
 	}
@@ -674,18 +669,12 @@ public final class Messages {
 	 * Returns all Sections that currently have stored Messages either of Type ERROR or WARNING.
 	 */
 	public static Collection<Section<?>> getSectionsWithMessages(Message.Type... types) {
-		synchronized (sectionsWithMessages) {
-			// get values needs external synchronization
-			int size = 0;
-			for (Message.Type type : types) {
-				size += sectionsWithMessages.getValues(type).size();
-			}
-			Set<Section<?>> sections = new HashSet<>(size);
-			for (Message.Type type : types) {
-				sections.addAll(sectionsWithMessages.getValues(type));
-			}
-			return Collections.unmodifiableCollection(sections);
+		if (types.length == 0) types = Message.Type.values();
+		Set<Section<?>> sections = new HashSet<>();
+		for (Message.Type type : types) {
+			sections.addAll(sectionsWithMessages.getOrDefault(type, Collections.emptySet()));
 		}
+		return Collections.unmodifiableCollection(sections);
 	}
 
 	/**
@@ -765,7 +754,12 @@ public final class Messages {
 
 	public static void unregisterMessagesSection(Section<?> section) {
 		for (Message.Type type : Message.Type.values()) {
-			sectionsWithMessages.remove(type, section);
+			removeSectionFromMessageTracking(type, section);
 		}
+	}
+
+	private static void removeSectionFromMessageTracking(Message.Type type, Section<?> section) {
+		Set<Section<?>> sections = sectionsWithMessages.get(type);
+		if (sections != null) sections.remove(section);
 	}
 }
