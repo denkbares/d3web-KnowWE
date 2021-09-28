@@ -21,7 +21,9 @@ package de.knowwe.core.compile.terminology;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,6 +31,8 @@ import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.collections.ConcatenateCollection;
+import com.denkbares.collections.MinimizedHashSet;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
@@ -52,23 +56,43 @@ import static de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMod
  */
 class TermLog {
 
+	private static final int DEFINITION_TRACKING_LIMIT = 4;
 	private final TreeSet<TermLogEntry> termDefinitions = new TreeSet<>();
 
 	private final Set<TermLogEntry> termReferences = new HashSet<>();
 
-//	private final Map<Class<?>, Set<TermLogEntry>> termClasses =
-//			new HashMap<>(2);
-//
-//	private final Map<String, Set<TermLogEntry>> termIdentifiers =
-//			new HashMap<>(2);
+	private Map<Class<?>, Set<TermLogEntry>> termClasses = null;
+	private Map<Identifier, Set<TermLogEntry>> termIdentifiers = null;
+	private boolean hasMessages = false;
 
 	void addTermDefinition(Compiler compiler,
 						   Section<?> termDefinition,
 						   Class<?> termClass,
 						   Identifier termIdentifier) {
 
-		termDefinitions.add(new TermLogEntry(termDefinition, termClass, termIdentifier));
+		TermLogEntry entry = new TermLogEntry(termDefinition, termClass, termIdentifier);
+		termDefinitions.add(entry);
+		// avoid the memory overhead if possible, most Terms have only one definition
+		if (termDefinitions.size() > DEFINITION_TRACKING_LIMIT) {
+			if (termClasses == null || termIdentifiers == null) {
+				termClasses = new HashMap<>(4);
+				termIdentifiers = new HashMap<>(4);
+				for (TermLogEntry definition : termDefinitions) {
+					trackDefinition(definition);
+				}
+			}
+			else {
+				trackDefinition(entry);
+			}
+		}
 		handleMessagesForDefinition(compiler);
+	}
+
+	private void trackDefinition(TermLogEntry definition) {
+		termClasses.computeIfAbsent(definition.getTermClass(), k -> new MinimizedHashSet<>())
+				.add(definition);
+		termIdentifiers.computeIfAbsent(definition.getTermIdentifier(), k -> new MinimizedHashSet<>())
+				.add(definition);
 	}
 
 	private void handleMessagesForDefinition(Compiler compiler) {
@@ -78,11 +102,10 @@ class TermLog {
 
 		Collection<Message> messages = new ArrayList<>(2);
 		if (termDefinitions.size() > 1) {
-			String term = termDefinitions.iterator().next().getTermIdentifier().toPrettyPrint();
 			if (validationMode != ReferenceValidationMode.ignore) {
 				Set<Class<?>> termClasses = getTermClasses();
 				if (termClasses.size() > 1) {
-					messages.add(Messages.ambiguousTermClassesError(term, termClasses));
+					messages.add(Messages.ambiguousTermClassesError(getTermVerbalization(), termClasses));
 				}
 			}
 			Collection<Identifier> termIdentifiers = getDefinitionIdentifiers();
@@ -90,17 +113,32 @@ class TermLog {
 				messages.add(Messages.ambiguousTermCaseWarning(termIdentifiers));
 			}
 			if (multiDefinitionMode == warn) {
-				messages.add(Messages.warning(getMultiDefinitionText(term)));
+				messages.add(Messages.warning(getMultiDefinitionText(getTermVerbalization())));
 			}
 			else if (multiDefinitionMode == error) {
-				messages.add(Messages.error(getMultiDefinitionText(term)));
+				messages.add(Messages.error(getMultiDefinitionText(getTermVerbalization())));
 			}
 		}
-		for (TermLogEntry termDefinition : termDefinitions) {
-			Messages.storeMessages(compiler, termDefinition.getSection(), this.getClass(), messages);
-		}
-		for (TermLogEntry termReference : termReferences) {
-			Messages.storeMessages(compiler, termReference.getSection(), this.getClass(), messages);
+		addMessagesToSections(compiler, messages, new ConcatenateCollection<>(this.termDefinitions, this.termReferences));
+	}
+
+	private String getTermVerbalization() {
+		return termDefinitions.iterator().next().getTermIdentifier().toPrettyPrint();
+	}
+
+	private void addMessagesToSections(Compiler compiler, Collection<Message> messages, Collection<TermLogEntry> termLogEntries) {
+		if (messages.isEmpty()) {
+			if (hasMessages) {
+				for (TermLogEntry entry : termLogEntries) {
+					Messages.clearMessages(compiler, entry.getSection(), this.getClass());
+				}
+			}
+			hasMessages = false;
+		} else {
+			for (TermLogEntry entry : termLogEntries) {
+				Messages.storeMessages(compiler, entry.getSection(), this.getClass(), messages);
+			}
+			hasMessages = true;
 		}
 	}
 
@@ -174,11 +212,32 @@ class TermLog {
 							  Class<?> termClass,
 							  Identifier termIdentifier) {
 
-		if (!termDefinitions.remove(new TermLogEntry(termDefinition, termClass, termIdentifier))) {
+		TermLogEntry entry = new TermLogEntry(termDefinition, termClass, termIdentifier);
+		if (!termDefinitions.remove(entry)) {
 			Log.warning("Trying to unregister term log that does not exist: " + termClass.getSimpleName() + ", " + termIdentifier);
+		}
+		if (termDefinitions.size() <= DEFINITION_TRACKING_LIMIT) {
+			termClasses = null;
+			termIdentifiers = null;
+		}
+		else {
+			untrackDefinition(entry);
 		}
 		Messages.clearMessages(compiler, termDefinition, this.getClass());
 		handleMessagesForDefinition(compiler);
+	}
+
+	private void untrackDefinition(TermLogEntry entry) {
+		Set<TermLogEntry> termLogEntries = termClasses.get(entry.getTermClass());
+		if (termLogEntries != null) {
+			termLogEntries.remove(entry);
+			if (termLogEntries.isEmpty()) termClasses.remove(entry.getTermClass());
+		}
+		termLogEntries = termIdentifiers.get(entry.getTermIdentifier());
+		if (termLogEntries != null) {
+			termLogEntries.remove(entry);
+			if (termLogEntries.isEmpty()) termIdentifiers.remove(entry.getTermIdentifier());
+		}
 	}
 
 	void removeTermReference(Compiler compiler, Section<?> termReference,
@@ -207,11 +266,21 @@ class TermLog {
 	}
 
 	Set<Class<?>> getTermClasses() {
-		return extractFromEntry(termDefinitions, TermLogEntry::getTermClass, 4);
+		if (termClasses == null) {
+			return extractFromEntry(termDefinitions, TermLogEntry::getTermClass, 4);
+		}
+		else {
+			return Collections.unmodifiableSet(termClasses.keySet());
+		}
 	}
 
 	Collection<Identifier> getDefinitionIdentifiers() {
-		return extractFromEntry(termDefinitions, TermLogEntry::getTermIdentifier, 4);
+		if (termIdentifiers == null) {
+			return extractFromEntry(termDefinitions, TermLogEntry::getTermIdentifier, 4);
+		}
+		else {
+			return Collections.unmodifiableSet(termIdentifiers.keySet());
+		}
 	}
 
 	Collection<Identifier> getReferencesIdentifiers() {
