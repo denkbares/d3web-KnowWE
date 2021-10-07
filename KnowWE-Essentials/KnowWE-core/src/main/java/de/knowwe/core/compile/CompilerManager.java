@@ -1,8 +1,5 @@
 package de.knowwe.core.compile;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +31,7 @@ import de.knowwe.core.ServletContextEventListener;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * This class represents the compile manager for a specific {@link ArticleManager}. It is responsible to manage every
@@ -368,7 +366,7 @@ public class CompilerManager {
 		if (this.lastThreadDumpThrown != this.compilationCount) { // avoid slow spam
 			message += "\nThread-Count: " + getMaxCompilationThreadCount() +
 					"\nThread-Dump:\n" +
-					threadDump() +
+					KnowWEUtils.getThreadDump() +
 					"Thread-Dump-End!";
 			this.lastThreadDumpThrown = this.compilationCount;
 		}
@@ -438,20 +436,6 @@ public class CompilerManager {
 			}
 
 			return noRunningCompileThreadsFoundSince.getTime() > DEADLOCK_TIMEOUT;
-		}
-	}
-
-	private static String threadDump() {
-		try {
-			StringBuilder threadDump = new StringBuilder(System.lineSeparator());
-			ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-			for (ThreadInfo threadInfo : threadMXBean.dumpAllThreads(true, true)) {
-				threadDump.append(threadInfo.toString());
-			}
-			return threadDump.toString();
-		}
-		catch (Throwable e) {
-			return "Unable to generate thread dump due to exception: " + e.getClass() + ": " + e.getMessage();
 		}
 	}
 

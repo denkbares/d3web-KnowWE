@@ -24,6 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1308,5 +1311,19 @@ public class KnowWEUtils {
 			articleManager.commit();
 		}
 		articleManager.getCompilerManager().awaitTermination();
+	}
+
+	public static String getThreadDump() {
+		try {
+			StringBuilder threadDump = new StringBuilder(System.lineSeparator());
+			ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+			for (ThreadInfo threadInfo : threadMXBean.dumpAllThreads(true, true)) {
+				threadDump.append(threadInfo.toString());
+			}
+			return threadDump.toString();
+		}
+		catch (Throwable e) {
+			return "Unable to generate thread dump due to exception: " + e.getClass() + ": " + e.getMessage();
+		}
 	}
 }
