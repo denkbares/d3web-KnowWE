@@ -20,6 +20,8 @@ package de.knowwe.jspwiki;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 
@@ -27,13 +29,11 @@ public class ReadOnlyAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		if (!context.userIsAdmin()) {
+			fail(context, HttpServletResponse.SC_FORBIDDEN, "This method is only available for administrators");
+		}
 		String readonly = context.getParameter("readonly");
-		if (readonly.equalsIgnoreCase("true")) {
-			ReadOnlyManager.setReadOnly(true);
-		}
-		else {
-			ReadOnlyManager.setReadOnly(false);
-		}
+		ReadOnlyManager.setReadOnly("true".equalsIgnoreCase(readonly));
 	}
 
 }
