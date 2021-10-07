@@ -36,6 +36,14 @@
 		<parameter id="scope" value="Administration" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AdministrationToolProviderAction">
+		<parameter id="class" value="de.knowwe.jspwiki.AdministrationToolProvider" />
+		<parameter id="name" value="AdministrationToolProvider" />
+		<parameter id="description" value="Copies the current thead dump to clipboard" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 			id="AdministrationMarkup">
 		<parameter id="class" value="de.knowwe.jspwiki.AdministrationMarkup" />

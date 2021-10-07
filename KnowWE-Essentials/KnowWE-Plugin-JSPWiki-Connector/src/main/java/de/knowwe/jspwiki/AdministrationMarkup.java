@@ -1,10 +1,11 @@
 package de.knowwe.jspwiki;
 
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
+ * Markup for some administrativ tools/utils
+ *
  * @author Tim Abler
  * @created 09.10.2018
  */
