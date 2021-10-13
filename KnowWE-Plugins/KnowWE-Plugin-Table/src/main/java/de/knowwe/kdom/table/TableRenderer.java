@@ -51,7 +51,7 @@ public class TableRenderer implements Renderer {
 			string.appendHtml("<div class=\"sortable scroll-parent\" style='overflow:auto;white-space:normal;'>");
 		}
 		else {
-			string.appendHtml("<div class\"scroll-parent\" style='overflow:auto;white-space:normal;'>");
+			string.appendHtml("<div class=\"scroll-parent\" style='overflow:auto;white-space:normal;'>");
 		}
 		string.appendHtml("<table style='border:1px solid #999999;' id='table_" + sec.getID()
 				+ "' class='wikitable knowwetable sticky-header' border='1'>");
