@@ -225,6 +225,7 @@ public class DefaultArticleManager implements ArticleManager {
 		Log.info("-> Deleted article '" + title + "'" + " from " + web);
 	}
 
+	@NotNull
 	@Override
 	public CompilerManager getCompilerManager() {
 		return compilerManager;
