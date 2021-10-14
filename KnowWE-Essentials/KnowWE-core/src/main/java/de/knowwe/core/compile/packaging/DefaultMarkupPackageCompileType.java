@@ -29,6 +29,8 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.ArticleManager;
+import de.knowwe.core.compile.CompilationLocal;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
@@ -63,7 +65,17 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 
 	@Override
 	public String[] getPackagesToCompile(Section<? extends PackageCompileType> section) {
+		ArticleManager articleManager = section.getArticleManager();
+		if (articleManager != null && !articleManager.getCompilerManager().isCompiling()) {
+			// use cache as soon as we are done compiling and the list can no longer change
+			return CompilationLocal.getCached(articleManager.getCompilerManager(), "packagesToCompile_" + section.getID(),
+					() -> resolvePackagesToCompile(section));
+		}
+		return resolvePackagesToCompile(section);
+	}
 
+	@NotNull
+	private String[] resolvePackagesToCompile(Section<? extends PackageCompileType> section) {
 		PackageManager packageManager = Compilers.getPackageRegistrationCompiler(section).getPackageManager();
 		Set<String> allPackageNames = packageManager.getAllPackageNames();
 
