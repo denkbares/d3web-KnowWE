@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2014 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -46,7 +46,6 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * This script compiles a parsed rule into the d3web knowledge base.
@@ -93,7 +92,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 
 		// if there is a else action but no unknown action, we assume the user wants else to also include unknown
 		if (!elseActions.isEmpty() && unknownActions.isEmpty()) {
-			elseCondition = new CondOr(Arrays.<Condition>asList(elseCondition, ntUnknownCondition));
+			elseCondition = new CondOr(Arrays.asList(elseCondition, ntUnknownCondition));
 		}
 
 		// create IF - ELSE - EXCEPT rules
@@ -110,7 +109,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 			Rule rule = RuleFactory.createRule(action.action, condition, exceptCondition, action.psContext);
 			rules.add(rule);
 		}
-		KnowWEUtils.storeObject(compiler, ruleSection, key, Collections.unmodifiableCollection(rules));
+		ruleSection.storeObject(compiler, key, Collections.unmodifiableCollection(rules));
 	}
 
 	private Collection<RuleAction> getThenAction(D3webCompiler compiler, Section<RuleType> ruleSection) {
@@ -132,10 +131,11 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 			@SuppressWarnings("rawtypes")
 			List<Section<D3webRuleAction>> actionSections = Sections.successors(actionContainerSection,
 					D3webRuleAction.class);
+			//noinspection rawtypes
 			for (Section<D3webRuleAction> actionSection : actionSections) {
 				@SuppressWarnings("unchecked")
 				PSAction action = actionSection.get().getAction(compiler, actionSection);
-				Class context = actionSection.get().getProblemSolverContext();
+				Class<?> context = actionSection.get().getProblemSolverContext();
 				actions.add(new RuleAction(action, context));
 			}
 		}
@@ -175,6 +175,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 		for (Rule rule : rules) {
 			rule.remove();
 		}
+		section.removeObject(compiler, ruleStoreKey);
 	}
 
 	/**
@@ -223,9 +224,8 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 		return getRules(compiler, section, UNKNOWN_RULE_STORE_KEY);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static Collection<Rule> getRules(D3webCompiler compiler, Section<? extends Type> section, String ruleStoreKey) {
-		Collection<Rule> rules = (Collection<Rule>) section.getObject(compiler, ruleStoreKey);
+		Collection<Rule> rules = section.getObject(compiler, ruleStoreKey);
 		if (rules == null) {
 			return Collections.emptyList();
 		}
@@ -234,4 +234,8 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 		}
 	}
 
+	@Override
+	public boolean isIncrementalCompilationSupported(Section<RuleType> section) {
+		return true;
+	}
 }

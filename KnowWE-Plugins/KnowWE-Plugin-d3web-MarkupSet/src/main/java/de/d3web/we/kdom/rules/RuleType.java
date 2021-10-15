@@ -103,7 +103,7 @@ public class RuleType extends AbstractType {
 
 		this.addChildType(EndLineComment.getInstance());
 
-		this.addCompileScript(Priority.LOW, new RuleCompileScript());
+		this.addCompileScript(Priority.LOWEST, new RuleCompileScript());
 	}
 
 	/**

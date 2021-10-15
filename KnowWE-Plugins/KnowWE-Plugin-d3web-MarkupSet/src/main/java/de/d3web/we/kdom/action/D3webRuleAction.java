@@ -75,6 +75,10 @@ public abstract class D3webRuleAction<T extends Type> extends AbstractType {
 			storeAction(compiler, action, section);
 		}
 
+		@Override
+		public boolean isIncrementalCompilationSupported(Section<T> section) {
+			return true;
+		}
 	}
 
 }

@@ -28,6 +28,7 @@ import de.knowwe.kdom.table.TableUtils;
  * @author Jochen Reutelshoefer (denkbares GmbH)
  * @created 14.09.17.
  */
+@SuppressWarnings("rawtypes")
 public class LineHandler implements D3webCompileScript<TableLine> {
 	@Override
 	public void compile(D3webCompiler compiler, Section<TableLine> section) throws CompilerMessage {
@@ -43,17 +44,18 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 
 		for (Section<TableCell> cell : cells) {
 			Section<CompositeCondition> conditionSection = Sections.successor(cell, CompositeCondition.class);
-			if(conditionSection != null) {
+			if (conditionSection != null) {
 				Condition condition = KDOMConditionFactory.createCondition(compiler, conditionSection);
-				if(condition != null) {
+				if (condition != null) {
 					conditions.add(condition);
 				}
 			}
 
 			List<Section<D3webRuleAction>> actionSections = Sections.successors(cell, D3webRuleAction.class);
 			for (Section<D3webRuleAction> actionSection : actionSections) {
+				//noinspection unchecked
 				PSAction action = actionSection.get().getAction(compiler, actionSection);
-				if(action != null) {
+				if (action != null) {
 					actions.put(action, actionSection);
 				}
 			}
@@ -67,17 +69,14 @@ public class LineHandler implements D3webCompileScript<TableLine> {
 			throw CompilerMessage.error(message);
 		}
 
-		if(!conditions.isEmpty() && !actions.isEmpty()) {
-			for (PSAction psAction : actions.keySet()) {
-				Section<D3webRuleAction> actionSection = actions.get(psAction);
-				PSAction action = actionSection.get().getAction(compiler, actionSection);
-				Class context = actionSection.get().getProblemSolverContext();
-				RuleCompileScript.createRules(compiler, actionSection, RuleCreationUtil.combineConditionsToConjunction(conditions), null, Collections
-						.singleton(new RuleAction(action, context)), RuleCompileScript.DEFAULT_RULE_STORE_KEY );
-			}
+		for (PSAction psAction : actions.keySet()) {
+			Section<D3webRuleAction> actionSection = actions.get(psAction);
+			//noinspection unchecked
+			PSAction action = actionSection.get().getAction(compiler, actionSection);
+			Class context = actionSection.get().getProblemSolverContext();
+			RuleCompileScript.createRules(compiler, actionSection, RuleCreationUtil.combineConditionsToConjunction(conditions), null, Collections
+					.singleton(new RuleAction(action, context)), RuleCompileScript.DEFAULT_RULE_STORE_KEY);
 		}
 		throw CompilerMessage.info();
 	}
-
-
 }
