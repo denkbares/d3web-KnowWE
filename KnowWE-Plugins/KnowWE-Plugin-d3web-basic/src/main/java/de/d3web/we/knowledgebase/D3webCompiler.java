@@ -41,6 +41,7 @@ import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.IncrementalCompiler;
+import de.knowwe.core.compile.OptInIncrementalCompileScript;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.ScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -373,7 +374,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		}
 
 		private <T extends Type> boolean isSupportedD3webCompileScript(Section<T> section, CompileScript<D3webCompiler, T> script) {
-			return script instanceof D3webCompileScript && ((D3webCompileScript<T>) script).isIncrementalCompilationSupported(section);
+			//noinspection unchecked
+			return script instanceof OptInIncrementalCompileScript && ((OptInIncrementalCompileScript<T>) script).isIncrementalCompilationSupported(section);
 		}
 
 		@SuppressWarnings("RedundantIfStatement")

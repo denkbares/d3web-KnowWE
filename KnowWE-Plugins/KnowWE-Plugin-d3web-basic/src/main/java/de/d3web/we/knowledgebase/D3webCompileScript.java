@@ -18,6 +18,7 @@
  */
 package de.d3web.we.knowledgebase;
 
+import de.knowwe.core.compile.OptInIncrementalCompileScript;
 import de.knowwe.core.compile.packaging.PackageCompileScript;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -29,7 +30,7 @@ import de.knowwe.core.kdom.parsing.Section;
  * @created 17.11.2013
  */
 @FunctionalInterface
-public interface D3webCompileScript<T extends Type> extends PackageCompileScript<D3webCompiler, T> {
+public interface D3webCompileScript<T extends Type> extends PackageCompileScript<D3webCompiler, T>, OptInIncrementalCompileScript<T> {
 
 	@Override
 	default Class<D3webCompiler> getCompilerClass() {
@@ -41,7 +42,5 @@ public interface D3webCompileScript<T extends Type> extends PackageCompileScript
 		// nothing to do for now...
 	}
 
-	default boolean isIncrementalCompilationSupported(Section<T> section) {
-		return false; // be default, we don't support incremental compilation
-	}
+
 }
