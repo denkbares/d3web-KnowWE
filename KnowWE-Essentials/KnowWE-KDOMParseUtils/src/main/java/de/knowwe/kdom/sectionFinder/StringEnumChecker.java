@@ -23,12 +23,13 @@ package de.knowwe.kdom.sectionFinder;
 import java.util.Arrays;
 
 import de.knowwe.core.compile.CompileScript;
+import de.knowwe.core.compile.OptInIncrementalCompileScript;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 
-public class StringEnumChecker<C extends de.knowwe.core.compile.Compiler, T extends Type> implements CompileScript<C, T> {
+public class StringEnumChecker<C extends de.knowwe.core.compile.Compiler, T extends Type> implements CompileScript<C, T>, OptInIncrementalCompileScript<T> {
 
 	private final String[] values;
 	private final Message error;
@@ -76,4 +77,8 @@ public class StringEnumChecker<C extends de.knowwe.core.compile.Compiler, T exte
 		return compilerClass;
 	}
 
+	@Override
+	public boolean isIncrementalCompilationSupported(Section<T> section) {
+		return true;
+	}
 }

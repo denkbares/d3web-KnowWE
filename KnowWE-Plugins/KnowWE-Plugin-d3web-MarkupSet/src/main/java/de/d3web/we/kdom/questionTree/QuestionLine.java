@@ -50,6 +50,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinder;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
+import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
@@ -58,7 +59,6 @@ import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.SingleChildConstraint;
 import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
-import de.knowwe.core.kdom.sectionFinder.ConditionalSectionFinder;
 import de.knowwe.kdom.sectionFinder.EmbracedContentFinder;
 import de.knowwe.kdom.sectionFinder.MatchUntilEndFinder;
 import de.knowwe.kdom.sectionFinder.OneOfStringFinder;
@@ -445,6 +445,11 @@ public class QuestionLine extends AbstractType {
 				}
 			}
 			return Messages.asList();
+		}
+
+		@Override
+		public boolean isIncrementalCompilationSupported(Section<QuestionTypeDeclaration> section) {
+			return true;
 		}
 	}
 }
