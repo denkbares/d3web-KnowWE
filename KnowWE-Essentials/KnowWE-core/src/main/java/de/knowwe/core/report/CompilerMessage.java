@@ -18,9 +18,11 @@
  */
 package de.knowwe.core.report;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.kdom.parsing.Section;
@@ -37,6 +39,7 @@ import de.knowwe.core.kdom.parsing.Section;
  */
 public final class CompilerMessage extends Exception {
 
+	@Serial
 	private static final long serialVersionUID = 6181153543632706782L;
 
 	private final Collection<Message> messages;
@@ -84,7 +87,6 @@ public final class CompilerMessage extends Exception {
 	private static Collection<Message> toMessages(Message.Type type, String... messageTexts) {
 		Collection<Message> messages = new ArrayList<>(messageTexts.length);
 		for (String message : messageTexts) {
-			//noinspection deprecation
 			messages.add(new Message(type, message));
 		}
 		return messages;
@@ -125,5 +127,10 @@ public final class CompilerMessage extends Exception {
 
 	public Collection<Message> getMessages() {
 		return this.messages;
+	}
+
+	@Override
+	public String getMessage() {
+		return getMessages().stream().map(Message::getVerbalization).collect(Collectors.joining(", "));
 	}
 }
