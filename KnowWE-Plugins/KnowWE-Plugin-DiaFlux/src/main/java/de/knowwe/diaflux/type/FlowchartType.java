@@ -48,8 +48,8 @@ public class FlowchartType extends AbstractXMLType {
 	public FlowchartType() {
 		super("flowchart");
 		this.addChildType(FlowchartContentType.getInstance());
-		addCompileScript(Priority.LOW, new FlowchartSubTreeHandler());
-		addCompileScript(Priority.LOWER, new NoAutostartFlowWarningScript());
+		addCompileScript(Priority.LOWEST, new FlowchartSubTreeHandler());
+		addCompileScript(Priority.DONE, new NoAutostartFlowWarningScript());
 		replaceHead();
 		setRenderer(new FlowchartRenderer());
 		// enable tracing
