@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.Rating;
@@ -53,7 +54,7 @@ public class SolutionPanelUtils {
 		appendImage(solutionRating, content);
 
 		String[] link = MMInfo.getLinks(solution, lang);
-		String prompt = MMInfo.getPrompt(solution, lang);
+		String prompt = Strings.htmlToPlain(MMInfo.getPrompt(solution, lang));
 		String description = MMInfo.getDescription(solution, lang);
 
 		StringBuilder tooltip = new StringBuilder();
