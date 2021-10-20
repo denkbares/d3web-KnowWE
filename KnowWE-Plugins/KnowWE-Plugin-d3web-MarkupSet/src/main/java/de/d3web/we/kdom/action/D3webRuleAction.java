@@ -38,7 +38,7 @@ public abstract class D3webRuleAction<T extends Type> extends AbstractType {
 	private static final String ACTION_STORE_KEY = "action-store-key";
 
 	public D3webRuleAction() {
-		this.addCompileScript(Priority.LOW, new ActionCreateHandler());
+		this.addCompileScript(Priority.LOWEST, new ActionCreateHandler());
 	}
 
 	public abstract Class<? extends PSMethod> getProblemSolverContext();
