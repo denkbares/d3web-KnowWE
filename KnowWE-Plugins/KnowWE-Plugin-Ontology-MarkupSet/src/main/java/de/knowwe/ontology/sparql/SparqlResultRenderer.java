@@ -57,6 +57,10 @@ public class SparqlResultRenderer {
 	private static final String RESULT_TABLE_TREE = "resultTableTree";
 	private static final String USED_IDS = "usedIDs";
 	private static final Pattern ARTICLE_LINK_PATTERN = Pattern.compile("\\[\\h*(?:([^|]+)\\h*\\|\\h*)?((\\w+?://)?[^]|]+)\\h*]");
+	private static final Collection<String> JSPWIKI_ESCAPE_TOKENS = KnowWEUtils.JSPWIKI_TOKENS.stream()
+			.filter(s -> !("[".equals(s) || "]".equals(s)))
+			.collect(Collectors.toList());
+	;
 
 	private static SparqlResultRenderer instance = null;
 
@@ -427,7 +431,7 @@ public class SparqlResultRenderer {
 							.length() - 1) + "; overflow-wrap: break-word'" + ">");
 				}
 
-				renderNode(row.getValue(var), var, user, opts, renderResult);
+				renderNode(row, var, user, opts, renderResult);
 
 				renderResult.appendHtml("</td>\n");
 			}
@@ -518,7 +522,7 @@ public class SparqlResultRenderer {
 						}
 
 						result.appendHtml("<td>");
-						renderNode(child.getValue(var), var, user, opts, result);
+						renderNode(child, var, user, opts, result);
 						result.appendHtml("</td>\n");
 					}
 					result.appendHtml("</tr>");
@@ -536,22 +540,35 @@ public class SparqlResultRenderer {
 		return Integer.toString(code);
 	}
 
-	public void renderNode(Value node, String var, UserContext user, RenderOptions opts, RenderResult result) {
-		String erg = renderNode(node, var, opts.isRawOutput(), user, opts.getRdf2GoCore(), opts.getRenderMode());
+	public void renderNode(TableRow tableRow, String var, UserContext user, RenderOptions opts, RenderResult result) {
+		String nodeResult = renderNode(tableRow.getValue(var), var, opts.isRawOutput(), user, opts.getRdf2GoCore(), opts.getRenderMode());
 
 		if (opts.isAllowJSPWikiMarkup()) {
-			erg = renderValidJspWikiLinks(user, erg);
-			result.append(erg);
+			nodeResult = renderValidJspWikiLinks(user, nodeResult);
+			result.append(nodeResult);
 		}
 		else {
-			result.appendJSPWikiMarkup(erg);
+			result.appendJSPWikiMarkup(nodeResult);
 		}
+	}
+
+	/**
+	 * Mask the usual JSPWiki tokens except [ and ], since they are not recognized in tables. Escaping will result in a
+	 * rendered ~[ and ~].
+	 *
+	 * @param text the text to mask
+	 * @return the masked text
+	 */
+	public String maskJSPWikiMarkupInTables(String text) {
+		StringBuilder builder = new StringBuilder(text);
+		KnowWEUtils.maskJSPWikiTokens(JSPWIKI_ESCAPE_TOKENS, builder);
+		return builder.toString();
 	}
 
 	/**
 	 * JSPWiki seems to ignore links embedded in tables, we parse them manually
 	 */
-	private String renderValidJspWikiLinks(UserContext user, String text) {
+	public String renderValidJspWikiLinks(UserContext user, String text) {
 		StringBuilder links = new StringBuilder();
 		final Matcher matcher = ARTICLE_LINK_PATTERN.matcher(text);
 		int index = 0;
@@ -565,7 +582,8 @@ public class SparqlResultRenderer {
 			boolean internal = matcher.group(3) == null;
 			if (internal && pageExists) {
 				linkUrl = KnowWEUtils.getURLLink(linkUrl);
-			} else if (internal) {
+			}
+			else if (internal) {
 				continue; // probably not a link, just ignore
 			}
 

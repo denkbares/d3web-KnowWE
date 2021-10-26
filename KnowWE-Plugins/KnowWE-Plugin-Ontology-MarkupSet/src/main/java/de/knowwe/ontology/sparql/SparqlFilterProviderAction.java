@@ -24,13 +24,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.query.BindingSet;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -146,7 +144,7 @@ public class SparqlFilterProviderAction extends AbstractAction {
 			// no need to do expensive rendering if already contained
 			if (addedFilterValueTexts.contains(valueText) || filteredOut.contains(valueText)) continue;
 
-			String rendered = getRenderedValue(compiler, columnName, value, context, renderOptions);
+			String rendered = getRenderedValue(compiler, columnName, row, context, renderOptions);
 			if (isFilteredOut(filterTextQuery, rendered)) {
 				filteredOut.add(valueText);
 				continue;
@@ -176,9 +174,9 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		return !Strings.isBlank(value) && !Strings.containsIgnoreCase(value, filterQuery);
 	}
 
-	private String getRenderedValue(Rdf2GoCompiler compiler, String columnName, Value value, UserActionContext context, RenderOptions renderOptions) {
+	private String getRenderedValue(Rdf2GoCompiler compiler, String columnName, TableRow tableRow, UserActionContext context, RenderOptions renderOptions) {
 		RenderResult renderResult = new RenderResult(context);
-		SparqlResultRenderer.getInstance().renderNode(value, columnName, context, renderOptions, renderResult);
+		SparqlResultRenderer.getInstance().renderNode(tableRow, columnName, context, renderOptions, renderResult);
 		String plain;
 		if (renderOptions.isAllowJSPWikiMarkup()) {
 			String renderedNode = Strings.htmlToPlain(renderResult.toString());
