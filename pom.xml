@@ -632,11 +632,6 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>de.uniwue.d3web</groupId>
-				<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
-				<version>${knowwe.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>jspwiki.plugin</groupId>
 				<artifactId>Table</artifactId>
 				<version>0.1</version>

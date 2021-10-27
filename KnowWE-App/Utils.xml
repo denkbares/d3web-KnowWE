@@ -72,7 +72,6 @@
 				<include name="KnowWE-Plugin-LoadKnowledgeBase/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-WikiBook/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-d3web-SimpleScoreTable/src/main/resources/webapp/" />
-				<include name="KnowWE-Plugin-d3web-SparqlToExcel/src/main/resources/webapp/" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>

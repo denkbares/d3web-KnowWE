@@ -29,6 +29,7 @@ import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.ConcurrentModificationException;
@@ -85,6 +86,8 @@ import de.knowwe.plugin.Plugins;
 import de.knowwe.plugin.StatusProvider;
 
 public class KnowWEUtils {
+
+	public static final List<String> JSPWIKI_TOKENS = Arrays.asList("[", "]", "----", "{{{", "}}}", "{{", "}}", "%%", "\\", "__", "''");
 
 	private static void mask(final StringBuilder buffer, final String toReplace) {
 		int index = buffer.indexOf(toReplace);
@@ -180,17 +183,19 @@ public class KnowWEUtils {
 	 * @created 03.03.2011
 	 */
 	public static void maskJSPWikiMarkup(final StringBuilder builder) {
-		mask(builder, "[");
-		mask(builder, "]");
-		mask(builder, "----");
-		mask(builder, "{{{");
-		mask(builder, "}}}");
-		mask(builder, "{{");
-		mask(builder, "}}");
-		mask(builder, "%%");
-		mask(builder, "\\");
-		mask(builder, "__");
-		mask(builder, "''");
+		maskJSPWikiTokens(JSPWIKI_TOKENS, builder);
+	}
+
+	/**
+	 * Specifically mask the given JSPWiki tokens, so they are not interpreted
+	 *
+	 * @param jspWikiTokens the tokens to escape
+	 * @param builder       the builder to destructively mask its contents
+	 */
+	public static void maskJSPWikiTokens(Collection<String> jspWikiTokens, StringBuilder builder) {
+		for (String token : jspWikiTokens) {
+			mask(builder, token);
+		}
 	}
 
 	/**
@@ -200,16 +205,9 @@ public class KnowWEUtils {
 	 * @created 28.09.2012
 	 */
 	public static void unmaskJSPWikiMarkup(final StringBuilder builder) {
-		unmask(builder, "[");
-		unmask(builder, "]");
-		unmask(builder, "----");
-		unmask(builder, "{{{");
-		unmask(builder, "}}}");
-		unmask(builder, "{{");
-		unmask(builder, "}}");
-		unmask(builder, "%%");
-		unmask(builder, "\\");
-		unmask(builder, "''");
+		for (String token : JSPWIKI_TOKENS) {
+			unmask(builder, token);
+		}
 	}
 
 	public static void appendToFile(final String path, final String entry) {

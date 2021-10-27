@@ -241,10 +241,6 @@
 					<artifactId>KnowWE-Plugin-Wikicontent-Download</artifactId>
 				</dependency>
 				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
-				</dependency>
-				<dependency>
 					<groupId>jspwiki.plugin</groupId>
 					<artifactId>Table</artifactId>
 				</dependency>
@@ -311,10 +307,6 @@
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-d3web-Rdf2Go</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>de.uniwue.d3web</groupId>
-					<artifactId>KnowWE-Plugin-SparqlToExcel</artifactId>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
