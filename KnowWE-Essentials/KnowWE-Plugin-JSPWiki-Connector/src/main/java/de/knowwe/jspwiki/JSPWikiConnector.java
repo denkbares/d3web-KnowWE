@@ -53,6 +53,8 @@ import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.WikiProvider;
 import org.apache.wiki.WikiSession;
+import org.apache.wiki.api.core.Engine;
+import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.exceptions.WikiException;
 import org.apache.wiki.attachment.Attachment;
@@ -60,12 +62,15 @@ import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.auth.AuthorizationManager;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.SessionMonitor;
+import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.WikiSecurityException;
 import org.apache.wiki.auth.permissions.PagePermission;
 import org.apache.wiki.auth.permissions.PermissionFactory;
 import org.apache.wiki.auth.permissions.WikiPermission;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.pages.PageLock;
+import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.preferences.Preferences;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
@@ -73,6 +78,8 @@ import org.apache.wiki.providers.GitVersioningFileProvider;
 import org.apache.wiki.providers.KnowWEAttachmentProvider;
 import org.apache.wiki.providers.WikiAttachmentProvider;
 import org.apache.wiki.providers.WikiPageProvider;
+import org.apache.wiki.references.ReferenceManager;
+import org.apache.wiki.search.SearchManager;
 import org.apache.wiki.ui.Command;
 import org.apache.wiki.util.MailUtil;
 import org.apache.wiki.util.TextUtil;
@@ -99,7 +106,6 @@ import de.knowwe.core.wikiConnector.WikiPageInfo;
  */
 public class JSPWikiConnector implements WikiConnector {
 
-	public static final String LINK_PREFIX = "Wiki.jsp?page=";
 	private static final Map<String, List<WikiAttachment>> zipAttachmentCache =
 			Collections.synchronizedMap(new HashMap<>());
 	private static final int skipAfter = 10;
@@ -118,8 +124,16 @@ public class JSPWikiConnector implements WikiConnector {
 		return articleTitle + "/" + fileName;
 	}
 
-	public WikiEngine getEngine() {
+	public WikiEngine getWikiEngine() {
 		return engine;
+	}
+
+	private Engine getEngine() {
+		return engine;
+	}
+
+	private PageManager getPageManager() {
+		return getEngine().getManager(PageManager.class);
 	}
 
 	/**
@@ -130,15 +144,15 @@ public class JSPWikiConnector implements WikiConnector {
 	 * @created 26.10.2012
 	 */
 	private void initPageLocking() {
-		PageManager mgr = engine.getPageManager();
-		WikiPage page = new WikiPage(engine, "Dummy");
+		PageManager mgr = engine.getManager(PageManager.class);
+		Page page = new WikiPage(getEngine(), "Dummy");
 		PageLock lock = mgr.lockPage(page, "Dummy");
 		mgr.unlockPage(lock);
 	}
 
 	@Override
 	public @Nullable String getTemplate() {
-		return getEngine().getTemplateDir();
+		return getWikiEngine().getTemplateDir();
 	}
 
 	@Override
@@ -148,12 +162,12 @@ public class JSPWikiConnector implements WikiConnector {
 			throw new IllegalArgumentException("Character + (plus) not allowed in article title: " + title);
 		}
 
-		WikiPage wp = new WikiPage(this.engine, title);
+		WikiPage wp = new WikiPage(getEngine(), title);
 
 		try {
 			updateReferences(wp, content);
 			wp.setAuthor(author);
-			this.engine.getPageManager().putPageText(wp, content);
+			getPageManager().putPageText(wp, content);
 			reindex(title);
 		}
 		catch (ProviderException e) {
@@ -165,24 +179,38 @@ public class JSPWikiConnector implements WikiConnector {
 			return null;
 		}
 		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
-		return this.engine.getPureText(wp);
+		return getPageManager().getPureText(wp);
 	}
 
 	public void reindex(String title) {
-		WikiPage wp = this.engine.getPage(title);
-		this.engine.getSearchManager().reindexPage(wp);
+		getSearchManager().reindexPage(getWikiPage(title));
+	}
+
+	private SearchManager getSearchManager() {
+		return getEngine().getManager(SearchManager.class);
+	}
+
+	private ReferenceManager getReferenceManager() {
+		return getEngine().getManager(ReferenceManager.class);
+	}
+
+	private WikiPage getWikiPage(String title) {
+		return (WikiPage) getPageManager().getPage(title);
 	}
 
 	private void updateReferences(WikiPage page, String content) {
-		this.engine.getReferenceManager().updateReferences(page.getName(),
-				this.engine.scanWikiLinks(page, content));
+		getReferenceManager().updateReferences(page.getName(), getReferenceManager().scanWikiLinks(page, content));
 	}
 
 	@Override
 	public boolean doesArticleExist(String title) {
-
-		// Check if a Page with the chosen title already exists.
-		return this.engine.pageExists(title);
+		try {
+			return getPageManager().pageExists(title);
+		}
+		catch (ProviderException e) {
+			Log.severe("Exception while checking page status", e);
+			return false;
+		}
 	}
 
 	@Override
@@ -198,21 +226,20 @@ public class JSPWikiConnector implements WikiConnector {
 		return activeUsers;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, String> getAllArticles(String web) {
 		Map<String, String> result = new HashMap<>();
-		Collection<WikiPage> pages = null;
-		PageManager pageManager = this.engine.getPageManager();
+		Collection<Page> pages;
+		PageManager pageManager = getPageManager();
 		try {
 			pages = pageManager.getProvider().getAllPages();
 		}
 		catch (ProviderException e) {
 			Log.severe("Exception while retrieving articles.", e);
+			return null;
 		}
-		if (pages == null) return null;
 
-		for (WikiPage wikiPage : pages) {
+		for (Page wikiPage : pages) {
 			String pageContent = null;
 			try {
 				pageContent = pageManager.getPageText(wikiPage.getName(),
@@ -234,10 +261,10 @@ public class JSPWikiConnector implements WikiConnector {
 		String[] users = null;
 
 		try {
-			Principal[] princ = engine.getUserManager().listWikiNames();
+			Principal[] princ = getUserManager().listWikiNames();
 			users = new String[princ.length];
 			for (int i = 0; i < princ.length; i++) {
-				users[i] = engine.getUserManager().getUserDatabase().findByWikiName(
+				users[i] = getUserManager().getUserDatabase().findByWikiName(
 						princ[i].getName()).getFullname();
 			}
 		}
@@ -246,6 +273,10 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 
 		return users;
+	}
+
+	private UserManager getUserManager() {
+		return engine.getManager(UserManager.class);
 	}
 
 	@Override
@@ -267,7 +298,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@NotNull
 	public Collection<WikiAttachment> collectWikiAttachments(boolean includeZipEntries) throws IOException {
 		try {
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			AttachmentManager attachmentManager = getAttachmentManager();
 			Collection<?> attachments = attachmentManager.getAllAttachments();
 			Collection<WikiAttachment> wikiAttachments = new ArrayList<>(attachments.size());
 			for (Object o : attachments) {
@@ -283,6 +314,10 @@ public class JSPWikiConnector implements WikiConnector {
 			String message = "Cannot access attachments due to provider error.";
 			throw new IOException(message, e);
 		}
+	}
+
+	private AttachmentManager getAttachmentManager() {
+		return this.engine.getManager(AttachmentManager.class);
 	}
 
 	@Override
@@ -308,8 +343,8 @@ public class JSPWikiConnector implements WikiConnector {
 			String actualPath = actualPathAndEntry.getA();
 			String entry = actualPathAndEntry.getB();
 
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
-			Attachment attachment = attachmentManager.getAttachmentInfo(actualPath, version);
+			AttachmentManager attachmentManager = getAttachmentManager();
+			org.apache.wiki.api.core.Attachment attachment = attachmentManager.getAttachmentInfo(actualPath, version);
 
 			if (attachment == null) {
 				return null;
@@ -351,7 +386,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 		List<String> remove = new ArrayList<>();
 		for (String path : zipAttachmentCache.keySet()) {
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			AttachmentManager attachmentManager = getAttachmentManager();
 			try {
 				Attachment attachment = attachmentManager.getAttachmentInfo(path);
 				if (attachment == null) {
@@ -368,7 +403,7 @@ public class JSPWikiConnector implements WikiConnector {
 	private List<WikiAttachment> getZipEntryAttachments(Attachment attachment) throws IOException, ProviderException {
 		if (!attachment.getFileName().endsWith(".zip")) return Collections.emptyList();
 		List<WikiAttachment> zipEntryAttachments = zipAttachmentCache.get(attachment.getName());
-		AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+		AttachmentManager attachmentManager = getAttachmentManager();
 		if (attachment.getVersion() == WikiProvider.LATEST_VERSION) {
 			// little hack for JSPWiki 2.8.4 not always providing a correct
 			// version number and we need it here.
@@ -427,7 +462,7 @@ public class JSPWikiConnector implements WikiConnector {
 		try {
 			// this list is in fact a Collection<Attachment>,
 			// the conversion is type safe!
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			AttachmentManager attachmentManager = getAttachmentManager();
 			WikiPage page = this.engine.getPage(title);
 			if (page == null) {
 				// might happen that a page of this title does not exist.
@@ -598,11 +633,10 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<WikiAttachmentInfo> getAttachmentHistory(String name) throws IOException {
 		try {
-			List<Attachment> versionHistory = this.engine.getAttachmentManager().getVersionHistory(name);
+			List<Attachment> versionHistory = getAttachmentManager().getVersionHistory(name);
 			if (versionHistory == null) return Collections.emptyList();
 			return versionHistory.stream()
 					.map(page -> new WikiAttachmentInfo(page.getName(), page.getAuthor(), page.getVersion(),
@@ -748,7 +782,7 @@ public class JSPWikiConnector implements WikiConnector {
 		try {
 			boolean wasLocked = isArticleLocked(title);
 			if (!wasLocked) lockArticle(title, user);
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			AttachmentManager attachmentManager = getAttachmentManager();
 
 			Attachment attachment = new Attachment(engine, title, filename);
 			attachment.setAuthor(user);
@@ -808,7 +842,7 @@ public class JSPWikiConnector implements WikiConnector {
 		try {
 			boolean wasLocked = isArticleLocked(title);
 			if (!wasLocked) lockArticle(title, user);
-			AttachmentManager attachmentManager = this.engine.getAttachmentManager();
+			AttachmentManager attachmentManager = getAttachmentManager();
 			Attachment attachment = attachmentManager.getAttachmentInfo(path);
 
 			if (attachment != null && !fireDeleteEvent) {
@@ -904,7 +938,7 @@ public class JSPWikiConnector implements WikiConnector {
 	private boolean checkWikiPermission(HttpServletRequest request, String permissionsCSV) {
 		WikiPermission wikiPermission = new WikiPermission(engine.getApplicationName(), permissionsCSV);
 		WikiSession wikiSession = WikiSession.getWikiSession(engine, request);
-		return  engine.getAuthorizationManager().checkPermission(wikiSession, wikiPermission);
+		return engine.getAuthorizationManager().checkPermission(wikiSession, wikiPermission);
 	}
 
 	@Override
@@ -996,7 +1030,7 @@ public class JSPWikiConnector implements WikiConnector {
 	private Set<String> resolveRecipients(String to) {
 		// resolve names of users to their mail addresses since any recipient can be given as a regular email address
 		// or by the recipient's full-name, wiki-name or login-name
-		UserDatabase userDatabase = this.engine.getUserManager().getUserDatabase();
+		UserDatabase userDatabase = getUserManager().getUserDatabase();
 		String[] addrArr = to.split(",");
 		Set<String> resolvedAddrs = new HashSet<>();
 		for (String addr : addrArr) {

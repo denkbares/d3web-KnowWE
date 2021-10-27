@@ -37,8 +37,7 @@ public class JSPWikiUserContext extends AbstractUserContext {
 	private final WikiContext context;
 	boolean allowAsynchronousRendering = true;
 
-	public JSPWikiUserContext(WikiContext context,
-							  Map<String, String> urlParameter) {
+	public JSPWikiUserContext(WikiContext context, Map<String, String> urlParameter) {
 		super(new JSPAuthenticationManager(context));
 		this.context = context;
 		this.urlParameter = urlParameter;

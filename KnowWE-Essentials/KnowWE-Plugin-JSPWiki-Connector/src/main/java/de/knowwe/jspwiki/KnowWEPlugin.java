@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiContext;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
@@ -45,27 +44,26 @@ import org.apache.wiki.api.exceptions.FilterException;
 import org.apache.wiki.api.exceptions.PluginException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.filters.BasePageFilter;
-import org.apache.wiki.api.filters.BasicPageFilter;
-import org.apache.wiki.api.plugin.WikiPlugin;
+import org.apache.wiki.api.plugin.Plugin;
+import org.apache.wiki.api.providers.AttachmentProvider;
+import org.apache.wiki.api.providers.PageProvider;
+import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEngineEvent;
 import org.apache.wiki.event.WikiEvent;
 import org.apache.wiki.event.WikiEventListener;
 import org.apache.wiki.event.WikiEventManager;
-import org.apache.wiki.event.WikiEventUtils;
 import org.apache.wiki.event.WikiPageEvent;
 import org.apache.wiki.event.WikiPageRenameEvent;
+import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.GitRefreshCacheEvent;
 import org.apache.wiki.providers.GitVersioningWikiEvent;
-import org.apache.wiki.providers.WikiAttachmentProvider;
-import org.apache.wiki.providers.WikiPageProvider;
 import org.apache.wiki.ui.TemplateManager;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.EventManager;
-import com.denkbares.plugin.Plugin;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
@@ -118,12 +116,12 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	@Override
 	public void initialize(Engine engine, Properties properties)
 			throws FilterException {
-
+		if (!(engine instanceof WikiEngine)) {
+			throw new IllegalStateException("We expect a wiki engine, otherwise KnowWE can't function");
+		}
 		super.initialize(engine, properties);
-		m_engine = engine;
 
-		String copyCorePages = KnowWEUtils.getConfigBundle().getString(
-				"knowweplugin.jspwikiconnector.copycorepages");
+		String copyCorePages = KnowWEUtils.getConfigBundle().getString("knowweplugin.jspwikiconnector.copycorepages");
 		if ("true".equals(copyCorePages)) {
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(
@@ -160,16 +158,10 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			}
 		}
 
-		WikiEventUtils.addWikiEventListener(engine,
-				WikiEngineEvent.INITIALIZED, this);
+		WikiEventManager.addWikiEventListener(getEngine(), this);
+		WikiEventManager.addWikiEventListener(getPageManager(), this);
 
-		WikiEventUtils.addWikiEventListener(engine.getPageManager(),
-				WikiPageEvent.PAGE_DELETE_REQUEST, this);
-
-		WikiEventUtils.addWikiEventListener(engine.getPageManager(),
-				WikiPageRenameEvent.PAGE_RENAMED, this);
-
-		WikiAttachmentProvider currentProvider = engine.getAttachmentManager().getCurrentProvider();
+		AttachmentProvider currentProvider = getAttachmentManager().getCurrentProvider();
 
 		if (currentProvider instanceof CachingAttachmentProvider) {
 			currentProvider = ((CachingAttachmentProvider) currentProvider).getRealProvider();
@@ -177,16 +169,28 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 		WikiEventManager.addWikiEventListener(currentProvider, this);
 
-		WikiPageProvider pageProvider = engine.getPageManager().getProvider();
+		PageProvider pageProvider = getPageManager().getProvider();
 		if (pageProvider instanceof CachingProvider) {
 			pageProvider = ((CachingProvider) pageProvider).getRealProvider();
 		}
 		WikiEventManager.addWikiEventListener(pageProvider, this);
 	}
 
-	private void initEnvironmentIfNeeded(WikiEngine wEngine) {
+	private PageManager getPageManager() {
+		return getEngine().getManager(PageManager.class);
+	}
+
+	private AttachmentManager getAttachmentManager() {
+		return getEngine().getManager(AttachmentManager.class);
+	}
+
+	public WikiEngine getEngine() {
+		return (WikiEngine) this.m_engine;
+	}
+
+	private void initEnvironmentIfNeeded() {
 		if (!Environment.isInitialized()) {
-			Environment.initInstance(new JSPWikiConnector(wEngine));
+			Environment.initInstance(new JSPWikiConnector(getEngine()));
 			// MultiSearchEngine.getInstance().addProvider(
 			// new JSPWikiSearchConnector());
 		}
@@ -208,7 +212,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	@Override
-	public String postTranslate(WikiContext wikiContext, String htmlContent) {
+	public String postTranslate(Context wikiContext, String htmlContent) {
 
 		try {
 			HttpServletRequest httpRequest = wikiContext.getHttpRequest();
@@ -228,8 +232,11 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	@Override
-	public String preTranslate(WikiContext wikiContext, String content) {
-
+	public String preTranslate(Context context, String content) {
+		if (!(context instanceof WikiContext)) {
+			throw new IllegalStateException("We expect a wiki engine, otherwise KnowWE can't function");
+		}
+		WikiContext wikiContext = (WikiContext) context;
 		if (!wikiEngineInitialized) {
 			return content;
 		}
@@ -279,7 +286,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			}
 		}
 
-		int version = WikiPageProvider.LATEST_VERSION;
+		int version = PageProvider.LATEST_VERSION;
 		String versionString = userContext.getParameter("version");
 		if (versionString != null) {
 			try {
@@ -288,11 +295,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			catch (NumberFormatException ignore) {
 			}
 		}
-		WikiEngine engine = wikiContext.getEngine();
-		if (engine != null) {
-			String pureText = engine.getPureText(title, version);
-			if (!content.equals(pureText)) return content;
-		}
+
+		String pureText = getPageManager().getPureText(title, version);
+		if (!content.equals(pureText)) return content;
 
 		DefaultArticleManager articleManager = getDefaultArticleManager();
 		Article existingArticle = articleManager.getArticle(title);
@@ -307,7 +312,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			String stringRaw = (String) httpRequest.getAttribute("renderresult" + title);
 			if (stringRaw != null) return stringRaw;
 			Article article;
-			if (version == WikiPageProvider.LATEST_VERSION) {
+			if (version == PageProvider.LATEST_VERSION) {
 				article = updateArticle(wikiContext, content);
 			}
 			else {
@@ -510,19 +515,18 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	/**
 	 * Loads ALL articles stored in the pageDir (which is specified in jspwiki.properties).
 	 *
-	 * @param engine the wiki engine to get the articles from
 	 * @created 07.06.2010
 	 */
-	private void initializeAllArticles(Engine engine) {
+	private void initializeAllArticles() {
 		Stopwatch stopwatchAll = new Stopwatch();
 		DefaultArticleManager articleManager = getDefaultArticleManager();
 		articleManager.open();
 		try {
-			Collection<?> wikiPages = getAllPages(engine);
+			Collection<?> wikiPages = getAllPages(getEngine());
 			Stopwatch stopwatchSectionizing = new Stopwatch();
 			wikiPages.parallelStream().forEach(o -> {
 				WikiPage wp = (WikiPage) o;
-				String content = engine.getPureText(wp.getName(), wp.getVersion());
+				String content = getPageManager().getPureText(wp.getName(), wp.getVersion());
 				articleManager.queueArticle(wp.getName(), content);
 			});
 			stopwatchSectionizing.log("Sectionized all articles");
@@ -547,8 +551,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private Collection<?> getAllPages(Engine engine) throws ProviderException {
-		PageManager mgr = engine.getPageManager();
-		WikiPageProvider provider = mgr.getProvider();
+		PageProvider provider = getPageManager().getProvider();
 		Collection<?> wikiPages;
 		/*
 		 Why do we need this workaround? Why do we check for the CachingProvider and so forth here?
@@ -566,7 +569,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			wikiPages = ((CachingProvider) provider).getRealProvider().getAllPages();
 		}
 		else {
-			wikiPages = mgr.getAllPages();
+			wikiPages = getPageManager().getAllPages();
 		}
 		return wikiPages;
 	}
@@ -607,9 +610,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		}
 		else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {
-				WikiEngine engine = ((WikiEngineEvent) event).getEngine();
-				initEnvironmentIfNeeded(engine);
-				initializeAllArticles(engine);
+				initEnvironmentIfNeeded();
+				initializeAllArticles();
 				wikiEngineInitialized = true;
 			}
 		}
@@ -644,9 +646,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			String pluginPrefix = "KnowWE-Plugin-";
 			if (resource.startsWith(pluginPrefix)) {
 				String resourceName = resource.substring(0, resource.lastIndexOf("."));
-				Plugin[] plugins = PluginManager.getInstance().getPlugins();
+				com.denkbares.plugin.Plugin[] plugins = PluginManager.getInstance().getPlugins();
 				boolean found = false;
-				for (Plugin plugin : plugins) {
+				for (com.denkbares.plugin.Plugin plugin : plugins) {
 					if (resourceName.startsWith(plugin.getPluginID())) {
 						found = true;
 					}
@@ -675,7 +677,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	@Override
-	public String execute(WikiContext context, @SuppressWarnings("rawtypes") Map params) throws PluginException {
+	public String execute(Context context, Map<String, String> params) throws PluginException {
 		return "";
 	}
 
