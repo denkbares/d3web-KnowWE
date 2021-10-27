@@ -35,6 +35,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.wiki.WikiEngine;
+import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.user.UserProfile;
 import org.eclipse.jgit.api.CommitCommand;

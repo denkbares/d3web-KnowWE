@@ -12,8 +12,10 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
-import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Engine;
+import org.apache.wiki.api.core.Page;
+import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -36,7 +38,6 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.NotNull;
 
-import static org.apache.wiki.WikiProvider.LATEST_VERSION;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
@@ -44,7 +45,7 @@ import static org.apache.wiki.WikiProvider.LATEST_VERSION;
  */
 public class GitVersionCache {
 
-	private final WikiEngine engine;
+	private final Engine engine;
 	private final Repository repository;
 	private static final Logger log = Logger.getLogger(GitVersionCache.class);
 	private final IgnoreNode ignoreNode;
@@ -53,7 +54,7 @@ public class GitVersionCache {
 	private Map<String, List<GitCacheItem>> attachmentRevisionCache;
 	private Map<String, List<CacheCommand>> cacheCommands;
 
-	public GitVersionCache(WikiEngine engine, Repository repository, IgnoreNode ignoreNode) {
+	public GitVersionCache(Engine engine, Repository repository, IgnoreNode ignoreNode) {
 		this.engine = engine;
 		this.repository = repository;
 		this.ignoreNode = ignoreNode;
@@ -230,7 +231,7 @@ public class GitVersionCache {
 		}
 	}
 
-	public void addPageVersion(WikiPage page, String commitMsg, ObjectId id) {
+	public void addPageVersion(Page page, String commitMsg, ObjectId id) {
 		PageCacheItem item = new PageCacheItem(page.getName(), commitMsg, page.getAuthor(), new Date(), page.getSize(), id);
 		putInCache(pageRevisionCache, item, page.getName());
 	}
@@ -247,7 +248,7 @@ public class GitVersionCache {
 		if (attachmentRevisionCache.containsKey(key)) {
 			List<GitCacheItem> gitCacheItems = attachmentRevisionCache.get(key);
 			if (att.getVersion() - 1 < gitCacheItems.size()) {
-				if (att.getVersion() == LATEST_VERSION) {
+				if (att.getVersion() == PageProvider.LATEST_VERSION) {
 					return (AttachmentCacheItem) gitCacheItems.get(gitCacheItems.size() - 1);
 				}
 				else if (att.getVersion() - 1 < gitCacheItems.size()) {
@@ -317,9 +318,9 @@ public class GitVersionCache {
 		}
 	}
 
-	public List<WikiPage> getPageHistory(String pageName) {
+	public List<Page> getPageHistory(String pageName) {
 		if (pageRevisionCache.containsKey(pageName)) {
-			List<WikiPage> pages = new ArrayList<>();
+			List<Page> pages = new ArrayList<>();
 			List<GitCacheItem> gitCacheItems = pageRevisionCache.get(pageName);
 			for (GitCacheItem item : gitCacheItems) {
 				WikiPage page = createWikiPage(pageName, item);
@@ -356,7 +357,7 @@ public class GitVersionCache {
 		return null;
 	}
 
-	public void movePage(WikiPage from, String to, String message, ObjectId id) {
+	public void movePage(Page from, String to, String message, ObjectId id) {
 		List<GitCacheItem> gitCacheItems = pageRevisionCache.get(from.getName());
 		if (gitCacheItems != null) {
 			pageRevisionCache.remove(from.getName());
@@ -430,7 +431,7 @@ public class GitVersionCache {
 		}
 	}
 
-	void deletePage(WikiPage page, String commitMsg, ObjectId id) {
+	void deletePage(Page page, String commitMsg, ObjectId id) {
 		PageCacheItem item = new PageCacheItem(page.getName(), commitMsg, page.getAuthor(), new Date(), page.getSize(), true, id);
 		putInCache(pageRevisionCache, item, page.getName());
 	}

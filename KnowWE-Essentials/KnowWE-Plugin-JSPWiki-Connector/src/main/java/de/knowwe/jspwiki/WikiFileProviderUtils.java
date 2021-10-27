@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URI;
 
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.providers.AbstractFileProvider;
 import org.apache.wiki.providers.BasicAttachmentProvider;
@@ -19,7 +20,7 @@ public class WikiFileProviderUtils {
 	private static final class FileProvider extends AbstractFileProvider {
 
 		@Override
-		public void movePage(WikiPage from, String to) throws ProviderException {
+		public void movePage(String from, String to) throws ProviderException {
 		}
 
 		@Override

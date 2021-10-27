@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Objects;
 
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Page;
 import org.apache.wiki.attachment.Attachment;
 
 /**
@@ -12,9 +13,9 @@ import org.apache.wiki.attachment.Attachment;
  */
 class CacheCommand {
 
-	final WikiPage page;
+	final Page page;
 
-	CacheCommand(WikiPage page) {
+	CacheCommand(Page page) {
 		this.page = page;
 	}
 
@@ -42,13 +43,13 @@ class CacheCommand {
 	}
 
 	static class AddPageVersion extends CacheCommand {
-		AddPageVersion(WikiPage page) {
+		AddPageVersion(Page page) {
 			super(page);
 		}
 	}
 
 	static class DeletePageVersion extends CacheCommand {
-		DeletePageVersion(WikiPage page) {
+		DeletePageVersion(Page page) {
 			super(page);
 		}
 	}
@@ -69,7 +70,7 @@ class CacheCommand {
 	static class MovePage extends CacheCommand {
 		final String to;
 
-		MovePage(WikiPage from, String to) {
+		MovePage(Page from, String to) {
 			super(from);
 			this.to = to;
 		}
@@ -82,6 +83,11 @@ class CacheCommand {
 			return page.getName().equals(that.page.getName()) ||
 					this.to.equals(that.page.getName());
 
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(super.hashCode(), to);
 		}
 	}
 

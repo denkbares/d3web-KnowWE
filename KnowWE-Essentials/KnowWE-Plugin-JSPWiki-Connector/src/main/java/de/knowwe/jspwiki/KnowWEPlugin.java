@@ -39,9 +39,12 @@ import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiContext;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Context;
+import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.exceptions.FilterException;
 import org.apache.wiki.api.exceptions.PluginException;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.api.filters.BasePageFilter;
 import org.apache.wiki.api.filters.BasicPageFilter;
 import org.apache.wiki.api.plugin.WikiPlugin;
 import org.apache.wiki.event.WikiAttachmentEvent;
@@ -89,7 +92,7 @@ import de.knowwe.event.PageRenderedEvent;
 import static de.knowwe.core.ResourceLoader.Type.script;
 import static de.knowwe.core.ResourceLoader.Type.stylesheet;
 
-public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
+public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		WikiEventListener {
 
 	private static final String LEFT_MENU_FOOTER = "LeftMenuFooter";
@@ -113,7 +116,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * To initialize KnowWE.
 	 */
 	@Override
-	public void initialize(WikiEngine engine, Properties properties)
+	public void initialize(Engine engine, Properties properties)
 			throws FilterException {
 
 		super.initialize(engine, properties);
@@ -190,7 +193,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	}
 
 	@Override
-	public void postSave(WikiContext wikiContext, String content) {
+	public void postSave(Context wikiContext, String content) {
 		try {
 			updateArticle(wikiContext, content);
 		}
@@ -386,7 +389,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		return (DefaultArticleManager) Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 	}
 
-	private static Article updateArticle(WikiContext wikiContext, String content) throws InterruptedException, UpdateNotAllowedException {
+	private static Article updateArticle(Context wikiContext, String content) throws InterruptedException, UpdateNotAllowedException {
 		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
 		if (httpRequest == null) {
 			// When a page is rendered the first time, the request is null.
@@ -510,7 +513,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 	 * @param engine the wiki engine to get the articles from
 	 * @created 07.06.2010
 	 */
-	private void initializeAllArticles(WikiEngine engine) {
+	private void initializeAllArticles(Engine engine) {
 		Stopwatch stopwatchAll = new Stopwatch();
 		DefaultArticleManager articleManager = getDefaultArticleManager();
 		articleManager.open();
@@ -543,7 +546,7 @@ public class KnowWEPlugin extends BasicPageFilter implements WikiPlugin,
 		stopwatchAll.log("Initialized all articles");
 	}
 
-	private Collection<?> getAllPages(WikiEngine engine) throws ProviderException {
+	private Collection<?> getAllPages(Engine engine) throws ProviderException {
 		PageManager mgr = engine.getPageManager();
 		WikiPageProvider provider = mgr.getProvider();
 		Collection<?> wikiPages;

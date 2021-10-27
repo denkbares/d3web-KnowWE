@@ -33,17 +33,18 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
-import org.apache.wiki.WikiProvider;
+import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.pages.PageManager;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -130,7 +131,7 @@ public class GitVersioningFileProviderTest {
 		page.setLastModified(new Date());
 		fileProvider.putPageText(page, "test file text2");
 
-		List<WikiPage> versionHistory = fileProvider.getVersionHistory(page.getName());
+		List<Page> versionHistory = fileProvider.getVersionHistory(page.getName());
 		// now 3, because of caching. Caching does not know about empty commits
 		assertEquals(3, versionHistory.size());
 	}
@@ -154,13 +155,13 @@ public class GitVersioningFileProviderTest {
 		String tess = fileProvider.getPageText("tess", 1);
 		assertEquals("test file text", tess);
 
-		WikiPage pageInfo = fileProvider.getPageInfo(page.getName(), 2);
+		Page pageInfo = fileProvider.getPageInfo(page.getName(), 2);
 		assertNotNull("get page info version 2", pageInfo);
-		pageInfo = fileProvider.getPageInfo(page.getName(), WikiProvider.LATEST_VERSION);
+		pageInfo = fileProvider.getPageInfo(page.getName(), PageProvider.LATEST_VERSION);
 		assertNotNull("get page info latest version", pageInfo);
 		String pageText = fileProvider.getPageText(page.getName(), 2);
 		assertEquals("get text version 2", "test file text2", pageText);
-		pageText = fileProvider.getPageText(page.getName(), WikiProvider.LATEST_VERSION);
+		pageText = fileProvider.getPageText(page.getName(), PageProvider.LATEST_VERSION);
 		assertEquals("get text latest version", "test file text2", pageText);
 	}
 
@@ -178,7 +179,7 @@ public class GitVersioningFileProviderTest {
 		fileProvider.putPageText(page, "test file text");
 		WikiPage from = new WikiPage(engine, "test seite");
 		from.setAuthor("UnknownAuthor");
-		fileProvider.movePage(from, "Neue Seite");
+		fileProvider.movePage(from.getName(), "Neue Seite");
 
 		assertTrue(new File(TMP_NEW_REPO + "/Neue+Seite.txt").exists());
 	}
@@ -208,7 +209,7 @@ public class GitVersioningFileProviderTest {
 		page2.setAttribute(WikiPage.CHANGENOTE, "add test2");
 		fileProvider.putPageText(page2, "text of test page 2");
 
-		List<WikiPage> allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
+		List<Page> allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
 		assertEquals(3, allChangedSince.size());
 		assertEquals("test", allChangedSince.get(0).getName());
 		assertEquals("test", allChangedSince.get(1).getName());
@@ -216,7 +217,7 @@ public class GitVersioningFileProviderTest {
 
 		WikiPage p = new WikiPage(engine, "test");
 		p.setAuthor("UnknownAuthor");
-		fileProvider.deletePage(p);
+		fileProvider.deletePage(p.getName());
 		allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
 		assertEquals(4, allChangedSince.size());
 		assertEquals("test", allChangedSince.get(3).getName());
@@ -249,7 +250,7 @@ public class GitVersioningFileProviderTest {
 
 		WikiPage p = new WikiPage(engine, "test");
 		p.setAuthor("UnknownAuthor");
-		fileProvider.deletePage(p);
+		fileProvider.deletePage(p.getName());
 		allChangedSince = fileProvider.getVersionHistory("test");
 		assertTrue("deleted pages have no version log anymore", allChangedSince.isEmpty());
 	}
@@ -269,7 +270,7 @@ public class GitVersioningFileProviderTest {
 		assertEquals(3, revCommits.size());
 		Instant nowMinusOneHour = Instant.now();
 		nowMinusOneHour = nowMinusOneHour.minus(1, ChronoUnit.HOURS);
-		List<WikiPage> allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
+		List<Page> allChangedSince = new ArrayList<>(fileProvider.getAllChangedSince(Date.from(nowMinusOneHour)));
 		assertEquals(1, allChangedSince.size());
 	}
 
@@ -364,7 +365,7 @@ public class GitVersioningFileProviderTest {
 		fileProvider.rollback(user1);
 		Collection<Attachment> attachments = attachmentProvider.listAttachments(page4);
 		assertEquals(1, attachments.size());
-		Attachment attachmentInfo = attachmentProvider.getAttachmentInfo(page4, "keep.txt", WikiProvider.LATEST_VERSION);
+		Attachment attachmentInfo = attachmentProvider.getAttachmentInfo(page4, "keep.txt", PageProvider.LATEST_VERSION);
 		String string = IOUtils.toString(attachmentProvider.getAttachmentData(attachmentInfo), StandardCharsets.UTF_8);
 		assertEquals("keep", string);
 	}

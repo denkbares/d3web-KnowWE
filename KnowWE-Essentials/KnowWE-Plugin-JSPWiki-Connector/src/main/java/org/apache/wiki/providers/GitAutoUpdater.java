@@ -11,13 +11,8 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
-import org.apache.wiki.WikiEngine;
-import org.apache.wiki.WikiPage;
-import org.apache.wiki.WikiProvider;
-import org.apache.wiki.api.exceptions.ProviderException;
-import org.apache.wiki.attachment.Attachment;
+import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.event.WikiEventManager;
-import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
@@ -65,11 +60,11 @@ public class GitAutoUpdater {
 	private static final Logger log = Logger.getLogger(GitAutoUpdater.class);
 
 	private final GitVersioningFileProvider fileProvider;
-	private final WikiEngine engine;
+	private final Engine engine;
 	private final Repository repository;
 	private static boolean running;
 
-	public GitAutoUpdater(WikiEngine engine, GitVersioningFileProvider fileProvider) {
+	public GitAutoUpdater(Engine engine, GitVersioningFileProvider fileProvider) {
 		this.fileProvider = fileProvider;
 		repository = fileProvider.repository;
 		this.engine = engine;
@@ -298,30 +293,32 @@ public class GitAutoUpdater {
 	}
 
 	private String refreshWikiCache(String path) {
-		try {
-			WikiPage toRefresh;
-			if (path.contains("/")) {
-				String[] split = path.split("/");
-				String parentName = TextUtil.urlDecodeUTF8(split[0])
-						.replace(GitVersioningAttachmentProvider.DIR_EXTENSION, "");
-				String attachmentName = TextUtil.urlDecodeUTF8(split[1]);
-				toRefresh = new Attachment(engine, parentName, attachmentName);
-			}
-			else {
-				toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
-			}
-			toRefresh.setVersion(WikiProvider.LATEST_VERSION);
-			engine.deleteVersion(toRefresh);
-
-			WikiPage page = engine.getPage(toRefresh.getName());
-			if(page!=null)
-				log.info(page.getName());
-
-			return toRefresh.getName();
-		}
-		catch (ProviderException e) {
-			log.error("error refreshing cache", e);
-		}
-		return null;
+		// this no longer works/applies, what are we trying to accomplish here?
+		throw new UnsupportedOperationException();
+//		try {
+//			WikiPage toRefresh;
+//			if (path.contains("/")) {
+//				String[] split = path.split("/");
+//				String parentName = TextUtil.urlDecodeUTF8(split[0])
+//						.replace(GitVersioningAttachmentProvider.DIR_EXTENSION, "");
+//				String attachmentName = TextUtil.urlDecodeUTF8(split[1]);
+//				toRefresh = new Attachment(engine, parentName, attachmentName);
+//			}
+//			else {
+//				toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
+//			}
+//			toRefresh.setVersion(WikiProvider.LATEST_VERSION);
+//			engine.deleteVersion(toRefresh);
+//
+//			WikiPage page = engine.getPage(toRefresh.getName());
+//			if(page!=null)
+//				log.info(page.getName());
+//
+//			return toRefresh.getName();
+//		}
+//		catch (ProviderException e) {
+//			log.error("error refreshing cache", e);
+//		}
+//		return null;
 	}
 }
