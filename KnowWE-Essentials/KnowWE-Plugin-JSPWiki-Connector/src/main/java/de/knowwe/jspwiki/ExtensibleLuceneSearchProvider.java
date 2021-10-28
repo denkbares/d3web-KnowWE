@@ -4,9 +4,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.wiki.WikiContext;
+import org.apache.wiki.api.core.Context;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.api.search.SearchResult;
 import org.apache.wiki.search.LuceneSearchProvider;
-import org.apache.wiki.search.SearchResult;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
@@ -21,9 +22,8 @@ import de.knowwe.plugin.Plugins;
  */
 public class ExtensibleLuceneSearchProvider extends LuceneSearchProvider {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<SearchResult> findPages(String query, int flags, WikiContext wikiContext ) throws ProviderException {
+	public Collection<SearchResult> findPages(String query, int flags, Context wikiContext) throws ProviderException {
 		Collection<SearchResult> results = super.findPages(query, flags, wikiContext );
 
 		Extension[] extensions = PluginManager.getInstance().getExtensions(

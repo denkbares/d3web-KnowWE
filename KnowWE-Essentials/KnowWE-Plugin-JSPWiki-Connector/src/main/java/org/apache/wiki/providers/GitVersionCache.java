@@ -13,10 +13,10 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.providers.PageProvider;
-import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
@@ -277,7 +277,7 @@ public class GitVersionCache {
 
 	@NotNull
 	private Attachment createAttachment(AttachmentCacheItem gitCacheItem) {
-		Attachment att = new Attachment(this.engine, gitCacheItem.getParentName(), gitCacheItem.getAttachmentName());
+		Attachment att = new org.apache.wiki.attachment.Attachment(this.engine, gitCacheItem.getParentName(), gitCacheItem.getAttachmentName());
 		att.setVersion(gitCacheItem.getVersion());
 		att.setAuthor(gitCacheItem.getAuthor());
 		att.setSize(gitCacheItem.getSize());

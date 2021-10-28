@@ -35,11 +35,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Attachment;
+import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.providers.PageProvider;
-import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
@@ -116,7 +117,7 @@ public class GitVersioningFileProviderTest {
 	@Test
 	public void testPutPageText() throws NoSuchPrincipalException, IOException, NoRequiredPropertyException, ProviderException {
 		String author = "UnknownAuthor";
-		WikiEngine engine = getWikiEngineMock(author);
+		Engine engine = getWikiEngineMock(author);
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
 
@@ -139,7 +140,7 @@ public class GitVersioningFileProviderTest {
 	@Test
 	public void testGetPageText() throws NoSuchPrincipalException, IOException, NoRequiredPropertyException, ProviderException {
 		String author = "UnknownAuthor";
-		WikiEngine engine = getWikiEngineMock(author);
+		Engine engine = getWikiEngineMock(author);
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
 
@@ -168,7 +169,7 @@ public class GitVersioningFileProviderTest {
 	@Test
 	public void testMovePage() throws ProviderException, IOException, NoRequiredPropertyException, NoSuchPrincipalException {
 		String author = "UnknownAuthor";
-		WikiEngine engine = getWikiEngineMock(author);
+		Engine engine = getWikiEngineMock(author);
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
 
@@ -187,7 +188,7 @@ public class GitVersioningFileProviderTest {
 	@Test
 	public void testGetChangedSince() throws IOException, NoRequiredPropertyException, ProviderException, NoSuchPrincipalException {
 		final String author = "UnknownAuthor";
-		WikiEngine engine = getWikiEngineMock(author);
+		Engine engine = getWikiEngineMock(author);
 
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
@@ -226,12 +227,10 @@ public class GitVersioningFileProviderTest {
 	@Test
 	public void testGetVersions() throws IOException, NoRequiredPropertyException, ProviderException, NoSuchPrincipalException {
 		final String author = "UnknownAuthor";
-		WikiEngine engine = getWikiEngineMock(author);
+		Engine engine = getWikiEngineMock(author);
 
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
-		Instant nowMinusOneHour = Instant.now();
-		nowMinusOneHour = nowMinusOneHour.minus(1, ChronoUnit.HOURS);
 
 		WikiPage page = new WikiPage(engine, "test");
 		page.setLastModified(new Date());
@@ -257,7 +256,7 @@ public class GitVersioningFileProviderTest {
 
 	@Test
 	public void testEmptyCommit() throws NoSuchPrincipalException, IOException, NoRequiredPropertyException, ProviderException, GitAPIException {
-		WikiEngine engine = getWikiEngineMock("egal");
+		Engine engine = getWikiEngineMock("egal");
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
 		WikiPage page = getWikiPage(engine, "test", "egal");
@@ -279,10 +278,10 @@ public class GitVersioningFileProviderTest {
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		String user1 = "User1";
 		String user2 = "User2";
-		WikiEngine engine = getWikiEngineMock(user1, user2);
+		Engine engine = getWikiEngineMock(user1, user2);
 		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
 		PageManager pm = Mockito.mock(PageManager.class);
-		when(engine.getPageManager()).thenReturn(pm);
+		when(engine.getManager(PageManager.class)).thenReturn(pm);
 		when(pm.getProvider()).thenReturn(fileProvider);
 		GitVersioningAttachmentProvider attachmentProvider = new GitVersioningAttachmentProvider();
 		fileProvider.initialize(engine, properties);
@@ -292,7 +291,7 @@ public class GitVersioningFileProviderTest {
 		fileProvider.putPageText(page, "new Text");
 		fileProvider.putPageText(getWikiPage(engine, "other commit", user2), "other commit");
 
-		Attachment att = new Attachment(engine, "test", "dings.txt");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test", "dings.txt");
 		att.setAuthor(user1);
 		attachmentProvider.putAttachmentData(att, new ByteArrayInputStream("test inhalt".getBytes(StandardCharsets.UTF_8)));
 
@@ -313,10 +312,10 @@ public class GitVersioningFileProviderTest {
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		String user1 = "User1";
 		String user2 = "User2";
-		WikiEngine engine = getWikiEngineMock(user1, user2);
+		@NotNull Engine engine = getWikiEngineMock(user1, user2);
 		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
 		PageManager pm = Mockito.mock(PageManager.class);
-		when(engine.getPageManager()).thenReturn(pm);
+		when(engine.getManager(PageManager.class)).thenReturn(pm);
 		when(pm.getProvider()).thenReturn(fileProvider);
 		GitVersioningAttachmentProvider attachmentProvider = new GitVersioningAttachmentProvider();
 		fileProvider.initialize(engine, properties);
@@ -327,7 +326,7 @@ public class GitVersioningFileProviderTest {
 		fileProvider.openCommit(user2);
 		fileProvider.putPageText(getWikiPage(engine, "other commit", user2), "other commit");
 
-		Attachment att = new Attachment(engine, "to revert", "dingsToRevert.txt");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "to revert", "dingsToRevert.txt");
 		att.setAuthor(user1);
 		attachmentProvider.putAttachmentData(att, new ByteArrayInputStream("test inhalt".getBytes(StandardCharsets.UTF_8)));
 
@@ -353,12 +352,12 @@ public class GitVersioningFileProviderTest {
 		WikiPage page4 = getWikiPage(engine, name4, user1);
 		page4.setAttribute(WikiPage.CHANGENOTE, "created");
 		fileProvider.putPageText(page4, "created");
-		Attachment att4 = new Attachment(engine, name4, "keep.txt");
+		Attachment att4 = new org.apache.wiki.attachment.Attachment(engine, name4, "keep.txt");
 		att4.setAuthor(user1);
 		att4.setAttribute(Attachment.CHANGENOTE, "created");
 		attachmentProvider.putAttachmentData(att4, new ByteArrayInputStream("keep".getBytes(StandardCharsets.UTF_8)));
 		fileProvider.openCommit(user1);
-		Attachment toRevert = new Attachment(engine, name4, "revert.txt");
+		Attachment toRevert = new org.apache.wiki.attachment.Attachment(engine, name4, "revert.txt");
 		toRevert.setAuthor(user1);
 		attachmentProvider.putAttachmentData(toRevert, new ByteArrayInputStream("revert".getBytes(StandardCharsets.UTF_8)));
 		attachmentProvider.putAttachmentData(att4, new ByteArrayInputStream("only revert this text".getBytes(StandardCharsets.UTF_8)));
@@ -370,18 +369,18 @@ public class GitVersioningFileProviderTest {
 		assertEquals("keep", string);
 	}
 
-	private WikiPage getWikiPage(WikiEngine engine, String name, String user) {
+	private WikiPage getWikiPage(Engine engine, String name, String user) {
 		WikiPage page = new WikiPage(engine, name);
 		page.setAuthor(user);
 		return page;
 	}
 
-	@NotNull WikiEngine getWikiEngineMock(String... authors) throws NoSuchPrincipalException {
+	@NotNull Engine getWikiEngineMock(String... authors) throws NoSuchPrincipalException {
 		WikiEngine engine = Mockito.mock(WikiEngine.class);
 		when(engine.getWikiProperties()).thenReturn(properties);
 		UserManager uMan = Mockito.mock(UserManager.class);
 		UserDatabase uDB = Mockito.mock(UserDatabase.class);
-		when(engine.getUserManager()).thenReturn(uMan);
+		when(engine.getManager(UserManager.class)).thenReturn(uMan);
 		when(uMan.getUserDatabase()).thenReturn(uDB);
 		for (String author : authors) {
 			UserProfile uP = Mockito.mock(UserProfile.class);
@@ -391,5 +390,4 @@ public class GitVersioningFileProviderTest {
 		}
 		return engine;
 	}
-
 }

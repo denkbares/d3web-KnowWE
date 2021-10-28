@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.wiki.WikiContext;
-import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Context;
 import org.apache.wiki.api.core.Engine;
@@ -116,9 +115,6 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	@Override
 	public void initialize(Engine engine, Properties properties)
 			throws FilterException {
-		if (!(engine instanceof WikiEngine)) {
-			throw new IllegalStateException("We expect a wiki engine, otherwise KnowWE can't function");
-		}
 		super.initialize(engine, properties);
 
 		String copyCorePages = KnowWEUtils.getConfigBundle().getString("knowweplugin.jspwikiconnector.copycorepages");
@@ -184,8 +180,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		return getEngine().getManager(AttachmentManager.class);
 	}
 
-	public WikiEngine getEngine() {
-		return (WikiEngine) this.m_engine;
+	public Engine getEngine() {
+		return this.m_engine;
 	}
 
 	private void initEnvironmentIfNeeded() {
@@ -610,6 +606,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		}
 		else if (event instanceof WikiEngineEvent) {
 			if (event.getType() == WikiEngineEvent.INITIALIZED) {
+				this.m_engine = event.getSrc();
 				initEnvironmentIfNeeded();
 				initializeAllArticles();
 				wikiEngineInitialized = true;

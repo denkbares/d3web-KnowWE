@@ -34,9 +34,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
-import org.apache.wiki.WikiEngine;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.auth.NoSuchPrincipalException;
+import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserProfile;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.GarbageCollectCommand;
@@ -75,10 +75,10 @@ public class GitVersioningUtils {
 		return ret;
 	}
 
-	public static void addUserInfo(WikiEngine engine, String author, CommitCommand commit) {
+	public static void addUserInfo(Engine engine, String author, CommitCommand commit) {
 		if (null != author && !"".equals(author)) {
 			try {
-				UserProfile userProfile = engine.getUserManager()
+				UserProfile userProfile = engine.getManager(UserManager.class)
 						.getUserDatabase()
 						.findByFullName(author);
 				commit.setCommitter(userProfile.getFullname(), userProfile.getEmail());

@@ -26,7 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.wiki.WikiContext;
+import org.apache.wiki.api.core.Context;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.user.AbstractUserContext;
@@ -34,10 +34,10 @@ import de.knowwe.core.user.AbstractUserContext;
 public class JSPWikiUserContext extends AbstractUserContext {
 
 	private final Map<String, String> urlParameter;
-	private final WikiContext context;
+	private final Context context;
 	boolean allowAsynchronousRendering = true;
 
-	public JSPWikiUserContext(WikiContext context, Map<String, String> urlParameter) {
+	public JSPWikiUserContext(Context context, Map<String, String> urlParameter) {
 		super(new JSPAuthenticationManager(context));
 		this.context = context;
 		this.urlParameter = urlParameter;
@@ -82,7 +82,7 @@ public class JSPWikiUserContext extends AbstractUserContext {
 		return this.context.getHttpRequest().getSession().getServletContext();
 	}
 
-	public WikiContext getWikiContext() {
+	public Context getWikiContext() {
 		return context;
 	}
 

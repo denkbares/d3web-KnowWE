@@ -272,7 +272,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 							.commit()
 							.setOnly(changedFile.getName());
 					commit.setMessage(comment);
-					addUserInfo((WikiEngine) this.m_engine, page.getAuthor(), commit);
+					addUserInfo(this.m_engine, page.getAuthor(), commit);
 					commit.setAllowEmpty(true);
 //					try {
 					retryGitOperation(() -> {
@@ -707,7 +707,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					} else {
 						commitCommand.setMessage(comment);
 					}
-					addUserInfo((WikiEngine) this.m_engine, page.getAuthor(), commitCommand);
+					addUserInfo(this.m_engine, page.getAuthor(), commitCommand);
 
 					retryGitOperation(() -> {
 						final RevCommit revCommit = commitCommand.call();
@@ -777,7 +777,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					} else {
 						commitCommand.setMessage(comment);
 					}
-					addUserInfo((WikiEngine) this.m_engine, author, commitCommand);
+					addUserInfo(this.m_engine, author, commitCommand);
 					retryGitOperation(() -> {
 						final RevCommit revCommit = commitCommand.call();
 						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
@@ -821,7 +821,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			} else {
 				commitCommand.setMessage(comment);
 			}
-			addUserInfo((WikiEngine) this.m_engine, user, commitCommand);
+			addUserInfo(this.m_engine, user, commitCommand);
 			if (this.openCommits.containsKey(user)) {
 				final Set<String> paths = this.openCommits.get(user);
 				for (final String path : paths) {
@@ -860,7 +860,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	private PageManager getEnginePageManager() {
-		return ((WikiEngine) this.m_engine).getPageManager();
+		return this.m_engine.getManager(PageManager.class);
 	}
 
 	public void rollback(final String user) {

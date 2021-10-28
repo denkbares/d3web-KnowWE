@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2011 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -22,7 +22,7 @@ import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.wiki.WikiContext;
+import org.apache.wiki.api.core.Context;
 import org.apache.wiki.auth.WikiSecurityException;
 
 import de.knowwe.core.user.AuthenticationManager;
@@ -36,19 +36,16 @@ import de.knowwe.core.user.AuthenticationManager;
  */
 public class JSPAuthenticationManager implements AuthenticationManager {
 
-	private final WikiContext context;
+	private final Context context;
 
-	public JSPAuthenticationManager(WikiContext context) {
+	public JSPAuthenticationManager(Context context) {
 		this.context = context;
 	}
 
 	@Override
 	public boolean userIsAsserted() {
-		if (context.getWikiSession().isAuthenticated()
-				|| context.getWikiSession().isAsserted()) {
-			return true;
-		}
-		return false;
+		return context.getWikiSession().isAuthenticated()
+				|| context.getWikiSession().isAsserted();
 	}
 
 	@Override
@@ -69,7 +66,7 @@ public class JSPAuthenticationManager implements AuthenticationManager {
 
 	public boolean login(HttpServletRequest request, String username, String password) throws WikiSecurityException {
 		return context.getEngine()
-				.getAuthenticationManager()
+				.getManager(org.apache.wiki.auth.AuthenticationManager.class)
 				.login(context.getWikiSession(), request, username, password);
 	}
 
