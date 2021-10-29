@@ -213,7 +213,7 @@ public class ObjectInfoRenderer implements Renderer {
 	public static String getNameForSection(UserContext user, Section<?> previewSection) {
 		Type surroundingMarkupName = getSurroundingMarkupName(previewSection);
 		return surroundingMarkupName instanceof GroupingType
-				? ((GroupingType) surroundingMarkupName).getSurroundingMarkupName(user, Sections.ancestor(previewSection, GroupingType.class))
+				? ((GroupingType) surroundingMarkupName).getGroupName(user, previewSection)
 				: surroundingMarkupName.getName();
 	}
 
@@ -409,12 +409,7 @@ public class ObjectInfoRenderer implements Renderer {
 		for (Section<?> reference : references) {
 			Type surroundingMarkupType = getSurroundingMarkupName(reference);
 			TypeGroup typeGroup = new TypeGroup(getNameForSection(user, reference), surroundingMarkupType);
-			List<Section<? extends Type>> sectionsForType = result.get(typeGroup);
-			if (sectionsForType == null) {
-				sectionsForType = new LinkedList<>();
-			}
-			sectionsForType.add(reference);
-			result.put(typeGroup, sectionsForType);
+			result.computeIfAbsent(typeGroup, k -> new ArrayList<>()).add(reference);
 		}
 		TreeMap<TypeGroup, List<Section<? extends Type>>> sortedResult = new TreeMap<>(orderComparator.thenComparing(nameComparator));
 		sortedResult.putAll(result);
@@ -485,7 +480,7 @@ public class ObjectInfoRenderer implements Renderer {
 		}
 
 		result.appendHtml("<div class='objectinfo preview defaultMarkupFrame" +
-				" type_").append(getNameForSection(user, previewSection))
+						" type_").append(getNameForSection(user, previewSection))
 				.appendHtml(" ").append(cssClass).appendHtml("'>");
 		result.appendHtml("<div class='objectinfo markupHeaderFrame headerMenu'>");
 		result.appendHtml("<div class='markupHeader'>");
@@ -689,11 +684,11 @@ public class ObjectInfoRenderer implements Renderer {
 		/**
 		 * Method to return a section specified markup name if {@link Type#getName()} would return the same name.
 		 *
-		 * @param user
+		 * @param user    the user context
 		 * @param section the section to define a specified markup name for
 		 * @return the name for the markup
 		 */
-		String getSurroundingMarkupName(UserContext user, Section<?> section);
+		String getGroupName(UserContext user, Section<?> section);
 	}
 
 	/**
