@@ -362,7 +362,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 //	@Override
-//	public Collection<Attachment> listAttachments(Page page) throws ProviderException {
+//	public Collection<Attachment> listAttachments(WikiPage page) throws ProviderException {
 //		try {
 //			gitVersioningFileProvider.canWriteFileLock();
 //			List<Attachment> ret = new ArrayList<>();
@@ -468,54 +468,54 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		return att;
 	}
 
-//	@Override
-//	public Attachment getAttachmentInfo(Page page, String name, int version) throws ProviderException {
-//		try {
-//			gitVersioningFileProvider.canWriteFileLock();
-//			Attachment att = new org.apache.wiki.attachment.Attachment(engine, page.getName(), name);
-//			att.setVersion(version);
-//			File attFile = findAttachmentFile(page.getName(), name);
-//			if (attFile.exists()) {
-//				Boolean ignored = ignoreNode.checkIgnored(attFile.getName(), false);
-//				if (ignored != null && ignored) {
-//					att.setVersion(1);
-//					return att;
-//				}
-//				AttachmentCacheItem cacheItem = cache.getAttachment(att);
-//				if (cacheItem != null) {
-//					att.setAuthor(cacheItem.getAuthor());
-//					att.setLastModified(cacheItem.getDate());
-//					att.setSize(cacheItem.getSize());
-//					if (att.getSize() == -1 && version == LATEST_VERSION) {
-//						att.setSize(attFile.length());
-//						cacheItem.setSize(att.getSize());
-//					}
-//					att.setVersion(cacheItem.getVersion());
-//					return att;
-//				}
-//				else {
-//					log.warn("Cache miss " + att.getParentName() + "/" + att.getFileName());
-//					List<Attachment> versionHistory = getVersionHistory(att);
-//					if (versionHistory.isEmpty() && version == LATEST_VERSION) {
-//						att.setCacheable(false);
-//						att.setSize(attFile.length());
-//						att.setLastModified(new Date(attFile.lastModified()));
-//						return att;
-//					}
-//					else if (version == LATEST_VERSION) {
-//						return versionHistory.get(versionHistory.size() - 1);
-//					}
-//					else if (version > 0 && version <= versionHistory.size()) {
-//						return versionHistory.get(version - 1);
-//					}
-//				}
-//			}
-//			return null;
-//		}
-//		finally {
-//			gitVersioningFileProvider.writeFileUnlock();
-//		}
-//	}
+	@Override
+	public Attachment getAttachmentInfo(Page page, String name, int version) throws ProviderException {
+		try {
+			gitVersioningFileProvider.canWriteFileLock();
+			Attachment att = new org.apache.wiki.attachment.Attachment(engine, page.getName(), name);
+			att.setVersion(version);
+			File attFile = findAttachmentFile(page.getName(), name);
+			if (attFile.exists()) {
+				Boolean ignored = ignoreNode.checkIgnored(attFile.getName(), false);
+				if (ignored != null && ignored) {
+					att.setVersion(1);
+					return att;
+				}
+				AttachmentCacheItem cacheItem = cache.getAttachment(att);
+				if (cacheItem != null) {
+					att.setAuthor(cacheItem.getAuthor());
+					att.setLastModified(cacheItem.getDate());
+					att.setSize(cacheItem.getSize());
+					if (att.getSize() == -1 && version == LATEST_VERSION) {
+						att.setSize(attFile.length());
+						cacheItem.setSize(att.getSize());
+					}
+					att.setVersion(cacheItem.getVersion());
+					return att;
+				}
+				else {
+					log.warn("Cache miss " + att.getParentName() + "/" + att.getFileName());
+					List<Attachment> versionHistory = getVersionHistory(att);
+					if (versionHistory.isEmpty() && version == LATEST_VERSION) {
+						att.setCacheable(false);
+						att.setSize(attFile.length());
+						att.setLastModified(new Date(attFile.lastModified()));
+						return att;
+					}
+					else if (version == LATEST_VERSION) {
+						return versionHistory.get(versionHistory.size() - 1);
+					}
+					else if (version > 0 && version <= versionHistory.size()) {
+						return versionHistory.get(version - 1);
+					}
+				}
+			}
+			return null;
+		}
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
+		}
+	}
 
 	@Override
 	public List<Attachment> getVersionHistory(Attachment att) {
@@ -698,12 +698,11 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@Override
-	public void moveAttachmentsForPage(String oldParentName, String newParent) throws ProviderException {
+	public void moveAttachmentsForPage(Page oldParent, String newParent) throws ProviderException {
 		try {
-			Page oldParent = engine.getManager(PageManager.class).getPage(oldParentName);
 			gitVersioningFileProvider.canWriteFileLock();
 			gitVersioningFileProvider.commitLock();
-			File oldDir = findPageDir(oldParentName);
+			File oldDir = findPageDir(oldParent.getName());
 			File newDir = findPageDir(newParent);
 			if (newDir.exists() && !newDir.isDirectory()) {
 				throw new ProviderException(newParent + DIR_EXTENSION + " is not a directory");

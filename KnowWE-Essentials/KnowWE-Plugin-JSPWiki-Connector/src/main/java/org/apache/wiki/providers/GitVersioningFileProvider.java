@@ -45,7 +45,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 import org.apache.wiki.InternalWikiException;
-import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
@@ -676,15 +675,22 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				.call();
 	}
 
+	@Override
+	public void deleteVersion(final Page pageName, final int version) {
+		// Can't delete version from git
+//		if(version == LATEST_VERSION){
+//			this.cache.reset(pageName);
+//		}
+	}
+
 
 	@Override
-	public void deletePage(String pageName) throws ProviderException {
+	public void deletePage(Page page) throws ProviderException {
 		try {
 			canWriteFileLock();
 			commitLock();
-			final File file = findPage(pageName);
+			final File file = findPage(page.getName());
 			file.delete();
-			Page page = getPageInfo(pageName, LATEST_VERSION);
 			try {
 				final Git git = new Git(this.repository);
 
@@ -734,13 +740,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	@Override
-	public void movePage(final String from, final String to) throws ProviderException {
+	public void movePage(final Page from, final String to) throws ProviderException {
 		try {
 			canWriteFileLock();
 			commitLock();
-			Page fromPage = getPageInfo(from, LATEST_VERSION);
-			String author = fromPage.getAuthor();
-			final File fromFile = findPage(from);
+			final File fromFile = findPage(from.getName());
 			final File toFile = findPage(to);
 			try {
 				if (fromFile.getName().equalsIgnoreCase(toFile.getName())) {
@@ -762,16 +766,17 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					return null;
 				}, LockFailedException.class, "Retry removing from repo, because of lock failed exception");
 
+				String author = from.getAuthor();
 				if (this.openCommits.containsKey(author)) {
 					this.openCommits.get(author).add(fromFile.getName());
 					this.openCommits.get(author).add(toFile.getName());
-					cache.addCacheCommand(author, new CacheCommand.MovePage(fromPage, to));
+					cache.addCacheCommand(author, new CacheCommand.MovePage(from, to));
 				}
 				else {
 					final CommitCommand commitCommand = git.commit()
 							.setOnly(toFile.getName())
 							.setOnly(fromFile.getName());
-					String comment = gitCommentStrategy.getComment(fromPage);
+					String comment = gitCommentStrategy.getComment(from);
 					if(comment.isEmpty()) {
 							commitCommand.setMessage("renamed page " + from + " to " + to);
 					} else {
@@ -784,7 +789,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 								author,
 								to,
 								revCommit.getId().getName()));
-						cache.movePage(fromPage, to, commitCommand.getMessage(), revCommit.getId());
+						cache.movePage(from, to, commitCommand.getMessage(), revCommit.getId());
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 

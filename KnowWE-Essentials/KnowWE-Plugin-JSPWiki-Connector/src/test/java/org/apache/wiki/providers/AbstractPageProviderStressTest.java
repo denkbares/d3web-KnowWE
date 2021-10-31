@@ -206,7 +206,7 @@ public abstract class AbstractPageProviderStressTest<T extends PageProvider> {
 	}
 
 	private void deletePage(final Page page) throws ProviderException {
-		this.pageProvider.deletePage(page.getName());
+		this.pageProvider.deletePage(page);
 	}
 
 	private void verifyPage(final WikiPage page, final String expectedContent) throws ProviderException {

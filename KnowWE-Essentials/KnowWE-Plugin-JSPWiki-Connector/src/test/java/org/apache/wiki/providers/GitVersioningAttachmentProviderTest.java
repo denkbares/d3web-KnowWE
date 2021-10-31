@@ -198,7 +198,9 @@ public class GitVersioningAttachmentProviderTest {
 		att.setAuthor(AUTHOR);
 		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
-		attProvider.moveAttachmentsForPage("test page", "new test page");
+		WikiPage from = new WikiPage(engine, "test page");
+		from.setAuthor("UnknownAuthor");
+		attProvider.moveAttachmentsForPage(from, "new test page");
 		File dir = new File(TMP_NEW_REPO + "/new+test+page-att");
 		assertNotNull(dir);
 		assertTrue(dir.exists());
