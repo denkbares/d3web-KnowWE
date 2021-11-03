@@ -62,7 +62,7 @@ import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
-import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -137,9 +137,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public Rdf2GoCore(String lns, RepositoryConfig reasoning) {
 		this("Rdf2GoCore", lns, reasoning);
 	}
-
-
-
 
 	/**
 	 * Initializes the Rdf2GoCore with the specified arguments. Please note that the RuleSet argument only has an effect
@@ -599,7 +596,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(boolean boolValue) {
-		return createDatatypeLiteral(String.valueOf(boolValue), XMLSchema.BOOLEAN);
+		return createDatatypeLiteral(String.valueOf(boolValue), XSD.BOOLEAN);
 	}
 
 	/**
@@ -609,7 +606,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(int intValue) {
-		return createDatatypeLiteral(String.valueOf(intValue), XMLSchema.INTEGER);
+		return createDatatypeLiteral(String.valueOf(intValue), XSD.INTEGER);
 	}
 
 	/**
@@ -619,7 +616,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(double doubleValue) {
-		return createDatatypeLiteral(String.valueOf(doubleValue), XMLSchema.DOUBLE);
+		return createDatatypeLiteral(String.valueOf(doubleValue), XSD.DOUBLE);
 	}
 
 	/**
@@ -629,7 +626,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @return a datatype literal for the specified value
 	 */
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(LocalDate dateValue) {
-		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE), XMLSchema.DATETIME);
+		return createDatatypeLiteral(dateValue.format(DateTimeFormatter.ISO_LOCAL_DATE), XSD.DATETIME);
 	}
 
 	public org.eclipse.rdf4j.model.Literal createDatatypeLiteral(String literal, IRI datatype) {
@@ -906,14 +903,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		synchronized ((this.statementMutex)) {
 			Set<Statement> statements = new HashSet<>();
 			for (Entry<StatementSource, Statement> entry : this.statementCache.entrySet()) {
-				if(sourceFilter.test(entry.getKey())) {
+				if (sourceFilter.test(entry.getKey())) {
 					statements.add(entry.getValue());
 				}
 			}
 			return statements;
 		}
 	}
-
 
 	public long getSize() {
 		return getStatements().size();
@@ -950,15 +946,19 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public void readFrom(InputStream in, RDFFormat syntax) throws RDFParseException, RepositoryException, IOException {
-		this.semanticCore.addData(in, syntax);
-		this.namespaces = null;
-		this.namespacePrefixes = null;
+		synchronized (nsPrefixMutex) {
+			this.semanticCore.addData(in, syntax);
+			this.namespaces = null;
+			this.namespacePrefixes = null;
+		}
 	}
 
 	public void readFrom(File in) throws RDFParseException, RepositoryException, IOException {
-		this.semanticCore.addData(in);
-		this.namespaces = null;
-		this.namespacePrefixes = null;
+		synchronized (nsPrefixMutex) {
+			this.semanticCore.addData(in);
+			this.namespaces = null;
+			this.namespacePrefixes = null;
+		}
 	}
 
 	public void removeAllCachedStatements() {
@@ -970,9 +970,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public void removeNamespace(String abbreviation) throws RepositoryException {
-		this.semanticCore.getConnection().removeNamespace(abbreviation);
-		this.namespaces = null;
-		this.namespacePrefixes = null;
+		synchronized (nsPrefixMutex) {
+			this.semanticCore.getConnection().removeNamespace(abbreviation);
+			this.namespaces = null;
+			this.namespacePrefixes = null;
+		}
 	}
 
 	/**
@@ -1206,7 +1208,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	@Override
-	public TupleQuery prepareSelect(Collection<Namespace> namespaces, String query)throws RepositoryException, MalformedQueryException  {
+	public TupleQuery prepareSelect(Collection<Namespace> namespaces, String query) throws RepositoryException, MalformedQueryException {
 		return semanticCore.prepareSelect(namespaces, query);
 	}
 
