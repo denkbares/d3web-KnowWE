@@ -35,6 +35,7 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.merge.ContentMergeStrategy;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevSort;
@@ -99,11 +100,32 @@ public class GitAutoUpdater {
 			RevWalk revWalk = new RevWalk(fileProvider.repository);
 			ObjectId oldHead = fileProvider.repository.resolve("remotes/origin/master");
 			RevCommit oldHeadCommit = revWalk.parseCommit(oldHead);
-
+			boolean pullAfterReset = false;
 			try {
 				Status status = git.status().call();
 				if (!status.isClean()) {
 					Log.warning("Git is not clean, doing reset first");
+					Log.warning("Added              : " + String.join(",", status.getAdded()));
+					Log.warning("Uncommitted changes: " + String.join(",", status.getUncommittedChanges()));
+					Log.warning("Missing            : " + String.join(",", status.getMissing()));
+					Log.warning("Modified           : " + String.join(",", status.getModified()));
+					Log.warning("Changed            : " + String.join(",", status.getChanged()));
+					Log.warning("Conflicting        : " + String.join(",", status.getConflicting()));
+					try {
+						switch (repository.getRepositoryState()) {
+							case REBASING_INTERACTIVE:
+							case REBASING:
+							case REBASING_REBASING:
+							case REBASING_MERGE:
+								git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
+								pullAfterReset = true;
+								break;
+						}
+					}
+					catch (GitAPIException e) {
+						Log.severe("Reset wasn't successful", e);
+						return;
+					}
 					try {
 						git.reset().setMode(ResetCommand.ResetType.HARD).call();
 					}
@@ -121,7 +143,7 @@ public class GitAutoUpdater {
 			FetchResult fetch = fetch1.call();
 			Collection<TrackingRefUpdate> trackingRefUpdates = fetch.getTrackingRefUpdates();
 
-			if(!trackingRefUpdates.isEmpty()) {
+			if(pullAfterReset || !trackingRefUpdates.isEmpty()) {
 				PullCommand pull = git.pull()
 						.setRemote("origin")
 						.setRemoteBranchName("master")
@@ -132,7 +154,19 @@ public class GitAutoUpdater {
 					pullResult = pull.call();
 				} catch (JGitInternalException ie){
 					log.error("internal jgit error", ie);
-//					pullResult = pull.call();
+					try {
+						switch (repository.getRepositoryState()) {
+							case REBASING_INTERACTIVE:
+							case REBASING:
+							case REBASING_REBASING:
+							case REBASING_MERGE:
+								git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
+								break;
+						}
+						pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
+					} catch (JGitInternalException ie2){
+						log.error("internal jgit error", ie);
+					}
 				}
 				if(pullResult != null) {
 					RebaseResult rebaseResult = pullResult.getRebaseResult();
