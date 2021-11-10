@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.Logger;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.WikiProvider;
@@ -63,8 +62,6 @@ import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
  */
 public class GitAutoUpdater {
 
-	private static final Logger log = Logger.getLogger(GitAutoUpdater.class);
-
 	private final GitVersioningFileProvider fileProvider;
 	private final WikiEngine engine;
 	private final Repository repository;
@@ -83,7 +80,7 @@ public class GitAutoUpdater {
 	public void update() {
 		running = true;
 		if(Files.exists(Paths.get(fileProvider.getFilesystemPath(), "lock.wc"))){
-			log.info("Not updating, because of filesystem lock");
+			Log.info("Not updating, because of filesystem lock");
 			return;
 		}
 		Git git = new Git(fileProvider.repository);
@@ -153,7 +150,7 @@ public class GitAutoUpdater {
 				try {
 					pullResult = pull.call();
 				} catch (JGitInternalException ie){
-					log.error("internal jgit error", ie);
+					Log.severe("internal jgit error", ie);
 					try {
 						switch (repository.getRepositoryState()) {
 							case REBASING_INTERACTIVE:
@@ -165,18 +162,18 @@ public class GitAutoUpdater {
 						}
 						pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
 					} catch (JGitInternalException ie2){
-						log.error("internal jgit error", ie);
+						Log.severe("internal jgit error", ie);
 					}
 				}
 				if(pullResult != null) {
 					RebaseResult rebaseResult = pullResult.getRebaseResult();
 					boolean successful = rebaseResult.getStatus().isSuccessful();
 					if (!successful) {
-						log.error("unsuccessful pull " +rebaseResult.getStatus());
+						Log.severe("unsuccessful pull " +rebaseResult.getStatus());
 						if(rebaseResult.getConflicts() != null) {
-							log.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
+							Log.severe("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
 						} else {
-							log.error("unsuccessful pull " + rebaseResult.getFailingPaths());
+							Log.severe("unsuccessful pull " + rebaseResult.getFailingPaths());
 						}
 					}
 				}
@@ -186,7 +183,7 @@ public class GitAutoUpdater {
 				ObjectId newHead = fileProvider.repository.resolve(Constants.HEAD);
 				String title = null;
 				if (!oldHeadCommit.equals(newHead)) {
-					log.info("Read changes after rebase");
+					Log.info("Read changes after rebase");
 					try {
 						fileProvider.canWriteFileLock();
 						RevCommit newHeadCommit = revWalk.parseCommit(newHead);
@@ -216,7 +213,7 @@ public class GitAutoUpdater {
 								mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, refreshedPages);
 							}
 						}
-						log.info("Beginn compile");
+						Log.info("Beginn compile");
 
 //							articleManager.open();
 						if (!refreshedPages.isEmpty())
@@ -229,7 +226,7 @@ public class GitAutoUpdater {
 					}
 				}
 				if(title != null){
-					log.info("do full parse");
+					Log.info("do full parse");
 					Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
 					EventManager.getInstance().fireEvent(new FullParseEvent(article));
 				}
@@ -238,26 +235,26 @@ public class GitAutoUpdater {
 			}
 		}
 		catch (GitAPIException | IOException e) {
-			log.error("Error while updating!", e);
+			Log.severe("Error while updating!", e);
 			try {
 				git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
 			}
 			catch (GitAPIException ex) {
-				log.error("Error while aborting rebase!", e);
+				Log.severe("Error while aborting rebase!", e);
 			}
 		}
 		finally {
 			try {
 				fileProvider.pushUnlock();
 			} catch (IllegalMonitorStateException ignoring){}
-			log.info("Commit compile");
+			Log.info("Commit compile");
 			articleManager.commit();
 			try {
 				Thread.sleep(500);
 			}
 			catch (InterruptedException ignored) {}
 			Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
-			log.info("Compile ends");
+			Log.info("Compile ends");
 			running = false;
 		}
 	}
@@ -349,12 +346,12 @@ public class GitAutoUpdater {
 
 			WikiPage page = engine.getPage(toRefresh.getName());
 			if(page!=null)
-				log.info(page.getName());
+				Log.info(page.getName());
 
 			return toRefresh.getName();
 		}
 		catch (ProviderException e) {
-			log.error("error refreshing cache", e);
+			Log.severe("error refreshing cache", e);
 		}
 		return null;
 	}
