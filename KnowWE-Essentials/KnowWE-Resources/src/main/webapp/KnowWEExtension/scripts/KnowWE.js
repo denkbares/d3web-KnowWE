@@ -683,7 +683,12 @@ KNOWWE.core.rerendercontent = function () {
 				}
 				jq$('.ReRenderSectionMarker').rerender(parameters);
 			});
-			jq$('.asynchronRenderer').rerender({reason: "asynchronRenderer", globalProcessingState: false});
+
+			let options = {reason: "asynchronRenderer", globalProcessingState: false};
+			KNOWWE.helper.observer.subscribe('afterRerender', function ($element) {
+				$element.find('.asynchronRenderer').rerender(options);
+			});
+			jq$('.asynchronRenderer').rerender(options);
 		},
 		/**
 		 * Function: updateNode

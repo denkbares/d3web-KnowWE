@@ -826,19 +826,18 @@ a.action.dialog {
 /* ------->>> Ajax Loading  <<<----------*/
 /* ##################################### */
 
-span.asynchronNormal, span.asynchronPreviewRenderer {
-	width: 32px;
-	height: 32px;
+.asynchronRenderer {
 	display: inline-block;
-	background-image: url(../images/ajax-loader.gif)
+}
+
+.asynchronRenderer .asynchronNormal {
+	font-size: 2.5em;
+	overflow: hidden;
+	color: grey;
 }
 
 span.asynchronSmall {
-	width: 12px;
-	height: 12px;
-	display: inline-block;
 	color: grey;
-	padding: 0 1px 0 2px;
 }
 
 span.ajaxLoader {

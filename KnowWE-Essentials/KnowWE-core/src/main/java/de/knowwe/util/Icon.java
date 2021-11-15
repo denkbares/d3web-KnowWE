@@ -163,7 +163,7 @@ public class Icon {
 	public static final Icon MINUS_OCTAGON = new Icon("fa-type fa-minus-octagon");
 
 	//SPINNING
-	public static final Icon LOADING = new Icon("fa-type fa-spin fa-sync-alt");
+	public static final Icon LOADING = new Icon("fa-type fa-spin fa-circle-notch");
 	public static final Icon WAITING = new Icon(LOADING.getCssClass());
 	public static final Icon CALCULATING = new Icon(LOADING.getCssClass());
 

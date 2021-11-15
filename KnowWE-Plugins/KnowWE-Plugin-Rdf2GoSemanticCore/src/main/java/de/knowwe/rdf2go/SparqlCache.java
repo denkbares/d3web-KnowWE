@@ -33,8 +33,8 @@ public class SparqlCache {
 	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
 
 	private final Rdf2GoCore core;
-	private int cachedSize = 0;
 	private final Map<String, SparqlTask> cache = new LinkedHashMap<>(16, 0.75f, true);
+	private final Map<String, SparqlTask> outdated = new LinkedHashMap<>(16, 0.75f, true);
 
 	SparqlCache(Rdf2GoCore core) {
 		this.core = core;
@@ -44,11 +44,13 @@ public class SparqlCache {
 		return cache.get(query);
 	}
 
+	public SparqlTask getOutdated(String query) {
+		return outdated.get(query);
+	}
+
 	public void put(String query, SparqlTask task) {
-		SparqlTask previous = cache.put(query, task);
-		if (previous != null) {
-			this.cachedSize -= previous.getSize();
-		}
+		cache.put(query, task);
+		checkCacheSize(this.cache);
 	}
 
 	/**
@@ -61,33 +63,31 @@ public class SparqlCache {
 	public boolean remove(String query) {
 		String completeQuery = core.prependPrefixesToQuery(core.getNamespaces(), query);
 		synchronized (this.cache) {
-			SparqlTask removed = this.cache.remove(completeQuery);
-			if (removed != null) {
-				this.cachedSize -= removed.getSize();
-				return true;
-			}
-			return false;
+			return this.cache.remove(completeQuery) != null;
 		}
 	}
 
 	/**
 	 * Clears the whole cache.
 	 */
-	public synchronized void clear() {
+	public synchronized void invalidate() {
+		this.outdated.putAll(this.cache);
+		checkCacheSize(this.outdated);
+
 		this.cache.clear();
-		this.cachedSize = 0;
 	}
 
-	public void handleCacheSize(SparqlTask task) {
-		this.cachedSize += task.getSize();
-		if (this.cachedSize > DEFAULT_MAX_CACHE_SIZE) {
-			synchronized (this.cache) {
-				Iterator<Map.Entry<String, SparqlTask>> iterator = this.cache.entrySet().iterator();
-				while (iterator.hasNext() && this.cachedSize > DEFAULT_MAX_CACHE_SIZE) {
+	private void checkCacheSize(Map<String, SparqlTask> cache) {
+		int currentSize = cache.values().stream().mapToInt(SparqlTask::getSize).sum();
+		if (currentSize > DEFAULT_MAX_CACHE_SIZE) {
+			//noinspection SynchronizationOnLocalVariableOrMethodParameter
+			synchronized (cache) {
+				Iterator<Map.Entry<String, SparqlTask>> iterator = cache.entrySet().iterator();
+				while (iterator.hasNext() && currentSize > DEFAULT_MAX_CACHE_SIZE) {
 					Map.Entry<String, SparqlTask> next = iterator.next();
 					iterator.remove();
 					try {
-						this.cachedSize -= next.getValue().getSize();
+						currentSize -= next.getValue().getSize();
 					}
 					catch (Exception ignore) {
 						// nothing to do, cache size wasn't increase either

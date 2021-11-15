@@ -540,8 +540,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					insertedStatements = true;
 				}
 				if (removedStatements || insertedStatements) {
-					// clear result cache if there are any changes
-					sparqlCache.clear();
+					// invalidate the result cache if there are any changes
+					sparqlCache.invalidate();
 					EventManager.getInstance().fireEvent(new ChangedStatementsEvent(this));
 				}
 
@@ -1172,7 +1172,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		TupleQueryResult result = (TupleQueryResult) sparql(options, SparqlType.SELECT, completeQuery, null, null, null);
 		if (result instanceof CachedTupleQueryResult) {
 			// make the result iterable by different threads multiple times... we have to do this, because the caller
-			// of this methods can not know, that he is getting a cached result that may already be iterated before
+			// of this method can not know, that he is getting a cached result that may already be iterated before
 			((CachedTupleQueryResult) result).resetIterator();
 		}
 		return result;
@@ -1241,11 +1241,21 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 
 		// normal query, e.g. from a renderer... do all the cache and timeout stuff
+		boolean isOutdated = false;
 		SparqlTask sparqlTask;
 		if (options.cached && query != null) {
 			// use case, if enabled, and we use a non-prepared query
 			synchronized (this.sparqlCache) {
 				sparqlTask = this.sparqlCache.get(query);
+				if (options.lastFinishedResult) {
+					if (sparqlTask == null || !sparqlTask.isDone()) {
+						sparqlTask = this.sparqlCache.getOutdated(query);
+						if (sparqlTask == null || !sparqlTask.isDone()) {
+							throw new RuntimeException(new TimeoutException());
+						}
+						isOutdated = true;
+					}
+				}
 				if (sparqlTask == null
 						|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != options.timeoutMillis)) {
 					SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, true, preparedAsk, preparedSelect, bindings);
@@ -1272,7 +1282,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				// in case we get an overflow because timeOutMillis is near MAX_VALUE
 				maxTimeOut = Long.MAX_VALUE;
 			}
-			return sparqlTask.get(maxTimeOut, TimeUnit.MILLISECONDS);
+			Object result = sparqlTask.get(maxTimeOut, TimeUnit.MILLISECONDS);
+			if (isOutdated && result instanceof CachedTupleQueryResult) {
+				((CachedTupleQueryResult) result).markAsOutdated();
+			}
+			return result;
 		}
 		catch (CancellationException | InterruptedException | TimeoutException e) {
 			throw new RuntimeException(timeOutMessage + Stopwatch.getDisplay(sparqlTask.getRunDuration()), e);
@@ -1374,6 +1388,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		 * Determines whether the result of the query should be cached.
 		 */
 		public boolean cached = true;
+
+		/**
+		 * If set to true, we get the last known and finished result of the query, even if it is from a previous
+		 * compilation. Using this setting, we always immediately return from the call. If no cached result is
+		 * available, a timeout exception is thrown.
+		 */
+		public boolean lastFinishedResult = false;
 		/**
 		 * Timeout for the query. Be aware that, in case of an uncached query, the timeout only effects the process of
 		 * creating the iterator. Retrieving elements from the iterator might again take a long time not covered by the
@@ -1394,6 +1415,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			this.timeoutMillis = timeoutMillis;
 		}
 
+		public Options(long timeoutMillis, boolean lastFinishedEvaluation) {
+			this.timeoutMillis = timeoutMillis;
+			this.lastFinishedResult = lastFinishedEvaluation;
+		}
+
 		public Options(boolean cached) {
 			this.cached = cached;
 		}
@@ -1411,6 +1437,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			this.cached = cached;
 			this.timeoutMillis = timeoutMillis;
 			this.priority = priority;
+		}
+
+		public Options(boolean cached, long timeoutMillis, double priority, boolean lastFinishedEvaluation) {
+			this.cached = cached;
+			this.timeoutMillis = timeoutMillis;
+			this.priority = priority;
+			this.lastFinishedResult = lastFinishedEvaluation;
 		}
 	}
 

@@ -76,7 +76,7 @@ import de.knowwe.util.Icon;
  * @author Stefan Plehn
  * @created 14.01.2014
  */
-public class PaginationRenderer implements Renderer {
+public class PaginationRenderer implements AsyncPreviewRenderer {
 
 	private static final String PAGINATION_KEY = "pagination";
 	private static final String COLUMNS = "columns";
@@ -120,6 +120,13 @@ public class PaginationRenderer implements Renderer {
 		this.decoratedRenderer = decoratedRenderer;
 		this.sorting = sorting;
 		this.supportFiltering = supportFiltering;
+	}
+
+	@Override
+	public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
+		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
+			((AsyncPreviewRenderer) decoratedRenderer).renderAsyncPreview(section, user, result);
+		}
 	}
 
 	@NotNull

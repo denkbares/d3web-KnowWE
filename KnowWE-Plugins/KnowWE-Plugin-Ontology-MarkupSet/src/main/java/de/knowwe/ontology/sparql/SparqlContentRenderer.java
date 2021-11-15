@@ -30,16 +30,16 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.AsyncPreviewRenderer;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
-import static de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode.*;
+import static de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode.HTML;
 
-public class SparqlContentRenderer implements Renderer {
+public class SparqlContentRenderer implements AsyncPreviewRenderer {
 
 	private static SparqlContentRenderer instance = null;
 
@@ -51,7 +51,16 @@ public class SparqlContentRenderer implements Renderer {
 	}
 
 	@Override
+	public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
+		render(section, user, result, true);
+	}
+
+	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
+		render(section, user, result, false);
+	}
+
+	private void render(Section<?> section, UserContext user, RenderResult result, boolean asyncPreview) {
 		Section<SparqlType> sparqlTypeSection = Sections.cast(section, SparqlType.class);
 		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(user, markupSection);
@@ -142,7 +151,7 @@ public class SparqlContentRenderer implements Renderer {
 		}
 		else {
 			SparqlResultRenderer.getInstance()
-					.renderSparqlResult(sparqlTypeSection, user, result);
+					.renderSparqlResult(sparqlTypeSection, user, result, asyncPreview);
 		}
 		if ("true".equalsIgnoreCase(showQueryFlag)) {
 			// we need an opening html element around all the content as

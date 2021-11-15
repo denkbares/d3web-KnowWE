@@ -44,7 +44,7 @@ public class RefreshSparqlAction extends AbstractAction {
 
 		RenderResult result = new RenderResult(context);
 		SparqlResultRenderer.getInstance()
-				.renderSparqlResult(Sections.cast(section, SparqlType.class), context, result);
+				.renderSparqlResult(Sections.cast(section, SparqlType.class), context, result, false);
 		context.getWriter().append(result.toString());
 	}
 }

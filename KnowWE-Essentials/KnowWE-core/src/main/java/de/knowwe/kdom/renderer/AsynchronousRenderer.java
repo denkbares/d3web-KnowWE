@@ -47,30 +47,29 @@ public class AsynchronousRenderer implements Renderer {
 			decoratedRenderer.render(section, user, result);
 		}
 		else {
-			appendAjaxLoadingSpinner(section, result);
+			renderPreview(section, user, result);
 		}
 	}
 
-	protected void appendAjaxLoadingSpinner(Section<?> section, RenderResult result) {
+	protected void renderPreview(Section<?> section, UserContext user, RenderResult result) {
 		String id = section.getID();
-		String size = inline ? "asynchronSmall" : "asynchronNormal";
-		result.appendHtml("<span class='asynchronRenderer " + size + "'")
-				.appendHtml(" id='")
-				.append(id)
-				.appendHtml("'")
-				.appendHtml(" rel=\"{id:'")
-				.append(id)
-				.appendHtml("'}\">")
-				.appendHtml(inline ? Icon.LOADING.toHtml() : "")
-				.appendHtml("</span>");
+		String[] attributes = new String[] { "class", "asynchronRenderer", "id", id, "rel", "rel=\"{id:'" + id + "'}\"" };
+
+		result.appendHtmlTag("div", attributes);
+		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
+			((AsyncPreviewRenderer) decoratedRenderer).renderAsyncPreview(section, user, result);
+		}
+		else {
+			result.appendHtml(Icon.LOADING.addClasses(inline ? "asynchronSmall" : "asynchronNormal").toHtml());
+		}
+		result.appendHtmlTag("/div");
 	}
 
 	protected boolean isAjaxRequested(Section<?> section, UserContext user) {
 		if (!user.allowAsynchronousRendering()) return false;
 		Section<DefaultMarkupType> defaultMarkupSection = getDefaultMarkupSection(section);
 		if (defaultMarkupSection == null) return true;
-		String asynchronousString = DefaultMarkupType.getAnnotation(
-				defaultMarkupSection, ASYNCHRONOUS);
+		String asynchronousString = DefaultMarkupType.getAnnotation(defaultMarkupSection, ASYNCHRONOUS);
 		if (asynchronousString == null) return true;
 		asynchronousString = asynchronousString.trim().toLowerCase();
 		return !asynchronousString.equals("false");

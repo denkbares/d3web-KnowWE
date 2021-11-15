@@ -31,7 +31,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  *
  * @author Johannes Dienst
  */
-public class ReRenderSectionMarkerRenderer implements Renderer {
+public class ReRenderSectionMarkerRenderer implements AsyncPreviewRenderer  {
 
 	/**
 	 * Holds the renderer of the inner text.
@@ -71,5 +71,12 @@ public class ReRenderSectionMarkerRenderer implements Renderer {
 
 	public static void renderClose(RenderResult result) {
 		result.appendHtml("</div>");
+	}
+
+	@Override
+	public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
+		if (renderer instanceof AsyncPreviewRenderer) {
+			((AsyncPreviewRenderer) renderer).renderAsyncPreview(section, user, result);
+		}
 	}
 }
