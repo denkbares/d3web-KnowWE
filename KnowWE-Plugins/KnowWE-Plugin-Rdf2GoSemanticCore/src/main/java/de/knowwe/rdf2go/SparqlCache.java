@@ -71,7 +71,14 @@ public class SparqlCache {
 	 * Clears the whole cache.
 	 */
 	public synchronized void invalidate() {
-		this.outdated.putAll(this.cache);
+		for (Map.Entry<String, SparqlTask> entry : this.cache.entrySet()) {
+			SparqlTask task = entry.getValue();
+			if (!task.isDone()) {
+				task.cancel(true);
+				continue;
+			}
+			this.outdated.put(entry.getKey(), task);
+		}
 		checkCacheSize(this.outdated);
 
 		this.cache.clear();
