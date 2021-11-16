@@ -88,7 +88,6 @@ KNOWWE.plugin.anchor = function() {
     jq$('html, body').animate({
       scrollTop: scrollTop
     }, 0);
-    console.log("Scrolled " + scrollTop)
   }
 
 
