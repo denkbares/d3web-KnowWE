@@ -686,7 +686,7 @@ KNOWWE.core.rerendercontent = function () {
 
 			let options = {reason: "asynchronRenderer", globalProcessingState: false};
 			KNOWWE.helper.observer.subscribe('afterRerender', function ($element) {
-				$element.find('.asynchronRenderer').rerender(options);
+				this.find('.asynchronRenderer').rerender(options);
 			});
 			jq$('.asynchronRenderer').rerender(options);
 		},
