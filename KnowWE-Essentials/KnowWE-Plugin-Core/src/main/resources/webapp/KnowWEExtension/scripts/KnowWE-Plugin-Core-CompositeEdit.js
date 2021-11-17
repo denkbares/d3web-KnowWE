@@ -584,6 +584,7 @@ KNOWWE.plugin.compositeEditTool = function() {
     _TM.animateDefaultMarkupMenu(jq$('#compositeEdit'));
     _TM.adjustSingletonMenus(jq$('#compositeEdit'));
     jq$(".extend-panel-right").click(function(e) {
+      KNOWWE.core.util.form.showExtendedPanel.call(new KNOWWE.helper.element(this)); // TODO: Try to not use this ancient stuff
       loadPreviews(jq$(this).next('div'));
       saveExpandState(this);
     });
@@ -602,7 +603,7 @@ KNOWWE.plugin.compositeEditTool = function() {
       : jq$(root).find('.asynchronPreviewRenderer');
     const json = [];
     const ids = [];
-    select.each(function() {
+    select.filter((i, e) => e.parentElement.style.display === "inline").each(function() {
       let attribute = this.getAttribute('rel');
       json.push(attribute);
       ids.push(this.id);
@@ -650,7 +651,7 @@ KNOWWE.plugin.compositeEditTool = function() {
   function initExpandAllButtons() {
     resetButtonTexts();
 
-    jq$('#compositeEdit').find('.show-extend').click(function() {
+    jq$('#compositeEdit').find('.extend-panel').click(function() {
       resetButtonTexts();
     });
     jq$('#compositeEdit').find('.show.extend').click(function() {
@@ -662,7 +663,7 @@ KNOWWE.plugin.compositeEditTool = function() {
       let expanded = isParentExpanded(jq$(this));
       if (isOpen(parent) && !expanded) event.stopPropagation();
       const toggleClassName = expanded ? '.extend-panel-down' : '.extend-panel-right';
-      parent.next('.objectInfoPanel').find(toggleClassName).click();
+      parent.siblings('.objectInfoPanel').find(toggleClassName).click();
       setExpandButtonText(jq$(this));
     });
 
