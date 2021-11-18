@@ -1247,11 +1247,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			// use case, if enabled, and we use a non-prepared query
 			synchronized (this.sparqlCache) {
 				sparqlTask = this.sparqlCache.get(query);
-				if (options.lastFinishedResult) {
+				if (options.lastCachedResult) {
 					if (sparqlTask == null || !sparqlTask.isDone()) {
 						sparqlTask = this.sparqlCache.getOutdated(query);
 						if (sparqlTask == null || !sparqlTask.isDone()) {
-							throw new RuntimeException(new TimeoutException());
+							throw new RuntimeException(new CacheMissException());
 						}
 						isOutdated = true;
 					}
@@ -1390,11 +1390,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		public boolean cached = true;
 
 		/**
-		 * If set to true, we get the last known and finished result of the query, even if it is from a previous
-		 * compilation. Using this setting, we always immediately return from the call. If no cached result is
-		 * available, a timeout exception is thrown.
+		 * If set to true, we get the last known, completed and cached result of the query, even if it is from a
+		 * previous compilation. Using this setting, we always immediately return from the call. If no cached result is
+		 * available, a {@link CacheMissException} is thrown.
 		 */
-		public boolean lastFinishedResult = false;
+		public boolean lastCachedResult = false;
 		/**
 		 * Timeout for the query. Be aware that, in case of an uncached query, the timeout only effects the process of
 		 * creating the iterator. Retrieving elements from the iterator might again take a long time not covered by the
@@ -1417,7 +1417,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		public Options(long timeoutMillis, boolean lastFinishedEvaluation) {
 			this.timeoutMillis = timeoutMillis;
-			this.lastFinishedResult = lastFinishedEvaluation;
+			this.lastCachedResult = lastFinishedEvaluation;
 		}
 
 		public Options(boolean cached) {
@@ -1443,7 +1443,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			this.cached = cached;
 			this.timeoutMillis = timeoutMillis;
 			this.priority = priority;
-			this.lastFinishedResult = lastFinishedEvaluation;
+			this.lastCachedResult = lastFinishedEvaluation;
 		}
 	}
 
@@ -1579,4 +1579,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		this.semanticCore.dump(query);
 		stopwatch.log("query executed");
 	}
+
+	public static class CacheMissException extends Exception {
+
+	}
+
 }
