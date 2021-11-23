@@ -100,14 +100,6 @@ KNOWWE.core.actions = function () {
 				});
 			}
 
-			//enable clearHTML
-			_KS('.clear-element').each(function (element) {
-				_KE.add('click', element, KNOWWE.core.actions.clearHTML);
-			});
-
-			_KS('.js-cell-change').each(function (element) {
-				_KE.add('change', element, KNOWWE.core.actions.cellChanged);
-			});
 		},
 		/**
 		 * Function: clearHTML
@@ -649,10 +641,9 @@ KNOWWE.core.util.form = function () {
 			const el = this;
 
 			const nextEl = el._next();
-			const style = nextEl.style;
 			el.removeAttribute('class');
 
-			if (style['display'] === 'inline') {
+			if (nextEl.style['display'] === 'inline') {
 				nextEl.style.setProperty('display', 'none', 'important');
 				//el.setAttribute('class', 'show extend pointer extend-panel-down');
 				el.setAttribute('class', 'show extend pointer extend-panel-right');
@@ -683,7 +674,12 @@ KNOWWE.core.rerendercontent = function () {
 				}
 				jq$('.ReRenderSectionMarker').rerender(parameters);
 			});
-			jq$('.asynchronRenderer').rerender({reason: "asynchronRenderer", globalProcessingState: false});
+
+			let options = {reason: "asynchronRenderer", globalProcessingState: false};
+			KNOWWE.helper.observer.subscribe('afterRerender', function () {
+				jq$(this).find('.asynchronRenderer').rerender(options);
+			});
+			jq$('.asynchronRenderer').rerender(options);
 		},
 		/**
 		 * Function: updateNode

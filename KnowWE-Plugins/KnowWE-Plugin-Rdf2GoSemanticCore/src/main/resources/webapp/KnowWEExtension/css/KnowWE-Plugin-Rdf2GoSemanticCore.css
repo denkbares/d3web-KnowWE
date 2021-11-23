@@ -6,6 +6,10 @@
 	padding-top: 2px;
 }
 
+.type_Sparql .asynchronRenderer {
+	display: block;
+}
+
 .sparqlTable .border .sparqltable td, .sparqlTable .border .sparqltable th {
 	border: 1px solid #DDD;
 }

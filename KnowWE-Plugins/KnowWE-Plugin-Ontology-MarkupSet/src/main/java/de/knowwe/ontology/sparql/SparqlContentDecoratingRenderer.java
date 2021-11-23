@@ -19,35 +19,47 @@
 
 package de.knowwe.ontology.sparql;
 
+import java.util.function.Consumer;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.AsyncPreviewRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 
-import static de.knowwe.kdom.renderer.PaginationRenderer.SortingMode.*;
+import static de.knowwe.kdom.renderer.PaginationRenderer.SortingMode.multi;
+import static de.knowwe.kdom.renderer.PaginationRenderer.SortingMode.off;
 
 /**
  * Created by Stefan Plehn (denkbares GmbH) on 10.12.14.
  */
-public class SparqlContentDecoratingRenderer implements Renderer {
+public class SparqlContentDecoratingRenderer implements AsyncPreviewRenderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
+		renderDecorated(section, user, renderer -> renderer.render(section, user, result));
+	}
 
+	@Override
+	public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
+		renderDecorated(section, user, renderer -> renderer.renderAsyncPreview(section, user, result));
+	}
+
+	private void renderDecorated(Section<?> section, UserContext user, Consumer<AsyncPreviewRenderer> renderFunction) {
 		Section<SparqlType> sparqlTypeSection = Sections.cast(section, SparqlType.class);
 		RenderOptions opts = sparqlTypeSection.get().getRenderOptions(sparqlTypeSection, user);
 		PaginationRenderer paginationRenderer = new PaginationRenderer(SparqlContentRenderer.getInstance(),
 				opts.isSorting() ? multi : off, opts.isFiltering());
 
+		AsyncPreviewRenderer renderer;
 		if (opts.isNavigation() && !opts.isTree()) {
-			paginationRenderer.render(section, user, result);
+			renderer = paginationRenderer;
 		}
 		else {
-			SparqlContentRenderer.getInstance().render(section, user, result);
+			renderer = SparqlContentRenderer.getInstance();
 		}
+		renderFunction.accept(renderer);
 	}
 }

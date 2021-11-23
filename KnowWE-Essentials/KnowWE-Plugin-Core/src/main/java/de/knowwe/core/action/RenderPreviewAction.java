@@ -3,17 +3,17 @@ package de.knowwe.core.action;
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -46,7 +46,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Renders a given set of section as preview to be shown in a wiki page.
- * 
+ *
  * @author Volker Belli (denkbares GmbH)
  * @created 29.11.2013
  */
@@ -94,7 +94,7 @@ public class RenderPreviewAction extends AbstractAction {
 		return RenderResult.unmask(markup, context);
 	}
 
-	private JSONArray executePlain(UserActionContext context, String nodeIDs, Mode mode) throws IOException {
+	private JSONArray executePlain(UserActionContext context, String nodeIDs, Mode mode) {
 		JSONArray result = new JSONArray();
 		renderItem(context, nodeIDs, mode, result);
 		return result;
@@ -127,11 +127,11 @@ public class RenderPreviewAction extends AbstractAction {
 	 * article). The method renders the previews of the specified sections,
 	 * grouped by their preview. Each preview may render one or multiple of the
 	 * specified sections.
-	 * 
-	 * @created 29.11.2013
+	 *
 	 * @param sections the section to be rendered in their previews
-	 * @param user the user context
-	 * @param result the buffer to render into
+	 * @param user     the user context
+	 * @param result   the buffer to render into
+	 * @created 29.11.2013
 	 */
 	public static void renderPlainPreviews(List<Section<?>> sections, UserContext user, JSONArray result) {
 

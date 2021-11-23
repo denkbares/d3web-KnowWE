@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
@@ -76,7 +77,7 @@ import de.knowwe.util.Icon;
  * @author Stefan Plehn
  * @created 14.01.2014
  */
-public class PaginationRenderer implements Renderer {
+public class PaginationRenderer implements AsyncPreviewRenderer {
 
 	private static final String PAGINATION_KEY = "pagination";
 	private static final String COLUMNS = "columns";
@@ -120,6 +121,15 @@ public class PaginationRenderer implements Renderer {
 		this.decoratedRenderer = decoratedRenderer;
 		this.sorting = sorting;
 		this.supportFiltering = supportFiltering;
+	}
+
+	@Override
+	public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
+		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
+			renderWithPagination(section, user, result, (table) -> ((AsyncPreviewRenderer) decoratedRenderer).renderAsyncPreview(section, user, table));
+		} else {
+			render(section, user, result);
+		}
 	}
 
 	@NotNull
@@ -200,11 +210,14 @@ public class PaginationRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
+		renderWithPagination(section, user, result, (table) -> this.decoratedRenderer.render(section, user, table));
+	}
 
+	private void renderWithPagination(Section<?> section, UserContext user, RenderResult result, Consumer<RenderResult> renderFunction) {
 		result.appendHtmlTag("div", "class", "knowwe-paginationWrapper", "id", section.getID(),
 				"sorting-mode", sorting.name(), "filtering", this.supportFiltering ? "true" : "false");
 		RenderResult table = new RenderResult(user);
-		decoratedRenderer.render(section, user, table);
+		renderFunction.accept(table);
 
 		renderPaginationInternal(section, user, result);
 		result.append(table);
@@ -304,15 +317,12 @@ public class PaginationRenderer implements Renderer {
 						.appendHtml(" class='startRow' type='field' value='")
 						.append(startRow).appendHtml("'>");
 
-				boolean forward = false;
-				if (resultSize >= startRow + count) {
-					forward = true;
-				}
 				result.appendHtml("<span class=fillText> to ")
 						.append(fillString)
 						.append(endRow)
 						.appendHtml("&nbsp;</span>");
 
+				boolean forward = resultSize >= startRow + count;
 				renderToolbarButton(Icon.NEXT, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'forward')", forward, result);
 				renderToolbarButton(Icon.LAST, "KNOWWE.core.plugin.pagination.navigate('" + id + "', 'end')", forward, result);
 			}

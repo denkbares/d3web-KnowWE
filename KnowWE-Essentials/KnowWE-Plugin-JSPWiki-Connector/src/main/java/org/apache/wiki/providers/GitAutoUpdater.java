@@ -30,6 +30,7 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.merge.ContentMergeStrategy;
 import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevSort;
@@ -57,8 +58,6 @@ import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
  */
 public class GitAutoUpdater {
 
-	private static final Logger log = Logger.getLogger(GitAutoUpdater.class);
-
 	private final GitVersioningFileProvider fileProvider;
 	private final Engine engine;
 	private final Repository repository;
@@ -77,7 +76,7 @@ public class GitAutoUpdater {
 	public void update() {
 		running = true;
 		if(Files.exists(Paths.get(fileProvider.getFilesystemPath(), "lock.wc"))){
-			log.info("Not updating, because of filesystem lock");
+			Log.info("Not updating, because of filesystem lock");
 			return;
 		}
 		Git git = new Git(fileProvider.repository);
@@ -94,11 +93,32 @@ public class GitAutoUpdater {
 			RevWalk revWalk = new RevWalk(fileProvider.repository);
 			ObjectId oldHead = fileProvider.repository.resolve("remotes/origin/master");
 			RevCommit oldHeadCommit = revWalk.parseCommit(oldHead);
-
+			boolean pullAfterReset = false;
 			try {
 				Status status = git.status().call();
 				if (!status.isClean()) {
 					Log.warning("Git is not clean, doing reset first");
+					Log.warning("Added              : " + String.join(",", status.getAdded()));
+					Log.warning("Uncommitted changes: " + String.join(",", status.getUncommittedChanges()));
+					Log.warning("Missing            : " + String.join(",", status.getMissing()));
+					Log.warning("Modified           : " + String.join(",", status.getModified()));
+					Log.warning("Changed            : " + String.join(",", status.getChanged()));
+					Log.warning("Conflicting        : " + String.join(",", status.getConflicting()));
+					try {
+						switch (repository.getRepositoryState()) {
+							case REBASING_INTERACTIVE:
+							case REBASING:
+							case REBASING_REBASING:
+							case REBASING_MERGE:
+								git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
+								pullAfterReset = true;
+								break;
+						}
+					}
+					catch (GitAPIException e) {
+						Log.severe("Reset wasn't successful", e);
+						return;
+					}
 					try {
 						git.reset().setMode(ResetCommand.ResetType.HARD).call();
 					}
@@ -116,7 +136,7 @@ public class GitAutoUpdater {
 			FetchResult fetch = fetch1.call();
 			Collection<TrackingRefUpdate> trackingRefUpdates = fetch.getTrackingRefUpdates();
 
-			if(!trackingRefUpdates.isEmpty()) {
+			if(pullAfterReset || !trackingRefUpdates.isEmpty()) {
 				PullCommand pull = git.pull()
 						.setRemote("origin")
 						.setRemoteBranchName("master")
@@ -126,18 +146,30 @@ public class GitAutoUpdater {
 				try {
 					pullResult = pull.call();
 				} catch (JGitInternalException ie){
-					log.error("internal jgit error", ie);
-//					pullResult = pull.call();
+					Log.severe("internal jgit error", ie);
+					try {
+						switch (repository.getRepositoryState()) {
+							case REBASING_INTERACTIVE:
+							case REBASING:
+							case REBASING_REBASING:
+							case REBASING_MERGE:
+								git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
+								break;
+						}
+						pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
+					} catch (JGitInternalException ie2){
+						Log.severe("internal jgit error", ie);
+					}
 				}
 				if(pullResult != null) {
 					RebaseResult rebaseResult = pullResult.getRebaseResult();
 					boolean successful = rebaseResult.getStatus().isSuccessful();
 					if (!successful) {
-						log.error("unsuccessful pull " +rebaseResult.getStatus());
+						Log.severe("unsuccessful pull " +rebaseResult.getStatus());
 						if(rebaseResult.getConflicts() != null) {
-							log.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
+							Log.severe("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
 						} else {
-							log.error("unsuccessful pull " + rebaseResult.getFailingPaths());
+							Log.severe("unsuccessful pull " + rebaseResult.getFailingPaths());
 						}
 					}
 				}
@@ -147,7 +179,7 @@ public class GitAutoUpdater {
 				ObjectId newHead = fileProvider.repository.resolve(Constants.HEAD);
 				String title = null;
 				if (!oldHeadCommit.equals(newHead)) {
-					log.info("Read changes after rebase");
+					Log.info("Read changes after rebase");
 					try {
 						fileProvider.canWriteFileLock();
 						RevCommit newHeadCommit = revWalk.parseCommit(newHead);
@@ -177,7 +209,7 @@ public class GitAutoUpdater {
 								mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, refreshedPages);
 							}
 						}
-						log.info("Beginn compile");
+						Log.info("Beginn compile");
 
 //							articleManager.open();
 						if (!refreshedPages.isEmpty())
@@ -190,7 +222,7 @@ public class GitAutoUpdater {
 					}
 				}
 				if(title != null){
-					log.info("do full parse");
+					Log.info("do full parse");
 					Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
 					EventManager.getInstance().fireEvent(new FullParseEvent(article));
 				}
@@ -199,26 +231,26 @@ public class GitAutoUpdater {
 			}
 		}
 		catch (GitAPIException | IOException e) {
-			log.error("Error while updating!", e);
+			Log.severe("Error while updating!", e);
 			try {
 				git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
 			}
 			catch (GitAPIException ex) {
-				log.error("Error while aborting rebase!", e);
+				Log.severe("Error while aborting rebase!", e);
 			}
 		}
 		finally {
 			try {
 				fileProvider.pushUnlock();
 			} catch (IllegalMonitorStateException ignoring){}
-			log.info("Commit compile");
+			Log.info("Commit compile");
 			articleManager.commit();
 			try {
 				Thread.sleep(500);
 			}
 			catch (InterruptedException ignored) {}
 			Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
-			log.info("Compile ends");
+			Log.info("Compile ends");
 			running = false;
 		}
 	}
@@ -293,32 +325,30 @@ public class GitAutoUpdater {
 	}
 
 	private String refreshWikiCache(String path) {
-		// this no longer works/applies, what are we trying to accomplish here?
-		throw new UnsupportedOperationException();
-//		try {
-//			WikiPage toRefresh;
-//			if (path.contains("/")) {
-//				String[] split = path.split("/");
-//				String parentName = TextUtil.urlDecodeUTF8(split[0])
-//						.replace(GitVersioningAttachmentProvider.DIR_EXTENSION, "");
-//				String attachmentName = TextUtil.urlDecodeUTF8(split[1]);
-//				toRefresh = new Attachment(engine, parentName, attachmentName);
-//			}
-//			else {
-//				toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
-//			}
-//			toRefresh.setVersion(WikiProvider.LATEST_VERSION);
-//			engine.deleteVersion(toRefresh);
-//
-//			WikiPage page = engine.getPage(toRefresh.getName());
-//			if(page!=null)
-//				log.info(page.getName());
-//
-//			return toRefresh.getName();
-//		}
-//		catch (ProviderException e) {
-//			log.error("error refreshing cache", e);
-//		}
-//		return null;
+		try {
+			WikiPage toRefresh;
+			if (path.contains("/")) {
+				String[] split = path.split("/");
+				String parentName = TextUtil.urlDecodeUTF8(split[0])
+						.replace(GitVersioningAttachmentProvider.DIR_EXTENSION, "");
+				String attachmentName = TextUtil.urlDecodeUTF8(split[1]);
+				toRefresh = new Attachment(engine, parentName, attachmentName);
+			}
+			else {
+				toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
+			}
+			toRefresh.setVersion(WikiProvider.LATEST_VERSION);
+			engine.deleteVersion(toRefresh);
+
+			WikiPage page = engine.getPage(toRefresh.getName());
+			if(page!=null)
+				Log.info(page.getName());
+
+			return toRefresh.getName();
+		}
+		catch (ProviderException e) {
+			Log.severe("error refreshing cache", e);
+		}
+		return null;
 	}
 }

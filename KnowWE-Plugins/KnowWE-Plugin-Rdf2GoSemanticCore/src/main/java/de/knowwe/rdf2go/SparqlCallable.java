@@ -181,12 +181,6 @@ class SparqlCallable implements Callable<Object> {
 		}
 	}
 
-	public void notifyCompleted(SparqlTask task) {
-		if (this.cached) {
-			core.getSparqlCache().handleCacheSize(task);
-		}
-	}
-
 	public String getReadableQuery() {
 		return Rdf2GoUtils.getReadableQuery(this.query, this.getType());
 	}

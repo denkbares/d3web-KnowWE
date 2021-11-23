@@ -49,6 +49,7 @@ import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.util.Color;
+import de.knowwe.util.Icon;
 
 public class SparqlResultRenderer {
 
@@ -60,7 +61,6 @@ public class SparqlResultRenderer {
 	private static final Collection<String> JSPWIKI_ESCAPE_TOKENS = KnowWEUtils.JSPWIKI_TOKENS.stream()
 			.filter(s -> !("[".equals(s) || "]".equals(s)))
 			.collect(Collectors.toList());
-	;
 
 	private static SparqlResultRenderer instance = null;
 
@@ -113,7 +113,7 @@ public class SparqlResultRenderer {
 		this.nodeRenderers = nodeRenderers;
 	}
 
-	public void renderSparqlResult(Section<? extends SparqlType> section, UserContext user, RenderResult result) {
+	public void renderSparqlResult(Section<? extends SparqlType> section, UserContext user, RenderResult result, boolean asyncPreview) {
 
 		String query = section.get().getSparqlQuery(section, user);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
@@ -128,13 +128,24 @@ public class SparqlResultRenderer {
 		CachedTupleQueryResult qrt = null;
 		try {
 			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
-					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout()));
+					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout(), asyncPreview));
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
-			handleRuntimeException(section, user, result, e);
+			if (asyncPreview) {
+				result.appendHtml(Icon.LOADING.addClasses("asynchronNormal").toHtml());
+			}
+			else {
+				handleRuntimeException(section, user, result, e);
+			}
 		}
 		if (qrt != null) {
+			if (asyncPreview) {
+				result.appendHtmlTag("span", "class", "async-preview-info warning");
+				result.appendHtml(Icon.LOADING.addClasses("asynchronSmall").toHtml());
+				result.appendHtml(" Database has changed. Showing previous result while rerunning query...");
+				result.appendHtmlTag("/span");
+			}
 			renderResult = getSparqlRenderResult(qrt, opts, user, section);
 
 			result.appendHtml(renderResult.getHTML());
