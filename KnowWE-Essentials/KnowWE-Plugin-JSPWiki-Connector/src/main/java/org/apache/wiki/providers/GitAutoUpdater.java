@@ -10,9 +10,16 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
+import org.apache.wiki.api.core.Page;
+import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.api.providers.PageProvider;
+import org.apache.wiki.api.providers.WikiProvider;
+import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.event.WikiEventManager;
+import org.apache.wiki.pages.PageManager;
+import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
@@ -75,7 +82,7 @@ public class GitAutoUpdater {
 
 	public void update() {
 		running = true;
-		if(Files.exists(Paths.get(fileProvider.getFilesystemPath(), "lock.wc"))){
+		if (Files.exists(Paths.get(fileProvider.getFilesystemPath(), "lock.wc"))) {
 			Log.info("Not updating, because of filesystem lock");
 			return;
 		}
@@ -106,13 +113,10 @@ public class GitAutoUpdater {
 					Log.warning("Conflicting        : " + String.join(",", status.getConflicting()));
 					try {
 						switch (repository.getRepositoryState()) {
-							case REBASING_INTERACTIVE:
-							case REBASING:
-							case REBASING_REBASING:
-							case REBASING_MERGE:
+							case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> {
 								git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
 								pullAfterReset = true;
-								break;
+							}
 						}
 					}
 					catch (GitAPIException e) {
@@ -127,7 +131,8 @@ public class GitAutoUpdater {
 						return;
 					}
 				}
-			} catch (GitAPIException e){
+			}
+			catch (GitAPIException e) {
 				Log.severe("Status query wasn't successful, quiting update", e);
 				return;
 			}
@@ -136,7 +141,7 @@ public class GitAutoUpdater {
 			FetchResult fetch = fetch1.call();
 			Collection<TrackingRefUpdate> trackingRefUpdates = fetch.getTrackingRefUpdates();
 
-			if(pullAfterReset || !trackingRefUpdates.isEmpty()) {
+			if (pullAfterReset || !trackingRefUpdates.isEmpty()) {
 				PullCommand pull = git.pull()
 						.setRemote("origin")
 						.setRemoteBranchName("master")
@@ -145,35 +150,35 @@ public class GitAutoUpdater {
 				PullResult pullResult = null;
 				try {
 					pullResult = pull.call();
-				} catch (JGitInternalException ie){
+				}
+				catch (JGitInternalException ie) {
 					Log.severe("internal jgit error", ie);
 					try {
 						switch (repository.getRepositoryState()) {
-							case REBASING_INTERACTIVE:
-							case REBASING:
-							case REBASING_REBASING:
-							case REBASING_MERGE:
-								git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
-								break;
+							case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> git.rebase()
+									.setOperation(RebaseCommand.Operation.ABORT)
+									.call();
 						}
 						pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
-					} catch (JGitInternalException ie2){
+					}
+					catch (JGitInternalException ie2) {
 						Log.severe("internal jgit error", ie);
 					}
 				}
-				if(pullResult != null) {
+				if (pullResult != null) {
 					RebaseResult rebaseResult = pullResult.getRebaseResult();
 					boolean successful = rebaseResult.getStatus().isSuccessful();
 					if (!successful) {
-						Log.severe("unsuccessful pull " +rebaseResult.getStatus());
-						if(rebaseResult.getConflicts() != null) {
+						Log.severe("unsuccessful pull " + rebaseResult.getStatus());
+						if (rebaseResult.getConflicts() != null) {
 							Log.severe("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
-						} else {
+						}
+						else {
 							Log.severe("unsuccessful pull " + rebaseResult.getFailingPaths());
 						}
 					}
 				}
-				GitVersioningUtils.gitGc(true, fileProvider.needsWindowsHack(),repository, false);
+				GitVersioningUtils.gitGc(true, fileProvider.needsWindowsHack(), repository, false);
 				fileProvider.getCache().initializeCache();
 				fileProvider.pushUnlock();
 				ObjectId newHead = fileProvider.repository.resolve(Constants.HEAD);
@@ -198,7 +203,7 @@ public class GitAutoUpdater {
 						Iterator<RevCommit> iterator = revWalk.iterator();
 						boolean parse = false;
 						Set<String> refreshedPages = new TreeSet<>();
-	//					resetCiBuildCache();
+						//					resetCiBuildCache();
 						while (iterator.hasNext()) {
 							RevCommit commit = iterator.next();
 							if (commit.equals(oldHeadCommit)) {
@@ -212,22 +217,26 @@ public class GitAutoUpdater {
 						Log.info("Beginn compile");
 
 //							articleManager.open();
-						if (!refreshedPages.isEmpty())
+						if (!refreshedPages.isEmpty()) {
 							WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
+						}
 
-						title = refreshedPages.stream().filter(p->p.contains("GVA_Gesamt") && p.contains("vm_gva_objekte")).findFirst().orElse(null);
+						title = refreshedPages.stream()
+								.filter(p -> p.contains("GVA_Gesamt") && p.contains("vm_gva_objekte"))
+								.findFirst()
+								.orElse(null);
 					}
 					finally {
 						fileProvider.writeFileUnlock();
 					}
 				}
-				if(title != null){
+				if (title != null) {
 					Log.info("do full parse");
 					Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
 					EventManager.getInstance().fireEvent(new FullParseEvent(article));
 				}
 				stopWatch.stop();
-				Log.info("Update of wiki lasts "+ stopWatch);
+				Log.info("Update of wiki lasts " + stopWatch);
 			}
 		}
 		catch (GitAPIException | IOException e) {
@@ -242,13 +251,16 @@ public class GitAutoUpdater {
 		finally {
 			try {
 				fileProvider.pushUnlock();
-			} catch (IllegalMonitorStateException ignoring){}
+			}
+			catch (IllegalMonitorStateException ignored) {
+			}
 			Log.info("Commit compile");
 			articleManager.commit();
 			try {
 				Thread.sleep(500);
 			}
-			catch (InterruptedException ignored) {}
+			catch (InterruptedException ignored) {
+			}
 			Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
 			Log.info("Compile ends");
 			running = false;
@@ -295,7 +307,6 @@ public class GitAutoUpdater {
 					choosePageForEvent(refreshedPages, toDelete);
 					String toAdd = refreshWikiCache(diff.getNewPath());
 					choosePageForEvent(refreshedPages, toAdd);
-
 				}
 			}
 		}
@@ -312,13 +323,14 @@ public class GitAutoUpdater {
 	}
 
 	private void choosePageForEvent(Collection<String> refreshedPages, String toUpdate) {
-		if(toUpdate!=null) {
-			if(toUpdate.contains("/")){
+		if (toUpdate != null) {
+			if (toUpdate.contains("/")) {
 				String[] attachment = toUpdate.split("/");
-				if(!attachment[1].contains("ci-build")){
+				if (!attachment[1].contains("ci-build")) {
 					refreshedPages.add(attachment[0]);
 				}
-			} else {
+			}
+			else {
 				refreshedPages.add(toUpdate);
 			}
 		}
@@ -326,7 +338,7 @@ public class GitAutoUpdater {
 
 	private String refreshWikiCache(String path) {
 		try {
-			WikiPage toRefresh;
+			Page toRefresh;
 			if (path.contains("/")) {
 				String[] split = path.split("/");
 				String parentName = TextUtil.urlDecodeUTF8(split[0])
@@ -338,11 +350,13 @@ public class GitAutoUpdater {
 				toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
 			}
 			toRefresh.setVersion(WikiProvider.LATEST_VERSION);
-			engine.deleteVersion(toRefresh);
+			PageManager manager = engine.getManager(PageManager.class);
+			manager.getProvider().deleteVersion(toRefresh, PageProvider.LATEST_VERSION);
 
-			WikiPage page = engine.getPage(toRefresh.getName());
-			if(page!=null)
+			Page page = manager.getPage(toRefresh.getName());
+			if (page != null) {
 				Log.info(page.getName());
+			}
 
 			return toRefresh.getName();
 		}
