@@ -21,11 +21,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ page import="org.apache.wiki.WikiContext" %>
+<%@ page import="org.apache.wiki.api.core.*" %>
 <fmt:setLocale value="${prefs.Language}"/>
 <fmt:setBundle basename="templates.default"/>
 <%
-	WikiContext c = WikiContext.findContext(pageContext);
+	Context c = Context.findContext(pageContext);
 %>
 <c:set var="frontpage" value="<%= c.getEngine().getFrontPage() %>"/>
 
@@ -34,7 +34,7 @@
 	<div class="titlebox alert">${titlebox}</div>
 </c:if>
 
-<div class="header">
+<div class="header" id="header">
 
 	<c:set var="titlebox"><wiki:InsertPage page="TitleBox"/></c:set>
 	<c:if test="${!empty titlebox}">
@@ -43,7 +43,7 @@
 
 	<div class="topline">
 
-		<div class="cage pull-left">
+		<div class="cage pull-left" tabindex="0">
 			<a class="logo pull-left"
 			   href="<wiki:Link page='${frontpage}' format='url' />"
 			   title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> "><wiki:Variable
@@ -71,14 +71,11 @@
 				<c:when test="${not empty fn:substringBefore(param.page,'_comments_')}">
 					<wiki:Link>${fn:replace(fn:replace(param.page,'_comments_',' ['),'_','#')}]</wiki:Link>
 				</c:when>
-				<c:otherwise><a href="#top"><wiki:PageName/></a></c:otherwise>
+				<c:otherwise><a href="#top" tabindex="-1"><wiki:PageName /></a></c:otherwise>
 			</c:choose>
 
 		</div>
 
-	</div>
-	<div class="breadcrumb">
-		<fmt:message key="header.yourtrail"/><wiki:Breadcrumbs separator="<span class='divider'></span>"/>
 	</div>
 
 	<wiki:Include page="Nav.jsp"/>
