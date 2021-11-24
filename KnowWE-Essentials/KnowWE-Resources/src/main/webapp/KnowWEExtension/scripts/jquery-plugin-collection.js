@@ -141,7 +141,7 @@
    * elements to rerender.
    */
   jq$.fn.rerender = function(options) {
-
+    if (this.length === 0) return;
     if (!options) options = {};
     let checkReplaceNeeded = options.checkReplaceNeeded;
     let beforeReplace = options.beforeReplace;
