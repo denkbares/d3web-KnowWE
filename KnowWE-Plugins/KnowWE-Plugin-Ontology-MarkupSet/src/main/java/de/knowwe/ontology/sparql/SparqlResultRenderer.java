@@ -45,6 +45,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.ontology.compile.OntologyType;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.SparqlCache;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.SparqlRenderResult;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
@@ -111,6 +112,12 @@ public class SparqlResultRenderer {
 
 	public void setNodeRenderers(List<SparqlResultNodeRenderer> nodeRenderers) {
 		this.nodeRenderers = nodeRenderers;
+	}
+
+	public boolean shouldRenderAsynchronous(Section<? extends SparqlType> section, UserContext user) {
+		String query = section.get().getSparqlQuery(section, user);
+		RenderOptions opts = section.get().getRenderOptions(section, user);
+		return opts.getRdf2GoCore().getCacheState(query) != SparqlCache.State.available;
 	}
 
 	public void renderSparqlResult(Section<? extends SparqlType> section, UserContext user, RenderResult result, boolean asyncPreview) {

@@ -26,7 +26,6 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -107,8 +106,6 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.SparqlType;
-
-import static java.time.temporal.ChronoUnit.MINUTES;
 
 public class Rdf2GoCore implements SPARQLEndpoint {
 
@@ -242,10 +239,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		catch (NumberFormatException e) {
 			return defaultThreadCount;
 		}
-	}
-
-	public SparqlCache getSparqlCache() {
-		return sparqlCache;
 	}
 
 	/**
@@ -1329,52 +1322,17 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		return new SparqlCallable(this, query, type, timeoutMillis, cached);
 	}
 
-	/**
-	 * Observes the SPARQL task end cancels/stops it, if it takes to long. We normally use the build-in sesame timeout
-	 * to terminate queries that are too slow. In some cases though, these timeouts do not work as desired (probably not
-	 * well implemented by underlying repos) so we use this kill switch to make sure the query is terminated after 150%
-	 * of the intended timeout or at most one minute later.
-	 */
-	private static class SparqlTaskReaper implements Runnable {
-
-		private final SparqlTask task;
-
-		SparqlTaskReaper(SparqlTask task) {
-			this.task = task;
+	public boolean clearCachedResult(String query) {
+		String completeQuery = prependPrefixesToQuery(getNamespaces(), query);
+		synchronized (this.sparqlCache) {
+			return sparqlCache.remove(completeQuery);
 		}
+	}
 
-		@Override
-		public void run() {
-			long timeOut = (int) Math.min(this.task.getTimeOutMillis(), Integer.MAX_VALUE);
-			try {
-				long killTimeOut = Math.min((long) (timeOut * 1.5), timeOut + Duration.of(1, MINUTES).toMillis());
-				this.task.get(killTimeOut, TimeUnit.MILLISECONDS);
-			}
-			catch (TimeoutException e) {
-
-				// we cancel the task
-				this.task.cancel(true);
-
-				sleep(timeOut);
-
-				// if it has not died after the sleep, we kill it
-				// (not all repositories will react to cancel)
-				if (this.task.isAlive()) {
-					this.task.stop();
-				}
-			}
-			catch (Exception ignore) {
-				// nothing to do
-			}
-		}
-
-		private void sleep(long timeout) {
-			try {
-				Thread.sleep(Math.max(timeout, 1000));
-			}
-			catch (InterruptedException ie) {
-				Log.warning(Thread.currentThread().getName() + " was interrupted", ie);
-			}
+	public SparqlCache.State getCacheState(String query) {
+		String completeQuery = prependPrefixesToQuery(getNamespaces(), query);
+		synchronized (this.sparqlCache) {
+			return sparqlCache.getState(completeQuery);
 		}
 	}
 
@@ -1583,5 +1541,4 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public static class CacheMissException extends Exception {
 
 	}
-
 }

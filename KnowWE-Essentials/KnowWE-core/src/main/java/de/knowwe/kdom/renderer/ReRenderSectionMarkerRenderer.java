@@ -79,4 +79,9 @@ public class ReRenderSectionMarkerRenderer implements AsyncPreviewRenderer  {
 			((AsyncPreviewRenderer) renderer).renderAsyncPreview(section, user, result);
 		}
 	}
+
+	@Override
+	public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
+		return AsyncPreviewRenderer.shouldRenderAsynchronous(renderer, section, user);
+	}
 }

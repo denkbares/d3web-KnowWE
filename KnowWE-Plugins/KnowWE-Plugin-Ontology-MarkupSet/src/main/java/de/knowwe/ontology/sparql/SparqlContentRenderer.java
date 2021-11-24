@@ -56,6 +56,12 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 	}
 
 	@Override
+	public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
+		return SparqlResultRenderer.getInstance()
+				.shouldRenderAsynchronous(Sections.cast(section, SparqlType.class), user);
+	}
+
+	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		render(section, user, result, false);
 	}
