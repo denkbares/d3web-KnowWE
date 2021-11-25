@@ -45,7 +45,7 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function updateNode(id) {
-    jq$('#' + id).rerender();
+    jq$('#' + id).rerender({reason: "pagination"});
   }
 
   function getSortingSymbol(naturalOrder, index) {

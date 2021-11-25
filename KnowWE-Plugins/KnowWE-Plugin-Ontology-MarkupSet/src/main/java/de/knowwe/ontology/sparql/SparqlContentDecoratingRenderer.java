@@ -47,6 +47,11 @@ public class SparqlContentDecoratingRenderer implements AsyncPreviewRenderer {
 		renderDecorated(section, user, renderer -> renderer.renderAsyncPreview(section, user, result));
 	}
 
+	@Override
+	public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
+		return AsyncPreviewRenderer.shouldRenderAsynchronous(SparqlContentRenderer.getInstance(), section, user);
+	}
+
 	private void renderDecorated(Section<?> section, UserContext user, Consumer<AsyncPreviewRenderer> renderFunction) {
 		Section<SparqlType> sparqlTypeSection = Sections.cast(section, SparqlType.class);
 		RenderOptions opts = sparqlTypeSection.get().getRenderOptions(sparqlTypeSection, user);

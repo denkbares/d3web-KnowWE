@@ -30,6 +30,22 @@ import java.util.Map;
  * @created 21.03.2020
  */
 public class SparqlCache {
+
+	public enum State {
+		/**
+		 * A result is cached and ready/done
+		 */
+		available,
+		/**
+		 * A result from a previous compilation is ready/done
+		 */
+		outdated,
+		/**
+		 * No cached and ready/done result is available
+		 */
+		unavailable
+	}
+
 	private static final int DEFAULT_MAX_CACHE_SIZE = 1000000; // should be below 100 MB of cache (we count each cell)
 
 	private final Rdf2GoCore core;
@@ -38,6 +54,19 @@ public class SparqlCache {
 
 	SparqlCache(Rdf2GoCore core) {
 		this.core = core;
+	}
+
+	public State getState(String query) {
+		SparqlTask sparqlTask = get(query);
+		if (sparqlTask != null && sparqlTask.isDone()) {
+			return State.available;
+		}
+		else if (getOutdated(query) != null) {
+			return State.outdated;
+		}
+		else {
+			return State.unavailable;
+		}
 	}
 
 	public SparqlTask get(String query) {

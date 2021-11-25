@@ -132,6 +132,11 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		}
 	}
 
+	@Override
+	public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
+		return AsyncPreviewRenderer.shouldRenderAsynchronous(decoratedRenderer, section, user);
+	}
+
 	@NotNull
 	public static Map<String, Set<Pattern>> getFilter(Section<?> section, UserContext user) {
 		HashMap<String, Set<Pattern>> filterMap = new HashMap<>();

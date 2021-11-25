@@ -29,8 +29,7 @@ public class ClearCachedSparqlAction extends AbstractAction {
 							"Maybe the page content is outdated. Please reload.");
 		}
 		String sparqlQuery = section.get().getSparqlQuery(section, context);
-		String completeQuery = core.prependPrefixesToQuery(core.getNamespaces(), sparqlQuery);
-		if (!core.getSparqlCache().remove(completeQuery)) {
+		if (!core.clearCachedResult(sparqlQuery)) {
 			Log.warning("Cache for query " + Strings.ellipsis(sparqlQuery, 50) + " from page "
 					+ section.getTitle() + " was not cleared as requested, because it could not be found...");
 		}

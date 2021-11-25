@@ -667,21 +667,24 @@ KNOWWE.core.rerendercontent = function () {
 		/**
 		 * Function: init
 		 */
-		init: function () {
-			KNOWWE.helper.observer.subscribe('update', function () {
-				const parameters = {reason: "updateEvent"};
-				if (typeof this == "object" && this !== window) {
-					jq$.extend(parameters, this);
-				}
-				jq$('.ReRenderSectionMarker').rerender(parameters);
-			});
-
-			let options = {reason: "asynchronRenderer", globalProcessingState: false};
-			KNOWWE.helper.observer.subscribe('afterRerender', function () {
-				jq$(this).find('.asynchronRenderer').rerender(options);
-			});
-			jq$('.asynchronRenderer').rerender(options);
-		},
+    init: function() {
+      KNOWWE.helper.observer.subscribe('update', function() {
+        const parameters = {reason: "updateEvent"};
+        if (typeof this == "object" && this !== window) {
+          jq$.extend(parameters, this);
+        }
+        jq$('.ReRenderSectionMarker').rerender(parameters);
+      });
+      let parameters = {reason: "asynchronRenderer", globalProcessingState: false};
+      KNOWWE.helper.observer.subscribe('afterRerender', function() {
+        if (jq$(this).is('.asynchronRenderer')) {
+          jq$(this).filter('.asynchronRenderer').rerender(parameters);
+        } else {
+          jq$(this).find('.asynchronRenderer').rerender(parameters);
+        }
+      });
+      jq$('.asynchronRenderer').rerender(parameters);
+    },
 		/**
 		 * Function: updateNode
 		 * Updates a node.
@@ -842,7 +845,7 @@ const _KU = KNOWWE.core.util;
 			// we only update if the onbeforeunload function does not return a message... if it would return a
 			// message, we can assume that there is unsaved work and we should not refresh...
 			if (!message) {
-				KNOWWE.helper.observer.notify('update', {status: jq$('#knowWEInfoStatus').val()});
+				KNOWWE.helper.observer.notify('update', {status: jq$('#knowWEInfoStatus').val(), reason: "updateEvent"});
 			}
 		});
 		if (KNOWWE.core.util.isIE()) {

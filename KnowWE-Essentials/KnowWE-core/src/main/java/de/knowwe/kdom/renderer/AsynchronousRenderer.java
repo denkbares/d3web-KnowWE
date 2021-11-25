@@ -43,11 +43,11 @@ public class AsynchronousRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		if (!isAjaxRequested(section, user)) {
-			decoratedRenderer.render(section, user, result);
+		if (shouldRenderAsynchronously(section, user)) {
+			renderPreview(section, user, result);
 		}
 		else {
-			renderPreview(section, user, result);
+			decoratedRenderer.render(section, user, result);
 		}
 	}
 
@@ -65,8 +65,12 @@ public class AsynchronousRenderer implements Renderer {
 		result.appendHtmlTag("/div");
 	}
 
-	protected boolean isAjaxRequested(Section<?> section, UserContext user) {
+	protected boolean shouldRenderAsynchronously(Section<?> section, UserContext user) {
 		if (!user.allowAsynchronousRendering()) return false;
+		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
+			AsyncPreviewRenderer asyncRenderer = (AsyncPreviewRenderer) this.decoratedRenderer;
+			if (!asyncRenderer.shouldRenderAsynchronous(section, user)) return false;
+		}
 		Section<DefaultMarkupType> defaultMarkupSection = getDefaultMarkupSection(section);
 		if (defaultMarkupSection == null) return true;
 		String asynchronousString = DefaultMarkupType.getAnnotation(defaultMarkupSection, ASYNCHRONOUS);
