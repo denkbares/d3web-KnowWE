@@ -734,6 +734,20 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
       KNOWWE.helper.observer.subscribe("afterRerender", update);
       jq$(".haddock .header").on("transitionend", update);
 
+      // trigger scroll and resize event for %%accordion animation
+      let mutationCallBack = function(mutations) {
+        window.requestAnimationFrame(function() {
+          update();
+          if (mutations[0].target.hasClass("animating")) {
+            mutationCallBack(mutations);
+          }
+        })
+      };
+      let observer = new MutationObserver(mutationCallBack);
+      document.querySelectorAll('.accordion .panel-heading').forEach(function(heading) {
+        observer.observe(heading, {attributes: true, childList: true, characterData: true});
+      })
+
       // special handling for sidebar, we want to continuously update while animating
       let transitionOngoing = false
       jq$(".haddock .sidebar").on("transitionstart", function() {
