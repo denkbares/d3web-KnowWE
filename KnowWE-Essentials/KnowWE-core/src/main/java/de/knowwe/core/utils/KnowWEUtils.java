@@ -938,7 +938,7 @@ public class KnowWEUtils {
 	 */
 	public static String getWikiLink(final Section<?> section) {
 		String link = section.getTitle();
-		if (link != null && link.contains("/")) { // happens for compiled attachments, we link to the parent article
+		if (link != null && isAttachmentArticle(section.getArticle())) { // for links to compiled attachments, we link to the parent article
 			link = link.replaceAll("/.*", "");
 		}
 		// append section id if the section is not the root section

@@ -36,6 +36,7 @@ import de.d3web.testing.TestResult;
 import de.d3web.testing.TestSpecification;
 import de.d3web.testing.TestingUtils;
 import de.d3web.we.ci4ke.build.CIRenderer;
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.parsing.Section;
@@ -91,7 +92,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 				.append("s found in compiler [")
 				.append(compiler.getName())
 				.append("|")
-				.append(KnowWEUtils.getWikiLink(compiler.getCompileSection()));
+				.append(getWikiLink(compiler.getCompileSection()));
 		if (!messages.isEmpty()) {
 			buffer.append("]\n");
 			for (de.knowwe.core.report.Message message : messages) {
@@ -155,10 +156,11 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 							.collect(Collectors.toList())));
 			int sum = messagesBySection.values().stream().mapToInt(Collection::size).sum();
 			if (sum > 0) {
+				Section<?> section = entry.getValue().get(0);
 				buffer.append("\n\n__[")
 						.append(entry.getKey())
 						.append("|")
-						.append(KnowWEUtils.getWikiLink(entry.getValue().get(0)))
+						.append(getWikiLink(section))
 						.append("]__ has ")
 						.append(Strings.pluralOf(sum, type.name().toLowerCase()))
 						.append(":");
@@ -171,7 +173,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 									.append("[")
 									.append(verbalization)
 									.append("|")
-									.append(KnowWEUtils.getWikiLink(listEntry.getKey()))
+									.append(getWikiLink(listEntry.getKey()))
 									.append("]");
 						}
 						else {
@@ -181,5 +183,17 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 				}
 			}
 		}
+	}
+
+	private String getWikiLink(Section<?> section) {
+		String wikiLink;
+		String title = section.getTitle();
+		if (title != null && title.contains("/") && !KnowWEUtils.isAttachmentArticle(section.getArticle())) {
+			wikiLink = Environment.getInstance().getWikiConnector().getBaseUrl() + KnowWEUtils.getURLLink(title);
+		}
+		else {
+			wikiLink = KnowWEUtils.getWikiLink(section);
+		}
+		return wikiLink;
 	}
 }
