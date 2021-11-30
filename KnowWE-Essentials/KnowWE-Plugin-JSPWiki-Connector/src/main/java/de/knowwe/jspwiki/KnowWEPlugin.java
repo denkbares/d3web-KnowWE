@@ -461,7 +461,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		}
 	}
 
-	public static String renderPreview(WikiContext wikiContext, String content) {
+	public static String renderPreview(Context wikiContext, String content) {
 		if (content == null) return "";
 
 		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
@@ -630,7 +630,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	/**
 	 * Adds the CSS and JS files to the current page.
 	 */
-	public static void includeDOMResources(WikiContext wikiContext) {
+	public static void includeDOMResources(Context wikiContext) {
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		ResourceLoader loader = ResourceLoader.getInstance();
 		for (String resource : loader.getScriptIncludes()) {
