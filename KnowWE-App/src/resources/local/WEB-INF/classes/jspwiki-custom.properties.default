@@ -922,6 +922,7 @@ rootLogger.appenderRef.stdout.ref = ConsoleAppender
 #appender.rolling-spam.policies.size.size=10MB
 #appender.rolling-spam.strategy.type = DefaultRolloverStrategy
 #appender.rolling-spam.strategy.max = 5
+
 ###########################################################################
 #
 # Workflow configuration
