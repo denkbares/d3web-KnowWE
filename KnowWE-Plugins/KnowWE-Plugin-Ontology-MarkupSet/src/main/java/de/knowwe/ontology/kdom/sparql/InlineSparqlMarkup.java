@@ -114,11 +114,13 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 		public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
 			Section<SparqlNameReference> reference = Sections.successor(
 					DefaultMarkupType.getContentSection(section), SparqlNameReference.class);
+			if (reference == null) return true;
 			Rdf2GoCompiler compiler = Compilers.getCompiler(user, section, Rdf2GoCompiler.class);
 			if (compiler == null) return true;
-			Section<SparqlMarkupType> referencedSection = reference == null ? null : reference.get()
-					.getReferencedSection(compiler, reference);
+			Section<SparqlMarkupType> referencedSection = reference.get().getReferencedSection(compiler, reference);
+			if (referencedSection == null) return true;
 			String query = $(referencedSection).successor(SparqlContentType.class).mapFirst(Section::getText);
+			if (query == null) return true;
 			Rdf2GoCore core = compiler.getRdf2GoCore();
 			query = Rdf2GoUtils.createSparqlString(core, query);
 			SparqlCache.State cacheState = core.getCacheState(query);
