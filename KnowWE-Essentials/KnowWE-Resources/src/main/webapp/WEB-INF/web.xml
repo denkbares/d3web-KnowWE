@@ -30,6 +30,22 @@
     </description>
     <display-name>JSPWiki</display-name>
 
+   <!--
+   Supported starting from servlet specification 2.5
+   Credit:  https://raibledesigns.com/rd/entry/trim_spaces_in_your_jsp1
+   -->
+   <jsp-config>
+     <jsp-property-group>
+       <url-pattern>*.jsp</url-pattern>
+       <trim-directive-whitespaces>true</trim-directive-whitespaces>
+     </jsp-property-group>
+     <!-- Set JSP pages to UTF-8 by default.  -->
+     <jsp-property-group>
+       <url-pattern>*.jsp</url-pattern>
+       <page-encoding>UTF-8</page-encoding>
+     </jsp-property-group>
+   </jsp-config>
+
     <!-- Resource bundle default location -->
     <context-param>
         <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
@@ -46,13 +62,6 @@
 		<url-pattern>/action/*</url-pattern>
 	</servlet-mapping>
 
-	<!-- Set JSP pages to UTF-8 by default.  -->
-	<jsp-config>
-		<jsp-property-group>
-			<url-pattern>*.jsp</url-pattern>
-			<page-encoding>UTF-8</page-encoding>
-		</jsp-property-group>
-	</jsp-config>
 
     <!--
 	   WikiServletFilter defines a servlet filter which filters all requests. It was
@@ -99,7 +108,12 @@
 	  -->
     <listener>
         <listener-class>org.apache.wiki.auth.SessionMonitor</listener-class>
+    </listener>
+    <listener>
         <listener-class>de.knowwe.core.ServletContextEventListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.apache.wiki.bootstrap.WikiBootstrapServletContextListener</listener-class>
     </listener>
 
     <!--
