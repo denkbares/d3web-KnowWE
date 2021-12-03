@@ -233,6 +233,11 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			throw new IllegalStateException("We expect a wiki engine, otherwise KnowWE can't function");
 		}
 		WikiContext wikiContext = (WikiContext) context;
+		if (context.getHttpRequest() != null && context.getHttpRequest().getParameter("action") != null) {
+			// we don't want to trigger our KnowWE compilation and render pipeline,
+			// if we are just executing some action (ajax from client)
+			return content;
+		}
 		if (!wikiEngineInitialized) {
 			return content;
 		}
