@@ -178,7 +178,7 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 				// we add addtional info for testability
 				result.appendHtmlTag("span", "class", "inline-sparql", "name", reference.get(SparqlNameReference::getTermName));
 
-				TupleQueryResult resultTable = core.sparqlSelect(query, new Rdf2GoCore.Options(timeout));
+				TupleQueryResult resultTable = core.sparqlSelect(query, new Rdf2GoCore.Options().timeout(timeout));
 
 				Iterator<BindingSet> rowIterator = resultTable.iterator();
 				List<String> variables = resultTable.getBindingNames();

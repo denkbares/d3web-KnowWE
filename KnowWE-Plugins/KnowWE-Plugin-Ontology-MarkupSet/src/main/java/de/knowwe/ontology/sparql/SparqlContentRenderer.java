@@ -144,7 +144,7 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 			RenderOptions opts = sparqlTypeSection.get().getRenderOptions(sparqlTypeSection, user);
 			try {
 				String query = sparqlTypeSection.get().getSparqlQuery(sparqlTypeSection, user);
-				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, new Rdf2GoCore.Options(opts.getTimeout()));
+				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, new Rdf2GoCore.Options().timeout(opts.getTimeout()));
 				result.appendHtml("<div class='sparqlAsk' sparqlSectionId='" + opts.getId() + "'>");
 				if (opts.isBorder()) result.appendHtml("<div class='border'>");
 				result.append(Boolean.valueOf(askResult).toString());

@@ -135,7 +135,7 @@ public class SparqlResultRenderer {
 		CachedTupleQueryResult qrt = null;
 		try {
 			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
-					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout(), asyncPreview));
+					.sparqlSelect(query, new Rdf2GoCore.Options().timeout(opts.getTimeout()).lastCachedResult(asyncPreview));
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
@@ -510,7 +510,7 @@ public class SparqlResultRenderer {
 		CachedTupleQueryResult qrt = null;
 		try {
 			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
-					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout()));
+					.sparqlSelect(query, new Rdf2GoCore.Options().timeout(opts.getTimeout()));
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
