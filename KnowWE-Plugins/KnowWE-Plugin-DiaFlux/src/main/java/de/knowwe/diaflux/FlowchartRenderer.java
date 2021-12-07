@@ -27,6 +27,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.diaflux.type.FlowchartType;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 
 /**
  * @author Reinhard Hatko
@@ -44,7 +45,7 @@ public class FlowchartRenderer implements Renderer {
 
 		String loaderId = section.getID();
 		string.appendHtmlElement("span", "", "class",
-				"asynchronRenderer", "id", loaderId, "style");
+				AsynchronousRenderer.ASYNCHRON_RENDERER, "id", loaderId, "style");
 
 		String script = "var fn = function() {\n"
 				+ "jq$('#" + loaderId + "').remove();\n"

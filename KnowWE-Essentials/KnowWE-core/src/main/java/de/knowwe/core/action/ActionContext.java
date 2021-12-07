@@ -157,11 +157,6 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 	}
 
 	@Override
-	public boolean allowAsynchronousRendering() {
-		return !"asynchronRenderer".equals(getParameter("reason"));
-	}
-
-	@Override
 	public boolean isRenderingPreview() {
 		return false;
 	}

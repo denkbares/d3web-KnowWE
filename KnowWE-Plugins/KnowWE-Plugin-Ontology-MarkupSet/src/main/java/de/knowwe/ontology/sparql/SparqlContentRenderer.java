@@ -66,7 +66,7 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 		render(section, user, result, false);
 	}
 
-	private void render(Section<?> section, UserContext user, RenderResult result, boolean asyncPreview) {
+	private void render(Section<?> section, UserContext user, RenderResult result, boolean renderPreview) {
 		Section<SparqlType> sparqlTypeSection = Sections.cast(section, SparqlType.class);
 		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(user, markupSection);
@@ -157,7 +157,7 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 		}
 		else {
 			SparqlResultRenderer.getInstance()
-					.renderSparqlResult(sparqlTypeSection, user, result, asyncPreview);
+					.renderSparqlResult(sparqlTypeSection, user, result, renderPreview);
 		}
 		if ("true".equalsIgnoreCase(showQueryFlag)) {
 			// we need an opening html element around all the content as

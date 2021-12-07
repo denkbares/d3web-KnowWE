@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.semanticcore.utils.IndexedResultTableModel;
 import com.denkbares.semanticcore.utils.ResultTableModel;
 import com.denkbares.semanticcore.utils.TableRow;
@@ -47,6 +47,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
+import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.SparqlCache;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 
 /**
@@ -124,7 +126,18 @@ public class SparqlFilterProviderAction extends AbstractAction {
 
 		Set<String> addedFilterValueTexts = new HashSet<>();
 
-		CachedTupleQueryResult bindingSets = compiler.getRdf2GoCore().sparqlSelect(sparqlQuery);
+		Rdf2GoCore core = compiler.getRdf2GoCore();
+		TupleQueryResult bindingSets;
+		SparqlCache.State state = core.getCacheState(sparqlQuery);
+		if (state == SparqlCache.State.unavailable) {
+			bindingSets = core.sparqlSelect(sparqlQuery, new Rdf2GoCore.Options().priority(1));
+		} else {
+			bindingSets = core.sparqlSelect(sparqlQuery, new Rdf2GoCore.Options().lastCachedResult());
+		}
+		// make sure the result gets refreshed for the next call
+		if (state == SparqlCache.State.outdated) {
+			new Thread(() -> core.sparqlSelect(sparqlQuery)).start();
+		}
 		ResultTableModel table = IndexedResultTableModel.create(bindingSets);
 
 		// pre-apply filters of the other columns

@@ -8,6 +8,8 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.util.Icon;
 
+import static de.knowwe.core.Attributes.REASON;
+
 /**
  * Renderer that wraps an other renderer to enable asynchron rendering of the
  * wrapped renderer (delegate). Instead of the delegate a placeholder will be
@@ -22,6 +24,7 @@ import de.knowwe.util.Icon;
  */
 public class AsynchronousRenderer implements Renderer {
 
+	public static final String ASYNCHRON_RENDERER = "asynchronRenderer";
 	protected final Renderer decoratedRenderer;
 	protected final boolean inline;
 
@@ -43,7 +46,7 @@ public class AsynchronousRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		if (shouldRenderAsynchronously(section, user)) {
+		if (shouldRenderPreview(section, user)) {
 			renderPreview(section, user, result);
 		}
 		else {
@@ -53,7 +56,7 @@ public class AsynchronousRenderer implements Renderer {
 
 	protected void renderPreview(Section<?> section, UserContext user, RenderResult result) {
 		String id = section.getID();
-		String[] attributes = new String[] { "class", "asynchronRenderer", "id", id, "rel", "rel=\"{id:'" + id + "'}\"" };
+		String[] attributes = new String[] { "class", ASYNCHRON_RENDERER, "id", id, "rel", "rel=\"{id:'" + id + "'}\"" };
 
 		result.appendHtmlTag("div", attributes);
 		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
@@ -65,8 +68,8 @@ public class AsynchronousRenderer implements Renderer {
 		result.appendHtmlTag("/div");
 	}
 
-	protected boolean shouldRenderAsynchronously(Section<?> section, UserContext user) {
-		if (!user.allowAsynchronousRendering()) return false;
+	protected boolean shouldRenderPreview(Section<?> section, UserContext user) {
+		if (isAsynchronousRerenderingRequest(user)) return false;
 		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
 			AsyncPreviewRenderer asyncRenderer = (AsyncPreviewRenderer) this.decoratedRenderer;
 			if (!asyncRenderer.shouldRenderAsynchronous(section, user)) return false;
@@ -86,5 +89,13 @@ public class AsynchronousRenderer implements Renderer {
 		else {
 			return Sections.ancestor(section, DefaultMarkupType.class);
 		}
+	}
+
+	/**
+	 * Check whether the request was generated to get the actual result for a previously rendered preview, return true
+	 * in this case. False otherwise.
+	 */
+	public static boolean isAsynchronousRerenderingRequest(UserContext user) {
+		return ASYNCHRON_RENDERER.equals(user.getParameter(REASON));
 	}
 }

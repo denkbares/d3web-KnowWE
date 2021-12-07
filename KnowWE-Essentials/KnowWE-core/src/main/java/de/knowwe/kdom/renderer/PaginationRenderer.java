@@ -79,6 +79,7 @@ import de.knowwe.util.Icon;
  */
 public class PaginationRenderer implements AsyncPreviewRenderer {
 
+	public static final String REASON_PAGINATION = "pagination";
 	private static final String PAGINATION_KEY = "pagination";
 	private static final String COLUMNS = "columns";
 	private static final String SELECTED_TEXTS = "selectedTexts";
@@ -127,9 +128,14 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
 		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
 			renderWithPagination(section, user, result, (table) -> ((AsyncPreviewRenderer) decoratedRenderer).renderAsyncPreview(section, user, table));
-		} else {
+		}
+		else {
 			render(section, user, result);
 		}
+	}
+
+	public static boolean isPaginationRerendering(UserContext user) {
+		return REASON_PAGINATION.equals(user.getParameter(Attributes.REASON));
 	}
 
 	@Override

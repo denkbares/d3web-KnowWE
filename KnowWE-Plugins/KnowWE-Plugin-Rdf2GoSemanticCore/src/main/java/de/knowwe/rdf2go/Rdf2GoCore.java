@@ -1361,7 +1361,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		public long timeoutMillis = DEFAULT_TIMEOUT;
 		/**
 		 * The priority influences the order in which the query will be executed. However, this is only influences a
-		 * potential working queue, in case the we are temporarily not fast enough in handling all incoming queries. The
+		 * potential working queue, in case that we are temporarily not fast enough in handling all incoming queries. The
 		 * individual queries are not faster or slower, as long as they do not queue up.
 		 */
 		public double priority = DEFAULT_QUERY_PRIORITY;

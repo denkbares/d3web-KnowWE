@@ -230,11 +230,6 @@ public class TestUserContext implements UserContext, UserActionContext {
 	}
 
 	@Override
-	public boolean allowAsynchronousRendering() {
-		return false;
-	}
-
-	@Override
 	public boolean isRenderingPreview() {
 		return KnowWEPlugin.PREVIEW.equals(getRequest().getAttribute(KnowWEPlugin.RENDER_MODE));
 	}

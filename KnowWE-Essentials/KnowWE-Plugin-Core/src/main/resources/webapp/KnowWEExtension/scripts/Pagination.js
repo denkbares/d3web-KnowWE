@@ -443,7 +443,7 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 
-  function decoratePagination($paginationWrapper) {
+  function decoratePagination($paginationWrapper, rerenderIfFilterActive) {
 
     const sectionId = $paginationWrapper.attr('id');
 
@@ -513,6 +513,11 @@ KNOWWE.core.plugin.pagination = function() {
     handlePaginationBelowTableVisibility($paginationWrapper);
 
     KNOWWE.helper.observer.notify("paginationTableDecorated");
+
+    // when loading filters initially, rerender to apply filter to result on server
+    if (rerenderIfFilterActive && filterState.active) {
+      updateNode(sectionId);
+    }
   }
 
   return {
@@ -662,9 +667,9 @@ KNOWWE.core.plugin.pagination = function() {
       decoratePagination($paginationWrapper);
     },
 
-    decorateTables: function() {
+    initialDecorateTables: function() {
       jq$(".knowwe-paginationWrapper").each(function() {
-        decoratePagination(jq$(this));
+        decoratePagination(jq$(this), true);
       });
 
     }
@@ -678,7 +683,7 @@ KNOWWE.core.plugin.pagination = function() {
   window.addEvent('domready', _KL.setup);
   if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
     window.addEvent('domready', function() {
-      KNOWWE.core.plugin.pagination.decorateTables();
+      KNOWWE.core.plugin.pagination.initialDecorateTables();
     });
   }
 }());

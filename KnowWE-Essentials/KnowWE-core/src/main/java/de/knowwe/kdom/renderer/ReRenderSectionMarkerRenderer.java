@@ -57,7 +57,7 @@ public class ReRenderSectionMarkerRenderer implements AsyncPreviewRenderer  {
 
 	public static boolean requiresWrapper(UserContext user) {
 		// we need the rerender wrapper-div if we are not using the user action or if we render asynchron
-		return !(user instanceof UserActionContext) || "asynchronRenderer".equals(user.getParameter("reason"));
+		return !(user instanceof UserActionContext) || AsynchronousRenderer.isAsynchronousRerenderingRequest(user);
 	}
 
 	public static void renderOpen(Section<?> sec, RenderResult result) {
