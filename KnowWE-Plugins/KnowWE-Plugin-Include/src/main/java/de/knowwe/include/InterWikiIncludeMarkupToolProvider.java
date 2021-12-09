@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 denkbares GmbH, Germany
+ * Copyright (C) 2021 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,26 +17,35 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.kdom.attachment;
+package de.knowwe.include;
 
-import java.io.IOException;
-
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
+import de.knowwe.tools.DefaultTool;
+import de.knowwe.tools.Tool;
+import de.knowwe.tools.ToolProvider;
+import de.knowwe.util.Icon;
 
 /**
- * Action to force start an update of an attachment with the {@link AttachmentMarkup}.
+ * Provide an update tool for InterWikiInclude markup
  *
  * @author Albrecht Striffler (denkbares GmbH)
- * @created 15.06.15
+ * @created 09.12.21
  */
-public class AttachmentUpdateAction extends AbstractAction {
+public class InterWikiIncludeMarkupToolProvider implements ToolProvider {
+	@Override
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
+		return new Tool[] {
+				new DefaultTool(Icon.REFRESH,
+						"Update now", "Updates the referenced wiki resource",
+						"KNOWWE.core.plugin.attachment.update('" + section.getID() + "')",
+						Tool.ActionType.ONCLICK,
+						Tool.CATEGORY_EXECUTE)
+		};
+	}
 
 	@Override
-	public void execute(UserActionContext context) throws IOException {
-		Section<AttachmentUpdateMarkup> section = Sections.cast(getSection(context), AttachmentUpdateMarkup.class);
-		section.get().performUpdate(section);
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
 	}
 }
