@@ -36,7 +36,7 @@ public class AttachmentUpdateAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		Section<AttachmentUpdateMarkup> section = Sections.cast(getSection(context), AttachmentUpdateMarkup.class);
-		section.get().performUpdate(section);
+		Section<AttachmentMarkup> section = Sections.cast(getSection(context), AttachmentMarkup.class);
+		AttachmentMarkup.performUpdate(section);
 	}
 }

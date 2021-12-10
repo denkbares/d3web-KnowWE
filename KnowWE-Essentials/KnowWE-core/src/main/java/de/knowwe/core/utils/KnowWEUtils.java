@@ -70,7 +70,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.basicType.AttachmentCompileType;
+import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -762,7 +762,7 @@ public class KnowWEUtils {
 		String title = section.getTitle();
 		final ArticleManager articleManager = section.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager) {
-			final Set<Section<AttachmentCompileType>> compilingAttachmentSections = ((DefaultArticleManager) articleManager).getAttachmentManager()
+			final Set<Section<AttachmentType>> compilingAttachmentSections = ((DefaultArticleManager) articleManager).getAttachmentManager()
 					.getCompilingAttachmentSections(section.getArticle());
 			if (!compilingAttachmentSections.isEmpty()) {
 				title = compilingAttachmentSections.iterator().next().getTitle();

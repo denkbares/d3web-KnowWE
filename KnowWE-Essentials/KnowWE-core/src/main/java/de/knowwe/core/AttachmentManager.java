@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
@@ -20,7 +18,6 @@ import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -30,7 +27,10 @@ import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitializedArticlesEvent;
+import de.knowwe.kdom.attachment.AttachmentMarkup;
+import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
 import static java.util.stream.Collectors.toSet;
 
 /**
@@ -43,8 +43,8 @@ public class AttachmentManager implements EventListener {
 
 	private final ArticleManager articleManager;
 
-	private final MultiMap<String, Section<AttachmentCompileType>> pathToSectionsMap = MultiMaps.synchronizedMultiMap(new N2MMap<>());
-	private final MultiMap<String, Section<AttachmentCompileType>> articleTitleToSectionsMap = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());
+	private final MultiMap<String, Section<AttachmentType>> pathToSectionsMap = MultiMaps.synchronizedMultiMap(new N2MMap<>());
+	private final MultiMap<String, Section<AttachmentType>> articleTitleToSectionsMap = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());
 	private boolean allArticlesInitialized = false;
 
 	public AttachmentManager(ArticleManager articleManager) {
@@ -90,9 +90,7 @@ public class AttachmentManager implements EventListener {
 				.collect(toSet());
 		Set<String> compiledAttachmentArticleTitles = articleTitleToSectionsMap.getValues(article.getTitle())
 				.stream()
-				.map(this::getWikiAttachment)
-				.filter(Objects::nonNull)
-				.map(WikiAttachment::getPath)
+				.map(AttachmentType::getPath)
 				.filter(title -> !queuedArticles.contains(title))
 				.collect(toSet());
 		for (String attachmentArticleTitle : compiledAttachmentArticleTitles) {
@@ -100,77 +98,66 @@ public class AttachmentManager implements EventListener {
 		}
 	}
 
-	@Nullable
-	private WikiAttachment getWikiAttachment(Section<AttachmentCompileType> section) {
-		try {
-			return section.get().getCompiledAttachment(section);
-		}
-		catch (IOException e) {
-			Log.severe("Exception while fetching attachment on page " + section.getTitle(), e);
-			return null;
-		}
-	}
-
 	private synchronized void handleArticleUpdate(Article article) {
-		Set<Section<AttachmentCompileType>> outdatedAttachmentSections = removeAttachmentSectionsOfLastArticleVersion(article);
-		Set<Section<AttachmentCompileType>> currentAttachmentSections = addAttachmentSectionsOfNewArticle(article);
+		Set<Section<AttachmentType>> outdatedAttachmentSections = removeAttachmentSectionsOfLastArticleVersion(article);
+		Set<Section<AttachmentType>> currentAttachmentSections = addAttachmentSectionsOfNewArticle(article);
 
 		for (String attachmentPath : getNewPathsOfArticle(outdatedAttachmentSections, currentAttachmentSections)) {
-			@NotNull Set<Section<AttachmentCompileType>> values = pathToSectionsMap.getValues(attachmentPath);
+			Set<Section<AttachmentType>> values = pathToSectionsMap.getValues(attachmentPath);
 			if (values.size() != 1) return;
 			createAndRegisterAttachmentArticle(attachmentPath);
 		}
 
 		for (String attachmentPath : getRemovedPathsOfArticle(outdatedAttachmentSections, currentAttachmentSections)) {
-			@NotNull Set<Section<AttachmentCompileType>> values = pathToSectionsMap.getValues(attachmentPath);
+			Set<Section<AttachmentType>> values = pathToSectionsMap.getValues(attachmentPath);
 			if (!values.isEmpty()) return;
 			deleteAttachmentArticle(attachmentPath);
 		}
 	}
 
-	private @NotNull Set<Section<AttachmentCompileType>> addAttachmentSectionsOfNewArticle(Article article) {
+	private Set<Section<AttachmentType>> addAttachmentSectionsOfNewArticle(Article article) {
 		registerCompiledAttachmentSections(article);
 		return articleTitleToSectionsMap.getValues(article.getTitle());
 	}
 
 	@NotNull
-	private Set<Section<AttachmentCompileType>> removeAttachmentSectionsOfLastArticleVersion(Article article) {
-		Set<Section<AttachmentCompileType>> lastVersionAttachments = articleTitleToSectionsMap.removeKey(article.getTitle());
-		for (Section<AttachmentCompileType> attachmentSection : lastVersionAttachments) {
+	private Set<Section<AttachmentType>> removeAttachmentSectionsOfLastArticleVersion(Article article) {
+		Set<Section<AttachmentType>> lastVersionAttachments = articleTitleToSectionsMap.removeKey(article.getTitle());
+		for (Section<AttachmentType> attachmentSection : lastVersionAttachments) {
 			pathToSectionsMap.removeValue(attachmentSection);
 		}
 		return lastVersionAttachments;
 	}
 
 	@NotNull
-	private Set<String> getRemovedPathsOfArticle(Set<Section<AttachmentCompileType>> lastVersionAttachments, Set<Section<AttachmentCompileType>> newVersionAttachments) {
+	private Set<String> getRemovedPathsOfArticle(Set<Section<AttachmentType>> lastVersionAttachments, Set<Section<AttachmentType>> newVersionAttachments) {
 		return getDiff(lastVersionAttachments, newVersionAttachments);
 	}
 
 	@NotNull
-	private Set<String> getNewPathsOfArticle(Set<Section<AttachmentCompileType>> lastVersionAttachments, Set<Section<AttachmentCompileType>> newVersionAttachments) {
+	private Set<String> getNewPathsOfArticle(Set<Section<AttachmentType>> lastVersionAttachments, Set<Section<AttachmentType>> newVersionAttachments) {
 		return getDiff(newVersionAttachments, lastVersionAttachments);
 	}
 
-	private Set<String> getDiff(Set<Section<AttachmentCompileType>> addAll, Set<Section<AttachmentCompileType>> removeAll) {
+	private Set<String> getDiff(Set<Section<AttachmentType>> addAll, Set<Section<AttachmentType>> removeAll) {
 		Set<String> registrationCandidates = new HashSet<>(toPaths(addAll));
 		registrationCandidates.removeAll(toPaths(removeAll));
 		return registrationCandidates;
 	}
 
-	private Set<String> toPaths(Collection<Section<AttachmentCompileType>> attachmentSections) {
-		return attachmentSections.stream().map(s -> getWikiAttachment(s)).filter(Objects::nonNull).map(WikiAttachment::getPath).collect(toSet());
+	private Set<String> toPaths(Collection<Section<AttachmentType>> attachmentSections) {
+		return attachmentSections.stream().map(AttachmentType::getPath).collect(toSet());
 	}
 
 	private void registerCompiledAttachmentSections(Article article) {
-		for (Section<AttachmentCompileType> attachmentSection : Sections.successors(article, AttachmentCompileType.class)) {
-			WikiAttachment wikiAttachment = getWikiAttachment(attachmentSection);
-			if (wikiAttachment == null) {
-				continue;
-			}
-			String path = wikiAttachment.getPath();
-			pathToSectionsMap.put(path, attachmentSection);
-			articleTitleToSectionsMap.put(attachmentSection.getTitle(), attachmentSection);
+		for (Section<AttachmentMarkup> attachmentSection : Sections.successors(article, AttachmentMarkup.class)) {
+			if (!"true".equals(DefaultMarkupType.getAnnotation(attachmentSection, AttachmentMarkup.COMPILE))) continue;
+			Section<AttachmentType> attachmentTypeSection = $(attachmentSection).successor(AttachmentType.class)
+					.getFirst();
+			if (attachmentTypeSection == null) continue;
+			String path = AttachmentType.getPath(attachmentTypeSection);
+			pathToSectionsMap.put(path, attachmentTypeSection);
+			articleTitleToSectionsMap.put(attachmentTypeSection.getTitle(), attachmentTypeSection);
 		}
 	}
 
@@ -215,8 +202,8 @@ public class AttachmentManager implements EventListener {
 	}
 
 	private boolean isCompiledAttachment(String attachmentPath) {
-		Set<Section<AttachmentCompileType>> attachmentTypeSections = pathToSectionsMap.getValues(attachmentPath);
-		for (Section<AttachmentCompileType> markupSection : attachmentTypeSections) {
+		Set<Section<AttachmentType>> attachmentTypeSections = pathToSectionsMap.getValues(attachmentPath);
+		for (Section<AttachmentType> markupSection : attachmentTypeSections) {
 			if (Sections.isLive(markupSection)) return true;
 		}
 		return false;
@@ -228,7 +215,7 @@ public class AttachmentManager implements EventListener {
 	 *
 	 * @param article the object for which we check if there are attachment sections
 	 */
-	public Set<Section<AttachmentCompileType>> getCompilingAttachmentSections(Article article) {
+	public Set<Section<AttachmentType>> getCompilingAttachmentSections(Article article) {
 		return pathToSectionsMap.getValues(article.getTitle());
 	}
 
