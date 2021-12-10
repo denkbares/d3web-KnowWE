@@ -32,7 +32,7 @@ import de.knowwe.util.Icon;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 09.12.21
  */
-public class InterWikiIncludeMarkupToolProvider implements ToolProvider {
+public class InterWikiImportMarkupToolProvider implements ToolProvider {
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
 		return new Tool[] {
