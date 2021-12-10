@@ -159,16 +159,13 @@ public class AttachmentManager implements EventListener {
 	}
 
 	private Set<String> toPaths(Collection<Section<AttachmentCompileType>> attachmentSections) {
-		return attachmentSections.stream().map(s -> getWikiAttachment(s)).filter(Objects::nonNull).map(WikiAttachment::getPath).collect(toSet());
+		return attachmentSections.stream().map(s -> s.get().getCompiledAttachmentPath(s)).filter(Objects::nonNull).collect(toSet());
 	}
 
 	private void registerCompiledAttachmentSections(Article article) {
 		for (Section<AttachmentCompileType> attachmentSection : Sections.successors(article, AttachmentCompileType.class)) {
-			WikiAttachment wikiAttachment = getWikiAttachment(attachmentSection);
-			if (wikiAttachment == null) {
-				continue;
-			}
-			String path = wikiAttachment.getPath();
+			String path = attachmentSection.get().getCompiledAttachmentPath(attachmentSection);
+			if (path == null) continue;
 			pathToSectionsMap.put(path, attachmentSection);
 			articleTitleToSectionsMap.put(attachmentSection.getTitle(), attachmentSection);
 		}

@@ -155,6 +155,10 @@ public class AttachmentMarkup extends AttachmentUpdateMarkup implements Attachme
 		return null;
 	}
 
+	@Override
+	public String getCompiledAttachmentPath(Section<? extends AttachmentCompileType> section) {
+		return $(section).successor(AttachmentType.class).mapFirst(AttachmentType::getPath);
+	}
 
 	@Override
 	protected boolean isVersioning(Section<? extends AttachmentUpdateMarkup> section) {

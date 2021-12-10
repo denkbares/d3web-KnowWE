@@ -56,7 +56,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	private static final String WIKI_ANNOTATION = "wiki";
 	private static final String PAGE_ANNOTATION = "page";
-	private static final String SECTION_ANNOTATION = "title";
+	private static final String SECTION_ANNOTATION = "section";
 	private static final String COMPILE_ANNOTATION = "compile";
 
 	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
@@ -111,6 +111,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			return getWikiAttachment($(section).closest(AttachmentUpdateMarkup.class).getFirst());
 		}
 		return null;
+	}
+
+	@Override
+	public String getCompiledAttachmentPath(Section<? extends AttachmentCompileType> section) {
+		return $(section).closest(AttachmentUpdateMarkup.class).mapFirst(this::getWikiAttachmentPath);
 	}
 
 	private boolean isCompiling(Section<? extends AttachmentCompileType> section) {
@@ -239,12 +244,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				String sectionName = markup.get().getSectionName(markup);
 				String linkLabel = wikiName + ": " + pageName;
 				if (sectionName != null) {
-					linkLabel += "#" + sectionName;
+					linkLabel += " - " + sectionName;
 				}
 
 				result.appendHtmlTag("h2");
 				result.append("Import from wiki ");
-				result.appendHtmlElement("a", linkLabel, "href", url.toString());
+				String shortenedUrl = url.toString().replaceAll("%23.+$", "");
+				result.appendHtmlElement("a", linkLabel, "href", shortenedUrl);
 				String action = "KNOWWE.core.plugin.setMarkupSectionActivationStatus('" + markup.getID() + "', 'off')";
 				result.appendHtmlTag("a", "onclick", action, "class", "include-deactivate tooltipster",
 						"title", "Deactivate import");
