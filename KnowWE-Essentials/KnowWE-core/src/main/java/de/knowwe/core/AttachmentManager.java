@@ -64,11 +64,11 @@ public class AttachmentManager implements EventListener {
 	public void notify(Event event) {
 		if (event instanceof AttachmentStoredEvent) {
 			AttachmentStoredEvent attachmentStoredEvent = (AttachmentStoredEvent) event;
-			registerAttachment(attachmentStoredEvent.getParentName(), attachmentStoredEvent.getFileName());
+			registerAttachment(attachmentStoredEvent.getPath());
 		}
 		else if (event instanceof AttachmentDeletedEvent) {
 			AttachmentDeletedEvent attachmentDeletedEvent = (AttachmentDeletedEvent) event;
-			unregisterAttachment(attachmentDeletedEvent.getPath(), attachmentDeletedEvent.getFileName());
+			unregisterAttachment(attachmentDeletedEvent.getPath());
 		}
 		else if (event instanceof ArticleRegisteredEvent) {
 			Article article = ((ArticleRegisteredEvent) event).getArticle();
@@ -159,7 +159,10 @@ public class AttachmentManager implements EventListener {
 	}
 
 	private Set<String> toPaths(Collection<Section<AttachmentCompileType>> attachmentSections) {
-		return attachmentSections.stream().map(s -> s.get().getCompiledAttachmentPath(s)).filter(Objects::nonNull).collect(toSet());
+		return attachmentSections.stream()
+				.map(s -> s.get().getCompiledAttachmentPath(s))
+				.filter(Objects::nonNull)
+				.collect(toSet());
 	}
 
 	private void registerCompiledAttachmentSections(Article article) {
@@ -171,11 +174,9 @@ public class AttachmentManager implements EventListener {
 		}
 	}
 
-	private void registerAttachment(@NotNull String parent, @NotNull String fileName) {
-
-		String attachmentPath = asPath(parent, fileName);
-		if (isCompiledAttachment(attachmentPath)) {
-			createAndRegisterAttachmentArticle(attachmentPath);
+	private void registerAttachment(@NotNull String path) {
+		if (isCompiledAttachment(path)) {
+			createAndRegisterAttachmentArticle(path);
 		}
 	}
 
@@ -196,14 +197,9 @@ public class AttachmentManager implements EventListener {
 		}
 	}
 
-	private String asPath(String parent, String fileName) {
-		return parent + "/" + fileName;
-	}
-
-	private void unregisterAttachment(@NotNull String parent, String fileName) {
-		String attachmentPath = asPath(parent, fileName);
-		if (isCompiledAttachment(attachmentPath)) {
-			deleteAttachmentArticle(attachmentPath);
+	private void unregisterAttachment(@NotNull String path) {
+		if (isCompiledAttachment(path)) {
+			deleteAttachmentArticle(path);
 		}
 	}
 
