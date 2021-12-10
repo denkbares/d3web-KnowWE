@@ -16,10 +16,6 @@
 	white-space: initial;
 }
 
-.type_InterWikiImport .include-refresh {
-	padding: 0 .5em;
-}
-
 .IncludeMarkup .defaultMarkup {
 	overflow-y: hidden;
 }

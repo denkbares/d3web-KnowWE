@@ -42,7 +42,6 @@ import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -181,55 +180,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 			if (markup == null) return;
 
-			renderHeader(markup, result);
-			renderLastChangesMessage(markup, result);
-			renderImport(markup, user, result);
-
-			if (isFramed()) {
-				renderAnnotations(markup, $(markup).successor(AnnotationType.class).asList(), user, result);
-			}
-		}
-
-		private void renderImport(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
-			String path = markup.get().getWikiAttachmentPath(markup);
-			Article article = user.getArticleManager().getArticle(path);
-			if (article == null) {
-				result.appendHtmlElement("span", "Included article not (yet) available", "class", "warning");
-			}
-			else {
-				if (isFramed()) {
-					// used the framing renderer
-					new FramedIncludedSectionRenderer(true).render(
-							article.getRootSection(), user, result);
-				}
-				else {
-					// or simply render the sections belonging to the header
-					FramedIncludedSectionRenderer.renderTargetSections(
-							article.getRootSection(), true, user, result);
-				}
-			}
-		}
-
-		private void renderLastChangesMessage(Section<InterWikiImportMarkup> markup, RenderResult result) {
-			long lastRun = markup.get().timeSinceLastRun(markup);
-			if (lastRun < Long.MAX_VALUE) {
-				String lastRunDisplay = getDisplay(lastRun);
-				String message = "Last check for changes was " + lastRunDisplay + " ago";
-				long lastChange = markup.get().timeSinceLastChange(markup);
-				if (lastChange < Long.MAX_VALUE) {
-					String lastChangeDisplay = getDisplay(lastChange);
-					message += ", last change was " + lastChangeDisplay + " ago";
-				}
-				result.appendHtmlTag("p");
-				result.appendHtmlElement("span", message, "class", "include-message");
-				result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')", "class", "include-refresh");
-				result.appendHtml(Icon.REFRESH.toHtml());
-				result.appendHtmlTag("/a");
-				result.appendHtmlTag("/p");
-			}
-		}
-
-		private void renderHeader(Section<InterWikiImportMarkup> markup, RenderResult result) {
 			URL url = markup.get().getUrl(markup, "Wiki.jsp?page=");
 			String wiki = markup.get().getWiki(markup);
 			if (url != null && wiki != null) {
@@ -245,6 +195,41 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.append("Import from wiki ");
 				result.appendHtmlElement("a", linkLabel, "href", url.toString());
 				result.appendHtmlTag("/h2");
+			}
+
+			long lastRun = markup.get().timeSinceLastRun(markup);
+			if (lastRun < Long.MAX_VALUE) {
+				String lastRunDisplay = getDisplay(lastRun);
+				String message = "Last check for changes was " + lastRunDisplay + " ago";
+				long lastChange = markup.get().timeSinceLastChange(markup);
+				if (lastChange < Long.MAX_VALUE) {
+					String lastChangeDisplay = getDisplay(lastChange);
+					message += ", last change was " + lastChangeDisplay + " ago";
+				}
+				result.appendHtmlElement("p", message, "class", "include-message");
+			}
+
+			String path = markup.get().getWikiAttachmentPath(markup);
+			Article article = user.getArticleManager().getArticle(path);
+			boolean framed = isFramed();
+			if (article == null) {
+				result.appendHtmlElement("span", "Included article not (yet) available", "class", "warning");
+			}
+			else {
+				if (framed) {
+					// used the framing renderer
+					new FramedIncludedSectionRenderer(true).render(
+							article.getRootSection(), user, result);
+				}
+				else {
+					// or simply render the sections belonging to the header
+					FramedIncludedSectionRenderer.renderTargetSections(
+							article.getRootSection(), true, user, result);
+				}
+			}
+
+			if (framed) {
+				renderAnnotations(markup, $(markup).successor(AnnotationType.class).asList(), user, result);
 			}
 		}
 	}
