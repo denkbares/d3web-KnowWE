@@ -28,6 +28,8 @@ import java.util.regex.Pattern;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Stopwatch;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
@@ -42,6 +44,8 @@ import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.AsyncPreviewRenderer;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -74,7 +78,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	public InterWikiImportMarkup() {
 		super(MARKUP);
-		setRenderer(new InterWikiImportRenderer());
+		setRenderer(new AsynchronousRenderer(new InterWikiImportRenderer()));
 	}
 
 	@Nullable
@@ -171,14 +175,46 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return interval;
 	}
 
-	private static class InterWikiImportRenderer extends DefaultMarkupRenderer {
+	private class InterWikiImportRenderer extends DefaultMarkupRenderer implements AsyncPreviewRenderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
+			render(section, user, result, true);
+		}
+
+		@Override
+		public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
+			render(section, user, result, false);
+		}
+
+		private void render(Section<?> section, UserContext user, RenderResult result, boolean waitForUpdate) {
+			waitForUpdate(section, user, waitForUpdate);
 			Collection<String> errors = getMessageStrings(section, Message.Type.ERROR, user);
 			Collection<String> warnings = getMessageStrings(section, Message.Type.ERROR, user);
 			setFramed(!errors.isEmpty() || !warnings.isEmpty());
 			super.render(section, user, result);
+		}
+
+		private void waitForUpdate(Section<?> section, UserContext user, boolean waitForUpdate) {
+			if (waitForUpdate) {
+				Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
+				if (markup != null) {
+					String path = markup.get().getWikiAttachmentPath(markup);
+					ArticleManager articleManager = user.getArticleManager();
+					try {
+						Stopwatch stopwatch = new Stopwatch();
+						while (articleManager.getArticle(path) == null && stopwatch.getTime() < 20000) {
+							// busy wait... not great, but ok in this case, since it is just a renderer
+							// the attachment compilation is triggered asynchronous, so it would
+							// be some hassle to do it event based
+							Thread.sleep(50);
+						}
+						articleManager.getCompilerManager().awaitTermination();
+					}
+					catch (InterruptedException ignore) {
+					}
+				}
+			}
 		}
 
 		@Override
@@ -193,6 +229,23 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			if (isFramed()) {
 				renderAnnotations(markup, $(markup).successor(AnnotationType.class).asList(), user, result);
 			}
+		}
+
+		@Override
+		public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
+			Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
+			if (markup == null) return true;
+			try {
+				if (markup.get().getWikiAttachment(markup) == null) {
+					return true;
+				}
+			}
+			catch (IOException e) {
+				return true;
+			}
+			Article article = user.getArticleManager().getArticle(markup.get().getWikiAttachmentPath(markup));
+			if (article == null) return true;
+			return getLock(markup).isLocked();
 		}
 
 		private void renderImport(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
@@ -216,6 +269,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 
 		private void renderLastChangesMessage(Section<InterWikiImportMarkup> markup, RenderResult result) {
+			if (getLock(markup).isLocked()) {
+				result.appendHtmlElement("p", "Update currently ongoing...", "style", "color:green");
+				return;
+			}
+
 			long lastRun = markup.get().timeSinceLastRun(markup);
 			if (lastRun < Long.MAX_VALUE) {
 				String lastRunDisplay = getDisplay(lastRun);
