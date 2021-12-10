@@ -12,10 +12,6 @@
 	text-decoration: none;
 }
 
-.type_InterWikiImport  .defaultMarkup .markupText {
-	white-space: initial;
-}
-
 .IncludeMarkup .defaultMarkup {
 	overflow-y: hidden;
 }

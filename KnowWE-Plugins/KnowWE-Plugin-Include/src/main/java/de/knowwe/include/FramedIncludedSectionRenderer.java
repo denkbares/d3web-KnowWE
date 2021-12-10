@@ -125,7 +125,12 @@ public class FramedIncludedSectionRenderer extends DefaultMarkupRenderer {
 			List<Section<? extends Type>> content = JSPWikiMarkupUtils.getContent(header);
 			for (Section<? extends Type> section : content) {
 				Renderer r = section.get().getRenderer();
-				r.render(section, user, result);
+				if (r != null) {
+					r.render(section, user, result);
+				}
+				else {
+					DelegateRenderer.getInstance().render(section, user, result);
+				}
 			}
 		}
 		else {
