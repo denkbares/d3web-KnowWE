@@ -51,14 +51,14 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 06.12.21
  */
-public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements AttachmentCompileType {
+public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements AttachmentCompileType {
 
 	private static final String WIKI_ANNOTATION = "wiki";
 	private static final String PAGE_ANNOTATION = "page";
 	private static final String SECTION_ANNOTATION = "title";
 	private static final String COMPILE_ANNOTATION = "compile";
 
-	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiInclude");
+	private static final DefaultMarkup MARKUP = new DefaultMarkup("InterWikiImport");
 
 	static {
 		MARKUP.addAnnotation(INTERVAL_ANNOTATION, false);
@@ -71,16 +71,16 @@ public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements At
 		MARKUP.addAnnotation(SECTION_ANNOTATION, false);
 	}
 
-	public InterWikiIncludeMarkup() {
+	public InterWikiImportMarkup() {
 		super(MARKUP);
-		setRenderer(new InterWikiIncludeRenderer());
+		setRenderer(new InterWikiImportRenderer());
 	}
 
 	@Nullable
 	@Override
 	public WikiAttachment getWikiAttachment(Section<? extends AttachmentUpdateMarkup> section) throws IOException {
 		if (section == null) return null;
-		Section<InterWikiIncludeMarkup> interWikiSection = $(section).closest(InterWikiIncludeMarkup.class).getFirst();
+		Section<InterWikiImportMarkup> interWikiSection = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (interWikiSection == null) return null;
 		String path = getWikiAttachmentPath(interWikiSection);
 		return Environment.getInstance().getWikiConnector().getAttachment(path);
@@ -88,7 +88,7 @@ public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements At
 
 	@Override
 	public String getWikiAttachmentPath(Section<? extends AttachmentUpdateMarkup> section) {
-		Section<InterWikiIncludeMarkup> interWikiSection = $(section).closest(InterWikiIncludeMarkup.class).getFirst();
+		Section<InterWikiImportMarkup> interWikiSection = $(section).closest(InterWikiImportMarkup.class).getFirst();
 		if (interWikiSection == null) return null;
 		String pageName = "-" + getPageName(interWikiSection);
 		String sectionName = getSectionName(interWikiSection);
@@ -96,11 +96,11 @@ public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements At
 		return section.getTitle() + PATH_SEPARATOR + "WikiImport" + pageName + sectionName;
 	}
 
-	private String getPageName(Section<InterWikiIncludeMarkup> section) {
+	private String getPageName(Section<InterWikiImportMarkup> section) {
 		return DefaultMarkupType.getAnnotation(section, PAGE_ANNOTATION);
 	}
 
-	private String getSectionName(Section<InterWikiIncludeMarkup> section) {
+	private String getSectionName(Section<InterWikiImportMarkup> section) {
 		return DefaultMarkupType.getAnnotation(section, SECTION_ANNOTATION);
 	}
 
@@ -117,10 +117,15 @@ public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements At
 	}
 
 	@Override
-	public @Nullable URL getUrl(Section<? extends AttachmentUpdateMarkup> sec) {
-		Section<InterWikiIncludeMarkup> section = $(sec).closest(InterWikiIncludeMarkup.class).getFirst();
+	public @Nullable URL getUrl(Section<? extends AttachmentUpdateMarkup> section) {
+		return getUrl(section, "_action/GetWikiSectionTextAction?reference=");
+	}
+
+	@Nullable
+	private URL getUrl(Section<? extends AttachmentUpdateMarkup> sec, String command) {
+		Section<InterWikiImportMarkup> section = $(sec).closest(InterWikiImportMarkup.class).getFirst();
 		if (section == null) return null;
-		String wikiAnnotation = Strings.trim(DefaultMarkupType.getAnnotation(section, WIKI_ANNOTATION));
+		String wikiAnnotation = getWiki(section);
 		if (wikiAnnotation == null) return null;
 		if (!wikiAnnotation.matches("^https?://.*")) {
 			wikiAnnotation = "https://" + wikiAnnotation;
@@ -136,7 +141,7 @@ public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements At
 			reference += Strings.encodeURL("#" + sectionName);
 		}
 
-		String url = wikiAnnotation + "_action/GetWikiSectionTextAction?reference=" + reference;
+		String url = wikiAnnotation + command + reference;
 
 		try {
 			return new URL(url);
@@ -144,6 +149,11 @@ public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements At
 		catch (MalformedURLException e) {
 			return null;
 		}
+	}
+
+	@Nullable
+	private String getWiki(Section<InterWikiImportMarkup> section) {
+		return Strings.trim(DefaultMarkupType.getAnnotation(section, WIKI_ANNOTATION));
 	}
 
 	@Override
@@ -155,7 +165,7 @@ public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements At
 		return interval;
 	}
 
-	private static class InterWikiIncludeRenderer extends DefaultMarkupRenderer {
+	private static class InterWikiImportRenderer extends DefaultMarkupRenderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
@@ -167,29 +177,58 @@ public class InterWikiIncludeMarkup extends AttachmentUpdateMarkup implements At
 
 		@Override
 		public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult result) {
-			Section<InterWikiIncludeMarkup> markup = $(section).closest(InterWikiIncludeMarkup.class).getFirst();
+			Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 			if (markup == null) return;
-			String path = markup.get().getWikiAttachmentPath(markup);
-			Article article = user.getArticleManager().getArticle(path);
-			if (article == null) {
-				result.appendHtmlElement("span", "Included article not (yet) available", "class", "warning");
-			}
-			else {
-				new FramedIncludedSectionRenderer(true).render(article.getRootSection(), user, result);
+
+			URL url = markup.get().getUrl(markup, "Wiki.jsp?page=");
+			String wiki = markup.get().getWiki(markup);
+			if (url != null && wiki != null) {
+				String wikiName = wiki.replaceAll("^https?://", "").replaceAll("/$", "");
+				String pageName = markup.get().getPageName(markup);
+				String sectionName = markup.get().getSectionName(markup);
+				String linkLabel = wikiName + ": " + pageName;
+				if (sectionName != null) {
+					linkLabel += "#" + sectionName;
+				}
+
+				result.appendHtmlTag("h2");
+				result.append("Import from wiki ");
+				result.appendHtmlElement("a", linkLabel, "href", url.toString());
+				result.appendHtmlTag("/h2");
 			}
 
 			long lastRun = markup.get().timeSinceLastRun(markup);
 			if (lastRun < Long.MAX_VALUE) {
 				String lastRunDisplay = getDisplay(lastRun);
-				String message = "Last check was " + lastRunDisplay + " ago";
+				String message = "Last check for changes was " + lastRunDisplay + " ago";
 				long lastChange = markup.get().timeSinceLastChange(markup);
 				if (lastChange < Long.MAX_VALUE) {
 					String lastChangeDisplay = getDisplay(lastChange);
 					message += ", last change was " + lastChangeDisplay + " ago";
 				}
-				result.appendHtmlElement("span", message);
+				result.appendHtmlElement("p", message, "class", "include-message");
 			}
-			if (isFramed()) {
+
+			String path = markup.get().getWikiAttachmentPath(markup);
+			Article article = user.getArticleManager().getArticle(path);
+			boolean framed = isFramed();
+			if (article == null) {
+				result.appendHtmlElement("span", "Included article not (yet) available", "class", "warning");
+			}
+			else {
+				if (framed) {
+					// used the framing renderer
+					new FramedIncludedSectionRenderer(true).render(
+							article.getRootSection(), user, result);
+				}
+				else {
+					// or simply render the sections belonging to the header
+					FramedIncludedSectionRenderer.renderTargetSections(
+							article.getRootSection(), true, user, result);
+				}
+			}
+
+			if (framed) {
 				renderAnnotations(markup, $(markup).successor(AnnotationType.class).asList(), user, result);
 			}
 		}

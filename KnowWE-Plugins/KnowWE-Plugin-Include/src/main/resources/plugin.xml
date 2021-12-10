@@ -27,23 +27,24 @@
         <parameter id="script" value="KnowWE-Plugin-Include.js" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="InterWikiIncludeMarkup">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="InterWikiImportMarkup">
 		<parameter id="class"
-			value="de.knowwe.include.InterWikiIncludeMarkup" />
+			value="de.knowwe.include.InterWikiImportMarkup" />
 		<parameter id="name" value="IncludeMarkup" />
-		<parameter id="description" value="Type InterWikiIncludeMarkup" />
+		<parameter id="description" value="Type InterWikiImportMarkup" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="InterWikiIncludeMarkupToolProvider">
-		<parameter id="class" value="de.knowwe.include.InterWikiIncludeMarkupToolProvider" />
+		<parameter id="class" value="de.knowwe.include.InterWikiImportMarkupToolProvider" />
 		<parameter id="name" value="InterWikiIncludeMarkupToolProvider" />
 		<parameter id="description" value="Offers tool to force update of attachment." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="InterWikiIncludeMarkup" />
+		<parameter id="scope" value="InterWikiImportMarkup" />
+		<parameter id="css" value="KnowWE-Plugin-Include.css" />
 	</extension>
 
     <extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider"
