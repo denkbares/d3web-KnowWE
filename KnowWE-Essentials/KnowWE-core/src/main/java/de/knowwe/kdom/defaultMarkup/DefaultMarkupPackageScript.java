@@ -35,9 +35,9 @@ import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.packaging.PackageRule;
+import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.attachment.AttachmentMarkup;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -53,7 +53,7 @@ public abstract class DefaultMarkupPackageScript {
 	@NotNull
 	protected List<String> getAllPackageNames(PackageInfo packageInfo) {
 		return Stream.concat(packageInfo.packageNames.stream(), packageInfo.packageRules.stream()
-				.flatMap((PredicateParser.ParsedPredicate parsedPredicate) -> parsedPredicate.getVariables().stream()))
+						.flatMap((PredicateParser.ParsedPredicate parsedPredicate) -> parsedPredicate.getVariables().stream()))
 				.collect(Collectors.toList());
 	}
 
@@ -83,7 +83,7 @@ public abstract class DefaultMarkupPackageScript {
 			packageNames.addAll(KnowWEUtils.getPackageManager(section).getDefaultPackages(section.getArticle()));
 			packageRules.addAll(KnowWEUtils.getPackageManager(section).getDefaultPackageRules(section.getArticle()));
 		}
-		// if we only have the default package, check if this is an article based on an compiled attachment
+		// if we only have the default package, check if this is an article based on a compiled attachment
 		// and if yes, get package info from compiling %%Attachment markups
 		ArticleManager articleManager = section.getArticleManager();
 		if (packageRules.isEmpty()
@@ -91,9 +91,9 @@ public abstract class DefaultMarkupPackageScript {
 				&& articleManager instanceof DefaultArticleManager) {
 			AttachmentManager attachmentManager = ((DefaultArticleManager) articleManager).getAttachmentManager();
 			PackageInfo attachmentMarkupPackageInfo = attachmentManager.getCompilingAttachmentSections(section
-					.getArticle())
+							.getArticle())
 					.stream()
-					.map(s -> $(s).ancestor(AttachmentMarkup.class).getFirst())
+					.map(s -> $(s).closest(AttachmentCompileType.class).closest(DefaultMarkupType.class).getFirst())
 					.filter(Objects::nonNull)
 					.map(this::getPackageInfo)
 					.findFirst()
@@ -123,8 +123,6 @@ public abstract class DefaultMarkupPackageScript {
 	protected boolean isCompileMarkup(Section<DefaultMarkupType> section) {
 		return section.get() instanceof DefaultMarkupPackageCompileType;
 	}
-
-
 
 	protected static final class PackageInfo {
 
