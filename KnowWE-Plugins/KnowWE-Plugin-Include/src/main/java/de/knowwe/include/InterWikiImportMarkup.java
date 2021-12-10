@@ -94,7 +94,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		String pageName = "-" + getPageName(interWikiSection);
 		String sectionName = getSectionName(interWikiSection);
 		sectionName = sectionName == null ? "" : "-" + sectionName;
-		return section.getTitle() + PATH_SEPARATOR + "WikiImport" + pageName + sectionName + ".txt";
+		return section.getTitle() + PATH_SEPARATOR + "WikiImport" + pageName + sectionName;
 	}
 
 	private String getPageName(Section<InterWikiImportMarkup> section) {
