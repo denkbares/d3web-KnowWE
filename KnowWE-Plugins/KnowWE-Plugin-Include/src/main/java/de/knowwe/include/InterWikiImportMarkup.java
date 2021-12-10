@@ -222,7 +222,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				}
 				result.appendHtmlTag("p");
 				result.appendHtmlElement("span", message, "class", "include-message");
-				result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')", "class", "include-refresh");
+				result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
+						"class", "include-refresh tooltipster", "title", "Check for changes");
 				result.appendHtml(Icon.REFRESH.toHtml());
 				result.appendHtmlTag("/a");
 				result.appendHtmlTag("/p");
@@ -244,6 +245,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.appendHtmlTag("h2");
 				result.append("Import from wiki ");
 				result.appendHtmlElement("a", linkLabel, "href", url.toString());
+				String action = "KNOWWE.core.plugin.setMarkupSectionActivationStatus('" + markup.getID() + "', 'off')";
+				result.appendHtmlTag("a", "onclick", action, "class", "include-deactivate tooltipster",
+						"title", "Deactivate import");
+				result.appendHtml(Icon.TOGGLE_OFF.toHtml());
+				result.appendHtmlTag("/a");
 				result.appendHtmlTag("/h2");
 			}
 		}

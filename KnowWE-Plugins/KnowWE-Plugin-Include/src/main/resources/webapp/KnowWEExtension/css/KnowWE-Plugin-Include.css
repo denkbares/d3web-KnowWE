@@ -20,6 +20,12 @@
 	padding: 0 .5em;
 }
 
+.type_InterWikiImport .include-deactivate {
+	color: grey;
+	font-size: 70%;
+	padding: 0.5em;
+}
+
 .IncludeMarkup .defaultMarkup {
 	overflow-y: hidden;
 }
