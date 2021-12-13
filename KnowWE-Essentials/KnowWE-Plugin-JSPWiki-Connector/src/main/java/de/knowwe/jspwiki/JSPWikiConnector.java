@@ -362,7 +362,7 @@ public class JSPWikiConnector implements WikiConnector {
 				Log.warning("Exception while cleaning zip cache", e);
 			}
 		}
-		zipAttachmentCache.keySet().removeAll(remove);
+		remove.forEach(zipAttachmentCache.keySet()::remove);
 	}
 
 	private List<WikiAttachment> getZipEntryAttachments(Attachment attachment) throws IOException, ProviderException {
@@ -852,8 +852,7 @@ public class JSPWikiConnector implements WikiConnector {
 				mgr.unlockPage(lock);
 			}
 			else {
-				for (Object other : mgr.getActiveLocks()) {
-					PageLock otherLock = (PageLock) other;
+				for (PageLock otherLock : mgr.getActiveLocks()) {
 					if (otherLock.getLocker().equals(user)) {
 						mgr.unlockPage(otherLock);
 					}
@@ -865,6 +864,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public boolean userCanEditArticle(String title, HttpServletRequest request) {
 		if (ReadOnlyManager.isReadOnly()) return false;
+		if (isAttachment(title)) return false;
 		return checkPagePermission(title, request, "edit");
 	}
 
@@ -876,6 +876,7 @@ public class JSPWikiConnector implements WikiConnector {
 	@Override
 	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
 		if (ReadOnlyManager.isReadOnly()) return false;
+		if (isAttachment(title)) return false;
 		return checkPagePermission(title, request, "delete");
 	}
 
@@ -924,9 +925,20 @@ public class JSPWikiConnector implements WikiConnector {
 		return false;
 	}
 
+	private boolean isAttachment(String title) {
+		try {
+			return getAttachment(title) != null;
+		}
+		catch (IOException e) {
+			return false;
+		}
+	}
+
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext user) {
 		try {
+			if (isAttachment(title)) return false; // don't write articles with the same name as an attachment path
+
 			WikiPage page = engine.getPage(title);
 			// if PageProvider throws exception, page will be null and can't be saved
 			if (page == null) return false;

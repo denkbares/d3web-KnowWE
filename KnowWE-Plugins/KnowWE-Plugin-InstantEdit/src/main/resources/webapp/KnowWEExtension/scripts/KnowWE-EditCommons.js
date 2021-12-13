@@ -143,7 +143,7 @@ KNOWWE.editCommons = function () {
 					if (fn) fn();
 					_EC.hideAjaxLoader();
 				} else {
-					_EC.onErrorBehavior();
+					_EC.onErrorBehavior.call(xhr);
 				}
 			};
 			xhr.send(JSON.stringify(sectionData));

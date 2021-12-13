@@ -37,7 +37,7 @@ import de.knowwe.util.Icon;
 public class RuleEditToolProvider implements ToolProvider {
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return true;
+		return KnowWEUtils.canWrite(section.getArticle(), userContext);
 	}
 
 	@Override
