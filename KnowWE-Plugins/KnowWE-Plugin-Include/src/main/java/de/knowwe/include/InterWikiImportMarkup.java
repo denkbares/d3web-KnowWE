@@ -111,7 +111,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	@Override
 	public @Nullable WikiAttachment getCompiledAttachment(Section<? extends AttachmentCompileType> section) throws IOException {
-		if (isCompiling(section)) {
+		if (isCompilingTheAttachment(section)) {
 			return getWikiAttachment($(section).closest(AttachmentUpdateMarkup.class).getFirst());
 		}
 		return null;
@@ -122,7 +122,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		return $(section).closest(AttachmentUpdateMarkup.class).mapFirst(this::getWikiAttachmentPath);
 	}
 
-	private boolean isCompiling(Section<? extends AttachmentCompileType> section) {
+	@Override
+	public boolean isCompilingTheAttachment(Section<? extends AttachmentCompileType> section) {
 		return !"false".equals(DefaultMarkupType.getAnnotation(section, COMPILE_ANNOTATION));
 	}
 

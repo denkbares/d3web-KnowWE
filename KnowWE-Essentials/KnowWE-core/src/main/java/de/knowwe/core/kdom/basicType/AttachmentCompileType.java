@@ -39,4 +39,12 @@ public interface AttachmentCompileType extends Type {
 	 */
 	@Nullable
 	String getCompiledAttachmentPath(Section<? extends AttachmentCompileType> section);
+
+	/**
+	 * Check whether this section is compiling its attachment or not (may be inactive at the moment)
+	 *
+	 * @param section the section to check
+	 * @return true if the attachment is compiled, false otherwise
+	 */
+	boolean isCompilingTheAttachment(Section<? extends AttachmentCompileType> section);
 }

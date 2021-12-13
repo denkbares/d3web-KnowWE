@@ -117,13 +117,13 @@ public class AttachmentManager implements EventListener {
 
 		for (String attachmentPath : getNewPathsOfArticle(outdatedAttachmentSections, currentAttachmentSections)) {
 			@NotNull Set<Section<AttachmentCompileType>> values = pathToSectionsMap.getValues(attachmentPath);
-			if (values.size() != 1) return;
+			if (values.stream().filter(s -> s.get().isCompilingTheAttachment(s)).count() != 1) return;
 			createAndRegisterAttachmentArticle(attachmentPath);
 		}
 
 		for (String attachmentPath : getRemovedPathsOfArticle(outdatedAttachmentSections, currentAttachmentSections)) {
 			@NotNull Set<Section<AttachmentCompileType>> values = pathToSectionsMap.getValues(attachmentPath);
-			if (!values.isEmpty()) return;
+			if (values.stream().anyMatch(s -> s.get().isCompilingTheAttachment(s))) return;
 			deleteAttachmentArticle(attachmentPath);
 		}
 	}
@@ -204,12 +204,14 @@ public class AttachmentManager implements EventListener {
 	}
 
 	private void deleteAttachmentArticle(String attachmentPath) {
+		if (articleManager.getArticle(attachmentPath) == null) return;
 		articleManager.deleteArticle(attachmentPath);
 	}
 
 	private boolean isCompiledAttachment(String attachmentPath) {
 		Set<Section<AttachmentCompileType>> attachmentTypeSections = pathToSectionsMap.getValues(attachmentPath);
 		for (Section<AttachmentCompileType> markupSection : attachmentTypeSections) {
+			if (!markupSection.get().isCompilingTheAttachment(markupSection)) continue;
 			if (Sections.isLive(markupSection)) return true;
 		}
 		return false;

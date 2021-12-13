@@ -149,10 +149,15 @@ public class AttachmentMarkup extends AttachmentUpdateMarkup implements Attachme
 
 	@Override
 	public @Nullable WikiAttachment getCompiledAttachment(Section<? extends AttachmentCompileType> section) throws IOException {
-		if ("true".equals(DefaultMarkupType.getAnnotation(section, COMPILE_ANNOTATION))) {
+		if (isCompilingTheAttachment(section)) {
 			return getWikiAttachment($(section).closest(AttachmentUpdateMarkup.class).getFirst());
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isCompilingTheAttachment(Section<? extends AttachmentCompileType> section) {
+		return "true".equals(DefaultMarkupType.getAnnotation(section, COMPILE_ANNOTATION));
 	}
 
 	@Override
