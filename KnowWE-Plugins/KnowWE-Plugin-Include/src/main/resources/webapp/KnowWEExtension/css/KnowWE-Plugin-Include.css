@@ -12,7 +12,7 @@
 	text-decoration: none;
 }
 
-.type_InterWikiImport  .defaultMarkup .markupText {
+.type_InterWikiImport > .defaultMarkup > .markupText {
 	white-space: initial;
 }
 
