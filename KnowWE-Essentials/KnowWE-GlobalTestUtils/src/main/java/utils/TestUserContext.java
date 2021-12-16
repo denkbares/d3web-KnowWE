@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	private final Map<String, String> parameterMap = new HashMap<>();
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-	private final Writer writer = new OutputStreamWriter(out);
+	private final Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
 	private final TestHttpSession session = new TestHttpSession();
 	private final TestHttpServletRequest request = new TestHttpServletRequest(session);
 
@@ -247,7 +248,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	public String getResponseText() {
 		try {
 			writer.flush();
-			return out.toString("UTF-8");
+			return out.toString(StandardCharsets.UTF_8);
 		}
 		catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException("platform must support utf-8");
