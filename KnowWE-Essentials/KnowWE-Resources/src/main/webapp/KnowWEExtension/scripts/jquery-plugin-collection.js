@@ -192,6 +192,12 @@
         if (beforeReplace) {
           beforeReplace.call(this, $element, data);
         }
+        if (data === "") {
+          if (showGlobalProcessingState()) {
+            KNOWWE.core.util.updateProcessingState(-1);
+          }
+          return; // nothing to rerender
+        }
         const parsed = JSON.parse(data);
         if (jq$.lastRerenderRequests[id] !== parsed.counter) {
           // console.log("Skipping: " + parsed.counter);
