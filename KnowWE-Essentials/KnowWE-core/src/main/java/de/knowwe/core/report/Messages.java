@@ -77,7 +77,7 @@ public final class Messages {
 	 * @param source   the source the {@link Message}s are stored for
 	 * @created 01.12.2011
 	 */
-	public static void clearMessages(Compiler compiler, Section<? extends Type> section, Class<?> source) {
+	public static void clearMessages(Compiler compiler, Section<? extends Type> section, Object source) {
 		storeMessages(compiler, section, source, Messages.noMessage());
 	}
 
@@ -88,7 +88,7 @@ public final class Messages {
 	 * @param source  is the source the {@link Message}s are stored for
 	 * @created 01.12.2011
 	 */
-	public static void clearMessages(Section<? extends Type> section, Class<?> source) {
+	public static void clearMessages(Section<? extends Type> section, Object source) {
 		storeMessages(null, section, source, Messages.noMessage());
 	}
 
@@ -102,7 +102,7 @@ public final class Messages {
 	public static void clearMessages(Compiler compiler, Section<?> section) {
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (section) {
-			Map<String, Collection<Message>> map = removeMessagesMap(compiler, section);
+			Map<Object, Collection<Message>> map = removeMessagesMap(compiler, section);
 			if (map != null) cleanUpSectionsWithMessagesMap(section);
 		}
 	}
@@ -139,7 +139,7 @@ public final class Messages {
 	 * @param sec      is the root of the subtree you want to clear the message for
 	 * @param source   is the source you want to clear the messages for
 	 */
-	public static void clearMessagesRecursively(Compiler compiler, Section<?> sec, Class<?> source) {
+	public static void clearMessagesRecursively(Compiler compiler, Section<?> sec, Object source) {
 		clearMessages(compiler, sec, source);
 		for (Section<?> child : sec.getChildren()) {
 			clearMessagesRecursively(compiler, child, source);
@@ -282,7 +282,7 @@ public final class Messages {
 	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Message.Type... types) {
 		if (section.isEmpty()) return Collections.emptyList();
 		Collection<Message> allMessages = new ArrayList<>();
-		Map<String, Collection<Message>> msgMapModifiable = getMessagesMap(compiler, section);
+		Map<Object, Collection<Message>> msgMapModifiable = getMessagesMap(compiler, section);
 		if (msgMapModifiable != null) {
 			for (Collection<Message> messages : msgMapModifiable.values()) {
 				addAllMessagesOfTypes(messages, allMessages, types);
@@ -301,7 +301,7 @@ public final class Messages {
 	 * @created 01.12.2011
 	 */
 	public static Collection<Message> getMessages(Section<?> section, Message.Type... types) {
-		return getMessages(null, section, types);
+		return getMessages((Compiler) null, section, types);
 	}
 
 	/**
@@ -315,12 +315,12 @@ public final class Messages {
 	 *                 <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
-	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Class<?> source, Message.Type... types) {
+	public static Collection<Message> getMessages(Compiler compiler, Section<?> section, Object source, Message.Type... types) {
 		if (section.isEmpty()) return Collections.emptyList();
-		Map<String, Collection<Message>> msgsMap = getMessagesMap(compiler, section);
+		Map<Object, Collection<Message>> msgsMap = getMessagesMap(compiler, section);
 		List<Message> allMsgs = new ArrayList<>();
 		if (msgsMap != null) {
-			Collection<Message> msgs = msgsMap.get(source.getName());
+			Collection<Message> msgs = msgsMap.get(source);
 			if (msgs != null) addAllMessagesOfTypes(msgs, allMsgs, types);
 		}
 		return Collections.unmodifiableCollection(allMsgs);
@@ -336,7 +336,7 @@ public final class Messages {
 	 *                <tt>null</tt> if you want all)
 	 * @created 01.12.2011
 	 */
-	public static Collection<Message> getMessages(Section<?> section, Class<?> source, Message.Type... types) {
+	public static Collection<Message> getMessages(Section<?> section, Object source, Message.Type... types) {
 		return getMessages(null, section, source, types);
 	}
 
@@ -415,11 +415,11 @@ public final class Messages {
 	 * given Section and article. The Collections are mapped by the String
 	 * <tt>source.getName()</tt>.
 	 */
-	private static Map<String, Collection<Message>> getMessagesMap(Compiler compiler, Section<?> sec) {
+	private static Map<Object, Collection<Message>> getMessagesMap(Compiler compiler, Section<?> sec) {
 		return sec.getObject(compiler, MESSAGE_KEY);
 	}
 
-	private static Map<String, Collection<Message>> removeMessagesMap(Compiler compiler, Section<?> sec) {
+	private static Map<Object, Collection<Message>> removeMessagesMap(Compiler compiler, Section<?> sec) {
 		return sec.removeObject(compiler, MESSAGE_KEY);
 	}
 
@@ -560,7 +560,7 @@ public final class Messages {
 	 * @param source   is the Class the message originate from
 	 * @param msg      is the message you want so store
 	 */
-	public static void storeMessage(Compiler compiler, Section<?> section, Class<?> source, Message msg) {
+	public static void storeMessage(Compiler compiler, Section<?> section, Object source, Message msg) {
 		Collection<Message> messages = Collections.emptyList();
 		if (msg != null) {
 			messages = Messages.asList(msg);
@@ -580,7 +580,7 @@ public final class Messages {
 	 * @param source  is the Class the message originate from
 	 * @param msg     is the message you want so store
 	 */
-	public static void storeMessage(Section<?> section, Class<?> source, Message msg) {
+	public static void storeMessage(Section<?> section, Object source, Message msg) {
 		storeMessage(null, section, source, msg);
 	}
 
@@ -596,9 +596,8 @@ public final class Messages {
 	 * @param source   is the Class the messages originate from
 	 * @param messages is the Collection of messages you want so store
 	 */
-	public static void storeMessages(Compiler compiler, Section<?> section, Class<?> source, Collection<Message> messages) {
-		Map<String, Collection<Message>> messagesMap = getMessagesMap(compiler, section);
-		String sourceKey = source.getName();
+	public static void storeMessages(Compiler compiler, Section<?> section, Object source, Collection<Message> messages) {
+		Map<Object, Collection<Message>> messagesMap = getMessagesMap(compiler, section);
 		// we have messages to store
 		if (messages != null && !messages.isEmpty()) {
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -614,7 +613,7 @@ public final class Messages {
 					}
 				}
 				// store messages in map
-				messagesMap.put(sourceKey, Collections.unmodifiableCollection(messages));
+				messagesMap.put(source, Collections.unmodifiableCollection(messages));
 				// store section for type collections
 				for (Message message : messages) {
 					sectionsWithMessages
@@ -629,7 +628,7 @@ public final class Messages {
 			if (messagesMap == null) return;
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
 			synchronized (section) {
-				Collection<Message> removedMessages = messagesMap.remove(sourceKey);
+				Collection<Message> removedMessages = messagesMap.remove(source);
 				// we did not remove anything, no cleanup needed
 				if (removedMessages == null || removedMessages.isEmpty()) return;
 				// we removed messages, cleanup!
@@ -688,7 +687,7 @@ public final class Messages {
 	 * @param source   is the Class the messages originate from
 	 * @param messages is the Collection of messages you want so store
 	 */
-	public static void storeMessages(Section<?> section, Class<?> source, Collection<Message> messages) {
+	public static void storeMessages(Section<?> section, Object source, Collection<Message> messages) {
 		storeMessages(null, section, source, messages);
 	}
 
