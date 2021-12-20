@@ -103,7 +103,6 @@ public class SparqlCache {
 		for (Map.Entry<String, SparqlTask> entry : this.cache.entrySet()) {
 			SparqlTask task = entry.getValue();
 			if (!task.isDone()) {
-				task.cancel(true);
 				continue;
 			}
 			this.outdated.put(entry.getKey(), task);
