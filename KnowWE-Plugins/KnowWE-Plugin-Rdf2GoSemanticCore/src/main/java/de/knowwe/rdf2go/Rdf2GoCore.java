@@ -943,15 +943,19 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public void readFrom(InputStream in, RDFFormat syntax) throws RDFParseException, RepositoryException, IOException {
-		this.semanticCore.addData(in, syntax);
-		this.namespaces = null;
-		this.namespacePrefixes = null;
+		synchronized (nsPrefixMutex) {
+			this.semanticCore.addData(in, syntax);
+			this.namespaces = null;
+			this.namespacePrefixes = null;
+		}
 	}
 
 	public void readFrom(File in) throws RDFParseException, RepositoryException, IOException {
-		this.semanticCore.addData(in);
-		this.namespaces = null;
-		this.namespacePrefixes = null;
+		synchronized (nsPrefixMutex) {
+			this.semanticCore.addData(in);
+			this.namespaces = null;
+			this.namespacePrefixes = null;
+		}
 	}
 
 	public void removeAllCachedStatements() {
@@ -963,9 +967,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public void removeNamespace(String abbreviation) throws RepositoryException {
-		this.semanticCore.getConnection().removeNamespace(abbreviation);
-		this.namespaces = null;
-		this.namespacePrefixes = null;
+		synchronized (nsPrefixMutex) {
+			this.semanticCore.getConnection().removeNamespace(abbreviation);
+			this.namespaces = null;
+			this.namespacePrefixes = null;
+		}
 	}
 
 	/**
