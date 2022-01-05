@@ -700,6 +700,13 @@ KNOWWE.helper.ajax.xhrExtractMessage = function(jqXHR) {
     return jqXHR.responseJSON.message;
   } else { // old variant, where we parse the message out of the tomcat error html
     const page = jqXHR.responseText || "";
+    try {
+      let jsonResponse = JSON.parse(page);
+      if (jsonResponse) {
+        return jsonResponse.message;
+      }
+    } catch (ignore) {
+    }
     let start = page.indexOf("<b>Message</b>");
     if (start < 0) start = page.indexOf("<b>message</b>"); // older tomcats
     const end = page.indexOf("</p>", start);
