@@ -1,6 +1,5 @@
 package org.apache.wiki.providers;
 
-import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Page;
 
 /**
