@@ -30,15 +30,16 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Attachment;
+import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
-import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.pages.PageManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class GitVersioningAttachmentProviderTest {
 	public static final String AUTHOR = "author";
 
 	private Properties properties;
-	private WikiEngine engine;
+	private Engine engine;
 
 	@Before
 	public void init() throws Exception {
@@ -74,10 +75,10 @@ public class GitVersioningAttachmentProviderTest {
 		PageManager pageManager = Mockito.mock(PageManager.class);
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
-		when(engine.getPageManager()).thenReturn(pageManager);
+		when(engine.getManager(PageManager.class)).thenReturn(pageManager);
 		when(pageManager.getProvider()).thenReturn(fileProvider);
 		UserManager um = Mockito.mock(UserManager.class);
-		when(engine.getUserManager()).thenReturn(um);
+		when(engine.getManager(UserManager.class)).thenReturn(um);
 		UserDatabase udb = mock(UserDatabase.class);
 		when(um.getUserDatabase()).thenReturn(udb);
 		UserProfile up = mock(UserProfile.class);
@@ -95,7 +96,7 @@ public class GitVersioningAttachmentProviderTest {
 	public void testPutAttachment() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
-		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		att.setAttribute(Attachment.CHANGENOTE, "add");
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
@@ -120,7 +121,7 @@ public class GitVersioningAttachmentProviderTest {
 	public void testGetVersionHistory() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
-		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
@@ -139,7 +140,7 @@ public class GitVersioningAttachmentProviderTest {
 	public void testGetAttachmentData() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
-		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
@@ -158,7 +159,7 @@ public class GitVersioningAttachmentProviderTest {
 	public void testDeleteAttachment() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
-		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
@@ -171,11 +172,11 @@ public class GitVersioningAttachmentProviderTest {
 	public void testListAttachments() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
-		Attachment att = new Attachment(engine, "test", "testAtt.txt");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
-		att = new Attachment(engine, "test", "testAtt2.txt");
+		att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt2.txt");
 		att.setAuthor(AUTHOR);
 		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
@@ -189,11 +190,11 @@ public class GitVersioningAttachmentProviderTest {
 	public void testMoveAttachments() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
-		Attachment att = new Attachment(engine, "test page", "testAtt.txt");
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test page", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
-		att = new Attachment(engine, "test page", "testAtt2.txt");
+		att = new org.apache.wiki.attachment.Attachment(engine, "test page", "testAtt2.txt");
 		att.setAuthor(AUTHOR);
 		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);

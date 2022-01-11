@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.wiki.api.exceptions.ProviderException;
-import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEventManager;
 
@@ -42,7 +41,7 @@ public class KnowWEAttachmentProvider extends BasicAttachmentProvider {
 	public static final String FIRE_DELETE_EVENT = "fireDeleteEvent";
 
 	@Override
-	public void putAttachmentData(Attachment att, InputStream data) throws ProviderException, IOException {
+	public void putAttachmentData(org.apache.wiki.api.core.Attachment att, InputStream data) throws ProviderException, IOException {
 		super.putAttachmentData(att, data);
 		WikiEventManager.fireEvent(this, new WikiAttachmentEvent(this, att.getParentName(), att.getFileName(), WikiAttachmentEvent.STORED));
 		EventManager.getInstance()
@@ -50,7 +49,7 @@ public class KnowWEAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@Override
-	public void deleteAttachment(Attachment att) throws ProviderException {
+	public void deleteAttachment(org.apache.wiki.api.core.Attachment att) throws ProviderException {
 		super.deleteAttachment(att);
 		EventManager.getInstance()
 				.fireEvent(new ArticleUpdateEvent(att.getParentName() + "/" + att.getFileName(), att.getAuthor()));

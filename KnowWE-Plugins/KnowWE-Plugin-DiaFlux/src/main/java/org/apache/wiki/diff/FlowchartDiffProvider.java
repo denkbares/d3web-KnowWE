@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -40,8 +40,8 @@ import org.apache.commons.jrcs.diff.DifferentiationFailedException;
 import org.apache.commons.jrcs.diff.Revision;
 import org.apache.commons.jrcs.diff.RevisionVisitor;
 import org.apache.commons.jrcs.diff.myers.MyersDiff;
-import org.apache.wiki.WikiContext;
-import org.apache.wiki.WikiEngine;
+import org.apache.wiki.api.core.Context;
+import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.i18n.InternationalizationManager;
 import org.apache.wiki.preferences.Preferences;
@@ -78,7 +78,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 	}
 
 	@Override
-	public void initialize(WikiEngine engine, Properties properties)
+	public void initialize(Engine engine, Properties properties)
 			throws NoRequiredPropertyException, IOException {
 	}
 
@@ -92,7 +92,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 	 * @return Full HTML diff.
 	 */
 	@Override
-	public String makeDiffHtml(WikiContext ctx, String p1, String p2) {
+	public String makeDiffHtml(Context ctx, String p1, String p2) {
 
 		// first version is empty page. Diff is called when article is created
 		if (p1.equals("") || !ctx.getJSP().equals("DiffContent.jsp")) {
@@ -125,7 +125,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 					remove(left, leftBob);
 					remove(right, rightBob);
 				}
-
 			}
 			else if (left != null) {
 				renderRemovedFlow(user, left, buffy, insert);
@@ -137,7 +136,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 			}
 
 			insert = false;
-
 		}
 
 		try {
@@ -145,11 +143,9 @@ public class FlowchartDiffProvider implements DiffProvider {
 		}
 		catch (DifferentiationFailedException e) {
 			buffy.append("Error in Diff:").append(e.getMessage());
-			e.printStackTrace();
 		}
 
 		return buffy.toString();
-
 	}
 
 	/**
@@ -160,15 +156,8 @@ public class FlowchartDiffProvider implements DiffProvider {
 		int start = diaFlux.getOffsetInArticle();
 		int end = start + diaFlux.getText().length();
 		bob.replace(start, end, "");
-
 	}
 
-	/**
-	 * @param user
-	 * @param buffy
-	 * @param insert
-	 * @created 26.10.2012
-	 */
 	private void renderAddedFlow(UserContext user, Section<FlowchartType> flow, StringBuffer buffy, boolean insert) {
 		renderFlow(user, flow, buffy, insert, "flowAdded");
 	}
@@ -182,7 +171,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 		buffy.append("<div class=\"").append(cssClass).append("\">");
 		insertFlowRenderer(user, flow, buffy, insert, parentID);
 		buffy.append("</div>");
-
 	}
 
 	private void renderChangedFlow(UserContext user, Pair<Section<FlowchartType>, Section<FlowchartType>> pair, StringBuffer buffy, boolean insert) {
@@ -200,9 +188,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 	 */
 	public List<Section<FlowchartType>> getFlowsFrom(String articleSource) {
 		Section<RootType> root = LoadFlowchartAction.sectionizeArticle(articleSource);
-		List<Section<FlowchartType>> flows = Sections.successors(root,
-				FlowchartType.class);
-		return flows;
+		return Sections.successors(root, FlowchartType.class);
 	}
 
 	private static Collection<Pair<Section<FlowchartType>, Section<FlowchartType>>> alignFlows(List<Section<FlowchartType>> leftFlows, List<Section<FlowchartType>> rightFlows) {
@@ -214,7 +200,6 @@ public class FlowchartDiffProvider implements DiffProvider {
 
 			if (rightFlow != null) {
 				alignments.add(new Pair<>(leftFlow, rightFlow));
-
 			}
 			else {
 				alignments.add(new Pair<>(leftFlow, null));
@@ -243,11 +228,9 @@ public class FlowchartDiffProvider implements DiffProvider {
 						alignments.add(index, new Pair<>(null, rightFlow));
 						continue nextFlow;
 					}
-
 				}
 				// we reached the end of the alignments, so just add it
 				alignments.add(new Pair<>(null, rightFlow));
-
 			}
 			// other this flow must have been found before, so do nothing
 
@@ -267,7 +250,7 @@ public class FlowchartDiffProvider implements DiffProvider {
 		ret.append(renderResult);
 	}
 
-	private String createTextDiff(WikiContext ctx, String p1, String p2, StringBuffer buffy) throws DifferentiationFailedException {
+	private String createTextDiff(Context ctx, String p1, String p2, StringBuffer buffy) throws DifferentiationFailedException {
 		String[] first = Diff.stringToArray(TextUtil.replaceEntities(p1));
 		String[] second = Diff.stringToArray(TextUtil.replaceEntities(p2));
 		Revision rev = Diff.diff(first, second, new MyersDiff());
@@ -297,11 +280,11 @@ public class FlowchartDiffProvider implements DiffProvider {
 	private static final class RevisionPrint
 			implements RevisionVisitor {
 
-		private StringBuffer m_result = null;
-		private final WikiContext m_context;
+		private final StringBuffer m_result;
+		private final Context m_context;
 		private final ResourceBundle m_rb;
 
-		private RevisionPrint(WikiContext ctx, StringBuffer sb) {
+		private RevisionPrint(Context ctx, StringBuffer sb) {
 			m_result = sb;
 			m_context = ctx;
 			m_rb = Preferences.getBundle(ctx, InternationalizationManager.CORE_BUNDLE);
@@ -361,5 +344,4 @@ public class FlowchartDiffProvider implements DiffProvider {
 			m_result.append(CSS_DIFF_CLOSE);
 		}
 	}
-
 }

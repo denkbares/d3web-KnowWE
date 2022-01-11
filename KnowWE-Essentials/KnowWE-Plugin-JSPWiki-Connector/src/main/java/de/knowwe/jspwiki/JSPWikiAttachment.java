@@ -26,9 +26,9 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Attachment;
+import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.ProviderException;
-import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.attachment.AttachmentManager;
 
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -77,12 +77,7 @@ public class JSPWikiAttachment implements WikiAttachment {
 	public boolean equals(Object o) {
 		if (!(o instanceof JSPWikiAttachment)) return false;
 		JSPWikiAttachment other = (JSPWikiAttachment) o;
-		if (other.attachment == attachment) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return other.attachment == attachment;
 	}
 
 	@Override
@@ -115,7 +110,7 @@ public class JSPWikiAttachment implements WikiAttachment {
 			Attachment info = attachmentManager.getAttachmentInfo(getPath(), version);
 			if (info != null) return info;
 		}
-		catch (ProviderException e) {
+		catch (ProviderException ignored) {
 		}
 		throw new IllegalArgumentException("cannot access requested attachment version " + version);
 	}
@@ -134,11 +129,10 @@ public class JSPWikiAttachment implements WikiAttachment {
 	@Override
 	public int[] getAvailableVersions() throws IOException {
 		try {
-			@SuppressWarnings("unchecked")
-			List<WikiPage> history = attachmentManager.getVersionHistory(getPath());
+			List<Attachment> history = attachmentManager.getVersionHistory(getPath());
 			int[] result = new int[history.size()];
 			int index = result.length;
-			for (WikiPage info : history) {
+			for (Page info : history) {
 				result[--index] = info.getVersion();
 			}
 			return result;

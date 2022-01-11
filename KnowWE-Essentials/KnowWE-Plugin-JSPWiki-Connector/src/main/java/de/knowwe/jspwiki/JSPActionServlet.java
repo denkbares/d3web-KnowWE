@@ -18,6 +18,8 @@
  */
 package de.knowwe.jspwiki;
 
+import java.io.Serial;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,12 +40,13 @@ import de.knowwe.core.user.UserContextUtil;
  */
 public class JSPActionServlet extends AbstractActionServlet {
 
+	@Serial
 	private static final long serialVersionUID = -3039426486440276502L;
 
 	@Override
 	protected UserActionContext createActionContext(HttpServletRequest request, HttpServletResponse response) {
-		WikiEngine wiki = WikiEngine.getInstance(getServletConfig());
-		WikiContext wikiContext = wiki.createContext(request, WikiContext.VIEW);
+		WikiEngine engine = WikiEngine.getInstance(getServletConfig());
+		WikiContext wikiContext = new WikiContext(engine, request, WikiContext.VIEW);
 		AuthenticationManager manager = new JSPAuthenticationManager(wikiContext);
 
 		// create action context
@@ -56,5 +59,4 @@ public class JSPActionServlet extends AbstractActionServlet {
 				getServletContext(),
 				manager);
 	}
-
 }

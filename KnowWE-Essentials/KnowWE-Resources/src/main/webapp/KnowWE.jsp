@@ -4,28 +4,13 @@
 <%@ page import="de.knowwe.core.user.*" %>
 <%@ page import="de.knowwe.core.action.*" %>
 <%@ page import="de.knowwe.core.utils.*" %>
-<%@ page import="de.d3web.strings.*" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="de.d3web.we.action.*" %>
 <%@ page import="de.knowwe.core.*" %>
-<%@ page import="de.knowwe.utils.*" %>
-<%@ page import="de.knowwe.user.*" %>
 <%@ page import="com.denkbares.strings.Strings" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%!
-String findParam( PageContext ctx, String key )
-    {
-        ServletRequest req = ctx.getRequest();
-        String val = req.getParameter( key );
-        if( val == null )
-        {
-            val = (String)ctx.findAttribute( key );
-        }
-        return val;
-    }
-%><%//Create wiki context; authorization check not needed
+<%//Create wiki context; authorization check not needed
 	WikiEngine wiki = WikiEngine.getInstance( getServletConfig() );
-    WikiContext wikiContext = wiki.createContext( request, WikiContext.VIEW );
+    WikiContext wikiContext = new WikiContext( wiki, request, WikiContext.VIEW );
 
     // Check if KnowWE is initialized
     if (!Environment.isInitialized()) {

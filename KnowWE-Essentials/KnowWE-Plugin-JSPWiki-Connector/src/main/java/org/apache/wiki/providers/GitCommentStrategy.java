@@ -1,6 +1,7 @@
 package org.apache.wiki.providers;
 
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Page;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
@@ -8,7 +9,7 @@ import org.apache.wiki.WikiPage;
  */
 @FunctionalInterface
 public interface GitCommentStrategy {
-	String getComment(WikiPage page);
+	String getComment(Page page);
 
 	default String getCommentForUser(String user){
 		return "";

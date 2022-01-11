@@ -1,6 +1,7 @@
 package org.apache.wiki.providers;
 
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Page;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
@@ -8,9 +9,9 @@ import org.apache.wiki.WikiPage;
  */
 public class ChangeNoteStrategy implements GitCommentStrategy {
 	@Override
-	public String getComment(WikiPage page) {
+	public String getComment(Page page) {
 		if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
-			return ((String) page.getAttribute(WikiPage.CHANGENOTE));
+			return page.getAttribute(WikiPage.CHANGENOTE);
 		}
 		else return "";
 	}

@@ -32,14 +32,17 @@ import java.util.concurrent.Future;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
-import org.apache.wiki.WikiProvider;
+import org.apache.wiki.api.core.Engine;
+import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.api.providers.PageProvider;
+import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.pages.PageManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,14 +55,14 @@ import static junit.framework.TestCase.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider> {
+public abstract class AbstractPageProviderStressTest<T extends PageProvider> {
 	public static final String AUTHOR = "author";
 
 	int numPages = 1000;
 
 	protected File wikiDir;
 
-	private WikiEngine engine;
+	private Engine engine;
 	private T pageProvider;
 	private int numConcurrentUsers;
 	private int numEdits;
@@ -68,10 +71,10 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 	@Before
 	public void setUp() throws Exception {
 
-		this.numPages = Integer.valueOf(System.getProperty("pageprovider.stresstest.numPages", "100"));
-		this.numEdits = Integer.valueOf(System.getProperty("pageprovider.stresstest.numEdits", "10"));
-		this.numConcurrentUsers = Integer.valueOf(System.getProperty("pageprovider.stresstest.concurrentUsers", "100"));
-		this.numConcurrentPages = Integer.valueOf(System.getProperty("pageprovider.stresstest.concurrentPages", "10"));
+		this.numPages = Integer.parseInt(System.getProperty("pageprovider.stresstest.numPages", "100"));
+		this.numEdits = Integer.parseInt(System.getProperty("pageprovider.stresstest.numEdits", "10"));
+		this.numConcurrentUsers = Integer.parseInt(System.getProperty("pageprovider.stresstest.concurrentUsers", "100"));
+		this.numConcurrentPages = Integer.parseInt(System.getProperty("pageprovider.stresstest.concurrentPages", "10"));
 
 //		TestEngine
 		this.engine = Mockito.mock(WikiEngine.class);
@@ -91,10 +94,10 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 		final PageManager pageManager = Mockito.mock(PageManager.class);
 		this.pageProvider = createPageProvider();
 		this.pageProvider.initialize(this.engine, properties);
-		when(this.engine.getPageManager()).thenReturn(pageManager);
+		when(this.engine.getManager(PageManager.class)).thenReturn(pageManager);
 		when(pageManager.getProvider()).thenReturn(this.pageProvider);
 		final UserManager um = Mockito.mock(UserManager.class);
-		when(this.engine.getUserManager()).thenReturn(um);
+		when(this.engine.getManager(UserManager.class)).thenReturn(um);
 		final UserDatabase udb = mock(UserDatabase.class);
 		when(um.getUserDatabase()).thenReturn(udb);
 		final UserProfile up = mock(UserProfile.class);
@@ -122,7 +125,6 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 				shutdownPageProvider(this.pageProvider);
 			}
 			catch (final Exception e) {
-				e.printStackTrace();
 				Assert.fail("Failed to shutdown page provider");
 			}
 		}
@@ -180,7 +182,7 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 			throws Exception {
 		final Stopwatch stopwatch = new Stopwatch();
 		stopwatch.start();
-		final List<WikiPage> pages = new ArrayList(this.numPages);
+		final List<WikiPage> pages = new ArrayList<>(this.numPages);
 		for (int i = 0; i < this.numPages; i++) {
 			final String initialContent = RandomStringUtils.randomAlphabetic(4 * 1024);
 			final String pageName = "page " + i;
@@ -193,17 +195,17 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 			verifyPageDeleted(p);
 		}
 
-		// check that we dont have any files in the wiki dir
+		// check that we don't have any files in the wiki dir
 		Assert.assertEquals(0, countWikiPages());
 		System.out.println("testDeletePages (" + this.numPages + " pages) :" + stopwatch.getDisplay());
 	}
 
 	private void verifyPageDeleted(final WikiPage page) throws ProviderException {
-		final WikiPage info = this.pageProvider.getPageInfo(page.getName(), WikiProvider.LATEST_VERSION);
+		final Page info = this.pageProvider.getPageInfo(page.getName(), PageProvider.LATEST_VERSION);
 		assertNull(info);
 	}
 
-	private void deletePage(final WikiPage page) throws ProviderException {
+	private void deletePage(final Page page) throws ProviderException {
 		this.pageProvider.deletePage(page);
 	}
 
@@ -218,8 +220,6 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 
 	/**
 	 * Liefert die Anzahl an Pages laut PageProvider
-	 *
-	 * @return
 	 */
 	private int countWikiPages() throws ProviderException {
 		final int count = this.pageProvider.getAllPages().size();
@@ -320,7 +320,7 @@ public abstract class AbstractPageProviderStressTest<T extends WikiPageProvider>
 
 			final int totalEdits = pages.stream().mapToInt(p -> {
 				try {
-					final List<WikiPage> history = this.pageProvider.getVersionHistory(p.getName());
+					final List<Page> history = this.pageProvider.getVersionHistory(p.getName());
 					// Anzahl edits = Anzahl Versionen - 1, da die initiale Version nicht mitzählt
 					return history.size() - 1;
 				}

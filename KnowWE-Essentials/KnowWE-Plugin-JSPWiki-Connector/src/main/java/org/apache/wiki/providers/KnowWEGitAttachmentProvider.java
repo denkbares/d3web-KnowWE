@@ -22,13 +22,13 @@ package org.apache.wiki.providers;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.exceptions.ProviderException;
-import org.apache.wiki.attachment.Attachment;
 import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEventManager;
 
 /**
- * AttachmentProvider that justs fixes the BasicAttachmentProvider from JSPWiki, which does not fire proper events when
+ * AttachmentProvider that just fixes the BasicAttachmentProvider from JSPWiki, which does not fire proper events when
  * storing and deleting attachments.
  *
  * @author Albrecht Striffler (denkbares GmbH)

@@ -309,7 +309,7 @@ jspwiki.translatorReader.camelCaseLinks = false
 #  KnowWE currently supports two templates. The legacy one is just 'KnowWE', the more
 #  modern 'haddock' template is almost unchanged from the original haddock from JSPWiki.
 #
-jspwiki.templateDir = haddock
+jspwiki.templateDir = default
 
 
 #

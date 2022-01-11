@@ -6,7 +6,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.apache.wiki.WikiEngine;
+import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.util.TextUtil;
 
 import com.denkbares.utils.Log;
@@ -21,14 +21,14 @@ public class GitAutoUpdateScheduler {
 	private static final String JSPWIKI_GIT_AUTOUPDATE_INIT_DELAY = "jspwiki.git.autoupdate.initDelay";
 	private static final String JSPWIKI_GIT_AUTOUPDATE_DELAY = "jspwiki.git.autoupdate.delay";
 	private ScheduledExecutorService scheduler;
-	private WikiEngine engine;
+	private Engine engine;
 	private TimerTask t;
 
 	GitAutoUpdateScheduler(){
 
 	}
 
-	public void initialize(WikiEngine engine, GitVersioningFileProvider fileProvider){
+	public void initialize(Engine engine, GitVersioningFileProvider fileProvider){
 		GitAutoUpdater updater = new GitAutoUpdater(engine, fileProvider);
 		this.engine = engine;
 		t = new TimerTask() {

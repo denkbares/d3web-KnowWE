@@ -26,14 +26,16 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.wiki.PageManager;
 import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
-import org.apache.wiki.WikiProvider;
+import org.apache.wiki.api.core.Engine;
+import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.ProviderException;
+import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserDatabase;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.util.TextUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -58,7 +60,7 @@ public class GitVersioningBenchmarkTest {
 	private String TMP_NEW_REPO = "/tmp/newRepo";
 
 	private Properties properties;
-	private WikiEngine engine;
+	private Engine engine;
 	GitVersioningFileProvider fileProvider;
 
 	@Before
@@ -76,10 +78,10 @@ public class GitVersioningBenchmarkTest {
 		PageManager pageManager = Mockito.mock(PageManager.class);
 		fileProvider = new GitVersioningFileProvider();
 		fileProvider.initialize(engine, properties);
-		when(engine.getPageManager()).thenReturn(pageManager);
+		when(engine.getManager(PageManager.class)).thenReturn(pageManager);
 		when(pageManager.getProvider()).thenReturn(fileProvider);
 		UserManager um = Mockito.mock(UserManager.class);
-		when(engine.getUserManager()).thenReturn(um);
+		when(engine.getManager(UserManager.class)).thenReturn(um);
 		UserDatabase udb = mock(UserDatabase.class);
 		when(um.getUserDatabase()).thenReturn(udb);
 		UserProfile up = mock(UserProfile.class);
@@ -113,7 +115,7 @@ public class GitVersioningBenchmarkTest {
 
 		mark.reset();
 		mark.start();
-		WikiPage pageinfo = getPage(NAME1);
+		Page pageinfo = getPage(NAME1);
 		mark.stop();
 		assertEquals("wrong version", maxver, pageinfo.getVersion());
 		// +2 comes from \r\n.
@@ -122,19 +124,19 @@ public class GitVersioningBenchmarkTest {
 
 		mark.reset();
 		mark.start();
-		Collection<WikiPage> pages = getAllPages();
+		Collection<Page> pages = getAllPages();
 		mark.stop();
 		assertEquals("only one element", 1, pages.size());
-		assertEquals("wrong version", maxver, pages.toArray(new WikiPage[1])[0].getVersion());
+		assertEquals("wrong version", maxver, pages.toArray(new Page[1])[0].getVersion());
 		// +2 comes from \r\n.
 		System.out.println("Benchmark read all files many versions: " + mark);
 	}
 
 	private String getText(String name1) throws ProviderException {
-		return TextUtil.replaceEntities(fileProvider.getPageText(name1, WikiProvider.LATEST_VERSION));
+		return TextUtil.replaceEntities(fileProvider.getPageText(name1, PageProvider.LATEST_VERSION));
 	}
 
-	private WikiPage getPage(String name1) throws ProviderException {
+	private Page getPage(String name1) throws ProviderException {
 		return fileProvider.getPageInfo(name1, GitVersioningFileProvider.LATEST_VERSION);
 	}
 
@@ -181,7 +183,7 @@ public class GitVersioningBenchmarkTest {
 		mark.reset();
 
 		mark.start();
-		Collection<WikiPage> pages = getAllPages();
+		Collection<Page> pages = getAllPages();
 		mark.stop();
 
 		System.out.println("Got a list of all pages in " + mark);
@@ -189,7 +191,7 @@ public class GitVersioningBenchmarkTest {
 		mark.reset();
 		mark.start();
 
-		for (WikiPage page : pages) {
+		for (Page page : pages) {
 			String foo = getPureText(page);
 			assertNotNull(foo);
 		}
@@ -199,13 +201,12 @@ public class GitVersioningBenchmarkTest {
 		System.out.println("which is " + getTime(mark, maxpages) + " pages/second");
 	}
 
-	private Collection<WikiPage> getAllPages() throws ProviderException {
+	private Collection<Page> getAllPages() throws ProviderException {
 		return fileProvider.getAllPages();
 	}
 
-	private String getPureText(WikiPage page) throws ProviderException {
-		String pageText = fileProvider.getPageText(page.getName(), WikiProvider.LATEST_VERSION);
-		return pageText;
+	private String getPureText(Page page) throws ProviderException {
+		return fileProvider.getPageText(page.getName(), PageProvider.LATEST_VERSION);
 	}
 
 	@Test

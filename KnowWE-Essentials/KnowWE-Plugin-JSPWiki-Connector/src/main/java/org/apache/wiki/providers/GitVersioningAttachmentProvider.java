@@ -35,13 +35,16 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.apache.wiki.WikiEngine;
 import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Attachment;
+import org.apache.wiki.api.core.Engine;
+import org.apache.wiki.api.core.Page;
 import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
-import org.apache.wiki.attachment.Attachment;
+import org.apache.wiki.api.providers.PageProvider;
+import org.apache.wiki.api.search.QueryItem;
 import org.apache.wiki.event.WikiEventManager;
-import org.apache.wiki.search.QueryItem;
+import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.AddCommand;
@@ -77,7 +80,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	private static final Logger log = Logger.getLogger(GitVersioningAttachmentProvider.class);
 
 	private Repository repository;
-	private WikiEngine engine;
+	private Engine engine;
 	private String storageDir;
 	private GitVersioningFileProvider gitVersioningFileProvider;
 	private GitVersionCache cache;
@@ -85,7 +88,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	private IgnoreNode ignoreNode;
 
 	@Override
-	public void initialize(WikiEngine engine, Properties properties) throws NoRequiredPropertyException, IOException {
+	public void initialize(Engine engine, Properties properties) throws NoRequiredPropertyException, IOException {
 		super.initialize(engine, properties);
 
 		this.engine = engine;
@@ -93,7 +96,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 
 		engine.getWikiProperties().getProperty(PROP_DISABLECACHE);
-		WikiPageProvider provider = engine.getPageManager().getProvider();
+		PageProvider provider = engine.getManager(PageManager.class).getProvider();
 		if (provider instanceof CachingProvider) {
 			provider = ((CachingProvider) provider).getRealProvider();
 		}
@@ -102,12 +105,12 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			repository = ((GitVersioningFileProvider) provider).getRepository();
 			File baseDir = new File(((GitVersioningFileProvider) provider).getFilesystemPath());
 			ignoreNode = new IgnoreNode();
-			File gitignoreFile = new File(baseDir+"/.gitignore");
-			if(gitignoreFile.exists()) {
+			File gitignoreFile = new File(baseDir + "/.gitignore");
+			if (gitignoreFile.exists()) {
 				ignoreNode.parse(new FileInputStream(gitignoreFile));
 			}
 			cache = gitVersioningFileProvider.getCache();
-			gitCommentStrategy = ((GitVersioningFileProvider)provider).getGitCommentStrategy();
+			gitCommentStrategy = ((GitVersioningFileProvider) provider).getGitCommentStrategy();
 		}
 		else {
 			throw new NoRequiredPropertyException("GitVersioningFileProvider is not configured", "jspwiki.pageProvider");
@@ -125,6 +128,15 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	@NotNull
 	public static String getAttachmentDir(String page) {
 		return mangleName(page) + DIR_EXTENSION;
+	}
+
+	@NotNull
+	private static String mangleName(String page) {
+		return TextUtil.urlEncodeUTF8(page);
+	}
+
+	private static String unmangleName(final String filename) {
+		return TextUtil.urlDecodeUTF8(filename);
 	}
 
 	public File findAttachmentDir(Attachment att) throws ProviderException {
@@ -230,9 +242,9 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	private void setMessage(Attachment att, CommitCommand commitCommand) {
-		String changeNote = (String) att.getAttribute(Attachment.CHANGENOTE);
+		String changeNote = att.getAttribute(Attachment.CHANGENOTE);
 		String comment = gitCommentStrategy.getComment(att);
-		if(comment.isEmpty()) {
+		if (comment.isEmpty()) {
 			comment = gitCommentStrategy.getCommentForUser(att.getAuthor());
 		}
 		if (comment.isEmpty()) {
@@ -242,7 +254,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			else {
 				commitCommand.setMessage("-");
 			}
-		} else {
+		}
+		else {
 			commitCommand.setMessage(comment);
 		}
 	}
@@ -266,9 +279,10 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				InputStream ret = null;
 				AttachmentCacheItem cacheItem = cache.getAttachment(att);
 				Boolean ignored = ignoreNode.checkIgnored(att.getName(), false);
-				if(ignored != null && ignored){
+				if (ignored != null && ignored) {
 					ret = new FileInputStream(attFile);
-				} else {
+				}
+				else {
 					if (cacheItem != null) {
 						if (version == LATEST_VERSION) {
 							ret = new FileInputStream(attFile);
@@ -347,33 +361,33 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		return null;
 	}
 
-	@Override
-	public Collection<Attachment> listAttachments(WikiPage page) throws ProviderException {
-		try {
-			gitVersioningFileProvider.canWriteFileLock();
-			List<Attachment> ret = new ArrayList<>();
-			File attachmentDir = findPageDir(page.getName());
-			if (attachmentDir.exists()) {
+//	@Override
+//	public Collection<Attachment> listAttachments(WikiPage page) throws ProviderException {
+//		try {
+//			gitVersioningFileProvider.canWriteFileLock();
+//			List<Attachment> ret = new ArrayList<>();
+//			File attachmentDir = findPageDir(page.getName());
+//			if (attachmentDir.exists()) {
+//
+//				File[] files = attachmentDir.listFiles(file -> !file.isHidden());
+//				if (files != null) {
+//					for (File file : files) {
+//						Attachment attachmentInfo = getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION);
+//						if (attachmentInfo != null) {
+//							ret.add(attachmentInfo);
+//						}
+//					}
+//				}
+//			}
+//			return ret;
+//		}
+//		finally {
+//			gitVersioningFileProvider.writeFileUnlock();
+//		}
+//	}
 
-				File[] files = attachmentDir.listFiles(file -> !file.isHidden());
-				if (files != null) {
-					for (File file : files) {
-						Attachment attachmentInfo = getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION);
-						if (attachmentInfo != null) {
-							ret.add(attachmentInfo);
-						}
-					}
-				}
-			}
-			return ret;
-		}
-		finally {
-			gitVersioningFileProvider.writeFileUnlock();
-		}
-	}
-
 	@Override
-	public Collection findAttachments(QueryItem[] query) {
+	public Collection<Attachment> findAttachments(QueryItem[] query) {
 		return super.findAttachments(query);
 	}
 
@@ -447,7 +461,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				.replace(DIR_EXTENSION, "");
 		parent = unmangleName(parent);
 		String attachmentName = unmangleName(path.substring(path.indexOf("/")));
-		Attachment att = new Attachment(engine, parent, attachmentName);
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, parent, attachmentName);
 		att.setAttribute(Attachment.CHANGENOTE, fullMessage);
 		att.setAuthor(author);
 		att.setLastModified(modified);
@@ -455,15 +469,15 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@Override
-	public Attachment getAttachmentInfo(WikiPage page, String name, int version) throws ProviderException {
+	public Attachment getAttachmentInfo(Page page, String name, int version) throws ProviderException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
-			Attachment att = new Attachment(engine, page.getName(), name);
+			Attachment att = new org.apache.wiki.attachment.Attachment(engine, page.getName(), name);
 			att.setVersion(version);
 			File attFile = findAttachmentFile(page.getName(), name);
 			if (attFile.exists()) {
 				Boolean ignored = ignoreNode.checkIgnored(attFile.getName(), false);
-				if(ignored != null && ignored) {
+				if (ignored != null && ignored) {
 					att.setVersion(1);
 					return att;
 				}
@@ -514,7 +528,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 					File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
 					if (attFile.exists()) {
 						Boolean ignored = ignoreNode.checkIgnored(attFile.getName(), false);
-						if(ignored == null || !ignored) {
+						if (ignored == null || !ignored) {
 							Git git = new Git(repository);
 							try {
 								List<RevCommit> revCommitList = getRevCommitList(att, git);
@@ -531,7 +545,8 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 							catch (GitAPIException | IOException e) {
 								log.error(e.getMessage(), e);
 							}
-						} else {
+						}
+						else {
 							att.setVersion(1);
 							return Collections.singletonList(att);
 						}
@@ -553,7 +568,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	private Attachment getAttachment(Attachment att, int version, RevCommit revCommit) {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
-			Attachment attVersion = new Attachment(engine, att.getParentName(), att.getFileName());
+			Attachment attVersion = new org.apache.wiki.attachment.Attachment(engine, att.getParentName(), att.getFileName());
 			//TODO check pattern
 			attVersion.setCacheable(false);
 			attVersion.setAuthor(revCommit.getCommitterIdent().getName());
@@ -621,7 +636,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 					Git git = new Git(repository);
 					GitVersioningFileProvider.retryGitOperation(() -> {
 						Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
-						if(ignored == null || !ignored) {
+						if (ignored == null || !ignored) {
 							git.rm().addFilepattern(getPath(att)).call();
 						}
 						return null;
@@ -643,7 +658,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 	private void commitAttachment(Attachment att, Git git, int type) throws Exception {
 		Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
-		if(ignored==null || !ignored) {
+		if (ignored == null || !ignored) {
 			if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
 				gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(getPath(att));
 				if (type == GitVersioningWikiEvent.UPDATE) {
@@ -683,7 +698,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	}
 
 	@Override
-	public void moveAttachmentsForPage(WikiPage oldParent, String newParent) throws ProviderException {
+	public void moveAttachmentsForPage(Page oldParent, String newParent) throws ProviderException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
 			gitVersioningFileProvider.commitLock();
@@ -746,9 +761,10 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
 					if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
 						String comment = gitCommentStrategy.getComment(oldParent);
-						if(comment.isEmpty()) {
+						if (comment.isEmpty()) {
 							commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
-						} else {
+						}
+						else {
 							commit.setMessage(comment);
 						}
 						try {
