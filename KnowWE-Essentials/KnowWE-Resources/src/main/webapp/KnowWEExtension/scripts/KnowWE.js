@@ -498,7 +498,8 @@ KNOWWE.core.util = function () {
 		},
 
 		isHaddockTemplate: function () {
-			return KNOWWE.core.util.getTemplate() === "haddock"
+			// the haddock template is the default template with jspwiki 2.11
+			return KNOWWE.core.util.getTemplate() === "default"
 		},
 
 		getContainerSelector: function () {
@@ -816,7 +817,14 @@ const _KU = KNOWWE.core.util;
 	window.addEvent('domready', _KL.setup);
 
 	window.addEvent('domready', function () {
-		jq$('body').addClass(KNOWWE.core.util.getTemplate());
+		// haddock is now the "default" template
+		// since "default" is a very generic name with lots of styles from different style sheets, and for
+		// better backwards compatibility, we still use css class "haddock" in the default template case
+		if (KNOWWE.core.util.isHaddockTemplate()) {
+			jq$('body').addClass("haddock");
+		} else {
+			jq$('body').addClass(KNOWWE.core.util.getTemplate());
+		}
 		if (KNOWWE.core.util.isAdmin() === "true") {
 			jq$('body').addClass("admin");
 		} else {

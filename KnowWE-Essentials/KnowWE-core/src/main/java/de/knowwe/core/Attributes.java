@@ -28,6 +28,7 @@ public class Attributes {
 	public static final String SECTION_ID = "SectionID";
 	public static final String LOCAL_SECTION_STORAGE = "localSectionStorage";
 	public static final String PACKAGE = "package";
+	public static final String REASON = "reason";
 	public static final String JSON_DATA = "data";
 	public static final String ENCODING = "KWiki_Encoding";
 	public static final String WEB = "KWikiWeb";

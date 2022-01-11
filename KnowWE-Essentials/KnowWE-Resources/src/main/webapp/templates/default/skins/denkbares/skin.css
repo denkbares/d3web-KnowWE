@@ -45,6 +45,10 @@ a, a.logo, .pagename a, .icon-search, .icon-user {
 	color: #173a64;
 }
 
+a:focus {
+	box-shadow: none;
+}
+
 a.logo.pull-left {
 	/* Hides the text. */
 	text-indent: 150%;
@@ -2593,7 +2597,7 @@ li.findpages .btn {
 	background-color: #f9f9f9;
 }
 
-.header .breadcrumb {
+.header .topline {
 	position: relative;
 	width: 100%;
 	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);

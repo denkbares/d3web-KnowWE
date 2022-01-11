@@ -1345,8 +1345,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public static class Options {
 
 		public static final Options DEFAULT = new Options();
-		public static final Options NO_CACHE = new Rdf2GoCore.Options(false);
-		public static final Options NO_CACHE_NO_TIMEOUT = new Rdf2GoCore.Options(false, Long.MAX_VALUE);
+		public static final Options NO_CACHE = new Rdf2GoCore.Options().noCache();
+		public static final Options NO_CACHE_NO_TIMEOUT = new Rdf2GoCore.Options().noCache().timeout(Long.MAX_VALUE);
 
 		/**
 		 * Determines whether the result of the query should be cached.
@@ -1367,34 +1367,12 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		public long timeoutMillis = DEFAULT_TIMEOUT;
 		/**
 		 * The priority influences the order in which the query will be executed. However, this is only influences a
-		 * potential working queue, in case the we are temporarily not fast enough in handling all incoming queries. The
+		 * potential working queue, in case that we are temporarily not fast enough in handling all incoming queries. The
 		 * individual queries are not faster or slower, as long as they do not queue up.
 		 */
 		public double priority = DEFAULT_QUERY_PRIORITY;
 
-		private Options() {
-		}
-
-		public Options(long timeoutMillis) {
-			this.timeoutMillis = timeoutMillis;
-		}
-
-		public Options(long timeoutMillis, boolean lastFinishedEvaluation) {
-			this.timeoutMillis = timeoutMillis;
-			this.lastCachedResult = lastFinishedEvaluation;
-		}
-
-		public Options(boolean cached) {
-			this.cached = cached;
-		}
-
-		public Options(double priority) {
-			this.priority = priority;
-		}
-
-		public Options(boolean cached, long timeoutMillis) {
-			this.cached = cached;
-			this.timeoutMillis = timeoutMillis;
+		public Options() {
 		}
 
 		public Options(boolean cached, long timeoutMillis, double priority) {
@@ -1403,11 +1381,37 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			this.priority = priority;
 		}
 
-		public Options(boolean cached, long timeoutMillis, double priority, boolean lastFinishedEvaluation) {
+		public Options(boolean cached) {
 			this.cached = cached;
+		}
+
+		public Options(long timeoutMillis) {
 			this.timeoutMillis = timeoutMillis;
+		}
+
+		public Options noCache() {
+			this.cached = false;
+			return this;
+		}
+
+		public Options timeout(long maxValue) {
+			this.timeoutMillis = maxValue;
+			return this;
+		}
+
+		public Options lastCachedResult() {
+			this.lastCachedResult = true;
+			return this;
+		}
+
+		public Options lastCachedResult(boolean lastCachedResult) {
+			this.lastCachedResult = lastCachedResult;
+			return this;
+		}
+
+		public Options priority(double priority) {
 			this.priority = priority;
-			this.lastCachedResult = lastFinishedEvaluation;
+			return this;
 		}
 	}
 

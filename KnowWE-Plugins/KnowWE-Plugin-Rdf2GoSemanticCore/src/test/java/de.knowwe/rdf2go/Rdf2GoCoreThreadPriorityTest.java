@@ -69,7 +69,7 @@ public class Rdf2GoCoreThreadPriorityTest {
 		for (int i = 0; i < PARALLEL_THREADS; i++) {
 			final int index = i;
 			executorService.execute(() -> {
-				Rdf2GoCore.Options options = new Rdf2GoCore.Options(false, 10000000, Math.random());
+				Rdf2GoCore.Options options = new Rdf2GoCore.Options().noCache().timeout(10000000).priority(Math.random());
 				core.sparqlSelect(query, options);
 				Stopwatch stopwatch = new Stopwatch();
 				synchronized (lastPriority) {

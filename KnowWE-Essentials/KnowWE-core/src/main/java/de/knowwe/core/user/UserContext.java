@@ -140,13 +140,6 @@ public interface UserContext {
 	ArticleManager getArticleManager();
 
 	/**
-	 * Returns if asynchronous rendering should be executed
-	 *
-	 * @return true if asynchronous rendering shall be executed, false otherwise
-	 */
-	boolean allowAsynchronousRendering();
-
-	/**
 	 * Returns if a preview version is rendered when editing article
 	 *
 	 * @return true, if preview is rendered, false otherwise

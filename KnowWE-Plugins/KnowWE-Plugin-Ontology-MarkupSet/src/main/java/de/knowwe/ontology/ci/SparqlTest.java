@@ -31,7 +31,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public abstract class SparqlTest<T> extends AbstractTest<T> implements ResultRenderer {
 
-	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options(true, 60000, 100);
+	private static final Rdf2GoCore.Options OPTIONS = new Rdf2GoCore.Options().timeout(60000).priority(100);
 
 	protected TupleQueryResult sparqlSelect(Rdf2GoCore core, String actualSparqlString, Rdf2GoCore.Options options) {
 		return core.sparqlSelect(actualSparqlString, options);

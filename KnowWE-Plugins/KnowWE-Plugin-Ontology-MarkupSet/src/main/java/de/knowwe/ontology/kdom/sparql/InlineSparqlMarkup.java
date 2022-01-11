@@ -16,16 +16,21 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.types.LinkType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.AsyncPreviewRenderer;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.ontology.sparql.SparqlMarkupType;
 import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.SparqlCache;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 import static de.knowwe.kdom.renderer.AsynchronousRenderer.ASYNCHRONOUS;
@@ -100,7 +105,35 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 
 	public InlineSparqlMarkup() {
 		super(MARKUP);
-		this.setRenderer(new AsynchronousRenderer((section, user, result) -> {
+		this.setRenderer(new AsynchronousRenderer(new InlineSparqlRenderer(), true));
+	}
+
+	private static class InlineSparqlRenderer implements Renderer, AsyncPreviewRenderer {
+
+		@Override
+		public boolean shouldRenderAsynchronous(Section<?> section, UserContext user) {
+			Section<SparqlNameReference> reference = Sections.successor(
+					DefaultMarkupType.getContentSection(section), SparqlNameReference.class);
+			if (reference == null) return true;
+			Rdf2GoCompiler compiler = Compilers.getCompiler(user, section, Rdf2GoCompiler.class);
+			if (compiler == null) return true;
+			Section<SparqlMarkupType> referencedSection = reference.get().getReferencedSection(compiler, reference);
+			if (referencedSection == null) return true;
+			String query = $(referencedSection).successor(SparqlContentType.class).mapFirst(Section::getText);
+			if (query == null) return true;
+			Rdf2GoCore core = compiler.getRdf2GoCore();
+			query = Rdf2GoUtils.createSparqlString(core, query);
+			SparqlCache.State cacheState = core.getCacheState(query);
+			return cacheState != SparqlCache.State.available;
+		}
+
+		@Override
+		public void renderAsyncPreview(Section<?> section, UserContext user, RenderResult result) {
+			result.appendHtml(Icon.LOADING.addClasses("asynchronSmall").toHtml());
+		}
+
+		@Override
+		public void render(Section<?> section, UserContext user, RenderResult result) {
 			String separator = DefaultMarkupType.getAnnotation(section, SEPARATOR);
 			String rowSeparator = DefaultMarkupType.getAnnotation(section, ROW_SEPARATOR);
 			String countString = DefaultMarkupType.getAnnotation(section, COUNT);
@@ -137,15 +170,15 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 					throw new Exception("No compiler found.");
 				}
 
-				String query = $(referencedSection).successor(SparqlContentType.class).mapFirst(Section::getText);
-				long timeout = SparqlContentType.getTimeout(referencedSection);
 				Rdf2GoCore core = compiler.getRdf2GoCore();
+				String query = $(referencedSection).successor(SparqlContentType.class).mapFirst(Section::getText);
 				query = Rdf2GoUtils.createSparqlString(core, query);
+				long timeout = SparqlContentType.getTimeout(referencedSection);
 
 				// we add addtional info for testability
 				result.appendHtmlTag("span", "class", "inline-sparql", "name", reference.get(SparqlNameReference::getTermName));
 
-				TupleQueryResult resultTable = core.sparqlSelect(query, new Rdf2GoCore.Options(timeout));
+				TupleQueryResult resultTable = core.sparqlSelect(query, new Rdf2GoCore.Options().timeout(timeout));
 
 				Iterator<BindingSet> rowIterator = resultTable.iterator();
 				List<String> variables = resultTable.getBindingNames();
@@ -199,6 +232,6 @@ public class InlineSparqlMarkup extends DefaultMarkupType {
 			catch (Exception e) {
 				result.appendHtmlElement("span", e.getMessage());
 			}
-		}, true));
+		}
 	}
 }

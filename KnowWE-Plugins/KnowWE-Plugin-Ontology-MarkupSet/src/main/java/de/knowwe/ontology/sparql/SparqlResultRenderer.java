@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
-import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.semanticcore.utils.IndexedResultTableModel;
 import com.denkbares.semanticcore.utils.ResultTableHierarchy;
 import com.denkbares.semanticcore.utils.TableRow;
@@ -120,7 +120,7 @@ public class SparqlResultRenderer {
 		return opts.getRdf2GoCore().getCacheState(query) != SparqlCache.State.available;
 	}
 
-	public void renderSparqlResult(Section<? extends SparqlType> section, UserContext user, RenderResult result, boolean asyncPreview) {
+	public void renderSparqlResult(Section<? extends SparqlType> section, UserContext user, RenderResult result, boolean renderPreview) {
 
 		String query = section.get().getSparqlQuery(section, user);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
@@ -131,15 +131,18 @@ public class SparqlResultRenderer {
 		}
 
 		SparqlRenderResult renderResult;
-
-		CachedTupleQueryResult qrt = null;
+		TupleQueryResult qrt = null;
+		// in case we render preview for async renderer OR if we are just navigating pagination/filtering,
+		// make sure to use cached result
+		boolean useLastCachedResult = renderPreview || PaginationRenderer.isPaginationRerendering(user);
+		Rdf2GoCore.Options options = new Rdf2GoCore.Options().timeout(opts.getTimeout())
+				.lastCachedResult(useLastCachedResult);
 		try {
-			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
-					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout(), asyncPreview));
+			qrt = opts.getRdf2GoCore().sparqlSelect(query, options);
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {
-			if (asyncPreview) {
+			if (renderPreview) {
 				result.appendHtml(Icon.LOADING.addClasses("asynchronNormal").toHtml());
 			}
 			else {
@@ -147,7 +150,7 @@ public class SparqlResultRenderer {
 			}
 		}
 		if (qrt != null) {
-			if (asyncPreview) {
+			if (renderPreview) {
 				result.appendHtmlTag("span", "class", "async-preview-info warning");
 				result.appendHtml(Icon.LOADING.addClasses("asynchronSmall").toHtml());
 				result.appendHtml(" Database has changed. Showing previous result while rerunning query...");
@@ -273,7 +276,7 @@ public class SparqlResultRenderer {
 	 * @return html table with all results of qrt and size of qrt
 	 * @created 06.12.2010
 	 */
-	public SparqlRenderResult getSparqlRenderResult(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
+	public SparqlRenderResult getSparqlRenderResult(TupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
 		if (section.getArticleManager() != null) {
 			Compilers.awaitTermination(section.getArticleManager().getCompilerManager());
 		}
@@ -287,7 +290,7 @@ public class SparqlResultRenderer {
 		}
 	}
 
-	private SparqlRenderResult renderQueryResultLocked(CachedTupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
+	private SparqlRenderResult renderQueryResultLocked(TupleQueryResult qrt, RenderOptions opts, UserContext user, Section<?> section) {
 
 		RenderResult renderResult = new RenderResult(user);
 		if (isEmpty(qrt)) {
@@ -480,7 +483,7 @@ public class SparqlResultRenderer {
 		return skip;
 	}
 
-	private boolean isEmpty(CachedTupleQueryResult qrt) {
+	private boolean isEmpty(TupleQueryResult qrt) {
 		if (qrt.getBindingSets().isEmpty()) {
 			return true;
 		}
@@ -507,10 +510,9 @@ public class SparqlResultRenderer {
 		boolean isTree = opts.isTree();
 		String query = section.get().getSparqlQuery(section, user);
 
-		CachedTupleQueryResult qrt = null;
+		TupleQueryResult qrt = null;
 		try {
-			qrt = (CachedTupleQueryResult) opts.getRdf2GoCore()
-					.sparqlSelect(query, new Rdf2GoCore.Options(opts.getTimeout()));
+			qrt = opts.getRdf2GoCore().sparqlSelect(query, new Rdf2GoCore.Options().timeout(opts.getTimeout()));
 			qrt = section.get().postProcessResult(qrt, user, opts);
 		}
 		catch (RuntimeException e) {

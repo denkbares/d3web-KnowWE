@@ -182,6 +182,12 @@
         cache: false,
         data: data
       }).success(function(data, status, jqXHR) {
+        if (data === "") {
+          if (showGlobalProcessingState()) {
+            KNOWWE.core.util.updateProcessingState(-1);
+          }
+          return; // nothing to rerender
+        }
         if (checkReplaceNeeded) {
           if (!checkReplaceNeeded.call(this, data, status, jqXHR)) {
             return

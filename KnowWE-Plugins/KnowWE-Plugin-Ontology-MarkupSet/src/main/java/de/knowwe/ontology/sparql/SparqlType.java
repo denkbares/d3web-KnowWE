@@ -19,7 +19,7 @@
 
 package de.knowwe.ontology.sparql;
 
-import com.denkbares.semanticcore.CachedTupleQueryResult;
+import com.denkbares.semanticcore.TupleQueryResult;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -38,7 +38,7 @@ public interface SparqlType extends Type {
 
 	RenderOptions getRenderOptions(Section<? extends SparqlType> section, UserContext context);
 
-	default CachedTupleQueryResult postProcessResult(CachedTupleQueryResult queryResultTable, UserContext context, RenderOptions opts) {
+	default TupleQueryResult postProcessResult(TupleQueryResult queryResultTable, UserContext context, RenderOptions opts) {
 		return queryResultTable;
 	}
 }

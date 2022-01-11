@@ -66,7 +66,7 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 		render(section, user, result, false);
 	}
 
-	private void render(Section<?> section, UserContext user, RenderResult result, boolean asyncPreview) {
+	private void render(Section<?> section, UserContext user, RenderResult result, boolean renderPreview) {
 		Section<SparqlType> sparqlTypeSection = Sections.cast(section, SparqlType.class);
 		Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(user, markupSection);
@@ -144,7 +144,7 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 			RenderOptions opts = sparqlTypeSection.get().getRenderOptions(sparqlTypeSection, user);
 			try {
 				String query = sparqlTypeSection.get().getSparqlQuery(sparqlTypeSection, user);
-				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, new Rdf2GoCore.Options(opts.getTimeout()));
+				boolean askResult = opts.getRdf2GoCore().sparqlAsk(query, new Rdf2GoCore.Options().timeout(opts.getTimeout()));
 				result.appendHtml("<div class='sparqlAsk' sparqlSectionId='" + opts.getId() + "'>");
 				if (opts.isBorder()) result.appendHtml("<div class='border'>");
 				result.append(Boolean.valueOf(askResult).toString());
@@ -157,7 +157,7 @@ public class SparqlContentRenderer implements AsyncPreviewRenderer {
 		}
 		else {
 			SparqlResultRenderer.getInstance()
-					.renderSparqlResult(sparqlTypeSection, user, result, asyncPreview);
+					.renderSparqlResult(sparqlTypeSection, user, result, renderPreview);
 		}
 		if ("true".equalsIgnoreCase(showQueryFlag)) {
 			// we need an opening html element around all the content as
