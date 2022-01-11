@@ -124,13 +124,14 @@ public class JSPWikiConnector implements WikiConnector {
 		return articleTitle + "/" + fileName;
 	}
 
-	private Engine getEngine() {
+	public Engine getEngine() {
 		return engine;
 	}
 
-	private PageManager getPageManager() {
+	public PageManager getPageManager() {
 		return getEngine().getManager(PageManager.class);
 	}
+
 
 	/**
 	 * We need this method, because there is the possibility of an IllegalThreadStateException while initializing the
@@ -271,7 +272,7 @@ public class JSPWikiConnector implements WikiConnector {
 		return users;
 	}
 
-	private UserManager getUserManager() {
+	public UserManager getUserManager() {
 		return engine.getManager(UserManager.class);
 	}
 
@@ -312,7 +313,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
-	private AttachmentManager getAttachmentManager() {
+	public AttachmentManager getAttachmentManager() {
 		return this.engine.getManager(AttachmentManager.class);
 	}
 
@@ -866,7 +867,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 	}
 
-	private AuthorizationManager getAuthorizationManager() {
+	public AuthorizationManager getAuthorizationManager() {
 		return getEngine().getManager(AuthorizationManager.class);
 	}
 
