@@ -635,6 +635,20 @@ td .information, td .info, td .warning, td .error {
 #attach {
 }
 
+.attach-name .attachment {
+	word-wrap: normal;
+}
+
+.slimbox-attachments .attach-type span {
+	padding-right: 4px;
+}
+
+#info .dropdown-menu .btn .badge {
+	top: -2px;
+	padding: 1px 5px;
+	margin-left: 3px;
+}
+
 /* upload submit button */
 #upload {
 	float: left;
