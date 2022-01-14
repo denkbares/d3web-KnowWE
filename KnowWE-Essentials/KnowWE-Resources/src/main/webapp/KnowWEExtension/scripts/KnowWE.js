@@ -498,8 +498,9 @@ KNOWWE.core.util = function () {
 		},
 
 		isHaddockTemplate: function () {
-			// the haddock template is the default template with jspwiki 2.11
-			return KNOWWE.core.util.getTemplate() === "default"
+			// haddock template is the default template with jspwiki 2.11, but also consider outdated configs
+			let template = KNOWWE.core.util.getTemplate();
+			return template === "default" || template === "haddock";
 		},
 
 		getContainerSelector: function () {
