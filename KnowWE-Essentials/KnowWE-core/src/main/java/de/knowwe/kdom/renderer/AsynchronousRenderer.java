@@ -56,7 +56,7 @@ public class AsynchronousRenderer implements Renderer {
 
 	protected void renderPreview(Section<?> section, UserContext user, RenderResult result) {
 		String id = section.getID();
-		String[] attributes = new String[] { "class", ASYNCHRON_RENDERER, "id", id, "rel", "rel=\"{id:'" + id + "'}\"" };
+		String[] attributes = new String[] { "class", ASYNCHRON_RENDERER, "sectionId", id, "rel", "rel=\"{id:'" + id + "'}\"" };
 
 		result.appendHtmlTag("div", attributes);
 		if (decoratedRenderer instanceof AsyncPreviewRenderer) {
