@@ -38,6 +38,7 @@ let doInit = true;
  * Namespace: KNOWWE.core.plugin.dropZone for debugging d3web expressions in KnowWE
  */
 KNOWWE.core.plugin.dropZone = function() {
+  let attachMessage = "Drop file(s) here to attach to current page";
 
   function handleDragOver(event) {
     if (!isEventWithFiles(event)) return;
@@ -46,7 +47,7 @@ KNOWWE.core.plugin.dropZone = function() {
     setDragOverStyle(event.target);
     const dropIndicator = jq$(event.target).closest('.dropzone').find(".drop-indicator").first();
     if (dropIndicator.length === 0) return;
-    dropIndicator[0].addEventListener('dragleave', handleDragLeave);
+    this.addEventListener('mouseleave', handleDragLeave);
     event.dataTransfer.dropEffect = 'copy';
   }
 
@@ -77,7 +78,7 @@ KNOWWE.core.plugin.dropZone = function() {
       } else {
         setClass(event.target, "uploading", "Not a valid attachment...");
         setTimeout(function() {
-          resetStyle(event.target, "Drop attachment(s) here");
+          resetStyle(event.target, attachMessage);
         }, 1000);
         return null;
       }
@@ -108,13 +109,13 @@ KNOWWE.core.plugin.dropZone = function() {
         }, 1000);
       } else {
         setTimeout(function() {
-          resetStyle(event.target, "Drop attachment(s) here");
+          resetStyle(event.target, attachMessage);
         }, 1000);
         if (event.callback) event.callback();
       }
     }, function(data) {
       KNOWWE.notification.error(data.responseText);
-      resetStyle(event.target, "Drop attachment(s) here");
+      resetStyle(event.target, attachMessage);
     });
   }
 
@@ -133,6 +134,12 @@ KNOWWE.core.plugin.dropZone = function() {
 
   function handleDropToExisting(event) {
     if (!isEventWithFiles(event)) return;
+    if (!jq$(event.toElement).closest('.box-input').exists()) {
+      event.preventDefault();
+      event.stopPropagation();
+      handleDragLeave(event);
+      return;
+    }
     event.reload = true;
     const uploadData = prepareUploadData(event);
     ajaxData(uploadData, event);
@@ -222,16 +229,16 @@ KNOWWE.core.plugin.dropZone = function() {
     },
 
     initAttachToExisting: function() {
-      KNOWWE.core.plugin.dropZone.addDropZoneTo('div.page', "Drop attachment(s)", handleDropToExisting);
+      KNOWWE.core.plugin.dropZone.addDropZoneTo('.content.active', attachMessage, handleDropToExisting);
     },
 
-		addDropZoneTo: function (elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
-			if (!actionUrl) actionUrl = 'attach';
-			if (!mode) mode = "full-height";
-			if (typeof multiple === "undefined") multiple = true;
-			if (!KNOWWE.core.util.isHaddockTemplate() || !KNOWWE.core.util.canWrite()) return;
+    addDropZoneTo: function(elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
+      if (!actionUrl) actionUrl = 'attach';
+      if (!mode) mode = "full-height";
+      if (typeof multiple === "undefined") multiple = true;
+      if (!KNOWWE.core.util.isHaddockTemplate() || !KNOWWE.core.util.canWrite()) return;
 
-			const elements = jq$(elementSelector);
+      const elements = jq$(elementSelector);
       attachDropZoneToElement(elements, actionUrl, multiple, title, mode);
 
       elements.each(function() {
