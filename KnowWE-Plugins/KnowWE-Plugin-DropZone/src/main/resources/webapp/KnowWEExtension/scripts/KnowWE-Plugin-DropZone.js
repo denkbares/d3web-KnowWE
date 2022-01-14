@@ -38,7 +38,6 @@ let doInit = true;
  * Namespace: KNOWWE.core.plugin.dropZone for debugging d3web expressions in KnowWE
  */
 KNOWWE.core.plugin.dropZone = function() {
-  let attachMessage = "Drop file(s) here to attach to current page";
 
   function handleDragOver(event) {
     if (!isEventWithFiles(event)) return;
@@ -113,8 +112,8 @@ KNOWWE.core.plugin.dropZone = function() {
         }, 1000);
         if (event.callback) event.callback();
       }
-    }, function(data) {
-      KNOWWE.notification.error(data.responseText);
+    }, function() {
+      KNOWWE.notification.error(null, "Unable to upload dropped file(s)");
       resetStyle(event.target, attachMessage);
     });
   }
@@ -229,7 +228,7 @@ KNOWWE.core.plugin.dropZone = function() {
     },
 
     initAttachToExisting: function() {
-      KNOWWE.core.plugin.dropZone.addDropZoneTo('.content.active', attachMessage, handleDropToExisting);
+      KNOWWE.core.plugin.dropZone.addDropZoneTo('.content.active', "Drop file(s) here to attach to current page", handleDropToExisting);
     },
 
     addDropZoneTo: function(elementSelector, title, dropHandlerCallback, actionUrl, mode, multiple) {
