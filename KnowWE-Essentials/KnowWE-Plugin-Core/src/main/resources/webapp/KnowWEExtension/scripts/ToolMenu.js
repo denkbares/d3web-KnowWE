@@ -127,16 +127,24 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 };
 
 ToolMenu.prototype.getToolMenuHtml = function (node) {
-	let toolMenuIdentifier = jq$(node).attr('toolMenuIdentifier');
+	let $node = jq$(node);
+
+	let toolMenuIdentifier = $node.attr('toolMenuIdentifier');
+	if (!toolMenuIdentifier) {
+		toolMenuIdentifier = $node.data('identifier'); // some compatibility for saner attribute names
+	}
 	if (!this.cache[toolMenuIdentifier]) {
 		let toolMenuAction = 'GetToolMenuAction';
-		const specialAction = jq$(node).attr('toolMenuAction');
+		let specialAction = $node.attr('toolMenuAction');
+		if (!specialAction) {
+			specialAction = $node.data('action');
+		}
 		if (specialAction) {
 			toolMenuAction = specialAction;
 		}
 
 		let locationName = "default";
-		if (jq$(node).parents(".termbrowser").exists()) {
+		if ($node.parents(".termbrowser").exists()) {
 			locationName = "termbrowser";
 		}
 
@@ -158,8 +166,9 @@ ToolMenu.prototype.getToolMenuHtml = function (node) {
 		const parsedResponse = JSON.parse(ajaxCall.getResponse());
 		this.cache[parsedResponse.sectionId] = parsedResponse.menuHTML;
 		if (specialAction) {
-			jq$(node).removeAttr('toolMenuAction');
-			jq$(node).attr('toolMenuIdentifier', parsedResponse.sectionId);
+			$node.removeAttr('toolMenuAction');
+			$node.removeData('action');
+			$node.attr('toolMenuIdentifier', parsedResponse.sectionId);
 			toolMenuIdentifier = parsedResponse.sectionId;
 		}
 	}
