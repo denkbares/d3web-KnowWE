@@ -55,8 +55,8 @@ a.logo.pull-left {
 	white-space: nowrap;
 	overflow: hidden;
 	/* Shows image */
-	margin-left: -3px;
-	margin-top: 7px;
+	margin-left: -8px;
+	margin-top: 3px;
 	background: url(../../../../KnowWEExtension/images/knowwe_logo.png) no-repeat;
 	background-size: contain;
 	height: 50px;
@@ -2606,7 +2606,7 @@ li.findpages .btn {
 	z-index: 1001;
 }
 
-.header  .navigation {
+.header .navigation {
 	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);
 	background-color: #f9f9f9;
 }
