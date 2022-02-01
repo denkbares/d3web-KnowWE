@@ -42,6 +42,8 @@ import de.knowwe.core.kdom.parsing.Section;
  * @created 01.02.22
  */
 public class ImportMarker {
+
+	public static final String REQUEST_FROM = "requestFrom";
 	private final Date creationDate;
 	private final String source;
 
@@ -82,7 +84,7 @@ public class ImportMarker {
 	public static void markAsImported(Section<? extends Type> section, UserActionContext context) {
 		Set<ImportMarker> markers = section.computeIfAbsent(null, ImportMarker.class.getName(),
 				(c, s) -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
-		ImportMarker marker = new ImportMarker(new Date(), context.getParameter("requestFrom"));
+		ImportMarker marker = new ImportMarker(new Date(), context.getParameter(REQUEST_FROM));
 		markers.remove(marker);
 		markers.add(marker);
 	}

@@ -152,7 +152,13 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			reference += Strings.encodeURL("#" + sectionName);
 		}
 
-		String url = wikiAnnotation + command + reference;
+		String from = "";
+		String applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
+		if (applicationName != null && !"knowwe".equalsIgnoreCase(applicationName)) {
+			from = "&" + ImportMarker.REQUEST_FROM + "=" + applicationName;
+		}
+
+		String url = wikiAnnotation + command + reference + from;
 
 		try {
 			return new URL(url);
