@@ -66,5 +66,22 @@
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 	</extension>
- 
- </plugin>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Renderer" id="ImportedHeaderRenderer">
+		<parameter id="class" value="de.knowwe.include.ImportedHeaderRenderer" />
+		<parameter id="name" value="ImportedHeaderRenderer" />
+		<parameter id="description" value="Renderer ImportedHeaderRenderer" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="4" />
+		<parameter id="scope" value="HeaderType" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="PageAppendHandler" id="ImportMarkerPageAppender">
+		<parameter id="class" value="de.knowwe.include.ImportMarkerPageAppender" />
+		<parameter id="name" value="RightColumnRenderer" />
+		<parameter id="description" value="PageAppendHandler ImportMarkerPageAppender" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+</plugin>

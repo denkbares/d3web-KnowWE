@@ -67,6 +67,7 @@ public class GetWikiSectionTextAction extends GetSectionTextAction {
 				else {
 					sectionText.append(referencedSection.getText());
 				}
+				ImportMarker.markAsImported(referencedSection, context);
 				writeFile(context, sectionText.toString(), wikiReference, lastModified);
 			}
 			else {
