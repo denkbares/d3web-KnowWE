@@ -37,7 +37,7 @@ public interface PageAppendHandler {
 	 * Returns the content to be rendered out with the wiki page. Content has to
 	 * be returned in (masked) HTML or wiki-syntax
 	 */
-	void append(Article title, UserContext user, RenderResult result);
+	void append(Article article, UserContext user, RenderResult result);
 
 	/**
 	 * Specifies whether the content should be inserted at the top/beginning
