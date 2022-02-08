@@ -47,6 +47,7 @@ import org.apache.wiki.api.plugin.Plugin;
 import org.apache.wiki.api.providers.AttachmentProvider;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.attachment.AttachmentManager;
+import org.apache.wiki.content.PageRenamer;
 import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEngineEvent;
 import org.apache.wiki.event.WikiEvent;
@@ -614,6 +615,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				this.m_engine = event.getSrc();
 				initEnvironmentIfNeeded();
 				initializeAllArticles();
+				registerLateListeners();
 				wikiEngineInitialized = true;
 			}
 		}
@@ -630,6 +632,14 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			}
 			EventManager.getInstance().fireEvent(articleUpdateEvent);
 		}
+	}
+
+	/**
+	 * Some managers are not available immediately, so register a bit later
+	 */
+	private void registerLateListeners() {
+		PageRenamer manager = getEngine().getManager(PageRenamer.class);
+		WikiEventManager.addWikiEventListener(manager, this);
 	}
 
 	/**
