@@ -361,30 +361,30 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		return null;
 	}
 
-//	@Override
-//	public Collection<Attachment> listAttachments(WikiPage page) throws ProviderException {
-//		try {
-//			gitVersioningFileProvider.canWriteFileLock();
-//			List<Attachment> ret = new ArrayList<>();
-//			File attachmentDir = findPageDir(page.getName());
-//			if (attachmentDir.exists()) {
-//
-//				File[] files = attachmentDir.listFiles(file -> !file.isHidden());
-//				if (files != null) {
-//					for (File file : files) {
-//						Attachment attachmentInfo = getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION);
-//						if (attachmentInfo != null) {
-//							ret.add(attachmentInfo);
-//						}
-//					}
-//				}
-//			}
-//			return ret;
-//		}
-//		finally {
-//			gitVersioningFileProvider.writeFileUnlock();
-//		}
-//	}
+	@Override
+	public List<Attachment> listAttachments(Page page) throws ProviderException {
+		try {
+			gitVersioningFileProvider.canWriteFileLock();
+			List<Attachment> ret = new ArrayList<>();
+			File attachmentDir = findPageDir(page.getName());
+			if (attachmentDir.exists()) {
+
+				File[] files = attachmentDir.listFiles(file -> !file.isHidden());
+				if (files != null) {
+					for (File file : files) {
+						Attachment attachmentInfo = getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION);
+						if (attachmentInfo != null) {
+							ret.add(attachmentInfo);
+						}
+					}
+				}
+			}
+			return ret;
+		}
+		finally {
+			gitVersioningFileProvider.writeFileUnlock();
+		}
+	}
 
 	@Override
 	public Collection<Attachment> findAttachments(QueryItem[] query) {
