@@ -107,10 +107,12 @@ public class WikiContentCleaner {
 			}
 			boolean copy = false;
 			boolean limit = false;
+			boolean matched = false;
 			for (Map.Entry<String, Integer> entry : maxNOfPatterns.entrySet()) {
 				String regex = entry.getKey();
 				int remaining = entry.getValue();
 				if (fileName.matches(regex)) {
+					matched = true;
 					maxNOfPatterns.put(regex, remaining - 1);
 					if (remaining > 0) {
 						copy = true;
@@ -121,7 +123,8 @@ public class WikiContentCleaner {
 					break;
 				}
 			}
-			if (copy || knownFiles.stream().anyMatch(regex -> fileName.matches(regex) || fileName.startsWith(regex))) {
+			if (copy || (!matched && (knownFiles.isEmpty() || knownFiles.stream()
+					.anyMatch(regex -> fileName.matches(regex) || fileName.startsWith(regex))))) {
 				File target = new File(targetFolder, fileName);
 				if (sourceFile.isFile()) {
 					String source = Strings.readFile(sourceFile);
