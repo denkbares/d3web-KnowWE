@@ -602,26 +602,23 @@ KNOWWE.core.plugin.recompile = function() {
 
 KNOWWE.core.plugin.switchCompiler = function() {
 
-  function addClickAction(link) {
-    jq$(link).click(function(event) {
-      var parentSelector = jq$(this).attr('data-click-parent');
-      var parent = jq$(parentSelector);
-      var openParent = jq$('.open-click-parent');
-      // Close already open parents
-      if (!openParent.is(parent)) {
-        openParent.removeClass('open open-click-parent');
-      }
-      if (parent.hasClass('open')) {
-        parent.removeClass('open open-click-parent');
-      } else {
-        parent.addClass('open open-click-parent');
-        if (parent.find('input').length > 0) {
-          parent.find("input:first").focus();
-        }
+  function addHoverAction(compilerSwitch) {
+    jq$(compilerSwitch).hover(function(event) {
+      var parent = jq$(this);
+      parent.addClass('open');
+      if (parent.find('input').length > 0) {
+        parent.find("input:first").focus();
       }
       event.preventDefault();
       event.stopPropagation();
       return false;
+    }, function(event) {
+      var parent = jq$(this);
+      if (parent.hasClass('open')) {
+        parent.removeClass('open');
+      }
+      event.preventDefault();
+      event.stopPropagation();
     });
   }
 
@@ -650,11 +647,10 @@ KNOWWE.core.plugin.switchCompiler = function() {
       let link = new Element('a', {
         'id': 'selectedCompiler',
         'href': '#',
-        'data-click-parent': '#compilerSwitch'
       });
       let list = new Element('ul', {
         'id': 'compilerList',
-        'class': 'dropdown-menu pull-right'
+        'class': 'dropdown-menu pull-right',
       });
       // get the inner html
       jq$.ajax("action/GetCompilerSwitchContentAction", {
@@ -681,7 +677,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
 
             if (compilers.length > 1) {
               // only add dropdown to select
-              addClickAction(link);
+              addHoverAction(compilerSwitch);
               list.innerHTML = getCompilerListContent(compilers, defaultCompiler);
               compilerSwitch.append(list);
             }
