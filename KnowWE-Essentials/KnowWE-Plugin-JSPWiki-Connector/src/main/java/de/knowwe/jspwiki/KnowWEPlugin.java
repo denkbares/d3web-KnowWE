@@ -234,7 +234,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			throw new IllegalStateException("We expect a wiki engine, otherwise KnowWE can't function");
 		}
 		WikiContext wikiContext = (WikiContext) context;
-		if (context.getHttpRequest() != null && context.getHttpRequest().getParameter("action") != null) {
+		if (context.getHttpRequest() != null
+				&& !wikiContext.getJSP().contains("Workflow")
+				&& context.getHttpRequest().getParameter("action") != null) {
 			// we don't want to trigger our KnowWE compilation and render pipeline,
 			// if we are just executing some action (ajax from client)
 			return content;
@@ -243,7 +245,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			return content;
 		}
 
-		/* creating KnowWEUserContext with username and requestParamteters */
+		/* creating KnowWEUserContext with username and requestParameters */
 		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
 		if (httpRequest == null) {
 			// When a page is rendered the first time, the request is null.
