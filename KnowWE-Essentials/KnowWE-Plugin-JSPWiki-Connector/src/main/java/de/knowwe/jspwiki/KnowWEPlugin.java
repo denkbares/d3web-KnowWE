@@ -235,7 +235,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		}
 		WikiContext wikiContext = (WikiContext) context;
 		if (context.getHttpRequest() != null
-				&& !wikiContext.getJSP().contains("Workflow")
+				&& !isWorkflow(wikiContext)
 				&& context.getHttpRequest().getParameter("action") != null) {
 			// we don't want to trigger our KnowWE compilation and render pipeline,
 			// if we are just executing some action (ajax from client)
@@ -344,6 +344,10 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			Log.severe("Exception while compiling and rendering article '" + title + "'", e);
 			return getExceptionRendering(userContext, e);
 		}
+	}
+
+	private boolean isWorkflow(WikiContext wikiContext) {
+		return wikiContext.getJSP() != null &&  wikiContext.getJSP().contains("Workflow");
 	}
 
 	public boolean isSupportArticle(String title) {
