@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 denkbares GmbH, Germany
+ * Copyright (C) 2022 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -137,13 +137,15 @@ KNOWWE.editCommons = function () {
 			xhr.open("POST", url, async);
 			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.onreadystatechange = function () {
-				if (xhr.readyState === 4 && xhr.status === 200) {
-					window.onbeforeunload = null;
-					window.onunload = null;
-					if (fn) fn();
-					_EC.hideAjaxLoader();
-				} else {
-					_EC.onErrorBehavior.call(xhr);
+				if (xhr.readyState === 4) {
+					if (xhr.status === 200) {
+						window.onbeforeunload = null;
+						window.onunload = null;
+						if (fn) fn();
+						_EC.hideAjaxLoader();
+					} else {
+						_EC.onErrorBehavior.call(xhr);
+					}
 				}
 			};
 			xhr.send(JSON.stringify(sectionData));
@@ -188,7 +190,7 @@ KNOWWE.editCommons = function () {
 			if (_EC.isModifier(event) || _EC.isDoubleModifier(event)) {
 				// Q, but not with alt gr (= alt + ctrl)  to allow for @ in windows
 				if (event.which === 81 && (!event.altKey || !event.ctrlKey)) {
-					return true
+					return true;
 				}
 				if (event.which === 27) { // ESC
 					return true;
