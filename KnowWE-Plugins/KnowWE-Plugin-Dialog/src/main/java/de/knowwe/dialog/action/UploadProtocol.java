@@ -33,7 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.denkbares.progress.DummyProgressListener;
 import com.denkbares.strings.Locales;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.core.records.SessionConversionFactory;
@@ -56,6 +57,7 @@ import static de.knowwe.dialog.action.InitWiki.PARAM_LANGUAGE;
  * @author Jonas Müller
  */
 public class UploadProtocol extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(UploadProtocol.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {

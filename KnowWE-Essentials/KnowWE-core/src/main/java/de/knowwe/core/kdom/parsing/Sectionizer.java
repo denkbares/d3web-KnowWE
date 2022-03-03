@@ -26,7 +26,8 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.kdom.ExclusiveType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.PlainText;
@@ -40,6 +41,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  * @author Jochen, Albrecht
  */
 public class Sectionizer implements Parser {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Sectionizer.class);
 
 	private final Type type;
 
@@ -98,7 +100,7 @@ public class Sectionizer implements Parser {
 				results = finder.lookForSections(text, parent, type);
 			}
 			catch (Exception e) {
-				Log.severe("Unexpected error while sectionizing", e);
+				LOGGER.error("Unexpected error while sectionizing", e);
 			}
 		}
 
@@ -116,7 +118,7 @@ public class Sectionizer implements Parser {
 
 			if (result.getStart() < lastEnd || result.getStart() > result.getEnd()
 					|| result.getStart() < 0 || result.getEnd() > text.length()) {
-				Log.warning("Invalid SectionFinderResults for the Type '"
+				LOGGER.warn("Invalid SectionFinderResults for the Type '"
 						+ type.getName() + "' in parent section '" + parent.getText() + "' in article '"
 						+ parent.getTitle() + "'. Results: " + results + ". Result " + result + " will be skipped.");
 				continue;

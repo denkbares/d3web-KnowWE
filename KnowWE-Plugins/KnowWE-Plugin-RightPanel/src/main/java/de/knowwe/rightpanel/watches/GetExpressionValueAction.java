@@ -28,7 +28,8 @@ import org.json.JSONObject;
 import com.denkbares.collections.PriorityList;
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.expression.ExpressionResolver;
@@ -42,6 +43,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * <p>
  */
 public class GetExpressionValueAction extends de.knowwe.core.action.AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GetExpressionValueAction.class);
 
 	private final static String EXPRESSION = "expressions";
 	public static final String ID = "id";
@@ -70,7 +72,7 @@ public class GetExpressionValueAction extends de.knowwe.core.action.AbstractActi
 			responseObject.write(context.getWriter());
 		}
 		catch (JSONException | IOException e) {
-			Log.severe("Exception while resolving watch expression: " + data + "\n", e);
+			LOGGER.error("Exception while resolving watch expression: " + data + "\n", e);
 		}
 
 	}

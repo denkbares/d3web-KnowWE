@@ -24,13 +24,15 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.ActionDispatcher;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.wikiConnector.NotAuthorizedException;
 
 public class JSPActionDispatcher extends ActionDispatcher {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JSPActionDispatcher.class);
 
 	private static final JSPActionDispatcher instance = new JSPActionDispatcher();
 
@@ -48,7 +50,7 @@ public class JSPActionDispatcher extends ActionDispatcher {
 		context.getParameters().put("KWikiWeb", "default_web");
 		if (action == null) {
 			String message = "Action " + action + " not found. plugin.xml configured correctly?";
-			Log.severe(message);
+			LOGGER.error(message);
 			context.sendError(500, message);
 			return;
 		}
@@ -59,12 +61,12 @@ public class JSPActionDispatcher extends ActionDispatcher {
 			context.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage(context.getAction(), context));
 		}
 		catch (Action.SendError e) {
-			Log.warning("Action aborted with an error: " + action, e);
+			LOGGER.warn("Action aborted with an error: " + action, e);
 			context.sendError(e.getHttpErrorCode(), e.getMessage());
 		}
 		catch (Throwable e) {
 			String message = "Unexpected " + e.getClass().getSimpleName() + " while executing action " + action;
-			Log.severe(message, e);
+			LOGGER.error(message, e);
 			context.sendError(500, message);
 		}
 	}
@@ -78,7 +80,7 @@ public class JSPActionDispatcher extends ActionDispatcher {
 			context.sendError(HttpServletResponse.SC_NOT_FOUND, "Unable to load action: \""
 					+ context.getActionName() + "\"");
 			context.getWriter().write("Unable to load action: \"" + context.getActionName() + "\"");
-			Log.warning("Unable to load action: \"" + context.getActionName() + "\"");
+			LOGGER.warn("Unable to load action: \"" + context.getActionName() + "\"");
 		}
 		// Execute the action
 		else if (actionInstance.isAdminAction()) {
@@ -104,7 +106,7 @@ public class JSPActionDispatcher extends ActionDispatcher {
 			);
 			context.getWriter().write("You need to be admin to execute the action: \""
 					+ context.getActionName() + "\"");
-			Log.warning("Unauthorized user tried to execute action: \"" + context.getActionName()
+			LOGGER.warn("Unauthorized user tried to execute action: \"" + context.getActionName()
 					+ "\"");
 		}
 	}

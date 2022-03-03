@@ -21,8 +21,10 @@ package de.knowwe.core;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.utils.Files;
-import com.denkbares.utils.Log;
 
 /**
  * KnowWERessourceLoader.
@@ -36,6 +38,7 @@ import com.denkbares.utils.Log;
  * @since 2010/02/15
  */
 public class ResourceLoader {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLoader.class);
 
 	public enum Type {
 		/**
@@ -233,7 +236,7 @@ public class ResourceLoader {
 
 	private void checkFileType(String file, Type type) {
 		if (!type.isValid(file)) {
-			Log.warning("The specified file '" + file + "' " +
+			LOGGER.warn("The specified file '" + file + "' " +
 					"does not seem to match the requested type " + type.name());
 		}
 	}

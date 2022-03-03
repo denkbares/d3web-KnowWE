@@ -3,18 +3,20 @@ package de.d3web.we.kdom.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.denkbares.strings.Strings;
 import de.d3web.abstraction.ActionSetQuestion;
 import de.d3web.abstraction.formula.FormulaNumberElement;
 import de.d3web.abstraction.inference.PSMethodAbstraction;
 import de.d3web.core.inference.PSAction;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.knowledge.terminology.Question;
-import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
-import de.d3web.we.kdom.auxiliary.Equals;
-import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.kdom.action.formula.CompositeFormula;
 import de.d3web.we.kdom.action.formula.FormulaNumberElementFactory;
+import de.d3web.we.kdom.auxiliary.Equals;
+import de.d3web.we.kdom.condition.QuestionNumReference;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.object.QuestionReference;
 import de.knowwe.core.kdom.Type;
@@ -35,6 +37,7 @@ import de.knowwe.kdom.sectionFinder.AllBeforeTypeSectionFinder;
  * @created 16.10.2010
  */
 public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SetQNumFormulaAction.class);
 
 	public SetQNumFormulaAction() {
 		this.setSectionFinder(new SetQuestionValueSectionFinder());
@@ -90,7 +93,7 @@ public class SetQNumFormulaAction extends D3webRuleAction<SetQuestionValue> {
 					compiler, formulaSection);
 		}
 		catch (Exception e) {
-			Log.severe("Unexpected error", e);
+			LOGGER.error("Unexpected error", e);
 			Messages.storeMessage(compiler, s, this.getClass(), Messages.error("Could not create FormulaNumberElement: "+e.getMessage()));
 		}
 

@@ -11,9 +11,10 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
@@ -21,6 +22,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.filter.SectionFilter;
 
 public class RenderResult {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RenderResult.class);
 
 	private static final String storeKey = RenderResult.class.getName();
 	private static final String[] HTML = new String[] {
@@ -493,7 +495,7 @@ public class RenderResult {
 
 	public RenderResult appendException(String message, Throwable e) {
 		appendHtmlElement("span", message, "class", "error");
-		Log.severe(message, e);
+		LOGGER.error(message, e);
 		return this;
 	}
 

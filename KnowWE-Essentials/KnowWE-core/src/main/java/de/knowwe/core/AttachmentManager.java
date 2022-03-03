@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
@@ -18,7 +20,6 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.basicType.AttachmentCompileType;
 import de.knowwe.core.kdom.basicType.AttachmentType;
@@ -40,6 +41,7 @@ import static java.util.stream.Collectors.toSet;
  * @created 23.06.16
  */
 public class AttachmentManager implements EventListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AttachmentManager.class);
 
 	private final ArticleManager articleManager;
 
@@ -106,7 +108,7 @@ public class AttachmentManager implements EventListener {
 			return section.get().getCompiledAttachment(section);
 		}
 		catch (IOException e) {
-			Log.severe("Exception while fetching attachment on page " + section.getTitle(), e);
+			LOGGER.error("Exception while fetching attachment on page " + section.getTitle(), e);
 			return null;
 		}
 	}
@@ -193,7 +195,7 @@ public class AttachmentManager implements EventListener {
 			}
 		}
 		catch (IOException e) {
-			Log.severe("Unable to compile attachment " + attachmentPath, e);
+			LOGGER.error("Unable to compile attachment " + attachmentPath, e);
 		}
 	}
 

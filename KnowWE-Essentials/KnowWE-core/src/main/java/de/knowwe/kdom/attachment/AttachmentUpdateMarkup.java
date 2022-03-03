@@ -29,9 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.ArticleManager;
@@ -60,6 +61,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @created 06.12.21
  */
 public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AttachmentUpdateMarkup.class);
 
 	public static final String INTERVAL_ANNOTATION = "interval";
 	public static final String REPLACEMENT = "replacement";
@@ -104,7 +106,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			}
 		}
 		catch (IOException e) {
-			Log.warning("Unable to get last change of attachment...", e);
+			LOGGER.warn("Unable to get last change of attachment...", e);
 		}
 		return Long.MAX_VALUE;
 	}
@@ -152,7 +154,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 		ReentrantLock lock = getLock(section);
 		if (!lock.tryLock()) {
-			Log.info("Skipped requested updated for attachment '" + Strings.trim(path)
+			LOGGER.info("Skipped requested updated for attachment '" + Strings.trim(path)
 					+ "' with resource from URL " + url + ", update already running");
 			return;
 		}
@@ -169,7 +171,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
 				State attachmentState = needsUpdate(attachment, url);
 				if (attachmentState == AttachmentMarkup.State.UP_TO_DATE) {
-					Log.fine("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
+					LOGGER.debug("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
 					return;
 				}
 
@@ -198,7 +200,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 						byte[] connectionBytes = Streams.getBytesAndClose(connectionStream);
 						byte[] attachmentBytes = Streams.getBytesAndClose(attachment.getInputStream());
 						if (Arrays.equals(connectionBytes, attachmentBytes)) {
-							Log.fine("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on content comparison).");
+							LOGGER.debug("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on content comparison).");
 							return;
 						}
 						connectionStream = new ByteArrayInputStream(connectionBytes);
@@ -219,15 +221,15 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 					articleManager.commit();
 				}
 
-				Log.info("Updated attachment '" + path + "' with resource from URL " + url);
+				LOGGER.info("Updated attachment '" + path + "' with resource from URL " + url);
 			}
 			catch (UnknownHostException e) {
-				Log.warning("Unable to reach " + url + " while trying to update attachment " + path);
+				LOGGER.warn("Unable to reach " + url + " while trying to update attachment " + path);
 			}
 			catch (Throwable e) { // NOSONAR
 				String message = e.getClass().getSimpleName() + " while trying to update attachment " + path;
 				Messages.storeMessage(section, getClass(), Messages.error(message + ": " + e.getMessage()));
-				Log.severe(message, e);
+				LOGGER.error(message, e);
 			}
 		}
 		finally {
@@ -325,7 +327,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			// check if urlDateTime is equal to unix time 0
 			// if it is, the time was not set (maybe because of server settings)
 			state = AttachmentMarkup.State.UNKNOWN;
-			Log.warning("Unable to get valid lastModified info from http connection, " +
+			LOGGER.warn("Unable to get valid lastModified info from http connection, " +
 					"cannot assess changes to resource without downloading it:\n" + url);
 		}
 		else {
@@ -420,13 +422,14 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	private static class UpdateTaskRegistrationScript extends DefaultGlobalCompiler.DefaultGlobalScript<AttachmentUpdateMarkup> {
+		private static final Logger LOGGER = LoggerFactory.getLogger(UpdateTaskRegistrationScript.class);
 
 		private static final String UPDATE_TASK_KEY = "updateTaskKey";
 		private static final Timer UPDATE_TIMER = new Timer(true);
 
 		static {
 			ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-				Log.info("Shutting down attachment update timer.");
+				LOGGER.info("Shutting down attachment update timer.");
 				UPDATE_TIMER.cancel();
 			});
 		}

@@ -37,7 +37,8 @@ import de.d3web.indication.ActionInstantIndication;
 import de.d3web.indication.ActionNextQASet;
 import de.d3web.indication.ActionSuppressAnswer;
 import de.d3web.scoring.ActionHeuristicPS;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**
@@ -51,6 +52,7 @@ import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
  * @date june 2008
  */
 public class RuleActionVerbalizer implements Verbalizer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RuleActionVerbalizer.class);
 
 	private static final ResourceBundle propertyRB = ResourceBundle.getBundle("properties.messages");
 
@@ -82,12 +84,12 @@ public class RuleActionVerbalizer implements Verbalizer {
 		// test, if targetformat is legal for this verbalizer
 
 		if (targetFormat != RenderingFormat.HTML) {
-			Log.warning("RenderingTarget" + targetFormat + " is not supported by RuleActionVerbalizer!");
+			LOGGER.warn("RenderingTarget" + targetFormat + " is not supported by RuleActionVerbalizer!");
 			return null;
 		}
 		// Test if object is legal for this verbalizer
 		if (!(o instanceof PSAction)) {
-			Log.warning("Object " + o + " couldnt be rendered by RuleActionVerbalizer!");
+			LOGGER.warn("Object " + o + " couldnt be rendered by RuleActionVerbalizer!");
 			return null;
 		}
 		// cast the given object to RuleAction

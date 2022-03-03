@@ -23,8 +23,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.TreeSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.testing.BuildResult;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
@@ -47,6 +49,7 @@ import de.knowwe.util.Icon;
  * @created 01.12.2010
  */
 public class CIDashboardRenderer extends DefaultMarkupRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIDashboardRenderer.class);
 
 	public CIDashboardRenderer() {
 		super();
@@ -92,7 +95,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			if (versionAtBuildDate < -1) return true;
 		}
 		catch (IOException e) {
-			Log.severe("Could not determine build version for date", e);
+			LOGGER.error("Could not determine build version for date", e);
 		}
 
 		String sourceTextAtBuildTime = Environment.getInstance().getWikiConnector().getArticleText(

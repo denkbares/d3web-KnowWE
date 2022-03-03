@@ -34,9 +34,10 @@ import java.util.function.BiFunction;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.AbstractType;
@@ -63,6 +64,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Jochen
  */
 public final class Section<T extends Type> implements Comparable<Section<? extends Type>> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Section.class);
 
 	/**
 	 * Stores Sections by their IDs.
@@ -248,7 +250,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		if (get() instanceof AbstractType && !(child.get() instanceof RootType)) {
 			Class<?> childTypeClass = child.get().getClass();
 			if (!Types.canHaveSuccessorOfType((AbstractType) type, childTypeClass)) {
-				Log.severe("Added section of type '"
+				LOGGER.error("Added section of type '"
 						+ childTypeClass.getSimpleName()
 						+ "' to parent section of type '"
 						+ type.getClass().getSimpleName()

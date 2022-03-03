@@ -25,8 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.KBTestUtilNewMarkup;
 import utils.TestArticleManager;
+
+import com.denkbares.plugin.test.InitPluginManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Choice;
@@ -35,8 +39,6 @@ import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.knowledge.terminology.QuestionNum;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import com.denkbares.plugin.test.InitPluginManager;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -49,6 +51,7 @@ import de.knowwe.core.kdom.Article;
  * 
  */
 public class QuestionTreeTest extends TestCase {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuestionTreeTest.class);
 
 	@Override
 	protected void setUp() throws IOException {
@@ -179,7 +182,7 @@ public class QuestionTreeTest extends TestCase {
 			}
 		}
 		else {
-			Log.warning("QuestionTest: Questions have not been tested!");
+			LOGGER.warn("QuestionTest: Questions have not been tested!");
 		}
 	}
 

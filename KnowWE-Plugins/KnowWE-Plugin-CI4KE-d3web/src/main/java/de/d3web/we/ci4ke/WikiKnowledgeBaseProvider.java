@@ -6,10 +6,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
-import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -41,11 +43,12 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 22.05.2012
  */
 public class WikiKnowledgeBaseProvider implements TestObjectProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WikiKnowledgeBaseProvider.class);
 
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String id) {
 		if (c == null) {
-			Log.warning("Class given to TestObjectProvider was 'null'");
+			LOGGER.warn("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		if (!c.equals(KnowledgeBase.class)) {

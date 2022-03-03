@@ -25,7 +25,8 @@ package de.knowwe.rdf2go;
 
 import java.util.Collection;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
@@ -40,6 +41,7 @@ import de.knowwe.core.report.Message;
  * 
  */
 public abstract class RDF2GoSubtreeHandler<C extends Rdf2GoCompiler, T extends Type> implements Rdf2GoCompileScript<C, T> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RDF2GoSubtreeHandler.class);
 
 	public abstract Collection<Message> create(C compiler, Section<T> section);
 
@@ -54,7 +56,7 @@ public abstract class RDF2GoSubtreeHandler<C extends Rdf2GoCompiler, T extends T
 			compiler.getRdf2GoCore().removeStatements(section);
 		}
 		catch (Exception e) {
-			Log.severe("Exception while removing statements for section " + section.get().getName() +
+			LOGGER.error("Exception while removing statements for section " + section.get().getName() +
 			 " " + section.getID());
 		}
 	}

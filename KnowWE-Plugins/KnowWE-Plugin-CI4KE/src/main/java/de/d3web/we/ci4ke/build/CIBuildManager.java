@@ -34,11 +34,12 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
-import com.denkbares.utils.Log;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestExecutor;
 import de.d3web.testing.TestObjectProvider;
@@ -53,6 +54,7 @@ import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIBuildManager implements EventListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIBuildManager.class);
 
 	private static CIBuildManager instance = null;
 
@@ -75,7 +77,7 @@ public class CIBuildManager implements EventListener {
 
 	static {
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
-			Log.info("Shutting down CI build executor.");
+			LOGGER.info("Shutting down CI build executor.");
 			CI_BUILD_EXECUTOR.shutdown();
 		});
 	}
@@ -93,6 +95,7 @@ public class CIBuildManager implements EventListener {
 	}
 
 	private static class CIBuildCallable implements Callable<Void> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIBuildCallable.class);
 
 		private final CIDashboard dashboard;
 		private final TestExecutor testExecutor;
@@ -111,7 +114,7 @@ public class CIBuildManager implements EventListener {
 
 		@Override
 		public Void call() {
-			Log.info("Executing new CI build for dashboard '" + dashboard.getDashboardName() + "'");
+			LOGGER.info("Executing new CI build for dashboard '" + dashboard.getDashboardName() + "'");
 			try {
 				testExecutor.run();
 
@@ -126,7 +129,7 @@ public class CIBuildManager implements EventListener {
 				deleteAttachmentTempFiles(build);
 			}
 			catch (Exception e) {
-				Log.severe("Exception while executing CI build", e);
+				LOGGER.error("Exception while executing CI build", e);
 			}
 			finally {
 				synchronized (ciBuildQueue) {
@@ -209,7 +212,7 @@ public class CIBuildManager implements EventListener {
 				ciBuildFuture.get();
 			}
 			catch (InterruptedException | ExecutionException e) {
-				Log.severe("Exception while awaiting CI Build termination", e);
+				LOGGER.error("Exception while awaiting CI Build termination", e);
 			}
 		}
 	}
@@ -228,7 +231,7 @@ public class CIBuildManager implements EventListener {
 				ciBuildFuture.get();
 			}
 			catch (InterruptedException | ExecutionException e) {
-				Log.severe("Exception while awaiting CI Build termination", e);
+				LOGGER.error("Exception while awaiting CI Build termination", e);
 			}
 		}
 	}

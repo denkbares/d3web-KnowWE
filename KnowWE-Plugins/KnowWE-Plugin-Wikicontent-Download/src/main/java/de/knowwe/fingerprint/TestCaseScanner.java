@@ -14,7 +14,8 @@ import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.TestCaseUtils;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Pair;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -25,6 +26,7 @@ import de.knowwe.testcases.ProviderTriple;
 import de.knowwe.testcases.TestCasePlayerType;
 
 public class TestCaseScanner implements Scanner {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TestCaseScanner.class);
 
 	@Override
 	public void scan(Article article, File target) throws IOException {
@@ -33,7 +35,7 @@ public class TestCaseScanner implements Scanner {
 		List<Section<TestCasePlayerType>> players = Sections.
 				successors(article.getRootSection(), TestCasePlayerType.class);
 		if (players.isEmpty()) return;
-		Log.info("Scanning cases on " + article.getTitle());
+		LOGGER.info("Scanning cases on " + article.getTitle());
 		try (PrintStream out = new PrintStream(target)) {
 			for (Section<TestCasePlayerType> player : players) {
 				List<ProviderTriple> providers = de.knowwe.testcases.TestCaseUtils.getTestCaseProviders(player);

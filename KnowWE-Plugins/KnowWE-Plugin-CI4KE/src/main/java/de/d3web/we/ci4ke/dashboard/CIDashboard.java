@@ -22,7 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.build.CIBuildCache;
@@ -40,6 +41,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  * @created 19.05.2012
  */
 public class CIDashboard {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIDashboard.class);
 
 	private final String dashboardName;
 	private final CIRenderer renderer;
@@ -196,7 +198,7 @@ public class CIDashboard {
 		catch (IOException e) {
 			// we cannot store the build as attachment
 			// so log this and continue as usual
-			Log.severe("Cannot attached build information due to internal error", e);
+			LOGGER.error("Cannot attached build information due to internal error", e);
 		}
 
 	}
@@ -210,7 +212,7 @@ public class CIDashboard {
 		}
 		catch (Exception e) {
 			if (logging) {
-				Log.warning("Unable to access build " + buildVersion);
+				LOGGER.warn("Unable to access build " + buildVersion);
 			}
 		}
 		if (build != null) {

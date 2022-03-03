@@ -29,7 +29,8 @@ import com.denkbares.events.EventManager;
 import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.compile.CompilationLocal;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageCompiler;
@@ -71,6 +72,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 17.12.2013
  */
 public class OntologyType extends DefaultMarkupPackageCompileType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyType.class);
 
 	public static final String PLUGIN_ID = "KnowWE-Plugin-Ontology-MarkupSet";
 
@@ -206,6 +208,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 	}
 
 	private static class OntologyCompilerRegistrationScript implements PackageRegistrationScript<OntologyType> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyCompilerRegistrationScript.class);
 
 		@Override
 		public void compile(PackageRegistrationCompiler compiler, Section<OntologyType> section) throws CompilerMessage {
@@ -245,7 +248,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 					return Enum.valueOf(enumClass, value);
 				}
 				catch (IllegalArgumentException e) {
-					Log.warning("'" + value + "' is not a " + enumName + ", please choose one of the following: "
+					LOGGER.warn("'" + value + "' is not a " + enumName + ", please choose one of the following: "
 							+ Strings.concat(", ", enumClass.getEnumConstants()));
 				}
 			}

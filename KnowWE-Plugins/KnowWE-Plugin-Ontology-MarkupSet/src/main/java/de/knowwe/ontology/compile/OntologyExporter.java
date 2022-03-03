@@ -35,7 +35,8 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.basicType.TimeStampType;
@@ -54,6 +55,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * Created by Albrecht on 05.02.2016.
  */
 public class OntologyExporter implements EventListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyExporter.class);
 
 	private static final int DEFAULT_EXPORT_DELAY = 20000; // 20 seconds
 	private static OntologyExporter instance = null;
@@ -137,11 +139,11 @@ public class OntologyExporter implements EventListener {
 				}
 				catch (Exception e) {
 					if (e.getCause() instanceof ClosedChannelException) {
-						Log.warning("Export of ontology from '" + compiler.getCompileSection()
+						LOGGER.warn("Export of ontology from '" + compiler.getCompileSection()
 								.getTitle() + "' aborted due to repository shutdown.");
 					}
 					else {
-						Log.severe("Unable to export ontology from '" + compiler.getCompileSection()
+						LOGGER.error("Unable to export ontology from '" + compiler.getCompileSection()
 								.getTitle() + "'", e);
 					}
 					return;
@@ -151,10 +153,10 @@ public class OntologyExporter implements EventListener {
 					connector.storeAttachment(title, annotationName, "SYSTEM", stream);
 				}
 				catch (IOException e) {
-					Log.severe("Unable to save exported ontology as an attachment in '" + title + "/" + annotationName + "'", e);
+					LOGGER.error("Unable to save exported ontology as an attachment in '" + title + "/" + annotationName + "'", e);
 					return;
 				}
-				Log.info("Exported ontology to attachment '" + title + "/" + annotationName + "' in "
+				LOGGER.info("Exported ontology to attachment '" + title + "/" + annotationName + "' in "
 						+ stopwatch.getDisplay() + " after a delay of " + Stopwatch.getDisplay(exportDelay));
 			}
 		}, exportDelay);

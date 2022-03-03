@@ -5,19 +5,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.util.TextUtil;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
  * @created 21.08.20
  */
 public class GitAutoUpdateScheduler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitAutoUpdateScheduler.class);
 
-	private static final Logger log = Logger.getLogger(GitAutoUpdateScheduler.class);
 	private static final String JSPWIKI_GIT_AUTOUPDATE_INIT_DELAY = "jspwiki.git.autoupdate.initDelay";
 	private static final String JSPWIKI_GIT_AUTOUPDATE_DELAY = "jspwiki.git.autoupdate.delay";
 	private ScheduledExecutorService scheduler;
@@ -36,17 +36,17 @@ public class GitAutoUpdateScheduler {
 			@Override
 			public void run() {
 				if (running) {
-					Log.info("Skipping update wiki");
+					LOGGER.info("Skipping update wiki");
 				}
 				else {
 					running = true;
-					Log.info("Start updating wiki");
+					LOGGER.info("Start updating wiki");
 					try {
 						updater.update();
 					} catch (Throwable t){
-						log.error("Unexpected error while updating", t);
+						LOGGER.error("Unexpected error while updating", t);
 					}
-					Log.info("End updating wiki");
+					LOGGER.info("End updating wiki");
 					running = false;
 				}
 			}
@@ -59,21 +59,21 @@ public class GitAutoUpdateScheduler {
 	}
 
 	public void pauseAutoUpdate() {
-		log.info("Auto update scheduler will be paused");
+		LOGGER.info("Auto update scheduler will be paused");
 		if(this.scheduler != null && !this.scheduler.isShutdown()) {
 			shutdown();
 			try {
 				this.scheduler.awaitTermination(60, TimeUnit.SECONDS);
 			}
 			catch (InterruptedException e) {
-				log.warn("Await termination of auto update was interrupted");
+				LOGGER.warn("Await termination of auto update was interrupted");
 			}
 		}
-		log.info("Auto update is paused");
+		LOGGER.info("Auto update is paused");
 	}
 
 	public void resumeAutoUpdate() {
-		log.info("Auto update will be resumed");
+		LOGGER.info("Auto update will be resumed");
 		startScheduler(true);
 	}
 

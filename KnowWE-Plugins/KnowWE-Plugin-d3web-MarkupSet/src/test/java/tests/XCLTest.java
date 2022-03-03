@@ -24,11 +24,13 @@ import java.io.IOException;
 import java.util.Collection;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.KBTestUtilNewMarkup;
 import utils.TestArticleManager;
-import de.d3web.core.knowledge.KnowledgeBase;
+
 import com.denkbares.plugin.test.InitPluginManager;
-import com.denkbares.utils.Log;
+import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.knowwe.core.kdom.Article;
@@ -43,6 +45,7 @@ import de.knowwe.core.kdom.Article;
  * 
  */
 public class XCLTest extends TestCase {
+	private static final Logger LOGGER = LoggerFactory.getLogger(XCLTest.class);
 
 	@Override
 	protected void setUp() throws IOException {
@@ -147,7 +150,7 @@ public class XCLTest extends TestCase {
 					loadedRelation.getWeight());
 		}
 		else {
-			Log.warning("XCLTest: XCLModel has not been tested!");
+			LOGGER.warn("XCLTest: XCLModel has not been tested!");
 		}
 	}
 

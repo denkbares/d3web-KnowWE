@@ -14,7 +14,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.core.io.PersistenceManager;
 import de.d3web.core.io.PersistenceManager.KnowledgeBaseInfo;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -36,6 +37,7 @@ import static de.knowwe.dialog.SessionConstants.ATTRIBUTE_AVAILABLE_KNOWLEDGE_BA
  * @created 18.04.2011
  */
 public class Init extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Init.class);
 
 	private static String knowledgeBaseRoot = SessionConstants.DEFAULT_KNOWLEDGE_FOLDER;
 
@@ -47,6 +49,7 @@ public class Init extends AbstractAction {
 	 * @created 22.09.2010
 	 */
 	public static class FileProvider implements KnowledgeBaseProvider {
+		private static final Logger LOGGER = LoggerFactory.getLogger(FileProvider.class);
 
 		private final HttpSession httpSession;
 		private final File knowledgeBaseFile;
@@ -75,13 +78,13 @@ public class Init extends AbstractAction {
 				File loadedFile = (File) httpSession.getAttribute(SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE_FILE);
 				Date loadedDate = (Date) httpSession.getAttribute(SessionConstants.ATTRIBUTE_KNOWLEDGE_BASE_DATE);
 				if (loadedFile.equals(knowledgeBaseFile) && loadedDate.equals(lastChanged)) {
-					Log.info("reuse knowledge base '" + knowledgeBaseFile.getCanonicalPath() + "'");
+					LOGGER.info("reuse knowledge base '" + knowledgeBaseFile.getCanonicalPath() + "'");
 					return base;
 				}
 			}
 
 			// otherwise load the base and remember it for later use
-			Log.info("load knowledge base '" + knowledgeBaseFile.getCanonicalPath() + "'");
+			LOGGER.info("load knowledge base '" + knowledgeBaseFile.getCanonicalPath() + "'");
 			PersistenceManager mgr = PersistenceManager.getInstance();
 			base = mgr.load(knowledgeBaseFile);
 			httpSession.setAttribute(

@@ -15,13 +15,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.OS;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.AbstractAction;
@@ -33,8 +34,10 @@ import de.knowwe.core.action.UserActionContext;
  * @author Volker Belli
  */
 public class ExternalViewer extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExternalViewer.class);
 
 	private static class Viewer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Viewer.class);
 
 		private final Pattern file;
 		private final OS os;
@@ -149,7 +152,7 @@ public class ExternalViewer extends AbstractAction {
 	 * @throws IOException if there are any i/o problems during creation
 	 */
 	public static int execCommand(String[] cmdLine, boolean waitForEnd) throws IOException {
-		Log.info("execute: " + Arrays.asList(cmdLine));
+		LOGGER.info("execute: " + Arrays.asList(cmdLine));
 		Process process = Runtime.getRuntime().exec(cmdLine);
 		try {
 			Streams.streamAsync(process.getInputStream(), System.out);

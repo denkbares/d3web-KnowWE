@@ -87,7 +87,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
@@ -105,6 +106,7 @@ import de.knowwe.core.wikiConnector.WikiPageInfo;
  * @author Jochen
  */
 public class JSPWikiConnector implements WikiConnector {
+	private static final Logger LOGGER = LoggerFactory.getLogger(JSPWikiConnector.class);
 
 	private static final Map<String, List<WikiAttachment>> zipAttachmentCache =
 			Collections.synchronizedMap(new HashMap<>());
@@ -168,7 +170,7 @@ public class JSPWikiConnector implements WikiConnector {
 			reindex(title);
 		}
 		catch (ProviderException e) {
-			Log.severe(e.getMessage(), e);
+			LOGGER.error(e.getMessage(), e);
 			return null;
 		}
 		catch (NullPointerException e) {
@@ -205,7 +207,7 @@ public class JSPWikiConnector implements WikiConnector {
 			return getPageManager().pageExists(title);
 		}
 		catch (ProviderException e) {
-			Log.severe("Exception while checking page status", e);
+			LOGGER.error("Exception while checking page status", e);
 			return false;
 		}
 	}
@@ -232,7 +234,7 @@ public class JSPWikiConnector implements WikiConnector {
 			pages = pageManager.getProvider().getAllPages();
 		}
 		catch (ProviderException e) {
-			Log.severe("Exception while retrieving articles.", e);
+			LOGGER.error("Exception while retrieving articles.", e);
 			return null;
 		}
 
@@ -243,7 +245,7 @@ public class JSPWikiConnector implements WikiConnector {
 						wikiPage.getVersion());
 			}
 			catch (ProviderException e) {
-				Log.severe("Exception while retrieving articles.", e);
+				LOGGER.error("Exception while retrieving articles.", e);
 			}
 			if (pageContent != null) {
 				result.put(wikiPage.getName(), pageContent);
@@ -266,7 +268,7 @@ public class JSPWikiConnector implements WikiConnector {
 			}
 		}
 		catch (WikiSecurityException e) {
-			Log.severe("Exception while retrieving users.", e);
+			LOGGER.error("Exception while retrieving users.", e);
 		}
 
 		return users;
@@ -391,7 +393,7 @@ public class JSPWikiConnector implements WikiConnector {
 				}
 			}
 			catch (ProviderException e) {
-				Log.warning("Exception while cleaning zip cache", e);
+				LOGGER.warn("Exception while cleaning zip cache", e);
 			}
 		}
 		remove.forEach(zipAttachmentCache.keySet()::remove);
@@ -549,14 +551,14 @@ public class JSPWikiConnector implements WikiConnector {
 				}
 			}
 			catch (IOException e) {
-				Log.warning("Could not read attachment content from: " + title);
+				LOGGER.warn("Could not read attachment content from: " + title);
 			}
 		}
 		try {
 			pageText = getPageManager().getPageText(title, version);
 		}
 		catch (ProviderException e) {
-			Log.warning("Could not obtain page text from PageManager for: " + title);
+			LOGGER.warn("Could not obtain page text from PageManager for: " + title);
 			return null;
 		}
 
@@ -601,7 +603,7 @@ public class JSPWikiConnector implements WikiConnector {
 			return pageInfo.getAttribute(WikiPage.CHANGENOTE);
 		}
 		catch (ProviderException e) {
-			Log.severe("Exception while retrieving change notes.", e);
+			LOGGER.error("Exception while retrieving change notes.", e);
 		}
 		return null;
 	}
@@ -697,7 +699,7 @@ public class JSPWikiConnector implements WikiConnector {
 			content = getEngine().getManager(RenderingManager.class).textToHTML(context, content);
 		}
 		catch (Exception e) {
-			Log.severe("Unable to render wiki syntax", e);
+			LOGGER.error("Unable to render wiki syntax", e);
 		}
 		return content;
 	}
@@ -725,7 +727,7 @@ public class JSPWikiConnector implements WikiConnector {
 			attachment.setAuthor(user);
 			attachmentManager.storeAttachment(attachment, stream);
 			String path = toPath(title, filename);
-			Log.info("Stored attachment '" + path + "'");
+			LOGGER.info("Stored attachment '" + path + "'");
 			if (!wasLocked) unlockArticle(title, user);
 			return new JSPWikiAttachment(attachment, attachmentManager);
 		}
@@ -762,7 +764,7 @@ public class JSPWikiConnector implements WikiConnector {
 			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
-			Log.severe("Can't delete article " + title, e);
+			LOGGER.error("Can't delete article " + title, e);
 			throw new IOException(e);
 		}
 	}
@@ -788,12 +790,12 @@ public class JSPWikiConnector implements WikiConnector {
 
 			if (attachment != null) {
 				attachmentManager.deleteAttachment(attachment);
-				Log.info("Deleted attachment '" + path + "'");
+				LOGGER.info("Deleted attachment '" + path + "'");
 			}
 			if (!wasLocked) unlockArticle(title, user);
 		}
 		catch (ProviderException e) {
-			Log.severe("Can't delete attachment " + title, e);
+			LOGGER.error("Can't delete attachment " + title, e);
 			throw new IOException(e);
 		}
 	}
@@ -862,7 +864,7 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 		catch (StackOverflowError e) {
 			// happens with very large articles
-			Log.severe("StackOverflowError while checking permissions on article '" + title + "': " + e.getMessage());
+			LOGGER.error("StackOverflowError while checking permissions on article '" + title + "': " + e.getMessage());
 			return false;
 		}
 	}
@@ -914,7 +916,7 @@ public class JSPWikiConnector implements WikiConnector {
 			return true;
 		}
 		catch (WikiException e) {
-			Log.severe("Failed to write article changes to wiki persistence", e);
+			LOGGER.error("Failed to write article changes to wiki persistence", e);
 			return false;
 		}
 	}
@@ -923,14 +925,14 @@ public class JSPWikiConnector implements WikiConnector {
 	public void sendMail(String to, String subject, String content) throws IOException {
 		Set<String> resolvedAddresses = resolveRecipients(to);
 		if (resolvedAddresses.isEmpty()) {
-			Log.info("Aborting to send mail since no recipient was resolved");
+			LOGGER.info("Aborting to send mail since no recipient was resolved");
 			return;
 		}
 
 		// perform send
 		String resolvedTo = String.join(",", resolvedAddresses);
 		try {
-			Log.info("Sending mail to '" + resolvedTo + "' with subject '" + subject + "'");
+			LOGGER.info("Sending mail to '" + resolvedTo + "' with subject '" + subject + "'");
 			MailUtil.sendMessage(this.engine.getWikiProperties(), resolvedTo, subject, content);
 		}
 		catch (MessagingException e) {
@@ -943,14 +945,14 @@ public class JSPWikiConnector implements WikiConnector {
 	public void sendMultipartMail(String to, String subject, String plainContent, String htmlContent, Map<String, URL> imageUrlsByCid) throws IOException {
 		Set<String> resolvedAddresses = resolveRecipients(to);
 		if (resolvedAddresses.isEmpty()) {
-			Log.info("Aborting to send mail since no recipient was resolved");
+			LOGGER.info("Aborting to send mail since no recipient was resolved");
 			return;
 		}
 
 		// perform send
 		String resolvedTo = String.join(",", resolvedAddresses);
 		try {
-			Log.info("Sending multipart-mail to '" + resolvedTo + "' with subject '" + subject + "'");
+			LOGGER.info("Sending multipart-mail to '" + resolvedTo + "' with subject '" + subject + "'");
 			MailUtil.sendMultiPartMessage(this.engine.getWikiProperties(), resolvedTo, subject, plainContent, htmlContent, imageUrlsByCid);
 		}
 		catch (MessagingException e) {
@@ -982,12 +984,12 @@ public class JSPWikiConnector implements WikiConnector {
 						resolvedAddrs.add(userProfile.getEmail());
 					}
 					else {
-						Log.warning("Ignoring mail recipient since it's user-profile doesn't contain an email address: " + addr);
+						LOGGER.warn("Ignoring mail recipient since it's user-profile doesn't contain an email address: " + addr);
 					}
 				}
 				catch (NoSuchPrincipalException e) {
 					// we just skip by doing nothing except logging
-					Log.warning("Ignoring mail recipient since it's address is neither a mail-address nor a Wiki user with that login-name, full-name or wiki-name: " + addr);
+					LOGGER.warn("Ignoring mail recipient since it's address is neither a mail-address nor a Wiki user with that login-name, full-name or wiki-name: " + addr);
 				}
 			}
 		}

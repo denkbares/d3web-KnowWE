@@ -25,7 +25,8 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -36,6 +37,7 @@ import de.knowwe.core.report.Messages;
  * @created 09.02.2014
  */
 public class DefaultBuilder implements DocumentBuilder {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBuilder.class);
 
 	private final ExportModel model;
 	protected XWPFParagraph paragraph = null;
@@ -115,7 +117,7 @@ public class DefaultBuilder implements DocumentBuilder {
 				}
 			}
 			catch (ExportException e) {
-				Log.warning("word export reported an error", e);
+				LOGGER.warn("word export reported an error", e);
 				model.addMessage(Messages.error(e));
 			}
 		}

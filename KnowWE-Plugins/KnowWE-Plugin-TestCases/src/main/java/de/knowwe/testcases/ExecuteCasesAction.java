@@ -26,7 +26,8 @@ import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.testcase.model.Check;
 import de.d3web.testcase.model.TestCase;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -43,6 +44,7 @@ import static de.d3web.testcase.model.TestCase.*;
  * @created 19.01.2012
  */
 public class ExecuteCasesAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteCasesAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -100,7 +102,7 @@ public class ExecuteCasesAction extends AbstractAction {
 			}
 		}
 		catch (SessionTerminatedException e) {
-			Log.warning("Propagation terminated due to detected loop.", e);
+			LOGGER.warn("Propagation terminated due to detected loop.", e);
 		}
 	}
 }

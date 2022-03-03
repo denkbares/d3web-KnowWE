@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
@@ -21,6 +22,7 @@ import de.knowwe.ontology.compile.OntologyCompiler;
  * Commits changes in the OntologyCompiler.
  */
 public class CommitOntologyAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommitOntologyAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -32,7 +34,7 @@ public class CommitOntologyAction extends AbstractAction {
 		Optional<PackageCompiler> optionalCompiler = packageCompilers.stream()
 				.filter(compiler -> compiler instanceof OntologyCompiler)
 				.findFirst();
-		Log.info("Committing ontology changes for Ontology on article '" + compileSection.getTitle() + "'");
+		LOGGER.info("Committing ontology changes for Ontology on article '" + compileSection.getTitle() + "'");
 		optionalCompiler.ifPresent(compiler -> OntologyCompiler.commitOntology(((OntologyCompiler) compiler)));
 	}
 

@@ -42,7 +42,8 @@ import org.jdom2.output.XMLOutputter;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.visualization.ConceptNode;
 import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
@@ -57,6 +58,7 @@ import de.knowwe.visualization.util.Utils;
  * @created 29.04.2013
  */
 public class DOTRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DOTRenderer.class);
 
 	// appearance of outer node
 	private static final String outerLabel = "[ shape=\"none\" fontsize=\"0\" fontcolor=\"white\" ];\n";
@@ -678,10 +680,10 @@ public class DOTRenderer {
 		File svgFile = new File(getFilePath(config) + "." + "svg");
 
 		if (dotFile.exists() && !dotFile.delete()) {
-			Log.warning("Could not delete file: " + svgFile.getName());
+			LOGGER.warn("Could not delete file: " + svgFile.getName());
 		}
 		if (svgFile.exists() && !svgFile.delete()) {
-			Log.warning("Could not delete file: " + svgFile.getName());
+			LOGGER.warn("Could not delete file: " + svgFile.getName());
 		}
 
 		try {
@@ -691,7 +693,7 @@ public class DOTRenderer {
 			augmentSVG(svgFile);
 		}
 		catch (IOException e) {
-			Log.warning("Exception while generating visualization", e);
+			LOGGER.warn("Exception while generating visualization", e);
 		}
 		return new File[] { dotFile, svgFile };
 	}
@@ -752,13 +754,13 @@ public class DOTRenderer {
 	 * @created 01.08.2012
 	 */
 	private static void augmentSVG(File svg) throws IOException {
-		Log.finest("Starting to augment SVG: " + svg.getAbsolutePath());
+		LOGGER.trace("Starting to augment SVG: " + svg.getAbsolutePath());
 		try {
 			// check if svg file is closed, otherwise wait timeout second
 			long start = System.currentTimeMillis();
 			while (!Utils.isFileClosed(svg)) {
 				if ((System.currentTimeMillis() - start) > TIMEOUT) {
-					Log.warning("Exceeded timeout while waiting for SVG file to be closed.");
+					LOGGER.warn("Exceeded timeout while waiting for SVG file to be closed.");
 					return;
 				}
 			}
@@ -772,10 +774,10 @@ public class DOTRenderer {
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			//noinspection ImplicitDefaultCharsetUsage
 			xmlOutputter.output(doc, new FileWriter(svg));
-			Log.finest("Finished augmenting SVG: " + svg.getAbsolutePath());
+			LOGGER.trace("Finished augmenting SVG: " + svg.getAbsolutePath());
 		}
 		catch (JDOMException e) {
-			Log.warning("Exception while augmenting SVG " + svg.getAbsolutePath() + ": " + e.getClass()
+			LOGGER.warn("Exception while augmenting SVG " + svg.getAbsolutePath() + ": " + e.getClass()
 					.getSimpleName() + ": " + e.getMessage());
 		}
 	}
@@ -827,7 +829,7 @@ public class DOTRenderer {
 		}
 		catch (InterruptedException e) {
 			//Thread was interrupted by GraphReRenderer
-			//Log.warning(e.getMessage(), e);
+			//LOGGER.warn(e.getMessage(), e);
 		}
 	}
 
@@ -843,7 +845,7 @@ public class DOTRenderer {
 			in.close();
 		}
 		catch (IOException e) {
-			Log.warning(e.getMessage());
+			LOGGER.warn(e.getMessage());
 		}
 		return add.toString();
 	}

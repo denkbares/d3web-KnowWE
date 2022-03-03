@@ -28,9 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.KDOMPositionComparator;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -49,6 +51,7 @@ import de.knowwe.plugin.Plugins;
  * @created 16.08.2013
  */
 public class PreviewManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PreviewManager.class);
 
 	private final Map<Scope, TreeMap<Integer, PreviewRenderer>> previewRenderers = new LinkedHashMap<>();
 
@@ -132,7 +135,7 @@ public class PreviewManager {
 				}
 			}
 			else {
-				Log.warning("extension of class '" + object.getClass().getName() +
+				LOGGER.warn("extension of class '" + object.getClass().getName() +
 						"' is not of the expected type " + Renderer.class.getName());
 			}
 		}

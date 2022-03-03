@@ -24,8 +24,10 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
 import de.knowwe.core.ArticleManager;
@@ -34,6 +36,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIUtils.class);
 
 	public static Collection<Section<CIDashboardType>> getDashboardSections(ArticleManager manager, String dashboardName) {
 		return CIDashboardManager.getDashboardSections(manager, dashboardName);
@@ -64,7 +67,7 @@ public class CIUtils {
 		WikiConnector con = Environment.getInstance().getWikiConnector();
 		String wikiDir = con.getSavePath();
 		if (wikiDir == null || wikiDir.isEmpty()) {
-			Log.warning("Wiki SavePath could not be retrieved! (null or empty!)");
+			LOGGER.warn("Wiki SavePath could not be retrieved! (null or empty!)");
 		}
 
 		if (!wikiDir.endsWith(File.separator)) {

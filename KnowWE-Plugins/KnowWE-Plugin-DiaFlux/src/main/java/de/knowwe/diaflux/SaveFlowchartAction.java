@@ -27,8 +27,10 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -49,6 +51,7 @@ import de.knowwe.diaflux.type.FlowchartType;
  * @created 24.11.2010
  */
 public class SaveFlowchartAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SaveFlowchartAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -149,7 +152,7 @@ public class SaveFlowchartAction extends AbstractAction {
 			context.getArticleManager().getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
-			Log.warning(e.getMessage(), e);
+			LOGGER.warn(e.getMessage(), e);
 		}
 		return newId;
 	}

@@ -11,7 +11,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.records.SessionConversionFactory;
 import de.d3web.core.records.SessionRecord;
@@ -28,6 +29,7 @@ import de.knowwe.dialog.SessionConstants;
  * @author Volker Belli
  */
 public class DownloadProtocol extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadProtocol.class);
 
 	public static final String FILENAME_SESSION_PROTOCOL_XML = "session-protocol.xml";
 	public static final String PARAMETER_SAVE_AS = "saveAs";
@@ -51,7 +53,7 @@ public class DownloadProtocol extends AbstractAction {
 				failUnexpected(context, "Trying to save to file the session was loaded from, but file attribute could not be found in session.");
 			}
 			if (!file.canWrite()) {
-				Log.severe("Trying to save to file the session was loaded from, but cannot write file: " + file.getPath());
+				LOGGER.error("Trying to save to file the session was loaded from, but cannot write file: " + file.getPath());
 				file = null;
 			}
 		}

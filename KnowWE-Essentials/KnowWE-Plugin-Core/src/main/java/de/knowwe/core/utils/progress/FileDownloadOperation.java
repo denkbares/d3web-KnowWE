@@ -6,8 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -17,6 +19,7 @@ import de.knowwe.tools.Tool;
 import de.knowwe.util.Icon;
 
 public abstract class FileDownloadOperation extends AbstractLongOperation {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadOperation.class);
 
 	// basic attributes for the operation
 	private final Article article;
@@ -49,18 +52,18 @@ public abstract class FileDownloadOperation extends AbstractLongOperation {
 		catch (IOException e) {
 			if (!file.delete()) file.deleteOnExit();
 			String msg = "Aborted due to error: " + e.getMessage();
-			Log.warning(msg, e);
+			LOGGER.warn(msg, e);
 			addMessage(Messages.error(msg, e));
 		}
 		catch (InterruptedException e) {
 			String msg = "Operation canceled by user.";
-			Log.info(msg);
+			LOGGER.info(msg);
 			addMessage(Messages.info(msg));
 		}
 		catch (Exception e) {
 			if (!file.delete()) file.deleteOnExit();
 			String msg = "Aborted execution due to unexpected exception";
-			Log.warning(msg, e);
+			LOGGER.warn(msg, e);
 			addMessage(Messages.error(msg + ": " + e, e));
 		}
 		finally {

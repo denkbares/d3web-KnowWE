@@ -17,7 +17,8 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.jetbrains.annotations.Nullable;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
@@ -42,6 +43,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 19.04.2013
  */
 public class OntologyDownloadAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyDownloadAction.class);
 
 	public static final String PARAM_FILENAME = "filename";
 	public static final String PARAM_SYNTAX = "syntax";
@@ -106,7 +108,7 @@ public class OntologyDownloadAction extends AbstractAction {
 					}
 				}
 				catch (Exception e) {
-					Log.warning("Formatted turtle export failed, very likely due to setting inline_blank_nodes, trying again without...");
+					LOGGER.warn("Formatted turtle export failed, very likely due to setting inline_blank_nodes, trying again without...");
 					// formatted writing didn't work, just write to response directly, we don't expect failure
 					rdf2GoCore.writeModel(Rio.createWriter(syntax, outputStream));
 				}

@@ -35,7 +35,8 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.TimeStampType;
@@ -54,6 +55,7 @@ import static java.util.stream.Collectors.toList;
  * Created by Albrecht Striffler (denkbares GmbH) on 07.05.2015.
  */
 public class Config {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
 
 	public static final String CONFIG = "config";
 	public static final String COLORS = "colors";
@@ -330,7 +332,7 @@ public class Config {
 				setter.accept(value);
 			}
 			catch (IllegalArgumentException e) {
-				Log.warning("Annotation '" + annotationName + "' expects on of the following values: "
+				LOGGER.warn("Annotation '" + annotationName + "' expects on of the following values: "
 						+ enumType + ". '" + annotation + "' is not one of them.");
 			}
 		}
@@ -376,7 +378,7 @@ public class Config {
 				setter.accept(Integer.parseInt(annotation));
 			}
 			catch (NumberFormatException e) {
-				Log.warning("Annotation '" + annotationName + "' expects an integer, '" + annotation + "' is not and" +
+				LOGGER.warn("Annotation '" + annotationName + "' expects an integer, '" + annotation + "' is not and" +
 						" " +
 						"integer.");
 			}

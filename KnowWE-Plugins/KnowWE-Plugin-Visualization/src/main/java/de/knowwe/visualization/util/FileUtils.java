@@ -26,13 +26,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Jochen Reutelshöfer
  * @created 23.05.2013
  */
 public class FileUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtils.class);
 
 	public static final String TMP_FOLDER = "tmp";
 	public static final String KNOWWEEXTENSION_FOLDER = "KnowWEExtension";
@@ -43,10 +45,10 @@ public class FileUtils {
 		try {
 			checkWriteable(file);
 			Strings.writeFile(file.getPath(), content);
-			Log.info("Wrote file " + file.getAbsolutePath());
+			LOGGER.info("Wrote file " + file.getAbsolutePath());
 		}
 		catch (IOException e) {
-			Log.severe("Unable to write file " + file.getName(), e);
+			LOGGER.error("Unable to write file " + file.getName(), e);
 		}
 	}
 

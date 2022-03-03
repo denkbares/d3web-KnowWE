@@ -14,9 +14,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.core.knowledge.InfoStore;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
@@ -64,6 +66,7 @@ import de.knowwe.dialog.Utils;
  * @author Volker Belli
  */
 public class GetInfoObject extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GetInfoObject.class);
 
 	public static final String PARAM_IDS = "ids";
 	public static final String PARAM_LOCALE = "lang";
@@ -302,7 +305,7 @@ public class GetInfoObject extends AbstractAction {
 		catch (ClassNotFoundException ignore) {
 		}
 		catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-			Log.warning("Unable to load and apply image map properties to dialog, probably incompatible plugins.");
+			LOGGER.warn("Unable to load and apply image map properties to dialog, probably incompatible plugins.");
 		}
 
 		// append multimedia information

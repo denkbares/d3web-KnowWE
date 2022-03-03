@@ -22,10 +22,12 @@ package de.d3web.we.ci4ke.dashboard.action;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.Message.Type;
-import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
@@ -38,6 +40,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.util.Icon;
 
 public class CIAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -68,7 +71,7 @@ public class CIAction extends AbstractAction {
 				selectedBuildNumber = Integer.parseInt(context.getParameter("nr"));
 			}
 			catch (NumberFormatException e) {
-				Log.warning(e.toString());
+				LOGGER.warn(e.toString());
 			}
 		}
 		if (selectedBuildNumber < 1) {

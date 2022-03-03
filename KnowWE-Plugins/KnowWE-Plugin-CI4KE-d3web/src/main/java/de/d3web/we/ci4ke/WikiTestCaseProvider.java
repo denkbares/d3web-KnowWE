@@ -24,10 +24,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.d3web.testcase.model.TestCase;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
-import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.testcases.ProviderTriple;
@@ -41,12 +43,13 @@ import de.knowwe.testcases.TestCaseProvider;
  * @created 29.06.2012
  */
 public class WikiTestCaseProvider implements TestObjectProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(WikiTestCaseProvider.class);
 
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> clazz, String name) {
 
 		if (clazz == null) {
-			Log.warning("Class given to TestObjectProvider was 'null'");
+			LOGGER.warn("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		if (!clazz.equals(TestCase.class)) {

@@ -30,7 +30,8 @@ import java.util.jar.Manifest;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
@@ -41,6 +42,7 @@ import de.knowwe.version.taghandler.VersionTagHandler;
  * @created 14.12.16
  */
 public class VersionMarkupType extends DefaultMarkupType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(VersionMarkupType.class);
 
 	private static final DefaultMarkup MARKUP;
 
@@ -124,7 +126,7 @@ public class VersionMarkupType extends DefaultMarkupType {
 				manifest = new Manifest(new FileInputStream(new File(manifestPath)));
 			}
 			catch (IOException e) {
-				Log.warning("Could not read manifest file, build info will not be displayed.");
+				LOGGER.warn("Could not read manifest file, build info will not be displayed.");
 			}
 		}
 		return manifest;

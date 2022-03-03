@@ -22,9 +22,10 @@ package de.knowwe.core.kdom;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
-import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.Environment.CompilationMode;
@@ -40,6 +41,7 @@ import de.knowwe.event.KDOMCreatedEvent;
  * @author Jochen
  */
 public final class Article {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Article.class);
 
 	public static final int LOG_THRESHOLD = 50;
 	private final ArticleManager articleManager;
@@ -114,7 +116,7 @@ public final class Article {
 			article = new Article(text, title, web, manager, fullParse);
 		}
 		catch (Exception e) {
-			Log.severe("Exception while creating article", e);
+			LOGGER.error("Exception while creating article", e);
 		}
 		return article;
 	}
@@ -137,10 +139,10 @@ public final class Article {
 
 		long time = System.currentTimeMillis() - start;
 		if (time < LOG_THRESHOLD && articleManager != null && !articleManager.isInitialized() || articleManager == null) {
-			Log.fine("Sectionized article '" + title + "' in " + time + "ms");
+			LOGGER.debug("Sectionized article '" + title + "' in " + time + "ms");
 		}
 		else {
-			Log.info("Sectionized article '" + title + "' in " + time + "ms");
+			LOGGER.info("Sectionized article '" + title + "' in " + time + "ms");
 		}
 	}
 

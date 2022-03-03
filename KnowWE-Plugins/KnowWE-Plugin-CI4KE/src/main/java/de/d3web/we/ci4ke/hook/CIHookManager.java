@@ -23,9 +23,11 @@ package de.d3web.we.ci4ke.hook;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
-import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.knowwe.core.kdom.Article;
 
@@ -33,6 +35,7 @@ import de.knowwe.core.kdom.Article;
  * @author Marc-Oliver Ochlast, Albrecht Striffler
  */
 public class CIHookManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIHookManager.class);
 
 	/**
 	 * Fore each monitored articles a list of hooks are stored.
@@ -66,7 +69,7 @@ public class CIHookManager {
 			CIBuildManager.getInstance().startBuild(hook.getDashboard());
 			triggered.add(hook.getDashboard().getDashboardName());
 		}
-		if (!triggered.isEmpty()) Log.info("Triggered the following dash boards: " + String.join(", ", triggered));
+		if (!triggered.isEmpty()) LOGGER.info("Triggered the following dash boards: " + String.join(", ", triggered));
 	}
 
 	public static int getCurrentCompilationId(CIHook hook) {

@@ -31,9 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
-import com.denkbares.utils.Log;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
@@ -45,6 +46,7 @@ import de.knowwe.event.ArticleRegisteredEvent;
  * @author Jochen Reutelshöfer, Albrecht Striffler (denkbares GmbH)
  */
 public class DefaultArticleManager implements ArticleManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultArticleManager.class);
 
 	/**
 	 * Stores Articles for article-names
@@ -96,7 +98,7 @@ public class DefaultArticleManager implements ArticleManager {
 					lock.wait();
 				}
 				catch (InterruptedException e) {
-					Log.warning("Waiting for initialization was interrupted");
+					LOGGER.warn("Waiting for initialization was interrupted");
 					return;
 				}
 			}
@@ -222,7 +224,7 @@ public class DefaultArticleManager implements ArticleManager {
 			commit();
 		}
 
-		Log.info("-> Deleted article '" + title + "'" + " from " + web);
+		LOGGER.info("-> Deleted article '" + title + "'" + " from " + web);
 	}
 
 	@NotNull

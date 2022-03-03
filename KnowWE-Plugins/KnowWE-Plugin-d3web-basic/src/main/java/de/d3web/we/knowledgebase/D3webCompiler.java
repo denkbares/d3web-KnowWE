@@ -31,10 +31,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.AbstractPackageCompiler;
@@ -67,6 +68,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 13.11.2013
  */
 public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler, IncrementalCompiler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(D3webCompiler.class);
 
 	private final ThreadPoolExecutor threadPool;
 	private TerminologyManager terminologyManager;
@@ -214,7 +216,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		Set<Class<? extends CompileScript>> failedCompileScripts = compileScriptCompiler.getCompileScriptsNotSupportingIncrementalCompilation();
 		int failedScriptsCount = failedCompileScripts.size() + failedDestroyScripts.size();
 		if (failedScriptsCount > 0) {
-			Log.info("The following " + Strings.pluralOf(failedScriptsCount, "script")
+			LOGGER.info("The following " + Strings.pluralOf(failedScriptsCount, "script")
 					+ " prevented incremental compilation: "
 					+ Stream.concat(failedCompileScripts.stream(), failedDestroyScripts.stream())
 					.map(c -> Strings.isBlank(c.getSimpleName()) ? c.getName() : c.getSimpleName())
@@ -339,10 +341,10 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 				future.get();
 			}
 			catch (InterruptedException e) {
-				Log.warning("Parallel script execution was interrupted", e);
+				LOGGER.warn("Parallel script execution was interrupted", e);
 			}
 			catch (ExecutionException e) {
-				Log.severe("Parallel script execution failed", e);
+				LOGGER.error("Parallel script execution failed", e);
 			}
 		}
 		// cleanup

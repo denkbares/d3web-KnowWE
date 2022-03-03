@@ -25,14 +25,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.KBTestUtilNewMarkup;
 import utils.TestArticleManager;
+
+import com.denkbares.plugin.test.InitPluginManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.QContainer;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import com.denkbares.plugin.test.InitPluginManager;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -43,6 +45,7 @@ import de.knowwe.core.kdom.Article;
  * @see KBCreationTest.txt to modify the Article which is tested
  */
 public class QuestionnaireTest extends TestCase {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuestionnaireTest.class);
 
 	@Override
 	protected void setUp() throws IOException {
@@ -126,7 +129,7 @@ public class QuestionnaireTest extends TestCase {
 			}
 		}
 		else {
-			Log.warning("QuestionnaireTest: Questionnaires have not been tested!");
+			LOGGER.warn("QuestionnaireTest: Questionnaires have not been tested!");
 		}
 
 		assertEquals("Init Questions differ.", createdKB.getInitQuestions(),

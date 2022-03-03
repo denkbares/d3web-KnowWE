@@ -40,7 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -50,6 +51,7 @@ import de.knowwe.core.wikiConnector.WikiPageInfo;
 import de.knowwe.jspwiki.JSPWikiConnector;
 
 public class DummyConnector implements WikiConnector {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DummyConnector.class);
 
 	private static final String DUMMY_USER = "DummyUser";
 	public static final String BASE_URL = "http://valid_dummy_base_url/";
@@ -74,17 +76,17 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public void openPageTransaction(String user) {
-		Log.warning("Dummy connector does not support commits");
+		LOGGER.warn("Dummy connector does not support commits");
 	}
 
 	@Override
 	public void commitPageTransaction(String user, String commitMsg) {
-		Log.warning("Dummy connector does not support commits");
+		LOGGER.warn("Dummy connector does not support commits");
 	}
 
 	@Override
 	public void rollbackPageTransaction(String user) {
-		Log.warning("Dummy connector does not support commits");
+		LOGGER.warn("Dummy connector does not support commits");
 	}
 
 	@Override
@@ -230,13 +232,13 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public int getVersion(String title) {
-		Log.warning("The used WikiConnector does not support page versions");
+		LOGGER.warn("The used WikiConnector does not support page versions");
 		return dummyPageProvider.getArticle(title) == null ? 0 : 1;
 	}
 
 	@Override
 	public String getArticleText(String title, int version) {
-		Log.warning("The used WikiConnector only provides one version per article");
+		LOGGER.warn("The used WikiConnector only provides one version per article");
 		return dummyPageProvider.getArticle(title);
 	}
 
@@ -247,7 +249,7 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String getChangeNote(String title, int version) {
-		Log.warning("The used WikiConnector does not support change notes");
+		LOGGER.warn("The used WikiConnector does not support change notes");
 		return "";
 	}
 
@@ -270,13 +272,13 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String normalizeString(String string) {
-		Log.warning("The used WikiConnector does not support normalizing of strings");
+		LOGGER.warn("The used WikiConnector does not support normalizing of strings");
 		return string;
 	}
 
 	@Override
 	public String renderWikiSyntax(String string, HttpServletRequest request) {
-		Log.warning("The used WikiConnector does not support a wiki syntax");
+		LOGGER.warn("The used WikiConnector does not support a wiki syntax");
 		return string;
 	}
 
@@ -332,31 +334,31 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanEditArticle(String articlename, HttpServletRequest r) {
-		Log.warning("The used WikiConnector does not support rights managment");
+		LOGGER.warn("The used WikiConnector does not support rights managment");
 		return true;
 	}
 
 	@Override
 	public boolean userCanViewArticle(String articlename, HttpServletRequest r) {
-		Log.warning("The used WikiConnector does not support rights managment");
+		LOGGER.warn("The used WikiConnector does not support rights managment");
 		return true;
 	}
 
 	@Override
 	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
-		Log.warning("The used WikiConnector does not support rights managment");
+		LOGGER.warn("The used WikiConnector does not support rights managment");
 		return true;
 	}
 
 	@Override
 	public boolean userCanCreateArticles(HttpServletRequest request) {
-		Log.warning("The used WikiConnector does not support rights managment");
+		LOGGER.warn("The used WikiConnector does not support rights managment");
 		return true;
 	}
 
 	@Override
 	public boolean userIsMemberOfGroup(String groupname, HttpServletRequest r) {
-		Log.warning("The used WikiConnector does not support user groups");
+		LOGGER.warn("The used WikiConnector does not support user groups");
 		return false;
 	}
 
@@ -369,12 +371,12 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public void sendMail(String to, String subject, String content) throws IOException {
-		Log.warning("This WikiConnector does not support sending mails");
+		LOGGER.warn("This WikiConnector does not support sending mails");
 	}
 
 	@Override
 	public void sendMultipartMail(String toAddresses, String subject, String plainTextContent, String htmlContent, Map<String, URL> imageMapping) throws IOException {
-		Log.warning("This WikiConnector does not support sending multipart-mails");
+		LOGGER.warn("This WikiConnector does not support sending multipart-mails");
 	}
 
 	public void setPageProvider(DummyPageProvider pageProvider) {

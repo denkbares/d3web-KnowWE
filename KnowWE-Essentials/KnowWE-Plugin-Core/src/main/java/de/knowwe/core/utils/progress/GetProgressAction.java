@@ -27,7 +27,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
@@ -45,6 +46,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
  * @created 18.07.2012
  */
 public class GetProgressAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GetProgressAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -84,7 +86,7 @@ public class GetProgressAction extends AbstractAction {
 			result.write(context.getWriter());
 		}
 		catch (JSONException e) {
-			Log.severe("Error while writing JSON message", e);
+			LOGGER.error("Error while writing JSON message", e);
 		}
 	}
 

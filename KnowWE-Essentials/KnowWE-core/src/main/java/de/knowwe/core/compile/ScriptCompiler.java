@@ -14,7 +14,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -33,6 +34,7 @@ import de.knowwe.core.report.Messages;
  * @created 13.12.2013
  */
 public class ScriptCompiler<C extends Compiler> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptCompiler.class);
 
 	private final TreeMap<Priority, List<CompilePair>> compileSetMap;
 	private final Set<CompilePair> pairSet = new HashSet<>();
@@ -208,7 +210,7 @@ public class ScriptCompiler<C extends Compiler> {
 			catch (Throwable e) {
 				String msg = "Unexpected internal exception while compiling with script " + script + ": " + e;
 				Messages.storeMessage(compiler, section, script.getClass(), Messages.error(msg));
-				Log.severe(msg, e);
+				LOGGER.error(msg, e);
 			}
 		}
 		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
@@ -225,7 +227,7 @@ public class ScriptCompiler<C extends Compiler> {
 				}
 				catch (Throwable e) {
 					String msg = "Unexpected internal exception while destroying with script " + destroyScript;
-					Log.severe(msg, e);
+					LOGGER.error(msg, e);
 				}
 			}
 		}

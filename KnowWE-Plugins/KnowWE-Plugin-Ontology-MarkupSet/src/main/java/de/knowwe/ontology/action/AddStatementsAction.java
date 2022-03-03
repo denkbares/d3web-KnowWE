@@ -17,7 +17,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -59,6 +60,7 @@ import de.knowwe.tools.Tool;
  * @created 25.11.2013
  */
 public class AddStatementsAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AddStatementsAction.class);
 
 	public static final String PARAM_DATA = "data";
 
@@ -189,7 +191,7 @@ public class AddStatementsAction extends AbstractAction {
 					+ "'";
 		}
 		catch (JSONException e) {
-			Log.warning("cannot create js action for statement insert", e);
+			LOGGER.warn("cannot create js action for statement insert", e);
 			return null;
 		}
 	}

@@ -30,12 +30,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.ConcatenateCollection;
 import com.denkbares.collections.MinimizedHashSet;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMode;
 import de.knowwe.core.compile.terminology.TermCompiler.ReferenceValidationMode;
@@ -55,6 +56,7 @@ import static de.knowwe.core.compile.terminology.TermCompiler.MultiDefinitionMod
  * @created 01.02.2012
  */
 class TermLog {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TermLog.class);
 
 	private static final int DEFINITION_TRACKING_LIMIT = 4;
 	private final TreeSet<TermLogEntry> termDefinitions = new TreeSet<>();
@@ -214,7 +216,7 @@ class TermLog {
 
 		TermLogEntry entry = new TermLogEntry(termDefinition, termClass, termIdentifier);
 		if (!termDefinitions.remove(entry)) {
-			Log.warning("Trying to unregister term log that does not exist: " + termClass.getSimpleName() + ", " + termIdentifier);
+			LOGGER.warn("Trying to unregister term log that does not exist: " + termClass.getSimpleName() + ", " + termIdentifier);
 		}
 		if (termDefinitions.size() <= DEFINITION_TRACKING_LIMIT) {
 			termClasses = null;

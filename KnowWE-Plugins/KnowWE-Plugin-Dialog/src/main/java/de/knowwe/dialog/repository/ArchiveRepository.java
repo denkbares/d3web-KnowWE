@@ -32,7 +32,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ArchiveRepository manages a versioned repository of archive files.
@@ -71,6 +72,7 @@ import com.denkbares.utils.Log;
  * 
  */
 public class ArchiveRepository {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArchiveRepository.class);
 
 	public static final String REPOSITORY_CONFIGURATION_FILE = "config.xml";
 
@@ -170,7 +172,7 @@ public class ArchiveRepository {
 				loadVersionSet(node);
 			}
 			else {
-				Log.warning("ignoring unexpected tag '" + nodeName
+				LOGGER.warn("ignoring unexpected tag '" + nodeName
 								+ "' in repository configuration file.");
 			}
 		}
@@ -190,7 +192,7 @@ public class ArchiveRepository {
 			}
 		}
 		catch (ParseException e) {
-			Log.warning("invalid date format in repository configuration in versionset '" + version
+			LOGGER.warn("invalid date format in repository configuration in versionset '" + version
 							+ "'. Using base date (1/1/1970) instead.");
 			date = new Date(0);
 		}
@@ -223,7 +225,7 @@ public class ArchiveRepository {
 				versionSet.addFile(this.storage.getFile(name, checksum));
 			}
 			else {
-				Log.warning("ignoring unexpected tag '" + nodeName
+				LOGGER.warn("ignoring unexpected tag '" + nodeName
 								+ "' in versionset in repository configuration file.");
 			}
 		}

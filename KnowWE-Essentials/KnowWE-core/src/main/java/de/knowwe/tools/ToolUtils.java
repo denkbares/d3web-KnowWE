@@ -13,18 +13,20 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.CountingSet;
 import com.denkbares.plugin.Extension;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Files;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.Scope;
 import de.knowwe.core.utils.ScopeExtensions;
 
 public class ToolUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ToolUtils.class);
 
 	/**
 	 * For each tool provider there might be an (counting) set of scopes, where this provider is blocked.
@@ -61,7 +63,7 @@ public class ToolUtils {
 				}
 			}
 			catch (Exception e) {
-				Log.warning("Exception while getting tools from " + provider.getClass()
+				LOGGER.warn("Exception while getting tools from " + provider.getClass()
 						.getSimpleName() + " ignoring this provider.", e);
 			}
 		}
@@ -77,7 +79,7 @@ public class ToolUtils {
 				return true;
 			}
 			catch (Exception e) {
-				Log.warning("Exception while checking tools from " + provider.getClass()
+				LOGGER.warn("Exception while checking tools from " + provider.getClass()
 						.getSimpleName() + " ignoring this provider.", e);
 			}
 		}
@@ -301,7 +303,7 @@ public class ToolUtils {
 			initSettings(new JSONObject(Files.getText(jsonFile)));
 		}
 		catch (IOException e) {
-			Log.severe("Cannot load (existing) properties file with blocked tool providers", e);
+			LOGGER.error("Cannot load (existing) properties file with blocked tool providers", e);
 		}
 	}
 

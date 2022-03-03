@@ -32,12 +32,13 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
@@ -66,6 +67,7 @@ import de.knowwe.util.Icon;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class DefaultMarkupRenderer implements Renderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMarkupRenderer.class);
 
 	private final String iconPath;
 
@@ -301,7 +303,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			content.appendHtmlElement("span", "Error while rendering content, if the problem persists, "
 					+ "please contact your administrator.\n"
 					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error", "style", "white-space: pre");
-			Log.severe("Exception while rendering content of " + section.get().getName(), e);
+			LOGGER.error("Exception while rendering content of " + section.get().getName(), e);
 		}
 
 		renderDefaultMarkupStyled(

@@ -18,7 +18,9 @@
  */
 package de.knowwe.core.kdom.objects;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.parsing.Section;
 
@@ -29,12 +31,13 @@ import de.knowwe.core.kdom.parsing.Section;
  * @created 09.12.2020
  */
 public interface HasCompilerDependentTermName extends Term {
+	Logger LOGGER = LoggerFactory.getLogger(HasCompilerDependentTermName.class);
 
 	String getTermName(TermCompiler compiler, Section<? extends Term> section);
 
 	@Override
 	default String getTermName(Section<? extends Term> section) {
-		Log.warning("Calling getTermName on Term with compiler-dependent term name without a compiler. This has to be fixed!");
+		LOGGER.warn("Calling getTermName on Term with compiler-dependent term name without a compiler. This has to be fixed!");
 		return Term.super.getTermName(section);
 	}
 

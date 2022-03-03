@@ -33,9 +33,10 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 
 /**
  * This class offers some methods often needed for UserContext related tasks.
@@ -44,6 +45,7 @@ import com.denkbares.utils.Log;
  * @created Mar 9, 2011
  */
 public class UserContextUtil {
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserContextUtil.class);
 
 	/**
 	 * Returns a Map<String, String> with all parameters of a http request. This is necessary because the parameter map
@@ -89,7 +91,7 @@ public class UserContextUtil {
 					parameters.put("data", bob.toString());
 				}
 				catch (IOException e) {
-					Log.severe("unexpected internal error", e);
+					LOGGER.error("unexpected internal error", e);
 				}
 			}
 		}

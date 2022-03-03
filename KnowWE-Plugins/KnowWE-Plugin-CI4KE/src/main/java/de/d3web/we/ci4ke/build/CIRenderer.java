@@ -27,13 +27,14 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.CountingSet;
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.BuildResult;
@@ -59,6 +60,7 @@ import de.knowwe.util.Icon;
  * @created 19.05.2012
  */
 public class CIRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIRenderer.class);
 
 	private static final int ABORT_CUTOFF = 10;
 
@@ -347,7 +349,7 @@ public class CIRenderer {
 			testObjectClass = test.getTestObjectClass();
 		}
 		else {
-			Log.warning("No class found for test: " + testResult.getTestName());
+			LOGGER.warn("No class found for test: " + testResult.getTestName());
 		}
 		renderResult.appendHtml("<p></p>");
 		renderResult.append("__" + messageType + "__: ");
@@ -371,7 +373,7 @@ public class CIRenderer {
 		}
 		ObjectNameRenderer objectRenderer = ObjectNameRendererManager.getObjectNameRenderer(objectClass);
 		if (objectRenderer == null) {
-//			Log.warning("No renderer found for " + objectClass);
+//			LOGGER.warn("No renderer found for " + objectClass);
 			result.append(objectName);
 			return;
 		}

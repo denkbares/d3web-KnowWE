@@ -29,10 +29,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
@@ -50,6 +51,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 12.04.2020
  */
 public class RecompileAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RecompileAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -83,7 +85,7 @@ public class RecompileAction extends AbstractAction {
 		try {
 			if (recompileAll) {
 				List<Article> articlesToRecompile = getCompilerArticles(article).collect(Collectors.toList());
-				Log.info("Starting FULL recompilation for article " + article.getTitle() +
+				LOGGER.info("Starting FULL recompilation for article " + article.getTitle() +
 						"\nRecompiling the following " + Strings.pluralOf(articlesToRecompile.size(), "article") + ": " +
 						articlesToRecompile.stream()
 								.map(Article::getTitle)
@@ -94,7 +96,7 @@ public class RecompileAction extends AbstractAction {
 				}
 			}
 			else {
-				Log.info("Starting recompilation of article " + article.getTitle());
+				LOGGER.info("Starting recompilation of article " + article.getTitle());
 				Article recompiledArticle = articleManager.registerArticle(article.getTitle(), article.getText());
 				EventManager.getInstance().fireEvent(new FullParseEvent(recompiledArticle));
 			}

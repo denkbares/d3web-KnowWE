@@ -34,7 +34,8 @@ import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -47,6 +48,7 @@ import de.knowwe.jspwiki.types.PluginType;
  * @created 07.02.2014
  */
 public class ImageExporter implements Exporter<PluginType> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImageExporter.class);
 
 	@Override
 	public boolean canExport(Section<PluginType> section) {
@@ -230,7 +232,7 @@ public class ImageExporter implements Exporter<PluginType> {
 			}
 		}
 		catch (IOException e) {
-			Log.warning("cannot read image size, using default size", e);
+			LOGGER.warn("cannot read image size, using default size", e);
 			return null;
 		}
 	}

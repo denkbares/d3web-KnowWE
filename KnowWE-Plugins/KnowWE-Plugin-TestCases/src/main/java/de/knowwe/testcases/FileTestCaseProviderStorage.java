@@ -28,7 +28,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.d3web.core.knowledge.KnowledgeBase;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.Article;
@@ -47,6 +48,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @created 07.02.2012
  */
 public abstract class FileTestCaseProviderStorage implements TestCaseProviderStorage {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileTestCaseProviderStorage.class);
 
 	private final Map<String, List<AttachmentTestCaseProvider>> regexMap = new HashMap<>();
 	private final D3webCompiler compiler;
@@ -112,7 +114,7 @@ public abstract class FileTestCaseProviderStorage implements TestCaseProviderSto
 						sectionArticle.getTitle(), fileRegex);
 			}
 			catch (IOException e) {
-				Log.severe("wiki error accessing attachments", e);
+				LOGGER.error("wiki error accessing attachments", e);
 				messages.add(Messages.error("Error accessing attachments '" + fileRegex + "': " + e));
 				continue;
 			}

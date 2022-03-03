@@ -22,9 +22,10 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
@@ -43,6 +44,7 @@ import de.knowwe.kdom.xml.AbstractXMLType;
  * @created 10.10.2013
  */
 public class FlowchartToolMenuAction extends GetToolMenuAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FlowchartToolMenuAction.class);
 
 	@Override
 	protected Section<? extends Type> getSection(UserActionContext context, String identifier) {
@@ -83,7 +85,7 @@ public class FlowchartToolMenuAction extends GetToolMenuAction {
 
 		}
 		catch (JSONException e) {
-			Log.severe("Recieved faulty JSON string", e);
+			LOGGER.error("Recieved faulty JSON string", e);
 		}
 		return null;
 	}

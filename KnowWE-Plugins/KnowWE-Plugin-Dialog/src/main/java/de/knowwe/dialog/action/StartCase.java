@@ -25,13 +25,14 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.core.inference.PSMethod;
 import de.d3web.core.inference.PSMethodInit;
 import de.d3web.core.knowledge.KnowledgeBase;
@@ -65,6 +66,7 @@ import de.knowwe.dialog.Utils;
  * @author Volker Belli
  */
 public class StartCase extends AbstractAction implements EventListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(StartCase.class);
 
 	public static final String PARAM_USER = "user";
 	public static final String PARAM_LANGUAGE = "lang";
@@ -169,7 +171,7 @@ public class StartCase extends AbstractAction implements EventListener {
 			else {
 				// the locale is not valid -> no lang
 				language = "NO_LANG";
-				Log.warning(locale + " is not a valid language. Using: " + language);
+				LOGGER.warn(locale + " is not a valid language. Using: " + language);
 			}
 		}
 		catch (IOException e) {
@@ -296,6 +298,7 @@ public class StartCase extends AbstractAction implements EventListener {
 	}
 
 	public static class StartInfo {
+		private static final Logger LOGGER = LoggerFactory.getLogger(StartInfo.class);
 		private final boolean forceRestart;
 		private final Map<String, String> answers;
 
@@ -322,12 +325,12 @@ public class StartCase extends AbstractAction implements EventListener {
 			for (Entry<String, String> answer : answers.entrySet()) {
 				Question question = manager.searchQuestion(answer.getKey());
 				if (question == null) {
-					Log.severe("question does not exists: " + answer.getKey());
+					LOGGER.error("question does not exists: " + answer.getKey());
 					continue;
 				}
 				Value value = ValueUtils.createValue(question, answer.getValue());
 				if (value == null) {
-					Log.severe("question is assigned an invalid value: " + answer);
+					LOGGER.error("question is assigned an invalid value: " + answer);
 					continue;
 				}
 				answerValues.put(question, value);

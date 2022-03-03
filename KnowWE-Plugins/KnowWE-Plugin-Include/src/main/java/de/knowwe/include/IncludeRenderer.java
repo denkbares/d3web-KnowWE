@@ -24,9 +24,10 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -42,6 +43,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.util.Icon;
 
 class IncludeRenderer extends DefaultMarkupRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(IncludeRenderer.class);
 
 	private static final Icon HEADER_LINK_ICON = Icon.EXTERNAL_LINK.addClasses("include-sourceHeaderLink");
 
@@ -67,7 +69,7 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 				params = URLEncodedUtils.parse(new URI(url), "UTF-8");
 			}
 			catch (URISyntaxException e) {
-				Log.severe("invalid uri", e);
+				LOGGER.error("invalid uri", e);
 			}
 			for (NameValuePair param : params) {
 				user.getRequest().getSession().setAttribute(param.getName(), param.getValue());

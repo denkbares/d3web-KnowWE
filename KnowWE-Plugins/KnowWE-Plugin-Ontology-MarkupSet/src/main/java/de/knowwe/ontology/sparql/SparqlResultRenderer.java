@@ -33,7 +33,8 @@ import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.semanticcore.utils.TableRowComparator;
 import com.denkbares.semanticcore.utils.ValueComparator;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.UserActionContext;
@@ -53,6 +54,7 @@ import de.knowwe.util.Color;
 import de.knowwe.util.Icon;
 
 public class SparqlResultRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SparqlResultRenderer.class);
 
 	private static final String POINT_ID = "SparqlResultNodeRenderer";
 	private static final String RESULT_TABLE = "resultTable";
@@ -285,7 +287,7 @@ public class SparqlResultRenderer {
 		}
 		catch (Throwable e) {
 			String message = "Exception while rendering SPARQL result";
-			Log.severe(message, e);
+			LOGGER.error(message, e);
 			return new SparqlRenderResult(new RenderResult(user).appendException(e).toStringRaw());
 		}
 	}
@@ -391,7 +393,7 @@ public class SparqlResultRenderer {
 			Stopwatch stopwatch = new Stopwatch();
 			// creating hierarchy order using PartialHierarchyTree
 			ResultTableHierarchy tree = new ResultTableHierarchy(table);
-			Log.info("Create hierarchical sparql result table in " + stopwatch.getDisplay());
+			LOGGER.info("Create hierarchical sparql result table in " + stopwatch.getDisplay());
 			section.storeObject(RESULT_TABLE, table);
 			section.storeObject(RESULT_TABLE_TREE, tree);
 			iterator = tree.getRoots().iterator();

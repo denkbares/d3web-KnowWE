@@ -22,7 +22,8 @@ import java.util.Collection;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -38,6 +39,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 14.11.2013
  */
 public abstract class AbstractPackageCompiler implements PackageCompiler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPackageCompiler.class);
 
 	private final Section<? extends PackageCompileType> compileSection;
 	private final PackageManager packageManager;
@@ -106,7 +108,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 			newlyCreated = false;
 			Stopwatch stopwatch = new Stopwatch();
 			compilePackages(packagesToCompile);
-			Log.info(this + " finished after " + stopwatch.getDisplay());
+			LOGGER.info(this + " finished after " + stopwatch.getDisplay());
 		}
 	}
 

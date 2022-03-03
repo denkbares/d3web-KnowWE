@@ -25,14 +25,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import utils.KBTestUtilNewMarkup;
 import utils.TestArticleManager;
+
+import com.denkbares.plugin.test.InitPluginManager;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.knowledge.terminology.Solution;
 import de.d3web.core.knowledge.terminology.info.MMInfo;
-import com.denkbares.plugin.test.InitPluginManager;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -45,6 +47,7 @@ import de.knowwe.core.kdom.Article;
  * 
  */
 public class SolutionsTest extends TestCase {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SolutionsTest.class);
 
 	@Override
 	protected void setUp() throws IOException {
@@ -138,7 +141,7 @@ public class SolutionsTest extends TestCase {
 			}
 		}
 		else {
-			Log.warning("SolutionsTest: Solutions have not been tested!");
+			LOGGER.warn("SolutionsTest: Solutions have not been tested!");
 		}
 	}
 }

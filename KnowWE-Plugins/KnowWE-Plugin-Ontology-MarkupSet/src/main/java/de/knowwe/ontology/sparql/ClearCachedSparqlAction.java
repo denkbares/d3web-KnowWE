@@ -5,7 +5,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
@@ -18,6 +19,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * Created by Albrecht Striffler (denkbares GmbH) on 09.12.2014.
  */
 public class ClearCachedSparqlAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClearCachedSparqlAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -30,7 +32,7 @@ public class ClearCachedSparqlAction extends AbstractAction {
 		}
 		String sparqlQuery = section.get().getSparqlQuery(section, context);
 		if (!core.clearCachedResult(sparqlQuery)) {
-			Log.warning("Cache for query " + Strings.ellipsis(sparqlQuery, 50) + " from page "
+			LOGGER.warn("Cache for query " + Strings.ellipsis(sparqlQuery, 50) + " from page "
 					+ section.getTitle() + " was not cleared as requested, because it could not be found...");
 		}
 	}

@@ -38,11 +38,12 @@ import java.util.stream.Collectors;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.CountingSet;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -77,6 +78,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 09.12.2013
  */
 public class ObjectInfoRenderer implements Renderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectInfoRenderer.class);
 
 	// Parameter used in the request
 	public static final String OBJECT_NAME = "objectname";
@@ -660,7 +662,7 @@ public class ObjectInfoRenderer implements Renderer {
 			response.accumulate("allTerms", allTerms);
 		}
 		catch (JSONException e) {
-			Log.severe("Exception while writing available terms to JSON", e);
+			LOGGER.error("Exception while writing available terms to JSON", e);
 		}
 		return response;
 	}

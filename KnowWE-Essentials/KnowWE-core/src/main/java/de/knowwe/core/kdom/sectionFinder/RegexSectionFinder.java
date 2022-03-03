@@ -26,11 +26,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 
 public class RegexSectionFinder implements SectionFinder {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegexSectionFinder.class);
 
 	private final Pattern pattern;
 	private final int group;
@@ -103,7 +105,7 @@ public class RegexSectionFinder implements SectionFinder {
 		catch (StackOverflowError e) {
 			String message = "Stack overflow in regex for type " + type.getClass()
 					.getSimpleName() + (father == null ? "" : " on article '" + father.getTitle() + "'");
-			Log.severe(message);
+			LOGGER.error(message);
 			return Collections.emptyList();
 		}
 

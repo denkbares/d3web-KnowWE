@@ -22,10 +22,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.session.Session;
 import de.d3web.testcase.model.TestCase;
-import com.denkbares.utils.Log;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
@@ -46,6 +48,7 @@ import de.knowwe.testcases.prefix.PrefixedTestCaseProvider;
  * @created 27.01.2012
  */
 public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AttachmentTestCaseProvider.class);
 
 	protected TestCase testCase;
 	protected WikiAttachment attachment;
@@ -86,7 +89,7 @@ public abstract class AttachmentTestCaseProvider extends PrefixedTestCaseProvide
 			messages.clear();
 			messages.add(Messages.error("File " + attachment.getFileName()
 					+ " cannot be accessed: " + e.getMessage() + "\n"));
-			Log.severe("File " + attachment.getFileName() + " cannot be accessed", e);
+			LOGGER.error("File " + attachment.getFileName() + " cannot be accessed", e);
 			return null;
 		}
 	}

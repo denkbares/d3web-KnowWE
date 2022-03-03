@@ -10,10 +10,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jgit.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.N2MMap;
-import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.compile.CompilationLocal;
@@ -30,6 +31,7 @@ import de.knowwe.ontology.compile.OntologyCompiler;
  * @created 18.05.18
  */
 public class OntologyBridge {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyBridge.class);
 
 	private static final MultiMap<String, String> mapping = new N2MMap<>();
 
@@ -116,7 +118,7 @@ public class OntologyBridge {
 			compiler.getCompilerManager().awaitCompilePriorityCompleted(compiler, priorityToAwait);
 		}
 		catch (InterruptedException e) {
-			Log.severe("Interrupted while waiting", e);
+			LOGGER.error("Interrupted while waiting", e);
 		}
 		return compiler;
 	}

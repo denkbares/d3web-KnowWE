@@ -44,7 +44,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Streams;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.BuildResultPersistenceHandler;
@@ -56,6 +57,7 @@ import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 
 public class CIPersistence {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIPersistence.class);
 
 	public static final int MAX_BUILDS = 200;
 
@@ -206,7 +208,7 @@ public class CIPersistence {
 				if (in != null) in.close();
 			}
 			catch (IOException e) {
-				Log.severe("Exception while closing", e);
+				LOGGER.error("Exception while closing", e);
 			}
 		}
 		return build;

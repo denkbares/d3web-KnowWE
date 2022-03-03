@@ -19,7 +19,8 @@ import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
@@ -27,6 +28,7 @@ import de.knowwe.core.action.UserActionContext;
 import static com.denkbares.strings.Strings.Encoding.UTF8;
 
 public class Utils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
 	private static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
 	private static final String EXTENDED_POINT_ID = "Action";
@@ -45,7 +47,7 @@ public class Utils {
 				return ((Action) e.getSingleton());
 			}
 		}
-		Log.warning("Action: \"" + actionName + "\" not found, check plugin.xml.");
+		LOGGER.warn("Action: \"" + actionName + "\" not found, check plugin.xml.");
 		return null;
 	}
 

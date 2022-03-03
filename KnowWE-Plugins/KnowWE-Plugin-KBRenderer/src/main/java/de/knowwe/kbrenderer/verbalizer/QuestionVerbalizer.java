@@ -24,7 +24,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 import de.d3web.core.knowledge.terminology.Question;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
 
 /**
@@ -36,6 +37,7 @@ import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
  * @date june 2008
  */
 public class QuestionVerbalizer implements Verbalizer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuestionVerbalizer.class);
 
 	/**
 	 * Returns the classes RuleVerbalizer can render
@@ -75,13 +77,13 @@ public class QuestionVerbalizer implements Verbalizer {
 		if (!Arrays.asList(getSupportedRenderingTargets()).contains(targetFormat)) {
 			// this should not happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Log.warning("RenderingTarget" + targetFormat + " is not supported by RuleVerbalizer!");
+			LOGGER.warn("RenderingTarget" + targetFormat + " is not supported by RuleVerbalizer!");
 			return null;
 		}
 		if (!(o instanceof Question)) {
 			// this should not happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Log.warning("Object " + o + " couldnt be rendered by DiagnosisVerbalizer!");
+			LOGGER.warn("Object " + o + " couldnt be rendered by DiagnosisVerbalizer!");
 			return null;
 		}
 

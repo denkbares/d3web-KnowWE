@@ -50,6 +50,8 @@ import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.PartialHierarchy;
 import com.denkbares.collections.PartialHierarchyTree;
@@ -57,11 +59,10 @@ import com.denkbares.semanticcore.OptimizedMemValueFactory;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.semanticcore.utils.RDFUtils;
 import com.denkbares.semanticcore.utils.Sparqls;
-import com.denkbares.strings.Text;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import com.denkbares.strings.Text;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -72,6 +73,7 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class Rdf2GoUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Rdf2GoUtils.class);
 
 	private static final SimpleDateFormat XSD_DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 
@@ -188,7 +190,7 @@ public class Rdf2GoUtils {
 			new java.net.URI(uri);
 		}
 		catch (URISyntaxException e) {
-			Log.severe(e.getMessage());
+			LOGGER.error(e.getMessage());
 			return uri;
 		}
 		return getLabel(repo.createIRI(uri), repo, locales);

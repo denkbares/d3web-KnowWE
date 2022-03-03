@@ -36,12 +36,13 @@ import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
@@ -60,6 +61,7 @@ import de.knowwe.visualization.dot.DOTVisualizationRenderer;
  * @created 11.10.2013
  */
 public class OntoGraphDataBuilder extends GraphDataBuilder {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntoGraphDataBuilder.class);
 
 	/*
 	For Debugging/Optimization only
@@ -180,28 +182,28 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 			long after = System.currentTimeMillis();
 
-			Log.info("Visualization Stats for: " + Strings.concat(",", getMainConcepts()));
-			Log.info("took " + stopwatch.getDisplay());
-			Log.info("addSuccessorCalls: " + addSuccessorsCalls);
-			Log.info("addPredecessorCalls: " + addPredecessorsCalls);
-			Log.info("addOutgoingSuccessorCalls: " + addOutgoingSuccessorsCalls);
-			Log.info("addOutgoingPredecessorCalls: " + addOutgoingPredecessorsCalls);
-			Log.info("addOuterConceptCalls: " + addOuterConceptCalls);
+			LOGGER.info("Visualization Stats for: " + Strings.concat(",", getMainConcepts()));
+			LOGGER.info("took " + stopwatch.getDisplay());
+			LOGGER.info("addSuccessorCalls: " + addSuccessorsCalls);
+			LOGGER.info("addPredecessorCalls: " + addPredecessorsCalls);
+			LOGGER.info("addOutgoingSuccessorCalls: " + addOutgoingSuccessorsCalls);
+			LOGGER.info("addOutgoingPredecessorCalls: " + addOutgoingPredecessorsCalls);
+			LOGGER.info("addOuterConceptCalls: " + addOuterConceptCalls);
 			Set<OuterConceptCheck> outerSet = new HashSet<>(checkedOuterConcepts);
-			Log.info("different outer-concepts: " + outerSet.size());
+			LOGGER.info("different outer-concepts: " + outerSet.size());
 
 			Set<String> predQuerySet = new HashSet<>(predQueries);
-			Log.info("number of pred-queries: " + predQueries.size());
-			Log.info("number of different pred-queries: " + predQuerySet.size());
+			LOGGER.info("number of pred-queries: " + predQueries.size());
+			LOGGER.info("number of different pred-queries: " + predQuerySet.size());
 
 			Set<String> succQueriesSet = new HashSet<>(succQueries);
-			Log.info("number of succ-queries: " + succQueries.size());
-			Log.info("number of succ-different queries: " + succQueriesSet.size());
+			LOGGER.info("number of succ-queries: " + succQueries.size());
+			LOGGER.info("number of succ-different queries: " + succQueriesSet.size());
 
 			Set<String> allQueriesSet = new HashSet<>();
 			allQueriesSet.addAll(succQueries);
 			allQueriesSet.addAll(predQueries);
-			Log.info("number of total different queries: " + allQueriesSet.size());
+			LOGGER.info("number of total different queries: " + allQueriesSet.size());
 		}
 	}
 
@@ -387,11 +389,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		if (DEBUG_MODE) {
 			if (succQueries.contains(query)) {
-				Log.warning("Query was already processed in succ:" + query);
+				LOGGER.warn("Query was already processed in succ:" + query);
 			}
 			succQueries.add(query);
 			if (count > 20) {
-				Log.warning("Large expansion query: " + query);
+				LOGGER.warn("Large expansion query: " + query);
 			}
 		}
 	}
@@ -498,7 +500,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		if (DEBUG_MODE) {
 			predQueries.add(query);
 			if (count > 20) {
-				Log.warning("Large expansion query: " + query);
+				LOGGER.warn("Large expansion query: " + query);
 			}
 		}
 	}
@@ -553,7 +555,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 		if (DEBUG_MODE) {
 			if (count > 20) {
-				Log.warning("Large expansion query: " + query);
+				LOGGER.warn("Large expansion query: " + query);
 			}
 		}
 	}
@@ -610,7 +612,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		}
 		if (DEBUG_MODE) {
 			if (count > 20) {
-				Log.warning("Large expansion query: " + query);
+				LOGGER.warn("Large expansion query: " + query);
 			}
 		}
 	}
@@ -778,11 +780,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 
 	private boolean checkTripleFilters(String query, String y, String z, NODE_TYPE nodeType, ExpandMode mode) {
 		if (y == null) {
-			Log.severe("Variable y of query was null: " + query);
+			LOGGER.error("Variable y of query was null: " + query);
 			return true;
 		}
 		if (z == null) {
-			Log.severe("Variable z of query was null: " + query);
+			LOGGER.error("Variable z of query was null: " + query);
 			return true;
 		}
 		if (excludedRelation(y)) {

@@ -43,6 +43,9 @@ import java.util.logging.LogManager;
 import javax.servlet.ServletContext;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import com.denkbares.collections.PriorityList;
 import com.denkbares.events.EventListener;
@@ -52,7 +55,6 @@ import com.denkbares.plugin.JPFPluginManager;
 import com.denkbares.plugin.Plugin;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.plugin.Resource;
-import com.denkbares.utils.Log;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.CompilerManager;
@@ -84,6 +86,7 @@ import de.knowwe.tools.ToolUtils;
  */
 
 public class Environment {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Environment.class);
 
 	/**
 	 * Indicates whether this environment is initialized or not.
@@ -135,7 +138,7 @@ public class Environment {
 	 */
 	public static synchronized Environment getInstance() {
 		if (instance == null) {
-			Log.severe("Environment was not instantiated!");
+			LOGGER.error("Environment was not instantiated!");
 		}
 		return instance;
 	}
@@ -145,14 +148,14 @@ public class Environment {
 	}
 
 	public static void initInstance(WikiConnector wiki) {
-		Log.info("STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
+		LOGGER.info("STARTING TO INITIALIZE KNOWWE ENVIRONMENT");
 
 		instance = new Environment(wiki);
 		instance.init();
 		initialized = true;
 		EventManager.getInstance().fireEvent(new InitEvent());
 
-		Log.info("INITIALIZED KNOWWE ENVIRONMENT");
+		LOGGER.info("INITIALIZED KNOWWE ENVIRONMENT");
 	}
 
 	/**
@@ -186,7 +189,7 @@ public class Environment {
 		catch (Throwable e) {
 			String msg = "Invalid initialization of the wiki. This is caused by an invalid wiki plugin. "
 					+ "Wiki is in unstable state. Please exit and correct before using the wiki.";
-			Log.severe(msg, e);
+			LOGGER.error(msg, e);
 			throw new IllegalStateException(msg, e);
 		}
 	}
@@ -245,8 +248,7 @@ public class Environment {
 	}
 
 	private void configureLogging() {
-
-		Log.setContextName(wikiConnector.getApplicationName());
+		MDC.put("context", wikiConnector.getApplicationName());
 
 		ResourceBundle config = KnowWEUtils.getConfigBundle();
 		Collection<String> logLevelConfigs = getLogLevelConfigs(config);
@@ -295,7 +297,7 @@ public class Environment {
 				pis.close();
 			}
 			catch (IOException ioe) {
-				Log.severe("Failed to set LogLevel ", ioe);
+				LOGGER.error("Failed to set LogLevel ", ioe);
 			}
 		}
 	}
@@ -485,7 +487,7 @@ public class Environment {
 		String key = tagName.toLowerCase();
 
 		if (tagHandlers.containsKey(key)) {
-			Log.warning("TagHandler for tag '" + tagName + "' had already been added.");
+			LOGGER.warn("TagHandler for tag '" + tagName + "' had already been added.");
 		}
 		else {
 			this.tagHandlers.put(key, tagHandler);

@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.denkbares.strings.Identifier;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -26,6 +27,7 @@ import de.knowwe.tools.ToolUtils;
  * @created 05.12.2016
  */
 public class GetVisMenuAction extends GetToolMenuAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GetVisMenuAction.class);
 
 	public static final String CONCEPT_NAME = "term";
 
@@ -54,7 +56,7 @@ public class GetVisMenuAction extends GetToolMenuAction {
 		String conceptName = context.getParameter(CONCEPT_NAME);
 		if (conceptName == null) {
 			String message = "term name parameter not found";
-			Log.severe(message);
+			LOGGER.error(message);
 			string.append(message);
 			writeResponse(context, null, string);
 			return;
@@ -76,7 +78,7 @@ public class GetVisMenuAction extends GetToolMenuAction {
 		}
 		if (termDefiningSection == null) {
 			String message = "No defining Section found";
-			Log.severe(message);
+			LOGGER.error(message);
 			string.append(message);
 			writeResponse(context, null, string);
 			return;

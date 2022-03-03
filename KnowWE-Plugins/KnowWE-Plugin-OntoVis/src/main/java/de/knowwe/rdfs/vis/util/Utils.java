@@ -48,7 +48,8 @@ import com.denkbares.strings.Text;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -74,6 +75,7 @@ import de.knowwe.visualization.dot.RenderingStyle;
  * @created 29.11.2012
  */
 public class Utils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
 	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, Locale... languages) {
 		return getLabel(concept, repo, languages, "<http://www.w3.org/2004/02/skos/core#prefLabel>", "rdfs:label");
@@ -227,7 +229,7 @@ public class Utils {
 		}
 
 		// this case should/can never happen!
-		Log.severe("No valid Value type!");
+		LOGGER.error("No valid Value type!");
 		return null;
 	}
 
@@ -314,7 +316,7 @@ public class Utils {
 							classHierarchy.remove(clazz);
 						}
 						catch (PartialHierarchyException e) {
-							Log.severe("Unable to remove class " + clazz, e);
+							LOGGER.error("Unable to remove class " + clazz, e);
 						}
 					}
 				}
@@ -455,7 +457,7 @@ public class Utils {
 			return colorCodings;
 		}
 		catch (Exception e) {
-			Log.severe("Exception while looking up color codes", e);
+			LOGGER.error("Exception while looking up color codes", e);
 			Messages.storeMessage(section, Utils.class, Messages.error("Unable to find color " + relationName + "."));
 		}
 		return null;

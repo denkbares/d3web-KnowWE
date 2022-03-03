@@ -25,16 +25,18 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import at.spardat.xma.xdelta.JarPatcher;
-import de.knowwe.dialog.Utils;
-import de.knowwe.dialog.repository.ArchiveUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import de.knowwe.dialog.Utils;
+import de.knowwe.dialog.repository.ArchiveUtils;
 
 public class SyncClientContext {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SyncClientContext.class);
 
 	/**
 	 * One and only instance of the SyncClientContext
@@ -96,6 +98,7 @@ public class SyncClientContext {
 
 	@SuppressWarnings("serial")
 	private static class CancelException extends Exception {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CancelException.class);
 	}
 
 	private final File rootFolder;
@@ -289,11 +292,11 @@ public class SyncClientContext {
 			this.syncState = SyncState.CANCELED;
 		}
 		catch (IOException e) {
-			Log.severe("synchronisation error", e);
+			LOGGER.error("synchronisation error", e);
 			this.syncState = SyncState.ERROR_OCCURED;
 		}
 		catch (Exception e) {
-			Log.severe("unexpected internal synchronisation error", e);
+			LOGGER.error("unexpected internal synchronisation error", e);
 			this.syncState = SyncState.ERROR_OCCURED;
 		}
 	}

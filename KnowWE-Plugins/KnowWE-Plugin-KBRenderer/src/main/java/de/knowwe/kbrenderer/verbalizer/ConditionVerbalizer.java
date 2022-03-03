@@ -30,7 +30,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondDState;
 import de.d3web.core.inference.condition.CondEqual;
@@ -65,6 +66,7 @@ import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
  */
 @SuppressWarnings("deprecation")
 public class ConditionVerbalizer implements Verbalizer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConditionVerbalizer.class);
 
 	private Map<String, Object> parameter = new HashMap<>();
 
@@ -130,7 +132,7 @@ public class ConditionVerbalizer implements Verbalizer {
 		if (!(o instanceof Condition)) {
 			// this shouldnt happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Log.warning("Object " + o + " couldnt be rendered by ConditionVerbalizer!");
+			LOGGER.warn("Object " + o + " couldnt be rendered by ConditionVerbalizer!");
 			return null;
 		}
 
@@ -187,7 +189,7 @@ public class ConditionVerbalizer implements Verbalizer {
 		else {
 			// this shouldnt happen, cause VerbalizationManager should not
 			// delegate here in this case!
-			Log.warning("RenderingTarget" + getTargetFormat() + " is not supported by RuleVerbalizer!");
+			LOGGER.warn("RenderingTarget" + getTargetFormat() + " is not supported by RuleVerbalizer!");
 			return null;
 		}
 	}

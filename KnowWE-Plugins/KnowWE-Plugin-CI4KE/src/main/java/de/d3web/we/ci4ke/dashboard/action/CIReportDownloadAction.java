@@ -19,7 +19,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.w3c.dom.Document;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.BuildResultPersistenceHandler;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
@@ -34,6 +35,7 @@ import de.knowwe.core.action.UserActionContext;
  * @created 21.02.17
  */
 public class CIReportDownloadAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIReportDownloadAction.class);
 
 	private static final String PARAM_NAME = "name";
 
@@ -79,7 +81,7 @@ public class CIReportDownloadAction extends AbstractAction {
 
 		}
 		catch (TransformerException | ParserConfigurationException e) {
-			Log.severe("Error while applying XSL stylesheet.", e);
+			LOGGER.error("Error while applying XSL stylesheet.", e);
 		}
 		                                    
 

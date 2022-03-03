@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.Resource;
-import com.denkbares.utils.Log;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.Article;
@@ -43,6 +45,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * @created 13.10.2010
  */
 public class ResourceHandler implements D3webHandler<ResourceType> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceHandler.class);
 
 	@Override
 	public Collection<Message> create(D3webCompiler compiler, Section<ResourceType> section) {
@@ -124,7 +127,7 @@ public class ResourceHandler implements D3webHandler<ResourceType> {
 				}
 			}
 			catch (IOException e) {
-				Log.severe("wiki error accessing attachments: ", e);
+				LOGGER.error("wiki error accessing attachments: ", e);
 				return Messages.asList(
 						Messages.error("Wiki error accessing attachments: " + e.getMessage()));
 			}

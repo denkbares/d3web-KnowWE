@@ -41,11 +41,12 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFParseException;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.basicType.AttachmentType;
@@ -75,6 +76,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @created 23.04.2015
  */
 public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(InitTerminologyHandler.class);
 
 	private static final Map<String, TermCache> importCache = new HashMap<>();
 	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -377,7 +379,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 		}
 		long duration = System.currentTimeMillis() - start;
 		if (duration > TimeUnit.SECONDS.toMillis(1)) {
-			Log.info("Loaded ontology from attachment " + path + " in " + duration + "ms");
+			LOGGER.info("Loaded ontology from attachment " + path + " in " + duration + "ms");
 		}
 	}
 
@@ -452,7 +454,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 	}
 
 	private void handleException(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, WikiAttachment attachment, Exception e) {
-		Log.severe("Exception while importing ontology " + attachment.getPath(), e);
+		LOGGER.error("Exception while importing ontology " + attachment.getPath(), e);
 		Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while importing ontology from '"
 				+ attachment.getPath() + "': " + e.getMessage()));
 	}
@@ -506,7 +508,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 			}
 		}
 		if (abbreviation == null) {
-			Log.fine("No matching namespace found for URI '" + uri + "', skipping term registration.");
+			LOGGER.debug("No matching namespace found for URI '" + uri + "', skipping term registration.");
 			return;
 		}
 		TerminologyManager terminologyManager = compiler.getTerminologyManager();

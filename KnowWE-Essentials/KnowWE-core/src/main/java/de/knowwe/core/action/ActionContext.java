@@ -30,10 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.PluginManager;
-import com.denkbares.utils.Log;
 import de.knowwe.core.user.AbstractUserContext;
 import de.knowwe.core.user.AuthenticationManager;
 
@@ -53,6 +54,7 @@ import de.knowwe.core.user.AuthenticationManager;
  * @author Sebastian Furth
  */
 public class ActionContext extends AbstractUserContext implements UserActionContext {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ActionContext.class);
 
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
 	public static final String EXTENDED_POINT_ID = "Action";
@@ -127,7 +129,7 @@ public class ActionContext extends AbstractUserContext implements UserActionCont
 				return ((Action) e.getSingleton());
 			}
 		}
-		Log.warning("Action: \"" + actionName + "\" not found, check plugin.xml.");
+		LOGGER.warn("Action: \"" + actionName + "\" not found, check plugin.xml.");
 		return null;
 	}
 

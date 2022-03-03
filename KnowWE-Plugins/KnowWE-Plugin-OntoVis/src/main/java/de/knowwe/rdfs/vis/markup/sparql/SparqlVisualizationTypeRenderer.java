@@ -11,7 +11,8 @@ import org.eclipse.rdf4j.query.BindingSet;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -35,6 +36,7 @@ import de.knowwe.visualization.SubGraphData;
 import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
 public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SparqlVisualizationTypeRenderer.class);
 
 	public static final String VISUALIZATION_RENDERER_KEY = "sparqlVisualizationRendererKey";
 
@@ -91,7 +93,7 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			Value object = row.getValue(variables.get(2));
 
 			if (subject == null || object == null || predicate == null) {
-				Log.warning("Incomplete query result row: " + row);
+				LOGGER.warn("Incomplete query result row: " + row);
 				continue;
 			}
 

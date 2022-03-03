@@ -3,7 +3,8 @@ package de.knowwe.rdf2go;
 import java.io.IOException;
 
 import com.denkbares.semanticcore.SemanticCore;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.plugin.Instantiation;
 
@@ -14,6 +15,7 @@ import de.knowwe.plugin.Instantiation;
  * @created 24.06.16
  */
 public class RepositoryInitializer implements Instantiation {
+	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryInitializer.class);
 
 	@Override
 	public void init(String web) {
@@ -28,7 +30,7 @@ public class RepositoryInitializer implements Instantiation {
 			SemanticCore.initializeRepositoryManager(SemanticCore.createRepositoryPath(context));
 		}
 		catch (IOException e) {
-			Log.severe("Unable to initialize repository for SemanticCore!", e);
+			LOGGER.error("Unable to initialize repository for SemanticCore!", e);
 		}
 	}
 }

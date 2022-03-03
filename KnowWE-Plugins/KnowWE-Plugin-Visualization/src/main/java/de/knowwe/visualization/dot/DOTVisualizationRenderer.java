@@ -20,7 +20,8 @@ package de.knowwe.visualization.dot;
 
 import java.io.File;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.visualization.Config;
 import de.knowwe.visualization.GraphVisualizationRenderer;
 import de.knowwe.visualization.SubGraphData;
@@ -34,6 +35,7 @@ import de.knowwe.visualization.util.FileUtils;
  * @created 27.05.2013
  */
 public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DOTVisualizationRenderer.class);
 
 	private final SubGraphData data;
 	private final Config config;
@@ -86,7 +88,7 @@ public class DOTVisualizationRenderer implements GraphVisualizationRenderer {
 	public synchronized void cleanUp() {
 		for (File createdFile : createdFiles) {
 			if (!createdFile.delete()) {
-				Log.warning("Unable to delete file " + createdFile.getAbsolutePath());
+				LOGGER.warn("Unable to delete file " + createdFile.getAbsolutePath());
 			}
 		}
 	}

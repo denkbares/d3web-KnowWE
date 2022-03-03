@@ -12,7 +12,8 @@ import org.eclipse.rdf4j.model.IRI;
 
 import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.strings.Identifier;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -33,6 +34,7 @@ import de.knowwe.util.Icon;
  * @created 29.04.16.
  */
 public class SparqlVisTemplateToolProvider implements ToolProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SparqlVisTemplateToolProvider.class);
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext userContext) {
@@ -56,7 +58,7 @@ public class SparqlVisTemplateToolProvider implements ToolProvider {
 				link += conceptParameterAppendix;
 			}
 			catch (UnsupportedEncodingException e) {
-				Log.severe("problem encoding vis template link", e);
+				LOGGER.error("problem encoding vis template link", e);
 			}
 
 			tools.add(new DefaultTool(

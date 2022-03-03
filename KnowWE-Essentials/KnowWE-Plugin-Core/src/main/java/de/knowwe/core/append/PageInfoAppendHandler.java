@@ -20,8 +20,10 @@ package de.knowwe.core.append;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -38,6 +40,7 @@ import de.knowwe.core.wikiConnector.WikiConnector;
  * @created 18.10.2012
  */
 public class PageInfoAppendHandler implements PageAppendHandler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PageInfoAppendHandler.class);
 
 	@Override
 	public void append(Article article, UserContext user, RenderResult html) {
@@ -73,7 +76,7 @@ public class PageInfoAppendHandler implements PageAppendHandler {
 				}
 			}
 			catch (IOException e) {
-				Log.severe("Unable to retrieve attachments", e);
+				LOGGER.error("Unable to retrieve attachments", e);
 			}
 			html.appendHtml("</div>");
 		}

@@ -34,9 +34,10 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
@@ -78,6 +79,7 @@ import de.knowwe.util.Icon;
  * @created 14.01.2014
  */
 public class PaginationRenderer implements AsyncPreviewRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PaginationRenderer.class);
 
 	public static final String REASON_PAGINATION = "pagination";
 	private static final String PAGINATION_KEY = "pagination";
@@ -411,7 +413,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 			return new JSONObject(sectionStorage).optJSONObject(PAGINATION_KEY);
 		}
 		catch (JSONException e) {
-			Log.warning("Exception while parsing json", e);
+			LOGGER.warn("Exception while parsing json", e);
 			return null;
 		}
 	}
@@ -424,7 +426,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 			}
 		}
 		catch (JSONException e) {
-			Log.warning("Exception while parsing start row", e);
+			LOGGER.warn("Exception while parsing start row", e);
 		}
 		return Integer.parseInt(START_ROW_DEFAULT);
 	}
@@ -456,7 +458,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 			}
 		}
 		catch (JSONException e) {
-			Log.warning("Exception while parsing count", e);
+			LOGGER.warn("Exception while parsing count", e);
 		}
 		return COUNT_DEFAULT;
 	}
@@ -503,7 +505,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				list.add(sortObject);
 			}
 			catch (JSONException e) {
-				Log.severe("Invalid JSON", e);
+				LOGGER.error("Invalid JSON", e);
 			}
 		}
 
@@ -518,7 +520,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 			}
 		}
 		catch (JSONException e) {
-			Log.warning("Exception while parsing sorting", e);
+			LOGGER.warn("Exception while parsing sorting", e);
 		}
 		return new JSONArray();
 	}

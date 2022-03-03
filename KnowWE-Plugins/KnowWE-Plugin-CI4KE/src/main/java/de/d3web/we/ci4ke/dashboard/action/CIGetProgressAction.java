@@ -23,9 +23,10 @@ import java.io.IOException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.we.ci4ke.build.CIBuildManager;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
@@ -42,6 +43,7 @@ import de.knowwe.core.utils.progress.DefaultAjaxProgressListener;
  * @created 18.07.2012
  */
 public class CIGetProgressAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CIGetProgressAction.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -73,7 +75,7 @@ public class CIGetProgressAction extends AbstractAction {
 			result.write(context.getWriter());
 		}
 		catch (JSONException e) {
-			Log.severe("Error while writing JSON message", e);
+			LOGGER.error("Error while writing JSON message", e);
 		}
 	}
 }

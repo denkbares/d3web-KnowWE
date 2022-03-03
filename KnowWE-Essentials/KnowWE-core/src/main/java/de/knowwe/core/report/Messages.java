@@ -37,8 +37,10 @@ import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.Compiler;
@@ -49,6 +51,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 public final class Messages {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Messages.class);
 
 	private static final String MESSAGE_KEY = "message_map_key";
 
@@ -710,7 +713,7 @@ public final class Messages {
 	 * @created 18.08.2010
 	 */
 	public static Message internalError(String message, Throwable e) {
-		Log.warning(message, e);
+		LOGGER.warn(message, e);
 		return Messages.error(message + ": " + e);
 	}
 

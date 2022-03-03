@@ -34,10 +34,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.NumberAwareComparator;
-import com.denkbares.utils.Log;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -61,6 +62,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @created 17.11.2013
  */
 public class Compilers {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Compilers.class);
 
 	private static final String DEFAULT_COMPILERS = "default-compilers";
 
@@ -114,7 +116,7 @@ public class Compilers {
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while destroying with script "
 							+ section;
-					Log.severe(msg, e);
+					LOGGER.error(msg, e);
 				}
 			}
 		}
@@ -637,7 +639,7 @@ public class Compilers {
 			manager.awaitTermination();
 		}
 		catch (InterruptedException e) {
-			Log.warning("Interrupted while waiting for compiler to finish", e);
+			LOGGER.warn("Interrupted while waiting for compiler to finish", e);
 		}
 	}
 }

@@ -19,12 +19,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.CountingSet;
 import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
 import com.denkbares.events.EventManager;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.ServletContextEventListener;
@@ -49,6 +50,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * <p/>
  */
 public class CompilerManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CompilerManager.class);
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
 	private static final String KNOWWE_COMPILER_THREADS_COUNT = "knowwe.compiler.threads.count";
@@ -80,7 +82,7 @@ public class CompilerManager {
 	}
 
 	private void onContextDestroyed() {
-		Log.info("Shutting down KnowWE compilers.");
+		LOGGER.info("Shutting down KnowWE compilers.");
 		new ArrayList<>(compilerCache).forEach(this::removeCompiler);
 		compileThreads.clear();
 		threadPool.shutdown();
@@ -101,7 +103,7 @@ public class CompilerManager {
 			compileThreads.put(thread, null);
 			return thread;
 		});
-		Log.fine("Created multi core thread pool of size " + threadCount);
+		LOGGER.debug("Created multi core thread pool of size " + threadCount);
 		return pool;
 	}
 
@@ -199,7 +201,7 @@ public class CompilerManager {
 				doCompile(added, removed);
 			}
 			catch (Throwable e) {
-				Log.severe("Unexpected internal error while starting compilation.", e);
+				LOGGER.error("Unexpected internal error while starting compilation.", e);
 			}
 			finally {
 				// we fire this before the synchronization, so the method awaitCompilation waits
@@ -208,7 +210,7 @@ public class CompilerManager {
 				synchronized (lock) {
 					running = null;
 					currentlyCompiledArticles.clear();
-					Log.info("Compiled " + added.size() + " added and " + removed.size()
+					LOGGER.info("Compiled " + added.size() + " added and " + removed.size()
 							+ " removed section" + (removed.size() == 1 ? "" : "s")
 							+ " after " + stopwatch.getDisplay());
 					lock.notifyAll();
@@ -258,7 +260,7 @@ public class CompilerManager {
 					catch (Throwable e) {
 						String msg = "Unexpected internal exception while compiling with "
 								+ compiler + ": " + e.getMessage();
-						Log.severe(msg, e);
+						LOGGER.error(msg, e);
 						for (Section<?> section : added) {
 							// it does not matter if we store the messages
 							// for the same article multiple times, because
@@ -273,7 +275,7 @@ public class CompilerManager {
 						synchronized (lock) {
 							// 1 - update all required compiler flags
 							activeCompilers.remove(compiler);
-							Log.fine(compiler.getClass().getSimpleName() + " finished after " + stopwatch.getDisplay());
+							LOGGER.debug(compiler.getClass().getSimpleName() + " finished after " + stopwatch.getDisplay());
 							clearCurrentCompilePriority(compiler);
 							// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
 							// always notify all, as the clear is usually a noop (if the compiler has cleared before)
@@ -341,7 +343,7 @@ public class CompilerManager {
 					if (awaitedCompilers.size() >= threadCount) {
 						int newThreadCount = threadCount + 1;
 						setMaxCompilationThreadCount(newThreadCount);
-						Log.warning("All compile threads are occupied with waiting compilers, increasing thread count to " + newThreadCount + ".\n"
+						LOGGER.warn("All compile threads are occupied with waiting compilers, increasing thread count to " + newThreadCount + ".\n"
 								+ "Consider using system property " + KNOWWE_COMPILER_THREADS_COUNT + " to set thread count to this number at startup.");
 					}
 
@@ -386,7 +388,7 @@ public class CompilerManager {
 	private boolean allCurrentlyCompilingCompilersAwaited() {
 		boolean allAwaiting = awaitedCompilers.containsAll(currentlyCompiledPriority.keySet());
 		if (allAwaiting) {
-			Log.severe("All remaining compiling compilers are awaited by other compilers");
+			LOGGER.error("All remaining compiling compilers are awaited by other compilers");
 		}
 		return allAwaiting;
 	}
@@ -430,7 +432,7 @@ public class CompilerManager {
 				noRunningCompileThreadsFoundSince.resume();
 				timeSinceLastMessage.resume();
 				if (timeSinceLastMessage.getTime() > DEADLOCK_TIMEOUT / 3) {
-					Log.warning("Non of the known compile threads is currently in state RUNNABLE. This may be an indication for a deadlock.");
+					LOGGER.warn("Non of the known compile threads is currently in state RUNNABLE. This may be an indication for a deadlock.");
 					timeSinceLastMessage.reset().resume();
 				}
 			}
@@ -579,7 +581,7 @@ public class CompilerManager {
 	 */
 	public boolean awaitTermination(long timeoutMilliSeconds) throws InterruptedException {
 		if (isCompileThread()) {
-			Log.severe("Unable to wait for compilation to finish in a compile thread, because it would cause a deadlock.");
+			LOGGER.error("Unable to wait for compilation to finish in a compile thread, because it would cause a deadlock.");
 			return true;
 		}
 		long endTime = System.currentTimeMillis() + timeoutMilliSeconds;
@@ -610,7 +612,7 @@ public class CompilerManager {
 				awaitTermination();
 			}
 			catch (InterruptedException e) {
-				Log.warning("Caught InterruptedException while waiting to compile.", e);
+				LOGGER.warn("Caught InterruptedException while waiting to compile.", e);
 			}
 		}
 	}

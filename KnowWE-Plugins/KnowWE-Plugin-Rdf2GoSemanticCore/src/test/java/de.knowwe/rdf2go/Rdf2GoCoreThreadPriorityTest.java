@@ -34,7 +34,8 @@ import org.junit.Test;
 
 import com.denkbares.plugin.test.InitPluginManager;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Stopwatch;
 
 import static junit.framework.TestCase.assertTrue;
@@ -46,6 +47,7 @@ import static junit.framework.TestCase.assertTrue;
  * @created 11.12.2019
  */
 public class Rdf2GoCoreThreadPriorityTest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Rdf2GoCoreThreadPriorityTest.class);
 
 	public static final int PARALLEL_THREADS = 100;
 
@@ -75,7 +77,7 @@ public class Rdf2GoCoreThreadPriorityTest {
 				synchronized (lastPriority) {
 					if (options.priority < lastPriority.get()) {
 						failureCount.incrementAndGet();
-						Log.severe("Query with high priority (" + lastPriority.get() + ") finished later than one with low priority (" + options.priority + ").");
+						LOGGER.error("Query with high priority (" + lastPriority.get() + ") finished later than one with low priority (" + options.priority + ").");
 					}
 					lastPriority.set(options.priority);
 				}
@@ -90,6 +92,6 @@ public class Rdf2GoCoreThreadPriorityTest {
 		String result = "Expected: < " + maxExpected + ", was: " + failureCount.get();
 		assertTrue("More than expected queries finished in the wrong order given by its priority. " + result,
 				failureCount.get() < maxExpected);
-		Log.info("Success: " + result);
+		LOGGER.info("Success: " + result);
 	}
 }

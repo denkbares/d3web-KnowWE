@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
@@ -35,7 +37,6 @@ import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
@@ -66,6 +67,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class OntologyCompiler extends AbstractPackageCompiler
 		implements Rdf2GoCompiler, IncrementalCompiler, EventListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyCompiler.class);
 
 	static final String COMMIT_NOTIFICATION_ID = "CommitNotification";
 	private Rdf2GoCore rdf2GoCore;
@@ -195,7 +197,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 					rdf2GoCore.commit();
 					commitTracker.add(currentCompilePriority);
 					long after = System.currentTimeMillis();
-					Log.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements in " + (after - before) + "ms");
+					LOGGER.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements in " + (after - before) + "ms");
 				}
 			}
 		}

@@ -38,11 +38,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.core.inference.LoopTerminator;
 import de.d3web.core.inference.LoopTerminator.LoopStatus;
 import de.d3web.core.inference.SessionTerminatedException;
@@ -83,6 +84,7 @@ import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.StandardNotification;
 
 public class D3webUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(D3webUtils.class);
 
 	static ArrayList<String> possibleScorePoints;
 
@@ -375,7 +377,7 @@ public class D3webUtils {
 			}
 		}
 		catch (SessionTerminatedException e) {
-			Log.warning("Unable to set fact, because the current session is " +
+			LOGGER.warn("Unable to set fact, because the current session is " +
 					"terminated (possibly due to a detected propagation loop).", e);
 		}
 		if (context != null) {
@@ -478,7 +480,7 @@ public class D3webUtils {
 			url = new File(varPath).toURI().toURL();
 		}
 		catch (MalformedURLException e) {
-			Log.warning("Cannot identify url for knowledgebase", e);
+			LOGGER.warn("Cannot identify url for knowledgebase", e);
 		}
 		return url;
 	}

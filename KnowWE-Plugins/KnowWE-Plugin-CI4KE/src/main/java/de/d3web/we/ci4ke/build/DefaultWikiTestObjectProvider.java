@@ -24,7 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.testing.TestObjectContainer;
 import de.d3web.testing.TestObjectProvider;
 import de.knowwe.core.ArticleManager;
@@ -41,6 +42,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @created 16.05.2012
  */
 public class DefaultWikiTestObjectProvider implements TestObjectProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultWikiTestObjectProvider.class);
 
 	private static DefaultWikiTestObjectProvider instance = null;
 
@@ -58,7 +60,7 @@ public class DefaultWikiTestObjectProvider implements TestObjectProvider {
 	@Override
 	public <T> List<TestObjectContainer<T>> getTestObjects(Class<T> c, String testObjectName) {
 		if (c == null) {
-			Log.warning("Class given to TestObjectProvider was 'null'");
+			LOGGER.warn("Class given to TestObjectProvider was 'null'");
 			return Collections.emptyList();
 		}
 		List<TestObjectContainer<T>> result = new ArrayList<>();

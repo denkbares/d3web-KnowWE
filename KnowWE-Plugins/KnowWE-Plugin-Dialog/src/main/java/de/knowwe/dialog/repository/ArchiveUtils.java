@@ -10,9 +10,11 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ArchiveUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArchiveUtils.class);
 
 	private static final byte[] Hexhars = {
 			'0', '1', '2', '3', '4', '5',
@@ -44,7 +46,7 @@ public class ArchiveUtils {
 			return encode(digest.digest());
 		}
 		catch (NoSuchAlgorithmException e) {
-			Log.severe(
+			LOGGER.error(
 					"no MD5 algorithm found, cannot provide checksum for incremental updates.", e);
 			return null;
 		}

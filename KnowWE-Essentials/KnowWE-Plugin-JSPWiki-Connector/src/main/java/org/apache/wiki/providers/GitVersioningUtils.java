@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
@@ -55,17 +54,17 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.utils.Files;
-import com.denkbares.utils.Log;
 
 /**
  * @author Josua Nürnberger
  * @created 2019-03-13
  */
 public class GitVersioningUtils {
-
-	private static final Logger log = Logger.getLogger(GitVersioningUtils.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningUtils.class);
 
 	public static List<RevCommit> reverseToList(Iterable<RevCommit> revCommits) {
 		LinkedList<RevCommit> ret = new LinkedList<>();
@@ -91,7 +90,7 @@ public class GitVersioningUtils {
 	}
 
 	public static void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
-		Log.info("Start git gc");
+		LOGGER.info("Start git gc");
 		if (windowsGitHack) {
 			doBinaryGC(repository.getDirectory(), prune);
 		}
@@ -104,19 +103,19 @@ public class GitVersioningUtils {
 		try {
 			StopWatch sw = new StopWatch();
 			sw.start();
-			log.info("binary gc start");
+			LOGGER.info("binary gc start");
 			ProcessBuilder pb = new ProcessBuilder();
 			pb.inheritIO().command("git", "gc", prune?"--prune=now":"").directory(pageDir);
 			Process git_gc = pb.start();
 			git_gc.waitFor(2, TimeUnit.MINUTES);
 			sw.stop();
-			log.info("binary gc took " + sw.toString());
+			LOGGER.info("binary gc took " + sw.toString());
 		}
 		catch (InterruptedException e) {
-			log.warn("External git process didn't end in 2 minutes, therefore cancel it");
+			LOGGER.warn("External git process didn't end in 2 minutes, therefore cancel it");
 		}
 		catch (IOException e) {
-			log.error("Error executing external git: " + e.getMessage(), e);
+			LOGGER.error("Error executing external git: " + e.getMessage(), e);
 		}
 	}
 
@@ -125,22 +124,22 @@ public class GitVersioningUtils {
 		stopwatch.start();
 		final Git git = new Git(repository);
 		try {
-			log.info("Beginn Git gc");
+			LOGGER.info("Beginn Git gc");
 			GarbageCollectCommand gc = git.gc()
 					.setAggressive(aggressive);
 			if(prune)
 					gc.setExpire(null);
 			final Properties gcRes = gc.call();
 			for (final Map.Entry<Object, Object> entry : gcRes.entrySet()) {
-				log.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
+				LOGGER.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
 			}
 
 		}
 		catch (final GitAPIException e) {
-			log.warn("Git gc not successful: " + e.getMessage());
+			LOGGER.warn("Git gc not successful: " + e.getMessage());
 		}
 		stopwatch.stop();
-		log.info("gc took " + stopwatch);
+		LOGGER.info("gc took " + stopwatch);
 	}
 
 	public static List<DiffEntry> getDiffEntries(ObjectId oldCommit, ObjectId newCommit, Repository repository) throws IOException {
@@ -180,7 +179,7 @@ public class GitVersioningUtils {
 			return commits;
 		}
 		catch (IOException | GitAPIException e) {
-			log.error(e.getMessage(), e);
+			LOGGER.error(e.getMessage(), e);
 		}
 		return new ArrayList<>();
 	}
@@ -209,7 +208,7 @@ public class GitVersioningUtils {
 			FileUtils.deleteDirectory(new File(path, VersioningFileProvider.PAGEDIR));
 		}
 		catch (IOException e) {
-			Log.severe("Can't delete old file versions", e);
+			LOGGER.error("Can't delete old file versions", e);
 		}
 	}
 
@@ -232,7 +231,7 @@ public class GitVersioningUtils {
 								FileUtils.deleteDirectory(attachmentDir);
 							}
 							catch (IOException e) {
-								Log.severe("Can't fully migrate attachment " + attachmentDir, e);
+								LOGGER.error("Can't fully migrate attachment " + attachmentDir, e);
 							}
 						}
 					}

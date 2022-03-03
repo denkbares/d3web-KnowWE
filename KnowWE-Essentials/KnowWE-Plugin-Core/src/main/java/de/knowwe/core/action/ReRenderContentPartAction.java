@@ -36,7 +36,8 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -51,6 +52,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @author smark
  */
 public class ReRenderContentPartAction extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReRenderContentPartAction.class);
 
 	private static final AtomicLong THREAD_COUNTER = new AtomicLong();
 	private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(runnable -> {
@@ -145,11 +147,11 @@ public class ReRenderContentPartAction extends AbstractAction {
 			// if the previous rerender is still ongoing, it can be ignored, since the newer response will be shown
 		}
 		catch (InterruptedException e) {
-			Log.warning("Rerender thread interrupted");
+			LOGGER.warn("Rerender thread interrupted");
 			return null;
 		}
 		catch (ExecutionException e) {
-			Log.severe("Exception while rendering", e);
+			LOGGER.error("Exception while rendering", e);
 			failUnexpected(context, "Exception while rerendering: " + e.getMessage());
 		}
 		finally {

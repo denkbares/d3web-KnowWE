@@ -36,10 +36,11 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 import org.apache.wiki.providers.BasicAttachmentProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Files;
-import com.denkbares.utils.Log;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.jspwiki.JSPWikiConnector;
@@ -52,6 +53,7 @@ import de.knowwe.jspwiki.JSPWikiConnector;
  * @created 11.04.2012
  */
 public class DummyPageProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DummyPageProvider.class);
 
 	private static final String ATTACHMENT_VERSION_FILE_PATTERN = "\\d+\\..+";
 
@@ -222,7 +224,7 @@ public class DummyPageProvider {
 		for (WikiAttachment zipEntryAttachment : getZipEntryAttachments(attachment)) {
 			allAttachments.put(zipEntryAttachment.getPath(), zipEntryAttachment);
 		}
-		Log.info("Cached attachment: " + attachment.getPath());
+		LOGGER.info("Cached attachment: " + attachment.getPath());
 	}
 
 	private Collection<WikiAttachment> getZipEntryAttachments(WikiAttachment attachment) {
@@ -239,7 +241,7 @@ public class DummyPageProvider {
 			zipStream.close();
 		}
 		catch (IOException e) {
-			Log.severe("Exception while creating ZipEntryAttachments", e);
+			LOGGER.error("Exception while creating ZipEntryAttachments", e);
 		}
 		return entryAttachments;
 	}

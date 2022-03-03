@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
 import de.knowwe.core.compile.packaging.MasterAnnotationWarningHandler;
@@ -46,6 +47,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  */
 
 public class QuickInterviewMarkup extends DefaultMarkupType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuickInterviewMarkup.class);
 
 	private static final DefaultMarkup m;
 
@@ -95,6 +97,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 	}
 
 	private static class QuickInterviewMarkupRenderer extends DefaultMarkupRenderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QuickInterviewMarkupRenderer.class);
 
 		@Override
 		public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
@@ -177,7 +180,7 @@ public class QuickInterviewMarkup extends DefaultMarkupType {
 				}
 			}
 			catch (IOException e) {
-				Log.warning("cannot read saved user session", e);
+				LOGGER.warn("cannot read saved user session", e);
 			}
 			builder.append("</form>");
 			return builder.toString();

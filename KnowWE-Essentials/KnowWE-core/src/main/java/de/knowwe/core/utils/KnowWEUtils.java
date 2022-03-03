@@ -54,7 +54,8 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.AttachmentManager;
@@ -86,6 +87,7 @@ import de.knowwe.plugin.Plugins;
 import de.knowwe.plugin.StatusProvider;
 
 public class KnowWEUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(KnowWEUtils.class);
 
 	public static final List<String> JSPWIKI_TOKENS = Arrays.asList("[", "]", "----", "{{{", "}}}", "{{", "}}", "%%", "\\", "__", "''");
 
@@ -222,7 +224,7 @@ public class KnowWEUtils {
 			out.close();
 		}
 		catch (final Exception e) {
-			Log.warning("Unable to append to File", e);
+			LOGGER.warn("Unable to append to File", e);
 		}
 	}
 
@@ -957,7 +959,7 @@ public class KnowWEUtils {
 			return Strings.readFile(fileName);
 		}
 		catch (final IOException e) {
-			Log.severe("Unable to read File", e);
+			LOGGER.error("Unable to read File", e);
 			return "";
 		}
 	}
@@ -971,7 +973,7 @@ public class KnowWEUtils {
 			Strings.writeFile(path, content);
 		}
 		catch (final Exception e) {
-			Log.severe("Unable to write file", e);
+			LOGGER.error("Unable to write file", e);
 		}
 	}
 
@@ -1164,7 +1166,7 @@ public class KnowWEUtils {
 			return (articleHistory != null && !articleHistory.isEmpty()) ? articleHistory.get(0) : null;
 		}
 		catch (final IOException e) {
-			Log.warning("Error fetching article history for " + article, e);
+			LOGGER.warn("Error fetching article history for " + article, e);
 			return null;
 		}
 	}
@@ -1269,7 +1271,7 @@ public class KnowWEUtils {
 			articleManager.getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
-			Log.severe("awaitTermination was interrupted", e);
+			LOGGER.error("awaitTermination was interrupted", e);
 		}
 	}
 

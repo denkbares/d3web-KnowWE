@@ -30,7 +30,8 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
 
 import com.denkbares.semanticcore.TupleQueryResult;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.testing.Message;
 import de.d3web.testing.Message.Type;
 import de.knowwe.ontology.compile.OntologyCompiler;
@@ -42,6 +43,7 @@ import de.knowwe.rdf2go.sparql.utils.SparqlQuery;
  * @created 10.01.2014
  */
 public class FunctionalPropertyTest extends SparqlTest<OntologyCompiler> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(FunctionalPropertyTest.class);
 
 	@Override
 	public Message execute(OntologyCompiler testObject, String[] args, String[]... ignores) throws InterruptedException {
@@ -104,7 +106,7 @@ public class FunctionalPropertyTest extends SparqlTest<OntologyCompiler> {
 			assertions = sparqlSelect(core, queryFunctionalPropertyAssertions.toSparql(core));
 		}
 		catch (Exception e) {
-			Log.severe("Exception while executing sparql:\n" + queryFunctionalPropertyAssertions);
+			LOGGER.error("Exception while executing sparql:\n" + queryFunctionalPropertyAssertions);
 			throw e;
 		}
 		Iterator<BindingSet> iterator = assertions.iterator();

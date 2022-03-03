@@ -24,7 +24,8 @@ import java.util.List;
 
 import org.eclipse.rdf4j.repository.RepositoryException;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -38,6 +39,7 @@ import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class NamespaceAbbreviationDefinition extends AbstractType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceAbbreviationDefinition.class);
 
 	public NamespaceAbbreviationDefinition() {
 		this.addCompileScript(Priority.PREPARE, new NamespaceSubtreeHandler());
@@ -57,6 +59,7 @@ public class NamespaceAbbreviationDefinition extends AbstractType {
 	}
 
 	private static class NamespaceSubtreeHandler extends OntologyHandler<NamespaceAbbreviationDefinition> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceSubtreeHandler.class);
 
 		@Override
 		public Collection<Message> create(OntologyCompiler compiler, Section<NamespaceAbbreviationDefinition> section) {
@@ -89,7 +92,7 @@ public class NamespaceAbbreviationDefinition extends AbstractType {
 				Rdf2GoCore.getInstance(compiler).removeNamespace(abbreviation);
 			}
 			catch (RepositoryException e) {
-				Log.severe("Unable to remove namespace", e);
+				LOGGER.error("Unable to remove namespace", e);
 			}
 		}
 	}

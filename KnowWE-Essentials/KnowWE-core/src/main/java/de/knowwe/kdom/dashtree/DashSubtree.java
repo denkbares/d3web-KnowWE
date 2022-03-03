@@ -25,8 +25,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.CommentLineType;
@@ -47,6 +49,7 @@ import de.knowwe.core.kdom.sectionFinder.SectionFinderResult;
  * @author Jochen
  */
 public class DashSubtree extends AbstractType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DashSubtree.class);
 
 	public char getKey() {
 		return key;
@@ -78,6 +81,7 @@ public class DashSubtree extends AbstractType {
 	 * @author Jochen
 	 */
 	static class SubtreeFinder implements SectionFinder {
+		private static final Logger LOGGER = LoggerFactory.getLogger(SubtreeFinder.class);
 
 		/**
 		 * Determines with how many dashes the top level of the dash tree should
@@ -190,7 +194,7 @@ public class DashSubtree extends AbstractType {
 				}
 			}
 			catch (StackOverflowError e) {
-				Log.severe("Dash tree to deep", e);
+				LOGGER.error("Dash tree to deep", e);
 				return result;
 			}
 			int lastStart = -1;

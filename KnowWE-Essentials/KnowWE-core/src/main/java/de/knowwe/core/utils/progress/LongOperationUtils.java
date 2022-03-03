@@ -10,11 +10,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 
 public class LongOperationUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LongOperationUtils.class);
 
 	private static ExecutorService threadPool;
 
@@ -27,7 +29,7 @@ public class LongOperationUtils {
 				thread.setPriority(Thread.MIN_PRIORITY);
 				return thread;
 			});
-			Log.fine("created multicore thread pool of size " + threadCount);
+			LOGGER.debug("created multicore thread pool of size " + threadCount);
 		}
 		// and return new executor based on the thread pool
 		return threadPool;
@@ -150,18 +152,18 @@ public class LongOperationUtils {
 			operation.execute(context);
 		}
 		catch (IOException | LongOperationException e) {
-			Log.warning("Cannot complete operation.", e);
+			LOGGER.warn("Cannot complete operation.", e);
 			operation.getProgressListener().setError("Error occurred: " + e.getMessage());
 		}
 		catch (InterruptedException e) {
-			Log.info("Operation canceled by user.");
+			LOGGER.info("Operation canceled by user.");
 			operation.getProgressListener().setError("Canceled by user.");
 		}
 		catch (Throwable e) {
 			// use Throwable here, so that the user can see,
 			// even if there is an internal server error
 			// (like wrong linkage)
-			Log.severe("Cannot complete operation, unexpected internal error.", e);
+			LOGGER.error("Cannot complete operation, unexpected internal error.", e);
 			operation.getProgressListener().setError("Unexpected internal error: " + e.getMessage() + ".");
 		}
 		finally {

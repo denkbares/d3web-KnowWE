@@ -24,7 +24,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Messages;
@@ -38,6 +39,7 @@ import de.knowwe.core.user.UserContext;
  * 
  */
 public class TagHandlerListHandler extends AbstractHTMLTagHandler {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TagHandlerListHandler.class);
 
 	public TagHandlerListHandler() {
 		super("taghandlerlist");
@@ -80,7 +82,7 @@ public class TagHandlerListHandler extends AbstractHTMLTagHandler {
 			}
 			catch (Exception e) {
 				description = "Fehler";
-				Log.warning("Unable to get description for TagHandler " + th.getClass(), e);
+				LOGGER.warn("Unable to get description for TagHandler " + th.getClass(), e);
 			}
 			html.append("<TR><TD>")
 					.append(name)

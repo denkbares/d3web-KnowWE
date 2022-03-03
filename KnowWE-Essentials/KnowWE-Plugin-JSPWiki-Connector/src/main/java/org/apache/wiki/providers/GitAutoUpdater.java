@@ -50,7 +50,8 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import com.denkbares.events.EventManager;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -64,6 +65,7 @@ import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
  * @created 21.08.20
  */
 public class GitAutoUpdater {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitAutoUpdater.class);
 
 	private final GitVersioningFileProvider fileProvider;
 	private final Engine engine;
@@ -83,7 +85,7 @@ public class GitAutoUpdater {
 	public void update() {
 		running = true;
 		if (Files.exists(Paths.get(fileProvider.getFilesystemPath(), "lock.wc"))) {
-			Log.info("Not updating, because of filesystem lock");
+			LOGGER.info("Not updating, because of filesystem lock");
 			return;
 		}
 		Git git = new Git(fileProvider.repository);
@@ -104,13 +106,13 @@ public class GitAutoUpdater {
 			try {
 				Status status = git.status().call();
 				if (!status.isClean()) {
-					Log.warning("Git is not clean, doing reset first");
-					Log.warning("Added              : " + String.join(",", status.getAdded()));
-					Log.warning("Uncommitted changes: " + String.join(",", status.getUncommittedChanges()));
-					Log.warning("Missing            : " + String.join(",", status.getMissing()));
-					Log.warning("Modified           : " + String.join(",", status.getModified()));
-					Log.warning("Changed            : " + String.join(",", status.getChanged()));
-					Log.warning("Conflicting        : " + String.join(",", status.getConflicting()));
+					LOGGER.warn("Git is not clean, doing reset first");
+					LOGGER.warn("Added              : " + String.join(",", status.getAdded()));
+					LOGGER.warn("Uncommitted changes: " + String.join(",", status.getUncommittedChanges()));
+					LOGGER.warn("Missing            : " + String.join(",", status.getMissing()));
+					LOGGER.warn("Modified           : " + String.join(",", status.getModified()));
+					LOGGER.warn("Changed            : " + String.join(",", status.getChanged()));
+					LOGGER.warn("Conflicting        : " + String.join(",", status.getConflicting()));
 					try {
 						switch (repository.getRepositoryState()) {
 							case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> {
@@ -120,20 +122,20 @@ public class GitAutoUpdater {
 						}
 					}
 					catch (GitAPIException e) {
-						Log.severe("Reset wasn't successful", e);
+						LOGGER.error("Reset wasn't successful", e);
 						return;
 					}
 					try {
 						git.reset().setMode(ResetCommand.ResetType.HARD).call();
 					}
 					catch (GitAPIException e) {
-						Log.severe("Reset wasn't successful", e);
+						LOGGER.error("Reset wasn't successful", e);
 						return;
 					}
 				}
 			}
 			catch (GitAPIException e) {
-				Log.severe("Status query wasn't successful, quiting update", e);
+				LOGGER.error("Status query wasn't successful, quiting update", e);
 				return;
 			}
 
@@ -152,7 +154,7 @@ public class GitAutoUpdater {
 					pullResult = pull.call();
 				}
 				catch (JGitInternalException ie) {
-					Log.severe("internal jgit error", ie);
+					LOGGER.error("internal jgit error", ie);
 					try {
 						switch (repository.getRepositoryState()) {
 							case REBASING_INTERACTIVE, REBASING, REBASING_REBASING, REBASING_MERGE -> git.rebase()
@@ -162,19 +164,19 @@ public class GitAutoUpdater {
 						pullResult = pull.setContentMergeStrategy(ContentMergeStrategy.OURS).call();
 					}
 					catch (JGitInternalException ie2) {
-						Log.severe("internal jgit error", ie);
+						LOGGER.error("internal jgit error", ie);
 					}
 				}
 				if (pullResult != null) {
 					RebaseResult rebaseResult = pullResult.getRebaseResult();
 					boolean successful = rebaseResult.getStatus().isSuccessful();
 					if (!successful) {
-						Log.severe("unsuccessful pull " + rebaseResult.getStatus());
+						LOGGER.error("unsuccessful pull " + rebaseResult.getStatus());
 						if (rebaseResult.getConflicts() != null) {
-							Log.severe("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
+							LOGGER.error("unsuccessful pull " + String.join(",", rebaseResult.getConflicts()));
 						}
 						else {
-							Log.severe("unsuccessful pull " + rebaseResult.getFailingPaths());
+							LOGGER.error("unsuccessful pull " + rebaseResult.getFailingPaths());
 						}
 					}
 				}
@@ -184,7 +186,7 @@ public class GitAutoUpdater {
 				ObjectId newHead = fileProvider.repository.resolve(Constants.HEAD);
 				String title = null;
 				if (!oldHeadCommit.equals(newHead)) {
-					Log.info("Read changes after rebase");
+					LOGGER.info("Read changes after rebase");
 					try {
 						fileProvider.canWriteFileLock();
 						RevCommit newHeadCommit = revWalk.parseCommit(newHead);
@@ -214,7 +216,7 @@ public class GitAutoUpdater {
 								mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, refreshedPages);
 							}
 						}
-						Log.info("Beginn compile");
+						LOGGER.info("Beginn compile");
 
 //							articleManager.open();
 						if (!refreshedPages.isEmpty()) {
@@ -231,21 +233,21 @@ public class GitAutoUpdater {
 					}
 				}
 				if (title != null) {
-					Log.info("do full parse");
+					LOGGER.info("do full parse");
 					Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
 					EventManager.getInstance().fireEvent(new FullParseEvent(article));
 				}
 				stopWatch.stop();
-				Log.info("Update of wiki lasts " + stopWatch);
+				LOGGER.info("Update of wiki lasts " + stopWatch);
 			}
 		}
 		catch (GitAPIException | IOException e) {
-			Log.severe("Error while updating!", e);
+			LOGGER.error("Error while updating!", e);
 			try {
 				git.rebase().setOperation(RebaseCommand.Operation.ABORT).call();
 			}
 			catch (GitAPIException ex) {
-				Log.severe("Error while aborting rebase!", e);
+				LOGGER.error("Error while aborting rebase!", e);
 			}
 		}
 		finally {
@@ -254,7 +256,7 @@ public class GitAutoUpdater {
 			}
 			catch (IllegalMonitorStateException ignored) {
 			}
-			Log.info("Commit compile");
+			LOGGER.info("Commit compile");
 			articleManager.commit();
 			try {
 				Thread.sleep(500);
@@ -262,7 +264,7 @@ public class GitAutoUpdater {
 			catch (InterruptedException ignored) {
 			}
 			Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
-			Log.info("Compile ends");
+			LOGGER.info("Compile ends");
 			running = false;
 		}
 	}
@@ -355,13 +357,13 @@ public class GitAutoUpdater {
 
 			Page page = manager.getPage(toRefresh.getName());
 			if (page != null) {
-				Log.info(page.getName());
+				LOGGER.info(page.getName());
 			}
 
 			return toRefresh.getName();
 		}
 		catch (ProviderException e) {
-			Log.severe("error refreshing cache", e);
+			LOGGER.error("error refreshing cache", e);
 		}
 		return null;
 	}

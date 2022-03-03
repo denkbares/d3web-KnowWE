@@ -29,7 +29,8 @@ import de.d3web.core.session.values.MultipleChoiceValue;
 import de.d3web.core.session.values.NumValue;
 import de.d3web.core.session.values.TextValue;
 import de.d3web.core.session.values.Unknown;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.we.basic.SessionProvider;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.action.AbstractAction;
@@ -43,6 +44,7 @@ import de.knowwe.core.action.UserActionContext;
  * @author Volker Belli
  */
 public class SetAnswer extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SetAnswer.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -69,7 +71,7 @@ public class SetAnswer extends AbstractAction {
 
 		Question question = base.getManager().searchQuestion(questionID);
 		if (question == null) {
-			Log.warning("no question '" + questionID + "' found for answering");
+			LOGGER.warn("no question '" + questionID + "' found for answering");
 			return;
 		}
 		Value value;
@@ -117,7 +119,7 @@ public class SetAnswer extends AbstractAction {
 			value = new TextValue(valueString);
 		}
 		else {
-			Log.warning("answering questions of type '" + question.getClass().getName()
+			LOGGER.warn("answering questions of type '" + question.getClass().getName()
 					+ "' is not supported yet");
 			return;
 		}

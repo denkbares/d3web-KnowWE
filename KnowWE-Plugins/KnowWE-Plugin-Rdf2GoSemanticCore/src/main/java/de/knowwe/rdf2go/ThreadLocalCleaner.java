@@ -5,7 +5,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InaccessibleObjectException;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Cleanup all thread locals for the current thread, so use with patient.
@@ -15,6 +16,7 @@ import com.denkbares.utils.Log;
  */
 
 public class ThreadLocalCleaner {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadLocalCleaner.class);
 
 	private static boolean active = true;
 
@@ -69,7 +71,7 @@ public class ThreadLocalCleaner {
 		}
 		catch (InaccessibleObjectException e) {
 			active = false;
-			Log.severe("\nUnable to clean graphdb thread locals in newer Java versions. Deactivating cleaner for current sessions." +
+			LOGGER.error("\nUnable to clean graphdb thread locals in newer Java versions. Deactivating cleaner for current sessions." +
 					"\nYou may try java setting --illegal-access=permit or =warn.", e);
 		}
 		catch (Exception e) {

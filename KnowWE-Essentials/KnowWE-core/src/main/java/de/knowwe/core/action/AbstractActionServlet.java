@@ -27,8 +27,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.denkbares.utils.Log;
-import de.knowwe.core.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.knowwe.core.wikiConnector.NotAuthorizedException;
 
 /**
@@ -81,17 +82,18 @@ import de.knowwe.core.wikiConnector.NotAuthorizedException;
  * @author Volker Belli (refactored by Sebastian Furth)
  */
 public abstract class AbstractActionServlet extends HttpServlet {
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractActionServlet.class);
 
 	private static final long serialVersionUID = 9190931066151487381L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Log.fine("GET: " + request.getRequestURI() + "?" + request.getQueryString());
+		LOGGER.debug("GET: " + request.getRequestURI() + "?" + request.getQueryString());
 		response.setCharacterEncoding("UTF-8");
 
 		if (request.getPathInfo() == null || request.getPathInfo().length() <= 1) {
 			// no path provided (or only "/" as path)
-			Log.info("no path provided (or only \"/\" as path): " + request.getRequestURI());
+			LOGGER.info("no path provided (or only \"/\" as path): " + request.getRequestURI());
 			response.getWriter().write(
 					"<b>ActionServlet:</b> No path provided (or only \"/\" as path): "
 							+ request.getRequestURI());
@@ -108,7 +110,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Log.fine("POST: " + request.getRequestURI());
+		LOGGER.debug("POST: " + request.getRequestURI());
 		response.setCharacterEncoding("UTF-8");
 
 		if ("/command".equals(request.getPathInfo())) {
@@ -126,7 +128,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 		if (cmd == null) {
 			String message = "no action '" + getActionName(request) +
 					"' for requested path: " + request.getPathInfo();
-			Log.severe(message);
+			LOGGER.error(message);
 			response.sendError(404, message);
 		}
 		else {
@@ -153,7 +155,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 			action.execute(context);
 		}
 		catch (Action.SendError e) {
-			Log.warning("Action aborted with an error: " + action, e);
+			LOGGER.warn("Action aborted with an error: " + action, e);
 			context.sendError(e.getHttpErrorCode(), e.getMessage());
 		}
 		catch (NotAuthorizedException e) {
@@ -163,7 +165,7 @@ public abstract class AbstractActionServlet extends HttpServlet {
 			String message = "Unexpected " + e.getClass()
 					.getSimpleName() + " while executing action " + action.getClass()
 					.getSimpleName();
-			Log.severe(message, e);
+			LOGGER.error(message, e);
 			context.sendError(HttpServletResponse.SC_EXPECTATION_FAILED, message + (e.getMessage() == null ? "" : ": " + e.getMessage()));
 		}
 	}

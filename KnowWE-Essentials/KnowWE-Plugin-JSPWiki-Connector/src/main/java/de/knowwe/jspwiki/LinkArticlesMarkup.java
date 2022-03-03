@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.PartialHierarchyException;
 import com.denkbares.collections.PartialHierarchyTree;
@@ -20,7 +22,6 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.StringFragment;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Predicates;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -61,6 +62,7 @@ import static com.denkbares.strings.Strings.*;
  * @created 10.10.2018
  */
 public class LinkArticlesMarkup extends DefaultMarkupType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LinkArticlesMarkup.class);
 
 	private static final DefaultMarkup MARKUP;
 
@@ -117,6 +119,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 	}
 
 	private static final class RenderWorker extends DefaultMarkupRenderer {
+		private static final Logger LOGGER = LoggerFactory.getLogger(RenderWorker.class);
 
 		private final Section<LinkArticlesMarkup> section;
 		private final Collection<Message> messages = new LinkedHashSet<>();
@@ -174,7 +177,7 @@ public class LinkArticlesMarkup extends DefaultMarkupType {
 						tree.insert(t);
 					}
 					catch (PartialHierarchyException e) {
-						Log.severe(e.getMessage());
+						LOGGER.error(e.getMessage());
 					}
 				});
 			}

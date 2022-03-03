@@ -20,10 +20,11 @@ import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Statement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.QuoteSet;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.Compilers;
@@ -58,6 +59,7 @@ import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class OntologyExcelTableMarkup extends DefaultMarkupType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyExcelTableMarkup.class);
 
 	private static final DefaultMarkup MARKUP;
 
@@ -137,6 +139,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	}
 
 	private static class StatementCompileScript extends OntologyCompileScript<ConfigAnnotationType> {
+		private static final Logger LOGGER = LoggerFactory.getLogger(StatementCompileScript.class);
 
 		@Override
 		public void compile(OntologyCompiler compiler, Section<ConfigAnnotationType> section) throws CompilerMessage {
@@ -248,7 +251,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 					}
 					catch (Exception e) {
 						String message = "Exception in row " + (i + 1) + ": " + e.getMessage();
-						Log.severe(message, e);
+						LOGGER.error(message, e);
 						throw CompilerMessage.error(message);
 					}
 					rowCounter++;

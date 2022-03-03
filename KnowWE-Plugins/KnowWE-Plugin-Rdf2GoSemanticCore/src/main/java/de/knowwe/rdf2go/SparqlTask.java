@@ -25,15 +25,17 @@ import java.util.concurrent.locks.LockSupport;
 
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 
 /**
  * Future for SPARQL queries with some addition control to stop it and get info about state.
  */
 class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SparqlTask.class);
 
 	private long startTime = Long.MIN_VALUE;
 	private final SparqlCallable callable;
@@ -84,7 +86,7 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 	public boolean cancel(boolean mayInterruptIfRunning) {
 		boolean canceled = super.cancel(mayInterruptIfRunning);
 		if (canceled) {
-			Log.warning("SPARQL query was canceled after "
+			LOGGER.warn("SPARQL query was canceled after "
 					+ Strings.getDurationVerbalization(getRunDuration())
 					+ ": " + callable.getReadableQuery());
 			ThreadLocalCleaner.cleanThreadLocals();
@@ -99,7 +101,7 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 			LockSupport.unpark(this.thread);
 			this.thread = null;
 			ThreadLocalCleaner.cleanThreadLocals();
-			Log.warning("SPARQL query was stopped after "
+			LOGGER.warn("SPARQL query was stopped after "
 					+ Strings.getDurationVerbalization(getRunDuration())
 					+ ": " + callable.getReadableQuery());
 		}
@@ -137,7 +139,7 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 			setSize(getResultSize(o));
 		}
 		if (getRunDuration() > 1000) {
-			Log.info("SPARQL query finished after "
+			LOGGER.info("SPARQL query finished after "
 					+ Strings.getDurationVerbalization(getRunDuration())
 					+ ": " + callable.getReadableQuery());
 		}

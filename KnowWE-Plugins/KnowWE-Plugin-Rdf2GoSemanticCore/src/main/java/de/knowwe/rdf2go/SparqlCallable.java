@@ -29,13 +29,14 @@ import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.semanticcore.BooleanQuery;
 import com.denkbares.semanticcore.RepositoryConnection;
 import com.denkbares.semanticcore.TupleQuery;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.SparqlType;
@@ -44,6 +45,7 @@ import de.knowwe.rdf2go.utils.SparqlType;
  * Does the work and retrieves the SPARQL result.
  */
 class SparqlCallable implements Callable<Object> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SparqlCallable.class);
 
 	private static final int LOG_TIMEOUT = 1000;
 
@@ -175,7 +177,7 @@ class SparqlCallable implements Callable<Object> {
 
 	private void logSlowEvaluation(Stopwatch stopwatch) {
 		if (this.cached && stopwatch.getTime() > LOG_TIMEOUT) {
-			Log.info("SPARQL query evaluation finished after "
+			LOGGER.info("SPARQL query evaluation finished after "
 					+ Strings.getDurationVerbalization(stopwatch.getTime())
 					+ ", retrieving results...: " + Rdf2GoUtils.getReadableQuery(this.query, this.type) + "...");
 		}

@@ -26,8 +26,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.d3web.core.inference.condition.Condition;
-import com.denkbares.utils.Log;
 import de.d3web.xcl.XCLModel;
 import de.d3web.xcl.XCLRelation;
 import de.d3web.xcl.XCLRelationType;
@@ -40,6 +42,7 @@ import de.knowwe.kbrenderer.verbalizer.VerbalizationManager.RenderingFormat;
  * 
  */
 public class XclVerbalizer implements Verbalizer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(XclVerbalizer.class);
 
 	@Override
 	public Class<?>[] getSupportedClassesForVerbalization() {
@@ -74,7 +77,7 @@ public class XclVerbalizer implements Verbalizer {
 			verbalisation = verbalizePlainText(model, parameter);
 		}
 		else {
-			Log.warning("RenderingTarget" + targetFormat + " is not supported by XclVerbalizer!");
+			LOGGER.warn("RenderingTarget" + targetFormat + " is not supported by XclVerbalizer!");
 		}
 		return verbalisation;
 	}

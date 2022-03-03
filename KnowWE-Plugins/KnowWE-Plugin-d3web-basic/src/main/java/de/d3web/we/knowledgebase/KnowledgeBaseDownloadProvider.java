@@ -24,8 +24,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
@@ -42,6 +44,7 @@ import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
 
 public class KnowledgeBaseDownloadProvider implements ToolProvider {
+	private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeBaseDownloadProvider.class);
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
@@ -109,7 +112,7 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		}
 		catch (UnknownHostException | MalformedURLException e1) {
 			// TODO Auto-generated catch block
-			Log.severe("Exception creating url for QR code. ");
+			LOGGER.error("Exception creating url for QR code. ");
 		}
 		String kbURL = baseUrl + "action/KnowledgeBaseDownloadAction" +
 				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +

@@ -42,7 +42,8 @@ import com.denkbares.plugin.test.InitPluginManager;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
 import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
@@ -63,6 +64,7 @@ import static org.junit.Assert.assertEquals;
  * @created 19.07.2014.
  */
 public class OntoVisTest {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntoVisTest.class);
 
 	static Rdf2GoCore rdfRepository = null;
 	static Rdf2GoCore rdfRepository2 = null;
@@ -246,7 +248,7 @@ public class OntoVisTest {
 			Value toURI = row.getValue(variables.get(2));
 
 			if (fromURI == null || toURI == null || relationURI == null) {
-				Log.warning("incomplete query result row: " + row);
+				LOGGER.warn("incomplete query result row: " + row);
 				continue;
 			}
 
@@ -339,7 +341,7 @@ public class OntoVisTest {
 			Value toURI = row.getValue(variables.get(2));
 
 			if (fromURI == null || toURI == null || relationURI == null) {
-				Log.warning("incomplete query result row: " + row);
+				LOGGER.warn("incomplete query result row: " + row);
 				continue;
 			}
 

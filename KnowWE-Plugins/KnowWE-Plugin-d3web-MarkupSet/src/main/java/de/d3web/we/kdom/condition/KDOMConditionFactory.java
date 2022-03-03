@@ -22,7 +22,8 @@ package de.d3web.we.kdom.condition;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.core.inference.condition.CondAnd;
 import de.d3web.core.inference.condition.CondNot;
 import de.d3web.core.inference.condition.CondOr;
@@ -39,6 +40,7 @@ import de.knowwe.core.kdom.parsing.Sections;
  * @see CompositeCondition
  */
 public class KDOMConditionFactory {
+	private static final Logger LOGGER = LoggerFactory.getLogger(KDOMConditionFactory.class);
 
 	@SuppressWarnings("unchecked")
 	public static Condition createCondition(D3webCompiler compiler, Section<? extends CompositeCondition> section) {
@@ -112,7 +114,7 @@ public class KDOMConditionFactory {
 			Section<D3webCondition> termChild = Sections.child(terminal, D3webCondition.class);
 
 			if (termChild == null) {
-				Log.warning("Could not create Condition for: " + terminal.getParent());
+				LOGGER.warn("Could not create Condition for: " + terminal.getParent());
 				return null;
 			}
 

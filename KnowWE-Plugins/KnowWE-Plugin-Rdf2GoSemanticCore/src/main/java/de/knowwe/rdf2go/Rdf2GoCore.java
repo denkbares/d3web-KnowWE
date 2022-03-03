@@ -50,7 +50,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
-import java.util.logging.Level;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
 import org.eclipse.rdf4j.model.BNode;
@@ -73,6 +72,8 @@ import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.RDFWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.MultiMaps;
@@ -92,7 +93,6 @@ import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
 import com.denkbares.strings.Text;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.d3web.core.inference.RuleSet;
 import de.knowwe.core.Environment;
@@ -108,6 +108,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdf2go.utils.SparqlType;
 
 public class Rdf2GoCore implements SPARQLEndpoint {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Rdf2GoCore.class);
 
 	public static final String SEMANTICCORE_SPARQL_THREADS_COUNT = "semanticcore.sparql.threads.count";
 	public static final String LNS_ABBREVIATION = "lns";
@@ -156,7 +157,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
 		}
 		catch (Exception e) {
-			Log.warning("Unable to get application name, using fallback");
+			LOGGER.warn("Unable to get application name, using fallback");
 			applicationName = "ROOT";
 		}
 
@@ -166,10 +167,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		try {
 			this.semanticCore = SemanticCore.getOrCreateInstance(name, reasoning);
 			this.semanticCore.allocate(); // make sure the core does not shut down on its own...
-			Log.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
+			LOGGER.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
 		}
 		catch (IOException e) {
-			Log.severe("Unable to create SemanticCore", e);
+			LOGGER.error("Unable to create SemanticCore", e);
 			throw new IllegalStateException(e);
 		}
 
@@ -180,7 +181,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				new URL(baseUrl); // check if we have a valid url or just context root
 			}
 			catch (Exception e) {
-				Log.warning("Invalid local namespace (lns), using fallback http://localhost:8080/KnowWE/");
+				LOGGER.warn("Invalid local namespace (lns), using fallback http://localhost:8080/KnowWE/");
 				baseUrl = "http://localhost:8080/KnowWE/";
 			}
 			lns = baseUrl + "Wiki.jsp?page=";
@@ -207,7 +208,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private static ThreadPoolExecutor createThreadPool(int threadCount, final String threadName, boolean priorityQueue) {
 		threadCount = Math.max(threadCount, 1);
-		Log.info("Creating " + threadName + "-Pool with " + threadCount + " threads");
+		LOGGER.info("Creating " + threadName + "-Pool with " + threadCount + " threads");
 		final ThreadFactory threadFactory = new ThreadFactory() {
 			private final AtomicLong number = new AtomicLong(1);
 
@@ -330,7 +331,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				}
 			}
 			catch (RepositoryException e) {
-				Log.severe("Exception while adding namespace", e);
+				LOGGER.error("Exception while adding namespace", e);
 			}
 			finally {
 				this.namespaces = null; // clear caches namespaces, will be get created lazy if needed
@@ -507,7 +508,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				}
 
 				// verbose log if only a few changes are recorded
-				boolean verboseLog = (removeSize + insertSize < 50) && !Log.logger().isLoggable(Level.FINE);
+				boolean verboseLog = (removeSize + insertSize < 50) && !LOGGER.isDebugEnabled();
 
 				// Do actual changes on the model
 				Stopwatch connectionStopwatch = new Stopwatch();
@@ -544,13 +545,13 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					logStatements(this.insertCache, connectionStopwatch, "Inserted statements:\n");
 				}
 				else {
-					Log.info("Removed " + removeSize + " statements from and added "
+					LOGGER.info("Removed " + removeSize + " statements from and added "
 							+ insertSize
 							+ " statements to " + Rdf2GoCore.class.getSimpleName() + " " + getName() + " in "
 							+ connectionStopwatch.getDisplay() + ".");
 				}
 
-				Log.info("Current number of statements in " + Rdf2GoCore.class.getSimpleName() + " " + getName() + ": " + this.statementCache.size());
+				LOGGER.info("Current number of statements in " + Rdf2GoCore.class.getSimpleName() + " " + getName() + ": " + this.statementCache.size());
 
 				// Reset caches
 				this.removeCache = new HashSet<>();
@@ -558,7 +559,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			}
 		}
 		catch (RepositoryException e) {
-			Log.severe("Exception while committing changes to repository", e);
+			LOGGER.error("Exception while committing changes to repository", e);
 		}
 		finally {
 			// outside of commit an auto committing connection seems to be ok
@@ -869,7 +870,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			statements1 = Iterations.asSet(statements);
 		}
 		catch (RepositoryException e) {
-			Log.severe("Exception while getting statements", e);
+			LOGGER.error("Exception while getting statements", e);
 		}
 		return statements1;
 	}
@@ -939,7 +940,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			buffer.append("* ").append(verbalizeStatement(statement)).append("\n");
 		}
 		buffer.append("Done after ").append(stopwatch.getDisplay());
-		Log.fine(caption + ":\n" + buffer);
+		LOGGER.debug(caption + ":\n" + buffer);
 	}
 
 	public void readFrom(InputStream in, RDFFormat syntax) throws RDFParseException, RepositoryException, IOException {
@@ -1228,7 +1229,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 							? "null" : preparedAsk.getQueryString()
 							: preparedSelect.getQueryString()
 							: query;
-					Log.warning("Slow compile time SPARQL query detected. Query finished after "
+					LOGGER.warn("Slow compile time SPARQL query detected. Query finished after "
 							+ stopwatch.getDisplay()
 							+ ": " + Rdf2GoUtils.getReadableQuery(usedQuery, type) + "...");
 				}
@@ -1270,7 +1271,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			sparqlTask = new SparqlTask(callable, options.priority);
 			final int currentQueueSize = sparqlThreadPool.getQueue().size();
 			if (currentQueueSize > 5) {
-				Log.info("Queuing new SPARQL query (" + name + "), current queue length: " + currentQueueSize);
+				LOGGER.info("Queuing new SPARQL query (" + name + "), current queue length: " + currentQueueSize);
 			}
 			sparqlThreadPool.execute(sparqlTask);
 		}
@@ -1300,12 +1301,12 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			}
 			else if (cause instanceof RuntimeException) {
 				if (!(cause.getCause() instanceof QueryInterruptedException)) {
-					Log.warning("SPARQL query failed due to an exception", cause);
+					LOGGER.warn("SPARQL query failed due to an exception", cause);
 				}
 				throw (RuntimeException) cause;
 			}
 			else {
-				Log.warning("SPARQL query failed due to an exception", cause);
+				LOGGER.warn("SPARQL query failed due to an exception", cause);
 				throw new RuntimeException(cause);
 			}
 		}
@@ -1527,7 +1528,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 					this.semanticCore.release();
 					if (this.semanticCore.isAllocated()) {
-						Log.warning("Semantic core " + this.semanticCore.getRepositoryId()
+						LOGGER.warn("Semantic core " + this.semanticCore.getRepositoryId()
 								+ " is still allocated and cannot be shut down, this may be an memory leak.");
 					}
 

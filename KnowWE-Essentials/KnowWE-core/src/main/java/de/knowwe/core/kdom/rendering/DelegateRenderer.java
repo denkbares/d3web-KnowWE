@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -35,6 +36,7 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 
 public class DelegateRenderer implements Renderer {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DelegateRenderer.class);
 
 	private static final DelegateRenderer instance = new DelegateRenderer();
 
@@ -86,7 +88,7 @@ public class DelegateRenderer implements Renderer {
 			result.append(subResult);
 		}
 		catch (Exception e) {
-			Log.warning("Internal error while rendering section", e);
+			LOGGER.warn("Internal error while rendering section", e);
 			result.appendHtml("<span class='warning'>");
 			result.append("Internal error while rendering section: " + e.getMessage());
 			result.appendHtml("</span>");

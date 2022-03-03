@@ -15,9 +15,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -42,6 +43,7 @@ import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.destroy;
  * @created 13.12.2013
  */
 public class ParallelScriptCompiler<C extends Compiler> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ParallelScriptCompiler.class);
 
 	public enum Mode {
 		compile,
@@ -192,7 +194,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 				threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
 			}
 			catch (InterruptedException e) {
-				Log.severe("Interrupted during script compiler shutdown", e);
+				LOGGER.error("Interrupted during script compiler shutdown", e);
 			}
 		}
 	}
@@ -241,7 +243,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 							"Script: " + script + ", @priority " + currentPriority.intValue() + ":\n"
 							+ e.getClass().getSimpleName() + ": " + e.getMessage();
 					Messages.storeMessage(compiler, section, ParallelScriptCompiler.class, Messages.error(msg));
-					Log.severe(msg, e);
+					LOGGER.error(msg, e);
 				}
 			});
 		}
@@ -281,7 +283,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 					catch (Exception e) {
 						String msg = "Unexpected internal exception while destroying with script "
 								+ pair.getB();
-						Log.severe(msg, e);
+						LOGGER.error(msg, e);
 					}
 				});
 			}

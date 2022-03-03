@@ -10,7 +10,8 @@ import java.util.Set;
 
 import de.knowwe.dialog.SessionConstants;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.action.AbstractAction;
@@ -22,6 +23,7 @@ import de.knowwe.core.action.UserActionContext;
  * @created 23.11.2010
  */
 public class GetLanguages extends AbstractAction {
+	private static final Logger LOGGER = LoggerFactory.getLogger(GetLanguages.class);
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -52,7 +54,7 @@ public class GetLanguages extends AbstractAction {
 						l.getDisplayName(l) + "</lang>\n");
 			}
 			else {
-				Log.warning(l
+				LOGGER.warn(l
 								+ " is not a valid language. Thus it will be ignored as available language.");
 			}
 		}

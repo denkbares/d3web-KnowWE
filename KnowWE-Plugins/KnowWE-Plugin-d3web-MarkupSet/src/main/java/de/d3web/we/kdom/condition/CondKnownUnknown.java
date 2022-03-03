@@ -20,7 +20,8 @@ package de.d3web.we.kdom.condition;
 
 import java.util.regex.Pattern;
 
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import de.d3web.core.inference.condition.CondKnown;
 import de.d3web.core.inference.condition.CondUnknown;
 import de.d3web.core.inference.condition.Condition;
@@ -44,6 +45,7 @@ import de.knowwe.kdom.sectionFinder.StringSectionFinderUnquoted;
  * @created 07.12.2010
  */
 public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CondKnownUnknown.class);
 
 	private enum Assignment {
 		KNOWN, UNKNOWN
@@ -96,7 +98,7 @@ public class CondKnownUnknown extends D3webCondition<CondKnownUnknown> {
 		}
 		catch (IllegalArgumentException e) {
 			// should not happen due to our regexp
-			Log.severe("unexpected internal error", e);
+			LOGGER.error("unexpected internal error", e);
 			Messages.storeMessage(compiler, section, getClass(), Messages.error(e));
 			return null;
 		}

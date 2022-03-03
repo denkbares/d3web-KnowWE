@@ -32,7 +32,8 @@ import java.util.concurrent.Future;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.denkbares.utils.Triple;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -46,6 +47,7 @@ import de.knowwe.rdfs.vis.markup.PreRenderer;
  * @author Albrecht Striffler
  */
 public class PreRenderWorker implements EventListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(PreRenderWorker.class);
 
 	private static final Object mutex = new Object();
 
@@ -100,7 +102,7 @@ public class PreRenderWorker implements EventListener {
 			}
 		}
 		catch (ExecutionException | InterruptedException e) {
-			Log.severe("Exception while generating and caching graphs", e);
+			LOGGER.error("Exception while generating and caching graphs", e);
 		}
 
 	}

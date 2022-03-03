@@ -48,7 +48,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static de.knowwe.uitest.UITestUtils.UseCase.LOGIN_PAGE;
 
@@ -59,6 +60,7 @@ import static de.knowwe.uitest.UITestUtils.UseCase.LOGIN_PAGE;
  * @created 03.07.15
  */
 public class UITestUtils {
+	private static final Logger LOGGER = LoggerFactory.getLogger(UITestUtils.class);
 
 	private static final String TMP_DEBUG_FOLDER = "/tmp/UI Debug Files/";
 
@@ -227,7 +229,7 @@ public class UITestUtils {
 //		if (!pageExists(template, driver)) {
 //			createDummyPage(template, driver);
 //		}
-		Log.info("New web driver for test " + testName);
+		LOGGER.info("New web driver for test " + testName);
 		return driver;
 	}
 
@@ -246,10 +248,10 @@ public class UITestUtils {
 		try {
 			File destFile = new File(folder, fileNameXML);
 			Strings.writeFile(destFile, driver.getPageSource());
-			Log.info("The xml file was saved to \"" + destFile.getParentFile().getAbsolutePath() + "\"");
+			LOGGER.info("The xml file was saved to \"" + destFile.getParentFile().getAbsolutePath() + "\"");
 		}
 		catch (IOException e) {
-			Log.warning("Failed to create xml file", e);
+			LOGGER.warn("Failed to create xml file", e);
 		}
 	}
 
@@ -267,10 +269,10 @@ public class UITestUtils {
 			File file = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 			File destFile = new File(folder, fileName);
 			FileUtils.copyFile(file, destFile);
-			Log.info("The screenshot was saved to \"" + destFile.getParentFile().getAbsolutePath() + "\"");
+			LOGGER.info("The screenshot was saved to \"" + destFile.getParentFile().getAbsolutePath() + "\"");
 		}
 		catch (IOException e) {
-			Log.warning("Failed to capture screenshot", e);
+			LOGGER.warn("Failed to capture screenshot", e);
 		}
 	}
 

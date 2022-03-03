@@ -62,10 +62,11 @@ import org.apache.wiki.providers.GitRefreshCacheEvent;
 import org.apache.wiki.providers.GitVersioningWikiEvent;
 import org.apache.wiki.ui.TemplateManager;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.plugin.PluginManager;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
@@ -92,6 +93,7 @@ import static de.knowwe.core.ResourceLoader.Type.stylesheet;
 
 public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		WikiEventListener {
+	private static final Logger LOGGER = LoggerFactory.getLogger(KnowWEPlugin.class);
 
 	private static final String LEFT_MENU_FOOTER = "LeftMenuFooter";
 	private static final String LEFT_MENU = "LeftMenu";
@@ -150,7 +152,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				}
 			}
 			catch (Exception e) {
-				Log.severe("Exception while trying to copy core pages", e);
+				LOGGER.error("Exception while trying to copy core pages", e);
 				// Start wiki without pages...
 			}
 		}
@@ -200,11 +202,11 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		}
 		catch (UpdateNotAllowedException e) {
 			String title = wikiContext.getPage().getName();
-			Log.fine("Somebody tried to update article " + title + " without appropriate rights", e);
+			LOGGER.debug("Somebody tried to update article " + title + " without appropriate rights", e);
 		}
 		catch (Exception e) {
 			String title = wikiContext.getPage().getName();
-			Log.severe("Exception while compiling article " + title, e);
+			LOGGER.error("Exception while compiling article " + title, e);
 		}
 	}
 
@@ -223,7 +225,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			return htmlContent;
 		}
 		catch (Exception e) {
-			Log.severe("Exception in post translate", e);
+			LOGGER.error("Exception in post translate", e);
 			return "";
 		}
 	}
@@ -283,7 +285,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				}
 			}
 			catch (Exception e) {
-				Log.severe("Exception while compiling and rendering article '" + title + "'", e);
+				LOGGER.error("Exception while compiling and rendering article '" + title + "'", e);
 				return getExceptionRendering(userContext, e);
 			}
 		}
@@ -327,7 +329,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			if (article != null) {
 				long start = System.currentTimeMillis();
 				render(userContext, article, renderResult);
-				Log.info("Rendered article '" + article.getTitle() + "' in "
+				LOGGER.info("Rendered article '" + article.getTitle() + "' in "
 						+ (System.currentTimeMillis() - start) + "ms");
 			}
 			stringRaw = renderResult.toStringRaw();
@@ -335,11 +337,11 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			return stringRaw;
 		}
 		catch (UpdateNotAllowedException e) {
-			Log.fine("Somebody tried to update article " + title + " without appropriate rights", e);
+			LOGGER.debug("Somebody tried to update article " + title + " without appropriate rights", e);
 			return getExceptionRendering(userContext, e);
 		}
 		catch (Throwable e) { // NOSONAR
-			Log.severe("Exception while compiling and rendering article '" + title + "'", e);
+			LOGGER.error("Exception while compiling and rendering article '" + title + "'", e);
 			return getExceptionRendering(userContext, e);
 		}
 	}
@@ -534,7 +536,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			stopwatchSectionizing.log("Sectionized all articles");
 		}
 		catch (ProviderException e1) {
-			Log.warning("Unable to load all articles, maybe some articles won't be initialized!", e1);
+			LOGGER.warn("Unable to load all articles, maybe some articles won't be initialized!", e1);
 		}
 		finally {
 			articleManager.commit();
@@ -545,7 +547,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			articleManager.getCompilerManager().awaitTermination();
 		}
 		catch (InterruptedException e) {
-			Log.warning("Caught InterrupedException while waiting til compilation is finished.", e);
+			LOGGER.warn("Caught InterrupedException while waiting til compilation is finished.", e);
 		}
 		articleManager.setInitialized(true);
 		EventManager.getInstance().fireEvent(new InitializedArticlesEvent(articleManager));
@@ -668,7 +670,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				if (!found) {
 					// obviously the plugin is not available in current
 					// installation
-					Log.warning("Found dependency to a css/js resource (" + resource +
+					LOGGER.warn("Found dependency to a css/js resource (" + resource +
 							") where the corresponding plugin is not available. " +
 							"This can also happen, if the plugin.xml has the wrong plugin id " +
 							"(id other than the name of module it is in).");

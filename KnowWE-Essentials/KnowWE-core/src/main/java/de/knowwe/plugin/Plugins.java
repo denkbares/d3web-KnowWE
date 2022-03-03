@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import com.denkbares.collections.PriorityList;
@@ -29,7 +32,6 @@ import com.denkbares.plugin.Extension;
 import com.denkbares.plugin.JPFExtension;
 import com.denkbares.plugin.PluginManager;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
@@ -58,6 +60,7 @@ import de.knowwe.util.CredentialProvider;
  * @author Jochen Reutelshöfer, Volker Belli & Markus Friedrich (denkbares GmbH)
  */
 public class Plugins {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Plugins.class);
 
 	public static final String EXTENDED_PLUGIN_ID = "KnowWEExtensionPoints";
 	public static final String EXTENDED_POINT_KnowWEAction = "Action";
@@ -160,7 +163,7 @@ public class Plugins {
 						(CompileScript<Compiler, AbstractType>) extension.getSingleton());
 			}
 			else {
-				Log.warning("Tried to plug CompileScript '"
+				LOGGER.warn("Tried to plug CompileScript '"
 						+ extension.getSingleton().getClass().getSimpleName()
 						+ "' into an type '" + type.getClass().getSimpleName()
 						+ "' which is not an AbstractType");
@@ -210,7 +213,7 @@ public class Plugins {
 					message.append("\n\tId: ").append(extension.getID())
 							.append(" - Name: ").append(extension.getName());
 				}
-				Log.severe(message.toString());
+				LOGGER.error(message.toString());
 			}
 		}
 	}

@@ -9,10 +9,11 @@ import java.util.Set;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import de.knowwe.core.compile.Compiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -36,6 +37,7 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
 public class LazyURIReference extends SimpleReference implements URIProvider<LazyURIReference> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LazyURIReference.class);
 
 	private static final String IDENTIFIER_KEY = "identifierKey";
 
@@ -135,10 +137,10 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 		if (identifiers.size() == 1) return identifiers.iterator().next();
 		String termName = getTermName(section);
 		if (identifiers.size() > 1) {
-			Log.warning("Multiple identifier found for " + LazyURIReference.class + " '" + termName + "'");
+			LOGGER.warn("Multiple identifier found for " + LazyURIReference.class + " '" + termName + "'");
 		}
 		if (identifiers.isEmpty()) {
-			Log.warning("No identifier found for " + LazyURIReference.class + " '" + termName + "'");
+			LOGGER.warn("No identifier found for " + LazyURIReference.class + " '" + termName + "'");
 		}
 		return new Identifier(termName);
 	}
