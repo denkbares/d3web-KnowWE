@@ -1,21 +1,5 @@
 /*
- * Copyright (C) 2010 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
+ * Copyright (C) 2022 denkbares GmbH. All rights reserved.
  */
 
 package de.knowwe.core.compile.terminology;
@@ -32,11 +16,12 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.Compiler;
@@ -57,6 +42,7 @@ import de.knowwe.core.report.Messages;
  * @author Albrecht Striffler (denkbares GmbH)
  */
 public class TerminologyManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(TerminologyManager.class);
 
 	private static final Set<Identifier> occupiedTerms = new HashSet<>();
 
@@ -269,7 +255,7 @@ public class TerminologyManager {
 		synchronized (this) {
 			TermLog termRefLog = termLogManager.getLog(termIdentifier);
 			if (termRefLog == null) {
-				Log.warning("Trying to unregister unknown term: " + termIdentifier);
+				LOGGER.warn("Trying to unregister unknown term: " + termIdentifier);
 			}
 			else {
 				termRefLog.removeTermDefinition(compiler, termDefinition,
