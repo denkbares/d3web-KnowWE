@@ -258,9 +258,18 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>1.2.10</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.2.10</version>
+			</dependency>
 
 			<!-- d3web -->
-
 			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>d3web-GlobalTests</artifactId>
@@ -975,6 +984,11 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.32</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>

@@ -1,0 +1,38 @@
+<!--
+  ~ Copyright (C) 2022 denkbares GmbH, Germany
+  ~
+  ~ This is free software; you can redistribute it and/or modify it under the
+  ~ terms of the GNU Lesser General Public License as published by the Free
+  ~ Software Foundation; either version 3 of the License, or (at your option) any
+  ~ later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+  ~ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+  ~ details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public License
+  ~ along with this software; if not, write to the Free Software Foundation,
+  ~ Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+  ~ site: http://www.fsf.org.
+  -->
+
+<configuration debug="true">
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} TEST [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="com.denkbares" level="DEBUG"/>
+	<logger name="org.apache.wiki" level="INFO"/>
+	<logger name="com.ontotext" level="ERROR"/>
+
+	<!-- Strictly speaking, the level attribute is not necessary since -->
+	<!-- the level of the root level is set to DEBUG by default.       -->
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
