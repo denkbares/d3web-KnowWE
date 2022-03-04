@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2021 denkbares GmbH, Germany
+  ~ Copyright (C) 2022 denkbares GmbH, Germany
   ~
   ~ This is free software; you can redistribute it and/or modify it under the
   ~ terms of the GNU Lesser General Public License as published by the Free
@@ -987,7 +987,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.32</version>
+			<version>1.7.36</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jetbrains</groupId>
