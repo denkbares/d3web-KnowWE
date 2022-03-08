@@ -4,7 +4,7 @@
  *
  * It works on an node model, containing the essential persistance data
  * for the flowchart. For now the node model is a simple structure instead
- * of a class. The node model is the same structure as in teh flowchart's
+ * of a class. The node model is the same structure as in the flowchart's
  * JSON data structure.
  *
  * Therefore the node model hat the following outine:

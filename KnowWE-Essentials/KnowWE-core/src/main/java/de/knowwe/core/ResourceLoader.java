@@ -90,7 +90,7 @@ public class ResourceLoader {
 		}
 
 		/**
-		 * Detects the type from teh specified file name by considering it's file extension. If no
+		 * Detects the type from the specified file name by considering it's file extension. If no
 		 * matching Type is find for the specified file name, an IllegalArgumentException is
 		 * thrown.
 		 *
