@@ -710,29 +710,14 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 		@Override
 		public void run() {
-			// we open a commit frame to bundle eventual article compilations
-			// that are likely to happen with attachment events
-			articleManager.open();
-			try {
-				if (event.getType() == WikiAttachmentEvent.STORED) {
-					EventManager.getInstance()
-							.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), event
-									.getParentName(), event.getFileName()));
-				}
-				else if (event.getType() == WikiAttachmentEvent.DELETED) {
-					EventManager.getInstance()
-							.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), event
-									.getParentName(), event.getFileName()));
-				}
+			if (event.getType() == WikiAttachmentEvent.STORED) {
+				EventManager.getInstance()
+						.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), event.getParentName(), event.getFileName()));
 			}
-			finally {
-				articleManager.commit();
+			else if (event.getType() == WikiAttachmentEvent.DELETED) {
+				EventManager.getInstance()
+						.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), event.getParentName(), event.getFileName()));
 			}
-		}
-
-		@NotNull
-		private String getAttachmentPath() {
-			return event.getParentName() + "/" + event.getFileName();
 		}
 	}
 

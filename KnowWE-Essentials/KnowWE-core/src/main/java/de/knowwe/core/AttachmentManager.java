@@ -1,11 +1,15 @@
 package de.knowwe.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,8 +47,11 @@ import static java.util.stream.Collectors.toSet;
 public class AttachmentManager implements EventListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AttachmentManager.class);
 
+	private final ExecutorService executor = Executors.newSingleThreadExecutor();
 	private final ArticleManager articleManager;
-
+	private final Object queueLock = new Object();
+	private final Set<String> registrationQueue = new LinkedHashSet<>();
+	private final Set<String> unregistrationQueue = new LinkedHashSet<>();
 	private final MultiMap<String, Section<AttachmentCompileType>> pathToSectionsMap = MultiMaps.synchronizedMultiMap(new N2MMap<>());
 	private final MultiMap<String, Section<AttachmentCompileType>> articleTitleToSectionsMap = MultiMaps.synchronizedMultiMap(new DefaultMultiMap<>());
 	private boolean allArticlesInitialized = false;
@@ -178,8 +185,39 @@ public class AttachmentManager implements EventListener {
 
 	private void registerAttachment(@NotNull String path) {
 		if (isCompiledAttachment(path)) {
-			createAndRegisterAttachmentArticle(path);
+			synchronized (queueLock) {
+				unregistrationQueue.remove(path);
+				registrationQueue.add(path);
+			}
+			updateRegisteredAndDeletedAttachments();
 		}
+	}
+
+	private void updateRegisteredAndDeletedAttachments() {
+		// try to batch process changes as soon as article manager can be opened,
+		// get all (de)registrations that arrived while waiting
+		executor.submit(() -> {
+			articleManager.open();
+			try {
+				ArrayList<String> registered;
+				ArrayList<String> unregistered;
+				synchronized (queueLock) {
+					registered = new ArrayList<>(registrationQueue);
+					unregistered = new ArrayList<>(unregistrationQueue);
+					registrationQueue.clear();
+					unregistrationQueue.clear();
+				}
+				for (String path : registered) {
+					createAndRegisterAttachmentArticle(path);
+				}
+				for (String path : unregistered) {
+					deleteAttachmentArticle(path);
+				}
+			}
+			finally {
+				articleManager.commit();
+			}
+		});
 	}
 
 	private void createAndRegisterAttachmentArticle(String attachmentPath) {
@@ -201,7 +239,11 @@ public class AttachmentManager implements EventListener {
 
 	private void unregisterAttachment(@NotNull String path) {
 		if (isCompiledAttachment(path)) {
-			deleteAttachmentArticle(path);
+			synchronized (queueLock) {
+				registrationQueue.remove(path);
+				unregistrationQueue.add(path);
+			}
+			updateRegisteredAndDeletedAttachments();
 		}
 	}
 
