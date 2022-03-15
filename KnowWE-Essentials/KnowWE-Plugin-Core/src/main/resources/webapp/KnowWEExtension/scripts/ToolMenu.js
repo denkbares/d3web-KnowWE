@@ -107,6 +107,7 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 
 	let parent = new Element('div', {
 		'id': 'toolPopupMenuID',
+		'data-menu-id': currentMenuId,
 		'styles': styles,
 		'events': {
 			'mouseleave': _TM.hideToolsPopupMenu
