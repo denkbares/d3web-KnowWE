@@ -48,10 +48,10 @@ import org.eclipse.jgit.transport.TrackingRefUpdate;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
-
-import com.denkbares.events.EventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.denkbares.events.EventManager;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
@@ -218,6 +218,11 @@ public class GitAutoUpdater {
 						}
 						LOGGER.info("Beginn compile");
 
+						TreeSet<String> debugSet = new TreeSet<>(refreshedPages);
+						for (String refreshedPage : debugSet) {
+							LOGGER.info("Refreshed Page: " + refreshedPage);
+						}
+
 //							articleManager.open();
 						if (!refreshedPages.isEmpty()) {
 							WikiEventManager.fireEvent(fileProvider, new GitRefreshCacheEvent(fileProvider, GitRefreshCacheEvent.UPDATE, refreshedPages));
@@ -357,7 +362,7 @@ public class GitAutoUpdater {
 
 			Page page = manager.getPage(toRefresh.getName());
 			if (page != null) {
-				LOGGER.info(page.getName());
+				LOGGER.info("refresh call" + page.getName());
 			}
 
 			return toRefresh.getName();
