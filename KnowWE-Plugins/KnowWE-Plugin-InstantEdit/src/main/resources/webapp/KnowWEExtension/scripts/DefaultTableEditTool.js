@@ -291,6 +291,10 @@ SpreadsheetModel.prototype.ensureSize = function (rowCount, colCount) {
 	this.width = Math.max(this.width, colCount);
 };
 
+SpreadsheetModel.prototype.isEmpty = function () {
+	return this.cells.length === 0;
+};
+
 SpreadsheetModel.prototype.getCellText = function (row, col) {
 	const key = row + "_" + col;
 	const data = this.cells[key];
