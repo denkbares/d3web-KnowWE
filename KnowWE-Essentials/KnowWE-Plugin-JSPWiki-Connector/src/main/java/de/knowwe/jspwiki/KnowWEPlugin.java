@@ -245,7 +245,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			return content;
 		}
 
-		/* creating KnowWEUserContext with username and requestParamteters */
+		/* creating KnowWEUserContext with username and requestParameters */
 		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
 		if (httpRequest == null) {
 			// When a page is rendered the first time, the request is null.
