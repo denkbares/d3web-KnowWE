@@ -184,7 +184,7 @@ KNOWWE.plugin.tableEditTool = function () {
 function SpreadsheetModel(wikiText, supportLinks) {
 	this.width = 1;
 	this.height = 1;
-	this.cells = [];
+	this.cells = {};
 
 	if (wikiText) {
 		// prepend and append returns for easier regex
@@ -292,7 +292,7 @@ SpreadsheetModel.prototype.ensureSize = function (rowCount, colCount) {
 };
 
 SpreadsheetModel.prototype.isEmpty = function () {
-	return this.cells.length === 0;
+	return Object.keys(this.cells).length === 0;
 };
 
 SpreadsheetModel.prototype.getCellText = function (row, col) {
