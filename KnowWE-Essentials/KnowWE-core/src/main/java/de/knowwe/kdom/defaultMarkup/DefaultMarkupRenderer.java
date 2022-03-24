@@ -654,6 +654,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				ToolUtils.getActionAttributeValue(tool));
 		result.appendHtmlElement("span", tool.getTitle());
 		result.appendHtmlTag("/a");
+		result.append("\n");
 	}
 
 	protected void appendToolAsMenuItem(Tool tool, RenderResult result) {
@@ -671,6 +672,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		result.appendHtmlTag("/a");
 		result.appendHtmlTag("/div");
 		result.appendHtmlTag("/div");
+		result.append("\n");
 	}
 
 	@SuppressWarnings("unused")

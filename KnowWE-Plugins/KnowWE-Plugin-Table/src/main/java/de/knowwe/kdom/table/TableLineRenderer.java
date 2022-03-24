@@ -41,7 +41,7 @@ public class TableLineRenderer implements Renderer {
 		renderLineBeginning(sec, user, string);
 		DelegateRenderer.getInstance().render(sec, user, string);
 
-		string.appendHtml("</tr>");
+		string.appendHtml("</tr>\n");
 
 	}
 
