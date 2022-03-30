@@ -109,6 +109,11 @@ public class StatementProviderResult {
 		return this;
 	}
 
+	public StatementProviderResult addLiteralStatement(IRI subject, URI predicate, double literal) {
+		addStatement(subject, core.createIRI(predicate.toString()), core.createDatatypeLiteral(literal));
+		return this;
+	}
+
 	public StatementProviderResult addLiteralStatement(String subject, URI predicate, double literal) {
 		addStatement(core.createIRI(subject), core.createIRI(predicate.toString()), core.createDatatypeLiteral(literal));
 		return this;
