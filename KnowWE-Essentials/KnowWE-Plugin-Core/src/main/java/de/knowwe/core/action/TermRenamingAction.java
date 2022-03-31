@@ -74,9 +74,8 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacementIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
-		ArticleManager mgr = context.getArticleManager();
 
-		if ("false".equals(force) && TermUtils.getTermIdentifiers(mgr).contains(replacementIdentifier)) {
+		if ("false".equals(force) && TermUtils.getTermIdentifiers(context).contains(replacementIdentifier)) {
 			writeAlreadyExistsResponse(context, termIdentifier, replacementIdentifier);
 			return;
 		}
@@ -86,6 +85,7 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 
 		checkEditRights(context, renamingCommands);
 
+		ArticleManager mgr = context.getArticleManager();
 		for (RenamingCommand command : renamingCommands) {
 			EventManager.getInstance()
 					.fireEvent(new TermRenamingStartEvent(mgr, context, command.termIdentifier, command.replacementIdentifier));

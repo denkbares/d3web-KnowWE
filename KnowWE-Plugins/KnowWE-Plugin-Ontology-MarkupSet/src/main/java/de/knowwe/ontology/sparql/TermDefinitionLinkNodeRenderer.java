@@ -30,7 +30,7 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 		}
 		Identifier identifier = new Identifier(split);
 		TerminologyManager manager = null;
-		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(
+		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(user,
 				KnowWEUtils.getArticleManager(user.getWeb()), Rdf2GoCompiler.class);
 		for (Rdf2GoCompiler rdf2GoCompiler : compilers) {
 			if (rdf2GoCompiler.getRdf2GoCore() == core) {

@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -108,7 +109,9 @@ public class TermUtils {
 	 *
 	 * @param web the web for which the identifiers should be returned
 	 * @return a set of all term identifiers
+	 * @deprecated use getTermIdentifiers(UserContext) instead, if possible
 	 */
+	@Deprecated
 	@NotNull
 	public static Set<Identifier> getTermIdentifiers(String web) {
 		return getTermIdentifiers(Environment.getInstance().getArticleManager(web));
@@ -122,7 +125,29 @@ public class TermUtils {
 	 */
 	@NotNull
 	public static Set<Identifier> getTermIdentifiers(ArticleManager articleManager) {
-		return Compilers.getCompilers(articleManager, TermCompiler.class)
+		return getTermIdentifiers(null, articleManager);
+	}
+
+	/**
+	 * Simple method returning a set of all term identifiers of a given context
+	 *
+	 * @param context the context to get all terms from
+	 * @return a set of all term identifiers
+	 */
+	@NotNull
+	public static Set<Identifier> getTermIdentifiers(UserContext context) {
+		return getTermIdentifiers(context, context.getArticleManager());
+	}
+
+	/**
+	 * Simple method returning a set of all term identifiers of a given article manager and context
+	 *
+	 * @param articleManager the article manager to get all terms from
+	 * @return a set of all term identifiers
+	 */
+	@NotNull
+	public static Set<Identifier> getTermIdentifiers(@Nullable UserContext context, ArticleManager articleManager) {
+		return Compilers.getCompilers(context, articleManager, TermCompiler.class)
 				.stream()
 				.map(compiler -> compiler.getTerminologyManager().getAllDefinedTerms())
 				.flatMap(Collection::stream)

@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.objects.TermUtils;
 
 import static java.util.stream.Collectors.toList;
@@ -20,11 +19,9 @@ public class LookUpAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String web = context.getParameter(Attributes.WEB);
-		String searchterm = context.getParameter("searchstring");
 
 		// gathering all terms
-		List<String> allTerms = TermUtils.getTermIdentifiers(web)
+		List<String> allTerms = TermUtils.getTermIdentifiers(context)
 				.stream()
 				.map(Identifier::toExternalForm)
 				.collect(toList());
