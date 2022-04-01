@@ -185,6 +185,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 					int responseCode = ((HttpURLConnection) connection).getResponseCode();
 					if (responseCode != HttpServletResponse.SC_OK) {
 						Messages.storeMessage(section, getClass(), Messages.warning("Invalid response code, skipping update: " + responseCode));
+						LOGGER.warn("Invalid response code " + responseCode + ", skipping update: " + url);
 						return;
 					}
 				}
