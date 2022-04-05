@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.log4j.Logger;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Engine;
@@ -37,7 +36,8 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.jetbrains.annotations.NotNull;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
@@ -47,7 +47,7 @@ public class GitVersionCache {
 
 	private final Engine engine;
 	private final Repository repository;
-	private static final Logger log = Logger.getLogger(GitVersionCache.class);
+	private static final Logger log = LoggerFactory.getLogger(GitVersionCache.class);
 	private final IgnoreNode ignoreNode;
 
 	private Map<String, List<GitCacheItem>> pageRevisionCache;

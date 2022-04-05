@@ -34,7 +34,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Engine;
@@ -66,6 +65,8 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
@@ -77,7 +78,7 @@ import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
 @SuppressWarnings("rawtypes")
 public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
-	private static final Logger log = Logger.getLogger(GitVersioningAttachmentProvider.class);
+	private static final Logger log = LoggerFactory.getLogger(GitVersioningAttachmentProvider.class);
 
 	private Repository repository;
 	private Engine engine;

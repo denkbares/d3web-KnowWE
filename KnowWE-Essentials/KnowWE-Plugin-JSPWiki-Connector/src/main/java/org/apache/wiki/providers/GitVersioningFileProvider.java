@@ -43,7 +43,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.log4j.Logger;
 import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
@@ -80,6 +79,8 @@ import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 import static org.apache.wiki.providers.GitVersioningUtils.gitGc;
@@ -96,7 +97,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	protected Repository repository;
 	private static final String GIT_DIR = ".git";
 	private static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
-	private static final Logger log = Logger.getLogger(GitVersioningFileProvider.class);
+	private static final Logger log = LoggerFactory.getLogger(GitVersioningFileProvider.class);
 	private String filesystemPath;
 	private final ReadWriteLock pushLock = new ReentrantReadWriteLock();
 	private final ReentrantLock commitLock = new ReentrantLock();
