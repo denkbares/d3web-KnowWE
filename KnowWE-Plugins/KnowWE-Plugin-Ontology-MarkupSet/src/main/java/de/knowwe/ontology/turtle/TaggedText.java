@@ -21,8 +21,8 @@ package de.knowwe.ontology.turtle;
 
 import java.util.Locale;
 
-import com.denkbares.strings.Text;
 import com.denkbares.strings.Strings;
+import com.denkbares.strings.Text;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.KeywordType;
 import de.knowwe.core.kdom.basicType.LocaleType;
@@ -63,7 +63,11 @@ public class TaggedText extends AbstractType {
 		}
 
 		public String getUnquoted(Section<StringType> section) {
-			return Strings.unquote(section.getText());
+			String text = section.getText();
+			if (text.length() >= 6 && text.startsWith("\"\"\"") && text.endsWith("\"\"\"")) {
+				text = text.substring(3, text.length() - 3);
+			}
+			return Strings.unquote(text);
 		}
 	}
 }
