@@ -25,7 +25,7 @@
 <%
 	//Create wiki context; authorization check not needed
 	WikiEngine wiki = WikiEngine.getInstance(getServletConfig());
-	WikiContext wikiContext = wiki.createContext(request, WikiContext.VIEW);
+	WikiContext wikiContext = new WikiContext( wiki, request, WikiContext.VIEW );
 
 	// Check if KnowWE is initialized
 	if (!Environment.isInitialized()) {
