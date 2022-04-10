@@ -29,6 +29,7 @@ import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.Term;
 import de.knowwe.core.kdom.parsing.Section;
@@ -48,7 +49,7 @@ public abstract class AnswerReference
 
 	public AnswerReference() {
 		this.setRenderer(StyleRenderer.CHOICE);
-		this.addCompileScript(new AnswerReferenceRegistrationHandler());
+		this.addCompileScript(Priority.LOW, new AnswerReferenceRegistrationHandler());
 	}
 
 	@Override
