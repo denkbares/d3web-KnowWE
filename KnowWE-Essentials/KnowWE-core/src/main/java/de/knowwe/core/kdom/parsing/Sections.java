@@ -1496,19 +1496,19 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public static ReplaceResult replace(UserContext context, Map<String, String> sectionsMap) {
 
 		List<SectionInfo> sectionInfos = getSectionInfos(sectionsMap);
-		Map<String, Collection<String>> idsByTitle = getIdsByTitle(sectionsMap.keySet());
+		Map<Article, Collection<String>> idsByTitle = getIdsByArticle(sectionsMap.keySet());
 
 		Collection<String> missingIDs = new LinkedList<>();
 		Collection<String> forbiddenArticles = new LinkedList<>();
 
 		KnowWEUtils.getArticleManager(context.getWeb()).open();
 		try {
-			for (String title : idsByTitle.keySet()) {
-				Collection<String> idsForCurrentTitle = idsByTitle.get(title);
-				boolean errorsForThisTitle = handleErrors(title, idsForCurrentTitle, context,
+			for (Map.Entry<Article, Collection<String>> entry : idsByTitle.entrySet()) {
+				Collection<String> idsForCurrentTitle = entry.getValue();
+				boolean errorsForThisTitle = handleErrors(entry.getKey(), idsForCurrentTitle, context,
 						missingIDs, forbiddenArticles);
 				if (!errorsForThisTitle) {
-					replaceForTitle(title, getSectionsMapForCurrentTitle(idsForCurrentTitle,
+					replaceForTitle(entry.getKey().getTitle(), getSectionsMapForCurrentTitle(idsForCurrentTitle,
 							sectionsMap), context);
 				}
 			}
@@ -1540,31 +1540,30 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return sectionInfos;
 	}
 
-	private static Map<String, Collection<String>> getIdsByTitle(Collection<String> allIds) {
-		Map<String, Collection<String>> idsByTitle = new HashMap<>();
+	private static Map<Article, Collection<String>> getIdsByArticle(Collection<String> allIds) {
+		Map<Article, Collection<String>> idsByTitle = new HashMap<>();
 		for (String id : allIds) {
 			Section<?> section = Sections.get(id);
-			String title = section == null ? null : section.getTitle();
-			Collection<String> ids = idsByTitle.computeIfAbsent(title, k -> new ArrayList<>());
+			Article article = section == null ? null : section.getArticle();
+			Collection<String> ids = idsByTitle.computeIfAbsent(article, k -> new ArrayList<>());
 			ids.add(id);
 		}
 		return idsByTitle;
 	}
 
 	private static boolean handleErrors(
-			String title,
+			Article article,
 			Collection<String> ids,
 			UserContext context,
 			Collection<String> missingIDs,
 			Collection<String> forbiddenArticles) {
 
-		if (title == null) {
+		if (article == null) {
 			missingIDs.addAll(ids);
 			return true;
 		}
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title,
-				context.getRequest())) {
-			forbiddenArticles.add(title);
+		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(article.getTitle(), context.getRequest())) {
+			forbiddenArticles.add(article.getTitle());
 			return true;
 		}
 		return false;

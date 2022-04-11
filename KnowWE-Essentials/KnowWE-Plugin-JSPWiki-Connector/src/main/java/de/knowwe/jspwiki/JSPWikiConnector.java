@@ -833,6 +833,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanEditArticle(String title, HttpServletRequest request) {
+		if (KnowWEUtils.isAttachmentArticle(title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
 		return checkPagePermission(title, request, "edit");
 	}
@@ -844,6 +845,7 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
+		if (KnowWEUtils.isAttachmentArticle(title)) return false;
 		if (ReadOnlyManager.isReadOnly()) return false;
 		return checkPagePermission(title, request, "delete");
 	}

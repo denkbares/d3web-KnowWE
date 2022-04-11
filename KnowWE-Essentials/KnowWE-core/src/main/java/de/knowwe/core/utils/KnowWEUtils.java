@@ -54,8 +54,10 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.AttachmentManager;
@@ -547,7 +549,23 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Checks whether the given article is compiled via an %%Attachment markup using the @compile: true flag.
+	 * Checks whether the given article (or article with the given title) is compiled as an article (e.g.
+	 * %%InterWikiImport or %%Attachment-Markup with @compile: true)
+	 * the @compile: true flag.
+	 *
+	 * @param title the article to check
+	 * @return true if the given article is an attachment article, false otherwise
+	 */
+	public static boolean isAttachmentArticle(String title) {
+		ArticleManager articleManager = getDefaultArticleManager();
+		if (!(articleManager instanceof DefaultArticleManager)) return false;
+		AttachmentManager attachmentManager = ((DefaultArticleManager) articleManager).getAttachmentManager();
+		return attachmentManager.isAttachmentArticle(title);
+	}
+
+	/**
+	 * Checks whether the given article is compiled as an article (e.g. %%InterWikiImport or %%Attachment-Markup with
+	 * @compile: true)
 	 *
 	 * @param article the article to check
 	 * @return true if the given article is an attachment article, false otherwise

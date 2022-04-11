@@ -272,12 +272,22 @@ public class AttachmentManager implements EventListener {
 	}
 
 	/**
-	 * Checks whether the given article is compiled via an %%Attachment markup using the @compile: true flag.
+	 * Checks whether the given article is compiled as an article (e.g. %%InterWikiImport or %%Attachment-Markup with @compile: true)
 	 *
 	 * @param article the article to check
 	 * @return true if the given article is an attachment article, false otherwise
 	 */
 	public boolean isAttachmentArticle(Article article) {
-		return !pathToSectionsMap.getValues(article.getTitle()).isEmpty();
+		return isAttachmentArticle(article.getTitle());
+	}
+
+	/**
+	 * Checks whether the given article is compiled as an article (e.g. %%InterWikiImport or %%Attachment-Markup with @compile: true)
+	 *
+	 * @param title the title of the article to check
+	 * @return true if the given article is an attachment article, false otherwise
+	 */
+	public boolean isAttachmentArticle(String title) {
+		return !pathToSectionsMap.getValues(title).isEmpty();
 	}
 }
