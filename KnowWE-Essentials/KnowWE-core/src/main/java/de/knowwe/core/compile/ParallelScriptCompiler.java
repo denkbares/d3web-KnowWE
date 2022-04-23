@@ -155,7 +155,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		if (currentIterator == null) {
 			// happens only at the start, no synchronizing needed
 			setCurrentIterator();
-			this.threadPool = CompilerManager.createExecutorService();
+			this.threadPool = CompilerManager.createExecutorService(this.getClass().getSimpleName());
 		}
 		if (!currentIterator.hasNext()) {
 			// wait for all scripts to finish
@@ -176,7 +176,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 				firePrioStepFinishedEvent(currentPriority);
 				return null;
 			}
-			this.threadPool = CompilerManager.createExecutorService();
+			this.threadPool = CompilerManager.createExecutorService(this.getClass().getSimpleName());
 		}
 		return currentIterator.next();
 	}

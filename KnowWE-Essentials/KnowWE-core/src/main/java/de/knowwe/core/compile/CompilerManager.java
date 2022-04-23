@@ -77,7 +77,7 @@ public class CompilerManager {
 		this.articleManager = articleManager;
 		this.compilerCache = new HashSet<>();
 		this.compilers = new PriorityList<>(5d);
-		this.threadPool = createExecutorService();
+		this.threadPool = createExecutorService(CompilerManager.class.getSimpleName());
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> onContextDestroyed());
 	}
 
@@ -95,10 +95,10 @@ public class CompilerManager {
 		return compileThreads.containsKey(Thread.currentThread());
 	}
 
-	public static ThreadPoolExecutor createExecutorService() {
+	public static ThreadPoolExecutor createExecutorService(String namePrefix) {
 		int threadCount = getCompilerThreadCount();
 		ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount, runnable -> {
-			Thread thread = new Thread(runnable, "KnowWE-Compiler-" + compileThreadNumber.getAndIncrement());
+			Thread thread = new Thread(runnable, namePrefix + "-" + compileThreadNumber.getAndIncrement());
 			thread.setDaemon(true);
 			compileThreads.put(thread, null);
 			return thread;

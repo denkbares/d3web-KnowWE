@@ -89,7 +89,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		super(packageManager, compileSection, compilingType);
 		this.compileSection = compileSection;
 		this.caseSensitive = caseSensitive;
-		this.threadPool = CompilerManager.createExecutorService();
+		this.threadPool = CompilerManager.createExecutorService(this.getName());
 		this.futures = new ArrayList<>();
 	}
 
