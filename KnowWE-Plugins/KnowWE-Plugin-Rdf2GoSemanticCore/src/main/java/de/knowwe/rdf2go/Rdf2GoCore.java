@@ -42,6 +42,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -49,6 +50,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -125,7 +127,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private final SparqlCache sparqlCache = new SparqlCache(this);
 
-	private final ThreadPoolExecutor sparqlThreadPool;
+	private final ThreadPoolExecutor threadPool;
 
 	private final RepositoryConfig ruleSet;
 
@@ -163,11 +165,16 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		final long coreId = Rdf2GoCore.coreId.incrementAndGet();
 		this.name = applicationName + "-" + coreName.replaceAll("\\s+", "-") + "-" + coreId;
+		this.threadPool = createThreadPool(
+				getMaxSparqlThreadCount(reasoning), this.name + "-Rdf2Go-Thread", true);
 
+		RepositoryConfig finalReasoning = reasoning;
 		try {
-			this.semanticCore = SemanticCore.getOrCreateInstance(name, reasoning);
-			this.semanticCore.allocate(); // make sure the core does not shut down on its own...
-			LOGGER.info("Semantic core with reasoning '" + reasoning.getName() + "' initialized");
+			runInIOThread(() -> {
+				this.semanticCore = SemanticCore.getOrCreateInstance(name, finalReasoning);
+				this.semanticCore.allocate(); // make sure the core does not shut down on its own...
+				LOGGER.info("Semantic core with reasoning '" + finalReasoning.getName() + "' initialized");
+			});
 		}
 		catch (IOException e) {
 			LOGGER.error("Unable to create SemanticCore", e);
@@ -188,9 +195,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 		this.lns = lns;
 		this.ruleSet = reasoning;
-
-		sparqlThreadPool = createThreadPool(
-				getMaxSparqlThreadCount(reasoning), name + "-Sparql-Thread", true);
 
 		this.insertCache = new HashSet<>();
 		this.removeCache = new HashSet<>();
@@ -244,7 +248,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	/**
 	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value is the full namespace, e.g. rdf and
-	 * http://www.w3.org/1999/02/22-rdf-syntax-ns#
+	 * <a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#">http://www.w3.org/1999/02/22-rdf-syntax-ns#</a>
 	 */
 	private Map<String, String> namespaces = new HashMap<>();
 
@@ -321,16 +325,18 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public void addNamespaces(Namespace... namespaces) {
 		synchronized (this.namespaceMutex) {
 			try {
-				try (RepositoryConnection connection = this.semanticCore.getConnection()) {
-					for (Namespace namespace : namespaces) {
-						connection.setNamespace(namespace.getPrefix(), namespace.getName());
-						if ("lns".equals(namespace.getPrefix())) {
-							this.lns = namespace.getName();
+				runInIOThread(() -> {
+					try (RepositoryConnection connection = this.semanticCore.getConnection()) {
+						for (Namespace namespace : namespaces) {
+							connection.setNamespace(namespace.getPrefix(), namespace.getName());
+							if ("lns".equals(namespace.getPrefix())) {
+								this.lns = namespace.getName();
+							}
 						}
 					}
-				}
+				});
 			}
-			catch (RepositoryException e) {
+			catch (IOException e) {
 				LOGGER.error("Exception while adding namespace", e);
 			}
 			finally {
@@ -512,14 +518,16 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 				// Do actual changes on the model
 				Stopwatch connectionStopwatch = new Stopwatch();
-				try (RepositoryConnection connection = this.semanticCore.getConnection()) {
-					connection.begin();
+				runInThread(() -> {
+					try (RepositoryConnection connection = this.semanticCore.getConnection()) {
+						connection.begin();
 
-					connection.remove(this.removeCache);
-					connection.add(this.insertCache);
+						connection.remove(this.removeCache);
+						connection.add(this.insertCache);
 
-					connection.commit();
-				}
+						connection.commit();
+					}
+				});
 
 				// Fire events
 				if (!this.removeCache.isEmpty()) {
@@ -757,7 +765,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * Creates a IRI for normal IRI string (e.g. http://example.org#myConcept) or an abbreviated IRI (e.g.
+	 * Creates a IRI for normal IRI string (e.g.
+	 * <a href="http://example.org#myConcept">http://example.org#myConcept</a>) or an abbreviated IRI (e.g.
 	 * ex:myConcept).
 	 *
 	 * @param value the string to create an URI from
@@ -793,7 +802,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	/**
 	 * Converts/expands a (possibly abbreviated) URI in string form (such as "example:some_concept") to a URI instance
-	 * ("http://example.org/#some_concept").
+	 * ("<a href="http://example.org/#some_concept">http://example.org/#some_concept</a>").
 	 */
 	public java.net.URI createURI(String uri) {
 		// IRIs created from string in short form are created expanded by createIRI() already
@@ -807,7 +816,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	/**
 	 * Returns a map of all namespaces mapped by their abbreviation.<br>
-	 * <b>Example:</b> rdf -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
+	 * <b>Example:</b> rdf ->
+	 * <a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#">http://www.w3.org/1999/02/22-rdf-syntax-ns#</a>
 	 */
 	@NotNull
 	public Map<String, String> getNamespacesMap() {
@@ -830,12 +840,17 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	@Override
 	@NotNull
 	public Collection<Namespace> getNamespaces() {
-		return this.semanticCore.getNamespaces();
+		final AtomicReference<Collection<Namespace>> namespaces = new AtomicReference<>();
+		runInThread(() -> {
+			namespaces.set(this.semanticCore.getNamespaces());
+		});
+		return namespaces.get();
 	}
 
 	/**
 	 * Returns a map of all namespaces mapped by their prefixes as they are used e.g. in Turtle and SPARQL.<br>
-	 * <b>Example:</b> rdf: -> http://www.w3.org/1999/02/22-rdf-syntax-ns#
+	 * <b>Example:</b> rdf: ->
+	 * <a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#">http://www.w3.org/1999/02/22-rdf-syntax-ns#</a>
 	 * <p>
 	 * Although this map seems trivial, it is helpful for optimization reasons.
 	 */
@@ -944,19 +959,23 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public void readFrom(InputStream in, RDFFormat syntax) throws RDFParseException, RepositoryException, IOException {
-		synchronized (nsPrefixMutex) {
-			this.semanticCore.addData(in, syntax);
-			this.namespaces = null;
-			this.namespacePrefixes = null;
-		}
+		runInIOThread(() -> {
+			synchronized (nsPrefixMutex) {
+				this.semanticCore.addData(in, syntax);
+				this.namespaces = null;
+				this.namespacePrefixes = null;
+			}
+		});
 	}
 
 	public void readFrom(File in) throws RDFParseException, RepositoryException, IOException {
-		synchronized (nsPrefixMutex) {
-			this.semanticCore.addData(in);
-			this.namespaces = null;
-			this.namespacePrefixes = null;
-		}
+		runInIOThread(() -> {
+			synchronized (nsPrefixMutex) {
+				this.semanticCore.addData(in);
+				this.namespaces = null;
+				this.namespacePrefixes = null;
+			}
+		});
 	}
 
 	public void removeAllCachedStatements() {
@@ -1219,9 +1238,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		// they are not needed in that context and do even cause problems and overhead
 		if (CompilerManager.isCompileThread()) {
 			try {
-				// if the compiler itself requests a query, evaluate synchronously
 				SparqlCallable callable = newSparqlCallable(query, type, Long.MAX_VALUE, true, preparedAsk, preparedSelect, bindings);
-				Object result = callable.call();
+				AtomicReference<Object> result = new AtomicReference<>();
+				runInThread(() -> {
+					result.set(callable.call());
+				});
 				if (stopwatch.getTime() > 10) {
 					String usedQuery = query == null
 							? preparedSelect == null
@@ -1233,7 +1254,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 							+ stopwatch.getDisplay()
 							+ ": " + Rdf2GoUtils.getReadableQuery(usedQuery, type) + "...");
 				}
-				return result;
+				return result.get();
 			}
 			catch (Exception e) {
 				throw new RuntimeException(e);
@@ -1261,7 +1282,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, true, preparedAsk, preparedSelect, bindings);
 					sparqlTask = new SparqlTask(callable, options.priority);
 					this.sparqlCache.put(query, sparqlTask);
-					sparqlThreadPool.execute(sparqlTask);
+					threadPool.execute(sparqlTask);
 				}
 			}
 		}
@@ -1269,11 +1290,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			// otherwise execute sparql query with no caches
 			SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, false, preparedAsk, preparedSelect, bindings);
 			sparqlTask = new SparqlTask(callable, options.priority);
-			final int currentQueueSize = sparqlThreadPool.getQueue().size();
+			final int currentQueueSize = threadPool.getQueue().size();
 			if (currentQueueSize > 5) {
 				LOGGER.info("Queuing new SPARQL query (" + name + "), current queue length: " + currentQueueSize);
 			}
-			sparqlThreadPool.execute(sparqlTask);
+			threadPool.execute(sparqlTask);
 		}
 		String timeOutMessage = "SPARQL query timed out or was cancelled after ";
 		try {
@@ -1368,7 +1389,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		public long timeoutMillis = DEFAULT_TIMEOUT;
 		/**
 		 * The priority influences the order in which the query will be executed. However, this is only influences a
-		 * potential working queue, in case that we are temporarily not fast enough in handling all incoming queries. The
+		 * potential working queue, in case that we are temporarily not fast enough in handling all incoming queries.
+		 * The
 		 * individual queries are not faster or slower, as long as they do not queue up.
 		 */
 		public double priority = DEFAULT_QUERY_PRIORITY;
@@ -1509,17 +1531,16 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	@Override
 	public void close() {
-		ThreadLocalCleaner.cleanThreadLocals();
 		if (ServletContextEventListener.isDestroyInProgress()) {
 			EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 			this.semanticCore.close();
-			this.sparqlThreadPool.shutdownNow();
+			this.threadPool.shutdownNow();
 		}
 		else {
 			new Thread(() -> {
 				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 				synchronized (this.statementMutex) {
-					this.sparqlThreadPool.shutdown();
+					this.threadPool.shutdown();
 					this.statementCache.clear(); // free memory even if there are still references
 
 					if (this.semanticCore == null) {
@@ -1551,5 +1572,48 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	public static class CacheMissException extends Exception {
 
+	}
+
+	private void runInThread(Runnable runnable) {
+		PriorityTask future = new PriorityTask(runnable, 0);
+		threadPool.execute(future);
+		try {
+			future.get();
+		}
+		catch (InterruptedException e) {
+			LOGGER.error("Waiting was interrupted", e);
+		}
+		catch (ExecutionException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void runInIOThread(RunnableWithIO runnable) throws IOException {
+		AtomicReference<IOException> exception = new AtomicReference<>();
+		PriorityTask future = new PriorityTask(() -> {
+			try {
+				runnable.run();
+			}
+			catch (IOException e) {
+				exception.set(e);
+			}
+		}, 0);
+		threadPool.execute(future);
+		try {
+			future.get();
+		}
+		catch (InterruptedException e) {
+			LOGGER.error("Waiting was interrupted", e);
+		}
+		catch (ExecutionException e) {
+			throw new IOException(e);
+		}
+		if (exception.get() != null) {
+			throw exception.get();
+		}
+	}
+
+	private interface RunnableWithIO {
+		void run() throws IOException;
 	}
 }

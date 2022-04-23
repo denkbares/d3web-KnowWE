@@ -20,11 +20,9 @@
 package de.knowwe.rdf2go;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
 import java.util.concurrent.locks.LockSupport;
 
 import org.eclipse.rdf4j.query.QueryEvaluationException;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,24 +32,18 @@ import com.denkbares.strings.Strings;
 /**
  * Future for SPARQL queries with some addition control to stop it and get info about state.
  */
-class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
+class SparqlTask extends PriorityTask {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SparqlTask.class);
 
 	private long startTime = Long.MIN_VALUE;
 	private final SparqlCallable callable;
-	private final double priority;
 	private Thread thread = null;
 	private int size = 50; // reasonable default value till the result is set
 	private long runTime = Long.MIN_VALUE;
 
 	SparqlTask(SparqlCallable callable, double priority) {
-		super(callable);
+		super(callable, priority);
 		this.callable = callable;
-		this.priority = priority;
-	}
-
-	public double getPriority() {
-		return priority;
 	}
 
 	long getTimeOutMillis() {
@@ -69,8 +61,8 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 	synchronized long getRunDuration() {
 		return hasStarted()
 				? this.runTime == Long.MIN_VALUE
-						? System.currentTimeMillis() - this.startTime
-						: this.runTime
+				? System.currentTimeMillis() - this.startTime
+				: this.runTime
 				: 0;
 	}
 
@@ -89,7 +81,6 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 			LOGGER.warn("SPARQL query was canceled after "
 					+ Strings.getDurationVerbalization(getRunDuration())
 					+ ": " + callable.getReadableQuery());
-			ThreadLocalCleaner.cleanThreadLocals();
 		}
 		return canceled;
 	}
@@ -100,7 +91,6 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 			this.thread.stop();
 			LockSupport.unpark(this.thread);
 			this.thread = null;
-			ThreadLocalCleaner.cleanThreadLocals();
 			LOGGER.warn("SPARQL query was stopped after "
 					+ Strings.getDurationVerbalization(getRunDuration())
 					+ ": " + callable.getReadableQuery());
@@ -128,7 +118,6 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 				this.thread = null;
 			}
 			this.runTime = System.currentTimeMillis() - this.startTime;
-			ThreadLocalCleaner.cleanThreadLocals();
 		}
 	}
 
@@ -143,11 +132,6 @@ class SparqlTask extends FutureTask<Object> implements Comparable<SparqlTask> {
 					+ Strings.getDurationVerbalization(getRunDuration())
 					+ ": " + callable.getReadableQuery());
 		}
-	}
-
-	@Override
-	public int compareTo(@NotNull SparqlTask o) {
-		return Double.compare(this.priority, o.priority);
 	}
 
 	private int getResultSize(Object result) {
