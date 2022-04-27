@@ -33,7 +33,7 @@
 		<knowwe.version>${project.version}</knowwe.version>
 		<ssp.version>3.8-SNAPSHOT</ssp.version>
 		<mate.version>2.9-SNAPSHOT</mate.version>
-		<jspwiki.version>2.11.0-SNAPSHOT</jspwiki.version>
+		<jspwiki.version>2.11.1-SNAPSHOT</jspwiki.version>
 		<selenium.version>3.13.0</selenium.version>
 		<tomcat.version>9.0.13</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
