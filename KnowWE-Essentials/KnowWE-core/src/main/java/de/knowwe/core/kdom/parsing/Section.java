@@ -75,9 +75,9 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	private List<Integer> lastPositions = null;
 
-	protected boolean isOrHasReusedSuccessor = false;
+	boolean isOrHasReusedSuccessor = false;
 
-	protected Article article;
+	Article article;
 
 	/**
 	 * The unique ID of this Section (or -1, if not initialized).
@@ -98,7 +98,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	/**
 	 * The child-nodes of this KDOM-node. This forms the tree-structure of KDOM.
 	 */
-	protected ArrayList<Section<? extends Type>> children;
+	ArrayList<Section<? extends Type>> children;
 
 	/**
 	 * The father section of this KDOM-node. Used for upwards navigation through the tree
@@ -126,7 +126,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 *
 	 * @see Type Each type has its own parser and renderer
 	 */
-	protected final T type;
+	private final T type;
 
 	/**
 	 * Returns the type instance of this section.
@@ -547,11 +547,11 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return false;
 	}
 
-	protected void setPositionInKDOM(List<Integer> positionInKDOM) {
+	void setPositionInKDOM(List<Integer> positionInKDOM) {
 		position = positionInKDOM;
 	}
 
-	protected void clearPositionInKDOM() {
+	void clearPositionInKDOM() {
 		position = null;
 	}
 
@@ -562,7 +562,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		return Collections.unmodifiableList(position);
 	}
 
-	protected void setLastPositionInKDOM(List<Integer> lastPositions) {
+	void setLastPositionInKDOM(List<Integer> lastPositions) {
 		this.lastPositions = lastPositions;
 	}
 
@@ -576,9 +576,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		// this can only occur in the exceptional case
 		// when Sections are created independently of articles
 		if (getArticle() == null || getArticle().getRootSection() == null) {
-			ArrayList<Integer> positions = new ArrayList<>(1);
-			positions.add(0);
-			return positions;
+			return List.of(0);
 		}
 
 		return calcPositionTil(getArticle().getRootSection());
@@ -707,7 +705,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @param id is the ID of the Section to be returned
 	 * @return the Section for the given ID or null if no Section exists for this ID.
 	 */
-	protected static Section<?> get(String id) {
+	static Section<?> get(String id) {
 		synchronized (sectionMap) {
 			// We have to parse long and convert to int, because when converting a int to a hex string, the negative
 			// sign is lost, resulting in for Integer.parseInt() not parsable values. Parsing long and casting
