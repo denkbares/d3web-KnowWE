@@ -389,7 +389,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 		String key = attachment.getPath() + "_" + attachment.getDate();
 		synchronized (importCache) {
 			cache = importCache.computeIfAbsent(key, k -> {
-				Rdf2GoCore dummy = new Rdf2GoCore(RepositoryConfigs.find("RDFS"));
+				Rdf2GoCore dummy = new Rdf2GoCore(compiler.getName() + "-InitTerminology", null, RepositoryConfigs.find("RDFS"));
 				readFrom(compiler, section, dummy, attachment, syntax);
 				return new TermCache(dummy, attachment.getPath(), attachment.getDate());
 			});
