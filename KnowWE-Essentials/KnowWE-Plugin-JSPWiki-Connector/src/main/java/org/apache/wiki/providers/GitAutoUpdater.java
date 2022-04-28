@@ -17,6 +17,7 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.api.providers.WikiProvider;
 import org.apache.wiki.attachment.Attachment;
+import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.util.TextUtil;
@@ -350,20 +351,27 @@ public class GitAutoUpdater {
 				String[] split = path.split("/");
 				String parentName = TextUtil.urlDecodeUTF8(split[0])
 						.replace(GitVersioningAttachmentProvider.DIR_EXTENSION, "");
+				parentName = TextUtil.urlDecodeUTF8(parentName.replace(GitVersioningFileProvider.FILE_EXT, ""));
 				String attachmentName = TextUtil.urlDecodeUTF8(split[1]);
 				toRefresh = new Attachment(engine, parentName, attachmentName);
+				toRefresh.setVersion(PageProvider.LATEST_VERSION);
+				AttachmentManager manager = engine.getManager(AttachmentManager.class);
+				manager.getCurrentProvider().deleteVersion((Attachment) toRefresh);
+				Page page = manager.getAttachmentInfo(toRefresh.getName());
+				if (page != null) {
+					LOGGER.info("refresh call" + page.getName());
+				}
 			}
 			else {
 				toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
+				PageManager manager = engine.getManager(PageManager.class);
+				manager.getProvider().deleteVersion(toRefresh, PageProvider.LATEST_VERSION);
+				Page page = manager.getPage(toRefresh.getName());
+				if (page != null) {
+					LOGGER.info("refresh call" + page.getName());
+				}
 			}
 			toRefresh.setVersion(WikiProvider.LATEST_VERSION);
-			PageManager manager = engine.getManager(PageManager.class);
-			manager.getProvider().deleteVersion(toRefresh, PageProvider.LATEST_VERSION);
-
-			Page page = manager.getPage(toRefresh.getName());
-			if (page != null) {
-				LOGGER.info("refresh call" + page.getName());
-			}
 
 			return toRefresh.getName();
 		}
