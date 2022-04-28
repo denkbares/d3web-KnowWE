@@ -164,9 +164,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 
 		final long coreId = Rdf2GoCore.coreId.incrementAndGet();
-		this.name = applicationName + "-" + coreName.replaceAll("\\s+", "-") + "-" + coreId;
+		String coreNameAndId = coreName.replaceAll("\\s+", "-") + "-" + coreId;
+		this.name = applicationName + "-" + coreNameAndId;
 		this.threadPool = createThreadPool(
-				getMaxSparqlThreadCount(reasoning), this.name + "-Rdf2Go-Thread", true);
+				getMaxSparqlThreadCount(reasoning), coreNameAndId + "-Rdf2Go-Thread", true);
 
 		RepositoryConfig finalReasoning = reasoning;
 		try {
