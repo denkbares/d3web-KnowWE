@@ -58,6 +58,7 @@ public class CIHookManager {
 	 * @param monitoredArticle the article to trigger hooks for
 	 */
 	public static synchronized void triggerHooks(Article monitoredArticle) {
+		if (!Boolean.parseBoolean(System.getProperty("ci.hooks.active", "true"))) return;
 		Set<CIHook> hookSet = hooks.getValues(monitoredArticle.getTitle());
 		Set<String> triggered = new TreeSet<>();
 		for (final CIHook hook : hookSet) {
