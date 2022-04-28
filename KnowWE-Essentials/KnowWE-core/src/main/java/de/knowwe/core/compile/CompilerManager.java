@@ -393,7 +393,7 @@ public class CompilerManager {
 		return allAwaiting;
 	}
 
-	private static final long DEADLOCK_TIMEOUT = 30 * 1000; // 30 seconds
+	private static final long DEADLOCK_TIMEOUT = 3 * 60 * 1000; // 3 minutes
 	private final Stopwatch noRunningCompileThreadsFoundSince = new Stopwatch().reset();
 	private final Stopwatch timeSinceLastMessage = new Stopwatch().reset();
 
@@ -431,7 +431,7 @@ public class CompilerManager {
 			else {
 				noRunningCompileThreadsFoundSince.resume();
 				timeSinceLastMessage.resume();
-				if (timeSinceLastMessage.getTime() > DEADLOCK_TIMEOUT / 3) {
+				if (timeSinceLastMessage.getTime() > DEADLOCK_TIMEOUT / 5) {
 					LOGGER.warn("Non of the known compile threads is currently in state RUNNABLE. This may be an indication for a deadlock.");
 					timeSinceLastMessage.reset().resume();
 				}
