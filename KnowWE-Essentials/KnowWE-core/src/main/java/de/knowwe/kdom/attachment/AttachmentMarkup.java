@@ -125,8 +125,9 @@ public class AttachmentMarkup extends AttachmentUpdateMarkup implements Attachme
 
 	@Override
 	public @Nullable URL getUrl(Section<? extends AttachmentUpdateMarkup> section) {
+		if(section == null) return null;
 		Section<URLType> urlSection = Sections.successor(section, URLType.class);
-		Objects.requireNonNull(urlSection);
+		if(urlSection == null) return null;
 		return URLType.getURL(urlSection);
 	}
 
