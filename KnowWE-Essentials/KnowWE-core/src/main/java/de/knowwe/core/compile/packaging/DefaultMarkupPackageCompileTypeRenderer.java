@@ -172,12 +172,17 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 	private void renderDefectArticleNames(Set<Article> articles, RenderResult string) {
 		// print all articles out as links (ordered alphabetically, duplicates
 		// removed)
-		string.appendHtml("<ul>");
-		articles.stream().sorted(Comparator.comparing(Article::getTitle)).forEach(article -> {
+		string.appendHtml("<ul style='white-space: normal'>");
+		int limit = articles.size() <= 5 ? 5 : 3;
+		articles.stream().sorted(Comparator.comparing(Article::getTitle)).limit(limit).forEach(article -> {
 			string.appendHtml("<li>");
 			string.appendHtmlElement("a", article.getTitle(), "href", KnowWEUtils.getURLLink(article));
+			string.appendHtml("</li>");
 			string.append("\n");
 		});
+		if (limit == 3) {
+			string.appendHtmlElement("li", articles.size() - limit + " more...");
+		}
 		string.appendHtml("</ul>");
 	}
 }
