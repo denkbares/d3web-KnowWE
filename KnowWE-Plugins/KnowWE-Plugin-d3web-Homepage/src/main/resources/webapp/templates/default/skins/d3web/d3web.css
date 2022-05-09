@@ -89,7 +89,6 @@ a.logo.pull-left {
 	/* Shows image */
 	background: url("d3web-logo.png") no-repeat;
 	background-size: contain;
-	height: 56px;
 }
 
 .breadcrumb {

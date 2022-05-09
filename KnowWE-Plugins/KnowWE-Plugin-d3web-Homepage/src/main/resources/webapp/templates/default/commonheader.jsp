@@ -18,11 +18,11 @@
 --%>
 
 <%@ taglib uri="http://jspwiki.apache.org/tags" prefix="wiki" %>
-<%@ page import="org.apache.wiki.WikiContext" %>
+<%@ page import="org.apache.wiki.*" %>
+<%@ page import="org.apache.wiki.ui.*" %>
+<%@ page import="org.apache.wiki.util.*" %>
 <%@ page import="org.apache.wiki.preferences.Preferences" %>
-<%@ page import="de.knowwe.core.Environment" %>
-<%@ page import="de.knowwe.jspwiki.JSPWikiConnector" %>
-<%@ page import="com.google.common.base.Strings" %>
+<%@ page import="java.util.*" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <fmt:setLocale value="${prefs.Language}"/>
@@ -45,7 +45,7 @@ BOOTSTRAP, IE compatibility / http://getbootstrap.com/getting-started/#support-i
 <meta http-equiv="Content-Type" content="text/html; charset=<wiki:ContentEncoding />"/>
 <meta http-equiv="x-ua-compatible" content="ie=edge"/>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta id="template-info" data-template="haddock"/>
+<meta id="template-info" data-template="default"/>
 
 <%-- Localized JS; must come before any css, to avoid blocking immediate execution --%>
 <%-- var LocalizedStrings= { "javascript.<xx>":"...", etc. } --%>
@@ -88,7 +88,8 @@ String.I18N.PREFIX = "javascript.";
 <meta name="wikiPageUrl" content='<wiki:Link format="url"  page="#$%"/>'/>
 <meta name="wikiEditUrl" content='<wiki:EditLink format="url" page="#$%"/>'/>
 <meta name="wikiCloneUrl" content='<wiki:EditLink format="url" page="#$%"/>&clone=<wiki:Variable var="pagename" />'/>
-<meta name="wikiJsonUrl" content='<%= Context.findContext(pageContext).getURL( ContextEnum.PAGE_NONE.getRequestContext(), "ajax" ) %>' /><%--unusual pagename--%>
+<meta name="wikiJsonUrl"
+	  content='<%=  WikiContext.findContext(pageContext).getURL( WikiContext.NONE, "ajax" ) %>'/><%--unusual pagename--%>
 <meta name="wikiPageName" content='<wiki:Variable var="pagename" />'/><%--pagename without blanks--%>
 <meta name="wikiUserName" content='<wiki:UserName />'/>
 <meta name="wikiTemplateUrl" content='<wiki:Link format="url" templatefile="" />'/>
@@ -112,8 +113,12 @@ String.I18N.PREFIX = "javascript.";
 	  title='Search <wiki:Variable var="ApplicationName" />'/>
 <link rel="help" href="<wiki:LinkTo format='url' page='TextFormattingRules'/>"
 	  title="Help"/>
-<c:set var="frontpage"><wiki:Variable var="jspwiki.frontPage" /></c:set>
-<link rel="start"  href="<wiki:Link page='${frontpage}' format='url' />" title="Front page" />
+<%
+	WikiContext c = WikiContext.findContext(pageContext);
+	String frontpage = c.getEngine().getFrontPage();
+%>
+<link rel="start" href="<wiki:LinkTo format='url' page='<%=frontpage%>' />"
+	  title="Front page"/>
 <link rel="alternate stylesheet" type="text/css" href="<wiki:Link format='url' templatefile='haddock.css'/>"
 	  title="Standard"/>
 
