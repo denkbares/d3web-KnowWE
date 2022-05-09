@@ -65,10 +65,6 @@ a:hover, .pagename a:hover, .icon-search:hover, .icon-user:hover {
 	box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.075);
 }
 
-.header > .navigation {
-	background-color: rgba(195, 195, 195, 0.1);
-}
-
 .header > .navigation .nav > li > a > .badge {
 	background: rgba(0, 0, 0, 0.4);
 }
