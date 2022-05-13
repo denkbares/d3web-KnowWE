@@ -249,9 +249,6 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 								statementCounter++;
 							}
 						}
-						if (true) {
-							throw new NullPointerException();
-						}
 					}
 					catch (Exception e) {
 						String message = "Skipping row " + (i + 1) + " due to " + e.getClass()
