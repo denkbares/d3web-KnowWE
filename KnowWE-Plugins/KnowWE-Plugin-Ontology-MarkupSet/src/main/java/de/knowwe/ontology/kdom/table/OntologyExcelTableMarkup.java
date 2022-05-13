@@ -57,6 +57,8 @@ import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
@@ -138,6 +140,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 	private static class StatementCompileScript extends OntologyCompileScript<ConfigAnnotationType> {
 
+		public static final int MAX_MESSAGES = 10;
+
 		@Override
 		public void compile(OntologyCompiler compiler, Section<ConfigAnnotationType> section) throws CompilerMessage {
 
@@ -167,7 +171,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 			int statementCounter = 0;
 			int rowCounter = 0;
-
+			List<String> messageStrings = new ArrayList<>();
 			// fill variable IRIs and Literals from excel
 			for (XSSFSheet sheet : getSheets(xlsx, config)) {
 				// config indexes are 1-based indexes, so subtract 1 to get to 0-based indexes for poi
@@ -245,15 +249,28 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 								statementCounter++;
 							}
 						}
+						if (true) {
+							throw new NullPointerException();
+						}
 					}
 					catch (Exception e) {
-						String message = "Exception in row " + (i + 1) + ": " + e.getMessage();
+						String message = "Skipping row " + (i + 1) + " due to " + e.getClass()
+								.getSimpleName() + (e.getMessage() == null ? "" : ": " + e.getMessage());
 						Log.severe(message, e);
-						throw CompilerMessage.error(message);
+						messageStrings.add(message);
 					}
 					rowCounter++;
 				}
 			}
+			Section<OntologyExcelTableMarkup> markup = $(section).ancestor(OntologyExcelTableMarkup.class)
+					.getFirst();
+			String source = this.getClass().toString() + section.getID();
+			String messageText = Strings.concat("\n", messageStrings.subList(0, Math.min(messageStrings.size(), MAX_MESSAGES)));
+			if (messageStrings.size() > MAX_MESSAGES) {
+				messageText += "\n...and " + (messageStrings.size() - MAX_MESSAGES) + " more";
+			}
+			List<Message> messages = List.of(Messages.warning(messageText));
+			Messages.storeMessages(compiler, markup, source, messages);
 			section.storeObject(compiler, COUNT_KEY, new Pair<>(statementCounter, rowCounter));
 			stopwatch.log(getMessage(statementCounter, rowCounter));
 		}
