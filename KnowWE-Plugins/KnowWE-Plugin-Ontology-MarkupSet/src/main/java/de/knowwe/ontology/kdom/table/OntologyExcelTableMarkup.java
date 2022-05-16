@@ -181,6 +181,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 				for (int i = config.startRow - 1; i <= Math.min(config.endRow - 1, sheet.getLastRowNum()); i++) {
 					try {
 						XSSFRow row = sheet.getRow(i);
+						if (row == null) continue;
 
 						//cell which is tested when using skipRowType
 						if (config.skipColumn != -1) {
