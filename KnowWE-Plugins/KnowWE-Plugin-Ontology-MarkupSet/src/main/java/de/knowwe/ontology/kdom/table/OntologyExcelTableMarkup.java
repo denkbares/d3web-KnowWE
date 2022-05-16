@@ -507,7 +507,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	}
 
 	private static class SkipType extends AbstractType {
-		private static final Pattern MATCHING_PATTERN = Pattern.compile("(?:matching):?\\s*(\"?.*\"?)");
+		private static final Pattern MATCHING_PATTERN = Pattern.compile("matching:?\\s*(\"?.*\"?)");
 
 		public SkipType() {
 			setSectionFinder(new RegexSectionFinder(
