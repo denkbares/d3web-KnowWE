@@ -35,7 +35,7 @@ import com.denkbares.semanticcore.config.RepositoryConfig;
 import com.denkbares.semanticcore.config.RepositoryConfigs;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Log;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.ParallelScriptCompiler;
@@ -191,11 +191,10 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		if (currentCompilePriority != null && !commitTracker.contains(currentCompilePriority)) {
 			synchronized (commitTracker) {
 				if (!commitTracker.contains(currentCompilePriority)) {
-					long before = System.currentTimeMillis();
+					Stopwatch stopwatch = new Stopwatch();
 					rdf2GoCore.commit();
 					commitTracker.add(currentCompilePriority);
-					long after = System.currentTimeMillis();
-					Log.info("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ". Committed statements in " + (after - before) + "ms");
+					stopwatch.log("Requesting Rdf2GoCore while compiling priority " + currentCompilePriority + ", statements were committed");
 				}
 			}
 		}
