@@ -612,6 +612,8 @@ td .information, td .info, td .warning, td .error {
 .wikitable > tbody > tr > td, .wikitable > tfoot > tr > td,
 .wikitable > tbody > tr > td, .wikitable > tfoot > tr > td {
 	border-top: 0;
+	border-left: 0;
+	border-right: 0;
 	border-bottom: 1px solid #ddd;
 }
 
