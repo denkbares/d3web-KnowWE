@@ -92,6 +92,8 @@ a.ci-daemon:hover {
 	padding-left: 20px;
 	padding-bottom: 3px;
 	border-left: 1px solid #ddd;
+	max-height: 70vh;
+	overflow: auto;
 }
 
 .ci-configuration {
