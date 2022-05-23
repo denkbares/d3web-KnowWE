@@ -88,7 +88,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		TestingUtils.checkInterrupt();
 
 		buffer.append(" ")
-				.append(Strings.capitalize(type.toString().toLowerCase()))
+				.append(Strings.pluralOf(messages.size(), type.toString().toLowerCase()))
 				.append("s found in compiler [")
 				.append(compiler.getName())
 				.append("|")
