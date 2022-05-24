@@ -102,7 +102,7 @@ public class SparqlDownloadAction extends AbstractAction {
 		}
 	}
 
-	private static void addSparqlResultAsSheet(XSSFWorkbook wb, CachedTupleQueryResult qrt, UserContext user, Rdf2GoCore core, RenderOptions opts) {
+	protected static void addSparqlResultAsSheet(XSSFWorkbook wb, CachedTupleQueryResult qrt, UserContext user, Rdf2GoCore core, RenderOptions opts) {
 
 		XSSFSheet sheet = wb.createSheet("Result");
 

@@ -31,7 +31,7 @@
 		<denkbares.version>${project.version}</denkbares.version>
 		<d3web.version>${project.version}</d3web.version>
 		<knowwe.version>${project.version}</knowwe.version>
-		<konap.version>12.8-SNAPSHOT</konap.version>
+		<konap.version>12.9-SNAPSHOT</konap.version>
 		<ssp.version>3.10-SNAPSHOT</ssp.version>
 		<mate.version>2.11-SNAPSHOT</mate.version>
 		<jspwiki.version>2.11.2-SNAPSHOT</jspwiki.version>
