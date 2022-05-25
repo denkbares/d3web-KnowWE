@@ -60,7 +60,7 @@ public class GitVersionCache {
 		this.ignoreNode = ignoreNode;
 	}
 
-	void initializeCache() throws IOException {
+	public void initializeCache() throws IOException {
 		pageRevisionCache = new TreeMap<>();
 		attachmentRevisionCache = new TreeMap<>();
 		cacheCommands = new HashMap<>();
