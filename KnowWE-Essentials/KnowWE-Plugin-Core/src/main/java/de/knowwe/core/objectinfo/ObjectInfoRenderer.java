@@ -420,9 +420,7 @@ public class ObjectInfoRenderer implements Renderer {
 
 	private static Comparator<TypeGroup> getOrderComparator(Collection<Section<?>> references) {
 		return (t1, t2) -> {
-			if (!(t1.getType() instanceof GroupingType) || !(t2.getType() instanceof GroupingType)) return 0;
-			GroupingType gt1 = (GroupingType) t1.getType();
-			GroupingType gt2 = (GroupingType) t2.getType();
+			if (!(t1.getType() instanceof GroupingType gt1) || !(t2.getType() instanceof GroupingType gt2)) return 0;
 			List<Integer> positions1 = getPositionList(gt1, references);
 			List<Integer> positions2 = getPositionList(gt2, references);
 			Iterator<Integer> thisIter = positions1.iterator();
@@ -516,7 +514,7 @@ public class ObjectInfoRenderer implements Renderer {
 		String id = UUID.randomUUID().toString();
 		StringBuilder sectionIDs = new StringBuilder();
 		for (Section<?> section : sections) {
-			if (sectionIDs.length() > 0) sectionIDs.append(",");
+			if (!sectionIDs.isEmpty()) sectionIDs.append(",");
 			sectionIDs.append(section.getID());
 		}
 
@@ -551,7 +549,7 @@ public class ObjectInfoRenderer implements Renderer {
 	private static void wrapInExtendPanel(String surroundingMarkupType, CountingSet<Type> occurrences, RenderResult content, RenderResult result, boolean expandable) {
 		StringBuilder info = new StringBuilder();
 		for (Type occurrence : occurrences) {
-			if (info.length() > 0) info.append(", ");
+			if (!info.isEmpty()) info.append(", ");
 			int count = occurrences.getCount(occurrence);
 			if (count > 1) info.append(count).append("&times; ");
 			info.append(occurrence.getName());
