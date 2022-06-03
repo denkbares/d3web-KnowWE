@@ -36,6 +36,14 @@ import de.knowwe.util.Icon;
  */
 public class HelpToolProvider implements ToolProvider {
 
+	public static final String HELP_TOOL_WIKI_PROPERTY = "knowwe.helpTool.externalWiki";
+
+	private String getExternalHelpWikiLink(UserContext context, Section<?> section) {
+		String wikiProperty = Environment.getInstance().getWikiConnector().getWikiProperty(HELP_TOOL_WIKI_PROPERTY);
+		if (wikiProperty == null) return null;
+		return wikiProperty + section.get().getName();
+	}
+
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
 		return getDocArticle(section, userContext) != null;
