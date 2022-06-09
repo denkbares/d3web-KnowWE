@@ -23,6 +23,8 @@
 <%@ page import="org.apache.wiki.util.*" %>
 <%@ page import="org.apache.wiki.preferences.Preferences" %>
 <%@ page import="java.util.*" %>
+<%@ page import="org.apache.wiki.api.core.Context" %>
+<%@ page import="de.knowwe.jspwiki.KnowWEPlugin" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <fmt:setLocale value="${prefs.Language}"/>
@@ -114,7 +116,8 @@ String.I18N.PREFIX = "javascript.";
 <link rel="help" href="<wiki:LinkTo format='url' page='TextFormattingRules'/>"
 	  title="Help"/>
 <%
-	WikiContext c = WikiContext.findContext(pageContext);
+	Context c = Context.findContext( pageContext );
+	KnowWEPlugin.includeDOMResources(c);
 	String frontpage = c.getEngine().getFrontPage();
 %>
 <link rel="start" href="<wiki:LinkTo format='url' page='<%=frontpage%>' />"

@@ -260,7 +260,6 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			return content;
 		}
 
-		includeDOMResources(wikiContext);
 		/*
 		 * The special pages MoreMenu, LeftMenu and LeftMenuFooter get extra
 		 * calls: they are handled and rendered from the KDOMs in the following
