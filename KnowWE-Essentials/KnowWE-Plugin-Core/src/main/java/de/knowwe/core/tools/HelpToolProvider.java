@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Article;
@@ -60,30 +61,30 @@ public class HelpToolProvider implements ToolProvider {
 		ArrayList<Tool> tools = new ArrayList<>();
 		Tool local = getLocalTool(section, userContext);
 		if (local != null) tools.add(local);
-		Tool external = getExternalTool(section, userContext);
+		Tool external = getExternalTool(section, userContext, local != null);
 		if (external != null) tools.add(external);
 
 		return tools.toArray(new Tool[0]);
 	}
 
-	private Tool getExternalTool(Section<?> section, UserContext userContext) {
+	private Tool getExternalTool(Section<?> section, UserContext userContext, boolean addSuffix) {
 		String externalHelpWikiLink = getExternalHelpWikiLink(userContext, section);
 		if (externalHelpWikiLink == null) return null;
-		return toolWithLink(section, externalHelpWikiLink);
+		return toolWithLink(section, externalHelpWikiLink, addSuffix ? " (external)" : null);
 	}
 
 	private Tool getLocalTool(Section<?> section, UserContext userContext) {
 		Article article = getDocArticle(section, userContext);
 		if (article == null) return null;
 		String link = KnowWEUtils.getURLLink(article);
-		return toolWithLink(section, link);
+		return toolWithLink(section, link, null);
 	}
 
 	@NotNull
-	private DefaultTool toolWithLink(Section<?> section, String link) {
+	private DefaultTool toolWithLink(Section<?> section, String link, String titleSuffix) {
 		return new DefaultTool(
 				Icon.HELP,
-				"Help: " + section.get().getName(),
+				"Help: " + section.get().getName() + (Strings.isBlank(titleSuffix) ? "" : titleSuffix),
 				"Open help page for this markup.",
 				link,
 				Tool.ActionType.HREF,
