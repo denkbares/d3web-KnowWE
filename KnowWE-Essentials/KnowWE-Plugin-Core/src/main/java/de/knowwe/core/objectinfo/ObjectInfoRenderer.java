@@ -45,6 +45,8 @@ import com.denkbares.collections.CountingSet;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -479,8 +481,11 @@ public class ObjectInfoRenderer implements Renderer {
 			return;
 		}
 
+		Collection<PackageCompiler> compilers = Compilers.getCompilers(previewSection, PackageCompiler.class);
+		String defaultCompilerClass = DefaultMarkupRenderer.getDefaultCompilerClass(previewSection, user, compilers);
+
 		result.appendHtml("<div class='objectinfo preview defaultMarkupFrame" +
-						" type_").append(getNameForSection(user, previewSection))
+						" type_").append(getNameForSection(user, previewSection)).append(defaultCompilerClass)
 				.appendHtml(" ").append(cssClass).appendHtml("'>");
 		result.appendHtml("<div class='objectinfo markupHeaderFrame headerMenu'>");
 		result.appendHtml("<div class='markupHeader'>");
