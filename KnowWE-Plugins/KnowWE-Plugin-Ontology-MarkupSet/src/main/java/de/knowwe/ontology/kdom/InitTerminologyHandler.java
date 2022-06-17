@@ -18,8 +18,10 @@
  */
 package de.knowwe.ontology.kdom;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collection;
@@ -375,7 +377,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 			mainReadFuture.get();
 		}
 		catch (InterruptedException | ExecutionException e) {
-			handleException(compiler, section, attachment, e);
+			handleException(compiler, section, attachment.getPath(), e);
 		}
 		long duration = System.currentTimeMillis() - start;
 		if (duration > TimeUnit.SECONDS.toMillis(1)) {
@@ -446,17 +448,23 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 
 	private void readFrom(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, Rdf2GoCore core, WikiAttachment attachment, RDFFormat syntax) {
 		try {
-			core.readFrom(attachment.getInputStream(), syntax);
+			// Copy attachment to byte array stream first, so we avoid IO errors in case the attachment
+			// changes (e.g. through %%Attachment markup) during slow import to core
+			ByteArrayInputStream copy;
+			try (InputStream attachmentStream = attachment.getInputStream()) {
+				copy = new ByteArrayInputStream(attachmentStream.readAllBytes());
+			}
+			core.readFrom(copy, syntax);
 		}
 		catch (IOException | RepositoryException | RDFParseException e) {
-			handleException(compiler, section, attachment, e);
+			handleException(compiler, section, attachment.getPath(), e);
 		}
 	}
 
-	private void handleException(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, WikiAttachment attachment, Exception e) {
-		LOGGER.error("Exception while importing ontology " + attachment.getPath(), e);
+	private void handleException(OntologyCompiler compiler, Section<? extends AnnotationContentType> section, String attachmentPath, Exception e) {
+		LOGGER.error("Exception while importing ontology " + attachmentPath, e);
 		Messages.storeMessage(compiler, section, this.getClass(), Messages.error("Error while importing ontology from '"
-				+ attachment.getPath() + "': " + e.getMessage()));
+				+ attachmentPath + "': " + e.getMessage()));
 	}
 
 	private String createPath(Section<?> section, String attachment) {
@@ -529,5 +537,4 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 		// no need to remove something, we get a new TerminologyManager
 		// anyway...
 	}
-
 }
