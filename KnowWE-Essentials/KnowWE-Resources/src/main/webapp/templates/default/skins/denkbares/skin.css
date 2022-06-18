@@ -2343,17 +2343,8 @@ div.coverflow .knob {
 	padding: 0;
 }
 
-@media screen, projection {
-	.defaultMarkupFrame:hover {
-		/*border-right: 1px solid #DDD;
-		border-left: 1px solid #DDD;
-		border-bottom: 1px solid #DDD;*/
-		background-color: #F9F9F9;
-	}
-
-	.frameless.defaultMarkupFrame:hover, .headerless.defaultMarkupFrame:hover {
-		background-color: transparent;
-	}
+.frameless.defaultMarkupFrame:hover, .headerless.defaultMarkupFrame:hover {
+	background-color: transparent;
 }
 
 .defaultMarkupFrame > .defaultMarkup .markupText {
