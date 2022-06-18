@@ -27,5 +27,5 @@ import de.knowwe.core.kdom.Type;
  */
 public interface VisualizationType extends Type {
 
-	PreRenderer getPreRenderer();
+	PreRenderer<?> getPreRenderer();
 }

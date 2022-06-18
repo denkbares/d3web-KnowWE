@@ -19,47 +19,36 @@
 
 package de.knowwe.rdfs.vis;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.denkbares.events.Event;
-import com.denkbares.events.EventListener;
-import com.denkbares.events.EventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.denkbares.utils.Triple;
+
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.ontology.compile.OntologyCompilerFinishedEvent;
 import de.knowwe.rdfs.vis.markup.PreRenderer;
+import de.knowwe.visualization.CleanableArtefact;
 
 /**
  * Helper class that handles the asynchronous (pre)rendering of all visualisation sections.
  *
  * @author Albrecht Striffler
  */
-public class PreRenderWorker implements EventListener {
+public class PreRenderWorker {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PreRenderWorker.class);
 
 	private static final Object mutex = new Object();
 
 	private static PreRenderWorker instance;
 
-	private final Map<String, Triple<Future, PreRenderer, Section<?>>> cache;
 	private final ExecutorService executor;
 
 	private PreRenderWorker() {
-		cache = new HashMap<>();
 		executor = Executors.newFixedThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1));
-		EventManager.getInstance().registerListener(this);
 	}
 
 	public static PreRenderWorker getInstance() {
@@ -74,16 +63,10 @@ public class PreRenderWorker implements EventListener {
 	/**
 	 * Queues a rendering task for the given section.
 	 */
-	private Future getPreRenderFuture(Section<? extends Type> section, UserContext user, PreRenderer preRenderer) {
+	private <Artefact extends CleanableArtefact> Future<Artefact> getPreRenderFuture(Section<? extends Type> section, UserContext user, PreRenderer<Artefact> preRenderer) {
 		synchronized (mutex) {
-			String fileID = preRenderer.getCacheFileID(section, user);
-			Triple<Future, PreRenderer, Section<?>> triple = cache.get(fileID);
-			if (triple == null) {
-				Future renderJobFuture = executor.submit(() -> preRenderer.preRender(section, user));
-				triple = new Triple<>(renderJobFuture, preRenderer, section);
-				cache.put(fileID, triple);
-			}
-			return triple.getA();
+			return section.computeIfAbsent(null, this.getClass().getName(),
+					(c, s) -> executor.submit(() -> preRenderer.preRender(section, user)));
 		}
 	}
 
@@ -91,62 +74,29 @@ public class PreRenderWorker implements EventListener {
 	 * Starts and caches a prerender job for each section. Waits until the prerendering is done. If this method is
 	 * called multiple times for the same section, the prerendering will only be done once, until the cache is cleared.
 	 */
-	public void handlePreRendering(Section<?> section, UserContext user, PreRenderer preRenderer) {
+	public <Artefact extends CleanableArtefact> Artefact getPreRenderedArtefact(Section<?> section, UserContext user, PreRenderer<Artefact> preRenderer) {
 		// create a new rendering task or get currently running task
-		Future renderJobFuture = getPreRenderFuture(section, user, preRenderer);
-
 		try {
-			if (renderJobFuture != null) {
-				// wait for the rendering to complete
-				renderJobFuture.get();
-			}
+			return getPreRenderFuture(section, user, preRenderer).get();
 		}
 		catch (ExecutionException | InterruptedException e) {
 			LOGGER.error("Exception while generating and caching graphs", e);
 		}
-
+		return null;
 	}
 
 	public void clearCache(Section<?> section) {
 		synchronized (mutex) {
-			Iterator<Map.Entry<String, Triple<Future, PreRenderer, Section<?>>>> entryIterator = cache.entrySet().iterator();
-			String keyToRemove = null;
-			while(entryIterator.hasNext()) {
-				// find entry in cache
-				Map.Entry<String, Triple<Future, PreRenderer, Section<?>>> entry = entryIterator.next();
-				if(entry.getValue().getC().equals(section)) {
-					keyToRemove = entry.getKey();
-				}
+			Future<CleanableArtefact> future = section.removeObject(null, this.getClass().getName());
+			if (future == null) return;
+			try {
+				CleanableArtefact artefact = future.get();
+				if (artefact == null) return;
+				artefact.cleanUp();
 			}
-			if(keyToRemove != null) {
-				// remove entry from cache
-				cache.remove(keyToRemove);
+			catch (ExecutionException | InterruptedException e) {
+				LOGGER.error("Exception while generating and caching graphs", e);
 			}
 		}
-	}
-
-	public void clearCache() {
-		synchronized (mutex) {
-			if (!cache.isEmpty()) {
-				for (Triple<Future, PreRenderer, Section<?>> value : cache.values()) {
-					value.getA().cancel(true);
-					value.getB().cleanUp(value.getC());
-				}
-				cache.clear();
-			}
-		}
-	}
-
-	@Override
-	public Collection<Class<? extends Event>> getEvents() {
-		Collection<Class<? extends Event>> events = new ArrayList<>(1);
-		events.add(OntologyCompilerFinishedEvent.class);
-		return events;
-	}
-
-	@Override
-	public void notify(Event event) {
-		// TODO: only clean for current compiler!
-		clearCache();
 	}
 }

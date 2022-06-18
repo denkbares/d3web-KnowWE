@@ -7,7 +7,6 @@ import de.knowwe.core.kdom.rendering.NothingRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
-import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.visualization.Config;
 
 public class ConceptVisualizationType extends DefaultMarkupType implements VisualizationType {
@@ -88,7 +87,7 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 	}
 
 	@Override
-	public PreRenderer getPreRenderer() {
+	public ConceptVisualizationRenderer getPreRenderer() {
 		return new ConceptVisualizationRenderer();
 	}
 
@@ -99,5 +98,4 @@ public class ConceptVisualizationType extends DefaultMarkupType implements Visua
 	public enum Visualizations {
 		wheel, force
 	}
-
 }

@@ -19,12 +19,13 @@
 
 package de.knowwe.rdfs.vis.markup;
 
-import de.knowwe.core.kdom.Type;
+import org.jetbrains.annotations.Nullable;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.rdfs.vis.PreRenderWorker;
-import de.knowwe.rdfs.vis.util.Utils;
+import de.knowwe.visualization.CleanableArtefact;
 
 /**
  * Renderer that has a slow pre rendering step with a result that can be cached. To be used together with {@link
@@ -33,13 +34,8 @@ import de.knowwe.rdfs.vis.util.Utils;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 07.05.15
  */
-public interface PreRenderer extends Renderer {
+public interface PreRenderer<Artefact extends CleanableArtefact> extends Renderer {
 
-	void preRender(Section<?> section, UserContext user);
-
-	default String getCacheFileID(Section<? extends Type> section, UserContext user) {
-		return Utils.getFileID(section, user);
-	}
-
-	void cleanUp(Section<?> section);
+	@Nullable
+	Artefact preRender(Section<?> section, UserContext user);
 }

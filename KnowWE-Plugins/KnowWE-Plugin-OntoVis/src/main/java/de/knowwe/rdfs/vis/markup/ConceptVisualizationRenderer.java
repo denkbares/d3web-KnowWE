@@ -20,24 +20,11 @@ import de.knowwe.rdfs.vis.PreRenderWorker;
 import de.knowwe.rdfs.vis.util.Utils;
 import de.knowwe.visualization.Config;
 
-public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implements PreRenderer {
-
-	public static final String VISUALIZATION_RENDERER_KEY = "conceptVisualizationRendererKey";
-
-	public static String getVisualizationRendererKey(UserContext user) {
-		String key = VISUALIZATION_RENDERER_KEY;
-		String concept = Utils.getConceptFromRequest(user);
-		if (user == null || concept == null) {
-			return key;
-		}
-		else {
-			return key + concept;
-		}
-	}
+public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implements PreRenderer<OntoGraphDataBuilder> {
 
 	@Override
 	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
-		OntoGraphDataBuilder builder = section.getObject(getVisualizationRendererKey(user));
+		OntoGraphDataBuilder builder = getGraphDataBuilder(section, user);
 		if (builder != null) {
 			builder.render(string);
 			if (builder.isTimeOut()) {
@@ -52,43 +39,38 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 		}
 	}
 
+	public OntoGraphDataBuilder getGraphDataBuilder(Section<?> section, UserContext user) {
+		return PreRenderWorker.getInstance().getPreRenderedArtefact(section, user, this);
+	}
+
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
 		if (user.isRenderingPreview()) {
 			result.append("%%information Concept Visualization is not rendered in live preview. /%");
 			return;
 		}
-		PreRenderWorker.getInstance().handlePreRendering(section, user, this);
 		super.render(section, user, result);
 	}
 
 	@Override
-	public void preRender(Section<?> section, UserContext user) {
+	public OntoGraphDataBuilder preRender(Section<?> section, UserContext user) {
 
 		Rdf2GoCompiler compiler = Compilers.getCompiler(user, section, Rdf2GoCompiler.class);
-		if (compiler == null) return;
+		if (compiler == null) return null;
 		Rdf2GoCore core = compiler.getRdf2GoCore();
 
 		Config config = createConfig(section, user, core);
 
-		if (Thread.currentThread().isInterrupted()) return;
+		if (Thread.currentThread().isInterrupted()) return null;
 
 		OntoGraphDataBuilder builder = new OntoGraphDataBuilder(section, config, new PackageCompileLinkToTermDefinitionProvider(), core);
 		builder.createData(config.getTimeout());
-
-		section.storeObject(getVisualizationRendererKey(user), builder);
-	}
-
-
-	@Override
-	public void cleanUp(Section<?> section) {
-		OntoGraphDataBuilder builder = (OntoGraphDataBuilder) section.getObject(VISUALIZATION_RENDERER_KEY);
-		if (builder != null) builder.getGraphRenderer().cleanUp();
+		return builder;
 	}
 
 	Config createConfig(Section<?> section, UserContext user, Rdf2GoCore core) {
 		Config config = new Config();
-		config.setCacheFileID(getCacheFileID(section, user));
+		config.setCacheFileID(Utils.getFileID(section, user));
 
 		if (core != null && !core.getRuleSet().equals(RepositoryConfigs.get(RdfConfig.class))) {
 			config.addExcludeRelations("onto:_checkChain2", "onto:_checkChain1", "onto:_checkChain3");
@@ -101,7 +83,7 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 		if (!Strings.isBlank(DefaultMarkupType.getAnnotation(section, ConceptVisualizationType.VIS_TEMPLATE_CLASS))) {
 //			Yay, it is!
 			config.setConcept(Utils.getConceptFromRequest(user));
-			config.setCacheFileID(getCacheFileID(section, user));
+			config.setCacheFileID(Utils.getFileID(section, user));
 		}
 
 		if (!Strings.isBlank(config.getColors())) {
@@ -111,5 +93,4 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 		}
 		return config;
 	}
-
 }

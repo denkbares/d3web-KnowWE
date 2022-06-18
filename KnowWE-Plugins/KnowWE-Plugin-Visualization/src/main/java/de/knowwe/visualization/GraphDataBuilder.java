@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2012 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -58,7 +58,6 @@ public abstract class GraphDataBuilder {
 		return config;
 	}
 
-
 	public void initialiseData(Section<?> section, Config config, LinkToTermDefinitionProvider uriProvider) {
 		this.uriProvider = uriProvider;
 		this.config = config;
@@ -80,7 +79,6 @@ public abstract class GraphDataBuilder {
 
 		// create the source representation using the configured source-renderer
 		this.graphRenderer.generateSource();
-
 	}
 
 	/**
@@ -103,7 +101,6 @@ public abstract class GraphDataBuilder {
 	public String getSource() {
 		return this.graphRenderer.getSource();
 	}
-
 
 	protected List<String> getExcludedRelations() {
 		return decorateStatements(config.getExcludeRelations());
@@ -128,11 +125,9 @@ public abstract class GraphDataBuilder {
 		return decorateStatements(config.getConcepts());
 	}
 
-
 	public List<String> getFilteredRelations() {
 		return decorateStatements(config.getFilterRelations());
 	}
-
 
 	public String createConceptURL(String to) {
 		return createBaseURL() + "?page=" + section.getTitle() + "&concept=" + to;
@@ -168,22 +163,6 @@ public abstract class GraphDataBuilder {
 		return getFilteredRelations().contains(y) || getFilteredRelations().contains("lns:" + y);
 	}
 
-	/**
-	 * Tests if input is a valid int for the depth/height of the graph.
-	 *
-	 * @created 20.08.2012
-	 */
-	private boolean isValidInt(String input) {
-		try {
-			Integer value = Integer.parseInt(input);
-			// final maximum depth/height for graph
-			return !(value > 5 || value < 0);
-		}
-		catch (Exception e) {
-			return false;
-		}
-	}
-
 	public GraphVisualizationRenderer getGraphRenderer() {
 		return graphRenderer;
 	}
@@ -191,5 +170,4 @@ public abstract class GraphDataBuilder {
 	public enum NODE_TYPE {
 		CLASS, PROPERTY, INSTANCE, UNDEFINED, LITERAL, BLANKNODE,
 	}
-
 }

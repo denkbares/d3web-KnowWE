@@ -7,12 +7,12 @@ import java.util.List;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.query.BindingSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.strings.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -35,22 +35,8 @@ import de.knowwe.visualization.GraphVisualizationRenderer;
 import de.knowwe.visualization.SubGraphData;
 import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
-public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
+public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer<GraphVisualizationRenderer> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SparqlVisualizationTypeRenderer.class);
-
-	public static final String VISUALIZATION_RENDERER_KEY = "sparqlVisualizationRendererKey";
-
-	public static String getVisualizationRendererKey(UserContext user) {
-		String key = VISUALIZATION_RENDERER_KEY;
-		String concept = Utils.getConceptFromRequest(user);
-
-		if (user == null || concept == null) {
-			return key;
-		}
-		else {
-			return key + concept;
-		}
-	}
 
 	@Override
 	public void render(Section<?> content, UserContext user, RenderResult string) {
@@ -59,14 +45,18 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			// hence we need to clear the cached visualization
 			PreRenderWorker.getInstance().clearCache(content);
 		}
-		PreRenderWorker.getInstance().handlePreRendering(content, user, this);
-		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) content.getObject(getVisualizationRendererKey(user));
+		GraphVisualizationRenderer graphRenderer = getGraphVisualizationRenderer(content, user);
 		if (graphRenderer != null) {
 			string.appendHtml(graphRenderer.getHTMLIncludeSnipplet());
 		}
 		else {
 			string.appendHtmlElement("span", "No results for this query", "class", "emptySparqlResult");
 		}
+	}
+
+	public GraphVisualizationRenderer getGraphVisualizationRenderer(Section<?> content, UserContext user) {
+		return PreRenderWorker.getInstance()
+				.getPreRenderedArtefact(content, user, this);
 	}
 
 	private SubGraphData convertToGraph(CachedTupleQueryResult resultSet, Config config, Rdf2GoCore rdfRepository, LinkToTermDefinitionProvider uriProvider, Section<?> section, List<Message> messages) {
@@ -131,16 +121,16 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 	}
 
 	@Override
-	public void preRender(Section<?> content, UserContext user) {
+	public GraphVisualizationRenderer preRender(Section<?> content, UserContext user) {
 		Section<SparqlVisualizationType> section = Sections.ancestor(content, SparqlVisualizationType.class);
-		if (section == null) return;
+		if (section == null) return null;
 
 		Rdf2GoCore core = Rdf2GoUtils.getRdf2GoCore(user, section);
-		if (core == null) return;
+		if (core == null) return null;
 
 		List<Message> messages = new ArrayList<>();
 		Config config = new Config();
-		config.setCacheFileID(getCacheFileID(section, user));
+		config.setCacheFileID(Utils.getFileID(section, user));
 
 		Messages.clearMessages(section, this.getClass());
 		config.init(section, user);
@@ -194,19 +184,12 @@ public class SparqlVisualizationTypeRenderer implements Renderer, PreRenderer {
 			GraphVisualizationRenderer graphRenderer;
 			graphRenderer = new DOTVisualizationRenderer(data, config);
 			graphRenderer.generateSource();
-			content.storeObject(SparqlVisualizationTypeRenderer.getVisualizationRendererKey(user), graphRenderer);
+			return graphRenderer;
 		}
-
+		return null;
 	}
 
 	private String fillSparqlTemplate(String sparqlContentRaw, String conceptShortURI) {
 		return sparqlContentRaw.replace("%1$", conceptShortURI);
 	}
-
-	@Override
-	public void cleanUp(Section<?> section) {
-		GraphVisualizationRenderer graphRenderer = (GraphVisualizationRenderer) section.getObject(VISUALIZATION_RENDERER_KEY);
-		if (graphRenderer != null) graphRenderer.cleanUp();
-	}
-
 }

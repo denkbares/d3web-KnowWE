@@ -49,10 +49,12 @@ import de.knowwe.core.utils.LinkToTermDefinitionProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.rdfs.vis.util.Utils;
+import de.knowwe.visualization.CleanableArtefact;
 import de.knowwe.visualization.ConceptNode;
 import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
 import de.knowwe.visualization.GraphDataBuilder;
+import de.knowwe.visualization.GraphVisualizationRenderer;
 import de.knowwe.visualization.SubGraphData;
 import de.knowwe.visualization.dot.DOTVisualizationRenderer;
 
@@ -60,7 +62,7 @@ import de.knowwe.visualization.dot.DOTVisualizationRenderer;
  * @author Johanna Latt
  * @created 11.10.2013
  */
-public class OntoGraphDataBuilder extends GraphDataBuilder {
+public class OntoGraphDataBuilder extends GraphDataBuilder implements CleanableArtefact {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OntoGraphDataBuilder.class);
 
 	/*
@@ -99,6 +101,12 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 		this.rdf2GoCore = rdf2GoCore;
 
 		initialiseData(section, config, uriProvider);
+	}
+
+	@Override
+	public void cleanUp() {
+		GraphVisualizationRenderer renderer = getGraphRenderer();
+		if (renderer != null) renderer.cleanUp();
 	}
 
 	@Override
@@ -255,7 +263,6 @@ public class OntoGraphDataBuilder extends GraphDataBuilder {
 			Locale bestLocale = Locales.findBestLocale(preferred, entry.getValue().keySet());
 			addConcept(fringeNode, entry.getValue().get(bestLocale), entry.getKey());
 		}
-
 	}
 
 	private void insertMainConcept(Value conceptIRI) {

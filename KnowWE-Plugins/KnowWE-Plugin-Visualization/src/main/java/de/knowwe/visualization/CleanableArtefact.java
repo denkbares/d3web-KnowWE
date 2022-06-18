@@ -1,15 +1,5 @@
-package de.knowwe.rdfs.vis.markup;
-
-import java.io.IOException;
-
-import de.knowwe.core.action.AbstractAction;
-import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.rdfs.vis.PreRenderWorker;
-
 /*
- * Copyright (C) 2012 denkbares GmbH
+ * Copyright (C) 2022 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -27,15 +17,15 @@ import de.knowwe.rdfs.vis.PreRenderWorker;
  * site: http://www.fsf.org.
  */
 
-/**
- * Created by Dmitrij Kozlov on 25.11.16.
- */
-public class OntoVisReRenderAction extends AbstractAction {
+package de.knowwe.visualization;
 
-	@Override
-	public void execute(UserActionContext context) throws IOException {
-		// Execute clean up and clearCache methods in ConceptVisualizationRenderer
-		Section<?> section = Sections.get(context.getParameter("SectionID"));
-		PreRenderWorker.getInstance().clearCache(section);
-	}
+/**
+ * Simple interface providing a cleanup method
+ *
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 18.06.22
+ */
+public interface CleanableArtefact {
+
+	void cleanUp();
 }

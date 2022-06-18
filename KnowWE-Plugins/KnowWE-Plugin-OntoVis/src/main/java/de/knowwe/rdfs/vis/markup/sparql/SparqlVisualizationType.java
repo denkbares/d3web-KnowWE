@@ -146,7 +146,7 @@ public class SparqlVisualizationType extends DefaultMarkupType implements Visual
 	}
 
 	@Override
-	public PreRenderer getPreRenderer() {
+	public PreRenderer<?> getPreRenderer() {
 		return new SparqlVisualizationTypeRenderer();
 	}
 
