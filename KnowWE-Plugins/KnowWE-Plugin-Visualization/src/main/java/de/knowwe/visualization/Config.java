@@ -33,10 +33,10 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
-
-import com.denkbares.strings.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.TimeStampType;
@@ -46,8 +46,6 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Data structure for visualization configuration.
@@ -413,7 +411,7 @@ public class Config {
 
 	public void setConcept(String... concepts) {
 		if (concepts == null) return;
-		concepts = Arrays.stream(concepts).filter(Objects::nonNull).collect(toList()).toArray(new String[0]);
+		concepts = Arrays.stream(concepts).filter(Objects::nonNull).toList().toArray(new String[0]);
 		if (concepts.length == 0) return;
 		this.concepts = new HashSet<>();
 		addConcept(concepts);
