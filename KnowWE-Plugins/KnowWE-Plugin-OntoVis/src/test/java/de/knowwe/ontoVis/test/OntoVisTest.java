@@ -112,7 +112,7 @@ public class OntoVisTest {
 		Map<String, String> colorMap = new HashMap<>();
 		colorMap.put("si:sibling", "#511F7A");
 		colorMap.put("si:child", "#398743");
-		config.setRelationColors(colorMap);
+		config.setColors(colorMap);
 
 		generateAndCompare(config, "src/test/resources/graph-Bart.dot");
 	}
@@ -132,7 +132,7 @@ public class OntoVisTest {
 
 		Map<String, String> colorMap = new HashMap<>();
 		colorMap.put("rdfs:subClassOf", "#19F193");
-		config.setRelationColors(colorMap);
+		config.setColors(colorMap);
 		config.setPredecessors(3);
 		config.setCacheDirectoryPath("target");
 
@@ -153,7 +153,7 @@ public class OntoVisTest {
 		colorMap.put("si:child", "#398743");
 		colorMap.put("si:parent", "#123A56");
 		colorMap.put("si:relatedWith", "#987F65");
-		config.setRelationColors(colorMap);
+		config.setColors(colorMap);
 		config.setPredecessors(3);
 		config.setCacheDirectoryPath("target");
 

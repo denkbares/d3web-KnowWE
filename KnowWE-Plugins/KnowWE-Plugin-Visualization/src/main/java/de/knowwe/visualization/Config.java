@@ -101,10 +101,8 @@ public class Config {
 	private final Collection<String> excludeRelations = new HashSet<>();
 	private final Collection<String> filterRelations = new HashSet<>();
 	private final String dotApp = "dot";
-	private String colors = null;
-	private Map<String, String> relationColors = new HashMap<>();
-	private Map<String, String> classColors = new HashMap<>();
-	private Map<String, String> individualColors = new HashMap<>();
+	private String colorsProperty = null;
+	private Map<String, String> colors = new HashMap<>();
 	private int successors = 1;
 	private int predecessors = 1;
 	private Collection<String> concepts = new HashSet<>();
@@ -278,7 +276,7 @@ public class Config {
 					"the same name found. This could lead to conflicts!"));
 		}
 
-		setColors(DefaultMarkupType.getAnnotation(section, COLORS));
+		setColorsProperty(DefaultMarkupType.getAnnotation(section, COLORS));
 		parseAndSetInt(section, SUCCESSORS, this::setSuccessors);
 		parseAndSetInt(section, PREDECESSORS, this::setPredecessors);
 		parseAndSetCSV(section, EXCLUDE_NODES, this::addExcludeNodes);
@@ -426,13 +424,13 @@ public class Config {
 		this.literalMode = mode;
 	}
 
-	public String getColors() {
-		return colors;
+	public String getColorsProperty() {
+		return colorsProperty;
 	}
 
-	public void setColors(String colors) {
-		if (colors == null) return;
-		this.colors = colors;
+	public void setColorsProperty(String colorsProperty) {
+		if (colorsProperty == null) return;
+		this.colorsProperty = colorsProperty;
 	}
 
 	public String getConfig() {
@@ -451,34 +449,14 @@ public class Config {
 	public void setLinkMode(LinkMode linkMode) {
 	}
 
-	public Map<String, String> getRelationColors() {
-		return relationColors;
+	public Map<String, String> getColors() {
+		return colors;
 	}
 
-	public void setRelationColors(Map<String, String> relationColors) {
+	public void setColors(Map<String, String> colors) {
 		// TODO: refactor this to be a map of color assignments
-		if (relationColors == null) return;
-		this.relationColors = relationColors;
-	}
-
-	public Map<String, String> getIndividualColors() {
-		return individualColors;
-	}
-
-	public void setIndividualColors(Map<String, String> individualColors) {
-		// TODO: refactor this to be a map of color assignments
-		if (individualColors == null) return;
-		this.individualColors = individualColors;
-	}
-
-	public Map<String, String> getClassColors() {
-		return classColors;
-	}
-
-	public void setClassColors(Map<String, String> classColors) {
-		// TODO: refactor this to be a map of color assignments
-		if (classColors == null) return;
-		this.classColors = classColors;
+		if (colors == null) return;
+		this.colors = colors;
 	}
 
 	public int getSuccessors() {

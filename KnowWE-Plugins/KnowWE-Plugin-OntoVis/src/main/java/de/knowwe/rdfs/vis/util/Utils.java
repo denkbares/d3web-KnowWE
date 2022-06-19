@@ -32,10 +32,12 @@ import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
@@ -44,12 +46,10 @@ import com.denkbares.collections.PartialHierarchyTree;
 import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.TupleQueryResult;
 import com.denkbares.semanticcore.utils.Sparqls;
-import com.denkbares.strings.Text;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Locales;
 import com.denkbares.strings.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.denkbares.strings.Text;
 import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.TerminologyManager;
@@ -235,7 +235,7 @@ public class Utils {
 
 	@NotNull
 	private static String literalToLabel(Literal toLiteral) {
-		if (toLiteral.getDatatype().equals(XMLSchema.STRING)) {
+		if (toLiteral.getDatatype().equals(XSD.STRING)) {
 			return toLiteral.stringValue();
 		}
 		String label = toLiteral.toString();
@@ -263,8 +263,8 @@ public class Utils {
 	public static String fetchLabel(Config config, Value toIRI, Rdf2GoCore rdf2GoCore) {
 		String showLabels = config.getShowLabels();
 		String label = null;
-		if (!Strings.isBlank(showLabels) && !"false".equals(showLabels.toLowerCase())) {
-			if ("true".equals(showLabels.toLowerCase())) {
+		if (!Strings.isBlank(showLabels) && !"false".equalsIgnoreCase(showLabels)) {
+			if ("true".equalsIgnoreCase(showLabels)) {
 				label = Utils.getRDFSLabel(toIRI, rdf2GoCore, config.getLanguages());
 			}
 			else {
@@ -288,44 +288,41 @@ public class Utils {
 
 	private static RenderingStyle setClassColorCoding(Value node, RenderingStyle style, Config config, Rdf2GoCore
 			rdfRepository) {
-		Map<String, String> individualColorsScheme = config.getIndividualColors();
+		Map<String, String> colors = config.getColors();
 		String shortIRI = Rdf2GoUtils.reduceNamespace(rdfRepository, node.stringValue());
 		if (node instanceof IRI) {
-			if (individualColorsScheme.containsKey(shortIRI)) {
-				style.setFillcolor(individualColorsScheme.get(shortIRI));
+			if (colors.containsKey(shortIRI)) {
+				style.setFillcolor(colors.get(shortIRI));
 			}
-		}
-
-		Map<String, String> classColorScheme = config.getClassColors();
-		if (classColorScheme != null && !classColorScheme.isEmpty()) {
-
-			if (Rdf2GoUtils.isClass(rdfRepository, (IRI) node)) {
-				String color = classColorScheme.get(shortIRI);
-				if (color != null) {
-					style.setFillcolor(color);
-				}
-			}
-			else {
-				// We fetch the class hierarchy of this concept
-				PartialHierarchyTree<IRI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, (IRI) node);
-				// we then remove from this hierarchy all classes that do not have a color assignment
-				List<IRI> allClasses = classHierarchy.getNodesDFSOrder();
-				for (IRI clazz : allClasses) {
-					if (!classColorScheme.containsKey(Rdf2GoUtils.reduceNamespace(rdfRepository, clazz.toString()))) {
-						try {
-							classHierarchy.remove(clazz);
-						}
-						catch (PartialHierarchyException e) {
-							LOGGER.error("Unable to remove class " + clazz, e);
-						}
-					}
-				}
-				IRI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
-				if (clazzToBeColored != null) {
-					String color = classColorScheme.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored
-							.toString()));
+			if (!colors.isEmpty()) {
+				if (Rdf2GoUtils.isClass(rdfRepository, (IRI) node)) {
+					String color = colors.get(shortIRI);
 					if (color != null) {
 						style.setFillcolor(color);
+					}
+				}
+				else {
+					// We fetch the class hierarchy of this concept
+					PartialHierarchyTree<IRI> classHierarchy = Rdf2GoUtils.getClassHierarchy(rdfRepository, (IRI) node);
+					// we then remove from this hierarchy all classes that do not have a color assignment
+					List<IRI> allClasses = classHierarchy.getNodesDFSOrder();
+					for (IRI clazz : allClasses) {
+						if (!colors.containsKey(Rdf2GoUtils.reduceNamespace(rdfRepository, clazz.toString()))) {
+							try {
+								classHierarchy.remove(clazz);
+							}
+							catch (PartialHierarchyException e) {
+								LOGGER.error("Unable to remove class " + clazz, e);
+							}
+						}
+					}
+					IRI clazzToBeColored = Rdf2GoUtils.findMostSpecificClass(classHierarchy);
+					if (clazzToBeColored != null) {
+						String color = colors.get(Rdf2GoUtils.reduceNamespace(rdfRepository, clazzToBeColored
+								.toString()));
+						if (color != null) {
+							style.setFillcolor(color);
+						}
 					}
 				}
 			}
@@ -433,13 +430,16 @@ public class Utils {
 		return result;
 	}
 
-	public static Map<String, String> createColorCodings(Section<?> section, String relationName, Rdf2GoCore core,
-														 String entityName) {
+	public static Map<String, String> createColorCodings(Section<?> section, String relationName, Rdf2GoCore core) {
 		Messages.clearMessages(section, Utils.class);
 
-		String query = "SELECT ?entity ?color WHERE {" +
-				"?entity <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " + entityName + " ." +
-				"?entity " + relationName + " ?color" +
+		String query = "SELECT ?entity ?color WHERE {\n" +
+				"\t{\n" +
+				"\t\t?entity ssc:color ?entityColor .\n" +
+				"\t} UNION {\n" +
+				"\t\t?entity a/ssc:color ?typeColor .\n" +
+				"\t}\n" +
+				"\tBIND (COALESCE(?entityColor, ?typeColor) AS ?color)\n" +
 				"}";
 //		TupleQueryResult resultTable = core.sparqlSelect(query);
 //		for (BindingSet row : resultTable) {

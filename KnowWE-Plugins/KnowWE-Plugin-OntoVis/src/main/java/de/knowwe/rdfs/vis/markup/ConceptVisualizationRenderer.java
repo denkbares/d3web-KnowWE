@@ -86,10 +86,8 @@ public class ConceptVisualizationRenderer extends DefaultMarkupRenderer implemen
 			config.setCacheFileID(Utils.getFileID(section, user));
 		}
 
-		if (!Strings.isBlank(config.getColors())) {
-			config.setRelationColors(Utils.createColorCodings(section, config.getColors(), core, "rdf:Property"));
-			config.setClassColors(Utils.createColorCodings(section, config.getColors(), core, "rdfs:Class"));
-			config.setIndividualColors(Utils.createColorCodings(section, config.getColors(), core, "owl:Thing"));
+		if (!Strings.isBlank(config.getColorsProperty())) {
+			config.setColors(Utils.createColorCodings(section, config.getColorsProperty(), core));
 		}
 		return config;
 	}
