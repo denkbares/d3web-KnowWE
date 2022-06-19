@@ -1,22 +1,24 @@
 /*
  * Copyright (C) 2012 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
 package de.knowwe.visualization;
+
+import java.util.Objects;
 
 /**
  * An edge in a named graph comprising a source node (predicate), a named
@@ -37,26 +39,26 @@ public class Edge {
 	public Edge(ConceptNode s, String p, ConceptNode o) {
 		this.subject = s;
 		this.setPredicate(p);
+		this.object = o;
 		this.setRelationURI(null);
-		this.object = o;
 		this.setBidirectionalEdge(false);
 		this.setSuperProperty(false);
 	}
 
-	public Edge(ConceptNode s, String p, String r, ConceptNode o) {
-		this.subject = s;
-		this.setPredicate(p);
-		this.setRelationURI(r);
-		this.object = o;
+	public Edge(ConceptNode subject, String predicate, String relationIRI, ConceptNode object) {
+		this.subject = subject;
+		this.setPredicate(predicate);
+		this.setRelationURI(relationIRI);
+		this.object = object;
 		this.setBidirectionalEdge(false);
 		this.setSuperProperty(false);
 	}
 
-	public Edge(ConceptNode s, String p, String r, ConceptNode o, boolean superProperty) {
-		this.subject = s;
-		this.setPredicate(p);
-		this.setRelationURI(r);
-		this.object = o;
+	public Edge(ConceptNode subject, String predicate, String relationIRI, ConceptNode object, boolean superProperty) {
+		this.subject = subject;
+		this.setPredicate(predicate);
+		this.setRelationURI(relationIRI);
+		this.object = object;
 		this.setBidirectionalEdge(false);
 		this.setSuperProperty(superProperty);
 	}
@@ -71,19 +73,20 @@ public class Edge {
 	}
 
 	@Override
-	public int hashCode() {
-
-		return subject.hashCode() + getPredicate().hashCode() + object.hashCode();
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Edge edge = (Edge) o;
+		return Objects.equals(subject, edge.subject) && Objects.equals(object, edge.object) && Objects.equals(getRelationKey(), edge.getRelationKey());
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Edge) {
-			Edge other = ((Edge) obj);
-			return other.subject.equals(this.subject) && other.getPredicate().equals(this.getPredicate())
-					&& other.object.equals(this.object);
-		}
-		return super.equals(obj);
+	public int hashCode() {
+		return Objects.hash(subject, object, getRelationKey());
+	}
+
+	private String getRelationKey() {
+		return relationURI == null ? predicate : relationURI;
 	}
 
 	public ConceptNode getSubject() {

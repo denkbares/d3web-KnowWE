@@ -833,7 +833,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder implements CleanableA
 		cluster change
         */
 		String clazz = null;
-		if (isTypeRelation(relation)) {
+		if (isTypeRelation(relationIRI.stringValue())) {
             /*
             no matter what class this type relation goes to, we look for a representative/meaningful class-uri to display
              */
@@ -898,7 +898,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder implements CleanableA
         cluster change
 		 */
 		String clazz = null;
-		if (isTypeRelation(relation)) {
+		if (isTypeRelation(relationIRI.stringValue())) {
 			clazz = getConceptName(toIRI);
 		}
 
@@ -919,6 +919,11 @@ public class OntoGraphDataBuilder extends GraphDataBuilder implements CleanableA
 		this.checkedOuterConcepts.add(new OuterConceptCheck(fromIRI, toIRI, relationIRI, predecessor));
 
 		boolean nodeIsNew = !data.getConceptDeclarations().contains(current);
+
+		String relationLabel = Utils.fetchLabel(config, relationIRI, rdf2GoCore);
+		if (relationLabel != null) {
+			relation = relationLabel;
+		}
 
 		Edge edge = new Edge(fromValue, relation, relationIRI.stringValue(), toValue);
 
@@ -950,7 +955,7 @@ public class OntoGraphDataBuilder extends GraphDataBuilder implements CleanableA
 			// do not show outgoing edges
 			if (!nodeIsNew) {
 				// but show if its node is internal one already, i.e. node would exist even without this edge
-				if (!isTypeRelation(relation)) { // cluster change
+				if (!isTypeRelation(relationIRI.stringValue())) { // cluster change
 					addEdge(edge);
 				}
 			}

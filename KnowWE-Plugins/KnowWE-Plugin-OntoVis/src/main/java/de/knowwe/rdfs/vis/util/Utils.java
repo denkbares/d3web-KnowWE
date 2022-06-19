@@ -457,6 +457,7 @@ public class Utils {
 				Value entity = row.getValue("entity");
 				String color = row.getValue("color").stringValue();
 				String shortIRI = Rdf2GoUtils.reduceNamespace(core, entity.toString());
+				colorCodings.put(entity.stringValue(), color);
 				colorCodings.put(shortIRI, color);
 			}
 			return colorCodings;

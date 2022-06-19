@@ -39,11 +39,11 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.MultiMap;
 import com.denkbares.strings.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import de.knowwe.visualization.ConceptNode;
 import de.knowwe.visualization.Config;
 import de.knowwe.visualization.Edge;
@@ -557,7 +557,7 @@ public class DOTRenderer {
 //		private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key, boolean
 // isBiDirectional) {
 		String label = DOTRenderer.innerRelation(key.getPredicate(),
-				config.getColors().get(key.getPredicate()),
+				config.getColors().get(key.getRelationURI()),
 				key.isBidirectionalEdge());
 		if (key.isOuter()) {
 			boolean arrowHead = key.getSubject().isOuter();
