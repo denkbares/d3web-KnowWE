@@ -76,6 +76,7 @@ import de.knowwe.visualization.dot.RenderingStyle;
  */
 public class Utils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+	public static final String FRAGMENT = "fragment";
 
 	public static String getRDFSLabel(Value concept, Rdf2GoCore repo, Locale... languages) {
 		return getLabel(concept, repo, languages, "<http://www.w3.org/2004/02/skos/core#prefLabel>", "rdfs:label");
@@ -93,6 +94,9 @@ public class Utils {
 		if (label == null) {
 
 			for (String property : properties) {
+				if (concept instanceof IRI iri && property.equalsIgnoreCase(FRAGMENT)) {
+					return Rdf2GoUtils.trimNamespace(repo, iri.stringValue());
+				}
 				String query = "SELECT ?x WHERE { <" + concept + "> " + property.trim() + " ?x.}";
 				TupleQueryResult resultTable = repo.sparqlSelect(query);
 				for (BindingSet queryRow : resultTable) {
@@ -108,6 +112,7 @@ public class Utils {
 		if (languages == null) return null;
 		Map<Locale, String> cache = new HashMap<>();
 		for (String property : properties) {
+			if (property.equalsIgnoreCase(FRAGMENT)) continue;
 			String query = "SELECT ?x WHERE { <" + concept
 					+ "> " + property.trim() + " ?x. }";
 			TupleQueryResult resultTable = repo.sparqlSelect(query);
@@ -268,7 +273,7 @@ public class Utils {
 				label = Utils.getRDFSLabel(toIRI, rdf2GoCore, config.getLanguages());
 			}
 			else {
-				label = Utils.getLabel(toIRI, rdf2GoCore, config.getLanguages(), showLabels.split(","));
+				label = Utils.getLabel(toIRI, rdf2GoCore, config.getLanguages(), showLabels.split("\s*,\s*"));
 			}
 			if (label != null && label.length() >= 3 && label.charAt(label.length() - 3) == '@') {
 				// do not show language tag of relation labels
