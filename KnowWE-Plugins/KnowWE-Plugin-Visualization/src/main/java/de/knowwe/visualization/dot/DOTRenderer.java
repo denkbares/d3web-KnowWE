@@ -557,7 +557,7 @@ public class DOTRenderer {
 //		private static void appendEdgeSource(Config config, StringBuilder dotSource, Edge key, boolean
 // isBiDirectional) {
 		String label = DOTRenderer.innerRelation(key.getPredicate(),
-				config.getColors().get(key.getRelationURI()),
+				config.getColors().getOrDefault(key.getRelationURI(), config.getColors().get(key.getPredicate())),
 				key.isBidirectionalEdge());
 		if (key.isOuter()) {
 			boolean arrowHead = key.getSubject().isOuter();

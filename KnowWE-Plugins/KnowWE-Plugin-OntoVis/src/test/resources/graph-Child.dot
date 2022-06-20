@@ -3,9 +3,9 @@ sep="+25,25";
 splines = true;
 overlap=false;
 graph [ rankdir="LR" ]
-"si:child"[  shape="hexagon"  style="bold" label=<<U>si:child</U>> ];
-"si:relatedWith"[  shape="hexagon" label="si:relatedWith" ];
-"si:parent"[  shape="hexagon" label="si:parent" ];
+"si:child"[  shape="hexagon"  style="filled,bold"  fillcolor="#398743" label=<<U>si:child</U>> ];
+"si:relatedWith"[  shape="hexagon"  style="filled"  fillcolor="#987F65" label="si:relatedWith" ];
+"si:parent"[  shape="hexagon"  style="filled"  fillcolor="#123A56" label="si:parent" ];
 "si:parent" -> "si:relatedWith" [ label = "rdfs:subPropertyOf" arrowtail="normal"  color="black"  ];
 "si:child" -> "si:relatedWith" [ label = "rdfs:subPropertyOf" arrowtail="normal"  color="black"  ];
 "si:child" -> "si:parent" [ label = "owl:inverseOf" arrowtail="normal"  color="black"  ];
