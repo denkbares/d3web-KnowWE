@@ -440,9 +440,9 @@ public class Utils {
 
 		String query = "SELECT ?entity ?color WHERE {\n" +
 				"\t{\n" +
-				"\t\t?entity ssc:color ?entityColor .\n" +
+				"\t\t?entity " + relationName + " ?entityColor .\n" +
 				"\t} UNION {\n" +
-				"\t\t?entity a/ssc:color ?typeColor .\n" +
+				"\t\t?entity a/" + relationName + " ?typeColor .\n" +
 				"\t}\n" +
 				"\tBIND (COALESCE(?entityColor, ?typeColor) AS ?color)\n" +
 				"}";
