@@ -275,7 +275,8 @@ public class CompilerManager {
 						synchronized (lock) {
 							// 1 - update all required compiler flags
 							activeCompilers.remove(compiler);
-							LOGGER.debug(compiler.getClass().getSimpleName() + " finished after " + stopwatch.getDisplay());
+							LOGGER.debug(compiler.getClass()
+									.getSimpleName() + " finished after " + stopwatch.getDisplay());
 							clearCurrentCompilePriority(compiler);
 							// 2 - notify the waiting caller of doCompile() in the synchronized block below (1)
 							// always notify all, as the clear is usually a noop (if the compiler has cleared before)
@@ -348,7 +349,7 @@ public class CompilerManager {
 					}
 
 					else if (deadlockDetected()) {
-						throwInterruptException(compiler, priority);
+						threadDump(compiler, priority);
 					}
 
 					// otherwise wait for notification...
@@ -362,17 +363,18 @@ public class CompilerManager {
 		}
 	}
 
-	private void throwInterruptException(@NotNull Compiler compiler, @NotNull Priority priority) throws InterruptedException {
-		String message = "Deadlock detected, terminate waiting for compiler: " +
-				compiler.getClass().getSimpleName() + " @priority: " + priority;
-		if (this.lastThreadDumpThrown != this.compilationCount) { // avoid slow spam
-			message += "\nThread-Count: " + getMaxCompilationThreadCount() +
-					"\nThread-Dump:\n" +
+	private void threadDump(@NotNull Compiler compiler, @NotNull Priority priority) {
+		String message = "Potential deadlock detected, while compiler " + Compilers.getCompilerName(compiler)
+				+ " was waiting for the compilation to complete priority " + priority;
+		if (this.lastThreadDumpThrown != this.compilationCount) { // avoid log spam
+			message += "\n####################\n" +
+					"\nThread-Dump-Start (" + getMaxCompilationThreadCount() + " threads):\n" +
 					KnowWEUtils.getThreadDump() +
-					"Thread-Dump-End!";
+					"Thread-Dump-End!\n####################";
 			this.lastThreadDumpThrown = this.compilationCount;
 		}
-		throw new InterruptedException(message);
+		LOGGER.error(message);
+//		throw new InterruptedException(message);
 	}
 
 	private boolean deadlockDetected() {
