@@ -119,6 +119,7 @@ public class SparqlResultRenderer {
 	public boolean shouldRenderAsynchronous(Section<? extends SparqlType> section, UserContext user) {
 		String query = section.get().getSparqlQuery(section, user);
 		RenderOptions opts = section.get().getRenderOptions(section, user);
+		if (opts.getRdf2GoCore() == null) return true;
 		return opts.getRdf2GoCore().getCacheState(query) != SparqlCache.State.available;
 	}
 
