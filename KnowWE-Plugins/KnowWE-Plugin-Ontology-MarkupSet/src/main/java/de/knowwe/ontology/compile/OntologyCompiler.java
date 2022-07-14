@@ -303,15 +303,6 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		return changed;
 	}
 
-	/**
-	 * Call this method while destroying, if the compilation can no longer be done incrementally.
-	 *
-	 * @created 04.01.2014
-	 */
-	public void doCompleteCompilation() {
-		this.completeCompilation = true;
-	}
-
 	@Override
 	public void addSectionToDestroy(Section<?> section, Class<?>... scriptFilter) {
 		destroyScriptCompiler.addSection(section, scriptFilter);
