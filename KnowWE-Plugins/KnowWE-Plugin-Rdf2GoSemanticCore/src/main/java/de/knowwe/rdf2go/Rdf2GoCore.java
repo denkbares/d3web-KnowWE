@@ -880,9 +880,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public Set<Statement> getStatements() {
 
 		Set<Statement> statements1 = null;
-		try {
-			RepositoryResult<Statement> statements = this.semanticCore.getConnection()
-					.getStatements(null, null, null, true);
+		try (RepositoryConnection connection = this.semanticCore.getConnection()) {
+			RepositoryResult<Statement> statements = connection.getStatements(null, null, null, true);
 			statements1 = Iterations.asSet(statements);
 		}
 		catch (RepositoryException e) {
@@ -989,9 +988,11 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	public void removeNamespace(String abbreviation) throws RepositoryException {
 		synchronized (nsPrefixMutex) {
-			this.semanticCore.getConnection().removeNamespace(abbreviation);
-			this.namespaces = null;
-			this.namespacePrefixes = null;
+			try (RepositoryConnection connection = this.semanticCore.getConnection()) {
+				connection.removeNamespace(abbreviation);
+				this.namespaces = null;
+				this.namespacePrefixes = null;
+			}
 		}
 	}
 
