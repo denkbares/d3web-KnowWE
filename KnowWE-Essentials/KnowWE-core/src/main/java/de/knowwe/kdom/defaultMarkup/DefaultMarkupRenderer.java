@@ -368,6 +368,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			result.appendHtmlTag(elementTag, "class", "markupAnnotation", "data-name", annotation.get().getName());
 			result.append(annotation, user);
 			result.appendHtmlTag("/" + elementTag);
+			result.append("\n");
 		}
 		result.appendHtmlTag("/" + parentTag);
 	}
