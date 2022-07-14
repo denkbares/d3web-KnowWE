@@ -140,9 +140,13 @@ class SparqlCallable implements Callable<Object> {
 	@NotNull
 	private Object executeAsk(int timeOutSeconds, Stopwatch stopwatch) {
 		// if the query is not a prepared (shared) query, create a new one, on a new connection, and close afterwards
-		try (RepositoryConnection connection = core.getRepositoryConnection()) {
+		core.getUsageLock().lock();
+		try (RepositoryConnection connection = core.getRepositoryConnectionPK()) {
 			BooleanQuery booleanQuery = connection.prepareBooleanQuery(this.query);
 			return executeAsk(timeOutSeconds, stopwatch, booleanQuery);
+		}
+		finally {
+			core.getUsageLock().unlock();
 		}
 	}
 
@@ -159,9 +163,13 @@ class SparqlCallable implements Callable<Object> {
 	@NotNull
 	private Object executeSelect(int timeOutSeconds, Stopwatch stopwatch) {
 		// if the query is not a prepared (shared) query, create a new one, on a new connection, and close afterwards
-		try (RepositoryConnection connection = core.getRepositoryConnection()) {
+		core.getUsageLock().lock();
+		try (RepositoryConnection connection = core.getRepositoryConnectionPK()) {
 			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, this.query);
 			return executeSelect(timeOutSeconds, stopwatch, tupleQuery);
+		}
+		finally {
+			core.getUsageLock().unlock();
 		}
 	}
 

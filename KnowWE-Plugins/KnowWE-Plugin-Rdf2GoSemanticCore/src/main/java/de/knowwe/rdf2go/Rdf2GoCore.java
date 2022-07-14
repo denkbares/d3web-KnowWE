@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -51,6 +52,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
 
 import org.eclipse.rdf4j.common.iteration.Iterations;
@@ -123,8 +127,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	public static final int DEFAULT_TIMEOUT = 60000; // 60 seconds
 
-	private final Object statementMutex = new Object();
-
 	private final SparqlCache sparqlCache = new SparqlCache(this);
 
 	private final ThreadPoolExecutor threadPool;
@@ -135,6 +137,42 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private final MultiMap<StatementSource, Statement> statementCache =
 			new N2MMap<>(MultiMaps.minimizedFactory(), MultiMaps.minimizedFactory());
+
+	private final Object statementMutex = new Object();
+	private final Object namespaceMutex = new Object();
+
+	/**
+	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value is the full namespace, e.g. rdf and
+	 * <a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#">http://www.w3.org/1999/02/22-rdf-syntax-ns#</a>
+	 */
+	private volatile Map<String, String> namespaces = new HashMap<>();
+
+	/**
+	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in Turtle and SPARQL
+	 */
+	private volatile Map<String, String> namespacePrefixes = new HashMap<>();
+
+	private Set<Statement> insertCache;
+	private Set<Statement> removeCache;
+	private long lastModified = System.currentTimeMillis();
+
+	/**
+	 * Used to prevent access to semantic core while it is shut down and prevent it from being shut down while still
+	 * accessed... It is NOT used to sync/lock reading and writing to the core, since that is already handled by the
+	 * core itself.
+	 */
+	private final ReadWriteLock coreUsageLock = new ReentrantReadWriteLock();
+	private SemanticCore semanticCore;
+
+	private boolean isShutdown = false;
+
+	Lock getUsageLock() {
+		return coreUsageLock.readLock();
+	}
+
+	public boolean isShutdown() {
+		return isShutdown;
+	}
 
 	public Rdf2GoCore(String lns, RepositoryConfig reasoning) {
 		this("Rdf2GoCore", lns, reasoning);
@@ -248,27 +286,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	/**
-	 * All namespaces known to KnowWE. Key is the namespace abbreviation, value is the full namespace, e.g. rdf and
-	 * <a href="http://www.w3.org/1999/02/22-rdf-syntax-ns#">http://www.w3.org/1999/02/22-rdf-syntax-ns#</a>
-	 */
-	private Map<String, String> namespaces = new HashMap<>();
-
-	private final Object namespaceMutex = new Object();
-
-	/**
-	 * For optimization reasons, we hold a map of all namespacePrefixes as they are used e.g. in Turtle and SPARQL
-	 */
-	private volatile Map<String, String> namespacePrefixes = new HashMap<>();
-
-	private final Object nsPrefixMutex = new Object();
-
-	private Set<Statement> insertCache;
-	private Set<Statement> removeCache;
-	private long lastModified = System.currentTimeMillis();
-
-	private SemanticCore semanticCore;
-
-	/**
 	 * Initializes the Rdf2GoCore with the default settings specified in the "owlim.ttl" file.
 	 */
 	public Rdf2GoCore() {
@@ -299,8 +316,17 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	/**
 	 * Make sure to close the connection after use!
+	 *
+	 * @deprecated this directly accesses the core without proper control and life cycle, so only use this if you know
+	 * what you are doing
 	 */
+	@SuppressWarnings("DeprecatedIsStillUsed")
+	@Deprecated
 	public RepositoryConnection getRepositoryConnection() throws RepositoryException {
+		return this.semanticCore.getConnection();
+	}
+
+	RepositoryConnection getRepositoryConnectionPK() throws RepositoryException {
 		return this.semanticCore.getConnection();
 	}
 
@@ -327,13 +353,20 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		synchronized (this.namespaceMutex) {
 			try {
 				runInIOThread(() -> {
-					try (RepositoryConnection connection = this.semanticCore.getConnection()) {
-						for (Namespace namespace : namespaces) {
-							connection.setNamespace(namespace.getPrefix(), namespace.getName());
-							if ("lns".equals(namespace.getPrefix())) {
-								this.lns = namespace.getName();
+					coreUsageLock.readLock().lock();
+					try {
+						if (isShutdown()) return;
+						try (RepositoryConnection connection = this.semanticCore.getConnection()) {
+							for (Namespace namespace : namespaces) {
+								connection.setNamespace(namespace.getPrefix(), namespace.getName());
+								if ("lns".equals(namespace.getPrefix())) {
+									this.lns = namespace.getName();
+								}
 							}
 						}
+					}
+					finally {
+						coreUsageLock.readLock().unlock();
 					}
 				});
 			}
@@ -341,7 +374,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				LOGGER.error("Exception while adding namespace", e);
 			}
 			finally {
-				this.namespaces = null; // clear caches namespaces, will be get created lazy if needed
+				this.namespaces = null; // clear caches namespaces, will be created lazily if needed
 				this.namespacePrefixes = null;
 			}
 		}
@@ -520,13 +553,20 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				// Do actual changes on the model
 				Stopwatch connectionStopwatch = new Stopwatch();
 				runInThread(() -> {
-					try (RepositoryConnection connection = this.semanticCore.getConnection()) {
-						connection.begin();
+					coreUsageLock.readLock().lock();
+					try {
+						if (isShutdown()) return;
+						try (RepositoryConnection connection = this.semanticCore.getConnection()) {
+							connection.begin();
 
-						connection.remove(this.removeCache);
-						connection.add(this.insertCache);
+							connection.remove(this.removeCache);
+							connection.add(this.insertCache);
 
-						connection.commit();
+							connection.commit();
+						}
+					}
+					finally {
+						coreUsageLock.readLock().unlock();
 					}
 				});
 
@@ -843,7 +883,18 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	public Collection<Namespace> getNamespaces() {
 		final AtomicReference<Collection<Namespace>> namespaces = new AtomicReference<>();
 		runInThread(() -> {
-			namespaces.set(this.semanticCore.getNamespaces());
+			coreUsageLock.readLock().lock();
+			try {
+				if (isShutdown()) {
+					namespaces.set(List.of());
+				}
+				else {
+					namespaces.set(this.semanticCore.getNamespaces());
+				}
+			}
+			finally {
+				coreUsageLock.readLock().unlock();
+			}
 		});
 		return namespaces.get();
 	}
@@ -857,9 +908,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 */
 	public Map<String, String> getNamespacePrefixes() {
 		Map<String, String> namespacePrefixes = this.namespacePrefixes;
-		// check before and after synchronizing synchronizing...
+		// check before and after synchronizing...
 		if (namespacePrefixes == null) {
-			synchronized (this.nsPrefixMutex) {
+			synchronized (this.namespaceMutex) {
 				namespacePrefixes = this.namespacePrefixes;
 				if (namespacePrefixes == null) {
 					namespacePrefixes = new HashMap<>();
@@ -878,14 +929,20 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @created 15.07.2012
 	 */
 	public Set<Statement> getStatements() {
-
 		Set<Statement> statements1 = null;
-		try (RepositoryConnection connection = this.semanticCore.getConnection()) {
-			RepositoryResult<Statement> statements = connection.getStatements(null, null, null, true);
-			statements1 = Iterations.asSet(statements);
+		coreUsageLock.readLock().lock();
+		try {
+			if (isShutdown()) return Set.of();
+			try (RepositoryConnection connection = this.semanticCore.getConnection()) {
+				RepositoryResult<Statement> statements = connection.getStatements(null, null, null, true);
+				statements1 = Iterations.asSet(statements);
+			}
+			catch (RepositoryException e) {
+				LOGGER.error("Exception while getting statements", e);
+			}
 		}
-		catch (RepositoryException e) {
-			LOGGER.error("Exception while getting statements", e);
+		finally {
+			coreUsageLock.readLock().unlock();
 		}
 		return statements1;
 	}
@@ -960,21 +1017,37 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	public void readFrom(InputStream in, RDFFormat syntax) throws RDFParseException, RepositoryException, IOException {
 		runInIOThread(() -> {
-			synchronized (nsPrefixMutex) {
+			// We don't sync on namespaceMutex by intent... if someone accesses namespaces from another thread while
+			// data is added, we can't guarantee the namespaces being there or not anyway.
+			// And we don't want to block for so long
+			coreUsageLock.readLock().lock();
+			try {
+				if (isShutdown()) return;
 				this.semanticCore.addData(in, syntax);
-				this.namespaces = null;
-				this.namespacePrefixes = null;
 			}
+			finally {
+				coreUsageLock.readLock().unlock();
+			}
+			this.namespaces = null;
+			this.namespacePrefixes = null;
 		});
 	}
 
 	public void readFrom(File in) throws RDFParseException, RepositoryException, IOException {
 		runInIOThread(() -> {
-			synchronized (nsPrefixMutex) {
+			// We don't sync on namespaceMutex by intent... if someone accesses namespaces from another thread while
+			// data is added, we can't guarantee the namespaces being there or not anyway.
+			// And we don't want to block for so long
+			coreUsageLock.readLock().lock();
+			try {
+				if (isShutdown()) return;
 				this.semanticCore.addData(in);
-				this.namespaces = null;
-				this.namespacePrefixes = null;
 			}
+			finally {
+				coreUsageLock.readLock().unlock();
+			}
+			this.namespaces = null;
+			this.namespacePrefixes = null;
 		});
 	}
 
@@ -987,13 +1060,22 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	public void removeNamespace(String abbreviation) throws RepositoryException {
-		synchronized (nsPrefixMutex) {
-			try (RepositoryConnection connection = this.semanticCore.getConnection()) {
-				connection.removeNamespace(abbreviation);
-				this.namespaces = null;
-				this.namespacePrefixes = null;
+		runInThread(() -> {
+			synchronized (namespaceMutex) {
+				coreUsageLock.readLock().lock();
+				try {
+					if (isShutdown()) return;
+					try (RepositoryConnection connection = this.semanticCore.getConnection()) {
+						connection.removeNamespace(abbreviation);
+						this.namespaces = null;
+						this.namespacePrefixes = null;
+					}
+				}
+				finally {
+					coreUsageLock.readLock().unlock();
+				}
 			}
-		}
+		});
 	}
 
 	/**
@@ -1004,9 +1086,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @created 13.06.2012
 	 */
 	public void removeStatements(Collection<Statement> statements) {
-		synchronized (this.statementMutex) {
-			removeStatements(null, statements);
-		}
+		removeStatements(null, statements);
 	}
 
 	/**
@@ -1125,12 +1205,26 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	@Override
 	public BooleanQuery prepareAsk(String query) {
-		return semanticCore.prepareAsk(query);
+		coreUsageLock.readLock().lock();
+		try {
+			if (isShutdown()) throw new IllegalStateException("Core is already shut down");
+			return semanticCore.prepareAsk(query);
+		}
+		finally {
+			coreUsageLock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public BooleanQuery prepareAsk(Collection<Namespace> namespaces, String query) {
-		return semanticCore.prepareAsk(namespaces, query);
+		coreUsageLock.readLock().lock();
+		try {
+			if (isShutdown()) throw new IllegalStateException("Core is already shut down");
+			return semanticCore.prepareAsk(namespaces, query);
+		}
+		finally {
+			coreUsageLock.readLock().unlock();
+		}
 	}
 
 	/**
@@ -1163,7 +1257,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	@Override
-	public TupleQueryResult sparqlSelect(Collection<Namespace> namespaces, String query) throws QueryFailedException {
+	public TupleQueryResult sparqlSelect(Collection<Namespace> namespaces, String query) throws
+			QueryFailedException {
 		return sparqlSelect(namespaces, query, Options.DEFAULT);
 	}
 
@@ -1211,7 +1306,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	@Override
-	public TupleQueryResult sparqlSelect(TupleQuery query, Map<String, Value> bindings) throws QueryFailedException {
+	public TupleQueryResult sparqlSelect(TupleQuery query, Map<String, Value> bindings) throws
+			QueryFailedException {
 		TupleQueryResult result = (TupleQueryResult) sparql(Options.DEFAULT, SparqlType.SELECT, null, null, query, bindings);
 		if (result instanceof CachedTupleQueryResult) {
 			// make the result iterable by different threads multiple times... we have to do this, because the caller
@@ -1223,16 +1319,31 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	@Override
 	public TupleQuery prepareSelect(String query) throws RepositoryException, MalformedQueryException {
-		return semanticCore.prepareSelect(query);
+		coreUsageLock.readLock().lock();
+		try {
+			if (isShutdown()) throw new IllegalStateException("Core is already shut down");
+			return semanticCore.prepareSelect(query);
+		}
+		finally {
+			coreUsageLock.readLock().unlock();
+		}
 	}
 
 	@Override
 	public TupleQuery prepareSelect(Collection<Namespace> namespaces, String query) throws RepositoryException, MalformedQueryException {
-		return semanticCore.prepareSelect(namespaces, query);
+		coreUsageLock.readLock().lock();
+		try {
+			if (isShutdown()) throw new IllegalStateException("Core is already shut down");
+			return semanticCore.prepareSelect(namespaces, query);
+		}
+		finally {
+			coreUsageLock.readLock().unlock();
+		}
 	}
 
 	private Object sparql(Options options, SparqlType type, @Nullable String query,
-						  @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery preparedSelect, @Nullable Map<String, Value> bindings) {
+						  @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery
+								  preparedSelect, @Nullable Map<String, Value> bindings) {
 
 		Stopwatch stopwatch = new Stopwatch();
 
@@ -1336,7 +1447,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	}
 
 	@NotNull
-	private SparqlCallable newSparqlCallable(@Nullable String query, SparqlType type, long timeoutMillis, boolean cached,
+	private SparqlCallable newSparqlCallable(@Nullable String query, SparqlType type, long timeoutMillis,
+											 boolean cached,
 											 @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery preparedSelect,
 											 @Nullable Map<String, Value> bindings) {
 		if (type == SparqlType.ASK && preparedAsk != null) {
@@ -1370,7 +1482,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 		public static final Options DEFAULT = new Options();
 		public static final Options NO_CACHE = new Rdf2GoCore.Options().noCache();
-		public static final Options NO_CACHE_NO_TIMEOUT = new Rdf2GoCore.Options().noCache().timeout(Long.MAX_VALUE);
+		public static final Options NO_CACHE_NO_TIMEOUT = new Rdf2GoCore.Options().noCache()
+				.timeout(Long.MAX_VALUE);
 
 		/**
 		 * Determines whether the result of the query should be cached.
@@ -1468,15 +1581,16 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @created 03.02.2012
 	 */
 	public void writeModel(RDFWriter out) throws IOException {
+		coreUsageLock.readLock().lock();
 		try {
-			synchronized (this.statementMutex) {
-				if (this.semanticCore != null) { // if the semantic core was closed while waiting, just skip
-					this.semanticCore.export(out);
-				}
-			}
+			if (isShutdown()) return;
+			this.semanticCore.export(out);
 		}
 		catch (RepositoryException | RDFHandlerException e) {
 			throw new IOException(e);
+		}
+		finally {
+			coreUsageLock.readLock().unlock();
 		}
 	}
 
@@ -1488,11 +1602,16 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @created 28.07.2014
 	 */
 	public void writeModel(Writer out, RDFFormat syntax) throws IOException {
+		coreUsageLock.readLock().lock();
 		try {
+			if (isShutdown()) return;
 			this.semanticCore.export(out, syntax);
 		}
 		catch (RepositoryException | RDFHandlerException e) {
 			throw new IOException(e);
+		}
+		finally {
+			coreUsageLock.readLock().unlock();
 		}
 	}
 
@@ -1504,15 +1623,16 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	 * @created 28.07.2014
 	 */
 	public void writeModel(OutputStream out, RDFFormat syntax) throws IOException {
+		coreUsageLock.readLock().lock();
 		try {
-			synchronized (this.statementMutex) {
-				if (this.semanticCore != null) { // if the semantic core was closed while waiting, just skip
-					this.semanticCore.export(out, syntax);
-				}
-			}
+			if (isShutdown()) return;
+			this.semanticCore.export(out, syntax);
 		}
 		catch (RepositoryException | RDFHandlerException e) {
 			throw new IOException(e);
+		}
+		finally {
+			coreUsageLock.readLock().unlock();
 		}
 	}
 
@@ -1534,28 +1654,36 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	@Override
 	public void close() {
 		if (ServletContextEventListener.isDestroyInProgress()) {
-			EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
-			this.semanticCore.close();
-			this.threadPool.shutdownNow();
+			coreUsageLock.writeLock().lock();
+			try {
+				if (isShutdown()) return;
+				this.isShutdown = true;
+				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
+				this.semanticCore.close();
+				this.threadPool.shutdownNow();
+			}
+			finally {
+				coreUsageLock.writeLock().unlock();
+			}
 		}
 		else {
 			new Thread(() -> {
-				EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
-				synchronized (this.statementMutex) {
+				coreUsageLock.writeLock().lock();
+				try {
+					if (isShutdown()) return;
+					this.isShutdown = true;
+					EventManager.getInstance().fireEvent(new Rdf2GoCoreDestroyEvent(this));
 					this.threadPool.shutdown();
 					this.statementCache.clear(); // free memory even if there are still references
-
-					if (this.semanticCore == null) {
-						return;
-					}
 
 					this.semanticCore.release();
 					if (this.semanticCore.isAllocated()) {
 						LOGGER.warn("Semantic core " + this.semanticCore.getRepositoryId()
 								+ " is still allocated and cannot be shut down, this may be an memory leak.");
 					}
-
-					this.semanticCore = null;
+				}
+				finally {
+					coreUsageLock.writeLock().unlock();
 				}
 			}).start();
 		}
@@ -1568,8 +1696,15 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 	@Override
 	public void dump(String query) {
 		Stopwatch stopwatch = new Stopwatch();
-		this.semanticCore.dump(query);
-		stopwatch.log("query executed");
+		coreUsageLock.readLock().lock();
+		try {
+			if (isShutdown()) return;
+			this.semanticCore.dump(query);
+		}
+		finally {
+			coreUsageLock.readLock().unlock();
+		}
+		stopwatch.log(LOGGER, "query executed");
 	}
 
 	public static class CacheMissException extends Exception {
