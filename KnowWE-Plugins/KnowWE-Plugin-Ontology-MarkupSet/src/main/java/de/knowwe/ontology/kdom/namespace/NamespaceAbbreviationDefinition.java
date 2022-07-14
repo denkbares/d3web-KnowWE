@@ -26,6 +26,7 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -59,14 +60,15 @@ public class NamespaceAbbreviationDefinition extends AbstractType {
 	}
 
 	private static class NamespaceSubtreeHandler extends OntologyHandler<NamespaceAbbreviationDefinition> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceSubtreeHandler.class);
+		private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceSubtreeHandler.class);
 
 		@Override
 		public Collection<Message> create(OntologyCompiler compiler, Section<NamespaceAbbreviationDefinition> section) {
 			String namespace = section.get().getNamespace(section);
 			List<Message> messages = new LinkedList<>();
+			Rdf2GoCore core = compiler.getRdf2GoCore();
 			try {
-				compiler.getRdf2GoCore().createIRI(namespace);
+				core.createIRI(namespace);
 			}
 			catch (IllegalArgumentException e) {
 				messages.add(Messages.error("'" + namespace + "' is not a valid URI"));
@@ -78,18 +80,17 @@ public class NamespaceAbbreviationDefinition extends AbstractType {
 				return messages;
 			}
 			String abbreviationName = abbreviation.get().getTermName(abbreviation);
-			Rdf2GoCore.getInstance(compiler).addNamespace(abbreviationName, namespace);
+			core.addNamespace(abbreviationName, namespace);
 			return messages;
 		}
 
 		@Override
 		public void destroy(OntologyCompiler compiler, Section<NamespaceAbbreviationDefinition> section) {
-			Section<AbbreviationDefinition> abbreviationDef = Sections.child(section,
-					AbbreviationDefinition.class);
+			Section<AbbreviationDefinition> abbreviationDef = Sections.child(section, AbbreviationDefinition.class);
 			assert abbreviationDef != null;
 			String abbreviation = abbreviationDef.get().getTermName(abbreviationDef);
 			try {
-				Rdf2GoCore.getInstance(compiler).removeNamespace(abbreviation);
+				compiler.getRdf2GoCore().removeNamespace(abbreviation);
 			}
 			catch (RepositoryException e) {
 				LOGGER.error("Unable to remove namespace", e);
