@@ -256,6 +256,7 @@ public class ParallelScriptCompiler<C extends Compiler> {
 
 			List<Section<?>> sectionListThisPrio = compileLog.getOrDefault(lastPriority, Collections.emptyList())
 					.stream().map(Pair::getA).collect(Collectors.toList());
+			//noinspection SimplifyStreamApiCallChains
 			List<Section<?>> allSectionCompiledUpToNow = compileLog.keySet()
 					.stream()
 					.map(compileLog::get)
