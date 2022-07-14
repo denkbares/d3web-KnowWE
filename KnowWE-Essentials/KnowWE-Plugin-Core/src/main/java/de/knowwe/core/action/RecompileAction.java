@@ -84,7 +84,7 @@ public class RecompileAction extends AbstractAction {
 		articleManager.open();
 		try {
 			if (recompileAll) {
-				List<Article> articlesToRecompile = getCompilerArticles(article).collect(Collectors.toList());
+				List<Article> articlesToRecompile = getCompilerArticles(article).toList();
 				LOGGER.info("Starting FULL recompilation for article " + article.getTitle() +
 						"\nRecompiling the following " + Strings.pluralOf(articlesToRecompile.size(), "article") + ": " +
 						articlesToRecompile.stream()
