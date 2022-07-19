@@ -112,12 +112,7 @@ public class CompositeEditToolProvider implements ToolProvider {
 
 	@NotNull
 	public static Tool createCompositeEditTool(String text, Identifier identifier) {
-		return new DefaultTool(
-				Icon.INFO,
-				text,
-				"Shows information about this object",
-				CompositeEditToolProvider.createCompositeEditModeAction(identifier),
-				Tool.CATEGORY_INFO);
+		return new CompositeEditTool(text, identifier);
 	}
 
 	/**
@@ -133,6 +128,20 @@ public class CompositeEditToolProvider implements ToolProvider {
 		String externalTermIdentifierForm = termIdentifier.toExternalForm();
 		return "KNOWWE.plugin.compositeEditTool.openCompositeEditDialog('"
 				+ TermInfoToolProvider.maskTermForHTML(externalTermIdentifierForm) + "')";
+	}
+
+	public static class CompositeEditTool extends DefaultTool {
+
+		private final Identifier identifier;
+
+		public CompositeEditTool(String title, Identifier identifier) {
+			super(Icon.INFO, title, "Shows information about this object", CompositeEditToolProvider.createCompositeEditModeAction(identifier), Tool.CATEGORY_INFO);
+			this.identifier = identifier;
+		}
+
+		public Identifier getIdentifier() {
+			return identifier;
+		}
 	}
 }
 
