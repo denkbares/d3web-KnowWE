@@ -76,7 +76,7 @@ public class SparqlConsoleMarkupType extends DefaultMarkupType {
 				currentSparql = "";
 			}
 			currentSparql = Strings.decodeURL(currentSparql);
-			result.appendHtmlElement("textarea", currentSparql, "class", "sparqlEditor",
+			result.appendHtmlElement("textarea", currentSparql, "class", "editor sparqlEditor",
 					"placeholder", "Enter Sparql here",
 					"sectionid", $(contentSections).children().mapFirst(Section::getID));
 			result.appendHtmlElement("span", "Hit CTRL + ENTER or ALT + ENTER to update the query result", "class", "usage-info");
