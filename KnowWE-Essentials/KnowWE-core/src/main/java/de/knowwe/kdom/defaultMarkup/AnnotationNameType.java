@@ -66,7 +66,7 @@ public class AnnotationNameType extends AbstractType {
 	 * @return the parsed name of the annotation
 	 */
 	public String getName(Section<AnnotationNameType> section) {
-		String name = (String) section.getObject(ANNOTATION_NAME_KEY);
+		String name = section.getObject(ANNOTATION_NAME_KEY);
 		if (name == null) {
 			Matcher matcher = namePattern.matcher(section.getText());
 			if (matcher.find()) {
