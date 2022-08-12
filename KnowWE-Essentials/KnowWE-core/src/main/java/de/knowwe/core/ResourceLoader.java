@@ -1,20 +1,5 @@
 /*
- * Copyright (C) 2014 denkbares GmbH, Germany
- *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
+ * Copyright (C) 2022 denkbares GmbH. All rights reserved.
  */
 package de.knowwe.core;
 
@@ -49,7 +34,12 @@ public class ResourceLoader {
 		/**
 		 * Requests a script to be loaded.
 		 */
-		script("KnowWEExtension/scripts/", "js");
+		script("KnowWEExtension/scripts/", "js"),
+
+		/**
+		 * Requests a module to be loaded. This is basically a script file, which is imported as module.
+		 */
+		module("KnowWEExtension/scripts/", "js");
 
 		/**
 		 * The default path were the resources of the specified type are stored on the server. Used
@@ -109,6 +99,11 @@ public class ResourceLoader {
 	 * Stores the registered script files.
 	 */
 	private final List<String> scripts = new LinkedList<>();
+
+	/**
+	 * Stores the registered module files.
+	 */
+	private final List<String> module = new LinkedList<>();
 
 	/**
 	 * Stores the registered CSS files.
@@ -260,6 +255,15 @@ public class ResourceLoader {
 	}
 
 	/**
+	 * Returns the module files the loader knows.
+	 *
+	 * @return String of module files.
+	 */
+	public List<String> getModuleIncludes() {
+		return this.module;
+	}
+
+	/**
 	 * Returns the CSS files the loader knows.
 	 *
 	 * @return String The CSS files.
@@ -272,6 +276,7 @@ public class ResourceLoader {
 		return switch (type) {
 			case script -> this.scripts;
 			case stylesheet -> this.stylesheets;
+			case module -> this.module;
 		};
 	}
 }

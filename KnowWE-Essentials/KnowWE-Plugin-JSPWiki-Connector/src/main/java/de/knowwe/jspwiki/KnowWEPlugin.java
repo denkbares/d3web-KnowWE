@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
+ * Copyright (C) 2022 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -61,7 +60,6 @@ import org.apache.wiki.providers.CachingProvider;
 import org.apache.wiki.providers.GitRefreshCacheEvent;
 import org.apache.wiki.providers.GitVersioningWikiEvent;
 import org.apache.wiki.ui.TemplateManager;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,8 +86,7 @@ import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 
-import static de.knowwe.core.ResourceLoader.Type.script;
-import static de.knowwe.core.ResourceLoader.Type.stylesheet;
+import static de.knowwe.core.ResourceLoader.Type.*;
 
 public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		WikiEventListener {
@@ -124,7 +121,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		if ("true".equals(copyCorePages)) {
 			try {
 				BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(
-						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/classes/jspwiki-custom.properties"), StandardCharsets.UTF_8));
+						KnowWEUtils.getApplicationRootPath() + "/WEB-INF/classes/jspwiki-custom.properties"),
+						StandardCharsets.UTF_8));
 				String line;
 				File pageDir = null;
 				while ((line = in.readLine()) != null) {
@@ -232,10 +230,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 	@Override
 	public String preTranslate(Context context, String content) {
-		if (!(context instanceof WikiContext)) {
+		if (!(context instanceof WikiContext wikiContext)) {
 			throw new IllegalStateException("We expect a wiki engine, otherwise KnowWE can't function");
 		}
-		WikiContext wikiContext = (WikiContext) context;
 		if (context.getHttpRequest() != null
 				&& !isWorkflow(wikiContext)
 				&& context.getHttpRequest().getParameter("action") != null) {
@@ -269,7 +266,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		String title = wikiContext.getRealPage().getName();
 
 		// happens when showing attachments, ignore...
-		if (title.contains("/") && content.equals("")) {
+		if (title.contains("/") && "".equals(content)) {
 			return content;
 		}
 
@@ -321,7 +318,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				article = updateArticle(wikiContext, content);
 			}
 			else {
-				// just create/sectionize temp version of the article that is NOT added and compiled to the article manager
+				// just create/sectionize temp version of the article that is NOT added and compiled to the article
+				// manager
 				article = Article.createTemporaryArticle(content, title, Environment.DEFAULT_WEB);
 			}
 
@@ -348,7 +346,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private boolean isWorkflow(WikiContext wikiContext) {
-		return wikiContext.getJSP() != null &&  wikiContext.getJSP().contains("Workflow");
+		return wikiContext.getJSP() != null && wikiContext.getJSP().contains("Workflow");
 	}
 
 	public boolean isSupportArticle(String title) {
@@ -383,10 +381,13 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			userContext.getSession().setAttribute(INITIAL_WAIT_ON, article.getTitle());
 
 			renderResult.appendHtmlElement("span", "Compilation still ongoing, please wait...\n" +
-							"You are currently viewing a preview of the page, compilation messages and parts of the content might still be missing!",
+							"You are currently viewing a preview of the page, compilation messages and parts of the " +
+							"content might still be missing!",
 					"class", "warning");
-			renderResult.appendHtmlElement("script", "_KU.showProcessingIndicator();setTimeout(function() {window.location.reload()}, 0)");
-			Article temporaryArticle = Article.createTemporaryArticle(article.getText(), article.getTitle(), article.getWeb());
+			renderResult.appendHtmlElement("script", "_KU.showProcessingIndicator();setTimeout(function() {window" +
+					".location.reload()}, 0)");
+			Article temporaryArticle = Article.createTemporaryArticle(article.getText(), article.getTitle(),
+					article.getWeb());
 			renderArticle(userContext, temporaryArticle, renderResult);
 		}
 	}
@@ -403,7 +404,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		return (DefaultArticleManager) Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
 	}
 
-	private static Article updateArticle(Context wikiContext, String content) throws InterruptedException, UpdateNotAllowedException {
+	private static Article updateArticle(Context wikiContext, String content) throws InterruptedException,
+			UpdateNotAllowedException {
 		HttpServletRequest httpRequest = wikiContext.getHttpRequest();
 		if (httpRequest == null) {
 			// When a page is rendered the first time, the request is null.
@@ -430,7 +432,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 
 			CompilerManager compilerManager = Compilers.getCompilerManager(Environment.DEFAULT_WEB);
 			if (compilerManager.isCompiling(title)) {
-				// it is possible, that compilation of this article was triggered independently from calling this method...
+				// it is possible, that compilation of this article was triggered independently from calling this
+				// method...
 				compilerManager.awaitTermination();
 			}
 
@@ -451,10 +454,12 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	private static boolean isFullParse(HttpServletRequest httpRequest) {
 		String parse = UserContextUtil.getParameters(httpRequest).get("parse");
 		Object fullParseFired = httpRequest.getAttribute(FULL_PARSE_FIRED);
-		return parse != null && (parse.equals("full") || parse.equals("true")) && fullParseFired == null;
+		return ("full".equals(parse) || "true".equals(parse)) && fullParseFired == null;
 	}
 
-	private static void renderPostPageAppendHandler(JSPWikiUserContext userContext, Article article, RenderResult renderResult, List<PageAppendHandler> appendhandlers) {
+	private static void renderPostPageAppendHandler(JSPWikiUserContext userContext, Article article,
+													RenderResult renderResult,
+													List<PageAppendHandler> appendhandlers) {
 		// in case we are rendering a support article (like LeftMenu or MoreMenu), skip this
 		if (!article.getTitle().equals(userContext.getTitle())) return;
 		for (PageAppendHandler pageAppendHandler : appendhandlers) {
@@ -464,7 +469,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		}
 	}
 
-	private static void renderPrePageAppendHandler(JSPWikiUserContext userContext, Article article, RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
+	private static void renderPrePageAppendHandler(JSPWikiUserContext userContext, Article article,
+												   RenderResult renderResult, List<PageAppendHandler> appendHandlers) {
 		// in case we are rendering a support article (like LeftMenu or MoreMenu), skip this
 		if (!article.getTitle().equals(userContext.getTitle())) return;
 		for (PageAppendHandler pageAppendHandler : appendHandlers) {
@@ -564,14 +570,17 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		Collection<?> wikiPages;
 		/*
 		 Why do we need this workaround? Why do we check for the CachingProvider and so forth here?
-		 JSPWiki does not handle case sensitivity in article names very well. On the one hand, it is possible in JSPWiki
+		 JSPWiki does not handle case sensitivity in article names very well. On the one hand, it is possible in
+		 JSPWiki
 		 to have article names that only differ in the case, which is a problem if you want to use such a wiki in a
 		 case insensitive file system. On the other hand, JSPWiki will match article links case insensitively and even
 		 creates pseudo wiki pages in the CachingProvider for those links which match only case insensitive.
 		 Since KnowWE is designed with the promise that it also works with case insensitive file systems, it also
-		 handles article names case insensitively. If the CachingProvider now serves pseudo articles based on links with
+		 handles article names case insensitively. If the CachingProvider now serves pseudo articles based on links
+		 with
 		 wrong case, we run into problems (e.g. ArticleManager in KnowWE stores articles case insensitively).
-		 To solve this, we circumvent the CachingProvider here and use the actual FileSystemProvider instead, which will
+		 To solve this, we circumvent the CachingProvider here and use the actual FileSystemProvider instead, which
+		 will
 		 not have those pseudo articles.
 		*/
 		if (provider instanceof CachingProvider) {
@@ -590,9 +599,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	public void actionPerformed(WikiEvent event) {
 		// When deleting a page, remove it from the ArticleManager and
 		// invalidate all knowledge
-		if ((event instanceof WikiPageEvent)
+		if ((event instanceof WikiPageEvent e)
 				&& (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
-			WikiPageEvent e = (WikiPageEvent) event;
 
 			ArticleManager articleManager = getDefaultArticleManager();
 
@@ -603,8 +611,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				articleManager.deleteArticle(e.getPageName());
 			}
 		}
-		else if (event instanceof WikiPageRenameEvent) {
-			WikiPageRenameEvent renameEvent = (WikiPageRenameEvent) event;
+		else if (event instanceof WikiPageRenameEvent renameEvent) {
 
 			String oldArticleTitle = renameEvent.getOldPageName();
 			String newArticleTitle = renameEvent.getNewPageName();
@@ -626,9 +633,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				wikiEngineInitialized = true;
 			}
 		}
-		else if (event instanceof GitVersioningWikiEvent) {
+		else if (event instanceof GitVersioningWikiEvent gitEvent) {
 
-			GitVersioningWikiEvent gitEvent = (GitVersioningWikiEvent) event;
 			ArticleUpdateEvent articleUpdateEvent;
 			if (event instanceof GitRefreshCacheEvent) {
 				articleUpdateEvent = new ArticleRefreshEvent(gitEvent.getPages(), gitEvent.getType());
@@ -655,7 +661,23 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	public static void includeDOMResources(Context wikiContext) {
 		Object ctx = wikiContext.getVariable(TemplateManager.RESOURCE_INCLUDES);
 		ResourceLoader loader = ResourceLoader.getInstance();
-		for (String resource : loader.getScriptIncludes()) {
+		final List<String> scriptIncludes = loader.getScriptIncludes();
+		addResourceToTemplateManager(wikiContext, ctx, scriptIncludes, script);
+
+		final List<String> moduleIncludes = loader.getModuleIncludes();
+		addResourceToTemplateManager(wikiContext, ctx, moduleIncludes, module);
+
+		List<String> css = loader.getStylesheetIncludes();
+		for (String resource : css) {
+			if (ctx == null || !ctx.toString().contains(resource)) {
+				TemplateManager.addResourceRequest(wikiContext, stylesheet.name(), stylesheet.getPath(resource));
+			}
+		}
+	}
+
+	private static void addResourceToTemplateManager(Context wikiContext, Object ctx, List<String> scriptIncludes,
+													 ResourceLoader.Type type) {
+		for (String resource : scriptIncludes) {
 			/*
 			 * Check whether the corresponding plugin shipping the resource is
 			 * also existing in current installation As css and js dependencies
@@ -683,14 +705,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				}
 			}
 			if (ctx == null || !ctx.toString().contains(resource)) {
-				TemplateManager.addResourceRequest(wikiContext, script.name(), script.getPath(resource));
-			}
-		}
-
-		List<String> css = loader.getStylesheetIncludes();
-		for (String resource : css) {
-			if (ctx == null || !ctx.toString().contains(resource)) {
-				TemplateManager.addResourceRequest(wikiContext, stylesheet.name(), stylesheet.getPath(resource));
+				TemplateManager.addResourceRequest(wikiContext, type.name(), type.getPath(resource));
 			}
 		}
 	}
@@ -717,11 +732,13 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		public void run() {
 			if (event.getType() == WikiAttachmentEvent.STORED) {
 				EventManager.getInstance()
-						.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), event.getParentName(), event.getFileName()));
+						.fireEvent(new AttachmentStoredEvent(articleManager.getWeb(), event.getParentName(),
+								event.getFileName()));
 			}
 			else if (event.getType() == WikiAttachmentEvent.DELETED) {
 				EventManager.getInstance()
-						.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), event.getParentName(), event.getFileName()));
+						.fireEvent(new AttachmentDeletedEvent(articleManager.getWeb(), event.getParentName(),
+								event.getFileName()));
 			}
 		}
 	}

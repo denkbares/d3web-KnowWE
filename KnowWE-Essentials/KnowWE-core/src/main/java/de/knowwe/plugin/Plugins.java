@@ -1,20 +1,5 @@
 /*
- * Copyright (C) 2014 denkbares GmbH, Germany
- *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
+ * Copyright (C) 2022 denkbares GmbH. All rights reserved.
  */
 package de.knowwe.plugin;
 
@@ -126,8 +111,8 @@ public class Plugins {
 	}
 
 	/**
-	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually be clicking on pre-generated
-	 * links on the wiki pages.
+	 * Returns a list of all plugged actions. Actions can be executed from the web. Usually be clicking on
+	 * pre-generated links on the wiki pages.
 	 */
 	public static List<Action> getKnowWEAction() {
 		return getSingletons(EXTENDED_POINT_KnowWEAction, Action.class);
@@ -177,13 +162,13 @@ public class Plugins {
 	 * is omitted from the test.
 	 * <p>
 	 * <p>
-	 * Explanation: This will to problems if the SectionFinders of these types are not disjoint, for instance both using
-	 * AllTextFinder(). That case can lead to indeterministic parsing results when KnowWE is launched with slightly
-	 * different configurations!
+	 * Explanation: This will to problems if the SectionFinders of these types are not disjoint, for instance both
+	 * using AllTextFinder(). That case can lead to indeterministic parsing results when KnowWE is launched with
+	 * slightly different configurations!
 	 * <p>
-	 * Action to take: If the warning appears, it is recommend to adjust the priority of the types to make them distinct
-	 * according to the intended order. However, if the SectionFinders are disjoint in their acceptance behaviour there
-	 * is no danger.
+	 * Action to take: If the warning appears, it is recommend to adjust the priority of the types to make them
+	 * distinct according to the intended order. However, if the SectionFinders are disjoint in their acceptance
+	 * behaviour there is no danger.
 	 * <p>
 	 * Note: This test is incomplete as using Path expression with wildcards, scopes can overlap even though their
 	 * string respresentation is not equal.
@@ -237,9 +222,8 @@ public class Plugins {
 	}
 
 	public static void addAnnotations(Type type, Type[] path) {
-		if (type instanceof DefaultMarkupType) {
+		if (type instanceof DefaultMarkupType markupType) {
 
-			DefaultMarkupType markupType = (DefaultMarkupType) type;
 			List<Type> childrenTypes = markupType.getChildrenTypes();
 			DefaultMarkup markup = markupType.getMarkup();
 
@@ -363,6 +347,28 @@ public class Plugins {
 		}
 	}
 
+	/**
+	 * Initializes the Javascript module files
+	 */
+	public static void initJsModules() {
+		PriorityList<Double, String> files = new PriorityList<>(5.0);
+		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_PageAppendHandler), files);
+		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Type), files);
+		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_TagHandler), files);
+		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_ToolProvider), files);
+		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_Renderer), files);
+		addModules(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
+				EXTENDED_POINT_KnowWEAction), files);
+		for (String s : files) {
+			ResourceLoader.getInstance().add(s, ResourceLoader.Type.module);
+		}
+	}
+
 	public static void initCSS() {
 		PriorityList<Double, String> files = new PriorityList<>(5.0);
 		addCSS(PluginManager.getInstance().getExtensions(EXTENDED_PLUGIN_ID,
@@ -399,6 +405,20 @@ public class Plugins {
 		for (Extension e : extensions) {
 			double priority = e.getPriority();
 			List<String> scripts = e.getParameters("script");
+			if (scripts != null) {
+				for (String s : scripts) {
+					if (!filesCollector.contains(s)) {
+						filesCollector.add(priority, s);
+					}
+				}
+			}
+		}
+	}
+
+	private static void addModules(Extension[] extensions, PriorityList<Double, String> filesCollector) {
+		for (Extension e : extensions) {
+			double priority = e.getPriority();
+			List<String> scripts = e.getParameters("module");
 			if (scripts != null) {
 				for (String s : scripts) {
 					if (!filesCollector.contains(s)) {

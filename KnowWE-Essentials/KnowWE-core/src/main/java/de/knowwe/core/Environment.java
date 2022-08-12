@@ -1,21 +1,5 @@
 /*
- * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
- * Computer Science VI, University of Wuerzburg
- *
- * This is free software; you can redistribute it and/or modify it under the
- * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation; either version 3 of the License, or (at your option) any
- * later version.
- *
- * This software is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
- * details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this software; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
- * site: http://www.fsf.org.
+ * Copyright (C) 2022 denkbares GmbH. All rights reserved.
  */
 
 package de.knowwe.core;
@@ -184,6 +168,7 @@ public class Environment {
 			initInstantiations();
 			initBlockedTools();
 			Plugins.initJS();
+			Plugins.initJsModules();
 			Plugins.initCSS();
 		}
 		catch (Throwable e) {
@@ -274,7 +259,7 @@ public class Environment {
 			for (String logLevel : logLevelConfigs) {
 				// if nothing follows 'loglvl', root logger's log level will
 				// be changed
-				if (logLevel.equals("loglvl")) {
+				if ("loglvl".equals(logLevel)) {
 					loggingProperties.put(".level", config.getString(logLevel));
 				}
 				// change specific logger's log level
@@ -461,7 +446,8 @@ public class Environment {
 			for (Type childType : type.getChildrenTypes()) {
 				// secure against malformed plugins
 				if (childType == null) {
-					throw new NullPointerException("type '" + type.getClass().getName() + "' contains 'null' as child");
+					throw new NullPointerException("type '" + type.getClass().getName() + "' contains 'null' as " +
+							"child");
 				}
 
 				// avoid multiple decoration in recursive type declarations
