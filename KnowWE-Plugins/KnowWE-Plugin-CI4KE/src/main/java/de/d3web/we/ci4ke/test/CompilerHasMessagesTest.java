@@ -89,7 +89,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 
 		buffer.append(" ")
 				.append(Strings.pluralOf(messages.size(), type.toString().toLowerCase()))
-				.append("s found in compiler [")
+				.append(" found in compiler [")
 				.append(compiler.getName())
 				.append("|")
 				.append(getWikiLink(compiler.getCompileSection()));
