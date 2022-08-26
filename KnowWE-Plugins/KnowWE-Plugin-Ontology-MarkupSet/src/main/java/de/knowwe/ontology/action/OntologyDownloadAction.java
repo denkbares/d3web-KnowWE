@@ -68,6 +68,7 @@ public class OntologyDownloadAction extends AbstractAction {
 
 		Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 		if (Boolean.parseBoolean(context.getParameter(PARAM_FULL_COMPILE, "false"))) {
+			Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 			if (compiler.isIncrementalBuild()) {
 				RecompileAction.recompile(compiler.getCompileSection().getArticle(), true);
 				Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
