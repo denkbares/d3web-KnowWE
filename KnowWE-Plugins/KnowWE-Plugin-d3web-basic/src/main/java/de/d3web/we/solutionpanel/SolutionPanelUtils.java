@@ -63,7 +63,7 @@ public class SolutionPanelUtils {
 		}
 
 		if (solutionRating != null) {
-			if (tooltip.length() > 0) {
+			if (!tooltip.isEmpty()) {
 				tooltip.append("<p/>");
 			}
 			ValueTooltipRenderer.appendCurrentValue(solution, solutionRating, tooltip);
@@ -121,7 +121,7 @@ public class SolutionPanelUtils {
 			tooltip.append(description);
 		}
 		if (value != null) {
-			if (tooltip.length() > 0) {
+			if (!tooltip.isEmpty()) {
 				tooltip.append("<p/>");
 			}
 			ValueTooltipRenderer.appendSourceFactsExplanation(question, session, tooltip);
@@ -130,7 +130,7 @@ public class SolutionPanelUtils {
 		List<String> attributes = new ArrayList<>();
 		attributes.add("class");
 		attributes.add("ABSTRACTION tooltipster");
-		if (tooltip.length() > 0) {
+		if (!tooltip.isEmpty()) {
 			attributes.add("title");
 			attributes.add(tooltip.toString());
 		}
