@@ -99,7 +99,7 @@ public class NotificationManager {
 	/**
 	 * Adds a {@link Notification} to the NotificationManager belonging to the
 	 * specified {@link UserContext}. The notification will be indexed using
-	 * it's ID in order to allow the removal of the notification by actions
+	 * its ID in order to allow the removal of the notification by actions
 	 * etc...
 	 * 
 	 * @created 20.04.2012
@@ -148,7 +148,7 @@ public class NotificationManager {
 	 * @param notification the notification to be added.
 	 */
 	public void addNotification(Notification notification) {
-		if (!userNotifications.values().contains(notification)) {
+		if (!userNotifications.containsValue(notification)) {
 			userNotifications.put(notification.getID(), notification);
 		}
 	}
