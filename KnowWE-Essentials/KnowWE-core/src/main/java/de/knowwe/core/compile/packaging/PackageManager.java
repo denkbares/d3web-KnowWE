@@ -217,6 +217,13 @@ public class PackageManager {// implements EventListener {
 				.map(ParsedPredicate::getCondition)).collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
+	public String getPackageStatementsOfSectionAsString(Section<?> section) {
+		return getPackageStatementsOfSection(section)
+				.stream()
+				.map(p -> p.contains("\s") ? "(" + p + ")" : p)
+				.collect(Collectors.joining(" OR "));
+	}
+
 	/**
 	 * Removes the given Section from the package with the given name.
 	 *
