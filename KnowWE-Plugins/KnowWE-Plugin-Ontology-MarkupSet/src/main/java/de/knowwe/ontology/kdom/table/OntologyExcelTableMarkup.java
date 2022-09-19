@@ -7,9 +7,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -58,6 +55,7 @@ import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
+import static com.denkbares.util.excel.ExcelPoiUtils.getStringCellValue;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class OntologyExcelTableMarkup extends DefaultMarkupType {
@@ -75,7 +73,6 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	private static final String ROW_VARIABLE2 = "${row}";
 	private static final String URL_ROW_VARIABLE = Strings.encodeURL(ROW_VARIABLE);
 	private static final String URL_ROW_VARIABLE2 = Strings.encodeURL(ROW_VARIABLE2);
-	private static final DataFormatter df = new DataFormatter();
 
 	static {
 		MARKUP = new DefaultMarkup("OntologyExcelTable");
@@ -185,7 +182,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 						//cell which is tested when using skipRowType
 						if (config.skipColumn != -1) {
-							String skipTestCell = getCellValue(row.getCell(config.skipColumn - 1));
+							String skipTestCell = getStringCellValue(row.getCell(config.skipColumn - 1));
 							if (config.skipPattern != null && skipTestCell != null && skipTestCell.matches(config.skipPattern)) {
 								continue;
 							}
@@ -311,10 +308,10 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			XSSFCell cell = row.getCell(config.objectColumn - 1);
 			if (cell == null) return null;
 			if (literal.getLanguage().isPresent()) {
-				literal = core.createLanguageTaggedLiteral(getCellValue(cell), literal.getLanguage().get());
+				literal = core.createLanguageTaggedLiteral(getStringCellValue(cell), literal.getLanguage().get());
 			}
 			else if (literal.getDatatype() != null) {
-				literal = core.createDatatypeLiteral(getCellValue(cell), literal.getDatatype());
+				literal = core.createDatatypeLiteral(getStringCellValue(cell), literal.getDatatype());
 			}
 			return literal;
 		}
@@ -331,7 +328,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		private IRI getUriFromCell(Rdf2GoCore core, XSSFRow row, int subjectColumn) {
 			XSSFCell cell = row.getCell(subjectColumn - 1);
 			if (cell == null) return null;
-			return core.createIRI(getCellValue(cell));
+			return core.createIRI(getStringCellValue(cell));
 		}
 
 		@NotNull
@@ -364,43 +361,6 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 	@NotNull
 	private static String replaceRow(int i, String label) {
 		return label.replace(ROW_VARIABLE, String.valueOf(i)).replace(ROW_VARIABLE2, String.valueOf(i));
-	}
-
-	/**
-	 * returns the value of a XSSFCell as String no matter what Type the cell is, null if the given cell is null
-	 */
-	private static String getCellValue(XSSFCell cell) {
-		if (cell != null) {
-			switch (cell.getCellType()) {
-				case STRING:
-					return cell.getStringCellValue();
-
-				case NUMERIC:
-					if (DateUtil.isCellDateFormatted(cell)) {
-						return cell.getDateCellValue().toString();
-					}
-					else {
-						return df.createFormat(cell).format(cell.getNumericCellValue());
-					}
-
-				case BOOLEAN:
-					return Boolean.toString(cell.getBooleanCellValue());
-				case FORMULA:
-					CellType formulaType = cell.getCachedFormulaResultType();
-					return switch (formulaType) {
-						case STRING -> cell.getStringCellValue();
-						case NUMERIC -> df.createFormat(cell).format(cell.getNumericCellValue());
-						case BOOLEAN -> Boolean.toString(cell.getBooleanCellValue());
-						case ERROR -> "#NV";
-						default -> cell.toString();
-					};
-				default:
-					return cell.toString();
-			}
-		}
-		else {
-			return null;
-		}
 	}
 
 	private static class ConfigParseScript extends DefaultGlobalCompiler.DefaultGlobalScript<ConfigAnnotationType> {
