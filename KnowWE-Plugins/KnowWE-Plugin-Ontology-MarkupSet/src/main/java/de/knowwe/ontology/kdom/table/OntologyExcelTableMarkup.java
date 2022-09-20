@@ -274,29 +274,10 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		}
 
 		private static XSSFWorkbook getXlsx(Section<ConfigAnnotationType> section) throws CompilerMessage {
-			Section<OntologyExcelTableMarkup> markupSection = Sections.ancestor(section, OntologyExcelTableMarkup.class);
-			if (markupSection == null) throw CompilerMessage.error("Unable to get markup section"); // should not happen
-
-			SoftReference<XSSFWorkbook> workbookSoftReference = markupSection.getObject(WORKBOOK_CACHE_KEY);
-			if (workbookSoftReference != null) {
-				XSSFWorkbook workbook = workbookSoftReference.get();
-				if (workbook != null) return workbook;
-			}
-
+			Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 			Section<? extends AnnotationContentType> contentSection = DefaultMarkupType.getAnnotationContentSection(markupSection, ANNOTATION_XLSX);
-			try {
-				WikiAttachment attachment = AttachmentType.getAttachment(Sections.successor(contentSection, AttachmentType.class));
-				if (attachment == null) {
-					throw CompilerMessage.error("Attachment specified at " + ANNOTATION_XLSX + " not found");
-				}
-				XSSFWorkbook workbook = new XSSFWorkbook(attachment.getInputStream());
-				markupSection.storeObject(WORKBOOK_CACHE_KEY, new SoftReference<>(workbook));
-				return workbook;
-			}
-			catch (Exception e) {
-				String message = "Exception while trying to access attached XLSX file";
-				throw CompilerMessage.error(message);
-			}
+			Section<AttachmentType> attachmentSection = Sections.successor(contentSection, AttachmentType.class);
+			return OntologyExcelTableMarkup.getWorkbookCached(markupSection, attachmentSection);
 		}
 
 		@Override
@@ -349,6 +330,31 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 		private Config getConfig(Section<ConfigAnnotationType> section) {
 			return section.getObject(CONFIG_KEY);
+		}
+	}
+
+	@NotNull
+	public static XSSFWorkbook getWorkbookCached(Section<DefaultMarkupType> markupSection, Section<AttachmentType> attachmentSection) throws CompilerMessage {
+		if (markupSection == null) throw CompilerMessage.error("Unable to get markup section"); // should not happen
+
+		SoftReference<XSSFWorkbook> workbookSoftReference = markupSection.getObject(WORKBOOK_CACHE_KEY);
+		if (workbookSoftReference != null) {
+			XSSFWorkbook workbook = workbookSoftReference.get();
+			if (workbook != null) return workbook;
+		}
+
+		try {
+			WikiAttachment attachment = AttachmentType.getAttachment(attachmentSection);
+			if (attachment == null) {
+				throw CompilerMessage.error("Attachment specified at " + ANNOTATION_XLSX + " not found");
+			}
+			XSSFWorkbook workbook = new XSSFWorkbook(attachment.getInputStream());
+			markupSection.storeObject(WORKBOOK_CACHE_KEY, new SoftReference<>(workbook));
+			return workbook;
+		}
+		catch (Exception e) {
+			String message = "Exception while trying to access attached XLSX file";
+			throw CompilerMessage.error(message);
 		}
 	}
 

@@ -69,9 +69,8 @@ public class TodoExporter implements Exporter<DefaultMarkupType> {
 			XWPFParagraph paragraph = manager.getNewParagraph(DocumentBuilder.Style.code);
 			CTR ctr = paragraph.getCTP().addNewR();
 			CTRPr ctrPr = ctr.addNewRPr();
-			CTHighlight ctHighlight = CTHighlight.Factory.newInstance();
+			CTHighlight ctHighlight = ctrPr.addNewHighlight();
 			ctHighlight.setVal(getUserColor(section));
-			ctrPr.setHighlight(ctHighlight);
 			ctr.addNewT().setStringValue(line + "\n\r");
 			manager.closeParagraph();
 		}
