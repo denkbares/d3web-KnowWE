@@ -277,7 +277,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 			Section<? extends AnnotationContentType> contentSection = DefaultMarkupType.getAnnotationContentSection(markupSection, ANNOTATION_XLSX);
 			Section<AttachmentType> attachmentSection = Sections.successor(contentSection, AttachmentType.class);
-			return OntologyExcelTableMarkup.getWorkbookCached(markupSection, attachmentSection);
+			return OntologyExcelTableMarkup.getWorkbookCached(attachmentSection);
 		}
 
 		@Override
@@ -333,11 +333,20 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 		}
 	}
 
+	/**
+	 * Get the cached XSSF workbook for the given xlsx attachment.
+	 * <p>
+	 * TODO: Should maybe be moved to some util class
+	 *
+	 * @param attachmentSection the attachment section with the reference to an xlsx file
+	 * @return the cached XSSF workbook for the given attachment
+	 */
 	@NotNull
-	public static XSSFWorkbook getWorkbookCached(Section<DefaultMarkupType> markupSection, Section<AttachmentType> attachmentSection) throws CompilerMessage {
-		if (markupSection == null) throw CompilerMessage.error("Unable to get markup section"); // should not happen
-
-		SoftReference<XSSFWorkbook> workbookSoftReference = markupSection.getObject(WORKBOOK_CACHE_KEY);
+	public static XSSFWorkbook getWorkbookCached(Section<AttachmentType> attachmentSection) throws CompilerMessage {
+		if (attachmentSection == null) {
+			throw CompilerMessage.error("Unable to find attachment definition"); // should not happen
+		}
+		SoftReference<XSSFWorkbook> workbookSoftReference = attachmentSection.getObject(WORKBOOK_CACHE_KEY);
 		if (workbookSoftReference != null) {
 			XSSFWorkbook workbook = workbookSoftReference.get();
 			if (workbook != null) return workbook;
@@ -349,7 +358,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 				throw CompilerMessage.error("Attachment specified at " + ANNOTATION_XLSX + " not found");
 			}
 			XSSFWorkbook workbook = new XSSFWorkbook(attachment.getInputStream());
-			markupSection.storeObject(WORKBOOK_CACHE_KEY, new SoftReference<>(workbook));
+			attachmentSection.storeObject(WORKBOOK_CACHE_KEY, new SoftReference<>(workbook));
 			return workbook;
 		}
 		catch (Exception e) {
