@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,7 @@ public class RecompileAction extends AbstractAction {
 			failUnexpected(context, "Unknown command for RecompileAction: " + command);
 		}
 
-		recompile(article, all);
+		recompile(article, all, "Manually triggered by user " + context.getUserName());
 	}
 
 	/**
@@ -79,6 +80,17 @@ public class RecompileAction extends AbstractAction {
 	 * @param recompileAll whether the compilers compiling anything on the articles should also recompile
 	 */
 	public static void recompile(Article article, boolean recompileAll) {
+		recompile(article, recompileAll, null);
+	}
+
+	/**
+	 * Recompiles the given article, optionally including all compilers compiling the given article
+	 *
+	 * @param article      the article to recompile
+	 * @param recompileAll whether the compilers compiling anything on the articles should also recompile
+	 * @param reason optional reason why the recompile was requested
+	 */
+	public static void recompile(Article article, boolean recompileAll, @Nullable String reason) {
 		ArticleManager articleManager = article.getArticleManager();
 		Objects.requireNonNull(articleManager);
 		articleManager.open();
@@ -86,6 +98,7 @@ public class RecompileAction extends AbstractAction {
 			if (recompileAll) {
 				List<Article> articlesToRecompile = getCompilerArticles(article).toList();
 				LOGGER.info("Starting FULL recompilation for article " + article.getTitle() +
+						(reason == null ? "" : "\nReason: " + reason) +
 						"\nRecompiling the following " + Strings.pluralOf(articlesToRecompile.size(), "article") + ": " +
 						articlesToRecompile.stream()
 								.map(Article::getTitle)
@@ -96,7 +109,7 @@ public class RecompileAction extends AbstractAction {
 				}
 			}
 			else {
-				LOGGER.info("Starting recompilation of article " + article.getTitle());
+				LOGGER.info("Starting recompilation of article " + article.getTitle() + (reason == null ? "" : ". Reason: " + reason));
 				Article recompiledArticle = articleManager.registerArticle(article.getTitle(), article.getText());
 				EventManager.getInstance().fireEvent(new FullParseEvent(recompiledArticle));
 			}
