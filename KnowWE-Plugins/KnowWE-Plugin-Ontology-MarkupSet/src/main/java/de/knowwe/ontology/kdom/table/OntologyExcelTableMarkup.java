@@ -362,7 +362,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			return workbook;
 		}
 		catch (Exception e) {
-			String message = "Exception while trying to access attached XLSX file";
+			String message = e.getClass().getSimpleName() + " while trying to access attached XLSX file" + (Strings.isBlank(e.getMessage()) ? "" : ": " +  e.getMessage());
 			throw CompilerMessage.error(message);
 		}
 	}
