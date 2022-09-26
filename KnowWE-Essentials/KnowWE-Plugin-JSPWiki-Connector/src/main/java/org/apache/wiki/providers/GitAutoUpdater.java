@@ -272,6 +272,7 @@ public class GitAutoUpdater {
 			Compilers.awaitTermination(Compilers.getCompilerManager(Environment.DEFAULT_WEB));
 			LOGGER.info("Compile ends");
 			running = false;
+			Git.shutdown();
 		}
 	}
 
