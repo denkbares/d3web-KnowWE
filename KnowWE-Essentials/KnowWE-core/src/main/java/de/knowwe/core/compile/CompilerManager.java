@@ -211,6 +211,7 @@ public class CompilerManager {
 				synchronized (lock) {
 					running = null;
 					currentlyCompiledArticles.clear();
+					currentlyCompiledPriority.clear();
 					LOGGER.info("Compiled " + added.size() + " added and " + removed.size()
 							+ " removed section" + (removed.size() == 1 ? "" : "s")
 							+ " after " + stopwatch.getDisplay());
