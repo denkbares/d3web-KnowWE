@@ -191,6 +191,7 @@ public class CompilerManager {
 			setCompiling(added);
 			setCompiling(removed);
 			running = compilers.groupIterator();
+			compilers.forEach(compiler -> setCurrentCompilePriority(compiler, Priority.AWAIT_COMPILATION));
 			compilationCount++;
 			noRunningCompileThreadsFoundSince.reset();
 		}
@@ -316,8 +317,8 @@ public class CompilerManager {
 	}
 
 	/**
-	 * Returns the compile priority the given Compiler currently operates in or <tt>null</tt>, if the compiler currently
-	 * is not compiling.
+	 * Returns the priority the given Compiler currently operates in or <tt>null</tt>, if the compiler has
+	 * finished compiling for the current compilation. Compilers that have not started com
 	 *
 	 * @param compiler the compiler for which to check the compilation priority
 	 */

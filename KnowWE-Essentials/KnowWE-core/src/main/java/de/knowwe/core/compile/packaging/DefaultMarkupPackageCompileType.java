@@ -65,9 +65,10 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 
 	@Override
 	public String[] getPackagesToCompile(Section<? extends PackageCompileType> section) {
+		PackageRegistrationCompiler packageRegistrationCompiler = Compilers.getPackageRegistrationCompiler(section);
 		ArticleManager articleManager = section.getArticleManager();
-		if (articleManager != null && !articleManager.getCompilerManager().isCompiling()) {
-			// use cache as soon as we are done compiling and the list can no longer change
+		if (articleManager != null && /*!articleManager.getCompilerManager().isCompiling()*/articleManager.getCompilerManager().getCurrentCompilePriority(packageRegistrationCompiler) == null) {
+			// use cache as soon as we are done compiling package registrations and the list can no longer change
 			return CompilationLocal.getCached(articleManager.getCompilerManager(), "packagesToCompile_" + section.getID(),
 					() -> resolvePackagesToCompile(section));
 		}

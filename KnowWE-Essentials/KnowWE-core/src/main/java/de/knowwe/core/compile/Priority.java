@@ -31,6 +31,9 @@ public final class Priority implements Comparable<Priority> {
 
 	private static final HashMap<Integer, Priority> registeredPrioritiesHash = new HashMap<>();
 
+	// not an actual priority, just to signal that the compiler is waiting to start compiling
+	public static final Priority AWAIT_COMPILATION = new Priority(Integer.MIN_VALUE);
+
 	// creation of the compiler thread, start creating the artifacts (TerminologyManager, KnowledgeBase, Ontology, ...)
 	public static final Priority INIT = new Priority(-1000);
 
