@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.CompilationLocal;
+import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.PackageRegistrationCompiler.PackageRegistrationScript;
@@ -65,14 +66,26 @@ public class DefaultMarkupPackageCompileType extends DefaultMarkupType implement
 
 	@Override
 	public String[] getPackagesToCompile(Section<? extends PackageCompileType> section) {
-		PackageRegistrationCompiler packageRegistrationCompiler = Compilers.getPackageRegistrationCompiler(section);
 		ArticleManager articleManager = section.getArticleManager();
-		if (articleManager != null && /*!articleManager.getCompilerManager().isCompiling()*/articleManager.getCompilerManager().getCurrentCompilePriority(packageRegistrationCompiler) == null) {
-			// use cache as soon as we are done compiling package registrations and the list can no longer change
-			return CompilationLocal.getCached(articleManager.getCompilerManager(), "packagesToCompile_" + section.getID(),
-					() -> resolvePackagesToCompile(section));
+		if (articleManager != null) {
+			CompilerManager compilerManager = articleManager.getCompilerManager();
+			// after compilation is done, the package can no longer change, so it is ok to cache this result
+			if (!compilerManager.isCompiling()) {
+				return CompilationLocal.getCached(articleManager.getCompilerManager(), "packagesToCompile_" + section.getID(),
+						() -> resolvePackagesToCompile(section));
+			}
+			// between the package registration and unregistration, the package also cannot change, so we cache here too
+			else if (isBetweenPackageCompilation(section, compilerManager)) {
+				return CompilationLocal.getCached(compilerManager, "packagesToCompile_during_compilation" + section.getID(),
+						() -> resolvePackagesToCompile(section));
+			}
 		}
 		return resolvePackagesToCompile(section);
+	}
+
+	private static boolean isBetweenPackageCompilation(Section<? extends PackageCompileType> section, CompilerManager compilerManager) {
+		return compilerManager.getCurrentCompilePriority(Compilers.getPackageRegistrationCompiler(section)) == null
+				&& compilerManager.getCurrentCompilePriority(Compilers.getPackageUnregistrationCompiler(section)) == Priority.AWAIT_COMPILATION;
 	}
 
 	@NotNull
