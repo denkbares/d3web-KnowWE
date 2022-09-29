@@ -545,6 +545,7 @@ public class CompilerManager {
 		}
 		// remove the compiler, being thread-save
 		synchronized (lock) {
+			currentlyCompiledPriority.remove(compiler);
 			compilerCache.remove(compiler);
 			compilers.remove(compiler);
 		}
