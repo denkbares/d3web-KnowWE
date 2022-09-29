@@ -319,7 +319,8 @@ public class CompilerManager {
 
 	/**
 	 * Returns the priority the given Compiler currently operates in or <tt>null</tt>, if the compiler has
-	 * finished compiling for the current compilation. Compilers that have not started com
+	 * finished compiling for the current compilation. Compilers that have not started compilation for the current
+	 * compilation cycle will return the Priority AWAIT_COMPILATION.
 	 *
 	 * @param compiler the compiler for which to check the compilation priority
 	 */
