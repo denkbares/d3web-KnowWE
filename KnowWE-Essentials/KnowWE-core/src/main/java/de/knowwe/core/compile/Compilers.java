@@ -215,6 +215,22 @@ public class Compilers {
 		throw new IllegalStateException("invalid state: no package registration compiler");
 	}
 
+	@NotNull
+	public static PackageUnregistrationCompiler getPackageUnregistrationCompiler(Section<?> section) {
+		return getPackageUnregistrationCompiler(section.getArticleManager() == null
+				? KnowWEUtils.getDefaultArticleManager() : section.getArticleManager());
+	}
+
+	@NotNull
+	public static PackageUnregistrationCompiler getPackageUnregistrationCompiler(ArticleManager manager) {
+		for (Compiler compiler : manager.getCompilerManager().getCompilers()) {
+			if (compiler.getClass() == PackageUnregistrationCompiler.class) {
+				return (PackageUnregistrationCompiler) compiler;
+			}
+		}
+		throw new IllegalStateException("invalid state: no package unregistration compiler");
+	}
+
 	/**
 	 * Returns a {@link Compiler} that compiles the packages of the given section, and is an instance of the given
 	 * compiler class. If no such compiler exists, null is returned.
