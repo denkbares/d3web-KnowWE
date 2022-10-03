@@ -80,7 +80,7 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 		List<Section<?>> newNodes = Sections.successors(match);
 		for (Section<?> node : newNodes) {
 
-			List<Integer> lastPositions = node.calcPositionTil(match);
+			List<Integer> lastPositions = calcPositionTil(node, match);
 			lastPositions.addAll(match.getLastPositionInKDOM());
 			node.setLastPositionInKDOM(lastPositions);
 			node.clearPositionInKDOM();
@@ -96,6 +96,18 @@ public class IncrementalSectionizerModule implements SectionizerModule {
 			}
 		}
 		return match;
+	}
+
+	public List<Integer> calcPositionTil(Section<?> node, Section<?> end) {
+		LinkedList<Integer> positions = new LinkedList<>();
+		Section<?> temp = node;
+		Section<?> tempFather = temp.getParent();
+		while (temp != end && tempFather != null) {
+			positions.addFirst(temp.getIndexInParent());
+			temp = tempFather;
+			tempFather = temp.getParent();
+		}
+		return new ArrayList<>(positions); // for a smaller memory footprint
 	}
 
 	private Section<?> findMatchingSection(Section<?> father, Type type, String text) {
