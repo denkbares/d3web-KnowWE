@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -219,17 +217,13 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			comp = 1;
 		}
 		if (comp == 0) {
-			List<Integer> thisPos = getPositionInKDOM();
-			List<Integer> otherPos = section.getPositionInKDOM();
-			Iterator<Integer> thisIter = thisPos.iterator();
-			Iterator<Integer> otherIter = otherPos.iterator();
-
-			while (comp == 0 && thisIter.hasNext() && otherIter.hasNext()) {
-				comp = thisIter.next().compareTo(otherIter.next());
-			}
-			if (comp == 0) {
-				comp = thisPos.size() - otherPos.size();
-			}
+			comp = Integer.compare(getOffsetInArticle(), section.getOffsetInArticle());
+		}
+		if (comp == 0) {
+			comp = Integer.compare(getTextLength(), section.getTextLength());
+		}
+		if (comp == 0) {
+			comp = $(this).ancestor(section.get().getClass()).anyMatch(s -> s == section) ? 1 : -1;
 		}
 		return comp;
 	}
@@ -559,7 +553,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		if (position == null) {
 			position = calcPositionInKDOM();
 		}
-		return Collections.unmodifiableList(position);
+		return position;
 	}
 
 	void setLastPositionInKDOM(List<Integer> lastPositions) {
@@ -572,28 +566,12 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	private List<Integer> calcPositionInKDOM() {
-
-		// this can only occur in the exceptional case
-		// when Sections are created independently of articles
-		if (getArticle() == null || getArticle().getRootSection() == null) {
-			return List.of(0);
-		}
-
-		return calcPositionTil(getArticle().getRootSection());
-	}
-
-	public List<Integer> calcPositionTil(Section<?> end) {
-		LinkedList<Integer> positions = new LinkedList<>();
-		Section<?> temp = this;
-		Section<?> tempFather = temp.getParent();
-		while (temp != end && tempFather != null) {
-			List<Section<?>> childrenList = tempFather.getChildren();
-			int indexOf = getIndex(temp, childrenList);
-			positions.addFirst(indexOf);
-			temp = tempFather;
-			tempFather = temp.getParent();
-		}
-		return new ArrayList<>(positions); // for a smaller memory footprint
+		if (parent == null) return List.of();
+		List<Integer> parentPositionInKDOM = parent.getPositionInKDOM();
+		ArrayList<Integer> position = new ArrayList<>(parentPositionInKDOM.size() + 1);
+		position.addAll(parentPositionInKDOM);
+		position.add(getIndexInParent());
+		return Collections.unmodifiableList(position);
 	}
 
 	/**
@@ -604,28 +582,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	 * @return the index of this section in the parent's list of child sections
 	 */
 	public int getIndexInParent() {
-		return (parent == null) ? -1 : getIndex(this, parent.children);
-	}
-
-	/**
-	 * Calculates the index of a contained object without using the equals-method but using object identity instead.
-	 *
-	 * @param object the object to get the index for
-	 * @param list   the list of objects to search in
-	 * @return the index or -1 if the section is not contained in the list
-	 * @created 10.07.2012
-	 */
-	private int getIndex(Object object, List<?> list) {
-		int index = 0;
-		for (Object item : list) {
-			// this == comparator is on purpose on this place as this method is
-			// used in the equals method
-			if (item == object) {
-				return index;
-			}
-			index++;
-		}
-		return -1;
+		return (parent == null) ? -1 : parent.children.indexOf(this);
 	}
 
 	/**
