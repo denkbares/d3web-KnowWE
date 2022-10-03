@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -217,13 +218,17 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 			comp = 1;
 		}
 		if (comp == 0) {
-			comp = Integer.compare(getOffsetInArticle(), section.getOffsetInArticle());
-		}
-		if (comp == 0) {
-			comp = Integer.compare(getTextLength(), section.getTextLength());
-		}
-		if (comp == 0) {
-			comp = $(this).ancestor(section.get().getClass()).anyMatch(s -> s == section) ? 1 : -1;
+			List<Integer> thisPos = getPositionInKDOM();
+			List<Integer> otherPos = section.getPositionInKDOM();
+			Iterator<Integer> thisIter = thisPos.iterator();
+			Iterator<Integer> otherIter = otherPos.iterator();
+
+			while (comp == 0 && thisIter.hasNext() && otherIter.hasNext()) {
+				comp = thisIter.next().compareTo(otherIter.next());
+			}
+			if (comp == 0) {
+				comp = thisPos.size() - otherPos.size();
+			}
 		}
 		return comp;
 	}
@@ -431,9 +436,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	private String getSignatureString() {
-		List<Integer> positionInKDOM = this.getPositionInKDOM();
-		String positionInKDOMString = positionInKDOM.toString();
-		return getWeb() + getTitle() + positionInKDOMString + this.getText();
+		return getWeb() + getTitle() + getOffsetInArticle() + this.getText();
 	}
 
 	private boolean hasID() {
