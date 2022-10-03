@@ -560,12 +560,11 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	void setLastPositionInKDOM(List<Integer> lastPositions) {
-		this.lastPositions = lastPositions;
+		this.lastPositions = Collections.unmodifiableList(lastPositions);
 	}
 
 	public List<Integer> getLastPositionInKDOM() {
-		return lastPositions == null ? null :
-				Collections.unmodifiableList(lastPositions);
+		return lastPositions == null ? null : lastPositions;
 	}
 
 	private List<Integer> calcPositionInKDOM() {
