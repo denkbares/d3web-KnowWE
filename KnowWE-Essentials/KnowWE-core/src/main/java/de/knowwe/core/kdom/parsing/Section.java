@@ -436,7 +436,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	private String getSignatureString() {
-		return getWeb() + getTitle() + getOffsetInArticle() + this.getText();
+		return getWeb() + getTitle() + getPositionInKDOM() + this.getText();
 	}
 
 	private boolean hasID() {
@@ -554,7 +554,11 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 
 	public List<Integer> getPositionInKDOM() {
 		if (position == null) {
-			position = calcPositionInKDOM();
+			List<Integer> position = calcPositionInKDOM();
+			if (article == null || !article.isSectionized()) {
+				return position; // don't cache result if article is not fully done
+			}
+			this.position = position;
 		}
 		return position;
 	}
@@ -613,6 +617,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		if (section.getArticle().isTemporary()) return idCandidate;
 		synchronized (sectionMap) {
 			Section<?> existingSection = sectionMap.get(idCandidate);
+			if (existingSection == section) return idCandidate; // already registered
 			while (existingSection != null || idCandidate == -1) {
 				++idCandidate;
 				existingSection = sectionMap.get(idCandidate);

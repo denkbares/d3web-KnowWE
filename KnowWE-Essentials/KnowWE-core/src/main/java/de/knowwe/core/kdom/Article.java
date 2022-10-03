@@ -52,6 +52,7 @@ public final class Article {
 
 	private final String web;
 	private final String text;
+	private boolean sectionized = false;
 
 	/**
 	 * The section representing the root-node of the KDOM-tree
@@ -144,6 +145,11 @@ public final class Article {
 		else {
 			LOGGER.info("Sectionized article '" + title + "' in " + time + "ms");
 		}
+		this.sectionized = true;
+	}
+
+	public boolean isSectionized() {
+		return sectionized;
 	}
 
 	public void clearLastVersion() {
@@ -232,7 +238,7 @@ public final class Article {
 
 	@Override
 	public String toString() {
-		return "Article: " + title + "\n----\n" + rootSection.getText();
+		return "Article: " + title + "\n----\n" + text;
 	}
 
 	public boolean isFullParse() {
