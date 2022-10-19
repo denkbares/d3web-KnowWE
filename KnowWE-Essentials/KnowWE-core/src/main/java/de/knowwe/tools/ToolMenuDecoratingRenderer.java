@@ -18,6 +18,8 @@
  */
 package de.knowwe.tools;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import de.knowwe.core.kdom.parsing.Section;
@@ -76,23 +78,21 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 			String headerID = UUID.randomUUID().toString();
 			string.appendHtmlTag("span", "class", "toolMenuDecorated");
 
-			String[] attributes = new String[toolMenuAction == null ? 8 : 10];
-			attributes[0] = "style";
-			attributes[1] = "position:absolute";
-			attributes[2] = "class";
-			attributes[3] = "toolsMenuDecorator";
-			attributes[4] = "id";
-			attributes[5] = headerID;
-			attributes[6] = "toolMenuIdentifier";
-			attributes[7] = toolMenuID;
+			List<String> attributes = new ArrayList<>();
+			attributes.add("class");
+			attributes.add("toolsMenuDecorator2");
+			attributes.add("id");
+			attributes.add(headerID);
+			attributes.add("toolMenuIdentifier");
+			attributes.add(toolMenuID);
 			if (toolMenuAction != null) {
-				attributes[8] = "toolMenuAction";
-				attributes[9] = toolMenuAction;
+				attributes.add("toolMenuAction");
+				attributes.add(toolMenuAction);
 			}
-			string.appendHtmlTag("span", attributes);
+			string.appendHtmlTag("span", attributes.toArray(new String[0]));
+			string.append(innerText);
 			string.appendHtmlTag("/span");
 		}
-		string.append(innerText);
 		if (hasTools) {
 			string.appendHtmlTag("/span");
 		}
