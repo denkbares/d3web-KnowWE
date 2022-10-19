@@ -72,23 +72,25 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 		'z-index': '10000',
 		'position': 'fixed'
 	};
-	if (nodeRect.top > windowHeight - nodeRect.top + nodeRect.height) {
+  const mouseMoveEvent = 'mousemove.toolmenu';
+  const mouseMovePadding = 5;
+  if (nodeRect.top > windowHeight - nodeRect.top + nodeRect.height) {
 		// show above
 		styles.bottom = windowHeight - nodeRect.top - 1 + 'px';
-		$node.unbind('mouseleave').mouseleave(function (event) {
-			if (event.clientY >= nodeRect.top + 5) {
+		jq$(document.body).unbind(mouseMoveEvent).bind(mouseMoveEvent, function (event) {
+      if (event.clientY > nodeRect.bottom || event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding) {
 				_TM.hideToolsPopupMenu();
+			  jq$(this).unbind(mouseMoveEvent);
 			}
-			jq$(this).unbind('mouseleave');
 		});
 	} else {
 		// show below
 		styles.top = nodeRect.top + nodeRect.height + 'px';
-		$node.unbind('mouseleave').mouseleave(function (event) {
-			if (event.clientY <= nodeRect.bottom - 5) {
+    jq$(document.body).unbind(mouseMoveEvent).bind(mouseMoveEvent, function (event) {
+			if (event.clientY < nodeRect.top || event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding) {
 				_TM.hideToolsPopupMenu();
+			  jq$(this).unbind(mouseMoveEvent);
 			}
-			jq$(this).unbind('mouseleave');
 		});
 	}
 	if (nodeRect.left > windowWidth - nodeRect.left + nodeRect.width) {
@@ -175,6 +177,7 @@ ToolMenu.prototype.hideToolsPopupMenu = function () {
 	const old = jq$('#toolPopupMenuID')[0];
 	if (old) {
 		old.remove();
+    jq$(document.body).unbind(mouseMoveEvent)
 	}
 };
 
