@@ -25,33 +25,27 @@ function ToolMenu() {
 ToolMenu.prototype.decorateToolMenus = function ($parent) {
 	if (!$parent) $parent = jq$('.toolMenuParent');
 	if ($parent.attr("id") === "compositeEdit") _TM.adjustSingletonMenus();
-	const decorators = $parent.find('.toolsMenuDecorator');
-	decorators.each(function () {
-		const a = jq$(this);
-		if (a.data('toolMenuDecorated') === 'true') return;
-		a.parent().mouseenter(function () {
-			a.css('visibility', 'visible');
-		});
-		a.parent().mouseleave(function () {
-			a.css('visibility', 'hidden');
-		});
-		a.click(function () {
-			_TM.showToolPopupMenu(a);
-		});
-		a.dblclick(function () {
+	$parent.find('.toolsMenuDecorator, .toolsMenuDecorator2').each(function () {
+		const $decorator = jq$(this);
+		if ($decorator.data('toolMenuDecorated') === 'true') return;
+		if ($decorator.is('.toolsMenuDecorator')) {
+			$decorator.parent().hover(() => $decorator.css('visibility', 'visible'), () =>  $decorator.css('visibility', 'hidden'));
+		} else { // toolsMenuDecorator2
+			$decorator.parent().hover(() => $decorator.css("border-color", "grey"), () => $decorator.css("border-color", "transparent"));
+		}
+		$decorator.click(() => _TM.showToolPopupMenu($decorator));
+		$decorator.dblclick(() => {
 			_TM.hideToolsPopupMenu();
 			_TM.selectTerm(this);
 		});
-		a.data('toolMenuDecorated', 'true');
+		$decorator.data('toolMenuDecorated', 'true');
 		//prevent "click through" in composite edit
-		a.click(function (e) {
-			e.stopPropagation();
-		});
+		$decorator.click(event => event.stopPropagation());
 	});
 };
 
 ToolMenu.prototype.selectTerm = function (element) {
-	let clickableTerm = jq$(element).parent().find('.clickable-term')[0] || jq$(element).parents('.toolMenuDecorated')[0];
+	let clickableTerm = jq$(element).parent().find('.clickable-term')[0] || jq$(element).parents('.toolMenuDecorated')[0] ||  jq$(element)[0];
 	const selection = window.getSelection();
 	const range = document.createRange();
 	range.selectNode(clickableTerm);
@@ -66,7 +60,7 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 	// hide tool menus opened for other terms
 	const lastMenuId = this.lastMenuId;
 	this.hideToolsPopupMenu();
-	const currentMenuId = jq$($node).attr('id');
+	const currentMenuId = jq$($node).attr('id') || jq$($node).data('identifier');
 	if (lastMenuId === currentMenuId) return;
 	this.lastMenuId = currentMenuId;
 
