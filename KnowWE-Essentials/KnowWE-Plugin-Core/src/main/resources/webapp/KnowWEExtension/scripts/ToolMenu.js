@@ -53,6 +53,8 @@ ToolMenu.prototype.selectTerm = function (element) {
 	selection.addRange(range);
 };
 
+ToolMenu.mouseMoveEvent = 'mousemove.toolmenu';
+
 ToolMenu.prototype.showToolPopupMenu = function ($node) {
 	// we hide all open tooltipster tool tips to reduce clutter
 	jq$('.tooltipstered').tooltipster('hide');
@@ -72,24 +74,23 @@ ToolMenu.prototype.showToolPopupMenu = function ($node) {
 		'z-index': '10000',
 		'position': 'fixed'
 	};
-  const mouseMoveEvent = 'mousemove.toolmenu';
   const mouseMovePadding = 5;
   if (nodeRect.top > windowHeight - nodeRect.top + nodeRect.height) {
 		// show above
 		styles.bottom = windowHeight - nodeRect.top - 1 + 'px';
-		jq$(document.body).unbind(mouseMoveEvent).bind(mouseMoveEvent, function (event) {
+		jq$(document.body).unbind(ToolMenu.mouseMoveEvent).bind(ToolMenu.mouseMoveEvent, function (event) {
       if (event.clientY > nodeRect.bottom || event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding) {
 				_TM.hideToolsPopupMenu();
-			  jq$(this).unbind(mouseMoveEvent);
+			  jq$(this).unbind(ToolMenu.mouseMoveEvent);
 			}
 		});
 	} else {
 		// show below
 		styles.top = nodeRect.top + nodeRect.height + 'px';
-    jq$(document.body).unbind(mouseMoveEvent).bind(mouseMoveEvent, function (event) {
+    jq$(document.body).unbind(ToolMenu.mouseMoveEvent).bind(ToolMenu.mouseMoveEvent, function (event) {
 			if (event.clientY < nodeRect.top || event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding) {
 				_TM.hideToolsPopupMenu();
-			  jq$(this).unbind(mouseMoveEvent);
+			  jq$(this).unbind(ToolMenu.mouseMoveEvent);
 			}
 		});
 	}
@@ -177,7 +178,7 @@ ToolMenu.prototype.hideToolsPopupMenu = function () {
 	const old = jq$('#toolPopupMenuID')[0];
 	if (old) {
 		old.remove();
-    jq$(document.body).unbind(mouseMoveEvent)
+    jq$(document.body).unbind(ToolMenu.mouseMoveEvent)
 	}
 };
 
