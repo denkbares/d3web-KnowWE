@@ -79,7 +79,8 @@ ToolMenu.prototype.showToolPopupMenu = function($node) {
     // show above
     styles.bottom = windowHeight - nodeRect.top - 1 + 'px';
     jq$(document.body).unbind(ToolMenu.mouseMoveEvent).bind(ToolMenu.mouseMoveEvent, function(event) {
-      if (event.clientY > nodeRect.bottom || event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding) {
+      if (event.clientY > nodeRect.bottom
+        || (event.clientY > nodeRect.top && (event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding))) {
         _TM.hideToolsPopupMenu();
         jq$(this).unbind(ToolMenu.mouseMoveEvent);
       }
@@ -88,7 +89,8 @@ ToolMenu.prototype.showToolPopupMenu = function($node) {
     // show below
     styles.top = nodeRect.top + nodeRect.height + 'px';
     jq$(document.body).unbind(ToolMenu.mouseMoveEvent).bind(ToolMenu.mouseMoveEvent, function(event) {
-      if (event.clientY < nodeRect.top || event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding) {
+      if (event.clientY < nodeRect.top ||
+        (event.clientY < nodeRect.bottom && (event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding))) {
         _TM.hideToolsPopupMenu();
         jq$(this).unbind(ToolMenu.mouseMoveEvent);
       }
