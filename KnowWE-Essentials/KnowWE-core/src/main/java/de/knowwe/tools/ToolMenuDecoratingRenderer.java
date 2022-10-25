@@ -92,9 +92,10 @@ public class ToolMenuDecoratingRenderer implements Renderer {
 			string.appendHtmlTag("span", attributes.toArray(new String[0]));
 			string.append(innerText);
 			string.appendHtmlTag("/span");
-		}
-		if (hasTools) {
 			string.appendHtmlTag("/span");
+		}
+		else {
+			string.append(innerText);
 		}
 	}
 }
