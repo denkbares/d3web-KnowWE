@@ -29,6 +29,10 @@ import org.json.JSONObject;
 
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.GroupingCompiler;
+import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.Term;
@@ -65,6 +69,9 @@ public class GetRenamingInfoAction extends AbstractAction {
 	}
 
 	protected Identifier getIdentifier(Section<Term> section) {
+		TermCompiler compiler = Compilers.getCompilers(section, TermCompiler.class).stream().filter(c -> c instanceof PackageCompiler).findFirst().orElse(null);
+		if (compiler != null)
+			return section.get().getTermIdentifier(compiler, section);
 		return section.get().getTermIdentifier(Sections.cast(section, Term.class));
 	}
 

@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Identifier;
-import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.terminology.RenamableTerm;
@@ -38,11 +37,8 @@ import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.objects.TermUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.Message;
 import de.knowwe.event.TermRenamingFinishEvent;
 import de.knowwe.event.TermRenamingStartEvent;
-import de.knowwe.notification.NotificationManager;
-import de.knowwe.notification.StandardNotification;
 
 /**
  * Action which renames a term by e.g. renaming all definitions and references.
@@ -74,16 +70,26 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 		Identifier termIdentifier = Identifier.fromExternalForm(term);
 		Identifier replacementIdentifier = createReplacingIdentifier(termIdentifier, replacement);
 
-
-		if ("false".equals(force) && TermUtils.getTermIdentifiers(context).contains(replacementIdentifier)) {
-			writeAlreadyExistsResponse(context, termIdentifier, replacementIdentifier);
-			return;
-		}
-
 		Collection<TermCompiler> compilers = Compilers.getCompilers(Sections.get(sectionId), TermCompiler.class);
 		Collection<RenamingCommand> renamingCommands = getRenamingCommands(termIdentifier, replacementIdentifier, compilers);
 
-		checkEditRights(context, renamingCommands);
+		Set<Article> articlesWithoutRenamingRights = checkEditRights(context, renamingCommands);
+
+		if ("false".equals(force)) {
+			boolean alreadyDefinedTerm = TermUtils.getTermIdentifiers(context).contains(replacementIdentifier);
+			if (alreadyDefinedTerm && articlesWithoutRenamingRights.isEmpty()) {
+				writeAlreadyExistsResponse(context, termIdentifier, replacementIdentifier);
+				return;
+			}
+			if (!alreadyDefinedTerm && !articlesWithoutRenamingRights.isEmpty()) {
+				writeMissingEditRightsResponse(context, termIdentifier, replacementIdentifier, articlesWithoutRenamingRights);
+				return;
+			}
+			if (alreadyDefinedTerm) {
+				writeAlreadyExistsMissingEditRightsResponse(context, termIdentifier, replacementIdentifier, articlesWithoutRenamingRights);
+				return;
+			}
+		}
 
 		ArticleManager mgr = context.getArticleManager();
 		for (RenamingCommand command : renamingCommands) {
@@ -109,16 +115,9 @@ public class TermRenamingAction extends AbstractTermRenamingAction {
 		return List.of(new RenamingCommand(termIdentifier, replacementIdentifier, registrationsByArticle));
 	}
 
-	private void checkEditRights(UserActionContext context, Collection<RenamingCommand> renamingCommands) throws IOException {
-		Set<Article> articlesWithoutEditRights = renamingCommands.stream()
+	private Set<Article> checkEditRights(UserActionContext context, Collection<RenamingCommand> renamingCommands) {
+		return renamingCommands.stream()
 				.flatMap(c -> getArticlesWithoutEditRights(c.registrationsByArticle, context).stream())
 				.collect(Collectors.toSet());
-
-		if (!articlesWithoutEditRights.isEmpty()) {
-			String errorMessage = "You are not allowed to rename this term, because you do not have permission to " +
-					"edit all articles on which this term occurs: \n" + Strings.concat(", ", articlesWithoutEditRights);
-			NotificationManager.addNotification(context, new StandardNotification(errorMessage, Message.Type.ERROR));
-			fail(context, 403, errorMessage);
-		}
 	}
 }

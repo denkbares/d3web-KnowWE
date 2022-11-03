@@ -188,6 +188,28 @@ KNOWWE.plugin.renaming = function() {
               KNOWWE.helper.observer.notify("renamed");
               KNOWWE.core.util.reloadPage(request);
             }
+            if (jsonResponse.missingEditRights) {
+              if (jsonResponse.noForce) {
+                alert('You are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article).');
+                KNOWWE.core.util.reloadPage(request);
+              } else if (confirm('You are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article). \nDo you want to rename all possible ones? WARNING: This will may cause failures in the wiki.\nThe terms used in these articles can not be renamed: ' + jsonResponse.articles)) {
+                options.forceRename = true;
+                renameTerms(options);
+              } else {
+                KNOWWE.core.util.reloadPage(request);
+              }
+            }
+            if (jsonResponse.alreadyExistsMissingEditRights) {
+              if (jsonResponse.noForce) {
+                alert('A term with this name already exists and you are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article)');
+                KNOWWE.core.util.reloadPage(request);
+              } else if (confirm('A term with this name already exists and you are not allowed to rename all occurrences of this term (e.g. because it is used in an attached article). Are you sure you want to merge both terms and rename all possible ones? WARNING: This will may cause failures in the wiki.?\nThe terms used in these articles can not be renamed: ' + jsonResponse.articles)) {
+                options.forceRename = true;
+                renameTerms(options);
+              } else {
+                KNOWWE.core.util.reloadPage(request);
+              }
+            }
           }
         },
 

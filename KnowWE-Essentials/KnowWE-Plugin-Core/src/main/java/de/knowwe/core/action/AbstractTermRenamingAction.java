@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
@@ -32,14 +33,17 @@ import de.knowwe.core.utils.KnowWEUtils;
 public abstract class AbstractTermRenamingAction extends AbstractAction {
 
 	public static final String ALREADY_EXISTS = "alreadyExists";
+	public static final String MISSING_EDIT_RIGHTS = "missingEditRights";
+	public static final String ALREADY_EXISTS_MISSING_EDIT_RIGHTS = "alreadyExistsMissingEditRights";
 	public static final String SAME = "same";
 	public static final String NO_FORCE = "noForce";
+	private static final String ARTICLES = "articles";
 
 	protected void executeRenamingCommands(UserActionContext context, Collection<RenamingCommand> renamingCommands) throws IOException {
 
 		Map<Article, Map<String, String>> nodesMapByArticle = new HashMap<>();
 		for (RenamingCommand renamingCommand : renamingCommands) {
-			appendReplacements(renamingCommand, nodesMapByArticle);
+			appendReplacements(context, renamingCommand, nodesMapByArticle);
 		}
 
 		performRenaming(nodesMapByArticle, context);
@@ -66,11 +70,12 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 				.userCanEditArticle(article.getTitle(), context.getRequest());
 	}
 
-	protected void appendReplacements(RenamingCommand renamingCommand, Map<Article, Map<String, String>> nodesMapByArticle) {
+	protected void appendReplacements(UserActionContext context, RenamingCommand renamingCommand, Map<Article, Map<String, String>> nodesMapByArticle) {
 		Map<Article, Set<Section<? extends RenamableTerm>>> registrations = renamingCommand.registrationsByArticle;
 		for (Article article : registrations.keySet()) {
 			Map<String, String> nodesMap = nodesMapByArticle.computeIfAbsent(article, k -> new HashMap<>());
 			for (Section<? extends RenamableTerm> termSection : registrations.get(article)) {
+				if (!KnowWEUtils.canWrite(termSection, context)) continue;
 				if (!termSection.get().allowRename(termSection)) continue;
 				String sectionTextAfterRename = termSection.get()
 						.getSectionTextAfterRename(termSection, renamingCommand.termIdentifier, renamingCommand.replacementIdentifier);
@@ -125,6 +130,24 @@ public abstract class AbstractTermRenamingAction extends AbstractAction {
 		response.put(SAME, termIdentifier.equals(replacementIdentifier));
 		response.write(context.getWriter());
 	}
+
+	protected void writeMissingEditRightsResponse(UserActionContext context, Identifier termIdentifier, Identifier replacementIdentifier, Set<Article> articlesWithoutRenamingRights) throws IOException {
+		context.setContentType(Action.JSON);
+		JSONObject response = new JSONObject();
+		response.put(MISSING_EDIT_RIGHTS, true);
+		response.put(SAME, termIdentifier.equals(replacementIdentifier));
+		response.put(ARTICLES, articlesWithoutRenamingRights.stream().map(Article::getTitle).collect(Collectors.joining(", ")));
+		response.write(context.getWriter());
+	}
+
+	protected void writeAlreadyExistsMissingEditRightsResponse(UserActionContext context, Identifier termIdentifier, Identifier replacementIdentifier, Set<Article> articlesWithoutRenamingRights) throws IOException {
+		context.setContentType(Action.JSON);
+		JSONObject response = new JSONObject();
+		response.put(ALREADY_EXISTS_MISSING_EDIT_RIGHTS, true);
+		response.put(SAME, termIdentifier.equals(replacementIdentifier));
+		response.write(context.getWriter());
+	}
+
 
 	protected void writeAlreadyExistsNoForceResponse(UserActionContext context, Identifier termIdentifier, Identifier replacementIdentifier) throws IOException {
 		context.setContentType(Action.JSON);
