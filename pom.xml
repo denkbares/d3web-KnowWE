@@ -23,7 +23,7 @@
 
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
-	<version>12.10-SNAPSHOT</version>
+	<version>12.11-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Open Source KnowWE parent</description>
 
@@ -31,10 +31,10 @@
 		<denkbares.version>${project.version}</denkbares.version>
 		<d3web.version>${project.version}</d3web.version>
 		<knowwe.version>${project.version}</knowwe.version>
-		<konap.version>12.10-SNAPSHOT</konap.version>
-		<ssp.version>3.11-SNAPSHOT</ssp.version>
-		<mate.version>2.12-SNAPSHOT</mate.version>
-		<jspwiki.version>2.11.3-SNAPSHOT</jspwiki.version>
+		<konap.version>12.11-SNAPSHOT</konap.version>
+		<ssp.version>3.12-SNAPSHOT</ssp.version>
+		<mate.version>2.13-SNAPSHOT</mate.version>
+		<jspwiki.version>2.11.4-SNAPSHOT</jspwiki.version>
 		<selenium.version>3.13.0</selenium.version>
 		<tomcat.version>9.0.13</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
