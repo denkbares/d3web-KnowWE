@@ -181,7 +181,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			}
 
 			File newFile = findAttachmentFile(att.getParentName(), att.getFileName());
-			Boolean ignored = ignoreNode.checkIgnored(newFile.getName(), newFile.isDirectory());
+			Boolean ignored = ignoreNode.checkIgnored(getPath(att), newFile.isDirectory());
 			boolean add = !newFile.exists() && (ignored == null || !ignored);
 			try (OutputStream out = new FileOutputStream(newFile)) {
 				log.info("Uploading attachment " + att.getFileName() + " to page " + att.getParentName());
@@ -279,7 +279,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			try {
 				InputStream ret = null;
 				AttachmentCacheItem cacheItem = cache.getAttachment(att);
-				Boolean ignored = ignoreNode.checkIgnored(att.getName(), false);
+				Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
 				if (ignored != null && ignored) {
 					ret = new FileInputStream(attFile);
 				}
@@ -477,7 +477,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			att.setVersion(version);
 			File attFile = findAttachmentFile(page.getName(), name);
 			if (attFile.exists()) {
-				Boolean ignored = ignoreNode.checkIgnored(attFile.getName(), false);
+				Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
 				if (ignored != null && ignored) {
 					att.setVersion(1);
 					return att;
@@ -528,7 +528,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				try {
 					File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
 					if (attFile.exists()) {
-						Boolean ignored = ignoreNode.checkIgnored(attFile.getName(), false);
+						Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
 						if (ignored == null || !ignored) {
 							Git git = new Git(repository);
 							try {
