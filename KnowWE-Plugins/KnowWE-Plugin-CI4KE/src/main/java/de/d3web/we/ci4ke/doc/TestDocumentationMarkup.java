@@ -54,7 +54,7 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 		this.setRenderer(new TestDocumentationRenderer());
 	}
 
-	class TestDocumentationRenderer extends DefaultMarkupRenderer {
+	static class TestDocumentationRenderer extends DefaultMarkupRenderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
@@ -147,7 +147,7 @@ public class TestDocumentationMarkup extends DefaultMarkupType {
 			if (objectClass == null) {
 				testObjectName = "Void";
 			}
-			if (Article.class.isAssignableFrom(objectClass)) {
+			else if (Article.class.isAssignableFrom(objectClass)) {
 				testObjectName = "Article";
 			}
 			else if (PackageManager.class.isAssignableFrom(objectClass)) {
