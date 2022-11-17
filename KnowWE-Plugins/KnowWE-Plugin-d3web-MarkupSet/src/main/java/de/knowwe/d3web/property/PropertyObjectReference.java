@@ -41,6 +41,7 @@ import de.d3web.we.object.D3webTerm;
 import de.d3web.we.object.D3webTermReference;
 import de.d3web.we.object.NamedObjectReference;
 import de.d3web.we.object.QuestionReference;
+import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.objects.Term;
@@ -198,7 +199,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 	public static class PropertyAnswerReference extends AnswerReference {
 
 		public PropertyAnswerReference() {
-			this.addCompileScript(new WildcardAnswerErrorRemover());
+			this.addCompileScript(Priority.LOWEST, new WildcardAnswerErrorRemover());
 		}
 
 		@Override
