@@ -58,8 +58,7 @@ public class RenamingToolProvider implements ToolProvider {
 		Section<RenamableTerm> termSection = Sections.cast(section, RenamableTerm.class);
 		Collection<TermCompiler> compilers = Compilers.getCompilersWithCompileScript(section, TermCompiler.class)
 				.stream()
-				.filter(c -> isCompatibleCompiler(c, termSection))
-				.collect(Collectors.toList());
+				.filter(c -> isCompatibleCompiler(c, termSection)).toList();
 		return !compilers.isEmpty()
 				&& compilers.stream()
 				.anyMatch(c -> !c.getTerminologyManager()
