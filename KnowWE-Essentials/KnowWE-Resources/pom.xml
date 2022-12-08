@@ -43,6 +43,7 @@
 							<artifactId>jspwiki-knowwe-war</artifactId>
 							<excludes>
 								<exclude>WEB-INF/classes/jspwiki-custom.properties</exclude>
+								<exclude>WEB-INF/classes/jspwiki-custom-jspwiki.properties</exclude>
 								<exclude>WEB-INF/lib/commons-*.jar</exclude>
 								<exclude>WEB-INF/lib/slf4j-log4j12-*.jar</exclude>
 								<exclude>WEB-INF/lib/slf4j-api-*.jar</exclude>
