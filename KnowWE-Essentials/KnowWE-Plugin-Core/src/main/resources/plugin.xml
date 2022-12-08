@@ -123,7 +123,6 @@
 		<parameter id="scope" value="SolutionReference" />
 		<parameter id="scope" value="NamedObjectReference" />
 		<parameter id="scope" value="AbstractIRITermDefinition" />
-		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
 		<parameter id="scope" value="CellContent" />
@@ -393,7 +392,6 @@
 		<parameter id="scope" value="SolutionReference" />
 		<parameter id="scope" value="NamedObjectReference" />
 		<parameter id="scope" value="AbstractIRITermDefinition" />
-		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
 		<parameter id="scope" value="CellContent" />
@@ -421,7 +419,6 @@
 		<parameter id="scope" value="SolutionReference" />
 		<parameter id="scope" value="NamedObjectReference" />
 		<parameter id="scope" value="AbstractIRITermDefinition" />
-		<parameter id="scope" value="IRITermReference" />
 		<parameter id="scope" value="FlowchartOrderReference" />
 		<parameter id="scope" value="PackageTerm" />
 		<parameter id="scope" value="CellContent" />
