@@ -43,6 +43,7 @@ import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
@@ -71,6 +72,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	protected static final String PATH_SEPARATOR = "/";
 
 	private static final long MIN_INTERVAL = TimeUnit.SECONDS.toMillis(1); // we want to wait at least a second before we check again
+	public static final String KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY = "knowwe.attachments.update.auto";
 
 	public enum State {
 		OUTDATED, UP_TO_DATE, UNKNOWN
@@ -79,6 +81,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	public AttachmentUpdateMarkup(DefaultMarkup markup) {
 		super(markup);
 		addCompileScript(new UpdateTaskRegistrationScript());
+		addCompileScript(new InactiveWarningScript());
 	}
 
 	@Nullable
@@ -138,6 +141,10 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			}
 			return lock;
 		}
+	}
+
+	private static boolean isAutoUpdatingActive() {
+		return Boolean.parseBoolean(System.getProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY, "true"));
 	}
 
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section) {
@@ -473,11 +480,24 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				this.cancel();
 				return;
 			}
+
+			if (!isAutoUpdatingActive()) return;
+
 			// only perform section update if articles are initialized in case we reference articles from this wiki
 			ArticleManager articleManager = section.getArticleManager();
 			if (articleManager instanceof DefaultArticleManager) {
 				((DefaultArticleManager) articleManager).awaitInitialization();
 				section.get().performUpdate(section);
+			}
+		}
+	}
+
+	private static class InactiveWarningScript extends DefaultGlobalCompiler.DefaultGlobalScript<AttachmentUpdateMarkup> {
+
+		@Override
+		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) throws CompilerMessage {
+			if (isAutoUpdatingActive()) {
+				Messages.storeMessage(section, this.getClass(), Messages.info("Auto updating is deactivated using the system property " + KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY + "=true/false"));
 			}
 		}
 	}
