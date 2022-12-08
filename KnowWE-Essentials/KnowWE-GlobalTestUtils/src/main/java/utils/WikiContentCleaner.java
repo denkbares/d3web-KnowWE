@@ -27,9 +27,9 @@ import com.denkbares.utils.Files;
 @SuppressWarnings("UseOfSystemOutOrSystemErr")
 public class WikiContentCleaner {
 
-	private final Set<String> cleanableExtensions = new LinkedHashSet<>();
+	private final Set<String> cleanableAttachments = new LinkedHashSet<>();
 	private final Set<String> ignoredFiles = new LinkedHashSet<>();
-	private final Set<String> knownExtensions = new LinkedHashSet<>();
+	private final Set<String> knownAttachments = new LinkedHashSet<>();
 	private final Set<String> knownFiles = new LinkedHashSet<>();
 	private final Map<String, Integer> maxNOfPatterns = new LinkedHashMap<>();
 	private final Map<String, Map<String, String>> replaceCommands = new LinkedHashMap<>();
@@ -64,8 +64,8 @@ public class WikiContentCleaner {
 	/**
 	 * Extension to be used/included
 	 */
-	public WikiContentCleaner setKnownExtensions(Set<String> knownExtensions) {
-		this.knownExtensions.addAll(knownExtensions);
+	public WikiContentCleaner setKnownAttachments(Set<String> knownAttachments) {
+		this.knownAttachments.addAll(knownAttachments);
 		return this;
 	}
 
@@ -81,7 +81,7 @@ public class WikiContentCleaner {
 	 * Attachments with the given extensions can be skipped without messages
 	 */
 	public WikiContentCleaner setCleanableAttachmentExtensions(Set<String> cleanableExtensions) {
-		this.cleanableExtensions.addAll(cleanableExtensions);
+		this.cleanableAttachments.addAll(cleanableExtensions);
 		return this;
 	}
 
@@ -177,9 +177,14 @@ public class WikiContentCleaner {
 		if (extensionStart < 0 || extensionEnd < 0 || extensionStart >= extensionEnd) {
 			return false;
 		}
+		for (String knownAttachment : knownAttachments) {
+			if (file.getPath().matches(knownAttachment)) {
+				return false;
+			}
+		}
 		String extension = file.getName().toLowerCase().substring(extensionStart + 1, extensionEnd);
-		boolean cleanable = cleanableExtensions.contains(extension);
-		if (!cleanable && !knownExtensions.isEmpty() && !knownExtensions.contains(extension)) {
+		boolean cleanable = cleanableAttachments.contains(extension);
+		if (!cleanable && !knownAttachments.isEmpty() && !knownAttachments.contains(extension)) {
 			System.out.println("Unknown attachment type, will not clean: " + file.getPath());
 		}
 		return cleanable;
