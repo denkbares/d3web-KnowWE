@@ -78,7 +78,7 @@ KNOWWE.plugin.anchor = function() {
   function scrollIntoView($element) {
     let headerHeight = jq$('.navigation').height();
     let elementOffset = $element.offset().top;
-    if (elementOffset === 0) {
+    if (elementOffset === 0) { // some anchors seem to not have an offset or are display: none...
       elementOffset = $element.parent().offset().top;
     }
     if (elementOffset === 0) return; // nothing to do
@@ -92,7 +92,7 @@ KNOWWE.plugin.anchor = function() {
       console.log("scrollTop " + scrollTop);
       jq$("html, body").animate({
         scrollTop: scrollTop
-      }, 1);
+      }, 1); // somehow 0 does not work, 1 does...
   }
 
 
