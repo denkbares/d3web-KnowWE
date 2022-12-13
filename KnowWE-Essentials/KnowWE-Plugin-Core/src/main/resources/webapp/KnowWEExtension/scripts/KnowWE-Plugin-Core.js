@@ -78,6 +78,10 @@ KNOWWE.plugin.anchor = function() {
   function scrollIntoView($element) {
     let headerHeight = jq$('.navigation').height();
     let elementOffset = $element.offset().top;
+    if (elementOffset === 0) {
+      elementOffset = $element.parent().offset().top;
+    }
+    if (elementOffset === 0) return; // nothing to do
     let scrollTop = elementOffset
       // header will be fixed to the top, so we have to scroll a bit further
       - headerHeight
@@ -85,9 +89,10 @@ KNOWWE.plugin.anchor = function() {
       - 10
       // if the hash anchor is inside a table, scroll additional 100px to also account for fixed table header
       - getFloatingTableHeaderHeight($element);
-    jq$('html, body').animate({
-      scrollTop: scrollTop
-    }, 0);
+      console.log("scrollTop " + scrollTop);
+      jq$("html, body").animate({
+        scrollTop: scrollTop
+      }, 1);
   }
 
 
