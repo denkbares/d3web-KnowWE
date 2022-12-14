@@ -496,7 +496,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<AttachmentUpdateMarkup> section) throws CompilerMessage {
-			if (isAutoUpdatingActive()) {
+			if (!isAutoUpdatingActive()) {
 				Messages.storeMessage(section, this.getClass(), Messages.info("Auto updating is deactivated using the system property " + KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY + "=true/false"));
 			}
 		}
