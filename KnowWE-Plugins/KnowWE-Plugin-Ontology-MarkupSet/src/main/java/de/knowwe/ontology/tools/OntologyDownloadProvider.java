@@ -83,7 +83,8 @@ public class OntologyDownloadProvider implements ToolProvider {
 		jsAction = "action/OntologyDownloadAction" +
 				"?" + identifierForThisOntology +
 				"&amp;" + OntologyDownloadAction.PARAM_SYNTAX + "=" + Strings.encodeURL(syntax.getDefaultMIMEType()) +
-				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + "." + extension + "";
+				"&amp;" + OntologyDownloadAction.PARAM_FILENAME + "=" + ontologyName + "." + extension + "" +
+				"&amp;_=" + System.currentTimeMillis();
 		// assemble download tool
 		return new DefaultTool(
 				Icon.DOWNLOAD,
