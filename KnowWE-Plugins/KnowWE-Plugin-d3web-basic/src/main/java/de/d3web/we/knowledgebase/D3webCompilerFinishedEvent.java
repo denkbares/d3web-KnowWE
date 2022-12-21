@@ -34,4 +34,9 @@ public class D3webCompilerFinishedEvent extends CompilerFinishedEvent<D3webCompi
 		super(compiler);
 	}
 
+	@Override
+	public boolean artifactChanged() {
+		// todo: implement for efficiency reasons
+		return true;
+	}
 }

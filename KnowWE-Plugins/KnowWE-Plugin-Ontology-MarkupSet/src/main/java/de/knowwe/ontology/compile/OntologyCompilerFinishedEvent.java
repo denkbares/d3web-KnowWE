@@ -41,4 +41,9 @@ public class OntologyCompilerFinishedEvent extends CompilerFinishedEvent<Ontolog
 	public boolean isOntologyChanged() {
 		return changed;
 	}
+
+	@Override
+	public boolean artifactChanged() {
+		return isOntologyChanged();
+	}
 }
