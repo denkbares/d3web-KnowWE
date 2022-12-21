@@ -49,6 +49,7 @@
 								<exclude>WEB-INF/lib/slf4j-api-*.jar</exclude>
 								<exclude>WEB-INF/lib/logback-*.jar</exclude>
 								<exclude>WEB-INF/lib/log4j-core-*.jar</exclude>
+								<exclude>WEB-INF/web.xml</exclude>
 								<exclude>META-INF/MANIFEST.MF</exclude>
 							</excludes>
 						</overlay>
