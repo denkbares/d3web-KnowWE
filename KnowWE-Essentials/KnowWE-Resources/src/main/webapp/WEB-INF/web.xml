@@ -24,11 +24,9 @@
 	version="4.0">
 
     <description>
-        JSPWiki is an open source JSP-based WikiClone.  It is licensed
-        under the Apache 2.0 license.
-        For more information, please come to http://jspwiki.apache.org/
+        KnowWE is a semantic wiki that provides the possibility to define and maintain ontologies together with strong problem-solving knowledge.
     </description>
-    <display-name>JSPWiki</display-name>
+    <display-name>KnowWE</display-name>
 
    <!--
    Supported starting from servlet specification 2.5
