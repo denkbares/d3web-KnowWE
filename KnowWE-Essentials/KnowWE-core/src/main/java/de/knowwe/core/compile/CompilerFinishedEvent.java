@@ -34,4 +34,6 @@ public abstract class CompilerFinishedEvent<C extends Compiler> extends Compiler
 		super(compiler);
 	}
 
+	public abstract boolean artifactChanged();
+
 }
