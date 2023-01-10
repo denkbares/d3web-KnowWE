@@ -82,8 +82,8 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		String jsAction = "window.location='action/KnowledgeBaseDownloadAction" +
 				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
 				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
-				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web'" +
-				"&amp;_=" + System.currentTimeMillis();
+				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web" +
+				"&amp;_=" + System.currentTimeMillis() + "'";
 		return new DefaultTool(
 				Icon.DOWNLOAD,
 				"Download as File",
