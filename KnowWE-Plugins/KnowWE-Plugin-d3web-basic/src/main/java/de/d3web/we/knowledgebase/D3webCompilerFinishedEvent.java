@@ -18,7 +18,11 @@
  */
 package de.d3web.we.knowledgebase;
 
+import java.util.Collections;
+import java.util.Set;
+
 import de.knowwe.core.compile.CompilerFinishedEvent;
+import de.knowwe.core.compile.terminology.TermRegistrationEvent;
 
 /**
  * This event is fired when packages compiled by a Section<? extends
@@ -38,5 +42,23 @@ public class D3webCompilerFinishedEvent extends CompilerFinishedEvent<D3webCompi
 	public boolean artifactChanged() {
 		// todo: implement for efficiency reasons
 		return true;
+	}
+
+	@Override
+	public boolean terminologyChanged() {
+		// todo: implement for efficiency reasons
+		return true;
+	}
+
+	@Override
+	public Set<TermRegistrationEvent> getRemovedTerms() {
+		// todo: implement for efficiency reasons
+		return Collections.emptySet();
+	}
+
+	@Override
+	public Set<TermRegistrationEvent> getAddedTerms() {
+		// todo: implement for efficiency reasons
+		return Collections.emptySet();
 	}
 }

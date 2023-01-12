@@ -18,6 +18,9 @@
  */
 package de.knowwe.core.compile;
 
+import java.util.Set;
+
+import de.knowwe.core.compile.terminology.TermRegistrationEvent;
 import de.knowwe.core.event.CompilerEvent;
 
 /**
@@ -35,5 +38,11 @@ public abstract class CompilerFinishedEvent<C extends Compiler> extends Compiler
 	}
 
 	public abstract boolean artifactChanged();
+
+	public abstract boolean terminologyChanged();
+
+	public abstract Set<TermRegistrationEvent> getRemovedTerms() ;
+
+	public abstract Set<TermRegistrationEvent> getAddedTerms() ;
 
 }

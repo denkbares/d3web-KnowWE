@@ -125,7 +125,7 @@ public class TerminologyManager {
 			termRefLog.addTermDefinition(compiler, termDefinition, termClass, termIdentifier);
 		}
 
-		EventManager.getInstance().fireEvent(new TermDefinitionRegisteredEvent(compiler, termIdentifier));
+		EventManager.getInstance().fireEvent(new TermDefinitionRegisteredEvent(compiler, termIdentifier, termClass));
 		Messages.clearMessages(messageCompiler, termDefinition, this.getClass());
 	}
 
@@ -258,12 +258,15 @@ public class TerminologyManager {
 				LOGGER.warn("Trying to unregister unknown term: " + termIdentifier);
 			}
 			else {
-				termRefLog.removeTermDefinition(compiler, termDefinition,
+				boolean removedTermDefinition = termRefLog.removeTermDefinition(compiler, termDefinition,
 						termClass, termIdentifier);
+				//if(removedTermDefinition) {
+					EventManager.getInstance()
+							.fireEvent(new TermDefinitionUnregisteredEvent(compiler, termIdentifier, termClass));
+				//}
 			}
 		}
-		EventManager.getInstance()
-				.fireEvent(new TermDefinitionUnregisteredEvent(compiler, termIdentifier));
+
 	}
 
 	/**

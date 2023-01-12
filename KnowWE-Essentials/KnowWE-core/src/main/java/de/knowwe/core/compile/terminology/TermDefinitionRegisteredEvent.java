@@ -20,22 +20,15 @@
 package de.knowwe.core.compile.terminology;
 
 import com.denkbares.strings.Identifier;
-import de.knowwe.core.event.CompilerEvent;
 
 /**
  * @author Jochen Reutelshöfer
  * @created 13.03.2014
  */
-public class TermDefinitionRegisteredEvent extends CompilerEvent {
+public class TermDefinitionRegisteredEvent extends TermRegistrationEvent {
 
-	private final Identifier identifier;
-
-	public TermDefinitionRegisteredEvent(TermCompiler compiler, Identifier identifier) {
-		super(compiler);
-		this.identifier = identifier;
+	public TermDefinitionRegisteredEvent(TermCompiler compiler, Identifier identifier, Class<?> termClass) {
+		super(compiler, identifier, termClass);
 	}
 
-	public Identifier getIdentifier() {
-		return identifier;
-	}
 }

@@ -209,7 +209,7 @@ class TermLog {
 		Messages.storeMessages(compiler, section, this.getClass(), msgs);
 	}
 
-	void removeTermDefinition(Compiler compiler,
+	boolean removeTermDefinition(Compiler compiler,
 							  Section<?> termDefinition,
 							  Class<?> termClass,
 							  Identifier termIdentifier) {
@@ -217,6 +217,7 @@ class TermLog {
 		TermLogEntry entry = new TermLogEntry(termDefinition, termClass, termIdentifier);
 		if (!termDefinitions.remove(entry)) {
 			LOGGER.warn("Trying to unregister term log that does not exist: " + termClass.getSimpleName() + ", " + termIdentifier);
+			return false;
 		}
 		if (termDefinitions.size() <= DEFINITION_TRACKING_LIMIT) {
 			termClasses = null;
@@ -227,6 +228,7 @@ class TermLog {
 		}
 		Messages.clearMessages(compiler, termDefinition, this.getClass());
 		handleMessagesForDefinition(compiler);
+		return true;
 	}
 
 	private void untrackDefinition(TermLogEntry entry) {
