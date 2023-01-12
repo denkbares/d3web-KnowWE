@@ -87,6 +87,26 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 		@Override
 		public void compile(OntologyCompiler compiler, Section<SimpleReference> s) {
 
+			// we jump out if no matching predicate was found
+			if (!isDefinition(s)) return;
+
+			// If termIdentifier is null, obviously section chose not to define
+			// a term, however so we can ignore this case
+			Identifier termIdentifier = s.get().getTermIdentifier(compiler, s);
+			if (termIdentifier != null) {
+				compiler.getTerminologyManager().registerTermDefinition(
+						compiler, s, de.knowwe.ontology.kdom.resource.Resource.class, termIdentifier);
+			}
+		}
+
+		@Override
+		public void destroy(OntologyCompiler compiler, Section<SimpleReference> s) {
+			if (isDefinition(s)) {
+				super.destroy(compiler, s);
+			}
+		}
+
+		public boolean isDefinition(Section<SimpleReference> s) {
 			List<Section<Predicate>> predicates = getPredicates(s);
 			boolean hasInstancePredicate = false;
 			for (Section<Predicate> section : predicates) {
@@ -96,17 +116,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 					}
 				}
 			}
-
-			// we jump out if no matching predicate was found
-			if (!hasInstancePredicate) return;
-
-			// If termIdentifier is null, obviously section chose not to define
-			// a term, however so we can ignore this case
-			Identifier termIdentifier = s.get().getTermIdentifier(compiler, s);
-			if (termIdentifier != null) {
-				compiler.getTerminologyManager().registerTermDefinition(
-						compiler, s, de.knowwe.ontology.kdom.resource.Resource.class, termIdentifier);
-			}
+			return hasInstancePredicate;
 		}
 	}
 
@@ -164,7 +174,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	}
 
 	@Nullable
-	protected Resource findSubject(OntologyCompiler core, StatementProviderResult result, Section<? extends Object> section) throws CompilerMessage {
+	protected Resource findSubject(OntologyCompiler core, StatementProviderResult result, Section<? extends Object> section) {
 		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section, PredicateSentence.class);
 		assert predSentenceSection != null;
 

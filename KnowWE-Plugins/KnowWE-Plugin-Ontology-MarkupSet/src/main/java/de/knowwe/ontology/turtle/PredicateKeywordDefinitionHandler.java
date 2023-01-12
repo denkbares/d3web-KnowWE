@@ -48,6 +48,8 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 
 	protected abstract List<Section<Predicate>> getPredicates(Section<SimpleReference> s);
 
+
+
 	@Override
 	public void compile(OntologyCompiler compiler, Section<SimpleReference> s) {
 
@@ -77,7 +79,7 @@ public abstract class PredicateKeywordDefinitionHandler extends OntologyCompileS
 			return;
 		}
 
-		Section<NodeProvider> successor = Sections.successor(predicate, NodeProvider.class);
+		@SuppressWarnings("rawtypes") Section<NodeProvider> successor = Sections.successor(predicate, NodeProvider.class);
 		if (successor == null) return;
 
 		String turtleURI = successor.collectTextsFromChildren();

@@ -21,7 +21,10 @@ package de.knowwe.ontology.compile;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,6 +46,9 @@ import de.knowwe.core.compile.ParallelScriptCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.compile.terminology.TermDefinitionRegisteredEvent;
+import de.knowwe.core.compile.terminology.TermDefinitionUnregisteredEvent;
+import de.knowwe.core.compile.terminology.TermRegistrationEvent;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -256,10 +262,19 @@ public class OntologyCompiler extends AbstractPackageCompiler
 			commitOntology(this);
 		}
 
-		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this, changed));
+		// fire proper CompilerFinishedEvent providing information about newly registered terms
+		Set<TermRegistrationEvent> registeredTerms = new HashSet<>(termsRegistered.values());
+		Set<TermRegistrationEvent> unregisteredTerms = new HashSet<>(termsUnregistered.values());
+		registeredTerms.removeAll(termsUnregistered.values());
+		unregisteredTerms.removeAll(termsRegistered.values());
+		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this, changed, unregisteredTerms, registeredTerms));
+
+		// clean up and prepare for next compilation step
 		buildDate = new Date();
 		completeCompilation = false;
 		commitTracker.clear();
+		termsRegistered.clear();
+		termsUnregistered.clear();
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this, destroy);
 		scriptCompiler = new ParallelScriptCompiler<>(this, compile);
 	}
@@ -329,8 +344,15 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 	@Override
 	public Collection<Class<? extends Event>> getEvents() {
-		return List.of(InitializedArticlesEvent.class, ChangedStatementsEvent.class);
+		return List.of(InitializedArticlesEvent.class, ChangedStatementsEvent.class, TermDefinitionRegisteredEvent.class, TermDefinitionUnregisteredEvent.class);
 	}
+
+	/**
+		Just for bookkeeping whether a compile step changes the set of registered terms,
+	 	which is required to decide whether the caches/indexes need to be invalidated or not
+ 	*/
+	private final Map<Identifier, TermRegistrationEvent> termsUnregistered = new HashMap<>();
+	private final Map<Identifier, TermRegistrationEvent> termsRegistered = new HashMap<>();
 
 	@Override
 	public void notify(Event event) {
@@ -343,6 +365,14 @@ public class OntologyCompiler extends AbstractPackageCompiler
 			if (((ChangedStatementsEvent) event).getCore() == getRdf2GoCore()) {
 				this.changed = true;
 			}
+		}
+
+		// we do some bookkeeping to find out, whether this compilation step actually changed the set of registered terms or not
+		if (event instanceof TermDefinitionUnregisteredEvent termRegistrationUnregisteredEvent && termRegistrationUnregisteredEvent.getCompiler().equals(this)) {
+			termsUnregistered.put(termRegistrationUnregisteredEvent.getIdentifier(), termRegistrationUnregisteredEvent);
+		}
+		if (event instanceof TermDefinitionRegisteredEvent termDefinitionRegisteredEvent && termDefinitionRegisteredEvent.getCompiler().equals(this)) {
+			termsRegistered.put(termDefinitionRegisteredEvent.getIdentifier(), termDefinitionRegisteredEvent);
 		}
 	}
 }
