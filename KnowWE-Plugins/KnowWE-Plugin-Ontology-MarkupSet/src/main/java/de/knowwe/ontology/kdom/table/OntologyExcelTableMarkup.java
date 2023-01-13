@@ -7,6 +7,10 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -55,11 +59,10 @@ import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
-import static com.denkbares.util.excel.ExcelPoiUtils.getStringCellValue;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class OntologyExcelTableMarkup extends DefaultMarkupType {
-	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyExcelTableMarkup.class);
+	private static final DataFormatter df = new DataFormatter();
 
 	private static final DefaultMarkup MARKUP;
 
@@ -82,11 +85,12 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 
 		MARKUP.addAnnotation(ANNOTATION_CONFIG, true);
 		MARKUP.addAnnotationContentType(ANNOTATION_CONFIG, new ConfigAnnotationType());
-		String documentation = "Some examples:\n"
-				+ "@config: Sheet 1-3, Rows 5+, Subject $columnA, Predicate rdf:type, Object lns:ImportedRow\n"
-				+ "@config: Sheet 1-3, Rows 5+, Subject $columnA, Predicate lns:hasRowNumber, Object \"$row\"^^xsd:int\n"
-				+ "@config: Sheet 1-3, Rows 5+, Subject ${column A}, Predicate skos:prefLabel, Object \"${column C}\"@en\n"
-				+ "@config: Sheet 4, Rows 5-120, Subject $column1, Predicate $column4, Object $column5";
+		String documentation = """
+				Some examples:
+				@config: Sheet 1-3, Rows 5+, Subject $columnA, Predicate rdf:type, Object lns:ImportedRow
+				@config: Sheet 1-3, Rows 5+, Subject $columnA, Predicate lns:hasRowNumber, Object "$row"^^xsd:int
+				@config: Sheet 1-3, Rows 5+, Subject ${column A}, Predicate skos:prefLabel, Object "${column C}"@en
+				@config: Sheet 4, Rows 5-120, Subject $column1, Predicate $column4, Object $column5""";
 		MARKUP.getAnnotation(ANNOTATION_CONFIG).setDocumentation(documentation);
 		MARKUP.addAnnotation(ANNOTATION_XLSX, true);
 		MARKUP.addAnnotationContentType(ANNOTATION_XLSX, new AttachmentType());
@@ -273,6 +277,47 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			stopwatch.log(getMessage(statementCounter, rowCounter));
 		}
 
+		/**
+		 * This is more or less a copy of ExcelPoiUtils.getStringCellValue(Cell)... because ExcelPoiUtils currently live
+		 * inside a closed source repo...
+		 */
+		private static String getStringCellValue(Cell cell) {
+			if (cell == null) {
+				return null;
+			}
+			else {
+				switch (cell.getCellType()) {
+					case STRING -> {
+						return cell.getStringCellValue();
+					}
+					case NUMERIC -> {
+						if (DateUtil.isCellDateFormatted(cell)) {
+							return cell.getDateCellValue().toString();
+						}
+						else {
+							return df.createFormat(cell).format(cell.getNumericCellValue());
+						}
+					}
+					case BOOLEAN -> {
+						return Boolean.toString(cell.getBooleanCellValue());
+					}
+					case FORMULA -> {
+						CellType formulaType = cell.getCachedFormulaResultType();
+						return switch (formulaType) {
+							case STRING -> cell.getStringCellValue();
+							case NUMERIC -> df.createFormat(cell).format(cell.getNumericCellValue());
+							case BOOLEAN -> Boolean.toString(cell.getBooleanCellValue());
+							case ERROR -> "#NV";
+							default -> cell.getCellFormula();
+						};
+					}
+					default -> {
+						return cell.toString();
+					}
+				}
+			}
+		}
+
 		private static XSSFWorkbook getXlsx(Section<ConfigAnnotationType> section) throws CompilerMessage {
 			Section<DefaultMarkupType> markupSection = Sections.ancestor(section, DefaultMarkupType.class);
 			Section<? extends AnnotationContentType> contentSection = DefaultMarkupType.getAnnotationContentSection(markupSection, ANNOTATION_XLSX);
@@ -362,7 +407,8 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			return workbook;
 		}
 		catch (Exception e) {
-			String message = e.getClass().getSimpleName() + " while trying to access attached XLSX file" + (Strings.isBlank(e.getMessage()) ? "" : ": " +  e.getMessage());
+			String message = e.getClass()
+					.getSimpleName() + " while trying to access attached XLSX file" + (Strings.isBlank(e.getMessage()) ? "" : ": " + e.getMessage());
 			throw CompilerMessage.error(message);
 		}
 	}

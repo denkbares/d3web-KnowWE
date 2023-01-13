@@ -77,9 +77,5 @@
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.denkbares</groupId>
-			<artifactId>denkbares-Statistics</artifactId>
-		</dependency>
 	</dependencies>
 </project>
