@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2022 denkbares GmbH, Germany
+  ~ Copyright (C) 2023 denkbares GmbH, Germany
   ~
   ~ This is free software; you can redistribute it and/or modify it under the
   ~ terms of the GNU Lesser General Public License as published by the Free
@@ -22,7 +22,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>12.11-SNAPSHOT</version>
+		<version>2023.2-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>

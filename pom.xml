@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2022 denkbares GmbH, Germany
+  ~ Copyright (C) 2023 denkbares GmbH, Germany
   ~
   ~ This is free software; you can redistribute it and/or modify it under the
   ~ terms of the GNU Lesser General Public License as published by the Free
@@ -23,7 +23,7 @@
 
 	<groupId>de.uniwue.d3web</groupId>
 	<artifactId>KnowWE</artifactId>
-	<version>12.11-SNAPSHOT</version>
+	<version>2023.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<description>Open Source KnowWE parent</description>
 
@@ -31,10 +31,10 @@
 		<denkbares.version>${project.version}</denkbares.version>
 		<d3web.version>${project.version}</d3web.version>
 		<knowwe.version>${project.version}</knowwe.version>
-		<konap.version>12.11-SNAPSHOT</konap.version>
-		<ssp.version>3.12-SNAPSHOT</ssp.version>
-		<mate.version>2.13-SNAPSHOT</mate.version>
-		<jspwiki.version>2.11.4-SNAPSHOT</jspwiki.version>
+		<konap.version>2023.2-SNAPSHOT</konap.version>
+		<ssp.version>2023.2-SNAPSHOT</ssp.version>
+		<mate.version>2023.2-SNAPSHOT</mate.version>
+		<jspwiki.version>2.11.5-SNAPSHOT</jspwiki.version>
 		<selenium.version>3.13.0</selenium.version>
 		<tomcat.version>9.0.13</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
