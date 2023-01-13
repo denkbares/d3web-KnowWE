@@ -8,20 +8,21 @@ import de.knowwe.core.kdom.parsing.Section;
 /**
  * Event that is thrown when a compiler has finished a certain stage,
  * i.e. all registered compile scripts of that particular priority level are finished
- *
+ * <p>
  * NOTE: The event is _NOT thrown_ if there were no script registered/executed for a specific Priority.
  *
  * @author Jochen Reutelshoefer (denkbares GmbH)
  * @created 23.10.20.
  */
-public class CompilePriorityLevelFinishedEvent extends CompilerEvent<Compiler> {
+public class CompilePriorityLevelFinishedEvent implements CompilerEvent<Compiler> {
+	private final Compiler compiler;
 	private final Priority priority;
 	private final Collection<Section<?>> compiledSectionsCurrentPriority;
 	private final boolean hasCompiledAnySectionUpToNow;
 
 	public CompilePriorityLevelFinishedEvent(Compiler compiler, Priority currentPriority, Collection<Section<?>> compiledSections, boolean hasCompiledAnySectionUpToNow) {
-		super(compiler);
 		priority = currentPriority;
+		this.compiler = compiler;
 		this.compiledSectionsCurrentPriority = compiledSections;
 		this.hasCompiledAnySectionUpToNow = hasCompiledAnySectionUpToNow;
 	}
@@ -51,5 +52,10 @@ public class CompilePriorityLevelFinishedEvent extends CompilerEvent<Compiler> {
 	 */
 	public boolean hasCompiledAnySectionUpToNow() {
 		return hasCompiledAnySectionUpToNow;
+	}
+
+	@Override
+	public Compiler getCompiler() {
+		return compiler;
 	}
 }

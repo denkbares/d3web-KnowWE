@@ -5,16 +5,22 @@ import java.util.Objects;
 import com.denkbares.strings.Identifier;
 import de.knowwe.core.event.CompilerEvent;
 
-public class TermRegistrationEvent extends CompilerEvent {
+public class TermRegistrationEvent<T extends TermCompiler> implements CompilerEvent<T> {
 
+	private final T compiler;
 	private final Identifier identifier;
 
 	private final Class<?> termClass;
 
-	public TermRegistrationEvent(TermCompiler compiler, Identifier identifier, Class<?> termClass) {
-		super(compiler);
+	public TermRegistrationEvent(T compiler, Identifier identifier, Class<?> termClass) {
+		this.compiler = compiler;
 		this.identifier = identifier;
 		this.termClass = termClass;
+	}
+
+	@Override
+	public T getCompiler() {
+		return compiler;
 	}
 
 	public Identifier getIdentifier() {
@@ -28,7 +34,7 @@ public class TermRegistrationEvent extends CompilerEvent {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (! (o instanceof TermRegistrationEvent that)) return false;
+		if (!(o instanceof TermRegistrationEvent<?> that)) return false;
 		return identifier.equals(that.identifier);
 	}
 

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import de.knowwe.core.compile.CompilerFinishedEvent;
+import de.knowwe.core.compile.TrackingTermCompilerFinishedEvent;
 import de.knowwe.core.compile.terminology.TermRegistrationEvent;
 
 /**
@@ -30,13 +31,13 @@ import de.knowwe.core.compile.terminology.TermRegistrationEvent;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class OntologyCompilerFinishedEvent extends CompilerFinishedEvent<OntologyCompiler> {
+public class OntologyCompilerFinishedEvent extends CompilerFinishedEvent<OntologyCompiler> implements TrackingTermCompilerFinishedEvent<OntologyCompiler> {
 
 	private final boolean ontologyChanged;
 
-	private final Set<TermRegistrationEvent> removedTerms;
+	private final Set<TermRegistrationEvent<OntologyCompiler>> removedTerms;
 
-	private final Set<TermRegistrationEvent> addedTerms;
+	private final Set<TermRegistrationEvent<OntologyCompiler>> addedTerms;
 
 	public OntologyCompilerFinishedEvent(OntologyCompiler compiler, boolean changed) {
 		super(compiler);
@@ -45,7 +46,7 @@ public class OntologyCompilerFinishedEvent extends CompilerFinishedEvent<Ontolog
 		addedTerms = Collections.emptySet();
 	}
 
-	public OntologyCompilerFinishedEvent(OntologyCompiler compiler, boolean changed, Set<TermRegistrationEvent> removedTerms, Set<TermRegistrationEvent> addedTerms) {
+	public OntologyCompilerFinishedEvent(OntologyCompiler compiler, boolean changed, Set<TermRegistrationEvent<OntologyCompiler>> removedTerms, Set<TermRegistrationEvent<OntologyCompiler>> addedTerms) {
 		super(compiler);
 		this.ontologyChanged = changed;
 		this.removedTerms = removedTerms;
@@ -65,17 +66,17 @@ public class OntologyCompilerFinishedEvent extends CompilerFinishedEvent<Ontolog
 	}
 
 	@Override
-	public Set<TermRegistrationEvent> getRemovedTerms() {
+	public Set<TermRegistrationEvent<OntologyCompiler>> getRemovedTerms() {
 		return removedTerms;
 	}
 
 	@Override
-	public Set<TermRegistrationEvent> getAddedTerms() {
+	public Set<TermRegistrationEvent<OntologyCompiler>> getAddedTerms() {
 		return addedTerms;
 	}
 
 	@Override
 	public boolean terminologyChanged() {
-		return ! (removedTerms.isEmpty() && addedTerms.isEmpty());
+		return !(removedTerms.isEmpty() && addedTerms.isEmpty());
 	}
 }

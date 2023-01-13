@@ -25,9 +25,9 @@ import com.denkbares.strings.Identifier;
  * @author Jochen Reutelshöfer
  * @created 13.03.2014
  */
-public class TermDefinitionRegisteredEvent extends TermRegistrationEvent {
+public class TermDefinitionRegisteredEvent<T extends TermCompiler> extends TermRegistrationEvent<T> {
 
-	public TermDefinitionRegisteredEvent(TermCompiler compiler, Identifier identifier, Class<?> termClass) {
+	public TermDefinitionRegisteredEvent(T compiler, Identifier identifier, Class<?> termClass) {
 		super(compiler, identifier, termClass);
 	}
 

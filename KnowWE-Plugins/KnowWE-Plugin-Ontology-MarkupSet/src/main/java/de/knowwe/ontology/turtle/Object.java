@@ -174,7 +174,7 @@ public class Object extends AbstractType implements NodeProvider<Object>, Statem
 	}
 
 	@Nullable
-	protected Resource findSubject(OntologyCompiler core, StatementProviderResult result, Section<? extends Object> section) {
+	protected Resource findSubject(OntologyCompiler core, StatementProviderResult result, Section<? extends Object> section) throws CompilerMessage {
 		Section<PredicateSentence> predSentenceSection = Sections.ancestor(section, PredicateSentence.class);
 		assert predSentenceSection != null;
 

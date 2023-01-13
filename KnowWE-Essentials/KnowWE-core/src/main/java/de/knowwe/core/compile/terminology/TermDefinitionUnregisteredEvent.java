@@ -21,9 +21,9 @@ package de.knowwe.core.compile.terminology;
 
 import com.denkbares.strings.Identifier;
 
-public class TermDefinitionUnregisteredEvent extends TermRegistrationEvent {
+public class TermDefinitionUnregisteredEvent<T extends TermCompiler> extends TermRegistrationEvent<T> {
 
-	public TermDefinitionUnregisteredEvent(TermCompiler compiler, Identifier identifier, Class<?> termClass) {
+	public TermDefinitionUnregisteredEvent(T compiler, Identifier identifier, Class<?> termClass) {
 		super(compiler, identifier, termClass);
 	}
 }

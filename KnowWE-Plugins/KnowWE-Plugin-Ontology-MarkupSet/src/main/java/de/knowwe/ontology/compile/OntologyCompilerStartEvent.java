@@ -34,7 +34,7 @@ public class OntologyCompilerStartEvent extends CompilerStartEvent<OntologyCompi
 	private final Collection<Section<?>> added;
 	private final Collection<Section<?>> removed;
 
-	private boolean completeCompilation;
+	private final boolean completeCompilation;
 
 	public OntologyCompilerStartEvent(OntologyCompiler compiler, Collection<Section<?>> added, Collection<Section<?>> removed, boolean completeCompilation) {
 		super(compiler);

@@ -263,11 +263,12 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		}
 
 		// fire proper CompilerFinishedEvent providing information about newly registered terms
-		Set<TermRegistrationEvent> registeredTerms = new HashSet<>(termsRegistered.values());
-		Set<TermRegistrationEvent> unregisteredTerms = new HashSet<>(termsUnregistered.values());
+		Set<TermRegistrationEvent<OntologyCompiler>> registeredTerms = new HashSet<>(termsRegistered.values());
+		Set<TermRegistrationEvent<OntologyCompiler>> unregisteredTerms = new HashSet<>(termsUnregistered.values());
 		registeredTerms.removeAll(termsUnregistered.values());
 		unregisteredTerms.removeAll(termsRegistered.values());
-		EventManager.getInstance().fireEvent(new OntologyCompilerFinishedEvent(this, changed, unregisteredTerms, registeredTerms));
+		EventManager.getInstance()
+				.fireEvent(new OntologyCompilerFinishedEvent(this, changed, unregisteredTerms, registeredTerms));
 
 		// clean up and prepare for next compilation step
 		buildDate = new Date();
@@ -348,12 +349,13 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	}
 
 	/**
-		Just for bookkeeping whether a compile step changes the set of registered terms,
-	 	which is required to decide whether the caches/indexes need to be invalidated or not
- 	*/
-	private final Map<Identifier, TermRegistrationEvent> termsUnregistered = new HashMap<>();
-	private final Map<Identifier, TermRegistrationEvent> termsRegistered = new HashMap<>();
+	 * Just for bookkeeping whether a compile step changes the set of registered terms,
+	 * which is required to decide whether the caches/indexes need to be invalidated or not
+	 */
+	private final Map<Identifier, TermRegistrationEvent<OntologyCompiler>> termsUnregistered = new HashMap<>();
+	private final Map<Identifier, TermRegistrationEvent<OntologyCompiler>> termsRegistered = new HashMap<>();
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void notify(Event event) {
 		if (event instanceof InitializedArticlesEvent) {
@@ -368,10 +370,12 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		}
 
 		// we do some bookkeeping to find out, whether this compilation step actually changed the set of registered terms or not
-		if (event instanceof TermDefinitionUnregisteredEvent termRegistrationUnregisteredEvent && termRegistrationUnregisteredEvent.getCompiler().equals(this)) {
+		if (event instanceof TermDefinitionUnregisteredEvent termRegistrationUnregisteredEvent
+				&& termRegistrationUnregisteredEvent.getCompiler().equals(this)) {
 			termsUnregistered.put(termRegistrationUnregisteredEvent.getIdentifier(), termRegistrationUnregisteredEvent);
 		}
-		if (event instanceof TermDefinitionRegisteredEvent termDefinitionRegisteredEvent && termDefinitionRegisteredEvent.getCompiler().equals(this)) {
+		if (event instanceof TermDefinitionRegisteredEvent termDefinitionRegisteredEvent
+				&& termDefinitionRegisteredEvent.getCompiler().equals(this)) {
 			termsRegistered.put(termDefinitionRegisteredEvent.getIdentifier(), termDefinitionRegisteredEvent);
 		}
 	}
