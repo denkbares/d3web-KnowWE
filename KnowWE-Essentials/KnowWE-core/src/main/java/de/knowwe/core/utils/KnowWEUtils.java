@@ -91,7 +91,7 @@ import de.knowwe.plugin.StatusProvider;
 public class KnowWEUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(KnowWEUtils.class);
 
-	public static final List<String> JSPWIKI_TOKENS = Arrays.asList("[", "]", "----", "{{{", "}}}", "{{", "}}", "%%", "\\", "__", "''");
+	public static final List<String> JSPWIKI_TOKENS = Arrays.asList("[", "]", "----", "{{{", "}}}", "{{", "}}", "%%", "\\", "__", "''", "||", "|");
 
 	private static void mask(final StringBuilder buffer, final String toReplace) {
 		int index = buffer.indexOf(toReplace);
