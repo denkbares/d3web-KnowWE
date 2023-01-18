@@ -497,6 +497,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			string.appendHtmlElement("div",
 					compilers.stream()
 							.map(PackageCompiler::getName)
+							.map(KnowWEUtils::maskJSPWikiMarkup)
 							.collect(Collectors.joining(";")),
 					"class", "compiler-preview", "style", "display:none");
 		}
