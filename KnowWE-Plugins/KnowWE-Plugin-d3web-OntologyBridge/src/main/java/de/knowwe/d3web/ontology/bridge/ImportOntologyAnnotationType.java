@@ -4,7 +4,7 @@
 
 package de.knowwe.d3web.ontology.bridge;
 
-import de.d3web.we.knowledgebase.KnowledgeBaseType;
+import de.d3web.we.knowledgebase.KnowledgeBaseMarkup;
 import de.knowwe.core.compile.PackageRegistrationCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
@@ -14,7 +14,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyDefinition;
 import de.knowwe.ontology.compile.OntologyReference;
-import de.knowwe.ontology.compile.OntologyType;
+import de.knowwe.ontology.compile.OntologyMarkup;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -42,7 +42,7 @@ public class ImportOntologyAnnotationType extends OntologyReference {
 			if (ontologyCompileSection == null) {
 				throw CompilerMessage.error("Ontology with name '" + section.getText() + "' could not be found.");
 			}
-			OntologyType.setCompilerPriority(ontologyCompileSection, 4);
+			OntologyMarkup.setCompilerPriority(ontologyCompileSection, 4);
 			Section<? extends PackageCompileType> d3webCompileSection = getD3webCompileSection(section);
 			OntologyBridge.registerBridge(d3webCompileSection.getID(), ontologyCompileSection.getID());
 			section.storeObject(compiler, KEY_BRIDGE, ontologyCompileSection);
@@ -56,7 +56,7 @@ public class ImportOntologyAnnotationType extends OntologyReference {
 			Section<? extends PackageCompileType> ontologyCompileSection =
 					(Section<? extends PackageCompileType>) section.removeObject(compiler, KEY_BRIDGE);
 			if (ontologyCompileSection == null) return;
-			OntologyType.resetCompilerPriority(ontologyCompileSection);
+			OntologyMarkup.resetCompilerPriority(ontologyCompileSection);
 			Section<? extends PackageCompileType> d3webCompileSection = getD3webCompileSection(section);
 			OntologyBridge.unregisterBridge(d3webCompileSection.getID());
 		}
@@ -67,7 +67,7 @@ public class ImportOntologyAnnotationType extends OntologyReference {
 		}
 
 		private Section<? extends PackageCompileType> getD3webCompileSection(Section<ImportOntologyAnnotationType> section) {
-			return $(section).ancestor(KnowledgeBaseType.class).cast(PackageCompileType.class).getFirst();
+			return $(section).ancestor(KnowledgeBaseMarkup.class).cast(PackageCompileType.class).getFirst();
 		}
 	}
 }

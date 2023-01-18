@@ -44,7 +44,7 @@ public class OntologyDefinition extends AbstractType implements TermDefinition, 
 
 	@NotNull
 	public OntologyCompiler getCompiler(Section<? extends OntologyDefinition> self) {
-		return Objects.requireNonNull($(self).ancestor(OntologyType.class).mapFirst(OntologyType::getCompiler));
+		return Objects.requireNonNull($(self).ancestor(OntologyMarkup.class).mapFirst(OntologyMarkup::getCompiler));
 	}
 
 	@Override

@@ -47,7 +47,7 @@ public class KnowledgeBaseDefinition extends AbstractType implements TermDefinit
 	@NotNull
 	public D3webCompiler getCompiler(Section<? extends KnowledgeBaseDefinition> self) {
 		return Objects.requireNonNull(
-				$(self).ancestor(KnowledgeBaseType.class).mapFirst(KnowledgeBaseType::getCompiler));
+				$(self).ancestor(KnowledgeBaseMarkup.class).mapFirst(KnowledgeBaseMarkup::getCompiler));
 	}
 
 	@Override

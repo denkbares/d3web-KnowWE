@@ -135,8 +135,8 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 	@Override
 	@NotNull
-	public Section<OntologyType> getCompileSection() {
-		return Sections.cast(super.getCompileSection(), OntologyType.class);
+	public Section<OntologyMarkup> getCompileSection() {
+		return Sections.cast(super.getCompileSection(), OntologyMarkup.class);
 	}
 
 	/**
@@ -290,7 +290,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	private void compile(Collection<Section<?>> sectionsOfPackage) {
 		for (Section<?> section : sectionsOfPackage) {
 			// only compile the OntologyType sections belonging to this compiler
-			if (!(section.get() instanceof OntologyType) || getCompileSection() == section) {
+			if (!(section.get() instanceof OntologyMarkup) || getCompileSection() == section) {
 				scriptCompiler.addSubtree(section);
 			}
 		}
@@ -305,7 +305,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	}
 
 	static CommitType getCommitType(OntologyCompiler compiler) {
-		String commitTypeString = DefaultMarkupType.getAnnotation(compiler.getCompileSection(), OntologyType.ANNOTATION_COMMIT);
+		String commitTypeString = DefaultMarkupType.getAnnotation(compiler.getCompileSection(), OntologyMarkup.ANNOTATION_COMMIT);
 		return Strings.parseEnum(commitTypeString, CommitType.onSave);
 	}
 

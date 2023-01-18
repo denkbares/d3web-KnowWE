@@ -47,15 +47,15 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 
 	@Override
 	public void renderContentsAndAnnotations(Section<?> section, UserContext user, RenderResult string) {
-		String id = KnowledgeBaseType.getAnnotation(section, KnowledgeBaseType.ANNOTATION_ID);
-		String author = KnowledgeBaseType.getAnnotation(section,
-				KnowledgeBaseType.ANNOTATION_AUTHOR);
-		String comment = KnowledgeBaseType.getAnnotation(section,
-				KnowledgeBaseType.ANNOTATION_COMMENT);
-		String version = KnowledgeBaseType.getAnnotation(section,
-				KnowledgeBaseType.ANNOTATION_VERSION);
-		String filename = KnowledgeBaseType.getAnnotation(section,
-				KnowledgeBaseType.ANNOTATION_FILENAME);
+		String id = KnowledgeBaseMarkup.getAnnotation(section, KnowledgeBaseMarkup.ANNOTATION_ID);
+		String author = KnowledgeBaseMarkup.getAnnotation(section,
+				KnowledgeBaseMarkup.ANNOTATION_AUTHOR);
+		String comment = KnowledgeBaseMarkup.getAnnotation(section,
+				KnowledgeBaseMarkup.ANNOTATION_COMMENT);
+		String version = KnowledgeBaseMarkup.getAnnotation(section,
+				KnowledgeBaseMarkup.ANNOTATION_VERSION);
+		String filename = KnowledgeBaseMarkup.getAnnotation(section,
+				KnowledgeBaseMarkup.ANNOTATION_FILENAME);
 
 		// render title line
 		Section<?> title = $(section).successor(KnowledgeBaseDefinition.class).getFirst();
@@ -96,11 +96,11 @@ public final class KnowledgeBaseTypeRenderer extends DefaultMarkupPackageCompile
 				Sections.successors(section, AnnotationType.class);
 		for (Section<AnnotationType> annotation : annotations) {
 			String name = annotation.get().getName();
-			if (KnowledgeBaseType.ANNOTATION_ID.equalsIgnoreCase(name)) continue;
-			if (KnowledgeBaseType.ANNOTATION_AUTHOR.equalsIgnoreCase(name)) continue;
-			if (KnowledgeBaseType.ANNOTATION_COMMENT.equalsIgnoreCase(name)) continue;
-			if (KnowledgeBaseType.ANNOTATION_VERSION.equalsIgnoreCase(name)) continue;
-			if (KnowledgeBaseType.ANNOTATION_FILENAME.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseMarkup.ANNOTATION_ID.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseMarkup.ANNOTATION_AUTHOR.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseMarkup.ANNOTATION_COMMENT.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseMarkup.ANNOTATION_VERSION.equalsIgnoreCase(name)) continue;
+			if (KnowledgeBaseMarkup.ANNOTATION_FILENAME.equalsIgnoreCase(name)) continue;
 			if (PackageManager.COMPILE_ATTRIBUTE_NAME.equalsIgnoreCase(name)) continue;
 			additionalAnnotations.add(annotation);
 		}

@@ -26,11 +26,10 @@ import de.d3web.diaFlux.inference.FluxSolver;
 import com.denkbares.strings.Strings;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
-import de.d3web.we.knowledgebase.KnowledgeBaseType;
+import de.d3web.we.knowledgebase.KnowledgeBaseMarkup;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.CompilerMessage;
-import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
@@ -42,12 +41,12 @@ import static de.d3web.diaFlux.inference.FluxSolver.SuggestMode;
  * @author Volker Belli (denkbares GmbH)
  * @created 10.08.2014
  */
-public class ConfigureDiaFluxCompileScript implements D3webCompileScript<KnowledgeBaseType> {
+public class ConfigureDiaFluxCompileScript implements D3webCompileScript<KnowledgeBaseMarkup> {
 
 	public static final String POTENTIAL_SOLUTIONS_ANNOTATION = "diaflux-PotentialSolutions";
 
 	@Override
-	public void compile(D3webCompiler compiler, Section<KnowledgeBaseType> section) throws CompilerMessage {
+	public void compile(D3webCompiler compiler, Section<KnowledgeBaseMarkup> section) throws CompilerMessage {
 		String suggest = DefaultMarkupType.getAnnotation(section, POTENTIAL_SOLUTIONS_ANNOTATION);
 		if (Strings.isBlank(suggest)) return;
 

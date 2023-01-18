@@ -10,7 +10,7 @@ import de.knowwe.dialog.action.InitWiki;
 
 import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.KnowledgeBase;
-import de.d3web.we.knowledgebase.KnowledgeBaseType;
+import de.d3web.we.knowledgebase.KnowledgeBaseMarkup;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.Article;
@@ -42,8 +42,8 @@ public class DialogTagHandler extends AbstractTagHandler {
 			if (!Strings.isBlank(value)) {
 				Article article = KnowWEUtils.getArticle(section.getWeb(), value);
 				if (article != null) {
-					Section<KnowledgeBaseType> kbSection = Sections.successor(
-							article.getRootSection(), KnowledgeBaseType.class);
+					Section<KnowledgeBaseMarkup> kbSection = Sections.successor(
+							article.getRootSection(), KnowledgeBaseMarkup.class);
 					if (kbSection != null) {
 						section = kbSection;
 					}

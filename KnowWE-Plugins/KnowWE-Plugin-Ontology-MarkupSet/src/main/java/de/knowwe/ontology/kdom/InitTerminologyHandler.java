@@ -63,7 +63,7 @@ import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.compile.OntologyCompiler;
 import de.knowwe.ontology.compile.OntologyHandler;
-import de.knowwe.ontology.compile.OntologyType;
+import de.knowwe.ontology.compile.OntologyMarkup;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.ontology.kdom.objectproperty.Property;
 import de.knowwe.ontology.kdom.resource.Resource;
@@ -77,7 +77,7 @@ import de.knowwe.rdf2go.utils.Rdf2GoUtils;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 23.04.2015
  */
-public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
+public class InitTerminologyHandler extends OntologyHandler<OntologyMarkup> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitTerminologyHandler.class);
 
 	private static final Map<String, TermCache> importCache = new HashMap<>();
@@ -242,16 +242,16 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 	};
 
 	@Override
-	public Collection<Message> create(OntologyCompiler compiler, Section<OntologyType> section) {
+	public Collection<Message> create(OntologyCompiler compiler, Section<OntologyMarkup> section) {
 		registerBaseTerminology(compiler, section);
 
-		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(section, OntologyType.ANNOTATION_IMPORT), false);
-		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(section, OntologyType.ANNOTATION_SILENT_IMPORT), true);
+		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(section, OntologyMarkup.ANNOTATION_IMPORT), false);
+		handleImports(compiler, DefaultMarkupType.getAnnotationContentSections(section, OntologyMarkup.ANNOTATION_SILENT_IMPORT), true);
 
 		return Messages.noMessage();
 	}
 
-	private void registerBaseTerminology(OntologyCompiler compiler, Section<OntologyType> section) {
+	private void registerBaseTerminology(OntologyCompiler compiler, Section<OntologyMarkup> section) {
 		compiler.getRdf2GoCore()
 				.addNamespaces(new SimpleNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
 						new SimpleNamespace("rdfs", "http://www.w3.org/2000/01/rdf-schema#"),
@@ -533,7 +533,7 @@ public class InitTerminologyHandler extends OntologyHandler<OntologyType> {
 	}
 
 	@Override
-	public void destroy(OntologyCompiler compiler, Section<OntologyType> section) {
+	public void destroy(OntologyCompiler compiler, Section<OntologyMarkup> section) {
 		// no need to remove something, we get a new TerminologyManager
 		// anyway...
 	}

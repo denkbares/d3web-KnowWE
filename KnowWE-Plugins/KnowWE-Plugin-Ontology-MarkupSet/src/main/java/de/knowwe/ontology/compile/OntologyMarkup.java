@@ -71,8 +71,8 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 17.12.2013
  */
-public class OntologyType extends DefaultMarkupPackageCompileType {
-	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyType.class);
+public class OntologyMarkup extends DefaultMarkupPackageCompileType {
+	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyMarkup.class);
 
 	public static final String PLUGIN_ID = "KnowWE-Plugin-Ontology-MarkupSet";
 
@@ -140,7 +140,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 		MARKUP.addAnnotation(ANNOTATION_COMMIT, false, CommitType.class);
 	}
 
-	public OntologyType() {
+	public OntologyMarkup() {
 		super(MARKUP);
 		this.addCompileScript(Priority.INIT, new InitTerminologyHandler());
 		this.addCompileScript(Priority.HIGHEST, new OntologyCompilerRegistrationScript());
@@ -167,7 +167,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 	}
 
 	@NotNull
-	public OntologyCompiler getCompiler(Section<? extends OntologyType> self) {
+	public OntologyCompiler getCompiler(Section<? extends OntologyMarkup> self) {
 		return Objects.requireNonNull(
 				Compilers.getCompiler(Sections.successor(self, PackageCompileType.class), OntologyCompiler.class),
 				"unexpected internal error: no compiler created");
@@ -184,7 +184,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 	public static Namespace getDefaultNamespace(OntologyCompiler compiler) {
 		if (compiler == null) return null;
 		return CompilationLocal.getCached(compiler, "defaultNamespace", () -> {
-			Section<OntologyType> ontologyTypeSection = compiler.getCompileSection();
+			Section<OntologyMarkup> ontologyTypeSection = compiler.getCompileSection();
 			Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
 			if (annotationContentSection == null) return null;
 			Section<AbbreviationDefinition> abbreviationDefinition = Sections.successor(annotationContentSection, AbbreviationDefinition.class);
@@ -207,11 +207,11 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 		compileTypeSection.removeObject(COMPILER_PRIORITY);
 	}
 
-	private static class OntologyCompilerRegistrationScript implements PackageRegistrationScript<OntologyType> {
+	private static class OntologyCompilerRegistrationScript implements PackageRegistrationScript<OntologyMarkup> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(OntologyCompilerRegistrationScript.class);
 
 		@Override
-		public void compile(PackageRegistrationCompiler compiler, Section<OntologyType> section) throws CompilerMessage {
+		public void compile(PackageRegistrationCompiler compiler, Section<OntologyMarkup> section) throws CompilerMessage {
 			String ruleSetValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_RULE_SET);
 			RepositoryConfig ruleSet = getRuleSet(ruleSetValue);
 			String multiDefModeValue = DefaultMarkupType.getAnnotation(section, ANNOTATION_MULTI_DEF_MODE);
@@ -222,7 +222,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 			// for backward compatibility, ask for explicit insensitivity
 			boolean caseSensitive = !CASE_INSENSITIVE.equalsIgnoreCase(termMatchingAnnotation);
 			OntologyCompiler ontologyCompiler = new OntologyCompiler(
-					compiler.getPackageManager(), section, OntologyType.class, ruleSet, multiDefMode, referenceValidationMode, caseSensitive);
+					compiler.getPackageManager(), section, OntologyMarkup.class, ruleSet, multiDefMode, referenceValidationMode, caseSensitive);
 			compiler.getCompilerManager().addCompiler(getCompilerPriority(section), ontologyCompiler);
 
 			if (ruleSetValue != null && ruleSet == null) {
@@ -256,7 +256,7 @@ public class OntologyType extends DefaultMarkupPackageCompileType {
 		}
 
 		@Override
-		public void destroy(PackageRegistrationCompiler compiler, Section<OntologyType> section) {
+		public void destroy(PackageRegistrationCompiler compiler, Section<OntologyMarkup> section) {
 			// we just remove the no longer used compiler... we do not need to destroy the s
 			for (PackageCompiler packageCompiler : section.get().getPackageCompilers(section)) {
 				if (packageCompiler instanceof OntologyCompiler) {

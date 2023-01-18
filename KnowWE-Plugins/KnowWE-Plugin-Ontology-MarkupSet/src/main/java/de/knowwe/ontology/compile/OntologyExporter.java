@@ -82,7 +82,7 @@ public class OntologyExporter implements EventListener {
 
 		final OntologyCompiler compiler = finishedEvent.getCompiler();
 		final Rdf2GoCore rdf2GoCore = compiler.getRdf2GoCore();
-		Section<OntologyType> ontologySection = compiler.getCompileSection();
+		Section<OntologyMarkup> ontologySection = compiler.getCompileSection();
 
 		synchronized (timers) {
 			Timer lastTimer = timers.get(ontologySection.getID());
@@ -91,7 +91,7 @@ public class OntologyExporter implements EventListener {
 			timers.keySet().removeIf(sectionId -> Sections.get(sectionId) == null);
 		}
 
-		Section<?> exportAnnotation = DefaultMarkupType.getAnnotationContentSection(ontologySection, OntologyType.ANNOTATION_EXPORT);
+		Section<?> exportAnnotation = DefaultMarkupType.getAnnotationContentSection(ontologySection, OntologyMarkup.ANNOTATION_EXPORT);
 		if (exportAnnotation == null) return; // no export specified, we are finished here
 		String export = exportAnnotation.getText();
 		String[] split = export.split("/");
@@ -166,7 +166,7 @@ public class OntologyExporter implements EventListener {
 	}
 
 	private static long getExportDelay(Section<? extends DefaultMarkupType> markupSection) {
-		String exportDelayString = DefaultMarkupType.getAnnotation(markupSection, OntologyType.ANNOTATION_EXPORT_DELAY);
+		String exportDelayString = DefaultMarkupType.getAnnotation(markupSection, OntologyMarkup.ANNOTATION_EXPORT_DELAY);
 		long exportDelay = DEFAULT_EXPORT_DELAY;
 		if (exportDelayString != null) {
 			try {

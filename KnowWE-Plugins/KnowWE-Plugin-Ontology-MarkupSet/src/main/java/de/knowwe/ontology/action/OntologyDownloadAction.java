@@ -32,7 +32,7 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.compile.OntologyType;
+import de.knowwe.ontology.compile.OntologyMarkup;
 import de.knowwe.ontology.tools.OntologyDownloadProvider;
 import de.knowwe.rdf2go.Rdf2GoCore;
 
@@ -147,7 +147,7 @@ public class OntologyDownloadAction extends AbstractAction {
 		else {
 			Article article = (title == null) ? context.getArticle()
 					: KnowWEUtils.getArticleManager(context.getWeb()).getArticle(title);
-			section = $(article).successor(OntologyType.class).successor(PackageCompileType.class).getFirst();
+			section = $(article).successor(OntologyMarkup.class).successor(PackageCompileType.class).getFirst();
 		}
 
 		return Compilers.getCompiler(context, section, OntologyCompiler.class);

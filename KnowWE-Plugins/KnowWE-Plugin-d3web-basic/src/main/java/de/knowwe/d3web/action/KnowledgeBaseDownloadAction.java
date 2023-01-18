@@ -16,7 +16,7 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.info.BasicProperties;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.knowledgebase.KnowledgeBaseReference;
-import de.d3web.we.knowledgebase.KnowledgeBaseType;
+import de.d3web.we.knowledgebase.KnowledgeBaseMarkup;
 import de.d3web.we.utils.D3webUtils;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;
@@ -96,7 +96,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			String kbName = context.getParameter(PARAM_KB_NAME);
 			if (kbName != null) {
 				sectionId = KnowledgeBaseReference.getDefinition(context.getArticleManager(), kbName)
-						.ancestor(KnowledgeBaseType.class)
+						.ancestor(KnowledgeBaseMarkup.class)
 						.mapFirst(Section::getID);
 			}
 		}
@@ -105,7 +105,7 @@ public class KnowledgeBaseDownloadAction extends AbstractAction {
 			// may be specified by Attributes.TOPIC
 			Article article = context.getArticle();
 			if (article != null) {
-				Section<?> kbSection = Sections.successor(article.getRootSection(), KnowledgeBaseType.class);
+				Section<?> kbSection = Sections.successor(article.getRootSection(), KnowledgeBaseMarkup.class);
 				if (kbSection != null) sectionId = kbSection.getID();
 			}
 		}

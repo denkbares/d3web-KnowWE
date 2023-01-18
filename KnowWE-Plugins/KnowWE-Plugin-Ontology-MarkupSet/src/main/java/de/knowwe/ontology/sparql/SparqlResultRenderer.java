@@ -44,7 +44,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.renderer.PaginationRenderer;
-import de.knowwe.ontology.compile.OntologyType;
+import de.knowwe.ontology.compile.OntologyMarkup;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.SparqlCache;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
@@ -104,7 +104,7 @@ public class SparqlResultRenderer {
 
 	public static List<SparqlResultNodeRenderer> getNodeRenderers() {
 		Extension[] extensions = PluginManager.getInstance().getExtensions(
-				OntologyType.PLUGIN_ID, POINT_ID);
+				OntologyMarkup.PLUGIN_ID, POINT_ID);
 		List<SparqlResultNodeRenderer> renderers = new ArrayList<>();
 		for (Extension extension : extensions) {
 			renderers.add((SparqlResultNodeRenderer) extension.getSingleton());

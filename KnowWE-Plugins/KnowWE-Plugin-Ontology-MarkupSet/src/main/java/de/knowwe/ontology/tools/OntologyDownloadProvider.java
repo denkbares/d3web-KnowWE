@@ -17,7 +17,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.ontology.action.OntologyDownloadAction;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.compile.OntologyType;
+import de.knowwe.ontology.compile.OntologyMarkup;
 import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.tools.DefaultTool;
@@ -70,7 +70,7 @@ public class OntologyDownloadProvider implements ToolProvider {
 
 		String extension = syntax.getDefaultFileExtension();
 
-		List<Section<OntologyType>> ontologySections = Sections.successors(section.getArticle(), OntologyType.class);
+		List<Section<OntologyMarkup>> ontologySections = Sections.successors(section.getArticle(), OntologyMarkup.class);
 		String jsAction;
 		//if there is only one ontology section on this article provide static URL access per article name
 		String identifierForThisOntology;

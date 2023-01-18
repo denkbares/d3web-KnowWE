@@ -28,11 +28,8 @@ import org.eclipse.rdf4j.model.IRI;
 import org.jetbrains.annotations.Nullable;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 
 import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.PackageCompiler;
-import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -42,7 +39,7 @@ import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.ontology.compile.OntologyCompiler;
-import de.knowwe.ontology.compile.OntologyType;
+import de.knowwe.ontology.compile.OntologyMarkup;
 import de.knowwe.ontology.kdom.namespace.AbbreviationPrefixReference;
 import de.knowwe.ontology.kdom.namespace.Namespace;
 import de.knowwe.ontology.turtle.Predicate;
@@ -50,7 +47,6 @@ import de.knowwe.ontology.turtle.PredicateSentence;
 import de.knowwe.ontology.turtle.Subject;
 import de.knowwe.ontology.turtle.TurtleMarkup;
 import de.knowwe.ontology.turtle.TurtleSentence;
-import de.knowwe.rdf2go.Rdf2GoCompiler;
 
 /**
  * @author Albrecht Striffler (denkbares GmbH)
@@ -101,7 +97,7 @@ public class OntologyUtils {
 	 */
 	@Nullable
 	public static Namespace getDefaultNamespace(OntologyCompiler compiler) {
-		return OntologyType.getDefaultNamespace(compiler);
+		return OntologyMarkup.getDefaultNamespace(compiler);
 	}
 
 	/**

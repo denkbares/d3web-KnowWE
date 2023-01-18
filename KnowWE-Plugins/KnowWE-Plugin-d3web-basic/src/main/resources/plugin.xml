@@ -67,7 +67,7 @@
 	</extension -->
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="KnowledgeBaseType">
-		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseType" />
+		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseMarkup" />
 		<parameter id="name" value="KnowledgeBaseType" />
 		<parameter id="description" value="This markup assembles a d3web knowledge base. It compiles
 			a set of defined packages into a knowledge base, as specified by the 'uses' annotation(s),

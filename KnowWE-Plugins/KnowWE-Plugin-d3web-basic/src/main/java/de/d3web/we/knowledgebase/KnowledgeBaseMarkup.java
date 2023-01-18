@@ -72,7 +72,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author volker_belli
  * @created 13.10.2010
  */
-public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
+public class KnowledgeBaseMarkup extends DefaultMarkupPackageCompileType {
 
 	public static final String ANNOTATION_ID = "id";
 	public static final String ANNOTATION_VERSION = "version";
@@ -108,20 +108,20 @@ public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 		MARKUP.addAnnotationContentType(PackageManager.COMPILE_ATTRIBUTE_NAME, new PackageSelection());
 	}
 
-	public KnowledgeBaseType() {
+	public KnowledgeBaseMarkup() {
 		super(MARKUP);
 		this.setRenderer(new KnowledgeBaseTypeRenderer());
 		this.addCompileScript(Priority.HIGHEST, new D3webCompilerRegistrationScript());
 		this.addCompileScript(Priority.HIGHEST, new KnowledgeBasePropertiesScript());
 	}
 
-	public String getFilename(Section<? extends KnowledgeBaseType> self) {
+	public String getFilename(Section<? extends KnowledgeBaseMarkup> self) {
 		String filename = getAnnotation(self, ANNOTATION_FILENAME);
 		return Strings.nonBlank(filename) ? filename : DEFAULT_FILENAME;
 	}
 
 	@NotNull
-	public D3webCompiler getCompiler(Section<? extends KnowledgeBaseType> self) {
+	public D3webCompiler getCompiler(Section<? extends KnowledgeBaseMarkup> self) {
 		return Objects.requireNonNull(
 				Compilers.getCompiler(Sections.successor(self, PackageCompileType.class), D3webCompiler.class),
 				"unexpected internal error: no compiler created");
@@ -134,7 +134,7 @@ public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 			String annotation = DefaultMarkupType.getAnnotation(section, ANNOTATION_TERM_MATCHING);
 			boolean caseSensitive = CASE_SENSITIVE.equalsIgnoreCase(annotation);
 			compiler.getCompilerManager()
-					.addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseType.class, caseSensitive));
+					.addCompiler(5, new D3webCompiler(compiler.getPackageManager(), section, KnowledgeBaseMarkup.class, caseSensitive));
 		}
 
 		@Override
@@ -147,9 +147,9 @@ public class KnowledgeBaseType extends DefaultMarkupPackageCompileType {
 		}
 	}
 
-	private static class KnowledgeBasePropertiesScript implements D3webCompileScript<KnowledgeBaseType> {
+	private static class KnowledgeBasePropertiesScript implements D3webCompileScript<KnowledgeBaseMarkup> {
 		@Override
-		public void compile(D3webCompiler compiler, Section<KnowledgeBaseType> section) throws CompilerMessage {
+		public void compile(D3webCompiler compiler, Section<KnowledgeBaseMarkup> section) throws CompilerMessage {
 			// get required information
 			KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 

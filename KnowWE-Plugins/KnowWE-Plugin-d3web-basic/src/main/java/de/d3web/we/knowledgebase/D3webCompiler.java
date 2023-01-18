@@ -121,8 +121,8 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	@NotNull
 	@Override
-	public Section<KnowledgeBaseType> getCompileSection() {
-		return Sections.cast(compileSection, KnowledgeBaseType.class);
+	public Section<KnowledgeBaseMarkup> getCompileSection() {
+		return Sections.cast(compileSection, KnowledgeBaseMarkup.class);
 	}
 
 	/**
@@ -364,7 +364,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		public void addSections(Collection<Section<?>> sectionsOfPackage) {
 			for (Section<?> section : sectionsOfPackage) {
 				// only compile the KnowledgeBaseType sections belonging to this compiler
-				if (!(section.get() instanceof KnowledgeBaseType) || getCompiler().getCompileSection() == section) {
+				if (!(section.get() instanceof KnowledgeBaseMarkup) || getCompiler().getCompileSection() == section) {
 					addSubtree(section);
 				}
 			}
