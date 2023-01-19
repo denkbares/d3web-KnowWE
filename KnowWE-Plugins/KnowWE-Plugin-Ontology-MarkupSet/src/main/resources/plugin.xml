@@ -181,10 +181,10 @@
 		<parameter id="priority" value="1.1" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OntologyType">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OntologyMarkup">
 		<parameter id="class" value="de.knowwe.ontology.compile.OntologyMarkup" />
-		<parameter id="name" value="OntologyType" />
-		<parameter id="description" value="Type OntologyType" />
+		<parameter id="name" value="OntologyMarkup" />
+		<parameter id="description" value="Type OntologyMarkup" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
@@ -409,7 +409,7 @@
 		<parameter id="description" value="Renders a preview of a import file." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="OntologyType/**/ImportType" />
+		<parameter id="scope" value="OntologyMarkup/**/ImportType" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="RelationPreviewRenderer">

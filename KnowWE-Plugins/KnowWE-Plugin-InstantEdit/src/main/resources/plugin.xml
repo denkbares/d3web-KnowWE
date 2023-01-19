@@ -29,7 +29,7 @@
 		<parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
 		<parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
 		<parameter id="css" value="DefaultEditTool.css" />
-		<parameter id="scope" value="KnowledgeBaseType" />
+		<parameter id="scope" value="KnowledgeBaseMarkup" />
 		<parameter id="scope" value="PackageMarkupType" />
 		<parameter id="scope" value="QuestionTree" />
 		<parameter id="scope" value="QuestionnaireTreeMarkup" />
@@ -49,7 +49,7 @@
 		<parameter id="scope" value="ReadOnly" />
 		<parameter id="scope" value="RuleMarkup" />
 		<parameter id="scope" value="SemanticAutocompletionType" />
-		<parameter id="scope" value="OntologyType" />
+		<parameter id="scope" value="Ontology" />
 		<parameter id="scope" value="AttachmentMarkup" />
 	</extension>
 

@@ -66,9 +66,9 @@
 		<parameter id="scope" value="ShowSolutions" />
 	</extension -->
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="KnowledgeBaseType">
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="KnowledgeBaseMarkup">
 		<parameter id="class" value="de.d3web.we.knowledgebase.KnowledgeBaseMarkup" />
-		<parameter id="name" value="KnowledgeBaseType" />
+		<parameter id="name" value="KnowledgeBaseMarkup" />
 		<parameter id="description" value="This markup assembles a d3web knowledge base. It compiles
 			a set of defined packages into a knowledge base, as specified by the 'uses' annotation(s),
 			or compiles the default package if no packages are specified." />

@@ -22,7 +22,7 @@
 			(set with @name annotation in the %%Ontology markup), to make it usable during d3web compilation." />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
-		<parameter id="scope" value="KnowledgeBaseType" />
+		<parameter id="scope" value="KnowledgeBaseMarkup" />
 	</extension>
 
 </plugin>
