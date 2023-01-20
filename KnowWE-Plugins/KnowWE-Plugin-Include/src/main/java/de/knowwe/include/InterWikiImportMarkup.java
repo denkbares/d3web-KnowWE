@@ -282,22 +282,25 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			}
 
 			long lastRun = markup.get().timeSinceLastRun(markup);
+			String message;
 			if (lastRun < Long.MAX_VALUE) {
 				String lastRunDisplay = getDisplay(lastRun);
-				String message = "Last check for changes was " + lastRunDisplay + " ago";
+				message = "Last check for changes was " + lastRunDisplay + " ago";
 				long lastChange = markup.get().timeSinceLastChange(markup);
 				if (lastChange < Long.MAX_VALUE) {
 					String lastChangeDisplay = getDisplay(lastChange);
 					message += ", last change was " + lastChangeDisplay + " ago";
 				}
-				result.appendHtmlTag("p");
-				result.appendHtmlElement("span", message, "class", "include-message");
-				result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
-						"class", "include-refresh tooltipster", "title", "Check for changes");
-				result.appendHtml(Icon.REFRESH.toHtml());
-				result.appendHtmlTag("/a");
-				result.appendHtmlTag("/p");
+			} else {
+				message = "No check yet, click here to check now: ";
 			}
+			result.appendHtmlTag("p");
+			result.appendHtmlElement("span", message, "class", "include-message");
+			result.appendHtmlTag("a", "onclick", "KNOWWE.core.plugin.attachment.update('" + markup.getID() + "')",
+					"class", "include-refresh tooltipster", "title", "Check for changes");
+			result.appendHtml(Icon.REFRESH.toHtml());
+			result.appendHtmlTag("/a");
+			result.appendHtmlTag("/p");
 		}
 
 		private void renderHeader(Section<InterWikiImportMarkup> markup, RenderResult result) {
