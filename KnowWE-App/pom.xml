@@ -414,6 +414,10 @@
 					<groupId>de.uniwue.d3web</groupId>
 					<artifactId>KnowWE-Plugin-DropZone</artifactId>
 				</dependency>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-d3web-Player</artifactId>
+				</dependency>
 			</dependencies>
 		</profile>
 
