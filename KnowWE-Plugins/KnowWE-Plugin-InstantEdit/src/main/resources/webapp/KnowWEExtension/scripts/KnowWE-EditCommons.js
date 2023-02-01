@@ -141,6 +141,7 @@ KNOWWE.editCommons = function () {
 					if (xhr.status === 200) {
 						window.onbeforeunload = null;
 						window.onunload = null;
+						KNOWWE.helper.observer.notify('saved');
 						if (fn) fn();
 						_EC.hideAjaxLoader();
 					} else {
