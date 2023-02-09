@@ -89,10 +89,10 @@ KNOWWE.plugin.anchor = function() {
       - 10
       // if the hash anchor is inside a table, scroll additional 100px to also account for fixed table header
       - getFloatingTableHeaderHeight($element);
-      console.log("scrollTop " + scrollTop);
-      jq$("html, body").animate({
-        scrollTop: scrollTop
-      }, 1); // somehow 0 does not work, 1 does...
+    console.log("scrollTop " + scrollTop);
+    jq$("html, body").animate({
+      scrollTop: scrollTop
+    }, 1); // somehow 0 does not work, 1 does...
   }
 
 
@@ -398,6 +398,107 @@ KNOWWE.core.plugin.setMarkupSectionActivationStatus = function(id, status) {
   _KU.showProcessingIndicator();
   new _KA(options).send();
 };
+
+KNOWWE.plugin.listFilter = function() {
+
+  return {
+    initAutoCompletion: function() {
+      jq$('.filter-list-section-input').each(function() {
+        new TextArea(this);
+        new AutoComplete(this, function(callback, prefix) {
+          AutoComplete.sendCompletionAction(callback, prefix, "$tsm")
+        });
+      });
+    }
+  }
+}();
+
+KNOWWE.plugin.listSection = function() {
+
+  const COOKIE_LIST_SECTION_ID = "list-section.identifier.";
+  const COOKIE_LIST_SECTION_COUNT = "list-section.count."
+
+  function setCookieAndRerender(cookie, value, element) {
+    const listWrapper = element.parent().next('.ReRenderSectionMarker').children('.list-section-wrapper');
+    const sectionId = listWrapper.attr("sectionid");
+    jq$.cookie(cookie + sectionId, value);
+    listWrapper.rerender({callback: highlight});
+  }
+
+  function highlight($wrapper, previous) {
+    let className = 'highlighted';
+    let $current = $wrapper.find('.list-sections tr.highlighted').first();
+    if (!$current.exists()) {
+      $wrapper.find('.list-sections tr').first().addClass(className);
+    } else {
+      $current.removeClass(className);
+      if (previous) {
+        $current.prev().addClass(className);
+      } else {
+        $current.next().addClass(className);
+      }
+    }
+    // $current[0].scrollIntoView({
+    //   behavior: "smooth",
+    //   block: "start"
+    // });
+  }
+
+  function getCookie(cookie, element) {
+    const sectionId = element.parent().next('.ReRenderSectionMarker').children('.list-section-wrapper').attr("sectionid");
+    return jq$.cookie(cookie + sectionId);
+  }
+
+  return {
+    initListSectionFilter: function() {
+
+      let $input = jq$('input.filter-list-section-input');
+      if (!$input.exists()) return;
+
+      highlight(jq$('.list-section-wrapper'));
+
+      // restore last value (browser history sometimes forgets)
+      $input.each(function() {
+        let $this = jq$(this);
+        let lastValue = getCookie(COOKIE_LIST_SECTION_ID, $this);
+        $this.val(lastValue);
+        // make sure we rerender
+        setCookieAndRerender(COOKIE_LIST_SECTION_ID, lastValue, $this);
+      });
+
+      // focus and highlight first input on page
+      $input.first().focus().selectRange(0, $input.val().length);
+      $input.on("change paste keyup", function(event) {
+        let $wrapper = jq$(this).parents('.grouped-list-section-wrapper');
+        if (event.keyCode === 13) { // ENTER
+          $wrapper.find('.list-sections .highlighted .list-sections-name a')[0].click();
+          return;
+        } else if (event.keyCode === 40) { // ARROW DOWN
+          highlight($wrapper);
+        } else if (event.keyCode === 38) { // ARROW UP
+          highlight($wrapper, true);
+        }
+        let inputField = jq$(this);
+        const inputText = inputField.val();
+        if (inputText === getCookie(COOKIE_LIST_SECTION_ID, jq$(this))) return;
+        setCookieAndRerender(COOKIE_LIST_SECTION_ID, inputText, jq$(this));
+      });
+
+      // init drop down to select number of displayed list elements
+      jq$('select.list-sections-filter-select').change(function() {
+        const option = jq$(this).find("option:selected").attr("value");
+        setCookieAndRerender(COOKIE_LIST_SECTION_COUNT, option, jq$(this));
+      });
+
+      // init 'clear' button
+      jq$('.grouped-list-section-wrapper .clear-filter').on("click", function() {
+        let $input = jq$(this).parents('.grouped-list-section-wrapper').find('input.filter-list-section-input');
+        $input.val("");
+        $input.trigger("change");
+      });
+    }
+  }
+}();
 
 KNOWWE.tooltips = {};
 
@@ -821,4 +922,6 @@ KNOWWE.helper.observer.subscribe("afterRerender", function() {
 jq$(document).ready(function() {
   KNOWWE.core.plugin.switchCompiler.init();
   KNOWWE.core.plugin.stickyTableHeaders.init();
+  KNOWWE.plugin.listSection.initListSectionFilter();
+  KNOWWE.plugin.listFilter.initAutoCompletion();
 });

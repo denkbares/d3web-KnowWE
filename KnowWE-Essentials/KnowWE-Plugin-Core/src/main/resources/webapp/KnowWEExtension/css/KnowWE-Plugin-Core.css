@@ -335,6 +335,98 @@ span.markupMenuItem {
 	font-weight: normal;
 }
 
+/*
+ * ListSections Rendering
+*/
+
+table.list-sections {
+	margin: 20px;
+}
+
+table.list-sections td,
+table.list-sections th {
+	padding: 1px 0.25em;
+	white-space: normal;
+}
+
+table.list-sections td {
+	vertical-align: top;
+}
+
+table.list-sections td.list-sections-tools {
+	white-space: nowrap;
+}
+
+table.list-sections td.list-sections-number {
+	text-align: right;
+}
+
+table.list-sections td.list-sections-tools ~ td.list-sections-tools {
+	padding-left: 0;
+}
+
+table.list-sections td.list-sections-name {
+	white-space: pre-wrap;
+}
+
+table.list-sections td.list-sections-failure-mode,
+table.list-sections td.list-sections-packages,
+table.list-sections td.list-sections-compilers,
+table.list-sections td.list-sections-description,
+table.list-sections td.list-sections-description a:link,
+table.list-sections td.list-sections-description a:visited {
+	color: #888;
+	white-space: pre-wrap;
+	max-width: 50vw;
+}
+
+table.list-sections td.list-sections-failure-mode {
+	font-size: 70%;
+	padding-left: 0;
+}
+
+table.list-sections td.list-sections-blank {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+table.list-sections td.list-sections-progress {
+	text-align: right;
+	color: #888;
+}
+
+table.list-sections tr:nth-child(odd) {
+	background-color: rgba(195, 195, 195, 0.1);
+}
+
+table.list-sections tr.highlighted {
+	background-color: rgba(195, 195, 195, 0.3) !important;
+}
+
+.grouped-list-section-wrapper .filter-input .form-control {
+	margin-top: -3px;
+}
+
+.grouped-list-section-wrapper .filter-input .fa-info-circle {
+	margin: 0 10px;
+	cursor: hand;
+}
+
+.filter-input .clear-filter {
+	margin: -1.5em;
+	cursor: pointer;
+}
+
+.list-sections-filter-select {
+	margin-left: 3em;
+}
+
+.knowwe-superscript {
+	zoom: 70%;
+	position: relative;
+	top: -9px;
+}
+
 /* ################################################## */
 /* ------------Tool Menu Styles----------------- */
 /* ################################################## */
