@@ -278,6 +278,7 @@ public class TableUtils {
 		columnHeader = Strings.trim(columnHeader);
 
 		Section<TableLine> headerRow = getHeaderRow(rowSection);
+		if (headerRow == null) return null;
 		List<Section<TableCellContent>> headerCells = Sections.successors(headerRow, TableCellContent.class);
 
 		List<Section<TableCellContent>> currentLineCells = Sections.successors(getTableLine(rowSection), TableCellContent.class);
