@@ -89,14 +89,13 @@ KNOWWE.plugin.anchor = function() {
       - 10
       // if the hash anchor is inside a table, scroll additional 100px to also account for fixed table header
       - getFloatingTableHeaderHeight($element);
-    console.log("scrollTop " + scrollTop);
     jq$("html, body").animate({
       scrollTop: scrollTop
     }, 1); // somehow 0 does not work, 1 does...
   }
 
 
-  return {
+  return {a
 
     init: function() {
       if (!window.location.hash) return;
