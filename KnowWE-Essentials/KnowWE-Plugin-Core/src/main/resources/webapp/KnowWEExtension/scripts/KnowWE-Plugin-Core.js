@@ -95,7 +95,7 @@ KNOWWE.plugin.anchor = function() {
   }
 
 
-  return {a
+  return {
 
     init: function() {
       if (!window.location.hash) return;
