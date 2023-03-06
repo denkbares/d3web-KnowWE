@@ -130,13 +130,18 @@ KNOWWE.plugin.anchor = function() {
       section = jq$('#' + sectionId);
       if (section.exists()) {
         scrollIntoView(section);
+        return;
       }
 
       section = jq$('#' + name); // ordinary JSPWiki hash anchor links
+      if (!section.exists()) {
+        section = jq$('[id="' + name + '"]'); // ordinary JSPWiki hash anchor links, if it contains + char
+      }
       if (section.exists()) {
         setTimeout(function() { // deferred, so normal hash anchor scroll has already happened
           scrollIntoView(section);
         }, 0);
+        return;
       }
     }
   }
