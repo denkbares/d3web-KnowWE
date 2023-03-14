@@ -79,16 +79,8 @@ public class UserContextUtil {
 			// do not handle file uploads, leave this to the action
 			if (!ServletFileUpload.isMultipartContent(request)) {
 				try {
-					BufferedReader br = new BufferedReader(new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8));
-
-					String line;
-					StringBuilder bob = new StringBuilder();
-
-					while ((line = br.readLine()) != null) {
-						bob.append(line).append("\n");
-					}
-
-					parameters.put("data", bob.toString());
+					String data = new String(request.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+					parameters.put("data", data);
 				}
 				catch (IOException e) {
 					LOGGER.error("unexpected internal error", e);
