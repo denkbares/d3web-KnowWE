@@ -48,6 +48,8 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 	private static final int DEFAULT_COUNT = 50;
 	private static final Map<String, Integer> COUNT_OPTIONS = new TreeMap<>(NumberAwareComparator.CASE_SENSITIVE);
+	public static final Pattern SEARCH_PATTERN = Pattern.compile("([^\u00A0\\h\\s\\v]+?)([:<>=]+)[\u00A0\\h\\s\\v]*([^\u00A0\\h\\s\\v]+)");
+	public static final Pattern QUOTES_PATTERN = Pattern.compile("\".+\"");
 
 	static {
 		COUNT_OPTIONS.put("Show All", -1);
@@ -363,8 +365,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 		public SearchPredicate(String searchPhrase) {
 			// Search phrases with :<>=
-			Pattern pattern = Pattern.compile("([^\u00A0\\h\\s\\v]+?)([:<>=]+)[\u00A0\\h\\s\\v]*([^\u00A0\\h\\s\\v]+)");
-			Matcher matcher = pattern.matcher(searchPhrase);
+			Matcher matcher = SEARCH_PATTERN.matcher(searchPhrase);
 			while (matcher.find()) {
 				String name = matcher.group(1);
 				String operator = matcher.group(2);
@@ -380,8 +381,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 			// Search phrases written in quotes ""
 			if (Strings.nonBlank(rest)) {
-				pattern = Pattern.compile("\".+\"");
-				matcher = pattern.matcher(rest);
+				matcher = QUOTES_PATTERN.matcher(rest);
 				List<Predicate<Section<T>>> filtersList = new ArrayList<>();
 				while (matcher.find()) {
 					String phrase = matcher.group();
