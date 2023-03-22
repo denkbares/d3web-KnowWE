@@ -102,4 +102,12 @@
 			<cutdirsmapper dirs="5" />
 		</copy>
 	</target>
+	<target name="update_resources d3web-Player" depends="update_resources core-plugins">
+		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT/KnowWEExtension/d3web-Player/client" verbose="true" overwrite="true">
+			<fileset dir="${basedir}/../../d3web-Player-Platform/">
+				<include name="d3web-Player/src/main/resources/" />
+			</fileset>
+			<cutdirsmapper dirs="5" />
+		</copy>
+	</target>
 </project>
