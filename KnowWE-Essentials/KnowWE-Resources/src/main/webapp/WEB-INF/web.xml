@@ -111,6 +111,9 @@
         <listener-class>de.knowwe.core.ServletContextEventListener</listener-class>
     </listener>
     <listener>
+        <listener-class>de.knowwe.core.HttpSessionEventListener</listener-class>
+    </listener>
+    <listener>
         <listener-class>org.apache.wiki.bootstrap.WikiBootstrapServletContextListener</listener-class>
     </listener>
 

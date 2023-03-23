@@ -19,8 +19,8 @@ import de.knowwe.kdom.defaultMarkup.AnnotationType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * A scope is an selector of a specific subset of KDOM nodes. It's selection is based on the type of the KDOM nodes
- * itself as well as on the type of the KDOM node's anchestors. It can be compared a little bit to the css selectors.
+ * A scope is a selector of a specific subset of KDOM nodes. Its selection is based on the type of the KDOM nodes
+ * itself as well as on the type of the KDOM node's ancestors. It can be compared a little to the css selectors.
  * <p>
  * The scope is a path of those KDOM node types that should be matched/selected. The path can be relative (anywhere in
  * the KDOM tree) or root based. Specific path wildcards as "*" and "**" are allowed.

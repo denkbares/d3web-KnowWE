@@ -10,6 +10,7 @@ import javax.servlet.ServletContextListener;
 import com.denkbares.events.EventManager;
 import de.knowwe.event.ServletContextDestroyedEvent;
 import de.knowwe.event.ServletContextInitializedEvent;
+
 /**
  * Listens to servlet events and delegates them to the denkbares event mechanism. Also allows to register simple tasks
  * to be executed when servlet is destroyed.
