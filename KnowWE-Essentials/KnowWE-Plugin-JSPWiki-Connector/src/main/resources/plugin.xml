@@ -78,6 +78,14 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="RecentChangesMarkup">
+		<parameter id="class" value="de.knowwe.jspwiki.RecentChangesMarkup" />
+		<parameter id="name" value="RecentChangesMarkup" />
+		<parameter id="description" value="Markup for Recent-Changes View" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 			id="ReadOnlyActionCheckbox">
