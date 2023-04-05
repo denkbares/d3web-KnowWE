@@ -56,13 +56,14 @@ public class LazyReferenceManager implements EventListener {
 		if (event instanceof CompilerEvent) {
 			Compiler compiler = ((CompilerEvent) event).getCompiler();
 			if (compiler instanceof TermCompiler) {
-				cache.remove(compiler);
-				if (!(compiler instanceof IncrementalCompiler)) return;
-				if (event instanceof TermDefinitionRegisteredEvent) {
-					handleRegistration((TermDefinitionRegisteredEvent) event, (IncrementalCompiler) compiler);
-				}
-				if (event instanceof TermDefinitionUnregisteredEvent) {
-					handleUnregistration((TermDefinitionUnregisteredEvent) event, (IncrementalCompiler) compiler);
+				if (cache.remove(compiler) != null) {
+					if (!(compiler instanceof IncrementalCompiler)) return;
+					if (event instanceof TermDefinitionRegisteredEvent) {
+						handleRegistration((TermDefinitionRegisteredEvent) event, (IncrementalCompiler) compiler);
+					}
+					if (event instanceof TermDefinitionUnregisteredEvent) {
+						handleUnregistration((TermDefinitionUnregisteredEvent) event, (IncrementalCompiler) compiler);
+					}
 				}
 			}
 		}
