@@ -155,6 +155,8 @@
     }
 
     this.each(function(i) {
+      if (!document.contains(this)) return;
+
       let $element = jq$(this);
 
       let id = $element.attr('sectionId');
