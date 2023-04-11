@@ -179,6 +179,7 @@ KNOWWE.core.plugin.progress = function() {
     },
 
     updateProgressBar: function(sectionId, refreshTilProgress) {
+      if (!KNOWWE.helper.loadCheck(['Wiki.jsp'])) return;
 
       var params = {
         action: 'GetProgressAction',
