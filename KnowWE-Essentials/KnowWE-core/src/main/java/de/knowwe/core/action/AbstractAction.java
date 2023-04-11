@@ -72,10 +72,8 @@ public abstract class AbstractAction implements Action {
 		}
 		Section<?> section = Sections.get(sectionId);
 		if (section == null) {
-			context.sendError(HttpServletResponse.SC_NOT_FOUND,
-					"The referenced section was not found. " +
+			fail(context, HttpServletResponse.SC_NOT_FOUND,"The referenced section was not found. " +
 							"Maybe the page content is outdated. Please reload.");
-			throw new IOException("Section with id '" + sectionId + "' was not found");
 		}
 		KnowWEUtils.assertCanView(section, context);
 		return section;
