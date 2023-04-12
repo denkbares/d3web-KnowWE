@@ -75,14 +75,17 @@ public class KnowledgeBaseDownloadProvider implements ToolProvider {
 		}
 
 		// tool to provide download capability
-		String kbName = DefaultMarkupType.getContent(section).trim();
+		String kbName = DefaultMarkupType.getAnnotation(section, KnowledgeBaseMarkup.ANNOTATION_FILENAME);
+		if (Strings.isBlank(kbName)) {
+			kbName = DefaultMarkupType.getContent(section).trim() + ".d3web";
+		}
 		if (kbName.isEmpty()) {
 			kbName = "knowledgebase";
 		}
 		String jsAction = "window.location='action/KnowledgeBaseDownloadAction" +
 				"?" + Attributes.SECTION_ID + "=" + compileSection.getID() +
 				"&amp;" + Attributes.WEB + "=" + compileSection.getWeb() +
-				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName + ".d3web" +
+				"&amp;" + KnowledgeBaseDownloadAction.PARAM_FILENAME + "=" + kbName.trim() +
 				"&amp;_=" + System.currentTimeMillis() + "'";
 		return new DefaultTool(
 				Icon.DOWNLOAD,
