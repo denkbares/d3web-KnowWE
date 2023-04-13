@@ -41,7 +41,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 	public TurtleURI() {
 
 		ConstraintSectionFinder c = new ConstraintSectionFinder(
-				new RegexSectionFinder("\\w*:\\w+"));
+				new RegexSectionFinder("\\w*:.+"));
 		c.addConstraint(AtMostOneFindingConstraint.getInstance());
 		setSectionFinder(c);
 	}
