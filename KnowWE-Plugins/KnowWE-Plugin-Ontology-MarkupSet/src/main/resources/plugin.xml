@@ -53,6 +53,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="RecentChangesFilterProviderAction">
+		<parameter id="class" value="de.knowwe.jspwiki.RecentChangesFilterProviderAction" />
+		<parameter id="name" value="RecentChangesFilterProviderAction" />
+		<parameter id="description" value="Action RecentChangesFilterProviderAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ClearCachedSparqlAction">
 		<parameter id="class" value="de.knowwe.ontology.sparql.ClearCachedSparqlAction" />
 		<parameter id="name" value="ClearCachedSparqlAction" />

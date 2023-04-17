@@ -21,9 +21,16 @@ package de.knowwe.jspwiki;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.wiki.api.core.Page;
+import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -37,43 +44,29 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	public void renderContentsAndAnnotations(Section<?> sec, UserContext user, RenderResult string) {
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
-		PaginationRenderer.setResultSize(user, recentChanges.size());
+		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
+		Set<Page> filteredRecentChanges = filter(filter, recentChanges);
+		PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
 		int startRow = PaginationRenderer.getStartRow(sec, user);
 		int count = PaginationRenderer.getCount(sec, user);
 
 		string.appendHtml("<table>");
-		string.appendHtml("<tr>");
-		string.appendHtml("<th>Page</th>");
-		string.appendHtml("<th>Last Modified</th>");
-		string.appendHtml("<th>Author</th>");
-		string.appendHtml("</tr>");
-
+		addTableHead(string);
 		int counter = 1;
 		int pagesCount = startRow + count - 1;
-		for (Page page : recentChanges) {
-			if (counter > pagesCount) {
+		for (Page page : filteredRecentChanges) {
+			if (counter > pagesCount || startRow > filteredRecentChanges.size()) {
 				break;
 			}
 			if (counter < startRow) {
 				counter++;
 				continue;
 			}
-
 			String author = page.getAuthor();
 			if (author == null) {
 				author = "Unknown Author";
 			}
-			LocalDate today = LocalDate.now();
-			LocalDate date = page.getLastModified().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-			SimpleDateFormat formatter;
-			if (date.equals(today)) {
-				formatter = new SimpleDateFormat("HH:mm:ss");
-			}
-			else {
-				formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			}
-
-			String formattedDate = formatter.format(page.getLastModified());
+			String formattedDate = getFormattedDate(page);
 			string.appendHtml("<tr>");
 			string.appendHtml("<td>" + page.getName() + "</td>");
 			string.appendHtml("<td>" + formattedDate + "</td>");
@@ -82,6 +75,78 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			counter++;
 		}
 		string.appendHtml("</table>");
+	}
+
+	@NotNull
+	private static String getFormattedDate(Page page) {
+		LocalDate today = LocalDate.now();
+		LocalDate date = page.getLastModified().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+		SimpleDateFormat formatter;
+		if (date.equals(today)) {
+			formatter = new SimpleDateFormat("HH:mm:ss");
+		}
+		else {
+			formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		}
+		return formatter.format(page.getLastModified());
+	}
+
+	private String addTableHead(RenderResult string) {
+		List<String> columnNames = new ArrayList<>();
+		columnNames.add("Page");
+		columnNames.add("Last Modified");
+		columnNames.add("Author");
+		string.appendHtml("<tr>");
+		for (String var : columnNames) {
+			List<String> attributes = new ArrayList<>(Arrays.asList(
+					"column-name", var, "filter-provider-action", RecentChangesFilterProviderAction.class.getSimpleName()));
+			string.appendHtmlTag("th", attributes.toArray(new String[0]));
+			string.append(var.replace("_", " "));
+			string.appendHtml("</th>");
+		}
+		string.appendHtml("</tr>");
+		return string.toString();
+	}
+
+	public Set<Page> filter(@NotNull Map<String, Set<Pattern>> filter, Set<Page> recentChanges) {
+		Set<Page> filteredPages = new HashSet<>();
+		if (filter.isEmpty()) return recentChanges;
+		for (Page page : recentChanges) {
+			boolean pageMatches = true;
+			for (String columnName : filter.keySet()) {
+				String text;
+				switch (columnName) {
+					case "Page" -> text = page.getName();
+					case "Last Modified" -> text = page.getLastModified().toString();
+					case "Author" -> {
+						text = page.getAuthor();
+						if (text == null) {
+							text = "Unknown Author";
+						}
+					}
+					default -> text = null;
+				}
+				Set<Pattern> patterns;
+				try {
+					patterns = filter.get(columnName);
+				}
+				catch (NullPointerException e) {
+					continue;
+				}
+				if (patterns.size() < 1) {
+					continue;
+				}
+				String finalText = text;
+				if (patterns.stream().noneMatch(p -> p.matcher(finalText).matches())) {
+					pageMatches = false;
+					break;
+				}
+			}
+			if (pageMatches) {
+				filteredPages.add(page);
+			}
+		}
+		return filteredPages;
 	}
 }
 
