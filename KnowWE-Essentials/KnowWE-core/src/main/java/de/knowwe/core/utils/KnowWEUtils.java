@@ -51,13 +51,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-
-import com.denkbares.strings.Identifier;
-import com.denkbares.strings.Strings;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.strings.Identifier;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.AttachmentManager;
@@ -141,9 +139,9 @@ public class KnowWEUtils {
 		while (matcher.find()) {
 			final String link = matcher.group(1);
 			if (articleManager.getArticle(link.replaceAll("#.*$", "")) == null
-					&& !link.startsWith("http")
-					&& !link.startsWith("file")
-					&& !link.startsWith("attach")) {
+				&& !link.startsWith("http")
+				&& !link.startsWith("file")
+				&& !link.startsWith("attach")) {
 				escapeIndices.add(new Pair<>(matcher.start(), matcher.end()));
 			}
 		}
@@ -290,8 +288,8 @@ public class KnowWEUtils {
 				.getAttachments();
 		for (final WikiAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
-					&& attachment.getParentName().equals(title))
-					|| attachment.getPath().equals(fileName)) {
+				 && attachment.getParentName().equals(title))
+				|| attachment.getPath().equals(fileName)) {
 				actualAttachment = attachment;
 				break;
 			}
@@ -565,10 +563,10 @@ public class KnowWEUtils {
 
 	/**
 	 * Checks whether the given article is compiled as an article (e.g. %%InterWikiImport or %%Attachment-Markup with
-	 * @compile: true)
 	 *
 	 * @param article the article to check
 	 * @return true if the given article is an attachment article, false otherwise
+	 * @compile: true)
 	 */
 	public static boolean isAttachmentArticle(Article article) {
 		ArticleManager articleManager = article.getArticleManager();
@@ -715,9 +713,13 @@ public class KnowWEUtils {
 	 * @see #getURLLink(Section)
 	 * @see #getWikiLink(Section)
 	 */
-	public static String getURLLink(final String title, final int version) {
+	public static String getURLLink(String title, final int version) {
+		Article article = getDefaultArticleManager().getArticle(title);
+		if (article != null) {
+			title = getArticleCompilingAttachmentArticle(article).getTitle();
+		}
 		return "Wiki.jsp?page=" + Strings.encodeURL(title)
-				+ (version != -1 ? "&version=" + version : "");
+			   + (version == -1 ? "" : "&version=" + version);
 	}
 
 	/**
@@ -779,16 +781,28 @@ public class KnowWEUtils {
 	 * @see #getWikiLink(Section)
 	 */
 	public static String getURLLink(final Section<?> section) {
-		String title = section.getTitle();
-		final ArticleManager articleManager = section.getArticleManager();
+		String title = getArticleCompilingAttachmentArticle(section.getArticle()).getTitle();
+		return "Wiki.jsp?page=" + Strings.encodeURL(title) + "#" + getAnchor(section);
+	}
+
+	/**
+	 * If the article is an attachment article, return the article containing the section compiling that article. If it
+	 * is not an attachment article, the given article is returned.
+	 */
+	@NotNull
+	private static Article getArticleCompilingAttachmentArticle(Article article) {
+		final ArticleManager articleManager = article.getArticleManager();
 		if (articleManager instanceof DefaultArticleManager) {
 			final Set<Section<AttachmentCompileType>> compilingAttachmentSections = ((DefaultArticleManager) articleManager).getAttachmentManager()
-					.getCompilingAttachmentSections(section.getArticle());
+					.getCompilingAttachmentSections(article);
 			if (!compilingAttachmentSections.isEmpty()) {
-				title = compilingAttachmentSections.iterator().next().getTitle();
+				Article compilingArticle = compilingAttachmentSections.iterator().next().getArticle();
+				if (compilingArticle != null) {
+					return compilingArticle;
+				}
 			}
 		}
-		return "Wiki.jsp?page=" + Strings.encodeURL(title) + "#" + getAnchor(section);
+		return article;
 	}
 
 	/**
