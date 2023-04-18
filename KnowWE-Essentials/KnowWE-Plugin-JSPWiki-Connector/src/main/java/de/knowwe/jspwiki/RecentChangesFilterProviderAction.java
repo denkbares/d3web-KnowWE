@@ -129,7 +129,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			String text = null;
 			switch (columnName) {
 				case "Page" -> text = page.getName();
-				case "Last Modified" -> text = util.formatDateTimeToDate(page.getLastModified());
+				case "Last Modified" -> text = util.toDateString(page.getLastModified());
 				case "Author" -> text = page.getAuthor();
 			}
 			if (addedFilterValueTexts.contains(text) || filteredOut.contains(text)) continue;

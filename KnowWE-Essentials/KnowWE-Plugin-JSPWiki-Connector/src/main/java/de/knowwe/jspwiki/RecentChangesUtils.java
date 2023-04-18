@@ -20,12 +20,9 @@
 package de.knowwe.jspwiki;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Locale;
 
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 
 import static java.time.ZoneId.*;
@@ -35,22 +32,21 @@ public class RecentChangesUtils {
 	private static final FastDateFormat TIME_FORMAT = FastDateFormat.getInstance("HH:mm:ss");
 	private static final FastDateFormat DATE_TIME_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
-	public String formatDateTimeToDate(Date dateString) {
-		LocalDate date = LocalDate.from(dateString.toInstant());
-		return DATE_FORMAT.format(Date.from(date.atStartOfDay().atZone(systemDefault()).toInstant()));
+	public String toDateString(Date date) {
+		return DATE_FORMAT.format(date);
 	}
 
 	@NotNull
-	public String getFormattedDate(Page page) {
+	public String toDateOrTodayTimeString(Date date) {
 		LocalDate today = LocalDate.now();
-		LocalDate date = page.getLastModified().toInstant().atZone(systemDefault()).toLocalDate();
+		LocalDate localDate = date.toInstant().atZone(systemDefault()).toLocalDate();
 		FastDateFormat formatter;
-		if (date.equals(today)) {
+		if (localDate.equals(today)) {
 			formatter = TIME_FORMAT;
 		}
 		else {
 			formatter = DATE_TIME_FORMAT;
 		}
-		return formatter.format(page.getLastModified());
+		return formatter.format(date);
 	}
 }

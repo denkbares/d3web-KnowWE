@@ -68,7 +68,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			if (author == null) {
 				author = "Unknown Author";
 			}
-			String formattedDate = util.getFormattedDate(page);
+			String formattedDate = util.toDateOrTodayTimeString(page.getLastModified());
 			string.appendHtml("<tr>");
 			if (page instanceof Attachment) {
 				string.appendHtml("<td>" + page.getName() + "</td>");
@@ -173,7 +173,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	private List<Page> checkVersionHistoryWithDate(List<Page> versionHistory, Set<Pattern> patterns) {
 		List<Page> filteredPages = new ArrayList<>();
 		for (Page page : versionHistory) {
-			String formattedDate = util.formatDateTimeToDate(page.getLastModified());
+			String formattedDate = util.toDateString(page.getLastModified());
 			if (patterns.stream().anyMatch(p -> p.matcher(formattedDate).matches())) {
 				filteredPages.add(page);
 			}
