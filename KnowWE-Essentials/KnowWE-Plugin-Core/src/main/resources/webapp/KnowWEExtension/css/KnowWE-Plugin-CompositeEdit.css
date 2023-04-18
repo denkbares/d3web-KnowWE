@@ -166,7 +166,7 @@
 }
 
 #compositeEdit .ueeditmarker:after {
-	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
+	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
 	content: "\f040";
 	display: block;
 	position: relative;

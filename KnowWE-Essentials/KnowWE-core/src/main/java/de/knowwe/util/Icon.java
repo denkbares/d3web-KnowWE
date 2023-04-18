@@ -33,8 +33,8 @@ public class Icon {
 	// Navigation
 	public static final Icon NEXT = new Icon("fa-type fa-angle-right");
 	public static final Icon PREVIOUS = new Icon("fa-type fa-angle-left");
-	public static final Icon LAST = new Icon("fa-type fa-angle-double-right");
-	public static final Icon FIRST = new Icon("fa-type fa-angle-double-left");
+	public static final Icon LAST = new Icon("fa-type fa-angles-right");
+	public static final Icon FIRST = new Icon("fa-type fa-angles-left");
 
 	//ARROWS
 	public static final Icon RIGHT = new Icon("fa-type fa-arrow-right");
@@ -47,93 +47,93 @@ public class Icon {
 
 	// BASICS
 	public static final Icon PIN = new Icon("fa-type fa-map-pin");
-	public static final Icon EDIT = new Icon("fa-type fa-pencil-alt");
-	public static final Icon HELP = new Icon("fa-type fa-question-circle");
-	public static final Icon INFO = new Icon("fa-type fa-info-circle");
-	public static final Icon ERROR = new Icon("fa-type fa-exclamation-triangle knowwe-error");
-	public static final Icon WARNING = new Icon("fa-type fa-exclamation-triangle knowwe-warning");
-	public static final Icon SEARCH = new Icon("fa-type fa-search");
-	public static final Icon DELETE = new Icon("fa-type fa-times-circle");
+	public static final Icon EDIT = new Icon("fa-type fa-pencil");
+	public static final Icon HELP = new Icon("fa-type fa-circle-question");
+	public static final Icon INFO = new Icon("fa-type fa-circle-info");
+	public static final Icon ERROR = new Icon("fa-type fa-triangle-exclamation knowwe-error");
+	public static final Icon WARNING = new Icon("fa-type fa-triangle-exclamation knowwe-warning");
+	public static final Icon SEARCH = new Icon("fa-type fa-magnifying-glass");
+	public static final Icon DELETE = new Icon("fa-type fa-circle-xmark");
 	public static final Icon DOWNLOAD = new Icon("fa-type fa-download");
 	public static final Icon UPLOAD = new Icon("fa-type fa-upload");
 	public static final Icon ATTACHMENT = new Icon("fa-type fa-paperclip");
 	public static final Icon IMPORT = new Icon("fa-type fa-upload");
-	public static final Icon REFRESH = new Icon("fa-type fa-sync");
+	public static final Icon REFRESH = new Icon("fa-type fa-rotate");
 	public static final Icon QRCODE = new Icon("fa-type fa-qrcode");
 	public static final Icon LINK = new Icon("fa-type fa-link");
-	public static final Icon EXTERNAL_LINK = new Icon("fa-type fa-external-link-square-alt");
+	public static final Icon EXTERNAL_LINK = new Icon("fa-type fa-up-right-from-square");
 	public static final Icon CLIPBOARD = new Icon("fa-type fa-clipboard");
 	public static final Icon CLOCK = new Icon("fa-type fa-clock");
 	public static final Icon SHARE = new Icon("fa-type fa-share");
 	public static final Icon LIGHTBULB = new Icon("fa-type fa-lightbulb");
-	public static final Icon SHOW = new Icon("fa-type fa-plus-square");
-	public static final Icon HIDE = new Icon("fa-type fa-minus-square");
-	public static final Icon COG = new Icon("fa-type fa-cog");
-	public static final Icon PREFERENCES = new Icon("fa-type fa-cog");
-	public static final Icon LIST = new Icon("fa-type fa-list-alt");
+	public static final Icon SHOW = new Icon("fa-type fa-square-plus");
+	public static final Icon HIDE = new Icon("fa-type fa-square-minus");
+	public static final Icon COG = new Icon("fa-type fa-gear");
+	public static final Icon PREFERENCES = new Icon("fa-type fa-gear");
+	public static final Icon LIST = new Icon("fa-type fa-rectangle-list");
 	public static final Icon COMMENT = new Icon("fa-type fa-comment");
 	public static final Icon STATISTICS = new Icon("fa-type fa-chart-line");
 	public static final Icon MINUS = new Icon("fa-type fa-minus");
 	public static final Icon PLUS = new Icon("fa-type fa-plus");
-	public static final Icon ADD = new Icon("fa-type fa-plus-circle");
-	public static final Icon BULB = new Icon("fas fa-circle");
-	public static final Icon STOP = new Icon("fas fa-stop");
+	public static final Icon ADD = new Icon("fa-type fa-circle-plus");
+	public static final Icon BULB = new Icon("fa-solid fa-circle");
+	public static final Icon STOP = new Icon("fa-solid fa-stop");
 	public static final Icon USER = new Icon("fa-type fa-user");
-	public static final Icon CALENDAR = new Icon("fa-type fa-calendar-alt");
+	public static final Icon CALENDAR = new Icon("fa-type fa-calendar-days");
 	public static final Icon GLOBE = new Icon("fa-type fa-globe");
 	public static final Icon ORDERED_LIST = new Icon("fa-type fa-list-ol");
 	public static final Icon COPY_TO_CLIPBOARD = new Icon("fa-type fa-clipboard");
-	public static final Icon CIRCLE_FULL = new Icon("fas fa-circle");
-	public static final Icon CIRCLE_HALF_FULL = new Icon("fas fa-adjust");
+	public static final Icon CIRCLE_FULL = new Icon("fa-solid fa-circle");
+	public static final Icon CIRCLE_HALF_FULL = new Icon("fa-solid fa-circle-half-stroke");
 	public static final Icon CIRCLE_EMPTY = new Icon("fa-type fa-circle");
-	public static final Icon TAG = new Icon("fas fa-tag");
-	public static final Icon REPEAT = new Icon("fas fa-repeat-alt");
+	public static final Icon TAG = new Icon("fa-solid fa-tag");
+	public static final Icon REPEAT = new Icon("fa-solid fa-repeat");
 	public static final Icon COMPILER = new Icon("fa-type fa-microchip");
-	public static final Icon HISTORY = new Icon("fa-type fa-history");
+	public static final Icon HISTORY = new Icon("fa-type fa-clock-rotate-left");
 
 	// KnowWE specific
-	public static final Icon ARTICLE = new Icon("fa-type fa-file-alt");
+	public static final Icon ARTICLE = new Icon("fa-type fa-file-lines");
 	public static final Icon KNOWLEDGEBASE = new Icon("fa-type fa-book");
 	public static final Icon VISUALEDITOR = new Icon("fa-type fa-eye");
 	//temporary?
 	public static final Icon SHOWTRACE = new Icon("fa-type fa-code-branch");
 	//temporary
 	public static final Icon RENAME = new Icon("fa-type fa-font");
-	public static final Icon RUN = new Icon("fas fa-play");
+	public static final Icon RUN = new Icon("fa-solid fa-play");
 	public static final Icon SELECT_TARGET = new Icon("fa-type fa-bullseye-pointer");
 	public static final Icon UNSELECT_TARGET = new Icon("fa-type fa-eraser");
 	public static final Icon CLEAR_UUT_STATE = new Icon("fa-type fa-eraser");
 	//temporary
 	public static final Icon PACKAGE = new Icon("fa-type fa-puzzle-piece");
-	public static final Icon EDITSECTION = new Icon("fa-type fa-edit");
-	public static final Icon OPENPAGE = new Icon("fa-type fa-edit");
+	public static final Icon EDITSECTION = new Icon("fa-type fa-pen-to-square");
+	public static final Icon OPENPAGE = new Icon("fa-type fa-pen-to-square");
 	public static final Icon DEBUG = new Icon("fa-type fa-bug");
 	public static final Icon CONSISTENCY = new Icon("fa-type fa-crosshairs");
-	public static final Icon CHECK = new Icon("fa-type fa-check-square");
-	public static final Icon CHECK2 = new Icon("fa-type fa-check-circle");
+	public static final Icon CHECK = new Icon("fa-type fa-square-check");
+	public static final Icon CHECK2 = new Icon("fa-type fa-circle-check");
 	public static final Icon CHECKED = new Icon("fa-type fa-check");
 	public static final Icon DEFER = new Icon("fa-type fa-share");
-	public static final Icon ESTABLISHED = new Icon("fas fa-circle");
-	public static final Icon SUGGESTED = new Icon("fas fa-circle");
+	public static final Icon ESTABLISHED = new Icon("fa-solid fa-circle");
+	public static final Icon SUGGESTED = new Icon("fa-solid fa-circle");
 	public static final Icon EXCLUDED = new Icon("fa-type fa-ban");
 	public static final Icon ABSTRACT = new Icon("fa-type fa-asterisk");
 	public static final Icon PLUG = new Icon("fa-type fa-plug");
-	public static final Icon MEASUREMENT_DEVICE = new Icon("fa-type fa-weight");
+	public static final Icon MEASUREMENT_DEVICE = new Icon("fa-type fa-weight-scale");
 	public static final Icon VISUAL_INSPECTION = new Icon("fa-type fa-eye");
-	public static final Icon SWITCHES = new Icon("fa-type fa-sliders-h");
+	public static final Icon SWITCHES = new Icon("fa-type fa-sliders");
 	public static final Icon GRIP_LINES_VERTICAL = new Icon("fa-type fa-grip-lines-vertical");
-	public static final Icon INTERNAL_UNIT_FAILURE = new Icon("fa-type fa-times-square");
-	public static final Icon TACHOMETER = new Icon("fa-type fa-tachometer");
+	public static final Icon INTERNAL_UNIT_FAILURE = new Icon("fa-type fa-square-xmark");
+	public static final Icon TACHOMETER = new Icon("fa-type fa-gauge-high");
 	public static final Icon LOCK = new Icon("fa-type fa-lock");
 
-	public static final Icon LOW_PRIO = new Icon("fa-type fa-exclamation-circle knowwe-lowprio");
-	public static final Icon HIGH_PRIO = new Icon("fa-type fa-exclamation-circle knowwe-highprio");
+	public static final Icon LOW_PRIO = new Icon("fa-type fa-circle-exclamation knowwe-lowprio");
+	public static final Icon HIGH_PRIO = new Icon("fa-type fa-circle-exclamation knowwe-highprio");
 
 	// TestCase
-	public static final Icon EXPAND_OUTLINE = new Icon("fa-type fa-plus-square");
-	public static final Icon COLLAPSE_OUTLINE = new Icon("fa-type fa-minus-square");
-	public static final Icon EXPAND = new Icon("fa-type fa-plus-square");
-	public static final Icon COLLAPSE = new Icon("fa-type fa-minus-square");
+	public static final Icon EXPAND_OUTLINE = new Icon("fa-type fa-square-plus");
+	public static final Icon COLLAPSE_OUTLINE = new Icon("fa-type fa-square-minus");
+	public static final Icon EXPAND = new Icon("fa-type fa-square-plus");
+	public static final Icon COLLAPSE = new Icon("fa-type fa-square-minus");
 	public static final Icon OPENTESTCASE = new Icon(LINK.getCssClass());
 	public static final Icon EDITTABLE = new Icon("fa-type fa-table");
 
@@ -144,11 +144,11 @@ public class Icon {
 	// FILE TYPES
 	public static final Icon NEW_FILE = new Icon("fa-type fa-file");
 	public static final Icon FILE = new Icon("fa-type fa-file");
-	public static final Icon FILE_TEXT = new Icon("fa-type fa-file-alt");
+	public static final Icon FILE_TEXT = new Icon("fa-type fa-file-lines");
 	public static final Icon FILE_EXCEL = new Icon("fa-type fa-file-excel");
 	public static final Icon FILE_WORD = new Icon("fa-type fa-file-word");
 	public static final Icon FILE_PDF = new Icon("fa-type fa-file-pdf");
-	public static final Icon FILE_ZIP = new Icon("fa-type fa-file-archive");
+	public static final Icon FILE_ZIP = new Icon("fa-type fa-file-zipper");
 	public static final Icon FILE_CODE = new Icon("fa-type fa-file-code");
 	public static final Icon FILE_XML = new Icon(FILE_CODE.getCssClass());
 	public static final Icon FILE_PLUS = new Icon("fa-type fa-file-plus");
@@ -158,10 +158,10 @@ public class Icon {
 	public static final Icon LAYER_PLUS = new Icon("fa-type fa-layer-plus");
 	public static final Icon CART_PLUS = new Icon("fa-type fa-cart-plus");
 	public static final Icon OBJECT_GROUP = new Icon("fa-type fa-object-group");
-	public static final Icon PLUS_CIRCLE = new Icon("fa-type fa-plus-circle");
+	public static final Icon PLUS_CIRCLE = new Icon("fa-type fa-circle-plus");
 	public static final Icon OBJECT_UNGROUP = new Icon("fa-type fa-object-ungroup");
-	public static final Icon PLUS_OCTAGON = new Icon("fa-type fa-plus-octagon");
-	public static final Icon MINUS_OCTAGON = new Icon("fa-type fa-minus-octagon");
+	public static final Icon PLUS_OCTAGON = new Icon("fa-type fa-octagon-plus");
+	public static final Icon MINUS_OCTAGON = new Icon("fa-type fa-octagon-minus");
 
 	//SPINNING
 	public static final Icon LOADING = new Icon("fa-type fa-spin fa-circle-notch");
@@ -191,10 +191,10 @@ public class Icon {
 	private Icon(String cssClass, String style, String title, String id) {
 		if (cssClass != null) {
 			if (isFontAweSomeProAvailable()) {
-				cssClass = cssClass.replace("fa-type ", "far ");
+				cssClass = cssClass.replace("fa-type ", "fa-regular ");
 			}
 			else {
-				cssClass = cssClass.replace("fa-type ", "fas ");
+				cssClass = cssClass.replace("fa-type ", "fa-solid ");
 			}
 		}
 		this.cssClass = cssClass;

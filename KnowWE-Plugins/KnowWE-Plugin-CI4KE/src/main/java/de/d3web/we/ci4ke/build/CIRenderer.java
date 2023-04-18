@@ -523,7 +523,7 @@ public class CIRenderer {
 		String css, text;
 
 		if (running) {
-			css = "fa-spin fa-sync";
+			css = "fa-spin fa-rotate";
 			text = "Build running!";
 		}
 		else {

@@ -759,9 +759,9 @@ KNOWWE.core.plugin.switchCompiler = function() {
   function getCompilerListContent(compilers, defaultCompiler) {
     let listInnerText = "";
     for (compiler of compilers) {
-      let icon = "far fa-circle";
+      let icon = "fa-regular fa-circle";
       if (compiler === defaultCompiler) {
-        icon = "far fa-dot-circle";
+        icon = "fa-regular fa-circle-dot";
       }
       listInnerText = listInnerText + '<li><a onclick="KNOWWE.core.plugin.switchCompiler.setDefaultCompiler(\'' + compiler + '\')"><span class="' + icon + '" style="padding-right: 5px"></span><span>' + compiler + '</span></a></li>';
     }
@@ -801,7 +801,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
           }
           if (storedDefaultCompiler === defaultCompiler) {
             // If the default compiler of the client and server (for the user) are the same, add the compiler switch.
-            let linkContent = '<span class="far fa-microchip"></span>' + '<span>' + defaultCompiler + '</span>';
+            let linkContent = '<span class="fa-regular fa-microchip"></span>' + '<span>' + defaultCompiler + '</span>';
             if (compilers.length > 1) {
               linkContent = linkContent + '<span class="caret"></span>';
             }

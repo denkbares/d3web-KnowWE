@@ -245,7 +245,7 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-state:before {
-	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
+	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
 	content: "\f04d";
 	color: #CC3333;
 	font-weight: 900;
@@ -256,7 +256,7 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-error .long-progress-state:before {
-	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
+	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
 	content: "\f111";
 	color: #CC3333;
 	background-image: none;
@@ -268,7 +268,7 @@ span.markupMenuItem {
 }
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-success .long-progress-state:before {
-	font-family: "Font Awesome 5 Pro", "Font Awesome 5 Free";
+	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
 	content: "\f111";
 	color: #6A9514;
 	font-weight: 900;
@@ -408,7 +408,7 @@ table.list-sections tr.highlighted {
 	margin-top: -3px;
 }
 
-.grouped-list-section-wrapper .filter-input .fa-info-circle {
+.grouped-list-section-wrapper .filter-input .fa-circle-info {
 	margin: 0 10px;
 	cursor: hand;
 }

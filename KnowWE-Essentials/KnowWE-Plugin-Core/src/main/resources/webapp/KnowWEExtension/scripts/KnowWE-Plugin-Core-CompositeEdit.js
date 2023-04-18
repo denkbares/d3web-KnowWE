@@ -431,8 +431,8 @@ KNOWWE.plugin.compositeEditTool = function() {
     const markupMenu = jq$('<div/>', {
       "class": 'markupMenu'
     });
-    const cancel = generateMarkUpmenuItem("_CE.cancelSection(\'" + sectionId + "\')", "Revert", "fa-undo");
-    const del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "fa-times");
+    const cancel = generateMarkUpmenuItem("_CE.cancelSection(\'" + sectionId + "\')", "Revert", "fa-rotate-left");
+    const del = generateMarkUpmenuItem("_CE.deleteSection(\'" + sectionId + "\')", "Delete this section", "fa-xmark");
     markupMenu.append(cancel);
     markupMenu.append(del);
     return markupMenu;

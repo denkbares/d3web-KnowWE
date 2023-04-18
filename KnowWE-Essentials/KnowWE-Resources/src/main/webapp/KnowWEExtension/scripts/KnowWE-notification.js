@@ -171,9 +171,9 @@ KNOWWE.notification = function () {
 				const counter = '<span class="notification-counter">(' + (index + 1) + '/'
 					+ messages.length + ')</span>';
 				const next = '<a class="next-notification' + (showNext ? '' : ' inactive') + '" href="#" onclick="KNOWWE.notification._select('
-					+ (index + 1) + ');"><i class="far fa-angle-right"></i></a>';
+					+ (index + 1) + ');"><i class="fa-regular fa-angle-right"></i></a>';
 				const prev = '<a class="prev-notification' + (showPrev ? '' : ' inactive') + '" href="#" onclick="KNOWWE.notification._select('
-					+ (index - 1) + ');"><i class="far fa-angle-left"></i></a>';
+					+ (index - 1) + ');"><i class="fa-regular fa-angle-left"></i></a>';
 
         counterHTML += prev;
         counterHTML += counter;
@@ -187,7 +187,7 @@ KNOWWE.notification = function () {
 			jq$('#KnowWENotificationQuit')
 				.html(
 					'<span><a onclick="KNOWWE.notification.removeNotification(\''
-					+ message.id + '\')' + '"><i class="far fa-times"></i></a></span>');
+					+ message.id + '\')' + '"><i class="fa-regular fa-xmark"></i></a></span>');
 
 			// show notification bar
 			jq$('#KnowWENotificationDom').show();

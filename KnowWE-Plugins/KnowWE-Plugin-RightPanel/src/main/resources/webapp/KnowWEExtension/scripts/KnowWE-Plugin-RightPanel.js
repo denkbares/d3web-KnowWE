@@ -477,7 +477,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		const orientation = (isShown ? "right" : "left");
 		const status = (isShown ? "Hide" : "Show");
 		jq$(KNOWWE.core.util.getMoreButtonSelector()).after("<li class='rightPanel-li'><a id='rightPanel-toggle-button' title='" + status + " right panel'"
-			+ " class='action " + (KNOWWE.helper.isFontAwesomeProAvailable() ? "far" : "fas") + " fa-angle-double-" + orientation + "'></a></li>");
+			+ " class='action " + (KNOWWE.helper.isFontAwesomeProAvailable() ? "fa-regular" : "fa-solid") + " fa-angles" + orientation + "'></a></li>");
 		bindRightPanelToggleButton();
 	}
 
@@ -486,10 +486,10 @@ KNOWWE.core.plugin.rightPanel = function () {
 			const $this = jq$(this);
 			if (isRightPanelShown()) {
 				KNOWWE.core.plugin.rightPanel.hideRightPanel();
-				$this.removeClass("fa-angle-double-right").addClass("fa-angle-double-left").attr("title", "Show right panel");
+				$this.removeClass("fa-angles-right").addClass("fa-angles-left").attr("title", "Show right panel");
 			} else {
 				KNOWWE.core.plugin.rightPanel.showRightPanel();
-				$this.removeClass("fa-angle-double-left").addClass("fa-angle-double-right").attr("title", "Hide right panel");
+				$this.removeClass("fa-angles-left").addClass("fa-angles-right").attr("title", "Hide right panel");
 			}
 		});
 	}
@@ -929,7 +929,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 			'class': 'watchlist'
 		});
 
-		const watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-plus-circle'></i>&nbsp;Add Watch</button>");
+		const watchesAddEntry = jq$("<button class='addwatch'><i class='fa fa-circle-plus'></i>&nbsp;Add Watch</button>");
 
 
 		const watchesAddEntryFromSelection = jq$("<button class='fromselection'><i class='fa fa-paragraph'></i>&nbsp;from Selection</button>");
@@ -947,7 +947,7 @@ KNOWWE.core.plugin.rightPanel.watches = function () {
 			'class': 'iconcontainer deletewatch select'
 		});
 
-		const deleteIcon = jq$("<a class=''><i class='fa fa-times-circle icon'></i></a>");
+		const deleteIcon = jq$("<a class=''><i class='fa fa-circle-xmark icon'></i></a>");
 
 
 		return deleteContainer.append(deleteIcon);
