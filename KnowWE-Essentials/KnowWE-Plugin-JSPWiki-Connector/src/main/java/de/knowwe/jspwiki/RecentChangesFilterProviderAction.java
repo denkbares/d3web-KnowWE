@@ -20,21 +20,15 @@
 package de.knowwe.jspwiki;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -56,8 +50,8 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 	private static final String FILTER_TEXTS = "filter-texts";
 	private static final int MAX_FILTER_COUNT = 200;
 	public static final String EMPTY = "<Empty>";
+	private static final RecentChangesUtils util = new RecentChangesUtils();
 
-	private FastDateFormat formatter;
 	private static final Comparator<String> COMPARATOR = (o1, o2) -> {
 		if (EMPTY.equals(o1) && EMPTY.equals(o2)) {
 			return 0;
@@ -87,9 +81,9 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 					.forEach(e -> {
 						JSONArray textPair = new JSONArray();
 						String keyString = e.getKey();
-						if (context.getParameter(COLUMN_NAME).equals("Last Modified")) {
-							keyString = formatDateToDay(e.getKey());
-						}
+//						if (context.getParameter(COLUMN_NAME).equals("Last Modified")) {
+//							keyString = formatDateToDay(e.getKey());
+//						}
 						boolean alreadyIn = false;
 						for (int i = 0; i < filterTextsArray.length(); i++) {
 							try {
@@ -115,17 +109,14 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 		}
 	}
 
-	private String formatDateToDay(String dateString) {
-		DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-		TemporalAccessor temporalAccessor = inputFormatter.parse(dateString);
-		LocalDate date = LocalDate.from(temporalAccessor);
-		formatter = FastDateFormat.getInstance("yyyy-MM-dd");
-		return formatter.format(Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
-	}
-
 	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
+		Set<Page> totalChangesSet = new HashSet<>(Set.copyOf(recentChanges));
+		for (Page page : recentChanges) {
+			List<Page> pageHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
+			totalChangesSet.addAll(pageHistory);
+		}
 		String columnName = context.getParameter(COLUMN_NAME);
 		Map<String, Set<String>> filterTexts = new HashMap<>();
 		Set<String> filteredOut = new HashSet<>();
@@ -133,41 +124,21 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 		Section<?> section = getSection(context);
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(section, context);
 		filter.put(columnName, Collections.emptySet());
-		Set<Page> filteredRecentChanges = new RecentChangesRenderer().filter(filter, recentChanges);
+		Set<Page> filteredRecentChanges = new RecentChangesRenderer().filter(filter, totalChangesSet);
 		for (Page page : filteredRecentChanges) {
 			String text = null;
-			String dateText = null;
 			switch (columnName) {
 				case "Page" -> text = page.getName();
-				case "Last Modified" -> {
-					text = formatDateToDay(page.getLastModified().toString());
-					dateText = page.getLastModified().toString();
-				}
+				case "Last Modified" -> text = util.formatDateToDay(page.getLastModified().toString());
 				case "Author" -> text = page.getAuthor();
 			}
 			if (addedFilterValueTexts.contains(text) || filteredOut.contains(text)) continue;
 			if (isFilteredOut(filterTextQuery, text)) {
-				if (columnName.equals("Last Modified")) {
-					filteredOut.add(dateText);
-				}
-				else {
-					filteredOut.add(text);
-				}
+				filteredOut.add(text);
 				continue;
 			}
-			if (columnName.equals("Last Modified")) {
-				filterTexts.computeIfAbsent(dateText, k -> new HashSet<>()).add(dateText);
-			}
-			else {
-				filterTexts.computeIfAbsent(text, k -> new HashSet<>()).add(text);
-			}
-
-			if (columnName.equals("Last Modified")) {
-				addedFilterValueTexts.add(dateText);
-			}
-			else {
-				addedFilterValueTexts.add(text);
-			}
+			filterTexts.computeIfAbsent(text, k -> new HashSet<>()).add(text);
+			addedFilterValueTexts.add(text);
 			if (filterTexts.size() >= MAX_FILTER_COUNT) {
 				break;
 			}

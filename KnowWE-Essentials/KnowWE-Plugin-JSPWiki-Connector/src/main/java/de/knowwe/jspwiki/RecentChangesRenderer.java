@@ -20,7 +20,6 @@
 package de.knowwe.jspwiki;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,15 +40,17 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
 public class RecentChangesRenderer extends DefaultMarkupRenderer {
+	private static final RecentChangesUtils util = new RecentChangesUtils();
+
 	@Override
 	public void renderContentsAndAnnotations(Section<?> sec, UserContext user, RenderResult string) {
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
 		Set<Page> filteredRecentChanges = filter(filter, recentChanges);
-		PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
 		int startRow = PaginationRenderer.getStartRow(sec, user);
 		int count = PaginationRenderer.getCount(sec, user);
+		PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
 
 		string.appendHtml("<table>");
 		addTableHead(string);
@@ -66,29 +68,33 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			if (author == null) {
 				author = "Unknown Author";
 			}
-			String formattedDate = getFormattedDate(page);
+			String formattedDate = util.getFormattedDate(page);
 			string.appendHtml("<tr>");
-			string.appendHtml("<td>" + page.getName() + "</td>");
+			if (page instanceof Attachment) {
+				string.appendHtml("<td>" + page.getName() + "</td>");
+			}
+			else {
+				int pageVersion = page.getVersion();
+				List<Page> versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
+				int totalVersionCount = 1;
+				for (Page p : versionHistory) {
+					if (totalVersionCount < p.getVersion()) {
+						totalVersionCount = p.getVersion();
+					}
+				}
+				if (pageVersion == totalVersionCount) {
+					string.appendHtmlElement("td", "[" + page.getName() + "]");
+				}
+				else {
+					string.appendHtmlElement("td", "[" + page.getName() + "Version " + pageVersion + " / " + totalVersionCount + " | " + page.getName() + "]");
+				}
+			}
 			string.appendHtml("<td>" + formattedDate + "</td>");
 			string.appendHtml("<td>" + author + "</td>");
 			string.appendHtml("</tr>");
 			counter++;
 		}
 		string.appendHtml("</table>");
-	}
-
-	@NotNull
-	private static String getFormattedDate(Page page) {
-		LocalDate today = LocalDate.now();
-		LocalDate date = page.getLastModified().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-		SimpleDateFormat formatter;
-		if (date.equals(today)) {
-			formatter = new SimpleDateFormat("HH:mm:ss");
-		}
-		else {
-			formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		}
-		return formatter.format(page.getLastModified());
 	}
 
 	private String addTableHead(RenderResult string) {
@@ -117,7 +123,10 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				String text;
 				switch (columnName) {
 					case "Page" -> text = page.getName();
-					case "Last Modified" -> text = page.getLastModified().toString();
+					case "Last Modified" -> {
+						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+						text = formatter.format(page.getLastModified());
+					}
 					case "Author" -> {
 						text = page.getAuthor();
 						if (text == null) {
@@ -143,6 +152,39 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				}
 			}
 			if (pageMatches) {
+				filteredPages.add(page);
+			}
+			JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
+			List<Page> versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
+			if (!filter.get("Last Modified").isEmpty()) {
+				filteredPages.addAll(checkVersionHistoryWithDate(versionHistory, filter.get("Last Modified")));
+			}
+			if (!filter.get("Author").isEmpty()) {
+				try {
+					filteredPages.addAll(checkVersionHistoryWithAuthor(versionHistory, filter.get("Author")));
+				}
+				catch (NullPointerException ignored) {
+				}
+			}
+		}
+		return filteredPages;
+	}
+
+	private List<Page> checkVersionHistoryWithDate(List<Page> versionHistory, Set<Pattern> patterns) {
+		List<Page> filteredPages = new ArrayList<>();
+		for (Page page : versionHistory) {
+			String formattedDate = util.formatDateToDay(page.getLastModified().toString());
+			if (patterns.stream().anyMatch(p -> p.matcher(formattedDate).matches())) {
+				filteredPages.add(page);
+			}
+		}
+		return filteredPages;
+	}
+
+	private List<Page> checkVersionHistoryWithAuthor(List<Page> versionHistory, Set<Pattern> patterns) {
+		List<Page> filteredPages = new ArrayList<>();
+		for (Page page : versionHistory) {
+			if (patterns.stream().anyMatch(p -> p.matcher(page.getAuthor()).matches())) {
 				filteredPages.add(page);
 			}
 		}
