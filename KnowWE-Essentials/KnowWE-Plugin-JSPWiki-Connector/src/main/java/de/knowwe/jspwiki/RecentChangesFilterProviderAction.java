@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -112,8 +113,9 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
-		Set<Page> totalChangesSet = new HashSet<>(Set.copyOf(recentChanges));
+		Set<Page> totalChangesSet = new HashSet<>(recentChanges);
 		for (Page page : recentChanges) {
+			if (page instanceof Attachment) continue;
 			List<Page> pageHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
 			totalChangesSet.addAll(pageHistory);
 		}
