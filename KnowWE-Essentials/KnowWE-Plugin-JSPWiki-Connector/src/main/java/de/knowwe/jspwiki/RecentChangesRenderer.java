@@ -173,7 +173,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	private List<Page> checkVersionHistoryWithDate(List<Page> versionHistory, Set<Pattern> patterns) {
 		List<Page> filteredPages = new ArrayList<>();
 		for (Page page : versionHistory) {
-			String formattedDate = util.formatDateToDay(page.getLastModified().toString());
+			String formattedDate = util.formatDateTimeToDate(page.getLastModified());
 			if (patterns.stream().anyMatch(p -> p.matcher(formattedDate).matches())) {
 				filteredPages.add(page);
 			}
