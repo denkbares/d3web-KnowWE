@@ -187,7 +187,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			clazz += " singleLine";
 		}
 		out.appendHtml("<span class='" + clazz
-				+ "' style='white-space: pre-wrap;'>");
+					   + "' style='white-space: pre-wrap;'>");
 		for (String messageString : messages) {
 			out.append(messageString).append("\n");
 		}
@@ -226,7 +226,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (compiler instanceof NamedCompiler) {
 			final String name = ((NamedCompiler) compiler).getName();
 			if (compiler instanceof PackageCompiler) {
-				return "[" + name + "|" + KnowWEUtils.getWikiLink(((PackageCompiler) compiler).getCompileSection()) + "]";
+				return KnowWEUtils.getWikiLink(name, ((PackageCompiler) compiler).getCompileSection());
 			}
 			else {
 				return name;
@@ -255,8 +255,8 @@ public class DefaultMarkupRenderer implements Renderer {
 						// check if the script manager has script for the type of this section or any sub type
 						// get all remaining managers for which there is currently no compiler
 						.filter(sm -> sm.hasScriptsForSubtree(rootSection.get())
-								&& Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
-						.collect(Collectors.toList());
+									  && Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
+						.toList();
 
 		// check that the found unused compiled scripts belong to types of sections that are actually in the current sub-KDOM
 		for (ScriptManager<? extends Compiler> scriptManager : unCompiledScriptManagersWithScriptsForTypeTree) {
@@ -269,7 +269,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				if (scriptManager.scripts(type).allMatch(ScriptManager.IgnoreNotCompiledSections::isIgnored)) continue;
 				// otherwise add the error message
 				messages.add("This section has " + compilerClass.getSimpleName() + " knowledge, "
-						+ "but does not belong to package compiled by one.");
+							 + "but does not belong to package compiled by one.");
 			}
 		}
 	}
@@ -301,8 +301,8 @@ public class DefaultMarkupRenderer implements Renderer {
 		catch (Throwable e) {
 			content.delete(validLength, content.length());
 			content.appendHtmlElement("span", "Error while rendering content, if the problem persists, "
-					+ "please contact your administrator.\n"
-					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error", "style", "white-space: pre");
+											  + "please contact your administrator.\n"
+											  + Strings.getStackTrace(e, 10) + "\n\t...", "class", "error", "style", "white-space: pre");
 			LOGGER.error("Exception while rendering content of " + section.get().getName(), e);
 		}
 
@@ -313,7 +313,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, RenderResult string) {
 		string.appendHtml("<span class='" + type.toString().toLowerCase()
-				+ "' style='white-space: pre-wrap;'>");
+						  + "' style='white-space: pre-wrap;'>");
 		for (Message msg : messages) {
 			string.append(KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization()));
 			string.append("\n");
@@ -399,7 +399,7 @@ public class DefaultMarkupRenderer implements Renderer {
 					.parallelStream().map(Section::getTitle)
 					.distinct()
 					.limit(threshold + 1)
-					.collect(Collectors.toList());
+					.toList();
 			return articleTitles.size() > threshold;
 		}
 
@@ -508,9 +508,9 @@ public class DefaultMarkupRenderer implements Renderer {
 			style = " style='white-space: normal;'";
 		}
 		string.appendHtml("<div id=\"box_" + sectionID
-				+ "\" class='defaultMarkup'>");
+						  + "\" class='defaultMarkup'>");
 		string.appendHtml("<div id=\"content_" + sectionID
-				+ "\" class='markupText'" + style + ">");
+						  + "\" class='markupText'" + style + ">");
 
 		// render content
 		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
@@ -553,7 +553,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				? " headerToolbar"
 				: " headerMenu";
 		String openingDiv = "<div id='header_" + sectionID + "' class='markupHeaderFrame"
-				+ renderModerClass + "'>";
+							+ renderModerClass + "'>";
 
 		temp.appendHtml(openingDiv);
 

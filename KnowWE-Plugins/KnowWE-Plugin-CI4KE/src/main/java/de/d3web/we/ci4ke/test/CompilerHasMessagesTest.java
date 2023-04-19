@@ -192,7 +192,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 			wikiLink = Environment.getInstance().getWikiConnector().getBaseUrl() + KnowWEUtils.getURLLink(title);
 		}
 		else {
-			wikiLink = KnowWEUtils.getWikiLink(section);
+			wikiLink = KnowWEUtils.getWikiLinkPart(section);
 		}
 		return wikiLink;
 	}

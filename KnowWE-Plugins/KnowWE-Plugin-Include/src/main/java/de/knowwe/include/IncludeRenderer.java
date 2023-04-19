@@ -199,7 +199,7 @@ class IncludeRenderer extends DefaultMarkupRenderer {
 		decorated.addCustomRenderer(Scope.getScope("HeaderType/LineBreak")::matches, (s, u, r) -> {
 			Section<HeaderType> header = Sections.cast(s.getParent(), HeaderType.class);
 			r.append(" [").appendHtml(HEADER_LINK_ICON.toHtml())
-					.append("|").append(KnowWEUtils.getWikiLink(header)).append("]");
+					.append("|").append(KnowWEUtils.getWikiLinkPart(header)).append("]");
 			DelegateRenderer.getRenderer(s, u).render(s, u, r);
 		});
 

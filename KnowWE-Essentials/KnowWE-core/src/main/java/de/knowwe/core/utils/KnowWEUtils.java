@@ -244,7 +244,7 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Creates a unique anchor name for the section to link to. See method {@link #getWikiLink(Section)} for more
+	 * Creates a unique anchor name for the section to link to. See method {@link #getWikiLinkPart(Section)} for more
 	 * details on how to use this method.
 	 *
 	 * @param section the section to create the anchor for.
@@ -255,7 +255,7 @@ public class KnowWEUtils {
 	}
 
 	/**
-	 * Renders a unique anchor name for the section to link to. See method {@link #getWikiLink(Section)} and {@link
+	 * Renders a unique anchor name for the section to link to. See method {@link #getWikiLinkPart(Section)} and {@link
 	 * #getURLLink(Section)} for more details on how to use this method.
 	 *
 	 * @param section the section to create the anchor for
@@ -661,7 +661,7 @@ public class KnowWEUtils {
 	 * @param article the article title to create the link for
 	 * @return the created link
 	 * @see #getURLLink(Section)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getLinkHTMLToArticle(final Article article) {
 		return getLinkHTMLToArticle(article.getTitle());
@@ -673,7 +673,7 @@ public class KnowWEUtils {
 	 * @param title the article title to create the link for
 	 * @return the created link
 	 * @see #getURLLink(Section)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getLinkHTMLToArticle(final String title) {
 		return getLinkHTMLToArticle(title, title);
@@ -686,7 +686,7 @@ public class KnowWEUtils {
 	 * @param linkText the text for the link
 	 * @return the created link
 	 * @see #getURLLink(Section)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getLinkHTMLToArticle(final String title, final String linkText) {
 		return "<a href='" + getURLLink(title) + "' >" + Strings.encodeHtml(linkText) + "</a>";
@@ -698,7 +698,7 @@ public class KnowWEUtils {
 	 * @param title the article title to create the link for
 	 * @return the created link
 	 * @see #getURLLink(Section)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getURLLink(final String title) {
 		return getURLLink(title, -1);
@@ -711,15 +711,29 @@ public class KnowWEUtils {
 	 * @param version the article version to link to
 	 * @return the created link
 	 * @see #getURLLink(Section)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getURLLink(String title, final int version) {
+		title = fixAttachmentArticleLinks(title);
+		return "Wiki.jsp?page=" + Strings.encodeURL(title)
+			   + (version == -1 ? "" : "&version=" + version);
+	}
+
+	private static String fixAttachmentArticleLinks(ArticleManager manager, String title) {
+		if (manager == null) manager = getDefaultArticleManager();
+		Article article = manager.getArticle(title);
+		if (article != null) {
+			title = getArticleCompilingAttachmentArticle(article).getTitle();
+		}
+		return title;
+	}
+
+	private static String fixAttachmentArticleLinks(String title) {
 		Article article = getDefaultArticleManager().getArticle(title);
 		if (article != null) {
 			title = getArticleCompilingAttachmentArticle(article).getTitle();
 		}
-		return "Wiki.jsp?page=" + Strings.encodeURL(title)
-			   + (version == -1 ? "" : "&version=" + version);
+		return title;
 	}
 
 	/**
@@ -728,7 +742,7 @@ public class KnowWEUtils {
 	 * @param article the article to create the link for
 	 * @return the created link
 	 * @see #getURLLink(Section)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getURLLink(final Article article) {
 		return getURLLink(article.getTitle());
@@ -763,7 +777,7 @@ public class KnowWEUtils {
 	 * @param section the section to create the link for
 	 * @return the created link
 	 * @see #getURLLink(Article)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getLinkHTMLToSection(final Section<?> section) {
 		return "<a href='" + getURLLink(section) + "'>" + section
@@ -778,7 +792,7 @@ public class KnowWEUtils {
 	 * @param section the section to create the link for
 	 * @return the created link
 	 * @see #getURLLink(Article)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getURLLink(final Section<?> section) {
 		String title = getArticleCompilingAttachmentArticle(section.getArticle()).getTitle();
@@ -814,7 +828,7 @@ public class KnowWEUtils {
 	 * @param version2 the base version
 	 * @return the created link
 	 * @see #getURLLink(Section)
-	 * @see #getWikiLink(Section)
+	 * @see #getWikiLinkPart(Section)
 	 */
 	public static String getDiffURLLink(final String title, final int version1, final int version2) {
 		return "Diff.jsp?page=" + title + "&r1=" + version1 + "&r2=" + version2;
@@ -958,6 +972,66 @@ public class KnowWEUtils {
 	}
 
 	/**
+	 * Create a JSPWiki markup link for the article of the given section
+	 *
+	 * @param section the section  we want to link to
+	 * @return the link string compatible with JSPWiki
+	 */
+	public static String getWikiLink(Section<?> section) {
+		return getWikiLink(getWikiLinkPart(section));
+	}
+
+	/**
+	 * Create a JSPWiki markup link for the given article
+	 *
+	 * @param article the article we want to link to
+	 * @return the link string compatible with JSPWiki
+	 */
+	public static String getWikiLink(Article article) {
+		String title = article.getTitle();
+		title = fixAttachmentArticleLinks(article.getArticleManager(), title);
+		return "[" + title + "]";
+	}
+
+	/**
+	 * Create a JSPWiki markup link for the given article title
+	 *
+	 * @param title the article title we want to link to
+	 * @return the link string compatible with JSPWiki
+	 */
+	public static String getWikiLink(String title) {
+		title = fixAttachmentArticleLinks(title);
+		return "[" + title + "]";
+	}
+
+	/**
+	 * Create a JSPWiki markup link with the given label and article
+	 *
+	 * @param label   the label of the link
+	 * @param section the title of the article
+	 * @return the link string compatible with JSPWiki
+	 */
+	public static String getWikiLink(String label, Section<?> section) {
+		return getWikiLink(label, getWikiLinkPart(section));
+	}
+
+	/**
+	 * Create a JSPWiki markup link with the given label and article
+	 *
+	 * @param label        the label of the link
+	 * @param articleTitle the title of the article
+	 * @return the link string compatible with JSPWiki
+	 */
+	public static String getWikiLink(String label, String articleTitle) {
+		String title = fixAttachmentArticleLinks(articleTitle);
+		// append section id if the section is not the root section
+		if (label == null || label.equals(articleTitle)) {
+			return "[" + title + "]";
+		}
+		return "[" + label + "|" + title + "]";
+	}
+
+	/**
 	 * Creates a wiki-markup-styled link to this section. The created link navigates the user to the article of the
 	 * section. If the section is rendered with an anchor (see method {@link #getAnchor(Section)}) the page is also
 	 * scrolled to the section.
@@ -967,13 +1041,14 @@ public class KnowWEUtils {
 	 *
 	 * @param section the section to create the link for
 	 * @return the created link
+	 * @see #getWikiLink(Section)
 	 * @see #getURLLink(Section)
 	 * @see #getURLLink(Article)
 	 */
-	public static String getWikiLink(final Section<?> section) {
+	public static String getWikiLinkPart(final Section<?> section) {
 		String link = section.getTitle();
-		if (link != null && isAttachmentArticle(section.getArticle())) { // for links to compiled attachments, we link to the parent article
-			link = link.replaceAll("/.*", "");
+		if (link != null) { // for links to compiled attachments, we link to the parent article
+			link = fixAttachmentArticleLinks(section.getArticleManager(), link);
 		}
 		// append section id if the section is not the root section
 		if (section.getParent() != null) {
