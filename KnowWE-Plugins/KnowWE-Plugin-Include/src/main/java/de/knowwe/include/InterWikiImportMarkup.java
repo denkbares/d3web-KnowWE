@@ -37,6 +37,7 @@ import de.knowwe.core.kdom.basicType.TimeStampType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
+import de.knowwe.core.tools.HelpToolProvider;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
@@ -46,6 +47,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsyncPreviewRenderer;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
+import de.knowwe.tools.Tool;
 import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -229,7 +231,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			Section<InterWikiImportMarkup> markup = $(section).closest(InterWikiImportMarkup.class).getFirst();
 			if (markup == null) return;
 
-			renderHeader(markup, result);
+			renderHeader(markup, user, result);
 			renderLastChangesMessage(markup, result);
 			renderImport(markup, user, result);
 
@@ -291,7 +293,8 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 					String lastChangeDisplay = getDisplay(lastChange);
 					message += ", last change was " + lastChangeDisplay + " ago";
 				}
-			} else {
+			}
+			else {
 				message = "No check yet, click here to check now: ";
 			}
 			result.appendHtmlTag("p");
@@ -303,7 +306,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			result.appendHtmlTag("/p");
 		}
 
-		private void renderHeader(Section<InterWikiImportMarkup> markup, RenderResult result) {
+		private void renderHeader(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
 			URL url = markup.get().getUrl(markup, "Wiki.jsp?page=");
 			String wiki = markup.get().getWiki(markup);
 			if (url != null && wiki != null) {
@@ -319,6 +322,17 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 				result.append("Import from wiki ");
 				String shortenedUrl = url.toString().replaceAll("%23.+$", "");
 				result.appendHtmlElement("a", linkLabel, "href", shortenedUrl);
+
+				HelpToolProvider helpToolProvider = new HelpToolProvider();
+				if (helpToolProvider.hasTools(markup, user)) {
+					Tool[] tools = helpToolProvider.getTools(markup, user);
+					for (Tool tool : tools) {
+						result.appendHtmlTag("a", "title", tool.getDescription(), "class", "tooltipster help-tool", tool.getActionType() == Tool.ActionType.ONCLICK ? "onclick" : "href", tool.getAction());
+						result.appendHtml(tool.getIcon().toHtml());
+						result.appendHtmlTag("/a");
+					}
+				}
+
 				String action = "KNOWWE.core.plugin.setMarkupSectionActivationStatus('" + markup.getID() + "', 'off')";
 				result.appendHtmlTag("a", "onclick", action, "class", "include-deactivate tooltipster",
 						"title", "Deactivate import");

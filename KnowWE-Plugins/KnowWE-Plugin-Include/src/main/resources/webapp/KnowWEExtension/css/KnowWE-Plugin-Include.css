@@ -20,10 +20,10 @@
 	padding: 0 .5em;
 }
 
-.type_InterWikiImport .include-deactivate {
+.type_InterWikiImport .include-deactivate, .type_InterWikiImport .help-tool  {
 	color: grey;
 	font-size: 70%;
-	padding: 0.5em;
+	padding: 0.5em 0 0.5em 0.5em;
 }
 
 .IncludeMarkup .defaultMarkup {
