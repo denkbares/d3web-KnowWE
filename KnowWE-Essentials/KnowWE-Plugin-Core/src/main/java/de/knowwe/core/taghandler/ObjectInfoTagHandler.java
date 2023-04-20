@@ -112,7 +112,7 @@ public class ObjectInfoTagHandler extends AbstractTagHandler {
 	}
 
 	protected void findTermSections(String web, Identifier termIdentifier, Set<Section<?>> definitions, Set<Section<?>> references) {
-		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier, false);
+		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier);
 		if (termInfo == null) return;
 		for (TermCompiler compiler : termInfo) {
 			TerminologyManager termManager = compiler.getTerminologyManager();

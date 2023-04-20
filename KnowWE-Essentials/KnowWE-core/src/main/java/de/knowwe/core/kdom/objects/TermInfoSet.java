@@ -36,7 +36,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 		@Override
 		public boolean isCaseSensitive() {
-			return caseSensitive;
+			return this.identifier.isCaseSensitive();
 		}
 
 		/**
@@ -103,11 +103,9 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	private final Map<String, DefaultTermInfo> result = new HashMap<>();
-	private final boolean caseSensitive;
 	private final Class<?>[] allowedTermClasses;
 
-	public TermInfoSet(boolean caseSensitive, Class<?>... allowedTermClasses) {
-		this.caseSensitive = caseSensitive;
+	public TermInfoSet(Class<?>... allowedTermClasses) {
 		if (allowedTermClasses == null || allowedTermClasses.length == 0) {
 			allowedTermClasses = new Class[] { Object.class };
 		}
@@ -123,9 +121,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	 * @created 26.08.2013
 	 */
 	private String getKey(Identifier identifier) {
-		return caseSensitive
-				? identifier.toExternalForm()
-				: identifier.toExternalForm().toLowerCase();
+		return identifier.toExternalForm();
 	}
 
 	@Override
@@ -185,7 +181,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 	private void addTermManagerIfMatches(Identifier termIdentifier, TermCompiler termCompiler) {
 		Collection<Identifier> identifiers;
-		if (caseSensitive) {
+		if (termIdentifier.isCaseSensitive()) {
 			identifiers = Collections.singletonList(termIdentifier);
 		}
 		else if (termCompiler.getTerminologyManager().isUndefinedTerm(termIdentifier)) {

@@ -339,7 +339,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	protected static Set<Section<?>> findTermDefinitionSections(String web, Identifier termIdentifier) {
-		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier, false);
+		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier);
 		Set<Section<?>> sections = new HashSet<>();
 		if (termInfo == null) {
 			return sections;
@@ -351,7 +351,7 @@ public class ObjectInfoRenderer implements Renderer {
 	}
 
 	public static Set<Section<?>> findTermReferenceSections(String web, Identifier termIdentifier) {
-		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier, false);
+		TermInfo termInfo = TermUtils.getTermInfo(web, termIdentifier);
 		Set<Section<?>> sections = new HashSet<>();
 		if (termInfo == null) {
 			return sections;

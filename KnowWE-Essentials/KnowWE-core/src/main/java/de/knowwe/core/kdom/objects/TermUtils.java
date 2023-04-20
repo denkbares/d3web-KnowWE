@@ -57,8 +57,8 @@ public class TermUtils {
 	}
 
 	@NotNull
-	private static TermInfoSet getAllTermInfosInternal(UserContext userContext, boolean caseSensitive, boolean defaultOnly, Class<?>[] allowedTermClasses) {
-		TermInfoSet result = new TermInfoSet(caseSensitive, allowedTermClasses);
+	private static TermInfoSet getAllTermInfosInternal(UserContext userContext, boolean defaultOnly, Class<?>[] allowedTermClasses) {
+		TermInfoSet result = new TermInfoSet(allowedTermClasses);
 		result.initAllTerms(userContext, defaultOnly);
 		return result;
 	}
@@ -69,16 +69,14 @@ public class TermUtils {
 	 * are collected case insensitive of case sensitive.
 	 *
 	 * @param userContext        the user context to fetch the term infos for
-	 * @param caseSensitive      whether the managers are collected case insensitive
-	 *                           of case sensitive
 	 * @param allowedTermClasses a set of classes the matched definitions shall
 	 *                           be type of. The method only returns term managers matching at
 	 *                           least one of these classes.
 	 * @return the collection of all term managers for all terms
 	 * @created 25.08.2013
 	 */
-	public static TermInfoSet getAllTermInfos(UserContext userContext, boolean caseSensitive, Class<?>... allowedTermClasses) {
-		return getAllTermInfosInternal(userContext, caseSensitive, true, allowedTermClasses);
+	public static TermInfoSet getAllTermInfos(UserContext userContext, Class<?>... allowedTermClasses) {
+		return getAllTermInfosInternal(userContext, true, allowedTermClasses);
 	}
 
 	/**
@@ -90,16 +88,14 @@ public class TermUtils {
 	 *
 	 * @param web                the web to collect the definitions for
 	 * @param termIdentifier     the identifier to get the term managers for
-	 * @param caseSensitive      whether the managers are collected case insensitive
-	 *                           of case sensitive
 	 * @param allowedTermClasses a set of classes the matched definitions shall
 	 *                           be type of. The method only returns term managers matching at
 	 *                           least one of these classes.
 	 * @return the collection of all term managers for the specified term
 	 * @created 25.08.2013
 	 */
-	public static TermInfo getTermInfo(String web, Identifier termIdentifier, boolean caseSensitive, Class<?>... allowedTermClasses) {
-		TermInfoSet set = new TermInfoSet(caseSensitive, allowedTermClasses);
+	public static TermInfo getTermInfo(String web, Identifier termIdentifier, Class<?>... allowedTermClasses) {
+		TermInfoSet set = new TermInfoSet(allowedTermClasses);
 		set.initTerm(web, termIdentifier);
 		return set.getTermInfo(termIdentifier);
 	}
