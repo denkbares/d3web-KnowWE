@@ -115,7 +115,7 @@ public class Compilers {
 				}
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while destroying with script "
-							+ section;
+								 + section;
 					LOGGER.error(msg, e);
 				}
 			}
@@ -181,6 +181,23 @@ public class Compilers {
 		else {
 			return compilers.iterator().next();
 		}
+	}
+
+	/**
+	 * Returns the first {@link Compiler} of a given ArticleManager and compiler class with the given name.
+	 *
+	 * @param manager       the {@link ArticleManager} for which we want the {@link Compiler}s
+	 * @param compilerName          the name of the compiler
+	 * @param compilerClass the type of the {@link Compiler} we want
+	 * @return the first {@link Compiler}s of a given ArticleManager and Class.
+	 * @created 15.11.2013
+	 */
+	@Nullable
+	public static <C extends Compiler> C getCompiler(ArticleManager manager, String compilerName, Class<C> compilerClass) {
+		return getCompilers(null, manager, compilerClass, false).stream()
+				.filter(c -> getCompilerName(c).equals(compilerName))
+				.findFirst()
+				.orElse(null);
 	}
 
 	@NotNull
@@ -275,7 +292,10 @@ public class Compilers {
 
 	private static void addCompilerClasses(Set<Class<? extends Compiler>> allClasses, List<Class<?>> classesToAdd) {
 		//noinspection unchecked
-		classesToAdd.stream().filter(Compiler.class::isAssignableFrom).map(c -> (Class<? extends Compiler>) c).forEach(allClasses::add);
+		classesToAdd.stream()
+				.filter(Compiler.class::isAssignableFrom)
+				.map(c -> (Class<? extends Compiler>) c)
+				.forEach(allClasses::add);
 	}
 
 	/**
