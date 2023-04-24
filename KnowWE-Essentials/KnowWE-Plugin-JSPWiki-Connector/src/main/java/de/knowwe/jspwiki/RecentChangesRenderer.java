@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,6 @@ import de.knowwe.kdom.renderer.PaginationRenderer;
 @SuppressWarnings("rawtypes")
 public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	private static final RecentChangesUtils util = new RecentChangesUtils();
-	List<Pair<String, Comparator>> columnComparators;
 	public static final String PAGE = "Page";
 	public static final String LAST_MODIFIED = "Last Modified";
 	public static final String AUTHOR = "Author";
@@ -107,9 +107,9 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 
 	@NotNull
 	private List<Page> sortPages(Section<?> sec, UserContext user, Set<Page> filteredRecentChanges) {
-		columnComparators = PaginationRenderer.getMultiColumnSorting(sec, user).stream()
-						.map(p -> new Pair<>(p.getA(), createComparator(p.getA(), p.getB())))
-						.collect(Collectors.toList());
+		List<Pair<String, Comparator>> columnComparators = PaginationRenderer.getMultiColumnSorting(sec, user).stream()
+				.map(p -> new Pair<>(p.getA(), createComparator(p.getA(), p.getB())))
+				.collect(Collectors.toList());
 		PageComparator pageComparator = new PageComparator(columnComparators);
 		List<Page> sortedFilteredRecentChanges = new ArrayList<>(filteredRecentChanges);
 		sortedFilteredRecentChanges.sort(pageComparator);
@@ -117,11 +117,12 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	}
 
 	private Comparator createComparator(String columnName, boolean ascending) {
-		if(columnName.equals(LAST_MODIFIED)){
-			RecentChangesDateComparator comparator = new RecentChangesDateComparator();
+		if (columnName.equals(LAST_MODIFIED)) {
+			Comparator<Date> comparator = Date::compareTo;
 			return ascending ? comparator : comparator.reversed();
-		}else{
-			RecentChangesStringComparator comparator = new RecentChangesStringComparator();
+		}
+		else {
+			Comparator<String> comparator = String::compareToIgnoreCase;
 			return ascending ? comparator : comparator.reversed();
 		}
 	}
@@ -150,17 +151,11 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			boolean pageMatches = true;
 			for (String columnName : filter.keySet()) {
 				String text = util.getColumnValueByName(columnName, page);
-				if(columnName.equals(LAST_MODIFIED)){
+				if (columnName.equals(LAST_MODIFIED)) {
 					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 					text = formatter.format(page.getLastModified());
 				}
-				Set<Pattern> patterns;
-				try {
-					patterns = filter.get(columnName);
-				}
-				catch (NullPointerException e) {
-					continue;
-				}
+				Set<Pattern> patterns = filter.getOrDefault(columnName, Set.of());
 				if (patterns.size() < 1) {
 					continue;
 				}
@@ -209,6 +204,5 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		}
 		return filteredPages;
 	}
-
 }
 
