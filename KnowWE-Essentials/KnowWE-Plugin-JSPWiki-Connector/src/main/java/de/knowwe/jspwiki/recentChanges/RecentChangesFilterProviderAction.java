@@ -130,12 +130,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 		filter.put(columnName, Collections.emptySet());
 		Set<Page> filteredRecentChanges = new RecentChangesRenderer().filter(filter, totalChangesSet);
 		for (Page page : filteredRecentChanges) {
-			String text = null;
-			switch (columnName) {
-				case "Page" -> text = page.getName();
-				case "Last Modified" -> text = util.toDateString(page.getLastModified());
-				case "Author" -> text = page.getAuthor();
-			}
+			String text = util.getColumnValueByName(columnName, page);
 			if (addedFilterValueTexts.contains(text) || filteredOut.contains(text)) continue;
 			if (isFilteredOut(filterTextQuery, text)) {
 				filteredOut.add(text);

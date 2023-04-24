@@ -19,7 +19,6 @@
 
 package de.knowwe.jspwiki.recentChanges;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -45,12 +44,11 @@ import de.knowwe.jspwiki.PageComparator;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
+import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
+
 @SuppressWarnings("rawtypes")
 public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	private static final RecentChangesUtils util = new RecentChangesUtils();
-	public static final String PAGE = "Page";
-	public static final String LAST_MODIFIED = "Last Modified";
-	public static final String AUTHOR = "Author";
 
 	@Override
 	public void renderContentsAndAnnotations(Section<?> sec, UserContext user, RenderResult string) {
@@ -96,7 +94,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 					string.appendHtmlElement("td", "[" + page.getName() + "]");
 				}
 				else {
-					string.appendHtmlElement("td", "[" + page.getName() + " (Version " + pageVersion + " / " + totalVersionCount + ") | " + page.getName() + "]");
+					string.appendHtmlElement("td", "[" + page.getName() + " (Version " + pageVersion + "/" + totalVersionCount + ") | " + page.getName() + "]");
 				}
 			}
 			string.appendHtml("<td>" + formattedDate + "</td>");
@@ -153,16 +151,11 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			boolean pageMatches = true;
 			for (String columnName : filter.keySet()) {
 				String text = util.getColumnValueByName(columnName, page);
-				if (columnName.equals(LAST_MODIFIED)) {
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-					text = formatter.format(page.getLastModified());
-				}
 				Set<Pattern> patterns = filter.getOrDefault(columnName, Set.of());
 				if (patterns.size() < 1) {
 					continue;
 				}
-				String finalText = text;
-				if (patterns.stream().noneMatch(p -> p.matcher(finalText).matches())) {
+				if (patterns.stream().noneMatch(p -> p.matcher(text).matches())) {
 					pageMatches = false;
 					break;
 				}
@@ -173,14 +166,10 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 			List<Page> versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
 			if (!filter.get("Last Modified").isEmpty()) {
-				filteredPages.addAll(checkVersionHistoryWithDate(versionHistory, filter.get("Last Modified")));
+				filteredPages.addAll(checkVersionHistoryWithDate(versionHistory, filter.getOrDefault(LAST_MODIFIED, Set.of())));
 			}
 			if (!filter.get("Author").isEmpty()) {
-				try {
-					filteredPages.addAll(checkVersionHistoryWithAuthor(versionHistory, filter.get("Author")));
-				}
-				catch (NullPointerException ignored) {
-				}
+				filteredPages.addAll(checkVersionHistoryWithAuthor(versionHistory, filter.getOrDefault(AUTHOR, Set.of())));
 			}
 		}
 		return filteredPages;

@@ -21,12 +21,13 @@ package de.knowwe.jspwiki.recentChanges;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Objects;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 
-import static java.time.ZoneId.*;
+import static java.time.ZoneId.systemDefault;
 
 public class RecentChangesUtils {
 	private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd");
@@ -53,26 +54,18 @@ public class RecentChangesUtils {
 		}
 		return formatter.format(date);
 	}
-	public String getColumnValueByName(String columnName, Page page){
-		switch (columnName) {
-			case PAGE -> {
-				return page.getName();
-			}
-			case LAST_MODIFIED -> {
-				return page.getLastModified().toString();
-			}
-			case AUTHOR -> {
-				String author = page.getAuthor();
-				if(author==null){
-					return "Unknown Author";
-				}else{
-					return author;
-				}
-			}
+
+	public String getColumnValueByName(String columnName, Page page) {
+		Object cell = getColumnObjectValueByName(columnName, page);
+		if (cell instanceof Date date) {
+			return toDateString(date);
 		}
-		return columnName;
+		else {
+			return cell.toString();
+		}
 	}
-	public Object getColumnObjectValueByName(String columnName, Page page){
+
+	public Object getColumnObjectValueByName(String columnName, Page page) {
 		switch (columnName) {
 			case PAGE -> {
 				return page.getName();
@@ -82,15 +75,9 @@ public class RecentChangesUtils {
 			}
 			case AUTHOR -> {
 				String author = page.getAuthor();
-				if(author==null){
-					return "Unknown Author";
-				}else{
-					return author;
-				}
+				return Objects.requireNonNullElse(author, "Unknown Author");
 			}
 		}
 		return columnName;
 	}
-
-
 }
