@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -113,7 +114,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
-		Set<Page> totalChangesSet = new HashSet<>(recentChanges);
+		LinkedHashSet<Page> totalChangesSet = new LinkedHashSet<>(recentChanges);
 		for (Page page : recentChanges) {
 			if (page instanceof Attachment) continue;
 			List<Page> pageHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
@@ -121,8 +122,8 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 		}
 		String columnName = context.getParameter(COLUMN_NAME);
 		Map<String, Set<String>> filterTexts = new HashMap<>();
-		Set<String> filteredOut = new HashSet<>();
-		Set<String> addedFilterValueTexts = new HashSet<>();
+		Set<String> filteredOut = new LinkedHashSet<>();
+		Set<String> addedFilterValueTexts = new LinkedHashSet<>();
 		Section<?> section = getSection(context);
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(section, context);
 		filter.put(columnName, Collections.emptySet());

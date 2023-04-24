@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 
 import static java.time.ZoneId.*;
@@ -31,6 +32,9 @@ public class RecentChangesUtils {
 	private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd");
 	private static final FastDateFormat TIME_FORMAT = FastDateFormat.getInstance("HH:mm:ss");
 	private static final FastDateFormat DATE_TIME_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+	public static final String PAGE = "Page";
+	public static final String LAST_MODIFIED = "Last Modified";
+	public static final String AUTHOR = "Author";
 
 	public String toDateString(Date date) {
 		return DATE_FORMAT.format(date);
@@ -49,4 +53,44 @@ public class RecentChangesUtils {
 		}
 		return formatter.format(date);
 	}
+	public String getColumnValueByName(String columnName, Page page){
+		switch (columnName) {
+			case PAGE -> {
+				return page.getName();
+			}
+			case LAST_MODIFIED -> {
+				return page.getLastModified().toString();
+			}
+			case AUTHOR -> {
+				String author = page.getAuthor();
+				if(author==null){
+					return "Unknown Author";
+				}else{
+					return author;
+				}
+			}
+		}
+		return columnName;
+	}
+	public Object getColumnObjectValueByName(String columnName, Page page){
+		switch (columnName) {
+			case PAGE -> {
+				return page.getName();
+			}
+			case LAST_MODIFIED -> {
+				return page.getLastModified();
+			}
+			case AUTHOR -> {
+				String author = page.getAuthor();
+				if(author==null){
+					return "Unknown Author";
+				}else{
+					return author;
+				}
+			}
+		}
+		return columnName;
+	}
+
+
 }

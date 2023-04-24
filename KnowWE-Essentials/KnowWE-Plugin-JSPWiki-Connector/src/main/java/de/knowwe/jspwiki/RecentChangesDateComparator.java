@@ -19,20 +19,13 @@
 
 package de.knowwe.jspwiki;
 
-import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.PaginationRenderer;
+import java.util.Comparator;
+import java.util.Date;
 
-public class RecentChangesMarkup extends DefaultMarkupType {
+public class RecentChangesDateComparator implements Comparator<Date> {
 
-	private static final DefaultMarkup MARKUP;
-
-	static {
-		MARKUP = new DefaultMarkup("RecentChanges");
-		MARKUP.setTemplate("%%RecentChanges %\n");
-	}
-	public RecentChangesMarkup(){
-		super(MARKUP);
-		this.setRenderer(new PaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true));
+	@Override
+	public int compare(Date date1, Date date2) {
+		return date1.compareTo(date2);
 	}
 }

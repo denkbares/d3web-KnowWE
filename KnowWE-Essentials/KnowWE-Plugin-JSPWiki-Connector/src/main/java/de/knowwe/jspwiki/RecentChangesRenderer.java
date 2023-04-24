@@ -22,16 +22,19 @@ package de.knowwe.jspwiki;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.utils.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -39,8 +42,13 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
+@SuppressWarnings("rawtypes")
 public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	private static final RecentChangesUtils util = new RecentChangesUtils();
+	List<Pair<String, Comparator>> columnComparators;
+	public static final String PAGE = "Page";
+	public static final String LAST_MODIFIED = "Last Modified";
+	public static final String AUTHOR = "Author";
 
 	@Override
 	public void renderContentsAndAnnotations(Section<?> sec, UserContext user, RenderResult string) {
@@ -51,12 +59,12 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		int startRow = PaginationRenderer.getStartRow(sec, user);
 		int count = PaginationRenderer.getCount(sec, user);
 		PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
-
+		List<Page> sortedFilteredRecentChanges = sortPages(sec, user, filteredRecentChanges);
 		string.appendHtml("<table>");
 		addTableHead(string);
 		int counter = 1;
 		int pagesCount = startRow + count - 1;
-		for (Page page : filteredRecentChanges) {
+		for (Page page : sortedFilteredRecentChanges) {
 			if (counter > pagesCount || startRow > filteredRecentChanges.size()) {
 				break;
 			}
@@ -86,7 +94,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 					string.appendHtmlElement("td", "[" + page.getName() + "]");
 				}
 				else {
-					string.appendHtmlElement("td", "[" + page.getName() + "Version " + pageVersion + " / " + totalVersionCount + " | " + page.getName() + "]");
+					string.appendHtmlElement("td", "[" + page.getName() + " (Version " + pageVersion + " / " + totalVersionCount + ") | " + page.getName() + "]");
 				}
 			}
 			string.appendHtml("<td>" + formattedDate + "</td>");
@@ -97,11 +105,32 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		string.appendHtml("</table>");
 	}
 
+	@NotNull
+	private List<Page> sortPages(Section<?> sec, UserContext user, Set<Page> filteredRecentChanges) {
+		columnComparators = PaginationRenderer.getMultiColumnSorting(sec, user).stream()
+						.map(p -> new Pair<>(p.getA(), createComparator(p.getA(), p.getB())))
+						.collect(Collectors.toList());
+		PageComparator pageComparator = new PageComparator(columnComparators);
+		List<Page> sortedFilteredRecentChanges = new ArrayList<>(filteredRecentChanges);
+		sortedFilteredRecentChanges.sort(pageComparator);
+		return sortedFilteredRecentChanges;
+	}
+
+	private Comparator createComparator(String columnName, boolean ascending) {
+		if(columnName.equals(LAST_MODIFIED)){
+			RecentChangesDateComparator comparator = new RecentChangesDateComparator();
+			return ascending ? comparator : comparator.reversed();
+		}else{
+			RecentChangesStringComparator comparator = new RecentChangesStringComparator();
+			return ascending ? comparator : comparator.reversed();
+		}
+	}
+
 	private String addTableHead(RenderResult string) {
 		List<String> columnNames = new ArrayList<>();
-		columnNames.add("Page");
-		columnNames.add("Last Modified");
-		columnNames.add("Author");
+		columnNames.add(PAGE);
+		columnNames.add(LAST_MODIFIED);
+		columnNames.add(AUTHOR);
 		string.appendHtml("<tr>");
 		for (String var : columnNames) {
 			List<String> attributes = new ArrayList<>(Arrays.asList(
@@ -115,25 +144,15 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	}
 
 	public Set<Page> filter(@NotNull Map<String, Set<Pattern>> filter, Set<Page> recentChanges) {
-		Set<Page> filteredPages = new HashSet<>();
+		Set<Page> filteredPages = new LinkedHashSet<>();
 		if (filter.isEmpty()) return recentChanges;
 		for (Page page : recentChanges) {
 			boolean pageMatches = true;
 			for (String columnName : filter.keySet()) {
-				String text;
-				switch (columnName) {
-					case "Page" -> text = page.getName();
-					case "Last Modified" -> {
-						SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-						text = formatter.format(page.getLastModified());
-					}
-					case "Author" -> {
-						text = page.getAuthor();
-						if (text == null) {
-							text = "Unknown Author";
-						}
-					}
-					default -> text = null;
+				String text = util.getColumnValueByName(columnName, page);
+				if(columnName.equals(LAST_MODIFIED)){
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+					text = formatter.format(page.getLastModified());
 				}
 				Set<Pattern> patterns;
 				try {
@@ -190,5 +209,6 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		}
 		return filteredPages;
 	}
+
 }
 
