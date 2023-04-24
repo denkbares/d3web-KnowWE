@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.wiki.api.core.Page;
 
 import com.denkbares.utils.Pair;
+import de.knowwe.jspwiki.recentChanges.RecentChangesUtils;
 
 @SuppressWarnings("rawtypes")
 public class PageComparator implements Comparator<Page> {

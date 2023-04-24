@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki;
+package de.knowwe.jspwiki.recentChanges;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,6 +40,8 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.jspwiki.JSPWikiConnector;
+import de.knowwe.jspwiki.PageComparator;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 

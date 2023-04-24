@@ -28,7 +28,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AdministrationToolProvider">
-		<parameter id="class" value="de.knowwe.jspwiki.AdministrationToolProvider" />
+		<parameter id="class" value="de.knowwe.jspwiki.administration.AdministrationToolProvider" />
 		<parameter id="name" value="AdministrationToolProvider" />
 		<parameter id="description" value="Offers quick access to set activationstatus = on." />
 		<parameter id="version" value="1.0" />
@@ -37,7 +37,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AdministrationToolProviderAction">
-		<parameter id="class" value="de.knowwe.jspwiki.AdministrationToolProvider" />
+		<parameter id="class" value="de.knowwe.jspwiki.administration.AdministrationToolProvider" />
 		<parameter id="name" value="AdministrationToolProvider" />
 		<parameter id="description" value="Copies the current thead dump to clipboard" />
 		<parameter id="version" value="1.0" />
@@ -46,7 +46,7 @@
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 			id="AdministrationMarkup">
-		<parameter id="class" value="de.knowwe.jspwiki.AdministrationMarkup" />
+		<parameter id="class" value="de.knowwe.jspwiki.administration.AdministrationMarkup" />
 		<parameter id="name" value="AdministrationMarkup" />
 		<parameter id="description" value="Markup for administration tools" />
 		<parameter id="version" value="1.0" />
@@ -58,7 +58,7 @@
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="ReadOnlyMarkup">
-		<parameter id="class" value="de.knowwe.jspwiki.ReadOnlyMarkup" />
+		<parameter id="class" value="de.knowwe.jspwiki.readOnly.ReadOnlyMarkup" />
 		<parameter id="name" value="ReadOnlyMarkup" />
 		<parameter id="description" value="Markup for a read only switch" />
 		<parameter id="version" value="1.0" />
@@ -70,7 +70,7 @@
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
 		id="ReadOnlyMessageMarkup">
-		<parameter id="class" value="de.knowwe.jspwiki.ReadOnlyMessageMarkup" />
+		<parameter id="class" value="de.knowwe.jspwiki.readOnly.ReadOnlyMessageMarkup" />
 		<parameter id="name" value="ReadOnlyMessageMarkup" />
 		<parameter id="description" value="Markup displaying a message if read-only mode is active" />
 		<parameter id="version" value="1.0" />
@@ -79,7 +79,7 @@
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="RecentChangesMarkup">
-		<parameter id="class" value="de.knowwe.jspwiki.RecentChangesMarkup" />
+		<parameter id="class" value="de.knowwe.jspwiki.recentChanges.RecentChangesMarkup" />
 		<parameter id="name" value="RecentChangesMarkup" />
 		<parameter id="description" value="Markup for Recent-Changes View" />
 		<parameter id="version" value="1.0" />
@@ -100,7 +100,7 @@
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
         id="ReadOnlyAction">
         <parameter id="class"
-            value="de.knowwe.jspwiki.ReadOnlyAction" />
+            value="de.knowwe.jspwiki.readOnly.ReadOnlyAction" />
         <parameter id="name" value="ReadOnlyAction" />
         <parameter id="description" value="Action ReadOnlyAction" />
         <parameter id="version" value="1.0" />

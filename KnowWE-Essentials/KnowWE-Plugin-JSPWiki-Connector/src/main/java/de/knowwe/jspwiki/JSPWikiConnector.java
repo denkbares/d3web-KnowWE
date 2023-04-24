@@ -85,10 +85,10 @@ import org.apache.wiki.util.MailUtil;
 import org.apache.wiki.util.TextUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import com.denkbares.strings.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
 import de.knowwe.core.Attributes;
@@ -99,6 +99,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.jspwiki.readOnly.ReadOnlyManager;
 
 /**
  * For code documentation look at the WikiConnector interface definition

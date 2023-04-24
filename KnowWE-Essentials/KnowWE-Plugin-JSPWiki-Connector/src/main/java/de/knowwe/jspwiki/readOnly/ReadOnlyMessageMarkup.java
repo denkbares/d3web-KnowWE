@@ -1,44 +1,43 @@
 /*
- * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ * Copyright (C) 2023 denkbares GmbH, Germany
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-package de.knowwe.jspwiki;
+
+package de.knowwe.jspwiki.readOnly;
 
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * Markup to easily activate (and deactivate) a read-only mode to the wiki. This
- * is only an administrative tool, not a security tool. If you know what you are
- * doing, you can easily circumvent the read-only mode.
- * 
+ * Simple markup that displays the content of the markup in case the read only mode is active.
+ *
  * @author Albrecht Striffler (denkbares GmbH)
- * @created 01.08.2013
+ * @created 28.09.15
  */
-public class ReadOnlyMarkup extends DefaultMarkupType {
+public class ReadOnlyMessageMarkup extends DefaultMarkupType {
 
-	private static final DefaultMarkup MARKUP;
-
-	static {
-		MARKUP = new DefaultMarkup("ReadOnly");
+	public ReadOnlyMessageMarkup() {
+		super(new DefaultMarkup("ReadOnlyMessage"));
+		setRenderer((section, user, result) -> {
+			boolean readOnly = ReadOnlyManager.isReadOnly();
+			result.appendHtml("<div class='readOnlyMessage'" + (readOnly ? " style='display: block'" : "") + ">");
+			result.append(DefaultMarkupType.getContent(section));
+			result.appendHtml("</div>");
+		});
 	}
 
-	public ReadOnlyMarkup() {
-		super(MARKUP);
-		this.setRenderer(new ReadOnlyMarkupRenderer());
-	}
 }

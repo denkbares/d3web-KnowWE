@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki;
+package de.knowwe.jspwiki.recentChanges;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -43,6 +43,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
 public class RecentChangesFilterProviderAction extends AbstractAction {

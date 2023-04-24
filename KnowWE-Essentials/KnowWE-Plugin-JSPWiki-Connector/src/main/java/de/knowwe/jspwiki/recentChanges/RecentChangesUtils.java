@@ -17,7 +17,7 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki;
+package de.knowwe.jspwiki.recentChanges;
 
 import java.time.LocalDate;
 import java.util.Date;

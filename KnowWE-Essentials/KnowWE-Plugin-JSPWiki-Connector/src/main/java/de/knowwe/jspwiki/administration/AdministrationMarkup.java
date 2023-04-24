@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 denkbares GmbH, Germany
+ * Copyright (C) 2023 denkbares GmbH, Germany
  *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
@@ -17,27 +17,27 @@
  * site: http://www.fsf.org.
  */
 
-package de.knowwe.jspwiki;
+package de.knowwe.jspwiki.administration;
 
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 /**
- * Simple markup that displays the content of the markup in case the read only mode is active.
+ * Markup for some administrativ tools/utils
  *
- * @author Albrecht Striffler (denkbares GmbH)
- * @created 28.09.15
+ * @author Tim Abler
+ * @created 09.10.2018
  */
-public class ReadOnlyMessageMarkup extends DefaultMarkupType {
+public class AdministrationMarkup extends DefaultMarkupType{
 
-	public ReadOnlyMessageMarkup() {
-		super(new DefaultMarkup("ReadOnlyMessage"));
-		setRenderer((section, user, result) -> {
-			boolean readOnly = ReadOnlyManager.isReadOnly();
-			result.appendHtml("<div class='readOnlyMessage'" + (readOnly ? " style='display: block'" : "") + ">");
-			result.append(DefaultMarkupType.getContent(section));
-			result.appendHtml("</div>");
-		});
+	private static final DefaultMarkup MARKUP;
+
+	static {
+		MARKUP = new DefaultMarkup("Administration");
 	}
 
+	public AdministrationMarkup() {
+		super(MARKUP);
+		this.setRenderer(new AdministrationMarkupRenderer());
+	}
 }

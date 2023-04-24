@@ -16,23 +16,29 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
  * site: http://www.fsf.org.
  */
-
-package de.knowwe.jspwiki;
+package de.knowwe.jspwiki.readOnly;
 
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
-import de.knowwe.kdom.renderer.PaginationRenderer;
 
-public class RecentChangesMarkup extends DefaultMarkupType {
+/**
+ * Markup to easily activate (and deactivate) a read-only mode to the wiki. This
+ * is only an administrative tool, not a security tool. If you know what you are
+ * doing, you can easily circumvent the read-only mode.
+ * 
+ * @author Albrecht Striffler (denkbares GmbH)
+ * @created 01.08.2013
+ */
+public class ReadOnlyMarkup extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
 
 	static {
-		MARKUP = new DefaultMarkup("RecentChanges");
-		MARKUP.setTemplate("%%RecentChanges %\n");
+		MARKUP = new DefaultMarkup("ReadOnly");
 	}
-	public RecentChangesMarkup(){
+
+	public ReadOnlyMarkup() {
 		super(MARKUP);
-		this.setRenderer(new PaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true));
+		this.setRenderer(new ReadOnlyMarkupRenderer());
 	}
 }
