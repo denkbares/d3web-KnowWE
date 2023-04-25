@@ -22,8 +22,8 @@ package de.knowwe.jspwiki.recentChanges;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -78,10 +78,11 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			@NotNull Map<String, Set<String>> filterTexts = getFilterTexts(context, filterTextQuery);
 			context.setContentType(JSON);
 			JSONArray filterTextsArray = new JSONArray();
+			Comparator<Map.Entry<String, Set<String>>> keyComparator = Map.Entry.comparingByKey(COMPARATOR);
 			filterTexts.entrySet()
 					.stream()
-					.sorted(Map.Entry.comparingByKey(COMPARATOR))
-					.forEach(e -> {
+					.sorted(keyComparator.reversed())
+					.forEach((Map.Entry<String, Set<String>> e) -> {
 						JSONArray textPair = new JSONArray();
 						String keyString = e.getKey();
 						boolean alreadyIn = false;
@@ -119,7 +120,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			totalChangesSet.addAll(pageHistory);
 		}
 		String columnName = context.getParameter(COLUMN_NAME);
-		Map<String, Set<String>> filterTexts = new HashMap<>();
+		LinkedHashMap<String, Set<String>> filterTexts = new LinkedHashMap<>();
 		Set<String> filteredOut = new LinkedHashSet<>();
 		Set<String> addedFilterValueTexts = new LinkedHashSet<>();
 		Section<?> section = getSection(context);

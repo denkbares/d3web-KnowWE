@@ -78,9 +78,9 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			}
 			String formattedDate = util.toDateOrTodayTimeString(page.getLastModified());
 			String changeNotes = page.getAttribute("changenote");
-			if(changeNotes==null){
+			if (changeNotes == null) {
 				changeNotes = "-";
-;			}
+			}
 			string.appendHtml("<tr>");
 			if (page instanceof Attachment) {
 				string.appendHtml("<td>" + page.getName() + "</td>");
