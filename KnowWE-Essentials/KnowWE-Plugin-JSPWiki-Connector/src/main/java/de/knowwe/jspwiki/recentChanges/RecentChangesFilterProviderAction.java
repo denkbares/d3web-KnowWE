@@ -22,6 +22,7 @@ package de.knowwe.jspwiki.recentChanges;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -46,6 +47,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
+import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
+
 public class RecentChangesFilterProviderAction extends AbstractAction {
 
 	private static final String COLUMN_NAME = "column-name";
@@ -69,6 +72,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			return NumberAwareComparator.CASE_INSENSITIVE.compare(o1, o2);
 		}
 	};
+	private static final Comparator<Date> DATE_COMPARATOR = Comparator.naturalOrder();
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -79,9 +83,12 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			context.setContentType(JSON);
 			JSONArray filterTextsArray = new JSONArray();
 			Comparator<Map.Entry<String, Set<String>>> keyComparator = Map.Entry.comparingByKey(COMPARATOR);
+			if(getColumnName(context).equals(LAST_MODIFIED)){
+				keyComparator = keyComparator.reversed();
+			}
 			filterTexts.entrySet()
 					.stream()
-					.sorted(keyComparator.reversed())
+					.sorted(keyComparator)
 					.forEach((Map.Entry<String, Set<String>> e) -> {
 						JSONArray textPair = new JSONArray();
 						String keyString = e.getKey();
@@ -108,6 +115,9 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			response.put(FILTER_TEXT_QUERY, filterTextQuery);
 			response.write(context.getWriter());
 		}
+	}
+	private String getColumnName(UserActionContext context){
+		return context.getParameter(COLUMN_NAME);
 	}
 
 	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
