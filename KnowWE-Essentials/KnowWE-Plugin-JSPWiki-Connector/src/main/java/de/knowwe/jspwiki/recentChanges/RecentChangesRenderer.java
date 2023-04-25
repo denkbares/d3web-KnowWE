@@ -34,11 +34,13 @@ import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.jspwiki.PageComparator;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -82,8 +84,10 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				changeNotes = "-";
 			}
 			string.appendHtml("<tr>");
-			if (page instanceof Attachment) {
-				string.appendHtml("<td>" + page.getName() + "</td>");
+			if (page instanceof Attachment attachment) {
+				string.appendHtml("<td>");
+				string.appendHtmlElement("a", attachment.getName(), "href", "Upload.jsp?page=" + Strings.encodeURL(attachment.getParentName()));
+				string.appendHtml("</td>");
 			}
 			else {
 				int pageVersion = page.getVersion();
@@ -94,16 +98,17 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 						totalVersionCount = p.getVersion();
 					}
 				}
-				if (pageVersion == totalVersionCount) {
-					string.appendHtmlElement("td", "[" + page.getName() + "]");
+				String label = page.getName();
+				if (pageVersion != totalVersionCount) {
+					label += " (Version " + pageVersion + "/" + totalVersionCount + ")";
 				}
-				else {
-					string.appendHtmlElement("td", "[" + page.getName() + " (Version " + pageVersion + "/" + totalVersionCount + ") | " + page.getName() + "]");
-				}
+				string.appendHtml("<td>");
+				string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()));
+				string.appendHtml("</td>");
 			}
-			string.appendHtml("<td>" + formattedDate + "</td>");
-			string.appendHtml("<td>" + author + "</td>");
-			string.appendHtml("<td>" + changeNotes + "</td>");
+			string.appendHtml("<td>").append(formattedDate).appendHtml("</td>");
+			string.appendHtml("<td>").append(author).appendHtml("</td>");
+			string.appendHtml("<td>").append(changeNotes).appendHtml("</td>");
 			string.appendHtml("</tr>");
 			counter++;
 		}
