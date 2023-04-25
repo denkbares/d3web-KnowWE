@@ -83,7 +83,12 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			if (changeNotes == null) {
 				changeNotes = "-";
 			}
-			string.appendHtml("<tr>");
+			if (counter % 2 == 0) {
+				string.appendHtml("<tr class='oddRow'>");
+			}
+			else {
+				string.appendHtml("<tr>");
+			}
 			if (page instanceof Attachment attachment) {
 				string.appendHtml("<td>");
 				string.appendHtmlElement("a", attachment.getName(), "href", "Upload.jsp?page=" + Strings.encodeURL(attachment.getParentName()));
@@ -106,9 +111,9 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()));
 				string.appendHtml("</td>");
 			}
-			string.appendHtml("<td>").append(formattedDate).appendHtml("</td>");
-			string.appendHtml("<td>").append(author).appendHtml("</td>");
-			string.appendHtml("<td>").append(changeNotes).appendHtml("</td>");
+			string.appendHtml("<td class='column-Last-Modified'>" + formattedDate + "</td>");
+			string.appendHtml("<td>" + author + "</td>");
+			string.appendHtml("<td>" + changeNotes + "</td>");
 			string.appendHtml("</tr>");
 			counter++;
 		}
@@ -143,10 +148,11 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		columnNames.add(LAST_MODIFIED);
 		columnNames.add(AUTHOR);
 		columnNames.add(CHANGE_NOTES);
-		string.appendHtml("<tr>");
+		string.appendHtml("<tr class='oddRow'>");
 		for (String var : columnNames) {
+			String varNoWhiteapace = var.replace(" ", "-");
 			List<String> attributes = new ArrayList<>(Arrays.asList(
-					"column-name", var, "filter-provider-action", RecentChangesFilterProviderAction.class.getSimpleName()));
+					"column-name", var, "filter-provider-action", RecentChangesFilterProviderAction.class.getSimpleName(), "class", "column-" + varNoWhiteapace));
 			string.appendHtmlTag("th", attributes.toArray(new String[0]));
 			string.append(var.replace("_", " "));
 			string.appendHtml("</th>");
@@ -176,11 +182,14 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			}
 			JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 			List<Page> versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
-			if (!filter.get("Last Modified").isEmpty()) {
+			if (!filter.get(LAST_MODIFIED).isEmpty()) {
 				filteredPages.addAll(checkVersionHistoryWithDate(versionHistory, filter.getOrDefault(LAST_MODIFIED, Set.of())));
 			}
-			if (!filter.get("Author").isEmpty()) {
-				filteredPages.addAll(checkVersionHistoryWithAuthor(versionHistory, filter.getOrDefault(AUTHOR, Set.of())));
+			if (!filter.get(AUTHOR).isEmpty()) {
+				filteredPages.addAll(checkVersionHistoryWithString(versionHistory, filter.getOrDefault(AUTHOR, Set.of()), AUTHOR));
+			}
+			if (!filter.get(CHANGE_NOTES).isEmpty()) {
+				filteredPages.addAll(checkVersionHistoryWithString(versionHistory, filter.getOrDefault(CHANGE_NOTES, Set.of()), CHANGE_NOTES));
 			}
 		}
 		return filteredPages;
@@ -197,10 +206,11 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		return filteredPages;
 	}
 
-	private List<Page> checkVersionHistoryWithAuthor(List<Page> versionHistory, Set<Pattern> patterns) {
+	private List<Page> checkVersionHistoryWithString(List<Page> versionHistory, Set<Pattern> patterns, String type) {
 		List<Page> filteredPages = new ArrayList<>();
 		for (Page page : versionHistory) {
-			if (patterns.stream().anyMatch(p -> p.matcher(page.getAuthor()).matches())) {
+			String toMatch = util.getColumnValueByName(type, page);
+			if (patterns.stream().anyMatch(p -> p.matcher(toMatch).matches())) {
 				filteredPages.add(page);
 			}
 		}
