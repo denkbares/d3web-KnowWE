@@ -111,9 +111,9 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()));
 				string.appendHtml("</td>");
 			}
-			string.appendHtml("<td class='column-Last-Modified'>" + formattedDate + "</td>");
-			string.appendHtml("<td>" + author + "</td>");
-			string.appendHtml("<td>" + changeNotes + "</td>");
+			string.appendHtml("<td class='column-Last-Modified'>").append(formattedDate).appendHtml("</td>");
+			string.appendHtml("<td>").append(author).appendHtml("</td>");
+			string.appendHtml("<td>").append(changeNotes).appendHtml("</td>");
 			string.appendHtml("</tr>");
 			counter++;
 		}
