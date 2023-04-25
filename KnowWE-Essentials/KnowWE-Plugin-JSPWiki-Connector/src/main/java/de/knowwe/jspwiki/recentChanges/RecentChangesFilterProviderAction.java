@@ -22,7 +22,6 @@ package de.knowwe.jspwiki.recentChanges;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -72,7 +71,6 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			return NumberAwareComparator.CASE_INSENSITIVE.compare(o1, o2);
 		}
 	};
-	private static final Comparator<Date> DATE_COMPARATOR = Comparator.naturalOrder();
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
@@ -83,7 +81,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			context.setContentType(JSON);
 			JSONArray filterTextsArray = new JSONArray();
 			Comparator<Map.Entry<String, Set<String>>> keyComparator = Map.Entry.comparingByKey(COMPARATOR);
-			if(getColumnName(context).equals(LAST_MODIFIED)){
+			if (getColumnName(context).equals(LAST_MODIFIED)) {
 				keyComparator = keyComparator.reversed();
 			}
 			filterTexts.entrySet()
@@ -116,7 +114,8 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 			response.write(context.getWriter());
 		}
 	}
-	private String getColumnName(UserActionContext context){
+
+	private String getColumnName(UserActionContext context) {
 		return context.getParameter(COLUMN_NAME);
 	}
 
