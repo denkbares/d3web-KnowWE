@@ -84,7 +84,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				changeNotes = "-";
 			}
 			if (counter % 2 == 0) {
-				string.appendHtml("<tr class='oddRow'>");
+				string.appendHtml("<tr class='odd-row'>");
 			}
 			else {
 				string.appendHtml("<tr>");
@@ -111,7 +111,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()));
 				string.appendHtml("</td>");
 			}
-			string.appendHtml("<td class='column-Last-Modified'>").append(formattedDate).appendHtml("</td>");
+			string.appendHtml("<td class='column-last-modified'>").append(formattedDate).appendHtml("</td>");
 			string.appendHtml("<td>").append(author).appendHtml("</td>");
 			string.appendHtml("<td>").append(changeNotes).appendHtml("</td>");
 			string.appendHtml("</tr>");
@@ -148,7 +148,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		columnNames.add(LAST_MODIFIED);
 		columnNames.add(AUTHOR);
 		columnNames.add(CHANGE_NOTES);
-		string.appendHtml("<tr class='oddRow'>");
+		string.appendHtml("<tr class='odd-row'>");
 		for (String var : columnNames) {
 			String varNoWhiteapace = var.replace(" ", "-");
 			List<String> attributes = new ArrayList<>(Arrays.asList(
