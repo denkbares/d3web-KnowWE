@@ -77,6 +77,10 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				author = "Unknown Author";
 			}
 			String formattedDate = util.toDateOrTodayTimeString(page.getLastModified());
+			String changeNotes = page.getAttribute("changenote");
+			if(changeNotes==null){
+				changeNotes = "-";
+;			}
 			string.appendHtml("<tr>");
 			if (page instanceof Attachment) {
 				string.appendHtml("<td>" + page.getName() + "</td>");
@@ -99,6 +103,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			}
 			string.appendHtml("<td>" + formattedDate + "</td>");
 			string.appendHtml("<td>" + author + "</td>");
+			string.appendHtml("<td>" + changeNotes + "</td>");
 			string.appendHtml("</tr>");
 			counter++;
 		}
@@ -132,6 +137,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		columnNames.add(PAGE);
 		columnNames.add(LAST_MODIFIED);
 		columnNames.add(AUTHOR);
+		columnNames.add(CHANGE_NOTES);
 		string.appendHtml("<tr>");
 		for (String var : columnNames) {
 			List<String> attributes = new ArrayList<>(Arrays.asList(

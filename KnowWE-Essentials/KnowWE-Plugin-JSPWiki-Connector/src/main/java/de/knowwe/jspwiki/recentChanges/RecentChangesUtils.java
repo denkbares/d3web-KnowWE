@@ -36,6 +36,7 @@ public class RecentChangesUtils {
 	public static final String PAGE = "Page";
 	public static final String LAST_MODIFIED = "Last Modified";
 	public static final String AUTHOR = "Author";
+	public static final String CHANGE_NOTES = "Change Notes";
 
 	public String toDateString(Date date) {
 		return DATE_FORMAT.format(date);
@@ -76,6 +77,13 @@ public class RecentChangesUtils {
 			case AUTHOR -> {
 				String author = page.getAuthor();
 				return Objects.requireNonNullElse(author, "Unknown Author");
+			}
+			case CHANGE_NOTES -> {
+				String changeNote = page.getAttribute("changenote");
+				if(changeNote==null){
+					changeNote = "-";
+				}
+				return changeNote;
 			}
 		}
 		return columnName;

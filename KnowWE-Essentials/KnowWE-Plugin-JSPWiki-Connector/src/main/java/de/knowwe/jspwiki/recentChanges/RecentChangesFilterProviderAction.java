@@ -84,9 +84,6 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 					.forEach(e -> {
 						JSONArray textPair = new JSONArray();
 						String keyString = e.getKey();
-//						if (context.getParameter(COLUMN_NAME).equals("Last Modified")) {
-//							keyString = formatDateToDay(e.getKey());
-//						}
 						boolean alreadyIn = false;
 						for (int i = 0; i < filterTextsArray.length(); i++) {
 							try {
