@@ -111,8 +111,7 @@ public class OntologyBridge {
 	public static OntologyCompiler getOntology(@NotNull D3webCompiler d3webCompiler, Priority priorityToAwait) {
 		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
 		if (ontologyId == null) throw new IllegalArgumentException("No ontology linked to the given d3web compiler");
-		OntologyCompiler compiler = CompilationLocal.getCached(d3webCompiler, OntologyCompiler.class + ":" + ontologyId,
-				() -> Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class));
+		OntologyCompiler compiler = getOntologyCompilerCached(d3webCompiler, ontologyId);
 		if (compiler == null) throw new IllegalStateException("Ontology compiler not yet available");
 		try {
 			compiler.getCompilerManager().awaitCompilePriorityCompleted(compiler, priorityToAwait);
@@ -121,6 +120,11 @@ public class OntologyBridge {
 			LOGGER.error("Interrupted while waiting", e);
 		}
 		return compiler;
+	}
+
+	private static OntologyCompiler getOntologyCompilerCached(@NotNull D3webCompiler d3webCompiler, String ontologyId) {
+		return CompilationLocal.getCached(d3webCompiler, OntologyCompiler.class + ":" + ontologyId,
+				() -> Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class));
 	}
 
 	/**
@@ -134,7 +138,8 @@ public class OntologyBridge {
 	public static boolean hasOntology(D3webCompiler d3webCompiler) {
 		if (d3webCompiler == null) return false;
 		String ontologyId = mapping.getAnyValue(d3webCompiler.getCompileSection().getID());
-		return ontologyId != null && Compilers.getCompiler(Sections.get(ontologyId), OntologyCompiler.class) != null;
+		if (ontologyId == null) return false;
+		return getOntologyCompilerCached(d3webCompiler, ontologyId) != null;
 	}
 
 	/**
