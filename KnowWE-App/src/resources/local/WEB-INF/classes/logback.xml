@@ -25,7 +25,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="com.denkbares" level="DEBUG"/>
+	<logger name="com.denkbares" level="INFO"/>
 	<logger name="org.apache.wiki" level="INFO"/>
 	<logger name="com.ontotext" level="ERROR"/>
 
