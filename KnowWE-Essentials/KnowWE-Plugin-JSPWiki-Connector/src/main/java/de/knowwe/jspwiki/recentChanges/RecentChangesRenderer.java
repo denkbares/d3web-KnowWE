@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
@@ -50,6 +52,9 @@ import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
 
 @SuppressWarnings("rawtypes")
 public class RecentChangesRenderer extends DefaultMarkupRenderer {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(RecentChangesRenderer.class);
+
 	private static final RecentChangesUtils util = new RecentChangesUtils();
 
 	@Override
@@ -80,7 +85,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 			}
 			String formattedDate = util.toDateOrTodayTimeString(page.getLastModified());
 			String changeNotes = page.getAttribute("changenote");
-			if (changeNotes == null) {
+			if (changeNotes == null || "undefined".equals(changeNotes)) {
 				changeNotes = "-";
 			}
 			if (counter % 2 == 0) {
@@ -181,7 +186,13 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				filteredPages.add(page);
 			}
 			JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-			List<Page> versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
+			List<Page> versionHistory;
+			try {
+				versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
+			} catch (Exception e) {
+				versionHistory = List.of();
+				LOGGER.error("Exception while getting version history", e);
+			}
 			if (!filter.get(LAST_MODIFIED).isEmpty()) {
 				filteredPages.addAll(checkVersionHistoryWithDate(versionHistory, filter.getOrDefault(LAST_MODIFIED, Set.of())));
 			}
