@@ -62,6 +62,10 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 	@Override
 	public void compile(D3webCompiler compiler, Section<RuleType> ruleSection) throws CompilerMessage {
 
+		if (!isActive(compiler, ruleSection)) {
+			return;
+		}
+
 		if (ruleSection.hasErrorInSubtree(compiler)) {
 			throw new CompilerMessage(Messages.creationFailedWarning(Rule.class.getSimpleName()));
 		}
@@ -100,6 +104,10 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 
 		// create IF - [ELSE] - UNKNOWN - EXCEPT rules
 		createRules(compiler, ruleSection, ntUnknownCondition, null, unknownActions, UNKNOWN_RULE_STORE_KEY);
+	}
+
+	protected boolean isActive(D3webCompiler compiler, Section<RuleType> ruleSection) {
+		return false;
 	}
 
 	public static void createRules(D3webCompiler compiler, Section<? extends Type> ruleSection, Condition condition, Condition exceptCondition, Collection<RuleAction> thenAction, String key) {
