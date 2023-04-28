@@ -107,7 +107,7 @@ public class RuleCompileScript implements D3webCompileScript<RuleType> {
 	}
 
 	protected boolean isActive(D3webCompiler compiler, Section<RuleType> ruleSection) {
-		return false;
+		return true;
 	}
 
 	public static void createRules(D3webCompiler compiler, Section<? extends Type> ruleSection, Condition condition, Condition exceptCondition, Collection<RuleAction> thenAction, String key) {
