@@ -64,9 +64,9 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 
 
 	@Override
-	public void compile(D3webCompiler article, Section<FlowchartType> s) {
+	public void compile(D3webCompiler compiler, Section<FlowchartType> s) {
 
-		KnowledgeBase kb = D3webUtils.getKnowledgeBase(article);
+		KnowledgeBase kb = D3webUtils.getKnowledgeBase(compiler);
 
 		Section<XMLContent> flowContent = AbstractXMLType.getContentChild(s);
 
@@ -83,12 +83,15 @@ public class FlowchartSubTreeHandler implements D3webCompileScript<FlowchartType
 			name = "unnamed";
 		}
 
-		List<Node> nodes = createNodes(article, kb, s);
-		List<Edge> edges = createEdges(article, s, nodes);
+		List<Node> nodes = createNodes(compiler, kb, s);
+		List<Edge> edges = createEdges(compiler, s, nodes);
 		Flow flow = FlowFactory.createFlow(kb, name, nodes, edges);
-		flow.setAutostart(autostart);
+		boolean active = isActive(compiler, s, flow);
+		flow.setAutostart(autostart && active);
+	}
 
-
+	protected boolean isActive(D3webCompiler compiler, Section<FlowchartType> s, Flow flow) {
+		return true;
 	}
 
 	private static List<Edge> createEdges(D3webCompiler compiler, Section<FlowchartType> flowSection, List<Node> nodes) {
