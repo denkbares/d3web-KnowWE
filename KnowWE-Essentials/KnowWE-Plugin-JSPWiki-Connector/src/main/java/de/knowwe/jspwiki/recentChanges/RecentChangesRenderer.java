@@ -193,14 +193,17 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 				versionHistory = List.of();
 				LOGGER.error("Exception while getting version history", e);
 			}
-			if (!filter.get(LAST_MODIFIED).isEmpty()) {
-				filteredPages.addAll(checkVersionHistoryWithDate(versionHistory, filter.getOrDefault(LAST_MODIFIED, Set.of())));
+			Set<Pattern> lastModified = filter.getOrDefault(LAST_MODIFIED, Set.of());
+			if (!lastModified.isEmpty()) {
+				filteredPages.addAll(checkVersionHistoryWithDate(versionHistory, lastModified));
 			}
-			if (!filter.get(AUTHOR).isEmpty()) {
-				filteredPages.addAll(checkVersionHistoryWithString(versionHistory, filter.getOrDefault(AUTHOR, Set.of()), AUTHOR));
+			Set<Pattern> authors = filter.getOrDefault(AUTHOR, Set.of());
+			if (!authors.isEmpty()) {
+				filteredPages.addAll(checkVersionHistoryWithString(versionHistory, authors, AUTHOR));
 			}
-			if (!filter.get(CHANGE_NOTES).isEmpty()) {
-				filteredPages.addAll(checkVersionHistoryWithString(versionHistory, filter.getOrDefault(CHANGE_NOTES, Set.of()), CHANGE_NOTES));
+			Set<Pattern> changeNotes = filter.getOrDefault(CHANGE_NOTES, Set.of());
+			if (!changeNotes.isEmpty()) {
+				filteredPages.addAll(checkVersionHistoryWithString(versionHistory, changeNotes, CHANGE_NOTES));
 			}
 		}
 		return filteredPages;
