@@ -34,7 +34,7 @@ import de.knowwe.core.user.UserContext;
  * some textual output just use context.getWriter().write(...). In case you are developing a KnowWEAction your output
  * will be written to KnowWE.jsp where it is applicable for further processing (via JavaScript etc.).
  * <p/>
- * Additionally you have the possibility to stream almost any kind of content via the OutputStream of the response.
+ * Additionally, you have the possibility to stream almost any kind of content via the OutputStream of the response.
  * Simply use context.getOutputStream().
  *
  * @author Sebastian Furth (denkbares GmbH)
@@ -85,7 +85,7 @@ public interface UserActionContext extends UserContext {
 	 * Returns the writer of the user's http response.
 	 *
 	 * @return the writer of the http response
-	 * @throws IOException
+	 * @throws IOException io exception
 	 * @created Mar 4, 2011
 	 */
 	Writer getWriter() throws IOException;
@@ -94,7 +94,7 @@ public interface UserActionContext extends UserContext {
 	 * Returns the OutputStream of the HTTP response.
 	 *
 	 * @return the OutputStream of the HTTP response
-	 * @throws IOException
+	 * @throws IOException io exception
 	 */
 	OutputStream getOutputStream() throws IOException;
 
