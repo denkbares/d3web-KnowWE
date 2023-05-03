@@ -52,8 +52,22 @@ public abstract class AbstractAction implements Action {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAction.class);
 
 	/**
-	 * Get the local storage from the user context. Check out KNOWWE.helper.setToLocalSectionStorage(sectionId, key, value)
-	 * and KNOWWE.helper.getLocalSectionStorage(sectionId) on the client siede (KnowWE-helper.js)
+	 * Get the local storage from the user context. Check out KNOWWE.helper.setToLocalSectionStorage(sectionId, key,
+	 * value)
+	 * and KNOWWE.helper.getLocalSectionStorage(sectionId) on the client siede (KnowWE-helper.js).
+	 * <p>
+	 * For the section storage to be available in the user context, it has to be set in the POST ajax request:
+	 * <pre>
+	 *    jq$.ajax({
+	 *        url: KNOWWE.core.util.getURL({ action: "<your-action-name>" }),
+	 *        type: 'post',
+	 *        data: {
+	 *            localSectionStorage: KNOWWE.helper.getLocalSectionStorage(sectionId, true)
+	 *        },
+	 *        success: function() {....},
+	 *        ...
+	 *    })
+	 * </pre>
 	 *
 	 * @param user the user context of the request
 	 * @return a JSONObject with the local section storage
@@ -101,8 +115,8 @@ public abstract class AbstractAction implements Action {
 		}
 		Section<?> section = Sections.get(sectionId);
 		if (section == null) {
-			fail(context, HttpServletResponse.SC_NOT_FOUND,"The referenced section was not found. " +
-							"Maybe the page content is outdated. Please reload.");
+			fail(context, HttpServletResponse.SC_NOT_FOUND, "The referenced section was not found. " +
+															"Maybe the page content is outdated. Please reload.");
 		}
 		KnowWEUtils.assertCanView(section, context);
 		return section;
@@ -188,7 +202,7 @@ public abstract class AbstractAction implements Action {
 	public static void failInternal(UserActionContext context, Throwable cause) throws IOException {
 		throw new SendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 				"An unexpected " + cause.getClass().getSimpleName() + " occurred. " +
-						"Please retry or contact support.");
+				"Please retry or contact support.");
 	}
 
 	@Override
