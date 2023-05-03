@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -149,7 +150,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	public static Map<String, Set<Pattern>> getFilter(Section<?> section, UserContext user) {
 		HashMap<String, Set<Pattern>> filterMap = new HashMap<>();
 
-		JSONObject paginationSettings = getJsonObject(section, user);
+		JSONObject paginationSettings = getPaginationSettings(user);
 		if (paginationSettings == null) return filterMap;
 		JSONObject filter = paginationSettings.optJSONObject(FILTER);
 		if (filter == null) return filterMap;
@@ -292,10 +293,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 				result.appendHtml("<option "
-						+ (setSelected ? "selected='selected' " : "")
-						+ "value='" + size + "'>"
-						+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-						+ "</option>");
+								  + (setSelected ? "selected='selected' " : "")
+								  + "value='" + size + "'>"
+								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+								  + "</option>");
 			}
 			result.appendHtml("</select>");
 			result.appendHtml(getResultSizeTag(sec, user));
@@ -406,21 +407,13 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		return sizes.toArray(new Integer[0]);
 	}
 
-	private static JSONObject getJsonObject(Section<?> section, UserContext user) {
-		String sectionStorage = user.getParameter(Attributes.LOCAL_SECTION_STORAGE);
-		if (sectionStorage == null) return null;
-		try {
-			return new JSONObject(sectionStorage).optJSONObject(PAGINATION_KEY);
-		}
-		catch (JSONException e) {
-			LOGGER.warn("Exception while parsing json", e);
-			return null;
-		}
+	private static JSONObject getPaginationSettings(UserContext user) {
+		return AbstractAction.getLocalSectionStorage(user).optJSONObject(PAGINATION_KEY);
 	}
 
 	public static int getStartRow(Section<?> sec, UserContext user) {
 		try {
-			JSONObject jsonObject = getJsonObject(sec, user);
+			JSONObject jsonObject = getPaginationSettings(user);
 			if (jsonObject != null && jsonObject.has(START_ROW)) {
 				return jsonObject.getInt(START_ROW);
 			}
@@ -452,7 +445,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	 */
 	public static int getCount(Section<?> sec, UserContext user) {
 		try {
-			JSONObject jsonObject = getJsonObject(sec, user);
+			JSONObject jsonObject = getPaginationSettings(user);
 			if (jsonObject != null && jsonObject.has(COUNT)) {
 				return jsonObject.optInt(COUNT, COUNT_DEFAULT);
 			}
@@ -514,7 +507,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 
 	private static JSONArray getSortingArray(Section<?> sec, UserContext user) {
 		try {
-			JSONObject jsonObject = getJsonObject(sec, user);
+			JSONObject jsonObject = getPaginationSettings(user);
 			if (jsonObject != null && jsonObject.has(SORTING)) {
 				return jsonObject.getJSONArray(SORTING);
 			}

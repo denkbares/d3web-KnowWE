@@ -25,12 +25,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 
 /**
@@ -43,6 +48,30 @@ import de.knowwe.core.utils.KnowWEUtils;
  * @see Action
  */
 public abstract class AbstractAction implements Action {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAction.class);
+
+	/**
+	 * Get the local storage from the user context. Check out KNOWWE.helper.setToLocalSectionStorage(sectionId, key, value)
+	 * and KNOWWE.helper.getLocalSectionStorage(sectionId) on the client siede (KnowWE-helper.js)
+	 *
+	 * @param user the user context of the request
+	 * @return a JSONObject with the local section storage
+	 */
+	@NotNull
+	public static JSONObject getLocalSectionStorage(UserContext user) {
+		String sectionStorage = user.getParameter(Attributes.LOCAL_SECTION_STORAGE);
+		if (sectionStorage == null) return new JSONObject();
+		JSONObject jsonObject;
+		try {
+			jsonObject = new JSONObject(sectionStorage);
+		}
+		catch (JSONException e) {
+			LOGGER.warn("Exception while parsing json", e);
+			return new JSONObject();
+		}
+		return jsonObject;
+	}
 
 	/**
 	 * Returns always false - which means that your action can be executed by every user. If you want to implement a
