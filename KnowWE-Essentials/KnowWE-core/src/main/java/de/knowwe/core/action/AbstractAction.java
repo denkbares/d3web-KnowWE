@@ -53,10 +53,12 @@ public abstract class AbstractAction implements Action {
 
 	/**
 	 * Get the local storage from the user context. Check out KNOWWE.helper.setToLocalSectionStorage(sectionId, key,
-	 * value)
-	 * and KNOWWE.helper.getLocalSectionStorage(sectionId) on the client siede (KnowWE-helper.js).
+	 * value) and KNOWWE.helper.getLocalSectionStorage(sectionId) on the client side (KnowWE-helper.js).
 	 * <p>
-	 * For the section storage to be available in the user context, it has to be set in the POST ajax request:
+	 * For the section storage to be available in the user context, it has to be set in the data field of the ajax
+	 * request on the client side. When a section is rerendered using jq$(elementWithSectionId).rerender(...), the
+	 * section storage for the section with that section id will automatically be provided in the user context.
+	 * If you are using a custom ajax request, you have to add the section storage manually the following way:
 	 * <pre>
 	 *    jq$.ajax({
 	 *        url: KNOWWE.core.util.getURL({ action: "<your-action-name>" }),
