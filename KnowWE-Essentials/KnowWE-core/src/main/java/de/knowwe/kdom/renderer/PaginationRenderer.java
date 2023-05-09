@@ -91,9 +91,9 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	private static final String ACTIVE = "active";
 	private final Renderer decoratedRenderer;
 	private final SortingMode sorting;
-	private final boolean supportFiltering;
+	protected final boolean supportFiltering;
 
-	private static final String UNKNOWN_RESULT_SIZE = "unknown";
+	protected static final String UNKNOWN_RESULT_SIZE = "unknown";
 	private static final String START_ROW = "startRow";
 	private static final String RESULT_SIZE = "resultsize";
 	private static final String COUNT = "count";
@@ -249,13 +249,13 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		paginationRenderer.renderPaginationInternal(section, user, result);
 	}
 
-	private void renderPaginationInternal(Section<?> section, UserContext user, RenderResult result) {
+	protected void renderPaginationInternal(Section<?> section, UserContext user, RenderResult result) {
 		renderTableSizeSelector(section, user, result);
 		renderNavigation(section, user, result);
 		if (supportFiltering) renderFilter(section, user, result);
 	}
 
-	private void renderFilter(Section<?> section, UserContext user, RenderResult result) {
+	protected void renderFilter(Section<?> section, UserContext user, RenderResult result) {
 		renderToolBarElement(section, result, () -> {
 			// generate unique id in case the filter is added multiple times
 			String id = "filter-activator-" + section.getID();
@@ -264,10 +264,16 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 			String uniqueId = id + "-" + activators;
 			user.getRequest().setAttribute(id, activators + 1);
 
-			result.appendHtmlTag("input", "class", "filter-activator", "type", "checkbox", "id", uniqueId, "name", uniqueId);
+			result.appendHtmlTag("input", "class", "filter-activator filter-style", "type", "checkbox", "id", uniqueId, "name", uniqueId);
 			result.appendHtmlElement("label", "Filter", "class", "fillText", "for", uniqueId);
-			result.appendHtmlElement("button", "Clear Filter", "class", "clear-filter");
+			result.appendHtml("<div class='filter-tools'>");
+			renderFilterTools(section, user, result);
+			result.appendHtml("</div>");
 		});
+	}
+
+	protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {
+		result.appendHtmlElement("button", "Clear Filter", "class", "clear-filter");
 	}
 
 	public static void renderToolSeparator(RenderResult navigation) {
@@ -281,7 +287,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	/**
 	 * Renders the result size selector.
 	 */
-	private void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
+	protected void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
 		int count = getCount(sec, user);
 		renderToolBarElement(sec, result, () -> {
 			Integer[] sizeArray = getSizeChoices(user);
@@ -293,10 +299,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 				result.appendHtml("<option "
-								  + (setSelected ? "selected='selected' " : "")
-								  + "value='" + size + "'>"
-								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-								  + "</option>");
+						+ (setSelected ? "selected='selected' " : "")
+						+ "value='" + size + "'>"
+						+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+						+ "</option>");
 			}
 			result.appendHtml("</select>");
 			result.appendHtml(getResultSizeTag(sec, user));
@@ -308,7 +314,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	/**
 	 * Renders the navigation icons.
 	 */
-	private void renderNavigation(Section<?> sec, UserContext user, RenderResult result) {
+	protected void renderNavigation(Section<?> sec, UserContext user, RenderResult result) {
 		String id = sec.getID();
 		int count = getCount(sec, user);
 		int startRow = getStartRow(sec, user);
@@ -375,7 +381,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		return resultSize;
 	}
 
-	private void renderToolBarElement(Section<?> sec, RenderResult result, Runnable contentRenderer) {
+	protected void renderToolBarElement(Section<?> sec, RenderResult result, Runnable contentRenderer) {
 		result.appendHtml("<div class='knowwe-paginationToolbar noselect' pagination=")
 				.append(Strings.quoteSingle(sec.getID())).appendHtml(">");
 		contentRenderer.run();
@@ -396,7 +402,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		}
 	}
 
-	private static Integer[] getSizeChoices(UserContext user) {
+	protected static Integer[] getSizeChoices(UserContext user) {
 		List<Integer> sizes = new LinkedList<>();
 		int[] sizeArray = new int[] {
 				10, 20, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };

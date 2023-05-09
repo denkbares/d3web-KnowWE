@@ -21,58 +21,40 @@ package de.knowwe.jspwiki.recentChanges;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Pair;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiConnector;
-import de.knowwe.jspwiki.PageComparator;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
 import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
 
-@SuppressWarnings("rawtypes")
 public class RecentChangesRenderer extends DefaultMarkupRenderer {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(RecentChangesRenderer.class);
 
 	private static final RecentChangesUtils util = new RecentChangesUtils();
 
 	@Override
 	public void renderContentsAndAnnotations(Section<?> sec, UserContext user, RenderResult string) {
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
-		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
-		Set<Page> filteredRecentChanges = filter(filter, recentChanges);
+		List<Page> sortedFilteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).getRecentChanges(sec, user);
 		int startRow = PaginationRenderer.getStartRow(sec, user);
 		int count = PaginationRenderer.getCount(sec, user);
-		PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
-		List<Page> sortedFilteredRecentChanges = sortPages(sec, user, filteredRecentChanges);
+		PaginationRenderer.setResultSize(user, sortedFilteredRecentChanges.size());
 		string.appendHtml("<table>");
 		addTableHead(string);
 		int counter = 1;
 		int pagesCount = startRow + count - 1;
 		for (Page page : sortedFilteredRecentChanges) {
-			if (counter > pagesCount || startRow > filteredRecentChanges.size()) {
+			if (counter > pagesCount || startRow > sortedFilteredRecentChanges.size()) {
 				break;
 			}
 			if (counter < startRow) {
@@ -125,28 +107,6 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		string.appendHtml("</table>");
 	}
 
-	@NotNull
-	private List<Page> sortPages(Section<?> sec, UserContext user, Set<Page> filteredRecentChanges) {
-		List<Pair<String, Comparator>> columnComparators = PaginationRenderer.getMultiColumnSorting(sec, user).stream()
-				.map(p -> new Pair<>(p.getA(), createComparator(p.getA(), p.getB())))
-				.collect(Collectors.toList());
-		PageComparator pageComparator = new PageComparator(columnComparators);
-		List<Page> sortedFilteredRecentChanges = new ArrayList<>(filteredRecentChanges);
-		sortedFilteredRecentChanges.sort(pageComparator);
-		return sortedFilteredRecentChanges;
-	}
-
-	private Comparator createComparator(String columnName, boolean ascending) {
-		if (columnName.equals(LAST_MODIFIED)) {
-			Comparator<Date> comparator = Date::compareTo;
-			return ascending ? comparator : comparator.reversed();
-		}
-		else {
-			Comparator<String> comparator = String::compareToIgnoreCase;
-			return ascending ? comparator : comparator.reversed();
-		}
-	}
-
 	private String addTableHead(RenderResult string) {
 		List<String> columnNames = new ArrayList<>();
 		columnNames.add(PAGE);
@@ -164,71 +124,6 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		}
 		string.appendHtml("</tr>");
 		return string.toString();
-	}
-
-	public Set<Page> filter(@NotNull Map<String, Set<Pattern>> filter, Set<Page> recentChanges) {
-		Set<Page> filteredPages = new LinkedHashSet<>();
-		if (filter.isEmpty()) return recentChanges;
-		for (Page page : recentChanges) {
-			boolean pageMatches = true;
-			for (String columnName : filter.keySet()) {
-				String text = util.getColumnValueByName(columnName, page);
-				Set<Pattern> patterns = filter.getOrDefault(columnName, Set.of());
-				if (patterns.size() < 1) {
-					continue;
-				}
-				if (patterns.stream().noneMatch(p -> p.matcher(text).matches())) {
-					pageMatches = false;
-					break;
-				}
-			}
-			if (pageMatches) {
-				filteredPages.add(page);
-			}
-			JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-			List<Page> versionHistory;
-			try {
-				versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
-			} catch (Exception e) {
-				versionHistory = List.of();
-				LOGGER.error("Exception while getting version history", e);
-			}
-			Set<Pattern> lastModified = filter.getOrDefault(LAST_MODIFIED, Set.of());
-			if (!lastModified.isEmpty()) {
-				filteredPages.addAll(checkVersionHistoryWithDate(versionHistory, lastModified));
-			}
-			Set<Pattern> authors = filter.getOrDefault(AUTHOR, Set.of());
-			if (!authors.isEmpty()) {
-				filteredPages.addAll(checkVersionHistoryWithString(versionHistory, authors, AUTHOR));
-			}
-			Set<Pattern> changeNotes = filter.getOrDefault(CHANGE_NOTES, Set.of());
-			if (!changeNotes.isEmpty()) {
-				filteredPages.addAll(checkVersionHistoryWithString(versionHistory, changeNotes, CHANGE_NOTES));
-			}
-		}
-		return filteredPages;
-	}
-
-	private List<Page> checkVersionHistoryWithDate(List<Page> versionHistory, Set<Pattern> patterns) {
-		List<Page> filteredPages = new ArrayList<>();
-		for (Page page : versionHistory) {
-			String formattedDate = util.toDateString(page.getLastModified());
-			if (patterns.stream().anyMatch(p -> p.matcher(formattedDate).matches())) {
-				filteredPages.add(page);
-			}
-		}
-		return filteredPages;
-	}
-
-	private List<Page> checkVersionHistoryWithString(List<Page> versionHistory, Set<Pattern> patterns, String type) {
-		List<Page> filteredPages = new ArrayList<>();
-		for (Page page : versionHistory) {
-			String toMatch = util.getColumnValueByName(type, page);
-			if (patterns.stream().anyMatch(p -> p.matcher(toMatch).matches())) {
-				filteredPages.add(page);
-			}
-		}
-		return filteredPages;
 	}
 }
 

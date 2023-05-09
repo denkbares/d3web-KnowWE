@@ -31,8 +31,9 @@ public class RecentChangesMarkup extends DefaultMarkupType {
 		MARKUP = new DefaultMarkup("RecentChanges");
 		MARKUP.setTemplate("%%RecentChanges %\n");
 	}
-	public RecentChangesMarkup(){
+
+	public RecentChangesMarkup() {
 		super(MARKUP);
-		this.setRenderer(new PaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true));
+		this.setRenderer(new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true));
 	}
 }

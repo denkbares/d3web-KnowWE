@@ -109,3 +109,9 @@
 .type_RecentChanges .column-last-modified {
 	white-space: pre;
 }
+
+.filter-tools {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 10px;
+}

@@ -482,13 +482,14 @@ KNOWWE.core.plugin.pagination = function() {
       updateNode(sectionId)
     })
     const clearFilter = $paginationWrapper.find('.clear-filter');
+    const filterTools = $paginationWrapper.find('.filter-tools');
     clearFilter.click(function() {
       filterState.columns = {}
       setPaginationState(sectionId, paginationState);
       updateNode(sectionId)
     })
     if (!filterState.active) {
-      clearFilter.hide();
+      filterTools.hide();
     } else {
       clearFilter.prop("disabled", !anyActiveFilter(filterState));
     }
@@ -675,6 +676,7 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 }();
+
 
 /* ############################################################### */
 /* ------------- Onload Events ---------------------------------- */

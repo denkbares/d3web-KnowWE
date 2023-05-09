@@ -640,7 +640,7 @@ i.knowwe-paginationNavigationIcons {
 	font-weight: inherit;
 }
 
-.knowwe-paginationToolbar .filter-activator {
+.knowwe-paginationToolbar .filter-style {
 	position: relative;
 	bottom: -1px;
 	margin: 3px 3px 3px 4px;
