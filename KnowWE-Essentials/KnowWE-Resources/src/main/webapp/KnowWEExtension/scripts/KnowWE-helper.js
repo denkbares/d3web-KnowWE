@@ -36,6 +36,18 @@ KNOWWE.helper = function() {
     },
 
     /**
+     * Delete the key-value pair from the local section store (section is represented by the sectionID).
+     *
+     * @param sectionID the id of the section to add a key-value pair to
+     * @param key the key for which to add the value
+     */
+    deleteFromLocalSectionStorage: function(sectionID, key) {
+      let sectionStorage = this.getLocalSectionStorage(sectionID);
+      delete sectionStorage[key];
+      localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
+    },
+
+    /**
      * Returns the local storage for the given sectionID as a JSON object (optionally string). To add to the
      * local storage of the section, please use KNOWWE.helper.addToLocalSectionStorage(...).
      *
