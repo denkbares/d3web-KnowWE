@@ -65,15 +65,17 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 		}
 		catch (Exception ignored) {
 		}
-		if ((localSectionStorage.isEmpty() || show == null) && checkBox.equals("page")) {
-			return true;
+		if (localSectionStorage.isEmpty() || show == null) {
+			switch (checkBox) {
+				case "page" -> {
+					return true;
+				}
+				case "attachment", "intermediate" -> {
+					return false;
+				}
+			}
 		}
-		if ((localSectionStorage.isEmpty() || show == null) && checkBox.equals("attachment")) {
-			return false;
-		}
-		if ((localSectionStorage.isEmpty() || show == null) && checkBox.equals("intermediate")) {
-			return false;
-		}
+
 		return (boolean) localSectionStorage.get(checkBox);
 	}
 
