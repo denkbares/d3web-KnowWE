@@ -25,12 +25,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -122,12 +120,6 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
-		LinkedHashSet<Page> totalChangesSet = new LinkedHashSet<>(recentChanges);
-		for (Page page : recentChanges) {
-			if (page instanceof Attachment) continue;
-			List<Page> pageHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
-			totalChangesSet.addAll(pageHistory);
-		}
 		String columnName = context.getParameter(COLUMN_NAME);
 		LinkedHashMap<String, Set<String>> filterTexts = new LinkedHashMap<>();
 		Set<String> filteredOut = new LinkedHashSet<>();
@@ -135,7 +127,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 		Section<?> section = getSection(context);
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(section, context);
 		filter.put(columnName, Collections.emptySet());
-		Set<Page> filteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).filter(filter, totalChangesSet, context);
+		Set<Page> filteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).filter(filter, recentChanges, context);
 		for (Page page : filteredRecentChanges) {
 			String text = util.getColumnValueByName(columnName, page);
 			if (addedFilterValueTexts.contains(text) || filteredOut.contains(text)) continue;
