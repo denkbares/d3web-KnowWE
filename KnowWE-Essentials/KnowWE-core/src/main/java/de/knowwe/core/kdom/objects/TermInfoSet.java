@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 		private final Identifier identifier;
 		private final String key;
-		private final Collection<TermCompiler> termCompilers = new LinkedList<>();
+		private final Collection<TermCompiler> termCompilers = new LinkedHashSet<>();
 
 		public DefaultTermInfo(Identifier identifier) {
 			this.identifier = identifier;
