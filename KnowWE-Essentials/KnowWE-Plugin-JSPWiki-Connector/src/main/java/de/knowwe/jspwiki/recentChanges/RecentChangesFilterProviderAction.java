@@ -135,7 +135,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 		Section<?> section = getSection(context);
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(section, context);
 		filter.put(columnName, Collections.emptySet());
-		Set<Page> filteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).filter(filter, totalChangesSet);
+		Set<Page> filteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).filter(filter, totalChangesSet, context);
 		for (Page page : filteredRecentChanges) {
 			String text = util.getColumnValueByName(columnName, page);
 			if (addedFilterValueTexts.contains(text) || filteredOut.contains(text)) continue;
