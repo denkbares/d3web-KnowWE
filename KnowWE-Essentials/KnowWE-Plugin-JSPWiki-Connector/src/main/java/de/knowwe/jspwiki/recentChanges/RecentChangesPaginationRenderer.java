@@ -74,19 +74,23 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 		return (boolean) localSectionStorage.get(checkBox);
 	}
 
-	static boolean checkboxSet(UserContext userContext) {
-		JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(userContext);
-		Boolean showPage = null;
-		Boolean showAtt = null;
-
-		try {
-			showPage = Boolean.valueOf(String.valueOf(localSectionStorage.get("page")));
-			showAtt = Boolean.valueOf(String.valueOf(localSectionStorage.get("attachment")));
-		}
-		catch (Exception ignored) {
-		}
-		return showPage != null || showAtt != null;
-	}
+//	static boolean checkboxSet(UserContext userContext) {
+//		JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(userContext);
+//		Boolean showPage = null;
+//		Boolean showAtt = null;
+//
+//		try {
+//			showPage = Boolean.valueOf(String.valueOf(localSectionStorage.get("page")));
+//			showAtt = Boolean.valueOf(String.valueOf(localSectionStorage.get("attachment")));
+//		}
+//		catch (Exception ignored) {
+//		}
+//		return showPage != null || showAtt != null;
+//	}
+//	public static boolean filterSelected(Section<?> section, UserContext user) {
+//		Map<String, Set<Pattern>> filterMap = PaginationRenderer.getFilter(section, user);
+//		return !filterMap.isEmpty() || checkboxSet(user);
+//	}
 
 	boolean isChecked(UserContext userContext, String checkBox) {
 		JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(userContext);
@@ -107,18 +111,6 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 
 	@Override
 	protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {
-//		renderToolBarElement(section, result, () -> {
-//			boolean tickedPage = isChecked(user, "page");
-//			boolean tickedAtt = isChecked(user, "attachment");
-//			// generate unique id in case the filter is added multiple times
-//			String id = "filter-activator-" + section.getID();
-//			Integer activators = (Integer) user.getRequest().getAttribute(id);
-//			if (activators == null) activators = 0;
-//			String uniqueId = id + "-" + activators;
-//			user.getRequest().setAttribute(id, activators + 1);
-//			result.appendHtmlTag("input", "class", "filter-activator filter-style", "type", "checkbox", "id", uniqueId, "name", uniqueId);
-//			result.appendHtmlElement("label", "Filter", "class", "fillText", "for", uniqueId);
-//			result.appendHtml("<div class='filter-tools'>");
 		boolean tickedPage = isChecked(user, "page");
 		boolean tickedAtt = isChecked(user, "attachment");
 		if (tickedPage) {
@@ -135,7 +127,8 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 			result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-attachments", "id", "showAttachments", "name", "showAttachments", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'attachment')");
 		}
 		result.appendHtmlElement("label", "Attachments", "class", "fillText", "for", "showAttachments");
-		result.appendHtmlElement("button", "Clear Filter", "class", "clear-filter");
+		//result.appendHtmlElement("button", "Clear Filter", "class", "clear-filter");
+		super.renderFilterTools(section, user, result);
 		//});
 	}
 

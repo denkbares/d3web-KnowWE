@@ -59,9 +59,14 @@ KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
   _IE.disableDefaultEditTool();
 };
 
-KNOWWE.plugin.jspwikiConnector.setPageFilter = function(self, filterType) {
+function getSectionId(filterTool) {
+  return jq$(filterTool).parents('.page').find('.type_RecentChanges').attr("id");
+
+}
+
+KNOWWE.plugin.jspwikiConnector.setPageFilter = function(self, filterType){
   let filterTool = self;
-  let sectionID = jq$(filterTool).parents('.page').find('.type_RecentChanges').attr("id");
+  let sectionID = getSectionId(filterTool);
   KNOWWE.helper.setToLocalSectionStorage(sectionID, filterType, filterTool.checked);
   jq$("#" + sectionID).rerender({reason: "pagination"});
 }
