@@ -36,6 +36,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
+import de.knowwe.util.Icon;
 
 import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
 
@@ -47,6 +48,7 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 	public void renderContentsAndAnnotations(Section<?> sec, UserContext user, RenderResult string) {
 		if (!(user instanceof ActionContext)) {
 			string.appendHtmlElement("table", "");
+			string.appendHtml(Icon.LOADING.addStyle("font-size: 2.5em").toHtml());
 			return;
 		}
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
