@@ -39,9 +39,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -111,6 +111,11 @@ public class DummyConnector implements WikiConnector {
 		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
 		dummyPageProvider.setArticleContent(title, content);
 		return content;
+	}
+
+	@Override
+	public String createArticle(String title, String author, String content, String changeNode) {
+		return createArticle(title, author, content);
 	}
 
 	@Override
@@ -363,7 +368,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context) {
+	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context, String changeNote) {
 		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
 		dummyPageProvider.setArticleContent(title, content);
 		return true;

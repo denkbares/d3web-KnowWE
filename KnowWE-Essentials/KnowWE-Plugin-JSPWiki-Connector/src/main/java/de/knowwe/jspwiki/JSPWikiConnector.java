@@ -91,7 +91,6 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Streams;
-import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -135,7 +134,6 @@ public class JSPWikiConnector implements WikiConnector {
 		return getEngine().getManager(PageManager.class);
 	}
 
-
 	/**
 	 * We need this method, because there is the possibility of an IllegalThreadStateException while initializing the
 	 * lock reaper of the PageManager, if the first call of lockPage is done in parallel by two threads. To avoid this,
@@ -157,12 +155,20 @@ public class JSPWikiConnector implements WikiConnector {
 
 	@Override
 	public String createArticle(String title, String author, String content) {
+		return createArticle(title, author, content, null);
+	}
+
+	@Override
+	public String createArticle(String title, String author, String content, @Nullable String changeNote) {
 
 		if (title.contains("+")) {
 			throw new IllegalArgumentException("Character + (plus) not allowed in article title: " + title);
 		}
 
 		WikiPage wp = new WikiPage(getEngine(), title);
+		if (changeNote != null) {
+			wp.setAttribute(WikiPage.CHANGENOTE, changeNote);
+		}
 
 		try {
 			updateReferences(wp, content);
@@ -302,8 +308,7 @@ public class JSPWikiConnector implements WikiConnector {
 			Collection<?> attachments = attachmentManager.getAllAttachments();
 			Collection<WikiAttachment> wikiAttachments = new ArrayList<>(attachments.size());
 			for (Object o : attachments) {
-				if (o instanceof Attachment) {
-					Attachment att = (Attachment) o;
+				if (o instanceof Attachment att) {
 					wikiAttachments.add(new JSPWikiAttachment(att, attachmentManager));
 					if (includeZipEntries) wikiAttachments.addAll(getZipEntryAttachments(att));
 				}
@@ -775,7 +780,7 @@ public class JSPWikiConnector implements WikiConnector {
 		Pair<String, String> actualPathAndEntry = getActualPathAndEntry(path);
 		if (actualPathAndEntry.getB() != null) {
 			throw new IOException("Unable to delete zip entry (" + path
-					+ ") in zip attachment. Try to delete attachment instead.");
+								  + ") in zip attachment. Try to delete attachment instead.");
 		}
 		try {
 			boolean wasLocked = isArticleLocked(title);
@@ -899,7 +904,7 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
-	public boolean writeArticleToWikiPersistence(String title, String content, UserContext user) {
+	public boolean writeArticleToWikiPersistence(String title, String content, UserContext user, String changeNote) {
 		try {
 			Page page = getPageManager().getPage(title);
 			// if PageProvider throws exception, page will be null and can't be saved
@@ -908,7 +913,6 @@ public class JSPWikiConnector implements WikiConnector {
 			if (context.getCurrentUser() != null) {
 				page.setAuthor(context.getCurrentUser().getName());
 			}
-			String changeNote = user.getParameter(Attributes.CHANGE_NOTE);
 			if (changeNote != null) {
 				page.setAttribute(WikiPage.CHANGENOTE, changeNote);
 			}

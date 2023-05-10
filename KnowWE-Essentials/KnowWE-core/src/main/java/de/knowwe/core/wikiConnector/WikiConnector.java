@@ -36,6 +36,7 @@ import javax.servlet.http.HttpSession;
 
 import org.jetbrains.annotations.Nullable;
 
+import de.knowwe.core.Attributes;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -74,6 +75,16 @@ public interface WikiConnector {
 	 * @param content the content of the new article
 	 */
 	String createArticle(String title, String author, String content);
+
+	/**
+	 * Creates a new wiki page with given title and content and author in the connected wiki.
+	 *
+	 * @param title      the title of the new article
+	 * @param author     the author of the new article
+	 * @param content    the content of the new article
+	 * @param changeNote the change not for the creation of the new article
+	 */
+	String createArticle(String title, String author, String content, String changeNote);
 
 	/**
 	 * Tests if a article with the given title exists.
@@ -458,7 +469,18 @@ public interface WikiConnector {
 	 * @param content the content of the article to save
 	 * @param context the {@link UserContext} of the user changing the article
 	 */
-	boolean writeArticleToWikiPersistence(String title, String content, UserContext context);
+	default boolean writeArticleToWikiPersistence(String title, String content, UserContext context) {
+		return writeArticleToWikiPersistence(title, content, context, context.getParameter(Attributes.CHANGE_NOTE));
+	}
+
+	/**
+	 * Saves the article (persistently) into the connected wiki
+	 *
+	 * @param title   the title of the article to save
+	 * @param content the content of the article to save
+	 * @param context the {@link UserContext} of the user changing the article
+	 */
+	boolean writeArticleToWikiPersistence(String title, String content, UserContext context, String changeNode);
 
 	/**
 	 * Send an email to one or more recipients.
