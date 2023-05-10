@@ -159,7 +159,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>    the result type
 	 * @return a Sections instance with all the mapped functions
 	 */
-	public <R extends Type> Sections<R> type(Function<Section<T>, Section<R>> mapper) {
+	public <R extends Type> Sections<R> mapTo(Function<Section<T>, Section<R>> mapper) {
 		return $(stream().map(mapper));
 	}
 
