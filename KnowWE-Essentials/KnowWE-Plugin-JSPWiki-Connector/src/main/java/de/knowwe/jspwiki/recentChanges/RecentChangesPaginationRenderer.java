@@ -191,7 +191,7 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 	}
 
 	private Set<Page> getRecentChangesWithShowFilter(Set<Page> sortedFilteredRecentChanges, UserContext user, Map<String, Set<Pattern>> filter) {
-		Set<Page> recentChangesCleaned = new HashSet<>();
+		Set<Page> recentChangesCleaned = new LinkedHashSet<>();
 		boolean showPages = RecentChangesPaginationRenderer.getCheckbox(user, "page");
 		boolean showAttachments = RecentChangesPaginationRenderer.getCheckbox(user, "attachment");
 		boolean showIntermediate = RecentChangesPaginationRenderer.getCheckbox(user, "intermediate");
