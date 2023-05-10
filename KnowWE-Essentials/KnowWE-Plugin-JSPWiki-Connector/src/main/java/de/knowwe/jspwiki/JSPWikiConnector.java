@@ -581,7 +581,7 @@ public class JSPWikiConnector implements WikiConnector {
 			versionHistory = Collections.singletonList(currentVersion);
 		}
 		return versionHistory.stream()
-				.map(page -> new WikiPageInfo(page.getName(), page.getAuthor(), page.getVersion(), page.getLastModified()))
+				.map(page -> new WikiPageInfo(page.getName(), page.getAuthor(), page.getVersion(), page.getLastModified(), page.getAttribute(WikiPage.CHANGENOTE)))
 				.collect(Collectors.toList());
 	}
 

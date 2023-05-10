@@ -97,7 +97,7 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public List<WikiPageInfo> getArticleHistory(String title) {
 		if (getArticleText(title) == null) return Collections.emptyList();
-		return Collections.singletonList(new WikiPageInfo(title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1)));
+		return Collections.singletonList(new WikiPageInfo(title, DUMMY_USER, getVersion(title), getLastModifiedDate(title, 1), null));
 	}
 
 	@Override

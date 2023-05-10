@@ -21,6 +21,8 @@ package de.knowwe.core.wikiConnector;
 
 import java.util.Date;
 
+import org.jetbrains.annotations.Nullable;
+
 import de.knowwe.core.Environment;
 
 public class WikiPageInfo implements WikiObjectInfo {
@@ -29,12 +31,14 @@ public class WikiPageInfo implements WikiObjectInfo {
 	private final String author;
 	private final int version;
 	private final Date date;
+	private final String changeNote;
 
-	public WikiPageInfo(String name, String author, int version, Date date) {
+	public WikiPageInfo(String name, String author, int version, Date date, String changeNote) {
 		this.name = name;
 		this.author = author;
 		this.version = version;
 		this.date = date;
+		this.changeNote = changeNote;
 	}
 
 	public String getText() {
@@ -59,5 +63,10 @@ public class WikiPageInfo implements WikiObjectInfo {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Nullable
+	public String getChangeNote() {
+		return changeNote;
 	}
 }
