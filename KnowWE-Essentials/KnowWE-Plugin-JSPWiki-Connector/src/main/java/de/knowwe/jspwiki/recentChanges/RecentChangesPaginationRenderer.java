@@ -22,7 +22,6 @@ package de.knowwe.jspwiki.recentChanges;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +52,7 @@ import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
 
 @SuppressWarnings("rawtypes")
 public class RecentChangesPaginationRenderer extends PaginationRenderer {
+
 	public RecentChangesPaginationRenderer(Renderer decoratedRenderer, SortingMode sorting, boolean supportFiltering) {
 		super(decoratedRenderer, sorting, supportFiltering);
 	}
@@ -122,10 +122,10 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 				result.appendHtml("<option "
-						+ (setSelected ? "selected='selected' " : "")
-						+ "value='" + size + "'>"
-						+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-						+ "</option>");
+								  + (setSelected ? "selected='selected' " : "")
+								  + "value='" + size + "'>"
+								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+								  + "</option>");
 			}
 			result.appendHtml("</select>");
 			result.appendHtml(getResultSizeTag(sec, user));
@@ -153,8 +153,7 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RecentChangesRenderer.class);
 
 	public List<Page> getRecentChanges(Section<?> sec, UserContext user) {
-		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
+		Set<Page> recentChanges = getWikiConnector().getPageManager().getRecentChanges();
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
 		Set<Page> filteredRecentChanges = filter(filter, recentChanges, user);
 		PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
@@ -195,13 +194,10 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 		boolean showIntermediate = RecentChangesPaginationRenderer.getCheckbox(user, "intermediate");
 		for (Page page : sortedFilteredRecentChanges) {
 			if (!(page instanceof Attachment) && showPages) {
-				recentChangesCleaned.add(page);
+				addPage(recentChangesCleaned, page, showIntermediate);
 			}
 			else if (page instanceof Attachment && showAttachments) {
-				recentChangesCleaned.add(page);
-			}
-			if (showIntermediate) {
-				getIntermediate(filter, recentChangesCleaned, page);
+				addPage(recentChangesCleaned, page, showIntermediate);
 			}
 		}
 		return recentChangesCleaned;
@@ -232,17 +228,25 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 		}
 	}
 
-	private void getIntermediate(@NotNull Map<String, Set<Pattern>> filter, Set<Page> filteredPages, Page page) {
-		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-		List<Page> versionHistory;
-		try {
-			versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
+	private void addPage(Set<Page> filteredPages, Page page, boolean showIntermediate) {
+		if (showIntermediate) {
+			List<Page> versionHistory;
+			try {
+				versionHistory = getWikiConnector().getPageManager().getVersionHistory(page.getName());
+			}
+			catch (Exception e) {
+				versionHistory = List.of();
+				LOGGER.error("Exception while getting version history", e);
+			}
+			filteredPages.addAll(versionHistory);
 		}
-		catch (Exception e) {
-			versionHistory = List.of();
-			LOGGER.error("Exception while getting version history", e);
+		else {
+			filteredPages.add(page);
 		}
-		filteredPages.addAll(versionHistory);
+	}
+
+	private JSPWikiConnector getWikiConnector() {
+		return (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 	}
 
 	private List<Page> checkVersionHistoryWithDate(List<Page> versionHistory, Set<Pattern> patterns) {
