@@ -21,7 +21,9 @@ package de.knowwe.jspwiki.recentChanges;
 
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
+import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 
 public class RecentChangesMarkup extends DefaultMarkupType {
 
