@@ -164,14 +164,10 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	}
 
 	/**
-	 * Filters and maps the sections to sections of the given type. Returns a new Sections object.
-	 *
-	 * @param typeClass the class to filter and cast the type elements of the section to
-	 * @param <R>       the result type
-	 * @return a Sections instance with all the sections of the given class
+	 * Same as {@link Sections#filter(Class)}
 	 */
 	public <R extends Type> Sections<R> type(Class<R> typeClass) {
-		return $(stream().map(s -> Sections.cast(s, typeClass)));
+		return filter(typeClass);
 	}
 
 	/**
