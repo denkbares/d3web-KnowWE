@@ -28,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.collections.CachedIterable;
 import com.denkbares.collections.ConcatenateIterable;
-import com.denkbares.collections.MappingIterator;
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
@@ -1082,8 +1081,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	public static boolean canHaveSuccessor(Section<?> section, Class<?>... classes) {
 		Object type = section.get();
-		if (type instanceof AbstractType) {
-			AbstractType aType = (AbstractType) type;
+		if (type instanceof AbstractType aType) {
 			for (Class<?> clazz : classes) {
 				if (Types.canHaveSuccessorOfType(aType, clazz)) {
 					return true;
@@ -1496,7 +1494,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	/**
 	 * Replaces Sections with the given texts, but not in the KDOMs themselves. It collects the texts deep through the
 	 * KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
-	 * Finally the article is saved with this new content.
+	 * Finally, the article is saved with this new content.
 	 * <p/>
 	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
 	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
@@ -1506,6 +1504,23 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @return a result object containing some information about the replacement success or the errors occurred
 	 */
 	public static ReplaceResult replace(UserContext context, Map<String, String> sectionsMap) {
+		return replace(context, sectionsMap, null);
+	}
+
+	/**
+	 * Replaces Sections with the given texts, but not in the KDOMs themselves. It collects the texts deep through the
+	 * KDOM and appends the new text (instead of the original text) for the Sections with an ID in the sectionsMap.
+	 * Finally the article is saved with this new content.
+	 * <p/>
+	 * If working on an action the resulting object may be used to send the errors during replacement back to the caller
+	 * using {@link ReplaceResult#sendErrors(UserActionContext)}.
+	 *
+	 * @param context     the user context to use for modifying the articles
+	 * @param sectionsMap containing pairs of the section id and the new text for this section
+	 * @param changeNote  the change notes to be associated with the given changes
+	 * @return a result object containing some information about the replacement success or the errors occurred
+	 */
+	public static ReplaceResult replace(UserContext context, Map<String, String> sectionsMap, @Nullable String changeNote) {
 
 		List<SectionInfo> sectionInfos = getSectionInfos(sectionsMap);
 		Map<Article, Collection<String>> idsByTitle = getIdsByArticle(sectionsMap.keySet());
@@ -1521,7 +1536,7 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 						missingIDs, forbiddenArticles);
 				if (!errorsForThisTitle) {
 					replaceForTitle(entry.getKey().getTitle(), getSectionsMapForCurrentTitle(idsForCurrentTitle,
-							sectionsMap), context);
+							sectionsMap), context, changeNote);
 				}
 			}
 		}
@@ -1574,7 +1589,9 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			missingIDs.addAll(ids);
 			return true;
 		}
-		if (!Environment.getInstance().getWikiConnector().userCanEditArticle(article.getTitle(), context.getRequest())) {
+		if (!Environment.getInstance()
+				.getWikiConnector()
+				.userCanEditArticle(article.getTitle(), context.getRequest())) {
 			forbiddenArticles.add(article.getTitle());
 			return true;
 		}
@@ -1594,11 +1611,11 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 	private static void replaceForTitle(String title,
 										Map<String, String> sectionsMapForCurrentTitle,
-										UserContext context) {
+										UserContext context, @Nullable String changeNote) {
 		String newArticleText = getNewArticleText(title, sectionsMapForCurrentTitle, context);
 		Environment.getInstance()
 				.getWikiConnector()
-				.writeArticleToWikiPersistence(title, newArticleText, context);
+				.writeArticleToWikiPersistence(title, newArticleText, context, changeNote);
 	}
 
 	private static String getNewArticleText(
