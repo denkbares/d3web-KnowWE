@@ -28,6 +28,7 @@ import org.apache.wiki.api.core.Page;
 
 import com.denkbares.strings.Strings;
 import de.knowwe.core.Environment;
+import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -44,14 +45,18 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 
 	@Override
 	public void renderContentsAndAnnotations(Section<?> sec, UserContext user, RenderResult string) {
+		if (!(user instanceof ActionContext)) {
+			string.appendHtmlElement("table", "");
+			return;
+		}
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		List<Page> sortedFilteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).getRecentChanges(sec, user);
-		int startRow = PaginationRenderer.getStartRow(sec, user);
-		int count = PaginationRenderer.getCount(sec, user);
 		PaginationRenderer.setResultSize(user, sortedFilteredRecentChanges.size());
 		string.appendHtml("<table>");
 		addTableHead(string);
 		int counter = 1;
+		int startRow = PaginationRenderer.getStartRow(sec, user);
+		int count = PaginationRenderer.getCount(sec, user);
 		int pagesCount = startRow + count - 1;
 		for (Page page : sortedFilteredRecentChanges) {
 			if (counter > pagesCount || startRow > sortedFilteredRecentChanges.size()) {
@@ -114,12 +119,12 @@ public class RecentChangesRenderer extends DefaultMarkupRenderer {
 		columnNames.add(AUTHOR);
 		columnNames.add(CHANGE_NOTES);
 		string.appendHtml("<tr class='odd-row'>");
-		for (String var : columnNames) {
-			String varNoWhiteapace = var.replace(" ", "-");
+		for (String columnName : columnNames) {
+			String varNoWhitespace = columnName.replace(" ", "-");
 			List<String> attributes = new ArrayList<>(Arrays.asList(
-					"column-name", var, "filter-provider-action", RecentChangesFilterProviderAction.class.getSimpleName(), "class", "column-" + varNoWhiteapace));
+					"column-name", columnName, "filter-provider-action", RecentChangesFilterProviderAction.class.getSimpleName(), "class", "column-" + varNoWhitespace));
 			string.appendHtmlTag("th", attributes.toArray(new String[0]));
-			string.append(var.replace("_", " "));
+			string.append(columnName);
 			string.appendHtml("</th>");
 		}
 		string.appendHtml("</tr>");
