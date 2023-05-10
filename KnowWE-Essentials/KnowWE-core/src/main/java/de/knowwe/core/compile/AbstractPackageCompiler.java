@@ -91,14 +91,6 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		return this.packageManager;
 	}
 
-	/**
-	 * Get all sections that are currently compiled by this compiler, based on used packages and available sections in
-	 * those packages.
-	 */
-	public Collection<Section<?>> getCompiledSections() {
-		return this.packageManager.getSectionsOfPackage(getCompiledPackages());
-	}
-
 	@Override
 	public CompilerManager getCompilerManager() {
 		return this.compilerManager;
@@ -134,6 +126,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		return false;
 	}
 
+	@Override
 	public String[] getCompiledPackages() {
 		return compiledPackages.get();
 	}

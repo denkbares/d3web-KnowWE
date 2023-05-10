@@ -18,6 +18,8 @@
  */
 package de.knowwe.core.compile;
 
+import java.util.Collection;
+
 import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.compile.packaging.PackageCompileType;
@@ -43,4 +45,17 @@ public interface PackageCompiler extends Compiler, NamedCompiler {
 	 */
 	@NotNull
 	PackageManager getPackageManager();
+
+	/**
+	 * Get all sections that are currently compiled by this compiler, based on used packages and available sections in
+	 * those packages.
+	 */
+	default Collection<Section<?>> getCompiledSections() {
+		return getPackageManager().getSectionsOfPackage(getCompiledPackages());
+	}
+
+	/**
+	 * The packages compiled by this package compiler
+	 */
+	String[] getCompiledPackages();
 }
