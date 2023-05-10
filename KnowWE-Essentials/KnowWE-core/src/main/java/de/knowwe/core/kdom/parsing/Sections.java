@@ -33,6 +33,7 @@ import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.AbstractType;
@@ -81,6 +82,14 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 				.stream()
 				.map(Article::getRootSection)
 				.iterator()));
+	}
+
+	/**
+	 * Create a new Sections object with all section the given compiler is compiling
+	 */
+	public static <T extends Type> Sections<T> $(PackageCompiler compiler) {
+		//noinspection rawtypes,unchecked
+		return new Sections(compiler.getCompiledSections());
 	}
 
 	public static Sections<RootType> $(Article article) {
@@ -150,8 +159,19 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	 * @param <R>    the result type
 	 * @return a Sections instance with all the mapped functions
 	 */
-	public <R extends Type> Sections<R> mapTo(Function<Section<T>, Section<R>> mapper) {
+	public <R extends Type> Sections<R> type(Function<Section<T>, Section<R>> mapper) {
 		return $(stream().map(mapper));
+	}
+
+	/**
+	 * Filters and maps the sections to sections of the given type. Returns a new Sections object.
+	 *
+	 * @param typeClass the class to filter and cast the type elements of the section to
+	 * @param <R>       the result type
+	 * @return a Sections instance with all the sections of the given class
+	 */
+	public <R extends Type> Sections<R> type(Class<R> typeClass) {
+		return $(stream().map(s -> Sections.cast(s, typeClass)));
 	}
 
 	/**
@@ -1676,14 +1696,14 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 		if (!missingIDs.isEmpty()) {
 			context.sendError(409, "The Sections '" + missingIDs
-					+ "' could not be found, possibly because somebody else"
-					+ " has edited them.");
+								   + "' could not be found, possibly because somebody else"
+								   + " has edited them.");
 			return true;
 		}
 		if (!forbiddenArticles.isEmpty()) {
 			context.sendError(403,
 					"You do not have the permission to edit the following pages: "
-							+ forbiddenArticles + ".");
+					+ forbiddenArticles + ".");
 			return true;
 		}
 		return false;
