@@ -157,8 +157,6 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
 		Set<Page> filteredRecentChanges = filter(filter, recentChanges, user);
-		int startRow = PaginationRenderer.getStartRow(sec, user);
-		int count = PaginationRenderer.getCount(sec, user);
 		PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
 		return sortPages(sec, user, filteredRecentChanges);
 	}
@@ -214,6 +212,9 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 		List<Pair<String, Comparator>> columnComparators = PaginationRenderer.getMultiColumnSorting(sec, user).stream()
 				.map(p -> new Pair<>(p.getA(), createComparator(p.getA(), p.getB())))
 				.collect(Collectors.toList());
+		if (columnComparators.isEmpty()) {
+			columnComparators.add(new Pair<>(LAST_MODIFIED, createComparator(LAST_MODIFIED, false)));
+		}
 		PageComparator pageComparator = new PageComparator(columnComparators);
 		List<Page> sortedFilteredRecentChanges = new ArrayList<>(filteredRecentChanges);
 		sortedFilteredRecentChanges.sort(pageComparator);
