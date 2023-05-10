@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -90,6 +91,14 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		return this.packageManager;
 	}
 
+	/**
+	 * Get all sections that are currently compiled by this compiler, based on used packages and available sections in
+	 * those packages.
+	 */
+	public Collection<Section<?>> getCompiledSections() {
+		return this.packageManager.getSectionsOfPackage(getCompiledPackages());
+	}
+
 	@Override
 	public CompilerManager getCompilerManager() {
 		return this.compilerManager;
@@ -115,7 +124,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	private boolean hasChangedForCompiler(String... packagesToCompile) {
 		final ScriptManager<AbstractPackageCompiler> scriptManager = CompilerManager.getScriptManager(this);
 		return hasKnowledgeForCompiler(getPackageManager().getRemovedSections(packagesToCompile), scriptManager)
-				|| hasKnowledgeForCompiler(getPackageManager().getAddedSections(packagesToCompile), scriptManager);
+			   || hasKnowledgeForCompiler(getPackageManager().getAddedSections(packagesToCompile), scriptManager);
 	}
 
 	private boolean hasKnowledgeForCompiler(Collection<Section<?>> addedSections, ScriptManager<AbstractPackageCompiler> scriptManager) {
