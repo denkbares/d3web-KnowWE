@@ -128,6 +128,11 @@ a.ci-daemon:hover {
 	margin: 5px;
 }
 
+.ci-unsuccessful-count {
+	font-size: 70%;
+	font-weight: bold;
+}
+
 .ci-collapsible-box h4 {
 	color: #000000;
 	cursor: pointer;

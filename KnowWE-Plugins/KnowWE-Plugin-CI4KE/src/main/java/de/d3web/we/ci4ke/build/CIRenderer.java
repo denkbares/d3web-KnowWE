@@ -128,10 +128,10 @@ public class CIRenderer {
 			sb.appendHtml("<td>");
 
 			sb.appendHtml("<a onclick=\"_CI.refreshBuildDetails('"
-					+ dashboardNameEncoded + "','"
-					+ buildNr + "','" + indexFromBack + "');_CI.refreshBuildList('"
-					+ dashboardNameEncoded + "', " + buildNr + ",'"
-					+ indexFromBack + "','" + numberOfBuilds + "');\">");
+						  + dashboardNameEncoded + "','"
+						  + buildNr + "','" + indexFromBack + "');_CI.refreshBuildList('"
+						  + dashboardNameEncoded + "', " + buildNr + ",'"
+						  + indexFromBack + "','" + numberOfBuilds + "');\">");
 
 			// _CI.refreshBuildList('"+ dashboardNameEncoded + "', " + buildNr +
 			// ");
@@ -165,13 +165,13 @@ public class CIRenderer {
 	private String makeNavButton(int numberOfBuilds, int latestDisplayedBuildNumber, String sign, Icon icon, boolean visible) {
 		String display = visible ? "visible" : "hidden";
 		return "<button display='" + display + "' "
-				+ "onclick=\"_CI.refreshBuildList('"
-				+ dashboardNameEncoded + "', -1 ,"
-				+ (latestDisplayedBuildNumber + sign + numberOfBuilds)
-				+ ",'" + numberOfBuilds
-				+ "');\" style=\"visibility:" + display + ";\">"
-				+ icon.addClasses("knowwe-blue").toHtml()
-				+ "</button>";
+			   + "onclick=\"_CI.refreshBuildList('"
+			   + dashboardNameEncoded + "', -1 ,"
+			   + (latestDisplayedBuildNumber + sign + numberOfBuilds)
+			   + ",'" + numberOfBuilds
+			   + "');\" style=\"visibility:" + display + ";\">"
+			   + icon.addClasses("knowwe-blue").toHtml()
+			   + "</button>";
 	}
 
 	/**
@@ -181,10 +181,22 @@ public class CIRenderer {
 	 */
 	public void renderCurrentBuildStatus(RenderResult result) {
 		Type type = Type.ERROR;
-		if (dashboard != null && dashboard.getLatestBuild() != null) {
-			type = dashboard.getLatestBuild().getOverallResult();
+		long unexpectedCount = 0;
+		if (dashboard != null) {
+			BuildResult latestBuild = dashboard.getLatestBuild();
+			if (latestBuild != null) {
+				type = latestBuild.getOverallResult();
+				unexpectedCount = latestBuild.getResults()
+						.stream()
+						.filter(r -> !r.isSuccessful())
+						.count();
+			}
 		}
 		renderBuildStatus(type, true, Icon.BULB, result);
+		if (unexpectedCount > 0) {
+			result.appendHtmlElement("span", String.valueOf(unexpectedCount), "class", "ci-unsuccessful-count tooltipster", "title",
+					Strings.pluralOf((int) unexpectedCount, "test") + " were not successful ");
+		}
 	}
 
 	/**
@@ -193,7 +205,7 @@ public class CIRenderer {
 	public void renderBuildDetails(UserContext context, BuildResult build, RenderResult result) {
 
 		result.appendHtml("<div id='" + dashboardNameEncoded
-				+ "-column-middle' class='ci-column-middle'>");
+						  + "-column-middle' class='ci-column-middle'>");
 
 		if (build != null) {
 			appendBuildHeadline(build, result);
@@ -440,7 +452,7 @@ public class CIRenderer {
 		}
 
 		if (failedTests.isEmpty() && test instanceof AbstractTest &&
-				((AbstractTest<?>) test).renderResultsOfSucceededTests()) {
+			((AbstractTest<?>) test).renderResultsOfSucceededTests()) {
 			for (String succeededTests : testResult.getTestObjectsWithExpectedOutcome()) {
 				de.d3web.testing.Message message = testResult.getMessageForTestObject(succeededTests);
 				doRenderResults(context, testResult, renderResult, test, succeededTests, message);
@@ -565,7 +577,7 @@ public class CIRenderer {
 
 	public void renderDashboardHeader(BuildResult latestBuild, RenderResult result) {
 		result.appendHtml("<div class='ci-header' id='ci-header_"
-				+ dashboard.getDashboardName() + "'>");
+						  + dashboard.getDashboardName() + "'>");
 
 		CIRenderer renderer = dashboard.getRenderer();
 		if (latestBuild != null) {
@@ -584,33 +596,33 @@ public class CIRenderer {
 	public void renderProgressInfo(RenderResult string) {
 
 		string.appendHtml("<span " +
-				"class='ci-progress-info' id='" + dashboardNameEncoded + "_progress-container'>");
+						  "class='ci-progress-info' id='" + dashboardNameEncoded + "_progress-container'>");
 		appendAbortButton(string);
 		string.appendHtml("<span class='ci-progress-value-wrap'><span class='ci-progress-value' id='"
-				+ dashboardNameEncoded + "_progress-value'>0 %");
+						  + dashboardNameEncoded + "_progress-value'>0 %");
 		string.appendHtml("</span></span>");
 		string.appendHtml("<span class='ci-progess-text' id='"
-				+ dashboardNameEncoded + "_progress-text'>Build running...</span>");
+						  + dashboardNameEncoded + "_progress-text'>Build running...</span>");
 		string.appendHtml("</span>");
 	}
 
 	private void appendAbortButton(RenderResult string) {
 		string.appendHtml("<a href=\"javascript:_CI.stopRunningBuild('"
-				+ dashboardNameEncoded
-				+ "', '"
-				+ dashboard.getDashboardArticle()
-				+ "', '"
-				+ KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
-				+ dashboardNameEncoded)
-				+ "')\"><img class='ci-abort-build' height='16' title='Stops the current build' " +
-				"src='KnowWEExtension/images/cross.png' /></a>");
+						  + dashboardNameEncoded
+						  + "', '"
+						  + dashboard.getDashboardArticle()
+						  + "', '"
+						  + KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
+												   + dashboardNameEncoded)
+						  + "')\"><img class='ci-abort-build' height='16' title='Stops the current build' " +
+						  "src='KnowWEExtension/images/cross.png' /></a>");
 	}
 
 	public void renderForecastIcon(int buildCount, int failedCount, RenderResult result) {
 
 		int score = (buildCount > 0) ? (100 * (buildCount - failedCount)) / buildCount : 0;
 		String imgForecast = "<img class='ci-forecast' src='KnowWEExtension/ci4ke/images/22x22/%s.png' "
-				+ "align='absmiddle' alt='%<s' title='%s'>";
+							 + "align='absmiddle' alt='%<s' title='%s'>";
 
 		if (score == 0) {
 			imgForecast = String.format(imgForecast, "health-00to19",
