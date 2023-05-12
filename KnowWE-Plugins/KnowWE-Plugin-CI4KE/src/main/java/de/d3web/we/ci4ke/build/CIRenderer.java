@@ -193,7 +193,7 @@ public class CIRenderer {
 			}
 		}
 		renderBuildStatus(type, true, Icon.BULB, result);
-		if (unexpectedCount > 0) {
+		if (unexpectedCount > 0 && !CIBuildManager.isRunning(dashboard)) {
 			String tooltip = unexpectedCount + (unexpectedCount == 1 ? " test was" : " tests were") + " not successful";
 			result.appendHtmlElement("span", String.valueOf(unexpectedCount),
 					"class", "ci-unsuccessful-count tooltipster",
