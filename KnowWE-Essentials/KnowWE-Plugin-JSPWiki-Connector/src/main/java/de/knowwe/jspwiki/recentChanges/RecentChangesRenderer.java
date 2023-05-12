@@ -46,6 +46,13 @@ public class RecentChangesRenderer implements Renderer {
 
 	@Override
 	public void render(Section<?> sec, UserContext user, RenderResult string) {
+		if (!(user instanceof ActionContext)) {
+			string.appendHtmlElement("table", "");
+			string.appendHtmlTag("div");
+			string.appendHtml(Icon.LOADING.addStyle("font-size: 2.5em").toHtml());
+			string.appendHtmlTag("/div");
+			return;
+		}
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		List<Page> sortedFilteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).getRecentChanges(sec, user);
 		PaginationRenderer.setResultSize(user, sortedFilteredRecentChanges.size());
