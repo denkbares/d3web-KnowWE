@@ -188,10 +188,11 @@ public class CIRenderer {
 				type = latestBuild.getOverallResult();
 				unexpectedCount = latestBuild.getResults()
 						.stream()
-						.filter(r -> !r.isSuccessful())
+						.filter(r -> !r.isSuccessful() && !r.getTestObjectsWithUnexpectedOutcome().isEmpty())
 						.count();
 			}
 		}
+
 		renderBuildStatus(type, true, Icon.BULB, result);
 		if (unexpectedCount > 0 && !CIBuildManager.isRunning(dashboard)) {
 			String tooltip = unexpectedCount + (unexpectedCount == 1 ? " test was" : " tests were") + " not successful";
