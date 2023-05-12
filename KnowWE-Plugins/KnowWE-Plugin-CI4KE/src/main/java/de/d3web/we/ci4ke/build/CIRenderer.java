@@ -194,8 +194,10 @@ public class CIRenderer {
 		}
 		renderBuildStatus(type, true, Icon.BULB, result);
 		if (unexpectedCount > 0) {
-			result.appendHtmlElement("span", String.valueOf(unexpectedCount), "class", "ci-unsuccessful-count tooltipster", "title",
-					Strings.pluralOf((int) unexpectedCount, "test") + " were not successful ");
+			String tooltip = unexpectedCount + (unexpectedCount == 1 ? " test was" : " tests were") + " not successful";
+			result.appendHtmlElement("span", String.valueOf(unexpectedCount),
+					"class", "ci-unsuccessful-count tooltipster",
+					"title", tooltip);
 		}
 	}
 
@@ -540,32 +542,31 @@ public class CIRenderer {
 		}
 		else {
 			switch (resultType) {
-				case SUCCESS:
+				case SUCCESS -> {
 					css = icon.getCssClass() + " knowwe-ok";
 					text = "Build successful";
-					break;
-				case SKIPPED:
+				}
+				case SKIPPED -> {
 					css = icon.getCssClass() + " knowwe-skip";
 					text = "Build has skipped tests";
-					break;
-				case ABORTED:
+				}
+				case ABORTED -> {
 					css = icon.getCssClass() + " knowwe-gray";
 					text = "Build has aborted tests";
-					break;
-				case WARNING:
+				}
+				case WARNING -> {
 					css = icon.getCssClass() + " knowwe-warning";
 					text = "Build has warning";
-					break;
-				case FAILURE:
+				}
+				case FAILURE -> {
 					css = icon.getCssClass() + " knowwe-error";
 					text = "Build failed";
-					break;
-				case ERROR:
+				}
+				case ERROR -> {
 					css = icon.getCssClass() + " knowwe-error";
 					text = "Build has errors";
-					break;
-				default:
-					throw new NotImplementedException("unexpected build status: " + resultType);
+				}
+				default -> throw new NotImplementedException("unexpected build status: " + resultType);
 			}
 		}
 		result.appendHtml("<i class='fa ").append(css).append(" ci-state'")
