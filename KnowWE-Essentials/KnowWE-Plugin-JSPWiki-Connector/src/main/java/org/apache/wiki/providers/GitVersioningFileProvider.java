@@ -201,7 +201,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		if(autoUpdateEnabled && remoteRepo){
 			scheduler.initialize(engine, this);
 		}
-		Git.shutdown();
 	}
 
 	private void setGitCommentStrategy(Properties properties) {
