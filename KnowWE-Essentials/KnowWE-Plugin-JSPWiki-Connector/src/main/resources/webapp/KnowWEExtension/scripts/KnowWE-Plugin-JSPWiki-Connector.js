@@ -60,15 +60,14 @@ KNOWWE.plugin.jspwikiConnector.disableEditButtons = function() {
 };
 
 function getSectionId(filterTool) {
-  return jq$(filterTool).parents('.page').find('.type_RecentChanges').attr("id");
+  return jq$(filterTool).parents('.page').find('.type_RecentChanges').find("table").attr("section-id");
 
 }
 
-KNOWWE.plugin.jspwikiConnector.setPageFilter = function(self, filterType){
-  let filterTool = self;
-  let sectionID = getSectionId(filterTool);
-  KNOWWE.helper.setToLocalSectionStorage(sectionID, filterType, filterTool.checked);
-  jq$("#" + sectionID).rerender({reason: "pagination"});
+KNOWWE.plugin.jspwikiConnector.setPageFilter = function(filterCheckBox, filterType){
+  let table = jq$(filterCheckBox).parents('.page').find('.type_RecentChanges').find(".knowwe-paginationWrapper");
+  KNOWWE.helper.setToLocalSectionStorage(table.attr("id"), filterType, filterCheckBox.checked);
+  table.rerender({reason: "pagination"});
 }
 
 jq$(document).ready(function() {

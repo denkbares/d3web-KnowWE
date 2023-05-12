@@ -31,26 +31,21 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.action.ActionContext;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiConnector;
-import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 import de.knowwe.util.Icon;
 
 import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
 
-public class RecentChangesRenderer extends DefaultMarkupRenderer {
+public class RecentChangesRenderer implements Renderer {
 
 	private static final RecentChangesUtils util = new RecentChangesUtils();
 
 	@Override
-	public void renderContentsAndAnnotations(Section<?> sec, UserContext user, RenderResult string) {
-		if (!(user instanceof ActionContext)) {
-			string.appendHtmlElement("table", "");
-			string.appendHtml(Icon.LOADING.addStyle("font-size: 2.5em").toHtml());
-			return;
-		}
+	public void render(Section<?> sec, UserContext user, RenderResult string) {
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		List<Page> sortedFilteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).getRecentChanges(sec, user);
 		PaginationRenderer.setResultSize(user, sortedFilteredRecentChanges.size());

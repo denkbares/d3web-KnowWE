@@ -19,11 +19,12 @@
 
 package de.knowwe.jspwiki.recentChanges;
 
+import de.knowwe.core.kdom.Types;
+import de.knowwe.kdom.defaultMarkup.ContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.renderer.AsynchronousRenderer;
 import de.knowwe.kdom.renderer.PaginationRenderer;
-import de.knowwe.kdom.renderer.ReRenderSectionMarkerRenderer;
 
 public class RecentChangesMarkup extends DefaultMarkupType {
 
@@ -36,6 +37,6 @@ public class RecentChangesMarkup extends DefaultMarkupType {
 
 	public RecentChangesMarkup() {
 		super(MARKUP);
-		this.setRenderer(new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true));
+		Types.injectRendererToSuccessors(this, ContentType.class, new AsynchronousRenderer(new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true)));
 	}
 }
