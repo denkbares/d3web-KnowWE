@@ -575,7 +575,7 @@ public class CIRenderer {
 				default -> throw new NotImplementedException("unexpected build status: " + resultType);
 			}
 		}
-		result.appendHtml("<i class='fa ").append(css)
+		result.appendHtml("<i class='fa ").append(css).append("'")
 				.append(" dashboardName='").appendHtml(dashboardNameEncoded).append("'")
 				.append(" running='").append(running).append("'")
 				.append(" title='").append(text).append(": ").append(dashboardName).append("'")
