@@ -117,6 +117,7 @@ a.ci-daemon:hover {
 
 .ci-state {
 	margin-right: 2px;
+	white-space: nowrap;
 }
 
 .ci-forecast {
