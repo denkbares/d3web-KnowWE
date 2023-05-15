@@ -546,11 +546,11 @@
 				<artifactId>KnowWE-Plugin-ASP</artifactId>
 				<version>${knowwe.version}</version>
 			</dependency>
-			<!--dependency>
+			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-COOM</artifactId>
 				<version>${knowwe.version}</version>
-			</dependency-->
+			</dependency>
 			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Todos</artifactId>
