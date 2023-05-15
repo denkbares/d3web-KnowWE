@@ -108,8 +108,7 @@ public class CIAction extends AbstractAction {
 		else if (task.equals("refreshBubble")) {
 			BuildResult build = dashboard.getLatestBuild();
 			if (build != null) {
-				Type overallResult = build.getOverallResult();
-				renderer.renderBuildStatus(overallResult, true, Icon.BULB, html);
+				renderer.renderBuildStatus(build, true, Icon.BULB, html);
 			}
 		}
 		else if (task.equals("refreshBuildList")) {

@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,8 +122,7 @@ public class CIRenderer {
 			}
 			sb.appendHtml("<tr class='" + cssClass + "'><td>");
 			// starting with a nice image...
-			Type buildResult = build.getOverallResult();
-			renderBuildStatus(buildResult, false, Icon.BULB, sb);
+			renderBuildStatus(build, false, Icon.BULB, sb);
 
 			sb.appendHtml("</td><td>");
 			sb.appendHtml("<td>");
@@ -180,25 +180,11 @@ public class CIRenderer {
 	 * @created 27.05.2010
 	 */
 	public void renderCurrentBuildStatus(RenderResult result) {
-		Type type = Type.ERROR;
-		long unexpectedCount = 0;
-		if (dashboard != null) {
-			BuildResult latestBuild = dashboard.getLatestBuild();
-			if (latestBuild != null) {
-				type = latestBuild.getOverallResult();
-				unexpectedCount = latestBuild.getResults()
-						.stream()
-						.filter(r -> !r.isSuccessful() && !r.getTestObjectsWithUnexpectedOutcome().isEmpty())
-						.count();
-			}
+		if (dashboard != null && dashboard.getLatestBuild() != null) {
+			renderBuildStatus(dashboard.getLatestBuild(), true, Icon.BULB, result);
 		}
-
-		renderBuildStatus(type, true, Icon.BULB, result);
-		if (unexpectedCount > 0 && !CIBuildManager.isRunning(dashboard)) {
-			String tooltip = unexpectedCount + (unexpectedCount == 1 ? " test was" : " tests were") + " not successful";
-			result.appendHtmlElement("span", String.valueOf(unexpectedCount),
-					"class", "ci-unsuccessful-count tooltipster",
-					"title", tooltip);
+		else {
+			renderBuildStatus(Type.ERROR, true, Icon.BULB, result);
 		}
 	}
 
@@ -532,6 +518,25 @@ public class CIRenderer {
 		buffy.appendHtml("</div>");
 	}
 
+	public void renderBuildStatus(@NotNull BuildResult buildResult, boolean checkRunning, Icon icon, RenderResult result) {
+
+		result.appendHtmlTag("span", "class", "ci-state",
+				"dashboardName", dashboardNameEncoded,
+				"running", Boolean.toString(checkRunning && CIBuildManager.isRunning(dashboard)));
+		long unexpectedCount = buildResult.getResults()
+				.stream()
+				.filter(r -> !r.isSuccessful() && !r.getTestObjectsWithUnexpectedOutcome().isEmpty())
+				.count();
+		renderBuildStatus(buildResult.getOverallResult(), checkRunning, icon, result);
+		if (unexpectedCount > 0 && (!checkRunning || !CIBuildManager.isRunning(dashboard))) {
+			String tooltip = unexpectedCount + (unexpectedCount == 1 ? " test was" : " tests were") + " not successful";
+			result.appendHtmlElement("span", String.valueOf(unexpectedCount),
+					"class", "ci-unsuccessful-count tooltipster",
+					"title", tooltip);
+		}
+		result.appendHtmlTag("/span");
+	}
+
 	public void renderBuildStatus(Type resultType, boolean checkRunning, Icon icon, RenderResult result) {
 
 		boolean running = checkRunning && CIBuildManager.isRunning(dashboard);
@@ -570,7 +575,7 @@ public class CIRenderer {
 				default -> throw new NotImplementedException("unexpected build status: " + resultType);
 			}
 		}
-		result.appendHtml("<i class='fa ").append(css).append(" ci-state'")
+		result.appendHtml("<i class='fa ").append(css)
 				.append(" dashboardName='").appendHtml(dashboardNameEncoded).append("'")
 				.append(" running='").append(running).append("'")
 				.append(" title='").append(text).append(": ").append(dashboardName).append("'")

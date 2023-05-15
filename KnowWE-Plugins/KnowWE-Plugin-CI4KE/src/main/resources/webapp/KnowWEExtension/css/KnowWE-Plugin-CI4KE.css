@@ -131,6 +131,7 @@ a.ci-daemon:hover {
 .ci-unsuccessful-count {
 	font-size: 70%;
 	font-weight: bold;
+	padding-left: 2px;
 }
 
 .ci-collapsible-box h4 {
