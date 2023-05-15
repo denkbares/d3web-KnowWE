@@ -92,7 +92,7 @@ public class CIRenderer {
 		int count = lastBuilds.size();
 		int failed = 0;
 		for (BuildResult build : lastBuilds) {
-			if (Type.SUCCESS != build.getOverallResult()) {
+			if (Type.SUCCESS != build.getOverallResult() && Type.SKIPPED != build.getOverallResult()) {
 				failed++;
 			}
 		}
