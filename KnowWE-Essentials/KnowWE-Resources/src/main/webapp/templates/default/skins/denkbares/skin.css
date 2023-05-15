@@ -1234,6 +1234,10 @@ th.changenote, td.changenote {
 	color: white;
 }
 
+.error.center .btn {
+	margin-right: 5px;
+}
+
 #header-spacer {
 	padding-top: 126px;
 }
