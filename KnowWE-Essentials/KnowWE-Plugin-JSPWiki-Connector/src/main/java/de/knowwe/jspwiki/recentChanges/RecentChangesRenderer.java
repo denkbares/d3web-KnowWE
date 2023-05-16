@@ -103,8 +103,14 @@ public class RecentChangesRenderer implements Renderer {
 				if (pageVersion != totalVersionCount) {
 					label += " (Version " + pageVersion + "/" + totalVersionCount + ")";
 				}
+
 				string.appendHtml("<td>");
-				string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()));
+				if(pageVersion != totalVersionCount){
+					string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()) + "&version=" + page.getVersion());
+
+				}else{
+					string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()));
+				}
 				string.appendHtml("</td>");
 			}
 			string.appendHtml("<td class='column-last-modified'>").append(formattedDate).appendHtml("</td>");
