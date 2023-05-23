@@ -18,6 +18,7 @@
  */
 package de.knowwe.plugin;
 
+@FunctionalInterface
 public interface Instantiation {
 
 	void init(String web);

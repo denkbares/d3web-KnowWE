@@ -53,6 +53,7 @@ import de.knowwe.jspwiki.JSPWikiConnector;
 public class DummyConnector implements WikiConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DummyConnector.class);
 
+	private static final String DEFAULT_SAVE_PATH = "/repository";
 	private static final String DUMMY_USER = "DummyUser";
 	public static final String BASE_URL = "http://valid_dummy_base_url/";
 
@@ -62,6 +63,15 @@ public class DummyConnector implements WikiConnector {
 	private String knowweExtensionPath = null;
 
 	private final Map<String, String> locks = new HashMap<>();
+	private String savePath;
+
+	public DummyConnector(String savePath) {
+		this.savePath = savePath;
+	}
+
+	public DummyConnector() {
+		this.savePath = DEFAULT_SAVE_PATH;
+	}
 
 	@Override
 	public String getTemplate() {
@@ -93,7 +103,7 @@ public class DummyConnector implements WikiConnector {
 	public boolean hasRollbackPageProvider() {
 		return false;
 	}
-
+	
 	@Override
 	public List<WikiPageInfo> getArticleHistory(String title) {
 		if (getArticleText(title) == null) return Collections.emptyList();
@@ -227,7 +237,7 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String getSavePath() {
-		return getApplicationRootPath() + "\repository";
+		return getApplicationRootPath() + savePath;
 	}
 
 	@Override
