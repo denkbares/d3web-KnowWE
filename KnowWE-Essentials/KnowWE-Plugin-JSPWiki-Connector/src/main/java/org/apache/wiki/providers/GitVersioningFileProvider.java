@@ -96,7 +96,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public static final String JSPWIKI_GIT_COMMENT_STRATEGY = "jspwiki.git.commentStrategy";
 	protected Repository repository;
 	private static final String GIT_DIR = ".git";
-	private static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
+	public static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
 	private static final Logger log = LoggerFactory.getLogger(GitVersioningFileProvider.class);
 	private String filesystemPath;
 	private final ReadWriteLock pushLock = new ReentrantReadWriteLock();

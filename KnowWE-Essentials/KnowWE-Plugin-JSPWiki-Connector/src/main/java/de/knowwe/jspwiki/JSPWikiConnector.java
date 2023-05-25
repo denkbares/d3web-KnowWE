@@ -661,6 +661,7 @@ public class JSPWikiConnector implements WikiConnector {
 		return getRealPageProvider() instanceof GitVersioningFileProvider;
 	}
 
+
 	/**
 	 * Checks if the current page has an access lock. If TRUE no user other then the lock owner can edit the page. If
 	 * FALSE the current page has no lock and can be edited by anyone.
