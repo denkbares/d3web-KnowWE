@@ -61,6 +61,7 @@ import de.knowwe.ontology.kdom.InitTerminologyHandler;
 import de.knowwe.ontology.kdom.namespace.AbbreviationDefinition;
 import de.knowwe.ontology.kdom.namespace.Namespace;
 import de.knowwe.ontology.kdom.namespace.NamespaceAbbreviationDefinition;
+import de.knowwe.ontology.kdom.namespace.NamespaceDefinition;
 import de.knowwe.util.Icon;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -187,10 +188,11 @@ public class OntologyMarkup extends DefaultMarkupPackageCompileType {
 			Section<OntologyMarkup> ontologyTypeSection = compiler.getCompileSection();
 			Section<? extends AnnotationContentType> annotationContentSection = getAnnotationContentSection(ontologyTypeSection, ANNOTATION_DEFAULT_NAMESPACE);
 			if (annotationContentSection == null) return null;
-			Section<AbbreviationDefinition> abbreviationDefinition = Sections.successor(annotationContentSection, AbbreviationDefinition.class);
-			if (abbreviationDefinition == null) return null;
-			String abbreviation = abbreviationDefinition.get().getTermName(abbreviationDefinition);
-			return new Namespace(abbreviation, compiler.getRdf2GoCore().getNamespacesMap().get(abbreviation));
+
+			String abbreviation = $(annotationContentSection).successor(AbbreviationDefinition.class).mapFirst(s -> s.get().getTermName(s));
+			String uri = $(annotationContentSection).successor(NamespaceDefinition.class).mapFirst(Section::getText);
+			if (abbreviation == null || uri == null) return null;
+			return new Namespace(abbreviation, uri);
 		});
 	}
 
