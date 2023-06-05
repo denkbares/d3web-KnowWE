@@ -7,7 +7,6 @@ import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
@@ -41,9 +40,9 @@ public class DayDateType extends AbstractType {
         return LocalDate.parse(sec.getText());
     }
 
-	public static String getISOLocalDate(Section<DayDateType> sec) throws ParseException {
-		return getDate(sec).format(DateTimeFormatter.ISO_LOCAL_DATE);
-	}
+    public static String getISOLocalDate(Section<DayDateType> sec) {
+        return getDate(sec).format(DateTimeFormatter.ISO_LOCAL_DATE);
+    }
 
 
     static class DateSubtreeHandler extends DefaultGlobalCompiler.DefaultGlobalHandler<DayDateType> {
