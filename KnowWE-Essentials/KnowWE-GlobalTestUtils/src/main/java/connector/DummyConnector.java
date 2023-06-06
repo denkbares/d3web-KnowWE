@@ -63,7 +63,7 @@ public class DummyConnector implements WikiConnector {
 	private String knowweExtensionPath = null;
 
 	private final Map<String, String> locks = new HashMap<>();
-	private String savePath;
+	private final String savePath;
 
 	public DummyConnector(String savePath) {
 		this.savePath = savePath;
@@ -118,7 +118,9 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String createArticle(String title, String author, String content) {
-		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
+		Environment environment = Environment.getInstance();
+		// create article with the new content
+		environment.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
 		dummyPageProvider.setArticleContent(title, content);
 		return content;
 	}
@@ -210,12 +212,7 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String getKnowWEExtensionPath() {
-		if (knowweExtensionPath == null) {
-			return getApplicationRootPath() + File.separator + "KnowWEExtension";
-		}
-		else {
-			return knowweExtensionPath;
-		}
+		return Objects.requireNonNullElseGet(knowweExtensionPath, () -> getApplicationRootPath() + File.separator + "KnowWEExtension");
 	}
 
 	@Override
@@ -379,7 +376,9 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context, String changeNote) {
-		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
+		Environment environment = Environment.getInstance();
+		// create article with the new content
+		environment.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
 		dummyPageProvider.setArticleContent(title, content);
 		return true;
 	}
@@ -390,7 +389,7 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public void sendMultipartMail(String toAddresses, String subject, String plainTextContent, String htmlContent, Map<String, URL> imageMapping) throws IOException {
+	public void sendMultipartMail(String toAddresses, String subject, String plainTextContent, String htmlContent, Map<String, URL> imageMapping)  {
 		LOGGER.warn("This WikiConnector does not support sending multipart-mails");
 	}
 

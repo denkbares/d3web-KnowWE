@@ -70,9 +70,8 @@ import de.knowwe.core.ArticleManager;
 import de.knowwe.core.DefaultArticleManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.ResourceLoader;
+import de.knowwe.core.UpdateNotAllowedException;
 import de.knowwe.core.append.PageAppendHandler;
-import de.knowwe.core.compile.CompilerManager;
-import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
@@ -82,7 +81,6 @@ import de.knowwe.event.ArticleRefreshEvent;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.AttachmentDeletedEvent;
 import de.knowwe.event.AttachmentStoredEvent;
-import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitializedArticlesEvent;
 import de.knowwe.event.PageRenderedEvent;
 
@@ -413,42 +411,10 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			// we can just ignore it.
 			return null;
 		}
-
-		String title = wikiContext.getRealPage().getName();
-
-		String originalText = "";
-		Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
-		if (article != null) {
-			originalText = article.getRootSection().getText();
-		}
-
-		DefaultArticleManager defaultArticleManager = getDefaultArticleManager();
 		boolean fullParse = isFullParse(httpRequest);
 		if (fullParse) httpRequest.setAttribute(FULL_PARSE_FIRED, true);
-		if (!originalText.equals(content) || fullParse) {
-			if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
-				throw new UpdateNotAllowedException();
-			}
 
-			CompilerManager compilerManager = Compilers.getCompilerManager(Environment.DEFAULT_WEB);
-			if (compilerManager.isCompiling(title)) {
-				// it is possible, that compilation of this article was triggered independently from calling this
-				// method...
-				compilerManager.awaitTermination();
-			}
-
-			EventManager.getInstance().fireEvent(new ArticleUpdateEvent(title, wikiContext.getRealPage().getAuthor()));
-			defaultArticleManager.open();
-			try {
-				article = Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
-				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article));
-			}
-			finally {
-				defaultArticleManager.commit();
-			}
-			compilerManager.awaitTermination();
-		}
-		return article;
+		return Environment.getInstance().updateArticle(wikiContext.getRealPage().getName(), wikiContext.getRealPage().getAuthor(), content, fullParse, httpRequest);
 	}
 
 	private static boolean isFullParse(HttpServletRequest httpRequest) {
@@ -713,9 +679,6 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	@Override
 	public String execute(Context context, Map<String, String> params) throws PluginException {
 		return "";
-	}
-
-	private static class UpdateNotAllowedException extends Exception {
 	}
 
 	private static class AttachmentEventHandler extends Thread {

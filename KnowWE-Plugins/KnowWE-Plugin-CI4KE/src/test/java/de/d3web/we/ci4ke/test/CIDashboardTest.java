@@ -20,12 +20,11 @@ package de.d3web.we.ci4ke.test;
 
 import java.io.IOException;
 
+import connector.DummyConnector;
 import org.junit.Before;
 import org.junit.Test;
-
 import utils.TestUserContext;
 import utils.TestUtils;
-import connector.DummyConnector;
 
 import com.denkbares.plugin.test.InitPluginManager;
 import com.denkbares.strings.Strings;
@@ -53,12 +52,12 @@ public class CIDashboardTest {
 		env = Environment.getInstance();
 	}
 
-	private Article loadArticle(String title) throws IOException {
+	private Article loadArticle(String title) {
 		String text = Strings.readStream(
 				getClass().getResourceAsStream("/" + title + ".txt"));
-		env.buildAndRegisterArticle(web, title, text);
-		Article article = env.getArticle(web, title);
-		return article;
+		// create article with the new content
+		env.getArticleManager(web).registerArticle(title, text);
+		return env.getArticle(web, title);
 	}
 
 	@Test

@@ -184,7 +184,8 @@ public class JSPWikiConnector implements WikiConnector {
 			// should only happen on wiki initialization
 			return null;
 		}
-		Environment.getInstance().buildAndRegisterArticle(Environment.DEFAULT_WEB, title, content);
+		// create article with the new content
+		Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
 		return getPageManager().getPureText(wp);
 	}
 

@@ -54,7 +54,8 @@ public class TestUserContext implements UserContext, UserActionContext {
 
 	private final boolean isAdmin;
 	private final boolean isAsserted;
-	private final String userName = "Testuser #" + (counter++);
+	private final String genericUserName = "Testuser #" + (counter++);
+	private String username = null;
 	private final Article article;
 	private final Map<String, String> parameterMap = new HashMap<>();
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -68,7 +69,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	}
 
 	/**
-	 * Creates a test user for an article that does not really exists as an object.
+	 * Creates a test user for an article that does not really exist as an object.
 	 * If possible, prefer to use the constructor #TestUserContext(Article), because it
 	 * will provide much more capabilities to the created object.
 	 *
@@ -76,6 +77,11 @@ public class TestUserContext implements UserContext, UserActionContext {
 	 */
 	public TestUserContext(String articleName) {
 		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
+	}
+
+	public TestUserContext(String articleName, String username) {
+		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
+		this.username = username;
 	}
 
 	public TestUserContext(Article article, boolean isAdmin, boolean isAsserted) {
@@ -99,7 +105,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 
 	@Override
 	public String getUserName() {
-		return userName;
+		return this.username != null ? username : genericUserName;
 	}
 
 	@Override
@@ -200,7 +206,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	}
 
 	@Override
-	public void sendRedirect(String location) throws IOException {
+	public void sendRedirect(String location)  {
 		// TODO Auto-generated method stub
 
 	}

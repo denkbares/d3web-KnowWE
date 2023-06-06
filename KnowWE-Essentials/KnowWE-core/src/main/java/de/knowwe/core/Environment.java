@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.logging.LogManager;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -56,10 +57,14 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.event.ArticleUpdateEvent;
+import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitEvent;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
 import de.knowwe.tools.ToolUtils;
+
+import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
 
 /**
  * This is the core class of KnowWE. It manages the {@link ArticleManager} and provides methods to access {@link
@@ -230,6 +235,44 @@ public class Environment {
 		setCompilationMode();
 
 		configureLogging();
+	}
+
+	public Article updateArticle(String title, String author, String content, boolean fullParse,  HttpServletRequest httpRequest) throws InterruptedException,
+			UpdateNotAllowedException {
+
+		String originalText = "";
+		Article article = getArticle(Environment.DEFAULT_WEB, title);
+		if (article != null) {
+			originalText = article.getRootSection().getText();
+		}
+
+		ArticleManager defaultArticleManager = getDefaultArticleManager();
+
+		if (!originalText.equals(content) || fullParse) {
+			if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
+				throw new UpdateNotAllowedException();
+			}
+
+			CompilerManager compilerManager = defaultArticleManager.getCompilerManager();
+			if (compilerManager.isCompiling(title)) {
+				// it is possible, that compilation of this article was triggered independently of calling this
+				// method...
+				compilerManager.awaitTermination();
+			}
+
+			EventManager.getInstance().fireEvent(new ArticleUpdateEvent(title, author));
+			defaultArticleManager.open();
+			try {
+				// create article with the new content
+				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, author);
+				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article));
+			}
+			finally {
+				defaultArticleManager.commit();
+			}
+			compilerManager.awaitTermination();
+		}
+		return article;
 	}
 
 	private void configureLogging() {
@@ -525,15 +568,6 @@ public class Environment {
 
 	public Collection<Renderer> getRenderersForType(Type type) {
 		return additionalRenderer.getOrDefault(type, Collections.emptyList());
-	}
-
-	/**
-	 * Builds an {@link Article} and registers it in the {@link ArticleManager}.
-	 */
-	public Article buildAndRegisterArticle(String web, String title, String content) {
-
-		// create article with the new content
-		return this.getArticleManager(web).registerArticle(title, content);
 	}
 
 	/**

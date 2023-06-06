@@ -1318,8 +1318,8 @@ public class KnowWEUtils {
 		manager.open();
 		try {
 			manager.deleteArticle(oldArticleTitle);
-			Environment.getInstance().buildAndRegisterArticle(
-					Environment.DEFAULT_WEB, newArticleTitle, oldArticle.getText());
+			// create article with the new content
+			manager.registerArticle(newArticleTitle, oldArticle.getText());
 		}
 		finally {
 			manager.commit();

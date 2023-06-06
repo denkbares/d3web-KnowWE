@@ -22,9 +22,9 @@ package de.knowwe.table.test;
 
 import java.io.IOException;
 
+import connector.DummyConnector;
 import junit.framework.TestCase;
 import utils.TestUtils;
-import connector.DummyConnector;
 
 import com.denkbares.plugin.test.InitPluginManager;
 import de.knowwe.core.Environment;
@@ -63,7 +63,8 @@ public class TableTest extends TestCase {
 		 */
 		String content = "!!Table\n\n%%Table\n| |Apple|Lemon|Coconut\n|sweetness|+|-|hm\n|grows in central europe|+|+|-\n|size|-|+|+\n%";
 		String title = "Test_Article";
-		env.buildAndRegisterArticle(web, title, content);
+		// create article with the new content
+		env.getArticleManager(web).registerArticle(title, content);
 		Article article = env.getArticle(web, title);
 
 		/**
