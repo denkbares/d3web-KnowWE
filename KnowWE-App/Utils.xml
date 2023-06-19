@@ -23,20 +23,20 @@
 
 	<!-- Updates all resources needed for the profile core-plugins -->
 	<target name="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="KnowWE-Resources/src/main/webapp/**" />
 				<include name="KnowWE-Resources/src/main/webapp/WEB-INF/" />
 			</fileset>
 			<cutdirsmapper dirs="4" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Essentials/">
 				<include name="*/src/main/resources/webapp/" />
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../KnowWE-Plugins/">
 				<include name="*/src/main/resources/webapp/" />
 				<exclude name="KnowWE-Plugin-d3web-Homepage/**" />
@@ -48,7 +48,7 @@
 
 	<!-- Updates all resources needed for the profile denkbares (and core-plugins) -->
 	<target name="update_resources denkbares" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KnowWE-DES/KnowWE-Plugins-DES/">
 				<include name="*/src/main/resources/webapp/" />
 
@@ -64,7 +64,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../Experimental/KnowWE-Plugins-Experimental/">
 				<include name="KnowWE-Plugin-d3web-TermBrowser/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-DiaFlux-Review/src/main/resources/webapp/" />
@@ -75,7 +75,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT">
 			<fileset dir="${basedir}/../../KnowWE-SSP/" erroronmissingdir="false">
 				<include name="KnowWE-Plugin-SemanticServiceCore/src/main/resources/webapp/" />
 				<include name="KnowWE-Plugin-CBX/src/main/resources/webapp/" />
@@ -84,7 +84,7 @@
 			</fileset>
 			<cutdirsmapper dirs="5" />
 		</copy>
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../ServiceMatePlatform/" erroronmissingdir="false">
 				<include name="KnowWE-Plugin-ServiceMate/src/main/resources/webapp/" />
 			</fileset>
@@ -92,7 +92,7 @@
 		</copy>
 	</target>
 	<target name="update_resources konap" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT" verbose="true">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT" verbose="true">
 			<fileset dir="${basedir}/../../KRONE/">
 				<include name="KnowWE-Plugin-KONAP/src/main/resources/webapp/" />
 
@@ -103,7 +103,7 @@
 		</copy>
 	</target>
 	<target name="update_resources d3web-Player" depends="update_resources core-plugins">
-		<copy todir="${basedir}/target/KnowWE-App-2023.2-SNAPSHOT/KnowWEExtension/d3web-Player/client" verbose="true" overwrite="true">
+		<copy todir="${basedir}/target/KnowWE-App-2023.3-SNAPSHOT/KnowWEExtension/d3web-Player/client" verbose="true" overwrite="true">
 			<fileset dir="${basedir}/../../d3web-Player-Platform/">
 				<include name="d3web-Player/src/main/resources/" />
 			</fileset>
