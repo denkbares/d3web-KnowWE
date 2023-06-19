@@ -1825,7 +1825,6 @@ KNOWWE.helper.observer = function() {
      *     o - The current scope.
      */
     notify: function(name, o) {
-      KNOWWE.core.util.updateProcessingState(1);
       try {
         var scope = o || window;
         var l = observations.length;
@@ -1845,7 +1844,6 @@ KNOWWE.helper.observer = function() {
         }
       } catch (e) { /*ignore*/
       } // is this redundant, after adding try - catch above?
-      KNOWWE.core.util.updateProcessingState(-1);
     },
     /**
      * Function: notifyAll
@@ -1853,7 +1851,6 @@ KNOWWE.helper.observer = function() {
      * Notifies all registered observation of a change.
      */
     notifyAll: function(o) {
-      KNOWWE.core.util.updateProcessingState(1);
       try {
         var scope = o || window;
         var l = observations.length;
@@ -1865,7 +1862,6 @@ KNOWWE.helper.observer = function() {
         }
       } catch (e) { /*ignore*/
       }
-      KNOWWE.core.util.updateProcessingState(-1);
     }
   }
 }();

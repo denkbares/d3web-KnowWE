@@ -761,7 +761,7 @@ KNOWWE.core.rerendercontent = function () {
 							jq$('#knowWEInfoStatus').val(JSON.parse(this.response).status);
 						} catch (e) { /*ignore*/
 						}
-						if (indicateProcess) KNOWWE.core.util.updateProcessingState(-1);
+						if (indicateProcess) KNOWWE.core.util.hideProcessingIndicator();
 						if (action) {
 							// afterRerender event thrown in respective action
 						} else {
@@ -773,9 +773,9 @@ KNOWWE.core.rerendercontent = function () {
 
 					},
 					onError: function () {
+						if (indicateProcess) KNOWWE.core.util.hideProcessingIndicator();
 						if (this.status === 304) {
 							// 304 means not change in status, so it is to be expected
-							KNOWWE.core.util.hideProcessingIndicator();
 							return;
 						}
 						_EC.onErrorBehavior.call(this, msgId);
