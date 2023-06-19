@@ -6,6 +6,11 @@
 	box-sizing: content-box;
 }
 
+.type_DiaFlux .asynchronNormal {
+	padding: 10px;
+	font-size: 200%;
+}
+
 .Flowchart {
 	position:	relative;
 	background-image: url(../image/grid_10.png);

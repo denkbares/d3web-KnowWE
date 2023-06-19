@@ -50,6 +50,7 @@ import de.knowwe.diaflux.kbinfo.JSPHelper;
 import de.knowwe.diaflux.type.DiaFluxType;
 import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.kdom.xml.AbstractXMLType;
+import de.knowwe.util.Icon;
 
 /**
  * @author Reinhard Hatko
@@ -81,17 +82,10 @@ public class FlowchartUtils {
 		parentId = escapeHtmlId(parentId);
 
 		RenderResult result = prepareFlowchartRenderer(section, parentId, user, scope, insertResources);
-		result.appendHtml("<script>\n");
-		result.appendHtml("if ($('" + parentId + "').getElements('.FlowchartGroup').length == 0)\n");
-		appendLoadFlowchartScript(section, parentId, result);
-		result.appendHtml("</script>");
 
 		return result.toStringRaw();
 	}
 
-	private static void appendLoadFlowchartScript(Section<FlowchartType> section, String parentId, RenderResult result) {
-		result.appendHtml("Flowchart.loadFlowchart('" + section.getID() + "', '" + parentId + "');\n");
-	}
 
 	/**
 	 * Prepares a div to render a flowchart in later on using JS.
@@ -100,12 +94,12 @@ public class FlowchartUtils {
 	 */
 	public static RenderResult prepareFlowchartRenderer(Section<FlowchartType> flowchartSection, String parentId, UserContext user, String scope, boolean insertRessources) {
 		RenderResult result = new RenderResult(user);
-		result.appendHtml("<div class='flowchartContainer' sectionid='" + flowchartSection.getID() + "'>");
+		result.appendHtml("<div class='flowchartContainer' sectionid='" + flowchartSection.getID() + "' id='" + parentId + "'>");
 		if (insertRessources) {
 			insertDiaFluxResources(user, scope, result, flowchartSection);
 		}
-		result.appendHtml("<div id='" + parentId + "'>");
-		result.appendHtml("</div></div>\n");
+		result.appendHtml(Icon.LOADING.addClasses("asynchronNormal", "loadingSpinner").toHtml());
+		result.appendHtml("</div>\n");
 		return result;
 	}
 

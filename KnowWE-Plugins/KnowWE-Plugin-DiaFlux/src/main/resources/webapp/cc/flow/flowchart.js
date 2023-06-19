@@ -44,7 +44,7 @@ Flowchart.loadFlowchart = function(kdomid, parent) {
         KNOWWE.core.util.updateProcessingState(-1);
         var xml = this.responseXML;
         // workaround if xml parser fails (backward compatibility)
-        if (!xml || xml.getElementsByTagName("flowchart").length == 0) {
+        if (!xml || xml.getElementsByTagName("flowchart").length === 0) {
           xml = Flowchart.parseXML(this.responseText);
         }
         Flowchart.update(parent, kdomid, xml);
@@ -65,7 +65,7 @@ Flowchart.loadFlowchart = function(kdomid, parent) {
 };
 
 Flowchart.update = function(parent, kdomid, xml) {
-  KNOWWE.helper.observer.notify('beforeflowchartrendered', {flow: flow});
+  KNOWWE.helper.observer.notify('beforeflowchartrendered');
   var flow = Flowchart.createFromXML(parent, xml);
   flow.kdomid = kdomid;
   KNOWWE.helper.observer.notify('flowchartrendered', {flow: flow});
@@ -138,6 +138,7 @@ Flowchart.prototype.setVisible = function(visible) {
     this.router.withDelayedReroute(function() {
       // ==> show Node
       this.dom = this.render();
+      this.parent.querySelectorAll(".loadingSpinner").forEach(e => e.remove());
       this.parent.appendChild(this.dom);
       // before showing childs, parent must be visible to enable dragging library
       for (var i = 0; i < this.nodes.length; i++) this.nodes[i].setVisible(visible);
@@ -570,5 +571,13 @@ if (typeof KNOWWE != "undefined") {
   });
 }
 
+if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
+  jq$(document).ready(function(){
+    jq$('.flowchartContainer').each(function() {
+      let $container = jq$(this);
+      Flowchart.loadFlowchart($container.attr("sectionid"), $container.attr("id"));
+    })
+  });
+}
 
 
