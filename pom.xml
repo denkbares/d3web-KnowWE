@@ -31,9 +31,9 @@
 		<denkbares.version>${project.version}</denkbares.version>
 		<d3web.version>${project.version}</d3web.version>
 		<knowwe.version>${project.version}</knowwe.version>
-		<konap.version>2023.2-SNAPSHOT</konap.version>
-		<ssp.version>2023.2-SNAPSHOT</ssp.version>
-		<mate.version>2023.2-SNAPSHOT</mate.version>
+		<konap.version>2023.3-SNAPSHOT</konap.version>
+		<ssp.version>2023.3-SNAPSHOT</ssp.version>
+		<mate.version>2023.3-SNAPSHOT</mate.version>
 		<jspwiki.version>2.11.5-SNAPSHOT</jspwiki.version>
 		<selenium.version>3.13.0</selenium.version>
 		<tomcat.version>9.0.13</tomcat.version>
