@@ -18,12 +18,14 @@
  */
 package de.knowwe.ontology.sparql.excel;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.util.*;
+import java.util.regex.Pattern;
 
+import com.denkbares.semanticcore.utils.ResultTableModel;
+import com.denkbares.utils.Files;
+import com.denkbares.utils.Streams;
+import de.knowwe.kdom.renderer.PaginationRenderer;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
@@ -53,6 +55,8 @@ import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -64,137 +68,158 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class SparqlDownloadAction extends AbstractAction {
 
-	public static final String PARAM_FILENAME = "filename";
-	public static final double MAX_COLUMN_WIDTH = 100;
+    public static final String PARAM_FILENAME = "filename";
+    public static final double MAX_COLUMN_WIDTH = 100;
 
-	@Override
-	public void execute(UserActionContext context) throws IOException {
+    @Override
+    public void execute(UserActionContext context) throws IOException {
+        // find query
+        Section<?> rootSection = getSection(context);
+        Section<SparqlContentType> querySection = Sections.successor(rootSection, SparqlContentType.class);
+        if (querySection == null) {
+            context.sendError(410, "Query not found, probably the page has been edited while you visiting it. Please reload the page and try again, or contact the administrator if the error persists.");
+            return;
+        }
+        Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(rootSection, context);
+        Section<SparqlMarkupType> markupSection = Sections.ancestor(querySection, SparqlMarkupType.class);
+        RenderOptions opts = $(markupSection).successor(SparqlType.class)
 
-		String filename = context.getParameter(PARAM_FILENAME);
+                .mapFirst(s -> s.get().getRenderOptions(s, context));
+        Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(markupSection, Rdf2GoCompiler.class);
+        if (!compilers.isEmpty()) {
+            Rdf2GoCore core = compilers.iterator().next().getRdf2GoCore();
+            String sparql = Rdf2GoUtils.createSparqlString(core, querySection.getText());
+            CachedTupleQueryResult resultSet = core.sparqlSelect(sparql);
+            File file = new File(Files.getSystemTempDir(), UUID.randomUUID() + ".xlsx");
+            file.deleteOnExit();
+            try (OutputStream outputStream = new FileOutputStream(file)) {
+                try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+                    addSparqlResultAsSheet(workbook, resultSet, context, core, opts, filter);
+                    workbook.write(outputStream);
+                }
+            }
+            //kein download - 1. request (post)
+            if (!Boolean.parseBoolean(context.getParameter("download"))) {
+                if (context.getWriter() != null) {
+                    context.setContentType(JSON);
+                    JSONObject response = new JSONObject();
+                    try {
+                        response.put("downloadFile", file.getName());
+                        response.write(context.getWriter());
+                    } catch (JSONException e) {
+                        throw new IOException(e);
+                    }
+                }
+            }
 
-		context.setContentType("application/vnd.ms-excel");
-		context.setHeader("Content-Disposition", "attachment; filename=\""
-				+ filename + "\"");
+            //download - 2. request (get)
+            if (Boolean.parseBoolean(context.getParameter("download"))) {
+                context.setContentType("application/vnd.ms-excel");
+                context.setHeader("Content-Disposition", "attachment; filename=\""
+                        + context.getParameter(PARAM_FILENAME) + "\"");
 
-		// find query
-		Section<?> rootSection = getSection(context);
-		Section<SparqlContentType> querySection = Sections.successor(rootSection, SparqlContentType.class);
-		if (querySection == null) {
-			context.sendError(410, "Query not found, probably the page has been edited while you visiting it. Please reload the page and try again, or contact the administrator if the error persists.");
-			return;
-		}
+                File file1 = new File(Files.getSystemTempDir(), context.getParameter("downloadFile"));
+                try (FileInputStream inputStream = new FileInputStream(file1); OutputStream outputStream = context.getOutputStream()) {
+                    Streams.stream(inputStream, outputStream);
+                } finally {
+                    file1.delete();
+                }
+            }
+        }
+    }
 
-		Section<SparqlMarkupType> markupSection = Sections.ancestor(querySection, SparqlMarkupType.class);
-		RenderOptions opts = $(markupSection).successor(SparqlType.class)
-				.mapFirst(s -> s.get().getRenderOptions(s, context));
-		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(markupSection, Rdf2GoCompiler.class);
-		if (!compilers.isEmpty()) {
-			Rdf2GoCore core = compilers.iterator().next().getRdf2GoCore();
-			String sparql = Rdf2GoUtils.createSparqlString(core, querySection.getText());
-			CachedTupleQueryResult resultSet = core.sparqlSelect(sparql);
+    protected static void addSparqlResultAsSheet(XSSFWorkbook wb, CachedTupleQueryResult qrt, UserContext user, Rdf2GoCore core, RenderOptions opts, Map<String, Set<Pattern>> filter) {
 
-			try (OutputStream outputStream = context.getOutputStream()) {
-				try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-					addSparqlResultAsSheet(workbook, resultSet, context, core, opts);
-					workbook.write(outputStream);
-				}
-			}
-		}
-	}
+        XSSFSheet sheet = wb.createSheet("Result");
 
-	protected static void addSparqlResultAsSheet(XSSFWorkbook wb, CachedTupleQueryResult qrt, UserContext user, Rdf2GoCore core, RenderOptions opts) {
+        List<String> variables = qrt.getBindingNames();
+        XSSFCellStyle headerStyle = getHeaderStyle(wb);
+        XSSFCellStyle cellStyle = getResultCellStyle(wb);
 
-		XSSFSheet sheet = wb.createSheet("Result");
+        // create header
+        XSSFRow headerRow = sheet.createRow(0);
+        for (int i = 0; i < variables.size(); i++) {
+            XSSFCell cell = headerRow.createCell(i);
+            cell.setCellValue(variables.get(i).replace("_", " "));
+            cell.setCellStyle(headerStyle);
+        }
 
-		List<String> variables = qrt.getBindingNames();
-		XSSFCellStyle headerStyle = getHeaderStyle(wb);
-		XSSFCellStyle cellStyle = getResultCellStyle(wb);
+        IndexedResultTableModel tableRows = IndexedResultTableModel.create(qrt);
+        ResultTableModel filteredTable = tableRows.filter(filter);
+        Iterator<TableRow> iterator = filteredTable.iterator();
+        int rowNum = 1;
+        while (iterator.hasNext()) {
+            XSSFRow row = sheet.createRow(rowNum);
+            TableRow tableRow = iterator.next();
+            for (int i = 0; i < variables.size(); i++) {
+                String variable = variables.get(i);
+                String result = renderCell(user, opts, variable, tableRow);
+                XSSFCell cell = row.createCell(i);
+                try {
+                    cell.setCellValue(Double.parseDouble(result));
+                } catch (NumberFormatException e) {
+                    cell.setCellValue(result);
+                }
+                cell.setCellStyle(cellStyle);
+            }
+            rowNum++;
+        }
+        adjustColumnWidth(sheet, variables);
+        sheet.createFreezePane(0, 1);
+    }
 
-		// create header
-		XSSFRow headerRow = sheet.createRow(0);
-		for (int i = 0; i < variables.size(); i++) {
-			XSSFCell cell = headerRow.createCell(i);
-			cell.setCellValue(variables.get(i).replace("_", " "));
-			cell.setCellStyle(headerStyle);
-		}
+    @NotNull
+    private static String renderCell(UserContext user, RenderOptions opts, String variable, TableRow node) {
+        RenderResult renderResult = new RenderResult(user);
+        SparqlResultRenderer.getInstance().renderNode(node, variable, user, opts, renderResult);
+        String result = renderResult.toString();
+        // some node renderers my already produce html, so we remove it
+        result = Strings.htmlToPlain(result);
 
-		IndexedResultTableModel tableRows = IndexedResultTableModel.create(qrt);
-		Iterator<TableRow> iterator = tableRows.iterator();
-		int rowNum = 1;
-		while (iterator.hasNext()) {
-			XSSFRow row = sheet.createRow(rowNum);
-			TableRow tableRow = iterator.next();
-			for (int i = 0; i < variables.size(); i++) {
-				String variable = variables.get(i);
-				String result = renderCell(user, opts, variable, tableRow);
-				XSSFCell cell = row.createCell(i);
-				try {
-					cell.setCellValue(Double.parseDouble(result));
-				}
-				catch (NumberFormatException e) {
-					cell.setCellValue(result);
-				}
-				cell.setCellStyle(cellStyle);
-			}
-			rowNum++;
-		}
-		adjustColumnWidth(sheet, variables);
-		sheet.createFreezePane(0, 1);
-	}
+        // get rid of all JSPWiki-Markup, just render it to HTML and the remove the html
+        result = Environment.getInstance().getWikiConnector().renderWikiSyntax(result, user.getRequest());
+        result = Strings.htmlToPlain(result);
+        // translate html emojis
+        result = StringEscapeUtils.unescapeHtml4(result);
+        // other clenaup
+        result = result.replace("&nbsp;", " ");
+        return result;
+    }
 
-	@NotNull
-	private static String renderCell(UserContext user, RenderOptions opts, String variable, TableRow node) {
-		RenderResult renderResult = new RenderResult(user);
-		SparqlResultRenderer.getInstance().renderNode(node, variable, user, opts, renderResult);
-		String result = renderResult.toString();
-		// some node renderers my already produce html, so we remove it
-		result = Strings.htmlToPlain(result);
+    private static void adjustColumnWidth(XSSFSheet sheet, List<String> variables) {
+        int maxWidth = (int) (MAX_COLUMN_WIDTH * 256);
+        for (int i = 0; i < variables.size(); i++) {
+            sheet.autoSizeColumn(i);
+            int columnWidth = sheet.getColumnWidth(i);
+            if (columnWidth > maxWidth) {
+                sheet.setColumnWidth(i, maxWidth);
+            } else if (columnWidth < 5 * 256) {
+                sheet.setColumnWidth(i, 5 * 256);
+            }
+        }
+    }
 
-		// get rid of all JSPWiki-Markup, just render it to HTML and the remove the html
-		result = Environment.getInstance().getWikiConnector().renderWikiSyntax(result, user.getRequest());
-		result = Strings.htmlToPlain(result);
-		// translate html emojis
-		result = StringEscapeUtils.unescapeHtml4(result);
-		// other clenaup
-		result = result.replace("&nbsp;", " ");
-		return result;
-	}
-
-	private static void adjustColumnWidth(XSSFSheet sheet, List<String> variables) {
-		int maxWidth = (int) (MAX_COLUMN_WIDTH * 256);
-		for (int i = 0; i < variables.size(); i++) {
-			sheet.autoSizeColumn(i);
-			int columnWidth = sheet.getColumnWidth(i);
-			if (columnWidth > maxWidth) {
-				sheet.setColumnWidth(i, maxWidth);
-			}
-			else if (columnWidth < 5 * 256) {
-				sheet.setColumnWidth(i, 5 * 256);
-			}
-		}
-	}
-
-	private static XSSFCellStyle getResultCellStyle(XSSFWorkbook wb) {
-		XSSFCellStyle style = wb.createCellStyle();
-		XSSFFont font = wb.createFont();
-		font.setFontHeightInPoints((short) 10);
-		font.setFontName("Arial");
-		font.setBold(false);
-		font.setItalic(false);
-		style.setFont(font);
+    private static XSSFCellStyle getResultCellStyle(XSSFWorkbook wb) {
+        XSSFCellStyle style = wb.createCellStyle();
+        XSSFFont font = wb.createFont();
+        font.setFontHeightInPoints((short) 10);
+        font.setFontName("Arial");
+        font.setBold(false);
+        font.setItalic(false);
+        style.setFont(font);
 //		style.setWrapText(true);
-		return style;
-	}
+        return style;
+    }
 
-	@NotNull
-	private static XSSFCellStyle getHeaderStyle(XSSFWorkbook wb) {
-		XSSFCellStyle headerStyle = wb.createCellStyle();
-		XSSFFont headerFont = wb.createFont();
-		headerFont.setBold(true);
-		headerFont.setItalic(false);
-		headerFont.setFontHeightInPoints((short) 10);
-		headerFont.setFontName("Arial");
-		headerStyle.setFont(headerFont);
-		return headerStyle;
-	}
+    @NotNull
+    private static XSSFCellStyle getHeaderStyle(XSSFWorkbook wb) {
+        XSSFCellStyle headerStyle = wb.createCellStyle();
+        XSSFFont headerFont = wb.createFont();
+        headerFont.setBold(true);
+        headerFont.setItalic(false);
+        headerFont.setFontHeightInPoints((short) 10);
+        headerFont.setFontName("Arial");
+        headerStyle.setFont(headerFont);
+        return headerStyle;
+    }
 }

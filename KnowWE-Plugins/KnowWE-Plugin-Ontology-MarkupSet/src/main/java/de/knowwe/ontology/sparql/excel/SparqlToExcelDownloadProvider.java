@@ -18,7 +18,6 @@
  */
 package de.knowwe.ontology.sparql.excel;
 
-import de.knowwe.core.Attributes;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.DefaultTool;
@@ -32,29 +31,29 @@ import de.knowwe.util.Icon;
  */
 public class SparqlToExcelDownloadProvider implements ToolProvider {
 
-	@Override
-	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return true;
-	}
+    @Override
+    public boolean hasTools(Section<?> section, UserContext userContext) {
+        return true;
+    }
 
-	@Override
-	public Tool[] getTools(Section<?> section, UserContext userContext) {
-		// and provide both download and refresh as tools
-		Tool ExcelTool = getDownloadExcelTool(section, userContext);
-		return new Tool[] { ExcelTool };
-	}
+    @Override
+    public Tool[] getTools(Section<?> section, UserContext userContext) {
+        // and provide both download and refresh as tools
+        Tool ExcelTool = getDownloadExcelTool(section, userContext);
+        return new Tool[]{ExcelTool};
+    }
 
-	protected Tool getDownloadExcelTool(Section<?> section,
-										UserContext userContext) {
-		// tool to provide download capability
-		String jsAction = "window.location='action/SparqlDownloadAction" + "?"
-				+ Attributes.SECTION_ID + "=" + section.getID() + "&amp;"
-				+ SparqlDownloadAction.PARAM_FILENAME + "="
-				+ section.getArticle().getTitle()
-				+ ".xlsx'";
-		return new DefaultTool(
-				Icon.FILE_EXCEL,
-				"Download as XLSX", "Download this table as an excel file",
-				jsAction, Tool.CATEGORY_DOWNLOAD);
-	}
+    protected Tool getDownloadExcelTool(Section<?> section,
+                                        UserContext userContext) {
+
+        String jsAction = "KNOWWE.plugin.sparql.downloadExcel(" +
+                "'" + section.getID() + "', " +
+                "'" + section.getArticle().getTitle() + ".xlsx'," +
+                "'SparqlDownloadAction'" +
+                ")";
+        return new DefaultTool(
+                Icon.FILE_EXCEL,
+                "Download as XLSX", "Download this table as an excel file",
+                jsAction, Tool.CATEGORY_DOWNLOAD);
+    }
 }
