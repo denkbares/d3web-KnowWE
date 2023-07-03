@@ -22,12 +22,10 @@ public class TermInfoSet implements Collection<TermInfo> {
 	private class DefaultTermInfo implements TermInfo {
 
 		private final Identifier identifier;
-		private final String key;
 		private final Collection<TermCompiler> termCompilers = new LinkedHashSet<>();
 
 		public DefaultTermInfo(Identifier identifier) {
 			this.identifier = identifier;
-			this.key = TermInfoSet.this.getKey(identifier);
 		}
 
 		@Override
@@ -52,19 +50,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 		 */
 		@Override
 		public boolean matches(Identifier otherIdentifier) {
-			return key.equals(TermInfoSet.this.getKey(otherIdentifier));
-		}
-
-		/**
-		 * Returns the key the to identify this {@link TermInfo} object. Is
-		 * considers the term's identifier and the case sensitivity flag.
-		 *
-		 * @return the key to be used by that term info
-		 * @created 26.08.2013
-		 */
-		@Override
-		public String getKey() {
-			return key;
+			return identifier.equals(otherIdentifier);
 		}
 
 		public void addManager(TermCompiler compiler) {
@@ -85,7 +71,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 		@Override
 		public int hashCode() {
-			return key.hashCode();
+			return identifier.hashCode();
 		}
 
 		@Override
@@ -94,7 +80,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 			if (obj == null) return false;
 			if (getClass() != obj.getClass()) return false;
 			TermInfo other = (TermInfo) obj;
-			return (key.equals(other.getKey()));
+			return (identifier.equals(other.getIdentifier()));
 		}
 
 		@Override
@@ -103,7 +89,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 		}
 	}
 
-	private final Map<String, DefaultTermInfo> result = new HashMap<>();
+	private final Map<Identifier, DefaultTermInfo> result = new HashMap<>();
 	private final Class<?>[] allowedTermClasses;
 
 	public TermInfoSet(Class<?>... allowedTermClasses) {
@@ -121,8 +107,8 @@ public class TermInfoSet implements Collection<TermInfo> {
 	 * @return the key to be used by that term info
 	 * @created 26.08.2013
 	 */
-	private String getKey(Identifier identifier) {
-		return identifier.toExternalForm();
+	private Identifier getKey(Identifier identifier) {
+		return identifier;
 	}
 
 	@Override
@@ -147,7 +133,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	public boolean contains(TermInfo termInfo) {
-		return result.containsKey(termInfo.getKey());
+		return result.containsKey(termInfo.getIdentifier());
 	}
 
 	@NotNull
@@ -241,28 +227,22 @@ public class TermInfoSet implements Collection<TermInfo> {
 	}
 
 	private DefaultTermInfo getTermInfoValid(Identifier identifier) {
-		String key = getKey(identifier);
-		DefaultTermInfo termInfo = result.get(key);
-		if (termInfo == null) {
-			termInfo = new DefaultTermInfo(identifier);
-			result.put(key, termInfo);
-		}
-		return termInfo;
+		return result.computeIfAbsent(identifier, k -> new DefaultTermInfo(identifier));
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		if (o instanceof Identifier) return remove((Identifier) o);
-		if (o instanceof TermInfo) return remove((TermInfo) o);
+		if (o instanceof Identifier) return remove((Identifier) o) != null;
+		if (o instanceof TermInfo) return remove((TermInfo) o) != null;
 		return false;
 	}
 
-	public boolean remove(Identifier identifier) {
-		return result.remove(getKey(identifier)) != null;
+	public TermInfo remove(Identifier identifier) {
+		return result.remove(identifier);
 	}
 
-	public boolean remove(TermInfo termInfo) {
-		return result.remove(termInfo.getKey()) != null;
+	public TermInfo remove(TermInfo termInfo) {
+		return remove(termInfo.getIdentifier());
 	}
 
 	@Override
@@ -293,19 +273,7 @@ public class TermInfoSet implements Collection<TermInfo> {
 
 	@Override
 	public boolean retainAll(@NotNull Collection<?> c) {
-		List<String> keysToRemove = new LinkedList<>();
-		for (DefaultTermInfo termInfo : result.values()) {
-			if (!c.contains(termInfo)
-					&& !c.contains(termInfo.getKey())
-					&& !c.contains(termInfo.getIdentifier())) {
-				keysToRemove.add(termInfo.getKey());
-			}
-		}
-		boolean changed = false;
-		for (String key : keysToRemove) {
-			changed |= (result.remove(key) != null);
-		}
-		return changed;
+		return this.removeIf(e -> !c.contains(e));
 	}
 
 	@Override
