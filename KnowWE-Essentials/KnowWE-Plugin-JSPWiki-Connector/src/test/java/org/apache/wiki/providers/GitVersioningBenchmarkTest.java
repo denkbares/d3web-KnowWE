@@ -96,14 +96,13 @@ public class GitVersioningBenchmarkTest {
 	public void testMillionChanges()
 			throws Exception {
 		String text = "";
-		String name = NAME1;
 		int maxver = 2000; // Save 2000 versions.
 		StopWatch watch = new StopWatch();
 
 		watch.start();
 		for (int i = 0; i < maxver; i++) {
 			text = text + ".";
-			saveText(name, text);
+			saveText(NAME1, text);
 		}
 
 		watch.stop();
@@ -152,7 +151,6 @@ public class GitVersioningBenchmarkTest {
 	private void runMassiveFileTest(int maxpages)
 			throws Exception {
 		String text = "Testing, 1, 2, 3: ";
-		String name = NAME1;
 		StopWatch mark = new StopWatch();
 
 		System.out.println("Building a massive repository of " + maxpages + " pages...");
@@ -170,7 +168,7 @@ public class GitVersioningBenchmarkTest {
 				zwischenZeit.reset();
 				zwischenZeit.start();
 			}
-			saveText(name + i, text + i);
+			saveText(NAME1 + i, text + i);
 		}
 		mark.stop();
 
