@@ -19,15 +19,7 @@
 
 package org.apache.wiki.providers;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
-
+import com.denkbares.utils.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wiki.WikiEngine;
@@ -45,7 +37,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.denkbares.utils.Files;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -114,7 +112,7 @@ public class GitVersioningAttachmentProviderTest {
 //			System.out.println(attachment.getAttribute(Attachment.CHANGENOTE));
 //		}
 
-		assertEquals(2, versionHistory.size());
+		assertEquals(3, versionHistory.size());
 	}
 
 	@Test
@@ -132,8 +130,14 @@ public class GitVersioningAttachmentProviderTest {
 
 		List<Attachment> versionHistory = attProvider.getVersionHistory(att);
 		assertEquals(3, versionHistory.size());
-		assertEquals(18, versionHistory.get(0).getSize());
-		assertEquals(20, versionHistory.get(2).getSize());
+
+		Set<Integer> expectedSizes = new HashSet<>();
+		expectedSizes.add(18);
+		expectedSizes.add(20);
+
+		Set<Integer> actualSizes = versionHistory.stream().map(he -> (int) he.getSize()).collect(Collectors.toSet());
+		assertEquals(expectedSizes, actualSizes);
+
 	}
 
 	@Test

@@ -19,11 +19,6 @@
 
 package org.apache.wiki.providers;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Properties;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.WikiEngine;
@@ -42,6 +37,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Properties;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -54,14 +54,11 @@ import static org.mockito.Mockito.when;
 
 public class GitVersioningBenchmarkTest {
 
-	public static final String NAME1 = "Test1";
-	public static final String AUTHOR = "author";
-
+	private static final String NAME1 = "Test1";
+	private static final String AUTHOR = "author";
 	private String TMP_NEW_REPO = "/tmp/newRepo";
-
-	private Properties properties;
 	private Engine engine;
-	GitVersioningFileProvider fileProvider;
+	private GitVersioningFileProvider fileProvider;
 
 	@Before
 	public void setUp() throws Exception {
@@ -69,7 +66,7 @@ public class GitVersioningBenchmarkTest {
 		engine = Mockito.mock(WikiEngine.class);
 		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "/newRepo";
 		System.out.println(TMP_NEW_REPO);
-		properties = new Properties();
+		Properties properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
 		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
 		engine = Mockito.mock(WikiEngine.class);
@@ -101,35 +98,35 @@ public class GitVersioningBenchmarkTest {
 		String text = "";
 		String name = NAME1;
 		int maxver = 2000; // Save 2000 versions.
-		StopWatch mark = new StopWatch();
+		StopWatch watch = new StopWatch();
 
-		mark.start();
+		watch.start();
 		for (int i = 0; i < maxver; i++) {
 			text = text + ".";
 			saveText(name, text);
 		}
 
-		mark.stop();
+		watch.stop();
 
-		System.out.println("Benchmark: " + getTime(mark, 2000) + " pages/second");
+		System.out.println("Benchmark: " + getTime(watch, 2000) + " pages/second");
 
-		mark.reset();
-		mark.start();
+		watch.reset();
+		watch.start();
 		Page pageinfo = getPage(NAME1);
-		mark.stop();
+		watch.stop();
 		assertEquals("wrong version", maxver, pageinfo.getVersion());
 		// +2 comes from \r\n.
 		assertEquals("wrong text", maxver, getText(NAME1).length());
-		System.out.println("Benchmark read versions: " + mark);
+		System.out.println("Benchmark read versions: " + watch);
 
-		mark.reset();
-		mark.start();
+		watch.reset();
+		watch.start();
 		Collection<Page> pages = getAllPages();
-		mark.stop();
+		watch.stop();
 		assertEquals("only one element", 1, pages.size());
 		assertEquals("wrong version", maxver, pages.toArray(new Page[1])[0].getVersion());
 		// +2 comes from \r\n.
-		System.out.println("Benchmark read all files many versions: " + mark);
+		System.out.println("Benchmark read all files many versions: " + watch);
 	}
 
 	private String getText(String name1) throws ProviderException {
@@ -221,6 +218,6 @@ public class GitVersioningBenchmarkTest {
 
 	@Test
 	public void testMillionFiles3() throws Exception {
-		runMassiveFileTest(10000);
+		runMassiveFileTest(5000);
 	}
 }

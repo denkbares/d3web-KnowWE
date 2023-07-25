@@ -19,30 +19,6 @@
 
 package org.apache.wiki.providers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
@@ -54,23 +30,13 @@ import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
-import org.eclipse.jgit.api.CheckoutCommand;
-import org.eclipse.jgit.api.CleanCommand;
-import org.eclipse.jgit.api.CommitCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ResetCommand;
-import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.ignore.IgnoreNode;
-import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.ObjectLoader;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryCache;
-import org.eclipse.jgit.lib.TextProgressMonitor;
+import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -81,6 +47,20 @@ import org.eclipse.jgit.util.FS;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 import static org.apache.wiki.providers.GitVersioningUtils.gitGc;
@@ -103,7 +83,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private final ReentrantLock commitLock = new ReentrantLock();
 	private GitVersionCache cache;
 	private final GitAutoUpdateScheduler scheduler;
-	private IgnoreNode ignoreNode;
 
 	private AtomicLong commitCount;
 
@@ -191,7 +170,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 		gitGc(true, windowsGitHackNeeded&&!dontUseHack, repository, true);
 		this.repository.autoGC(new TextProgressMonitor());
-		ignoreNode = new IgnoreNode();
+		IgnoreNode ignoreNode = new IgnoreNode();
 		File gitignoreFile = new File(pageDir+"/.gitignore");
 		if(gitignoreFile.exists()) {
 			ignoreNode.parse(new FileInputStream(gitignoreFile));
@@ -285,7 +264,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 
-					periodicalGitGC(git);
+					periodicalGitGC();
 				}
 			}
 			catch (final Exception e) {
@@ -332,7 +311,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		throw internalException;
 	}
 
-	void periodicalGitGC(final Git git) {
+	void periodicalGitGC() {
 		final long l = this.commitCount.incrementAndGet();
 		if (l % 2000 == 0) {
 			GitVersioningUtils.gitGc(true, windowsGitHackNeeded && !dontUseHack,repository, true);
@@ -466,23 +445,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 	}
 
-	private void mapCommit(final Map<String, WikiPage> resultingPages, final Map<String, File> files, final RevCommit commit, final String path) {
-		if (files.containsKey(path)) {
-			if (resultingPages.containsKey(path)) {
-				final WikiPage wikiPage = resultingPages.get(path);
-				wikiPage.setVersion(wikiPage.getVersion() + 1);
-			}
-			else {
-				final WikiPage wikiPage = getWikiPage(commit.getFullMessage(),
-						commit.getCommitterIdent().getName(),
-						new Date(1000L * commit.getCommitTime()),
-						path);
-				wikiPage.setVersion(1);
-				wikiPage.setSize(files.get(path).length());
-				resultingPages.put(path, wikiPage);
-			}
-		}
-	}
 
 	@Override
 	public Collection<Page> getAllChangedSince(final Date date) {
@@ -542,7 +504,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	@NotNull
-	WikiPage getWikiPage(final String fullMessage, final String author, final Date modified, final String path) {
+	private WikiPage getWikiPage(final String fullMessage, final String author, final Date modified, final String path) {
 		final int cutpoint = path.lastIndexOf(FILE_EXT);
 		if (cutpoint == -1) {
 			log.error("wrong page name " + path);
@@ -726,7 +688,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 
-					periodicalGitGC(git);
+					periodicalGitGC();
 				}
 			}
 			catch (final Exception e) {
@@ -794,7 +756,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 
-					periodicalGitGC(git);
+					periodicalGitGC();
 				}
 			}
 			catch (final Exception e) {
@@ -925,7 +887,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 	}
 
-	void refreshCache(final PageManager pm, final String pageName) {
+	private void refreshCache(final PageManager pm, final String pageName) {
 		final WikiPage page = new WikiPage(this.m_engine, pageName);
 		page.setVersion(PageProvider.LATEST_VERSION);
 		try {
@@ -939,12 +901,12 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 	}
 
-	public void commitLock() {
+	void commitLock() {
 		//noinspection LockAcquiredButNotSafelyReleased
 		this.commitLock.lock();
 	}
 
-	public void commitUnlock() {
+	void commitUnlock() {
 		this.commitLock.unlock();
 	}
 

@@ -19,21 +19,6 @@
 
 package org.apache.wiki.providers;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Engine;
@@ -46,11 +31,7 @@ import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
-import org.eclipse.jgit.api.AddCommand;
-import org.eclipse.jgit.api.CommitCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.RmCommand;
-import org.eclipse.jgit.api.Status;
+import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.LockFailedException;
@@ -67,6 +48,11 @@ import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
@@ -689,7 +675,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 						}
 						return null;
 					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
-					gitVersioningFileProvider.periodicalGitGC(git);
+					gitVersioningFileProvider.periodicalGitGC();
 				}
 				finally {
 					gitVersioningFileProvider.commitUnlock();
@@ -781,7 +767,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 								return null;
 							}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 
-							gitVersioningFileProvider.periodicalGitGC(git);
+							gitVersioningFileProvider.periodicalGitGC();
 						}
 						finally {
 							gitVersioningFileProvider.commitUnlock();
