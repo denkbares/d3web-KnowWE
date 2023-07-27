@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -70,6 +71,11 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	// contains filter providers that are only applied to a specific key (e.g. filter by name)
 	// The key has to be provided in the search field (e.g. name=<name>)
 	private final Map<String, Function<Section<T>, String>> keyFilterProviders;
+
+	// contains filter providers that are only applied to a specific key (e.g. filter by name)
+	// The key has to be provided in the search field (e.g. name=<name>)
+	private final Map<String, Pair<Function<Section<T>, Double>, Function<String, Double>>> numKeyFilterProviders = new HashMap<>();
+
 	// contains filters that are always applied (chained with OR). No key needed.
 	private final Set<Function<Section<T>, String>> keylessFilterProviders;
 
@@ -180,6 +186,20 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 */
 	public GroupedFilterListSectionsRenderer<T> filter(String name, Function<Section<T>, String> filter) {
 		this.keyFilterProviders.put(name, filter);
+		return this;
+	}
+
+	/**
+	 * Adds a new filter provider to the supported filters. The filter provider is a function that maps each line to a
+	 * searchable string that is used to filter the lines for.
+	 *
+	 * @param name   the type of information to filter for, e.g. "prompt", "name", "description", etc.
+	 * @param filter the function that maps each line to searchable content
+	 * @return this instance to chain method calls
+	 * @throws IllegalArgumentException if the name is assigned to a filter
+	 */
+	public GroupedFilterListSectionsRenderer<T> filter(String name, Function<Section<T>, Double> filter, Function<String, Double> phraseToDoubleParser) {
+		this.numKeyFilterProviders.put(name, new Pair<>(filter, phraseToDoubleParser));
 		return this;
 	}
 
@@ -375,6 +395,11 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 						.map(Entry::getValue)
 						.map(textFun -> createFilter(textFun, operator, value))
 						.reduce(Predicate::or).ifPresent(filters::add);
+				numKeyFilterProviders.entrySet().stream()
+						.filter(entry -> entry.getKey().startsWith(name))
+						.map(Entry::getValue)
+						.map(funPair -> createNumFilter(funPair.getA(), operator, funPair.getB().apply(value)))
+						.reduce(Predicate::or).ifPresent(filters::add);
 			}
 			// remove all matched filters and add all remaining phrases
 			String rest = Strings.trim(matcher.replaceAll(""));
@@ -398,7 +423,8 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 			// other (simple) search phrases
 			if (Strings.nonBlank(rest)) {
-				Predicate<Section<T>> sectionTextFilter = createFilter(s -> s.getText().replaceAll("[-/\\\\\u00A0\\h\\s\\v]", ""), rest.replaceAll("[-/\\\\\u00A0\\h\\s\\v]", ""));
+				Predicate<Section<T>> sectionTextFilter = createFilter(s -> s.getText()
+						.replaceAll("[-/\\\\\u00A0\\h\\s\\v]", ""), rest.replaceAll("[-/\\\\\u00A0\\h\\s\\v]", ""));
 				Predicate<Section<T>> filtersPredicate = Predicates.FALSE(); // an empty predicate
 				for (Function<Section<T>, String> filter : keylessFilterProviders) {
 					filtersPredicate = filtersPredicate.or(createFilter(filter, rest.split("[\u00A0\\h\\s\\v]+")));
@@ -430,7 +456,28 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 			return section -> {
 				String text = textFunction.apply(section);
 				return Strings.nonBlank(text) &&
-						compare.test(NumberAwareComparator.CASE_INSENSITIVE.compare(text, phrase));
+					   compare.test(NumberAwareComparator.CASE_INSENSITIVE.compare(text, phrase));
+			};
+		}
+
+		private Predicate<Section<T>> createNumFilter(Function<Section<T>, Double> numFun, String operator, Double value) {
+			return switch (operator) {
+				case "<" -> createNumFilter(numFun, x -> x < 0, value);
+				case "<=" -> createNumFilter(numFun, x -> x <= 0, value);
+				case ">" -> createNumFilter(numFun, x -> x > 0, value);
+				case ">=" -> createNumFilter(numFun, x -> x >= 0, value);
+				case "=" -> createNumFilter(numFun, x -> x == 0, value);
+				default -> createFilter(s -> numFun.apply(s).toString(), value.toString());
+			};
+		}
+
+		private Predicate<Section<T>> createNumFilter(Function<Section<T>, Double> numFunction, DoublePredicate compare, Double value) {
+			return section -> {
+				if (Double.isNaN(value)) return false;
+				Double sectionValue = numFunction.apply(section);
+				if (sectionValue == null || Double.isNaN(sectionValue)) return false;
+				int comparatorResult = Double.compare(sectionValue, value);
+				return compare.test(comparatorResult);
 			};
 		}
 	}
