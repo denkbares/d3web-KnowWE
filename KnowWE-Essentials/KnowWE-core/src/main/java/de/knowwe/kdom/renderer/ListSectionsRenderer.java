@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
@@ -55,6 +58,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  */
 public class ListSectionsRenderer<T extends Type> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListSectionsRenderer.class);
 	public static final String CSS_TOOL_COLUMN = "list-sections-tools";
 	public static final String CSS_NAME_COLUMN = "list-sections-name";
 	public static final String CSS_DESCRIPTION_COLUMN = "list-sections-description";
@@ -130,7 +134,7 @@ public class ListSectionsRenderer<T extends Type> {
 	 */
 	public ListSectionsRenderer<T> header(String heading, String explainHtml) {
 		this.headers.put(columns.size(), "<span class='tooltipster' title='" + Strings.encodeHtml(explainHtml) + "'>" +
-				Strings.encodeHtml(heading) + "<span class='knowwe-superscript'>" + Icon.INFO.toHtml() + "</span></span>");
+										 Strings.encodeHtml(heading) + "<span class='knowwe-superscript'>" + Icon.INFO.toHtml() + "</span></span>");
 		return this;
 	}
 
@@ -310,9 +314,23 @@ public class ListSectionsRenderer<T extends Type> {
 	 * @return this instance to chain builder calls
 	 */
 	public ListSectionsRenderer<T> compiler(Class<? extends Compiler> compilerType) {
+		return compiler(compilerType, null);
+	}
+
+	/**
+	 * Adds a new column to show all ServiceMateCompilers for each section. The column will contain plain text of all
+	 * compiler names separated by a comma
+	 *
+	 * @param trimPattern pattern to remove from the compiler names
+	 * @return this instance to chain builder calls
+	 */
+	public ListSectionsRenderer<T> compiler(Class<? extends Compiler> compilerType, @Nullable String trimPattern) {
 		return column(CSS_COMPILERS_COLUMN, line -> {
 			Collection<? extends Compiler> compilers = Compilers.getCompilers(line, compilerType);
-			return compilers.stream().map(Compilers::getCompilerName).collect(Collectors.joining(", "));
+			return compilers.stream()
+					.map(Compilers::getCompilerName)
+					.map(s -> trimPattern == null ? s : s.replaceAll(trimPattern, ""))
+					.collect(Collectors.joining(", "));
 		});
 	}
 
@@ -332,11 +350,9 @@ public class ListSectionsRenderer<T extends Type> {
 
 	/**
 	 * Adds a new column to display a link to a page. The specified function should return the name of the page you
-	 * want
-	 * to link to, i.e. the name you would usually write in brackets[] when linking to the page, but without brackets.
-	 * The
-	 * column is added right after the already
-	 * existing columns. The rendered name is rendered as a link to the row's section.
+	 * want to link to, i.e. the name you would usually write in brackets[] when linking to the page, but without
+	 * brackets. The column is added right after the already existing columns. The rendered name is rendered as a link
+	 * to the row's section.
 	 *
 	 * @param pageName name of the page you want to link to
 	 * @return this instance to chain builder calls
@@ -430,9 +446,11 @@ public class ListSectionsRenderer<T extends Type> {
 		stackTrace = "<div style='white-space: pre'>" + stackTrace + "</div>";
 		page.appendHtmlTag("td", "colspan", String.valueOf(tools.size() + columns.size()), "title", stackTrace,
 				"class", "tooltipster knowwe-error");
-		page.append("Unable to render section from article '" + section.getTitle() + "' due to exception");
+		String messageText = "Unable to render section from article '" + section.getTitle() + "' due to exception";
+		page.append(messageText);
 		page.appendHtmlTag("/td");
 		page.appendHtmlTag("/tr");
+		LOGGER.error(messageText, e);
 	}
 
 	private void renderHeader(RenderResult page) {
