@@ -427,7 +427,7 @@ public class ListSectionsRenderer<T extends Type> {
 			return;
 		}
 
-		page.appendHtmlTag("table", "class", "list-sections");
+		page.appendHtmlTag("table", "class", "list-sections" + (headers.isEmpty() ? "" : " sticky-header"));
 		renderHeader(page);
 		for (Section<T> section : sections) {
 			try {
@@ -457,7 +457,8 @@ public class ListSectionsRenderer<T extends Type> {
 		// skip if no headings are defined
 		if (headers.isEmpty()) return;
 
-		// start header line
+		// start header and line
+		page.appendHtmlTag("thead");
 		page.appendHtmlTag("tr");
 
 		// skip tool columns
@@ -473,8 +474,9 @@ public class ListSectionsRenderer<T extends Type> {
 			page.appendHtmlTag("/th");
 		});
 
-		// close header line
+		// close header line and thead
 		page.appendHtmlTag("/tr");
+		page.appendHtmlTag("/thead");
 	}
 
 	private void renderLine(RenderResult page, Section<T> line) {

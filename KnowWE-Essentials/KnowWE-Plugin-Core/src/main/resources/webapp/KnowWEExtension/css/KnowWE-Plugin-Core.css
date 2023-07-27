@@ -344,6 +344,11 @@ table.list-sections {
 	margin: 20px;
 }
 
+table.list-sections thead th {
+	padding: 0.25em 0.5em;
+	white-space: pre;
+}
+
 table.list-sections td,
 table.list-sections th {
 	padding: 1px 0.25em;
@@ -392,7 +397,6 @@ table.list-sections td.list-sections-blank {
 }
 
 table.list-sections td.list-sections-progress {
-	text-align: right;
 	color: #888;
 }
 
@@ -401,7 +405,7 @@ table.list-sections tr:nth-child(odd) {
 }
 
 table.list-sections tr.highlighted {
-	background-color: rgba(195, 195, 195, 0.3) !important;
+	background-color: #E9E9E9 !important;
 }
 
 .grouped-list-section-wrapper .filter-input .form-control {
