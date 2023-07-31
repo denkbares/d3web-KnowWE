@@ -95,7 +95,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 * @param renderer    The single instance of {@link ListSectionsRenderer}
 	 */
 	public GroupedFilterListSectionsRenderer(String id, String placeholder, ListSectionsRenderer<T> renderer) {
-		this(id, placeholder, renderer.getContext(), Collections.singletonList(new Pair<>(null, renderer)), Collections.emptyMap());
+		this(id, placeholder, renderer.getContext(), Collections.singletonList(new Pair<>(null, renderer)));
 		this.emptyText = renderer.getEmptyText();
 	}
 
@@ -107,24 +107,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 * @param renderer The single instance of {@link ListSectionsRenderer}
 	 */
 	public GroupedFilterListSectionsRenderer(Section<?> self, ListSectionsRenderer<T> renderer) {
-		this(self, renderer.getContext(), Collections.singletonList(new Pair<>(null, renderer)), Collections.emptyMap());
-		this.emptyText = renderer.getEmptyText();
-	}
-
-	/**
-	 * Initializes an instance given only a single {@link ListSectionsRenderer} without a header. This can be used to
-	 * make a single instance of {@link ListSectionsRenderer} filterable.
-	 *
-	 * @param self               The section this renderer is supposed to render into
-	 * @param renderer           The single instance of {@link ListSectionsRenderer}
-	 * @param keyFilterProviders Contains a filter keywords (keys) each paired with a {@link Function} mapping from a
-	 *                           {@link Section} to a filterable string of this section (values). For example, the key
-	 *                           {@code name} should be paired with a function that, given a {@link Section}, returns a
-	 *                           name representation of this section. These providers are applied to allow for a more
-	 *                           fine-grained search.
-	 */
-	public GroupedFilterListSectionsRenderer(Section<?> self, ListSectionsRenderer<T> renderer, Map<String, Function<Section<T>, String>> keyFilterProviders) {
-		this(self, renderer.getContext(), Collections.singletonList(new Pair<>(null, renderer)), keyFilterProviders);
+		this(self, renderer.getContext(), Collections.singletonList(new Pair<>(null, renderer)));
 		this.emptyText = renderer.getEmptyText();
 	}
 
@@ -132,42 +115,23 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 * Initializes an instance given several {@link ListSectionsRenderer}s each paired with a header. The header should
 	 * be an HTML String representation.
 	 *
-	 * @param self               The section this renderer is supposed to render into
-	 * @param context            The user context
-	 * @param renderers          The groups of {@link ListSectionsRenderer} each paired with an HTML String
-	 *                           representation
-	 *                           of the associated header
-	 * @param keyFilterProviders Contains a filter keywords (keys) each paired with a {@link Function} mapping from a
-	 *                           {@link Section} to a filterable string of this section (values). For example, the key
-	 *                           {@code name} should be paired with a function that, given a {@link Section}, returns a
-	 *                           name representation of this section. These providers are applied to allow for a more
-	 *                           fine-grained search.
+	 * @param self      The section this renderer is supposed to render into
+	 * @param context   The user context
+	 * @param renderers The groups of {@link ListSectionsRenderer} each paired with an HTML String
+	 *                  representation
+	 *                  of the associated header
 	 */
-	public GroupedFilterListSectionsRenderer(Section<?> self, UserContext context, List<Pair<String, ListSectionsRenderer<T>>> renderers, Map<String, Function<Section<T>, String>> keyFilterProviders) {
-		this(self.getID(), "Filter " + self.getArticle().getTitle(), context, renderers, keyFilterProviders);
+	public GroupedFilterListSectionsRenderer(Section<?> self, UserContext context, List<Pair<String, ListSectionsRenderer<T>>> renderers) {
+		this(self.getID(), "Filter " + self.getArticle().getTitle(), context, renderers);
 	}
 
-	private GroupedFilterListSectionsRenderer(String id, String placeholder, UserContext context, List<Pair<String, ListSectionsRenderer<T>>> renderers, Map<String, Function<Section<T>, String>> keyFilterProviders) {
+	private GroupedFilterListSectionsRenderer(String id, String placeholder, UserContext context, List<Pair<String, ListSectionsRenderer<T>>> renderers) {
 		this.id = id;
 		this.renderers = renderers;
 		this.context = context;
 		this.placeholder = placeholder;
-		this.keyFilterProviders = new LinkedHashMap<>(keyFilterProviders);
+		this.keyFilterProviders = new LinkedHashMap<>();
 		this.keylessFilterProviders = new HashSet<>();
-	}
-
-	/**
-	 * Initializes an instance given several {@link ListSectionsRenderer}s each paired with a header. The header should
-	 * be an HTML String representation. Before rendering you should add some calls to {@link #filter(String, Function)}
-	 * to provide appropriate filters.
-	 *
-	 * @param self      The section this renderer is supposed to render into
-	 * @param context   The user context
-	 * @param renderers The groups of {@link ListSectionsRenderer} each paired with an HTML String representation of the
-	 *                  associated header
-	 */
-	public GroupedFilterListSectionsRenderer(Section<?> self, UserContext context, List<Pair<String, ListSectionsRenderer<T>>> renderers) {
-		this(self, context, renderers, Collections.emptyMap());
 	}
 
 	public GroupedFilterListSectionsRenderer<T> filter(Function<Section<T>, String> filter) {
@@ -390,16 +354,11 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 				String name = matcher.group(1);
 				String operator = matcher.group(2);
 				String value = matcher.group(3);
-				keyFilterProviders.entrySet().stream()
-						.filter(entry -> entry.getKey().startsWith(name))
-						.map(Entry::getValue)
-						.map(textFun -> createFilter(textFun, operator, value))
-						.reduce(Predicate::or).ifPresent(filters::add);
-				numKeyFilterProviders.entrySet().stream()
-						.filter(entry -> entry.getKey().startsWith(name))
-						.map(Entry::getValue)
-						.map(funPair -> createNumFilter(funPair.getA(), operator, funPair.getB().apply(value)))
-						.reduce(Predicate::or).ifPresent(filters::add);
+				addKeyFilter(keyFilterProviders, name, operator, value);
+				addNumFilter(numKeyFilterProviders, name, operator, value);
+				for (Pair<String, ListSectionsRenderer<T>> renderer : renderers) {
+					addKeyFilter(renderer.getB().getKeyFilters(), name, operator, value);
+				}
 			}
 			// remove all matched filters and add all remaining phrases
 			String rest = Strings.trim(matcher.replaceAll(""));
@@ -431,6 +390,26 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 				}
 				filters.add(Predicates.or(sectionTextFilter, filtersPredicate));
 			}
+		}
+
+		private void addNumFilter(Map<String, Pair<Function<Section<T>, Double>, Function<String, Double>>> numKeyFilterProviders, String name, String operator, String value) {
+			numKeyFilterProviders.entrySet().stream()
+					.filter(entry -> entry.getKey().startsWith(name.toLowerCase()))
+					.map(Entry::getValue)
+					.map(funPair -> createNumFilter(funPair.getA(), operator, funPair.getB().apply(value)))
+					.reduce(Predicate::or).ifPresent(filters::add);
+		}
+
+		private void addKeyFilter(Map<String, Function<Section<T>, String>> keyFilterProviders, String name, String operator, String value) {
+			keyFilterProviders.entrySet().stream()
+					.filter(entry -> {
+						String plainKeyLC = Strings.htmlToPlain(entry.getKey()).toLowerCase();
+						return plainKeyLC.startsWith(name.toLowerCase())
+							   || plainKeyLC.replaceAll("\\W", "").startsWith(name.toLowerCase().replaceAll("\\W", ""));
+					})
+					.map(Entry::getValue)
+					.map(textFun -> createFilter(textFun, operator, value))
+					.reduce(Predicate::or).ifPresent(filters::add);
 		}
 
 		@Override

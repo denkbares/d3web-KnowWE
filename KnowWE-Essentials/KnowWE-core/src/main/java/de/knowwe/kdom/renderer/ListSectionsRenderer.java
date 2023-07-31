@@ -9,7 +9,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -589,6 +591,17 @@ public class ListSectionsRenderer<T extends Type> {
 	public ListSectionsRenderer<T> filter(Predicate<Section<T>> filter) {
 		if (filter != null) this.sections.removeIf(filter.negate());
 		return this;
+	}
+
+	public Map<String, Function<Section<T>, String>> getKeyFilters() {
+		Map<String, Function<Section<T>, String>> keyFilters = new HashMap<>();
+		for (Map.Entry<Integer, String> entry : headers.entrySet()) {
+			if (columns.size() > entry.getKey()) {
+				Pair<String, Function<Section<T>, String>> column = columns.get(entry.getKey());
+				keyFilters.put(entry.getValue(), column.getB());
+			}
+		}
+		return keyFilters;
 	}
 
 	/**
