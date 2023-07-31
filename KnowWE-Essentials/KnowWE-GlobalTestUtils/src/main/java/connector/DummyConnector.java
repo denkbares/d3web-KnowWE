@@ -20,28 +20,6 @@
 
 package connector;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -49,6 +27,18 @@ import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
 import de.knowwe.jspwiki.JSPWikiConnector;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.*;
 
 public class DummyConnector implements WikiConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DummyConnector.class);
@@ -65,11 +55,19 @@ public class DummyConnector implements WikiConnector {
 	private final Map<String, String> locks = new HashMap<>();
 	private final String savePath;
 
+	private Properties properties;
+
 	public DummyConnector(String savePath) {
 		this.savePath = savePath;
 	}
 
 	public DummyConnector() {
+		this.properties = new Properties();
+		this.savePath = DEFAULT_SAVE_PATH;
+	}
+
+	public DummyConnector(Properties wikiProperties) {
+		this.properties = wikiProperties;
 		this.savePath = DEFAULT_SAVE_PATH;
 	}
 
@@ -81,7 +79,7 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	@Nullable
 	public String getWikiProperty(String property) {
-		return null;
+		return properties.getProperty(property);
 	}
 
 	@Override
