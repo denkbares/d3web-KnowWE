@@ -58,17 +58,20 @@ public class DummyConnector implements WikiConnector {
 	private Properties properties;
 
 	public DummyConnector(String savePath) {
-		this.savePath = savePath;
+		this(new Properties(), savePath);
 	}
 
 	public DummyConnector() {
-		this.properties = new Properties();
-		this.savePath = DEFAULT_SAVE_PATH;
+		this(new Properties(), DEFAULT_SAVE_PATH);
 	}
 
 	public DummyConnector(Properties wikiProperties) {
+		this(wikiProperties, DEFAULT_SAVE_PATH);
+	}
+
+	public DummyConnector(Properties wikiProperties, String savePath) {
 		this.properties = wikiProperties;
-		this.savePath = DEFAULT_SAVE_PATH;
+		this.savePath = savePath;
 	}
 
 	@Override
