@@ -66,7 +66,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	private final List<Pair<String, ListSectionsRenderer<T>>> renderers;
 	private final String id;
 	private final UserContext context;
-	private final String placeholder;
+	private String placeholder;
 
 	// contains filter providers that are only applied to a specific key (e.g. filter by name)
 	// The key has to be provided in the search field (e.g. name=<name>)
@@ -84,6 +84,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	private int noFilterLimit = -1;
 
 	private String emptyText = "-- no entries --";
+	private String searchHint = null;
 
 	/**
 	 * Initializes an instance given only a single {@link ListSectionsRenderer} without a header. This can be used to
@@ -258,6 +259,11 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 	 */
 	public void render(RenderResult page) {
 		if (!context.isReRendering() && !context.isRenderingPreview()) {
+			if (searchHint != null) {
+				page.appendHtmlTag("div", "class", "grouped-list-search-hint");
+				page.appendHtml(searchHint);
+				page.appendHtmlTag("/div");
+			}
 			page.appendHtmlTag("div", "class", "grouped-list-section-wrapper");
 			appendFilterFields(page);
 		}
@@ -341,6 +347,16 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 		String cookie = KnowWEUtils.getCookie(key, context);
 		if (Strings.isBlank(cookie)) return null;
 		return Strings.decodeURL(cookie).trim();
+	}
+
+	public GroupedFilterListSectionsRenderer<T> placeHolder(String placeHolder) {
+		this.placeholder = placeHolder;
+		return this;
+	}
+
+	public GroupedFilterListSectionsRenderer<T> searchHint(String searchHintHtml) {
+		this.searchHint = searchHintHtml;
+		return this;
 	}
 
 	private final class SearchPredicate implements Predicate<Section<T>> {

@@ -417,6 +417,11 @@ table.list-sections tr.highlighted {
 	cursor: hand;
 }
 
+.grouped-list-search-hint {
+	margin-bottom: .7em;
+	color: #777;
+}
+
 .filter-input .clear-filter {
 	margin: -1.5em;
 	cursor: pointer;
