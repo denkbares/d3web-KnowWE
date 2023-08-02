@@ -21,6 +21,7 @@ package de.d3web.we.ci4ke.dashboard.type;
 import de.d3web.testing.TestParser;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.kdom.dashtree.LineEndComment;
 
 /**
  * Class to parse a ignore declaration and its parameters
@@ -32,6 +33,7 @@ public class TestIgnoreType extends AbstractType {
 
 	public TestIgnoreType() {
 		// first is "ignore[:]", following are the arguments
+		addChildType(new LineEndComment());
 		addChildType(new ParameterType());
 		setSectionFinder(new RegexSectionFinder(TestParser.IGNORE_PATTERN));
 	}

@@ -1,17 +1,17 @@
 /*
  * Copyright (C) 2009 Chair of Artificial Intelligence and Applied Informatics
  * Computer Science VI, University of Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.TestGroup;
@@ -47,6 +48,7 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.dashtree.LineEndComment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
@@ -137,13 +139,12 @@ public class CIDashboardType extends DefaultMarkupType {
 									Collection<Article> articles = s.getArticleManager().getArticles();
 									Pattern onSaveArticleRegexPattern = Pattern.compile(parameter);
 									for (Article article : articles) {
-										if(onSaveArticleRegexPattern.matcher(article.getTitle()).matches()) {
+										if (onSaveArticleRegexPattern.matcher(article.getTitle()).matches()) {
 											monitoredArticles.add(article.getTitle());
 										}
 									}
-
 								}
-								if(monitoredArticles.isEmpty()) {
+								if (monitoredArticles.isEmpty()) {
 									msgs.add(Messages.error("Article '" + parameter
 											+ "' for trigger does not exist"));
 								}
@@ -173,16 +174,29 @@ public class CIDashboardType extends DefaultMarkupType {
 			List<ArgsCheckResult> messages = new ArrayList<>();
 			for (Section<? extends AnnotationContentType> annoSection : annotationSections) {
 				String type = annoSection.get().getName(annoSection);
+				String textWithoutComment = annoSection.getChildren()
+						.stream()
+						.filter(c -> !(c.get() instanceof LineEndComment))
+						.map(c -> {
+							if (c.getChildren().isEmpty()) {
+								return c.getText();
+							}
+							else {
+								return c.getChildren().stream()
+										.filter(l -> !(l.get() instanceof LineEndComment))
+										.map(Section::getText).collect(Collectors.joining());
+							}
+						})
+						.collect(Collectors.joining());
 				if (type.equalsIgnoreCase(GROUP_KEY)) {
 					// parse group
-					String text = annoSection.getText();
 					TestSpecification<?> group = new TestSpecification<>(
-							new TestGroup(), "void", new String[] { text }, new String[0][]);
+							new TestGroup(), "void", new String[] { textWithoutComment }, new String[0][]);
 					tests.add(group);
 				}
 				else {
 					// parse test
-					TestParser testParser = new TestParser(annoSection.getText());
+					TestParser testParser = new TestParser(textWithoutComment);
 					TestSpecification<?> executableTest = testParser.getTestSpecification();
 					messages.add(testParser.getParameterCheckResult());
 					messages.addAll(testParser.getIgnoreCheckResults());
@@ -216,12 +230,11 @@ public class CIDashboardType extends DefaultMarkupType {
 						msgs.add(Messages.error(messageText));
 					}
 					else if (message.hasWarning(i)) {
-						msgs.add(Messages.warning( messageText));
+						msgs.add(Messages.warning(messageText));
 					}
-
 				}
 				if (arguments.length == 0 && message.getMessage(0) != null) {
-					msgs.add(Messages.error( message.getMessage(0)));
+					msgs.add(Messages.error(message.getMessage(0)));
 				}
 			}
 			Messages.storeMessages(section, this.getClass(), msgs);
@@ -229,13 +242,11 @@ public class CIDashboardType extends DefaultMarkupType {
 
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
-			CIHook ciHook = (CIHook) section.getObject(CIHook.CI_HOOK_STORE_KEY);
+			CIHook ciHook = section.getObject(CIHook.CI_HOOK_STORE_KEY);
 			if (ciHook != null) {
 				CIHookManager.unregisterHook(ciHook);
 			}
 			CIDashboardManager.unregisterDashboard(section);
 		}
-
 	}
-
 }
