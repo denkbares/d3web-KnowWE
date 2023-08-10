@@ -4,49 +4,13 @@
 
 package de.knowwe.core;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.logging.LogManager;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import com.denkbares.collections.PriorityList;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
-import com.denkbares.plugin.Extension;
-import com.denkbares.plugin.JPFPluginManager;
-import com.denkbares.plugin.Plugin;
-import com.denkbares.plugin.PluginManager;
-import com.denkbares.plugin.Resource;
+import com.denkbares.plugin.*;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.compile.Compiler;
-import de.knowwe.core.compile.CompilerManager;
-import de.knowwe.core.compile.Compilers;
-import de.knowwe.core.compile.DefaultGlobalCompiler;
-import de.knowwe.core.compile.PackageRegistrationCompiler;
-import de.knowwe.core.compile.PackageUnregistrationCompiler;
+import de.knowwe.core.compile.*;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.Article;
@@ -63,6 +27,16 @@ import de.knowwe.event.InitEvent;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
 import de.knowwe.tools.ToolUtils;
+import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
+import java.util.*;
+import java.util.logging.LogManager;
 
 import static de.knowwe.core.utils.KnowWEUtils.getDefaultArticleManager;
 
@@ -248,8 +222,9 @@ public class Environment {
 
 		ArticleManager defaultArticleManager = getDefaultArticleManager();
 
-		if (!originalText.equals(content) || fullParse) {
-			if (!Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
+		boolean contentChange = !originalText.equals(content);
+		if (contentChange || fullParse) {
+			if (contentChange && !Environment.getInstance().getWikiConnector().userCanEditArticle(title, httpRequest)) {
 				throw new UpdateNotAllowedException();
 			}
 
