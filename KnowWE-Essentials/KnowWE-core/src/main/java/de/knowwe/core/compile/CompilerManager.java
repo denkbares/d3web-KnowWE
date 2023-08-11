@@ -530,7 +530,7 @@ public class CompilerManager {
 	/**
 	 * Removes an existing compiler with the specific priority.
 	 * <p/>
-	 * Please not that it is allowed that compilers are added and removed while compiling the wiki. Usually a more
+	 * Please note that it is allowed that compilers are added and removed while compiling the wiki. Usually a more
 	 * prioritized compiler may add or remove sub-sequential Compilers depending on specific markups, e.g. defining a
 	 * knowledge base or triple store for specific package combination to be compiled.
 	 *
