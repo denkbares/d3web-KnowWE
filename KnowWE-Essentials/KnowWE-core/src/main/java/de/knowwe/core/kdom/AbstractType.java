@@ -64,8 +64,8 @@ public abstract class AbstractType implements Type, Sectionizable {
 	 * certain type inside the KDOM. This set will be filled lazily while the KDOM is created. For search speed it would
 	 * be better to have this set in every {@link Section} with the actual successor types of this section, but to
 	 * reduce the memory overhead of another Set in each individual {@link Section}, we just do this per type. It will
-	 * not be much slower to search and we can also reduce the overhead for creating this set (because it we don't need
-	 * to to it every time a new Section is created).
+	 * not be much slower to search and we can also reduce the overhead for creating this set (because we don't need
+	 * to do it every time a new Section is created).
 	 */
 	private final Set<Class<?>> successorTypes = new HashSet<>();
 
