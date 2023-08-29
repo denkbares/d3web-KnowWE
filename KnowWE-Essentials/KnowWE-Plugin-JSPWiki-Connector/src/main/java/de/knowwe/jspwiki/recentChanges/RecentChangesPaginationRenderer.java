@@ -53,221 +53,223 @@ import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
 @SuppressWarnings("rawtypes")
 public class RecentChangesPaginationRenderer extends PaginationRenderer {
 
-	public RecentChangesPaginationRenderer(Renderer decoratedRenderer, SortingMode sorting, boolean supportFiltering) {
-		super(decoratedRenderer, sorting, supportFiltering);
-	}
+    public RecentChangesPaginationRenderer(Renderer decoratedRenderer, SortingMode sorting, boolean supportFiltering) {
+        super(decoratedRenderer, sorting, supportFiltering);
+    }
 
-	static boolean getCheckbox(UserContext userContext, String checkBox) {
-		JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(userContext);
-		Boolean show = null;
-		try {
-			show = Boolean.valueOf(String.valueOf(localSectionStorage.get(checkBox)));
-		}
-		catch (Exception ignored) {
-		}
-		if (localSectionStorage.isEmpty() || show == null) {
-			switch (checkBox) {
-				case "page" -> {
-					return true;
-				}
-				case "attachment", "intermediate" -> {
-					return false;
-				}
-			}
-		}
+    static boolean getCheckbox(UserContext userContext, String checkBox) {
+        JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(userContext);
+        if (!localSectionStorage.isEmpty() && !isFilterActive(localSectionStorage) && !checkBox.equals("page")) {
+            return false;
+        }
+        Boolean show = null;
+        try {
+            show = Boolean.valueOf(String.valueOf(localSectionStorage.get(checkBox)));
+        } catch (Exception ignored) {
+        }
+        if (localSectionStorage.isEmpty() || show == null) {
+            switch (checkBox) {
+                case "page" -> {
+                    return true;
+                }
+                case "attachment", "intermediate" -> {
+                    return false;
+                }
+            }
+        }
 
-		return (boolean) localSectionStorage.get(checkBox);
-	}
+        return (boolean) localSectionStorage.get(checkBox);
+    }
 
-	@Override
-	protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {
-		boolean tickedPage = getCheckbox(user, "page");
-		boolean tickedAtt = getCheckbox(user, "attachment");
-		boolean tickedInterm = getCheckbox(user, "intermediate");
-		if (tickedPage) {
-			result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-pages", "id", "showPages", "name", "showPages", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'page')", "checked", "checked");
-		}
-		else {
-			result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-pages", "id", "showPages", "name", "showPages", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'page')");
-		}
-		result.appendHtmlElement("label", "Pages", "class", "fillText", "for", "showPages");
-		if (tickedAtt) {
-			result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-attachments", "id", "showAttachments", "name", "showAttachments", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'attachment')", "checked", "checked");
-		}
-		else {
-			result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-attachments", "id", "showAttachments", "name", "showAttachments", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'attachment')");
-		}
-		result.appendHtmlElement("label", "Attachments", "class", "fillText", "for", "showAttachments");
-		if (tickedInterm) {
-			result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-intermediate", "id", "showIntermediate", "name", "showIntermediate", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'intermediate')", "checked", "checked");
-		}
-		else {
-			result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-intermediate", "id", "showIntermediate", "name", "showIntermediate", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'intermediate')");
-		}
-		result.appendHtmlElement("label", "Intermediate Versions", "class", "fillText", "for", "showIntermediate");
+    static private boolean isFilterActive(JSONObject localSectionStorage) {
+        JSONObject pagination = (JSONObject) localSectionStorage.get("pagination");
+        JSONObject filter = (JSONObject) pagination.get("filter");
+        return (boolean) filter.get("active");
+    }
 
-		super.renderFilterTools(section, user, result);
-	}
+    @Override
+    protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {
+        boolean tickedPage = getCheckbox(user, "page");
+        boolean tickedAtt = getCheckbox(user, "attachment");
+        boolean tickedInterm = getCheckbox(user, "intermediate");
+        if (tickedPage) {
+            result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-pages", "id", "showPages", "name", "showPages", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'page')", "checked", "checked");
+        } else {
+            result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-pages", "id", "showPages", "name", "showPages", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'page')");
+        }
+        result.appendHtmlElement("label", "Pages", "class", "fillText", "for", "showPages");
+        if (tickedAtt) {
+            result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-attachments", "id", "showAttachments", "name", "showAttachments", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'attachment')", "checked", "checked");
+        } else {
+            result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-attachments", "id", "showAttachments", "name", "showAttachments", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'attachment')");
+        }
+        result.appendHtmlElement("label", "Attachments", "class", "fillText", "for", "showAttachments");
+        if (tickedInterm) {
+            result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-intermediate", "id", "showIntermediate", "name", "showIntermediate", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'intermediate')", "checked", "checked");
+        } else {
+            result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-intermediate", "id", "showIntermediate", "name", "showIntermediate", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'intermediate')");
+        }
+        result.appendHtmlElement("label", "Intermediate Versions", "class", "fillText", "for", "showIntermediate");
 
-	@Override
-	protected void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
-		int count = getCount(sec, user);
-		renderToolBarElement(sec, result, () -> {
-			Integer[] sizeArray = getSizeChoices(user);
-			result.appendHtml("<span class='fillText'>Show </span><select class='count'>");
+        super.renderFilterTools(section, user, result);
+    }
 
-			boolean foundSelected = false;
-			for (Integer size : sizeArray) {
-				boolean selected = count == size;
-				if (selected) foundSelected = true;
-				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
-				result.appendHtml("<option "
-								  + (setSelected ? "selected='selected' " : "")
-								  + "value='" + size + "'>"
-								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-								  + "</option>");
-			}
-			result.appendHtml("</select>");
-			result.appendHtml(getResultSizeTag(sec, user));
-			result.appendHtml("<div class='toolSeparator'>");
-			result.appendHtml("</div>");
-		});
-	}
+    @Override
+    protected void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
+        int count = getCount(sec, user);
+        renderToolBarElement(sec, result, () -> {
+            Integer[] sizeArray = getSizeChoices(user);
+            result.appendHtml("<span class='fillText'>Show </span><select class='count'>");
 
-	private String getResultSizeTag(Section<?> sec, UserContext user) {
-		String resultSize = String.valueOf(getRecentChanges(sec, user).size());
-		String tag = "";
-		if (resultSize.equals(UNKNOWN_RESULT_SIZE)) {
-			tag += "<span class=fillText> rows (overall number unknown)</span>";
-		}
-		else {
-			int resultSizeInt = Integer.parseInt(resultSize);
-			tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
-			tag += "<span class=fillText>" + (getCount(sec, user) == Integer.MAX_VALUE ? "" : " of");
-			tag += " " + resultSize + " " + Strings.pluralOf(resultSizeInt, "row", false) + "</span>";
-		}
-		return tag;
-	}
+            boolean foundSelected = false;
+            for (Integer size : sizeArray) {
+                boolean selected = count == size;
+                if (selected) foundSelected = true;
+                boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
+                result.appendHtml("<option "
+                        + (setSelected ? "selected='selected' " : "")
+                        + "value='" + size + "'>"
+                        + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+                        + "</option>");
+            }
+            result.appendHtml("</select>");
+            result.appendHtml(getResultSizeTag(sec, user));
+            result.appendHtml("<div class='toolSeparator'>");
+            result.appendHtml("</div>");
+        });
+    }
 
-	private static final RecentChangesUtils util = new RecentChangesUtils();
-	private static final Logger LOGGER = LoggerFactory.getLogger(RecentChangesRenderer.class);
+    private String getResultSizeTag(Section<?> sec, UserContext user) {
+        String resultSize = String.valueOf(getRecentChanges(sec, user).size());
+        String tag = "";
+        if (resultSize.equals(UNKNOWN_RESULT_SIZE)) {
+            tag += "<span class=fillText> rows (overall number unknown)</span>";
+        } else {
+            int resultSizeInt = Integer.parseInt(resultSize);
+            tag += "<input class='resultSize' style='display:none' value='" + resultSize + "'/>";
+            tag += "<span class=fillText>" + (getCount(sec, user) == Integer.MAX_VALUE ? "" : " of");
+            tag += " " + resultSize + " " + Strings.pluralOf(resultSizeInt, "row", false) + "</span>";
+        }
+        return tag;
+    }
 
-	public List<Page> getRecentChanges(Section<?> sec, UserContext user) {
-		Set<Page> recentChanges = getWikiConnector().getPageManager().getRecentChanges();
-		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
-		Set<Page> filteredRecentChanges = filter(filter, recentChanges, user);
-		PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
-		return sortPages(sec, user, filteredRecentChanges);
-	}
+    private static final RecentChangesUtils util = new RecentChangesUtils();
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecentChangesRenderer.class);
 
-	public Set<Page> filter(@NotNull Map<String, Set<Pattern>> filter, Set<Page> recentChanges, UserContext user) {
-		Set<Page> filteredPages = new LinkedHashSet<>();
-		if (!filter.isEmpty()) {
-			for (Page page : recentChanges) {
-				boolean pageMatches = true;
-				for (String columnName : filter.keySet()) {
-					String text = util.getColumnValueByName(columnName, page);
-					Set<Pattern> patterns = filter.getOrDefault(columnName, Set.of());
-					if (patterns.size() < 1) {
-						continue;
-					}
-					if (patterns.stream().noneMatch(p -> p.matcher(text).matches())) {
-						pageMatches = false;
-						break;
-					}
-				}
-				if (pageMatches) {
-					filteredPages.add(page);
-				}
-			}
-		}
-		else {
-			filteredPages = recentChanges;
-		}
-		return getRecentChangesWithShowFilter(filteredPages, user, filter);
-	}
+    public List<Page> getRecentChanges(Section<?> sec, UserContext user) {
+        Set<Page> recentChanges = getWikiConnector().getPageManager().getRecentChanges();
+        Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
+        Set<Page> filteredRecentChanges = filter(filter, recentChanges, user);
+        PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
+        return sortPages(sec, user, filteredRecentChanges);
+    }
 
-	private Set<Page> getRecentChangesWithShowFilter(Set<Page> sortedFilteredRecentChanges, UserContext user, Map<String, Set<Pattern>> filter) {
-		Set<Page> recentChangesCleaned = new LinkedHashSet<>();
-		boolean showPages = RecentChangesPaginationRenderer.getCheckbox(user, "page");
-		boolean showAttachments = RecentChangesPaginationRenderer.getCheckbox(user, "attachment");
-		boolean showIntermediate = RecentChangesPaginationRenderer.getCheckbox(user, "intermediate");
-		for (Page page : sortedFilteredRecentChanges) {
-			if (!(page instanceof Attachment) && showPages) {
-				addPage(recentChangesCleaned, page, showIntermediate);
-			}
-			else if (page instanceof Attachment && showAttachments) {
-				addPage(recentChangesCleaned, page, showIntermediate);
-			}
-		}
-		return recentChangesCleaned;
-	}
+    public Set<Page> filter(@NotNull Map<String, Set<Pattern>> filter, Set<Page> recentChanges, UserContext user) {
+        Set<Page> filteredPages = new LinkedHashSet<>();
+        if (!filter.isEmpty()) {
+            for (Page page : recentChanges) {
+                boolean pageMatches = true;
+                for (String columnName : filter.keySet()) {
+                    String text = util.getColumnValueByName(columnName, page);
+                    Set<Pattern> patterns = filter.getOrDefault(columnName, Set.of());
+                    if (patterns.size() < 1) {
+                        continue;
+                    }
+                    if (patterns.stream().noneMatch(p -> p.matcher(text).matches())) {
+                        pageMatches = false;
+                        break;
+                    }
+                }
+                if (pageMatches) {
+                    filteredPages.add(page);
+                }
+            }
+        } else {
+            filteredPages = recentChanges;
+        }
+        return getRecentChangesWithShowFilter(filteredPages, user, filter);
+    }
 
-	@NotNull
-	private List<Page> sortPages(Section<?> sec, UserContext user, Set<Page> filteredRecentChanges) {
-		List<Pair<String, Comparator>> columnComparators = PaginationRenderer.getMultiColumnSorting(sec, user).stream()
-				.map(p -> new Pair<>(p.getA(), createComparator(p.getA(), p.getB())))
-				.collect(Collectors.toList());
-		if (columnComparators.isEmpty()) {
-			columnComparators.add(new Pair<>(LAST_MODIFIED, createComparator(LAST_MODIFIED, false)));
-		}
-		PageComparator pageComparator = new PageComparator(columnComparators);
-		List<Page> sortedFilteredRecentChanges = new ArrayList<>(filteredRecentChanges);
-		sortedFilteredRecentChanges.sort(pageComparator);
-		return sortedFilteredRecentChanges;
-	}
+    private Set<Page> getRecentChangesWithShowFilter(Set<Page> sortedFilteredRecentChanges, UserContext user, Map<String, Set<Pattern>> filter) {
+        Set<Page> recentChangesCleaned = new LinkedHashSet<>();
+        boolean showPages = RecentChangesPaginationRenderer.getCheckbox(user, "page");
+        boolean showAttachments = RecentChangesPaginationRenderer.getCheckbox(user, "attachment");
+        boolean showIntermediate = RecentChangesPaginationRenderer.getCheckbox(user, "intermediate");
+        for (Page page : sortedFilteredRecentChanges) {
+            if (!(page instanceof Attachment) && showPages) {
+                addPage(recentChangesCleaned, page, showIntermediate);
+            } else if (page instanceof Attachment && showAttachments) {
+                addPage(recentChangesCleaned, page, showIntermediate);
+            }
+        }
+        return recentChangesCleaned;
+    }
 
-	private Comparator createComparator(String columnName, boolean ascending) {
-		if (columnName.equals(LAST_MODIFIED)) {
-			Comparator<Date> comparator = Date::compareTo;
-			return ascending ? comparator : comparator.reversed();
-		}
-		else {
-			Comparator<String> comparator = String::compareToIgnoreCase;
-			return ascending ? comparator : comparator.reversed();
-		}
-	}
+    @NotNull
+    private List<Page> sortPages(Section<?> sec, UserContext user, Set<Page> filteredRecentChanges) {
+        List<Pair<String, Comparator>> columnComparators = PaginationRenderer.getMultiColumnSorting(sec, user).stream()
+                .map(p -> new Pair<>(p.getA(), createComparator(p.getA(), p.getB())))
+                .collect(Collectors.toList());
+        if (columnComparators.isEmpty()) {
+            columnComparators.add(new Pair<>(LAST_MODIFIED, createComparator(LAST_MODIFIED, false)));
+        }
+        PageComparator pageComparator = new PageComparator(columnComparators);
+        List<Page> sortedFilteredRecentChanges = new ArrayList<>(filteredRecentChanges);
+        sortedFilteredRecentChanges.sort(pageComparator);
+        return sortedFilteredRecentChanges;
+    }
 
-	private void addPage(Set<Page> filteredPages, Page page, boolean showIntermediate) {
-		if (showIntermediate) {
-			List<Page> versionHistory;
-			try {
-				versionHistory = getWikiConnector().getPageManager().getVersionHistory(page.getName());
-			}
-			catch (Exception e) {
-				versionHistory = List.of();
-				LOGGER.error("Exception while getting version history", e);
-			}
-			filteredPages.addAll(versionHistory);
-		}
-		else {
-			filteredPages.add(page);
-		}
-	}
+    private Comparator createComparator(String columnName, boolean ascending) {
+        if (columnName.equals(LAST_MODIFIED)) {
+            Comparator<Date> comparator = Date::compareTo;
+            return ascending ? comparator : comparator.reversed();
+        } else {
+            Comparator<String> comparator = String::compareToIgnoreCase;
+            return ascending ? comparator : comparator.reversed();
+        }
+    }
 
-	private JSPWikiConnector getWikiConnector() {
-		return (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-	}
+    private void addPage(Set<Page> filteredPages, Page page, boolean showIntermediate) {
+        if (showIntermediate) {
+            List<Page> versionHistory;
+            try {
+                versionHistory = getWikiConnector().getPageManager().getVersionHistory(page.getName());
+            } catch (Exception e) {
+                versionHistory = List.of();
+                LOGGER.error("Exception while getting version history", e);
+            }
+            filteredPages.addAll(versionHistory);
+            if (versionHistory.isEmpty()) {    //sometimes version history doesn't contain current version if only one exists
+                filteredPages.add(page);
+            }
+        } else {
+            filteredPages.add(page);
+        }
+    }
 
-	private List<Page> checkVersionHistoryWithDate(List<Page> versionHistory, Set<Pattern> patterns) {
-		List<Page> filteredPages = new ArrayList<>();
-		for (Page page : versionHistory) {
-			String formattedDate = util.toDateString(page.getLastModified());
-			if (patterns.stream().anyMatch(p -> p.matcher(formattedDate).matches())) {
-				filteredPages.add(page);
-			}
-		}
-		return filteredPages;
-	}
+    private JSPWikiConnector getWikiConnector() {
+        return (JSPWikiConnector) Environment.getInstance().getWikiConnector();
+    }
 
-	private List<Page> checkVersionHistoryWithString(List<Page> versionHistory, Set<Pattern> patterns, String type) {
-		List<Page> filteredPages = new ArrayList<>();
-		for (Page page : versionHistory) {
-			String toMatch = util.getColumnValueByName(type, page);
-			if (patterns.stream().anyMatch(p -> p.matcher(toMatch).matches())) {
-				filteredPages.add(page);
-			}
-		}
-		return filteredPages;
-	}
+    private List<Page> checkVersionHistoryWithDate(List<Page> versionHistory, Set<Pattern> patterns) {
+        List<Page> filteredPages = new ArrayList<>();
+        for (Page page : versionHistory) {
+            String formattedDate = util.toDateString(page.getLastModified());
+            if (patterns.stream().anyMatch(p -> p.matcher(formattedDate).matches())) {
+                filteredPages.add(page);
+            }
+        }
+        return filteredPages;
+    }
+
+    private List<Page> checkVersionHistoryWithString(List<Page> versionHistory, Set<Pattern> patterns, String type) {
+        List<Page> filteredPages = new ArrayList<>();
+        for (Page page : versionHistory) {
+            String toMatch = util.getColumnValueByName(type, page);
+            if (patterns.stream().anyMatch(p -> p.matcher(toMatch).matches())) {
+                filteredPages.add(page);
+            }
+        }
+        return filteredPages;
+    }
 }
