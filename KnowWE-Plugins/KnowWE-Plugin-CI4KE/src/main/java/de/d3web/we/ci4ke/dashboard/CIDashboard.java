@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.d3web.testing.BuildResult;
@@ -95,6 +97,7 @@ public class CIDashboard {
 	 * @return the latest build
 	 * @created 19.05.2012
 	 */
+	@Nullable
 	public BuildResult getLatestBuild() {
 		return getBuildIfPossible(-1, true);
 	}
@@ -109,6 +112,7 @@ public class CIDashboard {
 	 *                     not happen
 	 * @created 04.10.2013
 	 */
+	@Nullable
 	public WikiAttachment getBuildAttachment() throws IOException {
 		return persistence.getAttachment();
 	}
@@ -122,6 +126,7 @@ public class CIDashboard {
 	 * @return the specified build
 	 * @created 19.05.2012
 	 */
+	@Nullable
 	public BuildResult getBuild(int buildNumber) {
 		return getBuildIfPossible(buildNumber, true);
 	}
@@ -141,6 +146,7 @@ public class CIDashboard {
 	 * @return the specified builds
 	 * @created 19.05.2012
 	 */
+	@NotNull
 	public List<BuildResult> getBuilds(int fromIndex, int numberOfBuilds) {
 		fromIndex = cap(fromIndex);
 		List<BuildResult> results = new ArrayList<>(numberOfBuilds);
