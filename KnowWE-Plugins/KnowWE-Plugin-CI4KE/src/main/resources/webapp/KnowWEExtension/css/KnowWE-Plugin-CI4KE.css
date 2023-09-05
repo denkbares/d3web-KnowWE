@@ -22,6 +22,14 @@
 	border: 1px solid #AAA;
 }
 
+/*
+ prevent the table from changing its size and moving around when going to older builds by giving the first element
+ of the table a transparent border matching that of `.selectedBuildNR`
+ */
+.build-table tr:first-child:not(.selectedBuildNR) {
+	border: 1px solid transparent;
+}
+
 .ci-column-left {
 	/*	border: thin solid #000000;  */
 	/*	border-right: 1px solid #DDD; */
@@ -133,6 +141,7 @@ a.ci-daemon:hover {
 	font-size: 70%;
 	font-weight: bold;
 	padding-left: 2px;
+	font-family: monospace;
 }
 
 .ci-collapsible-box h4 {
@@ -146,6 +155,8 @@ a.ci-daemon:hover {
 	cursor: pointer;
 	text-decoration: underline;
 }
+
+
 
 /* Span box showing the last editor of an article */
 #last-author-changed {
