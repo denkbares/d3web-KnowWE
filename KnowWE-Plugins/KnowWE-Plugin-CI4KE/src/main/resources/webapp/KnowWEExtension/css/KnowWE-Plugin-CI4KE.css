@@ -22,14 +22,6 @@
 	border: 1px solid #AAA;
 }
 
-/*
- prevent the table from changing its size and moving around when going to older builds by giving the first element
- of the table a transparent border matching that of `.selectedBuildNR`
- */
-.build-table tr:first-child:not(.selectedBuildNR) {
-	border: 1px solid transparent;
-}
-
 .ci-column-left {
 	/*	border: thin solid #000000;  */
 	/*	border-right: 1px solid #DDD; */
@@ -73,7 +65,7 @@
 
 .ci-title {
 	/*border-bottom: 1px solid #DDD;*/
-	padding: 0px 0px 6px 6px;
+	padding: 0 0 6px 6px;
 	white-space: normal;
 }
 
@@ -111,7 +103,7 @@ a.ci-daemon:hover {
 
 .ci-no-details {
 	color: #888;
-	margin: 15px 0px 10px 10px;
+	margin: 15px 0 10px 10px;
 }
 
 .ci-collapsible-box {
@@ -148,15 +140,13 @@ a.ci-daemon:hover {
 	color: #000000;
 	cursor: pointer;
 	/*margin:3px 0;*/
-	padding: 5px 0px 5px 5px;
+	padding: 5px 0 5px 5px;
 }
 
 .build-table a:hover {
 	cursor: pointer;
 	text-decoration: underline;
 }
-
-
 
 /* Span box showing the last editor of an article */
 #last-author-changed {
@@ -191,7 +181,7 @@ a.ci-daemon:hover {
 }
 
 .ci-progess-text {
-	padding: 0px 5px 0px 5px;
+	padding: 0 5px 0 5px;
 }
 
 div.ci-test-nav-outer {
