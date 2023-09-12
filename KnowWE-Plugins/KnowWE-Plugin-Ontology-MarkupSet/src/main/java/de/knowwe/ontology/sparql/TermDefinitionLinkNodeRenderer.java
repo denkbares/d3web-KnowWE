@@ -3,6 +3,7 @@ package de.knowwe.ontology.sparql;
 import java.util.Collection;
 
 import org.eclipse.rdf4j.model.Value;
+import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -23,12 +24,35 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 
 	@Override
 	public String renderNode(Value node, String text, String variable, UserContext user, Rdf2GoCore core, RenderMode mode) {
-		String abbreviatedName = Rdf2GoUtils.reduceNamespace(core, text);
-		String[] split = abbreviatedName.split(":");
+		String termName = Rdf2GoUtils.reduceNamespace(core, text);
+		String[] split = termName.split(":");
 		for (int i = 0; i < split.length; i++) {
 			split[i] = Strings.decodeURL(split[i]);
 		}
 		Identifier identifier = new Identifier(split);
+
+		String rendered = renderDefinitionLink(identifier, termName, user, core, mode);
+		return rendered == null ? text : rendered;
+	}
+
+	protected String renderDefinitionLink(Identifier identifier, String termName, UserContext user, Rdf2GoCore core, RenderMode mode) {
+		TerminologyManager manager = getTerminologyManager(user, core);
+		if (manager == null) return null;
+		Section<?> termDefiningSection = manager.getTermDefiningSection(identifier);
+		if (termDefiningSection == null) return null;
+		if (mode == RenderMode.HTML) {
+			return "<a href='" + KnowWEUtils.getURLLink(termDefiningSection) + "'>" + termName + "</a>";
+		}
+		if (mode == RenderMode.ToolMenu) {
+			RenderResult renderResult = new RenderResult(user);
+			ToolMenuDecoratingRenderer.renderToolMenuDecorator(termName, termDefiningSection.getID(), ToolUtils.hasToolInstances(termDefiningSection, user), renderResult);
+			return renderResult.toString();
+		}
+		return null;
+	}
+
+	@Nullable
+	protected TerminologyManager getTerminologyManager(UserContext user, Rdf2GoCore core) {
 		TerminologyManager manager = null;
 		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(user,
 				KnowWEUtils.getArticleManager(user.getWeb()), Rdf2GoCompiler.class);
@@ -37,21 +61,7 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 				manager = rdf2GoCompiler.getTerminologyManager();
 			}
 		}
-		if (manager != null) {
-			Section<?> termDefiningSection = manager.getTermDefiningSection(identifier);
-			if (termDefiningSection != null) {
-				String termName = Strings.concat(":", split);
-				if (mode == RenderMode.HTML) {
-					return "<a href='" + KnowWEUtils.getURLLink(termDefiningSection) + "'>" + termName + "</a>";
-				}
-				if (mode == RenderMode.ToolMenu) {
-					RenderResult renderResult = new RenderResult(user);
-					ToolMenuDecoratingRenderer.renderToolMenuDecorator(termName, termDefiningSection.getID(), ToolUtils.hasToolInstances(termDefiningSection, user), renderResult);
-					return renderResult.toString();
-				}
-			}
-		}
-		return text;
+		return manager;
 	}
 
 	@Override
