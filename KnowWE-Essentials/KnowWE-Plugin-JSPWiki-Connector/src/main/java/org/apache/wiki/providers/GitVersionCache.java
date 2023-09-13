@@ -196,26 +196,7 @@ public class GitVersionCache {
 	}
 
 	private long getObjectSize(RevCommit version, String path) throws IOException {
-//		long ret;
-//		ObjectId objectId = null;
-//		try (TreeWalk treeWalkDir = new TreeWalk(repository)) {
-//			treeWalkDir.reset(version.getTree());
-//			treeWalkDir.setFilter(PathFilter.create(path));
-//			treeWalkDir.setRecursive(true);
-//			//only the attachment directory
-//			if (treeWalkDir.next()) {
-//				objectId = treeWalkDir.getObjectId(0);
-//			}
-//		}
-//		if (objectId != null) {
-//			ObjectLoader loader = repository.open(objectId);
-//			ret = loader.getSize();
-//		}
-//		else {
-//			ret = 0;
-//		}
-//		return ret;
-		return 0L;
+		return new File(this.engine.getWikiProperties().getProperty("var.basedir"), path).length();
 	}
 
 	private void putInCache(Map<String, List<GitCacheItem>> cache, GitCacheItem toCache, String key) {
