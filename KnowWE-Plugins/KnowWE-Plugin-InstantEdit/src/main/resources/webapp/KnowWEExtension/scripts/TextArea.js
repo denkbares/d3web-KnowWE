@@ -1,4 +1,5 @@
 function TextArea(area) {
+	this.removeEvents();
 	if (area.textarea != null) {
 		return area.textarea;
 	}
@@ -55,16 +56,20 @@ TextArea.focusNextTextArea = function (currentOrNull, backwards) {
 	return next;
 }
 
+TextArea.prototype.removeEvents = function () {
+	// remove a hack of jspwiki-edit.js here,
+	// that is no longer needed but instead messes with keydown
+	// events of tab (keycode == 9) in chrome/webkit
+	const $editor = jq$('.editor')[0];
+	if ($editor) $editor.removeEvents('keydown');
+}
+
 TextArea.prototype.isLongerSelection = function () {
 	return this.getSelection().length > 0 && this.getSelection().indexOf('\n') >= 0;
 };
 // noinspection JSUnusedGlobalSymbols
 TextArea.prototype.handleKeyDown = function (event) {
-	// with this line, we remove a hack of jspwiki-edit.js,
-	// that is no longer needed but instead messes with keydown
-	// events of tab (keycode == 9) in chrome/webkit
-	const $editor = jq$('.editor')[0];
-	if ($editor) $editor.removeEvents('keydown');
+	this.removeEvents();
 
 	event = jq$.event.fix(event);
 	if (_EC.isModifier(event)) {
