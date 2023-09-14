@@ -524,7 +524,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		return new JSONArray();
 	}
 
-	private static String getResultSizeTag(Section<?> sec, UserContext user) {
+	protected String getResultSizeTag(Section<?> sec, UserContext user) {
 		String resultSize = getResultSizeString(user);
 		String tag = "";
 		if (resultSize.equals(UNKNOWN_RESULT_SIZE)) {

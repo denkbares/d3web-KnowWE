@@ -115,31 +115,7 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
     }
 
     @Override
-    protected void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
-        int count = getCount(sec, user);
-        renderToolBarElement(sec, result, () -> {
-            Integer[] sizeArray = getSizeChoices(user);
-            result.appendHtml("<span class='fillText'>Show </span><select class='count'>");
-
-            boolean foundSelected = false;
-            for (Integer size : sizeArray) {
-                boolean selected = count == size;
-                if (selected) foundSelected = true;
-                boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
-                result.appendHtml("<option "
-                        + (setSelected ? "selected='selected' " : "")
-                        + "value='" + size + "'>"
-                        + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-                        + "</option>");
-            }
-            result.appendHtml("</select>");
-            result.appendHtml(getResultSizeTag(sec, user));
-            result.appendHtml("<div class='toolSeparator'>");
-            result.appendHtml("</div>");
-        });
-    }
-
-    private String getResultSizeTag(Section<?> sec, UserContext user) {
+	protected String getResultSizeTag(Section<?> sec, UserContext user) {
         String resultSize = String.valueOf(getRecentChanges(sec, user).size());
         String tag = "";
         if (resultSize.equals(UNKNOWN_RESULT_SIZE)) {
@@ -172,7 +148,7 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
                 for (String columnName : filter.keySet()) {
                     String text = util.getColumnValueByName(columnName, page);
                     Set<Pattern> patterns = filter.getOrDefault(columnName, Set.of());
-                    if (patterns.size() < 1) {
+                    if (patterns.isEmpty()) {
                         continue;
                     }
                     if (patterns.stream().noneMatch(p -> p.matcher(text).matches())) {
