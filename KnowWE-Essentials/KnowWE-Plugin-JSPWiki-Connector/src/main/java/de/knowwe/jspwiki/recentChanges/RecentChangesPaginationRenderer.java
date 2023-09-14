@@ -89,9 +89,9 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 
     @Override
     protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {
-        boolean tickedPage = getCheckbox(user, "page");
-        boolean tickedAtt = getCheckbox(user, "attachment");
-        boolean tickedInterm = getCheckbox(user, "intermediate");
+        boolean tickedPage = showPages(user);
+        boolean tickedAtt = isShowAttachments(user);
+        boolean tickedInterm = showIntermediates(user);
         if (tickedPage) {
             result.appendHtmlTag("input", "type", "checkbox", "class", "filter-style show-pages", "id", "showPages", "name", "showPages", "onclick", "KNOWWE.plugin.jspwikiConnector.setPageFilter(this, 'page')", "checked", "checked");
         } else {
@@ -168,9 +168,9 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 
     private Set<Page> getRecentChangesWithShowFilter(Set<Page> sortedFilteredRecentChanges, UserContext user, Map<String, Set<Pattern>> filter) {
         Set<Page> recentChangesCleaned = new LinkedHashSet<>();
-        boolean showPages = RecentChangesPaginationRenderer.getCheckbox(user, "page");
-        boolean showAttachments = RecentChangesPaginationRenderer.getCheckbox(user, "attachment");
-        boolean showIntermediate = RecentChangesPaginationRenderer.getCheckbox(user, "intermediate");
+        boolean showPages = showPages(user);
+        boolean showAttachments = isShowAttachments(user);
+        boolean showIntermediate = showIntermediates(user);
         for (Page page : sortedFilteredRecentChanges) {
             if (!(page instanceof Attachment) && showPages) {
                 addPage(recentChangesCleaned, page, showIntermediate);
@@ -179,6 +179,18 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
             }
         }
         return recentChangesCleaned;
+    }
+
+    private static boolean showIntermediates(UserContext user) {
+        return getCheckbox(user, "intermediate");
+    }
+
+    private static boolean isShowAttachments(UserContext user) {
+        return getCheckbox(user, "attachment");
+    }
+
+    private static boolean showPages(UserContext user) {
+        return getCheckbox(user, "page");
     }
 
     @NotNull

@@ -54,7 +54,7 @@ public class RecentChangesRenderer implements Renderer {
 			return;
 		}
 		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-		List<Page> sortedFilteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).getRecentChanges(sec, user);
+		List<Page> sortedFilteredRecentChanges = new RecentChangesPaginationRenderer(this, PaginationRenderer.SortingMode.multi, true).getRecentChanges(sec, user);
 		PaginationRenderer.setResultSize(user, sortedFilteredRecentChanges.size());
 		string.appendHtml("<table>");
 		addTableHead(string);
