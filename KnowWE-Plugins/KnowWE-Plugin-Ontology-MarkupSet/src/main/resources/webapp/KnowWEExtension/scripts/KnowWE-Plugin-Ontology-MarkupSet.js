@@ -94,7 +94,7 @@ KNOWWE.plugin.turtle.editTool.generateButtons = function (id) {
     window.addEvent('domready', _KL.setup);
     if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
         window.addEvent('domready', function () {
-            jq$(document).find(".wikitable.knowwetable").each(function () {
+            jq$(document).find("type_HierarchyTable .wikitable.knowwetable").each(function () {
                 KNOWWE.plugin.hierarchy.declare(this);
                 KNOWWE.plugin.hierarchy.eval(this);
             });
