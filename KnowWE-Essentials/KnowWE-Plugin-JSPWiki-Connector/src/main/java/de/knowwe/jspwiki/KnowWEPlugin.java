@@ -32,6 +32,8 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import de.knowwe.event.*;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.wiki.WikiContext;
@@ -77,12 +79,6 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.event.ArticleRefreshEvent;
-import de.knowwe.event.ArticleUpdateEvent;
-import de.knowwe.event.AttachmentDeletedEvent;
-import de.knowwe.event.AttachmentStoredEvent;
-import de.knowwe.event.InitializedArticlesEvent;
-import de.knowwe.event.PageRenderedEvent;
 
 import static de.knowwe.core.ResourceLoader.Type.*;
 
@@ -414,7 +410,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		boolean fullParse = isFullParse(httpRequest);
 		if (fullParse) httpRequest.setAttribute(FULL_PARSE_FIRED, true);
 
-		return Environment.getInstance().updateArticle(wikiContext.getRealPage().getName(), wikiContext.getRealPage().getAuthor(), content, fullParse, httpRequest);
+		return Environment.getInstance()
+				.updateArticle(wikiContext.getRealPage().getName(), wikiContext.getRealPage()
+						.getAuthor(), content, fullParse, httpRequest);
 	}
 
 	private static boolean isFullParse(HttpServletRequest httpRequest) {
@@ -534,21 +532,21 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	private Collection<?> getAllPages(Engine engine) throws ProviderException {
 		PageProvider provider = getPageManager().getProvider();
 		Collection<?> wikiPages;
-		/*
-		 Why do we need this workaround? Why do we check for the CachingProvider and so forth here?
-		 JSPWiki does not handle case sensitivity in article names very well. On the one hand, it is possible in
-		 JSPWiki
-		 to have article names that only differ in the case, which is a problem if you want to use such a wiki in a
-		 case insensitive file system. On the other hand, JSPWiki will match article links case insensitively and even
-		 creates pseudo wiki pages in the CachingProvider for those links which match only case insensitive.
-		 Since KnowWE is designed with the promise that it also works with case insensitive file systems, it also
-		 handles article names case insensitively. If the CachingProvider now serves pseudo articles based on links
-		 with
-		 wrong case, we run into problems (e.g. ArticleManager in KnowWE stores articles case insensitively).
-		 To solve this, we circumvent the CachingProvider here and use the actual FileSystemProvider instead, which
-		 will
-		 not have those pseudo articles.
-		*/
+        /*
+         Why do we need this workaround? Why do we check for the CachingProvider and so forth here?
+         JSPWiki does not handle case sensitivity in article names very well. On the one hand, it is possible in
+         JSPWiki
+         to have article names that only differ in the case, which is a problem if you want to use such a wiki in a
+         case insensitive file system. On the other hand, JSPWiki will match article links case insensitively and even
+         creates pseudo wiki pages in the CachingProvider for those links which match only case insensitive.
+         Since KnowWE is designed with the promise that it also works with case insensitive file systems, it also
+         handles article names case insensitively. If the CachingProvider now serves pseudo articles based on links
+         with
+         wrong case, we run into problems (e.g. ArticleManager in KnowWE stores articles case insensitively).
+         To solve this, we circumvent the CachingProvider here and use the actual FileSystemProvider instead, which
+         will
+         not have those pseudo articles.
+        */
 		if (provider instanceof CachingProvider) {
 			wikiPages = ((CachingProvider) provider).getRealProvider().getAllPages();
 		}
@@ -574,6 +572,9 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 			if (articleToDelete != null) {
 				// somehow the event is fired twice...
 				// don't call deleteArticle if the article is already deleted
+				final ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
+				final Article article = manager.getArticle(e.getPageName());
+				EventManager.getInstance().fireEvent(new ArticleDeletedEvent(article));
 				articleManager.deleteArticle(e.getPageName());
 			}
 		}
