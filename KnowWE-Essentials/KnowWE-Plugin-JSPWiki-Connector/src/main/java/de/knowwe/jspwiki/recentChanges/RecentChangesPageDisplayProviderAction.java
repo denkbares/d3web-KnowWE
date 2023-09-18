@@ -29,12 +29,13 @@ import de.knowwe.core.action.UserActionContext;
 public class RecentChangesPageDisplayProviderAction extends AbstractAction {
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String filterType = context. getParameter ("type");
-		boolean show = Boolean.parseBoolean (context. getParameter ("show"));
-		JSONObject localSectionStorage = getLocalSectionStorage (context);
-		if(filterType.equals ("page" )) {
-			localSectionStorage.append ("showPage", show);
-		}else {
+		String filterType = context.getParameter("type");
+		boolean show = Boolean.parseBoolean(context.getParameter("show"));
+		JSONObject localSectionStorage = getLocalSectionStorage(context);
+		if ("page".equals(filterType)) {
+			localSectionStorage.append("showPage", show);
+		}
+		else {
 			localSectionStorage.append("showAttachment", show);
 		}
 	}
