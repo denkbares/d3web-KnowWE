@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.semanticcore.BooleanQuery;
+import com.denkbares.semanticcore.CachedTupleQueryResult;
 import com.denkbares.semanticcore.RepositoryConnection;
 import com.denkbares.semanticcore.TupleQuery;
 import com.denkbares.semanticcore.TupleQueryResult;
@@ -156,7 +157,7 @@ class SparqlCallable implements Callable<Object> {
 		boolean result = (preparedBindings == null)
 				? booleanQuery.evaluate()
 				: booleanQuery.evaluate(preparedBindings);
-		logSlowEvaluation(stopwatch);
+		logSlowEvaluation(stopwatch.getTime());
 		return result;
 	}
 
@@ -179,14 +180,17 @@ class SparqlCallable implements Callable<Object> {
 		TupleQueryResult result = (preparedBindings == null)
 				? tupleQuery.evaluate()
 				: tupleQuery.evaluate(preparedBindings);
-		logSlowEvaluation(stopwatch);
-		return result.cachedAndClosed();
+		CachedTupleQueryResult bindingSets = result.cachedAndClosed();
+		long evalTime = stopwatch.getTime();
+		logSlowEvaluation(evalTime);
+		bindingSets.setEvaluationTime(evalTime);
+		return bindingSets;
 	}
 
-	private void logSlowEvaluation(Stopwatch stopwatch) {
-		if (this.cached && stopwatch.getTime() > LOG_TIMEOUT) {
+	private void logSlowEvaluation(long evalTime) {
+		if (this.cached && evalTime > LOG_TIMEOUT) {
 			LOGGER.info("SPARQL query evaluation finished after "
-					+ Strings.getDurationVerbalization(stopwatch.getTime())
+					+ Strings.getDurationVerbalization(evalTime)
 					+ ", retrieving results...: " + Rdf2GoUtils.getReadableQuery(this.query, this.type) + "...");
 		}
 	}

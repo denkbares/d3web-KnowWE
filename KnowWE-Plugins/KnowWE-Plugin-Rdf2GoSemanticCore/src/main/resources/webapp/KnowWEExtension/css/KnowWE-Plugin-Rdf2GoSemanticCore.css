@@ -2,6 +2,11 @@
 	display: none;
 }
 
+.type_Sparql .sparql-evaluation-time {
+	color: grey;
+	padding-left: 0.3em;
+}
+
 .type_Sparql.defaultMarkupFrame {
 	padding-top: 2px;
 }

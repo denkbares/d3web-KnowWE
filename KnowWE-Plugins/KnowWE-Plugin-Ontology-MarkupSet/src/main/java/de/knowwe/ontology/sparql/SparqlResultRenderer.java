@@ -463,6 +463,9 @@ public class SparqlResultRenderer {
 		}
 		renderResult.appendHtml("</tbody>");
 		renderResult.appendHtml("</table>");
+		if (qrt.getEvaluationTime() > 1000) {
+			renderResult.appendHtmlElement("span", "Query evaluation time: " + Stopwatch.getDisplay(qrt.getEvaluationTime()), "class", "sparql-evaluation-time");
+		}
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());
 	}
