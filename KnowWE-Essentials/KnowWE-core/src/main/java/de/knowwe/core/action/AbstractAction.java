@@ -86,7 +86,27 @@ public abstract class AbstractAction implements Action {
 			LOGGER.warn("Exception while parsing json", e);
 			return new JSONObject();
 		}
+		String sectionId = user.getParameter(Attributes.SECTION_ID);
+		if (sectionId != null) {
+			Section<?> section = Sections.get(sectionId);
+			if (section != null) {
+				section.storeObject(Attributes.LOCAL_SECTION_STORAGE, jsonObject);
+			}
+		}
 		return jsonObject;
+	}
+
+	/**
+	 * Get the local section storage from the section, if no user context containing the section storage is available.
+	 * The normal {@link #getLocalSectionStorage(UserContext)} method has to be called before, for this method to work
+	 * (will happen on rerender).
+	 *
+	 * @param section the section for which a local section storage is available
+	 * @return the local section storage of the section
+	 * @see #getLocalSectionStorage(UserContext)
+	 */
+	public static JSONObject getLocalSectionStorage(Section<?> section) {
+		return section.getObject(Attributes.LOCAL_SECTION_STORAGE);
 	}
 
 	/**
@@ -108,7 +128,7 @@ public abstract class AbstractAction implements Action {
 	 * @return the section for the action
 	 */
 	@NotNull
-	public static Section<?> getSection(UserActionContext context) throws IOException {
+	public static Section<?> getSection(UserContext context) throws IOException {
 		String sectionId = context.getParameter(Attributes.SECTION_ID);
 		if (sectionId == null) sectionId = context.getParameter("KdomNodeId"); // compatibility
 		if (sectionId == null) {
@@ -152,7 +172,7 @@ public abstract class AbstractAction implements Action {
 	 * @param message  the fail message
 	 */
 	@Contract("_, _, _ -> fail")
-	public static void fail(UserActionContext context, int httpCode, String message) throws IOException {
+	public static void fail(UserContext context, int httpCode, String message) throws IOException {
 		throw new SendError(httpCode, Environment.getInstance().getWikiConnector().renderWikiSyntax(message));
 	}
 

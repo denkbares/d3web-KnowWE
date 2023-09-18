@@ -151,6 +151,9 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		HashMap<String, Set<Pattern>> filterMap = new HashMap<>();
 
 		JSONObject paginationSettings = getPaginationSettings(user);
+		if (paginationSettings == null) { // fallback, try section
+			paginationSettings = getPaginationSettings(section);
+		}
 		if (paginationSettings == null) return filterMap;
 		JSONObject filter = paginationSettings.optJSONObject(FILTER);
 		if (filter == null) return filterMap;
@@ -158,11 +161,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		JSONObject columns = filter.optJSONObject(COLUMNS);
 		if (columns == null) return filterMap;
 
-		for (Object columnKey : columns.keySet()) {
-			String columnName = (String) columnKey;
-			JSONObject columnObject = columns.optJSONObject(columnName);
+		for (String columnKey : columns.keySet()) {
+			JSONObject columnObject = columns.optJSONObject(columnKey);
 			JSONArray selectedTexts = columnObject.optJSONArray(SELECTED_TEXTS);
-			Set<Pattern> patterns = filterMap.computeIfAbsent(columnName, k -> new HashSet<>());
+			Set<Pattern> patterns = filterMap.computeIfAbsent(columnKey, k -> new HashSet<>());
 			if (selectedTexts != null) {
 				boolean containsEmptyString = false;
 				List<String> cleanedTexts = new ArrayList<>();
@@ -179,7 +181,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				if (columnObject.optBoolean(SELECT_ALL)) {
 					// we have to generate a reverse pattern matching everything except the given texts
 					// will look something like: ^(?!(?:text1|text2|text3)$).*
-					if (selectedTexts.length() > 0) {
+					if (!selectedTexts.isEmpty()) {
 						StringBuilder regex = new StringBuilder("(?s)^(?!(?:");
 						regex.append(cleanedTexts.stream().map(Pattern::quote).collect(Collectors.joining("|")));
 						regex.append(")\\z).").append(containsEmptyString ? "+" : "*");
@@ -189,7 +191,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				}
 				// with !selectAll, only the texts given in the array are considered selected
 				else {
-					if (selectedTexts.length() > 0) {
+					if (!selectedTexts.isEmpty()) {
 						for (String text : cleanedTexts) {
 							patterns.add(Pattern.compile(Pattern.quote(text)));
 						}
@@ -299,10 +301,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 				result.appendHtml("<option "
-						+ (setSelected ? "selected='selected' " : "")
-						+ "value='" + size + "'>"
-						+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-						+ "</option>");
+								  + (setSelected ? "selected='selected' " : "")
+								  + "value='" + size + "'>"
+								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+								  + "</option>");
 			}
 			result.appendHtml("</select>");
 			result.appendHtml(getResultSizeTag(sec, user));
@@ -413,6 +415,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		return sizes.toArray(new Integer[0]);
 	}
 
+	private static JSONObject getPaginationSettings(Section<?> section) {
+		return AbstractAction.getLocalSectionStorage(section).optJSONObject(PAGINATION_KEY);
+	}
+
 	private static JSONObject getPaginationSettings(UserContext user) {
 		return AbstractAction.getLocalSectionStorage(user).optJSONObject(PAGINATION_KEY);
 	}
@@ -486,7 +492,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	private static List<Pair<String, Boolean>> getSorting(Section<?> sec, UserContext user, boolean onlyFirst) {
 		List<Pair<String, Boolean>> list = new LinkedList<>();
 		JSONArray sorting = getSortingArray(sec, user);
-		if (sorting.length() == 0) {
+		if (sorting.isEmpty()) {
 			return list;
 		}
 		int length;
