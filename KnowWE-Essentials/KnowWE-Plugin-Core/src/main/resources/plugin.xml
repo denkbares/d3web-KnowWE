@@ -610,6 +610,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="StoreLocalSectionStorageAction">
+		<parameter id="class" value="de.knowwe.core.action.StoreLocalSectionStorageAction" />
+		<parameter id="name" value="StoreLocalSectionStorageAction" />
+		<parameter id="description" value="Stores the local section storage after setting or deleting from it." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<!-- extensions for basic preview rendering -->
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="PreviewRenderer" id="DashTreeItemPreviewRenderer">

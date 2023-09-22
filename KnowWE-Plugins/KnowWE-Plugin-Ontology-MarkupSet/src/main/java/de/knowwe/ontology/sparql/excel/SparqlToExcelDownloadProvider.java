@@ -18,12 +18,20 @@
  */
 package de.knowwe.ontology.sparql.excel;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.kdom.renderer.PaginationRenderer;
+import de.knowwe.ontology.sparql.SparqlContentType;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
 import de.knowwe.util.Icon;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * @author Stefan Plehn
@@ -31,29 +39,62 @@ import de.knowwe.util.Icon;
  */
 public class SparqlToExcelDownloadProvider implements ToolProvider {
 
-    @Override
-    public boolean hasTools(Section<?> section, UserContext userContext) {
-        return true;
-    }
+	@Override
+	public boolean hasTools(Section<?> section, UserContext userContext) {
+		return true;
+	}
 
-    @Override
-    public Tool[] getTools(Section<?> section, UserContext userContext) {
-        // and provide both download and refresh as tools
-        Tool ExcelTool = getDownloadExcelTool(section, userContext);
-        return new Tool[]{ExcelTool};
-    }
+	@Override
+	public Tool[] getTools(Section<?> section, UserContext userContext) {
+		// and provide both download and refresh as tools
+		Tool ExcelTool = getDownloadExcelTool(section);
+		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter($(section).successor(SparqlContentType.class)
+				.getFirst(), userContext);
+		if (hasFilter(filter)) {
+			Tool ExcelToolFiltered = getDownloadExcelToolFiltered(section);
+			return new Tool[] { ExcelTool, ExcelToolFiltered };
+		}
+		else {
+			return new Tool[] { ExcelTool };
+		}
+	}
 
-    protected Tool getDownloadExcelTool(Section<?> section,
-                                        UserContext userContext) {
+	protected Tool getDownloadExcelTool(Section<?> section) {
+		String title = "Download as XLSX";
+		String description = "Download this table as an excel file";
+		String jsAction = "KNOWWE.plugin.sparql.downloadExcel(" +
+				"'" + section.getID() + "', " +
+				"'" + section.getArticle().getTitle() + ".xlsx'," +
+				"'SparqlDownloadAction'," +
+				"'false'" +
+				")";
+		return new DefaultTool(
+				Icon.FILE_EXCEL,
+				title, description,
+				jsAction, Tool.CATEGORY_DOWNLOAD);
+	}
 
-        String jsAction = "KNOWWE.plugin.sparql.downloadExcel(" +
-                "'" + section.getID() + "', " +
-                "'" + section.getArticle().getTitle() + ".xlsx'," +
-                "'SparqlDownloadAction'" +
-                ")";
-        return new DefaultTool(
-                Icon.FILE_EXCEL,
-                "Download as XLSX", "Download this table as an excel file",
-                jsAction, Tool.CATEGORY_DOWNLOAD);
-    }
+	protected Tool getDownloadExcelToolFiltered(Section<?> section) {
+		String title = "Download as XLSX (filtered)";
+		String description = "Download this table as an excel file only containing the filtered results.";
+		String jsAction = "KNOWWE.plugin.sparql.downloadExcel(" +
+				"'" + section.getID() + "', " +
+				"'" + section.getArticle().getTitle() + ".xlsx'," +
+				"'SparqlDownloadAction'," +
+				"'true'" +
+				")";
+		return new DefaultTool(
+				Icon.FILE_EXCEL,
+				title, description,
+				jsAction, Tool.CATEGORY_DOWNLOAD);
+	}
+
+	protected boolean hasFilter(Map<String, Set<Pattern>> filter) {
+		for (Set<Pattern> filterPatterns : filter.values()) {
+			if (!filterPatterns.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

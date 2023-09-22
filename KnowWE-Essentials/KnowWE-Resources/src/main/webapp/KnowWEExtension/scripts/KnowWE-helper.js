@@ -32,7 +32,19 @@ KNOWWE.helper = function() {
     setToLocalSectionStorage: function(sectionID, key, value) {
       let sectionStorage = this.getLocalSectionStorage(sectionID);
       sectionStorage[key] = value;
+      let oldValue = localStorage.getItem(sectionID);
       localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
+      let newValue = JSON.stringify(sectionStorage);
+      if (oldValue !== newValue) {
+        jq$.ajax("action/StoreLocalSectionStorageAction", {
+          data: {
+            sectionID: sectionID,
+            value: newValue
+          },
+          type: 'post',
+          cache: false
+        });
+      }
     },
 
     /**
@@ -44,7 +56,19 @@ KNOWWE.helper = function() {
     deleteFromLocalSectionStorage: function(sectionID, key) {
       let sectionStorage = this.getLocalSectionStorage(sectionID);
       delete sectionStorage[key];
+      let oldValue = localStorage.getItem(sectionID);
       localStorage.setItem(sectionID, JSON.stringify(sectionStorage));
+      let newValue = JSON.stringify(sectionStorage);
+      if (oldValue !== newValue) {
+        jq$.ajax("action/StoreLocalSectionStorageAction", {
+          data: {
+            sectionID: sectionID,
+            value: newValue
+          },
+          type: 'post',
+          cache: false
+        });
+      }
     },
 
     /**

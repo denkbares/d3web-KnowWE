@@ -86,13 +86,7 @@ public abstract class AbstractAction implements Action {
 			LOGGER.warn("Exception while parsing json", e);
 			return new JSONObject();
 		}
-		String sectionId = user.getParameter(Attributes.SECTION_ID);
-		if (sectionId != null) {
-			Section<?> section = Sections.get(sectionId);
-			if (section != null) {
-				section.storeObject(Attributes.LOCAL_SECTION_STORAGE, jsonObject);
-			}
-		}
+
 		return jsonObject;
 	}
 
@@ -138,7 +132,7 @@ public abstract class AbstractAction implements Action {
 		Section<?> section = Sections.get(sectionId);
 		if (section == null) {
 			fail(context, HttpServletResponse.SC_NOT_FOUND, "The referenced section was not found. " +
-															"Maybe the page content is outdated. Please reload.");
+					"Maybe the page content is outdated. Please reload.");
 		}
 		KnowWEUtils.assertCanView(section, context);
 		return section;
@@ -224,7 +218,7 @@ public abstract class AbstractAction implements Action {
 	public static void failInternal(UserActionContext context, Throwable cause) throws IOException {
 		throw new SendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 				"An unexpected " + cause.getClass().getSimpleName() + " occurred. " +
-				"Please retry or contact support.");
+						"Please retry or contact support.");
 	}
 
 	@Override

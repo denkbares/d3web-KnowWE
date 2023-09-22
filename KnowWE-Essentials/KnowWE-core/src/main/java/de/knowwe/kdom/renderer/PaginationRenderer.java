@@ -301,10 +301,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 				result.appendHtml("<option "
-								  + (setSelected ? "selected='selected' " : "")
-								  + "value='" + size + "'>"
-								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-								  + "</option>");
+						+ (setSelected ? "selected='selected' " : "")
+						+ "value='" + size + "'>"
+						+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+						+ "</option>");
 			}
 			result.appendHtml("</select>");
 			result.appendHtml(getResultSizeTag(sec, user));
@@ -416,7 +416,13 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	private static JSONObject getPaginationSettings(Section<?> section) {
-		return AbstractAction.getLocalSectionStorage(section).optJSONObject(PAGINATION_KEY);
+		JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(section);
+		if (localSectionStorage == null) {
+			return new JSONObject();
+		}
+		else {
+			return localSectionStorage.optJSONObject(PAGINATION_KEY);
+		}
 	}
 
 	private static JSONObject getPaginationSettings(UserContext user) {
