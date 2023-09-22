@@ -793,7 +793,7 @@ KNOWWE.core.plugin.switchCompiler = function() {
           let storedDefaultCompiler = localStorage.getItem(defaultCompilerPrefixKey);
           let defaultCompiler = response.defaultCompiler;
           let compilers = response.compilers;
-          if (storedDefaultCompiler === "null" || !compilers.contains(storedDefaultCompiler)) {
+          if (!storedDefaultCompiler || storedDefaultCompiler === "null" || !compilers.contains(storedDefaultCompiler)) {
             // If default compiler is not stored yet or the stored compiler is not contained in all given compilers,
             // store the default compiler from the server also for the client.
             storedDefaultCompiler = defaultCompiler;
