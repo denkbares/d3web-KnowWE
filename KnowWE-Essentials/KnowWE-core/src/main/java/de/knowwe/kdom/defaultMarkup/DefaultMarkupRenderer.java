@@ -661,7 +661,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	protected void appendToolAsMenuItem(Tool tool, RenderResult result) {
 		result.appendHtmlTag("div", "class", tool.getClass().getSimpleName());
-		result.appendHtmlTag("div", "class", "markupMenuItem list-group");
+		result.appendHtmlTag("div", "class", "list-group");
 		result.appendHtmlTag("a", false, "class", "markupMenuItem list-group-item",
 				"title", Strings.encodeHtml(tool.getDescription()),
 				ToolUtils.getActionAttributeName(tool),
