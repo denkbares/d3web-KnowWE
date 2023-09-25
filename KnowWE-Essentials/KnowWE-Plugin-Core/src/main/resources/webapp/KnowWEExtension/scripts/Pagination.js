@@ -181,6 +181,10 @@ KNOWWE.core.plugin.pagination = function() {
           setPaginationState(sectionId, paginationState);
         }
       }
+      KNOWWE.helper.observer.notify("filterChanged", {
+        filteringActive: anyActiveFilter(filterState),
+        sectionId: sectionId
+      });
     };
 
     const cancelFilter = $filterIcon => {
@@ -479,7 +483,11 @@ KNOWWE.core.plugin.pagination = function() {
     filterActivator.change(function() {
       filterState.active = !!this.checked;
       setPaginationState(sectionId, paginationState);
-      updateNode(sectionId)
+      updateNode(sectionId);
+      KNOWWE.helper.observer.notify("filterChanged", {
+        filteringActive: anyActiveFilter(filterState) && this.checked,
+        sectionId: sectionId
+      });
     })
     const clearFilter = $paginationWrapper.find('.clear-filter');
     const filterTools = $paginationWrapper.find('.filter-tools');
@@ -487,6 +495,10 @@ KNOWWE.core.plugin.pagination = function() {
       filterState.columns = {}
       setPaginationState(sectionId, paginationState);
       updateNode(sectionId)
+      KNOWWE.helper.observer.notify("filterChanged", {
+        filteringActive: anyActiveFilter(filterState),
+        sectionId: sectionId
+      });
     })
     if (!filterState.active) {
       filterTools.hide();
@@ -518,6 +530,12 @@ KNOWWE.core.plugin.pagination = function() {
     // when loading filters initially, rerender to apply filter to result on server
     if (rerenderIfFilterActive && filterState.active) {
       updateNode(sectionId);
+    }
+    //on first load
+    if (!$paginationWrapper.find('.filter-activator')[0].checked || !anyActiveFilter(filterState)) {
+      let $reRenderSectionMarker = jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`);
+      let $markupMenu = $reRenderSectionMarker.closest('.defaultMarkupFrame').find('.markupMenu');
+      $markupMenu.find('[title="Download this table as an excel file only containing the filtered results."]')[0].style.display = "none";
     }
   }
 

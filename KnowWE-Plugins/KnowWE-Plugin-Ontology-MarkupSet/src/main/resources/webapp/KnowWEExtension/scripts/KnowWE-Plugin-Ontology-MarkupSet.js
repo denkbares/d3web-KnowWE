@@ -82,6 +82,21 @@ KNOWWE.plugin.sparql.downloadExcel = function(id, paramFilename, actionClass, fi
   });
 }
 
+KNOWWE.plugin.sparql.initDownloadExcelTools = function() {
+
+  KNOWWE.helper.observer.subscribe("filterChanged", function() {
+    let sectionId = this.sectionId;
+    let $reRenderSectionMarker = jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`);
+    let $markupMenu = $reRenderSectionMarker.closest('.defaultMarkupFrame').find('.markupMenu');
+    let tool = $markupMenu.find('[title="Download this table as an excel file only containing the filtered results."]');
+    if (this.filteringActive) {
+      tool[0].style.display = 'block';
+    } else {
+      tool[0].style.display = 'none';
+    }
+  })
+}
+
 KNOWWE.plugin.turtle.editTool.generateButtons = function(id) {
   KNOWWE.plugin.turtle.editTool.format = function() {
     KNOWWE.core.plugin.formatterAjax(id, "TurtleFormatAction");
@@ -234,6 +249,7 @@ KNOWWE.plugin.sparqlConsole = function() {
   if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
     window.addEvent('domready', function() {
       KNOWWE.plugin.sparqlConsole.init();
+      KNOWWE.plugin.sparql.initDownloadExcelTools();
     });
   }
 }());

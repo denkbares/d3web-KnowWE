@@ -50,13 +50,9 @@ public class SparqlToExcelDownloadProvider implements ToolProvider {
 		Tool ExcelTool = getDownloadExcelTool(section);
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter($(section).successor(SparqlContentType.class)
 				.getFirst(), userContext);
-		if (hasFilter(filter)) {
-			Tool ExcelToolFiltered = getDownloadExcelToolFiltered(section);
-			return new Tool[] { ExcelTool, ExcelToolFiltered };
-		}
-		else {
-			return new Tool[] { ExcelTool };
-		}
+
+		Tool ExcelToolFiltered = getDownloadExcelToolFiltered(section);
+		return new Tool[] { ExcelTool, ExcelToolFiltered };
 	}
 
 	protected Tool getDownloadExcelTool(Section<?> section) {
