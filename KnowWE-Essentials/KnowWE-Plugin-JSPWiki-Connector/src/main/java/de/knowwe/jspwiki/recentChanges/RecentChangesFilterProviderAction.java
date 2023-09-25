@@ -118,8 +118,7 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 	}
 
 	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
-		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-		Set<Page> recentChanges = wikiConnector.getPageManager().getRecentChanges();
+		Set<Page> recentChanges = getRecentChangesFromJSPWiki();
 		String columnName = context.getParameter(COLUMN_NAME);
 		LinkedHashMap<String, Set<String>> filterTexts = new LinkedHashMap<>();
 		Set<String> filteredOut = new LinkedHashSet<>();

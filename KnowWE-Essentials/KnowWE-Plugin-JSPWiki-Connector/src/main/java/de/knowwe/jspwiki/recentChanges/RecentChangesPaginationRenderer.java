@@ -135,7 +135,7 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
     private static final Logger LOGGER = LoggerFactory.getLogger(RecentChangesRenderer.class);
 
     public List<Page> getRecentChanges(Section<?> sec, UserContext user) {
-        Set<Page> recentChanges = getWikiConnector().getPageManager().getRecentChanges();
+        Set<Page> recentChanges = getRecentChangesFromJSPWiki();
         Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
         Set<Page> filteredRecentChanges = filter(filter, recentChanges, user);
         PaginationRenderer.setResultSize(user, filteredRecentChanges.size());

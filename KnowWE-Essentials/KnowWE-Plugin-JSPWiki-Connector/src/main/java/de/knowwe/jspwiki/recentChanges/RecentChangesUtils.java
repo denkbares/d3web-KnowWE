@@ -22,10 +22,16 @@ package de.knowwe.jspwiki.recentChanges;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
+
+import de.knowwe.core.Environment;
+import de.knowwe.core.compile.CompilationLocal;
+import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.jspwiki.JSPWikiConnector;
 
 import static java.time.ZoneId.systemDefault;
 
@@ -37,6 +43,15 @@ public class RecentChangesUtils {
 	public static final String LAST_MODIFIED = "Last Modified";
 	public static final String AUTHOR = "Author";
 	public static final String CHANGE_NOTES = "Change Notes";
+
+	public static Set<Page> getRecentChangesFromJSPWiki() {
+		// can take quite some time for large wikis, so we cache this...
+		return CompilationLocal.getCached(KnowWEUtils.getDefaultArticleManager()
+				.getCompilerManager(), "recentChangesFromJSPWiki", () -> {
+			JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
+			return wikiConnector.getPageManager().getRecentChanges();
+		});
+	}
 
 	public String toDateString(Date date) {
 		return DATE_FORMAT.format(date);
@@ -80,7 +95,7 @@ public class RecentChangesUtils {
 			}
 			case CHANGE_NOTES -> {
 				String changeNote = page.getAttribute("changenote");
-				if(changeNote==null){
+				if (changeNote == null) {
 					changeNote = "-";
 				}
 				return changeNote;
