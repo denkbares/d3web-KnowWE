@@ -82,9 +82,11 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
     }
 
     static private boolean isFilterActive(JSONObject localSectionStorage) {
-        JSONObject pagination = (JSONObject) localSectionStorage.get("pagination");
-        JSONObject filter = (JSONObject) pagination.get("filter");
-        return (boolean) filter.get("active");
+        JSONObject pagination = localSectionStorage.optJSONObject("pagination");
+        if (pagination == null) return false;
+        JSONObject filter = pagination.optJSONObject("filter");
+        if (filter == null) return false;
+        return filter.optBoolean("active");
     }
 
     @Override
