@@ -84,10 +84,14 @@ public class SparqlDownloadAction extends AbstractAction {
 		}
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(rootSection, context);
 		Section<SparqlMarkupType> markupSection = Sections.ancestor(querySection, SparqlMarkupType.class);
+		if (markupSection == null) {
+			context.sendError(404, "Markup section not found, please reload page.");
+			return;
+		}
 		RenderOptions opts = $(markupSection).successor(SparqlType.class)
 
 				.mapFirst(s -> s.get().getRenderOptions(s, context));
-		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(markupSection, Rdf2GoCompiler.class);
+		Collection<Rdf2GoCompiler> compilers = Compilers.getCompilers(context, markupSection, Rdf2GoCompiler.class);
 		if (!compilers.isEmpty()) {
 			Rdf2GoCore core = compilers.iterator().next().getRdf2GoCore();
 			String sparql = Rdf2GoUtils.createSparqlString(core, querySection.getText());
