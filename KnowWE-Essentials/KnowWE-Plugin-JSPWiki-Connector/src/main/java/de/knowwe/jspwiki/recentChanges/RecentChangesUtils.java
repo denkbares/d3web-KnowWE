@@ -95,6 +95,9 @@ public class RecentChangesUtils {
 				versionHistory = List.of();
 				LOGGER.error("Exception while getting version history", e);
 			}
+			if (versionHistory == null) {
+				versionHistory = List.of();
+			}
 			filteredPages.addAll(versionHistory);
 			if (versionHistory.isEmpty()) {    // sometimes version history doesn't contain current version if only one exists
 				filteredPages.add(page);
