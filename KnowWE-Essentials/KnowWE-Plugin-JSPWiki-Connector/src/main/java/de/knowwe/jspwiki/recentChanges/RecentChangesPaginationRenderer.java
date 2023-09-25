@@ -29,22 +29,17 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
-import de.knowwe.core.Environment;
-import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.jspwiki.PageComparator;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
@@ -55,38 +50,6 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
 
     public RecentChangesPaginationRenderer(Renderer decoratedRenderer, SortingMode sorting, boolean supportFiltering) {
         super(decoratedRenderer, sorting, supportFiltering);
-    }
-
-    static boolean getCheckbox(UserContext userContext, String checkBox) {
-        JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(userContext);
-        if (!localSectionStorage.isEmpty() && !isFilterActive(localSectionStorage) && !checkBox.equals("page")) {
-            return false;
-        }
-        Boolean show = null;
-        try {
-            show = Boolean.valueOf(String.valueOf(localSectionStorage.get(checkBox)));
-        } catch (Exception ignored) {
-        }
-        if (localSectionStorage.isEmpty() || show == null) {
-            switch (checkBox) {
-                case "page" -> {
-                    return true;
-                }
-                case "attachment", "intermediate" -> {
-                    return false;
-                }
-            }
-        }
-
-        return (boolean) localSectionStorage.get(checkBox);
-    }
-
-    static private boolean isFilterActive(JSONObject localSectionStorage) {
-        JSONObject pagination = localSectionStorage.optJSONObject("pagination");
-        if (pagination == null) return false;
-        JSONObject filter = pagination.optJSONObject("filter");
-        if (filter == null) return false;
-        return filter.optBoolean("active");
     }
 
     @Override
@@ -165,34 +128,7 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
         } else {
             filteredPages = recentChanges;
         }
-        return getRecentChangesWithShowFilter(filteredPages, user, filter);
-    }
-
-    private Set<Page> getRecentChangesWithShowFilter(Set<Page> sortedFilteredRecentChanges, UserContext user, Map<String, Set<Pattern>> filter) {
-        Set<Page> recentChangesCleaned = new LinkedHashSet<>();
-        boolean showPages = showPages(user);
-        boolean showAttachments = isShowAttachments(user);
-        boolean showIntermediate = showIntermediates(user);
-        for (Page page : sortedFilteredRecentChanges) {
-            if (!(page instanceof Attachment) && showPages) {
-                addPage(recentChangesCleaned, page, showIntermediate);
-            } else if (page instanceof Attachment && showAttachments) {
-                addPage(recentChangesCleaned, page, showIntermediate);
-            }
-        }
-        return recentChangesCleaned;
-    }
-
-    private static boolean showIntermediates(UserContext user) {
-        return getCheckbox(user, "intermediate");
-    }
-
-    private static boolean isShowAttachments(UserContext user) {
-        return getCheckbox(user, "attachment");
-    }
-
-    private static boolean showPages(UserContext user) {
-        return getCheckbox(user, "page");
+        return getRecentChangesWithFilter(filteredPages, user);
     }
 
     @NotNull
@@ -219,47 +155,4 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
         }
     }
 
-    private void addPage(Set<Page> filteredPages, Page page, boolean showIntermediate) {
-        if (showIntermediate) {
-            List<Page> versionHistory;
-            try {
-                versionHistory = getWikiConnector().getPageManager().getVersionHistory(page.getName());
-            } catch (Exception e) {
-                versionHistory = List.of();
-                LOGGER.error("Exception while getting version history", e);
-            }
-            filteredPages.addAll(versionHistory);
-            if (versionHistory.isEmpty()) {    //sometimes version history doesn't contain current version if only one exists
-                filteredPages.add(page);
-            }
-        } else {
-            filteredPages.add(page);
-        }
-    }
-
-    private JSPWikiConnector getWikiConnector() {
-        return (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-    }
-
-    private List<Page> checkVersionHistoryWithDate(List<Page> versionHistory, Set<Pattern> patterns) {
-        List<Page> filteredPages = new ArrayList<>();
-        for (Page page : versionHistory) {
-            String formattedDate = util.toDateString(page.getLastModified());
-            if (patterns.stream().anyMatch(p -> p.matcher(formattedDate).matches())) {
-                filteredPages.add(page);
-            }
-        }
-        return filteredPages;
-    }
-
-    private List<Page> checkVersionHistoryWithString(List<Page> versionHistory, Set<Pattern> patterns, String type) {
-        List<Page> filteredPages = new ArrayList<>();
-        for (Page page : versionHistory) {
-            String toMatch = util.getColumnValueByName(type, page);
-            if (patterns.stream().anyMatch(p -> p.matcher(toMatch).matches())) {
-                filteredPages.add(page);
-            }
-        }
-        return filteredPages;
-    }
 }
