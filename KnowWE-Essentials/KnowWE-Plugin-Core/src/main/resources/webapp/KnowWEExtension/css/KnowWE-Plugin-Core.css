@@ -396,6 +396,11 @@ table.list-sections td.list-sections-blank {
 	padding-right: 0;
 }
 
+table.list-sections th:has(.list-sections-separator),
+table.list-sections td.list-sections-separator {
+	border-left: 3px solid #888;
+}
+
 table.list-sections td.list-sections-progress {
 	color: #888;
 }

@@ -431,9 +431,9 @@ KNOWWE.plugin.listSection = function() {
 
   function highlight($wrapper, previous) {
     let className = 'highlighted';
-    let $current = $wrapper.find('.list-sections tr.highlighted').first();
+    let $current = $wrapper.find('.list-sections tr.highlighted');
     if (!$current.exists()) {
-      $wrapper.find('.list-sections tr').first().addClass(className);
+      $wrapper.find('.list-sections tr:has(th)').addClass(className);
     } else {
       $current.removeClass(className);
       if (previous) {

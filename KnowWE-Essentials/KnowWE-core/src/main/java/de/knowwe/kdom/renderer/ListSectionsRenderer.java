@@ -69,12 +69,14 @@ public class ListSectionsRenderer<T extends Type> {
 	public static final String CSS_NUMBER_COLUMN = "list-sections-number";
 	public static final String CSS_PACKAGES_COLUMN = "list-sections-packages";
 	public static final String CSS_COMPILERS_COLUMN = "list-sections-compilers";
+	public static final String CSS_SEPARATOR_COLUMN = "list-sections-separator";
 	public static final String CSS_LINK = "list-sections-link";
 
 	private final List<Section<T>> sections;
 	private final UserContext context;
 
 	private final TreeMap<Integer, String> headers = new TreeMap<>();
+	private final TreeMap<Integer, String> superheaders = new TreeMap<>();
 	private final List<Pair<String, Function<Section<T>, String>>> columns = new ArrayList<>();
 	private final List<Function<Section<T>, Collection<? extends Tool>>> tools = new ArrayList<>();
 
@@ -98,6 +100,24 @@ public class ListSectionsRenderer<T extends Type> {
 	 */
 	public UserContext getContext() {
 		return context;
+	}
+
+	/**
+	 * Adds a new column header over more columns to the column(s) specified after this method call. All subsequent
+	 * columns are jointly
+	 * labeled with the specified heading, until a new heading is defined. The columns may be defined using, e.g.,
+	 * {@link #name(Function)}, {@link #html(Function)}, {@link #description(Function)}, {@link #column(String,
+	 * Function)} or {@link #error(Function)} (and others).
+	 * <p>
+	 * Note that tool columns are not labeled.
+	 *
+	 * @param heading the column's heading text (plain text to be displayed, also html markup characters are printed as
+	 *                they are in the heading sting)
+	 * @return this instance to chain builder calls
+	 */
+	public ListSectionsRenderer<T> superheader(String heading) {
+		this.superheaders.put(columns.size(), Strings.encodeHtml(heading));
+		return this;
 	}
 
 	/**
@@ -136,7 +156,7 @@ public class ListSectionsRenderer<T extends Type> {
 	 */
 	public ListSectionsRenderer<T> header(String heading, String explainHtml) {
 		this.headers.put(columns.size(), "<span class='tooltipster' title='" + Strings.encodeHtml(explainHtml) + "'>" +
-										 Strings.encodeHtml(heading) + "<span class='knowwe-superscript'>" + Icon.INFO.toHtml() + "</span></span>");
+				Strings.encodeHtml(heading) + "<span class='knowwe-superscript'>" + Icon.INFO.toHtml() + "</span></span>");
 		return this;
 	}
 
@@ -257,6 +277,22 @@ public class ListSectionsRenderer<T extends Type> {
 	public ListSectionsRenderer<T> column(String cssClass, Function<Section<T>, String> content) {
 		assert Strings.nonBlank(cssClass);
 		this.columns.add(new Pair<>(cssClass, content));
+		return this;
+	}
+
+	/**
+	 * Adds a new column as separator between other columns. The column is added right after the
+	 * already existing columns.
+	 *
+	 * @param withHeader if set to true the header gets also the separator
+	 * @return this instance to chain builder calls
+	 */
+	public ListSectionsRenderer<T> separator(boolean withHeader) {
+		if (withHeader) {
+			this.headers.put(columns.size(), "<span class='" + CSS_SEPARATOR_COLUMN + "'></span>");
+			if (!this.superheaders.isEmpty()) this.superheaders.put(columns.size(), "<span class='" + CSS_SEPARATOR_COLUMN + "'></span>");
+		}
+		this.columns.add(new Pair<>(CSS_SEPARATOR_COLUMN, k -> ""));
 		return this;
 	}
 
@@ -461,6 +497,23 @@ public class ListSectionsRenderer<T extends Type> {
 
 		// start header and line
 		page.appendHtmlTag("thead");
+
+		if (!superheaders.isEmpty()) {
+			// render column groups
+			page.appendHtmlTag("tr");
+			// skip tool columns
+			tools.forEach(tool -> page.appendHtmlElement("th", ""));
+			superheaders.putIfAbsent(0, "");
+			superheaders.forEach((index, heading) -> {
+				int next = superheaders.higherKey(index) == null ? columns.size() : superheaders.higherKey(index);
+				int colspan = next - index;
+				page.appendHtmlTag("th", "colspan", String.valueOf(colspan));
+				page.appendHtml(heading);
+				page.appendHtmlTag("/th");
+			});
+			page.appendHtmlTag("/tr");
+		}
+
 		page.appendHtmlTag("tr");
 
 		// skip tool columns
