@@ -139,14 +139,14 @@
 	max-height: 70vh;
 }
 
-.defaultMarkupFrame .markupMenu .list-group {
+.defaultMarkupFrame .markupMenu .list-group, .toolMenuFrame .markupMenu .list-group {
 	margin-bottom: 0;
 	display: block;
 	list-style: none;
 	white-space: nowrap;
 }
 
-.defaultMarkupFrame .markupMenuItem {
+.defaultMarkupFrame .markupMenuItem, .toolMenuFrame .markupMenuItem {
 	padding: 0.25em;
 	border: 0;
 }
