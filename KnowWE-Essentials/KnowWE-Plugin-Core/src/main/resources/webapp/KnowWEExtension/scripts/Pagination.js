@@ -407,6 +407,7 @@ KNOWWE.core.plugin.pagination = function() {
           });
         }
         updateButtonState($tooltip);
+        paginationState.startRow = 1;
         setPaginationState(sectionId, paginationState);
       });
     };
