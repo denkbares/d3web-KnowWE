@@ -215,7 +215,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	 * the next) compilation will be a full compilation!.
 	 */
 	public void pinKnowledgeBase() {
-		this.allowIncrementalCompilation = false;
+		// this.allowIncrementalCompilation = false;
 	}
 
 	@SuppressWarnings("rawtypes")
