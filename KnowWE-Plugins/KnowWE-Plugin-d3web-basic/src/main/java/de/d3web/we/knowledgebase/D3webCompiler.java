@@ -77,7 +77,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private final boolean caseSensitive;
 	private D3webScriptCompiler compileScriptCompiler;
 	private D3webScriptCompiler destroyScriptCompiler;
-	private final boolean allowIncrementalCompilation = true;
+	private boolean allowIncrementalCompilation = true;
 	private boolean isIncrementalBuild = false;
 	private final List<Future<?>> futures;
 	private Date buildDate = new Date();
@@ -210,6 +210,14 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		this.destroyScriptCompiler = null;
 	}
 
+	/**
+	 * The current knowledge base can no longer be changed via an incremental build -> This means, the next (but only
+	 * the next) compilation will be a full compilation!.
+	 */
+	public void pinKnowledgeBase() {
+		this.allowIncrementalCompilation = false;
+	}
+
 	@SuppressWarnings("rawtypes")
 	private void logFailingIncrementalCompilationScripts() {
 		Set<Class<? extends CompileScript>> failedDestroyScripts = destroyScriptCompiler.getCompileScriptsNotSupportingIncrementalCompilation();
@@ -217,10 +225,10 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		int failedScriptsCount = failedCompileScripts.size() + failedDestroyScripts.size();
 		if (failedScriptsCount > 0) {
 			LOGGER.info("The following " + Strings.pluralOf(failedScriptsCount, "script")
-					+ " prevented incremental compilation: "
-					+ Stream.concat(failedCompileScripts.stream(), failedDestroyScripts.stream())
-					.map(c -> Strings.isBlank(c.getSimpleName()) ? c.getName() : c.getSimpleName())
-					.sorted().collect(Collectors.joining(", ")));
+						+ " prevented incremental compilation: "
+						+ Stream.concat(failedCompileScripts.stream(), failedDestroyScripts.stream())
+								.map(c -> Strings.isBlank(c.getSimpleName()) ? c.getName() : c.getSimpleName())
+								.sorted().collect(Collectors.joining(", ")));
 		}
 	}
 
@@ -242,6 +250,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		scriptCompiler.compile();
 
 		isIncrementalBuild = false;
+		allowIncrementalCompilation = true;
 
 		knowledgeBase.initPluggedPSMethods();
 	}
@@ -306,7 +315,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		if (!scriptCompiler.isIncrementalCompilationPossible()) {
 			logFailingIncrementalCompilationScripts();
 			throw new IllegalStateException("Non-incremental script was added during incremental compilation. " +
-					"Please inform your administrator and try refresh of the knowledge base to recover.");
+											"Please inform your administrator and try refresh of the knowledge base to recover.");
 		}
 	}
 
