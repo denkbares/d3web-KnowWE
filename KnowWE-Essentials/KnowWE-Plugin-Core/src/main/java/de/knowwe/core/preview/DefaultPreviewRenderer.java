@@ -1,6 +1,7 @@
 package de.knowwe.core.preview;
 
 import java.util.Collection;
+import java.util.List;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -17,7 +18,8 @@ public class DefaultPreviewRenderer extends AbstractPreviewRenderer {
 	public void render(Section<?> section, Collection<Section<?>> relevantSubSections, UserContext user, RenderResult result) {
 		if (section.get() instanceof DefaultMarkupType) {
 			// render all sub sections, but not the default markup itself
-			DefaultMarkupPreviewRenderer.renderSections(Sections.cast(section, DefaultMarkupType.class), section.getChildren(), user, result);
+			List<Section<?>> children = section.getChildren();
+			DefaultMarkupPreviewRenderer.renderSections(Sections.cast(section, DefaultMarkupType.class), children, user, result);
 		}
 		else {
 			// or render the full markup
