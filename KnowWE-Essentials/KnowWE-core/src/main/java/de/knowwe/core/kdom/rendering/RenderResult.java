@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.kdom.filter.SectionFilter;
@@ -169,6 +170,14 @@ public class RenderResult {
 			}
 			renderer.render(section, user, this);
 		}
+		return this;
+	}
+
+	/**
+	 * Append the given HTML element (and its successors) to this render result.
+	 */
+	public RenderResult append(HtmlElement element) {
+		element.write(this);
 		return this;
 	}
 
@@ -456,8 +465,8 @@ public class RenderResult {
 
 	private static String getAttribute(boolean encode, String attributeName, String attribute) {
 		return " " + attributeName + "=\""
-				+ (encode ? Strings.encodeHtml(attribute) : attribute)
-				+ "\"";
+			   + (encode ? Strings.encodeHtml(attribute) : attribute)
+			   + "\"";
 	}
 
 	/**
