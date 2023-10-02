@@ -41,6 +41,8 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.rendering.elements.Div;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
@@ -60,6 +62,10 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
  * @created 15.10.2010
  */
 public class ShowSolutionsContentRenderer implements Renderer {
+
+	private static final String SHOW_ALL = "showAll";
+	private static final int DISPLAY_THRESHOLD = 100;
+	private static final String TOO_MANY_SOLUTIONS_CSS_CLASS = "too-many-solutions-message";
 
 	public ShowSolutionsContentRenderer() {
 	}
@@ -84,7 +90,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		KnowledgeBase base = D3webUtils.getKnowledgeBase(user, section);
 		if (base == null) {
 			String msg = "Unable to find knowledge base. Please either add to a package" +
-					" used for a knowledge base or specify a master article.";
+						 " used for a knowledge base or specify a master article.";
 			DefaultMarkupRenderer.renderMessageOfType(string, Message.Type.WARNING, msg);
 			return;
 		}
@@ -93,7 +99,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 		boolean anyShown = false;
 		if (session != null) {
 			Locale lang = ShowSolutionsType.getLanguage(getShowSolutionsSection(section), user);
-			if (renderSolutions(section, session, lang, string)) anyShown = true;
+			if (renderSolutions(section, user, session, lang, string)) anyShown = true;
 			if (renderAbstractions(section, session, lang, string)) anyShown = true;
 		}
 
@@ -152,7 +158,7 @@ public class ShowSolutionsContentRenderer implements Renderer {
 	 *
 	 * @return if any contents are rendered
 	 */
-	private boolean renderSolutions(Section<?> section, final Session session, Locale lang, RenderResult content) {
+	private boolean renderSolutions(Section<?> section, UserContext user, final Session session, Locale lang, RenderResult content) {
 		Section<ShowSolutionsType> parentSection = getShowSolutionsSection(section);
 
 		// collect the solutions to be presented
@@ -172,23 +178,45 @@ public class ShowSolutionsContentRenderer implements Renderer {
 
 		// format the solutions, as grouped items
 		MultiMap<Solution, Solution> groups = KnowledgeBaseUtils.groupSolutions(allSolutions);
-		for (Solution solution : groups.keySet()) {
+		boolean showAll = Boolean.parseBoolean(user.getParameter(SHOW_ALL));
+		int count = 0;
+		groupLoop : for (Solution solution : groups.keySet()) {
+			if (abortRender(showAll, count)) {
+				content.append(new Span("...").clazz(TOO_MANY_SOLUTIONS_CSS_CLASS));
+				break;
+			}
 			SolutionPanelUtils.renderSolution(solution, session, endUserMode, lang, content);
+			count++;
 
-			// render the (remaining) children as a list
 			ArrayList<Solution> groupItems = new ArrayList<>(groups.getValues(solution));
 			groupItems.remove(solution);
 			if (groupItems.isEmpty()) continue;
 			content.appendHtml("<ul class='grouped-solutions'>");
 			for (Solution groupItem : groupItems) {
+				if (abortRender(showAll, count)) {
+					content.append(new Span("...").clazz(TOO_MANY_SOLUTIONS_CSS_CLASS));
+					break groupLoop;
+				}
 				content.appendHtml("<li class='grouped-solution'>");
 				SolutionPanelUtils.renderSolution(groupItem, session, endUserMode, lang, content);
 				content.appendHtml("</li>");
+				count++;
 			}
 			content.appendHtml("</ul>");
 		}
+		if (abortRender(showAll, count)) {
+			content.append(new Div().clazz(TOO_MANY_SOLUTIONS_CSS_CLASS).children(
+					new Span("There are " + (allSolutions.size() - DISPLAY_THRESHOLD) + " additional solutions, click "),
+					new Span("here").attributes("onClick", "jq$('#" + section.getID() + "').rerender({" + SHOW_ALL + ":true})")
+							.clazz(TOO_MANY_SOLUTIONS_CSS_CLASS + "-rerender"),
+					new Span(" to display all...")));
+		}
 
 		return !allSolutions.isEmpty();
+	}
+
+	private static boolean abortRender(boolean showAll, int count) {
+		return !showAll && count > DISPLAY_THRESHOLD;
 	}
 
 	public static void filterUnwantedSolutions(Section<ShowSolutionsType> parentSection, Set<Solution> allSolutions) {

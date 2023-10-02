@@ -87,6 +87,7 @@
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />
 		<parameter id="script" value="KnowWE-Plugin-d3web-basic.js" />
+		<parameter id="css" value="KnowWE-Plugin-d3web-basic.css" />
 	</extension>
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="KnowledgeBaseDownloadAction">

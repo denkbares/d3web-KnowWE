@@ -1,0 +1,8 @@
+.type_ShowSolutions .too-many-solutions-message {
+	color: grey;
+}
+
+.type_ShowSolutions .too-many-solutions-message-rerender {
+	color: #337ab7;
+	cursor: pointer;
+}
