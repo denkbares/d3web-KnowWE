@@ -37,7 +37,9 @@ import de.d3web.core.knowledge.TerminologyObject;
 import de.d3web.core.session.Session;
 import de.d3web.core.session.SessionFactory;
 import de.d3web.core.session.blackboard.Fact;
+import de.d3web.we.knowledgebase.D3webCompiler;
 import de.knowwe.core.Attributes;
+import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.user.UserContext;
 
 /**
@@ -346,6 +348,13 @@ public class SessionProvider {
 		SessionProvider sessionProvider = getSessionProvider(context);
 		if (sessionProvider != null) {
 			sessionProvider.pinSession(session);
+			// also pin knowledge base in compiler providing the knowledge base, so it does not change
+			// while using the session
+			for (D3webCompiler compiler : Compilers.getCompilers(context, context.getArticleManager(), D3webCompiler.class)) {
+				if (compiler.getKnowledgeBase() == session.getKnowledgeBase()) {
+					compiler.pinKnowledgeBase();
+				}
+			}
 		}
 	}
 
