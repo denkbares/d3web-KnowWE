@@ -53,7 +53,6 @@ public class RecentChangesRenderer implements Renderer {
 			string.appendHtmlTag("/div");
 			return;
 		}
-		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
 		List<Page> sortedFilteredRecentChanges = new RecentChangesPaginationRenderer(this, PaginationRenderer.SortingMode.multi, true).getRecentChanges(sec, user);
 		PaginationRenderer.setResultSize(user, sortedFilteredRecentChanges.size());
 		string.appendHtml("<table>");
@@ -92,7 +91,7 @@ public class RecentChangesRenderer implements Renderer {
 			}
 			else {
 				int pageVersion = page.getVersion();
-				List<Page> versionHistory = wikiConnector.getPageManager().getVersionHistory(page.getName());
+				List<Page> versionHistory = getPageHistory(page);
 				int totalVersionCount = 1;
 				for (Page p : versionHistory) {
 					if (totalVersionCount < p.getVersion()) {
@@ -105,10 +104,10 @@ public class RecentChangesRenderer implements Renderer {
 				}
 
 				string.appendHtml("<td>");
-				if(pageVersion != totalVersionCount){
+				if (pageVersion != totalVersionCount) {
 					string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()) + "&version=" + page.getVersion());
-
-				}else{
+				}
+				else {
 					string.appendHtmlElement("a", label, "href", KnowWEUtils.getURLLink(page.getName()));
 				}
 				string.appendHtml("</td>");
@@ -120,6 +119,11 @@ public class RecentChangesRenderer implements Renderer {
 			counter++;
 		}
 		string.appendHtml("</table>");
+	}
+
+	private static List<Page> getPageHistory(Page page) {
+		JSPWikiConnector wikiConnector = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
+		return wikiConnector.getPageManager().getVersionHistory(page.getName());
 	}
 
 	private String addTableHead(RenderResult string) {

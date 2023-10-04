@@ -37,11 +37,9 @@ import org.json.JSONObject;
 
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
-import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.kdom.renderer.PaginationRenderer;
 
 import static de.knowwe.jspwiki.recentChanges.RecentChangesUtils.*;
@@ -53,7 +51,6 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 	private static final String FILTER_TEXTS = "filter-texts";
 	private static final int MAX_FILTER_COUNT = 200;
 	public static final String EMPTY = "<Empty>";
-	private static final RecentChangesUtils util = new RecentChangesUtils();
 
 	private static final Comparator<String> COMPARATOR = (o1, o2) -> {
 		if (EMPTY.equals(o1) && EMPTY.equals(o2)) {
@@ -118,7 +115,6 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 	}
 
 	protected Map<String, Set<String>> getFilterTexts(UserActionContext context, String filterTextQuery) throws IOException {
-		Set<Page> recentChanges = getRecentChangesFromJSPWiki();
 		String columnName = context.getParameter(COLUMN_NAME);
 		LinkedHashMap<String, Set<String>> filterTexts = new LinkedHashMap<>();
 		Set<String> filteredOut = new LinkedHashSet<>();
@@ -126,9 +122,9 @@ public class RecentChangesFilterProviderAction extends AbstractAction {
 		Section<?> section = getSection(context);
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(section, context);
 		filter.put(columnName, Collections.emptySet());
-		Set<Page> filteredRecentChanges = new RecentChangesPaginationRenderer(new RecentChangesRenderer(), PaginationRenderer.SortingMode.multi, true).filter(filter, recentChanges, context);
+		Set<Page> filteredRecentChanges = RecentChangesUtils.getRecentChangesFiltered(context, filter);
 		for (Page page : filteredRecentChanges) {
-			String text = util.getColumnValueByName(columnName, page);
+			String text = RecentChangesUtils.getColumnValueByName(columnName, page);
 			if (addedFilterValueTexts.contains(text) || filteredOut.contains(text)) continue;
 			if (isFilteredOut(filterTextQuery, text)) {
 				filteredOut.add(text);

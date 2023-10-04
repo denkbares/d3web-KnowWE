@@ -23,8 +23,10 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.wiki.api.core.Attachment;
@@ -63,7 +65,37 @@ public class RecentChangesUtils {
 		});
 	}
 
-	public static Set<Page> getRecentChangesWithFilter(Set<Page> sortedFilteredRecentChanges, UserContext user) {
+	public static Set<Page> getRecentChangesFiltered(UserContext user, @NotNull Map<String, Set<Pattern>> filter) {
+		Set<Page> pages = getRecentChangesForPageTypeSelection(user);
+
+		Set<Page> filteredPages = new LinkedHashSet<>();
+		if (filter.isEmpty()) {
+			filteredPages = pages;
+		}
+		else {
+			for (Page page : pages) {
+				boolean pageMatches = true;
+				for (String columnName : filter.keySet()) {
+					String text = getColumnValueByName(columnName, page);
+					Set<Pattern> patterns = filter.getOrDefault(columnName, Set.of());
+					if (patterns.isEmpty()) {
+						continue;
+					}
+					if (patterns.stream().noneMatch(p -> p.matcher(text).matches())) {
+						pageMatches = false;
+						break;
+					}
+				}
+				if (pageMatches) {
+					filteredPages.add(page);
+				}
+			}
+		}
+		return filteredPages;
+	}
+
+	private static Set<Page> getRecentChangesForPageTypeSelection(UserContext user) {
+		Set<Page> recentChanges = getRecentChangesFromJSPWiki();
 		// can take quite some time for large wikis, so we cache this...
 		boolean showPages = showPages(user);
 		boolean showAttachments = isShowAttachments(user);
@@ -72,7 +104,7 @@ public class RecentChangesUtils {
 				"recentChangesWithFilterFromJSPWiki-" + showPages + "-" + showAttachments + "-" + showIntermediate,
 				() -> {
 					Set<Page> recentChangesCleaned = new LinkedHashSet<>();
-					for (Page page : sortedFilteredRecentChanges) {
+					for (Page page : recentChanges) {
 						if (!(page instanceof Attachment) && showPages) {
 							addPage(recentChangesCleaned, page, showIntermediate);
 						}
@@ -153,7 +185,7 @@ public class RecentChangesUtils {
 		return filter.optBoolean("active");
 	}
 
-	public String toDateString(Date date) {
+	public static String toDateString(Date date) {
 		return DATE_FORMAT.format(date);
 	}
 
@@ -171,7 +203,7 @@ public class RecentChangesUtils {
 		return formatter.format(date);
 	}
 
-	public String getColumnValueByName(String columnName, Page page) {
+	public static String getColumnValueByName(String columnName, Page page) {
 		Object cell = getColumnObjectValueByName(columnName, page);
 		if (cell instanceof Date date) {
 			return toDateString(date);
@@ -181,7 +213,7 @@ public class RecentChangesUtils {
 		}
 	}
 
-	public Object getColumnObjectValueByName(String columnName, Page page) {
+	public static Object getColumnObjectValueByName(String columnName, Page page) {
 		switch (columnName) {
 			case PAGE -> {
 				return page.getName();

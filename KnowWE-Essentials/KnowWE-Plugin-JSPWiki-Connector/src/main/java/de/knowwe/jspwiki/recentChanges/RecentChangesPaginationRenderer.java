@@ -22,7 +22,6 @@ package de.knowwe.jspwiki.recentChanges;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -98,40 +97,14 @@ public class RecentChangesPaginationRenderer extends PaginationRenderer {
     private static final Logger LOGGER = LoggerFactory.getLogger(RecentChangesRenderer.class);
 
     public List<Page> getRecentChanges(Section<?> sec, UserContext user) {
-        Set<Page> recentChanges = getRecentChangesFromJSPWiki();
         Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(sec, user);
-        Set<Page> filteredRecentChanges = filter(filter, recentChanges, user);
+        Set<Page> filteredRecentChanges = getRecentChangesFiltered(user, filter);
         PaginationRenderer.setResultSize(user, filteredRecentChanges.size());
         return sortPages(sec, user, filteredRecentChanges);
     }
 
-    public Set<Page> filter(@NotNull Map<String, Set<Pattern>> filter, Set<Page> recentChanges, UserContext user) {
-        Set<Page> filteredPages = new LinkedHashSet<>();
-        if (!filter.isEmpty()) {
-            for (Page page : recentChanges) {
-                boolean pageMatches = true;
-                for (String columnName : filter.keySet()) {
-                    String text = util.getColumnValueByName(columnName, page);
-                    Set<Pattern> patterns = filter.getOrDefault(columnName, Set.of());
-                    if (patterns.isEmpty()) {
-                        continue;
-                    }
-                    if (patterns.stream().noneMatch(p -> p.matcher(text).matches())) {
-                        pageMatches = false;
-                        break;
-                    }
-                }
-                if (pageMatches) {
-                    filteredPages.add(page);
-                }
-            }
-        } else {
-            filteredPages = recentChanges;
-        }
-        return getRecentChangesWithFilter(filteredPages, user);
-    }
 
-    @NotNull
+	@NotNull
     private List<Page> sortPages(Section<?> sec, UserContext user, Set<Page> filteredRecentChanges) {
         List<Pair<String, Comparator>> columnComparators = PaginationRenderer.getMultiColumnSorting(sec, user).stream()
                 .map(p -> new Pair<>(p.getA(), createComparator(p.getA(), p.getB())))
