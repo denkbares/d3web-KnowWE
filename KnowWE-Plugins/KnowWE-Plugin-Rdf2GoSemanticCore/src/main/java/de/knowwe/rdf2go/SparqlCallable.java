@@ -24,6 +24,8 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.query.GraphQuery;
+import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryEvaluationException;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -59,6 +61,7 @@ class SparqlCallable implements Callable<Object> {
 	// we may have optional prepared (shared) queries, that should be used if available
 	private final TupleQuery preparedSelectQuery;
 	private final BooleanQuery preparedAskQuery;
+	private final GraphQuery preparedConstructQuery;
 	private final Map<String, Value> preparedBindings;
 
 	SparqlCallable(Rdf2GoCore core, String query, SparqlType type, long timeOutMillis, boolean cached) {
@@ -71,6 +74,7 @@ class SparqlCallable implements Callable<Object> {
 		this.preparedAskQuery = null;
 		this.preparedSelectQuery = null;
 		this.preparedBindings = null;
+		this.preparedConstructQuery = null;
 	}
 
 	SparqlCallable(Rdf2GoCore core, TupleQuery query, Map<String, Value> bindings, SparqlType type, long timeOutMillis) {
@@ -82,7 +86,22 @@ class SparqlCallable implements Callable<Object> {
 		// timeouts shorter than 1 seconds are not possible with sesame
 		this.timeOutMillis = Math.max(1000, timeOutMillis);
 		this.preparedAskQuery = null;
+		this.preparedConstructQuery = null;
 		this.preparedSelectQuery = query;
+		this.preparedBindings = bindings;
+	}
+
+	SparqlCallable(Rdf2GoCore core, GraphQuery query, Map<String, Value> bindings, SparqlType type, long timeOutMillis) {
+		this.core = core;
+		this.query = query.toString();
+		this.type = type;
+		// for the moment, we cannot cache prepared queries
+		this.cached = false;
+		// timeouts shorter than 1 seconds are not possible with sesame
+		this.timeOutMillis = Math.max(1000, timeOutMillis);
+		this.preparedAskQuery = null;
+		this.preparedConstructQuery = query;
+		this.preparedSelectQuery = null;
 		this.preparedBindings = bindings;
 	}
 
@@ -96,6 +115,7 @@ class SparqlCallable implements Callable<Object> {
 		this.timeOutMillis = Math.max(1000, timeOutMillis);
 		this.preparedAskQuery = query;
 		this.preparedSelectQuery = null;
+		this.preparedConstructQuery = null;
 		this.preparedBindings = bindings;
 	}
 
@@ -134,8 +154,30 @@ class SparqlCallable implements Callable<Object> {
 			case ASK -> (preparedAskQuery == null)
 					? executeAsk(timeOutSeconds, new Stopwatch())
 					: executeAsk(timeOutSeconds, new Stopwatch(), preparedAskQuery);
+			case CONSTRUCT -> (preparedConstructQuery == null)
+					? executeConstruct(timeOutSeconds, new Stopwatch())
+					: executeConstruct(timeOutSeconds, new Stopwatch(), preparedConstructQuery);
 			default -> throw new NotImplementedException("query type is not supported yet: " + type);
 		};
+	}
+
+	private Object executeConstruct(int timeOutSeconds, Stopwatch stopwatch) {
+		// if the query is not a prepared (shared) query, create a new one, on a new connection, and close afterwards
+		core.getUsageLock().lock();
+		try (RepositoryConnection connection = core.getRepositoryConnectionPK()) {
+			GraphQuery graphQuery = connection.prepareGraphQuery(this.query);
+			return executeConstruct(timeOutSeconds, stopwatch, graphQuery);
+		}
+		finally {
+			core.getUsageLock().unlock();
+		}
+	}
+
+	private Object executeConstruct(int timeOutSeconds, Stopwatch stopwatch, GraphQuery graphQuery) {
+		graphQuery.setMaxExecutionTime(timeOutSeconds);
+		GraphQueryResult result = graphQuery.evaluate();
+		logSlowEvaluation(stopwatch.getTime());
+		return result;
 	}
 
 	@NotNull
@@ -190,8 +232,8 @@ class SparqlCallable implements Callable<Object> {
 	private void logSlowEvaluation(long evalTime) {
 		if (this.cached && evalTime > LOG_TIMEOUT) {
 			LOGGER.info("SPARQL query evaluation finished after "
-					+ Strings.getDurationVerbalization(evalTime)
-					+ ", retrieving results...: " + Rdf2GoUtils.getReadableQuery(this.query, this.type) + "...");
+						+ Strings.getDurationVerbalization(evalTime)
+						+ ", retrieving results...: " + Rdf2GoUtils.getReadableQuery(this.query, this.type) + "...");
 		}
 	}
 

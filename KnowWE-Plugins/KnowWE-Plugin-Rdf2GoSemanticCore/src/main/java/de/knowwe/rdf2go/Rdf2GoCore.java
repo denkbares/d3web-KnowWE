@@ -68,6 +68,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleNamespace;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
+import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.MalformedQueryException;
 import org.eclipse.rdf4j.query.QueryInterruptedException;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -1344,6 +1345,31 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		}
 	}
 
+	/**
+	 * Executes a CONSTRUCT query, return a new graph based on the query.
+	 *
+	 * @param query the query to execute
+	 * @return the result of the query as an iterable of statements
+	 * @deprecated unfortunately, as of 2023-10-05, CONSTRUCT queries seem to not work in our current setup (GraphDB?).
+	 * Feel free to try again in later versions.
+	 */
+	public GraphQueryResult sparqlConstruct(String query) {
+		return sparqlConstruct(getNamespaces(), query);
+	}
+
+	/**
+	 * Executes a CONSTRUCT query, return a new graph based on the query.
+	 *
+	 * @param query the query to execute
+	 * @return the result of the query as an iterable of statements
+	 * @deprecated unfortunately, as of 2023-10-05, CONSTRUCT queries seem to not work in our current setup (GraphDB?).
+	 * Feel free to try again in later versions.
+	 */
+	public GraphQueryResult sparqlConstruct(Collection<Namespace> namespaces, String query) {
+		String completeQuery = prependPrefixesToQuery(namespaces, query);
+		return (GraphQueryResult) sparql(Options.NO_CACHE, SparqlType.CONSTRUCT, completeQuery, null, null, null);
+	}
+
 	private Object sparql(Options options, SparqlType type, @Nullable String query,
 						  @Nullable BooleanQuery preparedAsk, @Nullable TupleQuery
 								  preparedSelect, @Nullable Map<String, Value> bindings) {
@@ -1459,6 +1485,10 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 			return new SparqlCallable(this, preparedAsk, bindings, type, timeoutMillis);
 		}
 		if (type == SparqlType.SELECT && preparedSelect != null) {
+			assert query == null;
+			return new SparqlCallable(this, preparedSelect, bindings, type, timeoutMillis);
+		}
+		if (type == SparqlType.CONSTRUCT && preparedSelect != null) {
 			assert query == null;
 			return new SparqlCallable(this, preparedSelect, bindings, type, timeoutMillis);
 		}

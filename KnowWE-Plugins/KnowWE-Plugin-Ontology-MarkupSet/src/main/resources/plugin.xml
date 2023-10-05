@@ -116,6 +116,15 @@
 		<parameter id="css" value="KnowWE-Plugin-Rdf2GoSemanticCore.css" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="SparqlConstructMarkup">
+		<parameter id="class" value="de.knowwe.ontology.sparql.SparqlConstructMarkup" />
+		<parameter id="name" value="SparqlConstructMarkup" />
+		<parameter id="description" value="Type SparqlConstructMarkup" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
 	<extension plugin-id="KnowWE-Plugin-Ontology-MarkupSet" point-id="SparqlResultNodeRenderer"
 		id="DecodeUrlNodeRenderer">
 		<parameter id="class" value="de.knowwe.ontology.sparql.DecodeUrlNodeRenderer" />
