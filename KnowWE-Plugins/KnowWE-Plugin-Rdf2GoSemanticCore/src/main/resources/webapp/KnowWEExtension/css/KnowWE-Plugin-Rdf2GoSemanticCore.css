@@ -15,6 +15,11 @@
 	display: block;
 }
 
+.type_Sparql .construct-compile-info {
+	margin-left: .5em;
+	color: grey;
+}
+
 .sparqlTable .border .sparqltable td, .sparqlTable .border .sparqltable th {
 	border: 1px solid #DDD;
 }

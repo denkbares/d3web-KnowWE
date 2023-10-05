@@ -58,6 +58,8 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	public static final String NAME = "name";
 	public static final String RENDER_QUERY = "showQuery";
 	public static final String RENDER_MODE = "renderMode";
+
+	public static final String CONSTRUCT = "construct";
 	public static final String TIMEOUT = "timeout";
 	public static final String LOG_LEVEL = "logLevel";
 	public static final String COLUMN_STYLE = "columnStyle";  // usage: @columnStyle: columnName style value
@@ -96,6 +98,11 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(AsynchronousRenderer.ASYNCHRONOUS, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(TIMEOUT, false, Pattern.compile("\\d+(\\.\\d+)?|" + TimeStampType.DURATION));
 		MARKUP.addAnnotationRenderer(TIMEOUT, NothingRenderer.getInstance());
+		MARKUP.addAnnotation(CONSTRUCT, false);
+		MARKUP.addAnnotationContentType(CONSTRUCT, new ConstructAnnotationType());
+		MARKUP.getAnnotation(CONSTRUCT)
+				.setDocumentation("Specify a template how statements should be generated from the result of the query, similar to CONSTRUCT queries.<br>" +
+								  "Example: @" + CONSTRUCT + ": ?uri skos:prefLabel ?name");
 		MARKUP.addAnnotation(NAME, false);
 		MARKUP.addAnnotationRenderer(NAME, NothingRenderer.getInstance());
 		MARKUP.addAnnotationContentType(NAME, new RegisteredNameType(SparqlMarkupType.class));
@@ -104,24 +111,24 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		MARKUP.addAnnotationRenderer(COLUMN_SORTING, NothingRenderer.getInstance());
 		MARKUP.getAnnotation(COLUMN_SORTING)
 				.setDocumentation("By default, columns are sorted lexicographically according to their XSD type. Use this annotation to try and force a different sorting criteria.<p>" +
-						"Example for sorting a column 'Formatted_Date' containing a date and additional style and text by that date:<br>" +
-						"@" + COLUMN_SORTING + ": Formatted_Date date<br>" +
-						"Example for sorting a column 'Name' according to their XSD type (this is the default for all columns anyway):<br>"
-						+ "@" + COLUMN_SORTING + ": Name value");
+								  "Example for sorting a column 'Formatted_Date' containing a date and additional style and text by that date:<br>" +
+								  "@" + COLUMN_SORTING + ": Formatted_Date date<br>" +
+								  "Example for sorting a column 'Name' according to their XSD type (this is the default for all columns anyway):<br>"
+								  + "@" + COLUMN_SORTING + ": Name value");
 		MARKUP.addAnnotation(COLUMN_STYLE, false);
 		MARKUP.getAnnotation(COLUMN_STYLE)
 				.setDocumentation("Set styles for a specific column of the SPARQL table. Any HTML/CSS style should work.<p>" +
-						"Example for setting the width of column 'Name' to 100px:<br>" +
-						"@" + COLUMN_STYLE + ": Name width 100px<br>" +
-						"Example for disabling filtering for columns 'Name':<br>"
-						+ "@" + COLUMN_STYLE + ": Name filter disable");
+								  "Example for setting the width of column 'Name' to 100px:<br>" +
+								  "@" + COLUMN_STYLE + ": Name width 100px<br>" +
+								  "Example for disabling filtering for columns 'Name':<br>"
+								  + "@" + COLUMN_STYLE + ": Name filter disable");
 		MARKUP.addAnnotationRenderer(COLUMN_STYLE, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(TABLE_STYLE, false);
 		MARKUP.addAnnotationRenderer(TABLE_STYLE, NothingRenderer.getInstance());
 		MARKUP.getAnnotation(TABLE_STYLE)
 				.setDocumentation("Set styles for the SPARQL table. Any HTML/CSS style should work.<p>" +
-						"Example for setting the width of the table to 1000px:<br>" +
-						"@" + TABLE_STYLE + ": width 1000px");
+								  "Example for setting the width of the table to 1000px:<br>" +
+								  "@" + TABLE_STYLE + ": width 1000px");
 		MARKUP.addAnnotation(ALLOW_JSPWIKI_MARKUP, false);
 		MARKUP.addAnnotationRenderer(ALLOW_JSPWIKI_MARKUP, NothingRenderer.getInstance());
 		MARKUP.addAnnotation(COLUMN_WIDTH, false);
@@ -229,7 +236,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 		private void handleInvalidCssKey(Section<SparqlMarkupType> markupSection, String styleName) {
 			if (!cssKeyIsValid(styleName)) {
 				markupSection.computeIfAbsent(null, INVALID_CSS_KEYS,
-						(compiler, sparqlMarkupTypeSection) -> new LinkedHashSet<>())
+								(compiler, sparqlMarkupTypeSection) -> new LinkedHashSet<>())
 						.add(styleName);
 			}
 		}
