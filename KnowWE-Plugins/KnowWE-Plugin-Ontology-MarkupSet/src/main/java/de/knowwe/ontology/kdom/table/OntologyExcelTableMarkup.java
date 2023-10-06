@@ -266,12 +266,12 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 			}
 			Section<OntologyExcelTableMarkup> markup = $(section).ancestor(OntologyExcelTableMarkup.class)
 					.getFirst();
-			String source = this.getClass().toString() + section.getID();
+			String source = this.getClass() + section.getID();
 			String messageText = Strings.concat("\n", messageStrings.subList(0, Math.min(messageStrings.size(), MAX_MESSAGES)));
 			if (messageStrings.size() > MAX_MESSAGES) {
 				messageText += "\n...and " + (messageStrings.size() - MAX_MESSAGES) + " more";
 			}
-			List<Message> messages = List.of(Messages.warning(messageText));
+			List<Message> messages = Strings.isBlank(messageText) ? List.of() : List.of(Messages.warning(messageText));
 			Messages.storeMessages(compiler, markup, source, messages);
 			section.storeObject(compiler, COUNT_KEY, new Pair<>(statementCounter, rowCounter));
 			stopwatch.log(getMessage(statementCounter, rowCounter));
