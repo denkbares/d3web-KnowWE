@@ -603,7 +603,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 								+ connectionStopwatch.getDisplay() + ".");
 				}
 
-				LOGGER.info("Current number of statements in " + Rdf2GoCore.class.getSimpleName() + " " + getName() + ": " + this.statementCache.size() + " uncached, " + this.uncachedStatementsCounter + " uncached.");
+				LOGGER.info("Current number of statements in " + Rdf2GoCore.class.getSimpleName() + " " + getName() + ": " + this.statementCache.size() + " cached, " + this.uncachedStatementsCounter + " uncached.");
 
 				// Reset caches
 				this.removeCache = new HashSet<>();
