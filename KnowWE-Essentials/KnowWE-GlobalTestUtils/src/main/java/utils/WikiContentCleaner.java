@@ -123,8 +123,8 @@ public class WikiContentCleaner {
 					break;
 				}
 			}
-			if (copy || (knownFiles.isEmpty() || knownFiles.stream()
-					.anyMatch(regex -> fileName.matches(regex) || fileName.startsWith(regex)))) {
+			if (copy || (!limit && (knownFiles.isEmpty() || knownFiles.stream()
+					.anyMatch(regex -> fileName.matches(regex) || fileName.startsWith(regex))))) {
 				File target = new File(targetFolder, fileName);
 				if (sourceFile.isFile()) {
 					String source = Strings.readFile(sourceFile);
