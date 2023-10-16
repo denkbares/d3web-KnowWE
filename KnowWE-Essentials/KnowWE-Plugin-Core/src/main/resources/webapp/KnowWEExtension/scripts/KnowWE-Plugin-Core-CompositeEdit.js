@@ -624,8 +624,8 @@ KNOWWE.plugin.compositeEditTool = function() {
         _TM.adjustSingletonMenus(root);
         /**
          * Trigger custom Event here to mount the React components so that the
-         * Item can be renderd on the users side. This even will be triggered
-         * multiple times since loadPreviews is called async. the react components
+         * Item can be rendered on the users side. This event will be triggered
+         * multiple times since loadPreviews is called async. The React components
          * will handle changes so that only new items will be rendered.
          */
         jq$("body").trigger("OpenCompositeEdit");
