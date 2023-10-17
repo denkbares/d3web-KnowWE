@@ -1,6 +1,6 @@
 KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
-KNOWWE.core.plugin = KNOWWE.core.plugin || {}
+KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
 /**
  * The KNOWWE.plugin.ontology global namespace object. If KNOWWE.plugin.ontology
@@ -13,7 +13,7 @@ KNOWWE.plugin.ontology = function() {
     commitOntology: function(sectionID) {
       new _KA({
         url: KNOWWE.core.util.getURL({
-          action: 'CommitOntologyAction',
+          action: "CommitOntologyAction",
           SectionID: sectionID
         }),
         fn: function() {
@@ -25,9 +25,9 @@ KNOWWE.plugin.ontology = function() {
     },
     expandLazyReference: function(sectionID, newReferenceText) {
       var params = {
-        action: 'ReplaceKDOMNodeAction',
+        action: "ReplaceKDOMNodeAction",
         TargetNamespace: sectionID,
-        KWikitext: newReferenceText,
+        KWikitext: newReferenceText
       };
       var options = {
         url: KNOWWE.core.util.getURL(params),
@@ -37,10 +37,10 @@ KNOWWE.plugin.ontology = function() {
             location.reload();
           }
         }
-      }
+      };
       new _KA(options).send();
     }
-  }
+  };
 }();
 
 KNOWWE.plugin.sparql.editTool = {};
@@ -60,7 +60,7 @@ KNOWWE.plugin.turtle.editTool = {};
 jq$.extend(KNOWWE.plugin.turtle.editTool, KNOWWE.plugin.defaultEditTool);
 
 KNOWWE.plugin.sparql.downloadExcel = function(id, paramFilename, actionClass, filtered) {
-  let sectionMarker = jq$('#' + id).find('.knowwe-paginationWrapper');
+  let sectionMarker = jq$("#" + id).find(".knowwe-paginationWrapper");
   let localSectionStorage = KNOWWE.helper.getLocalSectionStorage(sectionMarker.attr("id"), true);
   jq$.ajax("action/" + actionClass, {
     data: {
@@ -70,32 +70,32 @@ KNOWWE.plugin.sparql.downloadExcel = function(id, paramFilename, actionClass, fi
       download: false,
       filtered: filtered
     },
-    type: 'post',
+    type: "post",
     cache: false,
     success: function(json) {
       window.location = "action/SparqlDownloadAction?SectionID=" + id +
         "&filename=" + paramFilename +
         "&download=true" +
         "&downloadFile=" + json["downloadFile"] +
-        "&filtered=" + filtered
+        "&filtered=" + filtered;
     }
   });
-}
+};
 
 KNOWWE.plugin.sparql.initDownloadExcelTools = function() {
 
   KNOWWE.helper.observer.subscribe("filterChanged", function() {
     let sectionId = this.sectionId;
     let $reRenderSectionMarker = jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`);
-    let $markupMenu = $reRenderSectionMarker.closest('.defaultMarkupFrame').find('.markupMenu');
-    let tool = $markupMenu.find('[title="Download this table as an excel file only containing the filtered results."]');
+    let $markupMenu = $reRenderSectionMarker.closest(".defaultMarkupFrame").find(".markupMenu");
+    let tool = $markupMenu.find("[title=\"Download this table as an excel file only containing the filtered results.\"]");
     if (this.filteringActive) {
-      tool[0].style.display = 'block';
+      tool[0].style.display = "block";
     } else {
-      tool[0].style.display = 'none';
+      tool[0].style.display = "none";
     }
-  })
-}
+  });
+};
 
 KNOWWE.plugin.turtle.editTool.generateButtons = function(id) {
   KNOWWE.plugin.turtle.editTool.format = function() {
@@ -108,9 +108,9 @@ KNOWWE.plugin.turtle.editTool.generateButtons = function(id) {
 
 (function init() {
 
-  window.addEvent('domready', _KL.setup);
-  if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-    window.addEvent('domready', function() {
+  window.addEvent("domready", _KL.setup);
+  if (KNOWWE.helper.loadCheck(["Wiki.jsp"])) {
+    window.addEvent("domready", function() {
       jq$(document).find("type_HierarchyTable .wikitable.knowwetable").each(function() {
         KNOWWE.plugin.hierarchy.declare(this);
         KNOWWE.plugin.hierarchy.eval(this);
@@ -128,15 +128,15 @@ KNOWWE.plugin.hierarchy.declare = function(table) {
     return table.rows[0] !== this;
   }).each(function() {
     this.setAttribute("data-tt-id", "hierarchy-row-" + this.id);
-  })
-}
+  });
+};
 
 KNOWWE.plugin.hierarchy.list = [];
 
 KNOWWE.plugin.hierarchy.eval = function(table) {
   var highest = -1, lowest = -1;
   jq$(table.rows).filter(function() {
-    return this.hasAttribute("data-tt-id")
+    return this.hasAttribute("data-tt-id");
   }).each(function() {
     var hierarchy = this.cells[0].innerText.trim();
     if (highest === -1 || parseInt(hierarchy) < highest) {
@@ -153,7 +153,7 @@ KNOWWE.plugin.hierarchy.eval = function(table) {
       )
     );
   });
-}
+};
 
 KNOWWE.plugin.hierarchy.build = function() {
   KNOWWE.plugin.hierarchy.list.forEach(function(obj) {
@@ -166,7 +166,7 @@ KNOWWE.plugin.hierarchy.build = function() {
       dom.setAttribute("data-tt-branch", "true");
     }
   });
-}
+};
 
 KNOWWE.plugin.hierarchy.getParent = function(hierarchyObject) {
   var $child = jq$(document.getElementById(hierarchyObject.id));
@@ -179,7 +179,7 @@ KNOWWE.plugin.hierarchy.getParent = function(hierarchyObject) {
     $child = jq$($child.prev()[0]);
   }
   return null;
-}
+};
 
 KNOWWE.plugin.hierarchy.object = function(id, hierarchy) {
   return {
@@ -198,8 +198,8 @@ KNOWWE.plugin.hierarchy.object = function(id, hierarchy) {
       if (child == null) return;
       this.children.push(child);
     }
-  }
-}
+  };
+};
 
 KNOWWE.plugin.hierarchy.init = function() {
   jq$(".type_ClassHierarchy .wikitable.knowwetable").each(function() {
@@ -219,7 +219,7 @@ KNOWWE.plugin.hierarchy.init = function() {
       article: jq$(this.id).closest(".defaultMarkupFrame").attr("id")
     });
   });
-}
+};
 
 KNOWWE.plugin.sparqlConsole = function() {
 
@@ -227,27 +227,27 @@ KNOWWE.plugin.sparqlConsole = function() {
     init: function() {
       jq$(".type_SparqlConsole textarea.sparqlEditor").each(function() {
         const editor = jq$(this);
-        editor.autosize({append: ''});
+        editor.autosize({append: ""});
         new TextArea(editor);
-        editor.on('keydown', function(event) {
-          if ((event.metaKey || event.altKey || event.ctrl) && event.key === 'Enter') { // render sparql when cmd + enter is pressed
-            KNOWWE.plugin.sparqlConsole.updateConsole(jq$(this).attr('sectionid'));
+        editor.on("keydown", function(event) {
+          if ((event.metaKey || event.altKey || event.ctrl) && event.key === "Enter") { // render sparql when cmd + enter is pressed
+            KNOWWE.plugin.sparqlConsole.updateConsole(jq$(this).attr("sectionid"));
           }
-        })
+        });
       });
     },
 
     updateConsole: function(sectionID) {
-      var query = jq$('textarea.sparqlEditor[sectionid="' + sectionID + '"]').val();
+      var query = jq$("textarea.sparqlEditor[sectionid=\"" + sectionID + "\"]").val();
       jq$.cookie("sparqlConsole_" + sectionID, query);
-      jq$('#' + sectionID).rerender();
+      jq$("#" + sectionID).rerender();
     }
-  }
+  };
 }
 
 (function init() {
-  if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-    window.addEvent('domready', function() {
+  if (KNOWWE.helper.loadCheck(["Wiki.jsp"])) {
+    window.addEvent("domready", function() {
       KNOWWE.plugin.sparqlConsole.init();
       KNOWWE.plugin.sparql.initDownloadExcelTools();
     });
