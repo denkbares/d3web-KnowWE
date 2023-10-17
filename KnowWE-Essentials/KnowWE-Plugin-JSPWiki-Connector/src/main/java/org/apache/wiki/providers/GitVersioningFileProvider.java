@@ -383,10 +383,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					return page;
 				}
 				else if (version == PageProvider.LATEST_VERSION) {
-					return versionHistory.get(versionHistory.size() - 1);
+					return versionHistory.get(0);
 				}
 				else if (version > 0 && version <= versionHistory.size()) {
-					return versionHistory.get(version - 1);
+					return versionHistory.get(versionHistory.size() - version);
 				}
 				else {
 					throw new ProviderException("Version " + version + " of page " + pageName + " does not exist");
