@@ -534,9 +534,12 @@ KNOWWE.core.plugin.pagination = function() {
     }
     //on first load
     if (!$paginationWrapper.find('.filter-activator')[0].checked || !anyActiveFilter(filterState)) {
-      let $reRenderSectionMarker = jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`);
-      let $markupMenu = $reRenderSectionMarker.closest('.defaultMarkupFrame').find('.markupMenu');
-      $markupMenu.find('[title="Download this table as an excel file only containing the filtered results."]')[0].style.display = "none";
+      jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`).closest('.defaultMarkupFrame')
+        .find('.markupMenu .markupMenuItem')
+        // find tool that contains text "filtered"
+        .filter((_, elem) => jq$(elem).text().includes('filtered'))
+        .css('display', 'none');
+
     }
   }
 

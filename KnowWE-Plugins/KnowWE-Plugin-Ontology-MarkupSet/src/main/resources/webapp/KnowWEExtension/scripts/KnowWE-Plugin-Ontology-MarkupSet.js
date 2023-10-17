@@ -85,15 +85,11 @@ KNOWWE.plugin.sparql.downloadExcel = function(id, paramFilename, actionClass, fi
 KNOWWE.plugin.sparql.initDownloadExcelTools = function() {
 
   KNOWWE.helper.observer.subscribe("filterChanged", function() {
-    let sectionId = this.sectionId;
-    let $reRenderSectionMarker = jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`);
-    let $markupMenu = $reRenderSectionMarker.closest(".defaultMarkupFrame").find(".markupMenu");
-    let tool = $markupMenu.find("[title=\"Download this table as an excel file only containing the filtered results.\"]");
-    if (this.filteringActive) {
-      tool[0].style.display = "block";
-    } else {
-      tool[0].style.display = "none";
-    }
+    KNOWWE.helper.observer.subscribe("filterChanged", function() {
+      jq$(`.ReRenderSectionMarker[sectionid="${(this.sectionId)}"]`).closest(".defaultMarkupFrame").find(".markupMenu .markupMenuItem")
+        .filter((_, elem) => jq$(elem).text().includes("filtered"))
+        .css("display", this.filteringActive ? "block" : "none");
+    });
   });
 };
 
