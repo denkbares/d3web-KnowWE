@@ -860,6 +860,8 @@ KNOWWE.core.plugin.stickyTableHeaders = function() {
 
       // trigger scroll and resize event to make sure sticky position gets recalculated when page height changes
       KNOWWE.helper.observer.subscribe("afterRerender", update);
+      // also add extra event contentChange for every time the site changes
+      KNOWWE.helper.observer.subscribe("contentChange", update);
       jq$(".haddock .header").on("transitionend", update);
 
       // trigger scroll and resize event for %%accordion animation
