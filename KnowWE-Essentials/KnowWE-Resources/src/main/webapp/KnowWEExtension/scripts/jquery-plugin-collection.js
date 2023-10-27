@@ -184,7 +184,7 @@
         cache: false,
         data: data
       }).success(function(data, status, jqXHR) {
-        if (data === "") {
+        if (data.trim() === "") {
           if (showGlobalProcessingState()) {
             KNOWWE.core.util.updateProcessingState(-1);
           }
