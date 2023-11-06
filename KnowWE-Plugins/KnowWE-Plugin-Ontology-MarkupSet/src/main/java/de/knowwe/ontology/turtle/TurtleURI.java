@@ -27,6 +27,7 @@ import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
+import de.knowwe.core.utils.Patterns;
 import de.knowwe.kdom.constraint.AtMostOneFindingConstraint;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.ontology.compile.OntologyCompiler;
@@ -41,7 +42,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 	public TurtleURI() {
 
 		ConstraintSectionFinder c = new ConstraintSectionFinder(
-				new RegexSectionFinder("\\w*:\\S+"));
+				new RegexSectionFinder("\\w*:(?:" + Patterns.QUOTED + ")|\\S+"));
 		c.addConstraint(AtMostOneFindingConstraint.getInstance());
 		setSectionFinder(c);
 	}
