@@ -666,4 +666,13 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="ImageMarkup">
+		<parameter id="class" value="de.knowwe.core.images.ImageMarkup" />
+		<parameter id="name" value="ImageMarkup" />
+		<parameter id="description" value="Markup displaying an image" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
 </plugin>
