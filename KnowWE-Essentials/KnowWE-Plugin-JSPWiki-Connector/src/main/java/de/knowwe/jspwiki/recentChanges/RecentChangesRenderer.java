@@ -126,7 +126,7 @@ public class RecentChangesRenderer implements Renderer {
 		return wikiConnector.getPageManager().getVersionHistory(page.getName());
 	}
 
-	private String addTableHead(RenderResult string) {
+	private void addTableHead(RenderResult string) {
 		List<String> columnNames = new ArrayList<>();
 		columnNames.add(PAGE);
 		columnNames.add(LAST_MODIFIED);
@@ -142,7 +142,6 @@ public class RecentChangesRenderer implements Renderer {
 			string.appendHtml("</th>");
 		}
 		string.appendHtml("</tr>");
-		return string.toString();
 	}
 }
 
