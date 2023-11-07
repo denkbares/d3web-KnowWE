@@ -200,6 +200,9 @@ public class SparqlFilterProviderAction extends AbstractAction {
 		else {
 			plain = Strings.htmlToPlain(renderResult.toString());
 		}
+		if (Strings.isBlank(plain)) {
+			plain = EMPTY;
+		}
 		return plain;
 	}
 }
