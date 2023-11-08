@@ -20,8 +20,18 @@
 package de.knowwe.core.images;
 
 import de.knowwe.core.compile.packaging.PackageManager;
+import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+
+/**
+ * Markup for images elements.
+ * It defines specific annotations relevant for images, such as source, width, height, alternative text, style, ID,
+ * class, and caption.
+ *
+ * @author Antonia Heyder (denkbares GmbH)
+ * @created 08.11.2023
+ */
 
 public class ImageMarkup extends DefaultMarkupType {
 
@@ -33,12 +43,12 @@ public class ImageMarkup extends DefaultMarkupType {
 	private static final String ANNOTATION_ID = "id";
 	private static final String ANNOTATION_CLASS = "class";
 	static final String ANNOTATION_CAPTION = "caption";
-
 	private static final DefaultMarkup MARKUP;
 
 	static {
 		MARKUP = new DefaultMarkup("Image");
 		MARKUP.addAnnotation(ANNOTATION_SRC, true);
+		MARKUP.addAnnotationContentType(ANNOTATION_SRC, new AttachmentType());
 		MARKUP.addAnnotation(ANNOTATION_WIDTH, false);
 		MARKUP.addAnnotation(ANNOTATION_HEIGHT, false);
 		MARKUP.addAnnotation(ANNOTATION_ALT, false);
@@ -47,7 +57,6 @@ public class ImageMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_CLASS, false);
 		MARKUP.addAnnotation(ANNOTATION_CAPTION, false);
 		PackageManager.addPackageAnnotation(MARKUP);
-
 	}
 
 	public ImageMarkup() {
