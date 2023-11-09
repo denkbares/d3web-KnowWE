@@ -125,6 +125,7 @@ public class KnowWEUtils {
 	 * @created 03.03.2011
 	 */
 	public static String maskJSPWikiMarkup(final String string) {
+		if (string == null) return null;
 		final StringBuilder temp = new StringBuilder(string);
 		maskJSPWikiMarkup(temp);
 		return temp.toString();
