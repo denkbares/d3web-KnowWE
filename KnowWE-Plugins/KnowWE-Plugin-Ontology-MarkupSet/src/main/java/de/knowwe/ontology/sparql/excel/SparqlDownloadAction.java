@@ -96,52 +96,70 @@ public class SparqlDownloadAction extends AbstractAction {
 			Rdf2GoCore core = compilers.iterator().next().getRdf2GoCore();
 			String sparql = Rdf2GoUtils.createSparqlString(core, querySection.getText());
 			CachedTupleQueryResult resultSet = core.sparqlSelect(sparql);
-			File file = new File(Files.getSystemTempDir(), UUID.randomUUID() + ".xlsx");
-			file.deleteOnExit();
-			try (OutputStream outputStream = new FileOutputStream(file)) {
-				try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-					if (Boolean.parseBoolean(context.getParameter("filtered"))) {
-						addSparqlResultAsSheet(workbook, resultSet, context, core, opts, filter);
-					}
-					else {
-						addSparqlResultAsSheet(workbook, resultSet, context, core, opts, Collections.emptyMap());
-					}
-					workbook.write(outputStream);
-				}
-			}
+			File file = getExcelOutputFile(context, filter, opts, core, resultSet);
 			//no download - 1. request (post)
 			if (!Boolean.parseBoolean(context.getParameter("download"))) {
-				if (context.getWriter() != null) {
-					context.setContentType(JSON);
-					JSONObject response = new JSONObject();
-					try {
-						response.put("downloadFile", file.getName());
-						response.write(context.getWriter());
-					}
-					catch (JSONException e) {
-						throw new IOException(e);
-					}
-				}
+				prepareDownload(context, file);
 			}
 
 			//download - 2. request (get)
 			if (Boolean.parseBoolean(context.getParameter("download"))) {
-				context.setContentType("application/vnd.ms-excel");
-				context.setHeader("Content-Disposition", "attachment; filename=\""
-						+ context.getParameter(PARAM_FILENAME) + "\"");
-
-				File file1 = new File(Files.getSystemTempDir(), context.getParameter("downloadFile"));
-				try (FileInputStream inputStream = new FileInputStream(file1); OutputStream outputStream = context.getOutputStream()) {
-					Streams.stream(inputStream, outputStream);
-				}
-				finally {
-					file1.delete();
-				}
+				download(context);
 			}
 		}
 	}
 
-	protected static void addSparqlResultAsSheet(XSSFWorkbook wb, CachedTupleQueryResult qrt, UserContext user, Rdf2GoCore core, RenderOptions opts, Map<String, Set<Pattern>> filter) {
+	@NotNull
+	private static File getExcelOutputFile(UserActionContext context, Map<String, Set<Pattern>> filter, RenderOptions opts, Rdf2GoCore core, CachedTupleQueryResult resultSet) throws IOException {
+		File file = new File(Files.getSystemTempDir(), UUID.randomUUID() + ".xlsx");
+		file.deleteOnExit();
+		try (OutputStream outputStream = new FileOutputStream(file)) {
+			try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+				if (Boolean.parseBoolean(context.getParameter("filtered"))) {
+					addSparqlResultAsSheet(workbook, resultSet, context, opts, filter);
+				}
+				else {
+					addSparqlResultAsSheet(workbook, resultSet, context, opts, Collections.emptyMap());
+				}
+				workbook.write(outputStream);
+			}
+		}
+		return file;
+	}
+
+	private static void prepareDownload(UserActionContext context, File file) throws IOException {
+		if (context.getWriter() != null) {
+			context.setContentType(JSON);
+			JSONObject response = new JSONObject();
+			try {
+				response.put("downloadFile", file.getName());
+				response.write(context.getWriter());
+			}
+			catch (JSONException e) {
+				throw new IOException(e);
+			}
+		}
+	}
+
+	private static void download(UserActionContext context) throws IOException {
+		context.setContentType("application/vnd.ms-excel");
+		String fileName = context.getParameter(PARAM_FILENAME);
+		if (Boolean.parseBoolean(context.getParameter("filtered"))) {
+			fileName = fileName.replace(".xlsx", " filtered.xlsx");
+		}
+		context.setHeader("Content-Disposition", "attachment; filename=\""
+				+ fileName + "\"");
+
+		File file1 = new File(Files.getSystemTempDir(), context.getParameter("downloadFile"));
+		try (FileInputStream inputStream = new FileInputStream(file1); OutputStream outputStream = context.getOutputStream()) {
+			Streams.stream(inputStream, outputStream);
+		}
+		finally {
+			file1.delete();
+		}
+	}
+
+	protected static void addSparqlResultAsSheet(XSSFWorkbook wb, CachedTupleQueryResult qrt, UserContext user, RenderOptions opts, Map<String, Set<Pattern>> filter) {
 
 		XSSFSheet sheet = wb.createSheet("Result");
 
