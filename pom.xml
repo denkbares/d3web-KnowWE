@@ -36,7 +36,7 @@
 		<mate.version>2023.4-SNAPSHOT</mate.version>
 		<jspwiki.version>2.11.6-SNAPSHOT</jspwiki.version>
 		<selenium.version>3.13.0</selenium.version>
-		<tomcat.version>9.0.13</tomcat.version>
+		<tomcat.version>9.0.72</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.clover.encoding>UTF-8</maven.clover.encoding>
 		<sonar.core.codeCoveragePlugin>clover</sonar.core.codeCoveragePlugin>
