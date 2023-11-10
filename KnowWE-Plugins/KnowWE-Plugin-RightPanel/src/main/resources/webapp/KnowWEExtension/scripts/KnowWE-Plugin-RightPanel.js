@@ -477,7 +477,7 @@ KNOWWE.core.plugin.rightPanel = function () {
 		const orientation = (isShown ? "right" : "left");
 		const status = (isShown ? "Hide" : "Show");
 		jq$(KNOWWE.core.util.getMoreButtonSelector()).after("<li class='rightPanel-li'><a id='rightPanel-toggle-button' title='" + status + " right panel'"
-			+ " class='action " + (KNOWWE.helper.isFontAwesomeProAvailable() ? "fa-regular" : "fa-solid") + " fa-angles" + orientation + "'></a></li>");
+			+ " class='action " + (KNOWWE.helper.isFontAwesomeProAvailable() ? "fa-regular" : "fa-solid") + " fa-angles-" + orientation + "'></a></li>");
 		bindRightPanelToggleButton();
 	}
 
