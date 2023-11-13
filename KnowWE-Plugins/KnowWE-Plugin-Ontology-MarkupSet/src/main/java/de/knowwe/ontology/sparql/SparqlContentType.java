@@ -139,7 +139,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		}
 	}
 
-	private Set<String> getColumnsWithDisabledFiltering(Section<DefaultMarkupType> markupSection) {
+	protected Set<String> getColumnsWithDisabledFiltering(Section<DefaultMarkupType> markupSection) {
 		if (markupSection == null) return Collections.emptySet();
 		return markupSection.getObjectOrDefault(null, SparqlMarkupType.DISABLED_FILTERING_KEY, Collections.emptySet());
 	}
@@ -155,7 +155,7 @@ public class SparqlContentType extends AbstractType implements SparqlType {
 		}
 	}
 
-	private List<RenderOptions.StyleOption> getStyles(Section<DefaultMarkupType> markupSection, String columnstyle) {
+	protected List<RenderOptions.StyleOption> getStyles(Section<DefaultMarkupType> markupSection, String columnstyle) {
 		return markupSection == null ? Collections.emptyList() : markupSection.getObjectOrDefault(null, columnstyle, Collections
 				.emptyList());
 	}

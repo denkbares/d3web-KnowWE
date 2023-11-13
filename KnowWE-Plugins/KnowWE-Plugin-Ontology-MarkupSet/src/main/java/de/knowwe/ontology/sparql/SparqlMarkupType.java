@@ -158,7 +158,7 @@ public class SparqlMarkupType extends DefaultMarkupType {
 	 * Displays an error if necessary style information is missing.
 	 * Stores the StyleOptions in the section so that they can be used.
 	 */
-	private static class StyleCollectorScript extends DefaultGlobalCompiler.DefaultGlobalScript<SparqlMarkupType> {
+	public static class StyleCollectorScript extends DefaultGlobalCompiler.DefaultGlobalScript<SparqlMarkupType> {
 
 		public static final String INVALID_CSS_KEYS = "invalidCssKeys";
 

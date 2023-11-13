@@ -14,7 +14,6 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.rdf2go.Rdf2GoCore;
-import de.knowwe.rdf2go.sparql.utils.RenderOptions;
 import de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode;
 
 public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
@@ -35,7 +34,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 		ArticleManager articleManager = user.getArticleManager();
 		if (articleManager.getArticle(text) != null) {
 			if (mode == RenderMode.HTML) {
-				return KnowWEUtils.getLinkHTMLToArticle(text);
+				return getLinkHTMLToArticle(text);
 			}
 			if (mode == RenderMode.PlainText) {
 				return text;
@@ -48,7 +47,7 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 			String title = decodeSilent(text.substring(lns.length()));
 			if (user.getArticleManager().getArticle(title) != null) {
 				if (mode == RenderMode.HTML) {
-					return KnowWEUtils.getLinkHTMLToArticle(title);
+					return getLinkHTMLToArticle(title);
 				}
 				if (mode == RenderMode.PlainText) {
 					return title;
@@ -58,12 +57,21 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 
 		// try some heuristics to find article links in grouped literals with commonly used separators
 		StringBuilder newText = new StringBuilder(text);
-		if (text.contains("\n") && tryGroupedLinks(text, user, lns, mode, newText, LINE_BREAK)) return newText.toString();
+		if (text.contains("\n") && tryGroupedLinks(text, user, lns, mode, newText, LINE_BREAK)) {
+			return newText.toString();
+		}
 		if (text.contains(",") && tryGroupedLinks(text, user, lns, mode, newText, COMMA)) return newText.toString();
 		if (text.contains(";") && tryGroupedLinks(text, user, lns, mode, newText, SEMICOLON)) return newText.toString();
-		if (text.contains(" ") && tryGroupedLinks(text, user, lns, mode, newText, WHITE_SPACE)) return newText.toString();
+		if (text.contains(" ") && tryGroupedLinks(text, user, lns, mode, newText, WHITE_SPACE)) {
+			return newText.toString();
+		}
 
 		return newText.toString();
+	}
+
+	@NotNull
+	public String getLinkHTMLToArticle(String title) {
+		return KnowWEUtils.getLinkHTMLToArticle(title);
 	}
 
 	private boolean tryGroupedLinks(String text, UserContext user, String lns, RenderMode mode, StringBuilder newText, Pattern pattern) {
@@ -126,5 +134,4 @@ public class ArticleLinkNodeRenderer implements SparqlResultNodeRenderer {
 	public boolean allowFollowUpRenderer() {
 		return false;
 	}
-
 }
