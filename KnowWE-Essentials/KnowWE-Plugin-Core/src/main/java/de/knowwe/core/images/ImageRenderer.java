@@ -64,6 +64,7 @@ public class ImageRenderer implements Renderer {
 			assert annotationName != null;
 			String annotationAttribName = annotationName.getText().replace("@", "").replace(":", "");
 			Section<AnnotationContentType> annotationContent = Sections.successor(annotation, AnnotationContentType.class);
+			//@src: leer
 			if (annotationContent == null && "src".equals(annotationAttribName)) {
 				appendErrorMsg(result, "Missing image source in markup. Please reference attachment with @src annotation.");
 				return;
@@ -76,13 +77,27 @@ public class ImageRenderer implements Renderer {
 				attributes.put(annotationAttribName, annotationString);
 			}
 		}
+		if (!attributes.containsKey("src")) {
+			appendErrorMsg(result, "Missing image source in markup. Please insert an @src annotation.");
+			return;
+		}
 		setMaxSize(attributes);
 		Section<AttachmentType> attachmentSrc = $(section).successor(AttachmentType.class).getFirst();
-		assert attachmentSrc != null;
 		try {
 			WikiAttachment wikiAttachment = AttachmentType.getAttachment(attachmentSrc);
 			if (wikiAttachment == null) {
-				appendErrorMsg(result, "Wrong attachment definition in markup. Please reference each attachment with @annotation.");
+				if (attachmentSrc == null) {
+					appendErrorMsg(result, "Wrong attachment definition in markup. Please reference each attachment with @annotation and insert a value.");
+				}
+				else {
+					if (attachmentSrc.getText().contains("\n")) {
+						appendErrorMsg(result, "Wrong attachment definition in markup. Please use a valid image path." +
+								"\nEach line has to start with @annotation.");
+					}
+					else {
+						appendErrorMsg(result, "Wrong attachment definition in markup. Please use a valid image path.");
+					}
+				}
 				return;
 			}
 			String path = KnowWEUtils.getURLLink(Objects.requireNonNull(wikiAttachment));
