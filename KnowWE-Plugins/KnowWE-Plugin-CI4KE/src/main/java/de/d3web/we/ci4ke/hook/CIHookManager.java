@@ -70,10 +70,10 @@ public class CIHookManager {
 			CIBuildManager.getInstance().startBuild(hook.getDashboard());
 			triggered.add(hook.getDashboard().getDashboardName());
 		}
-		if (!triggered.isEmpty()) LOGGER.info("Triggered the following dash boards: " + String.join(", ", triggered));
+		if (!triggered.isEmpty()) LOGGER.info("Triggered the following dashboards: " + String.join(", ", triggered));
 	}
 
-	public static int getCurrentCompilationId(CIHook hook) {
+	private static int getCurrentCompilationId(CIHook hook) {
 		//noinspection ConstantConditions
 		return hook.getDashboard()
 				.getDashboardSection()
