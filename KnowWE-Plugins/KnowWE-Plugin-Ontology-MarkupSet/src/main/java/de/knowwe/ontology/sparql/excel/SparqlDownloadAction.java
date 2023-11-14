@@ -145,7 +145,7 @@ public class SparqlDownloadAction extends AbstractAction {
 		context.setContentType("application/vnd.ms-excel");
 		String fileName = context.getParameter(PARAM_FILENAME);
 		if (Boolean.parseBoolean(context.getParameter("filtered"))) {
-			fileName = fileName.replace(".xlsx", " filtered.xlsx");
+			fileName = fileName.replace(".xlsx", "_filtered.xlsx");
 		}
 		context.setHeader("Content-Disposition", "attachment; filename=\""
 				+ fileName + "\"");
