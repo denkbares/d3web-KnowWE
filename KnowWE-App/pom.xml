@@ -386,10 +386,10 @@
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-ASP</artifactId>
 				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-COOM</artifactId>
-				</dependency>
+<!--				<dependency>-->
+<!--					<groupId>com.denkbares</groupId>-->
+<!--					<artifactId>KnowWE-Plugin-COOM</artifactId>-->
+<!--				</dependency>-->
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Todos</artifactId>
