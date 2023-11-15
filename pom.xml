@@ -804,6 +804,11 @@
 				<version>${konap.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.denkbares.krone</groupId>
+				<artifactId>KnowWE-Plugin-QuartzScheduler</artifactId>
+				<version>${konap.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>com.denkbares</groupId>
 				<artifactId>KnowWE-Plugin-Ontology-TermBrowser</artifactId>
 				<version>${knowwe.version}</version>
