@@ -292,11 +292,11 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	protected void renderTableSizeSelector(Section<?> sec, UserContext user, RenderResult result) {
 		int count = getCount(sec, user);
 		renderToolBarElement(sec, result, () -> {
-			Integer[] sizeArray = getSizeChoices(user);
+			int[] sizeArray = new int[] { 10, 20, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
 			result.appendHtml("<span class='fillText'>Show </span><select class='count'>");
 
 			boolean foundSelected = false;
-			for (Integer size : sizeArray) {
+			for (int size : sizeArray) {
 				boolean selected = count == size;
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
@@ -402,17 +402,6 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		if (enabled) {
 			builder.appendHtml("</a>");
 		}
-	}
-
-	protected static Integer[] getSizeChoices(UserContext user) {
-		List<Integer> sizes = new LinkedList<>();
-		int[] sizeArray = new int[] {
-				10, 20, 50, 100, 200, 500, 1000, Integer.MAX_VALUE };
-		int resultSize = getResultSize(user);
-		for (int size : sizeArray) {
-			if (size <= resultSize || size == Integer.MAX_VALUE) sizes.add(size);
-		}
-		return sizes.toArray(new Integer[0]);
 	}
 
 	private static JSONObject getPaginationSettings(Section<?> section) {
