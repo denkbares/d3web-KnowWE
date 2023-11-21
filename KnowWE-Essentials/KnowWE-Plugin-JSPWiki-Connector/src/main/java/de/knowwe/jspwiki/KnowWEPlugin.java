@@ -567,23 +567,22 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				&& (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
 
 			ArticleManager articleManager = getDefaultArticleManager();
-
-			Article articleToDelete = articleManager.getArticle(e.getPageName());
-			if (articleToDelete != null) {
+			new Thread(() -> {
 				// somehow the event is fired twice...
 				// don't call deleteArticle if the article is already deleted
-				final ArticleManager manager = Environment.getInstance().getArticleManager(Environment.DEFAULT_WEB);
-				final Article article = manager.getArticle(e.getPageName());
-				EventManager.getInstance().fireEvent(new ArticleDeletedEvent(article));
-				articleManager.deleteArticle(e.getPageName());
-			}
+				final Article article = articleManager.getArticle(e.getPageName());
+				if (article != null) {
+					EventManager.getInstance().fireEvent(new ArticleDeletedEvent(article));
+					articleManager.deleteArticle(e.getPageName());
+				}
+			}).start();
 		}
 		else if (event instanceof WikiPageRenameEvent renameEvent) {
-
-			String oldArticleTitle = renameEvent.getOldPageName();
-			String newArticleTitle = renameEvent.getNewPageName();
-
-			KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
+			new Thread(() -> {
+				String oldArticleTitle = renameEvent.getOldPageName();
+				String newArticleTitle = renameEvent.getNewPageName();
+				KnowWEUtils.renameArticle(oldArticleTitle, newArticleTitle);
+			}).start();
 		}
 		else if (event instanceof WikiAttachmentEvent) {
 			// we fire the KnowWE events and commit asynchronously to avoid dead locks, because we cannot
