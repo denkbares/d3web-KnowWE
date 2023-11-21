@@ -89,14 +89,14 @@
 						<phase>process-resources</phase>
 
 						<configuration>
-							<tasks>
+							<target>
 								<mkdir
 									dir="${project.build.directory}/${project.name}-${project.version}/WEB-INF/resources/core-pages/" />
 								<copy
 									todir="${project.build.directory}/${project.name}-${project.version}/WEB-INF/resources/core-pages/">
 									<fileset dir="src/misc/resources/core-pages/" />
 								</copy>
-							</tasks>
+							</target>
 						</configuration>
 					</execution>
 				</executions>
