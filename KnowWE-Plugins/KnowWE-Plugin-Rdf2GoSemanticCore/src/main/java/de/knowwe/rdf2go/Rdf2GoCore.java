@@ -240,6 +240,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		this.removeCache = new HashSet<>();
 
 		initDefaultNamespaces();
+
+		LOGGER.info("Rdf2GoCore '" + coreName + "' initialized");
+
 	}
 
 	public String getName() {
