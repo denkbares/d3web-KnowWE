@@ -24,7 +24,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2023.3-SNAPSHOT</version>
+		<version>2023_2.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-JSPWiki-MarkupSet</artifactId>
