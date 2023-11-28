@@ -19,6 +19,8 @@
 
 package org.apache.wiki.providers;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.InternalWikiException;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
@@ -48,19 +50,28 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.swing.*;
+
+import com.denkbares.strings.Strings;
 
 import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
 import static org.apache.wiki.providers.GitVersioningUtils.gitGc;
@@ -70,6 +81,8 @@ import static org.apache.wiki.providers.GitVersioningUtils.gitGc;
  * @created 2019-01-02
  */
 public class GitVersioningFileProvider extends AbstractFileProvider {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningFileProvider.class);
 
 	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT = "jspwiki.gitVersioningFileProvider.remoteGit";
 	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE = "jspwiki.gitVersioningFileProvider.autoUpdate";
@@ -168,33 +181,75 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 				}
 			}
 		}
-		gitGc(true, windowsGitHackNeeded&&!dontUseHack, repository, true);
+
+		// we run the command to build up the commit graph. It considerably accelerates the reading of the commit history (e. g. git log)
+		executeGitCommitGraphCommand();
+
+		gitGc(true, windowsGitHackNeeded && !dontUseHack, repository, true);
 		this.repository.autoGC(new TextProgressMonitor());
+
 		IgnoreNode ignoreNode = new IgnoreNode();
-		File gitignoreFile = new File(pageDir+"/.gitignore");
-		if(gitignoreFile.exists()) {
+		File gitignoreFile = new File(pageDir + "/.gitignore");
+		if (gitignoreFile.exists()) {
 			ignoreNode.parse(new FileInputStream(gitignoreFile));
+		} else {
+			LOGGER.warn("NO .gitignore FILE WAS FOUND!! This will lead to a blown-up git history polluted buy thousands of ci-build-*.xml file versions, in case of that CI-Dashboards are used! Recommendation: Add .gitignore file ignoring CI-Dashboard builds");
 		}
 		this.cache = new GitVersionCache(engine, this.repository, ignoreNode);
 		cache.initializeCache();
-		if(autoUpdateEnabled && remoteRepo){
+		if (autoUpdateEnabled && remoteRepo) {
 			scheduler.initialize(engine, this);
 		}
+	}
+
+	private void executeGitCommitGraphCommand() {
+		StopWatch sw = new StopWatch();
+		sw.start();
+		String label = "git commit graph command ";
+		try {
+			LOGGER.info("Starting execution of "+label);
+			String command = "git commit-graph write --reachable --changed-paths";
+			Process process = Runtime.getRuntime().exec(
+					command, null, new File(this.filesystemPath));
+
+			InputStream responseStream = process.getInputStream();
+			int exitVal = process.waitFor();
+			sw.stop();
+			LOGGER.info("Execution of '"+command+"' took: "+ sw );
+			List<String> response = IOUtils.readLines(responseStream);
+			String responseString = Strings.concat("\n", response);
+			if (exitVal == 0) {
+				LOGGER.info(label + "executed successfully. " + responseString);
+			}
+			else {
+				LOGGER.warn(label + " terminated with error code: " + exitVal + " and message: " + responseString);
+			}
+		}
+		catch (IOException | InterruptedException e) {
+			LOGGER.error(label + " could not be run: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+
+
+
 	}
 
 	private void setGitCommentStrategy(Properties properties) {
 		String commentStrategyClassName = TextUtil.getStringProperty(properties, JSPWIKI_GIT_COMMENT_STRATEGY, "org.apache.wiki.providers.ChangeNoteStrategy");
 		try {
 			Class<?> commentStrategyClass = Class.forName(commentStrategyClassName);
-			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor().newInstance(new Object[]{});
+			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor()
+					.newInstance(new Object[] {});
 		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-			log.error("Comment strategy not found " +commentStrategyClassName, e);
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
+			   InvocationTargetException e) {
+			log.error("Comment strategy not found " + commentStrategyClassName, e);
 			gitCommentStrategy = new ChangeNoteStrategy();
 		}
 	}
 
-	boolean needsWindowsHack(){
+	boolean needsWindowsHack() {
 		return windowsGitHackNeeded && !dontUseHack;
 	}
 
@@ -240,11 +295,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 				if (this.openCommits.containsKey(page.getAuthor())) {
 					this.openCommits.get(page.getAuthor()).add(changedFile.getName());
-					if(addFile){
+					if (addFile) {
 						cache.addPageVersion(page, comment, null);
 					}
 					cache.addCacheCommand(page.getAuthor(), new CacheCommand.AddPageVersion(page));
-
 				}
 				else {
 					final CommitCommand commit = git
@@ -314,10 +368,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	void periodicalGitGC() {
 		final long l = this.commitCount.incrementAndGet();
 		if (l % 2000 == 0) {
-			GitVersioningUtils.gitGc(true, windowsGitHackNeeded && !dontUseHack,repository, true);
+			GitVersioningUtils.gitGc(true, windowsGitHackNeeded && !dontUseHack, repository, true);
 		}
 		else if (l % 500 == 0) {
-			GitVersioningUtils.gitGc(false, windowsGitHackNeeded && !dontUseHack,repository, false);
+			GitVersioningUtils.gitGc(false, windowsGitHackNeeded && !dontUseHack, repository, false);
 		}
 		else if (l % 100 == 0) {
 			this.repository.autoGC(new TextProgressMonitor());
@@ -444,7 +498,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			writeFileUnlock();
 		}
 	}
-
 
 	@Override
 	public Collection<Page> getAllChangedSince(final Date date) {
@@ -646,7 +699,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 //		}
 	}
 
-
 	@Override
 	public void deletePage(Page page) throws ProviderException {
 		try {
@@ -671,9 +723,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 					final CommitCommand commitCommand = git.commit()
 							.setOnly(file.getName());
 					String comment = gitCommentStrategy.getComment(page);
-					if(comment.isEmpty()) {
+					if (comment.isEmpty()) {
 						commitCommand.setMessage("removed page");
-					} else {
+					}
+					else {
 						commitCommand.setMessage(comment);
 					}
 					addUserInfo(this.m_engine, page.getAuthor(), commitCommand);
@@ -740,9 +793,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 							.setOnly(toFile.getName())
 							.setOnly(fromFile.getName());
 					String comment = gitCommentStrategy.getComment(from);
-					if(comment.isEmpty()) {
-							commitCommand.setMessage("renamed page " + from + " to " + to);
-					} else {
+					if (comment.isEmpty()) {
+						commitCommand.setMessage("renamed page " + from + " to " + to);
+					}
+					else {
 						commitCommand.setMessage(comment);
 					}
 					addUserInfo(this.m_engine, author, commitCommand);
@@ -784,9 +838,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			final Git git = new Git(this.repository);
 			final CommitCommand commitCommand = git.commit();
 			String comment = gitCommentStrategy.getCommentForUser(user);
-			if(comment.isEmpty()) {
+			if (comment.isEmpty()) {
 				commitCommand.setMessage(commitMsg);
-			} else {
+			}
+			else {
 				commitCommand.setMessage(comment);
 			}
 			addUserInfo(this.m_engine, user, commitCommand);
@@ -929,7 +984,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	public void shutdown() {
-		if(autoUpdateEnabled && remoteRepo){
+		if (autoUpdateEnabled && remoteRepo) {
 			scheduler.shutdown();
 		}
 		this.repository.close();
@@ -943,18 +998,22 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		return cache;
 	}
 
-	public void pauseAutoUpdate(){
-		if(autoUpdateEnabled && remoteRepo)
+	public void pauseAutoUpdate() {
+		if (autoUpdateEnabled && remoteRepo) {
 			scheduler.pauseAutoUpdate();
-		else
+		}
+		else {
 			log.warn("pauseAutoUpdate was called on a wiki not configured as autoUpdate");
+		}
 	}
 
-	public void resumeAutoUpdate(){
-		if(autoUpdateEnabled && remoteRepo)
+	public void resumeAutoUpdate() {
+		if (autoUpdateEnabled && remoteRepo) {
 			scheduler.resumeAutoUpdate();
-		else
+		}
+		else {
 			log.warn("resumeAutoUpdate was called on a wiki not configured as autoUpdate");
+		}
 	}
 
 	GitCommentStrategy getGitCommentStrategy() {
