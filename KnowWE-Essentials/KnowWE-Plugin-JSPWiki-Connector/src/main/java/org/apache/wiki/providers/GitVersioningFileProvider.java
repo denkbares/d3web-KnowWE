@@ -19,6 +19,31 @@
 
 package org.apache.wiki.providers;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.InternalWikiException;
@@ -32,13 +57,23 @@ import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
-import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.api.CheckoutCommand;
+import org.eclipse.jgit.api.CleanCommand;
+import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.ignore.IgnoreNode;
-import org.eclipse.jgit.lib.*;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryCache;
+import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
@@ -49,27 +84,6 @@ import org.eclipse.jgit.util.FS;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import javax.swing.*;
 
 import com.denkbares.strings.Strings;
 
@@ -192,7 +206,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		File gitignoreFile = new File(pageDir + "/.gitignore");
 		if (gitignoreFile.exists()) {
 			ignoreNode.parse(new FileInputStream(gitignoreFile));
-		} else {
+		}
+		else {
 			LOGGER.warn("NO .gitignore FILE WAS FOUND!! This will lead to a blown-up git history polluted buy thousands of ci-build-*.xml file versions, in case of that CI-Dashboards are used! Recommendation: Add .gitignore file ignoring CI-Dashboard builds");
 		}
 		this.cache = new GitVersionCache(engine, this.repository, ignoreNode);
@@ -207,7 +222,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		sw.start();
 		String label = "git commit graph command ";
 		try {
-			LOGGER.info("Starting execution of "+label);
+			LOGGER.info("Starting execution of " + label);
 			String command = "git commit-graph write --reachable --changed-paths";
 			Process process = Runtime.getRuntime().exec(
 					command, null, new File(this.filesystemPath));
@@ -215,7 +230,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			InputStream responseStream = process.getInputStream();
 			int exitVal = process.waitFor();
 			sw.stop();
-			LOGGER.info("Execution of '"+command+"' took: "+ sw );
+			LOGGER.info("Execution of '" + command + "' took: " + sw);
 			List<String> response = IOUtils.readLines(responseStream);
 			String responseString = Strings.concat("\n", response);
 			if (exitVal == 0) {
@@ -229,10 +244,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 			LOGGER.error(label + " could not be run: " + e.getMessage());
 			e.printStackTrace();
 		}
-
-
-
-
 	}
 
 	private void setGitCommentStrategy(Properties properties) {

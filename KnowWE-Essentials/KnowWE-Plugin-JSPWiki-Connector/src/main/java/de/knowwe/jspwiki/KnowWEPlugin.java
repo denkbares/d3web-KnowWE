@@ -565,8 +565,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	public void actionPerformed(WikiEvent event) {
 		// When deleting a page, remove it from the ArticleManager and
 		// invalidate all knowledge
-		if ((event instanceof WikiPageEvent e)
-				&& (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
+		if ((event instanceof WikiPageEvent e) && (event.getType() == WikiPageEvent.PAGE_DELETE_REQUEST)) {
 
 			ArticleManager articleManager = getDefaultArticleManager();
 

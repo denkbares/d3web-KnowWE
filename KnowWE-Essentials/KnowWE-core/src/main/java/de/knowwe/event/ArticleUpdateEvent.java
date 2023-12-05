@@ -14,6 +14,7 @@ import com.denkbares.events.Event;
  * @created 2019-08-08
  */
 public class ArticleUpdateEvent implements Event {
+
 	private final String username;
 	private final Collection<String> titles;
 	private String version;
