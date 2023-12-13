@@ -55,7 +55,7 @@ public class ArticleHasMarkupErrorsTest extends AbstractTest<Article> implements
             messageObjects.add(new MessageObject(sec.getTitle(), sec.get().getClass()));
             String text = sec.getText().trim();
             text = text.replaceAll("%%\\(color:.+%%", "");
-            if (text.matches("%%[\\s\\S]+%%[\\s\\S]+")) {
+            if (text.matches("%%[\\s\\S]+\\n%%[\\s\\S]+")) {
                 messages.add("In article [" + article.getTitle() + "] the section '" +
                         sec.get().getName() +
                         "' seems to have a nested markup.");
