@@ -144,7 +144,11 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	private static boolean isAutoUpdatingActive() {
-		return Boolean.parseBoolean(System.getProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY, "true"));
+		String wikiProperty = Environment.getInstance()
+				.getWikiConnector()
+				.getWikiProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY);
+		if (wikiProperty == null) wikiProperty = "true";
+		return Boolean.parseBoolean(System.getProperty(KNOWWE_ATTACHMENTS_AUTO_UPDATE_ACTIVE_KEY, wikiProperty));
 	}
 
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section) {
