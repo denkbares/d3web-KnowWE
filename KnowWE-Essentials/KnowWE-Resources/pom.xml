@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright (C) 2023 denkbares GmbH, Germany
   ~
   ~ This is free software; you can redistribute it and/or modify it under the
@@ -19,7 +18,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -62,7 +61,6 @@
 							<Extension-Name>${project.artifactId}</Extension-Name>
 							<Implementation-Version>${implementationVersion}</Implementation-Version>
 							<Build-Date>${maven.build.timestamp}</Build-Date>
-							<Build-Branch>${scmBranch}</Build-Branch>
 							<Build-Version>${buildNumber}</Build-Version>
 						</manifestEntries>
 					</archive>
