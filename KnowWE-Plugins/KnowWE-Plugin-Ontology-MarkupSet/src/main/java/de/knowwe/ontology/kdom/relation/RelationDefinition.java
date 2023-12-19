@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2013 University Wuerzburg, Computer Science VI
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -19,6 +19,8 @@
 package de.knowwe.ontology.kdom.relation;
 
 import java.util.Collection;
+
+import org.eclipse.rdf4j.model.IRI;
 
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.kdom.AbstractType;
@@ -96,7 +98,7 @@ public class RelationDefinition extends AbstractType {
 			Section<AbbreviatedResourceReference> abbrSubjectSection = Sections.successor(
 					subjectSection, AbbreviatedResourceReference.class);
 
-			org.eclipse.rdf4j.model.URI subjectURI = abbrSubjectSection.get().getResourceIRI(core, abbrSubjectSection);
+			IRI subjectURI = abbrSubjectSection.get().getResourceIRI(core, abbrSubjectSection);
 
 			Section<PredicateType> predicateSection = Sections.child(section,
 					PredicateType.class);
@@ -107,7 +109,7 @@ public class RelationDefinition extends AbstractType {
 			Section<AbbreviatedPropertyReference> abbrObjPropSection = Sections.successor(
 					predicateSection, AbbreviatedPropertyReference.class);
 
-			org.eclipse.rdf4j.model.URI predicatedURI = abbrObjPropSection.get().getPropertyURI(core, abbrObjPropSection);
+			IRI predicatedURI = abbrObjPropSection.get().getPropertyURI(core, abbrObjPropSection);
 
 			Section<ObjectType> objectSection = Sections.child(section,
 					ObjectType.class);
@@ -122,7 +124,7 @@ public class RelationDefinition extends AbstractType {
 			else {
 				Section<AbbreviatedResourceReference> abbrObjectSection = Sections.successor(
 						objectSection, AbbreviatedResourceReference.class);
-				org.eclipse.rdf4j.model.URI objectURI = abbrObjectSection.get().getResourceIRI(core, abbrObjectSection);
+				IRI objectURI = abbrObjectSection.get().getResourceIRI(core, abbrObjectSection);
 
 				core.addStatements(section,
 						core.createStatement(subjectURI, predicatedURI, objectURI));
@@ -135,6 +137,5 @@ public class RelationDefinition extends AbstractType {
 		public void destroy(OntologyCompiler compiler, Section<RelationDefinition> section) {
 			Rdf2GoCore.getInstance(compiler).removeStatements(section);
 		}
-
 	}
 }

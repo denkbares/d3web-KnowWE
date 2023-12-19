@@ -19,7 +19,6 @@
 package de.knowwe.ontology.turtle;
 
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.strings.Identifier;
@@ -62,7 +61,7 @@ public class TurtleURI extends AbbreviatedResourceReference implements URIProvid
 		}
 	}
 
-	public static URI getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
+	public static IRI getNodeForIdentifier(Rdf2GoCore core, Identifier identifier) {
 		if (identifier == null) return null;
 		String[] idPath = identifier.getPathElements();
 		String shortURI;

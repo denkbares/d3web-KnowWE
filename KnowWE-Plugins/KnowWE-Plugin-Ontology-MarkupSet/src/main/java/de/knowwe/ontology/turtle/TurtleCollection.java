@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.Value;
-import org.eclipse.rdf4j.model.impl.BNodeImpl;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.strings.Strings;
@@ -158,6 +158,6 @@ public class TurtleCollection extends AbstractType implements ResourceProvider<T
 
 	@Override
 	public org.eclipse.rdf4j.model.Resource getResource(OntologyCompiler core, Section<? extends TurtleCollection> section) {
-		return new BNodeImpl(getNode(core, section).stringValue());
+		return SimpleValueFactory.getInstance().createBNode(getNode(core, section).stringValue());
 	}
 }

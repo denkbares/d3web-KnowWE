@@ -26,7 +26,6 @@ import java.util.Map;
 
 import connector.DummyConnector;
 import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 
 import com.denkbares.semanticcore.utils.ResultTableModel;

@@ -154,7 +154,7 @@ public class LineHandler extends OntologyCompileScript<TableLine> {
 			Sections<DefaultMarkupType> markup = $(section).ancestor(DefaultMarkupType.class);
 			String typeRelationAnnotationValue = DefaultMarkupType.getAnnotation(markup.getFirst(), OntologyTableMarkup.ANNOTATION_TYPE_RELATION);
 			if (typeRelationAnnotationValue != null) {
-				org.eclipse.rdf4j.model.URI propertyUri = compiler.getRdf2GoCore()
+				IRI propertyUri = compiler.getRdf2GoCore()
 						.createIRI(typeRelationAnnotationValue);
 				statements.add(core.createStatement(compiler.getRdf2GoCore()
 						.createIRI(subjectNode.stringValue()), propertyUri, headerClassResource));

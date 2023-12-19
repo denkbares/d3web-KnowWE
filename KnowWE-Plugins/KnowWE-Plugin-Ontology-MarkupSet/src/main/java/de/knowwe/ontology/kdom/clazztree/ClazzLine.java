@@ -3,9 +3,9 @@ package de.knowwe.ontology.kdom.clazztree;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.jetbrains.annotations.NotNull;
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.URI;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
@@ -114,7 +114,7 @@ public class ClazzLine extends AbstractType {
 				if (classIdentifier != null) {
 					Rdf2GoCore core = compiler.getRdf2GoCore();
 
-					URI clazzNode = TurtleURI.getNodeForIdentifier(core, classIdentifier);
+					IRI clazzNode = TurtleURI.getNodeForIdentifier(core, classIdentifier);
 
 					Collection<Statement> statements = new ArrayList<>();
 

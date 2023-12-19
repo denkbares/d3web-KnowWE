@@ -1,7 +1,7 @@
 package de.knowwe.ontology.kdom.table;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.URI;
 import org.eclipse.rdf4j.model.Value;
 
 import de.knowwe.core.compile.packaging.PackageManager;
@@ -82,7 +82,7 @@ public class HierarchyTableMarkup extends DefaultMarkupType {
 						assert subjectNodeProvider != null;
 						Resource subjectURI = subjectNodeProvider.get().getResource(compiler, subjectNodeProvider);
 						assert propertyNodeProvider != null;
-						URI predicateNode = propertyNodeProvider.get().getIRI(compiler, propertyNodeProvider);
+						IRI predicateNode = propertyNodeProvider.get().getIRI(compiler, propertyNodeProvider);
 						assert parentNodeProvider != null;
 						Value parentNode = parentNodeProvider.get().getNode(compiler, parentConcept);
 						core.addStatements(section, core.createStatement(subjectURI, predicateNode, parentNode));

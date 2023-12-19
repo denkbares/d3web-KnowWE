@@ -11,14 +11,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.impl.StatementImpl;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.denkbares.strings.Strings;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.Attributes;
 import de.knowwe.core.action.AbstractAction;

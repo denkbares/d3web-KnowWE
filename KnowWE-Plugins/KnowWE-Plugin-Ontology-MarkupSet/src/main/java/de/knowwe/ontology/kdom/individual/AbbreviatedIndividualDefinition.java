@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
-import org.eclipse.rdf4j.model.URI;
 
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -19,7 +18,6 @@ import de.knowwe.ontology.compile.OntologyHandler;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceDefinition;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.rdf2go.Rdf2GoCore;
-
 
 public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefinition {
 
@@ -49,7 +47,7 @@ public class AbbreviatedIndividualDefinition extends AbbreviatedResourceDefiniti
 					Section<AbbreviatedResourceReference> resourceSection = Sections.child(
 							contentTypeSection, AbbreviatedResourceReference.class);
 					if (resourceSection.hasErrorInSubtree()) return Messages.noMessage();
-					URI typeURI = resourceSection.get().getResourceIRI(core, resourceSection);
+					IRI typeURI = resourceSection.get().getResourceIRI(core, resourceSection);
 					core.addStatements(section,
 							core.createStatement(resourceURI, RDF.TYPE, typeURI));
 				}
