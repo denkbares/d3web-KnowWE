@@ -5,15 +5,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.denkbares.events.Event;
+import com.denkbares.events.EventManager;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
+import de.knowwe.event.ArticleRegisteredEvent;
 
 public class LongOperationUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LongOperationUtils.class);
@@ -121,19 +128,48 @@ public class LongOperationUtils {
 		}
 	}
 
+	private volatile static com.denkbares.events.EventListener LONG_OPERATION_CLEANER = null;
+
+	private static final Map<String, Map<String, LongOperation>> LONG_OPERATIONS = new ConcurrentHashMap<>();
+
 	private static Map<String, LongOperation> accessLongOperations(Section<?> section, boolean create) {
+		lazyInitLongOperationCleaner();
 		String key = LongOperation.class.getName();
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (section) {
-			@SuppressWarnings("unchecked")
-			Map<String, LongOperation> storedObject = (Map<String, LongOperation>) section.getObject(key);
-			if (storedObject == null) {
+			Map<String, LongOperation> longOperationsOfSection = LONG_OPERATIONS.get(section.getID());
+			if (longOperationsOfSection == null) {
 				if (!create) return Collections.emptyMap();
-				storedObject = new LinkedHashMap<>();
-				section.storeObject(key, storedObject);
+				longOperationsOfSection = new LinkedHashMap<>();
+				LONG_OPERATIONS.put(section.getID(), longOperationsOfSection);
 			}
-			return storedObject;
+			return longOperationsOfSection;
 		}
+	}
+
+	private static void lazyInitLongOperationCleaner() {
+		if (LONG_OPERATION_CLEANER == null) {
+			synchronized (LongOperationUtils.class) {
+				if (LONG_OPERATION_CLEANER == null) {
+					LONG_OPERATION_CLEANER = new com.denkbares.events.EventListener() {
+						@Override
+						public Collection<Class<? extends Event>> getEvents() {
+							return List.of(ArticleRegisteredEvent.class);
+						}
+
+						@Override
+						public void notify(Event event) {
+							LongOperationUtils.cleanupOutdatedLongOperations();
+						}
+					};
+					EventManager.getInstance().registerListener(LONG_OPERATION_CLEANER);
+				}
+			}
+		}
+	}
+
+	private static void cleanupOutdatedLongOperations() {
+		LONG_OPERATIONS.keySet().removeIf(id -> !Sections.isLive(Sections.get(id)));
 	}
 
 	/**
