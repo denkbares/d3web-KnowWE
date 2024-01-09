@@ -39,7 +39,7 @@ import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.AnnotationNameType;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
 
-import static de.knowwe.core.images.ImageMarkup.ANNOTATION_CAPTION;
+import static de.knowwe.core.images.ImageMarkup.*;
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
@@ -55,7 +55,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class ImageRenderer implements Renderer {
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult result) {
-		Set<String> validImageAttributes = Set.of("src", "width", "height", "alt", "class", "style", "id");
+		Set<String> validImageAttributes = Set.of("src", "width", "height", "alt", "class", "style", "id", "align");
 		Map<String, String> attributes = new HashMap<>();
 		List<Section<AnnotationType>> annotations = Sections.successors(section, AnnotationType.class);
 
@@ -64,7 +64,6 @@ public class ImageRenderer implements Renderer {
 			assert annotationName != null;
 			String annotationAttribName = annotationName.getText().replace("@", "").replace(":", "");
 			Section<AnnotationContentType> annotationContent = Sections.successor(annotation, AnnotationContentType.class);
-			//@src: leer
 			if (annotationContent == null && "src".equals(annotationAttribName)) {
 				appendErrorMsg(result, "Missing image source in markup. Please reference attachment with @src annotation.");
 				return;
@@ -77,27 +76,12 @@ public class ImageRenderer implements Renderer {
 				attributes.put(annotationAttribName, annotationString);
 			}
 		}
-		if (!attributes.containsKey("src")) {
-			appendErrorMsg(result, "Missing image source in markup. Please insert an @src annotation.");
-			return;
-		}
-		setMaxSize(attributes);
 		Section<AttachmentType> attachmentSrc = $(section).successor(AttachmentType.class).getFirst();
+		assert attachmentSrc != null;
 		try {
 			WikiAttachment wikiAttachment = AttachmentType.getAttachment(attachmentSrc);
 			if (wikiAttachment == null) {
-				if (attachmentSrc == null) {
-					appendErrorMsg(result, "Wrong attachment definition in markup. Please reference each attachment with @annotation and insert a value.");
-				}
-				else {
-					if (attachmentSrc.getText().contains("\n")) {
-						appendErrorMsg(result, "Wrong attachment definition in markup. Please use a valid image path." +
-								"\nEach line has to start with @annotation.");
-					}
-					else {
-						appendErrorMsg(result, "Wrong attachment definition in markup. Please use a valid image path.");
-					}
-				}
+				appendErrorMsg(result, "Wrong attachment definition in markup. Please reference each attachment with @annotation.");
 				return;
 			}
 			String path = KnowWEUtils.getURLLink(Objects.requireNonNull(wikiAttachment));
@@ -116,13 +100,23 @@ public class ImageRenderer implements Renderer {
 
 	private static void buildFigureHtml(RenderResult result, Set<String> validImageAttributes, Map<String, String> attributes) {
 		HtmlElement figureHtml = new HtmlElement("figure");
-
+		String figureStyle = "";
+		String imgStyle = "";
 		HtmlElement imageHtml = new HtmlElement("img");
 		for (String attrib : attributes.keySet()) {
 			String attribContent = attributes.get(attrib);
 
 			if (validImageAttributes.contains(attrib)) {
-				imageHtml.attributes(attrib, attribContent);
+				//align as in JSPWiki-Markup used but has to be converted to functional CSS
+				if (attrib.equals(ANNOTATION_ALIGN)) {
+					figureStyle = "display: flex; justify-content: " + attribContent + "; ";
+				}
+				else if (attrib.equals(ANNOTATION_STYLE)) {
+					imgStyle = attribContent + "; ";
+				}
+				else {
+					imageHtml.attributes(attrib, attribContent);
+				}
 			}
 		}
 		figureHtml.children(imageHtml);
@@ -130,23 +124,35 @@ public class ImageRenderer implements Renderer {
 			String caption = attributes.get("caption");
 			figureHtml.children(new HtmlElement("figcaption").content(caption));
 		}
+		figureStyle += setFigureSize(attributes);
+		imgStyle += setImgSize(attributes);
+		figureHtml.attributes("style", figureStyle);
+		imageHtml.attributes("style", imgStyle);
 		result.append(figureHtml);
 	}
 
-	private static void setMaxSize(Map<String, String> attributes) {
-		int maxWidth = 80;
+	private static String setFigureSize(Map<String, String> attributes) {
+		int maxWidth = 100;
 		int maxHeight = 80;
 		String maxAttribs = "";
 		if (!attributes.containsKey("width") && !attributes.containsKey("height")) {
-			maxAttribs = "max-width:" + maxWidth + "%;max-height:" + maxHeight + "%;";
+			maxAttribs = "max-width: " + maxWidth + "%; max-height: " + maxHeight + "%; ";
 		}
 		if (attributes.containsKey("style")) {
 			String styleAttrib = attributes.get("style");
-			styleAttrib += ";" + maxAttribs;
-			attributes.put("style", styleAttrib);
+			maxAttribs += styleAttrib + ";";
 		}
-		else {
-			attributes.put("style", maxAttribs);
+
+		return maxAttribs;
+	}
+
+	private static String setImgSize(Map<String, String> attributes) {
+		int maxWidth = 80;
+		int maxHeight = 100;
+		String maxAttribs = "";
+		if (!attributes.containsKey("width") && !attributes.containsKey("height")) {
+			maxAttribs = "max-width: " + maxWidth + "%; max-height: " + maxHeight + "%; ";
 		}
+		return maxAttribs;
 	}
 }

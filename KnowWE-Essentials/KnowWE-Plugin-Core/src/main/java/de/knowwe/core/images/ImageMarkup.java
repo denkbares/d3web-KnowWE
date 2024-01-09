@@ -39,10 +39,11 @@ public class ImageMarkup extends DefaultMarkupType {
 	private static final String ANNOTATION_WIDTH = "width";
 	private static final String ANNOTATION_HEIGHT = "height";
 	private static final String ANNOTATION_ALT = "alt";
-	private static final String ANNOTATION_STYLE = "style";
+	static final String ANNOTATION_STYLE = "style";
 	private static final String ANNOTATION_ID = "id";
 	private static final String ANNOTATION_CLASS = "class";
 	static final String ANNOTATION_CAPTION = "caption";
+	static final String ANNOTATION_ALIGN = "align";
 	private static final DefaultMarkup MARKUP;
 
 	static {
@@ -56,6 +57,7 @@ public class ImageMarkup extends DefaultMarkupType {
 		MARKUP.addAnnotation(ANNOTATION_ID, false);
 		MARKUP.addAnnotation(ANNOTATION_CLASS, false);
 		MARKUP.addAnnotation(ANNOTATION_CAPTION, false);
+		MARKUP.addAnnotation(ANNOTATION_ALIGN, false);
 		PackageManager.addPackageAnnotation(MARKUP);
 	}
 

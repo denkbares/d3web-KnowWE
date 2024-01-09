@@ -206,6 +206,8 @@ span.markupMenuItem {
 	width: 50%;
 	height: 21px;
 	position: relative;
+	vertical-align: top;
+	top: -2px;
 }
 
 .KnowWE .defaultMarkupFrame .long-op-progress-container .long-progress-bar {
@@ -232,8 +234,9 @@ span.markupMenuItem {
 	display: inline-block;
 	position: relative;
 	top: -3px;
-	margin: 2px 2px 2px 5px;
-	background-image: none
+	margin: 2px 5px 2px 5px;
+	background-image: none;
+	vertical-align: top;
 }
 
 .haddock .defaultMarkupFrame .long-op-progress-container .long-progress-state {
@@ -285,6 +288,7 @@ span.markupMenuItem {
 	top: -4px;
 	position: relative;
 	user-select: none;
+	vertical-align: top;
 }
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-close {
@@ -460,7 +464,7 @@ table.list-sections tr.highlighted {
 	bottom: -1px;
 	left: -1px;
 	right: -15px;
-	border: 1px dotted gray;
+	border: 1px dotted grey;
 	border-radius: 4px;
 	text-align: right;
 	background: url(../../KnowWEExtension/d3web/icon/dropdown-opaque.png) no-repeat right 50%;
