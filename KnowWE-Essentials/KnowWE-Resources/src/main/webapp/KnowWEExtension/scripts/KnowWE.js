@@ -304,7 +304,7 @@ KNOWWE.core.util = function () {
 				if (p[i].length === 0) continue;
 				const t = p[i].split('=');
 				if (!KNOWWE.helper.containsArr(tokens, t[0])) {
-					tokens.push(t[0] + "=" + encodeURIComponent(t[1]));
+					tokens.push(t[0] + "=" + t[1]);
 				}
 			}
 			tokens.push('tstamp=' + new Date().getTime());
