@@ -292,10 +292,10 @@ KNOWWE.core.util = function () {
 
 			if (!params && typeof params != 'object') return baseURL;
 
-			for (keys in params) {
+			for (let keys in params) {
 				let value = params[keys];
 				if (typeof value != 'string') value = JSON.stringify(params[keys]);
-				tokens.push(keys + "=" + escape(encodeURIComponent(value)));
+				tokens.push(keys + "=" + encodeURIComponent(value));
 			}
 
 			//parse the url to add special token like debug etc.

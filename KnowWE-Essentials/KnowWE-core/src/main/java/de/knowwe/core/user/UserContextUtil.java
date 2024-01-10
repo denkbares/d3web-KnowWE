@@ -18,25 +18,17 @@
  */
 package de.knowwe.core.user;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.denkbares.strings.Strings;
 
 /**
  * This class offers some methods often needed for UserContext related tasks.
@@ -59,18 +51,10 @@ public class UserContextUtil {
 		Map<String, String> parameters = new LinkedHashMap<>();
 		if (request == null) return parameters;
 
-		Set<String> urlParameters = request.getQueryString() == null
-				? Collections.emptySet()
-				: Stream.of(request.getQueryString().split("&"))
-				.map(pair -> pair.split("=")[0])
-				.collect(Collectors.toSet());
 		Enumeration<?> iter = request.getParameterNames();
 		while (iter.hasMoreElements()) {
 			String key = (String) iter.nextElement();
 			String value = request.getParameter(key);
-			if (urlParameters.contains(key)) { // we only have to decode parameters given via url
-				value = Strings.decodeURL(value);
-			}
 			parameters.put(key, value);
 		}
 
