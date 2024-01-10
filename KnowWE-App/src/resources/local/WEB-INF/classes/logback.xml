@@ -18,8 +18,8 @@
   -->
 
 <configuration>
-	<timestamp key="bySecond" datePattern="yyyy-MM-dd'-T-'HH-mm-ss" />
-	<timestamp key="byDay" datePattern="yyyy-MM-dd" />
+	<timestamp key="bySecond" datePattern="yyyy-MM-dd'-T-'HH-mm-ss"/>
+	<timestamp key="byDay" datePattern="yyyy-MM-dd"/>
 
 	<!-- Log to stdout -->
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -30,32 +30,33 @@
 		</layout>
 	</appender>
 
-	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+	<!-- Rolling File Appender -->
+	<appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${catalina.base}/logs/knowwe-log-${bySecond}.log</file>
-		<append>true</append>
-		<immediateFlush>true</immediateFlush>
 		<encoder>
 			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</pattern>
 		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover with zip compression -->
+			<fileNamePattern>${catalina.base}/logs/knowwe-log-${bySecond}.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!-- keep 30 days' worth of history -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
 	</appender>
 
 	<logger name="com.denkbares" level="INFO" additivity="false">
 		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FILE" />
+		<appender-ref ref="ROLLING_FILE" />
 	</logger>
-	<logger name="org.apache.wiki" level="INFO" additivity="false">
-		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FILE" />
-	</logger>
-	<logger name="com.ontotext" level="ERROR"  additivity="false">
-		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FILE" />
-	</logger>
+	<!-- ... other loggers ... -->
 
 	<root level="info">
 		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FILE" />
+		<appender-ref ref="ROLLING_FILE" />
 	</root>
-
-
 </configuration>
+
