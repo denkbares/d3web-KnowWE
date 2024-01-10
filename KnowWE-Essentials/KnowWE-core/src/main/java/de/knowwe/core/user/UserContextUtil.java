@@ -51,9 +51,9 @@ public class UserContextUtil {
 		Map<String, String> parameters = new LinkedHashMap<>();
 		if (request == null) return parameters;
 
-		Enumeration<?> iter = request.getParameterNames();
+		Enumeration<String> iter = request.getParameterNames();
 		while (iter.hasMoreElements()) {
-			String key = (String) iter.nextElement();
+			String key = iter.nextElement();
 			String value = request.getParameter(key);
 			parameters.put(key, value);
 		}
