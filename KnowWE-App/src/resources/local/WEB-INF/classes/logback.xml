@@ -52,7 +52,14 @@
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="ROLLING_FILE" />
 	</logger>
-	<!-- ... other loggers ... -->
+	<logger name="org.apache.wiki" level="INFO" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="ROLLING_FILE" />
+	</logger>
+	<logger name="com.ontotext" level="ERROR"  additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="ROLLING_FILE" />
+	</logger>
 
 	<root level="info">
 		<appender-ref ref="CONSOLE" />
