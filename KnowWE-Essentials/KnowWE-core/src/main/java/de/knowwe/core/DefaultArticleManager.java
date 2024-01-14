@@ -23,6 +23,7 @@ package de.knowwe.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -278,6 +279,8 @@ public class DefaultArticleManager implements ArticleManager {
 					}
 				}
 				if (!addedSections.isEmpty() || !removedSections.isEmpty()) {
+					addedSections.sort(Comparator.naturalOrder());
+					removedSections.sort(Comparator.naturalOrder());
 					compilerManager.compile(addedSections, removedSections);
 				}
 				originalArticleMap.clear();
