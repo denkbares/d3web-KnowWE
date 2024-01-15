@@ -533,7 +533,7 @@ KNOWWE.core.plugin.pagination = function() {
       updateNode(sectionId);
     }
     //on first load
-    if (!$paginationWrapper.find('.filter-activator')[0].checked || !anyActiveFilter(filterState)) {
+    if ((filterActivator.exists() && !filterActivator[0].checked) || !anyActiveFilter(filterState)) {
       jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`).closest('.defaultMarkupFrame')
         .find('.markupMenu .markupMenuItem')
         // find tool that contains text "filtered"
