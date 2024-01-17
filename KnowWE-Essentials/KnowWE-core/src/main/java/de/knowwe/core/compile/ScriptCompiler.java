@@ -11,11 +11,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.lang.ArrayUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -50,6 +53,8 @@ public class ScriptCompiler<C extends Compiler> {
 	private Iterator<CompilePair> currentCompileSetIterator = null;
 	@SuppressWarnings("rawtypes")
 	private final Set<Class<? extends CompileScript>> compileScriptsNotSupportingIncrementalCompilation = new HashSet<>();
+	private final ThreadPoolExecutor threadPool;
+	private final List<Future<?>> futures = new ArrayList<>();
 
 	public ScriptCompiler(C compiler, Class<?>... typeFilter) {
 		this(compiler, false, typeFilter);
@@ -57,6 +62,7 @@ public class ScriptCompiler<C extends Compiler> {
 
 	public ScriptCompiler(C compiler, boolean reverseOrder, Class<?>... typeFilter) {
 		this.compiler = compiler;
+		this.threadPool = CompilerManager.createExecutorService(Compilers.getCompilerName(compiler));
 		//noinspection unchecked
 		this.scriptManager = CompilerManager.getScriptManager((Class<C>) compiler.getClass());
 		this.reverseOrder = reverseOrder;
@@ -119,6 +125,42 @@ public class ScriptCompiler<C extends Compiler> {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Runs the given script in parallel. The method will return immediately, but we wait for all scripts to finished
+	 * before the compilation is finished. This can be useful for parts of the compilation that are resource intensive,
+	 * but no other scripts/work depend on their output.
+	 *
+	 * @param section the section to store possible compiler messages for
+	 * @param script  the script to execute in parallel
+	 */
+	public void runInParallel(Section<?> section, ParallelScript script) {
+		this.futures.add(threadPool.submit(() -> {
+			try {
+				script.run();
+			}
+			catch (CompilerMessage e) {
+				Messages.storeMessages(this.compiler, section, ParallelScript.class, e.getMessages());
+			}
+		}));
+	}
+
+	private void awaitParallelScripts() {
+		// all futures will be added at this point, just make sure all have finished
+		for (Future<?> future : futures) {
+			try {
+				future.get();
+			}
+			catch (InterruptedException e) {
+				LOGGER.warn("Parallel script execution was interrupted", e);
+			}
+			catch (ExecutionException e) {
+				LOGGER.error("Parallel script execution failed", e);
+			}
+		}
+		// cleanup
+		futures.clear();
 	}
 
 	private Iterator<Priority> resetPriorityIteratorTo(Priority priority) {
@@ -196,7 +238,10 @@ public class ScriptCompiler<C extends Compiler> {
 			// get next script and section, and update the current compile priority, if required
 			CompilePair pair = next();
 			if (currentPriority != lastPriority) {
+				lastPriority = currentPriority;
+				awaitParallelScripts();
 				compiler.getCompilerManager().setCurrentCompilePriority(compiler, currentPriority);
+
 			}
 
 			Section<Type> section = pair.getA();
@@ -213,6 +258,7 @@ public class ScriptCompiler<C extends Compiler> {
 				LOGGER.error(msg, e);
 			}
 		}
+		awaitParallelScripts();
 		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
 	}
 
@@ -231,6 +277,11 @@ public class ScriptCompiler<C extends Compiler> {
 				}
 			}
 		}
+	}
+
+	@FunctionalInterface
+	public interface ParallelScript {
+		void run() throws CompilerMessage;
 	}
 
 	private class CompilePair extends Pair<Section<Type>, CompileScript<C, Type>> {

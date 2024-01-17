@@ -18,15 +18,11 @@
  */
 package de.d3web.we.knowledgebase;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,7 +36,6 @@ import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.knowwe.core.compile.AbstractPackageCompiler;
 import de.knowwe.core.compile.CompileScript;
-import de.knowwe.core.compile.CompilerManager;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.OptInIncrementalCompileScript;
 import de.knowwe.core.compile.Priority;
@@ -55,7 +50,6 @@ import de.knowwe.core.kdom.objects.SimpleDefinitionRegistrationScript;
 import de.knowwe.core.kdom.objects.SimpleReferenceRegistrationScript;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
-import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Messages;
 import de.knowwe.plugin.Plugins;
 
@@ -70,16 +64,16 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 public class D3webCompiler extends AbstractPackageCompiler implements TermCompiler, IncrementalCompiler {
 	private static final Logger LOGGER = LoggerFactory.getLogger(D3webCompiler.class);
 
-	private final ThreadPoolExecutor threadPool;
 	private TerminologyManager terminologyManager;
 	private KnowledgeBase knowledgeBase;
 	private final Section<? extends PackageCompileType> compileSection;
 	private final boolean caseSensitive;
 	private D3webScriptCompiler compileScriptCompiler;
 	private D3webScriptCompiler destroyScriptCompiler;
+	private D3webScriptCompiler fullCompileScriptCompiler;
 	private boolean allowIncrementalCompilation = true;
 	private boolean isIncrementalBuild = false;
-	private final List<Future<?>> futures;
+
 	private Date buildDate = new Date();
 
 	public D3webCompiler(PackageManager packageManager,
@@ -89,8 +83,6 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		super(packageManager, compileSection, compilingType);
 		this.compileSection = compileSection;
 		this.caseSensitive = caseSensitive;
-		this.threadPool = CompilerManager.createExecutorService(this.getName());
-		this.futures = new ArrayList<>();
 	}
 
 	@Override
@@ -152,7 +144,6 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		if (!tryIncrementalCompilation(packagesToCompile)) {
 			fullCompilation(packagesToCompile);
 		}
-		awaitParallelScripts();
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
 		this.buildDate = new Date();
 	}
@@ -208,6 +199,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 		this.compileScriptCompiler = null;
 		this.destroyScriptCompiler = null;
+		this.fullCompileScriptCompiler = null;
 	}
 
 	/**
@@ -215,7 +207,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	 * the next) compilation will be a full compilation!.
 	 */
 	public void pinKnowledgeBase() {
-		 this.allowIncrementalCompilation = false;
+		this.allowIncrementalCompilation = false;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -225,10 +217,10 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		int failedScriptsCount = failedCompileScripts.size() + failedDestroyScripts.size();
 		if (failedScriptsCount > 0) {
 			LOGGER.info("The following " + Strings.pluralOf(failedScriptsCount, "script")
-						+ " prevented incremental compilation: "
-						+ Stream.concat(failedCompileScripts.stream(), failedDestroyScripts.stream())
-								.map(c -> Strings.isBlank(c.getSimpleName()) ? c.getName() : c.getSimpleName())
-								.sorted().collect(Collectors.joining(", ")));
+					+ " prevented incremental compilation: "
+					+ Stream.concat(failedCompileScripts.stream(), failedDestroyScripts.stream())
+					.map(c -> Strings.isBlank(c.getSimpleName()) ? c.getName() : c.getSimpleName())
+					.sorted().collect(Collectors.joining(", ")));
 		}
 	}
 
@@ -243,11 +235,11 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 		getCompilerManager().setCurrentCompilePriority(this, Priority.PREPARE);
 
-		// we don't use the script compiler fields for full compilation to be able avoid work
+		// we don't use the script compiler fields for full compilation to be able to avoid work
 		// only necessary for incremental compilation
-		D3webScriptCompiler scriptCompiler = new D3webScriptCompiler(this);
-		scriptCompiler.addSections(getPackageManager().getSectionsOfPackage(packagesToCompile));
-		scriptCompiler.compile();
+		this.fullCompileScriptCompiler = new D3webScriptCompiler(this);
+		fullCompileScriptCompiler.addSections(getPackageManager().getSectionsOfPackage(packagesToCompile));
+		fullCompileScriptCompiler.compile();
 
 		isIncrementalBuild = false;
 		allowIncrementalCompilation = true;
@@ -315,49 +307,21 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		if (!scriptCompiler.isIncrementalCompilationPossible()) {
 			logFailingIncrementalCompilationScripts();
 			throw new IllegalStateException("Non-incremental script was added during incremental compilation. " +
-											"Please inform your administrator and try refresh of the knowledge base to recover.");
+					"Please inform your administrator and try refresh of the knowledge base to recover.");
 		}
-	}
-
-	@FunctionalInterface
-	public interface ParallelScript {
-		void run() throws CompilerMessage;
 	}
 
 	/**
 	 * Runs the given script in parallel. The method will return immediately, but we wait for all scripts to finished
-	 * before the compilation is finished. This can be useful for parts of the compilation that are resource intensive,
-	 * but no other scripts/work depend on their output.
+	 * before the current compilation priority is finished. This can be useful for parts of the compilation that are
+	 * resource intensive, but no other scripts/work inside the current priority depend on their output.
 	 *
 	 * @param section the section to store possible compiler messages for
 	 * @param script  the script to execute in parallel
 	 */
-	public void runInParallel(Section<?> section, ParallelScript script) {
-		this.futures.add(threadPool.submit(() -> {
-			try {
-				script.run();
-			}
-			catch (CompilerMessage e) {
-				Messages.storeMessages(this, section, ParallelScript.class, e.getMessages());
-			}
-		}));
-	}
-
-	private void awaitParallelScripts() {
-		// all futures will be added at this point, just make sure all have finished
-		for (Future<?> future : futures) {
-			try {
-				future.get();
-			}
-			catch (InterruptedException e) {
-				LOGGER.warn("Parallel script execution was interrupted", e);
-			}
-			catch (ExecutionException e) {
-				LOGGER.error("Parallel script execution failed", e);
-			}
-		}
-		// cleanup
-		futures.clear();
+	public void runInParallel(Section<?> section, ScriptCompiler.ParallelScript script) {
+		D3webScriptCompiler scriptCompiler = fullCompileScriptCompiler == null ? compileScriptCompiler : fullCompileScriptCompiler;
+		scriptCompiler.runInParallel(section, script);
 	}
 
 	private static class D3webScriptCompiler extends ScriptCompiler<D3webCompiler> {
