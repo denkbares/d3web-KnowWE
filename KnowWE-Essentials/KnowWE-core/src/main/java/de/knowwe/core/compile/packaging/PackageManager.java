@@ -502,6 +502,30 @@ public class PackageManager {// implements EventListener {
 	}
 
 	/**
+	 * Checks if the given first section is compiled by the compiler of the given second compile section.
+	 *
+	 * @param section        the section to check whether it is compiled by the compiler of the other section
+	 * @param compileSection the compile section to check whether its compiler compiles the other section
+	 * @return true, if section is compiled by the compiler of compileSection
+	 */
+	public boolean isCompiledBy(Section<?> section, Section<? extends PackageCompileType> compileSection) {
+		// basically do: return getCompileSections(section).contains(compileSection);
+		// but a bit faster, don't collect all sections first and so on...
+
+		for (String packageName : getPackagesOfSection(section)) {
+			if (getCompileSections(packageName).contains(compileSection)) return true;
+		}
+		String[] packagesToCompile = compileSection.get().getPackagesToCompile(compileSection);
+		for (ParsedPredicate parsedPredicate : getPackageRulesOfSection(section)) {
+			PackageRule.PackagesValueProvider valueProvider = new PackageRule.PackagesValueProvider(packagesToCompile);
+			if (parsedPredicate.test(valueProvider)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Returns all the Sections of type {@link PackageCompileType}, that have a package the given Section is part of.
 	 *
 	 * @param section the Section we want the compile Sections for
@@ -534,14 +558,8 @@ public class PackageManager {// implements EventListener {
 	 * @created 28.08.2010
 	 */
 	public Set<Section<? extends PackageCompileType>> getCompileSections(String packageName) {
-		Set<Section<? extends PackageCompileType>> compilingSections = new LinkedHashSet<>();
-
-		Set<Section<? extends PackageCompileType>> resolvedSections = packageToCompilingSections.get(packageName);
-		if (resolvedSections != null) {
-			compilingSections.addAll(resolvedSections);
-		}
-
-		return Collections.unmodifiableSet(compilingSections);
+		Set<Section<? extends PackageCompileType>> compilingSections = packageToCompilingSections.get(packageName);
+		return compilingSections == null ? Set.of() : Collections.unmodifiableSet(compilingSections);
 	}
 
 	/**

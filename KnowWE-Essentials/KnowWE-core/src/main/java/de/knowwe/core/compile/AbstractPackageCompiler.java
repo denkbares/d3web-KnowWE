@@ -21,7 +21,6 @@ package de.knowwe.core.compile;
 import java.util.Collection;
 
 import org.jetbrains.annotations.NotNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +63,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 		if (section == compileSection) {
 			return true;
 		}
-		if (packageManager.getCompileSections(section).contains(compileSection)) {
+		if (packageManager.isCompiledBy(section, compileSection)) {
 			return true;
 		}
 		Section<?> compilingMarkupSection = $(section).closest(compilingType).getFirst();
