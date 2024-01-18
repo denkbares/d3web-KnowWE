@@ -242,7 +242,6 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 		initDefaultNamespaces();
 
 		LOGGER.info("Rdf2GoCore '" + coreName + "' initialized");
-
 	}
 
 	public String getName() {
@@ -279,7 +278,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 
 	private int getMaxSparqlThreadCount(RepositoryConfig reasoning) {
 		final int defaultThreadCount = Math.min(Runtime.getRuntime()
-														.availableProcessors() - 1, reasoning.getNumberOfSupportedParallelConnections());
+				.availableProcessors() - 1, reasoning.getNumberOfSupportedParallelConnections());
 		final String threadCount = System.getProperty(SEMANTICCORE_SPARQL_THREADS_COUNT, String.valueOf(defaultThreadCount));
 		try {
 			return Integer.parseInt(threadCount);
@@ -600,9 +599,9 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 				}
 				else {
 					LOGGER.info("Removed " + removeSize + " statements from and added "
-								+ insertSize
-								+ " statements to " + Rdf2GoCore.class.getSimpleName() + " " + getName() + " in "
-								+ connectionStopwatch.getDisplay() + ".");
+							+ insertSize
+							+ " statements to " + Rdf2GoCore.class.getSimpleName() + " " + getName() + " in "
+							+ connectionStopwatch.getDisplay() + ".");
 				}
 
 				LOGGER.info("Current number of statements in " + Rdf2GoCore.class.getSimpleName() + " " + getName() + ": " + this.statementCache.size() + " cached, " + this.uncachedStatementsCounter + " uncached.");
@@ -1370,8 +1369,8 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 							: preparedSelect.getQueryString()
 							: query;
 					LOGGER.warn("Slow compile time SPARQL query detected. Query finished after "
-								+ stopwatch.getDisplay()
-								+ ": " + Rdf2GoUtils.getReadableQuery(usedQuery, type) + "...");
+							+ stopwatch.getDisplay()
+							+ ": " + Rdf2GoUtils.getReadableQuery(usedQuery, type) + "...");
 				}
 				return result.get();
 			}
@@ -1397,7 +1396,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					}
 				}
 				if (sparqlTask == null
-					|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != options.timeoutMillis)) {
+						|| (sparqlTask.isCancelled() && sparqlTask.getTimeOutMillis() != options.timeoutMillis)) {
 					SparqlCallable callable = newSparqlCallable(query, type, options.timeoutMillis, true, preparedAsk, preparedSelect, bindings);
 					sparqlTask = new SparqlTask(callable, options.priority);
 					this.sparqlCache.put(query, sparqlTask);
@@ -1685,7 +1684,7 @@ public class Rdf2GoCore implements SPARQLEndpoint {
 					this.semanticCore.release();
 					if (this.semanticCore.isAllocated()) {
 						LOGGER.warn("Semantic core " + this.semanticCore.getRepositoryId()
-									+ " is still allocated and cannot be shut down, this may be an memory leak.");
+								+ " is still allocated and cannot be shut down, this may be an memory leak.");
 					}
 				}
 				finally {
