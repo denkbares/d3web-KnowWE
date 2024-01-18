@@ -115,3 +115,12 @@
 	vertical-align: middle;
 	margin-right: 10px;
 }
+
+
+#delete-admin {
+	display: none;
+}
+
+body.noneAdmin #delete-admin {
+	display: inline-block;
+}
