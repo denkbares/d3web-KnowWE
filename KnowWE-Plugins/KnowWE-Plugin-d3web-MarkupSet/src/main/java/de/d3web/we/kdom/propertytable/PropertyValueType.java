@@ -23,13 +23,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.knowledgebase.D3webCompiler;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.basicType.LocaleType;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
@@ -57,10 +58,10 @@ public class PropertyValueType extends AbstractType {
 		setSectionFinder(new ConstraintSectionFinder(AllTextFinder.getInstance(),
 				new TableIndexConstraint(1, Integer.MAX_VALUE, 1, Integer.MAX_VALUE)));
 		setRenderer((section, user, result) -> result.appendJSPWikiMarkup(section.getText()));
-		addCompileScript((D3webHandler<Type>) PropertyValueType::compile);
+		addCompileScript((D3webHandler<PropertyValueType>) PropertyValueType::compile);
 	}
 
-	private static Collection<Message> compile(D3webCompiler compiler, Section<Type> section) {
+	private static Collection<Message> compile(D3webCompiler compiler, Section<PropertyValueType> section) {
 		Section<TableCellContent> header = TableUtils.getColumnHeader(section);
 
 		if (header == null) {
@@ -85,7 +86,7 @@ public class PropertyValueType extends AbstractType {
 		}
 
 		Object parsedValue;
-		String value = section.getText().trim();
+		String value = section.get().getPropertyValue(section);
 		if (Strings.isBlank(value)) return Messages.noMessage();
 
 		try {
@@ -120,5 +121,10 @@ public class PropertyValueType extends AbstractType {
 			}
 		}
 		return messages;
+	}
+
+	@NotNull
+	public String getPropertyValue(Section<PropertyValueType> section) {
+		return section.getText().trim();
 	}
 }

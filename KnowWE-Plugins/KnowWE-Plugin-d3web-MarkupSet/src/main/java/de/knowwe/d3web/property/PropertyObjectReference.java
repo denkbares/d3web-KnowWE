@@ -21,17 +21,23 @@ package de.knowwe.d3web.property;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
+import com.denkbares.utils.Pair;
 import de.d3web.core.knowledge.KnowledgeBase;
 import de.d3web.core.knowledge.terminology.Choice;
 import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.Question;
 import de.d3web.core.knowledge.terminology.QuestionChoice;
+import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.core.manage.KnowledgeBaseUtils;
 import de.d3web.we.knowledgebase.D3webCompileScript;
 import de.d3web.we.knowledgebase.D3webCompiler;
@@ -53,6 +59,8 @@ import de.knowwe.core.report.Messages;
 import de.knowwe.kdom.constraint.ConstraintSectionFinder;
 import de.knowwe.kdom.constraint.NoChildrenOfOtherTypesConstraint;
 
+import static de.knowwe.core.kdom.parsing.Sections.$;
+
 /**
  * This is a type that represents a {@link NamedObject}. Depending on type of the NamedObject, there are different
  * renderings. getNamedObject(...) returns the matching NamedObject from the {@link KnowledgeBase}.
@@ -60,7 +68,7 @@ import de.knowwe.kdom.constraint.NoChildrenOfOtherTypesConstraint;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 02.08.2011
  */
-public class PropertyObjectReference extends D3webTermReference<NamedObject> {
+public abstract class PropertyObjectReference extends D3webTermReference<NamedObject> {
 
 	public PropertyObjectReference() {
 
@@ -83,6 +91,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 		namedObjectReference.setSectionFinder(new ConstraintSectionFinder(
 				new AllTextFinderTrimmed(), NoChildrenOfOtherTypesConstraint.getInstance()));
 		this.addChildType(namedObjectReference);
+		this.addCompileScript(Priority.LOW, new DuplicatePropertiesChecker());
 	}
 
 	@Override
@@ -166,9 +175,7 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 		List<Question> questions = compiler.getKnowledgeBase().getManager().getQuestions();
 		List<NamedObject> choices = new ArrayList<>(questions.size());
 		for (Question question : questions) {
-			if (!(question instanceof QuestionChoice)) continue;
-
-			QuestionChoice questionChoice = (QuestionChoice) question;
+			if (!(question instanceof QuestionChoice questionChoice)) continue;
 			Choice choice = KnowledgeBaseUtils.findChoice(questionChoice,
 					answerReference.getText());
 			if (choice != null) choices.add(choice);
@@ -221,8 +228,51 @@ public class PropertyObjectReference extends D3webTermReference<NamedObject> {
 		}
 	}
 
+	protected abstract Property<?> getProperty(Section<PropertyObjectReference> reference);
+
+	protected abstract Locale getLocale(Section<PropertyObjectReference> reference);
+
+	protected abstract String getPropertyValue(Section<PropertyObjectReference> reference);
+
 	@Override
 	public Class<?> getTermObjectClass(@Nullable TermCompiler compiler, Section<? extends Term> section) {
 		return NamedObject.class;
+	}
+
+	private static class DuplicatePropertiesChecker implements D3webCompileScript<PropertyObjectReference> {
+		@Override
+		public void compile(D3webCompiler compiler, Section<PropertyObjectReference> section) {
+			compiler.runInParallel(section, () -> {
+				Map<Pair<? extends Property<?>, Locale>, Set<Section<PropertyObjectReference>>> map = $(section)
+						.successor(NamedObjectReference.class).references(compiler)
+						.closest(PropertyObjectReference.class)
+						.stream()
+						.collect(Collectors.groupingBy(r -> new Pair<>(r.get().getProperty(r), r.get()
+								.getLocale(r)), Collectors.toSet()));
+				map.forEach((key, references) -> validate(compiler, section, references));
+			});
+		}
+
+		private void validate(D3webCompiler compiler, Section<PropertyObjectReference> section, Set<Section<PropertyObjectReference>> references) {
+			boolean valid = true;
+			if (references.size() > 1) {
+				List<String> values = references.stream()
+						.map(r -> r.get().getPropertyValue(r))
+						.distinct().sorted().toList();
+				if (values.size() > 1) {
+					references.forEach(r -> Messages.storeMessage(compiler, r, this.getClass(),
+							Messages.error("Conflicting property declarations for object '" + section.getText() + "':\n" + String.join("\n", values))));
+					valid = false;
+				}
+			}
+			if (valid) {
+				references.forEach(r -> Messages.clearMessages(compiler, r, this.getClass()));
+			}
+		}
+
+		@Override
+		public boolean isIncrementalCompilationSupported(Section<PropertyObjectReference> section) {
+			return true;
+		}
 	}
 }

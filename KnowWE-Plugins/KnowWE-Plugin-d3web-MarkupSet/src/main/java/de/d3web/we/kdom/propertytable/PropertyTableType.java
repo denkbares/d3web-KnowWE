@@ -21,11 +21,14 @@ package de.d3web.we.kdom.propertytable;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.strings.Strings;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.reviseHandler.D3webHandler;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.basicType.LocaleType;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.report.Messages;
@@ -37,6 +40,10 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.kdom.table.Table;
 import de.knowwe.kdom.table.TableIndexConstraint;
+import de.knowwe.kdom.table.TableLine;
+import de.knowwe.kdom.table.TableUtils;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * A table for defining property values for objects.
@@ -96,7 +103,7 @@ public class PropertyTableType extends DefaultMarkupType {
 		content.injectTableCellContentChildtype(propertyType);
 		content.injectTableCellContentChildtype(localType);
 
-		PropertyObjectReference qRef = new PropertyObjectReference();
+		PropertyObjectReference qRef = new PropertyTableObjectReference();
 		qRef.setSectionFinder(new ConstraintSectionFinder(AllTextFinderTrimmed.getInstance(),
 				new TableIndexConstraint(0, 1, 1, Integer.MAX_VALUE)));
 
@@ -106,5 +113,22 @@ public class PropertyTableType extends DefaultMarkupType {
 
 	public PropertyTableType() {
 		super(MARKUP);
+	}
+
+	private static class PropertyTableObjectReference extends PropertyObjectReference {
+		@Override
+		protected Property<?> getProperty(Section<PropertyObjectReference> reference) {
+			return $(TableUtils.getColumnHeader(reference)).successor(PropertyType.class).mapFirst(p -> p.get().getProperty(p));
+		}
+
+		@Override
+		protected @Nullable Locale getLocale(Section<PropertyObjectReference> reference) {
+			return $(TableUtils.getColumnHeader(reference)).successor(LocaleType.class).map(l -> l.get().getLocale(l)).findFirst().orElse(Locale.ROOT);
+		}
+
+		@Override
+		protected String getPropertyValue(Section<PropertyObjectReference> reference) {
+			return $(reference).ancestor(TableLine.class).successor(PropertyValueType.class).mapFirst(v -> v.get().getPropertyValue(v));
+		}
 	}
 }

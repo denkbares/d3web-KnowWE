@@ -75,7 +75,7 @@ public class PropertyDeclarationType extends AbstractType {
 		Pattern p = Pattern.compile(propertyDeclaration, Pattern.MULTILINE + Pattern.DOTALL);
 		setSectionFinder(new RegexSectionFinder(p, 1));
 
-		this.addChildType(new PropertyObjectReference());
+		this.addChildType(new PropertyMarkupObjectReference());
 
 		this.addChildType(new PropertyType());
 		this.addChildType(new LocaleType("."));
@@ -141,5 +141,28 @@ public class PropertyDeclarationType extends AbstractType {
 	@Nullable
 	public String getValueString(Section<PropertyDeclarationType> section) {
 		return $(section).successor(PropertyContentType.class).mapFirst(PropertyContentType::getPropertyContent);
+	}
+
+	private static class PropertyMarkupObjectReference extends PropertyObjectReference {
+		@Override
+		protected Property<?> getProperty(Section<PropertyObjectReference> reference) {
+			return $(reference).ancestor(PropertyDeclarationType.class)
+					.successor(PropertyType.class)
+					.mapFirst(p -> p.get().getProperty(p));
+		}
+
+		@Override
+		protected Locale getLocale(Section<PropertyObjectReference> reference) {
+			return $(reference).ancestor(PropertyDeclarationType.class)
+					.successor(LocaleType.class)
+					.map(l -> l.get().getLocale(l)).findFirst().orElse(Locale.ROOT);
+		}
+
+		@Override
+		protected String getPropertyValue(Section<PropertyObjectReference> reference) {
+			return $(reference).ancestor(PropertyDeclarationType.class)
+					.successor(PropertyContentType.class)
+					.mapFirst(s -> s.get().getPropertyContent(s));
+		}
 	}
 }
