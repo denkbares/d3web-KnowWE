@@ -20,9 +20,9 @@ package de.knowwe.d3web.property;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -243,17 +243,31 @@ public abstract class PropertyObjectReference extends D3webTermReference<NamedOb
 		@Override
 		public void compile(D3webCompiler compiler, Section<PropertyObjectReference> section) {
 			compiler.runInParallel(section, () -> {
-				Map<Pair<? extends Property<?>, Locale>, Set<Section<PropertyObjectReference>>> map = $(section)
-						.successor(NamedObjectReference.class).references(compiler)
+				List<Section<PropertyObjectReference>> allReferences = $(section).successor(PropertyAnswerReference.class)
+						.references(compiler)
 						.closest(PropertyObjectReference.class)
-						.stream()
+						.asList();
+				if (allReferences.isEmpty()) {
+					allReferences = $(section)
+							.successor(NamedObjectReference.class).references(compiler)
+							.closest(PropertyObjectReference.class)
+							.asList();
+				}
+				if (allReferences.size() == 1) {
+					Messages.clearMessages(compiler, allReferences.get(0), this.getClass());
+					return;
+				}
+				Set<NamedObject> termObjects = new HashSet<>(section.get().getTermObjects(compiler, section));
+				allReferences.stream()
+						// make sure, that there is a match in the referenced term objects
+						.filter(r -> r.get().getTermObjects(compiler, r).stream().anyMatch(termObjects::contains))
 						.collect(Collectors.groupingBy(r -> new Pair<>(r.get().getProperty(r), r.get()
-								.getLocale(r)), Collectors.toSet()));
-				map.forEach((key, references) -> validate(compiler, section, references));
+								.getLocale(r)), Collectors.toSet()))
+						.forEach((key, references) -> validate(compiler, section, key, references));
 			});
 		}
 
-		private void validate(D3webCompiler compiler, Section<PropertyObjectReference> section, Set<Section<PropertyObjectReference>> references) {
+		private void validate(D3webCompiler compiler, Section<PropertyObjectReference> section, Pair<? extends Property<?>, Locale> property, Set<Section<PropertyObjectReference>> references) {
 			boolean valid = true;
 			if (references.size() > 1) {
 				List<String> values = references.stream()
@@ -261,7 +275,10 @@ public abstract class PropertyObjectReference extends D3webTermReference<NamedOb
 						.distinct().sorted().toList();
 				if (values.size() > 1) {
 					references.forEach(r -> Messages.storeMessage(compiler, r, this.getClass(),
-							Messages.error("Conflicting property declarations for object '" + section.getText() + "':\n" + String.join("\n", values))));
+							Messages.error("Conflicting property declarations for '" + section.getText() + "."
+									+ property.getA().getName() + (property.getB()
+									.equals(Locale.ROOT) ? "" : "." + property.getB().toLanguageTag())
+									+ "':\n" + String.join("\n", values))));
 					valid = false;
 				}
 			}
