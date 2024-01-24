@@ -39,6 +39,7 @@ public interface Action {
 	String JSON = "application/json; charset=UTF-8";
 	String PLAIN_TEXT = "text/plain; charset=UTF-8";
 	String TURTLE = "text/turtle; charset=UTF-8";
+	String ZIP = "application/zip";
 	String BINARY = "application/x-bin";
 
 	/**
