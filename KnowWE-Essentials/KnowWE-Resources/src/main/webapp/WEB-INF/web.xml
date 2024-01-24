@@ -84,6 +84,10 @@
         <filter-class>org.apache.wiki.ui.WikiServletFilter</filter-class>
     </filter>
     <filter>
+        <filter-name>PluggableLoginPageFilter</filter-name>
+        <filter-class>de.knowwe.jspwiki.auth.PluggableLoginPageFilter</filter-class>
+    </filter>
+    <filter>
         <filter-name>WikiJSPFilter</filter-name>
         <filter-class>org.apache.wiki.ui.WikiJSPFilter</filter-class>
     </filter>
@@ -100,10 +104,17 @@
         <url-pattern>/wiki/*</url-pattern>
         <url-pattern>*.jsp</url-pattern>
     </filter-mapping>
+    <filter-mapping>
+        <filter-name>PluggableLoginPageFilter</filter-name>
+        <url-pattern>/Login.jsp</url-pattern>
+    </filter-mapping>
 
     <!--
 		HttpSessionListener used for managing WikiSession's.
 	  -->
+    <listener>
+        <listener-class>de.knowwe.jspwiki.auth.AuthServletContextListener</listener-class>
+    </listener>
     <listener>
         <listener-class>org.apache.wiki.auth.SessionMonitor</listener-class>
     </listener>

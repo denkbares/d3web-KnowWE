@@ -39,8 +39,22 @@
 # Introduced this for convenience while editing this file:
 var.basedir = /folder/wikicontent
 
-
 jspwiki.applicationName = KnowWE
+
+#############################################################################
+#
+#  KnowWE
+#
+
+#  Authentication
+#  Set custom classes for AuthManager and/or the login page filter
+# knowwe.auth.authManager=
+# knowwe.auth.loginPageFilter=
+
+#############################################################################
+#
+#  JSPWiki Common
+#
 
 #
 #  Describe where your wiki lives (the real URL through which it is available
