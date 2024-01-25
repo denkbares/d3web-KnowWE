@@ -92,7 +92,8 @@ public class CIRenderer {
 		int count = lastBuilds.size();
 		int failed = 0;
 		for (BuildResult build : lastBuilds) {
-			if (Type.SUCCESS != build.getOverallResult() && Type.SKIPPED != build.getOverallResult()) {
+			//if (Type.SUCCESS != build.getOverallResult() && Type.SKIPPED != build.getOverallResult()) {
+			if (Type.SUCCESS != build.getOverallResultConsideringSoftTests() && Type.SKIPPED != build.getOverallResultConsideringSoftTests()) {
 				failed++;
 			}
 		}
@@ -203,7 +204,7 @@ public class CIRenderer {
 				Set<TestResult> groupResults = groups.getValues(group);
 				// open group if available
 				if (group != null) {
-					Type type = BuildResult.getOverallResult(groupResults);
+					Type type = BuildResult.getOverallResultConsideringSoftTests(groupResults);
 					openCollapse(type, result);
 					result.appendHtml("<span class='ci-test-title ci-test-group'>")
 							.append(group)
@@ -527,7 +528,7 @@ public class CIRenderer {
 				.stream()
 				.filter(r -> !r.isSuccessful() && !r.getTestObjectsWithUnexpectedOutcome().isEmpty())
 				.count();
-		renderBuildStatus(buildResult.getOverallResult(), checkRunning, icon, result);
+		renderBuildStatus(buildResult.getOverallResultConsideringSoftTests(), checkRunning, icon, result);
 		if (unexpectedCount > 0 && (!checkRunning || !CIBuildManager.isRunning(dashboard))) {
 			String tooltip = unexpectedCount + (unexpectedCount == 1 ? " test was" : " tests were") + " not successful";
 			result.appendHtmlElement("span", String.valueOf(unexpectedCount),

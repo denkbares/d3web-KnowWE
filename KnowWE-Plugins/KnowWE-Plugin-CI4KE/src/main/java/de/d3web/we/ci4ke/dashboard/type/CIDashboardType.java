@@ -59,6 +59,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String NAME_KEY = "name";
 	public static final String GROUP_KEY = "group";
 	public static final String TEST_KEY = "test";
+	public static final String SOFT_TEST_KEY = "softTest";
 	public static final String TRIGGER_KEY = "trigger";
 	public static final String VERBOSE_PERSISTENCE_KEY = "persistenceVerbose";
 
@@ -77,6 +78,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		DefaultMarkup markup = new DefaultMarkup(markupName);
 		markup.addAnnotation(NAME_KEY, true);
 		markup.addAnnotation(TEST_KEY, true);
+		markup.addAnnotation(SOFT_TEST_KEY, false);
 		markup.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
 				"^(onDemand|onSave\\s*(\".+?\"|[^\\s]+))$"));
 		markup.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
@@ -86,6 +88,8 @@ public class CIDashboardType extends DefaultMarkupType {
 				"<li>@" + TRIGGER_KEY + ": onDemand</li>" +
 				"</ul>" +
 				"</p>");
+		markup.getAnnotation(SOFT_TEST_KEY).setDocumentation("Declare tests as 'soft tests'.<br>" +
+				"Soft tests are only acknowledged in the build details but have no effect on the overall build result.");
 
 		// allow grouping of tests
 		markup.addAnnotation(GROUP_KEY, false);
@@ -93,7 +97,9 @@ public class CIDashboardType extends DefaultMarkupType {
 		// add content for individual annotations
 		markup.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
 		markup.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
+		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestIgnoreType());
 		markup.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
+		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestDeclarationType());
 		return markup;
 	}
 
