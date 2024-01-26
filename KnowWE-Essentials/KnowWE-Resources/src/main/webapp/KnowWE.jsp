@@ -17,7 +17,7 @@
     	Environment.initInstance(new JSPWikiConnector(wiki));
 	}
 
-	// We need to do this, because the paramterMap is locked!
+	// We need to do this, because the parameterMap is locked!
 	Map<String, String> parameters = UserContextUtil.getParameters(request);
 	
 	// Add user
