@@ -356,6 +356,43 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 		return new Sections<>(new ConcatenateIterable<>(this, sections));
 	}
 
+
+	/**
+	 * Creates a new sections instance that first iterates over the elements of this instance, then over the elements of
+	 * the given instance.
+	 *
+	 * @param sections the sections to append/concat
+	 * @return a new sections object with the elements of this and the given instance
+	 */
+	public Sections<?> append(Sections<?> sections) {
+		//noinspection rawtypes,unchecked
+		return new Sections(new ConcatenateIterable<>(this.sections, sections));
+	}
+
+	/**
+	 * Creates a new sections instance that first iterates over the elements of this instance, then over the elements of
+	 * the given instance.
+	 *
+	 * @param section the section to append/concat
+	 * @return a new sections object with the elements of this and the given instance
+	 */
+	public Sections<?> append(Section<?> section) {
+		//noinspection rawtypes,unchecked
+		return new Sections(new ConcatenateIterable<>(this.sections, List.of(section)));
+	}
+
+	/**
+	 * Creates a new sections instance that first iterates over the elements of this instance, then over the elements of
+	 * the given instance.
+	 *
+	 * @param sections the sections to append/concat
+	 * @return a new sections object with the elements of this and the given instance
+	 */
+	public Sections<?> append(Iterable<Section<?>> sections) {
+		//noinspection rawtypes,unchecked
+		return new Sections(new ConcatenateIterable<>(this.sections, sections));
+	}
+
 	@NotNull
 	@Override
 	public Iterator<Section<T>> iterator() {
