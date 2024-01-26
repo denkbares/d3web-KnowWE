@@ -165,6 +165,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	private boolean tryIncrementalCompilation(String[] packagesToCompile) {
 		if (knowledgeBase == null) return false; // first compilation, no need to do checking
 		if (!allowIncrementalCompilation) return false;
+		isIncrementalBuild = true;
 
 		this.compileScriptCompiler = new D3webScriptCompiler(this);
 		this.destroyScriptCompiler = new D3webScriptCompiler(this, true);
@@ -187,8 +188,6 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		getTerminologyManager().cleanupStaleSection();
 
 		compileScriptCompiler.compile();
-
-		isIncrementalBuild = true;
 
 		logAndCleanup();
 		return true;
@@ -225,6 +224,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	}
 
 	private void fullCompilation(String[] packagesToCompile) {
+		isIncrementalBuild = false;
 		knowledgeBase = KnowledgeBaseUtils.createKnowledgeBase();
 		knowledgeBase.setId(getKnowledgeBaseId());
 		terminologyManager = createTerminologyManager();
@@ -241,7 +241,6 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		fullCompileScriptCompiler.addSections(getPackageManager().getSectionsOfPackage(packagesToCompile));
 		fullCompileScriptCompiler.compile();
 
-		isIncrementalBuild = false;
 		allowIncrementalCompilation = true;
 
 		knowledgeBase.initPluggedPSMethods();
