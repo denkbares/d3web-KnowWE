@@ -41,6 +41,7 @@ public class CIHookManager {
 	 * Fore each monitored articles a list of hooks are stored.
 	 */
 	private static final MultiMap<String, CIHook> hooks = new DefaultMultiMap<>();
+	public static final String KNOWWE_CI_HOOKS_ACTIVE = "knowwe.ci.hooks.active";
 
 	public static synchronized void registerHook(CIHook hook) {
 		for (String monitoredArticle : hook.getMonitoredArticles()) {
@@ -58,7 +59,7 @@ public class CIHookManager {
 	 * @param monitoredArticle the article to trigger hooks for
 	 */
 	public static synchronized void triggerHooks(Article monitoredArticle) {
-		if (!Boolean.parseBoolean(System.getProperty("knowwe.ci.hooks.active", "true"))) return;
+		if (!Boolean.parseBoolean(System.getProperty(KNOWWE_CI_HOOKS_ACTIVE, "true"))) return;
 		Set<CIHook> hookSet = hooks.getValues(monitoredArticle.getTitle());
 		Set<String> triggered = new TreeSet<>();
 		for (final CIHook hook : hookSet) {
