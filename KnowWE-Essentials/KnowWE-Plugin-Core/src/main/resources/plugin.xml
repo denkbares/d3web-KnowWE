@@ -675,4 +675,12 @@
 		<parameter id="scope" value="root" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="HealthCheckAction">
+		<parameter id="class" value="de.knowwe.core.action.HealthCheckAction" />
+		<parameter id="name" value="HealthCheckAction" />
+		<parameter id="description" value="Returns a JSON snippet, assuming the application is running fine." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 </plugin>
