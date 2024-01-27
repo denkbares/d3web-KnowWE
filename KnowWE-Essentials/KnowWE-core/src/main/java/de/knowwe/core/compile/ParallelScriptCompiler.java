@@ -27,6 +27,7 @@ import de.knowwe.core.report.Messages;
 
 import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.compile;
 import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.destroy;
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * For the given {@link Section}s and {@link Compiler} it gets all
@@ -104,8 +105,9 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 27.07.2012
 	 */
-	public void addSection(Section<?> section, Class<?>... scriptFilter) {
+	public boolean addSection(Section<?> section, Class<?>... scriptFilter) {
 		synchronized (compileMap) {
+			boolean added = false;
 			Map<Priority, List<CompileScript<C, Type>>> scripts =
 					scriptManager.getScripts(Sections.cast(section, Type.class).get());
 			for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
@@ -118,11 +120,13 @@ public class ParallelScriptCompiler<C extends Compiler> {
 					CompilePair pair = new CompilePair(Sections.cast(section, Type.class), script);
 					// we only add pairs that are not already added before (e.g. during incremental compilation)
 					if (pairSet.add(pair)) {
+						added = true;
 						compileSet.add(pair);
 						if (priority.compareTo(currentPriority) > 0) currentPriority = priority;
 					}
 				}
 			}
+			return added;
 		}
 	}
 
@@ -138,16 +142,18 @@ public class ParallelScriptCompiler<C extends Compiler> {
 	 * @param section      the section and its successors you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
 	 */
-	public void addSubtree(Section<?> section, Class<?>... scriptFilter) {
+	public Sections<?> addSubtree(Section<?> section, Class<?>... scriptFilter) {
 		//noinspection DuplicatedCode
+		Sections<?> added = Sections.empty();
 		if (scriptManager.hasScriptsForSubtree(section.get())) {
 			if (typeFilter.length == 0 || Sections.canHaveSuccessor(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
-					addSubtree(child, scriptFilter);
+					added.append(addSubtree(child, scriptFilter));
 				}
 			}
-			addSection(section, scriptFilter);
+			if (addSection(section, scriptFilter)) added.append(section);
 		}
+		return added;
 	}
 
 	private CompilePair next() {

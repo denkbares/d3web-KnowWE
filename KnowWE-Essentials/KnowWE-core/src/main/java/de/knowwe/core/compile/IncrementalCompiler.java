@@ -19,6 +19,7 @@
 package de.knowwe.core.compile;
 
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * Interface for incremental {@link Compiler}s allowing to add depending
@@ -41,7 +42,7 @@ public interface IncrementalCompiler extends Compiler {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
-	void addSectionToDestroy(Section<?> section, Class<?>... scriptFilter);
+	boolean addSectionToDestroy(Section<?> section, Class<?>... scriptFilter);
 
 	/**
 	 * Adds the given {@link Section} to also be compiled in the current
@@ -54,7 +55,7 @@ public interface IncrementalCompiler extends Compiler {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
-	void addSectionToCompile(Section<?> section, Class<?>... scriptFilter);
+	boolean addSectionToCompile(Section<?> section, Class<?>... scriptFilter);
 
 	/**
 	 * Adds the given subtree of {@link Section}s to also be destroyed in the current
@@ -67,7 +68,7 @@ public interface IncrementalCompiler extends Compiler {
 	 * @param scriptFilter the classes of the scripts you want to destroy
 	 * @created 04.01.2014
 	 */
-	void addSubtreeToDestroy(Section<?> section, Class<?>... scriptFilter);
+	Sections<?> addSubtreeToDestroy(Section<?> section, Class<?>... scriptFilter);
 
 	/**
 	 * Adds the given subtree of {@link Section}s to also be compiled in the current
@@ -80,7 +81,7 @@ public interface IncrementalCompiler extends Compiler {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 04.01.2014
 	 */
-	void addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter);
+	Sections<?> addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter);
 
 	/**
 	 * Check whether this compiler's last build was done incrementally

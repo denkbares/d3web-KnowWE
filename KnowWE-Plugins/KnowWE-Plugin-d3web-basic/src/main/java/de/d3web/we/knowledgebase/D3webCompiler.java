@@ -271,35 +271,43 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	}
 
 	@Override
-	public void addSectionToDestroy(Section<?> section, Class<?>... scriptFilter) {
+	public boolean addSectionToDestroy(Section<?> section, Class<?>... scriptFilter) {
+		boolean added = false;
 		if (destroyScriptCompiler != null) {
-			destroyScriptCompiler.addSection(section, scriptFilter);
+			added = destroyScriptCompiler.addSection(section, scriptFilter);
 			assertIncrementalCompilationStillPossible(destroyScriptCompiler);
 		}
+		return added;
 	}
 
 	@Override
-	public void addSectionToCompile(Section<?> section, Class<?>... scriptFilter) {
+	public boolean addSectionToCompile(Section<?> section, Class<?>... scriptFilter) {
+		boolean added = false;
 		if (compileScriptCompiler != null) {
-			compileScriptCompiler.addSection(section, scriptFilter);
+			added = compileScriptCompiler.addSection(section, scriptFilter);
 			assertIncrementalCompilationStillPossible(compileScriptCompiler);
 		}
+		return added;
 	}
 
 	@Override
-	public void addSubtreeToDestroy(Section<?> section, Class<?>... scriptFilter) {
+	public Sections<?> addSubtreeToDestroy(Section<?> section, Class<?>... scriptFilter) {
+		Sections<?> added = Sections.empty();
 		if (destroyScriptCompiler != null) {
-			destroyScriptCompiler.addSubtree(section, scriptFilter);
+			added = destroyScriptCompiler.addSubtree(section, scriptFilter);
 			assertIncrementalCompilationStillPossible(destroyScriptCompiler);
 		}
+		return added;
 	}
 
 	@Override
-	public void addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter) {
+	public Sections<?> addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter) {
+		Sections<?> added = Sections.empty();
 		if (compileScriptCompiler != null) {
-			compileScriptCompiler.addSubtree(section, scriptFilter);
+			added = compileScriptCompiler.addSubtree(section, scriptFilter);
 			assertIncrementalCompilationStillPossible(compileScriptCompiler);
 		}
+		return added;
 	}
 
 	private void assertIncrementalCompilationStillPossible(D3webScriptCompiler scriptCompiler) {

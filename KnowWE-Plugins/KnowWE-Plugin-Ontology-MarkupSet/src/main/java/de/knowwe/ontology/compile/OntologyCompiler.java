@@ -320,23 +320,23 @@ public class OntologyCompiler extends AbstractPackageCompiler
 	}
 
 	@Override
-	public void addSectionToDestroy(Section<?> section, Class<?>... scriptFilter) {
-		destroyScriptCompiler.addSection(section, scriptFilter);
+	public boolean addSectionToDestroy(Section<?> section, Class<?>... scriptFilter) {
+		return destroyScriptCompiler.addSection(section, scriptFilter);
 	}
 
 	@Override
-	public void addSectionToCompile(Section<?> section, Class<?>... scriptFilter) {
-		scriptCompiler.addSection(section, scriptFilter);
+	public boolean addSectionToCompile(Section<?> section, Class<?>... scriptFilter) {
+		return scriptCompiler.addSection(section, scriptFilter);
 	}
 
 	@Override
-	public void addSubtreeToDestroy(Section<?> section, Class<?>... scriptFilter) {
-		destroyScriptCompiler.addSubtree(section, scriptFilter);
+	public Sections<?> addSubtreeToDestroy(Section<?> section, Class<?>... scriptFilter) {
+		return destroyScriptCompiler.addSubtree(section, scriptFilter);
 	}
 
 	@Override
-	public void addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter) {
-		scriptCompiler.addSubtree(section, scriptFilter);
+	public Sections<?> addSubtreeToCompile(Section<?> section, Class<?>... scriptFilter) {
+		return scriptCompiler.addSubtree(section, scriptFilter);
 	}
 
 	public RepositoryConfig getReasoning() {

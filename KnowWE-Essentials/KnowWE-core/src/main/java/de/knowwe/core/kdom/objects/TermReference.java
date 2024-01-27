@@ -25,6 +25,6 @@ package de.knowwe.core.kdom.objects;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 28.03.2013
  */
-public interface TermReference extends Term {
+public interface TermReference extends IncrementalTerm {
 
 }

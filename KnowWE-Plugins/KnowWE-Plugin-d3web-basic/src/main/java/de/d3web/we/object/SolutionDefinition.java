@@ -72,25 +72,5 @@ public abstract class SolutionDefinition extends D3webTermDefinition<Solution> {
 		protected Solution createTermObject(String name, KnowledgeBase kb) {
 			return new Solution(kb, name);
 		}
-
-		@Override
-		protected void recompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier termIdentifier) {
-			section.get().recompile(compiler, section, termIdentifier);
-			super.recompile(compiler, section, termIdentifier);
-		}
-
-		@Override
-		protected void destroyAndRecompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier identifier) {
-			section.get().destroyAndRecompile(compiler, section, identifier);
-			super.destroyAndRecompile(compiler, section, identifier);
-		}
-	}
-
-	protected void recompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier identifier) {
-		Compilers.recompileRegistrations(compiler, identifier);
-	}
-
-	protected void destroyAndRecompile(D3webCompiler compiler, Section<SolutionDefinition> section, Identifier identifier) {
-		Compilers.destroyAndRecompileRegistrations(compiler, identifier);
 	}
 }

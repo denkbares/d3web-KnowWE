@@ -46,6 +46,7 @@ import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.objects.IncrementalTerm;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.report.CompilerMessage;
@@ -115,7 +116,7 @@ public class Compilers {
 				}
 				catch (Exception e) {
 					String msg = "Unexpected internal exception while destroying with script "
-								 + section;
+							+ section;
 					LOGGER.error(msg, e);
 				}
 			}
@@ -187,7 +188,7 @@ public class Compilers {
 	 * Returns the first {@link Compiler} of a given ArticleManager and compiler class with the given name.
 	 *
 	 * @param manager       the {@link ArticleManager} for which we want the {@link Compiler}s
-	 * @param compilerName          the name of the compiler
+	 * @param compilerName  the name of the compiler
 	 * @param compilerClass the type of the {@link Compiler} we want
 	 * @return the first {@link Compiler}s of a given ArticleManager and Class.
 	 * @created 15.11.2013
@@ -624,6 +625,16 @@ public class Compilers {
 		return KnowWEUtils.getArticleManager(web).getCompilerManager();
 	}
 
+	public static void destroyAndRecompileSubtree(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		Sections<?> destroyedSections = compiler.addSubtreeToDestroy(section, scriptFilter);
+		destroyDependencies(compiler, destroyedSections, scriptFilter);
+		if (Sections.isLive(section)) {
+			// the sections that have not been removed from the wiki are also compiled again
+			Sections<?> compiledSections = compiler.addSubtreeToCompile(section, scriptFilter);
+			recompileDependencies(compiler, compiledSections, scriptFilter);
+		}
+	}
+
 	public static void destroyAndRecompileRegistrations(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
 		Sections.registrations((TermCompiler) compiler, identifier)
 				.forEach(s -> destroyAndRecompileSection(compiler, s, scriptFilter));
@@ -635,34 +646,56 @@ public class Compilers {
 	}
 
 	public static void destroyAndRecompileSection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
-		compiler.addSectionToDestroy(section, scriptFilter);
+		destroySection(compiler, section, scriptFilter);
 		if (Sections.isLive(section)) {
-			// the sections that have not been removed from the wiki are also compiled again
-			compiler.addSectionToCompile(section, scriptFilter);
+			recompileSection(compiler, section, scriptFilter);
 		}
-	}
-
-	public static void destroyAndRecompileSubtree(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
-		compiler.addSubtreeToDestroy(section, scriptFilter);
-		if (Sections.isLive(section)) {
-			// the sections that have not been removed from the wiki are also compiled again
-			compiler.addSubtreeToCompile(section, scriptFilter);
-		}
-	}
-
-	// very simple method at the moment, we have it to be consistent with #destroyAndRecompileSection
-	public static void recompileSection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
-		compiler.addSectionToCompile(section, scriptFilter);
 	}
 
 	public static void recompileRegistrations(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
 		Sections.registrations((TermCompiler) compiler, identifier)
-				.forEach(s -> compiler.addSectionToCompile(s, scriptFilter));
+				.forEach(s -> recompileSection(compiler, s, scriptFilter));
 	}
 
 	public static void recompileReferences(IncrementalCompiler compiler, Identifier identifier, Class<?>... scriptFilter) {
 		Sections.references((TermCompiler) compiler, identifier)
-				.forEach(s -> compiler.addSectionToCompile(s, scriptFilter));
+				.forEach(s -> recompileSection(compiler, s, scriptFilter));
+	}
+
+	public static void recompileSection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		compiler.addSectionToCompile(section, scriptFilter);
+		recompileDependencies(compiler, $(section), scriptFilter);
+	}
+
+	private static void recompileDependencies(IncrementalCompiler compiler, Sections<?> sections, Class<?>... scriptFilter) {
+		sections.filter(IncrementalTerm.class)
+				.flatMapTo(s -> s.get().getDependingSectionsToCompile(compiler, s))
+				.forEach(section -> recompileDependency(compiler, section, scriptFilter));
+	}
+
+	private static void recompileDependency(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		if (Sections.isLive(section)) {
+			if (compiler.addSectionToCompile(section, scriptFilter)) {
+				recompileDependencies(compiler, $(section), scriptFilter);
+			}
+		}
+	}
+
+	private static void destroySection(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		compiler.addSectionToDestroy(section, scriptFilter);
+		destroyDependencies(compiler, $(section), scriptFilter);
+	}
+
+	private static void destroyDependencies(IncrementalCompiler compiler, Sections<?> sections, Class<?>... scriptFilter) {
+		sections.filter(IncrementalTerm.class)
+				.flatMapTo(s -> s.get().getDependingSectionsToDestroy(compiler, s))
+				.forEach(section -> destroyDependency(compiler, section, scriptFilter));
+	}
+
+	private static void destroyDependency(IncrementalCompiler compiler, Section<?> section, Class<?>... scriptFilter) {
+		if (compiler.addSectionToDestroy(section, scriptFilter)) {
+			destroyDependencies(compiler, $(section), scriptFilter);
+		}
 	}
 
 	/**

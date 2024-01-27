@@ -24,6 +24,7 @@ import de.knowwe.core.compile.terminology.TermDefinitionRegisteredEvent;
 import de.knowwe.core.compile.terminology.TermDefinitionUnregisteredEvent;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.event.CompilerEvent;
+import de.knowwe.core.kdom.parsing.Sections;
 
 public class LazyReferenceManager implements EventListener {
 
@@ -79,7 +80,7 @@ public class LazyReferenceManager implements EventListener {
 	public void handleRegistration(TermDefinitionRegisteredEvent event, IncrementalCompiler compiler) {
 		Identifier identifier = toLazyIdentifier(event.getIdentifier());
 		if (identifier != null) {
-			Compilers.recompileReferences(compiler, identifier);
+			Sections.references((TermCompiler) compiler, identifier).forEach(compiler::addSectionToCompile);
 		}
 	}
 

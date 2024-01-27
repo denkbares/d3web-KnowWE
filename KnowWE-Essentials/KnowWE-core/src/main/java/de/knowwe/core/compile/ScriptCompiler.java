@@ -94,9 +94,10 @@ public class ScriptCompiler<C extends Compiler> {
 	 * @param scriptFilter the classes of the scripts you want to add
 	 * @created 27.07.2012
 	 */
-	public void addSection(Section<?> section, Class<?>... scriptFilter) {
+	public boolean addSection(Section<?> section, Class<?>... scriptFilter) {
 		Section<Type> typeSection = Sections.cast(section, Type.class);
 		Map<Priority, List<CompileScript<C, Type>>> scripts = scriptManager.getScripts(section.get());
+		boolean added = false;
 		for (Entry<Priority, List<CompileScript<C, Type>>> entry : scripts.entrySet()) {
 			Priority priority = entry.getKey();
 			List<CompilePair> compileSet = compileSetMap.get(priority);
@@ -110,6 +111,7 @@ public class ScriptCompiler<C extends Compiler> {
 				CompilePair pair = new CompilePair(typeSection, script);
 				// we only add pairs that are not already added before (e.g. during incremental compilation)
 				if (pairSet.add(pair)) {
+					added = true;
 					if (reverseOrder) {
 						((LinkedList<CompilePair>) compileSet).addFirst(pair);
 					}
@@ -125,6 +127,7 @@ public class ScriptCompiler<C extends Compiler> {
 				}
 			}
 		}
+		return added;
 	}
 
 	/**
@@ -197,16 +200,18 @@ public class ScriptCompiler<C extends Compiler> {
 	 * @param section      the section and its successors you want to add
 	 * @param scriptFilter the classes of the scripts you want to add
 	 */
-	public void addSubtree(Section<?> section, Class<?>... scriptFilter) {
+	public Sections<?> addSubtree(Section<?> section, Class<?>... scriptFilter) {
 		//noinspection DuplicatedCode
+		Sections<?> added = Sections.empty();
 		if (scriptManager.hasScriptsForSubtree(section.get())) {
 			if (typeFilter.length == 0 || Sections.canHaveSuccessor(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
-					addSubtree(child, scriptFilter);
+					added.append(addSubtree(child, scriptFilter));
 				}
 			}
-			addSection(section, scriptFilter);
+			if (addSection(section, scriptFilter)) added.append(section);
 		}
+		return added;
 	}
 
 	private boolean hasNext() {
@@ -241,7 +246,6 @@ public class ScriptCompiler<C extends Compiler> {
 				lastPriority = currentPriority;
 				awaitParallelScripts();
 				compiler.getCompilerManager().setCurrentCompilePriority(compiler, currentPriority);
-
 			}
 
 			Section<Type> section = pair.getA();

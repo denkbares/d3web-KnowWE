@@ -31,11 +31,14 @@ import de.d3web.core.knowledge.terminology.NamedObject;
 import de.d3web.core.knowledge.terminology.info.Property;
 import de.d3web.we.kdom.rules.Indent;
 import de.d3web.we.knowledgebase.D3webCompiler;
+import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.TermCompiler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.basicType.LocaleType;
+import de.knowwe.core.kdom.objects.IncrementalTerm;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.AnchorRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
 import de.knowwe.core.utils.Patterns;
@@ -144,6 +147,8 @@ public class PropertyDeclarationType extends AbstractType {
 	}
 
 	private static class PropertyMarkupObjectReference extends PropertyObjectReference {
+
+
 		@Override
 		protected Property<?> getProperty(Section<PropertyObjectReference> reference) {
 			return $(reference).ancestor(PropertyDeclarationType.class)
@@ -163,6 +168,11 @@ public class PropertyDeclarationType extends AbstractType {
 			return $(reference).ancestor(PropertyDeclarationType.class)
 					.successor(PropertyContentType.class)
 					.mapFirst(s -> s.get().getPropertyContent(s));
+		}
+
+		@Override
+		public Sections<?> getDependingSections(IncrementalCompiler compiler, Section<IncrementalTerm> section, Class<?>... scriptFilter) {
+			return $(section).ancestor(PropertyDeclarationType.class);
 		}
 	}
 }
