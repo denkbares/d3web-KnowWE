@@ -69,6 +69,10 @@
 		</license>
 	</licenses>
 
+	<scm>
+		<connection>scm:git:ssh://git@git.denkbares.com:2222/open-source/code/knowwe.git</connection>
+	</scm>
+
 	<build>
 		<defaultGoal>package</defaultGoal>
 		<plugins>
