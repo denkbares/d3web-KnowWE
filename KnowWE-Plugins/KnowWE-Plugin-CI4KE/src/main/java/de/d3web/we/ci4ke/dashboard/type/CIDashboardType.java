@@ -67,14 +67,19 @@ public class CIDashboardType extends DefaultMarkupType {
 	}
 
 	private static final DefaultMarkup MARKUP;
+	private static final String CI_DASHBOARD_MARKUP_NAME = "CIDashboard";
 
 	static {
-		MARKUP = new DefaultMarkup("CIDashboard");
-		MARKUP.addAnnotation(NAME_KEY, true);
-		MARKUP.addAnnotation(TEST_KEY, true);
-		MARKUP.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
+		MARKUP = createMarkup(CI_DASHBOARD_MARKUP_NAME);
+	}
+
+	private static DefaultMarkup createMarkup(String markupName) {
+		DefaultMarkup markup = new DefaultMarkup(markupName);
+		markup.addAnnotation(NAME_KEY, true);
+		markup.addAnnotation(TEST_KEY, true);
+		markup.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
 				"^(onDemand|onSave\\s*(\".+?\"|[^\\s]+))$"));
-		MARKUP.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
+		markup.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
 				"<p><b>Options:</b><br>" +
 				"<ul>" +
 				"<li>@" + TRIGGER_KEY + ": onSave \"Article Title Pattern\"</li>" +
@@ -83,12 +88,13 @@ public class CIDashboardType extends DefaultMarkupType {
 				"</p>");
 
 		// allow grouping of tests
-		MARKUP.addAnnotation(GROUP_KEY, false);
+		markup.addAnnotation(GROUP_KEY, false);
 
 		// add content for individual annotations
-		MARKUP.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
-		MARKUP.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
-		MARKUP.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
+		markup.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
+		markup.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
+		markup.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
+		return markup;
 	}
 
 	public CIDashboardType() {
