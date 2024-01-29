@@ -180,7 +180,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			List<TestSpecification<?>> tests = new ArrayList<>();
 
 			List<Section<? extends AnnotationContentType>> annotationSections =
-					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY, GROUP_KEY);
+					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY, GROUP_KEY, SOFT_TEST_KEY);
 
 			// iterate over all @test-Annotations
 			List<ArgsCheckResult> messages = new ArrayList<>();
@@ -208,6 +208,9 @@ public class CIDashboardType extends DefaultMarkupType {
 				}
 				else {
 					// parse test
+					if (type.equalsIgnoreCase(SOFT_TEST_KEY)) {
+						textWithoutComment += " " + type;
+					}
 					TestParser testParser = new TestParser(textWithoutComment);
 					TestSpecification<?> executableTest = testParser.getTestSpecification();
 					messages.add(testParser.getParameterCheckResult());
