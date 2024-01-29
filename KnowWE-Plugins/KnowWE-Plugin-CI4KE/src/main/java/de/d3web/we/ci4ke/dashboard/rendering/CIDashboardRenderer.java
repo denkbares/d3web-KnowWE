@@ -188,7 +188,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 			warningString.append("Dashboard has been modified. Latest build is not up to date. (Consider triggering a new build: ");
 			Tool buildTool = CIDashboardToolProvider.getStartNewBuildTool(dashboardName,
 					dashboardSection.getTitle());
-			String id = "modified-warning_" + dashboardName;
+			String id = "modified-warning_" + Strings.encodeURL(dashboardName);
 			// insert build button/link into warning message
 			warningString.appendHtml("<div id='" + id
 					+ "' style='display:inline;' class=\""
