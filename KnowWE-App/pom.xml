@@ -322,7 +322,10 @@
 		<profile>
 			<id>denkbares</id>
 			<dependencies>
-
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-Auth-OIDC</artifactId>
+				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-FontAwesomePro</artifactId>
@@ -746,10 +749,6 @@
 	</profiles>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.denkbares</groupId>
-			<artifactId>KnowWE-Plugin-Auth-OIDC</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
