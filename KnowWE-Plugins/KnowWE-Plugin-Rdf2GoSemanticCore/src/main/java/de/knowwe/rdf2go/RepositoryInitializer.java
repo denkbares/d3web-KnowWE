@@ -1,11 +1,13 @@
 package de.knowwe.rdf2go;
 
+import java.io.File;
 import java.io.IOException;
 
 import com.denkbares.semanticcore.SemanticCore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import de.knowwe.core.Environment;
+import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.plugin.Instantiation;
 
 /**
@@ -19,15 +21,15 @@ public class RepositoryInitializer implements Instantiation {
 
 	@Override
 	public void init(String web) {
-		String realPath = Environment.getInstance().getWikiConnector().getRealPath().replaceAll("\\W", "");
-		String pathHash = Integer.toHexString(Environment.getInstance()
-				.getWikiConnector()
-				.getApplicationRootPath()
-				.hashCode());
-		String context = realPath + "_" + pathHash;
+		WikiConnector wikiConnector = Environment.getInstance().getWikiConnector();
+		String basedir = wikiConnector.getWikiProperty("var.basedir");
+		if (basedir == null) basedir = "wiki";
+		String appPathHash = Integer.toHexString(wikiConnector.getApplicationRootPath().hashCode());
+		String context = new File(basedir).getName() + "_" + appPathHash;
 
 		try {
-			SemanticCore.initializeRepositoryManager(SemanticCore.createRepositoryPath(context));
+			File tempDir = SemanticCore.createRepositoryManagerDir(context);
+			SemanticCore.initializeRepositoryManager(tempDir);
 		}
 		catch (IOException e) {
 			LOGGER.error("Unable to initialize repository for SemanticCore!", e);
