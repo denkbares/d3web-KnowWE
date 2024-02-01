@@ -244,7 +244,7 @@
     <!-- Error pages -->
     <error-page>
         <error-code>403</error-code>
-        <location>/error/Forbidden.html</location>
+        <location>/AuthError.jsp</location>
     </error-page>
 
     <!--  REMOVE ME TO ENABLE JDBC DATABASE
