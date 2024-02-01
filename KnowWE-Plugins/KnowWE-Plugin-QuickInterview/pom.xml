@@ -25,7 +25,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2023.5-SNAPSHOT</version>
+		<version>2024.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-QuickInterview</artifactId>
