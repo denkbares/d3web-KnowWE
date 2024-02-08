@@ -265,25 +265,27 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 				String[] parsedReplacement = Strings.parseConcat("->", replacement);
 				if (parsedReplacement.length < 2) continue;
 
+				String sourceText = parsedReplacement[0];
+				String targetText = parsedReplacement[1].replace("\\n", "\n");
 				if (annotationContent.get().getName(annotationContent).equals(REGEX_REPLACEMENT)) {
-					if (Pattern.compile(parsedReplacement[0]).matcher(connectionString).find()) {
-						connectionString = connectionString.replaceAll(parsedReplacement[0], parsedReplacement[1]);
+					if (Pattern.compile(sourceText).matcher(connectionString).find()) {
+						connectionString = connectionString.replaceAll(sourceText, targetText);
 						Messages.clearMessages(annotationContent, AttachmentMarkup.class);
 					}
 					else {
 						Messages.storeMessage(annotationContent, AttachmentMarkup.class,
-								Messages.info("Replacement regex /" + parsedReplacement[0]
+								Messages.info("Replacement regex /" + sourceText
 										+ "/ does not match to any text in this attachment."));
 					}
 				}
 				else if (annotationContent.get().getName(annotationContent).equals(REPLACEMENT)) {
-					if (connectionString.contains(parsedReplacement[0])) {
-						connectionString = connectionString.replace(parsedReplacement[0], parsedReplacement[1]);
+					if (connectionString.contains(sourceText)) {
+						connectionString = connectionString.replace(sourceText, targetText);
 						Messages.clearMessages(annotationContent, AttachmentMarkup.class);
 					}
 					else {
 						Messages.storeMessage(annotationContent, AttachmentMarkup.class,
-								Messages.info("Replacement pattern '" + parsedReplacement[0]
+								Messages.info("Replacement pattern '" + sourceText
 										+ "' does not match to any text in this attachment."));
 					}
 				}
