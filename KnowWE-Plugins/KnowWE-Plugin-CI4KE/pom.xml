@@ -47,6 +47,10 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>de.uniwue.d3web</groupId>
+			<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom2</artifactId>
 		</dependency>
