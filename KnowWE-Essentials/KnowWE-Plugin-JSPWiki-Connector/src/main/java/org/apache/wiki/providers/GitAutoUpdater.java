@@ -335,11 +335,17 @@ public class GitAutoUpdater {
             } else {
                 toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
                 PageManager manager = engine.getManager(PageManager.class);
+                String oldText = manager.getPageText(toRefresh.getName(), PageProvider.LATEST_VERSION);
                 manager.getProvider().deleteVersion(toRefresh, PageProvider.LATEST_VERSION);
                 Page page = manager.getPage(toRefresh.getName());
                 if (page != null) {
                     LOGGER.info("refresh call" + page.getName());
+                    String newText = manager.getPageText(toRefresh.getName(), PageProvider.LATEST_VERSION);
+                    if(oldText.equals(newText)) {
+                        LOGGER.error("Wikitext update failed for page: " + page.getName());
+                    }
                 }
+
             }
             toRefresh.setVersion(WikiProvider.LATEST_VERSION);
 
