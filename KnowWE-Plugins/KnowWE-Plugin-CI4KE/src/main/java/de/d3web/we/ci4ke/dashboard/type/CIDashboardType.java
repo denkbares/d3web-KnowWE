@@ -56,6 +56,9 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIDashboardType extends DefaultMarkupType {
 
+	public static final String MATE_COMPILER = "mateCompiler";
+	public static final String SPAQL_RESULT_SIZE = "SparqlResultSize";
+
 	public static final String NAME_KEY = "name";
 	public static final String GROUP_KEY = "group";
 	public static final String TEST_KEY = "test";
@@ -67,17 +70,17 @@ public class CIDashboardType extends DefaultMarkupType {
 		onDemand, onSave
 	}
 
-	private static final DefaultMarkup MARKUP;
+	protected static final DefaultMarkup MARKUP;
 	private static final String CI_DASHBOARD_MARKUP_NAME = "CIDashboard";
 
 	static {
-		MARKUP = createMarkup(CI_DASHBOARD_MARKUP_NAME);
+		MARKUP = createMarkup(CI_DASHBOARD_MARKUP_NAME, true);
 	}
 
-	private static DefaultMarkup createMarkup(String markupName) {
+	protected static DefaultMarkup createMarkup(String markupName, boolean testMandatory) {
 		DefaultMarkup markup = new DefaultMarkup(markupName);
 		markup.addAnnotation(NAME_KEY, true);
-		markup.addAnnotation(TEST_KEY, true);
+		markup.addAnnotation(TEST_KEY, testMandatory);
 		markup.addAnnotation(SOFT_TEST_KEY, false);
 		markup.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
 				"^(onDemand|onSave\\s*(\".+?\"|[^\\s]+))$"));
@@ -112,13 +115,21 @@ public class CIDashboardType extends DefaultMarkupType {
 				DefaultMarkupPackageRegistrationScript.class);
 	}
 
+	public CIDashboardType(DefaultMarkup markup) {
+		super(markup);
+		//this.addCompileScript(new DashboardSubtreeHandler());
+		this.setRenderer(new CIDashboardRenderer());
+		this.removeCompileScript(PackageRegistrationCompiler.class,
+				DefaultMarkupPackageRegistrationScript.class);
+	}
+
 	public static String getDashboardName(Section<CIDashboardType> section) {
 		String name = DefaultMarkupType.getAnnotation(section, NAME_KEY);
 		if (name == null) name = "unnamed";
 		return name;
 	}
 
-	private static class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
+	protected static class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) throws CompilerMessage {
@@ -174,16 +185,40 @@ public class CIDashboardType extends DefaultMarkupType {
 				}
 			}
 
-			// This map is used for storing tests and their parameter-list
-			// Map<String, List<String>> tests = new HashMap<String,
-			// List<String>>();
-			List<TestSpecification<?>> tests = new ArrayList<>();
-
 			List<Section<? extends AnnotationContentType>> annotationSections =
-					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY, GROUP_KEY, SOFT_TEST_KEY);
+					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY, GROUP_KEY, SOFT_TEST_KEY, MATE_COMPILER, SPAQL_RESULT_SIZE);
 
-			// iterate over all @test-Annotations
+			TestProcessingResult result = processTests(annotationSections, compiler, s);
+			List<TestSpecification<?>> tests = result.testSpecifications();
+			List<ArgsCheckResult> messages = processMessages(result.testParsers());
+
+			convertMessages(s, messages);
+
+			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(s, tests);
+
+			if (trigger == CIBuildTriggers.onSave) {
+				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
+				CIHookManager.registerHook(ciHook);
+				// Store to be able to unregister in destroy method
+				KnowWEUtils.storeObject(s,
+						CIHook.CI_HOOK_STORE_KEY, ciHook);
+			}
+			throw new CompilerMessage(msgs);
+		}
+
+		protected List<ArgsCheckResult> processMessages(List<TestParser> testParsers) {
 			List<ArgsCheckResult> messages = new ArrayList<>();
+			for (TestParser testParser : testParsers) {
+				messages.add(testParser.getParameterCheckResult());
+				messages.addAll(testParser.getIgnoreCheckResults());
+			}
+			return messages;
+		}
+
+		protected TestProcessingResult processTests(List<Section<? extends AnnotationContentType>> annotationSections, DefaultGlobalCompiler compiler, Section<CIDashboardType> s) {
+			List<TestSpecification<?>> tests = new ArrayList<>();
+			List<TestParser> testParsers = new ArrayList<>();
+
 			for (Section<? extends AnnotationContentType> annoSection : annotationSections) {
 				String type = annoSection.get().getName(annoSection);
 				String textWithoutComment = annoSection.getChildren()
@@ -200,38 +235,26 @@ public class CIDashboardType extends DefaultMarkupType {
 							}
 						})
 						.collect(Collectors.joining());
+
 				if (type.equalsIgnoreCase(GROUP_KEY)) {
-					// parse group
 					TestSpecification<?> group = new TestSpecification<>(
 							new TestGroup(), "void", new String[] { textWithoutComment }, new String[0][]);
 					tests.add(group);
 				}
 				else {
-					// parse test
 					if (type.equalsIgnoreCase(SOFT_TEST_KEY)) {
 						textWithoutComment += " " + type;
 					}
 					TestParser testParser = new TestParser(textWithoutComment);
 					TestSpecification<?> executableTest = testParser.getTestSpecification();
-					messages.add(testParser.getParameterCheckResult());
-					messages.addAll(testParser.getIgnoreCheckResults());
 					if (executableTest != null) {
 						tests.add(executableTest);
 					}
+					testParsers.add(testParser);
 				}
 			}
-			convertMessages(s, messages);
 
-			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(s, tests);
-
-			if (trigger == CIBuildTriggers.onSave) {
-				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
-				CIHookManager.registerHook(ciHook);
-				// Store to be able to unregister in destroy method
-				KnowWEUtils.storeObject(s,
-						CIHook.CI_HOOK_STORE_KEY, ciHook);
-			}
-			throw new CompilerMessage(msgs);
+			return new TestProcessingResult(tests, testParsers);
 		}
 
 		private void convertMessages(Section<?> section, List<ArgsCheckResult> messages) {
@@ -263,5 +286,8 @@ public class CIDashboardType extends DefaultMarkupType {
 			}
 			CIDashboardManager.unregisterDashboard(section);
 		}
+	}
+
+	public record TestProcessingResult(List<TestSpecification<?>> testSpecifications, List<TestParser> testParsers) {
 	}
 }
