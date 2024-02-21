@@ -73,19 +73,6 @@
         <parameter id="script" value="KnowWE-Plugin-CI4KE.js" />
         <parameter id="css" value="KnowWE-Plugin-CI4KE.css" />
 	</extension>
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-		id="CIDashboardCBXMarkup">
-		<parameter id="class"
-			value="com.denkbares.knowwe.cbx.ci.markup.CIDashboardCBXMarkup" />
-		<parameter id="name" value="CIDashboardCBXMarkup" />
-		<parameter id="description" value="Type CIDashboardCBXMarkup" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-		<parameter id="script" value="KnowWE-Plugin-CI4KE.js" />
-		<parameter id="css" value="KnowWE-Plugin-CI4KE.css" />
-	</extension>
-
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 		id="CIAction">
