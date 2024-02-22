@@ -388,14 +388,6 @@
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-ASP</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
-					<artifactId>KnowWE-Plugin-COOM</artifactId>
-				</dependency>
-				<dependency>
-					<groupId>com.denkbares</groupId>
 					<artifactId>KnowWE-Plugin-Todos</artifactId>
 				</dependency>
 				<dependency>
@@ -684,6 +676,16 @@
 				<dependency>
 					<groupId>com.denkbares.krone</groupId>
 					<artifactId>KnowWE-Plugin-KONAP</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>coom</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.denkbares</groupId>
+					<artifactId>KnowWE-Plugin-COOM</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>
