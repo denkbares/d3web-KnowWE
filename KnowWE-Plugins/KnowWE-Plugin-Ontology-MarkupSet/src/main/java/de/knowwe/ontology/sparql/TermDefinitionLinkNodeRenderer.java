@@ -1,13 +1,16 @@
 package de.knowwe.ontology.sparql;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.rdf4j.model.Value;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.strings.Identifier;
 import com.denkbares.strings.Strings;
 import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.packaging.DefaultMarkupPackageCompileType;
 import de.knowwe.core.compile.terminology.TerminologyManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
@@ -19,6 +22,8 @@ import de.knowwe.rdf2go.sparql.utils.RenderOptions.RenderMode;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 import de.knowwe.tools.ToolUtils;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer {
 
@@ -38,14 +43,19 @@ public class TermDefinitionLinkNodeRenderer implements SparqlResultNodeRenderer 
 	protected String renderDefinitionLink(Identifier identifier, String termName, UserContext user, Rdf2GoCore core, RenderMode mode) {
 		TerminologyManager manager = getTerminologyManager(user, core);
 		if (manager == null) return null;
-		Section<?> termDefiningSection = manager.getTermDefiningSection(identifier);
-		if (termDefiningSection == null) return null;
+		@NotNull Collection<Section<?>> termSections = new ArrayList<>(manager.getTermDefiningSections(identifier));
+		termSections.removeIf(s -> $(s).hasAncestor(DefaultMarkupPackageCompileType.class));
+		if (termSections.isEmpty()) {
+			termSections = manager.getTermReferenceSections(identifier);
+		}
+		if (termSections.isEmpty()) return null;
+		Section<?> termSection = termSections.iterator().next();
 		if (mode == RenderMode.HTML) {
-			return "<a href='" + KnowWEUtils.getURLLink(termDefiningSection) + "'>" + termName + "</a>";
+			return "<a href='" + KnowWEUtils.getURLLink(termSection) + "'>" + termName + "</a>";
 		}
 		if (mode == RenderMode.ToolMenu) {
 			RenderResult renderResult = new RenderResult(user);
-			ToolMenuDecoratingRenderer.renderToolMenuDecorator(termName, termDefiningSection.getID(), ToolUtils.hasToolInstances(termDefiningSection, user), renderResult);
+			ToolMenuDecoratingRenderer.renderToolMenuDecorator(termName, termSection.getID(), ToolUtils.hasToolInstances(termSection, user), renderResult);
 			return renderResult.toString();
 		}
 		return null;
