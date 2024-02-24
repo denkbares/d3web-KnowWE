@@ -225,7 +225,10 @@ KNOWWE.plugin.ci4ke = function () {
 							}, 500);
 						} else {
 							jq$('[name="' + dashboardName + '"]').find('.ci-progress-info').fadeOut(500);
-							document.getElementById("modified-warning_" + dashboardName).parentElement.remove();
+							let modifiedWarning = document.getElementById("modified-warning_" + dashboardName);
+							if (modifiedWarning) {
+								modifiedWarning.parentElement.remove();
+							}
 							_CI.refreshBuildDetails(dashboardName);
 							_CI.refreshBuildList(dashboardName);
 							_CI.refreshBuildStatus(dashboardName);
