@@ -42,7 +42,7 @@ public class SparqlQueryTestObjectProvider implements TestObjectProvider {
 		Collection<Section<SparqlContentType>> sparqlQueryContentSections = SparqlTestObjectProviderUtils.getSparqlQueryContentSection(name);
 		for (Section<SparqlContentType> section : sparqlQueryContentSections) {
 			Rdf2GoCompiler compiler = SparqlTestObjectProviderUtils.getCompiler(section, name);
-			SparqlTestObject sparqlTestObject = new SparqlTestObject(compiler, section);
+			SparqlTestObject sparqlTestObject = new SparqlTestObject(compiler, section, name);
 			result.add(new TestObjectContainer<>(SparqlTestObjectProviderUtils.getName(section), clazz.cast(sparqlTestObject)));
 		}
 		return result;

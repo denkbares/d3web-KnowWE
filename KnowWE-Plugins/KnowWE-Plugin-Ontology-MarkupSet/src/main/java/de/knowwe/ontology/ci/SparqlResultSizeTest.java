@@ -28,6 +28,7 @@ import de.d3web.testing.ResultSizeTest;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.ontology.ci.provider.SparqlTestObject;
 import de.knowwe.ontology.sparql.SparqlContentType;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -62,10 +63,10 @@ public class SparqlResultSizeTest extends SparqlTest<SparqlTestObject> implement
 		Message.Type messageType = comparator.getMessageType();
 
 		Section<SparqlContentType> contentSection = testObject.getSection();
-		Rdf2GoCore core = testObject.getCompiler().getRdf2GoCore();
-
-		if (core == null) {
-			return new Message(Message.Type.ERROR, "No repository found for section: " + contentSection);
+		Rdf2GoCompiler compiler = testObject.getCompiler();
+		Rdf2GoCore core = compiler == null ? null : compiler.getRdf2GoCore();
+		if (compiler == null) {
+			return new Message(Message.Type.SKIPPED, "No ontology found for section: " + testObject.getName());
 		}
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, contentSection.getText());
@@ -115,6 +116,4 @@ public class SparqlResultSizeTest extends SparqlTest<SparqlTestObject> implement
 
 		return new Message(Message.Type.ERROR, "Unknown error in test (invalid comparator?)");
 	}
-
-
 }

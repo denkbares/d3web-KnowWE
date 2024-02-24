@@ -22,6 +22,7 @@ package de.knowwe.ontology.ci;
 import de.d3web.testing.Message;
 import de.d3web.testing.TestParameter;
 import de.knowwe.ontology.ci.provider.SparqlTestObject;
+import de.knowwe.rdf2go.Rdf2GoCompiler;
 import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
@@ -58,10 +59,10 @@ public class SparqlAskTest extends SparqlTest<SparqlTestObject> {
 			messageTypeTestFailed = Message.Type.WARNING;
 		}
 
-		Rdf2GoCore core = testObject.getCompiler().getRdf2GoCore();
-
+		Rdf2GoCompiler compiler = testObject.getCompiler();
+		Rdf2GoCore core = compiler == null ? null : compiler.getRdf2GoCore();
 		if (core == null) {
-			return new Message(Message.Type.ERROR, "No repository found for section: " + testObject.getSection());
+			return new Message(Message.Type.SKIPPED, "No ontology found for section: " + testObject.getName());
 		}
 
 		String sparqlString = Rdf2GoUtils.createSparqlString(core, testObject.getSection().getText());
