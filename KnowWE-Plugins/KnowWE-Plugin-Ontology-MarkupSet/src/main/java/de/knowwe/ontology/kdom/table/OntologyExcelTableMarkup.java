@@ -58,6 +58,7 @@ import de.knowwe.ontology.kdom.OntologyUtils;
 import de.knowwe.ontology.kdom.resource.AbbreviatedResourceReference;
 import de.knowwe.ontology.turtle.TurtleLiteralType;
 import de.knowwe.rdf2go.Rdf2GoCore;
+import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -292,7 +293,7 @@ public class OntologyExcelTableMarkup extends DefaultMarkupType {
 					}
 					case NUMERIC -> {
 						if (DateUtil.isCellDateFormatted(cell)) {
-							return cell.getDateCellValue().toString();
+							return Rdf2GoUtils.createDateTimeString(cell.getDateCellValue());
 						}
 						else {
 							return df.createFormat(cell).format(cell.getNumericCellValue());

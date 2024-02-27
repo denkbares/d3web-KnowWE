@@ -49,6 +49,7 @@ import org.eclipse.rdf4j.model.vocabulary.XMLSchema;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -608,11 +609,16 @@ public class Rdf2GoUtils {
 	}
 
 	public static org.eclipse.rdf4j.model.Literal createDateTimeLiteral(Rdf2GoCore core, Date date) {
+		return core.createDatatypeLiteral(createDateTimeString(date), XMLSchema.DATETIME);
+	}
+
+	@NotNull
+	public static String createDateTimeString(Date date) {
 		String dateTimeString;
 		synchronized (PRIVATE_XSD_DATE_TIME_FORMAT) {
 			dateTimeString = PRIVATE_XSD_DATE_TIME_FORMAT.format(date);
 		}
-		return core.createDatatypeLiteral(dateTimeString, XMLSchema.DATETIME);
+		return dateTimeString;
 	}
 
 	public static Date createDateFromDateTimeLiteral(Literal dateTimeLiteral) throws ParseException {
