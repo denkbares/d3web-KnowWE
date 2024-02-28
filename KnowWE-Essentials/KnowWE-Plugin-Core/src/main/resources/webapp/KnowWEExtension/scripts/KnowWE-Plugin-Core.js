@@ -181,7 +181,8 @@ KNOWWE.plugin.renaming = function() {
 
         success: function(jsonResponse, text, request) {
           if (jsonResponse.same) {
-            alert('The term has not changed.');
+            alert('The term has not changed (renaming is case-insensitive).');
+            KNOWWE.core.util.reloadPage(request);
           } else {
             if (jsonResponse.alreadyExists) {
               if (jsonResponse.noForce) {
