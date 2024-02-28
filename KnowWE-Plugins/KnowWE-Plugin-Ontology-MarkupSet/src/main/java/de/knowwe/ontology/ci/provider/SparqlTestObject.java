@@ -30,10 +30,16 @@ public class SparqlTestObject {
 
 	private final Rdf2GoCompiler compiler;
 	private final Section<SparqlContentType> section;
+	private final String name;
 
-	public SparqlTestObject(Rdf2GoCompiler compiler, Section<SparqlContentType> section) {
+	public SparqlTestObject(Rdf2GoCompiler compiler, Section<SparqlContentType> section, String name) {
 		this.compiler = compiler;
 		this.section = section;
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public Section<SparqlContentType> getSection() {

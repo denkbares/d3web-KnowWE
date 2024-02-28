@@ -74,10 +74,11 @@ public class SparqlTestObjectProviderUtils {
 	@Nullable
 	public static Rdf2GoCompiler getCompiler(Section<SparqlContentType> section, String name) {
 		String[] split = name.split(SPLIT_SYMBOL);
+		if (split.length < 2) return Compilers.getCompiler(section, Rdf2GoCompiler.class);
 		return Compilers.getCompilers(section, Rdf2GoCompiler.class)
 				.stream()
-				.filter(c -> split.length < 2 || Compilers.getCompilerName(c).equals(split[1]))
+				.filter(c -> Compilers.getCompilerName(c).equals(split[1]))
 				.findFirst()
-				.orElse(Compilers.getCompiler(section, Rdf2GoCompiler.class));
+				.orElse(null);
 	}
 }
