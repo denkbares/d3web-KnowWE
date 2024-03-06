@@ -120,6 +120,10 @@ public class CIBuildManager implements EventListener {
 
 				BuildResult build = testExecutor.getBuildResult();
 
+				// fire event to inform listeners about new result
+				CIBuildResultEvent event = new CIBuildResultEvent(dashboard, build);
+				EventManager.getInstance().fireEvent(event);
+
 				// add resulting build to dashboard
 				if (build != null && !Thread.interrupted()) {
 					// set verbose persistence flag, will be considered by persistence
