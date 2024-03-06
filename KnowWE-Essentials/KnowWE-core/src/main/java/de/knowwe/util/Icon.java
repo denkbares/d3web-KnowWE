@@ -90,6 +90,7 @@ public class Icon {
 	public static final Icon REPEAT = new Icon("fa-solid fa-repeat");
 	public static final Icon COMPILER = new Icon("fa-type fa-microchip");
 	public static final Icon HISTORY = new Icon("fa-type fa-clock-rotate-left");
+	public static final Icon VERSION = new Icon("fa-solid fa-hashtag");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-type fa-file-lines");
