@@ -39,7 +39,7 @@ import de.knowwe.core.compile.CompileScript;
 import de.knowwe.core.compile.IncrementalCompiler;
 import de.knowwe.core.compile.OptInIncrementalCompileScript;
 import de.knowwe.core.compile.Priority;
-import de.knowwe.core.compile.ScriptCompiler;
+import de.knowwe.core.compile.SequentialScriptCompiler;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.compile.terminology.TermCompiler;
@@ -327,12 +327,12 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 	 * @param section the section to store possible compiler messages for
 	 * @param script  the script to execute in parallel
 	 */
-	public void runInParallel(Section<?> section, ScriptCompiler.ParallelScript script) {
+	public void runInParallel(Section<?> section, SequentialScriptCompiler.ParallelScript script) {
 		D3webScriptCompiler scriptCompiler = fullCompileScriptCompiler == null ? compileScriptCompiler : fullCompileScriptCompiler;
 		scriptCompiler.runInParallel(section, script);
 	}
 
-	private static class D3webScriptCompiler extends ScriptCompiler<D3webCompiler> {
+	private static class D3webScriptCompiler extends SequentialScriptCompiler<D3webCompiler> {
 
 		public D3webScriptCompiler(D3webCompiler compiler) {
 			this(compiler, false);

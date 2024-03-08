@@ -36,8 +36,8 @@ import de.knowwe.core.report.Messages;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class ScriptCompiler<C extends Compiler> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptCompiler.class);
+public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompilerInterface<C> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(SequentialScriptCompiler.class);
 
 	private final TreeMap<Priority, List<CompilePair>> compileSetMap;
 	private final Set<CompilePair> pairSet = new HashSet<>();
@@ -56,11 +56,11 @@ public class ScriptCompiler<C extends Compiler> {
 	private final ThreadPoolExecutor threadPool;
 	private final List<Future<?>> futures = new ArrayList<>();
 
-	public ScriptCompiler(C compiler, Class<?>... typeFilter) {
+	public SequentialScriptCompiler(C compiler, Class<?>... typeFilter) {
 		this(compiler, false, typeFilter);
 	}
 
-	public ScriptCompiler(C compiler, boolean reverseOrder, Class<?>... typeFilter) {
+	public SequentialScriptCompiler(C compiler, boolean reverseOrder, Class<?>... typeFilter) {
 		this.compiler = compiler;
 		this.threadPool = CompilerManager.createExecutorService(Compilers.getCompilerName(compiler));
 		//noinspection unchecked
@@ -77,6 +77,7 @@ public class ScriptCompiler<C extends Compiler> {
 		this.currentPriority = priorityIterator.next();
 	}
 
+	@Override
 	public C getCompiler() {
 		return compiler;
 	}
@@ -237,6 +238,7 @@ public class ScriptCompiler<C extends Compiler> {
 		return next;
 	}
 
+	@Override
 	public void compile() {
 		Priority lastPriority = Priority.INIT;
 		while (hasNext()) {
@@ -266,6 +268,7 @@ public class ScriptCompiler<C extends Compiler> {
 		compiler.getCompilerManager().setCurrentCompilePriority(compiler, Priority.DONE);
 	}
 
+	@Override
 	public void destroy() {
 		while (hasNext()) {
 			CompilePair pair = next();

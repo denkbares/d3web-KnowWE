@@ -27,7 +27,6 @@ import de.knowwe.core.report.Messages;
 
 import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.compile;
 import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.destroy;
-import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * For the given {@link Section}s and {@link Compiler} it gets all
@@ -42,7 +41,7 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class ParallelScriptCompiler<C extends Compiler> {
+public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompilerInterface<C> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParallelScriptCompiler.class);
 
 	public enum Mode {
@@ -90,6 +89,11 @@ public class ParallelScriptCompiler<C extends Compiler> {
 			compileMap.put(p, new ArrayList<>());
 		}
 		currentPriority = Priority.getRegisteredPriorities().first();
+	}
+
+	@Override
+	public C getCompiler() {
+		return compiler;
 	}
 
 	/**
@@ -216,7 +220,8 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		}
 	}
 
-	private void compile() {
+	@Override
+	public void compile() {
 		Priority lastPriority = Priority.INIT;
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
@@ -270,8 +275,9 @@ public class ParallelScriptCompiler<C extends Compiler> {
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
-	private void destroy() {
+	public void destroy() {
 		while (true) {
 			CompilePair pair = next();
 			if (pair == null) break;
