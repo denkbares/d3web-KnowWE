@@ -41,7 +41,7 @@ import static de.knowwe.core.compile.ParallelScriptCompiler.Mode.destroy;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompilerInterface<C> {
+public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompiler<C> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParallelScriptCompiler.class);
 
 	public enum Mode {

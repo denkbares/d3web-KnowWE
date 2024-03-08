@@ -36,7 +36,7 @@ import de.knowwe.core.report.Messages;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 13.12.2013
  */
-public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompilerInterface<C> {
+public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompiler<C> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SequentialScriptCompiler.class);
 
 	private final TreeMap<Priority, List<CompilePair>> compileSetMap;

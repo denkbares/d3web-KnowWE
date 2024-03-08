@@ -10,7 +10,7 @@ package de.knowwe.core.compile;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 08.03.2024
  */
-public interface ScriptCompilerInterface<C extends Compiler> {
+public interface ScriptCompiler<C extends Compiler> {
 
 	C getCompiler();
 
