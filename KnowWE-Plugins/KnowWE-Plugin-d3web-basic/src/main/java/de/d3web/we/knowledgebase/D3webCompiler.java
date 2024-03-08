@@ -140,11 +140,14 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	@Override
 	public void compilePackages(String[] packagesToCompile) {
+		EventManager.getInstance().fireEvent(new D3webCompilerStartEvent(this));
 
 		if (!tryIncrementalCompilation(packagesToCompile)) {
 			fullCompilation(packagesToCompile);
 		}
+
 		EventManager.getInstance().fireEvent(new D3webCompilerFinishedEvent(this));
+
 		this.buildDate = new Date();
 	}
 
@@ -228,8 +231,6 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 		knowledgeBase = KnowledgeBaseUtils.createKnowledgeBase();
 		knowledgeBase.setId(getKnowledgeBaseId());
 		terminologyManager = createTerminologyManager();
-
-		EventManager.getInstance().fireEvent(new D3webCompilerStartEvent(this));
 
 		Messages.clearMessages(this);
 
