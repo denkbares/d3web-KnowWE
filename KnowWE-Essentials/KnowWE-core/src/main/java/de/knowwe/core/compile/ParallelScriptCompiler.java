@@ -222,6 +222,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 
 	@Override
 	public void compile() {
+		EventManager.getInstance().fireEvent(new ScriptCompilerCompilePhaseStartEvent<>(this));
 		Priority lastPriority = Priority.INIT;
 		while (true) {
 			// get next script and section, and update the current compile priority, if required
@@ -278,6 +279,7 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 	@Override
 	@SuppressWarnings("unchecked")
 	public void destroy() {
+		EventManager.getInstance().fireEvent(new ScriptCompilerDestroyPhaseStartEvent<>(this));
 		while (true) {
 			CompilePair pair = next();
 			if (pair == null) break;

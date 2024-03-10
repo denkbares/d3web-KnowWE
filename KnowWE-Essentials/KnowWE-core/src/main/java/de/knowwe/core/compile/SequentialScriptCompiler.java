@@ -19,6 +19,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.events.EventManager;
 import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
@@ -240,6 +241,7 @@ public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompi
 
 	@Override
 	public void compile() {
+		EventManager.getInstance().fireEvent(new ScriptCompilerCompilePhaseStartEvent<>(this));
 		Priority lastPriority = Priority.INIT;
 		while (hasNext()) {
 			// get next script and section, and update the current compile priority, if required
@@ -270,6 +272,7 @@ public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompi
 
 	@Override
 	public void destroy() {
+		EventManager.getInstance().fireEvent(new ScriptCompilerDestroyPhaseStartEvent<>(this));
 		while (hasNext()) {
 			CompilePair pair = next();
 			CompileScript<C, Type> destroyScript = pair.getB();
