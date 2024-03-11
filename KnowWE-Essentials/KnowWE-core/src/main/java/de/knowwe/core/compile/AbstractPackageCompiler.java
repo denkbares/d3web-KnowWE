@@ -44,8 +44,6 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	private final Section<? extends PackageCompileType> compileSection;
 	private final PackageManager packageManager;
 	private final Class<? extends Type> compilingType;
-
-	private CompilationLocal<String[]> compiledPackages;
 	private CompilerManager compilerManager;
 	private boolean newlyCreated = true;
 
@@ -76,12 +74,10 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	@Override
 	public void init(CompilerManager compilerManager) {
 		this.compilerManager = compilerManager;
-		this.compiledPackages = CompilationLocal.create(getCompilerManager(),
-				() -> getCompileSection().get().getPackagesToCompile(getCompileSection()));
 	}
 
 	public void refreshCompiledPackages() {
-		this.compiledPackages.invalidate();
+		CompilationLocal.removeCache(this, this.getCompileSection(), this.getClass());
 	}
 
 	@NotNull
@@ -115,7 +111,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 	private boolean hasChangedForCompiler(String... packagesToCompile) {
 		final ScriptManager<AbstractPackageCompiler> scriptManager = CompilerManager.getScriptManager(this);
 		return hasKnowledgeForCompiler(getPackageManager().getRemovedSections(packagesToCompile), scriptManager)
-			   || hasKnowledgeForCompiler(getPackageManager().getAddedSections(packagesToCompile), scriptManager);
+				|| hasKnowledgeForCompiler(getPackageManager().getAddedSections(packagesToCompile), scriptManager);
 	}
 
 	private boolean hasKnowledgeForCompiler(Collection<Section<?>> addedSections, ScriptManager<AbstractPackageCompiler> scriptManager) {
@@ -127,7 +123,8 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	@Override
 	public String[] getCompiledPackages() {
-		return compiledPackages.get();
+		return CompilationLocal.getCached(this, this.getCompileSection(), this.getClass(),
+				() -> getCompileSection().get().getPackagesToCompile(getCompileSection()));
 	}
 
 	public abstract void compilePackages(String[] packagesToCompile);
