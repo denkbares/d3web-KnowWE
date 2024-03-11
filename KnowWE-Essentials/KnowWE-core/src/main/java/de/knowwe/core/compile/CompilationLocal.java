@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
@@ -32,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
+import com.denkbares.utils.Pair;
 import de.knowwe.core.kdom.parsing.Section;
 
 /**
@@ -90,7 +90,7 @@ public final class CompilationLocal<E> {
 	 * @return a cached or newly generated instance of the object provided by the supplier
 	 */
 	public static <L> L getCached(@NotNull Compiler compiler, @NotNull Section<?> section, @NotNull Object cacheKey, @NotNull Supplier<L> supplier) {
-		return getCached(compiler, new CacheWrapper(section, cacheKey), supplier);
+		return getCached(compiler, new Pair<>(section, cacheKey), supplier);
 	}
 
 	/**
@@ -158,7 +158,7 @@ public final class CompilationLocal<E> {
 	 * @param compiler the Compiler the cache refers to
 	 */
 	public static void removeCache(@NotNull Compiler compiler, Section<?> section, @NotNull Object cacheKey) {
-		removeCache(compiler, new CacheWrapper(section, cacheKey));
+		removeCache(compiler, new Pair<>(section, cacheKey));
 	}
 
 	private CompilationLocal(@NotNull Supplier<E> supplier) {
@@ -177,38 +177,5 @@ public final class CompilationLocal<E> {
 			}
 		}
 		return variable;
-	}
-
-	private static class CacheWrapper {
-		Section<?> section;
-		Object key;
-
-		public CacheWrapper(Section<?> section, Object key) {
-			this.section = section;
-			this.key = key;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			CacheWrapper that = (CacheWrapper) o;
-			return Objects.equals(section, that.section) && Objects.equals(key, that.key);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(section, key);
-		}
-
-		@Override
-		public String toString() {
-			return "CacheWrapper{" +
-					(section == null ? "" : ", section=" + section.getTitle() + ":" + section.get()
-							.getClass()
-							.getSimpleName()) +
-					", key=" + key +
-					'}';
-		}
 	}
 }
