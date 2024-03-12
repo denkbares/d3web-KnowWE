@@ -51,6 +51,10 @@
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="FILE" />
 	</logger>
+	<logger name="org.apache.wiki.providers.BasicAttachmentProvider" level="ERROR" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</logger>
 	<logger name="com.ontotext" level="ERROR"  additivity="false">
 		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="FILE" />
