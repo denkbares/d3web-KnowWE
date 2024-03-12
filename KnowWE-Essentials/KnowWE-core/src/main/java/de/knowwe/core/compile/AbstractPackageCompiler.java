@@ -99,6 +99,7 @@ public abstract class AbstractPackageCompiler implements PackageCompiler {
 
 	@Override
 	public void compile(Collection<Section<?>> added, Collection<Section<?>> removed) {
+		refreshCompiledPackages();
 		String[] packagesToCompile = getCompiledPackages();
 		if (newlyCreated || hasChangedForCompiler(packagesToCompile)) {
 			newlyCreated = false;
