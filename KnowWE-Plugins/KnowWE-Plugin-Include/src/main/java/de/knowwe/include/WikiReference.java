@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2014 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -267,13 +267,20 @@ public class WikiReference extends AbstractType {
 			return null;
 		}
 
-
 		Article targetArticle = articleManager.getArticle(targetArticleName);
 
 		// warning if article not found
 		if (targetArticle == null) {
-			Messages.storeMessage(articleReference, WikiReference.class, Messages.error("Article '" + targetArticleName + "' not found!"));
-			return null;
+			// special case... article name contains an @...
+			if (Strings.isNotBlank(targetArticleName) && Strings.isNotBlank(namedSectionName)) {
+				targetArticleName = targetArticleName + "@" + namedSectionName;
+				targetArticle = articleManager.getArticle(targetArticleName);
+				if (targetArticle != null) namedSectionName = "";
+			}
+			if (targetArticle == null) {
+				Messages.storeMessage(articleReference, WikiReference.class, Messages.error("Article '" + targetArticleName + "' not found!"));
+				return null;
+			}
 		}
 
 		// find section to be rendered
@@ -305,13 +312,13 @@ public class WikiReference extends AbstractType {
 			if (!namedSections.isEmpty()) {
 				return namedSections.getFirst();
 			}
-			Messages.storeMessage(namedSectionReference,WikiReference.class, Messages.error("Name '" + namedSectionName + "' not found!"));
+			Messages.storeMessage(namedSectionReference, WikiReference.class, Messages.error("Name '" + namedSectionName + "' not found!"));
 		}
 		Messages.storeMessage(articleReference, WikiReference.class, Messages.error("Reference for '" + section.getText() + "' not found!"));
 		return null;
 	}
 
-	public static  Section<NamedSectionReference> getNamedSectionReference(Section<WikiReference> section) {
+	public static Section<NamedSectionReference> getNamedSectionReference(Section<WikiReference> section) {
 		return $(section).successor(NamedSectionReference.class).getFirst();
 	}
 
@@ -409,7 +416,7 @@ public class WikiReference extends AbstractType {
 		return getListMarks(section).endsWith("*");
 	}
 
-	public static  String getLinkName(Section<WikiReference> section) {
+	public static String getLinkName(Section<WikiReference> section) {
 		// if a name is specified use the name
 		Section<LinkName> nameSection = Sections.successor(section, LinkName.class);
 		if (nameSection != null) return nameSection.getText();
@@ -422,7 +429,7 @@ public class WikiReference extends AbstractType {
 		return section.getText();
 	}
 
-	public static  String getLink(Section<WikiReference> section) {
+	public static String getLink(Section<WikiReference> section) {
 		Section<ArticleReference> articleReference = getArticleReference(section);
 		Section<HeaderReference> headerReference = getHeaderReference(section);
 		if (articleReference == null && headerReference == null) return null;
@@ -442,10 +449,9 @@ public class WikiReference extends AbstractType {
 	 * @return the marks preceding the include link
 	 * @created 11.02.2014
 	 */
-	public static  String getListMarks(Section<WikiReference> reference) {
+	public static String getListMarks(Section<WikiReference> reference) {
 		Section<ListMarks> marks = Sections.successor(reference, ListMarks.class);
 		if (marks == null) return "";
 		return marks.getText();
 	}
-
 }
