@@ -15,7 +15,10 @@ import com.denkbares.events.Event;
 import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import de.knowwe.core.kdom.Type;
+import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.event.InitEvent;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * Class to manage all the compile scripts of a specific compiler type.
@@ -103,8 +106,26 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		return Collections.unmodifiableSet(scripts.keySet());
 	}
 
-	public boolean hasScriptsForSubtree(Type type) {
+	/**
+	 * Heuristic to check, if it is possible, that this manager has any script for a subtree with the given type as the
+	 * root. Very fast.
+	 *
+	 * @param type the type of the root section of the subtree
+	 * @return false, if there cannot be any script for the subtree. true, if it is possible
+	 */
+	public boolean canHaveScriptsForSubtree(Type type) {
 		return subtreeTypesWithScripts.contains(type);
+	}
+
+	/**
+	 * Check directly, if this manager has any script for the actual subtree of the given section. Fast, but not quite
+	 * as fast as {@link #canHaveScriptsForSubtree(Type)}
+	 *
+	 * @param section the root of the subtree to check
+	 * @return true, if there are any script, false if not
+	 */
+	public boolean hasScriptsForSubtree(Section<?> section) {
+		return $(section).successor().anyMatch(s -> !getScripts(s.get()).isEmpty());
 	}
 
 	public <T extends Type> void removeScript(T type, Class<? extends CompileScript<C, T>> clazz) {

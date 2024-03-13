@@ -254,7 +254,7 @@ public class DefaultMarkupRenderer implements Renderer {
 						.filter(sm -> PackageCompiler.class.isAssignableFrom(sm.getCompilerClass()))
 						// check if the script manager has script for the type of this section or any sub type
 						// get all remaining managers for which there is currently no compiler
-						.filter(sm -> sm.hasScriptsForSubtree(rootSection.get())
+						.filter(sm -> sm.canHaveScriptsForSubtree(rootSection.get())
 									  && Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
 						.toList();
 

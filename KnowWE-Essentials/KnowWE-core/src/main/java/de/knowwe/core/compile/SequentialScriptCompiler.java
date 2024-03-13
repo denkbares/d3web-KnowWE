@@ -205,7 +205,7 @@ public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompi
 	public Sections<?> addSubtree(Section<?> section, Class<?>... scriptFilter) {
 		//noinspection DuplicatedCode
 		Sections<?> added = Sections.empty();
-		if (scriptManager.hasScriptsForSubtree(section.get())) {
+		if (scriptManager.canHaveScriptsForSubtree(section.get())) {
 			if (typeFilter.length == 0 || Sections.canHaveSuccessor(section, typeFilter)) {
 				for (Section<?> child : section.getChildren()) {
 					added.append(addSubtree(child, scriptFilter));
