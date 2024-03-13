@@ -70,7 +70,6 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		ScriptList list = scripts.computeIfAbsent(type, k -> new ScriptList());
 
 		// add script to list
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (list) {
 			list.add(priority, script);
 		}
@@ -88,7 +87,6 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 	public <T extends Type> Map<Priority, List<CompileScript<C, T>>> getScripts(T type) {
 		ScriptList list = scripts.get(type);
 		if (list == null) list = EMPTY_SCRIPT_LIST;
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (list) {
 			return list.getPriorityMap();
 		}
@@ -113,7 +111,6 @@ public class ScriptManager<C extends Compiler> implements EventListener {
 		@SuppressWarnings("unchecked")
 		ScriptList<C, T> scriptsOfType = scripts.get(type);
 		List<CompileScript<C, T>> remove = new ArrayList<>();
-		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized (scriptsOfType) {
 			for (CompileScript<C, T> compileScript : scriptsOfType) {
 				if (compileScript.getClass().equals(clazz)) {
