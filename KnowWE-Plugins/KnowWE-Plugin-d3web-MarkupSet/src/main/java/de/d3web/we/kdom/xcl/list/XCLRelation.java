@@ -172,7 +172,7 @@ public class XCLRelation extends AbstractType {
 		@Override
 		public void destroy(D3webCompiler compiler, Section<XCLRelation> section) {
 			// do nothing if no relation has been created (and therefore not added at all)
-			de.d3web.xcl.XCLRelation rel = (de.d3web.xcl.XCLRelation) section.getObject(compiler, RELATION_STORE_KEY);
+			de.d3web.xcl.XCLRelation rel = section.getObject(compiler, RELATION_STORE_KEY);
 			if (rel == null) return;
 
 			// otherwise remove relation from each xcl model
