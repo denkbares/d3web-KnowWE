@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,9 +27,12 @@ import com.denkbares.collections.CountingSet;
 import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
 import com.denkbares.events.EventManager;
+import com.denkbares.strings.NumberAwareComparator;
+import com.denkbares.strings.Strings;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.ServletContextEventListener;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
@@ -212,14 +216,35 @@ public class CompilerManager {
 					running = null;
 					currentlyCompiledArticles.clear();
 					currentlyCompiledPriority.clear();
-					LOGGER.info("Compiled " + added.size() + " added and " + removed.size()
-							+ " removed section" + (removed.size() == 1 ? "" : "s")
-							+ " after " + stopwatch.getDisplay());
+					logCompilation(added, removed, stopwatch);
 					lock.notifyAll();
 				}
 			}
 		});
 		return true;
+	}
+
+	private static void logCompilation(Collection<Section<?>> added, Collection<Section<?>> removed, Stopwatch stopwatch) {
+		Set<String> addedArticles = added.stream()
+				.map(Section::getTitle)
+				.collect(Collectors.toCollection(HashSet::new));
+		// most common case: Some Page/Article gets edited... or recompilations
+		boolean allArticles = added.stream().allMatch(s -> s.get() instanceof RootType)
+				&& removed.stream().allMatch(s -> s.get() instanceof RootType);
+		boolean allRecompilations = added.size() == removed.size()
+				&& removed.stream().allMatch(s -> addedArticles.contains(s.getArticle().getTitle()));
+		boolean initialCompilation = removed.isEmpty();
+		if (allArticles && (allRecompilations || initialCompilation)) {
+			String articleTitles = addedArticles.size() > 100 ? "" : ": " + addedArticles.stream()
+					.sorted(NumberAwareComparator.CASE_INSENSITIVE)
+					.limit(5)
+					.collect(Collectors.joining(", ")) + (addedArticles.size() > 5 ? "..." : "");
+			stopwatch.log(LOGGER, "Compiled " + Strings.pluralOf(added.size(), "article") + articleTitles);
+		}
+		else {
+			stopwatch.log(LOGGER, "Compiled " + added.size() + " added and " + removed.size()
+					+ " removed section" + (removed.size() == 1 ? "" : "s"));
+		}
 	}
 
 	private void setCompiling(Collection<Section<?>> sections) {
