@@ -42,6 +42,7 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 
 	@Override
 	public void destroy() {
+		shutDownScriptCompilers();
 		// nothing to do
 	}
 
@@ -62,8 +63,14 @@ public class DefaultGlobalCompiler implements TermCompiler, IncrementalCompiler 
 		scriptCompiler.compile();
 
 		// set new script compilers to prepare the next compile run
+		shutDownScriptCompilers();
 		this.scriptCompiler = new SequentialScriptCompiler<>(this);
 		this.destroyScriptCompiler = new SequentialScriptCompiler<>(this);
+	}
+
+	private void shutDownScriptCompilers() {
+		if (this.scriptCompiler != null) this.scriptCompiler.shutDown();
+		if (this.destroyScriptCompiler != null) this.destroyScriptCompiler.shutDown();
 	}
 
 	@Override

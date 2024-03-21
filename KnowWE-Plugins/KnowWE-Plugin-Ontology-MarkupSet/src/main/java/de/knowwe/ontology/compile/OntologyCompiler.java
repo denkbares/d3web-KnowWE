@@ -159,6 +159,7 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 	@Override
 	public void destroy() {
+		shutDownScriptCompilers();
 		EventManager.getInstance().unregister(this);
 		this.rdf2GoCore.close();
 		this.rdf2GoCore = null; // make sure the core can be gc-ed, even if there are still references to the compiler
@@ -277,8 +278,14 @@ public class OntologyCompiler extends AbstractPackageCompiler
 		commitTracker.clear();
 		termsRegistered.clear();
 		termsUnregistered.clear();
+		shutDownScriptCompilers();
 		destroyScriptCompiler = new ParallelScriptCompiler<>(this, destroy);
 		scriptCompiler = new ParallelScriptCompiler<>(this, compile);
+	}
+
+	private void shutDownScriptCompilers() {
+		if (this.scriptCompiler != null) this.scriptCompiler.shutDown();
+		if (this.destroyScriptCompiler != null) this.destroyScriptCompiler.shutDown();
 	}
 
 	/**

@@ -75,7 +75,7 @@ public class CompilerManager {
 	private final Map<Compiler, Priority> currentlyCompiledPriority = new ConcurrentHashMap<>();
 	private final Set<Compiler> awaitedCompilers = new CountingSet<>();
 	private static final AtomicLong compileThreadNumber = new AtomicLong(1);
-	private static final Map<Thread, Object> compileThreads = Collections.synchronizedMap(new WeakHashMap<>());
+	private static final Set<Thread> compileThreads = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	public CompilerManager(ArticleManager articleManager) {
 		this.articleManager = articleManager;
@@ -96,7 +96,7 @@ public class CompilerManager {
 	 * Checks whether the current thread is created by a CompilerManager to compile articles.
 	 */
 	public static boolean isCompileThread() {
-		return compileThreads.containsKey(Thread.currentThread());
+		return compileThreads.contains(Thread.currentThread());
 	}
 
 	public static ThreadPoolExecutor createExecutorService(String namePrefix) {
@@ -104,10 +104,10 @@ public class CompilerManager {
 		ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadCount, runnable -> {
 			Thread thread = new Thread(runnable, namePrefix + "-" + compileThreadNumber.getAndIncrement());
 			thread.setDaemon(true);
-			compileThreads.put(thread, null);
+			compileThreads.add(thread);
 			return thread;
 		});
-		LOGGER.debug("Created multi core thread pool of size " + threadCount);
+		LOGGER.debug("Created multi core thread pool of size " + threadCount + " with prefix " + namePrefix);
 		return pool;
 	}
 
@@ -451,7 +451,7 @@ public class CompilerManager {
 	private boolean noRunningCompileThreads() {
 		synchronized (compileThreads) {
 			Thread currentThread = Thread.currentThread();
-			boolean anyRunning = compileThreads.keySet().stream()
+			boolean anyRunning = compileThreads.stream()
 					.filter(t -> t != currentThread)
 					.anyMatch(t -> t.getState() == Thread.State.RUNNABLE);
 

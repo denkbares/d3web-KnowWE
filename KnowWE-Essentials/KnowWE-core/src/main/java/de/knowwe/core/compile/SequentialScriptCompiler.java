@@ -12,8 +12,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompi
 	private Iterator<CompilePair> currentCompileSetIterator = null;
 	@SuppressWarnings("rawtypes")
 	private final Set<Class<? extends CompileScript>> compileScriptsNotSupportingIncrementalCompilation = new HashSet<>();
-	private final ThreadPoolExecutor threadPool;
+	private final ExecutorService threadPool;
 	private final List<Future<?>> futures = new ArrayList<>();
 
 	public SequentialScriptCompiler(C compiler, Class<?>... typeFilter) {
@@ -287,6 +287,10 @@ public class SequentialScriptCompiler<C extends Compiler> implements ScriptCompi
 				}
 			}
 		}
+	}
+
+	public void shutDown() {
+		this.threadPool.shutdown();
 	}
 
 	@FunctionalInterface

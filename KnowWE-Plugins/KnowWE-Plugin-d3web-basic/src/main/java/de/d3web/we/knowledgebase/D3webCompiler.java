@@ -87,7 +87,14 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	@Override
 	public void destroy() {
-		// nothing to do
+		shutDownScriptCompilers();
+	}
+
+
+	private void shutDownScriptCompilers() {
+		if (this.compileScriptCompiler != null) this.compileScriptCompiler.shutDown();
+		if (this.destroyScriptCompiler != null) this.destroyScriptCompiler.shutDown();
+		if (this.fullCompileScriptCompiler != null) this.fullCompileScriptCompiler.shutDown();
 	}
 
 	@Override
@@ -198,7 +205,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 	private void logAndCleanup() {
 		logFailingIncrementalCompilationScripts();
-
+		shutDownScriptCompilers();
 		this.compileScriptCompiler = null;
 		this.destroyScriptCompiler = null;
 		this.fullCompileScriptCompiler = null;
@@ -238,6 +245,7 @@ public class D3webCompiler extends AbstractPackageCompiler implements TermCompil
 
 		// we don't use the script compiler fields for full compilation to be able to avoid work
 		// only necessary for incremental compilation
+		shutDownScriptCompilers();
 		this.fullCompileScriptCompiler = new D3webScriptCompiler(this);
 		fullCompileScriptCompiler.addSections(getPackageManager().getSectionsOfPackage(packagesToCompile));
 		fullCompileScriptCompiler.compile();
