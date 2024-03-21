@@ -68,6 +68,8 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String NAME_KEY = "name";
 	public static final String GROUP_KEY = "group";
 	public static final String TEST_KEY = "test";
+
+	public static final String SOFT_TEST_KEY = "softTest";
 	public static final String TRIGGER_KEY = "trigger";
 	public static final String TRIGGER_REGEX = "^(onDemand|(onSave|onSchedule)\\s*(\".+?\"|[^\\s]+))$";
 	public static final String VERBOSE_PERSISTENCE_KEY = "persistenceVerbose";
@@ -77,14 +79,20 @@ public class CIDashboardType extends DefaultMarkupType {
 		onDemand, onSave, onSchedule
 	}
 
-	private static final DefaultMarkup MARKUP;
+	protected static final DefaultMarkup MARKUP;
+	private static final String CI_DASHBOARD_MARKUP_NAME = "CIDashboard";
 
 	static {
-		MARKUP = new DefaultMarkup("CIDashboard");
-		MARKUP.addAnnotation(NAME_KEY, true);
-		MARKUP.addAnnotation(TEST_KEY, true);
-		MARKUP.addAnnotation(TRIGGER_KEY, true, Pattern.compile(TRIGGER_REGEX));
-		MARKUP.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
+		MARKUP = createMarkup(CI_DASHBOARD_MARKUP_NAME, true);
+	}
+
+	protected static DefaultMarkup createMarkup(String markupName, boolean testMandatory) {
+		DefaultMarkup markup = new DefaultMarkup(markupName);
+		markup.addAnnotation(NAME_KEY, true);
+		markup.addAnnotation(TEST_KEY, testMandatory);
+		markup.addAnnotation(SOFT_TEST_KEY, false);
+		markup.addAnnotation(TRIGGER_KEY, true, Pattern.compile(TRIGGER_REGEX));
+		markup.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
 				"<p><b>Options:</b><br>" +
 				"  <ul>" +
 				"    <li>@" + TRIGGER_KEY + ": onDemand</li>" +
@@ -92,14 +100,19 @@ public class CIDashboardType extends DefaultMarkupType {
 				"    <li>@" + TRIGGER_KEY + ": onSchedule \"Cron Job Pattern\"</li>" +
 				"  </ul>" +
 				"</p>");
+		markup.getAnnotation(SOFT_TEST_KEY).setDocumentation("Declare tests as 'soft tests'.<br>" +
+				"Soft tests are only acknowledged in the build details but have no effect on the overall build result.");
 
 		// allow grouping of tests
-		MARKUP.addAnnotation(GROUP_KEY, false);
+		markup.addAnnotation(GROUP_KEY, false);
 
 		// add content for individual annotations
-		MARKUP.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
-		MARKUP.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
-		MARKUP.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
+		markup.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
+		markup.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
+		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestIgnoreType());
+		markup.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
+		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestDeclarationType());
+		return markup;
 	}
 
 	public CIDashboardType() {
@@ -111,13 +124,21 @@ public class CIDashboardType extends DefaultMarkupType {
 				DefaultMarkupPackageRegistrationScript.class);
 	}
 
+	public CIDashboardType(DefaultMarkup markup) {
+		super(markup);
+		//this.addCompileScript(new DashboardSubtreeHandler());
+		this.setRenderer(new CIDashboardRenderer());
+		this.removeCompileScript(PackageRegistrationCompiler.class,
+				DefaultMarkupPackageRegistrationScript.class);
+	}
+
 	public static String getDashboardName(Section<CIDashboardType> section) {
 		String name = DefaultMarkupType.getAnnotation(section, NAME_KEY);
 		if (name == null) name = "unnamed";
 		return name;
 	}
 
-	private static class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
+	protected static class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
 
 		@Override
 		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) throws CompilerMessage {
@@ -275,5 +296,8 @@ public class CIDashboardType extends DefaultMarkupType {
 			}
 			CIDashboardManager.unregisterDashboard(section);
 		}
+	}
+
+	public record TestProcessingResult(List<TestSpecification<?>> testSpecifications, List<TestParser> testParsers) {
 	}
 }
