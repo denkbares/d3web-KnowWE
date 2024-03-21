@@ -190,6 +190,14 @@ public class ParallelScriptCompiler<C extends Compiler> implements ScriptCompile
 		return currentIterator.next();
 	}
 
+
+	public void shutDown() {
+		if (this.threadPool != null) {
+			this.threadPool.shutdown();
+		}
+	}
+
+
 	private void setCurrentIterator() {
 		currentIterator = new ArrayList<>(compileMap.get(currentPriority)).iterator();
 		// reset the list, during compilation new sections can be added
