@@ -89,8 +89,8 @@
 			<artifactId>KnowWE-Plugin-ExtensionPoints</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.denkbares.krone</groupId>
-			<artifactId>KnowWE-Plugin-QuartzScheduler</artifactId>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.saxon</groupId>
