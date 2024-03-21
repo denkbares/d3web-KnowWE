@@ -31,9 +31,9 @@
 		<denkbares.version>${project.version}</denkbares.version>
 		<d3web.version>${project.version}</d3web.version>
 		<knowwe.version>${project.version}</knowwe.version>
-		<konap.version>2024.2-SNAPSHOT</konap.version>
-		<ssp.version>2024.2-SNAPSHOT</ssp.version>
-		<mate.version>2024.2-SNAPSHOT</mate.version>
+		<konap.version>${project.version}</konap.version>
+		<ssp.version>${project.version}</ssp.version>
+		<mate.version>${project.version}</mate.version>
 		<slf4j.version>2.0.9</slf4j.version>
 		<log4j.version>2.22.0</log4j.version>
 		<jspwiki.version>2.11.8-SNAPSHOT</jspwiki.version>
@@ -818,6 +818,11 @@
 			<dependency>
 				<groupId>com.denkbares.krone</groupId>
 				<artifactId>KnowWE-Plugin-KONAP</artifactId>
+				<version>${konap.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.denkbares.krone</groupId>
+				<artifactId>KnowWE-Plugin-QuartzScheduler</artifactId>
 				<version>${konap.version}</version>
 			</dependency>
 			<dependency>
