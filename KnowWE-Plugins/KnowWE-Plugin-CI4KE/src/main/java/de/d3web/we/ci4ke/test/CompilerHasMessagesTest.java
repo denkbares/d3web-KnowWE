@@ -21,11 +21,14 @@
 package de.d3web.we.ci4ke.test;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.NotNull;
 
 import com.denkbares.collections.ConcatenateCollection;
 import com.denkbares.strings.Strings;
@@ -154,6 +157,8 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 							.filter(m -> ignorePatterns.stream()
 									.noneMatch(p -> p.matcher(m.getVerbalization()).find()))
 							.collect(Collectors.toList())));
+
+			List<Map.Entry<? extends Section<?>, List<Message>>> messagesBySectionSorted = sortMessagesBySection(messagesBySection);
 			int sum = messagesBySection.values().stream().mapToInt(Collection::size).sum();
 			if (sum > 0) {
 				Section<?> section = entry.getValue().get(0);
@@ -164,8 +169,10 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 						.append("]__ has ")
 						.append(Strings.pluralOf(sum, type.name().toLowerCase()))
 						.append(":");
-				for (Map.Entry<? extends Section<?>, List<Message>> listEntry : messagesBySection.entrySet()) {
-					for (Message message : listEntry.getValue()) {
+				for (Map.Entry<? extends Section<?>, List<Message>> listEntry : messagesBySectionSorted) {
+
+					List<Message> sortedMessages = sortMessages(listEntry);
+					for (Message message : sortedMessages) {
 						String verbalization = message.getVerbalization();
 						if (message.getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
 							verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization.replaceAll("[\\[\\]|]", ""));
@@ -195,5 +202,53 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 			wikiLink = KnowWEUtils.getWikiLinkPart(section);
 		}
 		return wikiLink;
+	}
+
+	private List<Map.Entry<? extends Section<?>, List<Message>>> sortMessagesBySection(Map<? extends Section<?>, List<Message>> messagesBySection) {
+		Comparator<Map.Entry<? extends Section<?>, List<Message>>> complexComparator = (entry1, entry2) -> {
+			int sectionCompare = entry1.getKey().compareTo(entry2.getKey());
+			if (sectionCompare != 0) {
+				return sectionCompare;
+			}
+			List<Message> list1 = entry1.getValue();
+			List<Message> list2 = entry2.getValue();
+
+			int minLength = Math.min(list1.size(), list2.size());
+			for (int i = 0; i < minLength; i++) {
+				int messageCompare = createMessageString(list1.get(i), entry1.getKey()).compareTo(createMessageString(list2.get(i), entry2.getKey()));
+				if (messageCompare != 0) {
+					return messageCompare;
+				}
+			}
+			return Integer.compare(list1.size(), list2.size());
+		};
+		return messagesBySection.entrySet().stream()
+				.sorted(complexComparator)
+				.collect(Collectors.toList());
+	}
+
+	@NotNull
+	private List<Message> sortMessages(Map.Entry<? extends Section<?>, List<Message>> listEntry) {
+		Section<?> sectionKey = listEntry.getKey();
+		Comparator<Message> fullStringComparator = (message1, message2) -> {
+			String fullString1 = createMessageString(message1, sectionKey);
+			String fullString2 = createMessageString(message2, sectionKey);
+			return fullString1.compareTo(fullString2);
+		};
+		return listEntry.getValue()
+				.stream()
+				.sorted(fullStringComparator)
+				.toList();
+	}
+
+	private String createMessageString(Message message, Section<?> section) {
+		String verbalization = message.getVerbalization();
+		if (message.getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
+			verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization.replaceAll("[\\[\\]|]", ""));
+			return "\n* " + "[" + verbalization + "|" + getWikiLink(section) + "]";
+		}
+		else {
+			return verbalization;
+		}
 	}
 }

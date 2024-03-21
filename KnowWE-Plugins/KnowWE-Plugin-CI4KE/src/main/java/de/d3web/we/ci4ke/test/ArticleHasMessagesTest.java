@@ -18,14 +18,16 @@
  */
 package de.d3web.we.ci4ke.test;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.denkbares.collections.CountingSet;
 import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
@@ -80,13 +82,16 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> imple
 				.collect(Collectors.toList());
 
 		TestingUtils.checkInterrupt();
-
 		buffer.append(" ")
 				.append(type.toString().toLowerCase())
 				.append("s found in article '[")
 				.append(moni.getTitle())
 				.append("]'");
+		Map<de.knowwe.core.report.Message, Integer> messageMap = new LinkedHashMap<>();
 		if (!messages.isEmpty()) {
+			for (de.knowwe.core.report.Message message : messages) {
+				messageMap.put(message, messageMap.getOrDefault(message, 0) + 1);
+			}
 			for (de.knowwe.core.report.Message message : messages) {
 				if (message.getType() == Type.ERROR) {
 					hasError = true;
@@ -96,16 +101,20 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> imple
 					hasWarning = true;
 				}
 			}
-			CountingSet<de.knowwe.core.report.Message> msgSet =
-					new CountingSet<>();
-			msgSet.addAll(messages);
-			for (de.knowwe.core.report.Message message : msgSet) {
+			List<Map.Entry<de.knowwe.core.report.Message, Integer>> sortedMessages = new ArrayList<>(messageMap.entrySet());
+			sortedMessages.sort(Comparator.comparing(entry -> {
+				de.knowwe.core.report.Message message = entry.getKey();
 				String verbalization = message.getVerbalization();
-				if (message.getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
+				return verbalization != null ? verbalization : "";
+			}));
+
+			for (Map.Entry<de.knowwe.core.report.Message, Integer> message : sortedMessages) {
+				String verbalization = message.getKey().getVerbalization();
+				if (message.getKey().getDisplay() == de.knowwe.core.report.Message.Display.PLAIN) {
 					verbalization = KnowWEUtils.maskJSPWikiMarkup(verbalization);
 				}
 				buffer.append("\n* ").append(verbalization);
-				int count = msgSet.getCount(message);
+				int count = message.getValue();
 				if (count > 1) buffer.append(" (").append(count).append("&times;)");
 			}
 		}
