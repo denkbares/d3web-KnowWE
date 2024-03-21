@@ -33,9 +33,8 @@ import de.knowwe.rdf2go.Rdf2GoCore;
 import de.knowwe.rdf2go.utils.Rdf2GoUtils;
 
 /**
- * This test allows to verify the size of the result of a specific sparql query
- * (referenced by name). In that way one for instance can ensure the an ontology
- * contains at least/at most/exactly x instances of some class.
+ * This test allows to verify the size of the result of a specific sparql query (referenced by name). In that way one
+ * for instance can ensure that an ontology contains at least/at most/exactly x instances of some class.
  *
  * @author Jochen Reutelshöfer
  * @created 08.01.2014
@@ -113,7 +112,6 @@ public class SparqlResultSizeTest extends SparqlTest<SparqlTestObject> implement
 				return getMessageEqual(messageType, number, count);
 			}
 		}
-
 		return new Message(Message.Type.ERROR, "Unknown error in test (invalid comparator?)");
 	}
 }

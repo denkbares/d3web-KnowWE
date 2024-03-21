@@ -22,18 +22,28 @@ package de.d3web.we.ci4ke.dashboard.type;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
+import org.quartz.CronScheduleBuilder;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+
+import com.denkbares.kcv.QuartzSchedulerJobServer;
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.TestGroup;
 import de.d3web.testing.TestParser;
 import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
+import de.d3web.we.ci4ke.dashboard.CIDashboardJob;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.rendering.CIDashboardRenderer;
 import de.d3web.we.ci4ke.hook.CIHook;
@@ -48,7 +58,6 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.dashtree.LineEndComment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
@@ -56,54 +65,41 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 public class CIDashboardType extends DefaultMarkupType {
 
-	public static final String MATE_COMPILER = "mateCompiler";
-	public static final String SPAQL_RESULT_SIZE = "SparqlResultSize";
-
 	public static final String NAME_KEY = "name";
 	public static final String GROUP_KEY = "group";
 	public static final String TEST_KEY = "test";
-	public static final String SOFT_TEST_KEY = "softTest";
 	public static final String TRIGGER_KEY = "trigger";
+	public static final String TRIGGER_REGEX = "^(onDemand|(onSave|onSchedule)\\s*(\".+?\"|[^\\s]+))$";
 	public static final String VERBOSE_PERSISTENCE_KEY = "persistenceVerbose";
+	public static final String SCHEDULE_GROUP = CIDashboard.class.getSimpleName();
 
 	public enum CIBuildTriggers {
-		onDemand, onSave
+		onDemand, onSave, onSchedule
 	}
 
-	protected static final DefaultMarkup MARKUP;
-	private static final String CI_DASHBOARD_MARKUP_NAME = "CIDashboard";
+	private static final DefaultMarkup MARKUP;
 
 	static {
-		MARKUP = createMarkup(CI_DASHBOARD_MARKUP_NAME, true);
-	}
-
-	protected static DefaultMarkup createMarkup(String markupName, boolean testMandatory) {
-		DefaultMarkup markup = new DefaultMarkup(markupName);
-		markup.addAnnotation(NAME_KEY, true);
-		markup.addAnnotation(TEST_KEY, testMandatory);
-		markup.addAnnotation(SOFT_TEST_KEY, false);
-		markup.addAnnotation(TRIGGER_KEY, true, Pattern.compile(
-				"^(onDemand|onSave\\s*(\".+?\"|[^\\s]+))$"));
-		markup.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
+		MARKUP = new DefaultMarkup("CIDashboard");
+		MARKUP.addAnnotation(NAME_KEY, true);
+		MARKUP.addAnnotation(TEST_KEY, true);
+		MARKUP.addAnnotation(TRIGGER_KEY, true, Pattern.compile(TRIGGER_REGEX));
+		MARKUP.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
 				"<p><b>Options:</b><br>" +
-				"<ul>" +
-				"<li>@" + TRIGGER_KEY + ": onSave \"Article Title Pattern\"</li>" +
-				"<li>@" + TRIGGER_KEY + ": onDemand</li>" +
-				"</ul>" +
+				"  <ul>" +
+				"    <li>@" + TRIGGER_KEY + ": onDemand</li>" +
+				"    <li>@" + TRIGGER_KEY + ": onSave \"Article Title Pattern\"</li>" +
+				"    <li>@" + TRIGGER_KEY + ": onSchedule \"Cron Job Pattern\"</li>" +
+				"  </ul>" +
 				"</p>");
-		markup.getAnnotation(SOFT_TEST_KEY).setDocumentation("Declare tests as 'soft tests'.<br>" +
-				"Soft tests are only acknowledged in the build details but have no effect on the overall build result.");
 
 		// allow grouping of tests
-		markup.addAnnotation(GROUP_KEY, false);
+		MARKUP.addAnnotation(GROUP_KEY, false);
 
 		// add content for individual annotations
-		markup.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
-		markup.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
-		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestIgnoreType());
-		markup.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
-		markup.addAnnotationContentType(SOFT_TEST_KEY, new TestDeclarationType());
-		return markup;
+		MARKUP.addAnnotation(VERBOSE_PERSISTENCE_KEY, false, "true", "false");
+		MARKUP.addAnnotationContentType(TEST_KEY, new TestIgnoreType());
+		MARKUP.addAnnotationContentType(TEST_KEY, new TestDeclarationType());
 	}
 
 	public CIDashboardType() {
@@ -115,29 +111,22 @@ public class CIDashboardType extends DefaultMarkupType {
 				DefaultMarkupPackageRegistrationScript.class);
 	}
 
-	public CIDashboardType(DefaultMarkup markup) {
-		super(markup);
-		//this.addCompileScript(new DashboardSubtreeHandler());
-		this.setRenderer(new CIDashboardRenderer());
-		this.removeCompileScript(PackageRegistrationCompiler.class,
-				DefaultMarkupPackageRegistrationScript.class);
-	}
-
 	public static String getDashboardName(Section<CIDashboardType> section) {
 		String name = DefaultMarkupType.getAnnotation(section, NAME_KEY);
 		if (name == null) name = "unnamed";
 		return name;
 	}
 
-	protected static class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
+	private static class DashboardSubtreeHandler extends DefaultGlobalScript<CIDashboardType> {
 
 		@Override
-		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> s) throws CompilerMessage {
+		public void compile(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) throws CompilerMessage {
 
 			List<Message> msgs = new ArrayList<>();
-			String triggerString = DefaultMarkupType.getAnnotation(s, TRIGGER_KEY);
+			String triggerString = DefaultMarkupType.getAnnotation(section, TRIGGER_KEY);
 			CIBuildTriggers trigger = null;
 			Set<String> monitoredArticles = new HashSet<>();
+			CronScheduleBuilder cronSchedule = null;
 
 			if (triggerString != null) {
 				Pattern pattern = Pattern.compile("(?:\".+?\"|[^\\s]+)");
@@ -146,30 +135,33 @@ public class CIDashboardType extends DefaultMarkupType {
 					// get the name of the test
 					try {
 						trigger = CIBuildTriggers.valueOf(matcher.group());
-						// get the monitoredArticles if onSave
-						if (trigger == CIBuildTriggers.onSave) {
-							while (matcher.find()) {
-								String parameter = matcher.group();
-								if (parameter.startsWith("\"") && parameter.endsWith("\"")) {
-									parameter = parameter.substring(1, parameter.length() - 1);
-								}
-								if (Environment.getInstance().getWikiConnector().doesArticleExist(
-										parameter)) {
-									monitoredArticles.add(parameter);
-								}
-								else {
-									// also resolve regex for onSave trigger articles
-									Collection<Article> articles = s.getArticleManager().getArticles();
-									Pattern onSaveArticleRegexPattern = Pattern.compile(parameter);
-									for (Article article : articles) {
-										if (onSaveArticleRegexPattern.matcher(article.getTitle()).matches()) {
-											monitoredArticles.add(article.getTitle());
+						switch (trigger) {
+							case onSave -> {
+								while (matcher.find()) {
+									// get the monitoredArticles if onSave
+									String parameter = parseParameter(matcher.group());
+									if (Environment.getInstance().getWikiConnector().doesArticleExist(parameter)) {
+										monitoredArticles.add(parameter);
+									}
+									else {
+										// also resolve regex for onSave trigger articles
+										Collection<Article> articles = section.getArticleManager().getArticles();
+										Pattern onSaveArticleRegexPattern = Pattern.compile(parameter);
+										for (Article article : articles) {
+											if (onSaveArticleRegexPattern.matcher(article.getTitle()).matches()) {
+												monitoredArticles.add(article.getTitle());
+											}
 										}
 									}
+									if (monitoredArticles.isEmpty()) {
+										msgs.add(Messages.error("Article '" + parameter + "' for trigger does not exist"));
+									}
 								}
-								if (monitoredArticles.isEmpty()) {
-									msgs.add(Messages.error("Article '" + parameter
-											+ "' for trigger does not exist"));
+							}
+							case onSchedule -> {
+								if (matcher.find()) {
+									String cronExpression = parseParameter(matcher.group());
+									cronSchedule = CronScheduleBuilder.cronSchedule(cronExpression);
 								}
 							}
 						}
@@ -177,84 +169,51 @@ public class CIDashboardType extends DefaultMarkupType {
 					catch (IllegalArgumentException e) {
 						msgs.add(Messages.error("Invalid trigger specified: " + triggerString));
 					}
+					catch (RuntimeException e) {
+						msgs.add(Messages.error("Invalid cron expression: " + e.getMessage()));
+					}
 				}
-
 				if (CIBuildTriggers.onSave == trigger && monitoredArticles.isEmpty()) {
-					msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSave
-							+ " requires attached articles to monitor."));
+					msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSave + " requires attached articles to monitor."));
+				}
+				else if (CIBuildTriggers.onSchedule == trigger && cronSchedule == null) {
+					msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSchedule + " requires cron expression to schedule."));
 				}
 			}
-
-			List<Section<? extends AnnotationContentType>> annotationSections =
-					DefaultMarkupType.getAnnotationContentSections(s, TEST_KEY, GROUP_KEY, SOFT_TEST_KEY, MATE_COMPILER, SPAQL_RESULT_SIZE);
-
-			TestProcessingResult result = processTests(annotationSections, compiler, s);
-			List<TestSpecification<?>> tests = result.testSpecifications();
-			List<ArgsCheckResult> messages = processMessages(result.testParsers());
-
-			convertMessages(s, messages);
-
-			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(s, tests);
-
-			if (trigger == CIBuildTriggers.onSave) {
-				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
-				CIHookManager.registerHook(ciHook);
-				// Store to be able to unregister in destroy method
-				KnowWEUtils.storeObject(s,
-						CIHook.CI_HOOK_STORE_KEY, ciHook);
-			}
-			throw new CompilerMessage(msgs);
-		}
-
-		protected List<ArgsCheckResult> processMessages(List<TestParser> testParsers) {
-			List<ArgsCheckResult> messages = new ArrayList<>();
-			for (TestParser testParser : testParsers) {
-				messages.add(testParser.getParameterCheckResult());
-				messages.addAll(testParser.getIgnoreCheckResults());
-			}
-			return messages;
-		}
-
-		protected TestProcessingResult processTests(List<Section<? extends AnnotationContentType>> annotationSections, DefaultGlobalCompiler compiler, Section<CIDashboardType> s) {
 			List<TestSpecification<?>> tests = new ArrayList<>();
-			List<TestParser> testParsers = new ArrayList<>();
+			List<Section<? extends AnnotationContentType>> annotationSections = DefaultMarkupType.getAnnotationContentSections(section, TEST_KEY, GROUP_KEY);
 
+			// iterate over all @test-Annotations
+			List<ArgsCheckResult> messages = new ArrayList<>();
 			for (Section<? extends AnnotationContentType> annoSection : annotationSections) {
 				String type = annoSection.get().getName(annoSection);
-				String textWithoutComment = annoSection.getChildren()
-						.stream()
-						.filter(c -> !(c.get() instanceof LineEndComment))
-						.map(c -> {
-							if (c.getChildren().isEmpty()) {
-								return c.getText();
-							}
-							else {
-								return c.getChildren().stream()
-										.filter(l -> !(l.get() instanceof LineEndComment))
-										.map(Section::getText).collect(Collectors.joining());
-							}
-						})
-						.collect(Collectors.joining());
-
 				if (type.equalsIgnoreCase(GROUP_KEY)) {
-					TestSpecification<?> group = new TestSpecification<>(
-							new TestGroup(), "void", new String[] { textWithoutComment }, new String[0][]);
+					// parse group
+					String text = annoSection.getText();
+					TestSpecification<?> group = new TestSpecification<>(new TestGroup(), "void", new String[] { text }, new String[0][]);
 					tests.add(group);
 				}
 				else {
-					if (type.equalsIgnoreCase(SOFT_TEST_KEY)) {
-						textWithoutComment += " " + type;
-					}
-					TestParser testParser = new TestParser(textWithoutComment);
+					// parse test
+					TestParser testParser = new TestParser(annoSection.getText());
 					TestSpecification<?> executableTest = testParser.getTestSpecification();
+					messages.add(testParser.getParameterCheckResult());
+					messages.addAll(testParser.getIgnoreCheckResults());
 					if (executableTest != null) {
 						tests.add(executableTest);
 					}
-					testParsers.add(testParser);
 				}
 			}
+			convertMessages(section, messages);
+			register(section, tests, trigger, monitoredArticles, cronSchedule);
+			throw new CompilerMessage(msgs);
+		}
 
-			return new TestProcessingResult(tests, testParsers);
+		private static String parseParameter(String text) {
+			if (text.startsWith("\"") && text.endsWith("\"")) {
+				return text.substring(1, text.length() - 1);
+			}
+			return text;
 		}
 
 		private void convertMessages(Section<?> section, List<ArgsCheckResult> messages) {
@@ -278,16 +237,43 @@ public class CIDashboardType extends DefaultMarkupType {
 			Messages.storeMessages(section, this.getClass(), msgs);
 		}
 
+		private void register(Section<CIDashboardType> section, List<TestSpecification<?>> tests, CIBuildTriggers trigger, Set<String> monitoredArticles, CronScheduleBuilder cronSchedule) {
+			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(section, tests);
+			if (trigger == CIBuildTriggers.onSave) {
+				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
+				CIHookManager.registerHook(ciHook);
+				// store to be able to unregister hook in destroy method
+				KnowWEUtils.storeObject(section, CIHook.CI_HOOK_STORE_KEY, ciHook);
+			}
+			else if (trigger == CIBuildTriggers.onSchedule && cronSchedule != null) {
+				String dashboardName = dashboard.getDashboardName();
+				JobDataMap jobData = new JobDataMap(Collections.singletonMap(CIDashboardJob.DASHBOARD_KEY, dashboard));
+				JobDetail job = JobBuilder
+						.newJob(CIDashboardJob.class)
+						.withIdentity(dashboardName, SCHEDULE_GROUP)
+						.usingJobData(jobData)
+						.build();
+				Trigger jobTrigger = TriggerBuilder
+						.newTrigger()
+						.withIdentity(dashboardName, SCHEDULE_GROUP)
+						.withSchedule(cronSchedule)
+						.build();
+				QuartzSchedulerJobServer.registerJob(job, jobTrigger);
+				// store to be able to delete job in destroy method
+				KnowWEUtils.storeObject(section, CIHook.CI_HOOK_STORE_KEY, job.getKey());
+			}
+		}
+
 		@Override
 		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
-			CIHook ciHook = section.getObject(CIHook.CI_HOOK_STORE_KEY);
-			if (ciHook != null) {
+			Object object = section.getObject(CIHook.CI_HOOK_STORE_KEY);
+			if (object instanceof CIHook ciHook) {
 				CIHookManager.unregisterHook(ciHook);
+			}
+			else if (object instanceof JobKey jobKey) {
+				QuartzSchedulerJobServer.deleteJob(jobKey);
 			}
 			CIDashboardManager.unregisterDashboard(section);
 		}
-	}
-
-	public record TestProcessingResult(List<TestSpecification<?>> testSpecifications, List<TestParser> testParsers) {
 	}
 }

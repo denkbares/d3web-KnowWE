@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.build.CIBuildCache;
@@ -236,5 +237,4 @@ public class CIDashboard {
 	public List<TestSpecification<?>> getTestSpecifications() {
 		return this.testSpecifications;
 	}
-
 }

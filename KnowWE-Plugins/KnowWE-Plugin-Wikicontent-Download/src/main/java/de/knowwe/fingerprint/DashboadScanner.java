@@ -25,8 +25,7 @@ public class DashboadScanner implements Scanner {
 		CIHookManager.triggerHooks(article);
 		CIBuildManager.getInstance().awaitTermination();
 
-		List<Section<CIDashboardType>> dashboardTypes = Sections.successors(
-				article.getRootSection(), CIDashboardType.class);
+		List<Section<CIDashboardType>> dashboardTypes = Sections.successors(article.getRootSection(), CIDashboardType.class);
 
 		if (dashboardTypes.isEmpty()) return;
 
@@ -54,10 +53,7 @@ public class DashboadScanner implements Scanner {
 
 	@Override
 	public Diff compare(File file1, File file2) throws IOException {
-		LineFilter filter = new SkipRegexLinesFilter(
-				"<\\?xml .*\\?>",
-				"<build xmlns=\"http://www.denkbares.com\".*>");
+		LineFilter filter = new SkipRegexLinesFilter("<\\?xml .*\\?>", "<build xmlns=\"http://www.denkbares.com\".*>");
 		return Fingerprint.compareTextFiles(file1, file2, filter);
 	}
-
 }

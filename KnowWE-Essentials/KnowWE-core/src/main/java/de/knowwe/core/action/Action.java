@@ -26,7 +26,7 @@ import java.io.IOException;
  * Interface for Actions. Actions are used for user interactions in KnowWE. The most important method of this interface
  * is execute() because this method will be called when an action is executed.
  * <p>
- * Additionally you can specify whether your action is "free for all" or only executable for admins by overwritting the
+ * Additionally, you can specify whether your action is "free for all" or only executable for admins by overwriting the
  * isAdminAction() method accordingly.
  *
  * @author Sebastian Furth
@@ -39,6 +39,7 @@ public interface Action {
 	String JSON = "application/json; charset=UTF-8";
 	String PLAIN_TEXT = "text/plain; charset=UTF-8";
 	String TURTLE = "text/turtle; charset=UTF-8";
+	String ZIP = "application/zip";
 	String BINARY = "application/x-bin";
 
 	/**

@@ -25,7 +25,6 @@ public class CIHook {
 	}
 
 	public CIHook(@NotNull CIDashboard dashboard, @NotNull Collection<String> monitoredArticles) {
-
 		this.dashboard = dashboard;
 		this.monitoredArticles = monitoredArticles;
 	}

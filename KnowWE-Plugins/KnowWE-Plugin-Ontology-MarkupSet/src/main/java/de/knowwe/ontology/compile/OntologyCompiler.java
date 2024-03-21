@@ -182,7 +182,8 @@ public class OntologyCompiler extends AbstractPackageCompiler
 
 		if (rdf2GoCore == null) {
 			// in case the compiler doesn't have anything to compile...
-			return new Rdf2GoCore(RepositoryConfigs.get(RdfConfig.class));
+			return null;
+			//return new Rdf2GoCore(RepositoryConfigs.get(RdfConfig.class));
 		}
 		if (!committed) return rdf2GoCore;
 

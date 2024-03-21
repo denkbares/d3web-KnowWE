@@ -97,7 +97,7 @@ KNOWWE.editCommons = function () {
 		},
 
 		/**
-		 * Check if the user has write permissions on the article. If yes, execute function "grantedFN", if not, "forbittenFN".
+		 * Check if the user has write permissions on the article. If yes, execute function "grantedFN", if not, "forbiddenFN".
 		 *
 		 * @see KNOWWE.core.util.canWrite and KNOWWE.core.util.canView and so forth, which might be faster but less rigorous
 		 *
