@@ -37,7 +37,7 @@ import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
-import com.denkbares.kcv.QuartzSchedulerJobServer;
+import de.knowwe.quartz.QuartzSchedulerJobServer;
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.TestGroup;
 import de.d3web.testing.TestParser;

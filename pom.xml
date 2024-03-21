@@ -821,7 +821,7 @@
 				<version>${konap.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.denkbares.krone</groupId>
+				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-QuartzScheduler</artifactId>
 				<version>${konap.version}</version>
 			</dependency>
