@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
@@ -58,6 +59,7 @@ import de.knowwe.core.report.CompilerMessage;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.kdom.dashtree.LineEndComment;
 import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
@@ -201,30 +203,11 @@ public class CIDashboardType extends DefaultMarkupType {
 					msgs.add(Messages.error("Invalid trigger: " + CIBuildTriggers.onSchedule + " requires cron expression to schedule."));
 				}
 			}
-			List<TestSpecification<?>> tests = new ArrayList<>();
-			List<Section<? extends AnnotationContentType>> annotationSections = DefaultMarkupType.getAnnotationContentSections(section, TEST_KEY, GROUP_KEY);
+			List<Section<? extends AnnotationContentType>> annotationSections = getAnnotationSections(section);
 
-			// iterate over all @test-Annotations
-			List<ArgsCheckResult> messages = new ArrayList<>();
-			for (Section<? extends AnnotationContentType> annoSection : annotationSections) {
-				String type = annoSection.get().getName(annoSection);
-				if (type.equalsIgnoreCase(GROUP_KEY)) {
-					// parse group
-					String text = annoSection.getText();
-					TestSpecification<?> group = new TestSpecification<>(new TestGroup(), "void", new String[] { text }, new String[0][]);
-					tests.add(group);
-				}
-				else {
-					// parse test
-					TestParser testParser = new TestParser(annoSection.getText());
-					TestSpecification<?> executableTest = testParser.getTestSpecification();
-					messages.add(testParser.getParameterCheckResult());
-					messages.addAll(testParser.getIgnoreCheckResults());
-					if (executableTest != null) {
-						tests.add(executableTest);
-					}
-				}
-			}
+			TestProcessingResult result = processTests(annotationSections, compiler, section);
+			List<TestSpecification<?>> tests = result.testSpecifications();
+			List<ArgsCheckResult> messages = processMessages(result.testParsers());
 			convertMessages(section, messages);
 			register(section, tests, trigger, monitoredArticles, cronSchedule);
 			throw new CompilerMessage(msgs);
@@ -235,6 +218,59 @@ public class CIDashboardType extends DefaultMarkupType {
 				return text.substring(1, text.length() - 1);
 			}
 			return text;
+		}
+
+		protected List<Section<? extends AnnotationContentType>> getAnnotationSections(Section<CIDashboardType> section) {
+			return DefaultMarkupType.getAnnotationContentSections(section, TEST_KEY, GROUP_KEY, SOFT_TEST_KEY);
+		}
+
+		protected TestProcessingResult processTests(List<Section<? extends AnnotationContentType>> annotationSections, DefaultGlobalCompiler compiler, Section<CIDashboardType> s) {
+			List<TestSpecification<?>> tests = new ArrayList<>();
+			List<TestParser> testParsers = new ArrayList<>();
+
+			for (Section<? extends AnnotationContentType> annoSection : annotationSections) {
+				String type = annoSection.get().getName(annoSection);
+				String textWithoutComment = annoSection.getChildren()
+						.stream()
+						.filter(c -> !(c.get() instanceof LineEndComment))
+						.map(c -> {
+							if (c.getChildren().isEmpty()) {
+								return c.getText();
+							}
+							else {
+								return c.getChildren().stream()
+										.filter(l -> !(l.get() instanceof LineEndComment))
+										.map(Section::getText).collect(Collectors.joining());
+							}
+						})
+						.collect(Collectors.joining());
+				if (type.equalsIgnoreCase(GROUP_KEY)) {
+					TestSpecification<?> group = new TestSpecification<>(
+							new TestGroup(), "void", new String[] { textWithoutComment }, new String[0][]);
+					tests.add(group);
+				}
+				else {
+					if (type.equalsIgnoreCase(SOFT_TEST_KEY)) {
+						textWithoutComment += " " + type;
+					}
+					TestParser testParser = new TestParser(textWithoutComment);
+					TestSpecification<?> executableTest = testParser.getTestSpecification();
+					if (executableTest != null) {
+						tests.add(executableTest);
+					}
+					testParsers.add(testParser);
+				}
+			}
+			return new TestProcessingResult(tests, testParsers);
+		}
+
+		protected List<ArgsCheckResult> processMessages(List<TestParser> testParsers) {
+			List<ArgsCheckResult> messages = new ArrayList<>();
+			for (TestParser testParser : testParsers) {
+				messages.add(testParser.getParameterCheckResult());
+				messages.addAll(testParser.getIgnoreCheckResults());
+			}
+			return messages;
 		}
 
 		private void convertMessages(Section<?> section, List<ArgsCheckResult> messages) {
