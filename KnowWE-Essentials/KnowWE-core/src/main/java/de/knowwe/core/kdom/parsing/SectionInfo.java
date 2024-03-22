@@ -1,10 +1,13 @@
 package de.knowwe.core.kdom.parsing;
 
 import java.util.List;
+import java.util.Map;
+
+import de.knowwe.core.user.UserContext;
 
 /**
  * Utility class for
- * {@link Sections#replaceSections(de.knowwe.core.action.UserActionContext, java.util.Map)}
+ * {@link Sections#replace(UserContext, Map)}
  * 
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 11.12.2011
@@ -25,6 +28,6 @@ public class SectionInfo implements Comparable<SectionInfo> {
 		if (sectionExists && !si.sectionExists) return -1;
 		if (!sectionExists && si.sectionExists) return 1;
 		if (!sectionExists && !si.sectionExists) return 0;
-		return new Integer(offSet).compareTo(si.offSet);
+		return Integer.compare(offSet, si.offSet);
 	}
 }
