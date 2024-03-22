@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -230,20 +231,7 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			for (Section<? extends AnnotationContentType> annoSection : annotationSections) {
 				String type = annoSection.get().getName(annoSection);
-				String textWithoutComment = annoSection.getChildren()
-						.stream()
-						.filter(c -> !(c.get() instanceof LineEndComment))
-						.map(c -> {
-							if (c.getChildren().isEmpty()) {
-								return c.getText();
-							}
-							else {
-								return c.getChildren().stream()
-										.filter(l -> !(l.get() instanceof LineEndComment))
-										.map(Section::getText).collect(Collectors.joining());
-							}
-						})
-						.collect(Collectors.joining());
+				String textWithoutComment = getTextWithoutComment(annoSection);
 				if (type.equalsIgnoreCase(GROUP_KEY)) {
 					TestSpecification<?> group = new TestSpecification<>(
 							new TestGroup(), "void", new String[] { textWithoutComment }, new String[0][]);
@@ -262,6 +250,24 @@ public class CIDashboardType extends DefaultMarkupType {
 				}
 			}
 			return new TestProcessingResult(tests, testParsers);
+		}
+
+		@NotNull
+		protected static String getTextWithoutComment(Section<? extends AnnotationContentType> annoSection) {
+			return annoSection.getChildren()
+					.stream()
+					.filter(c -> !(c.get() instanceof LineEndComment))
+					.map(c -> {
+						if (c.getChildren().isEmpty()) {
+							return c.getText();
+						}
+						else {
+							return c.getChildren().stream()
+									.filter(l -> !(l.get() instanceof LineEndComment))
+									.map(Section::getText).collect(Collectors.joining());
+						}
+					})
+					.collect(Collectors.joining());
 		}
 
 		protected List<ArgsCheckResult> processMessages(List<TestParser> testParsers) {
