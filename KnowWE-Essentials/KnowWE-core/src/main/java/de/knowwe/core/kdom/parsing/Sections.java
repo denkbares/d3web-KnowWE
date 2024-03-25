@@ -25,6 +25,8 @@ import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.denkbares.collections.CachedIterable;
 import com.denkbares.collections.ConcatenateIterable;
@@ -55,6 +57,7 @@ import static java.util.stream.Collectors.toList;
 @SuppressWarnings("Convert2Diamond")
 public class Sections<T extends Type> implements Iterable<Section<T>> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Sections.class);
 	private static final Sections<?> EMPTY = new Sections<>(Collections.emptyList());
 
 	private final Iterable<Section<T>> sections;
@@ -355,7 +358,6 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 	public Sections<T> concat(Sections<T> sections) {
 		return new Sections<>(new ConcatenateIterable<>(this, sections));
 	}
-
 
 	/**
 	 * Creates a new sections instance that first iterates over the elements of this instance, then over the elements of
@@ -1597,6 +1599,16 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 			KnowWEUtils.getArticleManager(context.getWeb()).commit();
 		}
 
+		if (!missingIDs.isEmpty()) {
+			StringBuilder builder = new StringBuilder();
+			for (String missingID : missingIDs) {
+				builder.append("ID: ").append(missingID).append("\n");
+				builder.append("New text: ").append(sectionsMap.get(missingID)).append("\n");
+				builder.append("\n");
+			}
+			LOGGER.error("The following sections were not replaced, because they could not be found. " +
+					"Maybe there were changes to their articles in the meantime?\n{}", builder);
+		}
 		return new ReplaceResult(sectionInfos, missingIDs, forbiddenArticles);
 	}
 
@@ -1729,14 +1741,14 @@ public class Sections<T extends Type> implements Iterable<Section<T>> {
 
 		if (!missingIDs.isEmpty()) {
 			context.sendError(409, "The Sections '" + missingIDs
-								   + "' could not be found, possibly because somebody else"
-								   + " has edited them.");
+					+ "' could not be found, possibly because somebody else"
+					+ " has edited them.");
 			return true;
 		}
 		if (!forbiddenArticles.isEmpty()) {
 			context.sendError(403,
 					"You do not have the permission to edit the following pages: "
-					+ forbiddenArticles + ".");
+							+ forbiddenArticles + ".");
 			return true;
 		}
 		return false;
