@@ -69,6 +69,8 @@ public final class CompilationLocal<E> {
 				}
 				else if (event instanceof CompilationStartEvent compilationStartEvent) {
 					compilerManagerCache.remove(compilationStartEvent.getCompilerManager());
+					// make sure we don't have stale caches
+					compilerCache.keySet().removeIf(c -> !c.getCompilerManager().contains(c));
 				}
 			}
 		});
