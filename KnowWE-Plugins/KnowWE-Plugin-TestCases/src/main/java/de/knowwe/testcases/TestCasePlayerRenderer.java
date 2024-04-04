@@ -535,7 +535,7 @@ public class TestCasePlayerRenderer implements Renderer {
 				first = false;
 				String color;
 				if (success) {
-					color = StyleRenderer.CONDITION_FULLFILLED;
+					color = StyleRenderer.CONDITION_FULFILLED;
 				}
 				else {
 					color = StyleRenderer.CONDITION_FALSE;

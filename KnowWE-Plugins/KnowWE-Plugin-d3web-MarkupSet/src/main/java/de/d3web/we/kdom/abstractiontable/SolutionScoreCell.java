@@ -13,8 +13,7 @@ import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 public class SolutionScoreCell extends AbstractType {
 
 	public SolutionScoreCell() {
-		StyleRenderer renderer = new StyleRenderer("color:rgb(125, 80, 102)");
-		renderer.setMaskMode(MaskMode.htmlEntities);
+		StyleRenderer renderer = StyleRenderer.CONSTANT.setMaskMode(MaskMode.htmlEntities);
 		this.setRenderer(renderer);
 	}
 

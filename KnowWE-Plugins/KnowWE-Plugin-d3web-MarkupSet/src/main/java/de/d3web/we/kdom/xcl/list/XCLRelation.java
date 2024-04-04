@@ -243,7 +243,7 @@ public class XCLRelation extends AbstractType {
 
 			// find color to render the relation
 			String color = (!highlight) ? null :
-					fulfilled ? StyleRenderer.CONDITION_FULLFILLED : StyleRenderer.CONDITION_FALSE;
+					fulfilled ? StyleRenderer.CONDITION_FULFILLED : StyleRenderer.CONDITION_FALSE;
 
 			// TODO: simplify by directly render into the render-result string
 			// render the sub-sections

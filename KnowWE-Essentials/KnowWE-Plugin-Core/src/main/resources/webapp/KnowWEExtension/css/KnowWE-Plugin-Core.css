@@ -864,6 +864,7 @@ table.knowwe-pagination th img.filter:hover {
 /* ################################################## */
 /* ------------- Style Renderer Light Mode----------- */
 /* ################################################## */
+
 .style-keywords {
 	color: #000000;
 }
@@ -880,11 +881,11 @@ table.knowwe-pagination th img.filter:hover {
 	color: #1e2864;
 }
 
-.style-solution-no-tools {
+.style-solution {
 	color: #966e78;
 }
 
-.style-flowchart-exit-no-tools {
+.style-flowchart-exit {
 	color: #500028;
 }
 
@@ -904,11 +905,11 @@ table.knowwe-pagination th img.filter:hover {
 	color: #008080;
 }
 
-.style-choice-no-tools {
+.style-choice {
 	color: #2828a0;
 }
 
-.style-question-no-tools {
+.style-question {
 	color: #008000;
 }
 
@@ -916,15 +917,15 @@ table.knowwe-pagination th img.filter:hover {
 	color: #008000;
 }
 
-.style-questionnaire-no-tools {
+.style-questionnaire {
 	color: #808000;
 }
 
-.style-flowchart-no-tools {
+.style-flowchart {
 	color: #808000;
 }
 
-.style-flowchart-start-no-tools {
+.style-flowchart-start {
 	color: #005028;
 }
 
@@ -935,5 +936,28 @@ table.knowwe-pagination th img.filter:hover {
 .style-package-name {
 	color: #794f40;
 }
+.style-answer-reference{
+	color: #2828a0;
+}
 
-
+.style-variable{
+	color: #E69500;
+}
+.style-coom-name{
+	color: #2500FF;
+}
+.style-comfort{
+	color: #aaaaaa;
+}
+.style-unexpected{
+	color: #CC0000;
+}
+.style-success{
+	color: #23C552;
+}
+.style-fail{
+	color: #F84F31;
+}
+.style-location-embraced{
+color: #E66432;
+}

@@ -38,7 +38,7 @@ public class SolutionHighlightingRenderer implements Renderer {
 
 		// determine color to highlight
 		Rating.State state = getState(sec, user);
-		String color = (state == Rating.State.ESTABLISHED) ? StyleRenderer.CONDITION_FULLFILLED :
+		String color = (state == Rating.State.ESTABLISHED) ? StyleRenderer.CONDITION_FULFILLED :
 				(state == Rating.State.EXCLUDED) ? StyleRenderer.CONDITION_FALSE : null;
 
 		if (color != null) {

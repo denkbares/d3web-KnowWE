@@ -11,7 +11,7 @@ public class QuestionNumCell extends AbstractType {
 
 
 	public QuestionNumCell() {
-		StyleRenderer renderer = new StyleRenderer("color:rgb(125, 80, 102)") {
+		StyleRenderer renderer = new StyleRenderer("style-number") {
 
 			@Override
 			protected void renderContent(Section<?> section, UserContext user, RenderResult string) {

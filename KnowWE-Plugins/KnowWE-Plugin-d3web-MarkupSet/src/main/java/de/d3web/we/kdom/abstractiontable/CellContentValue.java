@@ -40,7 +40,6 @@ import de.knowwe.kdom.table.TableUtils;
 public class CellContentValue extends AbstractType implements D3webTerm<NamedObject>, RenamableTerm {
 
 	public static final String CELL_CONTENT_TYPE_KEY = "CellContentTypeKey";
-	public static final String RENDER_COLOR = "color:rgb(125, 80, 102)";
 
 	public enum CellType {
 		ANSWER_REFERENCE, QUESTION_NUM_VALUE, SOLUTION_SCORE, SOLUTION_STATE, QUESTION_REFERENCE, SOLUTION_REFERENCE, NONE
@@ -277,7 +276,7 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 					renderer = StyleRenderer.CHOICE;
 				}
 				else if (type == CellType.QUESTION_NUM_VALUE) {
-					renderer = new StyleRenderer(RENDER_COLOR) {
+					renderer = new StyleRenderer("style-number") {
 
 						@Override
 						protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
@@ -287,7 +286,7 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 					};
 				}
 				else if (type == CellType.SOLUTION_SCORE || type == CellType.SOLUTION_STATE) {
-					renderer = new StyleRenderer(RENDER_COLOR, StyleRenderer.MaskMode.htmlEntities);
+					renderer = StyleRenderer.CONSTANT.setMaskMode(StyleRenderer.MaskMode.htmlEntities);
 				}
 			}
 			renderer.render(section, user, result);
