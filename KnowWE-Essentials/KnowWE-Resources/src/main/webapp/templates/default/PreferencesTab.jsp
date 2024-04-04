@@ -152,6 +152,11 @@
       <option value='fav-right' ${prefs.Orientation=='fav-right' ? 'selected="selected"' : ''} ><fmt:message key="prefs.user.orientation.right"/></option>
       <%-- <option value='fav-hidden' ${prefs.Orientation=='fav-hidden' ? 'selected="selected"' : ''} ><fmt:message key="prefs.user.orientation.hidden"/></option>  --%>
     </select>
+    <label for="prefDisplayMode"></label>
+    <select id="prefDisplayMode" name="prefDisplayMode" data-pref="DisplayMode">
+      <option value='light-mode' ${prefs.DisplayMode=='light-mode' ? 'selected="selected"' : ''} > Light Mode</option>
+      <option value='dark-mode' ${prefs.DisplayMode=='dark-mode' ? 'selected="selected"' : ''} > Dark Mode</option>
+    </select>
   </div>
 
   <div class="form-group">
