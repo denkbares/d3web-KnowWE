@@ -33,32 +33,28 @@ import de.knowwe.kdom.defaultMarkup.AnnotationRenderer;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 public class StyleRenderer implements Renderer {
+	public static final StyleRenderer KEYWORDS = new StyleRenderer("style-keywords");
+	public static final StyleRenderer OPERATOR = new StyleRenderer("style-operator");
+	public static final StyleRenderer CONSTANT = new StyleRenderer("style-constant");
+	public static final StyleRenderer PROPERTY = new StyleRenderer("style-property");
+	public static final StyleRenderer CONDITION = new StyleRenderer("style-condition");
+	public static final StyleRenderer PROMPT = new StyleRenderer("style-prompt", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer NUMBER = new StyleRenderer("style-number");
+	public static final StyleRenderer COMMENT = new StyleRenderer("style-comment", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer CONTENT = new StyleRenderer("style-content");
+	public static final StyleRenderer LOCALE = new StyleRenderer("style-locale");
 
-	public static final StyleRenderer KEYWORDS = new StyleRenderer("color:rgb(0, 0, 0)");
-	public static final StyleRenderer OPERATOR = new StyleRenderer("color:rgb(40, 40, 160)");
-	public static final StyleRenderer CONSTANT = new StyleRenderer("color:rgb(125, 80, 102)");
-	public static final StyleRenderer PROPERTY = new StyleRenderer("color:rgb(30, 40, 100)");
-	public static final StyleRenderer CONDITION = new StyleRenderer("color:rgb(0, 128, 0)");
-	public static final StyleRenderer PROMPT = new StyleRenderer("color:rgb(0, 64, 0)",
-			MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-	public static final StyleRenderer NUMBER = new StyleRenderer("color:rgb(125, 80, 102)");
-	public static final StyleRenderer COMMENT = new StyleRenderer("comment", "color:rgb(160, 160, 160)",
-			MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-	public static final StyleRenderer CONTENT = new StyleRenderer("color:rgb(80, 80, 80)");
-	public static final StyleRenderer LOCALE = new StyleRenderer("color:rgb(0, 128, 128)");
+	public static final StyleRenderer CHOICE_NO_TOOLS = new StyleRenderer("style-choice-no-tools", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer QUESTION_NO_TOOLS = new StyleRenderer("style-question-no-tools", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer QUESTIONNAIRE_NO_TOOLS = new StyleRenderer("style-questionnaire-no-tools", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer SOLUTION_NO_TOOLS = new StyleRenderer("style-solution-no-tools", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
 
-	public static final StyleRenderer CHOICE_NO_TOOLS = new StyleRenderer("color:rgb(40, 40, 160)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-	public static final StyleRenderer QUESTION_NO_TOOLS = new StyleRenderer("color:rgb(0, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-	public static final StyleRenderer QUESTIONNAIRE_NO_TOOLS = new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-	public static final StyleRenderer SOLUTION_NO_TOOLS = new StyleRenderer("color:rgb(150, 110, 120)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-
-	public static final StyleRenderer FLOWCHART_NO_TOOLS = new StyleRenderer("color:rgb(128, 128, 0)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-	public static final StyleRenderer FLOWCHART_START_NO_TOOLS = new StyleRenderer("color:rgb(0, 80, 40)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
-	public static final StyleRenderer FLOWCHART_EXIT_NO_TOOLS = new StyleRenderer("color:rgb(80, 0, 40)", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer FLOWCHART_NO_TOOLS = new StyleRenderer("style-flowchart-no-tools", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer FLOWCHART_START_NO_TOOLS = new StyleRenderer("style-flowchart-start-no-tools", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final StyleRenderer FLOWCHART_EXIT_NO_TOOLS = new StyleRenderer("style-flowchart-exit-no-tools", MaskMode.htmlEntities, MaskMode.jspwikiMarkup);
+	public static final String CLICKABLE_TERM_CLASS = "clickable-term";
 
 	public static final AnnotationRenderer ANNOTATION = new AnnotationRenderer();
-
-	public static final String CLICKABLE_TERM_CLASS = "clickable-term";
 
 	public static final Renderer CHOICE = CHOICE_NO_TOOLS.withToolMenu();
 	public static final Renderer SOLUTION = SOLUTION_NO_TOOLS.withToolMenu();
@@ -112,8 +108,8 @@ public class StyleRenderer implements Renderer {
 	private final String cssStyle;
 	private MaskMode[] maskMode = new MaskMode[] { MaskMode.jspwikiMarkup };
 
-	public StyleRenderer(String cssStyle) {
-		this(null, cssStyle);
+	public StyleRenderer(String cssClass) {
+		this(cssClass, null, null);
 	}
 
 	public StyleRenderer(String cssClass, String cssStyle) {
@@ -125,8 +121,8 @@ public class StyleRenderer implements Renderer {
 		this(null, null, maskMode);
 	}
 
-	public StyleRenderer(String cssStyle, MaskMode... maskMode) {
-		this(null, cssStyle, maskMode);
+	public StyleRenderer(String cssClass, MaskMode... maskMode) {
+		this(cssClass, null, maskMode);
 	}
 
 	public StyleRenderer(StyleRenderer lookAlike, MaskMode... maskMode) {

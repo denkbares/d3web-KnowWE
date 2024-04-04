@@ -1221,7 +1221,7 @@ th.changenote, td.changenote {
 #morebutton a:hover, a.action:hover, #sectiontoc a:hover
 .userbox a.action:hover, a.action.quick2bottom:hover, a.action.quick2top:hover,
 .nav-pills a:hover {
-	background-color: #eee !important;
+	background-color: #eee;
 }
 
 .navigation ul {

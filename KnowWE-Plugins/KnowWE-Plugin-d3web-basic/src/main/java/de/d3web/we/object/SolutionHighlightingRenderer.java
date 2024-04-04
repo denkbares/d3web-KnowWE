@@ -42,7 +42,7 @@ public class SolutionHighlightingRenderer implements Renderer {
 				(state == Rating.State.EXCLUDED) ? StyleRenderer.CONDITION_FALSE : null;
 
 		if (color != null) {
-			string.appendHtml("<span style='background-color:").append(color).appendHtml(";'>");
+			string.appendHtml("<span class='solution-established' style='background-color:").append(color).appendHtml(";'>");
 		}
 		innerRenderer.render(sec, user, string);
 		if (color != null) {

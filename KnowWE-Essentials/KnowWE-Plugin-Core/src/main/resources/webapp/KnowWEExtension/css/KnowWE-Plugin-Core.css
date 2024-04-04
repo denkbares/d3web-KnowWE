@@ -860,3 +860,80 @@ table.knowwe-pagination th img.filter:hover {
 .edit-area textarea {
 	overflow-anchor: none
 }
+
+/* ################################################## */
+/* ------------- Style Renderer Light Mode----------- */
+/* ################################################## */
+.style-keywords {
+	color: #000000;
+}
+
+.style-content {
+	color: #505050;
+}
+
+.style-comment {
+	color: #A0A0A0;
+}
+
+.style-property {
+	color: #1e2864;
+}
+
+.style-solution-no-tools {
+	color: #966e78;
+}
+
+.style-flowchart-exit-no-tools {
+	color: #500028;
+}
+
+.style-number {
+	color: #785066;
+}
+
+.style-constant {
+	color: #7d5066;
+}
+
+.style-operator {
+	color: #2828a0;
+}
+
+.style-locale {
+	color: #008080;
+}
+
+.style-choice-no-tools {
+	color: #2828a0;
+}
+
+.style-question-no-tools {
+	color: #008000;
+}
+
+.style-condition {
+	color: #008000;
+}
+
+.style-questionnaire-no-tools {
+	color: #808000;
+}
+
+.style-flowchart-no-tools {
+	color: #808000;
+}
+
+.style-flowchart-start-no-tools {
+	color: #005028;
+}
+
+.style-prompt {
+	color: #004000;
+}
+
+.style-package-name {
+	color: #794f40;
+}
+
+

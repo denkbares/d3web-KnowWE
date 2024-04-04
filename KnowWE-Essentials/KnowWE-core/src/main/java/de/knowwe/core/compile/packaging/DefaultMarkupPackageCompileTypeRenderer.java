@@ -131,7 +131,7 @@ public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRender
 		string.appendHtml(icon);
 		string.append(" ");
 		RenderResult subString = new RenderResult(string);
-		subString.appendHtml("<span style='color:rgb(121,79, 64);'>");
+		subString.appendHtml("<span class='style-package-name'>");
 		subString.append(packageName);
 		subString.appendHtml("</span>");
 		boolean rendered = false;
