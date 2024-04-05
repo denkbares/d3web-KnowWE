@@ -86,7 +86,7 @@ public class QuestionTypeDeclaration extends
 							end + 1));
 		};
 		this.setSectionFinder(typeFinder);
-		this.setRenderer(StyleRenderer.OPERATOR);
+		this.setRenderer(StyleRenderer.OPERATOR.withMaskMode(StyleRenderer.MaskMode.htmlEntities));
 		String allowedTypes = Arrays.asList(QUESTION_DECLARATIONS).toString();
 		allowedTypes = allowedTypes.substring(1, allowedTypes.length() - 1);
 		Message errorMsg = Messages.error(D3webUtils.getD3webBundle()

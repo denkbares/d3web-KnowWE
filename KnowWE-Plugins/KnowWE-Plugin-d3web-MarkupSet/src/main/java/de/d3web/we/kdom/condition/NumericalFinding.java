@@ -70,7 +70,7 @@ public class NumericalFinding extends D3webCondition<NumericalFinding> {
 		// comparator
 		Comparator comparator = new Comparator();
 		comparator.setSectionFinder(new OneOfStringUnquotedFinder(comparators));
-		comparator.setRenderer(new StyleRenderer(StyleRenderer.OPERATOR, MaskMode.htmlEntities));
+		comparator.setRenderer(StyleRenderer.OPERATOR.withMaskMode(MaskMode.htmlEntities));
 		this.addChildType(comparator);
 
 		// question

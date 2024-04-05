@@ -20,7 +20,7 @@ public class SolutionStateCell extends AbstractType {
 		rating.setSectionFinder(new AllTextFinderTrimmed());
 		this.addChildType(rating);
 
-		StyleRenderer renderer = StyleRenderer.CONSTANT.setMaskMode(MaskMode.htmlEntities);
+		StyleRenderer renderer = StyleRenderer.CONSTANT.withMaskMode(MaskMode.htmlEntities);
 		this.setRenderer(renderer);
 	}
 

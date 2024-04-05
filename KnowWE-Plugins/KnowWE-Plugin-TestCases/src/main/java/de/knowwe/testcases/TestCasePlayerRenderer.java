@@ -413,8 +413,8 @@ public class TestCasePlayerRenderer implements Renderer {
 		TestCaseUtils.checkValues(errors, question, value);
 		if (!errors.isEmpty()) {
 			RenderResult errorResult = new RenderResult(tableModel.getUserContext());
-			errorResult.appendHtml("<div style='background-color:"
-					+ StyleRenderer.CONDITION_FALSE + "'>");
+			errorResult.appendHtml("<div class='"
+					+ StyleRenderer.CONDITION_FALSE.getCssClass() + "'>");
 			errorResult.append(findingString);
 			errorResult.appendHtml("</div>");
 			findingString = errorResult.toStringRaw();
@@ -533,14 +533,14 @@ public class TestCasePlayerRenderer implements Renderer {
 				max = Math.max(max, check.getCondition().length());
 				if (!first) sb.appendHtml("<br />");
 				first = false;
-				String color;
+				String cssClass;
 				if (success) {
-					color = StyleRenderer.CONDITION_FULFILLED;
+					cssClass = StyleRenderer.CONDITION_FULFILLED.getCssClass();
 				}
 				else {
-					color = StyleRenderer.CONDITION_FALSE;
+					cssClass = StyleRenderer.CONDITION_FALSE.getCssClass();
 				}
-				sb.appendHtml("<span style='background-color:" + color + "'>");
+				sb.appendHtml("<span class='" + cssClass + "'>");
 				// render the condition appropriately
 				renderCheck(check, user, sb);
 				sb.appendHtml("</span>");

@@ -1,24 +1,13 @@
 package de.d3web.we.kdom.abstractiontable;
 
-import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.AbstractType;
-import de.knowwe.core.kdom.parsing.Section;
-import de.knowwe.core.kdom.rendering.RenderResult;
-import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.renderer.StyleRenderer;
 
 public class QuestionNumCell extends AbstractType {
 
 
 	public QuestionNumCell() {
-		StyleRenderer renderer = new StyleRenderer("style-number") {
-
-			@Override
-			protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
-				string.appendJSPWikiMarkup(Strings.encodeHtml(section.getText().replace("~", "")));
-			}
-
-		};
+		StyleRenderer renderer = StyleRenderer.NUMBER.withMaskMode(StyleRenderer.MaskMode.htmlEntities, StyleRenderer.MaskMode.jspwikiMarkup);
 		this.setRenderer(renderer);
 	}
 

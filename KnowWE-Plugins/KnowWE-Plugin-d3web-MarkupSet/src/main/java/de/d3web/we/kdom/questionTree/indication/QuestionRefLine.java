@@ -48,7 +48,7 @@ public class QuestionRefLine extends AbstractType {
 		// take the keyword
 		AnonymousType key = new AnonymousType("ref-key");
 		key.setSectionFinder(new StringSectionFinderUnquoted(REF_KEYWORD));
-		key.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
+		key.setRenderer(StyleRenderer.KEYWORDS.withMaskMode(MaskMode.htmlEntities));
 		this.addChildType(key);
 
 		// the rest for the name of the question

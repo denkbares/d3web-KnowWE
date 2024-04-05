@@ -26,7 +26,7 @@ public class XCLWeight extends AbstractType {
 
 	public XCLWeight() {
 		setSectionFinder(new EmbracedContentFinder(BOUNDS_OPEN, BOUNDS_CLOSE, 1));
-		setRenderer(StyleRenderer.CONTENT.setMaskMode(StyleRenderer.MaskMode.jspwikiMarkup));
+		setRenderer(StyleRenderer.CONTENT.withMaskMode(StyleRenderer.MaskMode.jspwikiMarkup));
 	}
 
 	/**

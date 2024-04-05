@@ -62,7 +62,7 @@ public class CondKnown extends D3webCondition<CondKnown> {
 		this.addChildType(question);
 		this.addChildType(new AnonymousType("text",
 				AllTextFinder.getInstance(),
-				StyleRenderer.KEYWORDS.setMaskMode(StyleRenderer.MaskMode.jspwikiMarkup)));
+				StyleRenderer.KEYWORDS.withMaskMode(StyleRenderer.MaskMode.jspwikiMarkup)));
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.denkbares.strings.Strings;
 import de.d3web.core.inference.condition.Condition;
 import de.d3web.core.inference.condition.NoAnswerException;
 import de.d3web.core.inference.condition.UnknownAnswerException;
@@ -241,27 +240,26 @@ public class XCLRelation extends AbstractType {
 		private void renderRelation(Section<?> relationSection,
 									UserContext user, boolean highlight, boolean fulfilled, RenderResult string) {
 
-			// find color to render the relation
-			String color = (!highlight) ? null :
+			StyleRenderer styleRenderer = (!highlight) ? null :
 					fulfilled ? StyleRenderer.CONDITION_FULFILLED : StyleRenderer.CONDITION_FALSE;
 
 			// TODO: simplify by directly render into the render-result string
 			// render the sub-sections
 			for (Section<?> section : relationSection.getChildren()) {
-				this.renderRelationChild(section, user, string, color);
+				this.renderRelationChild(section, user, string, styleRenderer);
 			}
 		}
 
 		/**
 		 * Renders the children of a CoveringRelation.
 		 */
-		private void renderRelationChild(Section<?> sec, UserContext user, RenderResult buffi, String color) {
+		private void renderRelationChild(Section<?> sec, UserContext user, RenderResult buffi, StyleRenderer styleRenderer) {
 
 			Type type = sec.get();
 
 			if (type instanceof XCLRelationWeight) {
 				// renders contradiction in red if fulfilled
-				if (Strings.nonBlank(color) && sec.getText().trim().equals("[--]")) {
+				if (styleRenderer != null && sec.getText().trim().equals("[--]")) {
 					StyleRenderer.OPERATOR.render(sec, user, buffi);
 				}
 				else {
@@ -270,7 +268,7 @@ public class XCLRelation extends AbstractType {
 			}
 			else if (type instanceof CompositeCondition) {
 				// we do not want masked JPSWiki markup
-				StyleRenderer.getRenderer(null, color).render(sec, user, buffi);
+				styleRenderer.render(sec, user, buffi);
 			}
 			else {
 				type.getRenderer().render(sec, user, buffi);

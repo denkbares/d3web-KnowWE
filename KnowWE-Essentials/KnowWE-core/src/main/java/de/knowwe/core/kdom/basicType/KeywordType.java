@@ -39,7 +39,7 @@ import de.knowwe.kdom.renderer.StyleRenderer.MaskMode;
 public class KeywordType extends AbstractType {
 
 	private final String keyWord;
-	private static final Renderer DEFAULT_RENDERER = new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities);
+	private static final Renderer DEFAULT_RENDERER = StyleRenderer.KEYWORDS.withMaskMode(MaskMode.htmlEntities);
 	private static final Renderer PLAIN_RENDERER = DefaultTextRenderer.getInstance();
 
 	/**

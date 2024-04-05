@@ -33,6 +33,7 @@ import de.knowwe.kdom.defaultMarkup.AnnotationRenderer;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 public class StyleRenderer implements Renderer {
+	public static final StyleRenderer DEFAULT_STYLE_RENDERER = new StyleRenderer();
 	public static final StyleRenderer KEYWORDS = new StyleRenderer("style-keywords");
 	public static final StyleRenderer OPERATOR = new StyleRenderer("style-operator");
 	public static final StyleRenderer CONSTANT = new StyleRenderer("style-constant");
@@ -65,40 +66,11 @@ public class StyleRenderer implements Renderer {
 	public static final Renderer FlowchartStart = FLOWCHART_START_NO_TOOLS.withToolMenu();
 	public static final Renderer FlowchartExit = FLOWCHART_EXIT_NO_TOOLS.withToolMenu();
 
-	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(new StyleRenderer(
-			"packageOpacity",
-			"", MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
+	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(StyleRenderer.DEFAULT_STYLE_RENDERER.withCssClass("packageOpacity")
+			.withMaskMode(MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
-	public static final String CONDITION_FULFILLED = "#CFFFCF";
-	public static final String CONDITION_FALSE = "#FFCFCF";
-
-	/**
-	 * When normal functionality as in FontColorRenderer: Set background null;
-	 *
-	 * @param color      the foreground color to be used or "null"
-	 * @param background the background color to be used or "null"
-	 * @return the style renderer
-	 */
-	public static StyleRenderer getRenderer(String color, String background) {
-		return new StyleRenderer(null, generateCSSStyle(color, background));
-	}
-
-	/**
-	 * Allows for setting the class attribute.
-	 *
-	 * @param cssClass   the css class to be used or "null"
-	 * @param color      the foreground color to be used or "null"
-	 * @param background the background color to be used or "null"
-	 * @return the style renderer
-	 */
-	public static StyleRenderer getRenderer(String cssClass, String color, String background) {
-		return new StyleRenderer(cssClass, generateCSSStyle(color, background));
-	}
-
-	private static String generateCSSStyle(String color, String background) {
-		return (color == null ? "" : color + ";") +
-				(background == null ? "" : "background-color:" + background);
-	}
+	public static final StyleRenderer CONDITION_FULFILLED = new StyleRenderer("style-condition-fulfilled");
+	public static final StyleRenderer CONDITION_FALSE = new StyleRenderer("style-condition-false");
 
 	public enum MaskMode {
 		none, jspwikiMarkup, htmlEntities
@@ -108,28 +80,23 @@ public class StyleRenderer implements Renderer {
 	private final String cssStyle;
 	private MaskMode[] maskMode = new MaskMode[] { MaskMode.jspwikiMarkup };
 
-	public StyleRenderer(String cssClass) {
+	private StyleRenderer() {
+		this(null, (String) null);
+	}
+
+	private StyleRenderer(String cssClass) {
 		this(cssClass, null, null);
 	}
 
-	public StyleRenderer(String cssClass, String cssStyle) {
-		this.cssClass = cssClass;
-		this.cssStyle = cssStyle;
+	private StyleRenderer(String cssClass, String cssStyle) {
+		this(cssClass, cssStyle, null);
 	}
 
-	public StyleRenderer(MaskMode... maskMode) {
-		this(null, null, maskMode);
-	}
-
-	public StyleRenderer(String cssClass, MaskMode... maskMode) {
+	private StyleRenderer(String cssClass, MaskMode... maskMode) {
 		this(cssClass, null, maskMode);
 	}
 
-	public StyleRenderer(StyleRenderer lookAlike, MaskMode... maskMode) {
-		this(lookAlike.cssClass, lookAlike.cssStyle, maskMode);
-	}
-
-	public StyleRenderer(String cssClass, String cssStyle, MaskMode... maskMode) {
+	private StyleRenderer(String cssClass, String cssStyle, MaskMode... maskMode) {
 		this.cssClass = cssClass;
 		this.cssStyle = cssStyle;
 		this.maskMode = maskMode;
@@ -154,6 +121,9 @@ public class StyleRenderer implements Renderer {
 	 * @return the created style renderer
 	 */
 	public StyleRenderer withCssStyle(String cssStyle) {
+		if (cssStyle.contains("color")) {
+			throw new IllegalArgumentException("Please use CSS classes for color styling.");
+		}
 		if (Strings.isBlank(cssStyle)) return this;
 		String css = Strings.isBlank(this.cssStyle) ? cssStyle : (this.cssStyle + ";" + cssStyle);
 		return new StyleRenderer(this.cssClass, css, this.maskMode);
@@ -246,7 +216,7 @@ public class StyleRenderer implements Renderer {
 		return this.cssClass;
 	}
 
-	public StyleRenderer setMaskMode(MaskMode... maskMode) {
+	public StyleRenderer withMaskMode(MaskMode... maskMode) {
 		return new StyleRenderer(this.cssClass, this.cssStyle, maskMode);
 	}
 }

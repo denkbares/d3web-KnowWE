@@ -936,28 +936,47 @@ table.knowwe-pagination th img.filter:hover {
 .style-package-name {
 	color: #794f40;
 }
-.style-answer-reference{
+
+.style-answer-reference {
 	color: #2828a0;
 }
 
-.style-variable{
+.style-variable {
 	color: #E69500;
 }
-.style-coom-name{
+
+.style-coom-name {
 	color: #2500FF;
 }
-.style-comfort{
+
+.style-comfort {
 	color: #aaaaaa;
 }
-.style-unexpected{
+
+.style-unexpected {
 	color: #CC0000;
 }
-.style-success{
+
+.style-not-found {
+	color: red;
+}
+
+.style-success {
 	color: #23C552;
 }
-.style-fail{
+
+.style-fail {
 	color: #F84F31;
 }
-.style-location-embraced{
-color: #E66432;
+
+.style-location-embraced {
+	color: #E66432;
+}
+
+.style-condition-fulfilled {
+	background-color: #CFFFCF
+}
+
+.style-condition-false {
+	background-color: #FFCFCF;
 }

@@ -276,17 +276,10 @@ public class CellContentValue extends AbstractType implements D3webTerm<NamedObj
 					renderer = StyleRenderer.CHOICE;
 				}
 				else if (type == CellType.QUESTION_NUM_VALUE) {
-					renderer = new StyleRenderer("style-number") {
-
-						@Override
-						protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
-							string.appendJSPWikiMarkup(Strings.encodeHtml(section.getText().replace("~", "")));
-						}
-
-					};
+					renderer = StyleRenderer.NUMBER.withMaskMode(StyleRenderer.MaskMode.htmlEntities, StyleRenderer.MaskMode.jspwikiMarkup);
 				}
 				else if (type == CellType.SOLUTION_SCORE || type == CellType.SOLUTION_STATE) {
-					renderer = StyleRenderer.CONSTANT.setMaskMode(StyleRenderer.MaskMode.htmlEntities);
+					renderer = StyleRenderer.CONSTANT.withMaskMode(StyleRenderer.MaskMode.htmlEntities);
 				}
 			}
 			renderer.render(section, user, result);

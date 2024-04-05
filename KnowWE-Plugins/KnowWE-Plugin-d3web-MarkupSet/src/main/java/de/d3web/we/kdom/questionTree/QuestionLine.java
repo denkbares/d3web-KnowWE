@@ -348,7 +348,7 @@ public class QuestionLine extends AbstractType {
 
 		public AbstractFlag() {
 			this.setSectionFinder(new OneOfStringFinder("<abstract>", "<abstrakt>"));
-			this.setRenderer(new StyleRenderer(StyleRenderer.KEYWORDS, MaskMode.htmlEntities));
+			this.setRenderer(StyleRenderer.KEYWORDS.withMaskMode(MaskMode.htmlEntities));
 
 			this.addCompileScript(Priority.HIGH, (D3webCompileScript<AbstractFlag>) (compiler, s) -> {
 
