@@ -240,8 +240,7 @@ public class XCLRelation extends AbstractType {
 		private void renderRelation(Section<?> relationSection,
 									UserContext user, boolean highlight, boolean fulfilled, RenderResult string) {
 
-			StyleRenderer styleRenderer = (!highlight) ? null :
-					fulfilled ? StyleRenderer.CONDITION_FULFILLED : StyleRenderer.CONDITION_FALSE;
+			StyleRenderer styleRenderer = highlight ? fulfilled ? StyleRenderer.CONDITION_FULFILLED : StyleRenderer.CONDITION_FALSE : null;
 
 			// TODO: simplify by directly render into the render-result string
 			// render the sub-sections
@@ -266,7 +265,7 @@ public class XCLRelation extends AbstractType {
 					type.getRenderer().render(sec, user, buffi);
 				}
 			}
-			else if (type instanceof CompositeCondition) {
+			else if (styleRenderer != null && type instanceof CompositeCondition) {
 				// we do not want masked JPSWiki markup
 				styleRenderer.render(sec, user, buffi);
 			}
