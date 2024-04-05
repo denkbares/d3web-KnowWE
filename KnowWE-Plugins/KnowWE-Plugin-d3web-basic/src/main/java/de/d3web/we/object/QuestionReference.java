@@ -38,7 +38,7 @@ import de.knowwe.kdom.renderer.StyleRenderer;
 public class QuestionReference extends D3webTermReference<Question> {
 
 	public QuestionReference() {
-		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
+		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.QUESTION));
 		this.addCompileScript(new SimpleReferenceRegistrationScript<>(D3webCompiler.class));
 	}
 

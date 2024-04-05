@@ -36,7 +36,7 @@ public class AbbreviationReference extends SimpleReference {
 		super(OntologyCompiler.class, AbbreviationDefinition.class, Priority.LOWEST);
 		this.setSectionFinder(new ConstraintSectionFinder(new RegexSectionFinder(Patterns.WORD),
 				AtMostOneFindingConstraint.getInstance()));
-		this.setRenderer(StyleRenderer.Questionnaire);
+		this.setRenderer(StyleRenderer.QUESTIONNAIRE);
 	}
 
 	@Override

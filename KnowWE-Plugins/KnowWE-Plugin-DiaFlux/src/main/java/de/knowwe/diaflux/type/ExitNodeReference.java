@@ -36,7 +36,7 @@ public class ExitNodeReference extends SimpleReference {
 
 	public ExitNodeReference() {
 		super(D3webCompiler.class, EndNode.class);
-		setRenderer(StyleRenderer.FlowchartExit);
+		setRenderer(StyleRenderer.FLOWCHART_EXIT);
 	}
 
 	@Override

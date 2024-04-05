@@ -32,8 +32,8 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.AnnotationRenderer;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
-public class StyleRenderer implements Renderer {
-	public static final StyleRenderer DEFAULT_STYLE_RENDERER = new StyleRenderer();
+public final class StyleRenderer implements Renderer {
+	public static final StyleRenderer DEFAULT = new StyleRenderer();
 	public static final StyleRenderer KEYWORDS = new StyleRenderer("style-keywords");
 	public static final StyleRenderer OPERATOR = new StyleRenderer("style-operator");
 	public static final StyleRenderer CONSTANT = new StyleRenderer("style-constant");
@@ -59,14 +59,14 @@ public class StyleRenderer implements Renderer {
 
 	public static final Renderer CHOICE = CHOICE_NO_TOOLS.withToolMenu();
 	public static final Renderer SOLUTION = SOLUTION_NO_TOOLS.withToolMenu();
-	public static final Renderer Question = QUESTION_NO_TOOLS.withToolMenu();
-	public static final Renderer Questionnaire = QUESTIONNAIRE_NO_TOOLS.withToolMenu();
+	public static final Renderer QUESTION = QUESTION_NO_TOOLS.withToolMenu();
+	public static final Renderer QUESTIONNAIRE = QUESTIONNAIRE_NO_TOOLS.withToolMenu();
 
-	public static final Renderer Flowchart = FLOWCHART_NO_TOOLS.withToolMenu();
-	public static final Renderer FlowchartStart = FLOWCHART_START_NO_TOOLS.withToolMenu();
-	public static final Renderer FlowchartExit = FLOWCHART_EXIT_NO_TOOLS.withToolMenu();
+	public static final Renderer FLOWCHART = FLOWCHART_NO_TOOLS.withToolMenu();
+	public static final Renderer FLOWCHART_START = FLOWCHART_START_NO_TOOLS.withToolMenu();
+	public static final Renderer FLOWCHART_EXIT = FLOWCHART_EXIT_NO_TOOLS.withToolMenu();
 
-	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(StyleRenderer.DEFAULT_STYLE_RENDERER.withCssClass("packageOpacity")
+	public static final Renderer PACKAGE = new ToolMenuDecoratingRenderer(StyleRenderer.DEFAULT.withCssClass("packageOpacity")
 			.withMaskMode(MaskMode.htmlEntities, MaskMode.jspwikiMarkup));
 
 	public static final StyleRenderer CONDITION_FULFILLED = new StyleRenderer("style-condition-fulfilled");
@@ -179,7 +179,7 @@ public class StyleRenderer implements Renderer {
 	 * @param string  the buffer to render into
 	 * @created 06.10.2010
 	 */
-	protected void renderContent(Section<?> section, UserContext user, RenderResult string) {
+	private void renderContent(Section<?> section, UserContext user, RenderResult string) {
 		RenderResult builder = new RenderResult(user);
 		DelegateRenderer.getInstance().render(section, user, builder);
 		if (ArrayUtils.contains(maskMode, MaskMode.jspwikiMarkup)

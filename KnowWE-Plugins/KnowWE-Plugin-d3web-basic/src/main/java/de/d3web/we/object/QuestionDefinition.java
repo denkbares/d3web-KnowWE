@@ -64,7 +64,7 @@ public abstract class QuestionDefinition extends QASetDefinition<Question> {
 	public QuestionDefinition() {
 		this.addCompileScript(Priority.LOW, new TerminologyLoopDetectionHandler<Question>());
 		this.addCompileScript(Priority.LOWER, new TerminologyLoopResolveHandler<Question>());
-		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.Question));
+		this.setRenderer(new ValueTooltipRenderer(StyleRenderer.QUESTION));
 	}
 
 	@Override

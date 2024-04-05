@@ -63,7 +63,7 @@ public class ExitType extends AbstractXMLType {
 		public ExitNodeDef() {
 			super(D3webCompiler.class, EndNode.class);
 			setSectionFinder(AllTextFinder.getInstance());
-			setRenderer(StyleRenderer.FlowchartExit);
+			setRenderer(StyleRenderer.FLOWCHART_EXIT);
 		}
 
 		@Override

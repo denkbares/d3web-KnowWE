@@ -44,7 +44,7 @@ public abstract class QuestionnaireDefinition extends QASetDefinition<QContainer
 		addCompileScript(Priority.HIGHEST, new CreateQuestionnaireHandler());
 		this.addCompileScript(Priority.LOW, new TerminologyLoopDetectionHandler<QContainer>());
 		this.addCompileScript(Priority.LOWER, new TerminologyLoopResolveHandler<QContainer>());
-		setRenderer(StyleRenderer.Questionnaire);
+		setRenderer(StyleRenderer.QUESTIONNAIRE);
 	}
 
 	@Override

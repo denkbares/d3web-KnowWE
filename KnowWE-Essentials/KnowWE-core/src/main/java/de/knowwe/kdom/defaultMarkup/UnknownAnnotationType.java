@@ -39,7 +39,7 @@ public class UnknownAnnotationType extends AbstractType {
 
 	public UnknownAnnotationType() {
 		this.setSectionFinder(new RegexSectionFinder(PATTERN));
-		setRenderer(StyleRenderer.DEFAULT_STYLE_RENDERER.withCssClass("error_highlight"));
+		setRenderer(StyleRenderer.DEFAULT.withCssClass("error_highlight"));
 	}
 
 	/**

@@ -65,11 +65,11 @@ public class QASetReference extends D3webTermReference<QASet> {
 				Section<Term> cast = Sections.cast(section, Term.class);
 				Identifier termIdentifier = cast.get().getTermIdentifier(compiler, cast);
 				if (tm.hasTermOfClass(termIdentifier, Question.class)) {
-					delegate = new ValueTooltipRenderer(StyleRenderer.Question);
+					delegate = new ValueTooltipRenderer(StyleRenderer.QUESTION);
 					break;
 				}
 				if (tm.hasTermOfClass(termIdentifier, QContainer.class)) {
-					delegate = StyleRenderer.Questionnaire;
+					delegate = StyleRenderer.QUESTIONNAIRE;
 					break;
 				}
 			}

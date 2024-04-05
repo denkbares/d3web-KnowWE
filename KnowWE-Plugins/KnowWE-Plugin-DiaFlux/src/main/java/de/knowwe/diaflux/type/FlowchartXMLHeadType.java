@@ -57,7 +57,7 @@ public class FlowchartXMLHeadType extends XMLHead {
 			setSectionFinder(new MultiSectionFinder(
 					new RegexSectionFinder(Pattern.compile("name=\"\\s*([^\"]*?)\\s*\""), 1),
 					new RegexSectionFinder(Pattern.compile("name=\'\\s*([^\']*?)\\s*\'"), 1)));
-			setRenderer(StyleRenderer.Flowchart);
+			setRenderer(StyleRenderer.FLOWCHART);
 			clearCompileScripts();
 			addCompileScript(Priority.HIGHER, new FlowchartRegistrationHandler());
 		}

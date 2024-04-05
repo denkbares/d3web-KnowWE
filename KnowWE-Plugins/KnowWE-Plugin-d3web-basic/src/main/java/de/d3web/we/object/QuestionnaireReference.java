@@ -40,7 +40,7 @@ public class QuestionnaireReference extends D3webTermReference<QContainer> {
 
 	public QuestionnaireReference() {
 		this.setSectionFinder(AllTextFinderTrimmed.getInstance());
-		this.setRenderer(StyleRenderer.Questionnaire);
+		this.setRenderer(StyleRenderer.QUESTIONNAIRE);
 		this.addCompileScript(new SimpleReferenceRegistrationScript<>(D3webCompiler.class));
 	}
 

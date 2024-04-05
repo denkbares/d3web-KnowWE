@@ -32,7 +32,7 @@ public class FlowchartReference extends SimpleReference {
 
 	public FlowchartReference() {
 		super(D3webCompiler.class, Flow.class);
-		setRenderer(StyleRenderer.Flowchart);
+		setRenderer(StyleRenderer.FLOWCHART);
 	}
 
 }

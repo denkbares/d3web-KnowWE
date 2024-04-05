@@ -39,7 +39,7 @@ public class Indent extends AbstractType {
 	public Indent() {
 		setSectionFinder(new RegexSectionFinder(
 				"^([ \t\u00A0]+)[^\\s]", Pattern.MULTILINE, 1));
-		this.setRenderer(StyleRenderer.DEFAULT_STYLE_RENDERER.withCssClass("indent"));
+		this.setRenderer(StyleRenderer.DEFAULT.withCssClass("indent"));
 	}
 
 }

@@ -31,7 +31,7 @@ public class DefaultNamespaceResourceDefinition extends SimpleDefinition {
 	public DefaultNamespaceResourceDefinition(Class<?> termClass) {
 		super(OntologyCompiler.class, termClass, Priority.LOWEST);
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.setRenderer(StyleRenderer.Question);
+		this.setRenderer(StyleRenderer.QUESTION);
 	}
 
 	public static Identifier getDefaultNamespaceTermIdentifier(TermCompiler compiler, Section<? extends Term> section) {

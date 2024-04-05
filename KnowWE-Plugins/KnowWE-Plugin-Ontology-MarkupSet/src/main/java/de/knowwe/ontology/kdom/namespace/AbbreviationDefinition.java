@@ -39,7 +39,7 @@ public class AbbreviationDefinition extends SimpleDefinition {
 		this.setSectionFinder(new ConstraintSectionFinder(
 				new RegexSectionFinder("(?<=^\\s*)(" + PN_CHARS_BASE + "((_|[A-Z]|[a-z]|-|[0-9]|\\.)*" + PN_CHARS + ")?)|(?=:)"),
 				AtMostOneFindingConstraint.getInstance()));
-		this.setRenderer(StyleRenderer.Questionnaire);
+		this.setRenderer(StyleRenderer.QUESTIONNAIRE);
 	}
 
 	@Override

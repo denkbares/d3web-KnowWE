@@ -49,10 +49,10 @@ public class NamedObjectRenderer implements Renderer {
 		if (compiler != null) {
 			TerminologyManager tManager = compiler.getTerminologyManager();
 			if (tManager.hasTermOfClass(termIdentifier, Question.class)) {
-				renderer = StyleRenderer.Question;
+				renderer = StyleRenderer.QUESTION;
 			}
 			else if (tManager.hasTermOfClass(termIdentifier, QContainer.class)) {
-				renderer = StyleRenderer.Questionnaire;
+				renderer = StyleRenderer.QUESTIONNAIRE;
 			}
 			else if (tManager.hasTermOfClass(termIdentifier, Solution.class)) {
 				renderer = StyleRenderer.SOLUTION;
@@ -61,7 +61,7 @@ public class NamedObjectRenderer implements Renderer {
 				renderer = StyleRenderer.CHOICE;
 			}
 			else if (tManager.hasTermOfClass(termIdentifier, KnowledgeBase.class)) {
-				renderer = StyleRenderer.Questionnaire;
+				renderer = StyleRenderer.QUESTIONNAIRE;
 			}
 		}
 		renderer.render(section, user, string);

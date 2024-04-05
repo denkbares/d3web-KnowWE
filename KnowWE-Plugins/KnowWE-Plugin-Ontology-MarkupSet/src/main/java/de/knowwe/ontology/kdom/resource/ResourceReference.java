@@ -42,7 +42,7 @@ public class ResourceReference extends SimpleReference {
 	public ResourceReference(Class<?> termClass, Priority prio) {
 		super(OntologyCompiler.class, termClass, prio);
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.setRenderer(StyleRenderer.Question);
+		this.setRenderer(StyleRenderer.QUESTION);
 	}
 
 	@Override

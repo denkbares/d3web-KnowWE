@@ -37,7 +37,7 @@ public class StartNodeReference extends SimpleReference {
 
 	public StartNodeReference() {
 		super(D3webCompiler.class, StartNode.class);
-		setRenderer(StyleRenderer.FlowchartStart);
+		setRenderer(StyleRenderer.FLOWCHART_START);
 	}
 
 	@Override

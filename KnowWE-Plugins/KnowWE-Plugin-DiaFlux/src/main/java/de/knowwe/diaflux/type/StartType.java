@@ -65,7 +65,7 @@ public class StartType extends AbstractXMLType {
 		public StartNodeDef() {
 			super(D3webCompiler.class, StartNode.class);
 			setSectionFinder(AllTextFinder.getInstance());
-			setRenderer(StyleRenderer.FlowchartStart);
+			setRenderer(StyleRenderer.FLOWCHART_START);
 		}
 
 		@Override

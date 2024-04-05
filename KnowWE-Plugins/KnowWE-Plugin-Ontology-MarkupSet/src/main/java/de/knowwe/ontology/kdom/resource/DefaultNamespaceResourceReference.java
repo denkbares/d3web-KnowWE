@@ -27,7 +27,7 @@ public class DefaultNamespaceResourceReference extends SimpleReference {
 	public DefaultNamespaceResourceReference(Class<?> termClass) {
 		super(OntologyCompiler.class, termClass, Priority.LOWEST);
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.setRenderer(StyleRenderer.Question);
+		this.setRenderer(StyleRenderer.QUESTION);
 	}
 
 	@Override

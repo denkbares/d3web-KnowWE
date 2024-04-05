@@ -37,7 +37,7 @@ public class ResourceDefinition extends SimpleDefinition {
 	public ResourceDefinition(Class<?> termClass) {
 		super(OntologyCompiler.class, termClass);
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.setRenderer(StyleRenderer.Question);
+		this.setRenderer(StyleRenderer.QUESTION);
 	}
 
 	@Override

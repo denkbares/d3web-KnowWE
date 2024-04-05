@@ -44,7 +44,7 @@ public class LazyURIReference extends SimpleReference implements URIProvider<Laz
 	public LazyURIReference() {
 		super(OntologyCompiler.class, Resource.class);
 		this.setSectionFinder(new AllTextFinderTrimmed());
-		this.setRenderer(StyleRenderer.Question);
+		this.setRenderer(StyleRenderer.QUESTION);
 		//noinspection unchecked
 		this.removeCompileScript(OntologyCompiler.class, SimpleReferenceRegistrationScript.class);
 		this.addCompileScript(Priority.LOWER, new LazyIdentifierGenerator());
