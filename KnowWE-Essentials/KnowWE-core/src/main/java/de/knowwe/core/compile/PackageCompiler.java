@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.parsing.Sections;
 
 /**
  * Common interface for compilers compiling a set of packages.
@@ -49,6 +50,7 @@ public interface PackageCompiler extends Compiler, NamedCompiler {
 	/**
 	 * Get all sections that are currently compiled by this compiler, based on used packages and available sections in
 	 * those packages.
+	 * @deprecated use {@link Sections#$(PackageCompiler)} instead
 	 */
 	default Collection<Section<?>> getCompiledSections() {
 		return getPackageManager().getSectionsOfPackage(getCompiledPackages());
