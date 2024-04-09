@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
   ~ Copyright (C) 2023 denkbares GmbH, Germany
   ~
   ~ This is free software; you can redistribute it and/or modify it under the
@@ -19,7 +18,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -163,6 +162,9 @@
 
 		<profile>
 			<id>core-plugins</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>de.uniwue.d3web</groupId>
@@ -321,6 +323,9 @@
 
 		<profile>
 			<id>denkbares</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares</groupId>
@@ -633,7 +638,7 @@
 		</profile>
 
 		<profile>
-		<id>avl</id>
+			<id>avl</id>
 			<dependencies>
 				<dependency>
 					<groupId>com.denkbares.ssp</groupId>
@@ -708,8 +713,8 @@
 								<configuration>
 									<target name="copy ehcache">
 										<copy file="src/resources/local/WEB-INF/classes/ehcache.xml.default"
-											toFile="target/${project.build.finalName}/WEB-INF/classes/ehcache.xml"
-											verbose="true" />
+											  toFile="target/${project.build.finalName}/WEB-INF/classes/ehcache.xml"
+											  verbose="true" />
 									</target>
 								</configuration>
 							</execution>
