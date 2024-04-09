@@ -669,11 +669,6 @@
 				<version>${knowwe.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>jspwiki.plugin</groupId>
-				<artifactId>Table</artifactId>
-				<version>0.1</version>
-			</dependency>
-			<dependency>
 				<groupId>de.uniwue.d3web</groupId>
 				<artifactId>KnowWE-Plugin-d3web-MarkupSet</artifactId>
 				<version>${knowwe.version}</version>
