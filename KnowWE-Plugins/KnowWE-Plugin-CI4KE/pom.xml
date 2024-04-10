@@ -54,11 +54,6 @@
 			<artifactId>jdom2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>jrcs-diff</groupId>
-			<artifactId>jrcs-diff</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
 			<artifactId>KnowWE-Plugin-JSPWiki-Connector</artifactId>
 		</dependency>

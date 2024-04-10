@@ -911,7 +911,6 @@
 				<groupId>jrcs-diff</groupId>
 				<artifactId>jrcs-diff</artifactId>
 				<version>0</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-fileupload</groupId>
