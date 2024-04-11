@@ -847,6 +847,13 @@ public class JSPWikiConnector implements WikiConnector {
 	}
 
 	@Override
+	public boolean userCanUploadAttachment(String title, HttpServletRequest request) {
+		if (KnowWEUtils.isAttachmentArticle(title)) return false;
+		if (ReadOnlyManager.isReadOnly()) return false;
+		return checkPagePermission(title, request, "upload");
+	}
+
+	@Override
 	public boolean userCanViewArticle(String title, HttpServletRequest request) {
 		return checkPagePermission(title, request, "view");
 	}

@@ -20,6 +20,29 @@
 
 package connector;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
@@ -27,18 +50,6 @@ import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
 import de.knowwe.jspwiki.JSPWikiConnector;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.*;
 
 public class DummyConnector implements WikiConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DummyConnector.class);
@@ -104,7 +115,7 @@ public class DummyConnector implements WikiConnector {
 	public boolean hasRollbackPageProvider() {
 		return false;
 	}
-	
+
 	@Override
 	public List<WikiPageInfo> getArticleHistory(String title) {
 		if (getArticleText(title) == null) return Collections.emptyList();
@@ -352,6 +363,12 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
+	public boolean userCanUploadAttachment(String title, HttpServletRequest request) {
+		LOGGER.warn("The used WikiConnector does not support rights managment");
+		return true;
+	}
+
+	@Override
 	public boolean userCanViewArticle(String articlename, HttpServletRequest r) {
 		LOGGER.warn("The used WikiConnector does not support rights managment");
 		return true;
@@ -390,12 +407,11 @@ public class DummyConnector implements WikiConnector {
 	}
 
 	@Override
-	public void sendMultipartMail(String toAddresses, String subject, String plainTextContent, String htmlContent, Map<String, URL> imageMapping)  {
+	public void sendMultipartMail(String toAddresses, String subject, String plainTextContent, String htmlContent, Map<String, URL> imageMapping) {
 		LOGGER.warn("This WikiConnector does not support sending multipart-mails");
 	}
 
 	public void setPageProvider(DummyPageProvider pageProvider) {
 		this.dummyPageProvider = Objects.requireNonNull(pageProvider);
 	}
-
 }
