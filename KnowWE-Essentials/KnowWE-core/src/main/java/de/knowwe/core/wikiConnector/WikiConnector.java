@@ -432,6 +432,14 @@ public interface WikiConnector {
 	boolean userCanEditArticle(String title, HttpServletRequest request);
 
 	/**
+	 * Checks whether a user is allowed to upload attachments to a given article.
+	 *
+	 * @param title   the title of the article to check
+	 * @param request the request of the user to check for
+	 */
+	boolean userCanUploadAttachment(String title, HttpServletRequest request);
+
+	/**
 	 * Checks whether a user is allowed view a given article
 	 *
 	 * @param title   the title of the article to check

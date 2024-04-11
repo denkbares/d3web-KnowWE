@@ -235,7 +235,7 @@ KNOWWE.core.plugin.dropZone = function() {
       if (!actionUrl) actionUrl = 'attach';
       if (!mode) mode = "full-height";
       if (typeof multiple === "undefined") multiple = true;
-      if (!KNOWWE.core.util.isHaddockTemplate() || !KNOWWE.core.util.canWrite()) return;
+      if (!KNOWWE.core.util.isHaddockTemplate() || !KNOWWE.core.util.canUpload()) return;
 
       const elements = jq$(elementSelector);
       attachDropZoneToElement(elements, actionUrl, multiple, title, mode);

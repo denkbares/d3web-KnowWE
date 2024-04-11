@@ -143,9 +143,9 @@ public class KnowWEUtils {
 		while (matcher.find()) {
 			final String link = matcher.group(1);
 			if (articleManager.getArticle(link.replaceAll("#.*$", "")) == null
-					&& !link.startsWith("http")
-					&& !link.startsWith("file")
-					&& !link.startsWith("attach")) {
+				&& !link.startsWith("http")
+				&& !link.startsWith("file")
+				&& !link.startsWith("attach")) {
 				escapeIndices.add(new Pair<>(matcher.start(), matcher.end()));
 			}
 		}
@@ -292,8 +292,8 @@ public class KnowWEUtils {
 				.getAttachments();
 		for (final WikiAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
-					&& attachment.getParentName().equals(title))
-					|| attachment.getPath().equals(fileName)) {
+				 && attachment.getParentName().equals(title))
+				|| attachment.getPath().equals(fileName)) {
 				actualAttachment = attachment;
 				break;
 			}
@@ -489,6 +489,19 @@ public class KnowWEUtils {
 	 */
 	public static boolean canWrite(final Article article, final UserContext user) {
 		return Environment.getInstance().getWikiConnector().userCanEditArticle(
+				article.getTitle(), user.getRequest());
+	}
+
+	/**
+	 * Returns if the user has permission to attach files to the specified article.
+	 *
+	 * @param article the article to check the access rights for
+	 * @param user    the user context
+	 * @return true if the user has the upload permissions
+	 * @created 29.11.2013
+	 */
+	public static boolean canUpload(final Article article, final UserContext user) {
+		return Environment.getInstance().getWikiConnector().userCanUploadAttachment(
 				article.getTitle(), user.getRequest());
 	}
 
@@ -720,7 +733,7 @@ public class KnowWEUtils {
 	public static String getURLLink(String title, final int version) {
 		title = fixAttachmentArticleLinks(title);
 		return "Wiki.jsp?page=" + Strings.encodeURL(title)
-				+ (version == -1 ? "" : "&version=" + version);
+			   + (version == -1 ? "" : "&version=" + version);
 	}
 
 	private static String fixAttachmentArticleLinks(ArticleManager manager, String title) {

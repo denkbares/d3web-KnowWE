@@ -477,6 +477,10 @@ KNOWWE.core.util = function () {
       return "KnowWE";
 		},
 
+		canUpload: function() {
+			return jq$('#knowWEInfoCanUpload').val() === "true";
+		},
+
 		canWrite: function() {
 			return jq$('#knowWEInfoCanWrite').val() === "true";
 		},
