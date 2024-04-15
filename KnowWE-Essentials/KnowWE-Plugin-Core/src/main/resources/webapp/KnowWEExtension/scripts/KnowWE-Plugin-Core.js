@@ -789,8 +789,6 @@ KNOWWE.core.plugin.switchCompiler = function() {
       jq$.ajax("action/GetCompilerSwitchContentAction", {
         cache: false,
         dataType: 'json',
-        // override mime type to prevent browsers from initially attempting to parse this as something different
-        mimeType: "application/json",
         success: function(response) {
           if (Object.keys(response).length === 0) return;
           let storedDefaultCompiler = localStorage.getItem(defaultCompilerPrefixKey);

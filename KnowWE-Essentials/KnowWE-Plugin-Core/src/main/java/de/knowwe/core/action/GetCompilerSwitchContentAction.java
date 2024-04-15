@@ -43,6 +43,8 @@ public class GetCompilerSwitchContentAction extends AbstractAction {
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		context.setContentType("application/json");
+
 		Collection<GroupingCompiler> compilers = Compilers.getCompilers(KnowWEUtils.getArticleManager(context.getWeb()), GroupingCompiler.class);
 		JSONObject response = new JSONObject();
 
