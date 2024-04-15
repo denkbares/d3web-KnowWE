@@ -52,6 +52,7 @@ public interface PackageCompiler extends Compiler, NamedCompiler {
 	 * those packages.
 	 * @deprecated use {@link Sections#$(PackageCompiler)} instead
 	 */
+	@Deprecated
 	default Collection<Section<?>> getCompiledSections() {
 		return getPackageManager().getSectionsOfPackage(getCompiledPackages());
 	}
