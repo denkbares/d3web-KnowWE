@@ -151,7 +151,15 @@ public class CIDashboardType extends DefaultMarkupType {
 		return name;
 	}
 
-	protected TestProcessingResult processTests(List<Section<? extends AnnotationContentType>> annotationSections, DefaultGlobalCompiler compiler, Section<CIDashboardType> s) {
+	/**
+	 * Returns a testProcessingResult containing testSpecifications and testParsers of all defined tests and
+	 * soft tests from the respective annotations
+	 *
+	 * @param annotationSections all annotations of given dashboard
+	 * @param section            current ci dashboard section
+	 * @return final testProcessingResult containing all defined tests and soft tests
+	 */
+	protected TestProcessingResult processTests(List<Section<? extends AnnotationContentType>> annotationSections, DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
 		List<TestSpecification<?>> tests = new ArrayList<>();
 		List<TestParser> testParsers = new ArrayList<>();
 
@@ -217,6 +225,15 @@ public class CIDashboardType extends DefaultMarkupType {
 		return DefaultMarkupType.getAnnotationContentSections(section, TEST_KEY, GROUP_KEY, SOFT_TEST_KEY, TEMPLATE, SKIP_TESTS);
 	}
 
+	/**
+	 * Returns a concatenated testProcessingResult starting at the base dashboard, using all templates recursively
+	 * Templates are of lesser priority than current dashboards
+	 *
+	 * @param section           current ci dashboard section
+	 * @param testsToSkip       tests from skipTests annotation (accumulated from all sections)
+	 * @param processedSections stored dashboard sections to prevent loops
+	 * @return final testProcessingResult using base and all templates
+	 */
 	protected TestProcessingResult processDashboard(Section<CIDashboardType> section, DefaultGlobalCompiler compiler, List<String> testsToSkip, Set<Section<CIDashboardType>> processedSections) {
 		if (section == null || processedSections.contains(section)) return null;
 		processedSections.add(section);
@@ -225,16 +242,27 @@ public class CIDashboardType extends DefaultMarkupType {
 		TestProcessingResult dashboardResult = processTests(annotationSections, compiler, section);
 		List<String> skip = section.get().getTestsToSkip(section.get().getAnnotationSections(section));
 		if (!skip.isEmpty()) testsToSkip.addAll(skip);
+		dashboardResult = getFilteredTests(dashboardResult, testsToSkip);
 		TestProcessingResult templateResult = null;
 		Optional<Section<? extends AnnotationContentType>> templateSectionOpt = getAnnoSectionByKey(annotationSections, TEMPLATE);
 		if (templateSectionOpt.isPresent()) {
 			Section<CIDashboardType> templateDashboard = getDashboardFromTemplate(section, templateSectionOpt.get());
-			templateResult = templateDashboard.get()
-					.processDashboard(templateDashboard, compiler, testsToSkip, processedSections);
+			if (templateDashboard != null) {
+				templateResult = templateDashboard.get()
+						.processDashboard(templateDashboard, compiler, testsToSkip, processedSections);
+			}
 		}
-		return getFilteredTests(concatTestProcessingResults(dashboardResult, templateResult), testsToSkip);
+		return concatTestProcessingResults(dashboardResult, templateResult);
 	}
 
+	/**
+	 * Returns a concatenated testProcessingResult without duplicates and in the given order of priority 1.
+	 * In case of duplicate args and ignores are merged.
+	 *
+	 * @param prio1 testProcessingResult with top priority
+	 * @param prio2 testProcessingResult with lesser priority
+	 * @return concatenated testProcessingResult according to their priority
+	 */
 	protected TestProcessingResult concatTestProcessingResults(TestProcessingResult prio1, TestProcessingResult prio2) {
 		if (prio1 == null) return prio2;
 		if (prio2 == null) return prio1;
