@@ -152,6 +152,7 @@ public class ResourceLoader {
 		add("jquery-ui.structure.min.css", Type.stylesheet);
 		add("jquery-ui.theme.min.css", Type.stylesheet);
 		add("general.css", Type.stylesheet);
+		add("variables.css", Type.stylesheet);
 		add("font-awesome/css/fontawesome.min.css", Type.stylesheet);
 		addFirst("KnowWE-Plugin-DropZone.js", Type.script);
 		addFirst("KnowWE-notification.js", Type.script);

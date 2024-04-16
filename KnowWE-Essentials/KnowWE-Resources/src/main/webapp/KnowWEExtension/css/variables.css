@@ -1,0 +1,331 @@
+/*
+ * Copyright (C) 2024 denkbares GmbH, Germany
+ *
+ * This is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * This software is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this software; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
+ * site: http://www.fsf.org.
+ */
+
+/* ######################################################## */
+/* ------------- Introduce Light Mode Variables ----------- */
+/* ######################################################## */
+
+:root {
+	/*-------- backgrounds --------*/
+	--knowwe-blue: #036;
+
+	--bg-color-content: #fff;
+	--bg-color-base: #fff; /* different than content color in dark mode -> in light too?? */
+	--bg-color-default-Markup: #F9F9F9;
+	--bg-color-panel-heading: #f6f6f8;
+	--bg-color-tt: #f0f0f0;
+	--bg-color-tooltipster-menu: #ededed;
+	--bg-color-footer: rgba(195, 195, 195, 0.2);
+	--bg-color-weblogentry: #e0e0e0;
+	--bg-color-edit: #F5FAFF;
+	--bg-color-infobox: #FFF6BF;
+	--bg-color-information: #d9edf7;
+	--bg-color-light: #9ACBFB;
+	--bg-color-right-panel-top: rgb(232, 242, 249);
+	--bg-color-head-transparent: rgba(193, 206, 226, 0.65);
+	--bg-color-highlight: #f936;
+
+	/*-------- text --------*/
+	--text-color-primary: #000000;
+	--text-color-primary-link: #173a64; /*--text-color-primary-link: #23527c;*/
+	--text-color-button: inherit;
+	--text-color-tooltipster: #2c2c2c;
+	--text-color-default-head: #036;
+	--text-color-panel-heading: #333;
+	--text-color-dropdown-markupMenu: #555;
+	--text-color-markup-menu-item-link: #003DF5;
+	--text-color-secondary: #888;
+	--text-information: #31708f;
+
+	/*-- StyleRenderer --*/
+	--text-color-keywords: #000000;
+	--text-color-content: #505050;
+	--text-color-comment: #A0A0A0;
+	--text-color-property: #1e2864;
+	--text-color-solution: #966e78;
+	--text-color-flowchart-exit: #500028;
+	--text-color-number: #785066;
+	--text-color-constant: #7d5066;
+	--text-color-operator: #2828a0;
+	--text-color-locale: #008080;
+	--text-color-choice: #2828a0;
+	--text-color-question: #008000;
+	--text-color-condition: #008000;
+	--text-color-questionnaire: #808000;
+	--text-color-flowchart: #808000;
+	--text-color-flowchart-start: #005028;
+	--text-color-prompt: #004000;
+	--text-color-package-name: rgba(121, 79, 64, 0.4);
+	--text-color-package-name-opaque: #794f40;
+	--text-color-answer-reference: #2828a0;
+	--text-color-variable: #E69500;
+	--text-color-coom-name: #2500FF;
+	--text-color-comfort: #aaaaaa;
+	--text-color-error: #a94442;
+	--text-color-unexpected: #CC0000;
+	--text-color-not-found: red;
+	--text-color-create-page: #bd0019;
+	--text-color-success: #23C552;
+	--text-color-knowwe-ok: #6A9514;
+	--text-color-knowwe-warning: #ffd518;
+	--text-color-knowwe-error: #CC3333;
+	--text-color-fail: #F84F31;
+	--text-color-location-embraced: #E66432;
+	--text-color-condition-fulfilled: #CFFFCF;
+	--text-color-condition-false: #FFCFCF;
+
+
+	/* pretty print */
+	--text-color-str: #489a1b;
+	--text-color-kwd: #1b609a;
+	--text-color-com: #888;
+	--text-color-typ: #666;
+	--text-color-lit: #066;
+	--text-color-pun: #660;
+	--text-color-pln: #000;
+	--text-color-tag: #008;
+	--text-color-atn: #606;
+	--text-color-atv: #080;
+	--text-color-dec: #606;
+
+	--text-color-media-str: #060;
+	--text-color-media-kwd: #006;
+	--text-color-media-com: #600;
+	--text-color-media-typ: #404;
+	--text-color-media-lit: #044;
+	--text-color-media-pun: #440;
+	--text-color-media-pln: #000;
+	--text-color-media-tag: #006;
+	--text-color-media-atn: #404;
+	--text-color-media-atv: #060;
+
+	/* watchlist */
+	--text-color-watches-general: black;
+	--text-color-watches-expression: rgb(0, 128, 0);
+	--text-color-watches-value: rgb(150, 110, 120);
+	--text-color-watches-expressionerror: red;
+	--hover-color-watches-line: rgba(240, 240, 241, 0.62);
+
+	/* CBX colors */
+	--text-color-corporate-blue: #173A64;
+	--text-color-cbx-yellow: #808000;
+	--text-color-cbx-green: #008000;
+	--text-color-cbx-blue: #2828A0;
+	--text-color-cbx-red: #d11414;
+	--text-color-cbx-dark-grey: #004000;
+	--text-color-cbx-light-rose: #966E78;
+	--text-color-cbx-grey-rose: #a69393;
+	--border-text-color-cbx: gray;
+	--bg-color-cbx-window: #EEEEEE;
+	--bg-color-cbx-highlight: #ffffff;
+	--bg-color-cbx-button: #DEDEDE;
+	--bg-color-cbx-filter: darkslategray;
+
+	/*-------- borders --------*/
+	--border-color-default: #ccc;
+	--border-color-none: #ffffff;
+	--border-color-secondary: grey;
+	--border-color-panel: #e2e2e9;
+	--border-color-input: inherit;
+	--border-color-table: #DDD;
+	--border-color-form: #ccc;
+	--border-color-form-forcus: #66afe9;
+	--border-color-infobox: #ebccd1;
+	--border-color-light: #9ACBFB;
+
+	/*-------- hover --------*/
+	--hover-bg-color-links: transparent;
+	--hover-text-color-links: #444444;
+	--hover-bg-color-li: #f5f5f5;
+	--hover-bg-color-text-field: #f9f9f9;
+	--hover-text-color-pagename: inherit;
+	--hover-text-color-dropdown: #262626;
+	--hover-text-color-header-icons: blue;
+
+	--hover-bg-color-btn-default: #eee;
+	--hover-text-color-btn-default: #000000;
+	--hover-border-color-btn-default: #adadad;
+
+	/*-------- tables --------*/
+	--bg-color-table-list-sections: #E9E9E9;
+	--bg-color-table-odd-th: #EEE;
+	--bg-color-table: rgb(0, 0, 0, 0);
+	--table-row-bg-color-odd: rgba(195, 195, 195, 0.1);
+	--table-row-bg-color-zebra-odd: #f9f9f9;
+
+	/* Tools */
+	--color-pagination-tools: #808080;
+	--color-icon-user: #8a6d3b;
+
+	/* styles with images */
+	--bg-color-markupMenuIndicator: white /*url(../../templates/KnowWE/images/arrdownsmall.gif)*/;
+}
+
+/* ######################################################## */
+/* ------------- Introduce Dark Mode Variables ----------- */
+/* ######################################################## */
+
+.dark-mode {
+	/*-------- backgrounds --------*/
+	--bg-color-content: #2b2b2b;
+	--bg-color-base: #3c3f41;
+	--bg-color-default-Markup: #3c3f41;
+	--bg-color-panel-heading: #343434;
+	--bg-color-tt: #464646;
+	--bg-color-tooltipster-menu: #3c3f41; /* should be replaced by --bg-color-base */
+	--bg-color-footer: #3c3f41;
+	--bg-color-edit: #3c3f41;
+	--bg-color-infobox: #3d3d3d;
+	--bg-color-information: #626262;
+	--bg-color-light: #466785;
+	--bg-color-right-panel-top: #343434;
+	--bg-color-head-transparent: rgba(72, 74, 79, 0.65);
+	--bg-color-highlight: rgba(255, 184, 69, 0.7);
+
+
+	/*-------- text --------*/
+	--text-color-primary: #dee2e6;
+	--text-color-primary-link: #3f9ee9;
+	--text-color-button: #dee2e6;
+	--text-color-tooltipster: #dee2e6;
+	--text-color-default-head: #3f9ee9;
+	--text-color-panel-heading: #dee2e6;
+	--text-color-dropdown-markupMenu: #dee2e6;
+	--text-color-markup-menu-item-link: #00aeff;
+	--text-color-secondary: #b9b9b9;
+	--text-information: #7dd5ff;
+
+	/*-- StyleRenderer --*/
+	--text-color-keywords: #dee2e6;
+	--text-color-content: #b6b6b6;
+	--text-color-comment: #A0A0A0;
+	--text-color-property: #0099ff;
+	--text-color-solution: #f765ac;
+	--text-color-flowchart-exit: #dee2e6;
+	--text-color-number: #f86489;
+	--text-color-constant: #f86489;
+	--text-color-operator: #79c3ff;
+	--text-color-locale: #00C1C1;
+	--text-color-choice: #0480ff;
+	--text-color-question: #4cd557;
+	--text-color-condition: #4cd557;
+	--text-color-questionnaire: #A9E20A;
+	--text-color-flowchart: #A9E20A;
+	--text-color-flowchart-start: #005028;
+	--text-color-prompt: #00b603;
+	--text-color-package-name: rgba(252, 141, 169, 0.7);
+	--text-color-package-name-opaque: #fc8da9;
+	--text-color-error: #ff0500;
+	--text-color-create-page: #ff0500;
+
+	/*--text-color-answer-reference: #2828a0;*/
+	/*--text-color-variable: #E69500;*/
+	/*--text-color-coom-name: #2500FF;*/
+	/*--text-color-comfort: #aaaaaa;*/
+	/*--text-color-unexpected: #CC0000;*/
+	/*--text-color-not-found: red;*/
+	/*--text-color-success: #23C552;*/
+	/*--text-color-fail: #F84F31;*/
+	/*--text-color-location-embraced: #E66432;*/
+	--text-color-knowwe-ok: #80be00;
+	--text-color-condition-fulfilled: #74fa74;
+	--text-color-condition-false: #ff6767;
+
+	/* pretty print */
+	--text-color-str: #5fcb22;
+	--text-color-kwd: #39a4ff;
+	--text-color-com: #888;
+	--text-color-typ: #b9b9b9;
+	--text-color-lit: #00d9d9;
+	--text-color-pun: #e8e800;
+	--text-color-pln: #ffffff;
+	--text-color-tag: #a8a8ff;
+	--text-color-atn: #ff47ff;
+	--text-color-atv: #01d201;
+	--text-color-dec: #e700e7;
+
+	--text-color-media-str: #11c511;
+	--text-color-media-kwd: #8a8af1;
+	--text-color-media-com: #c01313;
+	--text-color-media-typ: #ff00ff;
+	--text-color-media-lit: #00b2b2;
+	--text-color-media-pun: #c7c701;
+	--text-color-media-pln: #ffffff;
+	--text-color-media-tag: #8484d7;
+	--text-color-media-atn: #e513e5;
+	--text-color-media-atv: #1cd01c;
+
+	/* watchlist */
+	--text-color-watches-general: #dee2e6;
+	--text-color-watches-value: rgb(238, 144, 162);
+	/*--hover-color-watches-line: rgba(240, 240, 241, 0.62);*/
+
+	/* CBX colors */
+	--text-color-corporate-blue: #4291fa;
+	--text-color-cbx-yellow: #cece00;
+	--text-color-cbx-green: #03d203;
+	--text-color-cbx-blue: #7878ff;
+	--text-color-cbx-red: #ff0606;
+	--text-color-cbx-dark-grey: #00a100;
+	--text-color-cbx-light-rose: #ff9fb9;
+	--text-color-cbx-grey-rose: #c99696;
+	--border-text-color-cbx: #d2d2d2;
+	--bg-color-cbx-window: #545454;
+	--bg-color-cbx-highlight: #5d5d5d;
+	--bg-color-cbx-button: #2b2b2b;
+	--bg-color-cbx-filter: #6fdada;
+
+	/*-------- borders --------*/
+	--border-color-panel: #444444;
+	--border-color-default: rgba(0, 0, 0, 0);
+	--border-color-input: #3c3f41;
+	--border-color-table: #464646;
+	--border-color-form: #464646;
+	--border-color-infobox: #8d6d6d;
+	--border-color-none: #2b2b2b;
+	--border-color-light: none;
+
+	/*-------- hover --------*/
+	--hover-bg-color-links: rgba(255, 255, 255, 0.1);
+	--hover-text-color-links: #4aa8ff;
+	--hover-bg-color-li: rgba(255, 255, 255, 0.1);
+	--hover-bg-color-text-field: rgba(255, 255, 255, 0.1);
+	--hover-text-color-pagename: #4aa8ff;
+	--hover-text-color-dropdown: #4aa8ff; /*#148cec;*/
+	--hover-text-color-header-icons: #00bdff;
+
+	--hover-bg-color-btn-default: rgba(255, 255, 255, 0.2);
+	--hover-text-color-btn-default: #ffffff;
+	--hover-border-color-btn-default: rgba(0, 0, 0, 0);
+
+	/*-------- tables --------*/
+	--bg-color-table-list-sections: #595959;
+	--table-row-bg-color-odd: rgba(215, 215, 215, 0.1);
+	--table-row-bg-color-zebra-odd: rgba(215, 215, 215, 0.1);
+	/*--bg-color-table-odd-th: #262626;*/
+	--bg-color-table-odd-th: #3c3f41;
+	--bg-color-table: rgb(0, 0, 0, 0);
+
+	/* Tools */
+	--color-pagination-tools: #afafaf;
+	--color-icon-user: #ffb738;
+
+	/* styles with images */
+	--bg-color-markupMenuIndicator: #3c3f41;
+}
