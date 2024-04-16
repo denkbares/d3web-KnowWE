@@ -29,8 +29,8 @@
     display: inline-block;
     text-decoration: none;
     line-height: normal;
-    border: 1px solid #DDD;
-    background: #F9F9F9;
+    border: 1px solid var(--border-color-table);
+    background: var(--bg-color-default-Markup);
     white-space: nowrap;
     box-sizing: content-box;
     -moz-box-sizing: content-box;

@@ -22,7 +22,7 @@
 /* ################################################## */
 
 .defaultMarkupFrame {
-	border: 1px solid #DDD;
+	border: 1px solid var(--border-color-table);
 	position: relative;
 	margin: 0 0 5px 0;
 	padding: 0 0 0 0;
@@ -35,7 +35,7 @@
 
 .defaultMarkup {
 	position: relative;
-	background-color: #F9F9F9;
+	background-color: var(--bg-color-default-Markup);
 	margin-right: 0;
 	margin-left: 0;
 	min-height: 30px;
@@ -55,6 +55,10 @@
 .frameless > .defaultMarkup > .markupText > .markupAnnotation,
 .frameless > .defaultMarkup > .markupText > .compilerAnnotations {
 	display: none;
+}
+
+.markupHeader {
+	background-color: var(--bg-color-base);
 }
 
 .frameless .markupHeader, .headerless .markupHeader {
@@ -103,11 +107,11 @@
 	opacity: 0.3;
 	z-index: 500;
 	max-width: 35px;
-	background-color: white;
+	background-color: var(--bg-color-base);
 	right: 1px;
 	position: absolute;
-	border-left: 1px solid #DDD;
-	border-bottom: 1px solid #DDD;
+	border-left: 1px solid var(--border-color-table);
+	border-bottom: 1px solid var(--border-color-table);
 	border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
 }
@@ -123,17 +127,18 @@
 
 .defaultMarkupFrame .markupMenuIndicator {
 	/*noinspection CssUnknownTarget*/
-	background: white url(../../templates/KnowWE/images/arrdownsmall.gif) no-repeat right 50%;
-	padding-right: 15px;
+	background: var(--bg-color-markupMenuIndicator) no-repeat right 50%;
+	/*padding-right: 15px;*/
+	padding: 0 15px 0 15px;
 }
 
 .defaultMarkupFrame .markupMenu {
 	display: none;
 	position: relative;
-	border: 2px solid #DDD; /*Template: Haddock*/
+	border: 2px solid var(--border-color-table); /*Template: Haddock*/
 	/*border: 1px solid #DDD; !*TODO: add for Template KnowWE*!*/
 	/*margin: -1px -2px -1px -1px; !*TODO: add for Template KnowWE*!*/
-	background-color: white;
+	background-color: var(--bg-color-base);
 	z-index: 750;
 	overflow: auto;
 	max-height: 70vh;
@@ -159,7 +164,7 @@
 .defaultMarkupFrame .markupMenuItem a.markupMenuItem {
 	padding: 0.25em;
 	margin: -0.25em;
-	color: #036;
+	color: var(--text-color-default-head);
 	border: 0;
 }
 
@@ -170,9 +175,9 @@
 }
 
 .defaultMarkupFrame a.markupMenuItem:hover {
-	background-color: #EEE;
+	background-color: var(--hover-bg-color-li);
 	text-decoration: none;
-	color: #003DF5;
+	color: var(--text-color-markup-menu-item-link);
 }
 
 .defaultMarkupFrame .headerMenu .markupIcon {
@@ -185,7 +190,7 @@
 
 .markupMenuDivider {
 	line-height: 0;
-	border-top: 1px solid #DDD;
+	border-top: 1px solid var(--border-color-table);
 	display: block;
 }
 
@@ -254,7 +259,7 @@ span.markupMenuItem {
 .defaultMarkupFrame .long-op-progress-container .long-progress-state:before {
 	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
 	content: "\f04d";
-	color: #CC3333;
+	color: var(--text-color-knowwe-error);
 	font-weight: 900;
 }
 
@@ -265,7 +270,7 @@ span.markupMenuItem {
 .defaultMarkupFrame .long-op-progress-container .long-progress-error .long-progress-state:before {
 	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
 	content: "\f111";
-	color: #CC3333;
+	color: var(--text-color-knowwe-error);
 	background-image: none;
 	font-weight: 900;
 }
@@ -277,7 +282,7 @@ span.markupMenuItem {
 .defaultMarkupFrame .long-op-progress-container .long-progress-success .long-progress-state:before {
 	font-family: "Font Awesome 6 Pro", "Font Awesome 6 Free";
 	content: "\f111";
-	color: #6A9514;
+	color: var(--text-color-knowwe-ok);
 	font-weight: 900;
 }
 
@@ -389,7 +394,7 @@ table.list-sections td.list-sections-compilers,
 table.list-sections td.list-sections-description,
 table.list-sections td.list-sections-description a:link,
 table.list-sections td.list-sections-description a:visited {
-	color: #888;
+	color: var(--text-color-secondary);
 	white-space: pre-wrap;
 	max-width: 50vw;
 }
@@ -406,19 +411,19 @@ table.list-sections td.list-sections-blank {
 
 table.list-sections th:has(.list-sections-separator),
 table.list-sections td.list-sections-separator {
-	border-left: 3px solid #888;
+	border-left: 3px solid var(--text-color-secondary);
 }
 
 table.list-sections td.list-sections-progress {
-	color: #888;
+	color: var(--text-color-secondary);
 }
 
 table.list-sections tr:nth-child(odd) {
-	background-color: rgba(195, 195, 195, 0.1);
+	background-color: var(--table-row-bg-color-odd);
 }
 
 table.list-sections tr.highlighted {
-	background-color: #E9E9E9 !important;
+	background-color: var(--bg-color-table-list-sections) !important;
 }
 
 .grouped-list-section-wrapper .filter-input .form-control {
@@ -492,11 +497,11 @@ table.list-sections tr.highlighted {
 	position: absolute;
 	top: 1px;
 	right: 1px;
-	border-left: 1px solid #DDD;
-	border-bottom: 1px solid #DDD;
+	border-left: 1px solid var(--border-color-table);
+	border-bottom: 1px solid var(--border-color-table);
 	border-bottom-left-radius: 10px;
 	-moz-border-radius-bottomleft: 10px;
-	background-color: white;
+	background-color: var(--bg-color-base);
 	white-space: nowrap;
 	z-index: 500;
 	overflow: visible;
@@ -509,14 +514,14 @@ table.list-sections tr.highlighted {
 
 .toolMenuFrame .markupMenuIndicator {
 	/*noinspection CssUnknownTarget*/
-	background: white url(../../templates/KnowWE/images/arrdownsmall.gif) no-repeat right 50%;
+	background: var(--bg-color-base) url(../../templates/KnowWE/images/arrdownsmall.gif) no-repeat right 50%;
 	padding-right: 15px;
 }
 
 .toolMenuFrame .markupMenu {
 	position: relative;
-	border: 2px solid #DDD;
-	background-color: white;
+	border: 2px solid var(--border-color-table);
+	background-color: var(--bg-color-base);
 	z-index: 750;
 	max-height: 70vh;
 	overflow: auto;
@@ -548,7 +553,7 @@ table.list-sections tr.highlighted {
 .InlineTool a.markupMenuInlineItem {
 	padding: 0 3px 0 3px;
 	margin: 0 1px 0 1px;
-	border: 1px solid grey;
+	border: 1px solid var(--border-color-secondary);
 	border-radius: 3px;
 	display: inline-block;
 	min-width: 1.5em;
@@ -563,9 +568,9 @@ table.list-sections tr.highlighted {
 }
 
 .toolMenuFrame a.markupMenuItem:hover {
-	background-color: #EEE;
+	background-color: var(--hover-bg-color-btn-default);
 	text-decoration: none;
-	color: #003DF5;
+	color: var(--text-color-markup-menu-item-link);
 }
 
 .toolMenuFrame .markupHeader .markupIcon {
@@ -585,8 +590,8 @@ table.list-sections tr.highlighted {
 	text-decoration: none;
 	text-align: center;
 	line-height: normal;
-	border: 1px solid #DDD;
-	background: #F9F9F9;
+	border: 1px solid var(--border-color-table);
+	background: var(--bg-color-default-Markup);
 	white-space: nowrap;
 	box-sizing: content-box;
 	-moz-box-sizing: content-box;
@@ -615,11 +620,11 @@ table.list-sections tr.highlighted {
 /* ################################################## */
 
 .packageOpacity {
-	color: rgba(121, 79, 64, 0.4);
+	color: var(--text-color-package-name);
 }
 
 .defaultMarkupFrame.type_Package .packageOpacity {
-	color: rgba(121, 79, 64, 1.0)
+	color: var(--text-color-package-name-opaque);
 }
 
 i.packageOpacity {
@@ -645,7 +650,7 @@ i.knowwe-paginationNavigationIcons {
 	display: inline-block;
 	margin-left: 10px;
 	margin-right: 10px;
-	border-left: 2px solid #DDD;
+	border-left: 2px solid var(--border-color-table);
 	height: 10px;
 }
 
@@ -655,7 +660,7 @@ i.knowwe-paginationNavigationIcons {
 	position: relative;
 	white-space: nowrap;
 	display: inline-block;
-	color: #808080;
+	color: var(--color-pagination-tools);
 }
 
 .knowwe-paginationToolbar label {
@@ -669,14 +674,14 @@ i.knowwe-paginationNavigationIcons {
 }
 
 table.knowwe-pagination th.sortable span {
-	color: #036;
+	color: var(--text-color-default-head);
 	text-decoration: none;
 	cursor: pointer;
 	user-select: none;
 }
 
 table.knowwe-pagination th.sortable span:hover {
-	color: blue;
+	color: var(--hover-text-color-header-icons);
 	text-decoration: underline;
 	cursor: pointer;
 }
@@ -687,7 +692,7 @@ table.knowwe-pagination th.sortable .sorting-icon {
 }
 
 table.knowwe-pagination th.sortable .secondary {
-	color: grey;
+	color: var(--text-color-secondary);
 }
 
 table.knowwe-pagination th img {
@@ -803,7 +808,7 @@ table.knowwe-pagination th img.filter:hover {
 
 .inline-definition-head {
 	font-size: 50%;
-	color: #888;
+	color: var(--text-color-secondary);
 }
 
 .inline-definition-data {
@@ -812,7 +817,7 @@ table.knowwe-pagination th img.filter:hover {
 .inline-definition-data:AFTER {
 	content: ")";
 	font-size: 50%;
-	color: #888;
+	color: var(--text-color-secondary);
 }
 
 .haddock a.anchor {
@@ -827,11 +832,11 @@ table.knowwe-pagination th img.filter:hover {
 /* ################################################## */
 
 .knowwe-warning, .knowwe-yellow {
-	color: #ffd518;
+	color: var(--text-color-knowwe-warning);
 }
 
 .knowwe-error, .knowwe-highprio, .knowwe-red {
-	color: #CC3333
+	color: var(--text-color-knowwe-error);
 }
 
 .knowwe-lowprio {
@@ -839,19 +844,19 @@ table.knowwe-pagination th img.filter:hover {
 }
 
 .knowwe-ok, i.knowwe-green {
-	color: #6A9514;
+	color: var(--text-color-knowwe-ok);
 }
 
 .knowwe-blue {
-	color: #036;
+	color: var(--text-color-default-head); /*TODO how to solve knowwe blue in dark mode?? #036*/
 }
 
 .knowwe-skip {
-	color: #6A9514;
+	color: var(--text-color-knowwe-ok);
 }
 
 .knowwe-disabled, .knowwe-deactivated, .knowwe-gray, .knowwe-grey {
-	color: #999;
+	color: var(--text-color-secondary);
 }
 
 /*
@@ -866,117 +871,118 @@ table.knowwe-pagination th img.filter:hover {
 /* ################################################## */
 
 .style-keywords {
-	color: #000000;
+	color: var(--text-color-keywords);
 }
 
 .style-content {
-	color: #505050;
+	color: var(--text-color-content);
 }
 
 .style-comment {
-	color: #A0A0A0;
+	color: var(--text-color-comment);
 }
 
 .style-property {
-	color: #1e2864;
+	color: var(--text-color-property);
 }
 
 .style-solution {
-	color: #966e78;
+	color: var(--text-color-solution);
 }
 
 .style-flowchart-exit {
-	color: #500028;
+	color: var(--text-color-flowchart-exit);
 }
 
 .style-number {
-	color: #785066;
+	color: var(--text-color-number);
 }
 
 .style-constant {
-	color: #7d5066;
+	color: var(--text-color-constant);
 }
 
 .style-operator {
-	color: #2828a0;
+	color: var(--text-color-operator);
 }
 
 .style-locale {
-	color: #008080;
+	color: var(--text-color-locale);
 }
 
 .style-choice {
-	color: #2828a0;
+	color: var(--text-color-choice);
 }
 
 .style-question {
-	color: #008000;
+	color: var(--text-color-question);
 }
 
 .style-condition {
-	color: #008000;
+	color: var(--text-color-condition);
 }
 
 .style-questionnaire {
-	color: #808000;
+	color: var(--text-color-questionnaire);
 }
 
 .style-flowchart {
-	color: #808000;
+	color: var(--text-color-flowchart);
 }
 
 .style-flowchart-start {
-	color: #005028;
+	color: var(--text-color-flowchart-start);
 }
 
 .style-prompt {
-	color: #004000;
+	color: var(--text-color-prompt);
 }
 
 .style-package-name {
-	color: #794f40;
+	color: var(--text-color-package-name);
 }
 
 .style-answer-reference {
-	color: #2828a0;
+	color: var(--text-color-answer-reference);
 }
 
 .style-variable {
-	color: #E69500;
+	color: var(--text-color-variable);
 }
 
 .style-coom-name {
-	color: #2500FF;
+	color: var(--text-color-coom-name);
 }
 
 .style-comfort {
-	color: #aaaaaa;
+	color: var(--text-color-comfort);
 }
 
 .style-unexpected {
-	color: #CC0000;
+	color: var(--text-color-unexpected);
 }
 
 .style-not-found {
-	color: red;
+	color: var(--text-color-not-found);
 }
 
 .style-success {
-	color: #23C552;
+	color: var(--text-color-success);
 }
 
 .style-fail {
-	color: #F84F31;
+	color: var(--text-color-fail);
 }
 
 .style-location-embraced {
-	color: #E66432;
+	color: var(--text-color-location-embraced);
 }
 
 .style-condition-fulfilled {
-	background-color: #CFFFCF
+	background-color: var(--text-color-condition-fulfilled);
 }
 
 .style-condition-false {
-	background-color: #FFCFCF;
+	background-color: var(--text-color-condition-false);
 }
+

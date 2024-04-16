@@ -220,7 +220,7 @@ a:hover {
 
 .message-dialog {
 	position: fixed;
-	background: #FFF6BF;
+	background: var(--bg-color-infobox);
 	border-bottom: 2px solid #FFD324;
 	border-top: 2px solid #FFD324;
 	z-index: 9999;
@@ -230,7 +230,7 @@ a:hover {
 }
 
 .message-dialog h2 {
-	background: #FFF6BF url(../images/msg_info.png) center no-repeat;
+	background: var(--bg-color-infobox) url(../images/msg_info.png) center no-repeat;
 	background-position: 10px 50%; /* x-pos y-pos */
 	padding: .5em;
 	padding-left: 40px;
@@ -250,7 +250,7 @@ a:hover {
 	height: 2em;
 	padding: .5em;
 	text-align: right;
-	background-color: #FFF6BF;
+	background-color: var(--bg-color-infobox);
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -285,23 +285,23 @@ code.box {
 }
 
 .warning {
-	background: #FFF6BF url(../images/msg_info_yellow.png) center no-repeat;
+	background: var(--bg-color-infobox) url(../images/msg_info_yellow.png) center no-repeat;
 	background-position: 10px 50%; /* x-pos y-pos */
 	padding: 5px 20px 5px 45px !important;
 }
 
 .error {
-	background: #FFF6BF url(../images/msg_cross.png) center no-repeat;
+	background: var(--bg-color-infobox) url(../images/msg_cross.png) center no-repeat;
 	background-position: 10px 50%; /* x-pos y-pos */
 	padding: 5px 20px 5px 45px;
 }
 
 .error_highlight {
-	background-color: #FFF6BF;
+	background-color: var(--bg-color-infobox);
 }
 
 .ok {
-	background: #FFF6BF url(../images/msg_checkmark.png) center no-repeat;
+	background: var(--bg-color-infobox) url(../images/msg_checkmark.png) center no-repeat;
 	background-position: 10px 50%; /* x-pos y-pos */
 	padding: 5px 20px 5px 45px;
 }

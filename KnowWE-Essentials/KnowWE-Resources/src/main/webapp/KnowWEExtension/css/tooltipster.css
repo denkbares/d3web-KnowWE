@@ -363,10 +363,10 @@ html {
 
 .tooltipster-knowwe {
 	border-radius: 5px;
-	border: 1px solid #cccccc;
-	background: #ededed;
+	border: 1px solid var(--border-color-default);
+	background: var(--bg-color-tooltipster-menu);
 	box-shadow: 0 0 14px rgba(0, 0, 0, 0.3);
-	color: #2c2c2c;
+	color: var(--text-color-tooltipster);
 	padding: 8px 10px;
 }
 .tooltipster-knowwe .tooltipster-content {
@@ -376,4 +376,8 @@ html {
 	overflow: auto;
 	max-width: 25vw;
 	max-height: 45vh;
+}
+.tooltipster-content button, .tooltipster-content input, optgroup, select, textarea{
+	color: var(--text-color-button);
+	background-color: var(--bg-color-content);
 }

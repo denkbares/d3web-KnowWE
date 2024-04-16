@@ -21,7 +21,7 @@
 }
 
 .sparqlTable .border .sparqltable td, .sparqlTable .border .sparqltable th {
-	border: 1px solid #DDD;
+	border: 1px solid var(--border-color-table);
 }
 
 .sparqlTable .hide-filter .filter-icon {
@@ -49,11 +49,11 @@
 }
 
 .sparqlTable .border .sparqltable thead tr:first-child {
-	background-color: #EEE;
+	background-color: var(--bg-color-table-odd-th);
 }
 
 .sparqlTable .sparqltable * TR.odd {
-	background-color: #EEE;
+	background-color: var(--bg-color-table-odd-th);
 }
 
 .sparqlTable.defaultMarkupFrame:hover {

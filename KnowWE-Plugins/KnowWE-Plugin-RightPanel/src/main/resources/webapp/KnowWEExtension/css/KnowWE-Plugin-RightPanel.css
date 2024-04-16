@@ -18,10 +18,10 @@
  */
 
 #rightPanel {
-	border-left: 1px solid #9ACBFB;
-	background-color: #f9f9f9;
+	border-left: 1px solid var(--border-color-light);
+	background-color: var(--bg-color-default-Markup);
 	padding-left: 4px;
-	color: #036;
+	color: var(--text-color-default-head);
 	z-index: 500;
 }
 
@@ -38,7 +38,7 @@
 }
 
 #rightPanel .rightpanelhide:hover > span {
-	color: blue !important;
+	color: var(--hover-text-color-header-icons) !important;
 }
 
 #rightPanel .rightpanelhide img {
@@ -51,27 +51,27 @@
 	padding-top: 3px;
 	padding-bottom: 3px;
 	cursor: pointer;
-	background: rgb(232, 242, 249);
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#f9f9f9), to(rgb(232, 242, 249))); /* Saf4+, Chrome */
-	background-image: -webkit-linear-gradient(top, #f9f9f9, rgb(232, 242, 249)); /* Chrome 10+, Saf5.1+ */
-	background-image: -moz-linear-gradient(top, #f9f9f9, rgb(232, 242, 249)); /* FF3.6+ */
-	background-image: -ms-linear-gradient(top, #f9f9f9, rgb(232, 242, 249)); /* IE10 */
-	background-image: -o-linear-gradient(top, #f9f9f9, rgb(232, 242, 249)); /* Opera 11.10+ */
-	background-image: linear-gradient(to bottom, #f9f9f9, rgb(232, 242, 249)); /* W3C */
+	background: var(--bg-color-right-panel-top);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(var(--bg-color-default-Markup)), to(var(--bg-color-right-panel-top))); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* Chrome 10+, Saf5.1+ */
+	background-image: -moz-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* FF3.6+ */
+	background-image: -ms-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* IE10 */
+	background-image: -o-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* Opera 11.10+ */
+	background-image: linear-gradient(to bottom, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* W3C */
 	background-position: 100% 0%;
 	background-size: cover;
-	border-top: 1px solid #9ACBFB;
-	background-color: #f9f9f9;
+	border-top: 1px solid var(--border-color-light);
+	background-color: var(--bg-color-default-Markup);
 }
 
 #rightPanel .topbar .title {
-	color: black;
+	color: var(--text-color-primary);
 	font-weight: bold;
 	margin-left: 4px;
 }
 
 #rightPanel .topbar .title i {
-	color: black;
+	color: var(--text-color-primary);
 	font-weight: bold;
 	margin-right: 0px;
 }
@@ -96,7 +96,7 @@
 	position: relative;
 	left: -4px;
 	width: 103%;
-	background-color: white;
+	background-color: var(--bg-color-base);
 }
 
 #rightPanel #custom {
@@ -117,8 +117,8 @@
 
 #watches .newwatch textarea {
 	min-width: 250px;
-	background-color: #F5FAFF;
-	border: 1px dashed black;
+	background-color: var(--bg-color-default-Markup);
+	border: 1px dashed var(--text-color-watches-general);
 }
 
 #watches div.watchlistline {
@@ -128,45 +128,45 @@
 }
 
 #watches div.watchlistline:hover {
-	background-color: rgba(240, 240, 241, 0.62);
+	background-color: var(--hover-color-watches-line);
 }
 
 #watches .watchlist .watchlistline span.expression {
-	color: rgb(0, 128, 0);
+	color: var(--text-color-watches-expression);
 	margin-right: 5px;
 }
 
 #watches .watchlist .watchlistline span.value {
-	color: rgb(150, 110, 120);
+	color: var(--text-color-watches-value);
 }
 
 #watches .watchlist .watchlistline span.value.expressionerror {
-	color: red;
+	color: var(--text-color-watches-expressionerror);
 }
 
 #watches .watchlist .watchlistline span.value ~ span.value:before {
 	content: " | ";
-	color: black;
+	color: var(--text-color-watches-general);
 }
 
 #watches .watchlist .watchlistline span.historyentry ~ span.historyentry:before {
 	content: ", ";
-	color: black;
+	color: var(--text-color-watches-general);
 }
 
 #watches .watchlist .history > .historyentry:before {
-	color: black;
+	color: var(--text-color-watches-general);
 	content: "[";
 }
 
 #watches .watchlist .historyentry:last-child:after {
-	color: black;
+	color: var(--text-color-watches-general);
 	content: "]";
 }
 
 #watches .watchlist .watchlistline span.expression::after {
 	content: "=";
-	color: black;
+	color: var(--text-color-watches-general);
 	margin-left: 5px;
 }
 
@@ -196,7 +196,7 @@
 }
 
 #watches div.iconcontainer:hover .icon {
-	color: blue;
+	color: var(--hover-text-color-header-icons);
 }
 
 #watches div.add img {
@@ -210,14 +210,14 @@
 #watches button {
 	height: 22px;
 	position: relative;
-	color: #036 !important;
+	color: var(--text-color-default-head) !important;
 	font-size: 12px !important;
 	margin-top: 5px;
 	margin-bottom: 8px;
 	cursor: pointer;
 	border: 0;
-	background: #F9F9F9;
-	border: 1px solid #DDD;
+	background: var(--bg-color-default-Markup);
+	border: 1px solid var(--border-color-table);
 }
 
 #watches button[disabled] {
@@ -236,7 +236,7 @@
 	-o-filter: grayscale(100%);
 	-ms-filter: grayscale(100%);
 	filter: grayscale(100%);
-	background-color: #F9F9F9 !important;
+	background-color: var(--hover-bg-color-text-field) !important;
 }
 
 #watches button.addwatch {
@@ -254,8 +254,8 @@
 }
 
 #watches button:hover {
-	color: blue !important;
-	background-color: #eee !important;
+	color: var(--hover-text-color-header-icons) !important;
+	background-color: var(--hover-bg-color-btn-default) !important;
 }
 
 #watches div.watchlistentry:hover img {

@@ -18,7 +18,7 @@
  */
 
 .ui-dialog {
-	border: 1px solid #9ACBFB !important;
+	border: 1px solid var(--border-color-light) !important;
 	padding: 0 0 0 0 !important;
 	z-index: 3000 !important;
 }
@@ -27,8 +27,8 @@
 	padding: .4em 1em;
 	position: relative;
 	background-image: none !important;
-	background-color: rgba(193, 206, 226, 0.65) !important;
-	color: #036 !important;
+	background-color: var(--bg-color-head-transparent) !important;
+	color: var(--text-color-default-head) !important;
 }
 
 .ui-dialog-titlebar h3 {
@@ -84,7 +84,7 @@
 }
 
 .articleName a {
-	color: #036 !important;
+	color: var(--text-color-default-head) !important;
 }
 
 .articleName a:hover {
@@ -129,17 +129,17 @@
 	margin-bottom: 0 !important;
 	padding-left: 3px;
 	white-space: pre-wrap;
-	border: 1px solid #DDD;
-	border-right: 1px solid white;
-	border-left: 1px solid white;
-	border-bottom: 1px solid white;
+	border: 1px solid var(--border-color-table);
+	border-right: 1px solid var(--border-color-none);
+	border-left: 1px solid var(--border-color-none);
+	border-bottom: 1px solid var(--border-color-none);
 }
 
 #compositeEdit .objectinfo.preview:hover {
-	border-right: 1px solid #DDD;
-	border-left: 1px solid #DDD;
-	border-bottom: 1px solid #DDD;
-	background-color: #F9F9F9;
+	border-right: 1px solid var(--border-color-table);
+	border-left: 1px solid var(--border-color-table);
+	border-bottom: 1px solid var(--border-color-table);
+	background-color: var(--bg-color-default-Markup);
 }
 
 #compositeEdit .onlyObjectInfoPage {
@@ -157,7 +157,7 @@
 }
 
 #compositeEdit .ueeditmarker {
-	background-color: #9ACBFB;
+	background-color: var(--bg-color-light);
 	position: absolute;
 	width: 3px;
 	left: -9px;
@@ -174,7 +174,7 @@
 }
 
 .tool-menu-click input {
-	background-color: #F5FAFF;
+	background-color: var(--bg-color-edit);
 	transition: width 100ms linear;
 }
 
@@ -201,7 +201,7 @@
 	background-image: none;
 	margin: 0 0 0 0;
 	padding: .4em 1em !important;
-	background-color: rgba(193, 206, 226, 0.65) !important;
+	background-color: var(--bg-color-head-transparent) !important;
 	position: relative;
 	/* bottom: 0px; */
 	/* right: 0px; */
@@ -223,7 +223,7 @@
 	margin-right: 5px !important;
 	margin-top: 0px !important;
 	margin-bottom: 0px !important;
-	color: #036 !important;
+	color: var(--text-color-default-head) !important;
 }
 
 .no-close .ui-dialog-titlebar-close {

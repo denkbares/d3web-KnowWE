@@ -90,8 +90,8 @@ b.roundedCorners {
 }
 
 body {
-	color: black;
-	background: white;
+	color: var(--text-color-primary);
+	background: var(--bg-color-content);
 	margin: 0;
 	tab-size: 4;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Liberation Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -142,7 +142,7 @@ blockquote p {
 }
 
 div.pagename a:hover {
-	color: inherit;
+	color: var(	--hover-text-color-pagename);
 	text-decoration: none;
 }
 
@@ -303,8 +303,8 @@ code, tt, pre {
 }
 
 tt {
-	color: #000;
-	background-color: #f0f0f0;
+	color: var(--text-color-primary);
+	background-color: var(--bg-color-tt);
 }
 
 pre {
@@ -312,8 +312,9 @@ pre {
 	white-space: pre;
 	margin: 1em 2.5%;
 	padding: 0.5em;
-	background: #f9f9f9;
-	border: 1px solid #ddd;
+	background: var(--bg-color-default-Markup);
+	border: 1px solid var(--border-color-table);
+	color: var(--text-color-panel-heading);
 }
 
 /*ie6 hack*/
@@ -335,7 +336,7 @@ pre {
 
 /* +++ 250 Hyperlinks +++ */
 a {
-	color: #036;
+	color: var(--text-color-primary-link);
 	text-decoration: none;
 }
 
@@ -381,13 +382,13 @@ a.wikipage {
 }
 
 a.createpage {
-	color: #bd0019;
+	color: var(--text-color-create-page);
 	text-decoration: none;
-	border-bottom: 1px solid #bd0019;
+	border-bottom: 1px solid var(--text-color-create-page);
 }
 
 .createpage:after {
-	background-color: #bd0019;
+	background-color: var(--text-color-create-page);
 }
 
 a.external {
@@ -576,13 +577,13 @@ td .information, td .info, td .warning, td .error {
 }
 
 .wikitable * th {
-	background-color: #eee;
+	background-color: var(--bg-color-table-odd-th);
 	vertical-align: top;
 }
 
 .wikitable thead tr {
-	background-color: #eee;
-	border-bottom: 1px solid #ddd;
+	background-color: var(--bg-color-table-odd-th);
+	border-bottom: 1px solid var(--border-color-table);
 }
 
 .wikitable * td {
@@ -592,7 +593,7 @@ td .information, td .info, td .warning, td .error {
 }
 
 .zebra-table tr.odd td {
-	background-color: #eee;
+	background-color: var(--bg-color-table-odd-th);
 }
 
 .wikitable * td.split {
@@ -604,7 +605,7 @@ td .information, td .info, td .warning, td .error {
 }
 
 .editarea .wikitable tr:first-child td {
-	border-top: 1px solid #ddd;
+	border-top: 1px solid var(--border-color-table);
 }
 
 .wikitable > thead > tr > th, .wikitable > tbody > tr > th,
@@ -614,11 +615,11 @@ td .information, td .info, td .warning, td .error {
 	border-top: 0;
 	border-left: 0;
 	border-right: 0;
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid var(--border-color-table);
 }
 
 .editarea .wikitable > tbody > tr:last-child > td {
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid var(--border-color-table);
 }
 
 .wikitable > thead > tr > th, .wikitable > tbody > tr > th,
@@ -1221,7 +1222,7 @@ th.changenote, td.changenote {
 #morebutton a:hover, a.action:hover, #sectiontoc a:hover
 .userbox a.action:hover, a.action.quick2bottom:hover, a.action.quick2top:hover,
 .nav-pills a:hover {
-	background-color: #eee;
+	background-color: var(--hover-bg-color-btn-default);
 }
 
 .navigation ul {
@@ -1429,7 +1430,7 @@ body.view {
 .index .header, .index .header:hover, .index .header:focus, .index .header.focus {
 	padding: 4px;
 	background: #162746;
-	border: 1px solid #ddd;
+	border: 1px solid var(--border-color-table);
 	text-align: center;
 	font-size: 1.4em;
 }
@@ -1510,7 +1511,7 @@ a.toc:hover {
 .weblogentryheading {
 	padding: 0.25em 0.5em;
 	font-size: 90%;
-	background: #e0e0e0;
+	background: var(--bg-color-weblogentry);
 	float: right;
 }
 
@@ -1519,7 +1520,7 @@ a.toc:hover {
 	font-size: 120%;
 	line-height: 1.2;
 	font-weight: bold;
-	background: #e0e0e0;
+	background: var(--bg-color-weblogentry);
 }
 
 .weblogentrybody {
@@ -1530,7 +1531,7 @@ a.toc:hover {
 .weblogentryfooter {
 	font-size: 90%;
 	padding: 0.25em 0.5em;
-	border-bottom: 3px solid #e0e0e0;
+	border-bottom: 3px solid var(--bg-color-weblogentry);
 	clear: both;
 }
 
@@ -1557,7 +1558,7 @@ a.toc:hover {
 }
 
 .weblogcommentstitle {
-	background: #e0e0e0;
+	background: var(--bg-color-weblogentry);
 	margin: 1em 0.5em 0 0.5em;
 	padding: 0.5em;
 	font-weight: bold;
@@ -1566,7 +1567,7 @@ a.toc:hover {
 }
 
 .weblogcomments {
-	background: #f9f9f9;
+	background: var(--bg-color-default-Markup);
 	margin: 0 0.5em 1em 0.5em;
 	padding: 1em;
 }
@@ -1583,13 +1584,13 @@ a.toc:hover {
 
 .recentchanges td {
 	vertical-align: top;
-	border-bottom: 1px solid #f9f9f9;
+	border-bottom: 1px solid var(--bg-color-default-Markup);
 }
 
 .recentchanges .date {
 	vertical-align: bottom;
-	border-top: 1.5em solid white;
-	background-color: #f9f9f9 !important;
+	border-top: 1.5em solid var(--bg-color-base);
+	background-color: var(--bg-color-default-Markup) !important;
 	border-bottom: none;
 }
 
@@ -2177,95 +2178,95 @@ pre.prettyprint {
 }
 
 .str {
-	color: #489a1b;
+	color: var(--text-color-str);
 }
 
 /* string 080*/
 .kwd {
-	color: #1b609a;
+	color: var(--text-color-kwd);
 }
 
 /*keyword 008*/
 .com {
-	color: #888;
+	color: var(--text-color-com);
 }
 
 /*800*/
 .typ {
-	color: #666;
+	color: var(--text-color-typ);
 }
 
 .lit {
-	color: #066;
+	color: var(--text-color-lit);
 }
 
 .pun {
-	color: #660;
+	color: var(--text-color-pun);
 }
 
 .pln {
-	color: #000;
+	color: var(--text-color-pln);
 }
 
 .tag {
-	color: #008;
+	color: var(--text-color-tag);
 }
 
 .atn {
-	color: #606;
+	color: var(--text-color-atn);
 }
 
 .atv {
-	color: #080;
+	color: var(--text-color-atv);
 }
 
 .dec {
-	color: #606;
+	color: var(--text-color-dec);
 }
 
 @media print {
 	.str {
-		color: #060;
+		color: var(--text-color-media-str);
 	}
 
 	.kwd {
-		color: #006;
+		color: var(--text-color-media-kwd);
 		font-weight: bold;
 	}
 
 	.com {
-		color: #600;
+		color: var(--text-color-media-com);
 		font-style: italic;
 	}
 
 	.typ {
-		color: #404;
+		color: var(--text-color-media-typ);
 		font-weight: bold;
 	}
 
 	.lit {
-		color: #044;
+		color: var(--text-color-media-lit);
 	}
 
 	.pun {
-		color: #440;
+		color: var(--text-color-media-pun);
 	}
 
 	.pln {
-		color: #000;
+		color: var(--text-color-media-pln);
 	}
 
 	.tag {
-		color: #006;
+		color: var(--text-color-media-tag);
 		font-weight: bold;
 	}
 
 	.atn {
-		color: #404;
+		color: var(--text-color-media-atn);
 	}
 
 	.atv {
-		color: #060;
+		color: var(--text-color-media-atv);
 	}
 }
 
@@ -2543,7 +2544,7 @@ li.findpages .btn {
 
 #rightPanel .topbar {
 	border: none;
-	background: #e5e8ed;
+	background: var(--bg-color-panel-heading); /*#e5e8ed;*/
 }
 
 #rightPanel .tooltip {
@@ -2605,14 +2606,14 @@ li.findpages .btn {
 
 .header .navigation {
 	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);
-	background-color: #f9f9f9;
+	background-color: var(--bg-color-content);
 }
 
 .header .topline {
 	position: relative;
 	width: 100%;
 	box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.08);
-	background-color: white;
+	background-color: var(--bg-color-base);
 }
 
 @media only screen and (max-width: 768px) {
@@ -2652,4 +2653,214 @@ li.findpages .btn {
 
 .accordion, .tabbedAccordion {
 	border: none;
+}
+
+
+/* ############################################################################ */
+/* ------------- overwritten Haddock.css styles using CSS variables ----------- */
+/* ############################################################################ */
+.content{
+	background-color: var(--bg-color-content);
+}
+
+.content.active .sidebar, .content.active:after {
+	background-color: var(--bg-color-base);
+}
+
+button{
+	background-color: var(--bg-color-base);
+	color: var(--text-color-button);
+}
+
+.panel {
+	background-color: var(--bg-color-content);
+}
+
+.panel-default {
+	border-color: var(--border-color-panel);
+}
+.panel-default > .panel-heading {
+	color: var(--text-color-panel-heading);
+	background-color: var(--bg-color-panel-heading);
+	border-color: var(--border-color-panel);
+}
+
+.header a, .footer a {
+	color: var(--text-color-primary-link);
+}
+
+.dropdown-menu{
+	background-color: var(--bg-color-base);
+}
+
+.dropdown-menu > li > a {
+	color: var(--text-color-primary-link);
+}
+
+.dropdown-menu .btn-default {
+	background-color: var(--bg-color-content);
+}
+
+.btn-default {
+	border-color: var(--border-color-default);
+	background-color: var(--bg-color-base);
+	color: var(--text-color-button);
+}
+.btn-default:hover {
+	border-color: var(--hover-border-color-btn-default);
+	background-color: var(--hover-bg-color-btn-default);
+	color: var(--hover-text-color-btn-default);
+}
+
+.list-group-item {
+	background-color: var(--bg-color-base);
+}
+
+a.list-group-item, button.list-group-item {
+	color: var(--text-color-dropdown-markupMenu);
+}
+
+.toc ul li:hover {
+	background: var(--hover-bg-color-li);
+}
+
+.list-hover li:hover a{
+	background: var(--hover-bg-color-li);
+}
+
+.list-hover li:hover {
+	background-color: var(--bg-color-content);
+}
+.dropdown-header {
+	color: var(--text-color-secondary);
+}
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus{
+	color: var(--hover-text-color-dropdown);
+	background-color: var(--hover-bg-color-li);
+	border-color: var(--border-color-default);
+
+}
+
+.header>.navigation .nav .open>a, .header>.navigation .nav>li>a:hover, .header>.navigation .nav>li>a:hover:focus {
+	background-color: var(--hover-bg-color-btn-default);
+}
+
+table{
+	background-color: var(--bg-color-table);
+}
+
+[class*=zebra] .odd {
+	background-color: var(--table-row-bg-color-zebra-odd);
+}
+
+.wikitable tr:first-child th {
+	border-bottom: 1px solid var(--border-color-table);
+}
+
+.sortable th:hover {
+	 background-color: var(--hover-bg-color-li);
+}
+
+caption {
+	color: var(--text-color-secondary);
+}
+
+.error{
+	color: var(--text-color-error);
+	border-color: var(--border-color-infobox);
+}
+
+.danger{
+	border-color: var(--border-color-infobox);
+
+}
+
+.user-asserted li .icon-user{
+	color: var(--color-icon-user);
+}
+.form-group select{
+	background-color: var(--bg-color-base);
+	color: var(--text-color-primary);
+	border-color: var(--border-color-form);
+}
+.form-control:focus {
+	border-color: var(--border-color-form-forcus);
+}
+
+.stickyOn {
+	background: var(--bg-color-base);
+}
+.info, .information {
+	background-color: var(--bg-color-information);
+	color: var(--text-information);
+}
+
+legend {
+	color: var(--text-color-panel-heading);
+}
+
+/* Edit Tools */
+.edittoolbar {
+	background-color: var(--bg-color-content);
+	color: var(--text-color-secondary);
+
+	border-top: 1px solid var(--border-color-light);
+	border-left: 1px solid var(--border-color-light);
+	border-bottom: 1px solid var(--border-color-light);
+}
+.defaultEditTool {
+	border: 1px solid var(--border-color-light);
+	background-color: var(--bg-color-edit);
+}
+
+.haddock mark, .haddock .mark, .haddock .highlight {
+	background-color: var(--bg-color-highlight);
+	color: var(--text-color-primary);
+}
+
+/* ############################################################################ */
+/* ------------- overwritten quickiNeutral.css styles using CSS variables ----------- */
+/* ############################################################################ */
+
+.quickinterview .qablock:hover, .qablockHidden:hover {
+	background: var(--hover-bg-color-li);
+}
+
+
+input, select, .form-control{
+	background-color: var(--bg-color-base);
+	color: var(--text-color-primary);
+	border-color: var(--border-color-input);
+}
+.form-control{
+	border-color: var(--border-color-form);
+}
+
+input:hover, select:hover, .form-control:hover{
+	border-color: var(--hover-border-color-btn-default);
+	background-color: var(--hover-bg-color-btn-default);
+	color: var(--hover-text-color-btn-default);
+}
+
+/* ######################################################################################## */
+/* ------------- overwritten jquery-ui.theme.min.css styles using CSS variables ----------- */
+/* ######################################################################################## */
+
+.ui-widget-content {
+	background: var(--bg-color-content);
+	color: var(--text-color-primary);
+}
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+	border-color: 1px solid var(--border-color-default);
+	background: var(--bg-color-base) 50% 50% repeat-x; /* url(images/ui-bg_glass_75_dadada_1x400.png)  */
+	color: var(--text-color-button);
+}
+
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
+	border-color: 1px solid var(--border-color-default);
+	background: var(--bg-color-base)  50% 50% repeat-x; /* url(images/ui-bg_glass_75_dadada_1x400.png)*/
+	color: var(--text-color-button);
+}
+.ui-widget-content a {
+	color: var(--text-color-primary);
 }
