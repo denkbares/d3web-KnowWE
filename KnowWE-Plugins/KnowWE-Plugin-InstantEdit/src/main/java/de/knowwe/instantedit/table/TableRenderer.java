@@ -5,10 +5,11 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
+import de.knowwe.util.Icon;
 
 /**
  * Class to render tool menu for wiki tables.
- * 
+ *
  * @author volker_belli
  * @created 16.03.2012
  */
@@ -18,7 +19,7 @@ public final class TableRenderer implements Renderer {
 
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult out) {
-			out.appendHtml("<img src='KnowWEExtension/images/table/table-menu-icon.png' />");
+			out.appendHtml(Icon.EDITTABLE.toHtml());
 		}
 	}
 
@@ -42,5 +43,4 @@ public final class TableRenderer implements Renderer {
 		out.appendHtml("</div>");
 		out.appendHtml("</div>");
 	}
-
 }
