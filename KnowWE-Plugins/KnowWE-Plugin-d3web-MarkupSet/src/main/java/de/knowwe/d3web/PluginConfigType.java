@@ -27,6 +27,7 @@ import de.knowwe.kdom.AnonymousType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.util.Icon;
 
 public class PluginConfigType extends DefaultMarkupType {
 
@@ -46,7 +47,7 @@ public class PluginConfigType extends DefaultMarkupType {
 
 	private static class Renderer extends DefaultMarkupRenderer {
 		public Renderer() {
-			super("KnowWEExtension/images/settings_128.png");
+			super(Icon.SETTINGS);
 			setListAnnotations(true);
 			setPreFormattedStyle(false);
 		}

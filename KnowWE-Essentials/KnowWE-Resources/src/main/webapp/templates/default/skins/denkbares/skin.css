@@ -142,7 +142,7 @@ blockquote p {
 }
 
 div.pagename a:hover {
-	color: var(	--hover-text-color-pagename);
+	color: var(--hover-text-color-pagename);
 	text-decoration: none;
 }
 
@@ -2659,7 +2659,7 @@ li.findpages .btn {
 /* ############################################################################ */
 /* ------------- overwritten Haddock.css styles using CSS variables ----------- */
 /* ############################################################################ */
-.content{
+.content {
 	background-color: var(--bg-color-content);
 }
 
@@ -2667,7 +2667,7 @@ li.findpages .btn {
 	background-color: var(--bg-color-base);
 }
 
-button{
+button {
 	background-color: var(--bg-color-base);
 	color: var(--text-color-button);
 }
@@ -2679,6 +2679,7 @@ button{
 .panel-default {
 	border-color: var(--border-color-panel);
 }
+
 .panel-default > .panel-heading {
 	color: var(--text-color-panel-heading);
 	background-color: var(--bg-color-panel-heading);
@@ -2689,7 +2690,7 @@ button{
 	color: var(--text-color-primary-link);
 }
 
-.dropdown-menu{
+.dropdown-menu {
 	background-color: var(--bg-color-base);
 }
 
@@ -2706,6 +2707,7 @@ button{
 	background-color: var(--bg-color-base);
 	color: var(--text-color-button);
 }
+
 .btn-default:hover {
 	border-color: var(--hover-border-color-btn-default);
 	background-color: var(--hover-bg-color-btn-default);
@@ -2724,28 +2726,58 @@ a.list-group-item, button.list-group-item {
 	background: var(--hover-bg-color-li);
 }
 
-.list-hover li:hover a{
+.list-hover li:hover a {
 	background: var(--hover-bg-color-li);
 }
 
 .list-hover li:hover {
 	background-color: var(--bg-color-content);
 }
+
 .dropdown-header {
 	color: var(--text-color-secondary);
 }
-.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus{
+
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
 	color: var(--hover-text-color-dropdown);
 	background-color: var(--hover-bg-color-li);
 	border-color: var(--border-color-default);
+}
+
+.nav-tabs > li.active > a {
+	color: var(--text-color-primary);
+	background-color: var(--bg-color-base);
+	border: 1px solid var(--border-color-table);
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+	color: var(--text-color-primary);
+	background-color: var(--bg-color-base);
+	border: 1px solid var(--border-color-table);
 
 }
 
-.header>.navigation .nav .open>a, .header>.navigation .nav>li>a:hover, .header>.navigation .nav>li>a:hover:focus {
+.nav-tabs > li > a:hover {
+	border-color: var(--border-color-btn) var(--border-color-btn) var(--border-color-table);
+}
+
+.nav > li > a:hover, .nav > li > a:focus {
 	background-color: var(--hover-bg-color-btn-default);
 }
 
-table{
+.header > .navigation .nav .open > a, .header > .navigation .nav > li > a:hover, .header > .navigation .nav > li > a:hover:focus {
+	background-color: var(--hover-bg-color-btn-default);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+	background-color: var(--bg-color-default-Markup);
+}
+
+.table-striped > tbody > tr:nth-child(odd) > td, .table-striped > tbody > tr:nth-child(odd) > th {
+	background-color: var(--bg-color-default-Markup);
+}
+
+table {
 	background-color: var(--bg-color-table);
 }
 
@@ -2758,31 +2790,33 @@ table{
 }
 
 .sortable th:hover {
-	 background-color: var(--hover-bg-color-li);
+	background-color: var(--hover-bg-color-li);
 }
 
 caption {
 	color: var(--text-color-secondary);
 }
 
-.error{
+.error {
 	color: var(--text-color-error);
 	border-color: var(--border-color-infobox);
 }
 
-.danger{
+.danger {
 	border-color: var(--border-color-infobox);
 
 }
 
-.user-asserted li .icon-user{
+.user-asserted li .icon-user {
 	color: var(--color-icon-user);
 }
-.form-group select{
+
+.form-group select {
 	background-color: var(--bg-color-base);
 	color: var(--text-color-primary);
 	border-color: var(--border-color-form);
 }
+
 .form-control:focus {
 	border-color: var(--border-color-form-forcus);
 }
@@ -2790,6 +2824,7 @@ caption {
 .stickyOn {
 	background: var(--bg-color-base);
 }
+
 .info, .information {
 	background-color: var(--bg-color-information);
 	color: var(--text-information);
@@ -2808,6 +2843,7 @@ legend {
 	border-left: 1px solid var(--border-color-light);
 	border-bottom: 1px solid var(--border-color-light);
 }
+
 .defaultEditTool {
 	border: 1px solid var(--border-color-light);
 	background-color: var(--bg-color-edit);
@@ -2827,16 +2863,17 @@ legend {
 }
 
 
-input, select, .form-control{
+input, select, .form-control {
 	background-color: var(--bg-color-base);
 	color: var(--text-color-primary);
 	border-color: var(--border-color-input);
 }
-.form-control{
+
+.form-control {
 	border-color: var(--border-color-form);
 }
 
-input:hover, select:hover, .form-control:hover{
+input:hover, select:hover, .form-control:hover {
 	border-color: var(--hover-border-color-btn-default);
 	background-color: var(--hover-bg-color-btn-default);
 	color: var(--hover-text-color-btn-default);
@@ -2850,6 +2887,7 @@ input:hover, select:hover, .form-control:hover{
 	background: var(--bg-color-content);
 	color: var(--text-color-primary);
 }
+
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
 	border-color: 1px solid var(--border-color-default);
 	background: var(--bg-color-base) 50% 50% repeat-x; /* url(images/ui-bg_glass_75_dadada_1x400.png)  */
@@ -2858,9 +2896,10 @@ input:hover, select:hover, .form-control:hover{
 
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
 	border-color: 1px solid var(--border-color-default);
-	background: var(--bg-color-base)  50% 50% repeat-x; /* url(images/ui-bg_glass_75_dadada_1x400.png)*/
+	background: var(--bg-color-base) 50% 50% repeat-x; /* url(images/ui-bg_glass_75_dadada_1x400.png)*/
 	color: var(--text-color-button);
 }
+
 .ui-widget-content a {
 	color: var(--text-color-primary);
 }

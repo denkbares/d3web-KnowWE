@@ -1,16 +1,16 @@
 /*
  * Copyright (C) ${year} denkbares GmbH, Germany
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,6 +25,7 @@ import de.knowwe.core.kdom.basicType.AttachmentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.util.Icon;
 
 /**
  * Defines a resource that should be added to the knowledge base as a binary
@@ -45,7 +46,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
  * or <br>
  * <code>@src = &lt;filename&gt;</code> <br>
  * for local attachments of this article.
- * 
+ *
  * @author volker_belli
  * @created 07.10.2010
  */
@@ -71,9 +72,7 @@ public class ResourceType extends DefaultMarkupType {
 
 	public ResourceType() {
 		super(MARKUP);
-		this.setRenderer(new DefaultMarkupRenderer(
-				"KnowWEExtension/d3web/icon/resource24.png"));
+		this.setRenderer(new DefaultMarkupRenderer(Icon.FILE));
 		this.addCompileScript(new ResourceHandler());
 	}
-
 }

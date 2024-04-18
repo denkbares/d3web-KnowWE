@@ -181,7 +181,9 @@
 }
 
 .defaultMarkupFrame .headerMenu .markupIcon {
-	vertical-align: -7px;
+	/*vertical-align: -7px;*/
+	margin: 0 5px 0 0;
+
 }
 
 .defaultMarkupFrame .headerToolbar .markupIcon {

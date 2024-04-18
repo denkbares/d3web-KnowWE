@@ -19,6 +19,10 @@
 
 package de.knowwe.util;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.denkbares.strings.Strings;
 
 /**
@@ -28,7 +32,8 @@ import com.denkbares.strings.Strings;
  */
 public class Icon {
 
-	public static final Icon NONE = new Icon(null);
+	public static final Icon NONE = new Icon((String) null);
+	private List<Icon> overlayIcons;
 
 	// Navigation
 	public static final Icon NEXT = new Icon("fa-type fa-angle-right");
@@ -63,14 +68,17 @@ public class Icon {
 	public static final Icon LINK = new Icon("fa-type fa-link");
 	public static final Icon EXTERNAL_LINK = new Icon("fa-type fa-up-right-from-square");
 	public static final Icon CLIPBOARD = new Icon("fa-type fa-clipboard");
+	public static final Icon CLIPBOARD_CHECK = new Icon("fa-solid fa-clipboard-check");
 	public static final Icon CLOCK = new Icon("fa-type fa-clock");
 	public static final Icon SHARE = new Icon("fa-type fa-share");
 	public static final Icon LIGHTBULB = new Icon("fa-type fa-lightbulb");
 	public static final Icon SHOW = new Icon("fa-type fa-square-plus");
 	public static final Icon HIDE = new Icon("fa-type fa-square-minus");
 	public static final Icon COG = new Icon("fa-type fa-gear");
+	public static final Icon SETTINGS = new Icon("fa-solid fa-gears");
 	public static final Icon PREFERENCES = new Icon("fa-type fa-gear");
 	public static final Icon LIST = new Icon("fa-type fa-rectangle-list");
+	public static final Icon LIST_CHECK = new Icon("fa-solid fa-list-check");
 	public static final Icon COMMENT = new Icon("fa-type fa-comment");
 	public static final Icon STATISTICS = new Icon("fa-type fa-chart-line");
 	public static final Icon MINUS = new Icon("fa-type fa-minus");
@@ -91,6 +99,12 @@ public class Icon {
 	public static final Icon COMPILER = new Icon("fa-type fa-microchip");
 	public static final Icon HISTORY = new Icon("fa-type fa-clock-rotate-left");
 	public static final Icon VERSION = new Icon("fa-solid fa-hashtag");
+	public static final Icon BOLT = new Icon("fa-solid fa-bolt");
+	public static final Icon FILE_CIRCLE_CHECK = new Icon("fa-solid fa-file-circle-check");
+	public static final Icon SITEMAP = new Icon("fa-solid fa-sitemap");
+	public static final Icon TOOLS = new Icon("fa-solid fa-screwdriver-wrench");
+	public static final Icon DATABASE = new Icon("fa-solid fa-database");
+	public static final Icon CURSOR = new Icon("fa-solid fa-arrow-pointer");
 
 	// KnowWE specific
 	public static final Icon ARTICLE = new Icon("fa-type fa-file-lines");
@@ -102,6 +116,7 @@ public class Icon {
 	public static final Icon RENAME = new Icon("fa-type fa-font");
 	public static final Icon RUN = new Icon("fa-solid fa-play");
 	public static final Icon SELECT_TARGET = new Icon("fa-type fa-bullseye-pointer");
+	public static final Icon TARGET = new Icon("fa-solid fa-bullseye");
 	public static final Icon UNSELECT_TARGET = new Icon("fa-type fa-eraser");
 	public static final Icon CLEAR_UUT_STATE = new Icon("fa-type fa-eraser");
 	//temporary
@@ -137,6 +152,9 @@ public class Icon {
 	public static final Icon COLLAPSE = new Icon("fa-type fa-square-minus");
 	public static final Icon OPENTESTCASE = new Icon(LINK.getCssClass());
 	public static final Icon EDITTABLE = new Icon("fa-type fa-table");
+	public static final Icon TABLE_ROW = new Icon("fa-solid fa-table-rows");
+	public static final Icon TABLE_COL = new Icon("fa-solid fa-table-columns");
+	public static final Icon TABLE_PIVOT = new Icon("fa-solid fa-table-pivot");
 
 	// ON and OFF
 	public static final Icon TOGGLE_ON = new Icon("fa-type fa-toggle-on");
@@ -169,6 +187,20 @@ public class Icon {
 	public static final Icon WAITING = new Icon(LOADING.getCssClass());
 	public static final Icon CALCULATING = new Icon(LOADING.getCssClass());
 
+	//Alphabet
+	public static final Icon C = new Icon("fa-solid fa-c");
+	public static final Icon F = new Icon("fa-solid fa-f");
+
+	//Layered Icons
+	public static final Icon TARGET_CURSOR = new Icon(Icon.TARGET.addStyle("color: gray;"), Icon.CURSOR.addStyle("padding: 7px 0 0 10px;"));
+
+	public static final Icon DATABASE_WITH_CONST = new Icon(Icon.DATABASE.addColor(Color.GRAY)
+			.addStyle("opacity: 0.6;"), Icon.C.addStyle("padding: 2px 0 0 5px; scale: 0.9;"));
+	public static final Icon DATABASE_WITH_FUNCTION = new Icon(Icon.DATABASE.addColor(Color.GRAY)
+			.addStyle("opacity: 0.6;"), Icon.F.addStyle("padding: 2px 0 0 5px; scale: 0.9;"));
+	public static final Icon CLEAR_TABLE = new Icon(Icon.EDITTABLE.addColor(Color.GRAY)
+			.addStyle("opacity: 0.7;"), Icon.UNSELECT_TARGET.addStyle("padding: 8px 0 0 8px; scale: 0.8;"));
+
 	public enum Percent {
 		by33,
 		by100,
@@ -189,7 +221,19 @@ public class Icon {
 		this(cssClass, null, null, null);
 	}
 
+	private Icon(Icon... icons) {
+		this.overlayIcons = Arrays.asList(icons);
+		this.cssClass = "";
+		this.style = null;
+		this.title = null;
+		this.id = null;
+	}
+
 	private Icon(String cssClass, String style, String title, String id) {
+		this(cssClass, style, title, id, null);
+	}
+
+	private Icon(String cssClass, String style, String title, String id, List<Icon> overlayIcons) {
 		if (cssClass != null) {
 			if (isFontAweSomeProAvailable()) {
 				cssClass = cssClass.replace("fa-type ", "fa-regular ");
@@ -202,6 +246,7 @@ public class Icon {
 		this.style = style;
 		this.title = title;
 		this.id = id;
+		this.overlayIcons = overlayIcons;
 	}
 
 	private boolean isFontAweSomeProAvailable() {
@@ -215,6 +260,12 @@ public class Icon {
 		}
 	}
 
+	/**
+	 * @param image to be used as an icon
+	 * @return an icon with respective css properties to display the image
+	 * @deprecated try to use Font Awesome Icons only. This is to ensure different color styles (light, dark) to work properly
+	 */
+	@Deprecated
 	public static Icon fromImage(String image) {
 		// we require some icon to get a valid width, color will be set transparent to appear empty
 		return new Icon("fa-pencil image-icon", "color: transparent;" +
@@ -238,15 +289,34 @@ public class Icon {
 	 * Returns the HTML tag for the current icon.
 	 */
 	public String toHtml() {
-		String cssClass = this.cssClass;
-		if (title != null) {
-			if (Strings.isBlank(cssClass)) {
-				cssClass = "tooltipster";
+		String iconsHtml;
+		String clazz = "icon-container";
+		if (overlayIcons == null || overlayIcons.isEmpty()) {
+			String cssClass = this.cssClass;
+			if (title != null) {
+				if (Strings.isBlank(cssClass)) {
+					cssClass = "tooltipster";
+				}
+				else {
+					cssClass += " tooltipster";
+				}
 			}
-			else {
-				cssClass += " tooltipster";
-			}
+			return "<i class='" + cssClass + "' "
+					+ (style == null ? "" : "style='" + style + "'")
+					+ (title == null ? "" : "title='" + Strings.encodeHtml(title) + "'")
+					+ (id == null ? "" : "id='" + id + "'")
+					+ "></i>";
 		}
+		else {
+			iconsHtml = overlayIcons.stream()
+					.map(Icon::toHtmlWithoutContainer)
+					.collect(Collectors.joining());
+			clazz += (this.cssClass != null && !this.cssClass.isEmpty() ? " " + this.cssClass + " layered" : "");
+		}
+		return "<div class='" + clazz + "'>" + iconsHtml + "</div>";
+	}
+
+	private String toHtmlWithoutContainer() {
 		return "<i class='" + cssClass + "' "
 				+ (style == null ? "" : "style='" + style + "'")
 				+ (title == null ? "" : "title='" + Strings.encodeHtml(title) + "'")
@@ -255,23 +325,23 @@ public class Icon {
 	}
 
 	public Icon addStyle(String style) {
-		return new Icon(cssClass, style, title, id);
+		return new Icon(cssClass, style, title, id, overlayIcons);
 	}
 
 	public Icon addClasses(String... classes) {
-		return new Icon(cssClass + " " + Strings.concat(" ", classes), style, title, id);
+		return new Icon(cssClass + " " + Strings.concat(" ", classes), style, title, id, overlayIcons);
 	}
 
 	public Icon addColor(Color color) {
-		return new Icon(cssClass + " " + color.getCssClassName(), style, title, id);
+		return new Icon(cssClass + " " + color.getCssClassName(), style, title, id, overlayIcons);
 	}
 
 	public Icon addTitle(String title) {
-		return new Icon(cssClass, style, title, id);
+		return new Icon(cssClass, style, title, id, overlayIcons);
 	}
 
 	public Icon addId(String id) {
-		return new Icon(cssClass, style, title, id);
+		return new Icon(cssClass, style, title, id, overlayIcons);
 	}
 
 	public Icon fixWidth() {
@@ -279,18 +349,20 @@ public class Icon {
 	}
 
 	public Icon increaseSize(Percent percent) {
-		switch (percent) {
-			case by33:
-				return addClasses("fa-lg");
-			case by100:
-				return addClasses("fa-2x");
-			case by200:
-				return addClasses("fa-3x");
-			case by300:
-				return addClasses("fa-4x");
-			case by400:
-				return addClasses("fa-5x");
-		}
-		return this;
+		return switch (percent) {
+			case by33 -> addClasses("fa-lg");
+			case by100 -> addClasses("fa-2x");
+			case by200 -> addClasses("fa-3x");
+			case by300 -> addClasses("fa-4x");
+			case by400 -> addClasses("fa-5x");
+		};
+	}
+
+	public List<Icon> getOverlayIcons() {
+		return overlayIcons;
+	}
+
+	public void setOverlayIcons(List<Icon> overlayIcons) {
+		this.overlayIcons = overlayIcons;
 	}
 }

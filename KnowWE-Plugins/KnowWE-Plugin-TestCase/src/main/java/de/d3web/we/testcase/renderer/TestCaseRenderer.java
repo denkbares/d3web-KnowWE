@@ -20,6 +20,7 @@ package de.d3web.we.testcase.renderer;
 
 import de.d3web.we.testcase.kdom.TestCaseType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
+import de.knowwe.util.Icon;
 
 /**
  * Renderer for the Default Markup TestCaseType
@@ -31,7 +32,7 @@ import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 public class TestCaseRenderer extends DefaultMarkupRenderer {
 
 	public TestCaseRenderer() {
-		super("KnowWEExtension/d3web/icon/testsuite24.png");
+		super(Icon.FILE_CIRCLE_CHECK);
 	}
 
 }

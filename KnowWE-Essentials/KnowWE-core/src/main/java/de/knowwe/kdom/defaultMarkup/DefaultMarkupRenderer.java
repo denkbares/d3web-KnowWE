@@ -70,6 +70,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMarkupRenderer.class);
 
 	private final String iconPath;
+	private final Icon icon;
 
 	private ToolsRenderMode renderMode = ToolsRenderMode.MENU;
 	private boolean preFormattedStyle = true;
@@ -82,10 +83,21 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	public DefaultMarkupRenderer() {
-		this(null);
+		this(null, null);
 	}
 
 	public DefaultMarkupRenderer(String iconPath) {
+		this.iconPath = iconPath;
+		this.icon = null;
+	}
+
+	public DefaultMarkupRenderer(Icon icon) {
+		this.icon = icon;
+		this.iconPath = null;
+	}
+
+	public DefaultMarkupRenderer(Icon icon, String iconPath) {
+		this.icon = icon;
 		this.iconPath = iconPath;
 	}
 
@@ -117,21 +129,40 @@ public class DefaultMarkupRenderer implements Renderer {
 	}
 
 	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
-		String icon = getTitleIcon(section, user);
+		renderIcon(section, user, string);
 		String title = getTitleName(section, user);
-
-		// render icon
-		if (icon != null) {
-			string.appendHtml("<img class='markupIcon' src='" + icon + "' /> ");
-		}
-
 		// render heading
 		string.appendHtml("<span>").append(title).appendHtml("</span>");
 	}
 
+	protected void renderIcon(Section<?> section, UserContext user, RenderResult string) {
+		Icon icon = getTitleIcon(section, user);
+		if (icon != null) {
+			if (icon.getOverlayIcons() != null && !icon.getOverlayIcons().isEmpty()) {
+				List<Icon> updatedOverlayIcons = new ArrayList<>();
+				for (Icon overlayIcon : icon.getOverlayIcons()) {
+					updatedOverlayIcons.add(overlayIcon.addClasses("markupIcon"));
+				}
+				icon.setOverlayIcons(updatedOverlayIcons);
+			}
+			string.appendHtml(icon.addClasses("markupIcon").toHtml());
+		}
+		else {
+			String iconPath = getTitleIconPath(section, user);
+			if (iconPath != null) {
+				string.appendHtml("<img class='markupIcon' src='" + iconPath + "' />");
+			}
+		}
+	}
+
 	@SuppressWarnings("UnusedParameters")
-	protected String getTitleIcon(Section<?> section, UserContext user) {
+	private String getTitleIconPath(Section<?> section, UserContext user) {
 		return this.iconPath;
+	}
+
+	@SuppressWarnings("UnusedParameters")
+	private Icon getTitleIcon(Section<?> section, UserContext user) {
+		return this.icon;
 	}
 
 	protected String getTitleName(Section<?> section, UserContext user) {
@@ -187,7 +218,7 @@ public class DefaultMarkupRenderer implements Renderer {
 			clazz += " singleLine";
 		}
 		out.appendHtml("<span class='" + clazz
-					   + "' style='white-space: pre-wrap;'>");
+				+ "' style='white-space: pre-wrap;'>");
 		for (String messageString : messages) {
 			out.append(messageString).append("\n");
 		}
@@ -255,7 +286,7 @@ public class DefaultMarkupRenderer implements Renderer {
 						// check if the script manager has script for the type of this section or any sub type
 						// get all remaining managers for which there is currently no compiler
 						.filter(sm -> sm.canHaveScriptsForSubtree(rootSection.get())
-									  && Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
+								&& Compilers.getCompiler(rootSection, sm.getCompilerClass()) == null)
 						.toList();
 
 		// check that the found unused compiled scripts belong to types of sections that are actually in the current sub-KDOM
@@ -269,7 +300,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				if (scriptManager.scripts(type).allMatch(ScriptManager.IgnoreNotCompiledSections::isIgnored)) continue;
 				// otherwise add the error message
 				messages.add("This section has " + compilerClass.getSimpleName() + " knowledge, "
-							 + "but does not belong to package compiled by one.");
+						+ "but does not belong to package compiled by one.");
 			}
 		}
 	}
@@ -301,8 +332,8 @@ public class DefaultMarkupRenderer implements Renderer {
 		catch (Throwable e) {
 			content.delete(validLength, content.length());
 			content.appendHtmlElement("span", "Error while rendering content, if the problem persists, "
-											  + "please contact your administrator.\n"
-											  + Strings.getStackTrace(e, 10) + "\n\t...", "class", "error", "style", "white-space: pre");
+					+ "please contact your administrator.\n"
+					+ Strings.getStackTrace(e, 10) + "\n\t...", "class", "error", "style", "white-space: pre");
 			LOGGER.error("Exception while rendering content of " + section.get().getName(), e);
 		}
 
@@ -313,7 +344,7 @@ public class DefaultMarkupRenderer implements Renderer {
 
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, RenderResult string) {
 		string.appendHtml("<span class='" + type.toString().toLowerCase()
-						  + "' style='white-space: pre-wrap;'>");
+				+ "' style='white-space: pre-wrap;'>");
 		for (Message msg : messages) {
 			string.append(KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization()));
 			string.append("\n");
@@ -508,9 +539,9 @@ public class DefaultMarkupRenderer implements Renderer {
 			style = " style='white-space: normal;'";
 		}
 		string.appendHtml("<div id=\"box_" + sectionID
-						  + "\" class='defaultMarkup'>");
+				+ "\" class='defaultMarkup'>");
 		string.appendHtml("<div id=\"content_" + sectionID
-						  + "\" class='markupText'" + style + ">");
+				+ "\" class='markupText'" + style + ">");
 
 		// render content
 		// Returns are replaced to avoid JSPWiki to render <p> </p>, do not edit
@@ -553,7 +584,7 @@ public class DefaultMarkupRenderer implements Renderer {
 				? " headerToolbar"
 				: " headerMenu";
 		String openingDiv = "<div id='header_" + sectionID + "' class='markupHeaderFrame"
-							+ renderModerClass + "'>";
+				+ renderModerClass + "'>";
 
 		temp.appendHtml(openingDiv);
 
@@ -561,7 +592,7 @@ public class DefaultMarkupRenderer implements Renderer {
 		temp.append(title);
 
 		if (renderMode == ToolsRenderMode.MENU) {
-			temp.appendHtml("<span class='markupMenuIndicator'></span>");
+			temp.appendHtml(Icon.DESCENDING.addClasses("markupMenuIndicator").toHtml());
 		}
 		else if (renderMode == ToolsRenderMode.TOOLBAR) {
 			appendToolbar(tools, user, temp);

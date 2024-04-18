@@ -49,11 +49,11 @@ used colors
 }
 
 #KnowWENotificationDom.notification-success {
-	background-color: #1aa52a;
+	background-color: var(--text-color-success); /*#1aa52a;*/
 }
 
 #KnowWENotificationDom.notification-success #KnowWENotificationQuit a {
-	color:  #1aa52a;
+	color: var(--text-color-success);
 }
 
 #KnowWENotificationDom.notification-warn {
@@ -61,7 +61,7 @@ used colors
 }
 
 #KnowWENotificationDom.notification-warn #KnowWENotificationQuit a {
-	color:  #eaaf11;
+	color: #eaaf11;
 }
 
 #KnowWENotificationDom.notification-error {
@@ -69,7 +69,7 @@ used colors
 }
 
 #KnowWENotificationDom.notification-error #KnowWENotificationQuit a {
-	color:  #e04308;
+	color: #e04308;
 	user-select: none;
 }
 
@@ -100,12 +100,12 @@ used colors
 }
 
 #KnowWENotificationCounter .next-notification, #KnowWENotificationCounter .prev-notification {
-    padding: 5px 10px;
+	padding: 5px 10px;
 }
 
 #KnowWENotificationCounter .notification-counter {
-    position: relative;
-    top: -1px;
+	position: relative;
+	top: -1px;
 }
 
 #KnowWENotificationCounter .inactive {
@@ -200,6 +200,7 @@ a:hover {
 .extend-panel-down {
 	padding: 0px 20px;
 	background: url(../images/arrow_down.png) no-repeat 0px 3px;
+	/*background: url(../images/arrow_down.png) no-repeat 0px 3px;*/
 }
 
 .extend-panel-up {

@@ -9,6 +9,7 @@ import de.knowwe.diaflux.type.FlowchartType;
 import de.knowwe.diaflux.type.FlowchartXMLHeadType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupRenderer;
 import de.knowwe.tools.ToolSet;
+import de.knowwe.util.Icon;
 
 import static de.knowwe.jspwiki.KnowWEPlugin.isRenderingPreview;
 
@@ -19,7 +20,7 @@ import static de.knowwe.jspwiki.KnowWEPlugin.isRenderingPreview;
 public class DiaFluxRenderer extends DefaultMarkupRenderer {
 
 	public DiaFluxRenderer() {
-		super("KnowWEExtension/flowchart/icon/flowchart24.png");
+		super(Icon.SITEMAP);
 	}
 
 	@Override
@@ -43,7 +44,6 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 				+ "}\n"
 				+ "KNOWWE.helper.observer.subscribe('beforeflowchartrendered', fn);";
 		temp.appendHtmlElement("script", script);
-
 	}
 
 	@Override
@@ -52,7 +52,8 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 
 		if (flowchart == null) {
 			return "New flowchart";
-		} else {
+		}
+		else {
 			return FlowchartType.getFlowchartName(flowchart);
 		}
 	}
@@ -62,7 +63,8 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 		if (isRenderingPreview(user)) {
 			//In live preview show info message
 			string.append("%%information DiaFlux is not rendered in live preview. /%");
-		} else {
+		}
+		else {
 			Section<FlowchartType> flowchart = Sections.successor(section, FlowchartType.class);
 
 			if (flowchart == null) {
@@ -85,14 +87,8 @@ public class DiaFluxRenderer extends DefaultMarkupRenderer {
 	@Override
 	protected void renderTitle(Section<?> section, UserContext user, RenderResult string) {
 		if (!isRenderingPreview(user)) {
-
-			String icon = getTitleIcon(section, user);
+			renderIcon(section, user, string);
 			String title = getTitleName(section, user);
-
-			// render icon
-			if (icon != null) {
-				string.appendHtml("<img class='markupIcon' src='" + icon + "' /> ");
-			}
 			Section<FlowchartXMLHeadType.FlowchartTermDef> termDefSection
 					= Sections.successor(section, FlowchartXMLHeadType.FlowchartTermDef.class);
 			if (termDefSection != null) {

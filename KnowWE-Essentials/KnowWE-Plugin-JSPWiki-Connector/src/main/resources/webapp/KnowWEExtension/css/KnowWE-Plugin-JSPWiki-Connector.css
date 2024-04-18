@@ -103,7 +103,7 @@
 }
 
 .type_RecentChanges .odd-row {
-	background-color: #EEE;
+	background-color: var(--bg-color-table-odd-th);
 }
 
 .type_RecentChanges .column-last-modified {

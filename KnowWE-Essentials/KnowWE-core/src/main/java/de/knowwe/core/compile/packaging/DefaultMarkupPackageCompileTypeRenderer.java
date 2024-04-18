@@ -51,12 +51,12 @@ import de.knowwe.util.Icon;
  */
 public class DefaultMarkupPackageCompileTypeRenderer extends DefaultMarkupRenderer {
 
-	public DefaultMarkupPackageCompileTypeRenderer(String icon) {
+	public DefaultMarkupPackageCompileTypeRenderer(Icon icon) {
 		super(icon);
 	}
 
 	public DefaultMarkupPackageCompileTypeRenderer() {
-		this("KnowWEExtension/d3web/icon/knowledgebase24.png");
+		this(Icon.DATABASE);
 	}
 
 	@Override
