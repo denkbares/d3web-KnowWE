@@ -290,7 +290,9 @@ public class ListSectionsRenderer<T extends Type> {
 	public ListSectionsRenderer<T> separator(boolean withHeader) {
 		if (withHeader) {
 			this.headers.put(columns.size(), "<span class='" + CSS_SEPARATOR_COLUMN + "'></span>");
-			if (!this.superheaders.isEmpty()) this.superheaders.put(columns.size(), "<span class='" + CSS_SEPARATOR_COLUMN + "'></span>");
+			if (!this.superheaders.isEmpty()) {
+				this.superheaders.put(columns.size(), "<span class='" + CSS_SEPARATOR_COLUMN + "'></span>");
+			}
 		}
 		this.columns.add(new Pair<>(CSS_SEPARATOR_COLUMN, k -> ""));
 		return this;
@@ -467,9 +469,11 @@ public class ListSectionsRenderer<T extends Type> {
 
 		page.appendHtmlTag("table", "class", "list-sections" + (headers.isEmpty() ? "" : " sticky-header"));
 		renderHeader(page);
+		int index = 0;
 		for (Section<T> section : sections) {
 			try {
-				renderLine(page, section);
+				renderLine(page, section, index);
+				index++;
 			}
 			catch (Throwable e) {
 				renderExceptionLine(page, section, e);
@@ -534,9 +538,14 @@ public class ListSectionsRenderer<T extends Type> {
 		page.appendHtmlTag("/thead");
 	}
 
-	private void renderLine(RenderResult page, Section<T> line) {
+	private void renderLine(RenderResult page, Section<T> line, int index) {
 		RenderResult lineResult = new RenderResult(page);
-		lineResult.appendHtml("<tr");
+		if (index % 2 == 0) {
+			lineResult.appendHtml("<tr");
+		}
+		else {
+			lineResult.appendHtml("<tr class=\"odd-row\">");
+		}
 		lineResult.appendHtml(greyoutFunction != null && greyoutFunction.apply(line) ? " class='greyed-out'>" : ">");
 
 		// render tool columns for the section

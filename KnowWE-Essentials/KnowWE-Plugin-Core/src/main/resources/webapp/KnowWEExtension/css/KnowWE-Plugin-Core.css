@@ -420,12 +420,16 @@ table.list-sections td.list-sections-progress {
 	color: var(--text-color-secondary);
 }
 
-table.list-sections tr:nth-child(odd) {
-	background-color: var(--table-row-bg-color-odd);
+table.list-sections .odd-row {
+	background-color: var(--bg-color-table-odd-th);
+}
+
+tr:nth-child(even) {
+	background-color: var(--bg-color-table-odd-th); /* sparql starts with odd in head, inconsistent atm */
 }
 
 table.list-sections tr.highlighted {
-	background-color: var(--bg-color-table-list-sections) !important;
+	background-color: var(--bg-color-table-th-highlighted);
 }
 
 .grouped-list-section-wrapper .filter-input .form-control {
@@ -555,7 +559,7 @@ table.list-sections tr.highlighted {
 .InlineTool a.markupMenuInlineItem {
 	padding: 0 3px 0 3px;
 	margin: 0 1px 0 1px;
-	border: 1px solid var(--border-color-secondary);
+	border: 1px solid var(--border-color-default);
 	border-radius: 3px;
 	display: inline-block;
 	min-width: 1.5em;
