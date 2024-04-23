@@ -92,6 +92,7 @@ b.roundedCorners {
 body {
 	color: var(--text-color-primary);
 	background: var(--bg-color-content);
+	background-color: var(--bg-color-content);
 	margin: 0;
 	tab-size: 4;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Liberation Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -693,18 +694,19 @@ td.diffadd, td.diffrem, td.diff {
 	font: 110% Monaco, "Courier New", Courier, monospace;
 	overflow: auto;
 	line-height: 1;
+	color: var(--text-color-primary);
 }
 
 td.diffadd {
-	background: #dff0d8;
+	background: var(--color-faint-green);
 }
 
 td.diffrem {
-	background: #f2dede;
+	background: var(--color-faint-red);
 }
 
 td.diff {
-	background: #fff;
+	background: var(--bg-color-primary);
 }
 
 /* +++ 421 Contextual diff provider +++ */
@@ -717,13 +719,13 @@ td.diff {
 .diff-insertion {
 	background: #9f9;
 	text-decoration: none;
-	color: black;
+	color: var(--text-color-primary);
 }
 
 .diff-deletion {
 	background: #f93;
 	text-decoration: line-through;
-	color: black;
+	color: var(--text-color-primary);
 }
 
 .diff-nextprev {
@@ -1082,7 +1084,8 @@ a.tool:hover {
 .pagination {
 	margin: 0.25em;
 	padding: 0.5em;
-	background: #eee;
+	background: var(--bg-color-secondary);
+	border: 1px solid var(--border-color-table);
 	/*line-height:1;*/
 }
 
@@ -1091,7 +1094,8 @@ a.tool:hover {
 }
 
 .pagination .cursor, .pagination a:hover {
-	background-color: #d7d7d7;
+	background-color: var(--hover-bg-color-li);
+	border: 1px solid var(--border-color-table);
 }
 
 td.changenote {
@@ -2544,7 +2548,7 @@ li.findpages .btn {
 
 #rightPanel .topbar {
 	border: none;
-	background: var(--bg-color-panel-heading); /*#e5e8ed;*/
+	background: var(--bg-color-secondary); /*#e5e8ed;*/
 }
 
 #rightPanel .tooltip {
@@ -2659,6 +2663,18 @@ li.findpages .btn {
 /* ############################################################################ */
 /* ------------- overwritten Haddock.css styles using CSS variables ----------- */
 /* ############################################################################ */
+.reader.context-view.can-flex {
+	background-color: var(--bg-color-base);
+}
+
+.container.fav-left {
+	background-color: var(--bg-color-base);
+}
+
+.viewport iframe {
+	background-color: var(--bg-color-primary-transparent);
+}
+
 .content {
 	background-color: var(--bg-color-content);
 }
@@ -2669,7 +2685,7 @@ li.findpages .btn {
 
 button {
 	background-color: var(--bg-color-base);
-	color: var(--text-color-button);
+	color: var(--text-color-primary);
 }
 
 .panel {
@@ -2677,17 +2693,25 @@ button {
 }
 
 .panel-default {
-	border-color: var(--border-color-panel);
+	border-color: var(--border-color-default);
 }
 
 .panel-default > .panel-heading {
 	color: var(--text-color-panel-heading);
-	background-color: var(--bg-color-panel-heading);
-	border-color: var(--border-color-panel);
+	background-color: var(--bg-color-secondary);
+	border-color: var(--border-color-default);
 }
 
 .header a, .footer a {
 	color: var(--text-color-primary-link);
+}
+
+.form-frame {
+	border: 1px solid var(--border-color-table);
+}
+
+.nav-tabs {
+	border-bottom: 1px solid var(--border-color-table);
 }
 
 .dropdown-menu {
@@ -2705,13 +2729,84 @@ button {
 .btn-default {
 	border-color: var(--border-color-default);
 	background-color: var(--bg-color-base);
-	color: var(--text-color-button);
+	color: var(--text-color-primary);
 }
+
+.btn-success {
+	background-color: var(--bg-color-green);
+	border-color: var(--bg-color-green);
+}
+
+.btn-success:hover {
+	background-color: var(--bg-color-green-dark);
+	border-color: var(--bg-color-green-dark);
+}
+
+.btn-success:active, .btn-success.active, .open > .dropdown-toggle.btn-success {
+	background-color: var(--bg-color-green-dark);
+	border-color: var(--bg-color-green-dark);
+}
+
+.btn-danger {
+	background-color: var(--bg-color-red); /*#d9534f;*/
+}
+
+.btn-danger:focus, .btn-danger.focus {
+	background-color: var(--bg-color-red-dark); /*#c9302c;*/
+	border-color: #761c19
+}
+
+.btn-danger:hover {
+	background-color: var(--bg-color-red-dark); /*#c9302c;*/
+}
+
+.btn-danger:active, .btn-danger.active, .open > .dropdown-toggle.btn-danger {
+	background-color: var(--bg-color-red-dark); /* #c9302c;*/
+}
+
+.btn-danger:active:hover, .btn-danger.active:hover, .open > .dropdown-toggle.btn-danger:hover, .btn-danger:active:focus, .btn-danger.active:focus, .open > .dropdown-toggle.btn-danger:focus, .btn-danger:active.focus, .btn-danger.active.focus, .open > .dropdown-toggle.btn-danger.focus {
+	background-color: var(--bg-color-red-dark); /*#ac2925;*/
+}
+
 
 .btn-default:hover {
 	border-color: var(--hover-border-color-btn-default);
 	background-color: var(--hover-bg-color-btn-default);
 	color: var(--hover-text-color-btn-default);
+}
+
+.btn-default:active, .btn-default.active, .open > .dropdown-toggle.btn-default {
+	color: var(--text-color-panel-heading);
+	background-color: var(--bg-color-default-Markup);
+	border-color: var(--border-color-default);
+}
+
+.btn-default:active:hover, .btn-default.active:hover, .open > .dropdown-toggle.btn-default:hover, .btn-default:active:focus, .btn-default.active:focus, .open > .dropdown-toggle.btn-default:focus, .btn-default:active.focus, .btn-default.active.focus, .open > .dropdown-toggle.btn-default.focus {
+	color: var(--text-color-panel-heading);
+	background-color: var(--bg-color-default-Markup);
+	border-color: var(--border-color-default);
+}
+
+.btn-default:focus, .btn-default.focus {
+	color: var(--text-color-primary-light);
+	background-color: var(--bg-color-secondary-shade);
+	border-color: var(--border-color-default);
+}
+
+.form-group .btn.active:active, .form-group .btn.active.active, .open > .dropdown-toggle.form-group .btn.active {
+	color: var(--text-color-primary-inverted);
+	background-color: var(--color-light-blue-transparent);
+	border-color: var(--color-light-blue-transparent);
+}
+
+.form-group .btn.active:active:hover, .form-group .btn.active.active:hover, .open > .dropdown-toggle.form-group .btn.active:hover, .form-group .btn.active:active:focus, .form-group .btn.active.active:focus, .open > .dropdown-toggle.form-group .btn.active:focus, .form-group .btn.active:active.focus, .form-group .btn.active.active.focus, .open > .dropdown-toggle.form-group .btn.active.focus {
+	color: var(--text-color-primary-inverted);
+	background-color: var(--color-light-blue-transparent);
+	border-color: var(--color-light-blue-transparent);
+}
+
+.btn.btn-default.active .icon-search {
+	color: var(--text-color-primary-inverted);
 }
 
 .list-group-item {
@@ -2734,8 +2829,22 @@ a.list-group-item, button.list-group-item {
 	background-color: var(--bg-color-content);
 }
 
+li:hover a:hover {
+	background-color: transparent;
+}
+
+.quickinterview .qablock:hover input:hover, .quickinterview .qablockHidden:hover input:hover {
+	background-color: transparent;
+	border-color: var(--border-color-input);
+}
+
 .dropdown-header {
 	color: var(--text-color-secondary);
+}
+
+a.list-group-item:hover, button.list-group-item:hover, a.list-group-item:focus, button.list-group-item:focus {
+	color: var(--text-color-secondary-shade);
+	background-color: var(--bg-color-secondary);
 }
 
 .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
@@ -2758,7 +2867,7 @@ a.list-group-item, button.list-group-item {
 }
 
 .nav-tabs > li > a:hover {
-	border-color: var(--border-color-btn) var(--border-color-btn) var(--border-color-table);
+	border-color: var(--border-color-none) var(--border-color-none) var(--border-color-table);
 }
 
 .nav > li > a:hover, .nav > li > a:focus {
@@ -2770,19 +2879,15 @@ a.list-group-item, button.list-group-item {
 }
 
 .table-striped > tbody > tr:nth-of-type(odd) {
-	background-color: var(--bg-color-default-Markup);
+	background-color: var(--bg-color-table-odd-th);
 }
 
 .table-striped > tbody > tr:nth-child(odd) > td, .table-striped > tbody > tr:nth-child(odd) > th {
-	background-color: var(--bg-color-default-Markup);
-}
-
-table {
-	background-color: var(--bg-color-table);
+	background-color: var(--bg-color-table-odd-th);
 }
 
 [class*=zebra] .odd {
-	background-color: var(--table-row-bg-color-zebra-odd);
+	background-color: var(--bg-color-table-odd-th);
 }
 
 .wikitable tr:first-child th {
@@ -2791,6 +2896,10 @@ table {
 
 .sortable th:hover {
 	background-color: var(--hover-bg-color-li);
+}
+
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+	border-top: 1px solid var(--border-color-table);
 }
 
 caption {
@@ -2807,18 +2916,38 @@ caption {
 
 }
 
+.user-authenticated li .icon-user {
+	color: var(--color-green);
+}
+
+a.user-authenticated li .icon-user:hover, a.user-authenticated li .icon-user:focus {
+	color: var(--color-dark-green);
+}
+
 .user-asserted li .icon-user {
-	color: var(--color-icon-user);
+	color: var(--color-dark-yellow);
+}
+
+a.user-asserted li .icon-user:hover, a.user-asserted li .icon-user:focus {
+	color: var(--color-light-orange);
+}
+
+.user-anonymous li .icon-user {
+	color: var(--color-light-red);
+}
+
+a.user-anonymous li .icon-user:hover, a.user-anonymous li .icon-user:focus {
+	color: var(--color-red);
 }
 
 .form-group select {
 	background-color: var(--bg-color-base);
 	color: var(--text-color-primary);
-	border-color: var(--border-color-form);
+	border-color: var(--border-color-input);
 }
 
 .form-control:focus {
-	border-color: var(--border-color-form-forcus);
+	border-color: rgb(0, 0, 0, 0);
 }
 
 .stickyOn {
@@ -2850,8 +2979,54 @@ legend {
 }
 
 .haddock mark, .haddock .mark, .haddock .highlight {
-	background-color: var(--bg-color-highlight);
+	background-color: var(--highlight-color-dark);
 	color: var(--text-color-primary);
+}
+
+.dialog {
+	background-color: var(--bg-color-primary-transparent);
+}
+
+.dark-mode .dialog .caption {
+	font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue Light', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+	background-color: var(--bg-color-secondary-shade);
+}
+
+.editform input[type="text"]:focus, .dialog.find input[type="text"]:focus, .editform textarea:focus, .dialog.find textarea:focus {
+	/*background: rgba(243, 156, 18, 0.1);*/
+	background: var(--highlight-color-extra-light);
+	border: 1px solid var(--border-color-default);
+}
+
+.controls {
+	color: var(--text-color-primary);
+	background: var(--bg-color-primary);
+}
+
+.controls:hover, .controls:focus {
+	opacity: 1 !important;
+	outline: 0;
+	color: var(--text-color-primary);
+}
+
+.login-form {
+	background: var(--bg-color-secondary);
+}
+
+.form-control {
+	border: 1px solid var(--border-color-default);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0);
+}
+
+.dark-mode .login-form .login-header {
+	font-weight: 530;
+}
+
+.createpage {
+	color: var(--text-color-error);
 }
 
 /* ############################################################################ */
@@ -2870,7 +3045,7 @@ input, select, .form-control {
 }
 
 .form-control {
-	border-color: var(--border-color-form);
+	border-color: var(--border-color-input);
 }
 
 input:hover, select:hover, .form-control:hover {
@@ -2891,13 +3066,13 @@ input:hover, select:hover, .form-control:hover {
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
 	border-color: 1px solid var(--border-color-default);
 	background: var(--bg-color-base) 50% 50% repeat-x; /* url(images/ui-bg_glass_75_dadada_1x400.png)  */
-	color: var(--text-color-button);
+	color: var(--text-color-primary);
 }
 
 .ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus {
 	border-color: 1px solid var(--border-color-default);
 	background: var(--bg-color-base) 50% 50% repeat-x; /* url(images/ui-bg_glass_75_dadada_1x400.png)*/
-	color: var(--text-color-button);
+	color: var(--text-color-primary);
 }
 
 .ui-widget-content a {

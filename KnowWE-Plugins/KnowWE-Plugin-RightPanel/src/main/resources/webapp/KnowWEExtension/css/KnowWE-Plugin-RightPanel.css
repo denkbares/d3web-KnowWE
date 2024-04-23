@@ -51,13 +51,13 @@
 	padding-top: 3px;
 	padding-bottom: 3px;
 	cursor: pointer;
-	background: var(--bg-color-right-panel-top);
-	background-image: -webkit-gradient(linear, left top, left bottom, from(var(--bg-color-default-Markup)), to(var(--bg-color-right-panel-top))); /* Saf4+, Chrome */
-	background-image: -webkit-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* Chrome 10+, Saf5.1+ */
-	background-image: -moz-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* FF3.6+ */
-	background-image: -ms-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* IE10 */
-	background-image: -o-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* Opera 11.10+ */
-	background-image: linear-gradient(to bottom, var(--bg-color-default-Markup), var(--bg-color-right-panel-top)); /* W3C */
+	background: var(--bg-color-secondary);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(var(--bg-color-default-Markup)), to(var(--bg-color-secondary))); /* Saf4+, Chrome */
+	background-image: -webkit-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-secondary)); /* Chrome 10+, Saf5.1+ */
+	background-image: -moz-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-secondary)); /* FF3.6+ */
+	background-image: -ms-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-secondary)); /* IE10 */
+	background-image: -o-linear-gradient(top, var(--bg-color-default-Markup), var(--bg-color-secondary)); /* Opera 11.10+ */
+	background-image: linear-gradient(to bottom, var(--bg-color-default-Markup), var(--bg-color-secondary)); /* W3C */
 	background-position: 100% 0%;
 	background-size: cover;
 	border-top: 1px solid var(--border-color-light);

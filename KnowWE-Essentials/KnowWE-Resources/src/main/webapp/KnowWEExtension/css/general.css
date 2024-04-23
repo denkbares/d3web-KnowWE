@@ -57,19 +57,19 @@ used colors
 }
 
 #KnowWENotificationDom.notification-warn {
-	background-color: #eaaf11;
+	background-color: var(--text-color-warning);
 }
 
 #KnowWENotificationDom.notification-warn #KnowWENotificationQuit a {
-	color: #eaaf11;
+	color: var(--text-color-warning);
 }
 
 #KnowWENotificationDom.notification-error {
-	background-color: #e04308;
+	background-color: var(--text-color-error);
 }
 
 #KnowWENotificationDom.notification-error #KnowWENotificationQuit a {
-	color: #e04308;
+	color: var(--text-color-error);
 	user-select: none;
 }
 
@@ -289,6 +289,7 @@ code.box {
 	background: var(--bg-color-infobox) url(../images/msg_info_yellow.png) center no-repeat;
 	background-position: 10px 50%; /* x-pos y-pos */
 	padding: 5px 20px 5px 45px !important;
+	color: var(--text-color-warning);
 }
 
 .error {

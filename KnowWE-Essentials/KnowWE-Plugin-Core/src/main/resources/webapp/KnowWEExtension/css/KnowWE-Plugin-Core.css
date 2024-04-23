@@ -177,7 +177,7 @@
 .defaultMarkupFrame a.markupMenuItem:hover {
 	background-color: var(--hover-bg-color-li);
 	text-decoration: none;
-	color: var(--text-color-markup-menu-item-link);
+	color: var(--text-color-primary-link);
 }
 
 .defaultMarkupFrame .headerMenu .markupIcon {
@@ -424,9 +424,9 @@ table.list-sections .odd-row {
 	background-color: var(--bg-color-table-odd-th);
 }
 
-tr:nth-child(even) {
-	background-color: var(--bg-color-table-odd-th); /* sparql starts with odd in head, inconsistent atm */
-}
+/*tr:nth-child(even) {*/
+/*	background-color: var(--bg-color-table-odd-th); !* sparql starts with odd in head, inconsistent atm *!*/
+/*}*/
 
 table.list-sections tr.highlighted {
 	background-color: var(--bg-color-table-th-highlighted);
@@ -478,7 +478,7 @@ table.list-sections tr.highlighted {
 	border: 1px dotted grey;
 	border-radius: 4px;
 	text-align: right;
-	background: url(../../KnowWEExtension/d3web/icon/dropdown-opaque.png) no-repeat right 50%;
+	/*background: url(../../KnowWEExtension/d3web/icon/dropdown-opaque.png) no-repeat right 50%;*/
 	padding-right: 15px;
 	visibility: hidden;
 }
@@ -576,7 +576,7 @@ table.list-sections tr.highlighted {
 .toolMenuFrame a.markupMenuItem:hover {
 	background-color: var(--hover-bg-color-btn-default);
 	text-decoration: none;
-	color: var(--text-color-markup-menu-item-link);
+	color: var(--text-color-primary-link);
 }
 
 .toolMenuFrame .markupHeader .markupIcon {

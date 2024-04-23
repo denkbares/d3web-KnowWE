@@ -21,315 +21,381 @@
 /* ------------- Introduce Light Mode Variables ----------- */
 /* ######################################################## */
 
-:root {
-	/*-------- backgrounds --------*/
-	--knowwe-blue: #036;
-	--ilme-signet-logo: url("ILME-Signet blau.svg");
+.light-mode {
+	--bg-color-primary: #ffffff;
+	--bg-color-primary-shade: #F9F9F9;
+	--bg-color-secondary: #f6f6f8;
+	--bg-color-secondary-shade: #EEE;
+	--bg-color-primary-transparent: rgba(255, 255, 255, 0.9);
 
-	--bg-color-content: #fff;
-	--bg-color-base: #fff; /* different than content color in dark mode -> in light too?? */
-	--bg-color-default-Markup: #F9F9F9;
-	--bg-color-panel-heading: #f6f6f8;
-	--bg-color-tt: #f0f0f0;
-	--bg-color-tooltipster-menu: #ededed;
-	--bg-color-footer: rgba(195, 195, 195, 0.2);
-	--bg-color-weblogentry: #e0e0e0;
-	--bg-color-edit: #F5FAFF;
-	--bg-color-infobox: #FFF6BF;
-	--bg-color-information: #d9edf7;
-	--bg-color-light: #9ACBFB;
-	--bg-color-right-panel-top: rgb(232, 242, 249);
-	--bg-color-head-transparent: rgba(193, 206, 226, 0.65);
-	--bg-color-highlight: #f936;
-
-	/*-------- text --------*/
 	--text-color-primary: #000000;
-	--text-color-primary-link: #173a64; /*--text-color-primary-link: #23527c;*/
-	--text-color-button: inherit;
-	--text-color-tooltipster: #2c2c2c;
-	--text-color-default-head: #036;
-	--text-color-panel-heading: #333;
-	--text-color-dropdown-markupMenu: #555;
-	--text-color-markup-menu-item-link: #003DF5;
+	--text-color-primary-inverted: #dee2e6;
+	--text-color-primary-light: #333;
+	--text-color-primary-link: #173a64;
 	--text-color-secondary: #888;
-	--text-information: #31708f;
+	--text-color-secondary-shade: #666;
+	--text-color-default-head: #036;
 
-	/*-- StyleRenderer --*/
-	--text-color-keywords: #000000;
-	--text-color-content: #505050;
-	--text-color-comment: #A0A0A0;
-	--text-color-property: #1e2864;
-	--text-color-solution: #966e78;
-	--text-color-flowchart-exit: #500028;
-	--text-color-number: #785066;
-	--text-color-constant: #7d5066;
-	--text-color-operator: #2828a0;
-	--text-color-locale: #008080;
-	--text-color-choice: #2828a0;
-	--text-color-question: #008000;
-	--text-color-condition: #008000;
-	--text-color-questionnaire: #808000;
-	--text-color-flowchart: #808000;
-	--text-color-flowchart-start: #005028;
-	--text-color-prompt: #004000;
-	--text-color-package-name: rgba(121, 79, 64, 0.4);
-	--text-color-package-name-opaque: #794f40;
-	--text-color-answer-reference: #2828a0;
-	--text-color-variable: #E69500;
-	--text-color-coom-name: #2500FF;
-	--text-color-comfort: #aaaaaa;
-	--text-color-error: #a94442;
-	--text-color-unexpected: #CC0000;
-	--text-color-not-found: red;
-	--text-color-create-page: #bd0019;
-	--text-color-success: #23C552;
-	--text-color-knowwe-ok: #6A9514;
-	--text-color-knowwe-warning: #ffd518;
-	--text-color-knowwe-error: #CC3333;
-	--text-color-fail: #F84F31;
-	--text-color-location-embraced: #E66432;
-	--text-color-condition-fulfilled: #CFFFCF;
-	--text-color-condition-false: #FFCFCF;
+	--highlight-color-extra-light: rgba(243, 156, 18, 0.1);
+	--highlight-color-light: #d9edf7;
+	--highlight-color-dark: #f936;
 
+	--color-grey-light: #DDD;
+	--color-grey: #ccc;
+	--color-grey-medium: #cbcbcb;
+	--color-grey-dark: #444444;
+
+	--color-faint-green: #dff0d8;
+	--color-light-green: #17b717;
+	--color-green: #008000;
+	--color-dark-green: #006400;
+	--color-signal-green: #6A9514; /*#80be00; */
+	--bg-color-green: #5cb85c;
+	--bg-color-green-dark: #449d44;
+
+	--color-light-pink: #ff53d7;
+	--color-pink: #ff23b8;
+	--color-dark-pink: #ce008b;
+
+	--color-light-purple: #b36cda;
+	--color-purple: #b200b2;
+	--color-dark-purple: #404;
+
+	--color-light-blue: #57b6ff;
+	--color-blue: #0b7dda;
+	--color-dark-blue: #1c00c2;
+	--color-deep-blue: #006;
+	--knowwe-blue: #036;
+	--color-light-blue-transparent: rgba(75, 138, 221, 0.9);
+
+	--color-faint-red: #f2dede;
+	--color-light-red: #ff5a5a;
+	--color-red: #ff0000;
+	--color-dark-red: #ce0606;
+	--bg-color-red: #d9534f;
+	--bg-color-red-dark: #c9302c;
+
+	--color-light-orange: #eaaf11;
+	--color-orange: #ff8200;
+	--color-dark-orange: #d95900;
+
+	--color-light-yellow: #fcf4c7;
+	--color-yellow: #ffde00;
+	--color-dark-yellow: #b09d05;
+
+	--color-light-brown: #805c36;
+	--color-light-brown-70: rgba(128, 92, 54, 0.7);
+	--color-brown: #a86210;
+	--color-dark-brown: #6e2e00;
+
+	/* color gradients */
+	--color-faint-blue-gradient1: #bcf;
+	--color-faint-blue-gradient2: #eef;
+
+	--color-faint-yellow-gradient1: #ffb;
+	--color-faint-yellow-gradient2: #ffe;
+
+	--color-faint-red-gradient1: #fbb;
+	--color-faint-red-gradient2: #fcc;
+	--color-faint-red-gradient3: #fee;
+
+	--color-faint-green-gradient1: #bfb;
+	--color-faint-green-gradient2: #cfc;
+	--color-faint-green-gradient3: #efe;
+
+	--color-blue-gradient1: #1af;
+	--color-blue-gradient2: #7cf;
+	--color-blue-gradient3: #bef;
+
+	--color-pink-gradient1: #fbf;
+	--color-pink-gradient2: #fcf;
+	--color-pink-gradient3: #fef;
+
+	--color-grey-gradient1: #eee;
+	--color-grey-gradient2: #ddd;
+	--color-grey-gradient3: #f5f5f5;
+
+	/* ######################################################## */
+	/* -------------------- variables-mapping ------------------ */
+	/* ######################################################## */
+
+	/*-------- backgrounds --------*/
+	--bg-color-base: var(--bg-color-primary);
+	--bg-color-infobox: var(--color-light-yellow);
+	--bg-color-head-transparent: rgba(193, 206, 226, 0.65);
+	/*--bg-color-footer: rgba(195, 195, 195, 0.2); light*/
 
 	/* pretty print */
-	--text-color-str: #489a1b;
-	--text-color-kwd: #1b609a;
-	--text-color-com: #888;
-	--text-color-typ: #666;
 	--text-color-lit: #066;
 	--text-color-pun: #660;
-	--text-color-pln: #000;
-	--text-color-tag: #008;
-	--text-color-atn: #606;
-	--text-color-atv: #080;
-	--text-color-dec: #606;
-
-	--text-color-media-str: #060;
-	--text-color-media-kwd: #006;
-	--text-color-media-com: #600;
-	--text-color-media-typ: #404;
 	--text-color-media-lit: #044;
 	--text-color-media-pun: #440;
-	--text-color-media-pln: #000;
-	--text-color-media-tag: #006;
-	--text-color-media-atn: #404;
-	--text-color-media-atv: #060;
 
-	/* watchlist */
-	--text-color-watches-general: black;
-	--text-color-watches-expression: rgb(0, 128, 0);
-	--text-color-watches-value: rgb(150, 110, 120);
-	--text-color-watches-expressionerror: red;
-	--hover-color-watches-line: rgba(240, 240, 241, 0.62);
-
-	/* CBX colors */
-	--text-color-corporate-blue: #173A64;
-	--text-color-cbx-yellow: #808000;
-	--text-color-cbx-green: #008000;
-	--text-color-cbx-blue: #2828A0;
-	--text-color-cbx-red: #d11414;
-	--text-color-cbx-dark-grey: #004000;
-	--text-color-cbx-light-rose: #966E78;
-	--text-color-cbx-grey-rose: #a69393;
-	--border-text-color-cbx: gray;
-	--bg-color-cbx-window: #EEEEEE;
-	--bg-color-cbx-highlight: #ffffff;
-	--bg-color-cbx-button: #DEDEDE;
-	--bg-color-cbx-filter: darkslategray;
+	/* hover */
+	--hover-bg-color-links: transparent;
+	--hover-bg-color-li: var(--bg-color-secondary-shade);
+	--hover-bg-color-text-field: var(--bg-color-primary-shade);
+	--hover-bg-color-btn-default: var(--bg-color-secondary-shade);
+	--hover-text-color-links: var(--color-grey-dark);
+	--hover-text-color-pagename: var(--bg-color-primary);
+	--hover-text-color-dropdown: var(--text-color-primary);
+	--hover-border-color-btn-default: var(--color-grey);
 
 	/*-------- borders --------*/
-	--border-color-default: #ccc;
-	--border-color-none: #ffffff;
-	--border-color-secondary: grey;
-	--border-color-panel: #e2e2e9;
-	--border-color-input: inherit;
-	--border-color-table: #DDD;
-	--border-color-form: #ccc;
-	--border-color-btn: #eee;
-	--border-color-form-forcus: #66afe9;
+	--border-color-default: var(--color-grey);
 	--border-color-infobox: #ebccd1;
-	--border-color-light: #9ACBFB;
-
-	/*-------- hover --------*/
-	--hover-bg-color-links: transparent;
-	--hover-text-color-links: #444444;
-	--hover-bg-color-li: #f5f5f5;
-	--hover-bg-color-text-field: #f9f9f9;
-	--hover-text-color-pagename: inherit;
-	--hover-text-color-dropdown: #262626;
-	--hover-text-color-header-icons: blue;
-
-	--hover-bg-color-btn-default: #eee;
-	--hover-text-color-btn-default: #000000;
-	--hover-border-color-btn-default: #adadad;
+	--border-color-light: var(--highlight-color-light);
 
 	/*-------- tables --------*/
-	--bg-color-table-list-sections: #E9E9E9;
-	--bg-color-table-odd-th: #EEE;
-	--bg-color-table: rgb(0, 0, 0, 0);
-	--table-row-bg-color-odd: rgba(195, 195, 195, 0.1);
-	--table-row-bg-color-zebra-odd: #f9f9f9;
+	--bg-color-table-th-highlighted: #E9E9E9;
+	--bg-color-table-odd-th: var(--bg-color-secondary-shade);
+	--table-row-mulit-selected: #DDF;
+	--table-row-selected: var(--bg-color-secondary-shade);
 
-	/* Tools */
+	/*-------- tools --------*/
 	--color-pagination-tools: #808080;
-	--color-icon-user: #8a6d3b;
 
 	/* styles with images */
 	--bg-color-markupMenuIndicator: white /*url(../../templates/KnowWE/images/arrdownsmall.gif)*/;
 }
+
 
 /* ######################################################## */
 /* ------------- Introduce Dark Mode Variables ----------- */
 /* ######################################################## */
 
 .dark-mode {
-	--ilme-signet-logo: url("ILME-Signet light-blue.svg");
+	/* general color palette */
+	--bg-color-primary: #2b2b2b;
+	--bg-color-primary-shade: #3c3f41;
+	--bg-color-secondary: #343434;
+	--bg-color-secondary-shade: var(--color-grey-dark);
+	--bg-color-primary-transparent: rgba(43, 43, 43, 0.9);
+
+	--text-color-primary: #dee2e6;
+	--text-color-primary-inverted: #000000;
+	--text-color-primary-light: #d7d7d7;
+	--text-color-primary-link: #3f9ee9;
+	--text-color-default-head: #3f9ee9;
+	--text-color-secondary: #b9b9b9;
+	--text-color-secondary-shade: #d2d2d2;
+
+	--highlight-color-extra-light: rgba(227, 180, 98, 0.2);
+	--highlight-color-light: rgba(78, 131, 178, 0.3);
+	--highlight-color-dark: rgba(255, 184, 69, 0.7);
+
+	--hover-color-default: rgba(255, 255, 255, 0.1);
+
+	--color-grey-light: #DDD;
+	--color-grey-medium: #545454;
+	--color-grey: #464646;
+	--color-grey-dark: #444444;
+
+	--color-faint-green: #536c43;
+	--color-light-green: #b1d751;
+	--color-green: #27dc28;
+	--color-dark-green: #0db941;
+	--color-signal-green: #6fa600;
+	--bg-color-green: #297329;
+	--bg-color-green-dark: #1b641b;
+
+	--color-light-purple: #c8a1ff;
+	--color-purple: #b31aff;
+	--color-dark-purple: #8400c4;
+
+	--color-light-blue: #70e9ff;
+	--color-blue: #4aa8ff;
+	--color-dark-blue: #2c81ff;
+	--color-light-blue-transparent: rgba(108, 170, 255, 0.9);
+
+	--color-faint-red: #7c4646;
+	--color-light-red: #ff8585;
+	--color-red: #f63131;
+	--color-dark-red: #ef0000;
+	--bg-color-red: #b63936;
+	--bg-color-red-dark: #912220;
+
+	--color-light-orange: #ff9100;
+	--color-orange: #ff7300;
+	--color-dark-orange: #de4d00;
+
+	--color-light-yellow: #ffe57c;
+	--color-yellow: #ffda3c;
+	--color-dark-yellow: #ffd000;
+
+	--color-light-brown: #c7879b;
+	--color-light-brown-70: rgba(199, 135, 155, 0.7);
+	--color-brown: #9f6639;
+	--color-dark-brown: #b25006;
+
+	/* color gradients */
+	--color-faint-blue-gradient1: #35516d;
+	--color-faint-blue-gradient2: #417a9a;
+
+	--color-faint-yellow-gradient1: #755419;
+	--color-faint-yellow-gradient2: #c28000;
+
+	--color-faint-red-gradient1: #520808;
+	--color-faint-red-gradient2: #802828;
+	--color-faint-red-gradient3: #915050;
+
+	--color-faint-green-gradient1: #133519;
+	--color-faint-green-gradient2: #184808;
+	--color-faint-green-gradient3: #316410;
+
+	--color-blue-gradient1: #0c1c70;
+	--color-blue-gradient2: #0f1949;
+	--color-blue-gradient3: #465395;
+
+	--color-pink-gradient1: #3c0d40;
+	--color-pink-gradient2: #825b86;
+	--color-pink-gradient3: #8d6888;
+
+	--color-grey-gradient1: #161616;
+	--color-grey-gradient2: #4c4c4c;
+	--color-grey-gradient3: #7e7e7e;
+
+	/* ######################################################## */
+	/* -------------------- variables-mapping ------------------ */
+	/* ######################################################## */
 
 	/*-------- backgrounds --------*/
-	--bg-color-content: #2b2b2b;
-	--bg-color-base: #3c3f41;
-	--bg-color-default-Markup: #3c3f41;
-	--bg-color-panel-heading: #343434;
-	--bg-color-tt: #464646;
-	--bg-color-tooltipster-menu: #3c3f41; /* should be replaced by --bg-color-base */
-	--bg-color-footer: #3c3f41;
-	--bg-color-edit: #3c3f41;
+	--bg-color-base: var(--bg-color-primary-shade);
 	--bg-color-infobox: #3d3d3d;
-	--bg-color-information: #626262;
-	--bg-color-light: #466785;
-	--bg-color-right-panel-top: #343434;
 	--bg-color-head-transparent: rgba(72, 74, 79, 0.65);
-	--bg-color-highlight: rgba(255, 184, 69, 0.7);
-
-
-	/*-------- text --------*/
-	--text-color-primary: #dee2e6;
-	--text-color-primary-link: #3f9ee9;
-	--text-color-button: #dee2e6;
-	--text-color-tooltipster: #dee2e6;
-	--text-color-default-head: #3f9ee9;
-	--text-color-panel-heading: #dee2e6;
-	--text-color-dropdown-markupMenu: #dee2e6;
-	--text-color-markup-menu-item-link: #00aeff;
-	--text-color-secondary: #b9b9b9;
-	--text-information: #7dd5ff;
-
-	/*-- StyleRenderer --*/
-	--text-color-keywords: #dee2e6;
-	--text-color-content: #b6b6b6;
-	--text-color-comment: #A0A0A0;
-	--text-color-property: #0099ff;
-	--text-color-solution: #f765ac;
-	--text-color-flowchart-exit: #dee2e6;
-	--text-color-number: #f86489;
-	--text-color-constant: #f86489;
-	--text-color-operator: #79c3ff;
-	--text-color-locale: #00C1C1;
-	--text-color-choice: #0480ff;
-	--text-color-question: #4cd557;
-	--text-color-condition: #4cd557;
-	--text-color-questionnaire: #A9E20A;
-	--text-color-flowchart: #A9E20A;
-	--text-color-flowchart-start: #005028;
-	--text-color-prompt: #00b603;
-	--text-color-package-name: rgba(252, 141, 169, 0.7);
-	--text-color-package-name-opaque: #fc8da9;
-	--text-color-error: #ff0500;
-	--text-color-create-page: #ff0500;
-
-	/*--text-color-answer-reference: #2828a0;*/
-	/*--text-color-variable: #E69500;*/
-	/*--text-color-coom-name: #2500FF;*/
-	/*--text-color-comfort: #aaaaaa;*/
-	/*--text-color-unexpected: #CC0000;*/
-	/*--text-color-not-found: red;*/
-	/*--text-color-success: #23C552;*/
-	/*--text-color-fail: #F84F31;*/
-	/*--text-color-location-embraced: #E66432;*/
-	--text-color-knowwe-ok: #80be00;
-	--text-color-condition-fulfilled: #74fa74;
-	--text-color-condition-false: #ff6767;
+	/*--bg-color-footer: var(--bg-color-secondary-shade); dark*/
 
 	/* pretty print */
-	--text-color-str: #5fcb22;
-	--text-color-kwd: #39a4ff;
-	--text-color-com: #888;
-	--text-color-typ: #b9b9b9;
 	--text-color-lit: #00d9d9;
 	--text-color-pun: #e8e800;
-	--text-color-pln: #ffffff;
-	--text-color-tag: #a8a8ff;
-	--text-color-atn: #ff47ff;
-	--text-color-atv: #01d201;
-	--text-color-dec: #e700e7;
+	--text-color-media-lit: #009393;
+	--text-color-media-pun: #a2a202;
 
-	--text-color-media-str: #11c511;
-	--text-color-media-kwd: #8a8af1;
-	--text-color-media-com: #c01313;
-	--text-color-media-typ: #ff00ff;
-	--text-color-media-lit: #00b2b2;
-	--text-color-media-pun: #c7c701;
-	--text-color-media-pln: #ffffff;
-	--text-color-media-tag: #8484d7;
-	--text-color-media-atn: #e513e5;
-	--text-color-media-atv: #1cd01c;
-
-	/* watchlist */
-	--text-color-watches-general: #dee2e6;
-	--text-color-watches-value: rgb(238, 144, 162);
-	/*--hover-color-watches-line: rgba(240, 240, 241, 0.62);*/
-
-	/* CBX colors */
-	--text-color-corporate-blue: #4291fa;
-	--text-color-cbx-yellow: #cece00;
-	--text-color-cbx-green: #03d203;
-	--text-color-cbx-blue: #7878ff;
-	--text-color-cbx-red: #ff0606;
-	--text-color-cbx-dark-grey: #00a100;
-	--text-color-cbx-light-rose: #ff9fb9;
-	--text-color-cbx-grey-rose: #c99696;
-	--border-text-color-cbx: #d2d2d2;
-	--bg-color-cbx-window: #545454;
-	--bg-color-cbx-highlight: #5d5d5d;
-	--bg-color-cbx-button: #2b2b2b;
-	--bg-color-cbx-filter: #6fdada;
-
-	/*-------- borders --------*/
-	--border-color-panel: #444444;
-	--border-color-default: rgba(0, 0, 0, 0);
-	--border-color-input: #3c3f41;
-	--border-color-table: #464646;
-	--border-color-form: #464646;
-	--border-color-infobox: #8d6d6d;
-	--border-color-none: #2b2b2b;
-	--border-color-light: none;
 
 	/*-------- hover --------*/
-	--hover-bg-color-links: rgba(255, 255, 255, 0.1);
-	--hover-text-color-links: #4aa8ff;
-	--hover-bg-color-li: rgba(255, 255, 255, 0.1);
-	--hover-bg-color-text-field: rgba(255, 255, 255, 0.1);
-	--hover-text-color-pagename: #4aa8ff;
-	--hover-text-color-dropdown: #4aa8ff; /*#148cec;*/
-	--hover-text-color-header-icons: #00bdff;
+	--hover-bg-color-links: var(--hover-color-default);
+	--hover-bg-color-li: var(--hover-color-default);
+	--hover-bg-color-text-field: var(--hover-color-default);
+	--hover-bg-color-btn-default: var(--hover-color-default);
+	--hover-text-color-links: var(--color-blue);
+	--hover-text-color-pagename: var(--color-blue);
+	--hover-text-color-dropdown: var(--color-blue);
+	--hover-border-color-btn-default: var(--border-color-default);
 
-	--hover-bg-color-btn-default: rgba(255, 255, 255, 0.2);
-	--hover-text-color-btn-default: #ffffff;
-	--hover-border-color-btn-default: rgba(0, 0, 0, 0);
+	/*-------- borders --------*/
+	--border-color-default: rgba(0, 0, 0, 0);
+	--border-color-infobox: #8d6d6d;
+	--border-color-light: none;
 
 	/*-------- tables --------*/
-	--bg-color-table-list-sections: #595959;
-	--table-row-bg-color-odd: rgba(215, 215, 215, 0.1);
-	--table-row-bg-color-zebra-odd: rgba(215, 215, 215, 0.1);
-	/*--bg-color-table-odd-th: #262626;*/
-	--bg-color-table-odd-th: #3c3f41;
-	--bg-color-table: rgb(0, 0, 0, 0);
+	--bg-color-table-th-highlighted: #53585b;
+	--bg-color-table-odd-th: var(--bg-color-primary-shade);
+	--table-row-mulit-selected: #36424f;
+	--table-row-selected: #5b5b5b;
 
 	/* Tools */
 	--color-pagination-tools: #afafaf;
-	--color-icon-user: #ffb738;
 
 	/* styles with images */
 	--bg-color-markupMenuIndicator: #3c3f41;
+}
+
+/* ######################################################## */
+/* ------------- Set Light & Dark Mode Variables ----------- */
+/* ######################################################## */
+
+.light-mode, .dark-mode {
+	/*-------- backgrounds --------*/
+	--bg-color-content: var(--bg-color-primary);
+	--bg-color-default-Markup: var(--bg-color-primary-shade);
+	--bg-color-tt: var(--bg-color-secondary);
+	--bg-color-weblogentry: var(--bg-color-secondary);
+	--bg-color-edit: var(--bg-color-secondary);
+	--bg-color-information: var(--highlight-color-light);
+	--bg-color-footer: var(--bg-color-primary-shade);
+
+	/*-------- text --------*/
+	--text-color-tooltipster: var(--text-color-primary-light);
+	--text-color-panel-heading: var(--text-color-primary-light);
+	--text-color-dropdown-markupMenu: var(--text-color-primary-light);
+	--text-information: var(--text-color-default-head);
+
+	/*!*-- StyleRenderer --*!*/
+	--text-color-keywords: var(--text-color-primary);
+	--text-color-content: var(--text-color-primary-light); /* 505050*/
+	--text-color-comment: var(--text-color-secondary);
+	--text-color-property: var(--color-dark-blue);
+	--text-color-solution: var(--color-light-pink);
+	--text-color-flowchart-exit: var(--color-light-purple);
+	--text-color-constant: var(--color-light-purple);
+	--text-color-number: var(--color-light-purple);
+	--text-color-operator: var(--color-dark-blue);
+	--text-color-locale: var(--color-light-blue);
+	--text-color-choice: var(--color-dark-blue);
+	--text-color-question: var(--color-green);
+	--text-color-condition: var(--color-green);
+	--text-color-questionnaire: var(--color-light-green);
+	--text-color-flowchart: var(--color-light-green);
+	--text-color-flowchart-start: var(--color-dark-green);
+	--text-color-prompt: var(--color-dark-green);
+	--text-color-package-name: var(--color-light-brown-70);
+	--text-color-package-name-opaque: var(--color-light-brown);
+	--text-color-answer-reference: var(--color-dark-blue);
+	--text-color-variable: var(--color-orange);
+	--text-color-coom-name: var(--color-dark-blue);
+	--text-color-comfort: var(--text-color-secondary-shade);
+	--text-color-warning: var(--color-light-orange);
+	--text-color-error: var(--color-dark-red);
+	--text-color-unexpected: var(--color-red);
+	--text-color-not-found: var(--color-red);
+	--text-color-create-page: var(--color-red);
+	--text-color-success: var(--color-signal-green);
+	--text-color-knowwe-ok: var(--color-signal-green);
+	--text-color-knowwe-warning: var(--color-yellow);
+	--text-color-knowwe-error: var(--color-dark-red);
+	--text-color-fail: var(--color-dark-red);
+	--text-color-location-embraced: var(--color-orange);
+	--text-color-condition-fulfilled: var(--color-light-green);
+	--text-color-condition-false: var(--color-light-red);
+
+
+	/* pretty print */
+	--text-color-str: var(--color-green);
+	--text-color-kwd: var(--color-blue);
+	--text-color-com: var(--text-color-secondary);
+	--text-color-typ: var(--text-color-secondary-shade);
+	--text-color-pln: var(--text-color-primary);
+	--text-color-tag: var(--color-dark-blue);
+	--text-color-atn: var(--color-dark-pink);
+	--text-color-atv: var(--color-green);
+	--text-color-dec: var(--color-dark-pink);
+
+	--text-color-media-str: var(--color-dark-green);
+	--text-color-media-kwd: var(--color-deep-blue);
+	--text-color-media-com: var(--color-dark-red);
+	--text-color-media-typ: var(--color-dark-purple);
+	--text-color-media-pln: var(--text-color-primary);
+	--text-color-media-tag: var(--color-deep-blue);
+	--text-color-media-atn: var(--color-dark-purple);
+	--text-color-media-atv: var(--color-dark-green);
+
+	/* watchlist */
+	--text-color-watches-general: var(--text-color-primary);
+	--text-color-watches-value: var(--color-light-pink);
+	--text-color-watches-expression: var(--color-green);
+	--text-color-watches-expressionerror: var(--color-red);
+	--hover-color-watches-line: rgba(240, 240, 241, 0.62);
+
+	/*-------- borders --------*/
+	--border-color-none: var(--bg-color-primary);
+	--border-color-input: var(--color-grey);
+	--border-color-table: var(--color-grey);
+	--border-color-form-forcus: var(--color-grey);
+	--border-color-strong: var(--text-color-primary);
+
+	/*-------- hover --------*/
+	--hover-bg-color-inner-links: none;
+	--hover-text-color-header-icons: var(--color-blue);
+	--hover-text-color-btn-default: var(--text-color-primary);
+
 }

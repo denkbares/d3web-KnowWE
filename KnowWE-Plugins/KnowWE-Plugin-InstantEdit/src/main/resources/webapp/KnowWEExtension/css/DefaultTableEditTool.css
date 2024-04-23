@@ -12,7 +12,7 @@
 
 .tablePopupIcon .toolsMenuDecorator {
 	height: 32px;
-	top:-19px;
+	top: -19px;
 }
 
 table.spreadsheet {
@@ -24,20 +24,20 @@ table.spreadsheet {
 }
 
 table.spreadsheet tr td.table-header {
-	border: 1px solid #CCC;
-	background: #EEE;
+	border: 1px solid var(--border-color-default);
+	background: var(--bg-color-table-odd-th);
 	text-align: center;
 	font-weight: bold;
 }
 
 table.spreadsheet tr td {
-	border: 1px solid #CCC;
-	background: #F5FAFF;
+	border: 1px solid var(--border-color-default);
+	background: var(--bg-color-table-odd-th);
 	padding: 0px;
 }
 
 table.spreadsheet tr td.multiSelected {
-	background-color: #DDF;
+	background-color: var(--table-row-mulit-selected);
 }
 
 table.spreadsheet tr td.selected {
@@ -46,7 +46,7 @@ table.spreadsheet tr td.selected {
 
 table.spreadsheet tr td.selected.table-header {
 	background-color: transparent;
-	background: #EEE;
+	background: var(--table-row-selected);
 }
 
 table.spreadsheet tr td > div {
@@ -56,36 +56,36 @@ table.spreadsheet tr td > div {
 	white-space: pre-wrap;
 }
 
-table.spreadsheet tr td > div > a, 
-table.spreadsheet tr td > div > a:hover, 
-table.spreadsheet tr td > div > a:active, 
+table.spreadsheet tr td > div > a,
+table.spreadsheet tr td > div > a:hover,
+table.spreadsheet tr td > div > a:active,
 table.spreadsheet tr td > div > a:visited {
 	display: block;
 	text-decoration: none;
-	color: black;
+	color: var(--text-color-primary);
 	margin: 3px 6px;
 }
 
-table.spreadsheet tr td.selected > div, 
+table.spreadsheet tr td.selected > div,
 table.spreadsheet tr td.selected.multiSelected > div {
 	margin: -1px;
-	border: 1px solid black;
+	border: 1px solid var(--border-color-strong);
 	background-color: transparent;
 }
 
-table.spreadsheet tr td.selected > div > a, 
+table.spreadsheet tr td.selected > div > a,
 table.spreadsheet tr td.selected.multiSelected > div > a {
-	box-shadow: 0px 0px 7px #06C;
+	box-shadow: 0px 0px 7px var(--border-color-light);
 }
 
 table.spreadsheet tr td.copied > div,
 table.spreadsheet tr td.copied.multiSelected > div {
 	margin: -1px;
-	border: 1px dashed black;
+	border: 1px dashed var(--border-color-strong);
 }
 
 table.spreadsheet tr td.copied.selected.multiSelected > div {
-	border: 1px dotted black;
+	border: 1px dotted var(--border-color-strong);
 }
 
 
