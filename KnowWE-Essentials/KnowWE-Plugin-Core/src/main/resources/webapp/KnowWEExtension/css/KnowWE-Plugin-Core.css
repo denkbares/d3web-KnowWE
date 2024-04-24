@@ -991,6 +991,8 @@ table.knowwe-pagination th img.filter:hover {
 .dark-mode .style-condition-fulfilled {
 	background-color: transparent;
 	border: solid var(--text-color-condition-fulfilled);
+	border-radius: 10px;
+	padding: 2px;
 }
 
 .style-condition-false {
@@ -1000,5 +1002,7 @@ table.knowwe-pagination th img.filter:hover {
 .dark-mode .style-condition-false {
 	background-color: transparent;
 	border: solid var(--text-color-condition-false);
+	border-radius: 10px;
+	padding: 2px;
 }
 
