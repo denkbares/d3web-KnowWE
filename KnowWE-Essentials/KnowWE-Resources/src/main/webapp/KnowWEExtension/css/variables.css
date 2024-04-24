@@ -46,27 +46,29 @@
 	--color-grey-dark: #444444;
 
 	--color-faint-green: #dff0d8;
-	--color-light-green: #17b717;
+	--color-extra-light-green: #CFFFCF;
+	--color-light-green: #808000;
 	--color-green: #008000;
 	--color-dark-green: #006400;
-	--color-signal-green: #6A9514; /*#80be00; */
+	--color-signal-green: #6A9514;
 	--bg-color-green: #5cb85c;
 	--bg-color-green-dark: #449d44;
 
-	--color-light-pink: #ff53d7;
-	--color-pink: #ff23b8;
-	--color-dark-pink: #ce008b;
+	--color-light-pink: #f1889f;
+	--color-pink: #b95d71;
+	--color-dark-pink: #9a4e66;
 
-	--color-light-purple: #b36cda;
-	--color-purple: #b200b2;
-	--color-dark-purple: #404;
+	--color-light-purple: #986882;
+	--color-purple: #915665;
+	--color-dark-purple: #7D5066;
 
+	--color-light-blue-transparent: rgba(75, 138, 221, 0.9);
 	--color-light-blue: #57b6ff;
 	--color-blue: #0b7dda;
-	--color-dark-blue: #1c00c2;
+	--color-dark-blue: #1E2864;
 	--color-deep-blue: #006;
 	--knowwe-blue: #036;
-	--color-light-blue-transparent: rgba(75, 138, 221, 0.9);
+	--color-turquoise: #008080;
 
 	--color-faint-red: #f2dede;
 	--color-light-red: #ff5a5a;
@@ -80,11 +82,11 @@
 	--color-dark-orange: #d95900;
 
 	--color-light-yellow: #fcf4c7;
-	--color-yellow: #ffde00;
+	--color-yellow: #eac105;
 	--color-dark-yellow: #b09d05;
 
-	--color-light-brown: #805c36;
-	--color-light-brown-70: rgba(128, 92, 54, 0.7);
+	--color-light-brown: rgba(121, 79, 64, 1.0);
+	--color-light-brown-70: rgba(121, 79, 64, 0.7);
 	--color-brown: #a86210;
 	--color-dark-brown: #6e2e00;
 
@@ -143,7 +145,8 @@
 
 	/*-------- borders --------*/
 	--border-color-default: var(--color-grey);
-	--border-color-infobox: #ebccd1;
+	--border-color-infobox-blue: #bce8f1;
+	--border-color-infobox-red: #ebccd1;
 	--border-color-light: var(--highlight-color-light);
 
 	/*-------- tables --------*/
@@ -184,7 +187,7 @@
 	--highlight-color-light: rgba(78, 131, 178, 0.3);
 	--highlight-color-dark: rgba(255, 184, 69, 0.7);
 
-	--hover-color-default: rgba(255, 255, 255, 0.1);
+	--hover-color-default: rgba(255, 255, 255, 0.07);
 
 	--color-grey-light: #DDD;
 	--color-grey-medium: #545454;
@@ -192,26 +195,35 @@
 	--color-grey-dark: #444444;
 
 	--color-faint-green: #536c43;
-	--color-light-green: #b1d751;
-	--color-green: #27dc28;
-	--color-dark-green: #0db941;
+	--color-extra-light-green: #749474;
+	--color-light-green: #abab08;
+	--color-green: #04b204;
+	--color-dark-green: #008c3a;
 	--color-signal-green: #6fa600;
 	--bg-color-green: #297329;
 	--bg-color-green-dark: #1b641b;
 
-	--color-light-purple: #c8a1ff;
-	--color-purple: #b31aff;
-	--color-dark-purple: #8400c4;
+	--color-light-pink: #ff72c6;
+	--color-pink: #f656ab;
+	--color-dark-pink: #c75096;
 
-	--color-light-blue: #70e9ff;
+	--color-light-purple: #956dcb;
+	--color-purple: #ca51f1;
+	--color-dark-purple: #c936d5;
+
+	--color-light-blue-transparent: rgba(108, 170, 255, 0.9);
+	--color-light-blue: #60e5ff;
 	--color-blue: #4aa8ff;
 	--color-dark-blue: #2c81ff;
-	--color-light-blue-transparent: rgba(108, 170, 255, 0.9);
+	--color-deep-blue: #3737ff;
+	--color-turquoise: #02b4b4;
+	--knowwe-blue: #0066c7;
+
 
 	--color-faint-red: #7c4646;
 	--color-light-red: #ff8585;
-	--color-red: #f63131;
-	--color-dark-red: #ef0000;
+	--color-red: #fc4848;
+	--color-dark-red: #de2727;
 	--bg-color-red: #b63936;
 	--bg-color-red-dark: #912220;
 
@@ -284,8 +296,9 @@
 
 	/*-------- borders --------*/
 	--border-color-default: rgba(0, 0, 0, 0);
-	--border-color-infobox: #8d6d6d;
 	--border-color-light: none;
+	--border-color-infobox-blue: #38585d;
+	--border-color-infobox-red: #8d6d6d;
 
 	/*-------- tables --------*/
 	--bg-color-table-th-highlighted: #53585b;
@@ -325,12 +338,12 @@
 	--text-color-content: var(--text-color-primary-light); /* 505050*/
 	--text-color-comment: var(--text-color-secondary);
 	--text-color-property: var(--color-dark-blue);
-	--text-color-solution: var(--color-light-pink);
+	--text-color-solution: var(--color-dark-pink);
 	--text-color-flowchart-exit: var(--color-light-purple);
-	--text-color-constant: var(--color-light-purple);
-	--text-color-number: var(--color-light-purple);
+	--text-color-constant: var(--color-dark-purple);
+	--text-color-number: var(--color-dark-purple);
 	--text-color-operator: var(--color-dark-blue);
-	--text-color-locale: var(--color-light-blue);
+	--text-color-locale: var(--color-turquoise);
 	--text-color-choice: var(--color-dark-blue);
 	--text-color-question: var(--color-green);
 	--text-color-condition: var(--color-green);
@@ -355,7 +368,7 @@
 	--text-color-knowwe-error: var(--color-dark-red);
 	--text-color-fail: var(--color-dark-red);
 	--text-color-location-embraced: var(--color-orange);
-	--text-color-condition-fulfilled: var(--color-light-green);
+	--text-color-condition-fulfilled: var(--color-extra-light-green);
 	--text-color-condition-false: var(--color-light-red);
 
 

@@ -988,7 +988,17 @@ table.knowwe-pagination th img.filter:hover {
 	background-color: var(--text-color-condition-fulfilled);
 }
 
+.dark-mode .style-condition-fulfilled {
+	background-color: transparent;
+	border: solid var(--text-color-condition-fulfilled);
+}
+
 .style-condition-false {
 	background-color: var(--text-color-condition-false);
+}
+
+.dark-mode .style-condition-false {
+	background-color: transparent;
+	border: solid var(--text-color-condition-false);
 }
 

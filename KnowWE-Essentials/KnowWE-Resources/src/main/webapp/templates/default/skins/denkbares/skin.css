@@ -2686,7 +2686,12 @@ li.findpages .btn {
 button {
 	background-color: var(--bg-color-base);
 	color: var(--text-color-primary);
+	border-color: var(--border-color-input);
+	border-radius: 5px;
+	border-style: solid;
+	margin: 2px;
 }
+
 
 .panel {
 	background-color: var(--bg-color-content);
@@ -2908,11 +2913,11 @@ caption {
 
 .error {
 	color: var(--text-color-error);
-	border-color: var(--border-color-infobox);
+	border-color: var(--border-color-infobox-red);
 }
 
 .danger {
-	border-color: var(--border-color-infobox);
+	border-color: var(--border-color-infobox-red);
 
 }
 
@@ -2957,6 +2962,7 @@ a.user-anonymous li .icon-user:hover, a.user-anonymous li .icon-user:focus {
 .info, .information {
 	background-color: var(--bg-color-information);
 	color: var(--text-information);
+	border-color: var(--border-color-infobox-blue);
 }
 
 legend {
@@ -3029,6 +3035,7 @@ legend {
 	color: var(--text-color-error);
 }
 
+
 /* ############################################################################ */
 /* ------------- overwritten quickiNeutral.css styles using CSS variables ----------- */
 /* ############################################################################ */
@@ -3042,6 +3049,8 @@ input, select, .form-control {
 	background-color: var(--bg-color-base);
 	color: var(--text-color-primary);
 	border-color: var(--border-color-input);
+	border-style: solid;
+	border-width: 1px;
 }
 
 .form-control {
