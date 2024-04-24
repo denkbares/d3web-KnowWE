@@ -34,6 +34,7 @@ import com.denkbares.collections.ConcatenateCollection;
 import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.MessageObject;
+import de.d3web.testing.Test;
 import de.d3web.testing.TestParameter;
 import de.d3web.testing.TestResult;
 import de.d3web.testing.TestSpecification;
@@ -132,6 +133,7 @@ public abstract class CompilerHasMessagesTest extends AbstractTest<PackageCompil
 		return allMessagesMap.values()
 				.stream()
 				.flatMap(Collection::stream)
+				.filter(m -> !(m.getSource() instanceof Class<?> classSource) || !Test.class.isAssignableFrom(classSource))
 				.filter(m -> ignorePatterns.stream().noneMatch(p -> p.matcher(m.getVerbalization()).find()))
 				.collect(Collectors.toList());
 	}
