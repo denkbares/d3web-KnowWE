@@ -603,6 +603,7 @@ public final class Messages {
 		Map<Object, Collection<Message>> messagesMap = getMessagesMap(compiler, section);
 		// we have messages to store
 		if (messages != null && !messages.isEmpty()) {
+			messages.forEach(m -> m.setSource(source));
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
 			synchronized (section) {
 				// create map if not already present

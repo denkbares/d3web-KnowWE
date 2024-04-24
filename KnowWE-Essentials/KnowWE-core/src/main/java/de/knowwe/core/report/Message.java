@@ -36,6 +36,7 @@ import com.denkbares.strings.Strings;
 public final class Message implements Comparable<Message>, Serializable {
 
 	private static final long serialVersionUID = 686699156806288497L;
+	private Object source;
 
 	public enum Type {
 		INFO, WARNING, ERROR
@@ -78,6 +79,20 @@ public final class Message implements Comparable<Message>, Serializable {
 		this.type = type;
 		this.text = text;
 		this.details = details;
+	}
+
+	public void setSource(Object source) {
+		this.source = source;
+	}
+
+	/**
+	 * Get the source of the message, if given
+	 *
+	 * @return the source of the message
+	 */
+	@Nullable
+	public Object getSource() {
+		return source;
 	}
 
 	/**

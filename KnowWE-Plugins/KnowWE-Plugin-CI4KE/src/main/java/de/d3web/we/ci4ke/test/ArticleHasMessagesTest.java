@@ -25,13 +25,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.denkbares.strings.Strings;
 import de.d3web.testing.AbstractTest;
 import de.d3web.testing.Message;
 import de.d3web.testing.MessageObject;
+import de.d3web.testing.Test;
 import de.d3web.testing.TestParameter;
 import de.d3web.testing.TestResult;
 import de.d3web.testing.TestingUtils;
@@ -73,13 +73,14 @@ public abstract class ArticleHasMessagesTest extends AbstractTest<Article> imple
 				.flatMap(Stream::of)
 				.map(Strings::unquote)
 				.map(Pattern::compile)
-				.collect(Collectors.toList());
+				.toList();
 
 		List<de.knowwe.core.report.Message> messages = allMessagesMap.values()
 				.stream()
 				.flatMap(Collection::stream)
+				.filter(m -> !(m.getSource() instanceof Class<?> classSource) || !Test.class.isAssignableFrom(classSource))
 				.filter(s -> ignorePatterns.stream().noneMatch(p -> p.matcher(s.getVerbalization()).find()))
-				.collect(Collectors.toList());
+				.toList();
 
 		TestingUtils.checkInterrupt();
 		buffer.append(" ")
