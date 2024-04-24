@@ -45,7 +45,7 @@
   </wiki:CheckRequestContext>
 </head>
 
-<body class="${prefs.DisplayMode} context-<wiki:Variable var='requestcontext' default='' />">
+<body class="${prefs.DisplayMode ==  null ? "light-mode" : prefs.DisplayMode} context-<wiki:Variable var='requestcontext' default='' />">
 
 <div class="container${prefs.Layout=='fixed' ? ' ' : '-fluid ' } ${prefs.Orientation} fixed-header">
   <wiki:Include page="Header.jsp" />

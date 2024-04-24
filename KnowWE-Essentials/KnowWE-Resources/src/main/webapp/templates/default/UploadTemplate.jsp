@@ -33,7 +33,7 @@
   <meta name="robots" content="noindex,nofollow" />
 </head>
 
-<body class="${prefs.DisplayMode} context-<wiki:Variable var='requestcontext' />">
+<body class="${prefs.DisplayMode ==  null ? "light-mode" : prefs.DisplayMode} context-<wiki:Variable var='requestcontext' />">
 
 <div class="container${prefs.Layout=='fixed' ? ' ' : '-fluid ' } ${prefs.Orientation} fixed-header">
 

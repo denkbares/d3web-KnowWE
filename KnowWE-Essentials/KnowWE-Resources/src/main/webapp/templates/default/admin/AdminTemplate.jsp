@@ -32,7 +32,7 @@
   <link rel="stylesheet" media="screen, projection, print" type="text/css"
         href="<wiki:Link format='url' templatefile='admin/admin.css'/>"/>
 </head>
-<body class="${prefs.DisplayMode} container context-view">
+<body class="${prefs.DisplayMode ==  null ? "light-mode" : prefs.DisplayMode} container context-view">
 <div id="wikibody">
 <div id="page" >
 <h1>JSPWiki Administration</h1>
