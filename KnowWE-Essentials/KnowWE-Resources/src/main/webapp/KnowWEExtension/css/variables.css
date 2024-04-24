@@ -90,7 +90,7 @@
 	--color-brown: #a86210;
 	--color-dark-brown: #6e2e00;
 
-	/* color gradients */
+	/* color gradients (DiaFlux flowcharts) */
 	--color-faint-blue-gradient1: #bcf;
 	--color-faint-blue-gradient2: #eef;
 
@@ -139,7 +139,7 @@
 	--hover-bg-color-text-field: var(--bg-color-primary-shade);
 	--hover-bg-color-btn-default: var(--bg-color-secondary-shade);
 	--hover-text-color-links: var(--color-grey-dark);
-	--hover-text-color-pagename: var(--bg-color-primary);
+	--hover-text-color-pagename: var(--text-color-primary);
 	--hover-text-color-dropdown: var(--text-color-primary);
 	--hover-border-color-btn-default: var(--color-grey);
 
@@ -411,4 +411,17 @@
 	--hover-text-color-header-icons: var(--color-blue);
 	--hover-text-color-btn-default: var(--text-color-primary);
 
+}
+
+/* ############################################################## */
+/* ------------- Set Transitions for switching modes ----------- */
+/* ############################################################## */
+
+*, input, select, button, .form-control, a, .header, .pagename a {
+	transition: background-color 0.3s ease,
+	background 0.3s ease,
+	color 0.1s,
+	border-color 0.3s ease,
+	border 0.3s ease,
+	box-shadow 0.3s ease;
 }
