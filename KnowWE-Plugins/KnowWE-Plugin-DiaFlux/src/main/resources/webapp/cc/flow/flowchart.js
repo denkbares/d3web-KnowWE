@@ -506,7 +506,7 @@ Flowchart.zoom = function(sectionId, diff) {
   if (scale < 0.4) {
     Flowchart.get(sectionId).css('background-image', "none");
   } else {
-    Flowchart.get(sectionId).css('background-image', 'url(cc/image/grid_10.png)');
+    //Flowchart.get(sectionId).css('background-image', 'url(cc/image/grid_10.png)');
   }
   flowchart.scale(scale);
   flowchart.css('margin', marginTB + "px " + marginLR + "px " + marginTB + "px " + marginLR + "px");

@@ -12,26 +12,35 @@
 }
 
 .Flowchart {
-	position:	relative;
-	background-image: url(../image/grid_10.png);
+	position: relative;
 	background-position: 1px 1px;
-	overflow:	auto;
+	overflow: auto;
 	/* DefaultMarkup sets white-space to pre -> No wrap in nodes */
 	white-space: normal;
-	-webkit-print-color-adjust:exact;
+	-webkit-print-color-adjust: exact;
 	line-height: 16px;
+
+	/* grid */
+	background-size: 20px 20px;
+	background-color: var(--bg-color-base);
+	background-image: linear-gradient(to right, var(--color-grey-medium) 1px, transparent 1px),
+	linear-gradient(to bottom, var(--color-grey-medium) 1px, transparent 1px);
 }
 
 .Flowchart_ghost {
-	position:	absolute;
-	top: 0px; 
+	position: absolute;
+	top: 0px;
 	left: 0px;
-	background-image: url(../image/grid_10.png);
 	background-position: 1px 1px;
-	overflow:	auto;
+	overflow: auto;
 	opacity: 0.5;
 	z-index: -10;
 	/* DefaultMarkup sets white-space to pre -> No wrap in nodes */
 	white-space: normal;
-	-webkit-print-color-adjust:exact;
+	-webkit-print-color-adjust: exact;
+
+	/* grid */
+	background-size: 20px 20px;
+	background-image: linear-gradient(to right, var(--bg-color-secondary-shade) 1px, transparent 1px),
+	linear-gradient(to bottom, var(--bg-color-secondary-shade) 1px, transparent 1px);
 }
