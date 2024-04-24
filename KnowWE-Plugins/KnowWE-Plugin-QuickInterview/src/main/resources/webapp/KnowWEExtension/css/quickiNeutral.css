@@ -280,32 +280,47 @@
 
 /* the reset button in the interview header */
 .quickinterview .norun {
-	background-image: url(../images/progress_stop_pale.gif);
-	height: 20px;
-	width: 20px;
+	height: 25px;
 	float: right;
 	margin-right: 30px;
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-color: transparent;
+	border: 1px solid var(--border-color-input);
+	border-radius: 5px;
+	padding: 6px;
+	display: flex;
+	align-items: center;
 }
 
 .quickinterview .reset {
-	background-image: url(../images/progress_stop.gif);
-	height: 20px;
-	width: 20px;
+	height: 25px;
 	float: right;
 	margin-right: 30px;
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-color: transparent;
 	cursor: pointer;
+	border: 1px solid var(--border-color-input);
+	border-radius: 5px;
+	padding: 6px;
+	display: flex;
+	align-items: center;
 }
 
 .quickinterview .reset {
 	position: absolute;
 	right: 0;
 	top: 3px;
+}
+
+.quickinterview .norun .fa-arrow-rotate-left {
+	color: var(--color-light-red);
+}
+
+.quickinterview .interview-reset-text {
+	font-size: 12px;
+	margin-left: 4px;
 }
 
 .defaultMarkupFrame .quickinterview .reset {

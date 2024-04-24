@@ -79,6 +79,7 @@ import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 import de.knowwe.notification.NotificationManager;
 import de.knowwe.notification.OutDatedSessionNotification;
+import de.knowwe.util.Icon;
 
 /**
  * Render the quick interview -aka QuickI- in KnowWE --- HTML / JS / CSS based
@@ -202,9 +203,12 @@ public class QuickInterviewRenderer {
 	private void getInterviewPluginHeader(RenderResult html) {
 		// assemble JS string
 		html.appendHtmlTag("div", "style", "position:relative");
-		html.appendHtmlElement("div", "",
+		html.appendHtmlTag("div",
 				"onclick", "KNOWWE.plugin.d3webbasic.actions.resetSession('" + kbSectionId + "')",
 				"class", "reset pointer", "title", rb.getString("KnowWE.quicki.reset"));
+		html.appendHtml(Icon.ROTATE_LEFT.addStyle("color: var(--color-red);").toHtml());
+		html.appendHtmlElement("span", "Reset", "class", "interview-reset-text");
+		html.appendHtmlTag("/div");
 		html.appendHtmlTag("/div");
 	}
 
