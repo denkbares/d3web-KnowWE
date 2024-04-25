@@ -215,6 +215,7 @@ span.markupMenuItem {
 	position: relative;
 	vertical-align: top;
 	top: -2px;
+	background-color: var(--bg-color-primary-shade);
 }
 
 .KnowWE .defaultMarkupFrame .long-op-progress-container .long-progress-bar {
@@ -227,6 +228,7 @@ span.markupMenuItem {
 	left: 10px;
 	right: 10px;
 	text-align: center;
+	color: var(--text-color-primary)
 }
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-bar .ui-progressbar-value {
@@ -244,6 +246,16 @@ span.markupMenuItem {
 	margin: 2px 5px 2px 5px;
 	background-image: none;
 	vertical-align: top;
+}
+
+.long-progress-bar .ui-widget-header {
+	border: 1px solid var(--border-color-default);
+	background: var(--color-grey-medium);
+	color: var(--text-color-primary);
+}
+
+.ui-progressbar.ui-widget-content {
+	border: 1px solid var(--border-color-default);
 }
 
 .haddock .defaultMarkupFrame .long-op-progress-container .long-progress-state {
