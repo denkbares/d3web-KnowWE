@@ -3089,3 +3089,21 @@ input:hover, select:hover, .form-control:hover {
 .ui-widget-content a {
 	color: var(--text-color-primary);
 }
+
+/* ########################################################*/
+/* ------------- overwritten system properties ----------- */
+/* ####################################################### */
+
+::-webkit-scrollbar {
+	background: transparent;
+	width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--bg-color-scrollbar-thumb);
+	border-radius: 50px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-grey-medium);
+}

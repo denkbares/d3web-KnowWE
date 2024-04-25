@@ -126,6 +126,7 @@
 	/*-------- backgrounds --------*/
 	--bg-color-base: var(--bg-color-primary);
 	--bg-color-infobox: var(--color-yellow-light);
+	--bg-color-scrollbar-thumb: var(--color-grey-light);
 	--bg-color-head-transparent: rgba(193, 206, 226, 0.65);
 	/*--bg-color-footer: rgba(195, 195, 195, 0.2); light*/
 
@@ -278,6 +279,7 @@
 	/*-------- backgrounds --------*/
 	--bg-color-base: var(--bg-color-primary-shade);
 	--bg-color-infobox: #3d3d3d;
+	--bg-color-scrollbar-thumb: #383838;
 	--bg-color-head-transparent: rgba(72, 74, 79, 0.65);
 	/*--bg-color-footer: var(--bg-color-secondary-shade); dark*/
 
