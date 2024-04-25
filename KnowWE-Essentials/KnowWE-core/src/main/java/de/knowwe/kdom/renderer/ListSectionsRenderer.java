@@ -544,7 +544,7 @@ public class ListSectionsRenderer<T extends Type> {
 			lineResult.appendHtml("<tr");
 		}
 		else {
-			lineResult.appendHtml("<tr class=\"odd-row\">");
+			lineResult.appendHtml("<tr class=\"odd-row\"");
 		}
 		lineResult.appendHtml(greyoutFunction != null && greyoutFunction.apply(line) ? " class='greyed-out'>" : ">");
 
