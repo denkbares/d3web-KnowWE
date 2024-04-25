@@ -27,6 +27,7 @@
 	--bg-color-secondary: #f6f6f8;
 	--bg-color-secondary-shade: #EEE;
 	--bg-color-primary-transparent: rgba(255, 255, 255, 0.9);
+	--bg-color-secondary-transparent: rgba(0, 0, 0, 0.7);
 
 	--text-color-primary: #000000;
 	--text-color-primary-inverted: #dee2e6;
@@ -36,7 +37,7 @@
 	--text-color-secondary-shade: #666;
 	--text-color-default-head: #036;
 
-	--highlight-color-extra-light: rgba(243, 156, 18, 0.1);
+	--highlight-color-extra-light: var(--color-yellow-light);
 	--highlight-color-light: #d9edf7;
 	--highlight-color-dark: #f936;
 
@@ -79,13 +80,13 @@
 	--bg-color-red: #d9534f;
 	--bg-color-red-dark: #c9302c;
 
-	--color-orange-light: #cb970a;
+	--color-orange-light: #bd8202;
 	--color-orange: #ff8200;
 	--color-orange-dark: #d95900;
 
-	--color-yellow-light: #fdf5cb;
+	--color-yellow-light: #FAF0D4;
 	--color-yellow: #eac105;
-	--color-yellow-dark: #b99c00;
+	--color-yellow-dark: #d7b614;
 
 	--color-brown-light: rgba(121, 79, 64, 1.0);
 	--color-brown-light-70: rgba(121, 79, 64, 0.7);
@@ -177,6 +178,7 @@
 	--bg-color-secondary: #343434;
 	--bg-color-secondary-shade: var(--color-grey-dark);
 	--bg-color-primary-transparent: rgba(43, 43, 43, 0.9);
+	--bg-color-secondary-transparent: rgba(68, 68, 68, 0.8);
 
 	--text-color-primary: #dee2e6;
 	--text-color-primary-inverted: #000000;
@@ -186,7 +188,7 @@
 	--text-color-secondary: #b9b9b9;
 	--text-color-secondary-shade: #d2d2d2;
 
-	--highlight-color-extra-light: rgba(227, 180, 98, 0.2);
+	--highlight-color-extra-light: rgba(253, 223, 172, 0.1);
 	--highlight-color-light: rgba(78, 131, 178, 0.3);
 	--highlight-color-dark: rgba(255, 184, 69, 0.7);
 
@@ -232,7 +234,7 @@
 	--bg-color-red: #b63936;
 	--bg-color-red-dark: #912220;
 
-	--color-orange-light: #ff9100;
+	--color-orange-light: #f68b08;
 	--color-orange: #ff7300;
 	--color-orange-dark: #de4d00;
 
@@ -278,7 +280,7 @@
 
 	/*-------- backgrounds --------*/
 	--bg-color-base: var(--bg-color-primary-shade);
-	--bg-color-infobox: #3d3d3d;
+	--bg-color-infobox: var(--color-grey-medium);
 	--bg-color-scrollbar-thumb: #383838;
 	--bg-color-head-transparent: rgba(72, 74, 79, 0.65);
 	/*--bg-color-footer: var(--bg-color-secondary-shade); dark*/
