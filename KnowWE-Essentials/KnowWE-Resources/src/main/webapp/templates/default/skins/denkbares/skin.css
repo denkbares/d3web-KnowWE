@@ -2368,7 +2368,7 @@ div.coverflow .knob {
 }
 
 .defaultMarkupFrame .headerMenu {
-	border-right: 1px solid #ddd;
+	border-right: 1px solid var(--border-color-default);
 }
 
 #searchSubmit:before {

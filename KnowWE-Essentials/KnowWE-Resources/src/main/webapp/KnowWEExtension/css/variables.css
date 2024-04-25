@@ -314,7 +314,7 @@
 	--color-pagination-tools: #afafaf;
 
 	/* styles with images */
-	--bg-color-markupMenuIndicator: #3c3f41;
+	--bg-color-markupMenuIndicator: var(--bg-color-primary-shade);
 }
 
 /* ######################################################## */
