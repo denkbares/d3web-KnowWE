@@ -68,15 +68,15 @@
 }
 
 .Node .action {
-	background-color: var(--color-faint-blue-gradient1);
-	background: -moz-linear-gradient(bottom, var(--color-faint-blue-gradient1), var(--color-faint-blue-gradient2));
-	background: -webkit-gradient(linear, left top, left bottom, from(var(--color-faint-blue-gradient1)), to(var(--color-faint-blue-gradient2)));
+	background-color: var(--color-blue-faint-gradient1);
+	background: -moz-linear-gradient(bottom, var(--color-blue-faint-gradient1), var(--color-blue-faint-gradient2));
+	background: -webkit-gradient(linear, left top, left bottom, from(var(--color-blue-faint-gradient1)), to(var(--color-blue-faint-gradient2)));
 }
 
 .Node .question {
-	background-color: var(--color-faint-yellow-gradient1);
-	background: -moz-linear-gradient(bottom, var(--color-faint-yellow-gradient1), var(--color-faint-yellow-gradient2));
-	background: -webkit-gradient(linear, left top, left bottom, from(var(--color-faint-yellow-gradient1)), to(var(--color-faint-yellow-gradient2)));
+	background-color: var(--color-yellow-faint-gradient1);
+	background: -moz-linear-gradient(bottom, var(--color-yellow-faint-gradient1), var(--color-yellow-faint-gradient2));
+	background: -webkit-gradient(linear, left top, left bottom, from(var(--color-yellow-faint-gradient1)), to(var(--color-yellow-faint-gradient2)));
 }
 
 .Node .decision, .Node .flowchart {
@@ -86,15 +86,15 @@
 }
 
 .Node .exit {
-	background-color: var(--color-faint-red-gradient1);
-	background: -moz-linear-gradient(bottom, var(--color-faint-red-gradient2), var(--color-faint-red-gradient3));
-	background: -webkit-gradient(linear, left top, left bottom, from(var(--color-faint-red-gradient2)), to(var(--color-faint-red-gradient3)));
+	background-color: var(--color-red-faint-gradient1);
+	background: -moz-linear-gradient(bottom, var(--color-red-faint-gradient2), var(--color-red-faint-gradient3));
+	background: -webkit-gradient(linear, left top, left bottom, from(var(--color-red-faint-gradient2)), to(var(--color-red-faint-gradient3)));
 }
 
 .Node .start {
-	background-color: var(--color-faint-green-gradient1);
-	background: -moz-linear-gradient(bottom, var(--color-faint-green-gradient2), var(--color-faint-green-gradient3));
-	background: -webkit-gradient(linear, left top, left bottom, from(var(--color-faint-green-gradient2)), to(var(--color-faint-green-gradient3)));
+	background-color: var(--color-green-faint-gradient1);
+	background: -moz-linear-gradient(bottom, var(--color-green-faint-gradient2), var(--color-green-faint-gradient3));
+	background: -webkit-gradient(linear, left top, left bottom, from(var(--color-green-faint-gradient2)), to(var(--color-green-faint-gradient3)));
 }
 
 .Node .comment {

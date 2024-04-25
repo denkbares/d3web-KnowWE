@@ -698,11 +698,11 @@ td.diffadd, td.diffrem, td.diff {
 }
 
 td.diffadd {
-	background: var(--color-faint-green);
+	background: var(--color-green-faint);
 }
 
 td.diffrem {
-	background: var(--color-faint-red);
+	background: var(--color-red-faint);
 }
 
 td.diff {
@@ -2802,14 +2802,14 @@ button {
 
 .form-group .btn.active:active, .form-group .btn.active.active, .open > .dropdown-toggle.form-group .btn.active {
 	color: var(--text-color-primary-inverted);
-	background-color: var(--color-light-blue-transparent);
-	border-color: var(--color-light-blue-transparent);
+	background-color: var(--color-blue-light-transparent);
+	border-color: var(--color-blue-light-transparent);
 }
 
 .form-group .btn.active:active:hover, .form-group .btn.active.active:hover, .open > .dropdown-toggle.form-group .btn.active:hover, .form-group .btn.active:active:focus, .form-group .btn.active.active:focus, .open > .dropdown-toggle.form-group .btn.active:focus, .form-group .btn.active:active.focus, .form-group .btn.active.active.focus, .open > .dropdown-toggle.form-group .btn.active.focus {
 	color: var(--text-color-primary-inverted);
-	background-color: var(--color-light-blue-transparent);
-	border-color: var(--color-light-blue-transparent);
+	background-color: var(--color-blue-light-transparent);
+	border-color: var(--color-blue-light-transparent);
 }
 
 .btn.btn-default.active .icon-search {
@@ -2928,19 +2928,19 @@ caption {
 }
 
 a.user-authenticated li .icon-user:hover, a.user-authenticated li .icon-user:focus {
-	color: var(--color-dark-green);
+	color: var(--color-green-dark);
 }
 
 .user-asserted li .icon-user {
-	color: var(--color-dark-yellow);
+	color: var(--color-yellow-dark);
 }
 
 a.user-asserted li .icon-user:hover, a.user-asserted li .icon-user:focus {
-	color: var(--color-light-orange);
+	color: var(--color-orange-light);
 }
 
 .user-anonymous li .icon-user {
-	color: var(--color-light-red);
+	color: var(--color-red-light);
 }
 
 a.user-anonymous li .icon-user:hover, a.user-anonymous li .icon-user:focus {
