@@ -170,11 +170,9 @@
 /* ######################################################## */
 
 .dark-mode {
-
-
 	/* general color palette */
 	--bg-color-primary: #2b2b2b;
-	--bg-color-primary-shade: #3c3f41;
+	--bg-color-primary-shade: #373738;
 	--bg-color-secondary: #343434;
 	--bg-color-secondary-shade: var(--color-grey-dark);
 	--bg-color-primary-transparent: rgba(43, 43, 43, 0.9);
