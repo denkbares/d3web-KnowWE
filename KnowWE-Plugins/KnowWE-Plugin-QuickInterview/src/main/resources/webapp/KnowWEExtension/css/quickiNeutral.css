@@ -282,8 +282,8 @@
 .quickinterview .norun {
 	height: 25px;
 	float: right;
-	margin-right: 30px;
-	background-color: transparent;
+	margin-right: 20px;
+	background-color: var(--bg-color-primary-shade);
 	border: 1px solid var(--border-color-input);
 	border-radius: 5px;
 	padding: 6px;
@@ -294,8 +294,8 @@
 .quickinterview .reset {
 	height: 25px;
 	float: right;
-	margin-right: 30px;
-	background-color: transparent;
+	margin-right: 20px;
+	background-color: var(--bg-color-primary-shade);
 	cursor: pointer;
 	border: 1px solid var(--border-color-input);
 	border-radius: 5px;
