@@ -837,13 +837,13 @@ KNOWWE.plugin.compositeEditTool = function() {
   }
 
   function appendMaximizeButton() {
-    const image = jq$("<span/>", {
+    let minMaxButton = jq$("<i/>", {
       "id": "maximizeCompositeView",
-      "class": "minimized"
+      "class": "fa-solid fa-arrows-maximize minimized"
     });
     const titlebar = jq$(".ui-dialog-titlebar");
-    jq$(titlebar).append(image);
-    registerMaximizeEvent(image);
+    jq$(titlebar).append(minMaxButton);
+    registerMaximizeEvent(minMaxButton);
   }
 
   function changeButtons() {

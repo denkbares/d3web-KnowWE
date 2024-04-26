@@ -651,9 +651,13 @@ KNOWWE.core.util.form = function() {
         nextEl.style.setProperty("display", "none", "important");
         //el.setAttribute('class', 'show extend pointer extend-panel-down');
         el.setAttribute("class", "show extend pointer extend-panel-right");
+        el.getElementById("pointDownCaret").style.display = "none";
+        el.getElementById("pointRightCaret").style.display = "inline";
       } else {
         nextEl.style.setProperty("display", "inline", "important");
         el.setAttribute("class", "show extend pointer extend-panel-down");
+        el.getElementById("pointDownCaret").style.display = "inline";
+        el.getElementById("pointRightCaret").style.display = "none";
       }
     }
   };

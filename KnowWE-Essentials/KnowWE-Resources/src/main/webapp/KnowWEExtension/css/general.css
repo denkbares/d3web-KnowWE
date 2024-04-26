@@ -213,24 +213,27 @@ a:hover {
 }
 
 .extend-panel-down {
-	padding: 0px 20px;
-	background: url(../images/arrow_down.png) no-repeat 0px 3px;
+	padding: 0 5px;
 }
 
 .extend-panel-up {
-	padding: 0px 20px;
-	background: url(../images/arrow_up.png) no-repeat 0px 3px;
+	padding: 0 5px;
 }
 
 .extend-panel-right {
-	padding: 0px 20px;
-	background: url(../images/arrow_right.png) no-repeat 0px 3px;
+	padding: 0 5px;
 }
 
 .objectInfoPanel .extend-panel-right,
 .objectInfoPanel .extend-panel-up,
 .objectInfoPanel .extend-panel-down {
 	margin-left: 16px;
+}
+
+.extend-panel-right i,
+.extend-panel-up i,
+.extend-panel-down i {
+	margin-right: 10px;
 }
 
 .message-dialog {

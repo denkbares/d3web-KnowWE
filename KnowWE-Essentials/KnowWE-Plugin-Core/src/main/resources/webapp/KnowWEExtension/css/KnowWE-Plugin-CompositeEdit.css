@@ -27,8 +27,9 @@
 	padding: .4em 1em;
 	position: relative;
 	background-image: none !important;
-	background-color: var(--bg-color-head-transparent) !important;
+	background-color: var(--bg-color-table-th-highlighted) !important;
 	color: var(--text-color-default-head) !important;
+	border: none;
 }
 
 .ui-dialog-titlebar h3 {
@@ -36,18 +37,17 @@
 	padding: 0 0 0 0;
 }
 
-.ui-dialog-titlebar.ui-widget-header {
-	border: 1px solid var(--border-color-table);
-}
+/*.ui-dialog-titlebar.ui-widget-header {*/
+/*	border: 1px solid var(--border-color-table);*/
+/*}*/
 
 #maximizeCompositeView {
 	float: right;
 	position: relative;
-	right: -8px;
-	top: -1px;
+	right: -5px;
+	top: 5px;
 	cursor: pointer;
-	background: url('../images/maximize_minimize.png') no-repeat;
-
+	color: var(--text-color-primary);
 }
 
 #maximizeCompositeView.minimized {
@@ -190,7 +190,7 @@
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: #aaaaaa !important;
+	background: var(--color-grey) !important;
 	opacity: 0.7 !important;
 	z-index: 999 !important;
 }
@@ -205,8 +205,9 @@
 	background-image: none;
 	margin: 0 0 0 0;
 	padding: .4em 1em !important;
-	background-color: var(--bg-color-head-transparent) !important;
+	background-color: var(--bg-color-table-th-highlighted) !important;
 	position: relative;
+	border: none;
 	/* bottom: 0px; */
 	/* right: 0px; */
 	/* left: 0px; */
@@ -227,7 +228,9 @@
 	margin-right: 5px !important;
 	margin-top: 0px !important;
 	margin-bottom: 0px !important;
-	color: var(--text-color-default-head) !important;
+	color: var(--text-color-primary) !important;
+	background-color: var(--bg-color-secondary) !important;
+	border: 1px solid var(--border-color-default) !important;
 }
 
 .no-close .ui-dialog-titlebar-close {
