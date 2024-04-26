@@ -34,11 +34,15 @@
 /* styling of the questionnaire div */
 .quickinterview .questionnaire {
 	clear: both;
-	display: block;
+	display: flex;
 	padding: 5px 0 3px 30px;
 	min-height: 9px;
 	font-weight: bold;
 	cursor: pointer;
+}
+
+.quickinterview .questionnaire i {
+	margin-right: 10px;
 }
 
 /* styling of empty questionnaires */
@@ -54,13 +58,11 @@
 
 /* styling of the questionnaire div */
 .quickinterview .pointRight {
-	background: transparent url(../images/triangleRight.png) no-repeat 10px 5px;
 	cursor: pointer;
 }
 
 /* styling of the questionnaire div */
 .quickinterview .pointDown {
-	background: transparent url(../images/triangleDown.png) no-repeat 10px 5px;
 	cursor: pointer;
 }
 

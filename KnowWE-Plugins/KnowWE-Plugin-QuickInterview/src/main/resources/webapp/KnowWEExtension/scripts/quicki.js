@@ -555,13 +555,16 @@ KNOWWE.plugin.quicki = function() {
      * image is attached to
      */
     toggleImage: function(flag, questionnaire) {
-
       if (flag === 1) {
         // questionnaire is visible and should be hidden
         // thus image needs to be the triangle indicating extensibility
         questionnaire.className = 'questionnaire pointRight';
+        questionnaire.getElementById("pointDownCaret").style.display = 'none';
+        questionnaire.getElementById("pointRightCaret").style.display = 'flex';
       } else if (flag === 0) {
         questionnaire.className = 'questionnaire pointDown';
+        questionnaire.getElementById("pointDownCaret").style.display = 'flex';
+        questionnaire.getElementById("pointRightCaret").style.display = 'none';
       }
     },
     /**
@@ -647,10 +650,10 @@ KNOWWE.plugin.quicki = function() {
     toggleQuestionnaireVisibility: function(event) {
 
       // get the clicked element, i.e., the questionnaire
-      var questionnaire = _KE.target(event);
+      var questionnaire = _KE.target(event).closest('.questionnaire');
       var group = _KS('#group_' + questionnaire.id);
 
-      if (group.style.display === 'block') {
+      if (group.style.display === 'block' || group.style.display === 'flex') {
         var indicated = questionnaire.hasClass('indicated');
         if (indicated) {
           questionnaireVis[questionnaire.id] = 2;
@@ -663,7 +666,7 @@ KNOWWE.plugin.quicki = function() {
 
       } else if (group.style.display === 'none') {
 
-        group.style.display = 'block';
+        group.style.display = 'flex';
 
         questionnaireVis[questionnaire.id] = 1;
 

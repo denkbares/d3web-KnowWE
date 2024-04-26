@@ -345,6 +345,16 @@ public class QuickInterviewRenderer {
 				+ title
 				+ "style='margin-left: " + margin + "px;' >");
 
+		Icon caretDown = Icon.CARET_DOWN.addId("pointDownCaret");
+		Icon caretRight = Icon.CARET_RIGHT.addId("pointRightCaret");
+		if (visible) {
+			buffi.appendHtml(caretDown.addStyle("display: flex").toHtml());
+			buffi.appendHtml(caretRight.addStyle("display: none").toHtml());
+		}
+		else {
+			buffi.appendHtml(caretDown.addStyle("display: none").toHtml());
+			buffi.appendHtml(caretRight.addStyle("display: flex").toHtml());
+		}
 		buffi.append(Strings.encodeHtml(getLabel(container)));
 		buffi.appendHtml("</div>\n");
 
