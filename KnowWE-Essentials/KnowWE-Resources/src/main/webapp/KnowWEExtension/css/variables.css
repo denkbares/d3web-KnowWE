@@ -39,7 +39,7 @@
 
 	--highlight-color-extra-light: var(--color-yellow-light);
 	--highlight-color-light: #d9edf7;
-	--highlight-color-dark: #f936;
+	--highlight-color-dark: rgba(248, 136, 25, 0.4);
 
 	--color-grey-light: #DDD;
 	--color-grey-medium: #cbcbcb;
@@ -81,7 +81,7 @@
 	--bg-color-red-dark: #c9302c;
 
 	--color-orange-light: #bd8202;
-	--color-orange: #ff8200;
+	--color-orange: #eaaf11;
 	--color-orange-dark: #d95900;
 
 	--color-yellow-light: #FAF0D4;
@@ -164,6 +164,7 @@
 
 	/* styles with images */
 	--bg-color-markupMenuIndicator: white /*url(../../templates/KnowWE/images/arrdownsmall.gif)*/;
+
 }
 
 
@@ -229,7 +230,7 @@
 
 	--color-red-faint: #7c4646;
 	--color-red-light: #ff8585;
-	--color-red: #fc4848;
+	--color-red: #f6321c;
 	--color-red-dark: #de2727;
 	--bg-color-red: #b63936;
 	--bg-color-red-dark: #912220;
@@ -239,7 +240,7 @@
 	--color-orange-dark: #de4d00;
 
 	--color-yellow-light: #ffe57c;
-	--color-yellow: #ffda3c;
+	--color-yellow: #ffd518;
 	--color-yellow-dark: #ffd000;
 
 	--color-brown-light: #c7879b;
@@ -280,7 +281,7 @@
 
 	/*-------- backgrounds --------*/
 	--bg-color-base: var(--bg-color-primary-shade);
-	--bg-color-infobox: var(--color-grey-medium);
+	--bg-color-infobox: #494949;
 	--bg-color-scrollbar-thumb: #383838;
 	--bg-color-head-transparent: rgba(72, 74, 79, 0.65);
 	/*--bg-color-footer: var(--bg-color-secondary-shade); dark*/
@@ -366,7 +367,8 @@
 	--text-color-coom-name: var(--color-blue-dark);
 	--text-color-comfort: var(--text-color-secondary-shade);
 	--text-color-warning: var(--color-orange-light);
-	--text-color-error: var(--color-red-dark);
+	--bg-color-warning: var(--color-orange);
+	--text-color-error: var(--color-red);
 	--text-color-unexpected: var(--color-red);
 	--text-color-not-found: var(--color-red);
 	--text-color-create-page: var(--color-red);
@@ -418,6 +420,12 @@
 	--hover-bg-color-inner-links: none;
 	--hover-text-color-header-icons: var(--color-blue);
 	--hover-text-color-btn-default: var(--text-color-primary);
+
+	/* -------- other expressions -------- */
+	--bg-color-true: #CFFFCF;
+	--bg-color-false: #FFCFCF;
+	--bg-color-unknown: #CFD5FF;
+	--bg-color-fired: #CFFFCF;
 
 }
 

@@ -283,8 +283,6 @@
 	height: 25px;
 	float: right;
 	margin-right: 30px;
-	background-repeat: no-repeat;
-	background-position: center center;
 	background-color: transparent;
 	border: 1px solid var(--border-color-input);
 	border-radius: 5px;
@@ -297,8 +295,6 @@
 	height: 25px;
 	float: right;
 	margin-right: 30px;
-	background-repeat: no-repeat;
-	background-position: center center;
 	background-color: transparent;
 	cursor: pointer;
 	border: 1px solid var(--border-color-input);

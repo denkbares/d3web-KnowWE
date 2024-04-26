@@ -43,21 +43,61 @@
 .CompositeCondition.conditionTrue,
 .TerminalCondition.conditionTrue,
 .RuleAction.conditionTrue {
-    background-color: #CFFFCF;
+	background-color: var(--text-color-condition-fulfilled);
+}
+
+.dark-mode .conditionTrue > *:not(.comment),
+.dark-mode .CompositeCondition.conditionTrue,
+.dark-mode .TerminalCondition.conditionTrue,
+.dark-mode .RuleAction.conditionTrue {
+	background-color: transparent;
+	border-bottom: solid var(--text-color-condition-fulfilled);
+}
+
+.dark-mode .style-condition-false .conditionTrue > *:not(.comment),
+.dark-mode .style-condition-false .CompositeCondition.conditionTrue,
+.dark-mode .style-condition-false .TerminalCondition.conditionTrue,
+.dark-mode .style-condition-false .RuleAction.conditionTrue {
+	background-color: transparent;
+	border-bottom: none;
 }
 
 .conditionFalse > *:not(.comment),
 .CompositeCondition.conditionFalse,
 .TerminalCondition.conditionFalse,
 .RuleAction.conditionFalse {
-    background-color: #FFCFCF;
+	background-color: var(--text-color-condition-false);
+}
+
+.dark-mode .style-condition-false .conditionFalse > *:not(.comment),
+.dark-mode .style-condition-false .CompositeCondition.conditionFalse,
+.dark-mode .style-condition-false .TerminalCondition.conditionFalse,
+.dark-mode .style-condition-false .RuleAction.conditionFalse {
+	background-color: transparent;
+	border-bottom: none;
+}
+
+.dark-mode .conditionFalse > *:not(.comment),
+.dark-mode .CompositeCondition.conditionFalse,
+.dark-mode .TerminalCondition.conditionFalse,
+.dark-mode .RuleAction.conditionFalse {
+	background-color: transparent;
+	border-bottom: solid var(--text-color-condition-false);
 }
 
 .conditionUnknown > *:not(.comment),
 .CompositeCondition.conditionUnknown,
 .TerminalCondition.conditionUnknown,
 .RuleAction.conditionUnknown {
-    background-color: #CFD5FF;
+	background-color: #CFD5FF;
+}
+
+.dark-mode .conditionUnknown > *:not(.comment),
+.dark-mode .CompositeCondition.conditionUnknown,
+.dark-mode .TerminalCondition.conditionUnknown,
+.dark-mode .RuleAction.conditionUnknown {
+	background-color: transparent;
+	border-bottom: solid #CFD5FF;
 }
 
 .conditionUndefined {
@@ -97,23 +137,23 @@
 /* -- Exceptions -- */
 
 .exceptTrue .ExceptionCondition {
-	background-color: #CFFFCF;
+	background-color: var(--bg-color-true);
 }
 
 .exceptFalse .ExceptionCondition {
-	background-color: #FFCFCF;
+	background-color: var(--bg-color-false);
 }
 
 .exceptUnknown .ExceptionCondition {
-	background-color: #CFD5FF;
+	background-color: var(--bg-color-unknown);
 }
 
 .elseFired .ElseAction {
-	background-color: #CFFFCF;
+	background-color: var(--bg-color-fired);
 }
 
 .unknownFired .UnknownAction {
-	background-color: #CFFFCF;
+	background-color: var(--bg-color-fired);
 }
 
 .exceptTrue .UnknownAction {

@@ -52,20 +52,35 @@ used colors
 	background-color: var(--text-color-success); /*#1aa52a;*/
 }
 
+.dark-mode #KnowWENotificationDom.notification-success {
+	color: var(--text-color-success);
+	background-color: var(--bg-color-infobox);
+}
+
 #KnowWENotificationDom.notification-success #KnowWENotificationQuit a {
 	color: var(--text-color-success);
 }
 
 #KnowWENotificationDom.notification-warn {
-	background-color: var(--text-color-warning);
+	background-color: var(--bg-color-warning);
+}
+
+.dark-mode #KnowWENotificationDom.notification-warn {
+	color: var(--bg-color-warning);
+	background-color: var(--bg-color-infobox);
 }
 
 #KnowWENotificationDom.notification-warn #KnowWENotificationQuit a {
-	color: var(--text-color-warning);
+	color: var(--bg-color-warning);
 }
 
 #KnowWENotificationDom.notification-error {
 	background-color: var(--text-color-error);
+}
+
+.dark-mode #KnowWENotificationDom.notification-error {
+	color: var(--text-color-error);
+	background-color: var(--bg-color-infobox);
 }
 
 #KnowWENotificationDom.notification-error #KnowWENotificationQuit a {

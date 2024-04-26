@@ -864,7 +864,7 @@ table.knowwe-pagination th img.filter:hover {
 }
 
 .knowwe-blue {
-	color: var(--text-color-default-head); /*TODO how to solve knowwe blue in dark mode?? #036*/
+	color: var(--text-color-default-head);
 }
 
 .knowwe-skip {

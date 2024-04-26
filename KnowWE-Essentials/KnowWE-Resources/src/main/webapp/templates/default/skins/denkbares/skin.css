@@ -1035,11 +1035,17 @@ a.tool:hover {
 	text-decoration: inherit;
 }
 
+.dark-mode.haddock mark,
+.dark-mode.haddock .mark,
+.dark-mode.haddock .highlight {
+	background-color: transparent;
+	border: 1px solid var(--highlight-color-dark);
+}
+
 .haddock mark, .haddock .mark, .haddock .highlight {
-	background-color: #f936;
+	background-color: var(--highlight-color-dark);
 	border-radius: 4px;
-	color: black;
-	/*padding: 0;*/
+	color: var(--text-color-primary);
 }
 
 /* +++ 455 Footer +++ */
@@ -2986,10 +2992,6 @@ legend {
 	background-color: var(--bg-color-edit);
 }
 
-.haddock mark, .haddock .mark, .haddock .highlight {
-	background-color: var(--highlight-color-dark);
-	color: var(--text-color-primary);
-}
 
 .dialog {
 	background-color: var(--bg-color-primary-transparent);
