@@ -3007,7 +3007,7 @@ legend {
 
 .editform input[type="text"]:focus, .dialog.find input[type="text"]:focus, .editform textarea:focus, .dialog.find textarea:focus {
 	/*background: rgba(243, 156, 18, 0.1);*/
-	background: var(--highlight-color-extra-light);
+	background: var(--highlight-color-faint-yellow);
 	border: 1px solid var(--border-color-default);
 }
 

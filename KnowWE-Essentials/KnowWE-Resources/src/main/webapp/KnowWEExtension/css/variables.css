@@ -37,7 +37,8 @@
 	--text-color-secondary-shade: #666;
 	--text-color-default-head: #036;
 
-	--highlight-color-extra-light: var(--color-yellow-light);
+	--highlight-color-faint-yellow: var(--color-yellow-light);
+	--highlight-color-faint-blue: #F5FAFF;
 	--highlight-color-light: #d9edf7;
 	--highlight-color-dark: rgba(248, 136, 25, 0.4);
 
@@ -149,6 +150,7 @@
 
 	/*-------- borders --------*/
 	--border-color-default: var(--color-grey);
+	--border-color-edit-blue: #9ACBFB;
 	--border-color-infobox-blue: #bce8f1;
 	--border-color-infobox-red: #ebccd1;
 	--border-color-light: var(--highlight-color-light);
@@ -189,7 +191,8 @@
 	--text-color-secondary: #b9b9b9;
 	--text-color-secondary-shade: #d2d2d2;
 
-	--highlight-color-extra-light: rgba(253, 223, 172, 0.1);
+	--highlight-color-faint-yellow: rgba(253, 223, 172, 0.05);
+	--highlight-color-faint-blue: rgba(245, 250, 255, 0.1);
 	--highlight-color-light: rgba(78, 131, 178, 0.3);
 	--highlight-color-dark: rgba(255, 184, 69, 0.7);
 
@@ -306,6 +309,7 @@
 	/*-------- borders --------*/
 	--border-color-default: rgba(0, 0, 0, 0);
 	--border-color-light: none;
+	--border-color-edit-blue: rgba(154, 203, 251, 0.05);
 	--border-color-infobox-blue: #38585d;
 	--border-color-infobox-red: #8d6d6d;
 
