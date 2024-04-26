@@ -2953,10 +2953,15 @@ a.user-anonymous li .icon-user:hover, a.user-anonymous li .icon-user:focus {
 	color: var(--color-red);
 }
 
-.form-group select {
+select, .form-group select {
 	background-color: var(--bg-color-base);
 	color: var(--text-color-primary);
 	border-color: var(--border-color-input);
+}
+
+option {
+	color: var(--text-color-primary);
+	background-color: var(--bg-color-base);
 }
 
 .form-control:focus {
