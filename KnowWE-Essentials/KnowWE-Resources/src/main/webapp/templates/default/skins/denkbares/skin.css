@@ -514,6 +514,8 @@ a.footnote {
 
 .haddock .warning, .haddock .error {
 	padding: 5px 20px 5px 45px;
+	position: relative;
+	z-index: 100;
 }
 
 .haddock .diffnote, .haddock .information, .haddock .info {

@@ -8,14 +8,14 @@ table.treetable * {
 .table_text {
 	height: 18px;
 	max-height: 400px;
-	border-left: 1px solid lightgray;
+	border-left: 1px solid var(--border-color-default);
 	overflow: hidden;
 	transition: height .5s .2s;
 }
 
 .table_text .kdom_source {
 	display: inline;
-	background-color: lightgray;
+	background-color: var(--bg-color-secondary-shade);
 	white-space: pre;
 }
 
