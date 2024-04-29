@@ -201,9 +201,9 @@ KNOWWE.core.util = function() {
       const indicator = jq$("#KnowWEProcessingIndicator");
       if (!indicator.exists()) {
         // fallback, happens for example on Edit.jsp
-        jq$("body").append("<div id='KnowWEProcessingIndicator' class='ajaxloader' style='display:none'>"
-          + "<img src='KnowWEExtension/images/ajax-100.gif' alt='loading'/>"
-          + "</div>");
+        jq$("body").append("<i id='KnowWEProcessingIndicator' class='fa-regular fa-spin fa-circle-notch ajaxloader' " +
+          "style='scale: 7; display:none'>"
+          + "</i>");
       }
       if (activityCounter > 0) {
         // to reduce flicker, we wait a bit
