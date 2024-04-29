@@ -303,10 +303,10 @@ public class Icon {
 					cssClass += " tooltipster";
 				}
 			}
-			return "<i class='" + cssClass + "' "
-					+ (style == null ? "" : "style='" + style + "'")
-					+ (title == null ? "" : "title='" + Strings.encodeHtml(title) + "'")
-					+ (id == null ? "" : "id='" + id + "'")
+			return "<i class='" + cssClass + "'"
+					+ (style == null ? "" : " style='" + style + "'")
+					+ (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
+					+ (id == null ? "" : " id='" + id + "'")
 					+ "></i>";
 		}
 		else {
@@ -319,10 +319,10 @@ public class Icon {
 	}
 
 	private String toHtmlWithoutContainer() {
-		return "<i class='" + cssClass + "' "
-				+ (style == null ? "" : "style='" + style + "'")
-				+ (title == null ? "" : "title='" + Strings.encodeHtml(title) + "'")
-				+ (id == null ? "" : "id='" + id + "'")
+		return "<i class='" + cssClass + "'"
+				+ (style == null ? "" : " style='" + style + "'")
+				+ (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
+				+ (id == null ? "" : " id='" + id + "'")
 				+ "></i>";
 	}
 
