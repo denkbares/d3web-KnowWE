@@ -41,7 +41,7 @@
 /*	border: 1px solid var(--border-color-table);*/
 /*}*/
 
-#maximizeCompositeView {
+.minMaxCompositeView {
 	float: right;
 	position: relative;
 	right: -5px;
@@ -50,13 +50,13 @@
 	color: var(--text-color-primary);
 }
 
-#maximizeCompositeView.minimized {
+#minimizeCompositeView {
 	background-position: 0 0;
 	width: 16px;
 	height: 16px;
 }
 
-#maximizeCompositeView.maximized {
+#maximizeCompositeView {
 	background-position: 0 -66px;
 	width: 16px;
 	height: 16px;

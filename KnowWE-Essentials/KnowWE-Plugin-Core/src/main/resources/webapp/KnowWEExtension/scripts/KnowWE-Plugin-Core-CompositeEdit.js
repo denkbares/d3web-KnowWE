@@ -806,8 +806,9 @@ KNOWWE.plugin.compositeEditTool = function() {
   function registerMaximizeEvent(image) {
     var image = jq$(image);
     jq$(image).on("click", function() {
-      if (image.hasClass("minimized")) {
-        image.removeClass("minimized").addClass("maximized");
+      jq$(this).css("display", "none");
+      if (jq$(this).attr("id") === "maximizeCompositeView") {
+        document.getElementById("minimizeCompositeView").style.display = "flex";
         jq$(_CE.dialogDiv).parents(".ui-dialog:first").animate({
           width: window.innerWidth,
           height: window.innerHeight
@@ -820,7 +821,7 @@ KNOWWE.plugin.compositeEditTool = function() {
         jq$(_CE.dialogDiv).dialog("option", "height", window.innerHeight);
         jq$(_CE.dialogDiv).dialog("option", "width", window.innerHeight);
       } else {
-        image.removeClass("maximized").addClass("minimized");
+        document.getElementById("maximizeCompositeView").style.display = "flex";
         jq$(_CE.dialogDiv).parents(".ui-dialog:first").animate({
           width: window.innerWidth * .6,
           height: window.innerHeight * .9
@@ -837,13 +838,22 @@ KNOWWE.plugin.compositeEditTool = function() {
   }
 
   function appendMaximizeButton() {
-    let minMaxButton = jq$("<i/>", {
+    let maxButton = jq$("<i/>", {
       "id": "maximizeCompositeView",
-      "class": "fa-solid fa-arrows-maximize minimized"
+      "class": "minMaxCompositeView fa-solid fa-arrows-maximize",
+      "style": "display: flex;"
+
+    });
+    let minButton = jq$("<i/>", {
+      "id": "minimizeCompositeView",
+      "class": "minMaxCompositeView fa-solid fa-arrows-minimize",
+      "style": "display: none;"
     });
     const titlebar = jq$(".ui-dialog-titlebar");
-    jq$(titlebar).append(minMaxButton);
-    registerMaximizeEvent(minMaxButton);
+    jq$(titlebar).append(maxButton);
+    registerMaximizeEvent(maxButton);
+    jq$(titlebar).append(minButton);
+    registerMaximizeEvent(minButton);
   }
 
   function changeButtons() {
