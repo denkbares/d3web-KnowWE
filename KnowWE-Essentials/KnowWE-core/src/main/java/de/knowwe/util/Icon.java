@@ -186,6 +186,7 @@ public class Icon {
 
 	//SPINNING
 	public static final Icon LOADING = new Icon("fa-type fa-spin fa-circle-notch");
+	public static final Icon LOADING_LIGHT = new Icon("fa-type-light fa-spin fa-circle-notch");
 	public static final Icon WAITING = new Icon(LOADING.getCssClass());
 	public static final Icon CALCULATING = new Icon(LOADING.getCssClass());
 
@@ -239,9 +240,11 @@ public class Icon {
 		if (cssClass != null) {
 			if (isFontAweSomeProAvailable()) {
 				cssClass = cssClass.replace("fa-type ", "fa-regular ");
+				cssClass = cssClass.replace("fa-type-light ", "fa-light ");
 			}
 			else {
 				cssClass = cssClass.replace("fa-type ", "fa-solid ");
+				cssClass = cssClass.replace("fa-type-light ", "fa-solid ");
 			}
 		}
 		this.cssClass = cssClass;
