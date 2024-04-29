@@ -14,7 +14,7 @@
 }
 
 .type_TestCasePlayer .wikitable * TR.odd {
-	background-color: #EEE;
+	background-color: var(--bg-color-table-odd-th);
 }
 
 .type_TestCasePlayer .wikitable * TH {

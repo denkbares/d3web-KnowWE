@@ -2669,6 +2669,9 @@ li.findpages .btn {
 	border: none;
 }
 
+.fa-bolt {
+	color: var(--color-yellow);
+}
 
 /* ############################################################################ */
 /* ------------- overwritten Haddock.css styles using CSS variables ----------- */
@@ -2690,7 +2693,7 @@ li.findpages .btn {
 }
 
 .content.active .sidebar, .content.active:after {
-	background-color: var(--bg-color-base);
+	background-color: var(--bg-color-primary-shade);
 }
 
 button {
@@ -3105,7 +3108,14 @@ input:hover, select:hover, .form-control:hover {
 
 ::-webkit-scrollbar {
 	background: transparent;
+}
+
+::-webkit-scrollbar:vertical {
 	width: 10px;
+}
+
+::-webkit-scrollbar:horizontal {
+	height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -3114,5 +3124,5 @@ input:hover, select:hover, .form-control:hover {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: var(--color-grey-medium);
+	background: var(--bg-color-scrollbar-thumb-hover);
 }
