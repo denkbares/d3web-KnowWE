@@ -424,6 +424,7 @@
 	--hover-bg-color-inner-links: none;
 	--hover-text-color-header-icons: var(--color-blue);
 	--hover-text-color-btn-default: var(--text-color-primary);
+	--hover-bg-color-btn-light-bg: var(--bg-color-primary);
 
 	/* -------- other expressions -------- */
 	--bg-color-true: #CFFFCF;
