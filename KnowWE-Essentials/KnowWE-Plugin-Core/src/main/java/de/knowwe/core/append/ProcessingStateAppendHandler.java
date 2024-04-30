@@ -10,7 +10,7 @@ public class ProcessingStateAppendHandler implements PageAppendHandler {
 	@Override
 	public void append(Article article, UserContext user, RenderResult result) {
 		result.appendHtml(Icon.LOADING_LIGHT.addClasses("ajaxloader").addId("KnowWEProcessingIndicator")
-				.addStyle("scale: 7; display: none; state='idle'").toHtml());
+				.addStyle("display: none;").increaseSize(Icon.Percent.by700).toHtml());
 	}
 
 	@Override
