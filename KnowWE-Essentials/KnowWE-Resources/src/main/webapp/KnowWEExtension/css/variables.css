@@ -149,6 +149,7 @@
 	--hover-text-color-pagename: var(--text-color-primary);
 	--hover-text-color-dropdown: var(--text-color-primary);
 	--hover-border-color-btn-default: var(--color-grey);
+	--hover-color-watches-line: rgba(240, 240, 241, 0.62);
 
 	/*-------- borders --------*/
 	--border-color-default: var(--color-grey);
@@ -309,6 +310,7 @@
 	--hover-text-color-pagename: var(--color-blue);
 	--hover-text-color-dropdown: var(--color-blue);
 	--hover-border-color-btn-default: var(--border-color-default);
+	--hover-color-watches-line: var(--hover-color-default);
 
 	/*-------- borders --------*/
 	--border-color-default: rgba(0, 0, 0, 0);
@@ -415,7 +417,6 @@
 	--text-color-watches-value: var(--color-pink-light);
 	--text-color-watches-expression: var(--color-green);
 	--text-color-watches-expressionerror: var(--color-red);
-	--hover-color-watches-line: rgba(240, 240, 241, 0.62);
 
 	/*-------- borders --------*/
 	--border-color-none: var(--bg-color-primary);

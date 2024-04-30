@@ -295,7 +295,7 @@ KNOWWE.plugin.renaming = function() {
       sectionsCache[occurence] = jq$(otherOccurencesHashMap[occurence]).parent().html();
       jq$(otherOccurencesHashMap[occurence]).attr("sectionOccurenceId", occurence);
       jq$(otherOccurencesHashMap[occurence]).empty();
-      jq$(otherOccurencesHashMap[occurence]).css("background-color", "yellow");
+      jq$(otherOccurencesHashMap[occurence]).css("background-color", "var(--highlight-color-light");
       jq$(otherOccurencesHashMap[occurence]).text(lastPathElement);
     }
     KNOWWE.core.util.updateProcessingState(-1);
