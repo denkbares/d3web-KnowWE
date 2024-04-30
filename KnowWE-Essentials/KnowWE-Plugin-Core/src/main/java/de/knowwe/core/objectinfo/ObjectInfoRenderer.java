@@ -568,8 +568,8 @@ public class ObjectInfoRenderer implements Renderer {
 
 	private static void wrapInExtendPanel(String surroundingMarkupType, String info, RenderResult content, RenderResult result, boolean expandable) {
 		result.appendHtml("<p class=\"extend-panel pointer extend-panel-right\" >");
-		result.appendHtml(Icon.CARET_RIGHT.addId("pointRightCaret").toHtml());
-		result.appendHtml(Icon.CARET_DOWN.addId("pointDownCaret").addStyle("display: none;").toHtml());
+		result.appendHtml(Icon.CARET_RIGHT.addClasses("pointRightCaret").toHtml());
+		result.appendHtml(Icon.CARET_DOWN.addClasses("pointDownCaret").addStyle("display: none;").toHtml());
 		result.appendHtml("<strong>");
 		result.appendHtml(surroundingMarkupType);
 		result.appendHtml("</strong>");

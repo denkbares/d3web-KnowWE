@@ -796,6 +796,10 @@ KNOWWE.plugin.compositeEditTool = function() {
         const p = jq$(".extend-panel-right strong").filter(function() {
           return jq$(this).text() === type;
         }).parent().removeClass("extend-panel-right").addClass("extend-panel-down");
+        if (p) {
+          jq$(".extend-panel-down")[0].querySelector(".pointDownCaret").style.display = "inline";
+          jq$(".extend-panel-down")[0].querySelector(".pointRightCaret").style.display = "none";
+        }
         const section = jq$(p).next("div");
         jq$(section).css("display", "inline");
         loadPreviews(section);

@@ -559,12 +559,12 @@ KNOWWE.plugin.quicki = function() {
         // questionnaire is visible and should be hidden
         // thus image needs to be the triangle indicating extensibility
         questionnaire.className = "questionnaire pointRight";
-        questionnaire.getElementById("pointDownCaret").style.display = "none";
-        questionnaire.getElementById("pointRightCaret").style.display = "flex";
+        questionnaire.querySelector(".pointDownCaret").style.display = "none";
+        questionnaire.querySelector(".pointRightCaret").style.display = "block";
       } else if (flag === 0) {
         questionnaire.className = "questionnaire pointDown";
-        questionnaire.getElementById("pointDownCaret").style.display = "flex";
-        questionnaire.getElementById("pointRightCaret").style.display = "none";
+        questionnaire.querySelector(".pointDownCaret").style.display = "block";
+        questionnaire.querySelector(".pointRightCaret").style.display = "none";
       }
     },
     /**
@@ -666,7 +666,7 @@ KNOWWE.plugin.quicki = function() {
 
       } else if (group.style.display === "none") {
 
-        group.style.display = "flex";
+        group.style.display = "block";
 
         questionnaireVis[questionnaire.id] = 1;
 
