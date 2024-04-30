@@ -97,7 +97,7 @@ used colors
 #KnowWENotificationQuit a {
 	padding: 0 7px;
 	margin-top: 5px;
-	background-color: var(--bg-color-secondary);
+	background-color: var(--bg-color-primary);
 	border-radius: 3px;
 }
 
@@ -313,17 +313,20 @@ code.box {
 	padding: 5px 20px 5px 45px;
 	position: relative;
 }
-.error i, .warning i{
+
+.error i, .warning i {
 	position: absolute;
 	left: 10px;
 	top: 50%;
 	transform: translateY(-50%);
 }
-.error i{
+
+.error i {
 	color: var(--color-red);
 }
-.warning i{
-	color: var(--color-orange);
+
+.warning i {
+	color: var(--color-orange-light);
 }
 
 .error_highlight {

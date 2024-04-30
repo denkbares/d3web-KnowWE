@@ -81,11 +81,11 @@
 	--bg-color-red: #d9534f;
 	--bg-color-red-dark: #c9302c;
 
-	--color-orange-light: #bd8202;
+	--color-orange-light: #ce8c00;
 	--color-orange: #eaaf11;
 	--color-orange-dark: #d95900;
 
-	--color-yellow-light: #FAF0D4;
+	--color-yellow-light: #faf1d7;
 	--color-yellow: #eac105;
 	--color-yellow-dark: #d7b614;
 
@@ -287,7 +287,7 @@
 	/*-------- backgrounds --------*/
 	--bg-color-base: var(--bg-color-primary-shade);
 	--bg-color-frame: var(--bg-color-primary-shade);
-	--bg-color-infobox: #494949;
+	--bg-color-infobox: var(--bg-color-secondary);
 	--bg-color-scrollbar-thumb: #4d4d4d;
 	--bg-color-scrollbar-thumb-hover: #757575;
 	--bg-color-head-transparent: var(--bg-color-primary-shade);

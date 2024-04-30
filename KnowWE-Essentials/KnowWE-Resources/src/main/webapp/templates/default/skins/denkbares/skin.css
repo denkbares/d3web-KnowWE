@@ -192,14 +192,14 @@ dl dd {
 }
 
 .KDDOMError {
-	color: red !important;
-	text-decoration-color: red !important;
+	color: var(--color-red) !important;
+	text-decoration-color: var(--color-red) !important;
 	text-decoration: underline !important;
 }
 
 .KDDOMWarning {
-	color: #CFCF00 !important;
-	text-decoration-color: #CFCF00 !important;
+	color: var(--color-yellow) !important;
+	text-decoration-color: var(--color-yellow) !important;
 	text-decoration: underline !important;
 }
 
