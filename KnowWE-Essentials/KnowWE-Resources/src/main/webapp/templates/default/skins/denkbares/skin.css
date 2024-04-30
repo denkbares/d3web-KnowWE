@@ -530,7 +530,7 @@ td .information, td .info, td .warning, td .error {
 .defaultMarkup .markupText .warning,
 .defaultMarkup .markupText .info,
 .defaultMarkup .markupText .information {
-	margin: 0;
+	margin: 2px 0 2px 0;
 	min-height: 32px;
 }
 

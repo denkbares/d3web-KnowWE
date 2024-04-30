@@ -58,7 +58,7 @@ used colors
 }
 
 #KnowWENotificationDom.notification-success #KnowWENotificationQuit a {
-	color: var(--text-color-success);
+	color: var(--text-color-primary);
 }
 
 #KnowWENotificationDom.notification-warn {
@@ -71,7 +71,7 @@ used colors
 }
 
 #KnowWENotificationDom.notification-warn #KnowWENotificationQuit a {
-	color: var(--bg-color-warning);
+	color: var(--text-color-primary);
 }
 
 #KnowWENotificationDom.notification-error {
@@ -84,7 +84,7 @@ used colors
 }
 
 #KnowWENotificationDom.notification-error #KnowWENotificationQuit a {
-	color: var(--text-color-error);
+	color: var(--text-color-primary);
 	user-select: none;
 }
 
@@ -97,7 +97,7 @@ used colors
 #KnowWENotificationQuit a {
 	padding: 0 7px;
 	margin-top: 5px;
-	background-color: white;
+	background-color: var(--bg-color-secondary);
 	border-radius: 3px;
 }
 
@@ -303,16 +303,27 @@ code.box {
 }
 
 .warning {
-	background: var(--bg-color-infobox) url(../images/msg_info_yellow.png) center no-repeat;
-	background-position: 10px 50%; /* x-pos y-pos */
+	background: var(--bg-color-infobox);
 	padding: 5px 20px 5px 45px !important;
 	color: var(--text-color-warning);
 }
 
 .error {
-	background: var(--bg-color-infobox) url(../images/msg_cross.png) center no-repeat;
-	background-position: 10px 50%; /* x-pos y-pos */
+	background: var(--bg-color-infobox);
 	padding: 5px 20px 5px 45px;
+	position: relative;
+}
+.error i, .warning i{
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+.error i{
+	color: var(--color-red);
+}
+.warning i{
+	color: var(--color-orange);
 }
 
 .error_highlight {

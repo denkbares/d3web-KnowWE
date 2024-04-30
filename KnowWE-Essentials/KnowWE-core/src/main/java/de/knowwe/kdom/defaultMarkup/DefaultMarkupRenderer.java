@@ -217,8 +217,17 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (messages.size() == 1) {
 			clazz += " singleLine";
 		}
+		String messageIcon = null;
+		if(clazz.contains("error")){
+			messageIcon = Icon.ERROR_CROSS.addClasses("error-icon").increaseSize(Icon.Percent.by33).toHtml();
+		} else if (clazz.contains("warning")){
+			messageIcon = Icon.ERROR.addClasses("warning-icon").increaseSize(Icon.Percent.by33).toHtml();
+		}
 		out.appendHtml("<span class='" + clazz
 				+ "' style='white-space: pre-wrap;'>");
+		if(messageIcon != null){
+			out.appendHtml(messageIcon);
+		}
 		for (String messageString : messages) {
 			out.append(messageString).append("\n");
 		}

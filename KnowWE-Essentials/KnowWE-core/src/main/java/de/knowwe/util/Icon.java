@@ -58,6 +58,7 @@ public class Icon {
 	public static final Icon HELP = new Icon("fa-type fa-circle-question");
 	public static final Icon INFO = new Icon("fa-type fa-circle-info");
 	public static final Icon ERROR = new Icon("fa-type fa-triangle-exclamation knowwe-error");
+	public static final Icon ERROR_CROSS = new Icon("fa-type fa-circle-xmark");
 	public static final Icon WARNING = new Icon("fa-type fa-triangle-exclamation knowwe-warning");
 	public static final Icon SEARCH = new Icon("fa-type fa-magnifying-glass");
 	public static final Icon DELETE = new Icon("fa-type fa-circle-xmark");
