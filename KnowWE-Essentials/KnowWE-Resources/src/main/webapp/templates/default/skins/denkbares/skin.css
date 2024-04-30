@@ -47,6 +47,7 @@ a, a.logo, .pagename a, .icon-search, .icon-user {
 
 a:focus {
 	box-shadow: none;
+	color: var(--text-color-primary-link);
 }
 
 a.logo.pull-left {
