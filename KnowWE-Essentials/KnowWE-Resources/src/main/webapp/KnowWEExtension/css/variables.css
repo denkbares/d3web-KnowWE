@@ -150,6 +150,7 @@
 	--hover-text-color-dropdown: var(--text-color-primary);
 	--hover-border-color-btn-default: var(--color-grey);
 	--hover-color-watches-line: rgba(240, 240, 241, 0.62);
+	--hover-bg-color-btn-light-bg: var(--bg-color-primary-shade);
 
 	/*-------- borders --------*/
 	--border-color-default: var(--color-grey);
@@ -311,6 +312,7 @@
 	--hover-text-color-dropdown: var(--color-blue);
 	--hover-border-color-btn-default: var(--border-color-default);
 	--hover-color-watches-line: var(--hover-color-default);
+	--hover-bg-color-btn-light-bg: #343434;
 
 	/*-------- borders --------*/
 	--border-color-default: rgba(0, 0, 0, 0);
@@ -429,7 +431,6 @@
 	--hover-bg-color-inner-links: none;
 	--hover-text-color-header-icons: var(--color-blue);
 	--hover-text-color-btn-default: var(--text-color-primary);
-	--hover-bg-color-btn-light-bg: var(--bg-color-primary);
 
 	/* -------- other expressions -------- */
 	--bg-color-true: #CFFFCF;
