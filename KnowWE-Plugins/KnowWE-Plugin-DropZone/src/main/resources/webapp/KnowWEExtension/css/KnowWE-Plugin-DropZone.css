@@ -44,7 +44,7 @@
 	height: 100px;
 	min-width: 60px;
 	min-height: 42px;
-	border: 3px dashed #192844;
+	border: 3px dashed var(--text-color-default-head);
 }
 
 .dropzone.full-height > .drop-indicator > .box-input {
@@ -52,9 +52,9 @@
 	top: 27.5%;
 	height: 45%;
 	left: 27.5%;
-	background-color: rgba(255, 255, 255, 0.9);
+	background-color: var(--bg-color-primary-transparent);
 	position: absolute;
-	border: 3px dashed #192844;
+	border: 3px dashed var(--text-color-default-head);
 }
 
 .dropzone.replace > .drop-indicator > .box-input {
@@ -63,7 +63,7 @@
 	height: 100%;
 	left: 0;
 	position: absolute;
-	border: 3px dashed #192844;
+	border: 3px dashed var(--text-color-default-head);
 }
 
 .dropzone.replace > .drop-indicator.dragover,
@@ -73,21 +73,21 @@
 }
 
 .drop-indicator.dragover {
-	border: solid #192844;
+	border: solid var(--text-color-default-head);
 }
 
 .dropzone.full-height > .drop-indicator > .box-input.dragover,
 .dropzone.replace > .drop-indicator > .box-input.dragover {
-	border: dashed #192844;
+	border: dashed var(--text-color-default-head);
 }
 
 .drop-indicator label.dragover {
-	color: #ccc;
+	color: var(--color-grey);
 }
 
 .dropzone.full-height > .drop-indicator label.dragover,
 .dropzone.replace > .drop-indicator label.dragover {
-	color: #192844;
+	color: var(--text-color-default-head);
 }
 
 .dropzone.replace > .drop-indicator.uploaded,
@@ -98,12 +98,12 @@
 
 .drop-indicator.uploaded,
 .dropzone.full-height > .drop-indicator > .box-input.uploaded,
-.dropzone.replace > .drop-indicator > .box-input.uploaded{
-	border-color: #ccc;
+.dropzone.replace > .drop-indicator > .box-input.uploaded {
+	border-color: var(--color-grey);
 }
 
 .drop-indicator label.uploaded {
-	color: #192844;
+	color: var(--text-color-default-head);
 }
 
 .dropzone.full-height > .drop-indicator.uploading, .drop-indicator.uploading,
@@ -113,12 +113,12 @@
 
 .drop-indicator.uploading,
 .dropzone.full-height > .drop-indicator > .box-input.uploading,
-.dropzone.replace > .drop-indicator > .box-input.uploading{
-	border: dashed #ccc;
+.dropzone.replace > .drop-indicator > .box-input.uploading {
+	border: dashed var(--color-grey);
 }
 
 .drop-indicator label.uploading {
-	color: #ccc;
+	color: var(--color-grey);
 }
 
 .drop-indicator > :first-child:after {
@@ -137,6 +137,6 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	color: #192844;
+	color: var(--text-color-default-head);
 	cursor: pointer;
 }
