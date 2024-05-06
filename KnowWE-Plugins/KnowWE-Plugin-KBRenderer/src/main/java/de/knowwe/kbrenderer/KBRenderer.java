@@ -130,7 +130,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				for (TerminologyObject t1 : getRoots) {
 					// Look for children @ depth 1
 					if (t1.getParents().length == 1) {
-						text.appendHtml("<span style=\"color: rgb(150, 110, 120);\">");
+						text.appendHtml("<span style=\"color: var(--color-purple-light);\">");
 						text.append(t1.getName());
 						text.appendHtml("</span><br/>\n");
 						// Get their childrens and build up the tree recursively
@@ -226,7 +226,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 						appendedQuestionHeadline = true;
 					}
 					if (q1 instanceof QContainer) {
-						text.appendHtml("<span style=\"color: rgb(128, 128, 0);\">");
+						text.appendHtml("<span style=\"color: var(--color-green-light);\">");
 						text.append(q1.getName());
 						text.appendHtml("</span><br/>");
 						// Build up question tree recursively
@@ -362,7 +362,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 					for (int i = 0; i < depth + 1; i++) {
 						result.append("-");
 					}
-					result.appendHtml("<span style=\"color: rgb(0, 0, 255);\">");
+					result.appendHtml("<span style=\"color: var(--color-blue-highlight);\">");
 					result.append(c1.toString());
 					result.appendHtml("</span><br/>\n");
 				}
@@ -377,13 +377,13 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 				result.append(getTermHTML(prompt, property, t1, "[date]", title, user));
 			}
 			else if (t1 instanceof Solution) {
-				result.appendHtml("<span style=\"color: rgb(150, 110, 120);\">");
+				result.appendHtml("<span style=\"color: var(--color-purple-light);\">");
 				result.append(VerbalizationManager.getInstance().verbalize(t1,
 						VerbalizationManager.RenderingFormat.HTML));
 				result.appendHtml("</span><br/>\n");
 			}
 			else if (t1 instanceof QContainer) {
-				result.appendHtml("<span style=\"color: rgb(128, 128, 0);\">");
+				result.appendHtml("<span style=\"color: var(--color-green-light);\">");
 				result.append(t1.getName());
 				result.appendHtml("</span><br/>");
 			}
@@ -412,7 +412,7 @@ public class KBRenderer extends AbstractHTMLTagHandler {
 		else {
 			termDefiningSection.get().getRenderer().render(termDefiningSection, user, builder);
 		}
-		builder.appendHtml("<span style=\"color: rgb(125, 80, 102);\"> ");
+		builder.appendHtml("<span style=\"color: var(--color-purple-dark);\"> ");
 		builder.append(typeDeclaration + " " + property);
 		builder.appendHtml(" </span><br/>\n");
 

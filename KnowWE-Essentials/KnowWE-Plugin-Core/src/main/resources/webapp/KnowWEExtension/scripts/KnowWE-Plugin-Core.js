@@ -608,7 +608,7 @@ KNOWWE.kdomtreetable.setOverflow = function() {
 
 KNOWWE.kdomtreetable.revealRenderKDOMTable = function(id) {
   const treetable = jq$('.renderKDOMTable.wikitable.treetable').not(".floatThead-table");
-  const markedtitle = treetable.find('td[style="color: rgb(0, 0, 255);"]');
+  const markedtitle = treetable.find('td[style="color: var(--color-blue-highlight);"]');
   if (typeof markedtitle != "undefined" || markedtitle != null) {
     for (let i = 0; i < markedtitle.size(); i++) {
       jq$(markedtitle[i]).removeAttr("style");
@@ -617,7 +617,7 @@ KNOWWE.kdomtreetable.revealRenderKDOMTable = function(id) {
 
   const tablerow = treetable.find('tr[data-tt-id="kdom-row-' + id + '"]');
   treetable.treetable("reveal", "kdom-row-" + id);
-  tablerow.find("td").first().css("color", "rgb(0, 0, 255)");
+  tablerow.find("td").first().css("color", "var(--color-blue-highlight)");
   jq$('html, body').animate({
     scrollTop: (tablerow.offset().top - 250)
   }, 400);
