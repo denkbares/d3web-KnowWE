@@ -678,6 +678,11 @@
 					<groupId>com.denkbares.krone</groupId>
 					<artifactId>KnowWE-Plugin-KONAP</artifactId>
 				</dependency>
+				<dependency>
+					<groupId>com.denkbares.krone</groupId>
+					<artifactId>KONAP-Plugin-COOM</artifactId>
+					<version>${project.version}</version>
+				</dependency>
 			</dependencies>
 		</profile>
 
