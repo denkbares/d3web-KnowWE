@@ -55,14 +55,18 @@ ToolMenu.prototype.selectTerm = function(element) {
 
 ToolMenu.mouseMoveEvent = 'mousemove.toolmenu';
 
-ToolMenu.prototype.showToolPopupMenu = function($node) {
+/**
+ * @param {jQuery} $node HTML element for which to display the tool menu (used for positioning)
+ * @param {Object} [args={}] optional set of additional arguments for the KnowWE action that returns the KnowWE tools
+ */
+ToolMenu.prototype.showToolPopupMenu = function ($node, args = {}) {
   // we hide all open tooltipster tool tips to reduce clutter
-  jq$('.tooltipstered').tooltipster('hide');
+  jq$(".tooltipstered").tooltipster("hide");
 
   // hide tool menus opened for other terms
   const lastMenuId = this.lastMenuId;
   this.hideToolsPopupMenu();
-  const currentMenuId = jq$($node).attr('id') || jq$($node).data('identifier');
+  const currentMenuId = jq$($node).attr("id") || jq$($node).data("identifier");
   if (lastMenuId === currentMenuId) return;
   this.lastMenuId = currentMenuId;
 
@@ -71,50 +75,64 @@ ToolMenu.prototype.showToolPopupMenu = function($node) {
   let windowWidth = window.getWidth();
   let nodeRect = node.getBoundingClientRect();
   let styles = {
-    'z-index': '10000',
-    'position': 'fixed'
+    "z-index": "10000",
+    position: "fixed",
   };
   const mouseMovePadding = 5;
   if (nodeRect.top > windowHeight - nodeRect.top + nodeRect.height) {
     // show above
-    styles.bottom = windowHeight - nodeRect.top - 1 + 'px';
-    jq$(document.body).unbind(ToolMenu.mouseMoveEvent).bind(ToolMenu.mouseMoveEvent, function(event) {
-      if (event.clientY > nodeRect.bottom
-        || (event.clientY > nodeRect.top && (event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding))) {
-        _TM.hideToolsPopupMenu();
-        jq$(this).unbind(ToolMenu.mouseMoveEvent);
-      }
-    });
+    styles.bottom = windowHeight - nodeRect.top - 1 + "px";
+    jq$(document.body)
+      .unbind(ToolMenu.mouseMoveEvent)
+      .bind(ToolMenu.mouseMoveEvent, function (event) {
+        if (
+          event.clientY > nodeRect.bottom ||
+          (event.clientY > nodeRect.top &&
+            (event.clientX > nodeRect.right + mouseMovePadding ||
+              event.clientX < nodeRect.left - mouseMovePadding))
+        ) {
+          _TM.hideToolsPopupMenu();
+          jq$(this).unbind(ToolMenu.mouseMoveEvent);
+        }
+      });
   } else {
     // show below
-    styles.top = nodeRect.top + nodeRect.height + 'px';
-    jq$(document.body).unbind(ToolMenu.mouseMoveEvent).bind(ToolMenu.mouseMoveEvent, function(event) {
-      if (event.clientY < nodeRect.top ||
-        (event.clientY < nodeRect.bottom && (event.clientX > nodeRect.right + mouseMovePadding || event.clientX < nodeRect.left - mouseMovePadding))) {
-        _TM.hideToolsPopupMenu();
-        jq$(this).unbind(ToolMenu.mouseMoveEvent);
-      }
-    });
+    styles.top = nodeRect.top + nodeRect.height + "px";
+    jq$(document.body)
+      .unbind(ToolMenu.mouseMoveEvent)
+      .bind(ToolMenu.mouseMoveEvent, function (event) {
+        if (
+          event.clientY < nodeRect.top ||
+          (event.clientY < nodeRect.bottom &&
+            (event.clientX > nodeRect.right + mouseMovePadding ||
+              event.clientX < nodeRect.left - mouseMovePadding))
+        ) {
+          _TM.hideToolsPopupMenu();
+          jq$(this).unbind(ToolMenu.mouseMoveEvent);
+        }
+      });
   }
   if (nodeRect.left > windowWidth - nodeRect.left + nodeRect.width) {
     // expand to the left
-    styles.right = Math.max(0, windowWidth - nodeRect.left - nodeRect.width) + 'px';
+    styles.right =
+      Math.max(0, windowWidth - nodeRect.left - nodeRect.width) + "px";
   } else {
     // expand to the right
-    styles.left = Math.max(0, nodeRect.left) + 'px';
+    styles.left = Math.max(0, nodeRect.left) + "px";
   }
 
-  let parent = new Element('div', {
-    'id': 'toolPopupMenuID',
-    'data-menu-id': currentMenuId,
-    'styles': styles,
-    'events': {
-      'mouseleave': _TM.hideToolsPopupMenu
-    }
+  let parent = new Element("div", {
+    id: "toolPopupMenuID",
+    "data-menu-id": currentMenuId,
+    styles: styles,
+    events: {
+      mouseleave: _TM.hideToolsPopupMenu,
+    },
   });
 
   document.body.appendChild(parent);
-  parent.innerHTML = "<div class='toolMenuFrame'>" + this.getToolMenuHtml(node) + "</div>";
+  parent.innerHTML =
+    "<div class='toolMenuFrame'>" + this.getToolMenuHtml(node, args) + "</div>";
 
   const menu = jq$(parent).find(".markupMenu");
   let menuRect = menu[0].getBoundingClientRect();
@@ -126,18 +144,22 @@ ToolMenu.prototype.showToolPopupMenu = function($node) {
   }
 };
 
-ToolMenu.prototype.getToolMenuHtml = function(node) {
+/**
+ * @param {jQuery} node HTML element for which to display the tool menu (used for positioning)
+ * @param {Object} [args={}] optional set of additional arguments for the KnowWE action that returns the KnowWE tools
+ */
+ToolMenu.prototype.getToolMenuHtml = function (node, args = {}) {
   let $node = jq$(node);
 
-  let toolMenuIdentifier = $node.attr('toolMenuIdentifier');
+  let toolMenuIdentifier = $node.attr("toolMenuIdentifier");
   if (!toolMenuIdentifier) {
-    toolMenuIdentifier = $node.data('identifier'); // some compatibility for saner attribute names
+    toolMenuIdentifier = $node.data("identifier"); // some compatibility for saner attribute names
   }
   if (!this.cache[toolMenuIdentifier]) {
-    let toolMenuAction = 'GetToolMenuAction';
-    let specialAction = $node.attr('toolMenuAction');
+    let toolMenuAction = "GetToolMenuAction";
+    let specialAction = $node.attr("toolMenuAction");
     if (!specialAction) {
-      specialAction = $node.data('action');
+      specialAction = $node.data("action");
     }
     if (specialAction) {
       toolMenuAction = specialAction;
@@ -148,27 +170,30 @@ ToolMenu.prototype.getToolMenuHtml = function(node) {
       locationName = "termbrowser";
     }
 
-    const params = {
-      action: toolMenuAction,
-      identifier: toolMenuIdentifier,
-      location: locationName,
-    };
+    const params = Object.assign(
+      {
+        action: toolMenuAction,
+        identifier: toolMenuIdentifier,
+        location: locationName,
+      },
+      args,
+    );
 
     const options = {
       url: KNOWWE.core.util.getURL(params),
       async: false,
       response: {
-        onError: _EC.onErrorBehavior
-      }
+        onError: _EC.onErrorBehavior,
+      },
     };
     const ajaxCall = new _KA(options);
     ajaxCall.send();
     const parsedResponse = JSON.parse(ajaxCall.getResponse());
     this.cache[parsedResponse.sectionId] = parsedResponse.menuHTML;
     if (specialAction) {
-      $node.removeAttr('toolMenuAction');
-      $node.removeData('action');
-      $node.attr('toolMenuIdentifier', parsedResponse.sectionId);
+      $node.removeAttr("toolMenuAction");
+      $node.removeData("action");
+      $node.attr("toolMenuIdentifier", parsedResponse.sectionId);
       toolMenuIdentifier = parsedResponse.sectionId;
     }
   }
