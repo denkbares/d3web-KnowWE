@@ -19,7 +19,18 @@
 
 package org.apache.wiki.providers;
 
-import com.denkbares.utils.Files;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.wiki.WikiEngine;
@@ -37,13 +48,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.denkbares.utils.Files;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -64,10 +69,11 @@ public class GitVersioningAttachmentProviderTest {
 	@Before
 	public void init() throws Exception {
 		TMP_NEW_REPO = new File(Files.getSystemTempDir(), "newRepo").getAbsolutePath();
-//		System.out.println(TMP_NEW_REPO);
+		System.out.println(TMP_NEW_REPO);
 		properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
 		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
+		properties.setProperty(GitVersioningFileProvider.JSPWIKI_GIT_DEFAULT_BRANCH,"maintenance");
 		engine = Mockito.mock(WikiEngine.class);
 		when(engine.getWikiProperties()).thenReturn(properties);
 		PageManager pageManager = Mockito.mock(PageManager.class);
@@ -94,9 +100,11 @@ public class GitVersioningAttachmentProviderTest {
 	public void testPutAttachment() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
+
 		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		att.setAttribute(Attachment.CHANGENOTE, "add");
+
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
 		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
@@ -112,7 +120,8 @@ public class GitVersioningAttachmentProviderTest {
 //			System.out.println(attachment.getAttribute(Attachment.CHANGENOTE));
 //		}
 
-		assertEquals(3, versionHistory.size());
+		//we expect 2 as there was 1 commit without any change
+		assertEquals(2, versionHistory.size());
 	}
 
 	@Test
@@ -176,14 +185,18 @@ public class GitVersioningAttachmentProviderTest {
 	public void testListAttachments() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
+
 		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
+
 		att = new org.apache.wiki.attachment.Attachment(engine, "test", "testAtt2.txt");
 		att.setAuthor(AUTHOR);
 		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
+
+		List<Attachment> versionHistoryFromGit = attProvider.getVersionHistory(att);
 
 		WikiPage page = new WikiPage(engine, "test");
 		Collection<Attachment> attachments = attProvider.listAttachments(page);
@@ -194,16 +207,20 @@ public class GitVersioningAttachmentProviderTest {
 	public void testMoveAttachments() throws IOException, NoRequiredPropertyException, ProviderException {
 		GitVersioningAttachmentProvider attProvider = new GitVersioningAttachmentProvider();
 		attProvider.initialize(engine, properties);
+
 		Attachment att = new org.apache.wiki.attachment.Attachment(engine, "test page", "testAtt.txt");
 		att.setAuthor(AUTHOR);
 		InputStream in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
+
 		att = new org.apache.wiki.attachment.Attachment(engine, "test page", "testAtt2.txt");
 		att.setAuthor(AUTHOR);
 		in = new ByteArrayInputStream("text file contents".getBytes(StandardCharsets.UTF_8));
 		attProvider.putAttachmentData(att, in);
+
 		WikiPage from = new WikiPage(engine, "test page");
 		from.setAuthor("UnknownAuthor");
+
 		attProvider.moveAttachmentsForPage(from, "new test page");
 		File dir = new File(TMP_NEW_REPO + "/new+test+page-att");
 		assertNotNull(dir);

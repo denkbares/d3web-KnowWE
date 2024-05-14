@@ -85,6 +85,7 @@ public abstract class AbstractPageProviderStressTest<T extends PageProvider> {
 		assertTrue(this.wikiDir.getParentFile().exists());
 		System.out.println(this.wikiDir.getAbsolutePath());
 		final Properties properties = new Properties();
+		properties.setProperty(GitVersioningFileProvider.JSPWIKI_GIT_DEFAULT_BRANCH,"maintenance");
 
 		initProperties(properties);
 
