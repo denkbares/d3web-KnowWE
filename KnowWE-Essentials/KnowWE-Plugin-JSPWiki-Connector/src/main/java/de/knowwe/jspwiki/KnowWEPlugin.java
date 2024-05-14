@@ -32,9 +32,6 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
-import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
-import de.knowwe.event.*;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.wiki.WikiContext;
@@ -50,6 +47,8 @@ import org.apache.wiki.api.providers.AttachmentProvider;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.attachment.AttachmentManager;
 import org.apache.wiki.content.PageRenamer;
+import org.apache.wiki.event.GitRefreshCacheEvent;
+import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.event.WikiAttachmentEvent;
 import org.apache.wiki.event.WikiEngineEvent;
 import org.apache.wiki.event.WikiEvent;
@@ -60,8 +59,6 @@ import org.apache.wiki.event.WikiPageRenameEvent;
 import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.CachingAttachmentProvider;
 import org.apache.wiki.providers.CachingProvider;
-import org.apache.wiki.providers.GitRefreshCacheEvent;
-import org.apache.wiki.providers.GitVersioningWikiEvent;
 import org.apache.wiki.ui.TemplateManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,9 +74,17 @@ import de.knowwe.core.UpdateNotAllowedException;
 import de.knowwe.core.append.PageAppendHandler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.ServletRequestKeyValueStore;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.user.UserContextUtil;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.event.ArticleDeletedEvent;
+import de.knowwe.event.ArticleRefreshEvent;
+import de.knowwe.event.ArticleUpdateEvent;
+import de.knowwe.event.AttachmentDeletedEvent;
+import de.knowwe.event.AttachmentStoredEvent;
+import de.knowwe.event.InitializedArticlesEvent;
+import de.knowwe.event.PageRenderedEvent;
 
 import static de.knowwe.core.ResourceLoader.Type.*;
 

@@ -1,4 +1,4 @@
-package org.apache.wiki.providers;
+package org.apache.wiki.providers.autoUpdate;
 
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
@@ -6,8 +6,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.wiki.api.core.Engine;
+import org.apache.wiki.providers.GitVersioningFileProvider;
 import org.apache.wiki.util.TextUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public class GitAutoUpdateScheduler {
 	private Engine engine;
 	private TimerTask t;
 
-	GitAutoUpdateScheduler(){
+	public GitAutoUpdateScheduler(){
 
 	}
 

@@ -1,4 +1,4 @@
-package org.apache.wiki.providers;
+package org.apache.wiki.providers.gitCache.items;
 
 import java.util.Date;
 
@@ -17,7 +17,7 @@ public class GitCacheItem {
 	private int version;
 	private long size;
 
-	GitCacheItem(String fullMessage, String author, Date date, long size, ObjectId id, boolean delete) {
+	public GitCacheItem(String fullMessage, String author, Date date, long size, ObjectId id, boolean delete) {
 		this.fullMessage = fullMessage;
 		this.author = author;
 		this.date = date;

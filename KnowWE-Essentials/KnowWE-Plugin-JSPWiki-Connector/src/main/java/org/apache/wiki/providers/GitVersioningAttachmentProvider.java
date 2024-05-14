@@ -19,6 +19,24 @@
 
 package org.apache.wiki.providers;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Engine;
@@ -27,18 +45,30 @@ import org.apache.wiki.api.exceptions.NoRequiredPropertyException;
 import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.api.providers.PageProvider;
 import org.apache.wiki.api.search.QueryItem;
+import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.event.WikiEventManager;
+import org.apache.wiki.gitBridge.JSPUtils;
+import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.pages.PageManager;
+import org.apache.wiki.providers.commentStrategy.GitCommentStrategy;
+import org.apache.wiki.providers.gitCache.GitVersionCache;
+import org.apache.wiki.providers.gitCache.commands.CacheCommand;
+import org.apache.wiki.providers.gitCache.items.AttachmentCacheItem;
+import org.apache.wiki.structs.VersionCarryingRevCommit;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
-import org.eclipse.jgit.api.*;
+import org.eclipse.jgit.api.AddCommand;
+import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.RmCommand;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.ignore.IgnoreNode;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectLoader;
+import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -46,16 +76,14 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
+import com.denkbares.utils.Stopwatch;
 
-import static org.apache.wiki.providers.GitVersioningUtils.addUserInfo;
-import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
+import static org.apache.wiki.gitBridge.JSPUtils.getAttachmentDir;
+import static org.apache.wiki.gitBridge.JSPUtils.getPath;
 
 /**
  * @author Josua Nürnberger
@@ -64,7 +92,7 @@ import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
 @SuppressWarnings("rawtypes")
 public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 
-	private static final Logger log = LoggerFactory.getLogger(GitVersioningAttachmentProvider.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningAttachmentProvider.class);
 
 	private Repository repository;
 	private Engine engine;
@@ -73,12 +101,14 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	private GitVersionCache cache;
 	private GitCommentStrategy gitCommentStrategy;
 	private IgnoreNode ignoreNode;
+	private JspGitBridge gitBridge;
 
 	@Override
 	public void initialize(Engine engine, Properties properties) throws NoRequiredPropertyException, IOException {
 		super.initialize(engine, properties);
 
 		this.engine = engine;
+
 		storageDir = TextUtil.getCanonicalFilePathProperty(properties, PROP_STORAGEDIR,
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 
@@ -98,48 +128,11 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			}
 			cache = gitVersioningFileProvider.getCache();
 			gitCommentStrategy = ((GitVersioningFileProvider) provider).getGitCommentStrategy();
+			this.gitBridge = gitVersioningFileProvider.gitBridge();
 		}
 		else {
 			throw new NoRequiredPropertyException("GitVersioningFileProvider is not configured", "jspwiki.pageProvider");
 		}
-	}
-
-	private File findPageDir(String page) throws ProviderException {
-		File dir = new File(storageDir, getAttachmentDir(page));
-		if (dir.exists() && !dir.isDirectory()) {
-			throw new ProviderException("Attachment directory for " + page + " is not a directory");
-		}
-		return dir;
-	}
-
-	@NotNull
-	public static String getAttachmentDir(String page) {
-		return mangleName(page) + DIR_EXTENSION;
-	}
-
-	@NotNull
-	private static String mangleName(String page) {
-		return TextUtil.urlEncodeUTF8(page);
-	}
-
-	private static String unmangleName(final String filename) {
-		return TextUtil.urlDecodeUTF8(filename);
-	}
-
-	public File findAttachmentDir(Attachment att) throws ProviderException {
-		return findPageDir(att.getParentName());
-	}
-
-	private File findAttachmentFile(String parentName, String fileName) throws ProviderException {
-		return new File(findPageDir(parentName), mangleName(fileName));
-	}
-
-	private String getAttachmentDir(Attachment att) {
-		return mangleName(att.getParentName()) + DIR_EXTENSION;
-	}
-
-	private String getPath(Attachment att) {
-		return getAttachmentDir(att.getParentName()) + "/" + mangleName(att.getFileName());
 	}
 
 	@Override
@@ -147,84 +140,110 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
 			gitVersioningFileProvider.commitLock();
-			File attDir = findAttachmentDir(att);
-			Git git = new Git(repository);
-			if (!attDir.exists()) {
-				attDir.mkdirs();
-				try {
-					GitVersioningFileProvider.retryGitOperation(() -> {
-						git.add().addFilepattern(attDir.getName()).call();
-						return null;
-					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
-					// not needed anymore, because new jgit version also commits directory
-//					if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
-//						gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(attDir.getName());
-//					}
-				}
-				catch (Exception e) {
-					log.error(e.getMessage(), e);
-				}
-			}
-
-			File newFile = findAttachmentFile(att.getParentName(), att.getFileName());
-			Boolean ignored = ignoreNode.checkIgnored(getPath(att), newFile.isDirectory());
-			boolean add = !newFile.exists() && (ignored == null || !ignored);
-			try (OutputStream out = new FileOutputStream(newFile)) {
-				log.info("Uploading attachment " + att.getFileName() + " to page " + att.getParentName());
-				log.info("Saving attachment contents to " + newFile.getAbsolutePath());
-				FileUtil.copyContents(data, out);
-			}
-			catch (IOException e) {
-				log.error(e.getMessage(), e);
-				throw new ProviderException("Can't write file " + getPath(att) + ": " + e.getMessage());
-			}
-			finally {
-				if (data != null) {
-					try {
-						data.close();
-					}
-					catch (IOException e) {
-						// Ignore
-					}
-				}
-			}
-			try {
-				if (add) {
-					try {
-						GitVersioningFileProvider.retryGitOperation(() -> {
-							git.add().addFilepattern(attDir.getName()).call();
-							return null;
-						}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
-
-						Status status = GitVersioningFileProvider.retryGitOperation(
-								() -> git.status().addPath(attDir.getName()).call()
-								, LockFailedException.class, "Retry status of repo, because of lock failed exception");
-
-						if (status.getUntracked().contains(attDir.getName())) {
-							GitVersioningFileProvider.retryGitOperation(() -> {
-								git.add().addFilepattern(attDir.getName()).call();
-								return null;
-							}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
-						}
-					}
-					catch (GitAPIException e) {
-						log.error(e.getMessage(), e);
-					}
-					GitVersioningFileProvider.retryGitOperation(() -> {
-						git.add().addFilepattern(getPath(att)).call();
-						return null;
-					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
-				}
-				att.setSize(newFile.length());
-				commitAttachment(att, git, GitVersioningWikiEvent.UPDATE);
-			}
-			catch (Exception e) {
-				log.error(e.getMessage(), e);
-			}
+			putAttachmentDataSafe(att, data);
 		}
 		finally {
 			gitVersioningFileProvider.commitUnlock();
 			gitVersioningFileProvider.writeFileUnlock();
+		}
+	}
+
+	public File findAttachmentDir(Attachment att) throws ProviderException {
+		return JSPUtils.findPageDir(att.getParentName(), storageDir);
+	}
+
+	private void putAttachmentDataSafe(Attachment att, InputStream data) throws ProviderException, IOException {
+		File attDir = findAttachmentDir(att);
+		Git git = new Git(repository);
+		if (!attDir.exists()) {
+			//create dir
+			attDir.mkdirs();
+			//add dir
+			this.gitVersioningFileProvider.gitBridge().addWithRetry(git, attDir);
+		}
+
+		File newFile = JSPUtils.findAttachmentFile(att.getParentName(), att.getFileName(), storageDir);
+		Boolean ignored = ignoreNode.checkIgnored(getPath(att), newFile.isDirectory());
+
+		boolean add = !newFile.exists() && (ignored == null || !ignored);
+
+		//check if there are no changes at all on the bytestream
+		boolean noChanges = false;
+		if (newFile.exists()) {
+			byte[] bytesExisting = Files.readAllBytes(newFile.toPath());
+			byte[] bytesNew = data.readAllBytes();
+
+			//if these are equal we do not update
+			if (Arrays.equals(bytesExisting, bytesNew)) {
+				noChanges = true;
+			}
+
+			//reset
+			data = new ByteArrayInputStream(bytesNew);
+		}
+
+		if (noChanges) {
+			return;
+		}
+
+		copyOnFilesystem(att, data, newFile);
+
+		try {
+			if (add) {
+				try {
+					JspGitBridge.retryGitOperation(() -> {
+						git.add().addFilepattern(attDir.getName()).call();
+						return null;
+					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
+
+					Status status = JspGitBridge.retryGitOperation(
+							() -> git.status().addPath(attDir.getName()).call()
+							, LockFailedException.class, "Retry status of repo, because of lock failed exception");
+
+					if (status.getUntracked().contains(attDir.getName())) {
+						JspGitBridge.retryGitOperation(() -> {
+							git.add().addFilepattern(attDir.getName()).call();
+							return null;
+						}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
+					}
+				}
+				catch (GitAPIException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+				JspGitBridge.retryGitOperation(() -> {
+					git.add().addFilepattern(getPath(att)).call();
+					return null;
+				}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
+			}
+			att.setSize(newFile.length());
+			commitAttachment(att, git, GitVersioningWikiEvent.UPDATE, newFile.getAbsolutePath()
+					.replace(this.gitVersioningFileProvider.getFilesystemPath(), "")
+					.substring(1));
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+	}
+
+	private void copyOnFilesystem(Attachment att, InputStream data, File newFile) throws ProviderException {
+		try (OutputStream out = new FileOutputStream(newFile)) {
+			LOGGER.info("Uploading attachment " + att.getFileName() + " to page " + att.getParentName());
+			LOGGER.info("Saving attachment contents to " + newFile.getAbsolutePath());
+			FileUtil.copyContents(data, out);
+		}
+		catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new ProviderException("Can't write file " + getPath(att) + ": " + e.getMessage());
+		}
+		finally {
+			if (data != null) {
+				try {
+					data.close();
+				}
+				catch (IOException e) {
+					// Ignore
+				}
+			}
 		}
 	}
 
@@ -256,79 +275,102 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	public InputStream getAttachmentData(Attachment att) throws IOException, ProviderException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
-			File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
-			if (!attFile.exists()) {
-				throw new ProviderException("File " + att.getFileName() + " does not exist");
-			}
-			int version = att.getVersion();
-			Git git = new Git(repository);
-			try {
-				InputStream ret = null;
-				AttachmentCacheItem cacheItem = cache.getAttachment(att);
-				Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
-				if (ignored != null && ignored) {
-					ret = new FileInputStream(attFile);
-				}
-				else {
-					if (cacheItem != null) {
-						if (version == LATEST_VERSION) {
-							ret = new FileInputStream(attFile);
-						}
-						else {
-							try (RevWalk revWalk = new RevWalk(repository)) {
-								RevCommit revCommit = revWalk.parseCommit(cacheItem.getId());
-								ObjectId fileId = getObjectOfCommit(revCommit, att);
-								if (fileId != null) {
-									ObjectLoader loader = repository.open(fileId);
-									ret = loader.openStream();
-								}
-								else {
-									throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
-								}
-							}
-						}
-					}
-					else {
-						List<RevCommit> revCommitList = getRevCommitList(att, git);
-						if (revCommitList.isEmpty()) {
-							if (version == LATEST_VERSION) {
-								ret = new FileInputStream(attFile);
-							}
-							else {
-								throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
-							}
-						}
-						else {
-							if (version == LATEST_VERSION || (version > 0 && version <= revCommitList.size())) {
-								RevCommit revCommit = revCommitList.get(version == LATEST_VERSION ? revCommitList.size() - 1 : version - 1);
-								ObjectId fileId = getObjectOfCommit(revCommit, att);
-								if (fileId != null) {
-									ObjectLoader loader = repository.open(fileId);
-									ret = loader.openStream();
-								}
-								else {
-									throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
-								}
-							}
-						}
-					}
-				}
-				return ret;
-			}
-			catch (GitAPIException e) {
-				log.error(e.getMessage(), e);
-				throw new ProviderException("Git call for " + getPath(att) + " throws an error");
-			}
+			return getAttachmentDataSafe(att);
 		}
 		finally {
 			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
 
+	@Nullable
+	private InputStream getAttachmentDataSafe(Attachment att) throws ProviderException, IOException {
+		File attFile = JSPUtils.findAttachmentFile(att.getParentName(), att.getFileName(), storageDir);
+		if (!attFile.exists()) {
+			throw new ProviderException("File " + att.getFileName() + " does not exist");
+		}
+		int version = att.getVersion();
+		if (version == -1) {
+			return new FileInputStream(attFile);
+		}
+
+		Git git = new Git(repository);
+		try {
+			InputStream ret = null;
+			AttachmentCacheItem cacheItem = cache.getAttachmentCacheItem(att);
+			Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
+			if (ignored != null && ignored) {
+				ret = new FileInputStream(attFile);
+			}
+			else {
+				if (cacheItem != null) {
+					ret = retrieveAttachmentDataFromCacheItem(att, cacheItem, version);
+				}
+				else {
+					ret = getAttachmentDataFromGit(att, git, version, ret);
+				}
+			}
+			return ret;
+		}
+		catch (GitAPIException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new ProviderException("Git call for " + getPath(att) + " throws an error");
+		}
+	}
+
+	private InputStream getAttachmentDataFromGit(Attachment att, Git git, int version, InputStream ret) throws GitAPIException, IOException, ProviderException {
+		Stopwatch watch = new Stopwatch();
+		LOGGER.info("Starting retrieve attachment file from git: " + watch.getDisplay());
+//		List<RevCommit> revCommitList = this.gitBridge.getRevCommitList(att, git);
+		VersionCarryingRevCommit revCommitWithVersion = this.gitBridge.getRevCommitWithVersion(att, git, version);
+//		if (revCommitList.isEmpty()) {
+//			throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
+//		}
+		if (revCommitWithVersion == null) {
+			throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
+		}
+		else {
+//			if (version > 0 && version <= revCommitList.size()) {
+//				RevCommit revCommit = revCommitList.get(version - 1);
+//				ObjectId fileId = getObjectOfCommit(revCommit, att);
+			ObjectId fileId = getObjectOfCommit(revCommitWithVersion.revCommit(), att);
+			if (fileId != null) {
+				ObjectLoader loader = repository.open(fileId);
+				ret = loader.openStream();
+				LOGGER.info("Completed retrieve attachment file from git: " + watch.getDisplay());
+			}
+			else {
+				throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
+			}
+//			}
+		}
+		return ret;
+	}
+
+	private InputStream retrieveAttachmentDataFromCacheItem(Attachment att, AttachmentCacheItem cacheItem, int version) throws IOException, ProviderException {
+		InputStream ret;
+		try (RevWalk revWalk = new RevWalk(repository)) {
+			RevCommit revCommit = revWalk.parseCommit(cacheItem.getId());
+			ObjectId fileId = getObjectOfCommit(revCommit, att);
+			if (fileId != null) {
+				ObjectLoader loader = repository.open(fileId);
+				ret = loader.openStream();
+			}
+			else {
+				throw new ProviderException("Can't load Git object for " + getPath(att) + " version " + version);
+			}
+		}
+		return ret;
+	}
+
 	private ObjectId getObjectOfCommit(RevCommit commit, Attachment att) throws IOException {
 		try (TreeWalk treeWalkDir = new TreeWalk(repository)) {
 			treeWalkDir.reset(commit.getTree());
-			treeWalkDir.setFilter(PathFilter.create(getAttachmentDir(att)));
+
+			String attachmentDir = getAttachmentDir(att);
+			if (!Paths.get(this.gitVersioningFileProvider.getFilesystemPath(), attachmentDir).toFile().exists()) {
+				attachmentDir = JSPUtils.unmangleName(attachmentDir);
+			}
+			treeWalkDir.setFilter(PathFilter.create(attachmentDir));
 			treeWalkDir.setRecursive(false);
 			//only the attachment directory
 			while (treeWalkDir.next()) {
@@ -336,7 +378,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 				// so now walk a step down
 				try (TreeWalk treeWalkFile = new TreeWalk(repository)) {
 					treeWalkFile.reset(objectId);
-					treeWalkFile.setFilter(PathFilter.create(mangleName(att.getFileName())));
+					treeWalkFile.setFilter(PathFilter.create(JSPUtils.mangleName(att.getFileName())));
 					treeWalkFile.setRecursive(false);
 					if (treeWalkFile.next()) {
 						// now we should have our file
@@ -352,25 +394,31 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	public List<Attachment> listAttachments(Page page) throws ProviderException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
-			List<Attachment> ret = new ArrayList<>();
-			File attachmentDir = findPageDir(page.getName());
-			if (attachmentDir.exists()) {
 
-				File[] files = attachmentDir.listFiles(file -> !file.isHidden());
-				if (files != null) {
-					for (File file : files) {
-						Attachment attachmentInfo = getAttachmentInfo(page, unmangleName(file.getName()), LATEST_VERSION);
-						if (attachmentInfo != null) {
-							ret.add(attachmentInfo);
-						}
-					}
-				}
-			}
-			return ret;
+			return listAttachmentsSafe(page);
 		}
 		finally {
 			gitVersioningFileProvider.writeFileUnlock();
 		}
+	}
+
+	@NotNull
+	private List<Attachment> listAttachmentsSafe(Page page) throws ProviderException {
+		List<Attachment> ret = new ArrayList<>();
+		File attachmentDir = JSPUtils.findPageDir(page.getName(), storageDir);
+		if (attachmentDir.exists()) {
+
+			File[] files = attachmentDir.listFiles(file -> !file.isHidden());
+			if (files != null) {
+				for (File file : files) {
+					Attachment attachmentInfo = getAttachmentInfo(page, JSPUtils.unmangleName(file.getName()), LATEST_VERSION);
+					if (attachmentInfo != null) {
+						ret.add(attachmentInfo);
+					}
+				}
+			}
+		}
+		return ret;
 	}
 
 	@Override
@@ -381,73 +429,88 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	@Override
 	public List<Attachment> listAllChanged(Date timestamp) throws ProviderException {
 		try {
-			boolean initCache = timestamp.getTime() == 0;
 			gitVersioningFileProvider.canWriteFileLock();
-			List<Attachment> attachments = new ArrayList<>();
-			if (initCache) {
-				return cache.getAllLatestAttachments();
-			}
-			else {
-				Iterable<RevCommit> commits = GitVersioningUtils.getRevCommitsSince(timestamp, repository);
-				try {
-					ObjectId oldCommit = null;
-					ObjectId newCommit;
-
-					for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
-						String fullMessage = commit.getFullMessage();
-						String author = commit.getCommitterIdent().getName();
-						Date modified = new Date(1000L * commit.getCommitTime());
-
-						if (oldCommit != null) {
-							newCommit = commit.getTree();
-							List<DiffEntry> diffs = GitVersioningUtils.getDiffEntries(oldCommit, newCommit, repository);
-							for (DiffEntry diff : diffs) {
-								String path = diff.getOldPath();
-								if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
-									path = diff.getNewPath();
-								}
-								if (path.contains("/") && path.contains(DIR_EXTENSION)) {
-									Attachment att = getAttachment(fullMessage, author, modified, path);
-									attachments.add(att);
-								}
-							}
-						}
-						else {
-							try (TreeWalk treeWalk = new TreeWalk(repository)) {
-								treeWalk.reset(commit.getTree());
-								treeWalk.setRecursive(true);
-								treeWalk.setFilter(TreeFilter.ANY_DIFF);
-								while (treeWalk.next()) {
-									String path = treeWalk.getPathString();
-									if (path.contains("/") && path.contains(DIR_EXTENSION)) {
-										Attachment att = getAttachment(fullMessage, author, modified, path);
-										attachments.add(att);
-									}
-								}
-							}
-						}
-
-						oldCommit = commit.getTree();
-					}
-				}
-				catch (IOException e) {
-					log.error(e.getMessage(), e);
-					throw new ProviderException("Can't get differences for a version");
-				}
-			}
-			return attachments;
+			return listAllChangedSafe(timestamp);
 		}
 		finally {
 			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
 
+	private List<Attachment> listAllChangedSafe(Date timestamp) throws ProviderException {
+		boolean initCache = timestamp.getTime() == 0;
+
+		List<Attachment> attachments = new ArrayList<>();
+		if (initCache) {
+			List<Attachment> allAttachmentsLatest = cache.getAllAttachmentsLatest();
+
+			if (allAttachmentsLatest == null) {
+				for (Page page : this.gitVersioningFileProvider.getAllPages()) {
+					List<Attachment> attachments1 = this.listAttachments(page);
+
+					attachments.addAll(attachments1);
+				}
+			}
+			return attachments;
+		}
+		else {
+			LOGGER.info("Access commits for the repository");
+			Iterable<RevCommit> commits = GitVersioningUtils.getRevCommitsSince(timestamp, repository);
+			try {
+				ObjectId oldCommit = null;
+				ObjectId newCommit;
+
+				for (RevCommit commit : GitVersioningUtils.reverseToList(commits)) {
+					String fullMessage = commit.getFullMessage();
+					String author = commit.getCommitterIdent().getName();
+					Date modified = new Date(1000L * commit.getCommitTime());
+
+					if (oldCommit != null) {
+						newCommit = commit.getTree();
+						List<DiffEntry> diffs = GitVersioningUtils.getDiffEntries(oldCommit, newCommit, repository);
+						for (DiffEntry diff : diffs) {
+							String path = diff.getOldPath();
+							if (diff.getChangeType() == DiffEntry.ChangeType.ADD) {
+								path = diff.getNewPath();
+							}
+							if (path.contains("/") && path.contains(DIR_EXTENSION)) {
+								Attachment att = getAttachment(fullMessage, author, modified, path);
+								attachments.add(att);
+							}
+						}
+					}
+					else {
+						try (TreeWalk treeWalk = new TreeWalk(repository)) {
+							treeWalk.reset(commit.getTree());
+							treeWalk.setRecursive(true);
+							treeWalk.setFilter(TreeFilter.ANY_DIFF);
+							while (treeWalk.next()) {
+								String path = treeWalk.getPathString();
+								if (path.contains("/") && path.contains(DIR_EXTENSION)) {
+									Attachment att = getAttachment(fullMessage, author, modified, path);
+									attachments.add(att);
+								}
+							}
+						}
+					}
+
+					oldCommit = commit.getTree();
+				}
+			}
+			catch (IOException e) {
+				LOGGER.error(e.getMessage(), e);
+				throw new ProviderException("Can't get differences for a version");
+			}
+		}
+		return attachments;
+	}
+
 	private Attachment getAttachment(String fullMessage, String author, Date modified, String path) {
 		String parent = path
 				.substring(0, path.indexOf("/"))
 				.replace(DIR_EXTENSION, "");
-		parent = unmangleName(parent);
-		String attachmentName = unmangleName(path.substring(path.indexOf("/")));
+		parent = JSPUtils.unmangleName(parent);
+		String attachmentName = JSPUtils.unmangleName(path.substring(path.indexOf("/")));
 		Attachment att = new org.apache.wiki.attachment.Attachment(engine, parent, attachmentName);
 		att.setAttribute(Attachment.CHANGENOTE, fullMessage);
 		att.setAuthor(author);
@@ -459,96 +522,104 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 	public Attachment getAttachmentInfo(Page page, String name, int version) throws ProviderException {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
-			Attachment att = new org.apache.wiki.attachment.Attachment(engine, page.getName(), name);
-			att.setVersion(version);
-			File attFile = findAttachmentFile(page.getName(), name);
-			if (attFile.exists()) {
-				Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
-				if (ignored != null && ignored) {
-					att.setVersion(1);
-					return att;
-				}
-				AttachmentCacheItem cacheItem = cache.getAttachment(att);
-				if (cacheItem != null) {
-					att.setAuthor(cacheItem.getAuthor());
-					att.setLastModified(cacheItem.getDate());
-					att.setSize(cacheItem.getSize());
-					if (att.getSize() == -1 && version == LATEST_VERSION) {
-						att.setSize(attFile.length());
-						cacheItem.setSize(att.getSize());
-					}
-					att.setVersion(cacheItem.getVersion());
-					return att;
-				}
-				else {
-					log.warn("Cache miss " + att.getParentName() + "/" + att.getFileName());
-					List<Attachment> versionHistory = getVersionHistory(att);
-					if (versionHistory.isEmpty() && version == LATEST_VERSION) {
-						att.setCacheable(false);
-						att.setSize(attFile.length());
-						att.setLastModified(new Date(attFile.lastModified()));
-						return att;
-					}
-					else if (version == LATEST_VERSION) {
-						return versionHistory.get(versionHistory.size() - 1);
-					}
-					else if (version > 0 && version <= versionHistory.size()) {
-						return versionHistory.get(version - 1);
-					}
-				}
-			}
-			return null;
+			return getAttachmentInfoSafe(page, name, version);
 		}
 		finally {
 			gitVersioningFileProvider.writeFileUnlock();
 		}
 	}
 
+	@Nullable
+	private Attachment getAttachmentInfoSafe(Page page, String name, int version) throws ProviderException {
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, page.getName(), name);
+		att.setVersion(version);
+		File attFile = JSPUtils.findAttachmentFile(page.getName(), name, storageDir);
+		if (attFile.exists()) {
+			Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
+			if (ignored != null && ignored) {
+				att.setVersion(1);
+				return att;
+			}
+
+			AttachmentCacheItem attachmentCacheItem = cache.getAttachmentCacheItem(att);
+			//check if we can obtain it via the cache TODO this does not respect the version????
+//			Attachment attachmentLatest = cache.getAttachmentLatest(name, page.getName());
+			if (attachmentCacheItem != null) {
+				return attachmentCacheItem.toAttachment(this.engine);
+			}
+
+			//otherwise we create it
+			try {
+				//TODO set correct version!
+				LOGGER.info("Obtain revcommits for: " + att.getFileName() + " with version: " + version);
+//				List<RevCommit> revCommitList = this.gitBridge.getRevCommitList(att, new Git(this.repository));
+//				if (revCommitList.isEmpty()) {
+//					LOGGER.error("Expected to find a commit, as there is a file: " + attFile.getName());
+//					return null;
+//				}
+//
+//				//TODO check if this is reversed
+//				if(version==LATEST_VERSION){
+//					version = revCommitList.size();
+//				}
+//				RevCommit revCommit = revCommitList.get(version-1);
+				VersionCarryingRevCommit accordingCommit = this.gitBridge.getRevCommitWithVersion(att, new Git(this.repository), version);
+				if (accordingCommit == null) {
+					LOGGER.error("Expected to find a commit, as there is a file: " + attFile.getName());
+					return null;
+				}
+				return attachmentFromCommit(att, accordingCommit.revCommit(), accordingCommit.version());
+			}
+			catch (GitAPIException e) {
+				throw new RuntimeException(e);
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return null;
+	}
+
+	private Attachment attachmentFromCommit(Attachment att, RevCommit revCommit, int version) {
+		PersonIdent authorIdent = revCommit.getAuthorIdent();
+//		att.setVersion(LATEST_VERSION);
+		att.setVersion(version);
+		att.setAuthor(authorIdent.getName());
+		try {
+			att.setSize(getObjectSize(revCommit, att));
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		att.setLastModified(authorIdent.getWhen());
+		att.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
+		return att;
+	}
+
 	@Override
 	public List<Attachment> getVersionHistory(Attachment att) {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
-			List<Attachment> ret = cache.getAttachmentHistory(att);
-			if (ret == null) {
-				ret = new ArrayList<>();
-				try {
-					File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
-					if (attFile.exists()) {
-						Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
-						if (ignored == null || !ignored) {
-							Git git = new Git(repository);
-							try {
-								List<RevCommit> revCommitList = getRevCommitList(att, git);
-								int version = 1;
-								for (RevCommit revCommit : revCommitList) {
-									Attachment attVersion = getAttachment(att, version, revCommit);
-									cache.addAttachmentVersion(att, revCommit.getFullMessage(), revCommit.getId());
-									ret.add(attVersion);
-									version++;
-								}
-								Collections.reverse(ret);
-								return ret;
-							}
-							catch (GitAPIException | IOException e) {
-								log.error(e.getMessage(), e);
-							}
-						}
-						else {
-							att.setVersion(1);
-							return Collections.singletonList(att);
-						}
-					}
-				}
-				catch (ProviderException e) {
-					log.error(e.getMessage(), e);
-				}
-			}
-			Collections.reverse(ret);
-			return ret;
+			return getVersionHistorySafe(att);
 		}
 		finally {
 			gitVersioningFileProvider.writeFileUnlock();
 		}
+	}
+
+	@NotNull
+	private List<Attachment> getVersionHistorySafe(Attachment att) {
+		List<Attachment> ret = cache.getAttachmentHistory(att);
+		//check cache
+		if (ret != null) {
+			Collections.reverse(ret);
+			return ret;
+		}
+
+		ret = getVersionHistoryFromGit(att);
+		if (ret != null) return ret;
+
+		return Collections.emptyList();
 	}
 
 	@NotNull
@@ -575,15 +646,6 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		}
 	}
 
-	private List<RevCommit> getRevCommitList(Attachment att, Git git) throws GitAPIException, IOException {
-		Iterable<RevCommit> revCommits = git
-				.log()
-				.add(repository.resolve(Constants.HEAD))
-				.addPath(getPath(att))
-				.call();
-		return reverseToList(revCommits);
-	}
-
 	private long getObjectSize(RevCommit version, Attachment att) throws IOException {
 		long ret;
 		//TODO look why this is not working every time
@@ -598,13 +660,6 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		return ret;
 	}
 
-	private long getObjectSize(ObjectId commitId, Attachment att) throws IOException {
-		try (RevWalk revWalk = new RevWalk(repository)) {
-			RevCommit revCommit = revWalk.parseCommit(commitId);
-			return getObjectSize(revCommit, att);
-		}
-	}
-
 	@Override
 	public void deleteVersion(Attachment att) {
 		// Can't delete version from git
@@ -615,27 +670,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
 			gitVersioningFileProvider.commitLock();
-			File attFile = findAttachmentFile(att.getParentName(), att.getFileName());
-			if (attFile.exists()) {
-				boolean delete = attFile.delete();
-				if (!delete) log.debug("File " + getPath(att) + " could not be deleted on filesystem");
-				try {
-					Git git = new Git(repository);
-					GitVersioningFileProvider.retryGitOperation(() -> {
-						Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
-						if (ignored == null || !ignored) {
-							git.rm().addFilepattern(getPath(att)).call();
-						}
-						return null;
-					}, LockFailedException.class, "Retry removing to repo, because of lock failed exception");
-
-					commitAttachment(att, git, GitVersioningWikiEvent.DELETE);
-				}
-				catch (Exception e) {
-					log.error(e.getMessage(), e);
-					throw new ProviderException("File " + getPath(att) + " could not be deleted");
-				}
-			}
+			deleteAttachmentSafe(att);
 		}
 		finally {
 			gitVersioningFileProvider.commitUnlock();
@@ -643,44 +678,101 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		}
 	}
 
-	private void commitAttachment(Attachment att, Git git, int type) throws Exception {
+	private void deleteAttachmentSafe(Attachment att) throws ProviderException {
+		File attFile = JSPUtils.findAttachmentFile(att.getParentName(), att.getFileName(), storageDir);
+		if (!attFile.exists()) {
+			LOGGER.debug("File " + getPath(att) + " was attempetd to be deleted but does not exist");
+			return;
+		}
+
+		boolean delete = attFile.delete();
+		if (!delete) LOGGER.debug("File " + getPath(att) + " could not be deleted on filesystem");
+		try {
+			Git git = new Git(repository);
+			JspGitBridge.retryGitOperation(() -> {
+				Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
+				if (ignored == null || !ignored) {
+					git.rm().addFilepattern(getPath(att)).call();
+				}
+				return null;
+			}, LockFailedException.class, "Retry removing to repo, because of lock failed exception");
+
+			commitAttachment(att, git, GitVersioningWikiEvent.DELETE, attFile.getAbsolutePath()
+					.replace(this.gitVersioningFileProvider.getFilesystemPath(), "")
+					.substring(1));
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new ProviderException("File " + getPath(att) + " could not be deleted");
+		}
+	}
+
+	private void commitAttachment(Attachment att, Git git, int type, String filePath) throws Exception {
 		Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
-		if (ignored == null || !ignored) {
-			if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
-				gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(getPath(att));
-				if (type == GitVersioningWikiEvent.UPDATE) {
-					cache.addCacheCommand(att.getAuthor(), new CacheCommand.AddAttachmentVersion(att));
-				}
-				else if (type == GitVersioningWikiEvent.DELETE) {
-					cache.addCacheCommand(att.getAuthor(), new CacheCommand.DeleteAttachmentVersion(att));
-				}
+
+		if (ignored != null && ignored) {
+			return;
+		}
+
+		if (gitVersioningFileProvider.openCommits.containsKey(att.getAuthor())) {
+			commitAttachmentOpenCommits(att, type);
+		}
+		else {
+			commitAttachmentGit(att, git, type, filePath);
+		}
+	}
+
+	private void commitAttachmentGit(Attachment att, Git git, int type, String filePath) throws Exception {
+		if (att.getAuthor() == null) {
+			this.gitBridge.assignAuthor(att);
+		}
+
+//		String path = JSPUtils.unmangleName(getPath(att));
+//		if(type!= GitVersioningWikiEvent.DELETE &&!Paths.get(this.gitVersioningFileProvider.getFilesystemPath(), path).toFile().exists()){
+//			String fileName = JSPUtils.mangleName(att.getParentName())+"-att"+File.separator+att.getFileName();
+//			if(Paths.get(this.gitVersioningFileProvider.getFilesystemPath(), fileName).toFile().exists()){
+//				path = fileName;
+//			}
+//			int a=2;
+//		}
+		CommitCommand commitCommand = git.commit().setAllowEmpty(true).setOnly(filePath);
+		setMessage(att, commitCommand);
+		this.gitVersioningFileProvider.gitBridge().addUserInfo(engine, att.getAuthor(), commitCommand);
+		try {
+			gitVersioningFileProvider.commitLock();
+
+			commitAttachmentSafe(att, type, commitCommand);
+		}
+		finally {
+			gitVersioningFileProvider.commitUnlock();
+		}
+	}
+
+	private void commitAttachmentSafe(Attachment att, int type, CommitCommand commitCommand) throws Exception {
+		JspGitBridge.retryGitOperation(() -> {
+			RevCommit revCommit = commitCommand.call();
+			WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
+					att.getAuthor(),
+					att.getParentName() + "/" + att.getFileName(),
+					revCommit.getId().getName()));
+			if (type == GitVersioningWikiEvent.UPDATE) {
+				cache.addAttachmentVersion(att, commitCommand.getMessage(), revCommit.getId());
 			}
-			else {
-				CommitCommand commitCommand = git.commit().setAllowEmpty(true).setOnly(getPath(att));
-				setMessage(att, commitCommand);
-				addUserInfo(engine, att.getAuthor(), commitCommand);
-				try {
-					gitVersioningFileProvider.commitLock();
-					GitVersioningFileProvider.retryGitOperation(() -> {
-						RevCommit revCommit = commitCommand.call();
-						WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
-								att.getAuthor(),
-								att.getParentName() + "/" + att.getFileName(),
-								revCommit.getId().getName()));
-						if (type == GitVersioningWikiEvent.UPDATE) {
-							cache.addAttachmentVersion(att, commitCommand.getMessage(), revCommit.getId());
-						}
-						else if (type == GitVersioningWikiEvent.DELETE) {
-							cache.deleteAttachment(att, commitCommand.getMessage(), revCommit.getId());
-						}
-						return null;
-					}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
-					gitVersioningFileProvider.periodicalGitGC();
-				}
-				finally {
-					gitVersioningFileProvider.commitUnlock();
-				}
+			else if (type == GitVersioningWikiEvent.DELETE) {
+				cache.deleteAttachment(att, commitCommand.getMessage(), revCommit.getId());
 			}
+			return null;
+		}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+		this.gitBridge.periodicalGitGC();
+	}
+
+	private void commitAttachmentOpenCommits(Attachment att, int type) {
+		gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(getPath(att));
+		if (type == GitVersioningWikiEvent.UPDATE) {
+			cache.addCacheCommand(att.getAuthor(), new CacheCommand.AddAttachmentVersion(att));
+		}
+		else if (type == GitVersioningWikiEvent.DELETE) {
+			cache.addCacheCommand(att.getAuthor(), new CacheCommand.DeleteAttachmentVersion(att));
 		}
 	}
 
@@ -689,100 +781,155 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 		try {
 			gitVersioningFileProvider.canWriteFileLock();
 			gitVersioningFileProvider.commitLock();
-			File oldDir = findPageDir(oldParent.getName());
-			File newDir = findPageDir(newParent);
-			if (newDir.exists() && !newDir.isDirectory()) {
-				throw new ProviderException(newParent + DIR_EXTENSION + " is not a directory");
-			}
-			if (newDir.exists() && !newDir.canWrite()) {
-				throw new ProviderException("Can't write to directory " + newParent + DIR_EXTENSION);
-			}
-			if (!newDir.exists()) {
-				newDir.mkdirs();
-			}
-			File[] files = oldDir.listFiles();
-			if (files != null) {
-				try {
-					List<String> filesForEvent = new ArrayList<>();
-					if (oldDir.getName().equalsIgnoreCase(newDir.getName())) {
-						File tmpDir = findPageDir(newParent + "_tmp");
-						Files.move(oldDir.toPath(), tmpDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
-						Files.move(tmpDir.toPath(), newDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
-					}
-					else {
-						Files.move(oldDir.toPath(), newDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
-					}
-					Git git = new Git(repository);
-					RmCommand rm = git.rm().setCached(true);
-					AddCommand add = git.add();
-					CommitCommand commit = git.commit();
-					for (File file : files) {
-						String oldPath = getAttachmentDir(oldParent.getName()) + "/" + file.getName();
-						String newPath = getAttachmentDir(newParent) + "/" + file.getName();
-						rm.addFilepattern(oldPath);
-						add.addFilepattern(newPath);
-						if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
-							gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(oldPath);
-							gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(newPath);
-							cache.addCacheCommand(oldParent.getAuthor(), new CacheCommand.MoveAttachment(oldParent, newParent, file));
-						}
-						else {
-							commit.setOnly(oldPath);
-							commit.setOnly(newPath);
-							filesForEvent.add(oldParent.getName() + "/" + file.getName());
-							filesForEvent.add(newParent + "/" + file.getName());
-						}
-					}
-					rm.addFilepattern(getAttachmentDir(oldParent.getName()));
-					add.addFilepattern(getAttachmentDir(newParent));
 
-					GitVersioningFileProvider.retryGitOperation(() -> {
-						rm.call();
-						return null;
-					}, LockFailedException.class, "Retry removing to repo, because of lock failed exception");
-
-					GitVersioningFileProvider.retryGitOperation(() -> {
-						add.call();
-						return null;
-					}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
-
-					if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
-						String comment = gitCommentStrategy.getComment(oldParent);
-						if (comment.isEmpty()) {
-							commit.setMessage("move attachments form " + oldParent.getName() + " to " + newParent);
-						}
-						else {
-							commit.setMessage(comment);
-						}
-						try {
-							gitVersioningFileProvider.commitLock();
-							GitVersioningFileProvider.retryGitOperation(() -> {
-								RevCommit revCommit = commit.call();
-								WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
-										oldParent.getAuthor(),
-										filesForEvent,
-										revCommit.getId().getName()));
-								cache.moveAttachments(oldParent.getName(), newParent, files, revCommit.getId(), commit.getMessage(), oldParent
-										.getAuthor());
-								return null;
-							}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
-
-							gitVersioningFileProvider.periodicalGitGC();
-						}
-						finally {
-							gitVersioningFileProvider.commitUnlock();
-						}
-					}
-				}
-				catch (Exception e) {
-					log.error(e.getMessage(), e);
-					throw new ProviderException("Can't move attachments form " + oldParent.getName() + " to " + newParent);
-				}
-			}
+			moveAttachmentsForPageSafe(oldParent, newParent);
 		}
 		finally {
 			gitVersioningFileProvider.commitUnlock();
 			gitVersioningFileProvider.writeFileUnlock();
 		}
+	}
+
+	private void moveAttachmentsForPageSafe(Page oldParent, String newParent) throws ProviderException {
+		File oldDir = JSPUtils.findPageDir(oldParent.getName(), storageDir);
+		File newDir = JSPUtils.findPageDir(newParent, storageDir);
+		if (newDir.exists() && !newDir.isDirectory()) {
+			throw new ProviderException(newParent + DIR_EXTENSION + " is not a directory");
+		}
+		if (newDir.exists() && !newDir.canWrite()) {
+			throw new ProviderException("Can't write to directory " + newParent + DIR_EXTENSION);
+		}
+		if (!newDir.exists()) {
+			newDir.mkdirs();
+		}
+
+		File[] files = oldDir.listFiles();
+
+		if (files == null) {
+			return;
+		}
+		try {
+			List<String> filesForEvent = new ArrayList<>();
+			moveFilesInFilesystem(newParent, oldDir, newDir);
+
+			moveFilesGit(oldParent, newParent, files, filesForEvent);
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new ProviderException("Can't move attachments from " + oldParent.getName() + " to " + newParent);
+		}
+	}
+
+	private void moveFilesGit(Page oldParent, String newParent, File[] files, List<String> filesForEvent) throws Exception {
+		Git git = new Git(repository);
+		RmCommand rm = git.rm().setCached(true);
+		AddCommand add = git.add();
+		CommitCommand commit = git.commit();
+		for (File file : files) {
+			String oldPath = getAttachmentDir(oldParent.getName()) + "/" + file.getName();
+			String newPath = getAttachmentDir(newParent) + "/" + file.getName();
+			rm.addFilepattern(oldPath);
+			add.addFilepattern(newPath);
+			if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
+				gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(oldPath);
+				gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(newPath);
+				cache.addCacheCommand(oldParent.getAuthor(), new CacheCommand.MoveAttachment(oldParent, newParent, file));
+			}
+			else {
+				commit.setOnly(oldPath);
+				commit.setOnly(newPath);
+				filesForEvent.add(oldParent.getName() + "/" + file.getName());
+				filesForEvent.add(newParent + "/" + file.getName());
+			}
+		}
+		add.addFilepattern(getAttachmentDir(oldParent.getName()));
+		add.addFilepattern(getAttachmentDir(newParent));
+
+//		WikiEngineGitBridge.retryGitOperation(() -> {
+//			rm.call();
+//			return null;
+//		}, LockFailedException.class, "Retry removing to repo, because of lock failed exception");
+
+		JspGitBridge.retryGitOperation(() -> {
+			add.call();
+			return null;
+		}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
+
+		if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
+			String comment = gitCommentStrategy.getComment(oldParent);
+			if (comment.isEmpty()) {
+				commit.setMessage("move attachments from " + oldParent.getName() + " to " + newParent);
+			}
+			else {
+				commit.setMessage(comment);
+			}
+			try {
+				gitVersioningFileProvider.commitLock();
+				JspGitBridge.retryGitOperation(() -> {
+					RevCommit revCommit = commit.call();
+					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
+							oldParent.getAuthor(),
+							filesForEvent,
+							revCommit.getId().getName()));
+					cache.moveAttachments(oldParent.getName(), newParent, files, revCommit.getId(), commit.getMessage(), oldParent
+							.getAuthor());
+					return null;
+				}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+
+				this.gitBridge.periodicalGitGC();
+			}
+			finally {
+				gitVersioningFileProvider.commitUnlock();
+			}
+		}
+	}
+
+	private void moveFilesInFilesystem(String newParent, File oldDir, File newDir) throws ProviderException, IOException {
+		if (oldDir.getName().equalsIgnoreCase(newDir.getName())) {
+			File tmpDir = JSPUtils.findPageDir(newParent + "_tmp", storageDir);
+			Files.move(oldDir.toPath(), tmpDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			Files.move(tmpDir.toPath(), newDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+		else {
+			Files.move(oldDir.toPath(), newDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	@Nullable
+	private List<Attachment> getVersionHistoryFromGit(Attachment att) {
+		List<Attachment> ret = new ArrayList<>();
+		try {
+			File attFile = JSPUtils.findAttachmentFile(att.getParentName(), att.getFileName(), storageDir);
+			if (!attFile.exists()) {
+				return null;
+			}
+			Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
+			if (ignored == null || !ignored) {
+				Git git = new Git(repository);
+				try {
+					List<RevCommit> revCommitList = this.gitBridge.getRevCommitList(att, git);
+					int version = 1;
+					for (RevCommit revCommit : revCommitList) {
+						Attachment attVersion = getAttachment(att, version, revCommit);
+						cache.addAttachmentVersion(att, revCommit.getFullMessage(), revCommit.getId());
+						ret.add(attVersion);
+						version++;
+					}
+					Collections.reverse(ret);
+					return ret;
+				}
+				catch (GitAPIException | IOException e) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
+			else {
+				att.setVersion(1);
+				return Collections.singletonList(att);
+			}
+		}
+		catch (ProviderException e) {
+			LOGGER.error(e.getMessage(), e);
+		}
+		return null;
 	}
 }

@@ -1,4 +1,4 @@
-package org.apache.wiki.providers;
+package org.apache.wiki.providers.commentStrategy;
 
 import org.apache.wiki.api.core.Page;
 

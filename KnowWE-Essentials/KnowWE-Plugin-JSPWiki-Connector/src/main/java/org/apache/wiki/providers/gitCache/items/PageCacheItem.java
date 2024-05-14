@@ -1,4 +1,4 @@
-package org.apache.wiki.providers;
+package org.apache.wiki.providers.gitCache.items;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import org.eclipse.jgit.lib.ObjectId;
 public class PageCacheItem extends GitCacheItem {
 	private String pageName;
 
-	PageCacheItem(String pageName, String fullMessage, String name, Date date, long size, boolean delete, ObjectId id) {
+	public PageCacheItem(String pageName, String fullMessage, String name, Date date, long size, boolean delete, ObjectId id) {
 		super(fullMessage, name, date, size, id, delete);
 		this.pageName = pageName;
 	}

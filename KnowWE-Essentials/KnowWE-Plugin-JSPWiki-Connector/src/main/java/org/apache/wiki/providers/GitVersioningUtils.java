@@ -21,6 +21,8 @@ package org.apache.wiki.providers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -32,12 +34,10 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.wiki.api.core.Engine;
-import org.apache.wiki.auth.NoSuchPrincipalException;
-import org.apache.wiki.auth.UserManager;
-import org.apache.wiki.auth.user.UserProfile;
-import org.eclipse.jgit.api.CommitCommand;
+import org.apache.wiki.gitBridge.JSPUtils;
+import org.apache.wiki.structs.PageIdentifier;
 import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -47,17 +47,21 @@ import org.eclipse.jgit.diff.RenameDetector;
 import org.eclipse.jgit.errors.StopWalkException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.revwalk.filter.RevFilter;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.utils.Files;
+import com.denkbares.utils.Stopwatch;
 
 /**
  * @author Josua Nürnberger
@@ -67,27 +71,53 @@ public class GitVersioningUtils {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningUtils.class);
 
 	public static List<RevCommit> reverseToList(Iterable<RevCommit> revCommits) {
+		Stopwatch watch = new Stopwatch();
 		LinkedList<RevCommit> ret = new LinkedList<>();
 		for (RevCommit revCommit : revCommits) {
 			ret.addFirst(revCommit);
 		}
+		LOGGER.info("Read and Reverse RevCommit Iterator took: "+ watch.getDisplay());
 		return ret;
 	}
 
-	public static void addUserInfo(Engine engine, String author, CommitCommand commit) {
-		if (null != author && !"".equals(author)) {
-			try {
-				UserProfile userProfile = engine.getManager(UserManager.class)
-						.getUserDatabase()
-						.findByFullName(author);
-				commit.setCommitter(userProfile.getFullname(), userProfile.getEmail());
+	public static long getObjectSize(RevCommit version, PageIdentifier pageIdentifier, Repository repo) throws IOException {
+		long ret;
+		ObjectId objectId = getObjectOfCommit(version, pageIdentifier, repo);
+		if (objectId != null) {
+			ObjectLoader loader = repo.open(objectId);
+			ret = loader.getSize();
+		}
+		else {
+			ret = 0;
+		}
+		return ret;
+	}
+
+	public static ObjectId getObjectOfCommit(RevCommit commit, PageIdentifier pageIdentifier, Repository repository) throws IOException {
+		try (TreeWalk treeWalkDir = new TreeWalk(repository)) {
+			treeWalkDir.reset(commit.getTree());
+
+			//TODO dirty
+			String pagePath = pageIdentifier.pageName();
+			if (!pagePath.endsWith(".txt")) {
+				pagePath = JSPUtils.mangleName(pageIdentifier.pageName()) + ".txt";
 			}
-			catch (NoSuchPrincipalException e) {
-				// is sometime necessary, e.g. CI-process is not a Wiki account
-				commit.setCommitter(author, "");
+
+			treeWalkDir.setFilter(PathFilter.create(pagePath));
+			treeWalkDir.setRecursive(false);
+			//only the attachment directory
+			while (treeWalkDir.next()) {
+				ObjectId objectId = treeWalkDir.getObjectId(0);
+
+				return objectId;
 			}
 		}
+		return null;
 	}
+
+
+
+
 
 	public static void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
 		LOGGER.info("Start git gc");
@@ -156,7 +186,23 @@ public class GitVersioningUtils {
 		return rd.compute();
 	}
 
+	public static RevCommit getRevCommit(Git git, String commitHash) {
+		try {
+			ObjectId objectId = git.getRepository().resolve(commitHash);
+			if (objectId != null) {
+				try (RevWalk revWalk = new RevWalk(git.getRepository())) {
+					return revWalk.parseCommit(objectId);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public static Iterable<RevCommit> getRevCommitsSince(Date timestamp, Repository repository) {
+
+//		List<RevCommit> revCommitsRaw = getRevCommitsSinceRaw(timestamp,repository);
 		Iterable<RevCommit> commits;
 		RevFilter filter = new RevFilter() {
 			@Override
@@ -182,6 +228,49 @@ public class GitVersioningUtils {
 			LOGGER.error(e.getMessage(), e);
 		}
 		return new ArrayList<>();
+	}
+
+	private static List<RevCommit> getRevCommitsSinceRaw(Date timestamp, Repository repository) {
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		String sinceDate = dateFormat.format(timestamp);
+
+		String command = "git log --since=" +sinceDate;
+		Process process = null;
+		try {
+			process = Runtime.getRuntime().exec(
+					command, null, repository.getDirectory().getParentFile());
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		InputStream responseStream = process.getInputStream();
+		try {
+			int exitVal = process.waitFor();
+		}
+		catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+
+		List<String> response = null;
+		try {
+			response = IOUtils.readLines(responseStream);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		List<String> commitHashes = new ArrayList<>();
+
+		for (String line : response) {
+			if (line.startsWith("commit")) {
+				String commitHash = line.split("commit")[1].trim();
+				commitHashes.add(commitHash);
+			}
+		}
+
+		return null;
 	}
 
 	public static void main(String[] args) {
@@ -211,6 +300,8 @@ public class GitVersioningUtils {
 			LOGGER.error("Can't delete old file versions", e);
 		}
 	}
+
+
 
 	public static void migrateAttachments(String wikiBasePath, final String dirExtension, final String attachmentDirExtension, final String propertyFileName) {
 		File basePath = new File(wikiBasePath);

@@ -1,8 +1,12 @@
-package org.apache.wiki.providers;
+package org.apache.wiki.providers.gitCache.items;
 
 import java.util.Date;
 
+import org.apache.wiki.WikiPage;
+import org.apache.wiki.api.core.Attachment;
+import org.apache.wiki.api.core.Engine;
 import org.eclipse.jgit.lib.ObjectId;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Josua Nürnberger (Feanor GmbH)
@@ -12,7 +16,7 @@ public class AttachmentCacheItem extends GitCacheItem {
 	private final String parentName;
 	private final String attachmentName;
 
-	AttachmentCacheItem(String parentName, String attachmentName, String commitMessage, String author,
+	public AttachmentCacheItem(String parentName, String attachmentName, String commitMessage, String author,
 						Date date, long size, boolean delete, ObjectId id) {
 		super(commitMessage, author, date, size, id, delete);
 		this.parentName = parentName;
@@ -29,5 +33,16 @@ public class AttachmentCacheItem extends GitCacheItem {
 
 	public String getAttachmentName() {
 		return attachmentName;
+	}
+
+	@NotNull
+	public Attachment toAttachment(Engine engine) {
+		Attachment att = new org.apache.wiki.attachment.Attachment(engine, getParentName(), getAttachmentName());
+		att.setVersion(getVersion());
+		att.setAuthor(getAuthor());
+		att.setSize(getSize());
+		att.setLastModified(getDate());
+		att.setAttribute(WikiPage.CHANGENOTE, getFullMessage());
+		return att;
 	}
 }

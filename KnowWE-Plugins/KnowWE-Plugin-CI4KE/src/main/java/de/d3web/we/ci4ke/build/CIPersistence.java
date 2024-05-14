@@ -59,7 +59,7 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 public class CIPersistence {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIPersistence.class);
 
-	public static final int MAX_BUILDS = 200;
+	public static final int MAX_BUILDS = 2;
 
 	private final boolean skipCleaning;
 	private static final String ATTACHMENT_PREFIX = "ci-build-";

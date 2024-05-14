@@ -1,4 +1,4 @@
-package org.apache.wiki.providers;
+package org.apache.wiki.event;
 
 import java.util.Collection;
 

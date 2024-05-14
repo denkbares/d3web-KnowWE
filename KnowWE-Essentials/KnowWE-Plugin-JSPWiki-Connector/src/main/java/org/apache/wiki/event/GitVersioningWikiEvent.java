@@ -1,10 +1,11 @@
-package org.apache.wiki.providers;
+package org.apache.wiki.event;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.apache.wiki.event.WikiEvent;
+import org.apache.wiki.providers.GitVersioningAttachmentProvider;
+import org.apache.wiki.providers.GitVersioningFileProvider;
 
 /**
  * Signals the update of one or more pages in a commit
