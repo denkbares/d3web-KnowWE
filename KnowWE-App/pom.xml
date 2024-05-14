@@ -677,6 +677,12 @@
 				<dependency>
 					<groupId>com.denkbares.krone</groupId>
 					<artifactId>KnowWE-Plugin-KONAP</artifactId>
+					<exclusions>
+						<exclusion>
+							<groupId>io.swagger</groupId>
+							<artifactId>swagger-jersey2-jaxrs</artifactId>
+						</exclusion>
+					</exclusions>
 				</dependency>
 				<dependency>
 					<groupId>com.denkbares.krone</groupId>
