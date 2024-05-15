@@ -24,7 +24,7 @@
 	<parent>
 		<artifactId>KnowWE-Plugins</artifactId>
 		<groupId>de.uniwue.d3web</groupId>
-		<version>2024.2-SNAPSHOT</version>
+		<version>2024.3-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowWE-Plugin-Ontology-MarkupSet</artifactId>
