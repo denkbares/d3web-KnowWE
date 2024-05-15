@@ -31,6 +31,7 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.kdom.defaultMarkup.AnnotationRenderer;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
+import de.knowwe.util.Icon;
 
 public final class StyleRenderer implements Renderer {
 	public static final StyleRenderer DEFAULT = new StyleRenderer();
@@ -78,6 +79,7 @@ public final class StyleRenderer implements Renderer {
 
 	private final String cssClass;
 	private final String cssStyle;
+	private final Icon icon;
 	private MaskMode[] maskMode = new MaskMode[] { MaskMode.jspwikiMarkup };
 
 	private StyleRenderer() {
@@ -97,8 +99,13 @@ public final class StyleRenderer implements Renderer {
 	}
 
 	private StyleRenderer(String cssClass, String cssStyle, MaskMode... maskMode) {
+		this(cssClass, cssStyle, null, maskMode);
+	}
+
+	private StyleRenderer(String cssClass, String cssStyle, Icon icon, MaskMode... maskMode) {
 		this.cssClass = cssClass;
 		this.cssStyle = cssStyle;
+		this.icon = icon;
 		this.maskMode = maskMode;
 	}
 
@@ -111,7 +118,7 @@ public final class StyleRenderer implements Renderer {
 	public StyleRenderer withCssClass(String cssClass) {
 		if (Strings.isBlank(cssClass)) return this;
 		String css = Strings.isBlank(this.cssClass) ? cssClass : (this.cssClass + " " + cssClass);
-		return new StyleRenderer(css, this.cssStyle, this.maskMode);
+		return new StyleRenderer(css, this.cssStyle, this.icon, this.maskMode);
 	}
 
 	/**
@@ -126,7 +133,7 @@ public final class StyleRenderer implements Renderer {
 		}
 		if (Strings.isBlank(cssStyle)) return this;
 		String css = Strings.isBlank(this.cssStyle) ? cssStyle : (this.cssStyle + ";" + cssStyle);
-		return new StyleRenderer(this.cssClass, css, this.maskMode);
+		return new StyleRenderer(this.cssClass, css, this.icon, this.maskMode);
 	}
 
 	/**
@@ -139,6 +146,10 @@ public final class StyleRenderer implements Renderer {
 		return new ToolMenuDecoratingRenderer(withCssClass(CLICKABLE_TERM_CLASS));
 	}
 
+	public StyleRenderer withIcon(Icon icon) {
+		return new StyleRenderer(this.cssClass, this.cssStyle, icon, this.maskMode);
+	}
+
 	@Override
 	public void render(Section<?> section, UserContext user, RenderResult string) {
 		renderOpeningTag(section, string);
@@ -147,6 +158,7 @@ public final class StyleRenderer implements Renderer {
 	}
 
 	private void renderOpeningTag(Section<?> section, RenderResult string) {
+		renderIcon(string);
 		string.appendHtml("<span");
 		if (section != null) {
 			string.append(" sectionid='").append(section.getID()).append("'");
@@ -158,6 +170,11 @@ public final class StyleRenderer implements Renderer {
 			string.append(" style='").append(cssStyle).append("'");
 		}
 		string.appendHtml(">");
+	}
+
+	private void renderIcon(RenderResult string) {
+		if (this.icon == null) return;
+		string.appendHtml(this.icon.toHtml());
 	}
 
 	public void renderText(Section<?> section, String text, UserContext user, RenderResult string) {
