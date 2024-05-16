@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 denkbares GmbH
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -42,7 +43,6 @@ import de.knowwe.jspwiki.JSPWikiConnector;
 import de.knowwe.jspwiki.WikiFileProviderUtils;
 
 /**
- * 
  * @author Johanna Latt
  * @created 16.04.2012
  */
@@ -64,14 +64,15 @@ public class DownloadWikiZIP extends AbstractAction {
 		}
 
 		JSPWikiConnector con = (JSPWikiConnector) Environment.getInstance().getWikiConnector();
-		File wikiFolder = new File(con.getWikiProperty("var.basedir"));
+		String wikiProperty = Objects.requireNonNull(con.getWikiProperty("var.basedir"));
+		File wikiFolder = new File(wikiProperty);
 
 		String filename = wikiFolder.getName() + ".zip";
 		context.setContentType(BINARY);
 		context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
 
-		boolean fingerprint = Boolean.valueOf(context.getParameter(PARAM_FINGERPRINT, "false"));
-		boolean versions = Boolean.valueOf(context.getParameter(PARAM_VERSIONS, "false"));
+		boolean fingerprint = Boolean.parseBoolean(context.getParameter(PARAM_FINGERPRINT, "false"));
+		boolean versions = Boolean.parseBoolean(context.getParameter(PARAM_VERSIONS, "false"));
 
 		OutputStream outs = context.getOutputStream();
 		ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(outs));
@@ -81,7 +82,6 @@ public class DownloadWikiZIP extends AbstractAction {
 			zos.close();
 		}
 		catch (Exception ioe) {
-			ioe.printStackTrace();
 			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.valueOf(ioe));
 		}
 		outs.flush();
@@ -99,7 +99,7 @@ public class DownloadWikiZIP extends AbstractAction {
 			}
 			Fingerprint.createFingerprint(articles, tempDir);
 			File[] files = tempDir.listFiles();
-			for (File file : files) {
+			for (File file : Objects.requireNonNull(files)) {
 				String relativePath = FINGERPRINT_ENTRY_PREFIX + file.getName();
 				addZipEntry(file, relativePath, zos);
 			}
@@ -112,10 +112,9 @@ public class DownloadWikiZIP extends AbstractAction {
 	/**
 	 * Zips the files in the given directory and writes the resulting zip-File
 	 * to the ZipOutputStream.
-	 * 
-	 * @created 21.04.2012
+	 *
 	 * @param wikiRootFolder the folder to be zipped
-	 * @param zos
+	 * @created 21.04.2012
 	 */
 	private void zipDir(File wikiRootFolder, ZipOutputStream zos, UserActionContext context, boolean includeOld) throws IOException {
 		zipDir(wikiRootFolder, wikiRootFolder, zos, context, 0, includeOld);
@@ -138,7 +137,7 @@ public class DownloadWikiZIP extends AbstractAction {
 			addZipEntry(file, relativePath, zos);
 		}
 		else {
-			for (File child : file.listFiles()) {
+			for (File child : Objects.requireNonNull(file.listFiles())) {
 				if (isHidden(child)) continue;
 				if (!includeOld && level == 0 && child.getName().equals("OLD")) continue;
 				zipDir(wikiRootFolder, child, zos, context, level + 1, includeOld);
@@ -169,10 +168,10 @@ public class DownloadWikiZIP extends AbstractAction {
 	 * Returns if the file matches the regular expression
 	 * "\.[\p{L}\d]*" (like ".svn") and should therefore not be zipped in the
 	 * zipDir method.
-	 * 
-	 * @created 29.04.2012
+	 *
 	 * @param file the file to be checked
 	 * @return if the file is a hidden file
+	 * @created 29.04.2012
 	 */
 	private boolean isHidden(File file) {
 		return file.getName().matches("\\.[\\p{L}\\d]*");
