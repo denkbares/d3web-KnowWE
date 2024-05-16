@@ -320,6 +320,9 @@ code.box {
 	top: 50%;
 	transform: translateY(-50%);
 }
+.ci-title .warning i {
+	position: static;
+}
 
 .error i {
 	color: var(--color-red);

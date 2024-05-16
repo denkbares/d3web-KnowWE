@@ -42,7 +42,7 @@
 }
 
 a, a.logo, .pagename a, .icon-search, .icon-user {
-	color: #173a64;
+	color: var(--text-color-primary-link);
 }
 
 a:focus {
@@ -2788,7 +2788,7 @@ button {
 }
 
 
-.btn-default:hover {
+.btn-default:hover, .btn:hover {
 	border-color: var(--hover-border-color-btn-default);
 	background-color: var(--hover-bg-color-btn-default);
 	color: var(--hover-text-color-btn-default);
