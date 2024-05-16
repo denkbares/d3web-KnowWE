@@ -19,12 +19,34 @@
 
 package de.knowwe.jspwiki.administration;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.FileAppender;
+import org.slf4j.LoggerFactory;
+
+import com.denkbares.collections.Iterators;
+import com.denkbares.utils.Streams;
+import de.knowwe.core.Environment;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
@@ -47,6 +69,8 @@ import de.knowwe.util.Icon;
 public class AdministrationToolProvider extends AbstractAction implements ToolProvider {
 
 	public static final String THREAD_DUMP = "thread-dump";
+	public static final String LOGS_RECENT = "logs-recent";
+	public static final String LOGS_ALL = "logs-all";
 
 	@Override
 	public Tool[] getTools(Section<?> section, UserContext user) {
@@ -81,7 +105,22 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 									+ "KNOWWE.notification.success(null, 'Copied thread dump to clipboard', 'thread-dump.copy', 3000);",
 							Map.of("type", THREAD_DUMP)),
 					Tool.ActionType.ONCLICK, Tool.CATEGORY_EDIT);
-			return new Tool[] { readOnlyTool, threadDumpTool };
+
+			DefaultTool downloadRecent = new DefaultTool(
+					Icon.FILE_TEXT,
+					"Download recent logs",
+					"Download the most recent logs of this wiki",
+					"window.location='action/AdministrationToolProvider" +
+							"?type=" + LOGS_RECENT + "'",
+					Tool.CATEGORY_DOWNLOAD);
+
+			DefaultTool downloadAll = new DefaultTool(Icon.FILE_ZIP,
+					"Download all logs",
+					"Get all logs of this as a zip file",
+					"window.location='action/AdministrationToolProvider" +
+							"?type=" + LOGS_ALL + "'",
+					Tool.CATEGORY_DOWNLOAD);
+			return new Tool[] { readOnlyTool, threadDumpTool, downloadRecent, downloadAll };
 		}
 		else {
 			return null;
@@ -100,15 +139,100 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 		}
 
 		context.setContentType(Action.PLAIN_TEXT);
-		Writer writer = context.getWriter();
 
 		String type = context.getParameter("type");
 		if (THREAD_DUMP.equals(type)) {
+			Writer writer = context.getWriter();
 			writer.append(KnowWEUtils.getThreadDump());
 			writer.close();
-		} else {
+		}
+		else if (LOGS_RECENT.equals(type)) {
+			List<File> logFiles = getLogFilePaths();
+			downloadToday(context, logFiles);
+		}
+		else if (LOGS_ALL.equals(type)) {
+			List<File> logFiles = getAllLogPaths();
+			downloadToday(context, logFiles);
+		}
+		else {
 			failUnexpected(context, "Unknown tool type: " + type);
 		}
 	}
 
+	private void downloadToday(UserActionContext context, List<File> logFiles) throws IOException {
+		Path tempFile = Files.createTempFile("Log-Download-" + new Date().getTime(), ".zip");
+		if (logFiles.size() > 1) {
+			// create tmp file first to be able to send error to user, if there is an exception
+			File tmpFile = tempFile.toFile();
+			tmpFile.deleteOnExit();
+			try (OutputStream tmpOutStream = new FileOutputStream(tmpFile); ZipOutputStream zos = new ZipOutputStream(tmpOutStream)) {
+				for (File logFile : logFiles) {
+					if (logFile.exists()) {
+						ZipEntry zipEntry = new ZipEntry(logFile.getName());
+						zos.putNextEntry(zipEntry);
+						try (InputStream in = new FileInputStream(logFile)) {
+							Streams.stream(in, zos);
+						}
+						finally {
+							zos.closeEntry();
+						}
+					}
+				}
+			}
+			catch (Exception ioe) {
+				context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.valueOf(ioe));
+				tmpFile.delete();
+				tmpFile = null;
+			}
+			finally {
+				if (tmpFile != null) {
+					String applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
+					String filename = new SimpleDateFormat("yyyy-MM-dd").format(new Date()) + "-" + applicationName + "-logs.zip";
+					context.setContentType(BINARY);
+					context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+
+					try (FileInputStream in = new FileInputStream(tmpFile); OutputStream out = context.getOutputStream()) {
+						Streams.stream(in, out);
+					}
+					finally {
+						tmpFile.delete();
+					}
+				}
+			}
+		}
+		else if (logFiles.size() == 1) {
+			File logFile = logFiles.get(0);
+			String filename = logFile.getName();
+			context.setContentType(BINARY);
+			context.setHeader("Content-Disposition", "attachment;filename=\"" + filename + "\"");
+			try (InputStream in = new FileInputStream(logFile); OutputStream out = context.getOutputStream()) {
+				Streams.stream(in, out);
+			}
+		}
+		else {
+			context.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No logs found!");
+		}
+	}
+
+	private List<File> getLogFilePaths() {
+		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		return context.getLoggerList().stream()
+				.flatMap(logger -> Iterators.stream(logger.iteratorForAppenders()))
+				.filter(appender -> appender instanceof FileAppender)
+				.map(appender -> ((FileAppender<ILoggingEvent>) appender).getFile())
+				.distinct()
+				.map(File::new)
+				.filter(File::exists)
+				.toList();
+	}
+
+	private List<File> getAllLogPaths() {
+		return getLogFilePaths().stream()
+				.map(File::getParentFile)
+				.distinct()
+				.map(File::listFiles)
+				.filter(Objects::nonNull)
+				.flatMap(Arrays::stream)
+				.toList();
+	}
 }
