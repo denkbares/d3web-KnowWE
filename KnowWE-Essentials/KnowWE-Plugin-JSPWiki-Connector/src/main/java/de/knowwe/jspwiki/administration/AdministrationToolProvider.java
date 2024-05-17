@@ -116,7 +116,7 @@ public class AdministrationToolProvider extends AbstractAction implements ToolPr
 
 			DefaultTool downloadAll = new DefaultTool(Icon.FILE_ZIP,
 					"Download all logs",
-					"Get all logs of this as a zip file",
+					"Get all logs of this wiki as a zip file",
 					"window.location='action/AdministrationToolProvider" +
 							"?type=" + LOGS_ALL + "'",
 					Tool.CATEGORY_DOWNLOAD);
