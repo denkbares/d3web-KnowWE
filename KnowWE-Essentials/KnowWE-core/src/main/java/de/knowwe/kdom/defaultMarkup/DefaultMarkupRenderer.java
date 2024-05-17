@@ -217,21 +217,27 @@ public class DefaultMarkupRenderer implements Renderer {
 		if (messages.size() == 1) {
 			clazz += " singleLine";
 		}
-		String messageIcon = null;
-		if(clazz.contains("error")){
-			messageIcon = Icon.ERROR_CROSS.addClasses("error-icon").increaseSize(Icon.Percent.by33).toHtml();
-		} else if (clazz.contains("warning")){
-			messageIcon = Icon.ERROR.addClasses("warning-icon").increaseSize(Icon.Percent.by33).toHtml();
-		}
 		out.appendHtml("<span class='" + clazz
 				+ "' style='white-space: pre-wrap;'>");
-		if(messageIcon != null){
+		String messageIcon = getMessageIcon(clazz);
+		if (messageIcon != null) {
 			out.appendHtml(messageIcon);
 		}
 		for (String messageString : messages) {
 			out.append(messageString).append("\n");
 		}
 		out.appendHtml("</span>");
+	}
+
+	private static @Nullable String getMessageIcon(String clazz) {
+		String messageIcon = null;
+		if (clazz.contains("error")) {
+			messageIcon = Icon.ERROR_CROSS.addClasses("error-icon").increaseSize(Icon.Percent.by33).toHtml();
+		}
+		else if (clazz.contains("warning")) {
+			messageIcon = Icon.ERROR.addClasses("warning-icon").increaseSize(Icon.Percent.by33).toHtml();
+		}
+		return messageIcon;
 	}
 
 	public static Collection<String> getMessageStrings(Section<?> rootSection, Type type, @Nullable UserContext context) {
@@ -354,6 +360,10 @@ public class DefaultMarkupRenderer implements Renderer {
 	public static void renderMessagesOfType(Message.Type type, Collection<Message> messages, RenderResult string) {
 		string.appendHtml("<span class='" + type.toString().toLowerCase()
 				+ "' style='white-space: pre-wrap;'>");
+		String messageIcon = getMessageIcon(type.toString().toLowerCase());
+		if (messageIcon != null) {
+			string.appendHtml(messageIcon);
+		}
 		for (Message msg : messages) {
 			string.append(KnowWEUtils.maskJSPWikiMarkup(msg.getVerbalization()));
 			string.append("\n");

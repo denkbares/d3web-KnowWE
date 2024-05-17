@@ -195,7 +195,7 @@ public class CIDashboardRenderer extends DefaultMarkupRenderer {
 					+ buildTool.getClass().getSimpleName() + "\" >" +
 					"<a " + ToolUtils.getActionAttribute(buildTool) + "" +
 					"title=\"" + Strings.encodeHtml(buildTool.getDescription()) + "\">" +
-					buildTool.getIcon().increaseSize(Icon.Percent.by33).toHtml() +
+					buildTool.getIcon().increaseSize(Icon.Percent.by33).addClasses("trigger-build-icon").toHtml() +
 					"</a></div>");
 
 			warningString.append(")");

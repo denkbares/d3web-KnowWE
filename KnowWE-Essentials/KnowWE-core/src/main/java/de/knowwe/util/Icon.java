@@ -45,6 +45,7 @@ public class Icon {
 	public static final Icon RIGHT = new Icon("fa-type fa-arrow-right");
 	public static final Icon LEFT = new Icon("fa-type fa-arrow-left");
 	public static final Icon ROTATE_LEFT = new Icon("fa-type fa-arrow-rotate-left");
+	public static final Icon ROTATE_RIGHT = new Icon("fa-type fa-arrow-rotate-right");
 	public static final Icon CARET_DOWN = new Icon("fa-type fa-caret-down");
 	public static final Icon CARET_RIGHT = new Icon("fa-type fa-caret-right");
 	// Sorting

@@ -320,8 +320,11 @@ code.box {
 	top: 50%;
 	transform: translateY(-50%);
 }
-.ci-title .warning i {
+
+.ci-title .trigger-build-icon {
 	position: static;
+	color: var(--text-color-primary-link);
+	margin-right: 3px;
 }
 
 .error i {

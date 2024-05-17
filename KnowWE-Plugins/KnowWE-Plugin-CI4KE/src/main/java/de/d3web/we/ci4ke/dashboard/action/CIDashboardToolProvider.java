@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2010 denkbares GmbH, Wuerzburg
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -46,7 +46,7 @@ public class CIDashboardToolProvider implements ToolProvider {
 		}
 		else {
 			return new Tool[] { getStartNewBuildTool(dashboardName, section.getTitle()),
-			getReportDownloadTool(dashboardName, section.getTitle())};
+					getReportDownloadTool(dashboardName, section.getTitle()) };
 		}
 	}
 
@@ -74,7 +74,7 @@ public class CIDashboardToolProvider implements ToolProvider {
 		String jsAction = "_CI.executeNewBuild('" + Strings.encodeURL(dashboardName) + "','"
 				+ title + "')";
 		return new DefaultTool(
-				Icon.CLOCK,
+				Icon.ROTATE_RIGHT,
 				"Start a new build",
 				"Starts a new build.",
 				jsAction, Tool.CATEGORY_EXECUTE);
