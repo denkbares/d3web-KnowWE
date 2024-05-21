@@ -189,16 +189,19 @@ public class LongOperationUtils {
 		}
 		catch (IOException | LongOperationException e) {
 			LOGGER.warn("Cannot complete operation.", e);
+			operation.getProgressListener().updateProgress(1f);
 			operation.getProgressListener().setError("Error occurred: " + e.getMessage());
 		}
 		catch (InterruptedException e) {
 			LOGGER.info("Operation canceled by user.");
+			operation.getProgressListener().updateProgress(1f);
 			operation.getProgressListener().setError("Canceled by user.");
 		}
 		catch (Throwable e) {
 			// use Throwable here, so that the user can see,
 			// even if there is an internal server error
 			// (like wrong linkage)
+			operation.getProgressListener().updateProgress(1f);
 			LOGGER.error("Cannot complete operation, unexpected internal error.", e);
 			operation.getProgressListener().setError("Unexpected internal error: " + e.getMessage() + ".");
 		}
