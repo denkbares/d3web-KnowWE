@@ -129,20 +129,27 @@
 	cursor: pointer;
 }
 
+.quickinterview .answer:hover {
+	background-color: var(--hover-bg-color-li);
+}
+
 /* answer active syling */
 .quickinterview .answerClicked {
 	float: left;
-	background-color: transparent;
-	border-top: 2px solid #ACC0D6;
-	border-bottom: 2px solid #ACC0D6;
-	padding: 0 0 0 0;
+	background-color: var(--bg-color-quicki-answer);
+	padding: 2px 4px 2px 4px;
 	cursor: pointer;
+	border-style: hidden;
+	border-radius: 5px;
+}
+
+.quickinterview .qablockHidden .answerClicked {
+	color: var(--text-color-primary);
 }
 
 .quickinterview .answerClicked.answerDerived,
 .quickinterview .answerMCClicked.answerDerived {
-	border-top: 2px dotted #ACC0D6;
-	border-bottom: 2px dotted #ACC0D6;
+	background-color: var(--highlight-color-light);
 }
 
 .quickinterview .answer.answerDisabled,
@@ -174,10 +181,10 @@
 /* answer mcs when clicked */
 .quickinterview .answerMCClicked {
 	float: left;
-	background-color: transparent;
-	border-top: 2px solid #ACC0D6;
-	border-bottom: 2px solid #ACC0D6;
-	padding: 0 0;
+	background-color: var(--bg-color-quicki-answer);
+	padding: 2px 4px 2px 4px;
+	border-style: hidden;
+	border-radius: 5px;
 	cursor: pointer;
 }
 
@@ -191,10 +198,11 @@
 
 /* answer unknown styling clicked */
 .quickinterview .answerunknownClicked {
-	padding: 0 0;
 	cursor: pointer;
-	border-bottom: 2px #ACC0D6 solid;
-	border-top: 2px #ACC0D6 solid;
+	background-color: var(--bg-color-quicki-answer);
+	padding: 2px 4px 2px 4px;
+	border-style: hidden;
+	border-radius: 5px;
 	float: left;
 	display: inline;
 }

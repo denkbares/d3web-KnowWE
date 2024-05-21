@@ -36,13 +36,24 @@
  */
 
 /* +++ 010 LAYOUT of main ID blocks +++ */
-.header, .footer {
-	background-color: white;
-	color: black
+.header {
+	background-color: var(--bg-color-base);
+	color: var(--text-color-primary);
+}
+
+.footer {
+	background-color: var(--bg-color-footer);
+	color: var(--text-color-primary);
+	box-shadow: 0 -2px 3px 0 rgba(0, 0, 0, 0.075);
 }
 
 a, a.logo, .pagename a, .icon-search, .icon-user {
 	color: var(--text-color-primary-link);
+}
+
+.icon-search:hover, .icon-user:hover {
+	background-color: var(--hover-bg-color-inner-links);
+	color: var(--hover-text-color-links);
 }
 
 a:focus {
@@ -61,6 +72,11 @@ a.logo.pull-left {
 	background: url(../../../../KnowWEExtension/images/knowwe_logo.png) no-repeat;
 	background-size: contain;
 	height: 48px;
+}
+
+a:hover, .pagename a:hover {
+	background-color: var(--hover-bg-color-links);
+	color: var(--hover-text-color-links);
 }
 
 .footer {
@@ -344,11 +360,6 @@ a {
 
 .KDDOMWarning a, .KDDOMError a {
 	color: inherit;
-}
-
-a:hover {
-	color: #0059b3;
-	text-decoration: underline;
 }
 
 a:link {
@@ -1446,6 +1457,7 @@ body.view {
 	border: 1px solid var(--border-color-table);
 	text-align: center;
 	font-size: 1.4em;
+	position: static;
 }
 
 .index .body {
@@ -2848,10 +2860,6 @@ a.list-group-item, button.list-group-item {
 	background-color: var(--bg-color-content);
 }
 
-li:hover a:hover {
-	background-color: transparent;
-}
-
 .quickinterview .qablock:hover input:hover, .quickinterview .qablockHidden:hover input:hover {
 	background-color: transparent;
 	border-color: var(--border-color-input);
@@ -3050,13 +3058,22 @@ legend {
 	color: var(--text-color-error);
 }
 
+.alert-danger {
+	background-color: var(--bg-color-red-light);
+	border-color: var(--color-red);
+	color: var(--color-red-light);
+}
+
+.alert-danger .close {
+	color: var(--color-red);
+}
 
 /* ############################################################################ */
 /* ------------- overwritten quickiNeutral.css styles using CSS variables ----------- */
 /* ############################################################################ */
 
 .quickinterview .qablock:hover, .qablockHidden:hover {
-	background: var(--hover-bg-color-li);
+	background: transparent;
 }
 
 

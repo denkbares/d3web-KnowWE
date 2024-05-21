@@ -64,6 +64,7 @@
 	--color-purple: #915665;
 	--color-purple-dark: #7D5066;
 
+	--color-blue-extra-light: #bce7ff;
 	--color-blue-light-transparent: rgba(75, 138, 221, 0.9);
 	--color-blue-light: #57b6ff;
 	--color-blue: #0263b2;
@@ -78,6 +79,7 @@
 	--color-red-light: #ff5a5a;
 	--color-red: #e81818;
 	--color-red-dark: #ce0606;
+	--bg-color-red-light: rgba(255, 222, 222, 0.5);
 	--bg-color-red: #d9534f;
 	--bg-color-red-dark: #c9302c;
 
@@ -171,6 +173,9 @@
 	/* styles with images */
 	--bg-color-markupMenuIndicator: white /*url(../../templates/KnowWE/images/arrdownsmall.gif)*/;
 
+	/* quick interview */
+	--bg-color-quicki-answer: var(--color-blue-extra-light);
+
 }
 
 
@@ -199,8 +204,7 @@
 	--highlight-color-faint-blue: rgba(245, 250, 255, 0.1);
 	--highlight-color-light: rgba(78, 131, 178, 0.3);
 	--highlight-color-dark: rgba(255, 184, 69, 0.7);
-
-	--hover-color-default: rgba(255, 255, 255, 0.07);
+	--hover-color-default: rgba(255, 255, 255, 0.09);
 
 	--color-grey-light: #DDD;
 	--color-grey-medium: #545454;
@@ -229,6 +233,7 @@
 	--color-blue: #4aa8ff;
 	--color-blue-dark: #2c81ff;
 	--color-blue-deep: #3737ff;
+	--bg-color-blue-extra-dark: #003964;
 	--color-blue-highlight: #00c4ff;
 
 	--color-turquoise-light: #729898;
@@ -332,6 +337,10 @@
 
 	/* styles with images */
 	--bg-color-markupMenuIndicator: var(--bg-color-primary-shade);
+
+	/* quick interview */
+	--bg-color-quicki-answer: var(--bg-color-blue-extra-dark);
+
 }
 
 /* ######################################################## */

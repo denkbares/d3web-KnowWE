@@ -1362,3 +1362,7 @@ Intellij Idea-like styling (c) Vasily Polovnyov <vast@whiteants.net>
 	background: #bccff9;
 }
 
+.modal {
+	background-color: var(--bg-color-primary-shade);
+	color: var(--text-color-primary);
+}
