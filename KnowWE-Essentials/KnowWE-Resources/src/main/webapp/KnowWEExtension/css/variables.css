@@ -453,7 +453,10 @@
 /* ------------- Set Transitions for switching modes ----------- */
 /* ############################################################## */
 
-*, input, select, button, .form-control, a, .header, .pagename a {
+.context-prefs *, .context-prefs input,
+.context-prefs select, .context-prefs button,
+.context-prefs .form-control, .context-prefs a,
+.context-prefs .header, .context-prefs .pagename a {
 	transition: background-color 0.3s ease,
 	background 0.3s ease,
 	color 0.1s,
