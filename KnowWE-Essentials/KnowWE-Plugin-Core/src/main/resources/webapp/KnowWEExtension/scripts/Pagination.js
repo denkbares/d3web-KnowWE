@@ -19,7 +19,7 @@
 
 KNOWWE = typeof KNOWWE === "undefined" ? {} : KNOWWE;
 KNOWWE.core = KNOWWE.core || {};
-KNOWWE.core.plugin = KNOWWE.core.plugin || {}
+KNOWWE.core.plugin = KNOWWE.core.plugin || {};
 
 /**
  * Namespace: KNOWWE.core.plugin.pagination The KNOWWE plugin d3web namespace.
@@ -31,7 +31,7 @@ KNOWWE.core.plugin.pagination = function() {
   const filterTextQueryAttribute = "filter-text-query";
   const sortingIcon = "sorting-icon";
   const filterIcon = "filter-icon";
-  const filterProviderActionAttribute = 'filter-provider-action';
+  const filterProviderActionAttribute = "filter-provider-action";
   const filterTextsProperty = "filter-texts";
   const paginationClickEvent = "click.pagination-filter";
 
@@ -45,7 +45,7 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function updateNode(id) {
-    jq$('#' + id).rerender({reason: "pagination"});
+    jq$("#" + id).rerender({reason: "pagination"});
   }
 
   function getSortingSymbol(naturalOrder, index) {
@@ -56,13 +56,13 @@ KNOWWE.core.plugin.pagination = function() {
       cssClass = "fa fa-caret-up fa-lg " + sortingIcon;
     }
     if (index !== 0) cssClass += " secondary";
-    return jq$('<i/>', {
+    return jq$("<i/>", {
       "class": cssClass
     });
   }
 
   function getFilterSymbol(empty) {
-    const $symbol = jq$('<i/>', {"class": 'fa-filter'});
+    const $symbol = jq$("<i/>", {"class": "fa-filter"});
     $symbol.addClass(filterIcon);
     $symbol.addClass(empty ? "far" : "fa");
     if (empty) $symbol.css("color", "grey");
@@ -94,8 +94,8 @@ KNOWWE.core.plugin.pagination = function() {
     const paginationState = getPaginationState(sectionId);
 
     $table.find("th").each(function() {
-      jq$(this.firstChild).wrap('<span></span>');
-    })
+      jq$(this.firstChild).wrap("<span></span>");
+    });
 
     if (sortingMode !== "off") {
       let sorting = paginationState.sorting || [];
@@ -123,7 +123,7 @@ KNOWWE.core.plugin.pagination = function() {
   function enableSorting($thElement, sectionId) {
     if (!$thElement.hasClass("notSortable")) {
       $thElement.addClass("sortable");
-      $thElement.find("span").bind('click', function(event) {
+      $thElement.find("span").bind("click", function(event) {
           if (event.altKey) return;
           KNOWWE.core.plugin.pagination.sort(this, sectionId);
         }
@@ -152,7 +152,7 @@ KNOWWE.core.plugin.pagination = function() {
         selectAll: true,
         customTexts: [],
         selectedCustomTexts: [],
-        selectedTexts: [],
+        selectedTexts: []
       };
     }
     const columnState = filterState.columns[columnName];
@@ -189,7 +189,7 @@ KNOWWE.core.plugin.pagination = function() {
 
     const cancelFilter = $filterIcon => {
       jq$(document).off(paginationClickEvent); // in case we close via buttons
-      const $thElement = $filterIcon.parents('th');
+      const $thElement = $filterIcon.parents("th");
       filterState.columns[getColumnName($thElement)] = $thElement.data(initialState);
       setPaginationState(sectionId, paginationState);
       $filterIcon.tooltipster("hide");
@@ -206,7 +206,7 @@ KNOWWE.core.plugin.pagination = function() {
       $thElement.removeAttr(filterProviderActionAttribute); // prevent second additional ajax calls
 
       ajaxFilterTexts("", () => {
-        origin.tooltipster('content', getTooltipContent()).tooltipster('reposition');
+        origin.tooltipster("content", getTooltipContent()).tooltipster("reposition");
         continueTooltip();
       });
 
@@ -215,14 +215,14 @@ KNOWWE.core.plugin.pagination = function() {
     // show little spinner at the filter text input
     const showSpinner = () => {
       if ($tooltip) {
-        $tooltip.find('.filter-input-indicator-parent').addClass("loading-texts")
+        $tooltip.find(".filter-input-indicator-parent").addClass("loading-texts");
       }
     };
 
     // hide little spinner at the filter text input
     const hideSpinner = () => {
       if ($tooltip) {
-        $tooltip.find('.filter-input-indicator-parent').removeClass("loading-texts")
+        $tooltip.find(".filter-input-indicator-parent").removeClass("loading-texts");
       }
     };
 
@@ -234,12 +234,12 @@ KNOWWE.core.plugin.pagination = function() {
         url: KNOWWE.core.util.getURL({
           action: filterProviderAction
         }),
-        type: 'post',
+        type: "post",
         data: function() {
           let data = {SectionID: sectionId};
           data[columnNameAttribute] = columnName;
           data[filterTextQueryAttribute] = filterTextQuery;
-          data["localSectionStorage"] = KNOWWE.helper.getLocalSectionStorage(sectionId, true)
+          data["localSectionStorage"] = KNOWWE.helper.getLocalSectionStorage(sectionId, true);
           return data;
         }(),
         success: function(json) {
@@ -268,18 +268,18 @@ KNOWWE.core.plugin.pagination = function() {
         event.stopPropagation(); // don't allow click to bubble up to document, closing tooltip again
       });
       $tooltip.on("keyup", function(event) {
-        if (event.originalEvent.code === 'Enter') {
-          $tooltip.find('.ok-button').click();
-        } else if (event.originalEvent.code === 'Escape') {
-          $tooltip.find('.cancel-button').click();
+        if (event.originalEvent.code === "Enter") {
+          $tooltip.find(".ok-button").click();
+        } else if (event.originalEvent.code === "Escape") {
+          $tooltip.find(".cancel-button").click();
         }
       });
     };
 
 
     // open/close filter dialog/tooltip
-    const $filterIcon = $thElement.find('.filter-icon');
-    if (!$filterIcon.hasClass('tooltipstered')) {
+    const $filterIcon = $thElement.find(".filter-icon");
+    if (!$filterIcon.hasClass("tooltipstered")) {
       $filterIcon.tooltipster({
         interactive: true,
         updateAnimation: false,
@@ -292,12 +292,12 @@ KNOWWE.core.plugin.pagination = function() {
       });
       $filterIcon.click(function(event) {
         // hide other open filter tooltips
-        $filterIcon.parents('tr').first().find('.filter-icon')
-          .filter('.tooltipstered')
+        $filterIcon.parents("tr").first().find(".filter-icon")
+          .filter(".tooltipstered")
           .filter((i, e) => e !== $filterIcon[0])
           .each(function() {
             cancelFilter(jq$(this));
-          })
+          });
         // open filter tooltip
         $filterIcon.tooltipster("show");
         // prevent closing it again immediately
@@ -306,7 +306,7 @@ KNOWWE.core.plugin.pagination = function() {
         jq$(document).off(paginationClickEvent); // just to be sure
         jq$(document).on(paginationClickEvent, function() {
           cancelFilter($filterIcon);
-        })
+        });
       });
     }
     $filterIcon.addClass("tooltipstered");
@@ -328,13 +328,13 @@ KNOWWE.core.plugin.pagination = function() {
             "<input type='checkbox' id='" + id + "' name='" + id + "' " + (isSelected(texts[0], selectedTexts) ? "checked" : "") + ">" +
             "<label for='" + id + "'>" + encodeHTML(rendered) + "</label><div style='display: none'>" + encodeHTML(JSON.stringify(texts)) + "</div>" +
             "</li>\n";
-        }).join('') +
+        }).join("") +
         "</ul>";
     };
 
     // update the filter list
     const updateFilterList = $tooltip => {
-      $tooltip.find('.pagination-filter-list').replaceWith(getFilterList());
+      $tooltip.find(".pagination-filter-list").replaceWith(getFilterList());
       initFilterList($tooltip);
     };
 
@@ -352,8 +352,8 @@ KNOWWE.core.plugin.pagination = function() {
 
     // init events for "Filter: ..." text input
     const initFilterInput = $tooltip => {
-      $tooltip.find('#filter-input').keyup(function(event) {
-        if (event.originalEvent.code === 'Enter') {
+      $tooltip.find("#filter-input").keyup(function(event) {
+        if (event.originalEvent.code === "Enter") {
           saveAndCloseFilter($filterIcon);
         } else {
           const filterText = jq$(this).val();
@@ -361,14 +361,14 @@ KNOWWE.core.plugin.pagination = function() {
           setPaginationState(sectionId, paginationState);
           ajaxFilterTexts(filterText, () => {
             updateFilterList($tooltip);
-          })
+          });
         }
       });
     };
 
     // update the state of buttons
     const updateButtonState = $tooltip => {
-      const $toggleBox = $tooltip.find('.toggle-box');
+      const $toggleBox = $tooltip.find(".toggle-box");
       if (columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0) {
         $toggleBox.prop("indeterminate", true);
       } else {
@@ -376,11 +376,11 @@ KNOWWE.core.plugin.pagination = function() {
         $toggleBox.prop("checked", columnState.selectAll);
       }
 
-      $tooltip.find('.ok-button').prop("disabled", !isValidState());
+      $tooltip.find(".ok-button").prop("disabled", !isValidState());
     };
 
     const isValidState = () => columnState.selectAll || columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0;
-    const getFilterTexts = $checkBox => JSON.parse($checkBox.parent().find('div').text());
+    const getFilterTexts = $checkBox => JSON.parse($checkBox.parent().find("div").text());
 
     // init events for filter check boxes
     const initFilterList = function($tooltip) {
@@ -391,7 +391,7 @@ KNOWWE.core.plugin.pagination = function() {
         }
       };
 
-      $tooltip.find('li input').change(function() {
+      $tooltip.find("li input").change(function() {
         const $checkBox = jq$(this);
         const texts = getFilterTexts($checkBox);
         if (this.checked && !columnState.selectAll || !this.checked && columnState.selectAll) {
@@ -415,7 +415,7 @@ KNOWWE.core.plugin.pagination = function() {
     // init buttons
     const initButtons = $tooltip => {
       updateButtonState($tooltip);
-      $tooltip.find('.toggle-box').click(function() {
+      $tooltip.find(".toggle-box").click(function() {
         columnState.selectAll = this.checked;
         columnState.selectedTexts = [];
         columnState.selectedCustomTexts = [];
@@ -423,10 +423,10 @@ KNOWWE.core.plugin.pagination = function() {
         setPaginationState(sectionId, paginationState);
         updateFilterList($tooltip);
       });
-      $tooltip.find('.ok-button').click(function() {
+      $tooltip.find(".ok-button").click(function() {
         saveAndCloseFilter($filterIcon);
       });
-      $tooltip.find('.cancel-button').click(function() {
+      $tooltip.find(".cancel-button").click(function() {
         cancelFilter($filterIcon);
       });
     };
@@ -437,20 +437,20 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function toggleLowerPagination(paginationWrapper, visibility) {
-    jq$(paginationWrapper).find('.sparqlTable').nextAll().filter('.knowwe-paginationToolbar').css("display", visibility);
+    jq$(paginationWrapper).find(".sparqlTable").nextAll().filter(".knowwe-paginationToolbar").css("display", visibility);
   }
 
   function handlePaginationBelowTableVisibility(paginationWrapper) {
     if (isShortTable(paginationWrapper)) {
       toggleLowerPagination(paginationWrapper, "none");
     } else {
-      toggleLowerPagination(paginationWrapper, "inline-block")
+      toggleLowerPagination(paginationWrapper, "inline-block");
     }
   }
 
   function decoratePagination($paginationWrapper, rerenderIfFilterActive) {
 
-    const sectionId = $paginationWrapper.attr('id');
+    const sectionId = $paginationWrapper.attr("id");
 
     const $table = $paginationWrapper.find("table");
     if (!$table.exists()) {
@@ -459,27 +459,27 @@ KNOWWE.core.plugin.pagination = function() {
     }
 
     //for css purposes
-    $table.addClass('knowwe-pagination');
+    $table.addClass("knowwe-pagination");
 
     // register count selector
-    $paginationWrapper.find("select.count").on('change', function() {
+    $paginationWrapper.find("select.count").on("change", function() {
       KNOWWE.core.plugin.pagination.setCount(this, sectionId);
     });
 
     // register start row change event
-    $paginationWrapper.find('input.startRow').on('change', function() {
+    $paginationWrapper.find("input.startRow").on("change", function() {
       KNOWWE.core.plugin.pagination.updateStartRow(this, sectionId);
     });
 
-    const filterActivator = $paginationWrapper.find('.filter-activator');
-    const sortingMode = $paginationWrapper.attr('sorting-mode'); // from markup (not user specific)
-    const filteringActive = $paginationWrapper.attr('filtering') === "true"; // from markup/annotation (not user specific)
+    const filterActivator = $paginationWrapper.find(".filter-activator");
+    const sortingMode = $paginationWrapper.attr("sorting-mode"); // from markup (not user specific)
+    const filteringActive = $paginationWrapper.attr("filtering") === "true"; // from markup/annotation (not user specific)
 
     // decoratePagination "Filter" checkbox
     const paginationState = getPaginationState(sectionId);
     const filterState = getPaginationFilterState(paginationState);
     if (filterState.active) {
-      filterActivator.prop('checked', true);
+      filterActivator.prop("checked", true);
     }
     filterActivator.change(function() {
       filterState.active = !!this.checked;
@@ -489,18 +489,18 @@ KNOWWE.core.plugin.pagination = function() {
         filteringActive: anyActiveFilter(filterState) && this.checked,
         sectionId: sectionId
       });
-    })
-    const clearFilter = $paginationWrapper.find('.clear-filter');
-    const filterTools = $paginationWrapper.find('.filter-tools');
+    });
+    const clearFilter = $paginationWrapper.find(".clear-filter");
+    const filterTools = $paginationWrapper.find(".filter-tools");
     clearFilter.click(function() {
-      filterState.columns = {}
+      filterState.columns = {};
       setPaginationState(sectionId, paginationState);
-      updateNode(sectionId)
+      updateNode(sectionId);
       KNOWWE.helper.observer.notify("filterChanged", {
         filteringActive: anyActiveFilter(filterState),
         sectionId: sectionId
       });
-    })
+    });
     if (!filterState.active) {
       filterTools.hide();
     } else {
@@ -534,11 +534,11 @@ KNOWWE.core.plugin.pagination = function() {
     }
     //on first load
     if ((filterActivator.exists() && !filterActivator[0].checked) || !anyActiveFilter(filterState)) {
-      jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`).closest('.defaultMarkupFrame')
-        .find('.markupMenu .markupMenuItem')
+      jq$(`.ReRenderSectionMarker[sectionid="${sectionId}"]`).closest(".defaultMarkupFrame")
+        .find(".markupMenu .markupMenuItem")
         // find tool that contains text "filtered"
-        .filter((_, elem) => jq$(elem).text().includes('filtered'))
-        .css('display', 'none');
+        .filter((_, elem) => jq$(elem).text().includes("filtered"))
+        .css("display", "none");
 
     }
   }
@@ -555,7 +555,7 @@ KNOWWE.core.plugin.pagination = function() {
         sorting = cookie.sorting;
         let found = false;
         let remove = false;
-        let i = 0
+        let i = 0;
         for (; i < sorting.length; i++) {
           if (sorting[i].sort === sortingName) {
             if (i === 0) { // we only toggle sorting when primary sort column
@@ -588,14 +588,14 @@ KNOWWE.core.plugin.pagination = function() {
       const cookie = getPaginationState(id);
 
       const lastCount = parseInt(cookie.count);
-      const resultSize = parseInt(jq$('#' + id + " .resultSize").val());
+      const resultSize = parseInt(jq$("#" + id + " .resultSize").val());
       const count = $selected.val();
-      $selected.data('current', count);
-      let startRow = parseInt(jq$('#' + id + ' .startRow').val());
+      $selected.data("current", count);
+      let startRow = parseInt(jq$("#" + id + " .startRow").val());
       const search = /^\d+$/;
       const found = search.test(startRow);
       if (!(found)) {
-        jq$('#' + id + ' .startRow').val('');
+        jq$("#" + id + " .startRow").val("");
         return;
       }
 
@@ -662,7 +662,7 @@ KNOWWE.core.plugin.pagination = function() {
       const search = /^\d+$/;
       const found = search.test(startRow);
       if (!(found)) {
-        jq$("#" + id + " .startRow").val('');
+        jq$("#" + id + " .startRow").val("");
         return;
       }
       if (startRow <= 0) {
@@ -682,7 +682,7 @@ KNOWWE.core.plugin.pagination = function() {
     decorateTable: function($paginationWrapper) {
       if ($paginationWrapper.is(".knowwe-paginationWrapper")) {
         // is() requires only one of the elements to match, so we also filter...
-        $paginationWrapper = $paginationWrapper.filter(".knowwe-paginationWrapper")
+        $paginationWrapper = $paginationWrapper.filter(".knowwe-paginationWrapper");
       } else {
         // select correct elements
         $paginationWrapper = $paginationWrapper.find(".knowwe-paginationWrapper");
@@ -696,7 +696,7 @@ KNOWWE.core.plugin.pagination = function() {
       });
 
     }
-  }
+  };
 }();
 
 
@@ -704,9 +704,9 @@ KNOWWE.core.plugin.pagination = function() {
 /* ------------- Onload Events ---------------------------------- */
 /* ############################################################### */
 (function init() {
-  window.addEvent('domready', _KL.setup);
-  if (KNOWWE.helper.loadCheck(['Wiki.jsp'])) {
-    window.addEvent('domready', function() {
+  window.addEvent("domready", _KL.setup);
+  if (KNOWWE.helper.loadCheck(["Wiki.jsp"])) {
+    window.addEvent("domready", function() {
       KNOWWE.core.plugin.pagination.initialDecorateTables();
     });
   }
