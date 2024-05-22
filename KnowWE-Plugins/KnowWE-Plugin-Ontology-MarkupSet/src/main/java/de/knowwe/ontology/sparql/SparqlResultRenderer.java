@@ -36,7 +36,6 @@ import com.denkbares.semanticcore.utils.ValueComparator;
 import com.denkbares.strings.Strings;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,8 +177,8 @@ public class SparqlResultRenderer {
 		result.appendHtml("<div class='warning'>");
 		appendMessage(section, e, user, result);
 		result.appendHtml("<br/><a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
-						  + "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
-						  + " class='tooltipster'>Try again...</a></div>");
+				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
+				+ " class='tooltipster'>Try again...</a></div>");
 	}
 
 	private static void appendMessage(Section<? extends SparqlType> section, RuntimeException e, UserContext user, RenderResult result) {
@@ -459,11 +458,10 @@ public class SparqlResultRenderer {
 					renderResult.appendHtml("<td>");
 				}
 				else if (getStyleForKey(var, columnWidths).isEmpty()) {
-					renderResult.appendHtml("<td " + getStyleForKey(var, columnStyle) + ">");
+					renderResult.appendHtml("<td style='" + getStyleForKey(var, columnStyle) + "'>");
 				}
 				else {
-					renderResult.appendHtml("<td " + getStyleForKey(var, allColumnStyles).substring(0, getStyleForKey(var, allColumnStyles)
-																											   .length() - 1) + "; overflow-wrap: break-word'" + ">");
+					renderResult.appendHtml("<td style='" + getStyleForKey(var, allColumnStyles) + "; overflow-wrap: break-word'>");
 				}
 
 				renderNode(row, var, user, opts, renderResult);
@@ -619,7 +617,7 @@ public class SparqlResultRenderer {
 			String linkUrl = Strings.trim(matcher.group(2));
 			String linkLabel = matcher.group(1) == null ? linkUrl : Strings.trim(matcher.group(1));
 			boolean pageExists = user.getArticleManager() != null
-								 && user.getArticleManager().getArticle(matcher.group(2)) != null;
+					&& user.getArticleManager().getArticle(matcher.group(2)) != null;
 			boolean internal = matcher.group(3) == null;
 			if (internal && pageExists) {
 				linkUrl = KnowWEUtils.getURLLink(linkUrl);
@@ -648,8 +646,8 @@ public class SparqlResultRenderer {
 	@NotNull
 	private String generateReplacement(String erg, Matcher matcher, String linkLabel, String linkUrl) {
 		return erg.substring(0, matcher.start()) +
-			   "<a class='external' href='" + linkUrl + "'>" + linkLabel + "</a>" +
-			   erg.substring(matcher.end());
+				"<a class='external' href='" + linkUrl + "'>" + linkLabel + "</a>" +
+				erg.substring(matcher.end());
 	}
 
 	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderOptions.RenderMode mode) {
