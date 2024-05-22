@@ -2771,13 +2771,13 @@ button {
 .btn.btn-success:hover, .btn-success:hover {
 	background-color: var(--bg-color-green-dark);
 	border-color: var(--bg-color-green-dark);
-	color: var(--text-color-primary-inverted);
+	color: white;
 }
 
 .btn.btn-success:active, .btn-success:active, .btn.btn-success.active, .btn-success.active, .open > .dropdown-toggle.btn-success {
 	background-color: var(--bg-color-green-dark);
 	border-color: var(--bg-color-green-dark);
-	color: var(--text-color-primary-inverted);
+	color: white;
 }
 
 .btn-danger {
@@ -2787,22 +2787,22 @@ button {
 .btn.btn-danger:focus, .btn-danger:focus, .btn.btn-danger.focus, .btn-danger.focus {
 	background-color: var(--bg-color-red-dark); /*#c9302c;*/
 	border-color: #761c19;
-	color: var(--text-color-primary-inverted);
+	color: white;
 }
 
 .btn.btn-danger:hover, .btn-danger:hover {
 	background-color: var(--bg-color-red-dark); /*#c9302c;*/
-	color: var(--text-color-primary-inverted);
+	color: white;
 }
 
 .btn-danger:active, .btn.btn-danger:active, .btn-danger.active, .btn.btn-danger.active, .open > .dropdown-toggle.btn-danger {
 	background-color: var(--bg-color-red-dark); /* #c9302c;*/
-	color: var(--text-color-primary-inverted);
+	color: white;
 }
 
 .btn-danger:active:hover, .btn.btn-danger:active:hover, .btn-danger.active:hover, .btn.btn-danger.active:hover, .open > .dropdown-toggle.btn-danger:hover, .btn-danger:active:focus, .btn-danger.active:focus, .open > .dropdown-toggle.btn-danger:focus, .btn-danger:active.focus, .btn-danger.active.focus, .open > .dropdown-toggle.btn-danger.focus {
 	background-color: var(--bg-color-red-dark); /*#ac2925;*/
-	color: var(--text-color-primary-inverted);
+	color: white;
 }
 
 
