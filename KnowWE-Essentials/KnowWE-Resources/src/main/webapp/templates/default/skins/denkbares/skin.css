@@ -2848,6 +2848,7 @@ button {
 
 .list-group-item {
 	background-color: var(--bg-color-base);
+	border: 1px solid var(--border-color-default);
 }
 
 a.list-group-item, button.list-group-item {
