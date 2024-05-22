@@ -542,7 +542,7 @@ td .information, td .info, td .warning, td .error {
 .defaultMarkup .markupText .warning,
 .defaultMarkup .markupText .info,
 .defaultMarkup .markupText .information {
-	margin: 2px 0 2px 0;
+	margin: 6px 0 6px 0;
 	min-height: 32px;
 }
 
@@ -2490,11 +2490,6 @@ li.findpages .btn {
 	margin: 0;
 }
 
-#searchForm > .btn:hover, #searchForm > .btn:focus,
-.userbox > .btn:hover, .userbox > .btn:focus {
-	color: #777
-}
-
 #findSuggestionMenu {
 	max-height: 66%;
 	top: 161px;
@@ -2805,9 +2800,13 @@ button {
 	color: white;
 }
 
+#searchForm > .btn:hover, #searchForm > .btn:focus,
+.userbox > .btn:hover, .userbox > .btn:focus {
+	color: var(--hover-text-color-btn-default);
+}
+
 
 .btn-default:hover, .btn:hover {
-	border-color: var(--hover-border-color-btn-default);
 	background-color: var(--hover-bg-color-btn-default);
 	color: var(--hover-text-color-btn-default);
 }
