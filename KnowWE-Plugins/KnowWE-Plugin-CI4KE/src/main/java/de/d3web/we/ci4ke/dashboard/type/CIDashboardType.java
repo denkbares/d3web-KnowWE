@@ -284,8 +284,8 @@ public class CIDashboardType extends DefaultMarkupType {
 
 			if (matchingSpecOptional.isPresent()) {
 				TestSpecification<?> specification2 = matchingSpecOptional.get();
+				//we are overwriting all args but concat ignores for now!
 				Set<String> argsSet = new LinkedHashSet<>(Arrays.asList(specification1.getArguments()));
-				argsSet.addAll(Arrays.asList(specification2.getArguments()));
 				String[] allArgs = argsSet.toArray(new String[0]);
 
 				Set<String[]> ignoreSet = new LinkedHashSet<>(Arrays.asList(specification1.getIgnores()));
@@ -293,7 +293,7 @@ public class CIDashboardType extends DefaultMarkupType {
 				String[][] allIgnores = ignoreSet.toArray(new String[0][]);
 
 				combinedTestSpecifications.add(new TestSpecification<>(specification1.getTest(), specification1.getTestObject(),
-						allArgs, allIgnores));
+						allArgs, allIgnores, specification1.isSoftTest()));
 				secondPrioritySpecs.remove(specification2);
 			}
 			else {
