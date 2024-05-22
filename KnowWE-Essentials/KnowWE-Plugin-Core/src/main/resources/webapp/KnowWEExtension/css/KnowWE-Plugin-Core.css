@@ -304,12 +304,12 @@ span.markupMenuItem {
 	margin-left: 5px;
 	top: -4px;
 	position: relative;
-	user-select: none;
 	vertical-align: top;
 }
 
 .defaultMarkupFrame .long-op-progress-container .long-progress-close {
 	color: grey;
+	user-select: none;
 }
 
 /*
