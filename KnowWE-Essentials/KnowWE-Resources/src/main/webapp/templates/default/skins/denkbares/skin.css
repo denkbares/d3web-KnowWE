@@ -2501,7 +2501,7 @@ li.findpages .btn {
 	left: 20px;
 	position: fixed;
 	color: white;
-	background-color: var(--bg-color-secondary-transparent);
+	background-color: var(--bg-color-secondary);
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
@@ -2536,7 +2536,7 @@ li.findpages .btn {
 }
 
 #findSuggestionMenu .hover {
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: var(--hover-bg-color-li);
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
@@ -2768,35 +2768,41 @@ button {
 	border-color: var(--bg-color-green);
 }
 
-.btn-success:hover {
+.btn.btn-success:hover, .btn-success:hover {
 	background-color: var(--bg-color-green-dark);
 	border-color: var(--bg-color-green-dark);
+	color: var(--text-color-primary-inverted);
 }
 
-.btn-success:active, .btn-success.active, .open > .dropdown-toggle.btn-success {
+.btn.btn-success:active, .btn-success:active, .btn.btn-success.active, .btn-success.active, .open > .dropdown-toggle.btn-success {
 	background-color: var(--bg-color-green-dark);
 	border-color: var(--bg-color-green-dark);
+	color: var(--text-color-primary-inverted);
 }
 
 .btn-danger {
 	background-color: var(--bg-color-red); /*#d9534f;*/
 }
 
-.btn-danger:focus, .btn-danger.focus {
+.btn.btn-danger:focus, .btn-danger:focus, .btn.btn-danger.focus, .btn-danger.focus {
 	background-color: var(--bg-color-red-dark); /*#c9302c;*/
-	border-color: #761c19
+	border-color: #761c19;
+	color: var(--text-color-primary-inverted);
 }
 
-.btn-danger:hover {
+.btn.btn-danger:hover, .btn-danger:hover {
 	background-color: var(--bg-color-red-dark); /*#c9302c;*/
+	color: var(--text-color-primary-inverted);
 }
 
-.btn-danger:active, .btn-danger.active, .open > .dropdown-toggle.btn-danger {
+.btn-danger:active, .btn.btn-danger:active, .btn-danger.active, .btn.btn-danger.active, .open > .dropdown-toggle.btn-danger {
 	background-color: var(--bg-color-red-dark); /* #c9302c;*/
+	color: var(--text-color-primary-inverted);
 }
 
-.btn-danger:active:hover, .btn-danger.active:hover, .open > .dropdown-toggle.btn-danger:hover, .btn-danger:active:focus, .btn-danger.active:focus, .open > .dropdown-toggle.btn-danger:focus, .btn-danger:active.focus, .btn-danger.active.focus, .open > .dropdown-toggle.btn-danger.focus {
+.btn-danger:active:hover, .btn.btn-danger:active:hover, .btn-danger.active:hover, .btn.btn-danger.active:hover, .open > .dropdown-toggle.btn-danger:hover, .btn-danger:active:focus, .btn-danger.active:focus, .open > .dropdown-toggle.btn-danger:focus, .btn-danger:active.focus, .btn-danger.active.focus, .open > .dropdown-toggle.btn-danger.focus {
 	background-color: var(--bg-color-red-dark); /*#ac2925;*/
+	color: var(--text-color-primary-inverted);
 }
 
 
@@ -2960,7 +2966,7 @@ a.user-asserted li .icon-user:hover, a.user-asserted li .icon-user:focus {
 }
 
 .user-anonymous li .icon-user {
-	color: var(--color-red-light);
+	color: var(--bg-color-red);
 }
 
 a.user-anonymous li .icon-user:hover, a.user-anonymous li .icon-user:focus {
@@ -3061,7 +3067,7 @@ legend {
 .alert-danger {
 	background-color: var(--bg-color-red-light);
 	border-color: var(--color-red);
-	color: var(--color-red-light);
+	color: var(--color-red);
 }
 
 .alert-danger .close {

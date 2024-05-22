@@ -115,7 +115,7 @@
 }
 
 .defaultMarkupFrame .headerToolbar {
-	background-color: var(--bg-color-base);
+	background-color: var(--bg-color-secondary-shade);
 	left: 1px;
 }
 
