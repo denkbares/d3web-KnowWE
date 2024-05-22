@@ -83,6 +83,7 @@ public class SparqlDownloadAction extends AbstractAction {
 			return;
 		}
 		Map<String, Set<Pattern>> filter = PaginationRenderer.getFilter(rootSection, context);
+		Set<String> hiddenColumns = PaginationRenderer.getHiddenColumns(rootSection, context);
 		Section<SparqlMarkupType> markupSection = Sections.ancestor(querySection, SparqlMarkupType.class);
 		if (markupSection == null) {
 			context.sendError(404, "Markup section not found, please reload page.");
@@ -96,7 +97,7 @@ public class SparqlDownloadAction extends AbstractAction {
 			Rdf2GoCore core = compilers.iterator().next().getRdf2GoCore();
 			String sparql = Rdf2GoUtils.createSparqlString(core, querySection.getText());
 			CachedTupleQueryResult resultSet = core.sparqlSelect(sparql);
-			File file = getExcelOutputFile(context, filter, opts, core, resultSet);
+			File file = getExcelOutputFile(context, filter, hiddenColumns, opts, core, resultSet);
 			//no download - 1. request (post)
 			if (!Boolean.parseBoolean(context.getParameter("download"))) {
 				prepareDownload(context, file);
@@ -110,16 +111,16 @@ public class SparqlDownloadAction extends AbstractAction {
 	}
 
 	@NotNull
-	private static File getExcelOutputFile(UserActionContext context, Map<String, Set<Pattern>> filter, RenderOptions opts, Rdf2GoCore core, CachedTupleQueryResult resultSet) throws IOException {
+	private static File getExcelOutputFile(UserActionContext context, Map<String, Set<Pattern>> filter, Set<String> hiddenColumns, RenderOptions opts, Rdf2GoCore core, CachedTupleQueryResult resultSet) throws IOException {
 		File file = new File(Files.getSystemTempDir(), UUID.randomUUID() + ".xlsx");
 		file.deleteOnExit();
 		try (OutputStream outputStream = new FileOutputStream(file)) {
 			try (XSSFWorkbook workbook = new XSSFWorkbook()) {
 				if (Boolean.parseBoolean(context.getParameter("filtered"))) {
-					addSparqlResultAsSheet(workbook, resultSet, context, opts, filter);
+					addSparqlResultAsSheet(workbook, resultSet, context, opts, filter, hiddenColumns);
 				}
 				else {
-					addSparqlResultAsSheet(workbook, resultSet, context, opts, Collections.emptyMap());
+					addSparqlResultAsSheet(workbook, resultSet, context, opts, Collections.emptyMap(), Collections.emptySet());
 				}
 				workbook.write(outputStream);
 			}
@@ -159,7 +160,7 @@ public class SparqlDownloadAction extends AbstractAction {
 		}
 	}
 
-	protected static void addSparqlResultAsSheet(XSSFWorkbook wb, CachedTupleQueryResult qrt, UserContext user, RenderOptions opts, Map<String, Set<Pattern>> filter) {
+	protected static void addSparqlResultAsSheet(XSSFWorkbook wb, CachedTupleQueryResult qrt, UserContext user, RenderOptions opts, Map<String, Set<Pattern>> filter, Set<String> hiddenColumns) {
 
 		XSSFSheet sheet = wb.createSheet("Result");
 
@@ -177,6 +178,7 @@ public class SparqlDownloadAction extends AbstractAction {
 
 		IndexedResultTableModel tableRows = IndexedResultTableModel.create(qrt);
 		ResultTableModel filteredTable = tableRows.filter(filter);
+		filteredTable = filteredTable.hideColumns(hiddenColumns);
 		Iterator<TableRow> iterator = filteredTable.iterator();
 		int rowNum = 1;
 		while (iterator.hasNext()) {

@@ -35,8 +35,8 @@ KNOWWE.core.plugin.pagination = function() {
   const filterTextsProperty = "filter-texts";
   const paginationClickEvent = "click.pagination-filter";
 
-  const getColumnName = $th => {
-    return $th.attr(columnNameAttribute) || $th.text();
+  const getColumnName = $el => {
+    return $el.attr(columnNameAttribute) || $el.text();
   };
 
   function setPaginationStateAndUpdateNode(cookie, id) {
@@ -45,7 +45,7 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function updateNode(id) {
-    jq$("#" + id).rerender({reason: "pagination"});
+    jq$("#" + id).filter(".allow-update").rerender({reason: "pagination", callback: () => allowUpdate(id)});
   }
 
   function getSortingSymbol(naturalOrder, index) {
@@ -90,7 +90,7 @@ KNOWWE.core.plugin.pagination = function() {
     return false;
   }
 
-  function renderIcons($table, sectionId, sortingMode, filteringActive) {
+  function renderIcons($table, $columnFilterButton, sectionId, sortingMode, filteringActive) {
     const paginationState = getPaginationState(sectionId);
 
     $table.find("th").each(function() {
@@ -117,6 +117,9 @@ KNOWWE.core.plugin.pagination = function() {
         const $th = jq$(this);
         $th.prepend(getFilterSymbol(isEmpty(columns[getColumnName($th)])));
       });
+
+      let empty = Object.entries(columns).filter(v => v[1].hidden).length === 0;
+      $columnFilterButton.prepend(getFilterSymbol(empty));
     }
   }
 
@@ -136,6 +139,40 @@ KNOWWE.core.plugin.pagination = function() {
     return paginationState.filter;
   }
 
+  function initTooltipster($element, generateTooltip, initTooltip, sectionId) {
+    // noinspection JSUnusedGlobalSymbols
+    $element.tooltipster({
+      interactive: true,
+      updateAnimation: false,
+      trigger: "custom",
+      theme: "tooltipster-knowwe pagination-filter-tooltipster",
+      content: "Loading...",
+      functionBefore: generateTooltip,
+      functionReady: initTooltip,
+      functionAfter: () => updateNode(sectionId)
+    });
+  }
+
+  function getColumnFilterState(filterState, columnName) {
+    if (!filterState.columns[columnName]) {
+      filterState.columns[columnName] = {
+        selectAll: true,
+        customTexts: [],
+        selectedCustomTexts: [],
+        selectedTexts: [],
+        hidden: false
+      };
+    }
+    return filterState.columns[columnName];
+  }
+
+  function closeFilter() {
+    let $openFilters = jq$(".pagination-column-filter.showing-tooltip, .sparqltable .filter-icon.showing-tooltip");
+    if ($openFilters.exists()) {
+      $openFilters.removeClass("showing-tooltip").tooltipster("hide");
+    }
+  }
+
   function enableFiltering($thElement, sectionId) {
 
     let filterProviderAction = $thElement.attr(filterProviderActionAttribute);
@@ -147,15 +184,7 @@ KNOWWE.core.plugin.pagination = function() {
     if (!filterState.columns) filterState.columns = {};
 
     const columnName = getColumnName($thElement);
-    if (!filterState.columns[columnName]) {
-      filterState.columns[columnName] = {
-        selectAll: true,
-        customTexts: [],
-        selectedCustomTexts: [],
-        selectedTexts: []
-      };
-    }
-    const columnState = filterState.columns[columnName];
+    const columnState = getColumnFilterState(filterState, columnName);
     $thElement.data(initialState, JSON.parse(JSON.stringify(columnState)));
     let filterTextsJson = {}; // will be initialized in ajaxFilterTexts
     let latestFilterTextQuery = ""; // will be initialized in ajaxFilterTexts
@@ -163,8 +192,9 @@ KNOWWE.core.plugin.pagination = function() {
 
     const saveAndCloseFilter = $filterIcon => {
       jq$(document).off(paginationClickEvent); // in case we close via buttons
+      allowUpdate(sectionId);
       if (isValidState()) {
-        $filterIcon.tooltipster("hide");
+        closeFilter();
       } else {
         cancelFilter($filterIcon);
       }
@@ -192,7 +222,7 @@ KNOWWE.core.plugin.pagination = function() {
       const $thElement = $filterIcon.parents("th");
       filterState.columns[getColumnName($thElement)] = $thElement.data(initialState);
       setPaginationState(sectionId, paginationState);
-      $filterIcon.tooltipster("hide");
+      closeFilter();
     };
 
     // function to generate the tooltip content on demand
@@ -206,7 +236,7 @@ KNOWWE.core.plugin.pagination = function() {
       $thElement.removeAttr(filterProviderActionAttribute); // prevent second additional ajax calls
 
       ajaxFilterTexts("", () => {
-        origin.tooltipster("content", getTooltipContent()).tooltipster("reposition");
+        origin.tooltipster("content", getTooltipContent(getFilterList)).tooltipster("reposition");
         continueTooltip();
       });
 
@@ -280,26 +310,8 @@ KNOWWE.core.plugin.pagination = function() {
     // open/close filter dialog/tooltip
     const $filterIcon = $thElement.find(".filter-icon");
     if (!$filterIcon.hasClass("tooltipstered")) {
-      $filterIcon.tooltipster({
-        interactive: true,
-        updateAnimation: false,
-        trigger: "custom",
-        theme: "tooltipster-knowwe pagination-filter-tooltipster",
-        content: "Loading...",
-        functionBefore: generateTooltip,
-        functionReady: initTooltip,
-        functionAfter: () => updateNode(sectionId)
-      });
+      initTooltipster($filterIcon, generateTooltip, initTooltip, sectionId);
       $filterIcon.click(function(event) {
-        // hide other open filter tooltips
-        $filterIcon.parents("tr").first().find(".filter-icon")
-          .filter(".tooltipstered")
-          .filter((i, e) => e !== $filterIcon[0])
-          .each(function() {
-            cancelFilter(jq$(this));
-          });
-        // open filter tooltip
-        $filterIcon.tooltipster("show");
         // prevent closing it again immediately
         event.stopPropagation();
         // close tooltip when clicking outside of it
@@ -307,6 +319,15 @@ KNOWWE.core.plugin.pagination = function() {
         jq$(document).on(paginationClickEvent, function() {
           cancelFilter($filterIcon);
         });
+
+        // hide other open filter tooltips
+        preventUpdate(sectionId);
+        closeFilter();
+
+        // open filter tooltip
+        let $button = jq$(event.target);
+        $button.tooltipster("show");
+        $button.addClass("showing-tooltip");
       });
     }
     $filterIcon.addClass("tooltipstered");
@@ -336,18 +357,6 @@ KNOWWE.core.plugin.pagination = function() {
     const updateFilterList = $tooltip => {
       $tooltip.find(".pagination-filter-list").replaceWith(getFilterList());
       initFilterList($tooltip);
-    };
-
-    // generate html for tooltip content
-    const getTooltipContent = () => {
-      return jq$("<div class='filter-parent'><label for='filter-input'>Filter:</label><input id='filter-input'>" +
-        "<div class='filter-input-indicator-parent'><i class='filter-input-indicator fa-solid fa-spinner fa-spin-pulse'/></div>\n" +
-        "<div class='toggle-box-parent'><input class='toggle-box' id='toggle-checkbox' type='checkbox'><label for='toggle-checkbox'>All</label></div>" +
-        getFilterList() +
-        "<div class='close-buttons'>" +
-        "<button class='ok-button'>Ok</button>" +
-        "<button class='cancel-button'>Cancel</button>" +
-        "</div></div>");
     };
 
     // init events for "Filter: ..." text input
@@ -448,9 +457,18 @@ KNOWWE.core.plugin.pagination = function() {
     }
   }
 
+  function allowUpdate(sectionId) {
+    jq$("#" + sectionId).addClass("allow-update");
+  }
+
+  function preventUpdate(sectionId) {
+    jq$("#" + sectionId).removeClass("allow-update");
+  }
+
   function decoratePagination($paginationWrapper, rerenderIfFilterActive) {
 
     const sectionId = $paginationWrapper.attr("id");
+    allowUpdate(sectionId);
 
     const $table = $paginationWrapper.find("table");
     if (!$table.exists()) {
@@ -507,8 +525,10 @@ KNOWWE.core.plugin.pagination = function() {
       clearFilter.prop("disabled", !anyActiveFilter(filterState));
     }
 
+    const $columnFilterButton = $paginationWrapper.find(".pagination-column-filter");
+
     // render sorting symbol
-    renderIcons($table, sectionId, sortingMode, filteringActive);
+    renderIcons($table, $columnFilterButton, sectionId, sortingMode, filteringActive);
 
 
     $table.find("th").each(function() {
@@ -523,6 +543,8 @@ KNOWWE.core.plugin.pagination = function() {
         }
       }
     );
+
+    initColumnFiltering($columnFilterButton, $table, sectionId);
 
     handlePaginationBelowTableVisibility($paginationWrapper);
 
@@ -542,6 +564,177 @@ KNOWWE.core.plugin.pagination = function() {
 
     }
   }
+
+  function initColumnFiltering($columnFilterButton, $table, sectionId) {
+
+    const paginationState = getPaginationState(sectionId);
+    const filterState = getPaginationFilterState(paginationState);
+    if (!filterState.columns) filterState.columns = {};
+    let latestFilterTextQuery = "";
+
+    $columnFilterButton.data(initialState, JSON.parse(JSON.stringify(filterState)));
+
+    const columns = $table.parents(".sparqlTable").find("table").first().data("columns");
+
+    const getColumnFilterList = () => {
+      return "<ul class='pagination-filter-list'>\n" +
+        columns.map((column, i) => {
+          let id = "filter" + i;
+          let columnName = column[0];
+          let columnFilterState = getColumnFilterState(filterState, columnName);
+          let columnLabel = column[1];
+          return "<li class='column' " + columnNameAttribute + "='" + columnName + "'>" +
+            "<input type='checkbox' id='" + id + "' name='" + id + "' " + (columnFilterState.hidden ? "" : "checked") + ">" +
+            "<label for='" + id + "'>" + columnLabel + "</label>" +
+            "</li>\n";
+        }).join("") +
+        "</ul>";
+    };
+
+    let generateTooltip = (origin, continueTooltip) => {
+      origin.tooltipster("content", getTooltipContent(getColumnFilterList)).tooltipster("reposition");
+      continueTooltip();
+    };
+
+    const initFilterInput = ($tooltip) => {
+      $tooltip.find("#filter-input").keyup(function(event) {
+        if (event.originalEvent.code === "Enter") {
+          saveAndCloseFilter($columnFilterButton, $tooltip);
+        } else {
+          const filterText = jq$(this).val();
+          setPaginationState(sectionId, paginationState);
+          $tooltip.find("li.column").forEach((li) => {
+            let $li = jq$(li);
+            if (getColumnName($li).contains(filterText)) {
+              $li.addClass("hidden");
+            } else {
+              $li.removeClass("hidden");
+            }
+          });
+        }
+      });
+    };
+
+    const initTooltip = (origin, tooltip) => {
+      $tooltip = jq$(tooltip); // init tooltip variable in closure
+      initFilterInput($tooltip);
+      initFilterList($tooltip);
+      initButtons($tooltip);
+      $tooltip.on("click", function(event) {
+        event.stopPropagation(); // don't allow click to bubble up to document, closing tooltip again
+      });
+      $tooltip.on("keyup", function(event) {
+        if (event.originalEvent.code === "Enter") {
+          $tooltip.find(".ok-button").click();
+        } else if (event.originalEvent.code === "Escape") {
+          $tooltip.find(".cancel-button").click();
+        }
+      });
+    };
+
+    initTooltipster($columnFilterButton, generateTooltip, initTooltip, sectionId);
+    $columnFilterButton.click(function(event) {
+      // prevent closing it again immediately
+      event.stopPropagation();
+      // close tooltip when clicking outside of it
+      jq$(document).off(paginationClickEvent); // just to be sure
+      jq$(document).on(paginationClickEvent, function() {
+        cancelFilter($button);
+      });
+      // hide other open filter tooltips
+      preventUpdate(sectionId);
+      closeFilter();
+      // open filter tooltip
+      let $button = jq$(event.target).closest(".pagination-column-filter");
+      $button.tooltipster("show");
+      $button.addClass("showing-tooltip");
+    });
+
+    // init events for filter check boxes
+    const initFilterList = function($tooltip) {
+      $tooltip.find("li input").change(function() {
+        const $checkBox = jq$(this);
+        let columnFilterState = getColumnFilterState(filterState, getColumnName($checkBox.parents("li")));
+        columnFilterState.hidden = !this.checked;
+        updateButtonState($tooltip);
+        setPaginationState(sectionId, paginationState);
+      });
+    };
+
+    // init buttons
+    const initButtons = $tooltip => {
+      updateButtonState($tooltip);
+      $tooltip.find(".toggle-box").click(function() {
+        let checkBoxes = $tooltip.find(".pagination-filter-list input");
+        let checked = this.checked;
+        checkBoxes.prop("checked", checked);
+        Object.values(filterState.columns).forEach(c => c.hidden = !checked);
+        updateButtonState($tooltip);
+        setPaginationState(sectionId, paginationState);
+      });
+      $tooltip.find(".ok-button").click(function() {
+        saveAndCloseFilter($columnFilterButton);
+      });
+      $tooltip.find(".cancel-button").click(function() {
+        cancelFilter($columnFilterButton);
+      });
+    };
+
+    const cancelFilter = $columnFilterButton => {
+      jq$(document).off(paginationClickEvent); // in case we close via buttons
+      paginationState.filter = $columnFilterButton.data(initialState);
+      setPaginationState(sectionId, paginationState);
+      closeFilter();
+    };
+
+    // update the state of buttons
+    const updateButtonState = $tooltip => {
+      const $toggleBox = $tooltip.find(".toggle-box");
+      let columnFilterStates = Object.entries(filterState.columns);
+      if (columnFilterStates.filter(e => e[1].hidden).length > 0 && columnFilterStates.filter(e => !e[1].hidden).length > 0) {
+        $toggleBox.prop("indeterminate", true);
+      } else {
+        $toggleBox.prop("indeterminate", false);
+        $toggleBox.prop("checked", !columnFilterStates[0][1].hidden);
+      }
+
+    };
+
+    const saveAndCloseFilter = $tooltip => {
+      jq$(document).off(paginationClickEvent); // in case we close via buttons
+      $columnFilterButton.tooltipster("hide");
+
+      if ($tooltip && latestFilterTextQuery.length > 0) {
+        const checked = $tooltip.find(".pagination-filter-list input:checked");
+        if (checked.exists()) {
+          checked.each(function() {
+            getFilterTexts(jq$(this)).forEach(text => {
+              columnState.selectedTexts.push(text);
+            });
+          });
+          setPaginationState(sectionId, paginationState);
+        }
+      }
+      KNOWWE.helper.observer.notify("filterChanged", {
+        filteringActive: anyActiveFilter(filterState),
+        sectionId: sectionId
+      });
+    };
+
+
+  }
+
+  // generate html for tooltip content
+  function getTooltipContent(getFilterList) {
+    return jq$("<div class='filter-parent'><label for='filter-input'>Filter:</label><input id='filter-input'>" +
+      "<div class='filter-input-indicator-parent'><i class='filter-input-indicator fa-solid fa-spinner fa-spin-pulse'/></div>\n" +
+      "<div class='toggle-box-parent'><input class='toggle-box' id='toggle-checkbox' type='checkbox'><label for='toggle-checkbox'>All</label></div>" +
+      getFilterList() +
+      "<div class='close-buttons'>" +
+      "<button class='ok-button'>Ok</button>" +
+      "<button class='cancel-button'>Cancel</button>" +
+      "</div></div>");
+  };
 
   return {
 

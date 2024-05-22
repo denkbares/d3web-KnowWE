@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,8 +34,12 @@ import com.denkbares.semanticcore.utils.TableRow;
 import com.denkbares.semanticcore.utils.TableRowComparator;
 import com.denkbares.semanticcore.utils.ValueComparator;
 import com.denkbares.strings.Strings;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.denkbares.utils.Pair;
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.UserActionContext;
@@ -173,8 +178,8 @@ public class SparqlResultRenderer {
 		result.appendHtml("<div class='warning'>");
 		appendMessage(section, e, user, result);
 		result.appendHtml("<br/><a onclick='KNOWWE.plugin.sparql.retry(\"" + section.getID()
-				+ "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
-				+ " class='tooltipster'>Try again...</a></div>");
+						  + "\")' title='Try executing the query again, if you think it was only a temporary problem.'"
+						  + " class='tooltipster'>Try again...</a></div>");
 	}
 
 	private static void appendMessage(Section<? extends SparqlType> section, RuntimeException e, UserContext user, RenderResult result) {
@@ -315,14 +320,17 @@ public class SparqlResultRenderer {
 		String tableID = UUID.randomUUID().toString();
 
 		List<String> variables = qrt.getBindingNames();
+		List<String> variablesFiltered = new ArrayList<>(variables);
+		Set<String> hiddenColumns = PaginationRenderer.getHiddenColumns(section, user);
+		variablesFiltered.removeIf(hiddenColumns::contains);
 
 		// tree table init
 		String childIdVariable = null;
 		String parentIdVariable = null;
 		if (isTree) {
-			if (qrt.getBindingNames().size() > 2) {
-				childIdVariable = qrt.getBindingNames().get(0);
-				parentIdVariable = qrt.getBindingNames().get(1);
+			if (variables.size() > 2) {
+				childIdVariable = variables.get(0);
+				parentIdVariable = variables.get(1);
 			}
 			else {
 				isTree = false;
@@ -337,20 +345,23 @@ public class SparqlResultRenderer {
 		}
 
 		renderResult.appendHtmlTag("div", "style", "overflow-x: auto", "class", "scroll-parent");
-		renderResult.appendHtml("<table id='").append(tableID).appendHtml("'")
-				.append(isTree
-						? " class='sticky-header sparqltable sparqltreetable"
-						: " class='sticky-header sparqltable")
-				.append(opts.getColor() == Color.NONE ? "" : " logLevel")
-				.append("'")
-				.append(getStyleForKey("table", tableStyle))
-				.append(">");
+		JSONArray variablesJson = new JSONArray();
+		for (String variable : variables) {
+			variablesJson.put(new JSONArray(List.of(variable, getColumnDisplayName(variable))));
+		}
+
+		List<String> tableAttributes = new ArrayList<>();
+		tableAttributes.addAll(List.of("id", tableID));
+		tableAttributes.addAll(List.of("class", "sticky-header sparqltable" + (isTree ? " sparqltreetable" : "") + (opts.getColor() == Color.NONE ? "" : " logLevel")));
+		tableAttributes.addAll(List.of("style", getStyleForKey("table", tableStyle)));
+		tableAttributes.addAll(List.of("data-columns", variablesJson.toString()));
+		renderResult.appendHtmlTag("table", tableAttributes.toArray(String[]::new));
 
 		renderResult.appendHtml("<thead>");
 		renderResult.appendHtml(!zebraMode ? "<tr>" : "<tr class='odd'>");
 
 		int column = 0;
-		for (String var : variables) {
+		for (String var : variablesFiltered) {
 			if (isSkipped(isTree, column++, var)) {
 				continue;
 			}
@@ -361,7 +372,7 @@ public class SparqlResultRenderer {
 				attributes.add("hide-filter");
 			}
 			renderResult.appendHtmlTag("th", attributes.toArray(new String[0]));
-			renderResult.append(var.replace("_", " "));
+			renderResult.append(getColumnDisplayName(var));
 			renderResult.appendHtml("</th>");
 		}
 		renderResult.appendHtml("</tr>");
@@ -437,7 +448,7 @@ public class SparqlResultRenderer {
 			renderResult.append(">");
 
 			column = 0;
-			for (String var : variables) {
+			for (String var : variablesFiltered) {
 				if (isSkipped(isTree, column++, var)) {
 					continue;
 				}
@@ -452,7 +463,7 @@ public class SparqlResultRenderer {
 				}
 				else {
 					renderResult.appendHtml("<td " + getStyleForKey(var, allColumnStyles).substring(0, getStyleForKey(var, allColumnStyles)
-							.length() - 1) + "; overflow-wrap: break-word'" + ">");
+																											   .length() - 1) + "; overflow-wrap: break-word'" + ">");
 				}
 
 				renderNode(row, var, user, opts, renderResult);
@@ -468,6 +479,11 @@ public class SparqlResultRenderer {
 		}
 		renderResult.appendHtml("</div>");
 		return new SparqlRenderResult(renderResult.toStringRaw());
+	}
+
+	@NotNull
+	private static String getColumnDisplayName(String var) {
+		return var.replace("_", " ");
 	}
 
 	private Comparator<Value> createValueComparator(RenderOptions opts, String column, boolean ascending) {
@@ -546,7 +562,6 @@ public class SparqlResultRenderer {
 						if (isSkipped(isTree, column++, var)) {
 							continue;
 						}
-
 						result.appendHtml("<td>");
 						renderNode(child, var, user, opts, result);
 						result.appendHtml("</td>\n");
@@ -604,7 +619,7 @@ public class SparqlResultRenderer {
 			String linkUrl = Strings.trim(matcher.group(2));
 			String linkLabel = matcher.group(1) == null ? linkUrl : Strings.trim(matcher.group(1));
 			boolean pageExists = user.getArticleManager() != null
-					&& user.getArticleManager().getArticle(matcher.group(2)) != null;
+								 && user.getArticleManager().getArticle(matcher.group(2)) != null;
 			boolean internal = matcher.group(3) == null;
 			if (internal && pageExists) {
 				linkUrl = KnowWEUtils.getURLLink(linkUrl);
@@ -633,8 +648,8 @@ public class SparqlResultRenderer {
 	@NotNull
 	private String generateReplacement(String erg, Matcher matcher, String linkLabel, String linkUrl) {
 		return erg.substring(0, matcher.start()) +
-				"<a class='external' href='" + linkUrl + "'>" + linkLabel + "</a>" +
-				erg.substring(matcher.end());
+			   "<a class='external' href='" + linkUrl + "'>" + linkLabel + "</a>" +
+			   erg.substring(matcher.end());
 	}
 
 	public String renderNode(Value node, String var, boolean rawOutput, UserContext user, Rdf2GoCore core, RenderOptions.RenderMode mode) {
@@ -696,12 +711,11 @@ public class SparqlResultRenderer {
 
 		List<RenderOptions.StyleOption> columnStyles = styles.stream()
 				.filter(a -> Strings.equalsIgnoreCase(a.getColumnName(), key))
-				.collect(Collectors.toList());
+				.toList();
 		if (columnStyles.isEmpty()) {
 			return "";
 		}
 		StringBuilder styleHtmlBuffer = new StringBuilder();
-		styleHtmlBuffer.append(" style='");
 		for (Iterator<RenderOptions.StyleOption> iterator = columnStyles.iterator(); iterator.hasNext(); ) {
 			RenderOptions.StyleOption styleOption = iterator.next();
 			styleHtmlBuffer.append(styleOption.getStyleKey());
@@ -711,7 +725,6 @@ public class SparqlResultRenderer {
 				styleHtmlBuffer.append("; ");
 			}
 		}
-		styleHtmlBuffer.append("'");
 		return styleHtmlBuffer.toString();
 	}
 
@@ -730,7 +743,7 @@ public class SparqlResultRenderer {
 			if (isSkipped(opts.isTree(), column++, var)) {
 				continue;
 			}
-			renderResult.appendHtml("<col" + getStyleForKey(var, styleOptions) + ">");
+			renderResult.appendHtml("<col style='" + getStyleForKey(var, styleOptions) + "'>");
 		}
 		return renderResult;
 	}

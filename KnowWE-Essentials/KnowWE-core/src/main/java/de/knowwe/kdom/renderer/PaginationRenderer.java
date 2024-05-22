@@ -147,6 +147,29 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	@NotNull
+	public static Set<String> getHiddenColumns(Section<?> section, UserContext user) {
+		Set<String> hiddenColumns = new HashSet<>();
+		JSONObject paginationSettings = getPaginationSettings(user);
+		if (paginationSettings == null) { // fallback, try section
+			paginationSettings = getPaginationSettings(section);
+		}
+		if (paginationSettings == null) return hiddenColumns;
+		JSONObject filter = paginationSettings.optJSONObject(FILTER);
+		if (filter == null) return hiddenColumns;
+		if (!filter.optBoolean(ACTIVE, false)) return hiddenColumns;
+		JSONObject columns = filter.optJSONObject(COLUMNS);
+		if (columns == null) return hiddenColumns;
+		for (String columnKey : columns.keySet()) {
+			JSONObject columnObject = columns.optJSONObject(columnKey);
+			if (columnObject == null) continue;
+			if (columnObject.optBoolean("hidden", false)) {
+				hiddenColumns.add(columnKey);
+			}
+		}
+		return hiddenColumns;
+	}
+
+	@NotNull
 	public static Map<String, Set<Pattern>> getFilter(Section<?> section, UserContext user) {
 		HashMap<String, Set<Pattern>> filterMap = new HashMap<>();
 
@@ -275,6 +298,7 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	}
 
 	protected void renderFilterTools(Section<?> section, UserContext user, RenderResult result) {
+		result.appendHtmlElement("button", "Columns", "class", "pagination-column-filter");
 		result.appendHtmlElement("button", "Clear Filter", "class", "clear-filter");
 	}
 
@@ -301,10 +325,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 				result.appendHtml("<option "
-						+ (setSelected ? "selected='selected' " : "")
-						+ "value='" + size + "'>"
-						+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-						+ "</option>");
+								  + (setSelected ? "selected='selected' " : "")
+								  + "value='" + size + "'>"
+								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+								  + "</option>");
 			}
 			result.appendHtml("</select>");
 			result.appendHtml(getResultSizeTag(sec, user));
