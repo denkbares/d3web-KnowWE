@@ -167,6 +167,7 @@
 	--bg-color-table-odd-th: var(--bg-color-secondary-shade);
 	--table-row-mulit-selected: #DDF;
 	--table-row-selected: var(--bg-color-secondary-shade);
+	--border-color-table: var(--color-grey-light);
 
 	/*-------- tools --------*/
 	--color-pagination-tools: #808080;
@@ -328,6 +329,7 @@
 	--border-color-edit-blue: rgba(154, 203, 251, 0.05);
 	--border-color-infobox-blue: #38585d;
 	--border-color-infobox-red: #8d6d6d;
+	--border-color-table: var(--color-grey);
 
 	/*-------- tables --------*/
 	--bg-color-table-th-highlighted: #53585b;
@@ -435,7 +437,6 @@
 	/*-------- borders --------*/
 	--border-color-none: var(--bg-color-primary);
 	--border-color-input: var(--color-grey);
-	--border-color-table: var(--color-grey);
 	--border-color-form-forcus: var(--color-grey);
 	--border-color-strong: var(--text-color-primary);
 
