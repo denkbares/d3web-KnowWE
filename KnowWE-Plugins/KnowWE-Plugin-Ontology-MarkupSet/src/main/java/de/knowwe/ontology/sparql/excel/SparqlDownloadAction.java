@@ -164,10 +164,14 @@ public class SparqlDownloadAction extends AbstractAction {
 
 		XSSFSheet sheet = wb.createSheet("Result");
 
-		List<String> variables = qrt.getBindingNames();
 		XSSFCellStyle headerStyle = getHeaderStyle(wb);
 		XSSFCellStyle cellStyle = getResultCellStyle(wb);
 
+		IndexedResultTableModel tableRows = IndexedResultTableModel.create(qrt);
+		ResultTableModel filteredTable = tableRows.filter(filter);
+		filteredTable = filteredTable.hideColumns(hiddenColumns);
+
+		List<String> variables = filteredTable.getVariables();
 		// create header
 		XSSFRow headerRow = sheet.createRow(0);
 		for (int i = 0; i < variables.size(); i++) {
@@ -175,10 +179,6 @@ public class SparqlDownloadAction extends AbstractAction {
 			cell.setCellValue(variables.get(i).replace("_", " "));
 			cell.setCellStyle(headerStyle);
 		}
-
-		IndexedResultTableModel tableRows = IndexedResultTableModel.create(qrt);
-		ResultTableModel filteredTable = tableRows.filter(filter);
-		filteredTable = filteredTable.hideColumns(hiddenColumns);
 		Iterator<TableRow> iterator = filteredTable.iterator();
 		int rowNum = 1;
 		while (iterator.hasNext()) {
