@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+	<symbol id="table_insert_col_before">
+		<line stroke="var(--table-icon-stroke)" stroke-width="4" class="table" x1="103.003" y1="55" x2="103.003" y2="124" />
+		<line stroke="var(--table-icon-stroke)" stroke-width="4" x1="57" y1="88.5" x2="149.005" y2="88.5"/>
+		<path stroke="var(--table-icon-stroke)" d="M59.0027 53H137.003C142.526 53 147.003 57.4772 147.003 63V112C147.003 117.523 142.526 122 137.003 122H59.0027V53Z"  stroke-width="4" stroke-linejoin="round"/>
+		<path fill="var(--table-icon-insert)" stroke="var(--table-icon-insert-accent)" d="M16.1115 3.18572L16.9505 2.5H48.0495L48.8885 3.18572L49.5 3.6855V66.3145L48.8885 66.8143L48.0495 67.5H16.9505L16.1115 66.8143L15.5 66.3145V3.6855L16.1115 3.18572Z" stroke-width="5"/>
+		<path fill="var(--table-icon-insert-accent)" stroke="var(--table-icon-insert-accent)" stroke-width="4" d="M47.9875 102.153C47.0287 101.275 45.48 101.275 44.5212 102.153L34.9583 110.882V76.75C34.9583 75.5125 33.8521 74.5 32.5 74.5C31.1479 74.5 30.0417 75.5125 30.0417 76.75V110.905L20.5033 102.175C19.5446 101.297 17.9958 101.297 17.0371 102.175C16.0783 103.052 16.0783 104.47 17.0371 105.347L30.7792 117.925C31.7379 118.802 33.2867 118.802 34.2454 117.925L47.9875 105.347C48.9217 104.47 48.9217 103.03 47.9875 102.153Z" />
+	</symbol>
+	<symbol id="table_insert_col_after">
+		<line stroke="var(--table-icon-stroke)" y1="-2" x2="69" y2="-2" transform="matrix(0 1 1 0 48.0027 55)"  stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" y1="-2" x2="92.0054" y2="-2" transform="matrix(-1 0 0 1 92.0054 90.5)" stroke-width="4"/>
+		<path stroke="var(--table-icon-stroke)" d="M90.0027 53H12.0027C6.47984 53 2.00268 57.4772 2.00268 63V112C2.00268 117.523 6.47984 122 12.0027 122H90.0027V53Z" stroke-width="4" stroke-linejoin="round"/>
+		<path fill="var(--table-icon-insert)" stroke="var(--table-icon-insert-accent)" d="M100.956 67.5H132.055L132.894 66.8143L133.505 66.3145V3.6855L132.894 3.18572L132.055 2.5H100.956L100.117 3.18572L99.5054 3.6855V66.3145L100.117 66.8143L100.956 67.5Z"  stroke-width="5"/>
+		<path fill="var(--table-icon-insert-accent)" stroke="var(--table-icon-insert-accent)" stroke-width="4" d="M101.018 102.153C101.977 101.275 103.525 101.275 104.484 102.153L114.047 110.882V76.75C114.047 75.5125 115.153 74.5 116.505 74.5C117.857 74.5 118.964 75.5125 118.964 76.75V110.905L128.502 102.175C129.461 101.297 131.01 101.297 131.968 102.175C132.927 103.052 132.927 104.47 131.968 105.348L118.226 117.925C117.267 118.802 115.719 118.802 114.76 117.925L101.018 105.348C100.084 104.47 100.084 103.03 101.018 102.153Z" />
+	</symbol>
+
+	<symbol id="table_insert_row_before">
+		<line stroke="var(--table-icon-stroke)" x1="46.0027" y1="57" x2="46.0027" y2="126" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" y1="90.5" x2="92.0054" y2="90.5" stroke-width="4"/>
+		<path stroke="var(--table-icon-stroke)" d="M2.00269 55H90.0027V114C90.0027 119.523 85.5255 124 80.0027 124H12.0027C6.47984 124 2.00269 119.523 2.00269 114V55Z" stroke-width="4" stroke-linejoin="round"/>
+		<path fill="var(--table-icon-insert)" stroke="var(--table-icon-insert-accent)" d="M56.5043 45.0493L56.5013 13.9503L57.187 13.1112L57.6867 12.4997L120.316 12.4938L120.816 13.1052L121.501 13.9441L121.504 45.0432L120.819 45.8822L120.319 46.4938L57.6899 46.4997L57.1901 45.8882L56.5043 45.0493Z" stroke-width="5"/>
+		<path fill="var(--table-icon-insert-accent)" stroke="var(--table-icon-insert-accent)" stroke-width="4" d="M21.8517 44.9905C22.7292 44.0317 22.729 42.4829 21.8514 41.5243L13.1205 31.9622L47.253 31.959C48.4905 31.9589 49.5029 30.8525 49.5028 29.5004C49.5027 28.1483 48.4901 27.0422 47.2526 27.0423L13.0976 27.0455L21.8267 17.5064C22.7041 16.5475 22.7039 14.9988 21.8263 14.0401C20.9487 13.0814 19.5312 13.0816 18.6538 14.0404L6.07762 27.7837C5.20021 28.7425 5.20036 30.2913 6.07795 31.2499L18.6567 44.9908C19.5343 45.9249 20.9743 45.9248 21.8517 44.9905Z"/>
+
+	</symbol>
+
+	<symbol id="table_insert_row_after">
+		<line stroke="var(--table-icon-stroke)" y1="-2" x2="69" y2="-2" transform="matrix(0 -1 -1 0 44.0027 69)" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" y1="-2" x2="92.0054" y2="-2" transform="matrix(1 0 0 -1 0 33.5)" stroke-width="4"/>
+		<path stroke="var(--table-icon-stroke)" d="M2.00269 71H90.0027V12C90.0027 6.47715 85.5255 2 80.0027 2H12.0027C6.47984 2 2.00269 6.47715 2.00269 12V71Z" stroke-width="4" stroke-linejoin="round"/>
+		<path fill="var(--table-icon-insert)" stroke="var(--table-icon-insert-accent)" d="M56.5043 80.9507L56.5013 112.05L57.187 112.889L57.6867 113.5L120.316 113.506L120.816 112.895L121.501 112.056L121.504 80.9568L120.819 80.1178L120.319 79.5062L57.6899 79.5003L57.1901 80.1118L56.5043 80.9507Z" stroke-width="5"/>
+		<path fill="var(--table-icon-insert-accent)" stroke="var(--table-icon-insert-accent)" stroke-width="4" d="M21.8517 81.0095C22.7292 81.9683 22.729 83.5171 21.8514 84.4757L13.1205 94.0378L47.253 94.041C48.4905 94.0411 49.5029 95.1475 49.5028 96.4996C49.5027 97.8517 48.4901 98.9578 47.2526 98.9577L13.0976 98.9545L21.8267 108.494C22.7041 109.452 22.7039 111.001 21.8263 111.96C20.9487 112.919 19.5312 112.918 18.6538 111.96L6.07762 98.2163C5.20021 97.2575 5.20036 95.7087 6.07795 94.7501L18.6567 81.0092C19.5343 80.0751 20.9743 80.0752 21.8517 81.0095Z"/>
+	</symbol>
+
+	<symbol id="table_delete_col">
+		<line stroke="var(--table-icon-stroke)" x1="72" y1="4" x2="72" y2="73" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" x1="37" y1="2" x2="37" y2="71" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" x1="73.9924" y1="37.125" x2="107.993" y2="37.0036" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" x1="4" y1="37" x2="35" y2="37" stroke-width="4"/>
+		<path stroke="var(--table-icon-stroke)" d="M2 12C2 6.47715 6.47715 2 12 2H97C102.523 2 107 6.47715 107 12V61C107 66.5228 102.523 71 97 71H12C6.47715 71 2 66.5228 2 61V12Z" stroke-width="4" stroke-linejoin="round"/>
+		<path fill="var(--table-icon-delete)" stroke="var(--table-icon-delete-accent)" d="M70.0495 68.5H38.9505L38.1115 67.8143L37.5 67.3145V4.6855L38.1115 4.18572L38.9505 3.5H70.0495L70.8885 4.18572L71.5 4.6855V67.3145L70.8885 67.8143L70.0495 68.5Z" stroke-width="5"/>
+		<path fill="var(--table-icon-delete-accent)" stroke="var(--table-icon-delete-accent)" stroke-width="4" d="M69.9875 103.153C69.0287 102.275 67.48 102.275 66.5212 103.153L56.9583 111.882V77.75C56.9583 76.5125 55.8521 75.5 54.5 75.5C53.1479 75.5 52.0417 76.5125 52.0417 77.75V111.905L42.5033 103.175C41.5446 102.297 39.9958 102.297 39.0371 103.175C38.0783 104.052 38.0783 105.47 39.0371 106.348L52.7792 118.925C53.7379 119.802 55.2867 119.802 56.2454 118.925L69.9875 106.348C70.9217 105.47 70.9217 104.03 69.9875 103.153Z"/>
+	</symbol>
+
+	<symbol id="table_delete_row">
+		<line stroke="var(--table-icon-stroke)" x1="4" y1="37" x2="73" y2="37.0001" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" x1="2" y1="72" x2="71" y2="72.0001" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" x1="37.125" y1="35.0075" x2="37.0036" y2="1.00713" stroke-width="4"/>
+		<line stroke="var(--table-icon-stroke)" x1="37.0002" y1="105" x2="37.0003" y2="74" stroke-width="4"/>
+		<path stroke="var(--table-icon-stroke)" d="M12 107C6.47715 107 2 102.523 2.00001 97L2.00007 12C2.00008 6.47716 6.47723 2.00001 12.0001 2.00001L61.0001 2.00005C66.5229 2.00005 71.0001 6.47721 71.0001 12.0001L71 97.0001C71 102.523 66.5228 107 61 107L12 107Z" stroke-width="4" stroke-linejoin="round"/>
+		<path fill="var(--table-icon-delete)" stroke="var(--table-icon-delete-accent)" d="M4.18572 70.8885L3.5 70.0495L3.50003 38.9505L4.18575 38.1115L4.68553 37.5L67.3145 37.5001L67.8143 38.1115L68.5 38.9505L68.5 70.0496L67.8143 70.8886L67.3145 71.5L4.6855 71.5L4.18572 70.8885Z" stroke-width="5"/>
+		<path fill="var(--table-icon-delete-accent)" stroke="var(--table-icon-delete-accent)" stroke-width="4" d="M103.153 39.0126C102.275 39.9713 102.275 41.5201 103.153 42.4788L111.883 52.0418L77.75 52.0417C76.5125 52.0417 75.5 53.148 75.5 54.5001C75.5 55.8521 76.5125 56.9584 77.75 56.9584L111.905 56.9584L103.175 66.4968C102.298 67.4555 102.298 69.0043 103.175 69.963C104.053 70.9218 105.47 70.9218 106.348 69.963L118.925 56.2209C119.803 55.2622 119.803 53.7134 118.925 52.7547L106.348 39.0126C105.47 38.0784 104.03 38.0784 103.153 39.0126Z"/>
+	</symbol>
+
+	<symbol id="toggle_header">
+		<line x1="21.0497" y1="13.8451" x2="3.84518" y2="61.1143" stroke="var(--text-color-primary)" stroke-width="6" stroke-linecap="round"/>
+		<line x1="91.4493" y1="35.0494" x2="64.0495" y2="110.33" stroke="var(--text-color-primary)" stroke-width="11" stroke-linecap="round"/>
+		<line x1="10" y1="46" x2="31.0185" y2="46" stroke="var(--text-color-primary)" stroke-width="6" stroke-linecap="round"/>
+		<line x1="73.5" y1="85.2097" x2="106.5" y2="85.2097" stroke="var(--text-color-primary)" stroke-width="11" stroke-linecap="round"/>
+		<line x1="39.4116" y1="61.1143" x2="22.207" y2="13.8451" stroke="var(--text-color-primary)" stroke-width="6" stroke-linecap="round"/>
+		<line x1="119.951" y1="110.33" x2="92.5508" y2="35.0494" stroke="var(--text-color-primary)" stroke-width="11" stroke-linecap="round"/>
+		<line x1="88.4329" y1="0.250205" x2="25.4329" y2="109.25" stroke="var(--text-color-primary)" stroke-width="4"/>
+	</symbol>
+</svg>
+

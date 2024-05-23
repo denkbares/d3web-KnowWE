@@ -96,6 +96,8 @@
 	--color-brown: #a86210;
 	--color-brown-dark: #6e2e00;
 
+	--color-knowwe-primary: #1a3766;
+
 	/* color gradients (DiaFlux flowcharts) */
 	--color-blue-faint-gradient1: #bcf;
 	--color-blue-faint-gradient2: #eef;
@@ -262,6 +264,8 @@
 	--color-brown-light-70: rgba(199, 135, 155, 0.7);
 	--color-brown: #9f6639;
 	--color-brown-dark: #b25006;
+
+	--color-knowwe-primary: #3f9ee9;
 
 	/* color gradients */
 	--color-blue-faint-gradient1: #35516d;

@@ -29,6 +29,7 @@
 		<parameter id="css" value="KnowWE-Plugin-InstantEdit.css" />
 		<parameter id="css" value="KnowWE-Plugin-AutoComplete.css" />
 		<parameter id="css" value="DefaultEditTool.css" />
+		<parameter id="css" value="instant-edit-variables.css" />
 		<parameter id="scope" value="KnowledgeBaseMarkup" />
 		<parameter id="scope" value="PackageMarkupType" />
 		<parameter id="scope" value="QuestionTree" />

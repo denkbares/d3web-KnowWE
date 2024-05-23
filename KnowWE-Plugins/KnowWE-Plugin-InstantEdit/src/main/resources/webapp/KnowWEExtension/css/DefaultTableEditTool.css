@@ -32,7 +32,7 @@ table.spreadsheet tr td.table-header {
 
 table.spreadsheet tr td {
 	border: 1px solid var(--border-color-default);
-	background: var(--bg-color-table-odd-th);
+	background: var(--bg-color-secondary);
 	padding: 0px;
 }
 
@@ -46,7 +46,7 @@ table.spreadsheet tr td.selected {
 
 table.spreadsheet tr td.selected.table-header {
 	background-color: transparent;
-	background: var(--table-row-selected);
+	background: var(--bg-color-table-odd-th);
 }
 
 table.spreadsheet tr td > div {

@@ -8,9 +8,11 @@ KNOWWE.plugin.tableEditTool = function() {
     return "tableEdit" + id;
   }
 
-  function createButton(image, ext) {
-    return "<a class='" + image + " action narrow'>" +
-      "<img src='KnowWEExtension/images/table/" + image + "." + ext + "'></a>";
+  function createSvgButton(iconId) {
+    let hoverText = iconId.replace(/_/g, " ").replace("table ", "");
+    return "<a class='" + iconId + " action narrow' title='" + hoverText + "'>" +
+      "<svg height='20' viewBox='0 0 149 124' fill='none'><use xlink:href='KnowWEExtension/images/table/svg/table-edit-icons.svg#" + iconId + "'></use></svg>" +
+      "</a>";
   }
 
   return {
@@ -36,13 +38,14 @@ KNOWWE.plugin.tableEditTool = function() {
 
     generateButtons: function(id) {
       return _EC.elements.getSaveCancelDeleteButtons(id, [
-        createButton("table_insert_col_before", "gif"),
-        createButton("table_insert_col_after", "gif"),
-        createButton("table_insert_row_before", "gif"),
-        createButton("table_insert_row_after", "gif"),
-        createButton("table_delete_col", "png"),
-        createButton("table_delete_row", "png"),
-        createButton("toggle_header", "png")]);
+        createSvgButton("table_insert_col_before"),
+        createSvgButton("table_insert_col_after"),
+        createSvgButton("table_insert_row_before"),
+        createSvgButton("table_insert_row_after"),
+        createSvgButton("table_delete_col"),
+        createSvgButton("table_delete_row"),
+        createSvgButton("toggle_header")
+      ]);
     },
 
     getEventInfo: function($event) {
