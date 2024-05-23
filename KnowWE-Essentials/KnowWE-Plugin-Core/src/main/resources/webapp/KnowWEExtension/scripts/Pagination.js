@@ -39,8 +39,8 @@ KNOWWE.core.plugin.pagination = function() {
     return $el.attr(columnNameAttribute) || $el.text();
   };
 
-  function setPaginationStateAndUpdateNode(cookie, id) {
-    setPaginationState(id, cookie);
+  function setPaginationStateAndUpdateNode(paginationState, id) {
+    setPaginationState(id, paginationState);
     updateNode(id);
   }
 
@@ -73,8 +73,29 @@ KNOWWE.core.plugin.pagination = function() {
     return KNOWWE.helper.getLocalSectionStorage(sectionId).pagination || {};
   }
 
-  function setPaginationState(id, state) {
-    KNOWWE.helper.setToLocalSectionStorage(id, "pagination", state);
+  function getFilterState(paginationState) {
+    const filterState = getPaginationFilterState(paginationState);
+    if (!filterState.columns) filterState.columns = {};
+    return filterState;
+  }
+
+  function getColumnState(paginationState, columnName) {
+    let filterState = getFilterState(paginationState);
+    if (!filterState.columns[columnName]) {
+      filterState.columns[columnName] = {
+        selectAll: true,
+        customTexts: [],
+        selectedCustomTexts: [],
+        selectedTexts: [],
+        hidden: false
+      };
+    }
+    return filterState.columns[columnName];
+  }
+
+
+  function setPaginationState(id, paginationState) {
+    KNOWWE.helper.setToLocalSectionStorage(id, "pagination", paginationState);
   }
 
   function isEmpty(columnState) {
@@ -91,11 +112,12 @@ KNOWWE.core.plugin.pagination = function() {
   }
 
   function renderIcons($table, $columnFilterButton, sectionId, sortingMode, filteringActive) {
-    const paginationState = getPaginationState(sectionId);
 
     $table.find("th").each(function() {
       jq$(this.firstChild).wrap("<span></span>");
     });
+
+    let paginationState = getPaginationState(sectionId);
 
     if (sortingMode !== "off") {
       let sorting = paginationState.sorting || [];
@@ -153,19 +175,6 @@ KNOWWE.core.plugin.pagination = function() {
     });
   }
 
-  function getColumnFilterState(filterState, columnName) {
-    if (!filterState.columns[columnName]) {
-      filterState.columns[columnName] = {
-        selectAll: true,
-        customTexts: [],
-        selectedCustomTexts: [],
-        selectedTexts: [],
-        hidden: false
-      };
-    }
-    return filterState.columns[columnName];
-  }
-
   function closeFilter() {
     let $openFilters = jq$(".pagination-column-filter.showing-tooltip, .sparqltable .filter-icon.showing-tooltip");
     if ($openFilters.exists()) {
@@ -178,13 +187,8 @@ KNOWWE.core.plugin.pagination = function() {
     let filterProviderAction = $thElement.attr(filterProviderActionAttribute);
     if (!filterProviderAction) return; // if no action is defined, we cannot support filtering
 
-    // init state
-    const paginationState = getPaginationState(sectionId);
-    const filterState = getPaginationFilterState(paginationState);
-    if (!filterState.columns) filterState.columns = {};
-
     const columnName = getColumnName($thElement);
-    const columnState = getColumnFilterState(filterState, columnName);
+    const columnState = getColumnState(getPaginationState(sectionId), columnName);
     $thElement.data(initialState, JSON.parse(JSON.stringify(columnState)));
     let filterTextsJson = {}; // will be initialized in ajaxFilterTexts
     let latestFilterTextQuery = ""; // will be initialized in ajaxFilterTexts
@@ -201,6 +205,8 @@ KNOWWE.core.plugin.pagination = function() {
       if ($tooltip && latestFilterTextQuery.length > 0) {
         const checked = $tooltip.find(".pagination-filter-list input:checked");
         if (checked.exists()) {
+          let paginationState = getPaginationState(sectionId);
+          const columnState = getColumnState(paginationState, columnName);
           columnState.selectAll = false;
           columnState.selectedTexts = [];
           checked.each(function() {
@@ -212,7 +218,7 @@ KNOWWE.core.plugin.pagination = function() {
         }
       }
       KNOWWE.helper.observer.notify("filterChanged", {
-        filteringActive: anyActiveFilter(filterState),
+        filteringActive: anyActiveFilter(getFilterState(getPaginationState(sectionId))),
         sectionId: sectionId
       });
     };
@@ -220,6 +226,8 @@ KNOWWE.core.plugin.pagination = function() {
     const cancelFilter = $filterIcon => {
       jq$(document).off(paginationClickEvent); // in case we close via buttons
       const $thElement = $filterIcon.parents("th");
+      let paginationState = getPaginationState(sectionId);
+      let filterState = getFilterState(paginationState);
       filterState.columns[getColumnName($thElement)] = $thElement.data(initialState);
       setPaginationState(sectionId, paginationState);
       closeFilter();
@@ -365,6 +373,8 @@ KNOWWE.core.plugin.pagination = function() {
         if (event.originalEvent.code === "Enter") {
           saveAndCloseFilter($filterIcon);
         } else {
+          let paginationState = getPaginationState(sectionId);
+          let columnState = getColumnState(paginationState);
           const filterText = jq$(this).val();
           columnState.filterText = filterText;
           setPaginationState(sectionId, paginationState);
@@ -377,6 +387,8 @@ KNOWWE.core.plugin.pagination = function() {
 
     // update the state of buttons
     const updateButtonState = $tooltip => {
+      let paginationState = getPaginationState(sectionId);
+      let columnState = getColumnState(paginationState, columnName);
       const $toggleBox = $tooltip.find(".toggle-box");
       if (columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0) {
         $toggleBox.prop("indeterminate", true);
@@ -402,6 +414,8 @@ KNOWWE.core.plugin.pagination = function() {
 
       $tooltip.find("li input").change(function() {
         const $checkBox = jq$(this);
+        let paginationState = getPaginationState(sectionId);
+        let columnState = getColumnState(paginationState, columnName);
         const texts = getFilterTexts($checkBox);
         if (this.checked && !columnState.selectAll || !this.checked && columnState.selectAll) {
           texts.forEach(text => {
@@ -425,6 +439,8 @@ KNOWWE.core.plugin.pagination = function() {
     const initButtons = $tooltip => {
       updateButtonState($tooltip);
       $tooltip.find(".toggle-box").click(function() {
+        let paginationState = getPaginationState(sectionId);
+        let columnState = getColumnState(paginationState, columnName);
         columnState.selectAll = this.checked;
         columnState.selectedTexts = [];
         columnState.selectedCustomTexts = [];
@@ -567,12 +583,9 @@ KNOWWE.core.plugin.pagination = function() {
 
   function initColumnFiltering($columnFilterButton, $table, sectionId) {
 
-    const paginationState = getPaginationState(sectionId);
-    const filterState = getPaginationFilterState(paginationState);
-    if (!filterState.columns) filterState.columns = {};
     let latestFilterTextQuery = "";
 
-    $columnFilterButton.data(initialState, JSON.parse(JSON.stringify(filterState)));
+    $columnFilterButton.data(initialState, JSON.parse(JSON.stringify(getFilterState(getPaginationState(sectionId)))));
 
     const columns = $table.parents(".sparqlTable").find("table").first().data("columns");
 
@@ -581,10 +594,10 @@ KNOWWE.core.plugin.pagination = function() {
         columns.map((column, i) => {
           let id = "filter" + i;
           let columnName = column[0];
-          let columnFilterState = getColumnFilterState(filterState, columnName);
+          let columnState = getColumnState(getPaginationState(sectionId), columnName);
           let columnLabel = column[1];
           return "<li class='column' " + columnNameAttribute + "='" + columnName + "'>" +
-            "<input type='checkbox' id='" + id + "' name='" + id + "' " + (columnFilterState.hidden ? "" : "checked") + ">" +
+            "<input type='checkbox' id='" + id + "' name='" + id + "' " + (columnState.hidden ? "" : "checked") + ">" +
             "<label for='" + id + "'>" + columnLabel + "</label>" +
             "</li>\n";
         }).join("") +
@@ -597,18 +610,20 @@ KNOWWE.core.plugin.pagination = function() {
     };
 
     const initFilterInput = ($tooltip) => {
+      let paginationState = getPaginationState(sectionId);
       $tooltip.find("#filter-input").keyup(function(event) {
         if (event.originalEvent.code === "Enter") {
-          saveAndCloseFilter($columnFilterButton, $tooltip);
+          saveAndCloseFilter($tooltip, paginationState);
         } else {
-          const filterText = jq$(this).val();
-          setPaginationState(sectionId, paginationState);
-          $tooltip.find("li.column").forEach((li) => {
+          const filterText = jq$(this).val().toLowerCase();
+          latestFilterTextQuery = filterText;
+          $tooltip.find("li.column").each((i, li) => {
             let $li = jq$(li);
-            if (getColumnName($li).contains(filterText)) {
-              $li.addClass("hidden");
-            } else {
+            let columnName = getColumnName($li);
+            if (columnName.toLowerCase().contains(filterText)) {
               $li.removeClass("hidden");
+            } else {
+              $li.addClass("hidden");
             }
           });
         }
@@ -653,11 +668,13 @@ KNOWWE.core.plugin.pagination = function() {
     // init events for filter check boxes
     const initFilterList = function($tooltip) {
       $tooltip.find("li input").change(function() {
+        let paginationState = getPaginationState(sectionId);
         const $checkBox = jq$(this);
-        let columnFilterState = getColumnFilterState(filterState, getColumnName($checkBox.parents("li")));
+        let columnName = getColumnName($checkBox.parents("li"));
+        let columnFilterState = getColumnState(paginationState, columnName);
         columnFilterState.hidden = !this.checked;
-        updateButtonState($tooltip);
         setPaginationState(sectionId, paginationState);
+        updateButtonState($tooltip);
       });
     };
 
@@ -665,15 +682,17 @@ KNOWWE.core.plugin.pagination = function() {
     const initButtons = $tooltip => {
       updateButtonState($tooltip);
       $tooltip.find(".toggle-box").click(function() {
+        let paginationState = getPaginationState(sectionId);
+        let filterState = getFilterState(paginationState);
         let checkBoxes = $tooltip.find(".pagination-filter-list input");
         let checked = this.checked;
         checkBoxes.prop("checked", checked);
         Object.values(filterState.columns).forEach(c => c.hidden = !checked);
-        updateButtonState($tooltip);
         setPaginationState(sectionId, paginationState);
+        updateButtonState($tooltip);
       });
       $tooltip.find(".ok-button").click(function() {
-        saveAndCloseFilter($columnFilterButton);
+        saveAndCloseFilter($tooltip, getPaginationState(sectionId));
       });
       $tooltip.find(".cancel-button").click(function() {
         cancelFilter($columnFilterButton);
@@ -681,6 +700,7 @@ KNOWWE.core.plugin.pagination = function() {
     };
 
     const cancelFilter = $columnFilterButton => {
+      let paginationState = getPaginationState(sectionId);
       jq$(document).off(paginationClickEvent); // in case we close via buttons
       paginationState.filter = $columnFilterButton.data(initialState);
       setPaginationState(sectionId, paginationState);
@@ -690,35 +710,38 @@ KNOWWE.core.plugin.pagination = function() {
     // update the state of buttons
     const updateButtonState = $tooltip => {
       const $toggleBox = $tooltip.find(".toggle-box");
-      let columnFilterStates = Object.entries(filterState.columns);
-      if (columnFilterStates.filter(e => e[1].hidden).length > 0 && columnFilterStates.filter(e => !e[1].hidden).length > 0) {
+      let $checkBoxes = $toggleBox.parents(".filter-parent").find(".pagination-filter-list input")
+      let $checked = $checkBoxes.filter(":checked");
+      let $notChecked = $checkBoxes.filter(":not(:checked)");
+      if ($checked.length > 0 && $notChecked.length > 0) {
         $toggleBox.prop("indeterminate", true);
       } else {
         $toggleBox.prop("indeterminate", false);
-        $toggleBox.prop("checked", !columnFilterStates[0][1].hidden);
+        $toggleBox.prop("checked", $checked.length > 0);
       }
-
     };
 
-    const saveAndCloseFilter = $tooltip => {
+    const saveAndCloseFilter = ($tooltip, paginationState) => {
       jq$(document).off(paginationClickEvent); // in case we close via buttons
       $columnFilterButton.tooltipster("hide");
 
       if ($tooltip && latestFilterTextQuery.length > 0) {
-        const checked = $tooltip.find(".pagination-filter-list input:checked");
-        if (checked.exists()) {
-          checked.each(function() {
-            getFilterTexts(jq$(this)).forEach(text => {
-              columnState.selectedTexts.push(text);
-            });
-          });
-          setPaginationState(sectionId, paginationState);
-        }
+        $tooltip.find(".pagination-filter-list input").each((i, checkbox) => {
+          let $checkbox = jq$(checkbox);
+          let $li = $checkbox.parents("li");
+          let columnName = getColumnName($li);
+          let columnState = getColumnState(paginationState, columnName);
+          let checked = $checkbox.prop("checked");
+          let visible = !$li.is(".hidden");
+          columnState.hidden = !(checked && visible);
+        })
+        setPaginationState(sectionId, paginationState);
       }
       KNOWWE.helper.observer.notify("filterChanged", {
-        filteringActive: anyActiveFilter(filterState),
+        filteringActive: anyActiveFilter(getFilterState(paginationState)),
         sectionId: sectionId
       });
+      updateNode(sectionId);
     };
 
 
@@ -739,13 +762,13 @@ KNOWWE.core.plugin.pagination = function() {
   return {
 
     sort: function(element, id) {
-      const cookie = getPaginationState(id);
+      const paginationState = getPaginationState(id);
       const sortingName = getColumnName(jq$(element).parent());
       let sorting;
-      if (typeof cookie.sorting == "undefined") {
+      if (typeof paginationState.sorting == "undefined") {
         sorting = [{sort: sortingName, naturalOrder: true}];
       } else {
-        sorting = cookie.sorting;
+        sorting = paginationState.sorting;
         let found = false;
         let remove = false;
         let i = 0;
@@ -771,16 +794,16 @@ KNOWWE.core.plugin.pagination = function() {
           sorting.unshift({sort: sortingName, naturalOrder: true});
         }
       }
-      cookie.sorting = sorting;
-      setPaginationStateAndUpdateNode(cookie, id);
+      paginationState.sorting = sorting;
+      setPaginationStateAndUpdateNode(paginationState, id);
     },
 
     setCount: function(selected, id) {
       const $selected = jq$(selected);
 
-      const cookie = getPaginationState(id);
+      const paginationState = getPaginationState(id);
 
-      const lastCount = parseInt(cookie.count);
+      const lastCount = parseInt(paginationState.count);
       const resultSize = parseInt(jq$("#" + id + " .resultSize").val());
       const count = $selected.val();
       $selected.data("current", count);
@@ -793,8 +816,8 @@ KNOWWE.core.plugin.pagination = function() {
       }
 
       if (count === "Max") {
-        cookie.startRow = 1;
-        cookie.count = "Max";
+        paginationState.startRow = 1;
+        paginationState.count = "Max";
       } else {
         if (startRow + lastCount === resultSize + 1) {
           startRow = resultSize - parseInt(count) + 1;
@@ -802,11 +825,11 @@ KNOWWE.core.plugin.pagination = function() {
         if (startRow <= 0) {
           startRow = 1;
         }
-        cookie.startRow = startRow;
-        cookie.count = count;
+        paginationState.startRow = startRow;
+        paginationState.count = count;
       }
 
-      setPaginationStateAndUpdateNode(cookie, id);
+      setPaginationStateAndUpdateNode(paginationState, id);
     },
 
     navigate: function(id, direction) {
@@ -839,17 +862,17 @@ KNOWWE.core.plugin.pagination = function() {
       }
 
 
-      const cookie = getPaginationState(id);
-      cookie.startRow = startRow;
-      cookie.count = count;
-      setPaginationStateAndUpdateNode(cookie, id);
+      const paginationState = getPaginationState(id);
+      paginationState.startRow = startRow;
+      paginationState.count = count;
+      setPaginationStateAndUpdateNode(paginationState, id);
 
     },
 
     updateStartRow: function(selectedRow, sectionId, preventRerender) {
 
       const id = sectionId;
-      const cookie = getPaginationState(id);
+      const paginationState = getPaginationState(id);
       const count = jq$("#" + id + " .count").val();
       let startRow = selectedRow.value;
       const search = /^\d+$/;
@@ -862,13 +885,13 @@ KNOWWE.core.plugin.pagination = function() {
         startRow = 1;
       }
       if (count === "Max") {
-        cookie.startRow = 1;
-        cookie.count = "Max";
+        paginationState.startRow = 1;
+        paginationState.count = "Max";
       } else {
-        cookie.startRow = startRow;
-        cookie.count = count;
+        paginationState.startRow = startRow;
+        paginationState.count = count;
       }
-      setPaginationState(id, cookie);
+      setPaginationState(id, paginationState);
       if (!preventRerender) updateNode(id);
     },
 
