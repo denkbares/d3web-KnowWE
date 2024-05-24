@@ -35,12 +35,14 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
+import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
 import de.knowwe.core.compile.PackageCompiler;
 import de.knowwe.core.kdom.Article;
 import de.knowwe.event.FullParseEvent;
+import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
@@ -111,6 +113,11 @@ public class RecompileAction extends AbstractAction {
 			else {
 				LOGGER.info("Starting recompilation of article " + article.getTitle() + (reason == null ? "" : ". Reason: " + reason));
 				Article recompiledArticle = articleManager.registerArticle(article.getTitle(), article.getText());
+				// also update all markups
+				$(recompiledArticle).successor(AttachmentUpdateMarkup.class).stream().parallel().forEach(markup -> {
+					LOGGER.info("Checking " + markup.get().getUrl(markup) + " for updates...");
+					markup.get().performUpdate(markup);
+				});
 				EventManager.getInstance().fireEvent(new FullParseEvent(recompiledArticle));
 			}
 		}
