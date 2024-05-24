@@ -179,6 +179,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			}
 
 			try {
+				Stopwatch stopwatch = new Stopwatch();
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
 				State attachmentState = needsUpdate(attachment, url);
 				if (attachmentState == AttachmentMarkup.State.UP_TO_DATE) {
@@ -233,7 +234,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 					articleManager.commit();
 				}
 
-				LOGGER.info("Updated attachment '" + path + "' with resource from URL " + url);
+				stopwatch.log(LOGGER, "Updated attachment '" + path + "' with resource from URL " + url);
 			}
 			catch (UnknownHostException e) {
 				LOGGER.warn("Unable to reach " + url + " while trying to update attachment " + path);
