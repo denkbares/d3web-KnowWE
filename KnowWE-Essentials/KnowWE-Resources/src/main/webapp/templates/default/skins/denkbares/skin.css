@@ -22,7 +22,7 @@
  * Styles can be overwritten by print and skin stylesheets
  * /
 
-/* COLOR scheme   
+/* COLOR scheme
 	normal font color
 	#f9f9f9 code, comment, weblogentries, (light grey)
 	#d7d7d7 table header(darker grey)
@@ -229,7 +229,7 @@ dl dd {
 /* special minimized look for TOC in left menu */
 .leftmenu > .toc > .collapsebox {
 	border: none;
-	margin: -0.5em 0px 0px 0px;
+	margin: -0.5em 0 0 0;
 }
 
 .leftmenu > .toc > .collapsebox > h4 {
@@ -237,11 +237,11 @@ dl dd {
 }
 
 .leftmenu > .toc > .collapsebox > .collapsebody {
-	padding: 0px;
+	padding: 0;
 }
 
 .leftmenu > .toc > .collapsebox > .collapsebody > ul {
-	padding: 0px 0px 0px 2em;
+	padding: 0 0 0 2em;
 }
 
 .leftmenu > .toc > .collapsebox > .collapsebody > ul > li.active {
@@ -763,7 +763,7 @@ body.comment {
 }
 
 #changenote {
-	margin-top: 0px;
+	margin-top: 0;
 }
 
 #submitbuttons {
@@ -917,9 +917,9 @@ a.tool:hover {
 /* +++ 440 Favorites +++ */
 /* fixme
 #collapseFavs {
-	position:absolute; 
-	margin-left:-1px; 
-	left:-0.5em; 
+	position:absolute;
+	margin-left:-1px;
+	left:-0.5em;
 	top:-1px;
 	width:0.5em;
 	height:100%;
@@ -1133,19 +1133,19 @@ th.changenote, td.changenote {
 
 /* +++ 470 PageActions +++ */
 #actionsTop {
-	margin: 0 5px 0px 0px;
+	margin: 0 5px 0 0;
 	border-right: 1px solid #9ACBFB;
-	padding-right: 0px;
+	padding-right: 0;
 }
 
 #actionsTop > ul {
-	padding: 0px 0px 0px 0px;
-	margin: 0px 0px 0px 0px;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
 }
 
 #actionsTop > ul > li {
-	padding: 0px 0px 0px 0px;
-	margin: 0px 0px 0px 0px;
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
 	border-left: 1px solid #9ACBFB;
 	background-image: url(tab-back.png);
 	background-position: left bottom;
@@ -1153,7 +1153,7 @@ th.changenote, td.changenote {
 }
 
 #actionsTop > ul > li > a {
-	margin: 0px 0px 0px 0px;
+	margin: 0 0 0 0;
 	padding-right: 10px;
 	padding-left: 10px;
 	padding-top: 4px;
@@ -1186,7 +1186,7 @@ th.changenote, td.changenote {
 
 .pageactions li ul {
 	position: absolute;
-	background: white;
+	background: #ffffff;
 	border: 2px solid #ddd;
 	left: 0; /*right:2.5em; */
 	z-index: 10;
@@ -1243,7 +1243,7 @@ th.changenote, td.changenote {
 	display: block;
 }
 
-#morebutton a:hover, a.action:hover, #sectiontoc a:hover
+#morebutton a:hover, a.action:hover, #sectiontoc a:hover,
 .userbox a.action:hover, a.action.quick2bottom:hover, a.action.quick2top:hover,
 .nav-pills a:hover {
 	background-color: var(--hover-bg-color-btn-default);
@@ -1666,7 +1666,7 @@ tr.visible {
 /* +++ 900 "Special-effects" JavaScript styles +++ */
 
 /* +++ 910 Tabbed Pages +++ */
-/* use absolute position trick to avoid page bump when inserting tabmenu 
+/* use absolute position trick to avoid page bump when inserting tabmenu
  * "tabs" surrounds the actual tab-content :only border right-bottom-left
  * "tabmenu" visualises the actuals tabs :border-bottom to close the tabs box
  * "tabmenu a" for the actual tabs :border left-top-right to draw the tab
@@ -1840,13 +1840,13 @@ tr.visible {
 /* ie only hack no needed ?
 * html .togglemenu {
 	margin-top:1px;
-}  
+}
 */
 
 /* margin is not compatible with scrollHeigth used by accordion - replace it by padding */
 /*
-.tab h1, .tab h2, .tab h3, .tab h4, 
-.tab p, .tab pre, .tab blockquote, .tab label, 
+.tab h1, .tab h2, .tab h3, .tab h4,
+.tab p, .tab pre, .tab blockquote, .tab label,
 .tab ul, .tab ol, .tab dl, .xxtab hr {
 	margin:0 auto;
 	padding-top:0.5em;
@@ -2345,7 +2345,7 @@ div.coverflow .knob {
 }
 
 .type_DiaFlux.defaultMarkupFrame > .defaultMarkup .markupText {
-	padding: 0px;
+	padding: 0;
 	margin: -1px;
 	white-space: normal;
 }
@@ -2383,9 +2383,9 @@ div.coverflow .knob {
 
 .defaultMarkupFrame > .defaultMarkup {
 	background-color: transparent;
-	border-right: 0px;
-	border-left: 0px;
-	border-bottom: 0px;
+	border-right: 0;
+	border-left: 0;
+	border-bottom: 0;
 }
 
 .defaultMarkupFrame .headerMenu {
@@ -2421,7 +2421,7 @@ div.coverflow .knob {
 a.action.quick2top {
 	float: right;
 	background: none;
-	text-indent: 0px;
+	text-indent: 0;
 	width: 20px;
 }
 
@@ -2495,7 +2495,7 @@ li.findpages .btn {
 	top: 161px;
 	left: 20px;
 	position: fixed;
-	color: white;
+	color: var(--text-color-primary);
 	background-color: var(--bg-color-secondary);
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 5px;
