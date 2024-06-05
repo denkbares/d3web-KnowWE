@@ -69,9 +69,14 @@ a.logo.pull-left {
 	/* Shows image */
 	margin-left: -8px;
 	margin-top: 3px;
-	background: url(../../../../KnowWEExtension/images/knowwe_logo.png) no-repeat;
 	background-size: contain;
 	height: 48px;
+}
+
+a.logo.pull-left img {
+	position: absolute;
+	left: 0;
+	height: inherit;
 }
 
 a:hover, .pagename a:hover {

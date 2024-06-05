@@ -103,6 +103,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="LogoAction">
+		<parameter id="class" value="de.knowwe.jspwiki.DefaultLogoAction" />
+		<parameter id="name" value="DefaultLogoAction" />
+		<parameter id="description" value="Action DefaultLogoAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Action"
 			id="ReadOnlyActionCheckbox">
 		<parameter id="class"

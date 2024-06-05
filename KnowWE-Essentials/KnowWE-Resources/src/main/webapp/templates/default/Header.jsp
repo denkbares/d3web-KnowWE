@@ -22,21 +22,21 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import="org.apache.wiki.api.core.*" %>
-<fmt:setLocale value="${prefs.Language}"/>
-<fmt:setBundle basename="templates.default"/>
+<fmt:setLocale value="${prefs.Language}" />
+<fmt:setBundle basename="templates.default" />
 <%
 	Context c = Context.findContext(pageContext);
 %>
-<c:set var="frontpage" value="<%= c.getEngine().getFrontPage() %>"/>
+<c:set var="frontpage" value="<%= c.getEngine().getFrontPage() %>" />
 
-<c:set var="titlebox"><wiki:InsertPage page="TitleBox"/></c:set>
+<c:set var="titlebox"><wiki:InsertPage page="TitleBox" /></c:set>
 <c:if test="${!empty titlebox}">
 	<div class="titlebox alert">${titlebox}</div>
 </c:if>
 
 <div class="header" id="header">
 
-	<c:set var="titlebox"><wiki:InsertPage page="TitleBox"/></c:set>
+	<c:set var="titlebox"><wiki:InsertPage page="TitleBox" /></c:set>
 	<c:if test="${!empty titlebox}">
 		<div class="titlebox">${titlebox}</div>
 	</c:if>
@@ -47,17 +47,19 @@
 			<a class="logo pull-left"
 			   href="<wiki:Link page='${frontpage}' format='url' />"
 			   title="<fmt:message key='actions.home.title' ><fmt:param>${frontpage}</fmt:param></fmt:message> "><wiki:Variable
-					var="ApplicationName" default="KnowWE"/></a>
-
+					var="ApplicationName" default="KnowWE" />
+				<img id="knowwe-logo" src="KnowWE.jsp?action=LogoAction&displayMode='${prefs.DisplayMode}'"
+					 alt="knowwe logo">
+			</a>
 			<wiki:PageExists page="HomeMenu">
 				<ul class="dropdown-menu" data-hover-parent=".cage">
-					<li class="logo-menu"><wiki:InsertPage page="HomeMenu"/></li>
+					<li class="logo-menu"><wiki:InsertPage page="HomeMenu" /></li>
 				</ul>
 			</wiki:PageExists>
 		</div>
 
-		<wiki:Include page="UserBox.jsp"/>
-		<wiki:Include page="SearchBox.jsp"/>
+		<wiki:Include page="UserBox.jsp" />
+		<wiki:Include page="SearchBox.jsp" />
 
 		<div class="pagename" title="<wiki:PageName />">
 			<wiki:CheckRequestContext context='viewGroup|createGroup|editGroup'><span
@@ -78,6 +80,6 @@
 
 	</div>
 
-	<wiki:Include page="Nav.jsp"/>
+	<wiki:Include page="Nav.jsp" />
 
 </div>
