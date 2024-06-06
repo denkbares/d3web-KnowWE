@@ -204,14 +204,15 @@ KNOWWE.core.plugin.pagination = function() {
     if (!filterProviderAction) return; // if no action is defined, we cannot support filtering
 
     const columnName = getColumnName($thElement);
-    const columnState = getColumnState(getPaginationState(sectionId), columnName);
     let filterTextsJson = {}; // will be initialized in ajaxFilterTexts
     let latestFilterTextQuery = ""; // will be initialized in ajaxFilterTexts
     let $tooltip = null; // will be initialized in initTooltip
 
     const saveAndCloseFilter = (sectionId) => {
+      let paginationState = getPaginationState(sectionId);
+      let columnState = getColumnState(paginationState, columnName);
       jq$(document).off(paginationClickEvent); // in case we close via buttons
-      if (isValidState()) {
+      if (isValidState(columnState)) {
         closeFilter(sectionId);
       } else {
         cancelFilter(sectionId);
@@ -352,6 +353,8 @@ KNOWWE.core.plugin.pagination = function() {
 
     // generate html for filter list
     const getFilterList = () => {
+      let paginationState = getPaginationState(sectionId);
+      let columnState = getColumnState(paginationState, columnName);
       const selectAll = columnState.selectAll;
       const selectedTexts = columnState.selectedTexts;
       const filterTexts = filterTextsJson[filterTextsProperty];
@@ -407,10 +410,10 @@ KNOWWE.core.plugin.pagination = function() {
         $toggleBox.prop("checked", columnState.selectAll);
       }
 
-      $tooltip.find(".ok-button").prop("disabled", !isValidState());
+      $tooltip.find(".ok-button").prop("disabled", !isValidState(columnState));
     };
 
-    const isValidState = () => columnState.selectAll || columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0;
+    const isValidState = columnState => columnState.selectAll || columnState.selectedTexts.length !== 0 || columnState.selectedCustomTexts.length !== 0;
     const getFilterTexts = $checkBox => JSON.parse($checkBox.parent().find("div").text());
 
     // init events for filter check boxes
