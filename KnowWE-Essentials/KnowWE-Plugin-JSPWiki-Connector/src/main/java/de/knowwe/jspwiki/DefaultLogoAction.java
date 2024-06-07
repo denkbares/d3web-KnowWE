@@ -16,6 +16,8 @@ import de.knowwe.core.action.UserActionContext;
 /**
  * Default action for retrieving the correct KnowWE logo path for wiki
  * If individual logo is used, override getter methods. Logos should be placed in resource folder.
+ * Extension in plugin.xml needs to be set to priority 4 for inheriting classes.
+ * Refer to KnowSECLogoAction as implementation example
  *
  * @author Antonia Heyder (denkbares GmbH)
  * @created 03.06.24
