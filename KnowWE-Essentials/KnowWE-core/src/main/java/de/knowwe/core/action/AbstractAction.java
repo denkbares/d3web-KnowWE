@@ -77,6 +77,15 @@ public abstract class AbstractAction implements Action {
 	@NotNull
 	public static JSONObject getLocalSectionStorage(UserContext user) {
 		String sectionStorage = user.getParameter(Attributes.LOCAL_SECTION_STORAGE);
+		if (sectionStorage == null) {
+			String sectionId = user.getParameter("sectionID");
+			if (sectionId != null) {
+				JSONObject jsonObject = (JSONObject) user.getSession()
+						.getAttribute(getHttpSessionAttributeLocalSectionStorageKey(sectionId));
+				if (jsonObject != null) return jsonObject;
+
+			}
+		}
 		if (sectionStorage == null) return new JSONObject();
 		JSONObject jsonObject;
 		try {
@@ -90,17 +99,18 @@ public abstract class AbstractAction implements Action {
 		return jsonObject;
 	}
 
-	/**
-	 * Get the local section storage from the section, if no user context containing the section storage is available.
-	 * The normal {@link #getLocalSectionStorage(UserContext)} method has to be called before, for this method to work
-	 * (will happen on rerender).
-	 *
-	 * @param section the section for which a local section storage is available
-	 * @return the local section storage of the section
-	 * @see #getLocalSectionStorage(UserContext)
-	 */
-	public static JSONObject getLocalSectionStorage(Section<?> section) {
-		return section.getObject(Attributes.LOCAL_SECTION_STORAGE);
+	public static void storeLocalSectionStorage(UserActionContext context) {
+		String sectionId = context.getParameter("sectionID");
+		String value = context.getParameter("value");
+		if (sectionId != null) {
+			context.getSession()
+					.setAttribute(getHttpSessionAttributeLocalSectionStorageKey(sectionId), new JSONObject(value));
+		}
+	}
+
+	@NotNull
+	private static String getHttpSessionAttributeLocalSectionStorageKey(String sectionId) {
+		return Attributes.LOCAL_SECTION_STORAGE + "_" + sectionId;
 	}
 
 	/**

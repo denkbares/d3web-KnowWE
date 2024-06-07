@@ -28,16 +28,10 @@ import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 
 public class StoreLocalSectionStorageAction extends AbstractAction {
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		String sectionId = context.getParameter("sectionID");
-		String value = context.getParameter("value");
-
-		if (sectionId != null) {
-			Section<?> section = Sections.get(sectionId);
-			if (section != null) {
-				section.storeObject(Attributes.LOCAL_SECTION_STORAGE, new JSONObject(value));
-			}
-		}
+		AbstractAction.storeLocalSectionStorage(context);
 	}
+
 }

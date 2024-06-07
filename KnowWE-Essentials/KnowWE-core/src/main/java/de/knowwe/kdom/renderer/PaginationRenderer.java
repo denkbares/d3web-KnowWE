@@ -150,9 +150,6 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 	public static Set<String> getHiddenColumns(Section<?> section, UserContext user) {
 		Set<String> hiddenColumns = new HashSet<>();
 		JSONObject paginationSettings = getPaginationSettings(user);
-		if (paginationSettings == null) { // fallback, try section
-			paginationSettings = getPaginationSettings(section);
-		}
 		if (paginationSettings == null) return hiddenColumns;
 		JSONObject filter = paginationSettings.optJSONObject(FILTER);
 		if (filter == null) return hiddenColumns;
@@ -174,9 +171,6 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 		HashMap<String, Set<Pattern>> filterMap = new HashMap<>();
 
 		JSONObject paginationSettings = getPaginationSettings(user);
-		if (paginationSettings == null) { // fallback, try section
-			paginationSettings = getPaginationSettings(section);
-		}
 		if (paginationSettings == null) return filterMap;
 		JSONObject filter = paginationSettings.optJSONObject(FILTER);
 		if (filter == null) return filterMap;
@@ -325,10 +319,10 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				if (selected) foundSelected = true;
 				boolean setSelected = selected || size == Integer.MAX_VALUE && !foundSelected;
 				result.appendHtml("<option "
-								  + (setSelected ? "selected='selected' " : "")
-								  + "value='" + size + "'>"
-								  + (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
-								  + "</option>");
+						+ (setSelected ? "selected='selected' " : "")
+						+ "value='" + size + "'>"
+						+ (size == Integer.MAX_VALUE ? "All" : String.valueOf(size))
+						+ "</option>");
 			}
 			result.appendHtml("</select>");
 			result.appendHtml(getResultSizeTag(sec, user));
@@ -425,16 +419,6 @@ public class PaginationRenderer implements AsyncPreviewRenderer {
 				.toHtml());
 		if (enabled) {
 			builder.appendHtml("</a>");
-		}
-	}
-
-	private static JSONObject getPaginationSettings(Section<?> section) {
-		JSONObject localSectionStorage = AbstractAction.getLocalSectionStorage(section);
-		if (localSectionStorage == null) {
-			return new JSONObject();
-		}
-		else {
-			return localSectionStorage.optJSONObject(PAGINATION_KEY);
 		}
 	}
 
