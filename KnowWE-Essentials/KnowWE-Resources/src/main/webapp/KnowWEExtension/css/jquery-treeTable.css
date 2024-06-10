@@ -56,6 +56,20 @@ table.treetable tr.expanded span.indenter a {
 	background-image: url(../images/toggle-collapse-dark.png);
 }
 
+table.treetable .hidden-child td,
+table.treetable .hidden-child .cell-content {
+	height: 0;
+	overflow: hidden;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+table.treetable .empty-indenter:not(:has(a)) {
+	display: none;
+}
+
+
+
 /* jquery.treeTable.sortable
  * ------------------------------------------------------------------------- */
 table.treeTable tr.selected,.treeTable tr.accept {

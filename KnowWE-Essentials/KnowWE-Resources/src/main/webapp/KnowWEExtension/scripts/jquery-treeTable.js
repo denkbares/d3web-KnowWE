@@ -30,6 +30,9 @@
 			this.indenter = jq$(this.settings.indenterTemplate);
 			this.children = [];
 			this.initialized = false;
+			if (this.settings.indent === 0) {
+				this.indenter.addClass("empty-indenter");
+			}
 			this.treeCell.prepend(this.indenter);
 		}
 
@@ -79,7 +82,11 @@
 
 		Node.prototype.hide = function() {
 			this._hideChildren();
-			this.row.hide();
+			if (this.settings.stableCollapse) {
+				this.row.addClass("hidden-child");
+			} else {
+			  this.row.hide();
+			}
 			return this;
 		};
 
@@ -159,7 +166,11 @@
 			if (!this.initialized) {
 				this._initialize();
 			}
-			this.row.show();
+			if (this.settings.stableCollapse) {
+				this.row.removeClass("hidden-child");
+			} else {
+				this.row.show();
+			}
 			if (this.expanded()) {
 				this._showChildren();
 			}
@@ -374,6 +385,7 @@
 				parentIdAttr : "ttParentId", // maps to data-tt-parent-id
 				stringExpand : "Expand",
 				stringCollapse : "Collapse",
+				stableCollapse : false,
 
 				// Events
 				onInitialized : null,
