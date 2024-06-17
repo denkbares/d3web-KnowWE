@@ -21,323 +21,346 @@ if (typeof KNOWWE.plugin == "undefined" || !KNOWWE.plugin) {
  * Namespace: KNOWWE.core.plugin.instantedit The KNOWWE instant edit namespace.
  */
 KNOWWE.plugin.ci4ke = function () {
+  /**
+   * Fetches the ci state bubble html code for a daemon/dashboard and inserts it. This is called after some build
+   * process has been finished on the server to update the view correspondingly.
+   *
+   * @param dashboardName the name of the dashboard to display the daemon for
+   * @param {undefined | (({dashboardName: string}) => void)} onFinish an optional callback to be called after
+   * successfully refreshing
+   */
+  function refreshCIDeamonBubble(dashboardName, onFinish = undefined) {
+    const params = {
+      action: "CIAction",
+      task: "refreshBubble",
+      name: dashboardName,
+    };
 
-	/*
-	 * Fetches the ci state bubble html code for a deamon/dashboard and insertes it.
-	 * This is called after some build process has been finished on the server to
-	 * update the view correspondingly.
-	 */
-	function refreshCIDeamonBubble(dashboardName) {
+    const options = {
+      url: KNOWWE.core.util.getURL(params),
+      loader: true,
+      response: {
+        fn: function () {
+          jq$(".ci-header,.ci-daemon")
+            .find(".ci-state")
+            .filter('[dashboardName="' + dashboardName + '"]')
+            .replaceWith(this.response);
+          if (onFinish) {
+            onFinish(dashboardName);
+          }
+        },
+        onError: onErrorBehavior,
+      },
+    };
 
-		const params = {
-			action: 'CIAction',
-			task: 'refreshBubble',
-			name: dashboardName,
-		};
+    new _KA(options).send();
+  }
 
-		const options = {
-			url: KNOWWE.core.util.getURL(params),
-			loader: true,
-			response: {
-				fn: function () {
-					jq$('.ci-header,.ci-daemon').find('.ci-state')
-						.filter('[dashboardName="' + dashboardName + '"]')
-						.replaceWith(this.response);
-				},
-				onError: onErrorBehavior,
-			}
-		};
+  function onErrorBehavior() {
+    if (this.status == null) return;
+    switch (this.status) {
+      case 0:
+        // server not running, do nothing.
+        KNOWWE.notification.error(
+          null,
+          "Server appears to be offline.",
+          status,
+        );
+        break;
+      case 409:
+        KNOWWE.notification.error(
+          null,
+          "There already is a build running for this dashboard. Please abort the running build before starting a new one.",
+          status,
+        );
+        break;
+      case 404:
+        KNOWWE.notification.error(
+          null,
+          "This page no longer exists. Please reload.",
+          status,
+        );
+        break;
+      default:
+        // alert("Error " + this.status + ". Please reload the page.");
+        break;
+    }
+  }
 
-		new _KA(options).send();
+  return {
+    expandMessage: function (button) {
+      const $expandButton = jq$(button);
+      const $collapseButton = $expandButton
+        .parent()
+        .children(".collapseCIMessage");
+      const $message = $expandButton.parent().children(".ci-message");
+      $message.show("fast", function () {
+        $expandButton.hide();
+        $collapseButton.show();
+      });
+    },
 
-	}
+    collapseMessage: function (button) {
+      const $collapseButton = jq$(button);
+      const $expandButton = $collapseButton
+        .parent()
+        .children(".expandCIMessage");
+      const $message = $collapseButton.parent().children(".ci-message");
+      $message.hide("fast", function () {
+        $collapseButton.hide();
+        $expandButton.show();
+      });
+    },
 
-	function onErrorBehavior() {
-		if (this.status == null)
-			return;
-		switch (this.status) {
-			case 0:
-				// server not running, do nothing.
-				KNOWWE.notification.error(null, "Server appears to be offline.", status);
-				break;
-			case 409:
-				KNOWWE.notification.error(null, "There already is a build running for this dashboard. Please abort the running build before starting a new one.", status);
-				break;
-			case 404:
-				KNOWWE.notification.error(null, "This page no longer exists. Please reload.", status);
-				break;
-			default:
-				// alert("Error " + this.status + ". Please reload the page.");
-				break;
-		}
-	}
+    refreshBuildDetails: function (dashboardName, buildNr) {
+      const params = {
+        action: "CIAction",
+        task: "refreshBuildDetails",
+        name: dashboardName,
+      };
 
-	return {
+      if (buildNr != null) {
+        params["nr"] = buildNr;
+      }
 
-		expandMessage: function (button) {
-			const $expandButton = jq$(button);
-			const $collapseButton = $expandButton.parent().children('.collapseCIMessage');
-			const $message = $expandButton.parent().children('.ci-message');
-			$message.show('fast', function () {
-				$expandButton.hide();
-				$collapseButton.show();
-			});
-		},
+      const options = {
+        url: KNOWWE.core.util.getURL(params),
+        loader: true,
+        response: {
+          ids: [dashboardName + "-build-details-wrapper"],
+          action: "insert",
+          fn: function () {
+            // (re-)activate incoming script tags for collapsing
+            let result = null;
+            const rePattern = /<script>(.*)<\/script>/gi;
+            while ((result = rePattern.exec(this.responseText))) {
+              const script = result[1];
+              eval(script);
+            }
+          },
+        },
+      };
 
-		collapseMessage: function (button) {
-			const $collapseButton = jq$(button);
-			const $expandButton = $collapseButton.parent().children('.expandCIMessage');
-			const $message = $collapseButton.parent().children('.ci-message');
-			$message.hide('fast', function () {
-				$collapseButton.hide();
-				$expandButton.show();
-			});
-		},
+      new _KA(options).send();
+    },
 
-		refreshBuildDetails: function (dashboardName, buildNr) {
+    /*
+     * Cancels a running build, followed by a page reload.
+     */
+    stopRunningBuild: function (dashboardName, title, location) {
+      const params = {
+        action: "CIStopBuildAction",
+        name: dashboardName,
+        topic: title,
+      };
 
-			const params = {
-				action: 'CIAction',
-				task: 'refreshBuildDetails',
-				name: dashboardName,
-			};
+      const options = {
+        url: KNOWWE.core.util.getURL(params),
+        loader: true,
+        response: {
+          fn: function () {
+            window.location = location;
+          },
+        },
+      };
 
-			if (buildNr != null) {
-				params["nr"] = buildNr;
-			}
+      new _KA(options).send();
+    },
 
-			const options = {
-				url: KNOWWE.core.util.getURL(params),
-				loader: true,
-				response: {
-					ids: [dashboardName + '-build-details-wrapper'],
-					action: 'insert',
-					fn: function () {
-						// (re-)activate incoming script tags for collapsing
-						let result = null;
-						const rePattern = /<script>(.*)<\/script>/gi;
-						while (result = rePattern.exec(this.responseText)) {
-							const script = result[1];
-							eval(script);
-						}
-					}
-				}
+    /*
+     * Triggers the start of a new build. Afterward just a page reload is called,
+     * which then renders progress info html stuff.
+     */
+    executeNewBuild: function (dashboardName, title) {
+      const params = {
+        action: "CIAction",
+        task: "executeNewBuild",
+        name: dashboardName,
+      };
 
+      const options = {
+        url: KNOWWE.core.util.getURL(params),
+        loader: true,
+        response: {
+          fn: function () {
+            _CI.refreshBuildProgress(dashboardName);
+            refreshCIDeamonBubble(dashboardName);
+            _CI.refreshBuildProgressDeamon(dashboardName);
 
-			};
+            // make not-up-to-date warning disappear
+            jq$(".ci-title").each(function () {
+              if (jq$(this).attr("name") === dashboardName) {
+                jq$(this).find(".warning").hide();
+                // warning.attr('style', function(i, style) {
+                // 	return style + 'display: none !important;';
+                // });
+              }
+            });
+          },
+          onError: onErrorBehavior,
+        },
+      };
 
-			new _KA(options).send();
-		},
+      new _KA(options).send();
+    },
 
-		/*
-		 * Cancels a running build, followed by a page reload.
-		 */
-		stopRunningBuild: function (dashboardName, title, location) {
+    /*
+     * Repeatedly asks the state of the current build process and displays it. When
+     * 'finished' is responed as progress message, the loop terminates and a page
+     * reload is triggered.
+     */
+    refreshBuildProgress: function (dashboardName) {
+      const error = false;
+      const params = {
+        action: "CIGetProgressAction",
+        name: dashboardName,
+      };
+      const options = {
+        url: KNOWWE.core.util.getURL(params),
+        response: {
+          action: "none",
+          fn: function () {
+            if (error) return;
+            const percent = JSON.parse(this.responseText).progress;
+            const message = JSON.parse(this.responseText).message;
 
-			const params = {
-				action: 'CIStopBuildAction',
-				name: dashboardName,
-				topic: title
-			};
+            const pv = document.getElementById(
+              dashboardName + "_progress-value",
+            );
+            if (pv) pv.innerHTML = percent + " %";
+            const pt = document.getElementById(
+              dashboardName + "_progress-text",
+            );
+            if (pt) pt.innerHTML = message;
 
-			const options = {
-				url: KNOWWE.core.util.getURL(params),
-				loader: true,
-				response: {
-					fn: function () {
-						window.location = location;
-					}
-				}
-			};
+            if (message !== "Finished") {
+              jq$('[name="' + dashboardName + '"]')
+                .find(".ci-progress-info")
+                .show();
+              setTimeout(function () {
+                new _KA(options).send();
+              }, 500);
+            } else {
+              jq$('[name="' + dashboardName + '"]')
+                .find(".ci-progress-info")
+                .fadeOut(500);
+              let modifiedWarning = document.getElementById(
+                "modified-warning_" + dashboardName,
+              );
+              if (modifiedWarning) {
+                modifiedWarning.parentElement.remove();
+              }
+              _CI.refreshBuildDetails(dashboardName);
+              _CI.refreshBuildList(dashboardName);
+              _CI.refreshBuildStatus(dashboardName);
+            }
+          },
+          onError: function () {
+            const progressText = jq$("#" + dashboardName + "_progress-text");
+            if (progressText)
+              progressText.text(
+                " Exception while updating progress. Please reload manually.",
+              );
+          },
+        },
+      };
+      new _KA(options).send();
+    },
 
-			new _KA(options).send();
-		},
+    /**
+     * Repeatedly check whether the current build process is still running. When 'finished' is responded as progress
+     * message, the loop terminates and a refresh call of the state bubble is called.
+     *
+     * @param dashboardName the name of the CI dashboard to display the daemon for
+     * @param {undefined | (({dashboardName: string}) => void)} onFinish an optional callback to be called after
+     * termination and successful refresh.
+     */
+    refreshBuildProgressDeamon: function (dashboardName, onFinish = undefined) {
+      const params = {
+        action: "CIGetProgressAction",
+        name: dashboardName,
+      };
+      const options = {
+        url: KNOWWE.core.util.getURL(params),
+        response: {
+          action: "none",
+          fn: function () {
+            const message = JSON.parse(this.responseText).message;
 
+            if (message !== "Finished") {
+              setTimeout(function () {
+                new _KA(options).send();
+              }, 1000);
+            } else {
+              refreshCIDeamonBubble(dashboardName, onFinish);
+            }
+          },
+        },
+        onError: function () {},
+      };
 
-		/*
-		 * Triggers the start of a new build. Afterward just a page reload is called,
-		 * which then renders progress info html stuff.
-		 */
-		executeNewBuild: function (dashboardName, title) {
+      new _KA(options).send();
+    },
 
-			const params = {
-				action: 'CIAction',
-				task: 'executeNewBuild',
-				name: dashboardName
-			};
+    /*
+     * Fetches the list of build numbers/states when the left/right navigation
+     * buttons for showing earlier/later builds are pressed. It also updates the
+     * build details panel on the right correspondingly.
+     *
+     */
+    refreshBuildList: function (
+      dashboardName,
+      clickedIndex,
+      indexFromBack,
+      numberOfBuilds,
+    ) {
+      const params = {
+        action: "CIAction",
+        task: "refreshBuildList",
+        name: dashboardName,
+      };
 
-			const options = {
-				url: KNOWWE.core.util.getURL(params),
-				loader: true,
-				response: {
-					fn: function () {
-						_CI.refreshBuildProgress(dashboardName);
-						refreshCIDeamonBubble(dashboardName);
-						_CI.refreshBuildProgressDeamon(dashboardName);
+      if (clickedIndex != null) {
+        params["nr"] = clickedIndex;
+      }
 
-						// make not-up-to-date warning disappear
-						jq$('.ci-title').each(function () {
-							if (jq$(this).attr('name') === dashboardName) {
-								jq$(this).find('.warning').hide();
-								// warning.attr('style', function(i, style) {
-								// 	return style + 'display: none !important;';
-								// });
-							}
-						});
-					},
-					onError: onErrorBehavior,
-				}
-			};
+      if (indexFromBack != null) {
+        params["indexFromBack"] = indexFromBack;
+      }
 
-			new _KA(options).send();
-		},
+      if (numberOfBuilds != null) {
+        params["numberOfBuilds"] = numberOfBuilds;
+      }
 
-		/*
-		 * Repeatedly asks the state of the current build process and displays it. When
-		 * 'finished' is responed as progress message, the loop terminates and a page
-		 * reload is triggered.
-		 */
-		refreshBuildProgress: function (dashboardName) {
-			const error = false;
-			const params = {
-				action: 'CIGetProgressAction',
-				name: dashboardName,
-			};
-			const options = {
-				url: KNOWWE.core.util.getURL(params),
-				response: {
-					action: 'none',
-					fn: function () {
-						if (error)
-							return;
-						const percent = JSON.parse(this.responseText).progress;
-						const message = JSON.parse(this.responseText).message;
+      const options = {
+        url: KNOWWE.core.util.getURL(params),
+        response: {
+          ids: [dashboardName + "-build-table"],
+          action: "insert",
+        },
+      };
 
-						const pv = document.getElementById(dashboardName + "_progress-value");
-						if (pv) pv.innerHTML = percent + " %";
-						const pt = document.getElementById(dashboardName + "_progress-text");
-						if (pt) pt.innerHTML = message;
+      new _KA(options).send();
+    },
 
-						if (message !== 'Finished') {
-							jq$('[name="' + dashboardName + '"]').find('.ci-progress-info').show();
-							setTimeout(function () {
-								new _KA(options).send()
-							}, 500);
-						} else {
-							jq$('[name="' + dashboardName + '"]').find('.ci-progress-info').fadeOut(500);
-							let modifiedWarning = document.getElementById("modified-warning_" + dashboardName);
-							if (modifiedWarning) {
-								modifiedWarning.parentElement.remove();
-							}
-							_CI.refreshBuildDetails(dashboardName);
-							_CI.refreshBuildList(dashboardName);
-							_CI.refreshBuildStatus(dashboardName);
-						}
-					},
-					onError: function () {
-						const progressText = jq$("#" + dashboardName + "_progress-text");
-						if (progressText)
-							progressText
-								.text(" Exception while updating progress. Please reload manually.");
-					}
-				}
-			};
-			new _KA(options).send();
-		},
+    refreshBuildStatus: function (dashboardName) {
+      const params = {
+        action: "CIAction",
+        task: "refreshBuildStatus",
+        name: dashboardName,
+      };
 
-		/*
-		 * Repeatedly check whether the current build process is still running.
-		 * When 'finished' is responded as progress message, 
-		 * the loop terminates and a refresh call of the state bubble is called.
-		 */
-		refreshBuildProgressDeamon: function (dashboardName) {
+      const options = {
+        url: KNOWWE.core.util.getURL(params),
+        response: {
+          ids: ["ci-header_" + dashboardName],
+          action: "replace",
+        },
+      };
 
-			const params = {
-				action: 'CIGetProgressAction',
-				name: dashboardName,
-			};
-			const options = {
-				url: KNOWWE.core.util.getURL(params),
-				response: {
-					action: 'none',
-					fn: function () {
-
-						const message = JSON.parse(this.responseText).message;
-
-						if (message !== 'Finished') {
-							setTimeout(function () {
-								new _KA(options).send()
-							}, 1000);
-						} else {
-							refreshCIDeamonBubble(dashboardName);
-						}
-
-					}
-				},
-				onError: function () {
-				}
-			};
-
-			new _KA(options).send();
-		},
-
-
-		/*
-		 * Fetches the list of build numbers/states when the left/right navigation
-		 * buttons for showing earlier/later builds are pressed. It also updates the
-		 * build details panel on the right correspondingly.
-		 * 
-		 */
-		refreshBuildList: function (dashboardName, clickedIndex, indexFromBack, numberOfBuilds) {
-
-			const params = {
-				action: 'CIAction',
-				task: 'refreshBuildList',
-				name: dashboardName,
-			};
-
-			if (clickedIndex != null) {
-				params["nr"] = clickedIndex;
-			}
-
-			if (indexFromBack != null) {
-				params["indexFromBack"] = indexFromBack;
-			}
-
-			if (numberOfBuilds != null) {
-				params["numberOfBuilds"] = numberOfBuilds;
-			}
-
-			const options = {
-				url: KNOWWE.core.util.getURL(params),
-				response: {
-					ids: [dashboardName + '-build-table'],
-					action: 'insert'
-				}
-			};
-
-			new _KA(options).send();
-		},
-
-		refreshBuildStatus: function (dashboardName) {
-
-			const params = {
-				action: 'CIAction',
-				task: 'refreshBuildStatus',
-				name: dashboardName,
-			};
-
-			const options = {
-				url: KNOWWE.core.util.getURL(params),
-				response: {
-					ids: ['ci-header_' + dashboardName],
-					action: 'replace'
-				}
-			};
-
-			new _KA(options).send();
-		}
-	}
+      new _KA(options).send();
+    },
+  };
 }();
 
 /**
