@@ -538,6 +538,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			Boolean ignored = ignoreNode.checkIgnored(getPath(att), false);
 			if (ignored != null && ignored) {
 				att.setVersion(1);
+				att.setSize(attFile.length());
 				return att;
 			}
 
