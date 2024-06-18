@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -619,15 +620,22 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		addResourceToTemplateManager(wikiContext, ctx, moduleIncludes, module);
 
 		List<String> css = loader.getStylesheetIncludes();
+		List<String> cssToAdd = new ArrayList<>();
+		List<String> types = new ArrayList<>();
 		for (String resource : css) {
 			if (ctx == null || !ctx.toString().contains(resource)) {
-				TemplateManager.addResourceRequest(wikiContext, stylesheet.name(), stylesheet.getPath(resource));
+				cssToAdd.add(stylesheet.getPath(resource));
+				types.add(stylesheet.name());
 			}
 		}
+		TemplateManager.addResourceRequests(wikiContext, types, cssToAdd);
 	}
 
 	private static void addResourceToTemplateManager(Context wikiContext, Object ctx, List<String> scriptIncludes,
 													 ResourceLoader.Type type) {
+
+		List<String> types = new ArrayList<>();
+		List<String> resourcePaths = new ArrayList<>();
 		for (String resource : scriptIncludes) {
 			/*
 			 * Check whether the corresponding plugin shipping the resource is
@@ -656,9 +664,11 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				}
 			}
 			if (ctx == null || !ctx.toString().contains(resource)) {
-				TemplateManager.addResourceRequest(wikiContext, type.name(), type.getPath(resource));
+				types.add(type.name());
+				resourcePaths.add(type.getPath(resource));
 			}
 		}
+		TemplateManager.addResourceRequests(wikiContext, types, resourcePaths);
 	}
 
 	@Override

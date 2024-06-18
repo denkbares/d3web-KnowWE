@@ -103,8 +103,11 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT = "jspwiki.gitVersioningFileProvider.remoteGit";
 	public static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_SKIP_GC = "jspwiki.gitVersioningFileProvider.skipGC";
 	private static final String JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE = "jspwiki.gitVersioningFileProvider.autoUpdate";
+
 	public static final String JSPWIKI_GIT_DEFAULT_BRANCH = "jspwiki.git.defaultBranch";
 	private static final String JSPWIKI_GIT_COMMENT_STRATEGY = "jspwiki.git.commentStrategy";
+	private static final String JSPWIKI_GIT_REMOTE_USERNAME = "jspwiki.git.remoteUsername";
+	private static final String JSPWIKI_GIT_REMOTE_TOKEN = "jspwiki.git.remoteToken";
 	public Repository repository;
 	public static final String GIT_DIR = ".git";
 	public static final String JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR = "jspwiki.fileSystemProvider.pageDir";
@@ -115,6 +118,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private GitVersionCache cache;
 	private GitHistoryProvider historyProvider;
 	private final GitAutoUpdateScheduler scheduler;
+
+	private String remoteUsername;
+	private String remoteToken;
 
 	//user to set of paths
 	Map<String, Set<String>> openCommits = new ConcurrentHashMap<>();
@@ -130,6 +136,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public boolean isRemoteRepo() {
 		return this.remoteRepo;
 	}
+
+
 
 	private boolean remoteRepo = false;
 	private boolean autoUpdateEnabled = false;
@@ -152,6 +160,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		this.repository = this.gitBridge.getRepository();
 
 		autoUpdateEnabled = TextUtil.getBooleanProperty(properties, JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_AUTOUPDATE, false);
+
+		this.remoteUsername = TextUtil.getStringProperty(properties, JSPWIKI_GIT_REMOTE_USERNAME, null);
+		this.remoteToken = TextUtil.getStringProperty(properties, JSPWIKI_GIT_REMOTE_TOKEN, null);
 
 		setGitCommentStrategy(properties);
 
@@ -1041,5 +1052,13 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 
 	public boolean isClean() {
 		return this.gitBridge.isClean();
+	}
+
+	public String getRemoteToken() {
+		return remoteToken;
+	}
+
+	public String getRemoteUsername() {
+		return remoteUsername;
 	}
 }

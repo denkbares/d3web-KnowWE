@@ -44,46 +44,16 @@ public class RawGitHistoryProvider implements GitHistoryProvider {
 	public List<Page> getPageHistory(PageIdentifier pageIdentifier) throws ProviderException {
 
 		String filename = pageIdentifier.fileName();
-
-
-		String command = "git log " + filename;
-		Process process = null;
+		List<String> commitHashesForPage = new ArrayList<>();
 		try {
-			process = Runtime.getRuntime().exec(
-					command, null, this.directory.getParentFile());
+			commitHashesForPage = gitBridge.getCommitHashesForPageRaw(filename, false, -1);
 		}
-		catch (IOException e) {
+		catch (InterruptedException | IOException e) {
 			throw new RuntimeException(e);
-		}
-
-		InputStream responseStream = process.getInputStream();
-		try {
-			int exitVal = process.waitFor();
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-
-
-		List<String> response = new ArrayList<>();
-		try {
-			response = IOUtils.readLines(responseStream);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		List<String> commithashes = new ArrayList<>();
-
-		for (String line : response) {
-			if (line.startsWith("commit")) {
-				String commitHash = line.split("commit")[1].trim();
-				commithashes.add(commitHash);
-			}
 		}
 
 		List<RevCommit> revCommits = new ArrayList<>();
-		for (String commitHash : commithashes) {
+		for (String commitHash : commitHashesForPage) {
 			RevCommit revCommit = GitVersioningUtils.getRevCommit(new Git(this.repo), commitHash);
 			if (revCommit != null) {
 				revCommits.add(revCommit);

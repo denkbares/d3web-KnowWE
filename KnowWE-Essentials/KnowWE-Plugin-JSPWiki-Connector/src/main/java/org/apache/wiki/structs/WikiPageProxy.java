@@ -50,6 +50,7 @@ public class WikiPageProxy extends WikiPage {
 			return author;
 		}
 
+
 		try {
 			List<Page> pageHistory = this.historyProvider.getPageHistory(PageIdentifier.fromPagename(this.historyProvider.basePath(), this.getName(), -1));
 			if (pageHistory == null || pageHistory.isEmpty()) {
