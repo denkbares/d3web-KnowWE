@@ -76,6 +76,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String NAME_KEY = "name";
 	public static final String GROUP_KEY = "group";
 	public static final String TEST_KEY = "test";
+	public static final String MAX_BUILDS = "max-builds";
 
 	public static final String SOFT_TEST_KEY = "softTest";
 	public static final String TRIGGER_KEY = "trigger";
@@ -134,6 +135,9 @@ public class CIDashboardType extends DefaultMarkupType {
 		markup.addAnnotation(TEMPLATE, false);
 		markup.addAnnotation(SKIP_TESTS, false);
 
+		//allow specification of max tests for the dashboard
+		markup.addAnnotation(MAX_BUILDS, false);
+
 		return markup;
 	}
 
@@ -163,6 +167,18 @@ public class CIDashboardType extends DefaultMarkupType {
 
 	public Set<String> getMonitoredArticles(Section<CIDashboardType> dashboardSection) {
 		return Set.copyOf(dashboardSection.getObjectOrDefault(null, MONITORED_ARTICLES, Set.of()));
+	}
+	public static Optional<Integer> getMaxBuilds(Section<CIDashboardType> section) {
+		String maxBuildsString = DefaultMarkupType.getAnnotation(section, MAX_BUILDS);
+		if (maxBuildsString == null)return Optional.empty();
+
+		try{
+			int maxBuilds = Integer.parseInt(maxBuildsString);
+			return Optional.of(maxBuilds);
+		}
+		catch (NumberFormatException e){
+			return Optional.empty();
+		}
 	}
 
 	/**

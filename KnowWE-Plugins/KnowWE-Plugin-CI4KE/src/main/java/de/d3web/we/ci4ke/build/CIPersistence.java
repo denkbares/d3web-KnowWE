@@ -59,7 +59,7 @@ import de.knowwe.core.wikiConnector.WikiConnector;
 public class CIPersistence {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIPersistence.class);
 
-	public static final int MAX_BUILDS = 2;
+	public static int maxBuilds = 200;
 
 	private final boolean skipCleaning;
 	private static final String ATTACHMENT_PREFIX = "ci-build-";
@@ -71,6 +71,11 @@ public class CIPersistence {
 		this.dashboard = dashboard;
 		this.buildCache = buildCache;
 		skipCleaning = System.getProperty("knowwe.ci.skipCleaning") != null;
+	}
+
+	public CIPersistence(CIDashboard dashboard, CIBuildCache buildCache, int maxBuilds) {
+		this(dashboard, buildCache);
+		CIPersistence.maxBuilds = maxBuilds;
 	}
 
 	/**
@@ -145,7 +150,7 @@ public class CIPersistence {
 		String userName = "CI-process";
 		String dashboardArticle = attachmentTargetArticle(dashboard.getDashboardArticle());
 
-		if (!skipCleaning && build.getBuildNumber() > MAX_BUILDS) {
+		if (!skipCleaning && build.getBuildNumber() > maxBuilds) {
 			// do big cleanup, where the older half of the builds are deleted
 			LinkedList<ByteArrayInputStream> streams = new LinkedList<>();
 			streams.add(currentBuildInputStream);
@@ -153,7 +158,7 @@ public class CIPersistence {
 					.getAttachmentHistory(getAttachmentPath());
 			// collection newer half
 			for (WikiAttachmentInfo wikiAttachmentInfo : attachmentHistory) {
-				if (streams.size() > MAX_BUILDS / 2) break;
+				if (streams.size() > maxBuilds / 2) break;
 				InputStream inputStream = wikiAttachmentInfo.getAttachment().getInputStream();
 				streams.addFirst(new ByteArrayInputStream(Streams.getBytesAndClose(inputStream)));
 			}
