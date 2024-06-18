@@ -34,6 +34,7 @@ import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * Marks the section as imported into another wiki at a specific time
@@ -44,12 +45,15 @@ import de.knowwe.core.kdom.parsing.Section;
 public class ImportMarker {
 
 	public static final String REQUEST_FROM = "requestFrom";
+	public static final String REQUEST_LINK = "requestLink";
 	private final Date creationDate;
-	private final String source;
+	private final String sourceLabel;
+	private final String sourceLink;
 
-	public ImportMarker(@NotNull Date creationDate, @Nullable String source) {
+	public ImportMarker(@NotNull Date creationDate, @Nullable String sourceLabel, @Nullable String sourceLink) {
 		this.creationDate = creationDate;
-		this.source = source;
+		this.sourceLabel = sourceLabel;
+		this.sourceLink = sourceLink;
 	}
 
 	/**
@@ -61,11 +65,19 @@ public class ImportMarker {
 	}
 
 	/**
-	 * The source to where the section was imported. May be null, if the source is unknown
+	 * The source label to where the section was imported. May be null, if the source is unknown
 	 */
 	@Nullable
-	public String getSource() {
-		return source;
+	public String getSourceLabel() {
+		return sourceLabel;
+	}
+
+	/**
+	 * The absolute link  to where the section was imported. May be null, if the source is unknown
+	 */
+	@Nullable
+	public String getSourceLink() {
+		return sourceLink;
 	}
 
 	@Override
@@ -73,18 +85,18 @@ public class ImportMarker {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		ImportMarker that = (ImportMarker) o;
-		return Objects.equals(source, that.source);
+		return Objects.equals(sourceLabel, that.sourceLabel) && Objects.equals(sourceLink, that.sourceLink);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(source);
+		return Objects.hash(sourceLabel, sourceLink);
 	}
 
 	public static void markAsImported(Section<? extends Type> section, UserActionContext context) {
 		Set<ImportMarker> markers = section.computeIfAbsent(null, ImportMarker.class.getName(),
 				(c, s) -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
-		ImportMarker marker = new ImportMarker(new Date(), context.getParameter(REQUEST_FROM));
+		ImportMarker marker = new ImportMarker(new Date(), context.getParameter(REQUEST_FROM), context.getParameter(REQUEST_LINK));
 		markers.remove(marker);
 		markers.add(marker);
 	}
@@ -101,10 +113,18 @@ public class ImportMarker {
 	}
 
 	public String getInfoText(String contentName) {
-		String source = getSource();
-		if (source == null) {
-			source = "another wiki";
+		String source;
+		String sourceLabel = getSourceLabel();
+		if (sourceLabel == null) {
+			sourceLabel = "another wiki";
 		}
+		String sourceLink = getSourceLink();
+		if (sourceLink == null) {
+			source = sourceLabel;
+		} else {
+			source = KnowWEUtils.getWikiLink(sourceLabel, sourceLink);
+		}
+
 		return "%%information This " + contentName + " was imported by " + source + " "
 				+ Stopwatch.getDisplay(System.currentTimeMillis() - getCreationDate()
 				.getTime()) + " ago /%";

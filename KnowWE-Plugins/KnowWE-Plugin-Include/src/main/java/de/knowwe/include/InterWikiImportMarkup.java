@@ -39,6 +39,7 @@ import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.tools.HelpToolProvider;
 import de.knowwe.core.user.UserContext;
+import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
 import de.knowwe.kdom.defaultMarkup.AnnotationType;
@@ -154,13 +155,18 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 			reference += Strings.encodeURL("#" + sectionName);
 		}
 
-		String from = "";
-		String applicationName = Environment.getInstance().getWikiConnector().getApplicationName();
-		if (Strings.isNotBlank(applicationName) && !"knowwe".equalsIgnoreCase(applicationName)) {
-			from = "&" + ImportMarker.REQUEST_FROM + "=" + Strings.encodeURL(applicationName);
+		String linkLabel = Environment.getInstance().getWikiConnector().getApplicationName();
+		if (Strings.isBlank(linkLabel) || "knowwe".equalsIgnoreCase(linkLabel)) {
+			linkLabel = "another wiki";
 		}
+		linkLabel += ": " + section.getTitle();
 
-		String url = wikiAnnotation + command + reference + from;
+		String fromParam = "&" + ImportMarker.REQUEST_FROM + "=" + Strings.encodeURL(linkLabel);
+
+		String link = KnowWEUtils.getAsAbsoluteLink(KnowWEUtils.getURLLink(section));
+		String linkParam = "&" + ImportMarker.REQUEST_LINK + "=" + Strings.encodeURL(link);
+
+		String url = wikiAnnotation + command + reference + fromParam + linkParam;
 
 		try {
 			return new URL(url);
