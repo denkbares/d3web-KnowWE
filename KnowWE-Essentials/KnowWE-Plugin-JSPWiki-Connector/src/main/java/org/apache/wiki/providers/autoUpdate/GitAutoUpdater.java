@@ -301,7 +301,6 @@ public class GitAutoUpdater {
 			revWalk.parseCommit(oldHead);
 			Iterator<RevCommit> iterator = revWalk.iterator();
 			boolean parse = false;
-			Set<String> refreshedPages = new TreeSet<>();
 			Collection<String> toRefresh = new HashSet<>();
 			Collection<RevCommit> revWalkCommits = new ArrayList<>();
 			while (iterator.hasNext()) {
@@ -315,9 +314,10 @@ public class GitAutoUpdater {
 					continue;
 				}
 				if (parse) {
-					mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, refreshedPages, toRefresh);
+					mapRevCommit(objectReader, oldTreeParser, newTreeParser, diffFormatter, commit, toRefresh);
 				}
 			}
+			Set<String> refreshedPages = new TreeSet<>();
 			for (String path : toRefresh) {
 				chooseAndUpdate(refreshedPages, path);
 			}
@@ -343,7 +343,9 @@ public class GitAutoUpdater {
 		return title;
 	}
 
-	private void mapRevCommit(ObjectReader objectReader, CanonicalTreeParser oldTreeParser, CanonicalTreeParser newTreeParser, DiffFormatter diffFormatter, RevCommit commit, Collection<String> refreshedPages, Collection<String> toRefresh) throws IOException {
+
+
+	private void mapRevCommit(ObjectReader objectReader, CanonicalTreeParser oldTreeParser, CanonicalTreeParser newTreeParser, DiffFormatter diffFormatter, RevCommit commit, Collection<String> toRefresh) throws IOException {
 		final RevCommit[] parents = commit.getParents();
 		RevTree tree = commit.getTree();
 		if (parents.length > 0) {
