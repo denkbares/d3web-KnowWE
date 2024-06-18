@@ -21,7 +21,7 @@ public class TextNode extends HtmlElement {
 	}
 
 	@Override
-	public HtmlElement children(HtmlElement... htmlElements) {
+	public HtmlElement children(HtmlProvider... htmlElements) {
 		return this; // ignore
 	}
 
