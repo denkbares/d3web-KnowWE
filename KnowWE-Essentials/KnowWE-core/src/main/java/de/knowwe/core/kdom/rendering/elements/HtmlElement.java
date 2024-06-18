@@ -18,11 +18,11 @@ import de.knowwe.core.kdom.rendering.RenderResult;
  * @author Albrecht Striffler (denkbares GmbH)
  * @created 02.10.2023
  */
-public class HtmlElement {
+public class HtmlElement implements HtmlProvider {
 
 	private String tagName = null;
 	private final List<String> attributes = new ArrayList<>();
-	private final List<HtmlElement> children = new ArrayList<>();
+	private final List<HtmlProvider> children = new ArrayList<>();
 
 	/**
 	 * Create a new empty HTML element with default div tag name.
@@ -73,7 +73,7 @@ public class HtmlElement {
 	 * Add children to this HTML element
 	 */
 
-	public HtmlElement children(HtmlElement... htmlElements) {
+	public HtmlElement children(HtmlProvider... htmlElements) {
 		this.children.addAll(Arrays.asList(htmlElements));
 		return this;
 	}
@@ -81,10 +81,11 @@ public class HtmlElement {
 	/**
 	 * Write the HTML of this element to the given {@link RenderResult}
 	 */
+	@Override
 	public void write(RenderResult result) {
 		Objects.requireNonNull(tagName);
 		result.appendHtmlTag(tagName, attributes.toArray(String[]::new));
-		for (HtmlElement child : children) {
+		for (HtmlProvider child : children) {
 			child.write(result);
 		}
 		result.appendHtmlTag("/" + tagName);

@@ -24,11 +24,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.denkbares.strings.Strings;
+import de.knowwe.core.kdom.rendering.elements.HtmlProvider;
 
 /**
  * Created by Stefan Plehn, Albrecht Striffler (denkbares GmbH) on 21.11.14.
  * <p>
- * For further icons or an example of the existing ones; http://fontawesome.io/icons/
+ * For further icons or an example of the existing ones, visit <a href="http://fontawesome.io/icons/">fontawesome.io</a>
  */
 public class Icon {
 
@@ -206,6 +207,10 @@ public class Icon {
 	public static final Icon CLEAR_TABLE = new Icon(Icon.EDITTABLE.addColor(Color.GRAY)
 			.addStyle("opacity: 0.7;"), Icon.UNSELECT_TARGET.addStyle("padding: 8px 0 0 8px; scale: 0.8;"));
 
+	public HtmlProvider toHtmlElement() {
+		return result -> result.appendHtml(toHtml());
+	}
+
 	public enum Percent {
 		by33,
 		by100,
@@ -277,11 +282,11 @@ public class Icon {
 	public static Icon fromImage(String image) {
 		// we require some icon to get a valid width, color will be set transparent to appear empty
 		return new Icon("fa-pencil image-icon", "color: transparent;" +
-				"display: inline-block;" +
-				"background-image:url(" + image + ");" +
-				"background-repeat: no-repeat;" +
-				"background-size: contain;" +
-				"background-position: 50%",
+												"display: inline-block;" +
+												"background-image:url(" + image + ");" +
+												"background-repeat: no-repeat;" +
+												"background-size: contain;" +
+												"background-position: 50%",
 				null, null);
 	}
 
@@ -310,10 +315,10 @@ public class Icon {
 				}
 			}
 			return "<i class='" + cssClass + "'"
-					+ (style == null ? "" : " style='" + style + "'")
-					+ (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
-					+ (id == null ? "" : " id='" + id + "'")
-					+ "></i>";
+				   + (style == null ? "" : " style='" + style + "'")
+				   + (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
+				   + (id == null ? "" : " id='" + id + "'")
+				   + "></i>";
 		}
 		else {
 			iconsHtml = overlayIcons.stream()
@@ -326,10 +331,10 @@ public class Icon {
 
 	private String toHtmlWithoutContainer() {
 		return "<i class='" + cssClass + "'"
-				+ (style == null ? "" : " style='" + style + "'")
-				+ (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
-				+ (id == null ? "" : " id='" + id + "'")
-				+ "></i>";
+			   + (style == null ? "" : " style='" + style + "'")
+			   + (title == null ? "" : " title='" + Strings.encodeHtml(title) + "'")
+			   + (id == null ? "" : " id='" + id + "'")
+			   + "></i>";
 	}
 
 	public Icon addStyle(String style) {
