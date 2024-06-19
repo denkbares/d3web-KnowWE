@@ -13,7 +13,7 @@ package de.knowwe.core.kdom.rendering.elements;
 public class Li extends HtmlElement {
 
 	public Li() {
-		super("lit");
+		super("li");
 	}
 
 	public Li(String textContent) {
