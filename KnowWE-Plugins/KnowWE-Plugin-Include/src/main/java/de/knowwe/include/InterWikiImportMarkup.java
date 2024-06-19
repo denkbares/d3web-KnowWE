@@ -132,11 +132,11 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	@Override
 	public @Nullable URL getUrl(Section<? extends AttachmentUpdateMarkup> section) {
-		return getUrl(section, "_action/GetWikiSectionTextAction?reference=");
+		return getUrl(section, "_action/GetWikiSectionTextAction?reference=", true);
 	}
 
 	@Nullable
-	private URL getUrl(Section<? extends AttachmentUpdateMarkup> sec, String command) {
+	private URL getUrl(Section<? extends AttachmentUpdateMarkup> sec, String command, boolean params) {
 		Section<InterWikiImportMarkup> section = $(sec).closest(InterWikiImportMarkup.class).getFirst();
 		if (section == null) return null;
 		String wikiAnnotation = getWiki(section);
@@ -166,7 +166,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		String link = KnowWEUtils.getAsAbsoluteLink(KnowWEUtils.getURLLink(section));
 		String linkParam = "&" + ImportMarker.REQUEST_LINK + "=" + Strings.encodeURL(link);
 
-		String url = wikiAnnotation + command + reference + fromParam + linkParam;
+		String url = wikiAnnotation + command + reference + (params ? fromParam + linkParam : "");
 
 		try {
 			return new URL(url);
@@ -313,7 +313,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 		}
 
 		private void renderHeader(Section<InterWikiImportMarkup> markup, UserContext user, RenderResult result) {
-			URL url = markup.get().getUrl(markup, "Wiki.jsp?page=");
+			URL url = markup.get().getUrl(markup, "Wiki.jsp?page=", false);
 			String wiki = markup.get().getWiki(markup);
 			if (url != null && wiki != null) {
 				String wikiName = wiki.replaceAll("^https?://", "").replaceAll("/$", "");
