@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import com.denkbares.strings.Strings;
 import de.knowwe.core.kdom.rendering.RenderResult;
 
 /**
@@ -89,5 +90,30 @@ public class HtmlElement implements HtmlProvider {
 			child.write(result);
 		}
 		result.appendHtmlTag("/" + tagName);
+	}
+
+	@Override
+	public String toString() {
+		Objects.requireNonNull(tagName);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("<").append(tagName);
+
+		for (int i = 0; i + 2 <= attributes.size(); i += 2) {
+			String attributeName = attributes.get(i);
+			String attributeValue = attributes.get(i + 1);
+			if (attributeName == null) continue;
+			if (attributeValue == null) continue;
+			stringBuilder.append(" ")
+					.append(attributeName)
+					.append("=\"")
+					.append(Strings.encodeHtml(attributeValue))
+					.append("\"");
+		}
+		stringBuilder.append(">");
+		for (HtmlProvider child : children) {
+			stringBuilder.append(child.toString());
+		}
+		stringBuilder.append("</").append(tagName).append(">");
+		return stringBuilder.toString();
 	}
 }

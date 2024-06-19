@@ -39,4 +39,9 @@ public class TextNode extends HtmlElement {
 	public void write(RenderResult result) {
 		result.append(textContent);
 	}
+
+	@Override
+	public String toString() {
+		return textContent;
+	}
 }
