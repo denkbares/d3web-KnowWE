@@ -95,25 +95,24 @@ public class HtmlElement implements HtmlProvider {
 	@Override
 	public String toString() {
 		Objects.requireNonNull(tagName);
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("<").append(tagName);
-
+		StringBuilder builder = new StringBuilder();
+		builder.append("<").append(tagName);
 		for (int i = 0; i + 2 <= attributes.size(); i += 2) {
 			String attributeName = attributes.get(i);
 			String attributeValue = attributes.get(i + 1);
 			if (attributeName == null) continue;
 			if (attributeValue == null) continue;
-			stringBuilder.append(" ")
+			builder.append(" ")
 					.append(attributeName)
 					.append("=\"")
 					.append(Strings.encodeHtml(attributeValue))
 					.append("\"");
 		}
-		stringBuilder.append(">");
+		builder.append(">");
 		for (HtmlProvider child : children) {
-			stringBuilder.append(child.toString());
+			builder.append(child.toString());
 		}
-		stringBuilder.append("</").append(tagName).append(">");
-		return stringBuilder.toString();
+		builder.append("</").append(tagName).append(">");
+		return builder.toString();
 	}
 }
