@@ -348,42 +348,17 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private void render(JSPWikiUserContext userContext, Article article, RenderResult renderResult) throws InterruptedException {
-		Integer compilationTimeout = (Integer) userContext.getSession().getAttribute(COMPILATION_TIMEOUT);
-		if (compilationTimeout == null) compilationTimeout = DEFAULT_RENDER_WAIT_TIMEOUT_SECONDS;
-
-		// if we waited for compilation on another article, don't wait again here
-		String initialWaitOn = (String) userContext.getSession().getAttribute(INITIAL_WAIT_ON);
-		if (initialWaitOn != null && !initialWaitOn.equals(article.getTitle())) {
-			compilationTimeout = 0;
-		}
-
-		if (isSupportArticle(article.getTitle())
-				|| article.getArticleManager() == null
-				|| article.getArticleManager().getCompilerManager().awaitTermination(compilationTimeout * 1000)) {
-
-			// reset timeout if compilation has finished
-			if (!isSupportArticle(article.getTitle()) && article.getArticleManager() != null) {
-				userContext.getSession().setAttribute(COMPILATION_TIMEOUT, DEFAULT_RENDER_WAIT_TIMEOUT_SECONDS);
-				userContext.getSession().removeAttribute(INITIAL_WAIT_ON);
-			}
-
-			renderArticle(userContext, article, renderResult);
-		}
-		else {
-			// increase to reduce flickering
-			userContext.getSession().setAttribute(COMPILATION_TIMEOUT, DEFAULT_RENDER_WAIT_TIMEOUT_SECONDS * 2);
-			userContext.getSession().setAttribute(INITIAL_WAIT_ON, article.getTitle());
-
+		if (!isSupportArticle(article.getTitle())
+				&& article.getArticleManager() != null
+				&& !article.getArticleManager().getCompilerManager().awaitTermination(300)) {
 			renderResult.appendHtmlElement("span", "Compilation still ongoing, please wait...\n" +
 							"You are currently viewing a preview of the page, compilation messages and parts of the " +
 							"content might still be missing!",
 					"class", "warning");
-			renderResult.appendHtmlElement("script", "_KU.showProcessingIndicator();setTimeout(function() {window" +
-					".location.reload()}, 0)");
-			Article temporaryArticle = Article.createTemporaryArticle(article.getText(), article.getTitle(),
-					article.getWeb());
-			renderArticle(userContext, temporaryArticle, renderResult);
+			String awaitAction = "jq$.ajax('action/AwaitRecompilationAction', {cache: false}).done(function() { window.location.reload() });";
+			renderResult.appendHtmlElement("script", awaitAction);
 		}
+		renderArticle(userContext, article, renderResult);
 	}
 
 	private void renderArticle(JSPWikiUserContext userContext, Article article, RenderResult renderResult) {

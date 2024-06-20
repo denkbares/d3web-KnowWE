@@ -287,6 +287,7 @@ public class DefaultMarkupRenderer implements Renderer {
 	 * We create an additional warning in case this section has package compile scripts but no compiler compiling them
 	 */
 	private static void checkNotCompiledWarning(Section<?> rootSection, Collection<String> messages, @Nullable UserContext context) {
+		if (rootSection.getArticleManager() != null && rootSection.getArticleManager().getCompilerManager().isCompiling()) return;
 		// if there is a package annotation, a message will be produced there, no need to produce another one
 		if (DefaultMarkupType.getAnnotation(rootSection, PackageManager.PACKAGE_ATTRIBUTE_NAME) != null) return;
 		if (context != null && context.isRenderingPreview()) return;

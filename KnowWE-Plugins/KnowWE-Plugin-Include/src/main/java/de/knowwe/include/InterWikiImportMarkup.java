@@ -224,7 +224,6 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 							// be some hassle to do it event based
 							Thread.sleep(50);
 						}
-						articleManager.getCompilerManager().awaitTermination();
 					}
 					catch (InterruptedException ignore) {
 					}
