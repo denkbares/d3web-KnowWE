@@ -1,6 +1,7 @@
 package de.knowwe.event;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import com.denkbares.events.Event;
@@ -14,10 +15,9 @@ import com.denkbares.events.Event;
  * @created 2019-08-08
  */
 public class ArticleUpdateEvent implements Event {
-
 	private final String username;
-	private final Collection<String> titles;
-	private String version;
+	private final String titles;
+	private Version version;
 
 	/**
 	 * Constructs an event for one page
@@ -44,11 +44,11 @@ public class ArticleUpdateEvent implements Event {
 		return username;
 	}
 
-	public Collection<String> getTitles() {
+	public String getTitle() {
 		return titles;
 	}
 
-	public String getVersion() {
+	public Version getVersion() {
 		return version;
 	}
 
@@ -57,7 +57,34 @@ public class ArticleUpdateEvent implements Event {
 	 *
 	 * @param version version number or git revision
 	 */
-	public void setVersion(String version) {
+	public void setVersion(Version version) {
 		this.version = version;
+	}
+
+
+	public static class Version {
+		private int wikiVersionNumber;
+		private String commitHash;
+
+		public Version(int wikiVersionNumber) {
+			this.wikiVersionNumber = wikiVersionNumber;
+		}
+
+		public Version(int wikiVersionNumber, String commitHash) {
+			this.wikiVersionNumber = wikiVersionNumber;
+			this.commitHash = commitHash;
+		}
+
+		public String getCommitHash() {
+			return commitHash;
+		}
+
+		public void setCommitHash(String commitHash) {
+			this.commitHash = commitHash;
+		}
+
+		public int getWikiVersionNumber() {
+			return wikiVersionNumber;
+		}
 	}
 }

@@ -386,8 +386,8 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		if (fullParse) httpRequest.setAttribute(FULL_PARSE_FIRED, true);
 
 		return Environment.getInstance()
-				.updateArticle(wikiContext.getRealPage().getName(), wikiContext.getRealPage()
-						.getAuthor(), content, fullParse, httpRequest);
+				.updateArticle(wikiContext.getRealPage().getName(), wikiContext.getCurrentUser()
+						.getName(), content, fullParse, httpRequest);
 	}
 
 	private static boolean isFullParse(HttpServletRequest httpRequest) {
@@ -576,12 +576,17 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		else if (event instanceof GitVersioningWikiEvent gitEvent) {
 
 			ArticleUpdateEvent articleUpdateEvent;
+			String pageTitle = gitEvent.getPages().stream().findFirst().get();
 			if (event instanceof GitRefreshCacheEvent) {
-				articleUpdateEvent = new ArticleRefreshEvent(gitEvent.getPages(), gitEvent.getType());
+				articleUpdateEvent = new ArticleRefreshEvent(pageTitle, gitEvent.getType());
 			}
 			else {
-				articleUpdateEvent = new ArticleUpdateEvent(gitEvent.getPages(), gitEvent.getAuthor());
-				articleUpdateEvent.setVersion(gitEvent.getGitCommitRev());
+				articleUpdateEvent = new ArticleUpdateEvent(pageTitle, gitEvent.getAuthor());
+				String gitCommitRev = gitEvent.getGitCommitRev();
+				int latestVersionNumber = Environment.retrieveLatestVersionNumber(pageTitle);
+				ArticleUpdateEvent.Version version = new ArticleUpdateEvent.Version(latestVersionNumber);
+				version.setCommitHash(gitCommitRev);
+				articleUpdateEvent.setVersion(version);
 			}
 			EventManager.getInstance().fireEvent(articleUpdateEvent);
 		}

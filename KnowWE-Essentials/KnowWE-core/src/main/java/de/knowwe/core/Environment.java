@@ -21,12 +21,14 @@ import de.knowwe.core.kdom.rendering.Renderer;
 import de.knowwe.core.taghandler.TagHandler;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
+import de.knowwe.core.wikiConnector.WikiPageInfo;
 import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitEvent;
 import de.knowwe.plugin.Instantiation;
 import de.knowwe.plugin.Plugins;
 import de.knowwe.tools.ToolUtils;
+
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,7 @@ import org.slf4j.MDC;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.*;
 import java.util.*;
 import java.util.logging.LogManager;
@@ -211,7 +214,7 @@ public class Environment {
 		configureLogging();
 	}
 
-	public Article updateArticle(String title, String author, String content, boolean fullParse,  HttpServletRequest httpRequest) throws InterruptedException,
+	public Article updateArticle(String title, String author, String content, boolean fullParse, HttpServletRequest httpRequest) throws InterruptedException,
 			UpdateNotAllowedException {
 
 		String originalText = "";
@@ -234,8 +237,10 @@ public class Environment {
 				// method...
 				compilerManager.awaitTermination();
 			}
-
-			EventManager.getInstance().fireEvent(new ArticleUpdateEvent(title, author));
+			ArticleUpdateEvent event = new ArticleUpdateEvent(title, author);
+			int latestVersion = retrieveLatestVersionNumber(title);
+			event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
+			EventManager.getInstance().fireEvent(event);
 			defaultArticleManager.open();
 			try {
 				// create article with the new content
@@ -248,6 +253,25 @@ public class Environment {
 			compilerManager.awaitTermination();
 		}
 		return article;
+	}
+
+	public static int retrieveLatestVersionNumber(String title) {
+		try {
+			List<WikiPageInfo> articleHistory = Environment.getInstance()
+					.getWikiConnector()
+					.getArticleHistory(title);
+			if(articleHistory == null || articleHistory.size() == 0) {
+				LOGGER.warn("Error occurred when retrieving wiki page history from WikiConnector: History is empty");
+				return -1;
+			}
+			WikiPageInfo wikiPageInfo = articleHistory.get(0);
+			int latestVersion = wikiPageInfo.getVersion();
+			return latestVersion;
+		}
+		catch (IOException e) {
+			LOGGER.error("Error occurred when retrieving wiki page history from WikiConnector");
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void configureLogging() {

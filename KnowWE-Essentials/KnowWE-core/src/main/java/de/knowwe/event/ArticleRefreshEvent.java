@@ -15,11 +15,6 @@ public class ArticleRefreshEvent extends ArticleUpdateEvent {
 		this.type = type;
 	}
 
-	public ArticleRefreshEvent(Collection<String> titles, int type) {
-		super(titles, null);
-		this.type = type;
-	}
-
 	public int getType() {
 		return type;
 	}
