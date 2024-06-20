@@ -57,7 +57,7 @@ public final class AnnotationContentType extends AbstractType {
 	 * @return the parsed name of the annotation
 	 */
 	public String getName(Section<? extends AnnotationContentType> section) {
-		if (!(section.get() instanceof AnnotationContentType)) {
+		if (section.get() == null) {
 			throw new IllegalArgumentException("section must have the type "
 					+ AnnotationContentType.class.getSimpleName());
 		}

@@ -270,14 +270,12 @@ public class DefaultMarkupType extends AbstractType {
 	 * @return the annotation section
 	 * @throws IllegalArgumentException if the specified section is not of {@link DefaultMarkupType}
 	 */
-	@SuppressWarnings("unchecked")
 	@Nullable
 	public static Section<? extends AnnotationContentType> getAnnotationContentSection(Section<? extends Type> section, String name) {
-		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
-			Section<AnnotationContentType> annotationContent = (Section<AnnotationContentType>) child;
-			String annotationName = annotationContent.get().getName(annotationContent);
+		for (Section<? extends AnnotationContentType> child : findAnnotationContentTypes(section)) {
+			String annotationName = child.get().getName(child);
 			if (annotationName.equalsIgnoreCase(name)) {
-				return (Section<? extends AnnotationContentType>) child;
+				return child;
 			}
 		}
 		return null;
@@ -338,24 +336,19 @@ public class DefaultMarkupType extends AbstractType {
 	 * @return the list of annotation sections
 	 * @throws IllegalArgumentException if the specified section is not of {@link DefaultMarkupType}
 	 */
-	@SuppressWarnings("unchecked")
 	@NotNull
 	public static List<Section<? extends AnnotationContentType>> getAllAnnotationContentSections(Section<?> section) {
 		List<Section<? extends AnnotationContentType>> results = new ArrayList<>();
-		for (Section<? extends Type> child : findAnnotationContentTypes(section)) {
-			results.add((Section<? extends AnnotationContentType>) child);
+		for (Section<? extends AnnotationContentType> child : findAnnotationContentTypes(section)) {
+			results.add(child);
 		}
 		return results;
 	}
 
-	private static List<Section<AnnotationContentType>> findAnnotationContentTypes(Section<? extends Type> markupSectionOrSuccessor) {
-		Section<DefaultMarkupType> markupTypeSection = $(markupSectionOrSuccessor)
+	private static Sections<? extends AnnotationContentType> findAnnotationContentTypes(Section<? extends Type> markupSectionOrSuccessor) {
+		return $(markupSectionOrSuccessor)
 				.closest(DefaultMarkupType.class)
-				.getFirst();
-		if (markupTypeSection == null) {
-			throw new IllegalArgumentException("Not a DefaultMarkupType section (or successor)");
-		}
-		return Sections.successors(markupTypeSection, AnnotationContentType.class);
+				.successor(AnnotationContentType.class);
 	}
 
 	/**
