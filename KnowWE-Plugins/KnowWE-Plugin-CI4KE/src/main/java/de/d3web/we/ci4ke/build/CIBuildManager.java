@@ -31,8 +31,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +75,16 @@ public class CIBuildManager implements EventListener {
 	private static final ExecutorService CI_BUILD_EXECUTOR = Executors.newCachedThreadPool(
 			r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet()));
 	private static final AtomicLong THREAD_NUMBER = new AtomicLong();
-	private static final ExecutorService TEST_EXECUTOR_SERVICE = Executors.newFixedThreadPool(
-			(int) Math.max(2, Runtime.getRuntime().availableProcessors() * 0.6),
-			r -> new Thread(r, "CI-Test-Executor-" + THREAD_NUMBER.incrementAndGet()));
+	private static final ExecutorService TEST_EXECUTOR_SERVICE = createTestExecutorService();
+
+	@NotNull
+	private static ExecutorService createTestExecutorService() {
+		int threadCount = (int) Math.max(2, Runtime.getRuntime().availableProcessors() * 0.75);
+		return  new ThreadPoolExecutor(threadCount, threadCount,
+				0L, TimeUnit.MILLISECONDS,
+				new PriorityBlockingQueue<>(),
+				r -> new Thread(r, "CI-Test-Executor-" + THREAD_NUMBER.incrementAndGet()));
+	}
 
 	static {
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> {
@@ -109,7 +120,7 @@ public class CIBuildManager implements EventListener {
 			providers.addAll(pluggedProviders);
 
 			listener = new DefaultAjaxProgressListener();
-			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), listener, TEST_EXECUTOR_SERVICE);
+			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), listener, TEST_EXECUTOR_SERVICE, dashboard.getPriority());
 		}
 
 		@Override

@@ -42,7 +42,6 @@ import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
-import de.knowwe.quartz.QuartzSchedulerJobServer;
 import de.d3web.testing.ArgsCheckResult;
 import de.d3web.testing.TestGroup;
 import de.d3web.testing.TestParser;
@@ -68,6 +67,7 @@ import de.knowwe.kdom.defaultMarkup.AnnotationContentType;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkup;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupPackageRegistrationScript;
 import de.knowwe.kdom.defaultMarkup.DefaultMarkupType;
+import de.knowwe.quartz.QuartzSchedulerJobServer;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
 
@@ -79,11 +79,14 @@ public class CIDashboardType extends DefaultMarkupType {
 
 	public static final String SOFT_TEST_KEY = "softTest";
 	public static final String TRIGGER_KEY = "trigger";
+	public static final String PRIORITY = "priority";
 	public static final String TRIGGER_REGEX = "^(onDemand|(onSave|onSchedule)\\s*(\".+?\"|[^\\s]+))$";
 	public static final String VERBOSE_PERSISTENCE_KEY = "persistenceVerbose";
 	public static final String SCHEDULE_GROUP = CIDashboard.class.getSimpleName();
 	public static final String TEMPLATE = "template";
 	public static final String SKIP_TESTS = "skipTests";
+
+	private static final double DEFAULT_PRIORITY = 10;
 
 	public enum CIBuildTriggers {
 		onDemand, onSave, onSchedule
@@ -100,6 +103,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		DefaultMarkup markup = new DefaultMarkup(markupName);
 		markup.addAnnotation(NAME_KEY, true);
 		markup.addAnnotation(TEST_KEY, testMandatory);
+		markup.addAnnotation(PRIORITY, false, Pattern.compile("\\d+(.\\d+)?"));
 		markup.addAnnotation(SOFT_TEST_KEY, false);
 		markup.addAnnotation(TRIGGER_KEY, true, Pattern.compile(TRIGGER_REGEX));
 		markup.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
@@ -505,6 +509,18 @@ public class CIDashboardType extends DefaultMarkupType {
 			}
 			CIDashboardManager.unregisterDashboard(section);
 		}
+	}
+
+	public double getPriority(Section<CIDashboardType> section) {
+		String priorityAnnotation = DefaultMarkupType.getAnnotation(section, PRIORITY);
+		if (priorityAnnotation == null) return DEFAULT_PRIORITY;
+		try {
+			return Double.parseDouble(priorityAnnotation);
+		}
+		catch (NumberFormatException ignore) {
+
+		}
+		return DEFAULT_PRIORITY;
 	}
 
 	public record TestProcessingResult(List<TestSpecification<?>> testSpecifications, List<TestParser> testParsers) {

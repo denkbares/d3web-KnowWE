@@ -1,16 +1,16 @@
 /*
  * Copyright (C) 2012 denkbares GmbH, Germany
- * 
+ *
  * This is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this software; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF
@@ -52,6 +52,7 @@ public class CIDashboard {
 	private final CIBuildCache buildCache;
 	private final Section<CIDashboardType> dashboardSection;
 	private final List<TestSpecification<?>> testSpecifications;
+	private final double priority;
 
 	protected CIDashboard(Section<CIDashboardType> dashboardSection, List<TestSpecification<?>> specifications) {
 		this.dashboardSection = dashboardSection;
@@ -60,6 +61,7 @@ public class CIDashboard {
 		this.buildCache = new CIBuildCache();
 		this.renderer = new CIRenderer(this);
 		this.persistence = new CIPersistence(this, buildCache);
+		this.priority = dashboardSection.get().getPriority(dashboardSection);
 	}
 
 	public Section<CIDashboardType> getDashboardSection() {
@@ -207,7 +209,6 @@ public class CIDashboard {
 			// so log this and continue as usual
 			LOGGER.error("Cannot attached build information due to internal error", e);
 		}
-
 	}
 
 	private BuildResult getBuildIfPossible(final int buildVersion, boolean logging) {
@@ -236,5 +237,9 @@ public class CIDashboard {
 
 	public List<TestSpecification<?>> getTestSpecifications() {
 		return this.testSpecifications;
+	}
+
+	public double getPriority() {
+		return this.priority;
 	}
 }
