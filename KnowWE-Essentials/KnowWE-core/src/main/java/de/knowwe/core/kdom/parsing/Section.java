@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -217,19 +216,14 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 		else if (otherTitle != null) {
 			comp = 1;
 		}
-		if (comp == 0) {
-			List<Integer> thisPos = getPositionInKDOM();
-			List<Integer> otherPos = section.getPositionInKDOM();
-			Iterator<Integer> thisIter = thisPos.iterator();
-			Iterator<Integer> otherIter = otherPos.iterator();
-
-			while (comp == 0 && thisIter.hasNext() && otherIter.hasNext()) {
-				comp = thisIter.next().compareTo(otherIter.next());
-			}
-			if (comp == 0) {
-				comp = thisPos.size() - otherPos.size();
-			}
-		}
+		if (comp != 0) return comp;
+		int thisOffset = getOffsetInArticle();
+		int otherOffset = section.getOffsetInArticle();
+		comp = Integer.compare(thisOffset, otherOffset);
+		if (comp != 0) return comp;
+		int thisDepth = getDepth();
+		int otherDepth = section.getDepth();
+		comp = Integer.compare(thisDepth, otherDepth);
 		return comp;
 	}
 
@@ -436,7 +430,7 @@ public final class Section<T extends Type> implements Comparable<Section<? exten
 	}
 
 	private String getSignatureString() {
-		return getWeb() + getTitle() + getPositionInKDOM() + this.getText();
+		return getWeb() + getTitle() + getOffsetInArticle() + "-" + getDepth() + this.getText();
 	}
 
 	private boolean hasID() {
