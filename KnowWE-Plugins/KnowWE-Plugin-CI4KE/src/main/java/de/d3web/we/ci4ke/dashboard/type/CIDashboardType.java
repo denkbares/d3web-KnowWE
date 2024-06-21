@@ -104,6 +104,10 @@ public class CIDashboardType extends DefaultMarkupType {
 		markup.addAnnotation(NAME_KEY, true);
 		markup.addAnnotation(TEST_KEY, testMandatory);
 		markup.addAnnotation(PRIORITY, false, Pattern.compile("\\d+(.\\d+)?"));
+		markup.getAnnotation(PRIORITY)
+				.setDocumentation("The priority with which this dashboard should be run in relations" +
+						" to others, meaning the tests will get priority while queueing for execution." +
+						" Default priority is 10.");
 		markup.addAnnotation(SOFT_TEST_KEY, false);
 		markup.addAnnotation(TRIGGER_KEY, true, Pattern.compile(TRIGGER_REGEX));
 		markup.getAnnotation(TRIGGER_KEY).setDocumentation("Specify how to trigger the build of this dashboard." +
