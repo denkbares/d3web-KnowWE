@@ -539,7 +539,7 @@ public class GitVersioningAttachmentProvider extends BasicAttachmentProvider {
 			if (ignored != null && ignored) {
 				att.setVersion(1);
 				att.setSize(attFile.length());
-				att.setLastModified(att.getLastModified());
+				att.setLastModified(new Date(attFile.lastModified()));
 				return att;
 			}
 
