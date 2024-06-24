@@ -325,12 +325,15 @@ public class CIRenderer {
 		if (hasConfig || hasText) {
 			renderResult.appendHtml("<span class='ci-configuration'>");
 			if (hasConfig) {
-				renderResult.append("( ")
+				renderResult.append("(")
 						.appendJSPWikiMarkup(TestParser.concatParameters(config))
-						.append(" )");
+						.append(")");
 			}
 			if (hasText) {
 				renderResult.appendHtml(": ").appendJSPWikiMarkup(text);
+			}
+			if (testResult.getRunTimeMillis() > 2000 && testResult.isSuccessful()) {
+				renderResult.appendHtml("<span class='ci-runtime'> " + Stopwatch.getDisplay(testResult.getRunTimeMillis()) + "</span>");
 			}
 			renderResult.appendHtml("</span>");
 		}
@@ -483,7 +486,7 @@ public class CIRenderer {
 		}
 
 		if (testResult.getRunTimeMillis() >= 0) {
-			renderResult.appendHtml("\n<br><span style='color: grey'>Runtime: " + Stopwatch.getDisplay(testResult.getRunTimeMillis()) + "</span>");
+			renderResult.appendHtml("\n<br><span class='ci-runtime'>Runtime: " + Stopwatch.getDisplay(testResult.getRunTimeMillis()) + "</span>");
 		}
 	}
 
