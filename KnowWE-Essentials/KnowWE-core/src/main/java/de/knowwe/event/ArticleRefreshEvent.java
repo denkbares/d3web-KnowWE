@@ -1,7 +1,5 @@
 package de.knowwe.event;
 
-import java.util.Collection;
-
 /**
  * @author Josua Nürnberger (Feanor GmbH)
  * @created 04.09.20

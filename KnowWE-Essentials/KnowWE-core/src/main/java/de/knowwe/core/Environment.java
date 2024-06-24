@@ -265,8 +265,7 @@ public class Environment {
 				return -1;
 			}
 			WikiPageInfo wikiPageInfo = articleHistory.get(0);
-			int latestVersion = wikiPageInfo.getVersion();
-			return latestVersion;
+			return wikiPageInfo.getVersion();
 		}
 		catch (IOException e) {
 			LOGGER.error("Error occurred when retrieving wiki page history from WikiConnector");

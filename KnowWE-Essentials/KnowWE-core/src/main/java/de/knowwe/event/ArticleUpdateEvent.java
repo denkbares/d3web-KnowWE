@@ -63,7 +63,7 @@ public class ArticleUpdateEvent implements Event {
 
 
 	public static class Version {
-		private int wikiVersionNumber;
+		private final int wikiVersionNumber;
 		private String commitHash;
 
 		public Version(int wikiVersionNumber) {
