@@ -21,26 +21,18 @@
 package de.knowwe.kdom.defaultMarkup;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import de.knowwe.core.ArticleManager;
-import de.knowwe.core.AttachmentManager;
-import de.knowwe.core.DefaultArticleManager;
-import de.knowwe.core.compile.packaging.PackageManager;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.parsing.Sections;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
 import de.knowwe.core.kdom.sectionFinder.RegexSectionFinder;
-import de.knowwe.core.utils.KnowWEUtils;
-import de.knowwe.kdom.attachment.AttachmentMarkup;
 import de.knowwe.tools.ToolMenuDecoratingRenderer;
 
 import static de.knowwe.core.kdom.parsing.Sections.$;
