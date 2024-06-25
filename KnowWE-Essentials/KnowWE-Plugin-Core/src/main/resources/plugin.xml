@@ -272,6 +272,14 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="ReplacePageAction">
+		<parameter id="class" value="de.knowwe.core.action.ReplacePageAction" />
+		<parameter id="name" value="ReplacePageAction" />
+		<parameter id="description" value="Action ReplacePageAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="TagHandler" id="ObjectInfoTagHandler">
 		<parameter id="class" value="de.knowwe.core.taghandler.ObjectInfoTagHandler" />
 		<parameter id="name" value="ObjectInfoTagHandler" />
