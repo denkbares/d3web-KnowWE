@@ -47,15 +47,15 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * This class represents a section of the top-level default markup. That markup always starts with "%%" followed by an
- * alpha-numerical string. After that an optional ":" is allowed. This is followed by either a one-line declaration or a
+ * alphanumeric string. After that an optional ":" is allowed. This is followed by either a one-line declaration or a
  * multiple-line-block terminated by an "/%" denoted in a line with no other content. Because of backward-compatibility
- * reasons, the multiple-line-block can also be terminated by an single "%".
+ * reasons, the multiple-line-block can also be terminated by a single "%".
  * <p/>
  * Within the block declaration you may use java-style end-line comments. Within the single-line declaration you may
  * also use this comments at the end of the line. Note: there are no block comments ("/ * ... * /") allowed.
  * <p/>
  * It is also allowed to define multiple additional annotations. An annotation is denoted as "@", followed by its name
- * without spacing. This annotation-header may optionally followed by a ":" or "=". The content of the parameter goes
+ * without spacing. This annotation-header may optionally be followed by a ":" or "=". The content of the parameter goes
  * until a new parameter is defined or the markup block is terminated.
  * <p/>
  * <b>Examples:</b>
@@ -76,8 +76,8 @@ import static de.knowwe.core.kdom.parsing.Sections.$;
  * </pre>
  * <p/>
  * <p/>
- * The default mark-up forms a KDOM of the following structure. Please not that there might be any PlainText section in
- * between at any level:
+ * The default mark-up forms a KDOM of the following structure. Please note, that there might be any PlainText section
+ * in between at any level:
  * <p/>
  * <pre>
  * Section&lt;DefaultMarkupType&gt; // %%rule
