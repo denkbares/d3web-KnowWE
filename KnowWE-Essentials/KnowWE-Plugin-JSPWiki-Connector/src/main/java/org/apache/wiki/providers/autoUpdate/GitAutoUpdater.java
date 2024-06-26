@@ -421,19 +421,19 @@ public class GitAutoUpdater {
 				toRefresh.setVersion(PageProvider.LATEST_VERSION);
 				AttachmentManager manager = engine.getManager(AttachmentManager.class);
 				manager.getCurrentProvider().deleteVersion((Attachment) toRefresh);
-				Page page = manager.getAttachmentInfo(toRefresh.getName());
-				if (page != null) {
-					LOGGER.info("refresh call" + page.getName());
-				}
+				//Page page = manager.getAttachmentInfo(toRefresh.getName());
+				//if (page != null) {
+				//	LOGGER.info("refresh call" + page.getName());
+				//}
 			}
 			else {
 				toRefresh = new WikiPage(engine, TextUtil.urlDecodeUTF8(path.replace(GitVersioningFileProvider.FILE_EXT, "")));
 				PageManager manager = engine.getManager(PageManager.class);
 				manager.getProvider().deleteVersion(toRefresh, PageProvider.LATEST_VERSION);
-				Page page = manager.getPage(toRefresh.getName());
-				if (page != null) {
-					LOGGER.info("refresh call" + page.getName());
-				}
+				//Page page = manager.getPage(toRefresh.getName());
+				//if (page != null) {
+				//	LOGGER.info("refresh call" + page.getName());
+				//}
 			}
 			toRefresh.setVersion(WikiProvider.LATEST_VERSION);
 
