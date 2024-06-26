@@ -620,6 +620,9 @@ KNOWWE.helper.ajax = function(options) {
    */
   function init() {
     oDefault = KNOWWE.helper.enrich(options, oDefault);
+    if (oDefault.method === 'POST') {
+      oDefault.url = oDefault.url + "&X-XSRF-TOKEN=" + document.getElementById("X-XSRF-TOKEN").value;
+    }
   }
 
   /**
