@@ -20,7 +20,11 @@
 
 package de.d3web.we.ci4ke.hook;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.slf4j.Logger;
@@ -29,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.collections.DefaultMultiMap;
 import com.denkbares.collections.MultiMap;
 import de.d3web.we.ci4ke.build.CIBuildManager;
+import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.knowwe.core.kdom.Article;
 
 /**
@@ -53,24 +58,31 @@ public class CIHookManager {
 		hooks.removeValue(hook);
 	}
 
+	public static synchronized void triggerHooks(Article monitoredArticle) {
+		triggerHooks(List.of(monitoredArticle));
+	}
+
 	/**
 	 * Triggers the registered hooks for a given Article.
 	 *
-	 * @param monitoredArticle the article to trigger hooks for
+	 * @param monitoredArticles the article to trigger hooks for
 	 */
-	public static synchronized void triggerHooks(Article monitoredArticle) {
+	public static synchronized void triggerHooks(Collection<Article> monitoredArticles) {
 		if (!Boolean.parseBoolean(System.getProperty(KNOWWE_CI_HOOKS_ACTIVE, "true"))) return;
-		Set<CIHook> hookSet = hooks.getValues(monitoredArticle.getTitle());
-		Set<String> triggered = new TreeSet<>();
-		for (final CIHook hook : hookSet) {
-			int compilationId = getCurrentCompilationId(hook);
-			// avoid triggering the same hook multiple times for the same compilation
-			// this can happen, if the regular expression matches multiple articles
-			if (hook.getLastTrigger() == compilationId) continue;
-			hook.setLastTrigger(compilationId);
-			CIBuildManager.getInstance().startBuild(hook.getDashboard());
-			triggered.add(hook.getDashboard().getDashboardName());
+		Set<CIDashboard> dashboardsToTrigger = new HashSet<>();
+		for (Article monitoredArticle : monitoredArticles) {
+			Set<CIHook> hookSet = hooks.getValues(monitoredArticle.getTitle());
+			for (final CIHook hook : hookSet) {
+				int compilationId = getCurrentCompilationId(hook);
+				// avoid triggering the same hook multiple times for the same compilation
+				// this can happen, if the regular expression matches multiple articles
+				if (hook.getLastTrigger() == compilationId) continue;
+				hook.setLastTrigger(compilationId);
+				dashboardsToTrigger.add(hook.getDashboard());
+			}
 		}
+		CIBuildManager.getInstance().startBuilds(dashboardsToTrigger);
+		List<String> triggered = dashboardsToTrigger.stream().map(CIDashboard::getDashboardName).sorted().toList();
 		if (!triggered.isEmpty()) LOGGER.info("Triggered the following dashboards: " + String.join(", ", triggered));
 	}
 

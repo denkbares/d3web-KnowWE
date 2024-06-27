@@ -57,12 +57,8 @@ public class CIEventForwarder implements EventListener {
 		}
 		if (event instanceof CompilationFinishedEvent) {
 			synchronized (articlesToTrigger) {
-				Iterator<Map.Entry<String, Article>> iterator = articlesToTrigger.entrySet().iterator();
-				while (iterator.hasNext()) {
-					Map.Entry<String, Article> articleEntry = iterator.next();
-					CIHookManager.triggerHooks(articleEntry.getValue());
-					iterator.remove();
-				}
+				CIHookManager.triggerHooks(articlesToTrigger.values());
+				articlesToTrigger.clear();
 			}
 		}
 	}

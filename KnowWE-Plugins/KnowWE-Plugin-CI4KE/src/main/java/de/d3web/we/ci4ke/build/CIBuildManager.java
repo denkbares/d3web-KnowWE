@@ -23,8 +23,11 @@ package de.d3web.we.ci4ke.build;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -35,6 +38,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -74,6 +78,8 @@ public class CIBuildManager implements EventListener {
 	private static final AtomicLong executorNumber = new AtomicLong();
 	private static final ExecutorService CI_BUILD_EXECUTOR = Executors.newCachedThreadPool(
 			r -> new Thread(r, "CI-Build-Executor-" + executorNumber.incrementAndGet()));
+	private static final ExecutorService CI_BUILD_TRIGGER = Executors.newCachedThreadPool(
+			r -> new Thread(r, "CI-Build-Trigger-" + executorNumber.incrementAndGet()));
 	private static final AtomicLong THREAD_NUMBER = new AtomicLong();
 	private static final ExecutorService TEST_EXECUTOR_SERVICE = createTestExecutorService();
 
@@ -156,6 +162,41 @@ public class CIBuildManager implements EventListener {
 			}
 			return null;
 		}
+	}
+
+	public synchronized void startBuilds(Set<CIDashboard> dashboardsToTrigger) {
+		TreeMap<Double, Set<CIDashboard>> dashboardsByPriority = dashboardsToTrigger.stream()
+				.collect(Collectors.groupingBy(CIDashboard::getPriority, TreeMap::new, Collectors.toSet()));
+		TreeMap<Double, Set<CIBuildFuture>> futuresByPriority = new TreeMap<>();
+		for (Set<CIDashboard> dashboards : dashboardsByPriority.descendingMap().values()) {
+			for (CIDashboard dashboard : dashboards) {
+				shutDownNow(dashboard);
+				CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard));
+				ciBuildQueue.put(dashboard, ciBuildFuture);
+				futuresByPriority.computeIfAbsent(dashboard.getPriority(), k -> new HashSet<>()).add(ciBuildFuture);
+			}
+		}
+		CI_BUILD_TRIGGER.submit(() -> {
+			Set<CIBuildFuture> runningFutures = new HashSet<>();
+			for (Set<CIBuildFuture> futures : futuresByPriority.descendingMap().values()) {
+				for (CIBuildFuture runningFuture : runningFutures) {
+					try {
+						runningFuture.get();
+					}
+					catch (InterruptedException e) {
+						LOGGER.warn("Interrupted waiting for CI build");
+					}
+					catch (ExecutionException e) {
+						LOGGER.warn(e.getClass().getSimpleName() + " in CI build...", e);
+					}
+				}
+				runningFutures.clear();
+				for (CIBuildFuture future : futures) {
+					CI_BUILD_EXECUTOR.submit(future);
+				}
+				runningFutures.addAll(futures);
+			}
+		});
 	}
 
 	/**
