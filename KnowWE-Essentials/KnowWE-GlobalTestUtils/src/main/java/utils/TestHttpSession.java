@@ -99,7 +99,7 @@ public class TestHttpSession implements HttpSession {
 	@Override
 	public void removeAttribute(String arg0) {
 		// TODO Auto-generated method stub
-
+		this.attributes.remove(arg0);
 	}
 
 	@Override
