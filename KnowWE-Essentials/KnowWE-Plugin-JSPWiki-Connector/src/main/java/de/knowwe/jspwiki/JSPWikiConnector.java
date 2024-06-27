@@ -1017,4 +1017,9 @@ public class JSPWikiConnector implements WikiConnector {
 		}
 		return resolvedAddrs;
 	}
+
+	@Override
+	public String getAntiCsrfToken(UserContext context) {
+		return WikiSession.getWikiSession(getEngine(), context.getRequest()).antiCsrfToken();
+	}
 }
