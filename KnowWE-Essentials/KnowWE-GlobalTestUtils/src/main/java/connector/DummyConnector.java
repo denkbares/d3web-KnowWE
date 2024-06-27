@@ -425,4 +425,9 @@ public class DummyConnector implements WikiConnector {
 	public void setPageProvider(DummyPageProvider pageProvider) {
 		this.dummyPageProvider = Objects.requireNonNull(pageProvider);
 	}
+
+	@Override
+	public String getAntiCsrfToken(UserContext context) {
+		return "csrf-test-token";
+	}
 }

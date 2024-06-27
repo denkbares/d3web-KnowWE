@@ -552,4 +552,9 @@ public interface WikiConnector {
 	void rollbackPageTransaction(String user);
 
 	boolean hasRollbackPageProvider();
+
+	/**
+	 * Returns the CSRF protection Token associated with this wiki session.
+	 */
+	String getAntiCsrfToken(UserContext context);
 }
