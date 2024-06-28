@@ -3,6 +3,9 @@
  */
 package de.knowwe.event;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.denkbares.events.Event;
 import de.knowwe.core.kdom.Article;
 
@@ -15,9 +18,11 @@ import de.knowwe.core.kdom.Article;
  */
 public class FullParseEvent implements Event {
 	private final Article article;
+	private final String user;
 
-	public FullParseEvent(Article article) {
+	public FullParseEvent(@NotNull Article article, @Nullable String user) {
 		this.article = article;
+		this.user = user == null ? "SYSTEM" : user;
 	}
 
 	/**
@@ -25,5 +30,9 @@ public class FullParseEvent implements Event {
 	 */
 	public Article getArticle() {
 		return article;
+	}
+
+	public String getUserName() {
+		return user;
 	}
 }

@@ -70,7 +70,7 @@ public class OntologyDownloadAction extends AbstractAction {
 		if (Boolean.parseBoolean(context.getParameter(PARAM_FULL_COMPILE, "false"))) {
 			Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 			if (compiler.isIncrementalBuild()) {
-				RecompileAction.recompile(compiler.getCompileSection().getArticle(), true, "Ontology download by " + context.getUserName());
+				RecompileAction.recompile(compiler.getCompileSection().getArticle(), true, "Ontology download", context.getUserName());
 				Compilers.awaitTermination(context.getArticleManager().getCompilerManager());
 				compiler = getCompiler(context);
 				if (compiler == null) failUnexpected(context, "Compile no longer available after recompile");

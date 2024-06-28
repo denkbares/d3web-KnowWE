@@ -222,7 +222,7 @@ public class GitAutoUpdater {
                 if (title != null) {
                     LOGGER.info("do full parse");
                     Article article = Environment.getInstance().getArticle(Environment.DEFAULT_WEB, title);
-                    EventManager.getInstance().fireEvent(new FullParseEvent(article));
+                    EventManager.getInstance().fireEvent(new FullParseEvent(article, "SYSTEM"));
                 }
                 stopWatch.stop();
                 LOGGER.info("Update of wiki lasts " + stopWatch);

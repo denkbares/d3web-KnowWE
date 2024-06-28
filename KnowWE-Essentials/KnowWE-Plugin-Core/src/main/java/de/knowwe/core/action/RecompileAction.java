@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.Strings;
-import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.compile.Compilers;
 import de.knowwe.core.compile.GroupingCompiler;
@@ -72,7 +71,7 @@ public class RecompileAction extends AbstractAction {
 			failUnexpected(context, "Unknown command for RecompileAction: " + command);
 		}
 
-		recompile(article, all, "Manually triggered by user " + context.getUserName());
+		recompile(article, all, "Recompile hotkey triggered", context.getUserName());
 	}
 
 	/**
@@ -82,7 +81,7 @@ public class RecompileAction extends AbstractAction {
 	 * @param recompileAll whether the compilers compiling anything on the articles should also recompile
 	 */
 	public static void recompile(Article article, boolean recompileAll) {
-		recompile(article, recompileAll, null);
+		recompile(article, recompileAll, null, null);
 	}
 
 	/**
@@ -92,8 +91,9 @@ public class RecompileAction extends AbstractAction {
 	 * @param recompileAll whether the compilers compiling anything on the articles should also recompile
 	 * @param reason optional reason why the recompile was requested
 	 */
-	public static void recompile(Article article, boolean recompileAll, @Nullable String reason) {
+	public static void recompile(Article article, boolean recompileAll, @Nullable String reason, @Nullable String userName) {
 		ArticleManager articleManager = article.getArticleManager();
+		if (userName == null) userName = "SYSTEM";
 		Objects.requireNonNull(articleManager);
 		articleManager.open();
 		try {
@@ -101,24 +101,25 @@ public class RecompileAction extends AbstractAction {
 				List<Article> articlesToRecompile = getCompilerArticles(article).toList();
 				LOGGER.info("Starting FULL recompilation for article " + article.getTitle() +
 						(reason == null ? "" : "\nReason: " + reason) +
+						"\nUser: " + userName +
 						"\nRecompiling the following " + Strings.pluralOf(articlesToRecompile.size(), "article") + ": " +
 						articlesToRecompile.stream()
 								.map(Article::getTitle)
 								.collect(Collectors.joining(", ")));
 				for (Article recompileArticle : articlesToRecompile) {
 					articleManager.registerArticle(recompileArticle.getTitle(), recompileArticle.getText());
-					EventManager.getInstance().fireEvent(new FullParseEvent(recompileArticle));
+					EventManager.getInstance().fireEvent(new FullParseEvent(recompileArticle, userName));
 				}
 			}
 			else {
-				LOGGER.info("Starting recompilation of article " + article.getTitle() + (reason == null ? "" : ". Reason: " + reason));
+				LOGGER.info("Starting recompilation of article " + article.getTitle() + (reason == null ? "" : ". Reason: " + reason + ". User: " + userName));
 				Article recompiledArticle = articleManager.registerArticle(article.getTitle(), article.getText());
 				// also update all markups
 				$(recompiledArticle).successor(AttachmentUpdateMarkup.class).stream().parallel().forEach(markup -> {
 					LOGGER.info("Checking " + markup.get().getUrl(markup) + " for updates...");
 					markup.get().performUpdate(markup);
 				});
-				EventManager.getInstance().fireEvent(new FullParseEvent(recompiledArticle));
+				EventManager.getInstance().fireEvent(new FullParseEvent(recompiledArticle, userName));
 			}
 		}
 		finally {

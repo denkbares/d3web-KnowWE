@@ -240,7 +240,7 @@ public class Environment {
 			try {
 				// create article with the new content
 				article = this.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
-				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article));
+				if (fullParse) EventManager.getInstance().fireEvent(new FullParseEvent(article, author));
 			}
 			finally {
 				defaultArticleManager.commit();
