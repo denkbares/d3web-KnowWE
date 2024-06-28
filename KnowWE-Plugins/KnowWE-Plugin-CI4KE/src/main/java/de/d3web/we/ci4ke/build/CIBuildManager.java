@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,6 +67,8 @@ public class CIBuildManager implements EventListener {
 
 	private static CIBuildManager instance = null;
 
+	private static final Map<String, Double> priorityOverride = new ConcurrentHashMap<>();
+
 	public static CIBuildManager getInstance() {
 		if (instance == null) instance = new CIBuildManager();
 		return instance;
@@ -86,7 +89,7 @@ public class CIBuildManager implements EventListener {
 	@NotNull
 	private static ExecutorService createTestExecutorService() {
 		int threadCount = (int) Math.max(2, Runtime.getRuntime().availableProcessors() * 0.75);
-		return  new ThreadPoolExecutor(threadCount, threadCount,
+		return new ThreadPoolExecutor(threadCount, threadCount,
 				0L, TimeUnit.MILLISECONDS,
 				new PriorityBlockingQueue<>(),
 				r -> new Thread(r, "CI-Test-Executor-" + THREAD_NUMBER.incrementAndGet()));
@@ -112,7 +115,7 @@ public class CIBuildManager implements EventListener {
 	}
 
 	private static class CIBuildCallable implements Callable<Void> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CIBuildCallable.class);
+		private static final Logger LOGGER = LoggerFactory.getLogger(CIBuildCallable.class);
 
 		private final CIDashboard dashboard;
 		private final TestExecutor testExecutor;
@@ -173,9 +176,11 @@ public class CIBuildManager implements EventListener {
 				shutDownNow(dashboard);
 				CIBuildFuture ciBuildFuture = new CIBuildFuture(new CIBuildCallable(dashboard));
 				ciBuildQueue.put(dashboard, ciBuildFuture);
-				futuresByPriority.computeIfAbsent(dashboard.getPriority(), k -> new HashSet<>()).add(ciBuildFuture);
+				double priority = priorityOverride.getOrDefault(dashboard.getDashboardName(), dashboard.getPriority());
+				futuresByPriority.computeIfAbsent(priority, k -> new HashSet<>()).add(ciBuildFuture);
 			}
 		}
+		priorityOverride.clear();
 		CI_BUILD_TRIGGER.submit(() -> {
 			Set<CIBuildFuture> runningFutures = new HashSet<>();
 			for (Set<CIBuildFuture> futures : futuresByPriority.descendingMap().values()) {
@@ -319,6 +324,7 @@ public class CIBuildManager implements EventListener {
 	public Collection<Class<? extends Event>> getEvents() {
 		List<Class<? extends Event>> events = new ArrayList<>(1);
 		events.add(CompilationStartEvent.class);
+		events.add(CIDashboardPriorityOverrideEvent.class);
 		return events;
 	}
 
@@ -326,7 +332,11 @@ public class CIBuildManager implements EventListener {
 	public synchronized void notify(Event event) {
 		// we synchronize the method so there will not be any new builds
 		// added between shutting down and awaiting termination
-		shutDownNow();
-//		awaitTermination();
+		if (event instanceof CompilationStartEvent) {
+			shutDownNow();
+		}
+		else if (event instanceof CIDashboardPriorityOverrideEvent prioEvent) {
+			priorityOverride.put(prioEvent.getDashboard().getDashboardName(), prioEvent.getPriority());
+		}
 	}
 }
