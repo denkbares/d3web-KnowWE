@@ -67,7 +67,7 @@ public class CIBuildManager implements EventListener {
 
 	private static CIBuildManager instance = null;
 
-	private static final Map<String, Double> priorityOverride = new ConcurrentHashMap<>();
+	private final Map<String, Double> priorityOverride = new ConcurrentHashMap<>();
 
 	public static CIBuildManager getInstance() {
 		if (instance == null) instance = new CIBuildManager();
