@@ -126,9 +126,10 @@ public class CIHookManager implements EventListener {
 		if (Strings.isNotBlank(userName)) {
 			Set<String> defaultDashboardsOfTriggeringUser = userToDefaultDashboardNames.getOrDefault(userName, Set.of());
 			if (defaultDashboardsOfTriggeringUser.contains(hook.getDashboard().getDashboardName())) {
+				LOGGER.info("Set max prio for CI dashboard " + hook.getDashboard()
+						.getDashboardName() + " due to user " + userName + " triggering the last compilation");
 				EventManager.getInstance()
 						.fireEvent(new CIDashboardPriorityOverrideEvent(hook.getDashboard(), Double.MAX_VALUE));
-				System.out.println("Override prio of " + hook.getDashboard().getDashboardName());
 			}
 		}
 	}
