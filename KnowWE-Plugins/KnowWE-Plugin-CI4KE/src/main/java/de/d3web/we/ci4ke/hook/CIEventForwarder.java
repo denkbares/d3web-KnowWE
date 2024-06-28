@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.denkbares.events.Event;
@@ -48,8 +47,8 @@ public class CIEventForwarder implements EventListener {
 
 	@Override
 	public void notify(Event event) {
-		if (event instanceof CompilerFinishedEvent) {
-			de.knowwe.core.compile.Compiler compiler = ((CompilerFinishedEvent<?>) event).getCompiler();
+		if (event instanceof CompilerFinishedEvent<?> compilerFinishedEvent) {
+			de.knowwe.core.compile.Compiler compiler = compilerFinishedEvent.getCompiler();
 			if (compiler instanceof PackageCompiler) {
 				Article article = ((PackageCompiler) compiler).getCompileSection().getArticle();
 				articlesToTrigger.put(article.getTitle().toLowerCase(), article);
