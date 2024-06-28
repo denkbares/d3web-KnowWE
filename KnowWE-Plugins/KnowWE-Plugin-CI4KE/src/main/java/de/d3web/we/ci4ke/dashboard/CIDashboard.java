@@ -20,21 +20,32 @@ package de.d3web.we.ci4ke.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.events.EventManager;
 import de.d3web.testing.BuildResult;
 import de.d3web.testing.TestSpecification;
 import de.d3web.we.ci4ke.build.CIBuildCache;
 import de.d3web.we.ci4ke.build.CIPersistence;
 import de.d3web.we.ci4ke.build.CIRenderer;
+import de.d3web.we.ci4ke.dashboard.event.UserDefaultDashboardUpdateEvent;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.compile.Compilers;
+import de.knowwe.core.compile.PackageCompiler;
+import de.knowwe.core.compile.packaging.PackageCompileType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
+
+import static de.knowwe.core.kdom.parsing.Sections.$;
 
 /**
  * This class represents a dashboard data structure, managing the build results,
@@ -45,6 +56,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
  */
 public class CIDashboard {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CIDashboard.class);
+	private static final String DEFAULT_DASHBOARD = "DEFAULT_DASHBOARD";
 
 	private final String dashboardName;
 	private final CIRenderer renderer;
@@ -62,6 +74,10 @@ public class CIDashboard {
 		this.renderer = new CIRenderer(this);
 		this.persistence = new CIPersistence(this, buildCache);
 		this.priority = dashboardSection.get().getPriority(dashboardSection);
+	}
+
+	public Set<String> getMonitoredArticles() {
+		return dashboardSection.get().getMonitoredArticles(dashboardSection);
 	}
 
 	public Section<CIDashboardType> getDashboardSection() {
@@ -241,5 +257,40 @@ public class CIDashboard {
 
 	public double getPriority() {
 		return this.priority;
+	}
+
+	public void updateDefaultDashboardOfUser(UserContext user) {
+		for (String monitoredArticle : getMonitoredArticles()) {
+			for (Section<PackageCompileType> compileSection : $(user.getArticleManager()
+					.getArticle(monitoredArticle)).successor(PackageCompileType.class)) {
+				PackageCompiler compiler = Compilers.getCompiler(compileSection, PackageCompiler.class);
+				Set<String> defaultDashboards = getDefaultDashboards(user);
+				Set<String> before = Set.copyOf(defaultDashboards);
+				if (compiler != null && Compilers.isDefaultCompiler(user, compiler)) {
+					defaultDashboards.add(getDashboardName());
+				}
+				else {
+					defaultDashboards.remove(getDashboardName());
+				}
+				if (!before.equals(defaultDashboards)) {
+					EventManager.getInstance().fireEvent(new UserDefaultDashboardUpdateEvent(Set.copyOf(defaultDashboards), user.getUserName()));
+				}
+			}
+		}
+	}
+
+	public boolean isDefaultDashboardOfUser(UserContext userContext) {
+		return getDefaultDashboards(userContext).contains(getDashboardName());
+	}
+
+	@NotNull
+	private static Set<String> getDefaultDashboards(UserContext user) {
+		//noinspection unchecked
+		Set<String> defaultDashboards = (Set<String>) user.getSession().getAttribute(DEFAULT_DASHBOARD);
+		if (defaultDashboards == null) {
+			defaultDashboards = Collections.newSetFromMap(new ConcurrentHashMap<>());
+		}
+		user.getSession().setAttribute(DEFAULT_DASHBOARD, defaultDashboards);
+		return defaultDashboards;
 	}
 }

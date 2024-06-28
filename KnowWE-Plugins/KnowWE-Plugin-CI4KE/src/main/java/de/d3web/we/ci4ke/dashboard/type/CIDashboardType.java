@@ -87,6 +87,7 @@ public class CIDashboardType extends DefaultMarkupType {
 	public static final String SKIP_TESTS = "skipTests";
 
 	private static final double DEFAULT_PRIORITY = 10;
+	private static final String MONITORED_ARTICLES = "monitoredArticles";
 
 	public enum CIBuildTriggers {
 		onDemand, onSave, onSchedule
@@ -157,6 +158,11 @@ public class CIDashboardType extends DefaultMarkupType {
 		String name = DefaultMarkupType.getAnnotation(section, NAME_KEY);
 		if (name == null) name = "unnamed";
 		return name;
+	}
+
+
+	public Set<String> getMonitoredArticles(Section<CIDashboardType> dashboardSection) {
+		return Set.copyOf(dashboardSection.getObjectOrDefault(null, MONITORED_ARTICLES, Set.of()));
 	}
 
 	/**
@@ -360,7 +366,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			Set<String> monitoredArticles = new HashSet<>();
 			CronScheduleBuilder cronSchedule = null;
 			if (triggerString != null) {
-				Pattern pattern = Pattern.compile("(?:\".+?\"|[^\\s]+)");
+				Pattern pattern = Pattern.compile("\".+?\"|\\S+");
 				Matcher matcher = pattern.matcher(triggerString);
 				if (matcher.find()) {
 					try {
@@ -386,6 +392,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			List<TestSpecification<?>> tests = result.testSpecifications();
 			List<ArgsCheckResult> messages = processMessages(result.testParsers());
 			convertMessages(section, messages);
+			section.storeObject(null, MONITORED_ARTICLES, monitoredArticles);
 			register(section, tests, trigger, monitoredArticles, cronSchedule);
 			throw new CompilerMessage(msgs);
 		}
@@ -406,7 +413,7 @@ public class CIDashboardType extends DefaultMarkupType {
 					monitoredArticles.add(parameter);
 				}
 				else {
-					Collection<Article> articles = section.getArticleManager().getArticles();
+					Collection<Article> articles = section.getArticleManager() == null ? List.of() : section.getArticleManager().getArticles();
 					Pattern onSaveArticleRegexPattern = Pattern.compile(parameter);
 					for (Article article : articles) {
 						if (onSaveArticleRegexPattern.matcher(article.getTitle()).matches()) {
@@ -479,7 +486,7 @@ public class CIDashboardType extends DefaultMarkupType {
 			CIDashboard dashboard = CIDashboardManager.generateAndRegisterDashboard(section, tests);
 			if (trigger == CIBuildTriggers.onSave) {
 				CIHook ciHook = new CIHook(dashboard, monitoredArticles);
-				CIHookManager.registerHook(ciHook);
+				CIHookManager.getInstance().registerHook(ciHook);
 				// store to be able to unregister hook in destroy method
 				KnowWEUtils.storeObject(section, CIHook.CI_HOOK_STORE_KEY, ciHook);
 			}
@@ -506,7 +513,7 @@ public class CIDashboardType extends DefaultMarkupType {
 		public void destroy(DefaultGlobalCompiler compiler, Section<CIDashboardType> section) {
 			Object object = section.getObject(CIHook.CI_HOOK_STORE_KEY);
 			if (object instanceof CIHook ciHook) {
-				CIHookManager.unregisterHook(ciHook);
+				CIHookManager.getInstance().unregisterHook(ciHook);
 			}
 			else if (object instanceof JobKey jobKey) {
 				QuartzSchedulerJobServer.deleteJob(jobKey);

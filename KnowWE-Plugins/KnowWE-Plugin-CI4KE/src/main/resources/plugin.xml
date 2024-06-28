@@ -107,14 +107,6 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="EventListener" id="CIEventForwarder">
-		<parameter id="class" value="de.d3web.we.ci4ke.hook.CIEventForwarder" />
-		<parameter id="name" value="CIEventForwarder" />
-		<parameter id="description" value="EventListener CIEventForwarder" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-	</extension>
-
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="CIDashboardToolProvider">
 		<parameter id="class" value="de.d3web.we.ci4ke.dashboard.action.CIDashboardToolProvider" />
 		<parameter id="name" value="CIDashboardToolProvider" />

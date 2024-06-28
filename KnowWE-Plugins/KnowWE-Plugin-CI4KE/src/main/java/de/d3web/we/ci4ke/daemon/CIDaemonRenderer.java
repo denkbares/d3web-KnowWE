@@ -4,6 +4,7 @@ import de.d3web.we.ci4ke.build.CIRenderer;
 import de.d3web.we.ci4ke.dashboard.CIDashboard;
 import de.d3web.we.ci4ke.dashboard.CIDashboardManager;
 import de.d3web.we.ci4ke.dashboard.type.CIDashboardType;
+import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.kdom.rendering.RenderResult;
 import de.knowwe.core.kdom.rendering.Renderer;
@@ -17,13 +18,14 @@ public class CIDaemonRenderer implements Renderer {
 	public void render(Section<?> section, UserContext user, RenderResult string) {
 		String content = DefaultMarkupType.getContent(section);
 		String dashboardName = DefaultMarkupType.getAnnotation(section, CIDashboardType.NAME_KEY);
-		renderDaemonContents(section, dashboardName, string);
+		renderDaemonContents(user, section, dashboardName, string);
 		string.append(content);
 	}
 
-	public static void renderDaemonContents(Section<?> section, String dashboardName, RenderResult string) {
+	public static void renderDaemonContents(UserContext user, Section<?> section, String dashboardName, RenderResult string) {
 
-		CIDashboard dashboard = CIDashboardManager.getDashboard(section.getArticleManager(), dashboardName);
+		ArticleManager articleManager = section.getArticleManager();
+		CIDashboard dashboard = CIDashboardManager.getDashboard(articleManager, dashboardName);
 
 		if (dashboard == null) {
 			string.appendHtml("<span class='error'>");
@@ -32,6 +34,7 @@ public class CIDaemonRenderer implements Renderer {
 			string.appendHtml("</span>");
 		}
 		else {
+			dashboard.updateDefaultDashboardOfUser(user);
 			string.appendHtml("<a class=\"ci-daemon\" href=\""
 					+ KnowWEUtils.getURLLink(dashboard.getDashboardSection())
 					+ "\">");
@@ -39,6 +42,5 @@ public class CIDaemonRenderer implements Renderer {
 			renderer.renderCurrentBuildStatus(string);
 			string.appendHtml("</a> ");
 		}
-
 	}
 }
