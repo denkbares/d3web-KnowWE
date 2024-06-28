@@ -1,7 +1,7 @@
 package de.knowwe.event;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import com.denkbares.events.Event;
 
@@ -26,8 +26,7 @@ public class ArticleUpdateEvent implements Event {
 	 * @param username author of the update
 	 */
 	public ArticleUpdateEvent(String title, String username) {
-		this.username = username;
-		this.titles = Collections.singletonList(title);
+		this(List.of(title), username);
 	}
 
 	/**
