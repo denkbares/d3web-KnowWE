@@ -332,7 +332,7 @@ public class CIRenderer {
 			if (hasText) {
 				renderResult.appendHtml(": ").appendJSPWikiMarkup(text);
 			}
-			if (testResult.getRunTimeMillis() > 2000 && testResult.isSuccessful()) {
+			if (testResult.getRunTimeMillis() > 1000 && testResult.isSuccessful()) {
 				renderResult.appendHtml("<span class='ci-runtime'> " + Stopwatch.getDisplay(testResult.getRunTimeMillis()) + "</span>");
 			}
 			renderResult.appendHtml("</span>");
