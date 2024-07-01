@@ -85,6 +85,7 @@ public class CIBuildManager implements EventListener {
 			r -> new Thread(r, "CI-Build-Trigger-" + executorNumber.incrementAndGet()));
 	private static final AtomicLong THREAD_NUMBER = new AtomicLong();
 	private static final ExecutorService TEST_EXECUTOR_SERVICE = createTestExecutorService();
+	private static final ExecutorService SUB_TEST_EXECUTOR_SERVICE = createTestExecutorService();
 
 	@NotNull
 	private static ExecutorService createTestExecutorService() {
@@ -129,7 +130,7 @@ public class CIBuildManager implements EventListener {
 			providers.addAll(pluggedProviders);
 
 			listener = new DefaultAjaxProgressListener();
-			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), listener, TEST_EXECUTOR_SERVICE, dashboard.getPriority());
+			testExecutor = new TestExecutor(providers, dashboard.getTestSpecifications(), listener, TEST_EXECUTOR_SERVICE, SUB_TEST_EXECUTOR_SERVICE, dashboard.getPriority());
 		}
 
 		@Override
