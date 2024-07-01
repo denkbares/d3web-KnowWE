@@ -25,19 +25,10 @@ public class ArticleUpdateEvent implements Event {
 	 * @param title    page name of the update
 	 * @param username author of the update
 	 */
-	public ArticleUpdateEvent(String title, String username) {
-		this(List.of(title), username);
-	}
 
-	/**
-	 * Constructs an event for an update with multiple pages
-	 *
-	 * @param titles   list of page names in the update
-	 * @param username author of the update
-	 */
-	public ArticleUpdateEvent(Collection<String> titles, String username) {
+	public ArticleUpdateEvent(String title, String username) {
 		this.username = username;
-		this.titles = titles;
+		this.titles = title;
 	}
 
 	public String getUsername() {
