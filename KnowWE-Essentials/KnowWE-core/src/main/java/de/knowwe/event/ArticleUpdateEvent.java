@@ -1,9 +1,5 @@
 package de.knowwe.event;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.denkbares.events.Event;
 
 /**
