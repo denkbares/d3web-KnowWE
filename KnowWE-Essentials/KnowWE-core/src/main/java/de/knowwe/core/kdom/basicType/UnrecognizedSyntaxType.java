@@ -26,9 +26,13 @@ import de.knowwe.core.compile.DefaultGlobalCompiler;
 import de.knowwe.core.compile.DefaultGlobalCompiler.DefaultGlobalHandler;
 import de.knowwe.core.kdom.AbstractType;
 import de.knowwe.core.kdom.parsing.Section;
+import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.Renderer;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.kdom.sectionFinder.AllTextFinderTrimmed;
 import de.knowwe.core.report.Message;
 import de.knowwe.core.report.Messages;
+import de.knowwe.core.user.UserContext;
 
 /**
  * Type to be used for left over text in markups. Left over means that no other SectionFinder could recognize this
@@ -45,6 +49,12 @@ public class UnrecognizedSyntaxType extends AbstractType {
 
 	private UnrecognizedSyntaxType() {
 		this.setSectionFinder(new AllTextFinderTrimmed(AllTextFinderTrimmed.TrimType.SPACES_AND_LINE_BREAKS));
+		this.setRenderer(new Renderer() {
+			@Override
+			public void render(Section<?> section, UserContext user, RenderResult result) {
+				result.append(new Span(section.getText()).clazz("unrecognized-syntax"));
+			}
+		});
 		this.addCompileScript(new DefaultGlobalHandler<UnrecognizedSyntaxType>() {
 
 			@Override

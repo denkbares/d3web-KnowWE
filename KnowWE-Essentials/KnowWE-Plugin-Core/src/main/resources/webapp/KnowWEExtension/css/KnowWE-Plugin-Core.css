@@ -843,6 +843,11 @@ table.knowwe-pagination th img.filter:hover {
 	visibility: hidden;
 }
 
+.unrecognized-syntax {
+	color: var(--text-color-knowwe-error);
+	text-decoration: underline var(--text-color-knowwe-error);
+}
+
 /* ################################################## */
 /* ------------- Font Awesome Customisation----------- */
 /* ################################################## */
