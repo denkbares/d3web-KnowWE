@@ -107,9 +107,6 @@ public class JspGitBridge {
 		this.commitCount = new AtomicLong();
 	}
 
-	public IgnoreNode getIgnoreNode() {
-		return ignoreNode;
-	}
 
 	public String getFilesystemPath() {
 		return filesystemPath;
@@ -513,7 +510,11 @@ public class JspGitBridge {
 		//check whether maintencance branch is already existing
 		Git git = new Git(this.repository);
 		try {
-			String defaultBranchName = properties.getProperty(JSPWIKI_GIT_DEFAULT_BRANCH);
+			String defaultBranchName = properties.getProperty(JSPWIKI_GIT_DEFAULT_BRANCH,null);
+			//do nothing if it is not set
+			if(defaultBranchName==null){
+				return;
+			}
 			List<Ref> branchRefs = git.branchList().call();
 			List<Ref> refs = branchRefs.stream()
 					.filter(ref -> ref.getName().equals("refs/heads/" + defaultBranchName))
@@ -530,6 +531,7 @@ public class JspGitBridge {
 	}
 
 	public List<String> getCommitHashesForPageRaw(String pageName, boolean mangle, int maxCount) throws InterruptedException, IOException {
+		long time = System.currentTimeMillis();
 		String filename = attemptGetFilename(pageName, mangle);
 
 		File outputFile = File.createTempFile("git-log-output", ".txt");
@@ -553,7 +555,7 @@ public class JspGitBridge {
 		int exitCode = process.waitFor();
 
 		if (exitCode == 0) {
-			LOGGER.info("Successfully execute: " + processBuilder.command());
+			LOGGER.info("Successfully execute: " + processBuilder.command() + " in " + (System.currentTimeMillis() - time) + "ms");
 //			System.out.println("Command executed successfully");
 		}
 		else {
@@ -683,6 +685,7 @@ public class JspGitBridge {
 			throw new RuntimeException(e);
 		}
 	}
+
 
 	/**
 	 * In addition to detached commit clean up, git gc will also perform compression on stored Git Objects, freeing up
