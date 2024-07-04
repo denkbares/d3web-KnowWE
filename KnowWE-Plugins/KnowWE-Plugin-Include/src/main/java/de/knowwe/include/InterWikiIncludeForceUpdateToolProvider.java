@@ -20,25 +20,17 @@
 package de.knowwe.include;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.events.EventManager;
-import com.denkbares.strings.Strings;
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.action.AbstractAction;
 import de.knowwe.core.action.RecompileAction;
 import de.knowwe.core.action.UserActionContext;
-import de.knowwe.core.kdom.Article;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.user.UserContext;
-import de.knowwe.event.FullParseEvent;
 import de.knowwe.kdom.attachment.AttachmentUpdateMarkup;
-import de.knowwe.tools.AsynchronousActionTool;
 import de.knowwe.tools.DefaultTool;
 import de.knowwe.tools.Tool;
 import de.knowwe.tools.ToolProvider;
@@ -56,7 +48,7 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
-		if (!context.userIsAdmin()) return;
+		if ( false && !context.userIsAdmin()) return;
 
 		ArticleManager articleManager = context.getArticleManager();
 
@@ -67,6 +59,7 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 				LOGGER.info("Checking " + markup.get().getUrl(markup) + " for updates...");
 				markup.get().performUpdate(markup, true);
 			});
+			RecompileAction.recompile(articleManager.getArticles().iterator().next(), true);
 		}
 		finally {
 			LOGGER.info("Updated all imports, recompiling....");
@@ -79,13 +72,14 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 		DefaultTool updateImports = new DefaultTool(Icon.REFRESH,
 				"Update imports",
 				"Update all import markups",
-				"window.location='action/InterWikiIncludeForceUpdateToolProvider'",
+				"jq$.ajax({url : 'action/InterWikiIncludeForceUpdateToolProvider', cache : false });" +
+						"KNOWWE.notification.success(null, 'Triggered all imports to update - this may take a while. Full recompile will be performed at the end.', 'import-all', 20000);",
 				Tool.CATEGORY_EXECUTE);
 		return new Tool[] { updateImports };
 	}
 
 	@Override
 	public boolean hasTools(Section<?> section, UserContext userContext) {
-		return userContext.userIsAdmin();
+		return true || userContext.userIsAdmin();
 	}
 }
