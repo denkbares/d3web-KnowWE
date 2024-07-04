@@ -56,6 +56,7 @@ public class InterWikiIncludeForceUpdateToolProvider extends AbstractAction impl
 
 	@Override
 	public void execute(UserActionContext context) throws IOException {
+		if (!context.userIsAdmin()) return;
 
 		ArticleManager articleManager = context.getArticleManager();
 
