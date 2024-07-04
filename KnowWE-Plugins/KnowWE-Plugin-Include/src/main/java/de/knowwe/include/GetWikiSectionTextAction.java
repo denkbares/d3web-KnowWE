@@ -17,6 +17,8 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.jspwiki.JSPWikiMarkupUtils;
 import de.knowwe.jspwiki.types.HeaderType;
 
+import static de.knowwe.include.ImportMarker.REFERENCE;
+
 /**
  * An action to retrieve the wiki source text of a chapter of a wiki page.
  * For other parts of wiki source (i.e. markup block) see GetSectionTextAction in the core-plugins.
@@ -26,10 +28,11 @@ import de.knowwe.jspwiki.types.HeaderType;
  */
 public class GetWikiSectionTextAction extends GetSectionTextAction {
 
+
 	@Override
 	public void execute(UserActionContext context) throws IOException {
 
-		String wikiReference = context.getParameter("reference");
+		String wikiReference = context.getParameter(REFERENCE);
 
 		if (wikiReference == null) {
 			context.sendError(HttpServletResponse.SC_NOT_FOUND, "URL parameter 'reference' missing.");

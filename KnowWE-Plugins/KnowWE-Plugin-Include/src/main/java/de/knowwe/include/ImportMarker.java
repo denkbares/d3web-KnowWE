@@ -19,10 +19,16 @@
 
 package de.knowwe.include;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.denkbares.utils.Stopwatch;
 import de.knowwe.core.action.UserActionContext;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.utils.KnowWEUtils;
@@ -46,12 +53,16 @@ public class ImportMarker {
 
 	public static final String REQUEST_FROM = "requestFrom";
 	public static final String REQUEST_LINK = "requestLink";
+	public static final String REFERENCE = "reference";
 	private final Date creationDate;
+	private final String reference;
 	private final String sourceLabel;
 	private final String sourceLink;
+	private static final Map<String, Set<ImportMarker>> IMPORT_MARKERS = new ConcurrentHashMap<>();
 
-	public ImportMarker(@NotNull Date creationDate, @Nullable String sourceLabel, @Nullable String sourceLink) {
+	public ImportMarker(@NotNull Date creationDate, @NotNull String reference, @Nullable String sourceLabel, @Nullable String sourceLink) {
 		this.creationDate = creationDate;
+		this.reference = reference;
 		this.sourceLabel = sourceLabel;
 		this.sourceLink = sourceLink;
 	}
@@ -85,27 +96,41 @@ public class ImportMarker {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		ImportMarker that = (ImportMarker) o;
-		return Objects.equals(sourceLabel, that.sourceLabel) && Objects.equals(sourceLink, that.sourceLink);
+		return Objects.equals(sourceLabel, that.sourceLabel) && Objects.equals(sourceLink, that.sourceLink) && Objects.equals(reference, that.reference);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(sourceLabel, sourceLink);
+		return Objects.hash(sourceLabel, sourceLink, reference);
 	}
 
 	public static void markAsImported(Section<? extends Type> section, UserActionContext context) {
 		Set<ImportMarker> markers = section.computeIfAbsent(null, ImportMarker.class.getName(),
 				(c, s) -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
-		ImportMarker marker = new ImportMarker(new Date(), context.getParameter(REQUEST_FROM), context.getParameter(REQUEST_LINK));
+		ImportMarker marker = new ImportMarker(new Date(), context.getParameter(REFERENCE), context.getParameter(REQUEST_FROM), context.getParameter(REQUEST_LINK));
+
 		markers.remove(marker);
 		markers.add(marker);
+
+		// also safe statically, so it can be displayed after the page changed
+		Set<ImportMarker> staticMarkersOfPage = IMPORT_MARKERS.computeIfAbsent(section.getTitle(), k -> Collections.newSetFromMap(new ConcurrentHashMap<>()));
+		staticMarkersOfPage.add(marker);
+		Date twoHoursAgo = Date.from(Instant.now().minus(2, ChronoUnit.HOURS));
+		staticMarkersOfPage.removeIf(m -> m.getCreationDate().before(twoHoursAgo)); // cleanup
 	}
 
 	@NotNull
-	public static Set<ImportMarker> getImportMarkers(Section<?> section) {
+	public static List<ImportMarker> getImportMarkers(Section<?> section) {
 		Collection<? extends ImportMarker> markers = section.getObject(ImportMarker.class.getName());
-		if (markers == null) return Collections.emptySet();
-		return new HashSet<>(markers);
+		if (markers == null) markers = Set.of();
+		List<ImportMarker> markerList = new ArrayList<>(markers);
+		if (section.get() instanceof RootType) {
+			Set<ImportMarker> staticMarkers = IMPORT_MARKERS.getOrDefault(section.getTitle(), new HashSet<>());
+			staticMarkers.removeAll(markers); // don't duplicate
+			markerList.addAll(staticMarkers);
+		}
+		markerList.sort(Comparator.comparing(ImportMarker::getSourceLabel).thenComparing(ImportMarker::getSourceLink));
+		return List.copyOf(markerList);
 	}
 
 	public String getInfoText() {
@@ -121,7 +146,8 @@ public class ImportMarker {
 		String sourceLink = getSourceLink();
 		if (sourceLink == null) {
 			source = sourceLabel;
-		} else {
+		}
+		else {
 			source = KnowWEUtils.getWikiLink(sourceLabel, sourceLink);
 		}
 
