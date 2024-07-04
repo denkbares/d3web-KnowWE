@@ -152,6 +152,10 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 	}
 
 	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section) {
+		performUpdate(section, false);
+	}
+
+	public void performUpdate(Section<? extends AttachmentUpdateMarkup> section, boolean force) {
 		if (section.getArticleManager() == null) return;
 
 		section.get().logLastRun(section);
@@ -181,7 +185,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 			try {
 				Stopwatch stopwatch = new Stopwatch();
 				WikiAttachment attachment = section.get().getWikiAttachment(section);
-				State attachmentState = needsUpdate(attachment, url);
+				State attachmentState = force ? State.OUTDATED : needsUpdate(attachment, url);
 				if (attachmentState == AttachmentMarkup.State.UP_TO_DATE) {
 					LOGGER.debug("Resource at URL " + url + " has not changed, attachment '" + path + "' not updated (based on header info).");
 					return;
@@ -206,7 +210,7 @@ public abstract class AttachmentUpdateMarkup extends DefaultMarkupType {
 
 				connectionStream = applyReplacements(section, connectionStream);
 
-				if (attachmentState == AttachmentMarkup.State.UNKNOWN || attachmentState == AttachmentMarkup.State.OUTDATED) {
+				if ((attachmentState == AttachmentMarkup.State.UNKNOWN || attachmentState == AttachmentMarkup.State.OUTDATED)) {
 					// if state is unknown, compare contents, so we don't produce unnecessary attachment versions and compiles
 					// to be sure that there is actually change, also compare content if we see outdated based on header info...
 					if (attachment != null) {

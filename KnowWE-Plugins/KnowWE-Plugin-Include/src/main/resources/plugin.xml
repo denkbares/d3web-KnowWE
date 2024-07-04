@@ -27,6 +27,23 @@
         <parameter id="script" value="KnowWE-Plugin-Include.js" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="InterWikiIncludeForceUpdateToolProvider">
+		<parameter id="class" value="de.knowwe.include.InterWikiIncludeForceUpdateToolProvider" />
+		<parameter id="name" value="InterWikiIncludeForceUpdate" />
+		<parameter id="description" value="Offers quick access to set activationstatus = on." />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="9" />
+		<parameter id="scope" value="Administration" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="InterWikiIncludeForceUpdateAction">
+		<parameter id="class" value="de.knowwe.include.InterWikiIncludeForceUpdateToolProvider" />
+		<parameter id="name" value="InterWikiIncludeForceUpdateToolProvider" />
+		<parameter id="description" value="Action InterWikiIncludeForceUpdateAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="InterWikiImportMarkup">
 		<parameter id="class"
 			value="de.knowwe.include.InterWikiImportMarkup" />
