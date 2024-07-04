@@ -132,7 +132,7 @@ public class InterWikiImportMarkup extends AttachmentUpdateMarkup implements Att
 
 	@Override
 	public @Nullable URL getUrl(Section<? extends AttachmentUpdateMarkup> section) {
-		return getUrl(section, "action/GetWikiSectionTextAction?reference=", true);
+		return getUrl(section, "_action/GetWikiSectionTextAction?reference=", true);
 	}
 
 	@Nullable
