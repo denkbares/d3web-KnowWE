@@ -125,7 +125,7 @@ public class ImportMarker {
 		if (markers == null) markers = Set.of();
 		List<ImportMarker> markerList = new ArrayList<>(markers);
 		if (section.get() instanceof RootType) {
-			Set<ImportMarker> staticMarkers = IMPORT_MARKERS.getOrDefault(section.getTitle(), new HashSet<>());
+			Set<ImportMarker> staticMarkers = new HashSet<>(IMPORT_MARKERS.getOrDefault(section.getTitle(), Set.of()));
 			staticMarkers.removeAll(markers); // don't duplicate
 			markerList.addAll(staticMarkers);
 		}
