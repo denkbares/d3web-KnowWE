@@ -129,7 +129,9 @@ public class ImportMarker {
 			staticMarkers.removeAll(markers); // don't duplicate
 			markerList.addAll(staticMarkers);
 		}
-		markerList.sort(Comparator.comparing(ImportMarker::getSourceLabel).thenComparing(ImportMarker::getSourceLink));
+		markerList.sort(Comparator.comparing((ImportMarker m) -> m.getSourceLabel() == null ? "" : m.getSourceLabel())
+				.thenComparing(m -> m.getSourceLink() == null ? "" : m.getSourceLink())
+				.thenComparing(ImportMarker::getCreationDate));
 		return List.copyOf(markerList);
 	}
 
