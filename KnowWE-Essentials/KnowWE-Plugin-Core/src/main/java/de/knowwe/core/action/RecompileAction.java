@@ -115,9 +115,9 @@ public class RecompileAction extends AbstractAction {
 				LOGGER.info("Starting recompilation of article " + article.getTitle() + (reason == null ? "" : ". Reason: " + reason + ". User: " + userName));
 				Article recompiledArticle = articleManager.registerArticle(article.getTitle(), article.getText());
 				// also update all markups
-				$(recompiledArticle).successor(AttachmentUpdateMarkup.class).stream().parallel().forEach(markup -> {
+				$(recompiledArticle).successor(AttachmentUpdateMarkup.class).stream().forEach(markup -> {
 					LOGGER.info("Checking " + markup.get().getUrl(markup) + " for updates...");
-					markup.get().performUpdate(markup);
+					markup.get().performUpdate(markup, true);
 				});
 				EventManager.getInstance().fireEvent(new FullParseEvent(recompiledArticle, userName));
 			}
