@@ -117,10 +117,6 @@
 }
 
 
-#delete-admin {
+#delete-admin.noneAdmin {
 	display: none;
-}
-
-body.admin #delete-admin {
-	display: inline-block;
 }

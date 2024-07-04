@@ -142,7 +142,7 @@
       <input class="btn btn-danger" type="submit" name="delete-all" id="delete-all"
         data-modal="+ .modal"
             value="<fmt:message key='info.delete.submit'/>" />
-      <input class="btn btn-danger" type="submit" name="delete-admin" id="delete-admin"
+      <input class="btn btn-danger <%=c.hasAdminPermissions() ? "admin" : "noneAdmin"%>" type="submit" name="delete-admin" id="delete-admin"
              data-modal="+ .modal"
              value="Delete entire page with history" />
       <div class="modal"><fmt:message key='info.confirmdelete'/></div>
