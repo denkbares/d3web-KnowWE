@@ -205,3 +205,13 @@ span.collapseCIMessage, span.expandCIMessage {
 span.collapseCIMessage:hover, span.expandCIMessage:hover {
 	opacity: 0.6;
 }
+
+.expand-all {
+	padding-right: 0.4em;
+	cursor: pointer;
+}
+
+.collapse-all {
+	padding-right: 0.3em;
+	cursor: pointer;
+}

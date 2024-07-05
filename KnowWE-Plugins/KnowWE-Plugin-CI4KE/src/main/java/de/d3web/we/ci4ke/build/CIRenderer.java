@@ -52,6 +52,8 @@ import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRenderer;
 import de.d3web.we.ci4ke.dashboard.rendering.ObjectNameRendererManager;
 import de.d3web.we.ci4ke.test.ResultRenderer;
 import de.knowwe.core.kdom.rendering.RenderResult;
+import de.knowwe.core.kdom.rendering.elements.HtmlElement;
+import de.knowwe.core.kdom.rendering.elements.Span;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.util.Icon;
@@ -244,7 +246,7 @@ public class CIRenderer {
 	}
 
 	public static String getTitleHtml(String title) {
-		return "<span class='ci-test-title' title='" + title + "'>";
+		return "<span class='ci-test-title tooltipster' title='" + title + "'>";
 	}
 
 	private void appendTestResult(UserContext context, TestResult testResult, RenderResult renderResult) {
@@ -502,7 +504,7 @@ public class CIRenderer {
 	private void appendBuildHeadline(BuildResult build, RenderResult buffy) {
 		DateFormat dateFormat = DateFormat.getDateTimeInstance();
 		String buildDate = dateFormat.format(build.getBuildDate());
-		buffy.appendHtml("<div class='ci-name'>Build #").append(build.getBuildNumber())
+		buffy.appendHtml("<div class='ci-name'>").append(getCollapseExpandAll()).append("Build #").append(build.getBuildNumber())
 				.append(" (").append(buildDate).append(") ");
 
 		// get the build duration time
@@ -520,6 +522,19 @@ public class CIRenderer {
 		}
 
 		buffy.appendHtml("</div>");
+	}
+
+	private HtmlElement getCollapseExpandAll() {
+
+		return new Span().clazz("expand-collapse-all").children(
+				new Span().clazz("expand-all tooltipster")
+						.attributes("title", "Expand all")
+						.attributes("onclick", "KNOWWE.plugin.ci4ke.expandAllMessages(this)")
+						.children(Icon.EXPAND.toHtmlElement()),
+				new Span().clazz("collapse-all tooltipster")
+						.attributes("title", "Collapse all")
+						.attributes("onclick", "KNOWWE.plugin.ci4ke.collapseAllMessages(this)")
+						.children(Icon.COLLAPSE.toHtmlElement()));
 	}
 
 	public void renderBuildStatus(@NotNull BuildResult buildResult, boolean checkRunning, Icon icon, RenderResult result) {
@@ -579,7 +594,7 @@ public class CIRenderer {
 				default -> throw new NotImplementedException("unexpected build status: " + resultType);
 			}
 		}
-		result.appendHtml("<i class='fa ").append(css).append("'")
+		result.appendHtml("<i class='tooltipster fa ").append(css).append("'")
 				.append(" dashboardName='").appendHtml(dashboardNameEncoded).append("'")
 				.append(" running='").append(running).append("'")
 				.append(" title='").append(text).append(": ").append(dashboardName).append("'")
@@ -625,7 +640,7 @@ public class CIRenderer {
 						  + "', '"
 						  + KnowWEUtils.getURLLink(dashboard.getDashboardArticle() + "#"
 												   + dashboardNameEncoded)
-						  + "')\"><img class='ci-abort-build' height='16' title='Stops the current build' " +
+						  + "')\"><img class='tooltipster ci-abort-build' height='16' title='Stops the current build' " +
 						  "src='KnowWEExtension/images/cross.png' /></a>");
 	}
 

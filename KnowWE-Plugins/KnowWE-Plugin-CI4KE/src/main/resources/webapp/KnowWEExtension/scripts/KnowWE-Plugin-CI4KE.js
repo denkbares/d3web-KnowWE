@@ -88,6 +88,24 @@ KNOWWE.plugin.ci4ke = function() {
   }
 
   return {
+
+    expandAllMessages: function(button) {
+      let expandButtons = jq$(button).parents(".ci-column-middle")
+        .find(".expandCIMessage:visible")
+        .filter((i, el) => jq$(el).find(".knowwe-error, .knowwe-warning").exists());
+      if (expandButtons.length === 0) {
+        expandButtons = jq$(button).parents(".ci-column-middle")
+          .find(".expandCIMessage:visible");
+      }
+      expandButtons.each((i, el) => KNOWWE.plugin.ci4ke.expandMessage(el));
+    },
+
+    collapseAllMessages: function(button) {
+      jq$(button).parents(".ci-column-middle")
+        .find(".collapseCIMessage:visible")
+        .each((i, el) => KNOWWE.plugin.ci4ke.collapseMessage(el));
+    },
+
     expandMessage: function(button) {
       const $expandButton = jq$(button);
       const $collapseButton = $expandButton
