@@ -15,7 +15,7 @@ import de.knowwe.core.wikiConnector.WikiAttachment;
 
 public abstract class AttachmentOperation extends AbstractLongOperation {
 
-	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private final Article article;
 	private final String attachmentFileName;
 	private Thread operationThread;
@@ -53,12 +53,12 @@ public abstract class AttachmentOperation extends AbstractLongOperation {
 		try {
 			final WikiAttachment attachment = Environment.getInstance()
 					.getWikiConnector()
-					.getAttachment(getArticle().getTitle() + "/" + attachmentFileName);
+					.getAttachment(getArticle().getTitle() + "/" + getAttachmentFileName());
 			if (attachment != null) {
 				result.appendHtml("Download latest version: <a class='action' href='")
-						.appendHtml(KnowWEUtils.getURLLink(getArticle(), attachmentFileName))
+						.appendHtml(KnowWEUtils.getURLLink(getArticle(), getAttachmentFileName()))
 						.appendHtml("'>")
-						.append(attachmentFileName)
+						.append(getAttachmentFileName())
 						.appendHtml("</a> (Build date: " + DATE_FORMAT.format(attachment.getDate()) + ")");
 			}
 		}
