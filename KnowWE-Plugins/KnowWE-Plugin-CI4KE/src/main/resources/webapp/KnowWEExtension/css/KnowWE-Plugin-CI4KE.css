@@ -105,6 +105,11 @@ a.ci-daemon:hover {
 	margin-left: 5px;
 }
 
+.ci-softTest {
+	color: var(--text-color-secondary);
+	margin-right: 5px;
+}
+
 .ci-no-details {
 	color: var(--text-color-secondary);
 	margin: 15px 0 10px 10px;
