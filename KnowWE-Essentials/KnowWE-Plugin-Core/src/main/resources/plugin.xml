@@ -50,6 +50,15 @@
 		<parameter id="priority" value="5" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Action" id="AttachmentDownloadAction">
+		<parameter id="class" value="de.knowwe.core.action.AttachmentDownloadAction" />
+		<parameter id="name" value="AttachmentDownloadAction" />
+		<parameter id="description" value="Action AttachmentDownloadAction" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+	</extension>
+
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="RefreshToolProvider">
 		<parameter id="class" value="de.knowwe.core.tools.RefreshToolProvider" />
 		<parameter id="name" value="RefreshToolProvider" />
