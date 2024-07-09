@@ -102,7 +102,6 @@ a.ci-daemon:hover {
 
 .ci-configuration {
 	color: var(--text-color-secondary);
-	margin-left: 5px;
 }
 
 .ci-softTest {
