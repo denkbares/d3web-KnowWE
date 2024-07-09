@@ -14,6 +14,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.jetbrains.annotations.NotNull;
 
+import de.uniwue.d3web.gitConnector.UserData;
+
 public class WikiPageProxy extends WikiPage {
 
 	private GitHistoryProvider historyProvider;
@@ -50,7 +52,6 @@ public class WikiPageProxy extends WikiPage {
 			return author;
 		}
 
-
 		try {
 			List<Page> pageHistory = this.historyProvider.getPageHistory(PageIdentifier.fromPagename(this.historyProvider.basePath(), this.getName(), -1));
 			if (pageHistory == null || pageHistory.isEmpty()) {
@@ -82,6 +83,18 @@ public class WikiPageProxy extends WikiPage {
 			throw new RuntimeException(e);
 		}
 		page.setAttribute(WikiPage.CHANGENOTE, revCommit.getFullMessage());
+		return page;
+	}
+
+	@NotNull
+	public static WikiPage fromUserData(String pageName,int version, UserData userData, String pageText, Date commitTime, Engine engine) {
+		final WikiPage page = new WikiPage(engine, pageName);
+
+		page.setAuthor(userData.user);
+		page.setLastModified(commitTime);
+		page.setVersion(version);
+		page.setSize(pageText.getBytes().length);
+		page.setAttribute(WikiPage.CHANGENOTE, userData.message);
 		return page;
 	}
 }

@@ -3,20 +3,20 @@ package org.apache.wiki.gitBridge;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Attachment;
@@ -25,10 +25,13 @@ import org.apache.wiki.api.core.Page;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserProfile;
+import org.apache.wiki.providers.GitProviderProperties;
+import org.apache.wiki.providers.GitVersioningFileProviderDelegate;
 import org.apache.wiki.providers.GitVersioningUtils;
 import org.apache.wiki.structs.VersionCarryingRevCommit;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.CommitCommand;
+import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.LogCommand;
 import org.eclipse.jgit.api.Status;
@@ -55,13 +58,10 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.denkbares.strings.Strings;
-
 import static org.apache.wiki.api.providers.AttachmentProvider.PROP_STORAGEDIR;
 import static org.apache.wiki.gitBridge.JSPUtils.getPath;
 import static org.apache.wiki.providers.AbstractFileProvider.FILE_EXT;
 import static org.apache.wiki.providers.GitVersioningFileProvider.*;
-import static org.apache.wiki.providers.GitVersioningUtils.gitGc;
 import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
 
 public class JspGitBridge {
@@ -97,11 +97,11 @@ public class JspGitBridge {
 		this.storageDir = TextUtil.getCanonicalFilePathProperty(properties, PROP_STORAGEDIR,
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 
-		this.filesystemPath = TextUtil.getCanonicalFilePathProperty(properties, JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR,
+		this.filesystemPath = TextUtil.getCanonicalFilePathProperty(properties, GitProviderProperties.JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR,
 				System.getProperty("user.home") + File.separator + "jspwiki-files");
 
 		this.pageDir = new File(this.filesystemPath);
-		this.gitDir = new File(pageDir.getAbsolutePath() + File.separator + GIT_DIR);
+		this.gitDir = new File(pageDir.getAbsolutePath() + File.separator + ".git");
 
 		this.ignoreNode = initIgnoreNode(this.pageDir);
 		this.commitCount = new AtomicLong();
@@ -141,34 +141,6 @@ public class JspGitBridge {
 		}
 	}
 
-	public void executeGitCommitGraphCommand() {
-		StopWatch sw = new StopWatch();
-		sw.start();
-		String label = "git commit graph command ";
-		try {
-			LOGGER.info("Starting execution of " + label);
-			String command = "git commit-graph write --reachable --changed-paths";
-			Process process = Runtime.getRuntime().exec(
-					command, null, new File(this.filesystemPath));
-
-			InputStream responseStream = process.getInputStream();
-			int exitVal = process.waitFor();
-			sw.stop();
-			LOGGER.info("Execution of '" + command + "' took: " + sw);
-			List<String> response = IOUtils.readLines(responseStream);
-			String responseString = Strings.concat("\n", response);
-			if (exitVal == 0) {
-				LOGGER.info(label + "executed successfully. " + responseString);
-			}
-			else {
-				LOGGER.warn(label + " terminated with error code: " + exitVal + " and message: " + responseString);
-			}
-		}
-		catch (IOException | InterruptedException e) {
-			LOGGER.error(label + " could not be run: " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
 
 	public Repository initGitRepository(File gitDir, File pageDir, String remoteURL) throws IOException {
 		if (!RepositoryCache.FileKey.isGitRepository(gitDir, FS.DETECTED)) {
@@ -313,66 +285,8 @@ public class JspGitBridge {
 		return reverseToList(revCommits);
 	}
 
-	public int numberOfCommitsForFile(Git git, String filePath, String filesystemPath) {
 
-		String command = "git rev-list --count HEAD -- " + filePath;
-		Process process = null;
-		try {
-			process = Runtime.getRuntime().exec(
-					command, null, new File(filesystemPath));
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 
-		InputStream responseStream = process.getInputStream();
-
-		try {
-			int exitVal = process.waitFor();
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-
-		String response = null;
-		try {
-			response = new String(responseStream.readNBytes(10));
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		return Integer.parseInt(response.trim());
-	}
-
-	public List<RevCommit> getCommitsForFile(Git git, String filePath) throws IOException {
-		RevWalk revWalk = new RevWalk(git.getRepository());
-
-		// Set the file path filter
-		revWalk.setTreeFilter(PathFilter.create(filePath));
-
-		// Sort the commits in reverse chronological order
-		revWalk.sort(RevSort.REVERSE);
-
-		// Start walking from HEAD
-		ObjectId head = git.getRepository().resolve("HEAD");
-		revWalk.markStart(revWalk.parseCommit(head));
-
-		List<RevCommit> commits = new ArrayList<>();
-
-//		for(RevCommit commit : revWalk){
-//			commits.add(commit);
-//		}
-
-		RevCommit currentCommit = revWalk.next();
-		while (currentCommit != null) {
-			commits.add(currentCommit);
-			currentCommit = revWalk.next();
-		}
-
-		// Return the commits
-		return commits;
-	}
 
 	@NotNull
 	private IgnoreNode initIgnoreNode(File pageDir) {
@@ -495,7 +409,7 @@ public class JspGitBridge {
 	}
 
 	public void initAndVerifyGitRepository(Properties properties) throws IOException {
-		final String remoteURL = TextUtil.getStringProperty(properties, JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT, "");
+		final String remoteURL = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT, "");
 		this.repository = initGitRepository(gitDir, pageDir, remoteURL);
 		//verify that we have the required branch for this project
 		verifyGitRepositoryInitialStatus(properties);
@@ -510,7 +424,7 @@ public class JspGitBridge {
 		//check whether maintencance branch is already existing
 		Git git = new Git(this.repository);
 		try {
-			String defaultBranchName = properties.getProperty(JSPWIKI_GIT_DEFAULT_BRANCH,null);
+			String defaultBranchName = properties.getProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH,null);
 			//do nothing if it is not set
 			if(defaultBranchName==null){
 				return;
@@ -687,22 +601,7 @@ public class JspGitBridge {
 	}
 
 
-	/**
-	 * In addition to detached commit clean up, git gc will also perform compression on stored Git Objects, freeing up
-	 * precious disk space. When Git identifies a group of similar objects it will compress them into a 'pack'. Packs
-	 * are like zip files of Git bjects and live in the ./git/objects/pack directory within a repository.
-	 *
-	 * @param properties of the wiki
-	 * @see <a href="https://www.atlassian.com/git/tutorials/git-gc">...</a>
-	 */
-	public void applyGarbageCollection(Properties properties) {
-		boolean skipGC = TextUtil.getBooleanProperty(properties, JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_SKIP_GC, false);
 
-		if (!skipGC) {
-			gitGc(true, windowsGitHackNeeded && !dontUseHack, repository, true);
-			this.repository.autoGC(new TextProgressMonitor());
-		}
-	}
 
 	private static final int RETRY = 2;
 	private static final int DELAY = 100;
@@ -737,24 +636,71 @@ public class JspGitBridge {
 		throw internalException;
 	}
 
-//	public WikiEngineGitBridge(Engine engine, Repository repository) {
-//		this.engine = engine;
-//		this.repository = repository;
-//		verifyForWindowsHack();
-//		this.commitCount = new AtomicLong();
-//	}
 
 	public void periodicalGitGC() {
 		final long l = this.commitCount.incrementAndGet();
 		if (l % 2000 == 0) {
-			GitVersioningUtils.gitGc(true, windowsGitHackNeeded && !dontUseHack, repository, true);
+			gitGc(true, windowsGitHackNeeded && !dontUseHack, repository, true);
 		}
 		else if (l % 500 == 0) {
-			GitVersioningUtils.gitGc(false, windowsGitHackNeeded && !dontUseHack, repository, false);
+			gitGc(false, windowsGitHackNeeded && !dontUseHack, repository, false);
 		}
 		else if (l % 100 == 0) {
 			this.repository.autoGC(new TextProgressMonitor());
 		}
+	}
+
+	public void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
+		LOGGER.info("Start git gc");
+		if (windowsGitHack) {
+			doBinaryGC(repository.getDirectory(), prune);
+		}
+		else {
+			doGC(repository, aggressive, prune);
+		}
+	}
+
+	private void doBinaryGC(File pageDir, boolean prune) {
+		try {
+			StopWatch sw = new StopWatch();
+			sw.start();
+			LOGGER.info("binary gc start");
+			ProcessBuilder pb = new ProcessBuilder();
+			pb.inheritIO().command("git", "gc", prune?"--prune=now":"").directory(pageDir);
+			Process git_gc = pb.start();
+			git_gc.waitFor(2, TimeUnit.MINUTES);
+			sw.stop();
+			LOGGER.info("binary gc took " + sw.toString());
+		}
+		catch (InterruptedException e) {
+			LOGGER.warn("External git process didn't end in 2 minutes, therefore cancel it");
+		}
+		catch (IOException e) {
+			LOGGER.error("Error executing external git: " + e.getMessage(), e);
+		}
+	}
+
+	private void doGC(final Repository repository, final boolean aggressive, boolean prune) {
+		final StopWatch stopwatch = new StopWatch();
+		stopwatch.start();
+		final Git git = new Git(repository);
+		try {
+			LOGGER.info("Beginn Git gc");
+			GarbageCollectCommand gc = git.gc()
+					.setAggressive(aggressive);
+			if(prune)
+				gc.setExpire(null);
+			final Properties gcRes = gc.call();
+			for (final Map.Entry<Object, Object> entry : gcRes.entrySet()) {
+				LOGGER.info("Git gc result: " + entry.getKey() + " " + entry.getValue());
+			}
+
+		}
+		catch (final GitAPIException e) {
+			LOGGER.warn("Git gc not successful: " + e.getMessage());
+		}
+		stopwatch.stop();
+		LOGGER.info("gc took " + stopwatch);
 	}
 
 	private void verifyForWindowsHack() {

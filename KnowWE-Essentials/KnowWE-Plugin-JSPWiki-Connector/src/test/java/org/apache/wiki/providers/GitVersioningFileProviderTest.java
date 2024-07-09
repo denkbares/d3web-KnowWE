@@ -80,7 +80,7 @@ public class GitVersioningFileProviderTest {
 		properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
 		properties.put("var.basedir", TMP_NEW_REPO);
-		properties.put(GitVersioningFileProvider.JSPWIKI_GIT_DEFAULT_BRANCH,"maintenance");
+		properties.put(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH,"maintenance");
 	}
 
 	@After
@@ -94,13 +94,13 @@ public class GitVersioningFileProviderTest {
 		WikiEngine engine = Mockito.mock(WikiEngine.class);
 		Mockito.when(engine.getWikiProperties()).thenReturn(properties);
 		GitVersioningFileProvider fileProvider = new GitVersioningFileProvider();
-		properties.put(GitVersioningFileProvider.JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT, "ssh://git@gitlab.example.com:2222/root/knowwetest.git");
+		properties.put(GitProviderProperties.JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT, "ssh://git@gitlab.example.com:2222/root/knowwetest.git");
 
 		fileProvider.initialize(engine, properties);
 
 		Repository repo = getRepository();
 		assertTrue(repo.getObjectDatabase().exists());
-		properties.remove(GitVersioningFileProvider.JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT);
+		properties.remove(GitProviderProperties.JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT);
 	}
 
 	Repository getRepository() throws IOException {

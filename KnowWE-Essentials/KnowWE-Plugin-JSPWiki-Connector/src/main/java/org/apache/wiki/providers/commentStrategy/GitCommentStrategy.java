@@ -8,7 +8,7 @@ import org.apache.wiki.api.core.Page;
  */
 @FunctionalInterface
 public interface GitCommentStrategy {
-	String getComment(Page page);
+	String getComment(Page page,String defaultValue);
 
 	default String getCommentForUser(String user){
 		return "";

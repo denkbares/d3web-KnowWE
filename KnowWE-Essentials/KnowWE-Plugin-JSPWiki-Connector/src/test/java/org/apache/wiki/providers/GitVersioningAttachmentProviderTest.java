@@ -73,7 +73,7 @@ public class GitVersioningAttachmentProviderTest {
 		properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
 		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
-		properties.setProperty(GitVersioningFileProvider.JSPWIKI_GIT_DEFAULT_BRANCH,"maintenance");
+		properties.setProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH,"maintenance");
 		engine = Mockito.mock(WikiEngine.class);
 		when(engine.getWikiProperties()).thenReturn(properties);
 		PageManager pageManager = Mockito.mock(PageManager.class);

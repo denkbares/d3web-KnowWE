@@ -25,14 +25,15 @@ import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.pages.DefaultPageManager;
 import org.apache.wiki.pages.PageManager;
+import org.apache.wiki.providers.GitProviderProperties;
 import org.apache.wiki.providers.GitVersioningAttachmentProvider;
 import org.apache.wiki.providers.GitVersioningFileProvider;
+import org.apache.wiki.providers.GitVersioningFileProviderDelegate;
 import org.mockito.Mockito;
 
 import com.denkbares.utils.Files;
 
 import static org.apache.wiki.api.providers.AttachmentProvider.PROP_STORAGEDIR;
-import static org.apache.wiki.providers.GitVersioningFileProvider.JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -268,9 +269,9 @@ public class MockedWiki {
 			Files.recursiveDelete(file);
 		}
 		Properties properties = new Properties();
-		properties.setProperty(GitVersioningFileProvider.JSPWIKI_GIT_DEFAULT_BRANCH, "maintenance");
+		properties.setProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH, "maintenance");
 		properties.setProperty("jspwiki.pageProvider", "GitVersioningFileProvider");
-		properties.setProperty(JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR, gitDir);
+		properties.setProperty(GitProviderProperties.JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR, gitDir);
 		properties.setProperty(PROP_STORAGEDIR, gitDir);
 
 		try {

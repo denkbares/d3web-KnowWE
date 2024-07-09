@@ -81,7 +81,7 @@ public class GitAutoUpdater {
 
 	public GitAutoUpdater(Engine engine, GitVersioningFileProvider fileProvider) {
 		this.fileProvider = fileProvider;
-		repository = fileProvider.repository;
+		repository = fileProvider.getRepository();
 		this.engine = engine;
 	}
 
@@ -97,7 +97,7 @@ public class GitAutoUpdater {
 			return;
 		}
 
-		Git git = new Git(fileProvider.repository);
+		Git git = new Git(fileProvider.getRepository());
 		ArticleManager articleManager = getDefaultArticleManager();
 
 		updateMasterBranch(articleManager, git);
@@ -160,8 +160,8 @@ public class GitAutoUpdater {
 			return;
 		}
 
-		RevWalk revWalk = new RevWalk(fileProvider.repository);
-		ObjectId oldHead = fileProvider.repository.resolve("remotes/origin/master");
+		RevWalk revWalk = new RevWalk(fileProvider.getRepository());
+		ObjectId oldHead = fileProvider.getRepository().resolve("remotes/origin/master");
 		RevCommit oldHeadCommit = revWalk.parseCommit(oldHead);
 
 		FetchCommand fetch1 = git.fetch();
@@ -187,7 +187,7 @@ public class GitAutoUpdater {
 				}
 			}
 			fileProvider.pushUnlock();
-			ObjectId newHead = fileProvider.repository.resolve(Constants.HEAD);
+			ObjectId newHead = fileProvider.getRepository().resolve(Constants.HEAD);
 
 			String title = null;
 			if (!oldHeadCommit.equals(newHead)) {

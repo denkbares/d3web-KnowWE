@@ -9,9 +9,12 @@ import org.apache.wiki.api.core.Page;
  */
 public class ChangeNoteStrategy implements GitCommentStrategy {
 	@Override
-	public String getComment(Page page) {
+	public String getComment(Page page,String defaultValue) {
 		if (page.getAttributes().containsKey(WikiPage.CHANGENOTE)) {
 			return page.getAttribute(WikiPage.CHANGENOTE);
+		}
+		if(defaultValue != null) {
+			return defaultValue;
 		}
 		else return "";
 	}

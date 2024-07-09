@@ -11,7 +11,6 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.providers.GitVersioningUtils;
-import org.apache.wiki.providers.gitCache.complete.CompleteGitVersionCache;
 import org.apache.wiki.structs.PageIdentifier;
 import org.apache.wiki.structs.WikiPageProxy;
 import org.eclipse.jgit.api.Git;
@@ -22,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class JGitHistoryProvider implements GitHistoryProvider {
-	private static final Logger LOGGER = LoggerFactory.getLogger(CompleteGitVersionCache.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JGitHistoryProvider.class);
 	private final Repository repo;
 	private final Engine engine;
 	private final JspGitBridge gitBridge;
