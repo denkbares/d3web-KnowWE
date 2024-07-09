@@ -41,7 +41,7 @@
 		<module>KnowWE-Plugin-Core</module>
 		<module>KnowWE-Plugin-JSPWiki-Connector</module>
 		<module>KnowWE-UITests</module>
-		<module>KnowWE-GitEssentials</module>
+		<module>KnowWE-Git-Essentials</module>
 	</modules>
 
 </project>

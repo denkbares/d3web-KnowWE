@@ -131,7 +131,7 @@
 		</dependency>
 		<dependency>
 			<groupId>de.uniwue.d3web</groupId>
-			<artifactId>KnowWE-GitEssentials</artifactId>
+			<artifactId>KnowWE-Git-Essentials</artifactId>
 			<version>2024.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
