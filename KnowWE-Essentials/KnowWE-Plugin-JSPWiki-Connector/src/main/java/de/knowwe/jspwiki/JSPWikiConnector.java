@@ -65,6 +65,7 @@ import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.SessionMonitor;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.WikiSecurityException;
+import org.apache.wiki.auth.authorize.GroupManager;
 import org.apache.wiki.auth.permissions.PagePermission;
 import org.apache.wiki.auth.permissions.PermissionFactory;
 import org.apache.wiki.auth.permissions.WikiPermission;
@@ -285,6 +286,11 @@ public class JSPWikiConnector implements WikiConnector {
 
 	public UserManager getUserManager() {
 		return engine.getManager(UserManager.class);
+	}
+
+
+	public GroupManager getGroupManager() {
+		return engine.getManager(GroupManager.class);
 	}
 
 	@Override
@@ -1022,4 +1028,5 @@ public class JSPWikiConnector implements WikiConnector {
 	public String getAntiCsrfToken(UserContext context) {
 		return WikiSession.getWikiSession(getEngine(), context.getRequest()).antiCsrfToken();
 	}
+
 }
