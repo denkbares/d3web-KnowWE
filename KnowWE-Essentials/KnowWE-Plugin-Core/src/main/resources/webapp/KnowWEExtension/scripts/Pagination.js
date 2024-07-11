@@ -693,7 +693,11 @@ KNOWWE.core.plugin.pagination = function() {
         let checkBoxes = $tooltip.find(".pagination-filter-list input");
         let checked = this.checked;
         checkBoxes.prop("checked", checked);
-        Object.values(filterState.columns).forEach(c => c.hidden = !checked);
+        checkBoxes.each((i, checkbox) => {
+          let columnName = getColumnName(jq$(checkbox).parents("li"));
+          let columnFilterState = getColumnState(paginationState, columnName);
+          columnFilterState.hidden = !checked;
+        })
         setPaginationState(sectionId, paginationState);
         updateButtonState($tooltip);
       });
