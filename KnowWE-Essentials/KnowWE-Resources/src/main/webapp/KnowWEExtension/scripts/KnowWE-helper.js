@@ -621,8 +621,7 @@ KNOWWE.helper.ajax = function(options) {
   function init() {
     oDefault = KNOWWE.helper.enrich(options, oDefault);
     if (oDefault.method === 'POST') {
-      let separator = oDefault.url.indexOf('?') === -1 ? "?" : "&";
-      oDefault.url = oDefault.url + separator + "X-XSRF-TOKEN=" + document.getElementById("X-XSRF-TOKEN").value;
+      oDefault.url = KNOWWE.helper.ajax.appendXSRFToken(oDefault.url);
     }
   }
 
@@ -734,6 +733,11 @@ KNOWWE.helper.ajax = function(options) {
     return http.responseText;
   }
 };
+
+KNOWWE.helper.ajax.appendXSRFToken = function(url) {
+  let separator = url.indexOf('?') === -1 ? "?" : "&";
+  return url + separator + "X-XSRF-TOKEN=" + document.getElementById("X-XSRF-TOKEN").value;
+}
 
 KNOWWE.helper.ajax.xhrExtractMessage = function(jqXHR) {
   if (jqXHR.responseJSON && jqXHR.responseJSON.message) {
