@@ -158,7 +158,7 @@
 	--hover-bg-color-btn-light-bg: var(--bg-color-primary-shade);
 
 	/*-------- borders --------*/
-	--border-color-default: var(--color-grey);
+	--border-color-default: #e2e2e9;
 	--border-color-edit-blue: #9ACBFB;
 	--border-color-infobox-blue: #bce8f1;
 	--border-color-infobox-red: #ebccd1;
