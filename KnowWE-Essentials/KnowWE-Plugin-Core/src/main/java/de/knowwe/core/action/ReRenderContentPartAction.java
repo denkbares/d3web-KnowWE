@@ -97,7 +97,7 @@ public class ReRenderContentPartAction extends AbstractAction {
 		else {
 			String renderResult = renderAndCancelOngoingRenders(context, section);
 			if (renderResult != null && context.getWriter() != null) {
-				context.setContentType(HTML);
+				context.setContentType(JSON);
 				JSONObject response = new JSONObject();
 				int counter = -1;
 				String counterParam = context.getParameter("counter");
