@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -619,6 +620,11 @@ public class JSPWikiConnector implements WikiConnector {
 	@Nullable
 	public String getWikiProperty(String property) {
 		return (String) engine.getWikiProperties().get(property);
+	}
+
+	@Override
+	public @NotNull Properties getWikiProperties() {
+		return getEngine().getWikiProperties();
 	}
 
 	@Override

@@ -45,51 +45,66 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.denkbares.events.EventManager;
 import de.knowwe.core.Environment;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.core.wikiConnector.WikiAttachment;
 import de.knowwe.core.wikiConnector.WikiAttachmentInfo;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
+import de.knowwe.event.ArticleUpdateEvent;
 import de.knowwe.jspwiki.JSPWikiConnector;
 
 public class DummyConnector implements WikiConnector {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DummyConnector.class);
 
 	private static final String DEFAULT_SAVE_PATH = "/repository";
-	private static final String DUMMY_USER = "DummyUser";
+	public static final String DUMMY_USER = "DummyUser";
 	public static final String BASE_URL = "http://valid_dummy_base_url/";
 
 	@NotNull
-	private DummyPageProvider dummyPageProvider = new DummyPageProvider();
+	protected DummyPageProvider dummyPageProvider;
 
 	private String knowweExtensionPath = null;
 
 	private final Map<String, String> locks = new HashMap<>();
 	private final String savePath;
 
-	private Properties properties;
+	private final Properties properties;
 
 	public DummyConnector(String savePath) {
-		this(new Properties(), savePath);
+		this(new Properties(), savePath, new SimpleDummyPageProvider());
 	}
 
 	public DummyConnector() {
-		this(new Properties(), DEFAULT_SAVE_PATH);
+		this(new Properties(), DEFAULT_SAVE_PATH, new SimpleDummyPageProvider());
 	}
 
 	public DummyConnector(Properties wikiProperties) {
-		this(wikiProperties, DEFAULT_SAVE_PATH);
+		this(wikiProperties, DEFAULT_SAVE_PATH, new SimpleDummyPageProvider());
 	}
 
-	public DummyConnector(Properties wikiProperties, String savePath) {
+	public DummyConnector(String savePath, DummyPageProvider pageProvider) {
+		this(new Properties(), savePath, pageProvider);
+	}
+
+	public DummyConnector(DummyPageProvider pageProvider) {
+		this(new Properties(), DEFAULT_SAVE_PATH, pageProvider);
+	}
+
+	public DummyConnector(Properties wikiProperties, DummyPageProvider pageProvider) {
+		this(wikiProperties, DEFAULT_SAVE_PATH, pageProvider);
+	}
+
+	public DummyConnector(Properties wikiProperties, String savePath, @NotNull DummyPageProvider pageProvider) {
 		this.properties = wikiProperties;
 		this.savePath = savePath;
+		dummyPageProvider = pageProvider;
 	}
 
 	private static final Set<String> LOGGED_WARNINGS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-	private static void warn(String message) {
+	protected static void warn(String message) {
 		// avoid spam...
 		if (LOGGED_WARNINGS.add(message)) {
 			LOGGER.warn(message);
@@ -105,6 +120,11 @@ public class DummyConnector implements WikiConnector {
 	@Nullable
 	public String getWikiProperty(String property) {
 		return properties.getProperty(property);
+	}
+
+	@Override
+	public @NotNull Properties getWikiProperties() {
+		return properties;
 	}
 
 	@Override
@@ -285,7 +305,7 @@ public class DummyConnector implements WikiConnector {
 	@Override
 	public String getChangeNote(String title, int version) {
 		warn("The used WikiConnector does not support change notes");
-		return "";
+		return this.dummyPageProvider.getChangeNote(title, version);
 	}
 
 	@Override
@@ -359,7 +379,8 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public String renamePage(String fromPage, String toPage, HttpServletRequest request) {
-		return dummyPageProvider.renameArticle(fromPage, toPage);
+		dummyPageProvider.renameArticle(fromPage, toPage);
+		return toPage; // weird interface definition having a return value here
 	}
 
 	@Override
@@ -369,31 +390,31 @@ public class DummyConnector implements WikiConnector {
 
 	@Override
 	public boolean userCanEditArticle(String articlename, HttpServletRequest r) {
-		warn("The used WikiConnector does not support rights managment");
+		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
 	public boolean userCanUploadAttachment(String title, HttpServletRequest request) {
-		warn("The used WikiConnector does not support rights managment");
+		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
 	public boolean userCanViewArticle(String articlename, HttpServletRequest r) {
-		warn("The used WikiConnector does not support rights managment");
+		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
 	public boolean userCanDeleteArticle(String title, HttpServletRequest request) {
-		warn("The used WikiConnector does not support rights managment");
+		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
 	@Override
 	public boolean userCanCreateArticles(HttpServletRequest request) {
-		warn("The used WikiConnector does not support rights managment");
+		warn("The used WikiConnector does not support rights management");
 		return true;
 	}
 
@@ -407,8 +428,14 @@ public class DummyConnector implements WikiConnector {
 	public boolean writeArticleToWikiPersistence(String title, String content, UserContext context, String changeNote) {
 		Environment environment = Environment.getInstance();
 		// create article with the new content
+		dummyPageProvider.setArticleContent(title, content, changeNote);
+
+		ArticleUpdateEvent event = new ArticleUpdateEvent(title, context.getUserName());
+		int latestVersion = Environment.retrieveLatestVersionNumber(title);
+		event.setVersion(new ArticleUpdateEvent.Version(latestVersion));
+		EventManager.getInstance().fireEvent(event);
+
 		environment.getArticleManager(Environment.DEFAULT_WEB).registerArticle(title, content);
-		dummyPageProvider.setArticleContent(title, content);
 		return true;
 	}
 
@@ -422,7 +449,7 @@ public class DummyConnector implements WikiConnector {
 		warn("This WikiConnector does not support sending multipart-mails");
 	}
 
-	public void setPageProvider(DummyPageProvider pageProvider) {
+	public void setPageProvider(SimpleDummyPageProvider pageProvider) {
 		this.dummyPageProvider = Objects.requireNonNull(pageProvider);
 	}
 }

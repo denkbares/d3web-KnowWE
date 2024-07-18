@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import de.knowwe.core.Environment;
 import de.knowwe.core.compile.Priority;
 import de.knowwe.core.compile.terminology.PageTitleTermCompileScript;
 import de.knowwe.core.kdom.rendering.DelegateRenderer;
@@ -36,13 +37,7 @@ import de.knowwe.core.report.Messages;
  */
 public class RootType extends AbstractType {
 
-	private static final RootType instance;
-
-	static {
-		instance = new RootType();
-	}
-
-	private RootType() {
+	public RootType() {
         this.addCompileScript(Priority.HIGHEST, new PageTitleTermCompileScript());
 		this.setSectionFinder(AllTextFinder.getInstance());
 		this.setRenderer((section, user, string) -> {
@@ -65,7 +60,11 @@ public class RootType extends AbstractType {
 	}
 
 	public static RootType getInstance() {
-		return instance;
+		if(Environment.getInstance() != null) {
+			return Environment.getInstance().getRootType();
+		} else {
+			// is a dummy object for testing only
+			return new RootType();
+		}
 	}
-
 }

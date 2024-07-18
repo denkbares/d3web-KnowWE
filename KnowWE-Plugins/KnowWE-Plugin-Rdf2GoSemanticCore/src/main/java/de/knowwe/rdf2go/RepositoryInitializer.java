@@ -28,6 +28,7 @@ public class RepositoryInitializer implements Instantiation {
 		String context = new File(basedir).getName() + "_" + appPathHash;
 
 		try {
+			SemanticCore.shutDownRepositoryManager(); // just in case there is already one initialized (e.g. JUnit tests)
 			File tempDir = SemanticCore.createRepositoryManagerDir(context);
 			SemanticCore.initializeRepositoryManager(tempDir);
 		}

@@ -23,6 +23,7 @@ import de.knowwe.core.utils.KnowWEUtils;
 import de.knowwe.core.wikiConnector.WikiConnector;
 import de.knowwe.core.wikiConnector.WikiPageInfo;
 import de.knowwe.event.ArticleUpdateEvent;
+import de.knowwe.event.DeInitEvent;
 import de.knowwe.event.FullParseEvent;
 import de.knowwe.event.InitEvent;
 import de.knowwe.plugin.Instantiation;
@@ -84,6 +85,8 @@ public class Environment {
 	 * The {@link CompilationMode} of KnowWE:
 	 */
 	private CompilationMode currentCompilationMode = CompilationMode.DEFAULT;
+
+	private RootType rootType;
 
 	/**
 	 * Hard coded name of the default web
@@ -161,6 +164,12 @@ public class Environment {
 		}
 	}
 
+	public void shutdown() {
+		instance = null;
+		initialized = false;
+		EventManager.getInstance().fireEvent(new DeInitEvent());
+	}
+
 	private void initEventManager() {
 		// get all EventListeners
 		List<Extension> extensions = new ArrayList<>(Arrays.asList(PluginManager.getInstance().getExtensions(
@@ -193,6 +202,10 @@ public class Environment {
 
 		// we want this compiler to run after all package compilers
 		compilerManager.addCompiler(10000, new PackageUnregistrationCompiler(packageRegistrationCompiler));
+	}
+
+	public RootType getRootType() {
+		return rootType;
 	}
 
 	/**
@@ -450,7 +463,7 @@ public class Environment {
 
 	/**
 	 * Initialize all types by decorating them. The method makes sure that each instance is decorated only once. To do
-	 * this a breath-first-search is used. Thus each item is initialized with the shortest path towards it.
+	 * this a breath-first-search is used. Thus, each item is initialized with the shortest path towards it.
 	 *
 	 * @created 24.10.2013
 	 */
@@ -460,13 +473,13 @@ public class Environment {
 		Plugins.checkTypePriorityClarity();
 
 		// queue the queue of paths to be initialized
-		RootType root = RootType.getInstance();
+		rootType = new RootType();
 		LinkedList<Type[]> queue = new LinkedList<>();
-		queue.add(new Type[] { root });
+		queue.add(new Type[] { rootType });
 
 		// queuedTypes the already queued instances
 		Set<Type> queuedTypes = Collections.newSetFromMap(new IdentityHashMap<>());
-		queuedTypes.add(root);
+		queuedTypes.add(rootType);
 
 		while (!queue.isEmpty()) {
 			// initialize the first element of the queue

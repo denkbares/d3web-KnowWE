@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import com.denkbares.collections.CountingSet;
 import com.denkbares.collections.PriorityList;
 import com.denkbares.collections.PriorityList.Group;
+import com.denkbares.events.Event;
+import com.denkbares.events.EventListener;
 import com.denkbares.events.EventManager;
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
@@ -37,6 +39,7 @@ import de.knowwe.core.kdom.Type;
 import de.knowwe.core.kdom.parsing.Section;
 import de.knowwe.core.report.Messages;
 import de.knowwe.core.utils.KnowWEUtils;
+import de.knowwe.event.DeInitEvent;
 
 /**
  * This class represents the compile manager for a specific {@link ArticleManager}. It is responsible to manage every
@@ -53,7 +56,7 @@ import de.knowwe.core.utils.KnowWEUtils;
  * Only compilers with same priority may compile in parallel.
  * <p/>
  */
-public class CompilerManager {
+public class CompilerManager implements EventListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CompilerManager.class);
 
 	private static final Map<Class<? extends Compiler>, ScriptManager<? extends Compiler>> scriptManagers = new HashMap<>();
@@ -83,6 +86,7 @@ public class CompilerManager {
 		this.compilers = new PriorityList<>(5d);
 		this.threadPool = createExecutorService(CompilerManager.class.getSimpleName());
 		ServletContextEventListener.registerOnContextDestroyedTask(servletContextEvent -> onContextDestroyed());
+		EventManager.getInstance().registerListener(this);
 	}
 
 	private void onContextDestroyed() {
@@ -645,6 +649,18 @@ public class CompilerManager {
 			catch (InterruptedException e) {
 				LOGGER.warn("Caught InterruptedException while waiting to compile.", e);
 			}
+		}
+	}
+
+	@Override
+	public Collection<Class<? extends Event>> getEvents() {
+		return Collections.singleton(DeInitEvent.class);
+	}
+
+	@Override
+	public void notify(Event event) {
+		if( event instanceof DeInitEvent) {
+			scriptManagers.clear();
 		}
 	}
 }

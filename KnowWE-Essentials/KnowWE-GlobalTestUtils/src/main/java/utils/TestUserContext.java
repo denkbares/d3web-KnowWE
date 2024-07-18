@@ -63,6 +63,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 	private final Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
 	private final TestHttpSession session = new TestHttpSession();
 	private final TestHttpServletRequest request = new TestHttpServletRequest(session);
+	private final TestHttpServletResponse response = new TestHttpServletResponse();
 
 	public TestUserContext(Article article) {
 		this(article, false, false);
@@ -168,8 +169,7 @@ public class TestUserContext implements UserContext, UserActionContext {
 
 	@Override
 	public HttpServletResponse getResponse() {
-		// TODO Auto-generated method stub
-		return null;
+		return response;
 	}
 
 	@Override

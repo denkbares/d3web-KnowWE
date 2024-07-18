@@ -39,7 +39,7 @@ public class ZipContentConnectorAttachment extends SingleVersionAttachment {
 
 	private final ZipEntry zipEntry;
 
-	public ZipContentConnectorAttachment(DummyPageProvider pageProvider, String fileName, String parentName, ZipEntry zipEntry, ZipFile zipFile) {
+	public ZipContentConnectorAttachment(SimpleDummyPageProvider pageProvider, String fileName, String parentName, ZipEntry zipEntry, ZipFile zipFile) {
 		super(pageProvider);
 		this.zipFile = zipFile;
 		this.zipEntry = zipEntry;

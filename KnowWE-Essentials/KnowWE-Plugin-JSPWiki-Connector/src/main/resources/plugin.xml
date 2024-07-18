@@ -15,17 +15,7 @@
         </library>
     </runtime>
 
-	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
-			id="LinkArticlesMarkup">
-		<parameter id="class" value="de.knowwe.jspwiki.LinkArticlesMarkup" />
-		<parameter id="name" value="LinkArticlesMarkup" />
-		<parameter id="description" value="Markup to show list of articles" />
-		<parameter id="version" value="1.0" />
-		<parameter id="priority" value="5" />
-		<parameter id="scope" value="root" />
-		<parameter id="css" value="KnowWE-Plugin-JSPWiki-Connector.css" />
-		<parameter id="script" value="KnowWE-Plugin-JSPWiki-Connector.js" />
-	</extension>
+
 
 	<extension plugin-id="KnowWEExtensionPoints" point-id="ToolProvider" id="AdministrationToolProvider">
 		<parameter id="class" value="de.knowwe.jspwiki.administration.AdministrationToolProvider" />
@@ -49,6 +39,18 @@
 		<parameter id="class" value="de.knowwe.jspwiki.administration.AdministrationMarkup" />
 		<parameter id="name" value="AdministrationMarkup" />
 		<parameter id="description" value="Markup for administration tools" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+		<parameter id="css" value="KnowWE-Plugin-JSPWiki-Connector.css" />
+		<parameter id="script" value="KnowWE-Plugin-JSPWiki-Connector.js" />
+	</extension>
+
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type"
+			   id="LinkArticlesMarkup">
+		<parameter id="class" value="de.knowwe.jspwiki.LinkArticlesMarkup" />
+		<parameter id="name" value="LinkArticlesMarkup" />
+		<parameter id="description" value="Markup to show list of articles" />
 		<parameter id="version" value="1.0" />
 		<parameter id="priority" value="5" />
 		<parameter id="scope" value="root" />

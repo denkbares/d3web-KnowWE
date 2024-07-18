@@ -29,11 +29,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import de.knowwe.core.Attributes;
@@ -419,7 +421,7 @@ public interface WikiConnector {
 	 * Removes the lock for the article.
 	 *
 	 * @param title the title of the article to be unlocked
-	 * @param user  the user who's lock shall be removed, if null the most recent lock will be removed
+	 * @param user  the user whose lock shall be removed, if null the most recent lock will be removed
 	 */
 	void unlockArticle(String title, String user);
 
@@ -488,7 +490,7 @@ public interface WikiConnector {
 	 * @param content the content of the article to save
 	 * @param context the {@link UserContext} of the user changing the article
 	 */
-	boolean writeArticleToWikiPersistence(String title, String content, UserContext context, String changeNode);
+	boolean writeArticleToWikiPersistence(String title, String content, UserContext context, String changeNote);
 
 	/**
 	 * Send an email to one or more recipients.
@@ -524,6 +526,14 @@ public interface WikiConnector {
 	String getWikiProperty(String property);
 
 	/**
+	 * Returns the properties set as definied in the wiki connector (for JSPWiki this are the
+	 * property value as defined in "jspwiki-custom.properties".
+	 *
+	 * @return the wiki properties
+	 */
+	@NotNull Properties getWikiProperties();
+
+	/**
 	 * Opens a page transaction for a Wiki user, in which multiple file operations are put in one Git commit together,
 	 * if GitVersioningFileProvider or equivalent is active
 	 *
@@ -542,7 +552,7 @@ public interface WikiConnector {
 	void commitPageTransaction(String user, String commitMsg);
 
 	/**
-	 * This will rollback the changes of a user to the file system.
+	 * This will roll back the changes of a user to the file system.
 	 * This can be done, if an error occurs or if some defined states were not reached.
 	 * But only if commitPageTransaction was not successfully executed. It also closes
 	 * the page transaction which was opened with openPageTransaction
