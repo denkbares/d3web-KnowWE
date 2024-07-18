@@ -73,7 +73,7 @@ public class VersioningDummyPageProvider extends SimpleDummyPageProvider {
 	public void setArticleContent(String title, String content, String changeNote) {
 		List<WikiPageInfoFull> wikiPageInfos = articles.computeIfAbsent(title, x -> new ArrayList<>());
 		int currentVersion = 0; // if article does not yet exist at all
-		if (wikiPageInfos.size() > 0) {
+		if (!wikiPageInfos.isEmpty()) {
 			currentVersion = wikiPageInfos.get(wikiPageInfos.size() - 1).getVersion();
 		}
 		int createdVersion = currentVersion + 1;
