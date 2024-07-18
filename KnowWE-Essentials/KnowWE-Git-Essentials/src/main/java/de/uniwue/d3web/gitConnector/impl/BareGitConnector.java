@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -14,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -117,17 +117,86 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String getGitDirectory() {
+		return this.repositoryPath;
+	}
+
+	@Override
+	public String currentBranch() {
+		String currentBranch = RawGitExecutor.executeGitCommand("git branch --show-current", this.repositoryPath);
+		if (currentBranch == null || currentBranch.isEmpty()) {
+			throw new IllegalStateException("Can not access the current branch");
+		}
+		return currentBranch.trim();
+	}
+
+	@Override
+	public String currentHEAD() {
+		String currentHEAD = RawGitExecutor.executeGitCommand("git rev-parse HEAD", this.repositoryPath);
+		if (currentHEAD == null || currentHEAD.isEmpty()) {
+			throw new IllegalStateException("Can not access the current HEAD");
+		}
+		return currentHEAD.trim();
+	}
+
+	@Override
+	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
+		if(Objects.equals(commitHashFrom, commitHashTo)){
+			return Collections.emptyList();
+		}
+		String commitHashes = RawGitExecutor.executeGitCommand("git log --pretty=format:\"%H\" " + commitHashFrom + ".." + commitHashTo, this.repositoryPath);
+		List<String> hashesBetween = new ArrayList<>();
+		for (String line : commitHashes.split("\n")) {
+			if (line.trim().isEmpty()) {
+				continue;
+			}
+			String commitHash = line.replaceAll("\"", "").trim();
+			hashesBetween.add(commitHash);
+		}
+		//TODO i am not sure if i need to reverse this list!
+		Collections.reverse(hashesBetween);
+		return hashesBetween;
+	}
+
+	@Override
+	public List<String> commitsBetweenForFile(String commitHashFrom, String commitHashTo, String path) {
+
+		if (Objects.equals(commitHashFrom, commitHashTo)) {
+			return Collections.emptyList();
+		}
+		String[] command = null;
+		command = new String[] { "git", "log", "--format=%H", commitHashFrom + ".." + commitHashTo, "--", path };
+
+		String logOutput = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
+
+		List<String> commitHashes = new ArrayList<>();
+		for (String line : logOutput.split("\n")) {
+			if (line.trim().isEmpty()) {
+				continue;
+			}
+			String commitHash = line.replaceAll("\"", "").trim();
+			commitHashes.add(commitHash);
+		}
+		Collections.reverse(commitHashes);
+		return commitHashes;
+	}
+
+
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 
 		String[] command = null;
 		command = new String[] { "git", "log", "--format=%H", file };
 
-		String logOutput = RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath);
+		String logOutput = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
 
 		List<String> commitHashes = new ArrayList<>();
 		for (String line : logOutput.split("\n")) {
 			String commitHash = line.replaceAll("\"", "").trim();
-			commitHashes.add(commitHash);
+			if (!commitHash.isEmpty()) {
+				commitHashes.add(commitHash);
+			}
 		}
 		Collections.reverse(commitHashes);
 		return commitHashes;
@@ -139,7 +208,7 @@ public class BareGitConnector implements GitConnector {
 		long epochTime = date.getTime() / 1000L;
 		String[] command = new String[] { "git", "log", "--format=%H", "--since=@" + epochTime, file };
 
-		String logOutput = RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath);
+		String logOutput = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
 
 		List<String> commitHashes = new ArrayList<>();
 		for (String line : logOutput.split("\n")) {
@@ -190,7 +259,7 @@ public class BareGitConnector implements GitConnector {
 		String sinceDate = dateFormat.format(timeStamp);
 
 		String[] command = { "git", "log", "--format=%H", "--since=" + sinceDate };
-		String response = RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath);
+		String response = new String(RawGitExecutor.executeGitCommandWithTempFile(command, this.repositoryPath));
 
 		List<String> commitHashes = new ArrayList<>();
 
@@ -220,12 +289,21 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public byte[] getBytesForCommit(String commitHash, String path) {
-		String content = RawGitExecutor.executeGitCommand("git show " + commitHash + ":" + path, this.repositoryPath);
-		if (content.contains(commitHash)) {
+		byte[] content = RawGitExecutor.executeGitCommandWithTempFile(new String[] { "git", "--no-pager", "show", commitHash + ":" + path }, this.repositoryPath);
+		if (content == null) {
 			LOGGER.error("Could not successfully execute: git show on : " + path);
 			return null;
 		}
-		return content.getBytes();
+		return content;
+	}
+
+	@Override
+	public long getFilesizeForCommit(String commitHash, String path) {
+		String filesize = RawGitExecutor.executeGitCommand("git cat-file -s " + commitHash+":"+path, this.repositoryPath);
+		if(filesize.trim().isEmpty()){
+			return -1;
+		}
+		return Long.parseLong(filesize.trim());
 	}
 
 	@Override
@@ -235,7 +313,7 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public UserData userDataFor(String commitHash) {
-		String[] command = { "git", "show", "--format='%an%n%ae%n%s'", "--no-patch" };
+		String[] command = { "git", "show", "--format='%an%n%ae%n%s'", "--no-patch", commitHash };
 		String result = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 
 		String[] split = result.split("\n");
@@ -251,7 +329,7 @@ public class BareGitConnector implements GitConnector {
 
 	@Override
 	public long commitTimeFor(String commitHash) {
-		String[] command = { "git", "show", "--no-patch", "--format='%at'" };
+		String[] command = { "git", "show", "--no-patch", "--format='%at'", commitHash };
 		String result = RawGitExecutor.executeGitCommand(command, this.repositoryPath);
 		return Long.parseLong(result.split("\n")[0].replaceAll("'", ""));
 	}
@@ -278,7 +356,7 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void commitPathsForUser(String message, String author, String email, Set<String> paths) {
+	public String commitPathsForUser(String message, String author, String email, Set<String> paths) {
 		throw new NotImplementedException("So far not implemented - use the JGit version");
 	}
 
@@ -288,12 +366,12 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void moveFile(Path from, Path to, String user, String email, String message) {
+	public String moveFile(Path from, Path to, String user, String email, String message) {
 		throw new NotImplementedException("So far not implemented - use the JGit version");
 	}
 
 	@Override
-	public void deletePath(Path pathToDelete, UserData userData) {
+	public String deletePath(String pathToDelete, UserData userData) {
 		throw new NotImplementedException("So far not implemented - use the JGit version");
 	}
 
@@ -323,6 +401,12 @@ public class BareGitConnector implements GitConnector {
 		if (!addResult.isEmpty()) {
 			LOGGER.error("Could not add path: " + path);
 		}
+	}
+
+	@Override
+	public boolean isIgnored(String path) {
+		String ignoreResult = RawGitExecutor.executeGitCommand("git check-ignore " + path, this.repositoryPath);
+		return !ignoreResult.trim().isEmpty();
 	}
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {

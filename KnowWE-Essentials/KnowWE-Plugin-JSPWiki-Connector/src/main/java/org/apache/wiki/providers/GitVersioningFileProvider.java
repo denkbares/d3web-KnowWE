@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.denkbares.utils.Stopwatch;
+import de.uniwue.d3web.gitConnector.GitConnector;
 
 /**
  * @author Josua Nürnberger, Markus Krug
@@ -52,8 +53,10 @@ import com.denkbares.utils.Stopwatch;
  */
 public class GitVersioningFileProvider extends AbstractFileProvider {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningFileProvider.class);
+	//only log timing if they exceed this threshold
+	private final int LOGGING_THRESHOLD_IN_MS = 10;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningFileProvider.class);
 
 	private final ReadWriteLock pushLock = new ReentrantReadWriteLock();
 	private final ReentrantLock commitLock = new ReentrantLock();
@@ -63,10 +66,10 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	private String remoteUsername;
 	private String remoteToken;
 
-	//user to set of paths
+	//user to set of paths TODO this is so bad that it is here!!!
 	Map<String, Set<String>> openCommits;
 
-	private Engine engine;
+
 
 	private final GitVersioningFileProviderDelegate delegate;
 
@@ -90,8 +93,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	@Override
 	public void initialize(final Engine engine, final Properties properties) throws NoRequiredPropertyException, IOException {
 		super.initialize(engine, properties);
-		this.engine = engine;
-
 		this.delegate.initialize(engine, properties);
 
 		//TODO this has to go => super dirty!!!
@@ -162,7 +163,9 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 		finally {
 			writeFileUnlock();
-			stopwatch.show("Time to get pageinfo for page: " + pageName + " and version: " + version);
+			if(stopwatch.getTime()>LOGGING_THRESHOLD_IN_MS) {
+				stopwatch.show("Time to get pageinfo for page: " + pageName + " and version: " + version);
+			}
 		}
 	}
 
@@ -213,14 +216,16 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		try {
 			stopwatch.start();
 			canWriteFileLock();
-			PageIdentifier pageIdentifier = PageIdentifier.fromPagename(this.getFilesystemPath(), pageName, version);
 
 			String pageText = this.delegate.getPageText(pageName, version);
 
 			return pageText;
 		}
 		finally {
-			stopwatch.show("Time to get page: " + pageName + " and version " + version);
+
+			if(stopwatch.getTime()>LOGGING_THRESHOLD_IN_MS) {
+				stopwatch.show("Time to get page: " + pageName + " and version " + version);
+			}
 			writeFileUnlock();
 		}
 	}
@@ -275,11 +280,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		}
 	}
 
-	public Engine getEngine() {
-		return engine;
-	}
-
-
 	public void rollback(final String user) {
 		try {
 			canWriteFileLock();
@@ -328,9 +328,8 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	public String getFilesystemPath() {
-		return this.gitBridge().getFilesystemPath();
+		return this.delegate.getGitConnector().getGitDirectory();
 	}
-
 
 	public void pauseAutoUpdate() {
 		if (autoUpdateEnabled && remoteRepo) {
@@ -360,7 +359,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	}
 
 	public boolean isClean() {
-		return this.delegate.gitBridge().isClean();
+		return this.delegate.getGitConnector().isClean();
 	}
 
 	public String getRemoteToken() {
@@ -370,4 +369,13 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 	public String getRemoteUsername() {
 		return remoteUsername;
 	}
+
+	public GitConnector getGitConnector() {
+		return this.delegate.getGitConnector();
+	}
+
+	public GitVersioningFileProviderDelegate getDelegate() {
+		return delegate;
+	}
 }
+

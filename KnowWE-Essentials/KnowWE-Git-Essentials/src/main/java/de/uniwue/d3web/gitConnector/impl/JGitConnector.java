@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.time.StopWatch;
@@ -58,7 +57,7 @@ public class JGitConnector implements GitConnector {
 
 	public JGitConnector(Repository repository) {
 		this.repository = repository;
-		this.ignoreNode = initIgnoreNode(repository.getDirectory());
+		this.ignoreNode = initIgnoreNode(repository.getDirectory().getParentFile());
 		this.git = new Git(repository);
 	}
 
@@ -94,6 +93,53 @@ public class JGitConnector implements GitConnector {
 	@Override
 	public List<String> listChangedFilesForHash(String commitHash) {
 		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public String getGitDirectory() {
+		return this.repository.getDirectory().getParentFile().getAbsolutePath();
+	}
+
+	@Override
+	public String currentBranch() {
+		try {
+			return this.repository.getBranch();
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public String currentHEAD() {
+		ObjectId head = null;
+		try {
+			head = repository.resolve("HEAD");
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		if (head == null) {
+			LOGGER.error("Unable to obtain the current HEAD");
+			throw new IllegalStateException("HEAD is null!");
+		}
+		return head.getName();
+	}
+
+	@Override
+	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public List<String> commitsBetweenForFile(String headCache, String s, String path) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean isIgnored(String path) {
+		Boolean b = ignoreNode.checkIgnored(path, false);
+		return b != null && b;
 	}
 
 	@Override
@@ -315,6 +361,11 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
+	public long getFilesizeForCommit(String commitHash, String path) {
+		return getBytesForCommit(commitHash, path).length;
+	}
+
+	@Override
 	public boolean versionExists(String path, int version) {
 		return commitHashForFileAndVersion(path, version) != null;
 	}
@@ -371,7 +422,7 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void commitPathsForUser(String message, String author, String email, Set<String> paths) {
+	public String commitPathsForUser(String message, String author, String email, Set<String> paths) {
 		final CommitCommand commitCommand = git.commit();
 
 		//set necessary data into commit
@@ -382,13 +433,16 @@ public class JGitConnector implements GitConnector {
 			commitCommand.setOnly(path);
 		}
 
+		String commitHash = null;
 		try {
 			commitCommand.setAllowEmpty(true);
-			retryGitOperation(() -> commitCommand.call(), LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+			commitHash = retryGitOperation(() -> commitCommand.call().getId().getName()
+					, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 		}
 		catch (final Exception e) {
 			LOGGER.error(e.getMessage(), e);
 		}
+		return commitHash;
 	}
 
 	@Override
@@ -430,7 +484,7 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void moveFile(Path from, Path to, String user, String email, String message) {
+	public String moveFile(Path from, Path to, String user, String email, String message) {
 		//TODO better exception handling
 		try {
 			retryGitOperation(() -> {
@@ -463,32 +517,33 @@ public class JGitConnector implements GitConnector {
 			commitCommand.setMessage(message);
 		}
 
+		String commitHash = null;
 		try {
-			retryGitOperation(() -> {
-				commitCommand.call();
-				return null;
+			commitHash = retryGitOperation(() -> {
+				RevCommit commit = commitCommand.call();
+				return commit.getId().getName();
 			}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		return commitHash;
 	}
 
 	@Override
-	public void deletePath(Path pathToDelete, UserData userData) {
+	public String deletePath(String path, UserData userData) {
 
-		final File file = pathToDelete.toFile();
-		file.delete();
+		String commitHash = null;
 		try {
 			final Git git = new Git(this.repository);
 
 			retryGitOperation(() -> {
-				git.rm().addFilepattern(file.getName()).call();
+				git.rm().addFilepattern(path).call();
 				return null;
 			}, LockFailedException.class, "Retry removing from repo, because of lock failed exception");
 
 			final CommitCommand commitCommand = git.commit()
-					.setOnly(file.getName());
+					.setOnly(path);
 
 			String comment = userData.message;
 			if (comment.isEmpty()) {
@@ -499,15 +554,16 @@ public class JGitConnector implements GitConnector {
 			}
 			setUserData(userData.user, userData.email, commitCommand);
 
-			retryGitOperation(() -> {
+			commitHash = retryGitOperation(() -> {
 				final RevCommit revCommit = commitCommand.call();
-				return null;
+				return revCommit.getId().getName();
 			}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 		}
 		catch (final Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new ProviderException("Can't delete page " + pathToDelete + ": " + e.getMessage());
+			throw new ProviderException("Can't delete page " + path + ": " + e.getMessage());
 		}
+		return commitHash;
 	}
 
 	@Override

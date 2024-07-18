@@ -6,26 +6,24 @@ import java.util.List;
 
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
-import org.apache.wiki.api.core.Page;
-import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.providers.GitVersioningUtils;
-import org.apache.wiki.providers.gitCache.history.GitHistoryProvider;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.jetbrains.annotations.NotNull;
 
+import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
 
 public class WikiPageProxy extends WikiPage {
 
-	private GitHistoryProvider historyProvider;
+	private GitConnector gitConnector;
 
 	public WikiPageProxy(Engine engine, String name) {
 		super(engine, name);
 	}
 
-	public void setHistoryProvider(GitHistoryProvider historyProvider) {
-		this.historyProvider = historyProvider;
+	public void setHistoryProvider(GitConnector gitConnector) {
+		this.gitConnector = gitConnector;
 	}
 
 	@Override
@@ -52,20 +50,16 @@ public class WikiPageProxy extends WikiPage {
 			return author;
 		}
 
-		try {
-			List<Page> pageHistory = this.historyProvider.getPageHistory(PageIdentifier.fromPagename(this.historyProvider.basePath(), this.getName(), -1));
-			if (pageHistory == null || pageHistory.isEmpty()) {
-				return null;
-			}
-			String gitAuthor = pageHistory.get(pageHistory.size() - 1).getAuthor();
-			super.setAuthor(gitAuthor);
-			//Note: this is a workaround, if i would determine the version in the corresponding method the code would end up to slow..
-			if (this.getVersion() == -1) {
-				super.setVersion(pageHistory.size());
-			}
+		PageIdentifier pageIdentifier = PageIdentifier.fromPagename(this.gitConnector.getGitDirectory(), this.getName(), -1);
+		List<String> commitHashes = this.gitConnector.commitHashesForFile(pageIdentifier.fileName());
+		if (commitHashes == null || commitHashes.isEmpty()) {
+			return null;
 		}
-		catch (ProviderException e) {
-			throw new RuntimeException(e);
+		UserData userData = this.gitConnector.userDataFor(commitHashes.get(commitHashes.size() - 1));
+		super.setAuthor(userData.user);
+		//Note: this is a workaround, if i would determine the version in the corresponding method the code would end up to slow..
+		if (this.getVersion() == -1) {
+			super.setVersion(commitHashes.size());
 		}
 		return super.getAuthor();
 	}
@@ -87,13 +81,13 @@ public class WikiPageProxy extends WikiPage {
 	}
 
 	@NotNull
-	public static WikiPage fromUserData(String pageName,int version, UserData userData, String pageText, Date commitTime, Engine engine) {
+	public static WikiPage fromUserData(String pageName, int version, UserData userData, long fileSize, Date commitTime, Engine engine) {
 		final WikiPage page = new WikiPage(engine, pageName);
 
 		page.setAuthor(userData.user);
 		page.setLastModified(commitTime);
 		page.setVersion(version);
-		page.setSize(pageText.getBytes().length);
+		page.setSize(fileSize);
 		page.setAttribute(WikiPage.CHANGENOTE, userData.message);
 		return page;
 	}

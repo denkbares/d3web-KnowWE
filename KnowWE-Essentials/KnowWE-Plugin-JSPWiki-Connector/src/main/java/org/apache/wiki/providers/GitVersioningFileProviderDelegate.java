@@ -22,9 +22,9 @@ package org.apache.wiki.providers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,30 +53,20 @@ import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.gitBridge.JSPUtils;
 import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.pages.PageManager;
-import org.apache.wiki.providers.commentStrategy.ChangeNoteStrategy;
 import org.apache.wiki.providers.commentStrategy.GitCommentStrategy;
-import org.apache.wiki.providers.gitCache.history.BackedJGitHistoryProvider;
-import org.apache.wiki.providers.gitCache.history.GitHistoryProvider;
 import org.apache.wiki.structs.DefaultPageIdentifier;
 import org.apache.wiki.structs.PageIdentifier;
 import org.apache.wiki.structs.WikiPageProxy;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
-import org.eclipse.jgit.api.CheckoutCommand;
-import org.eclipse.jgit.api.CleanCommand;
-import org.eclipse.jgit.api.CommitCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.ResetCommand;
-import org.eclipse.jgit.api.Status;
-import org.eclipse.jgit.errors.LockFailedException;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.uniwue.d3web.gitConnector.GitConnector;
 import de.uniwue.d3web.gitConnector.UserData;
+import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
 import de.uniwue.d3web.gitConnector.impl.JGitBackedGitConnector;
 
 /**
@@ -89,16 +79,14 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningFileProviderDelegate.class);
 
+	//TODO has to go
 	private Repository repository;
-
-
-	private GitHistoryProvider historyProvider;
-
 	//user to set of paths
 	Map<String, Set<String>> openCommits = new ConcurrentHashMap<>();
 	private final Set<String> refreshCacheList = new HashSet<>();
 
 	private Engine engine;
+	//TODO has to go
 	private JspGitBridge gitBridge;
 	private GitConnector gitConnector;
 
@@ -119,7 +107,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		String pageDir = properties.getProperty(GitProviderProperties.JSPWIKI_FILESYSTEMPROVIDER_PAGEDIR, null);
 		if (pageDir != null) {
-			this.gitConnector = JGitBackedGitConnector.fromPath(pageDir);
+			this.gitConnector = new CachingGitConnector(JGitBackedGitConnector.fromPath(pageDir));
 		}
 
 		this.gitBridge = new JspGitBridge(engine);
@@ -132,23 +120,11 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		// we run the command to build up the commit graph. It considerably accelerates the reading of the commit history (e. g. git log)
 		this.gitConnector.executeCommitGraph();
-
-		// initialization of the git history provider
-		this.historyProvider = new BackedJGitHistoryProvider(repository, engine, this.gitBridge);
 	}
 
 	private void setGitCommentStrategy(Properties properties) {
 		String commentStrategyClassName = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_COMMENT_STRATEGY, "org.apache.wiki.providers.commentStrategy.ChangeNoteStrategy");
-		try {
-			Class<?> commentStrategyClass = Class.forName(commentStrategyClassName);
-			gitCommentStrategy = (GitCommentStrategy) commentStrategyClass.getConstructor()
-					.newInstance(new Object[] {});
-		}
-		catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
-			   InvocationTargetException e) {
-			LOGGER.error("Comment strategy not found " + commentStrategyClassName, e);
-			gitCommentStrategy = new ChangeNoteStrategy();
-		}
+		this.gitCommentStrategy = GitCommentStrategy.fromProperty(commentStrategyClassName);
 	}
 
 	public Repository getRepository() {
@@ -209,16 +185,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 				comment = "-";
 			}
 		}
-		//TODO this is annoying to have here!
-		UserProfile userProfile = null;
-		try {
-			userProfile = engine.getManager(UserManager.class)
-					.getUserDatabase()
-					.findByFullName(page.getAuthor());
-		}
-		catch (NoSuchPrincipalException e) {
-			throw new RuntimeException(e);
-		}
+		UserProfile userProfile = getUserProfile(page.getAuthor());
 
 		if (this.openCommits.containsKey(page.getAuthor())) {
 			if (addFile) {
@@ -228,10 +195,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 		else {
 			String commitHash = this.gitConnector.changePath(changedFile.toPath(), new UserData(page.getAuthor(), userProfile.getEmail(), comment));
-			WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.UPDATE,
-					page.getAuthor(),
-					page.getName(),
-					commitHash));
+			fireWikiEvent(GitVersioningWikiEvent.UPDATE, page.getAuthor(), List.of(page.getName()), commitHash);
 		}
 	}
 
@@ -246,17 +210,12 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			return true;
 		}
 
-		try {
-			final List<Page> versionHistory = getVersionHistory(page);
-			return (version > 0 && version <= versionHistory.size());
-		}
-		catch (final ProviderException e) {
-			return false;
-		}
+		final List<Page> versionHistory = getVersionHistory(page);
+		return (version > 0 && version <= versionHistory.size());
 	}
 
 	@Override
-	public Page getPageInfo(final String pageName, final int version) throws ProviderException {
+	public Page getPageInfo(final String pageName, final int version) {
 		PageIdentifier pageIdentifier = PageIdentifier.fromPagename(this.getFilesystemPath(), pageName, version);
 
 		LOGGER.info("Get page for : " + pageIdentifier + " and version: " + pageIdentifier.version());
@@ -266,9 +225,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 
 		String commitHash = this.gitConnector.commitHashForFileAndVersion(pageIdentifier.fileName(), pageIdentifier.version());
-		WikiPage wikiPage = createWikiPageFromCommitHash(pageIdentifier, commitHash, pageIdentifier.version());
-
-		return wikiPage;
+		return createWikiPageFromCommitHash(pageIdentifier, commitHash, pageIdentifier.version());
 	}
 
 	@Override
@@ -277,11 +234,11 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 		final Map<String, Page> resultingPages = new HashMap<>();
 
-		final File wikipagedir = new File(this.gitBridge.getFilesystemPath());
+		final File wikipagedir = new File(this.gitConnector.getGitDirectory());
 		final File[] wikipages = wikipagedir.listFiles(new WikiFileFilter());
 
 		if (wikipages == null) {
-			LOGGER.error("Wikipages directory '" + this.gitBridge.getFilesystemPath() + "' does not exist! Please check " + PROP_PAGEDIR + " in jspwiki.properties.");
+			LOGGER.error("Wikipages directory '" + this.gitConnector.getGitDirectory() + "' does not exist! Please check " + PROP_PAGEDIR + " in jspwiki.properties.");
 			throw new InternalWikiException("Page directory does not exist");
 		}
 		for (final File file : wikipages) {
@@ -298,7 +255,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	private WikiPage getWikiPageFromFilesystem(PageIdentifier pageIdentifier) {
 
 		WikiPageProxy page = new WikiPageProxy(engine, pageIdentifier.pageName());
-		page.setHistoryProvider(this.historyProvider);
+		page.setHistoryProvider(this.gitConnector);
 
 		File file = pageIdentifier.accordingFile();
 		if (file != null && file.exists()) {
@@ -322,7 +279,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	}
 
 	@Override
-	public List<Page> getVersionHistory(final String pageName) throws ProviderException {
+	public List<Page> getVersionHistory(final String pageName) {
 		DefaultPageIdentifier pageIdentifier = PageIdentifier.fromPagename(this.getFilesystemPath(), pageName, -1);
 		final File page = pageIdentifier.accordingFile();
 		List<Page> pageVersions = new ArrayList<>();
@@ -345,10 +302,13 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	}
 
 	private @NotNull WikiPage createWikiPageFromCommitHash(PageIdentifier pageIdentifier, String commitHash, int version) {
+		//mark page as to be refreshed TODO why???
+		this.refreshCacheList.add(pageIdentifier.pageName());
 		UserData userData = this.gitConnector.userDataFor(commitHash);
-		String textForPath = new String(this.gitConnector.getBytesForCommit(commitHash, pageIdentifier.fileName()));
-		long time = this.gitConnector.commitTimeFor(commitHash);
-		return WikiPageProxy.fromUserData(pageIdentifier.pageName(), version, userData, textForPath, new Date(time), this.engine);
+		long filesize =this.gitConnector.getFilesizeForCommit(commitHash, pageIdentifier.fileName());
+		long timeInSeconds = this.gitConnector.commitTimeFor(commitHash);
+		Date date = Date.from(Instant.ofEpochSecond(timeInSeconds));
+		return WikiPageProxy.fromUserData(pageIdentifier.pageName(), version, userData, filesize, date, this.engine);
 	}
 
 	@Override
@@ -400,47 +360,33 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	@Override
 	public void deletePage(Page page) throws ProviderException {
 
-		if (page.getAuthor() == null) {
-			this.gitBridge.assignAuthor(page);
-		}
+
 		final File file = findPage(page.getName());
-		file.delete();
-		try {
-			final Git git = new Git(this.repository);
 
-			JspGitBridge.retryGitOperation(() -> {
-				git.rm().addFilepattern(file.getName()).call();
-				return null;
-			}, LockFailedException.class, "Retry removing from repo, because of lock failed exception");
-
-			String author = page.getAuthor();
-			if (this.openCommits.containsKey(author)) {
-				this.openCommits.get(author).add(file.getName());
-			}
-			else {
-				final CommitCommand commitCommand = git.commit()
-						.setOnly(file.getName());
-				String comment = gitCommentStrategy.getComment(page, "removed page");
-				commitCommand.setMessage(comment);
-
-				this.gitBridge.addUserInfo(this.m_engine, page.getAuthor(), commitCommand);
-
-				JspGitBridge.retryGitOperation(() -> {
-					final RevCommit revCommit = commitCommand.call();
-					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.DELETE,
-							page.getAuthor(),
-							page.getName(),
-							revCommit.getId().getName()));
-					return null;
-				}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
-
-				this.gitBridge.periodicalGitGC();
-			}
+		if (page.getAuthor() == null) {
+			String commitHash = this.gitConnector.commitHashForFileAndVersion(file.getName(), page.getVersion());
+			UserData userData = this.gitConnector.userDataFor(commitHash);
+			page.setAuthor(userData.user);
 		}
-		catch (final Exception e) {
-			LOGGER.error(e.getMessage(), e);
-			throw new ProviderException("Can't delete page " + page + ": " + e.getMessage());
+
+		boolean delete = file.delete();
+		if (!delete) {
+			LOGGER.warn("Failed to delete page (on filesystem): " + page.getName());
 		}
+
+		String comment = gitCommentStrategy.getComment(page, "removed page");
+		String commitHash = this.gitConnector.deletePath(file.getName(), getUserData(page.getAuthor(), comment));
+
+		String author = page.getAuthor();
+		if (this.openCommits.containsKey(author)) {
+			this.openCommits.get(author).add(file.getName());
+		}
+		fireWikiEvent(GitVersioningWikiEvent.DELETE, page.getAuthor(), List.of(page.getName()), commitHash);
+	}
+
+	public UserData getUserData(String author, String comment) {
+		UserProfile userProfile = getUserProfile(author);
+		return new UserData(userProfile.getFullname(), userProfile.getEmail(), comment);
 	}
 
 	@Override
@@ -462,18 +408,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 	}
 
-	private void movePageGit(Page from, String to, File toFile, File fromFile) throws Exception {
-		final Git git = new Git(this.repository);
-
-		JspGitBridge.retryGitOperation(() -> {
-			git.add().addFilepattern(toFile.getName()).call();
-			return null;
-		}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
-
-		JspGitBridge.retryGitOperation(() -> {
-			git.rm().setCached(true).addFilepattern(fromFile.getName()).call();
-			return null;
-		}, LockFailedException.class, "Retry removing from repo, because of lock failed exception");
+	private void movePageGit(Page from, String to, File toFile, File fromFile) {
 
 		String author = from.getAuthor();
 		if (this.openCommits.containsKey(author)) {
@@ -481,24 +416,16 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 			this.openCommits.get(author).add(toFile.getName());
 		}
 		else {
-			final CommitCommand commitCommand = git.commit()
-					.setOnly(toFile.getName())
-					.setOnly(fromFile.getName());
 			String comment = gitCommentStrategy.getComment(from, "renamed page " + from + " to " + to);
-			commitCommand.setMessage(comment);
-
-			this.gitBridge.addUserInfo(this.m_engine, author, commitCommand);
-			JspGitBridge.retryGitOperation(() -> {
-				final RevCommit revCommit = commitCommand.call();
-				WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
-						author,
-						to,
-						revCommit.getId().getName()));
-				return null;
-			}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
-
-			this.gitBridge.periodicalGitGC();
+			UserData userData = getUserData(author, comment);
+			String commitHash = this.gitConnector.moveFile(fromFile.toPath(), toFile.toPath(), userData.user, userData.email, userData.message);
+			fireWikiEvent(GitVersioningWikiEvent.MOVED, author, List.of(to), commitHash);
 		}
+	}
+
+	private void fireWikiEvent(int event, String author, Collection<String> pages, String commitHash) {
+		WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, event,
+				author, pages, commitHash));
 	}
 
 	private void movePageOnFilesystem(String to, File fromFile, File toFile) throws IOException {
@@ -518,46 +445,42 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 	}
 
+	private UserProfile getUserProfile(String user) {
+		try {
+			return engine.getManager(UserManager.class)
+					.getUserDatabase()
+					.findByFullName(user);
+		}
+		catch (NoSuchPrincipalException e) {
+			LOGGER.error("Tried to access user: " + user + " but that user does not exist!");
+			throw new RuntimeException(e);
+		}
+	}
+
 	public void commit(final String user, final String commitMsg) {
-		final Git git = new Git(this.repository);
-		final CommitCommand commitCommand = git.commit();
+		//if there are no commits for this user, we do nothing
+		if (!this.openCommits.containsKey(user)) {
+			LOGGER.warn("Tried to commit for user: " + user, " but there were no paths for her!");
+			return;
+		}
+
 		String comment = gitCommentStrategy.getCommentForUser(user);
 		if (comment.isEmpty()) {
-			commitCommand.setMessage(commitMsg);
+			comment = commitMsg;
 		}
-		else {
-			commitCommand.setMessage(comment);
-		}
-		this.gitBridge.addUserInfo(this.m_engine, user, commitCommand);
-		if (this.openCommits.containsKey(user)) {
-			final Set<String> paths = this.openCommits.get(user);
-			for (final String path : paths) {
-				commitCommand.setOnly(path);
-			}
-			try {
-				commitCommand.setAllowEmpty(true);
-				JspGitBridge.retryGitOperation(() -> {
-					final RevCommit revCommit = commitCommand.call();
-					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
-							user,
-							this.openCommits.get(user),
-							revCommit.getId().getName()));
-					return null;
-				}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
+		UserProfile userProfile = getUserProfile(user);
 
-				this.openCommits.remove(user);
-				final PageManager pm = getEnginePageManager();
-				LOGGER.info("Start refresh");
-				for (final String path : this.refreshCacheList) {
-					// decide whether page or attachment
-					refreshCache(pm, path);
-				}
-				this.refreshCacheList.clear();
-			}
-			catch (final Exception e) {
-				LOGGER.error(e.getMessage(), e);
-			}
+		String commitHash = this.gitConnector.commitPathsForUser(comment, userProfile.getFullname(), userProfile.getEmail(), this.openCommits.get(user));
+		fireWikiEvent(GitVersioningWikiEvent.MOVED, user, this.openCommits.get(user), commitHash);
+
+		this.openCommits.remove(user);
+		final PageManager pm = getEnginePageManager();
+		LOGGER.info("Start refresh");
+		for (final String path : this.refreshCacheList) {
+			// decide whether page or attachment
+			refreshCache(pm, path);
 		}
+		this.refreshCacheList.clear();
 	}
 
 	private PageManager getEnginePageManager() {
@@ -565,52 +488,19 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	}
 
 	public void rollback(final String user) {
-		final Git git = new Git(this.repository);
 		final Set<String> paths = this.openCommits.get(user);
 
-		final ResetCommand reset = git.reset();
-		final CleanCommand clean = git.clean();
-		final CheckoutCommand checkout = git.checkout().setForced(true);
-		clean.setPaths(paths);
+		final PageManager pm = getEnginePageManager();
+		// this could be done, because we only remove the page from the cache and the method of
+		// GitVersioningFileProvider does nothing here
+		// But we have to inform KnowWE also and Lucene
 		for (final String path : paths) {
-			reset.addPath(path);
-			checkout.addPath(path);
+			// decide whether page or attachment
+			refreshCache(pm, JSPUtils.unmangleName(path).replaceAll(FILE_EXT, ""));
 		}
-		clean.setCleanDirectories(true);
-		try {
-			final PageManager pm = getEnginePageManager();
-			// this could be done, because we only remove the page from the cache and the method of
-			// GitVersioningFileProvider does nothing here
-			// But we have to inform KnowWE also and Lucene
-			for (final String path : paths) {
-				// decide whether page or attachment
-				refreshCache(pm, JSPUtils.unmangleName(path).replaceAll(FILE_EXT, ""));
-			}
-			JspGitBridge.retryGitOperation(() -> {
-				reset.call();
-				return null;
-			}, LockFailedException.class, "Retry reset repo, because of lock failed exception");
 
-			JspGitBridge.retryGitOperation(() -> {
-				clean.call();
-				return null;
-			}, LockFailedException.class, "Retry clean repo, because of lock failed exception");
-
-			JspGitBridge.retryGitOperation(() -> {
-				final Status status = git.status().call();
-				return null;
-			}, LockFailedException.class, "Retry status repo, because of lock failed exception");
-
-			JspGitBridge.retryGitOperation(() -> {
-				checkout.call();
-				return null;
-			}, LockFailedException.class, "Retry checkout repo, because of lock failed exception");
-
-			this.openCommits.remove(user);
-		}
-		catch (final Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
+		this.gitConnector.rollbackPaths(paths);
+		this.openCommits.remove(user);
 	}
 
 	private void refreshCache(final PageManager pm, final String pageName) {
@@ -632,7 +522,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 	}
 
 	public String getFilesystemPath() {
-		return this.gitBridge.getFilesystemPath();
+		return this.gitConnector.getGitDirectory();
 	}
 
 	GitCommentStrategy getGitCommentStrategy() {
@@ -641,5 +531,9 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 
 	public JspGitBridge gitBridge() {
 		return this.gitBridge;
+	}
+
+	public GitConnector getGitConnector() {
+		return this.gitConnector;
 	}
 }

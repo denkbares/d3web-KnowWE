@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,7 +29,6 @@ import org.apache.wiki.pages.PageManager;
 import org.apache.wiki.providers.GitProviderProperties;
 import org.apache.wiki.providers.GitVersioningAttachmentProvider;
 import org.apache.wiki.providers.GitVersioningFileProvider;
-import org.apache.wiki.providers.GitVersioningFileProviderDelegate;
 import org.mockito.Mockito;
 
 import com.denkbares.utils.Files;
@@ -311,5 +311,9 @@ public class MockedWiki {
 		catch (ProviderException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public List<Attachment> getAttachmentsSince(long time) throws ProviderException {
+		return this.attachmentProvider.listAllChanged(new Date(time));
 	}
 }

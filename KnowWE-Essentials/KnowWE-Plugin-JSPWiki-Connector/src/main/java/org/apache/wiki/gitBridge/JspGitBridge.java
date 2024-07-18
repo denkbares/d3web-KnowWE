@@ -1,12 +1,10 @@
 package org.apache.wiki.gitBridge;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,43 +13,31 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.WikiPage;
-import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
 import org.apache.wiki.auth.NoSuchPrincipalException;
 import org.apache.wiki.auth.UserManager;
 import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.providers.GitProviderProperties;
-import org.apache.wiki.providers.GitVersioningFileProviderDelegate;
 import org.apache.wiki.providers.GitVersioningUtils;
-import org.apache.wiki.structs.VersionCarryingRevCommit;
 import org.apache.wiki.util.TextUtil;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.LogCommand;
-import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.errors.LockFailedException;
-import org.eclipse.jgit.ignore.IgnoreNode;
-import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.lib.RepositoryCache;
 import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevSort;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 import org.eclipse.jgit.util.FS;
 import org.jetbrains.annotations.NotNull;
@@ -59,10 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.apache.wiki.api.providers.AttachmentProvider.PROP_STORAGEDIR;
-import static org.apache.wiki.gitBridge.JSPUtils.getPath;
 import static org.apache.wiki.providers.AbstractFileProvider.FILE_EXT;
-import static org.apache.wiki.providers.GitVersioningFileProvider.*;
-import static org.apache.wiki.providers.GitVersioningUtils.reverseToList;
+import static org.apache.wiki.providers.GitVersioningFileProvider.LATEST_VERSION;
 
 public class JspGitBridge {
 
@@ -74,7 +58,6 @@ public class JspGitBridge {
 	private File pageDir;
 	private File gitDir;
 
-	private IgnoreNode ignoreNode;
 	private Repository repository;
 
 	public boolean isRemoteRepo() {
@@ -103,16 +86,15 @@ public class JspGitBridge {
 		this.pageDir = new File(this.filesystemPath);
 		this.gitDir = new File(pageDir.getAbsolutePath() + File.separator + ".git");
 
-		this.ignoreNode = initIgnoreNode(this.pageDir);
 		this.commitCount = new AtomicLong();
 	}
 
 
-	public String getFilesystemPath() {
+	private String getFilesystemPath() {
 		return filesystemPath;
 	}
 
-	public Repository initFromFilesystem(File gitDir, boolean alreadyExisting) throws IOException {
+	private Repository initFromFilesystem(File gitDir, boolean alreadyExisting) throws IOException {
 		if (alreadyExisting) {
 			return new FileRepositoryBuilder()
 					.setGitDir(gitDir)
@@ -126,7 +108,7 @@ public class JspGitBridge {
 		}
 	}
 
-	public Repository initGitFromRemote(File gitDir, File pageDir, String remoteURL) throws IOException {
+	private Repository initGitFromRemote(File gitDir, File pageDir, String remoteURL) throws IOException {
 		try {
 			final Git git = Git.cloneRepository()
 					.setURI(remoteURL)
@@ -142,7 +124,7 @@ public class JspGitBridge {
 	}
 
 
-	public Repository initGitRepository(File gitDir, File pageDir, String remoteURL) throws IOException {
+	private Repository initGitRepository(File gitDir, File pageDir, String remoteURL) throws IOException {
 		if (!RepositoryCache.FileKey.isGitRepository(gitDir, FS.DETECTED)) {
 			if (!"".equals(remoteURL)) {
 				return initGitFromRemote(gitDir, pageDir, remoteURL);
@@ -174,156 +156,9 @@ public class JspGitBridge {
 		}
 	}
 
-	public Iterable<RevCommit> getRevCommits(final String pageName, final Git git) throws GitAPIException, IOException {
-		return git.log().add(git.getRepository().resolve(Constants.HEAD)).addPath(pageName).call();
-	}
-
-	public VersionCarryingRevCommit getRevCommitWithVersion(Attachment att, Git git, int version) throws GitAPIException, IOException {
-		String path = getPath(att);
-		VersionCarryingRevCommit revCommit = getRevCommitWithVersion(path, git, version);
-
-		if (revCommit == null) {
-			revCommit = getRevCommitWithVersion(JSPUtils.unmangleName(path), git, version);
-		}
-
-		return revCommit;
-	}
-
-	public List<RevCommit> getRevCommitList(Attachment att, Git git) throws GitAPIException, IOException {
-		String path = getPath(att);
-		List<RevCommit> revCommitList = getRevCommitList(path, git, -1);
-
-		if (revCommitList.isEmpty()) {
-			revCommitList = getRevCommitList(JSPUtils.unmangleName(path), git, -1);
-		}
-
-		return revCommitList;
-	}
-
-	public VersionCarryingRevCommit getRevCommitWithVersion(String path, Git git, int version) throws GitAPIException, IOException {
-
-		long time = System.currentTimeMillis();
-		List<String> commitsHashes = new ArrayList<>();
-		//try raw access firstLOGGER.info("Access commits for page: " + path);
-
-		//we attempt raw first as this appears to be the faster version
-		try {
-			commitsHashes = getCommitHashesForPageRaw(path, false, -1);
-		}
-		catch (InterruptedException e) {
-			LOGGER.error("Tried to access commits for page " + path + " raw, but didnt work, we default to JGit");
-		}
-		System.out.println("Time raw git: " + (System.currentTimeMillis() - time));
-		time = System.currentTimeMillis();
-
-		if (!commitsHashes.isEmpty()) {
-			Collections.reverse(commitsHashes);
-			String commitHash = null;
-			int commitVersion = -1;
-			if (version == LATEST_VERSION) {
-				commitHash = commitsHashes.get(commitsHashes.size() - 1);
-				commitVersion = commitsHashes.size();
-			}
-			else {
-				commitHash = commitsHashes.get(version - 1);
-				commitVersion = version;
-			}
-			if (commitHash != null) {
-				System.out.println("Reverse Revcommit raw git: " + (System.currentTimeMillis() - time));
-				return new VersionCarryingRevCommit(GitVersioningUtils.getRevCommit(git, commitHash), commitVersion);
-			}
-		}
-
-		List<RevCommit> slowRevCommits = getRevCommitsJGit(path, git, -1);
-		if (version == LATEST_VERSION) {
-			return new VersionCarryingRevCommit(slowRevCommits.get(slowRevCommits.size() - 1), slowRevCommits.size());
-		}
-		return new VersionCarryingRevCommit(slowRevCommits.get(version - 1), version);
-	}
-
-	public List<RevCommit> getRevCommitList(String path, Git git, int maxCount) throws GitAPIException, IOException {
-
-		long time = System.currentTimeMillis();
-		List<String> commitsHashes = new ArrayList<>();
-		//try raw access first
-		LOGGER.info("Access commits for page: " + path);
-
-		//we attempt raw first as this appears to be the faster version
-		try {
-			commitsHashes = getCommitHashesForPageRaw(path, false, -1);
-		}
-		catch (InterruptedException e) {
-			LOGGER.error("Tried to access commits for page " + path + " raw, but didnt work, we default to JGit");
-		}
-		System.out.println("Time raw git: " + (System.currentTimeMillis() - time));
-		time = System.currentTimeMillis();
-
-		if (!commitsHashes.isEmpty()) {
-			List<RevCommit> list = commitsHashes.stream()
-					.map(hash -> GitVersioningUtils.getRevCommit(git, hash))
-					.collect(Collectors.toList());
-			Collections.reverse(list);
-			System.out.println("Reverse Revcommit raw git: " + (System.currentTimeMillis() - time));
-			return list;
-		}
-
-		return getRevCommitsJGit(path, git, maxCount);
-	}
-
-	@NotNull
-	private static List<RevCommit> getRevCommitsJGit(String path, Git git, int maxCount) throws IOException, GitAPIException {
-		LogCommand logCommand = git
-				.log()
-				.add(git.getRepository().resolve(Constants.HEAD))
-				.addPath(path);
-
-		if (maxCount != -1) {
-			logCommand.setMaxCount(maxCount);
-		}
-		Iterable<RevCommit> revCommits = logCommand
-				.call();
-		return reverseToList(revCommits);
-	}
 
 
 
-
-	@NotNull
-	private IgnoreNode initIgnoreNode(File pageDir) {
-		IgnoreNode ignoreNode = new IgnoreNode();
-		File gitignoreFile = new File(pageDir + "/.gitignore");
-		if (gitignoreFile.exists()) {
-			try {
-				ignoreNode.parse(new FileInputStream(gitignoreFile));
-			}
-			catch (IOException e) {
-				LOGGER.error("Can not read the gitignore file!");
-				throw new RuntimeException(e);
-			}
-		}
-		else {
-			LOGGER.warn("NO .gitignore FILE WAS FOUND!! This will lead to a blown-up git history polluted by thousands of ci-build-*.xml file versions, in case of that CI-Dashboards are used! Recommendation: Add .gitignore file ignoring CI-Dashboard builds");
-		}
-		return ignoreNode;
-	}
-
-	public void addWithRetry(Git git, File attDir) {
-		try {
-			retryGitOperation(() -> {
-				git.add().addFilepattern(attDir.getName()).call();
-				return null;
-			}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
-		}
-		catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-	}
-
-//	public boolean shouldAddFile(){
-////		Boolean ignored = ignoreNode.checkIgnored(this.gitBridge.getPath(att), newFile.isDirectory());
-////
-////		boolean add = !newFile.exists() && (ignored == null || !ignored);
-//	}
 
 	@NotNull
 	public List<Page> getAllChangedSinceSafe(Date date, Repository repository, Engine engine) {
@@ -389,25 +224,6 @@ public class JspGitBridge {
 		return page;
 	}
 
-	public RevCommit getLatestCommitForFile(Git git, String filePath) throws IOException {
-		RevWalk revWalk = new RevWalk(git.getRepository());
-
-		// Set the file path filter
-		revWalk.setTreeFilter(PathFilter.create(filePath));
-
-		// Sort the commits in reverse chronological order
-		revWalk.sort(RevSort.REVERSE);
-
-		// Start walking from HEAD
-		ObjectId head = git.getRepository().resolve("HEAD");
-		revWalk.markStart(revWalk.parseCommit(head));
-
-		RevCommit next = revWalk.next();
-
-		revWalk.close();
-		return next;
-	}
-
 	public void initAndVerifyGitRepository(Properties properties) throws IOException {
 		final String remoteURL = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_VERSIONING_FILE_PROVIDER_REMOTE_GIT, "");
 		this.repository = initGitRepository(gitDir, pageDir, remoteURL);
@@ -444,7 +260,7 @@ public class JspGitBridge {
 		}
 	}
 
-	public List<String> getCommitHashesForPageRaw(String pageName, boolean mangle, int maxCount) throws InterruptedException, IOException {
+	private List<String> getCommitHashesForPageRaw(String pageName, boolean mangle, int maxCount) throws InterruptedException, IOException {
 		long time = System.currentTimeMillis();
 		String filename = attemptGetFilename(pageName, mangle);
 
@@ -491,7 +307,7 @@ public class JspGitBridge {
 	}
 
 	//TODO i hate this method this is just an ugly hack
-	public String attemptGetFilename(String pageName, boolean mangle) {
+	private String attemptGetFilename(String pageName, boolean mangle) {
 		//check if the file does exist already
 		if (Paths.get(getFilesystemPath(), pageName).toFile().exists()) {
 			return pageName;
@@ -554,19 +370,8 @@ public class JspGitBridge {
 		return this.repository;
 	}
 
-	public boolean isClean() {
-		try {
-			Status call = new Git(this.repository).status().call();
-			return call.isClean();
-		}
-		catch (GitAPIException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
-	public void assignAuthor(Attachment att) {
-		int a = 2;
-	}
+
 
 	public void assignAuthor(Page page) {
 
@@ -650,7 +455,7 @@ public class JspGitBridge {
 		}
 	}
 
-	public void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
+	private void gitGc(boolean prune, boolean windowsGitHack, Repository repository, boolean aggressive){
 		LOGGER.info("Start git gc");
 		if (windowsGitHack) {
 			doBinaryGC(repository.getDirectory(), prune);

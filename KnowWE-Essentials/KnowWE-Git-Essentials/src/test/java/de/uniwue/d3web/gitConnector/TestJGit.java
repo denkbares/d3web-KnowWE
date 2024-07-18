@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.uniwue.d3web.gitConnector.impl.BareGitConnector;
+import de.uniwue.d3web.gitConnector.impl.CachingGitConnector;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,12 +17,12 @@ public class TestJGit {
 	private String TMP_NEW_REPO = "/Users/mkrug/temp/konap_test/testGit";
 //	private String TMP_NEW_REPO = "/Users/mkrug/temp/konap_test/wiki";
 
-	private GitConnector jGitConnector;
+	private GitConnector gitConnector;
 
 	@Before
 	public void init() {
 //		jGitConnector = JGitConnector.fromPath(TMP_NEW_REPO);
-		jGitConnector = BareGitConnector.fromPath(TMP_NEW_REPO);
+		gitConnector = new CachingGitConnector(BareGitConnector.fromPath(TMP_NEW_REPO));
 	}
 
 	@After
@@ -44,7 +45,7 @@ public class TestJGit {
 			if (i == 7) {
 				expected = 0;
 			}
-			int number = this.jGitConnector.numberOfCommitsForFile(fileName);
+			int number = this.gitConnector.numberOfCommitsForFile(fileName);
 
 			assertEquals(expected, number);
 		}
@@ -68,7 +69,7 @@ public class TestJGit {
 			int version = versions[i];
 			String expectedHash = expectedHashes[i];
 
-			String accordingHash = jGitConnector.commitHashForFileAndVersion(fileName, version);
+			String accordingHash = gitConnector.commitHashForFileAndVersion(fileName, version);
 
 			assertEquals("Filename: " + fileName + " version: " + version, expectedHash, accordingHash);
 		}
@@ -78,12 +79,12 @@ public class TestJGit {
 	public void testGetCommitsSince() {
 
 		//assumes to be no commit
-		List<String> commitsSince = this.jGitConnector.getCommitsSince(new Date());
+		List<String> commitsSince = this.gitConnector.getCommitsSince(new Date());
 
 		assertEquals(0, commitsSince.size());
 
 		//all commits
-		commitsSince = this.jGitConnector.getCommitsSince(new Date(0));
+		commitsSince = this.gitConnector.getCommitsSince(new Date(0));
 
 		assertEquals(21, commitsSince.size());
 	}
@@ -92,17 +93,17 @@ public class TestJGit {
 	public void testGetBytesForPath() {
 
 		//assumes to be no commit
-		byte[] bytesForPath = this.jGitConnector.getBytesForPath("2.txt", 2);
+		byte[] bytesForPath = this.gitConnector.getBytesForPath("2.txt", 2);
 		assertEquals("Hier ist 2.2!",new String(bytesForPath));
 
 
-		bytesForPath = this.jGitConnector.getBytesForPath("4.txt", -1);
+		bytesForPath = this.gitConnector.getBytesForPath("4.txt", -1);
 		assertEquals("Hier ist 4.4!",new String(bytesForPath));
 
-		bytesForPath = this.jGitConnector.getBytesForPath("6.txt", 5);
+		bytesForPath = this.gitConnector.getBytesForPath("6.txt", 5);
 		assertEquals("Hier ist 6.5!",new String(bytesForPath));
 
-		bytesForPath = this.jGitConnector.getBytesForPath("6.txt", 55);
+		bytesForPath = this.gitConnector.getBytesForPath("6.txt", 55);
 		assertEquals(null,bytesForPath);
 	}
 
@@ -110,14 +111,14 @@ public class TestJGit {
 	public void testGetTextForPath() {
 
 		//assumes to be no commit
-		String text = this.jGitConnector.getTextForPath("2.txt", 2);
+		String text = this.gitConnector.getTextForPath("2.txt", 2);
 		assertEquals("Hier ist 2.2!",text);
 
 
-		text = this.jGitConnector.getTextForPath("4.txt", -1);
+		text = this.gitConnector.getTextForPath("4.txt", -1);
 		assertEquals("Hier ist 4.4!",text);
 
-		text = this.jGitConnector.getTextForPath("6.txt", 5);
+		text = this.gitConnector.getTextForPath("6.txt", 5);
 		assertEquals("Hier ist 6.5!",text);
 	}
 }

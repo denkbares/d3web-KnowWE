@@ -44,6 +44,45 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String getGitDirectory() {
+		if (this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.getGitDirectory();
+		}
+		return this.jgitConnector.getGitDirectory();
+	}
+
+	@Override
+	public String currentBranch() {
+		return this.jgitConnector.currentBranch();
+	}
+
+	@Override
+	public String currentHEAD() {
+		return this.bareGitConnector.currentHEAD();
+	}
+
+	@Override
+	public List<String> commitsBetween(String commitHashFrom, String commitHashTo) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.commitsBetween(commitHashFrom, commitHashTo);
+		}
+		return this.jgitConnector.commitsBetween(commitHashFrom, commitHashTo);
+	}
+
+	@Override
+	public List<String> commitsBetweenForFile(String commitHashFrom, String commitHashTo, String path) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.commitsBetweenForFile(commitHashFrom, commitHashTo, path);
+		}
+		return this.jgitConnector.commitsBetweenForFile(commitHashFrom, commitHashTo, path);
+	}
+
+	@Override
+	public boolean isIgnored(String path) {
+		return this.jgitConnector.isIgnored(path);
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFile(file);
@@ -114,7 +153,16 @@ public class JGitBackedGitConnector implements GitConnector {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.getBytesForCommit(commitHash, path);
 		}
+		//TODO verify that this is indeed correct!
 		return this.jgitConnector.getBytesForCommit(commitHash, path);
+	}
+
+	@Override
+	public long getFilesizeForCommit(String commitHash, String path) {
+		if (bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.getFilesizeForCommit(commitHash, path);
+		}
+		return this.jgitConnector.getFilesizeForCommit(commitHash, path);
 	}
 
 	@Override
@@ -151,8 +199,8 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void commitPathsForUser(String message, String author, String email, Set<String> paths) {
-		this.jgitConnector.commitPathsForUser(message, author, email, paths);
+	public String commitPathsForUser(String message, String author, String email, Set<String> paths) {
+		return this.jgitConnector.commitPathsForUser(message, author, email, paths);
 	}
 
 	@Override
@@ -161,13 +209,13 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public void moveFile(Path from, Path to, String user, String email, String message) {
-		this.jgitConnector.moveFile(from, to, user, email, message);
+	public String moveFile(Path from, Path to, String user, String email, String message) {
+		return this.jgitConnector.moveFile(from, to, user, email, message);
 	}
 
 	@Override
-	public void deletePath(Path pathToDelete, UserData userData) {
-		this.jgitConnector.deletePath(pathToDelete, userData);
+	public String deletePath(String pathToDelete, UserData userData) {
+		return this.jgitConnector.deletePath(pathToDelete, userData);
 	}
 
 	@Override

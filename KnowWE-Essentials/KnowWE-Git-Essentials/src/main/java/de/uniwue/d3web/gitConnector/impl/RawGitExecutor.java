@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
@@ -79,7 +80,7 @@ public class RawGitExecutor {
 		return response;
 	}
 
-	public static String executeGitCommandWithTempFile(String[] command, String repositoryPath) {
+	public static byte[] executeGitCommandWithTempFile(String[] command, String repositoryPath) {
 		long time = System.currentTimeMillis();
 
 		File outputFile = null;
@@ -120,12 +121,12 @@ public class RawGitExecutor {
 //			System.out.println("Command executed successfully");
 		}
 		else {
-			LOGGER.error("Failed to execute command with exit code: " + (exitCode) + " for command: " + command);
+			LOGGER.error("Failed to execute command with exit code: " + (exitCode) + " for command: " + Arrays.toString(command));
 		}
 
-		String response = null;
+		byte[] response = null;
 		try {
-			response = Files.readString(outputFile.toPath());
+			response = Files.readAllBytes(outputFile.toPath());
 		}
 		catch (IOException e) {
 			outputFile.delete();

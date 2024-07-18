@@ -48,21 +48,31 @@ public class TestRepositoryUtils {
 		BareGitConnector connector = BareGitConnector.fromPath(wikiPath);
 		//GitConnector connector = JGitConnector.fromPath(wikiPath);
 
-		Calendar calendar = Calendar.getInstance();
 
-		// Set the calendar to January 1, 2023
-		calendar.set(2000, Calendar.MAY, 9, 10, 26, 10);
-		calendar.set(Calendar.MILLISECOND, 0);
 
-		// Get the Date object representing January 1, 2023
-		Date date = calendar.getTime();
 
 		for (File f : new File(wikiPath).listFiles()) {
-			List<String> strings = connector.commitHashesForFileSince(f.getName(), date);
-			System.out.println("Result: since: " + strings.size());
+			if(f.isDirectory() && !f.getName().startsWith(".")){
+				for(File att : f.listFiles()){
+					if(!att.getName().endsWith(".txt") && !att.getName().endsWith(".xml") && att.getName().endsWith(".jpg")){
+						String path = att.getParentFile().getName()+"/"+att.getName();
+						List<String> strings = connector.commitHashesForFile(path);
+						System.out.println(att +" with revisions: " + strings.size());
 
-			List<String> strings2 = connector.commitHashesForFile(f.getName());
-			System.out.println("Result: " + strings2.size());
+						for(String hash : strings){
+							byte[] bytesForCommit = connector.getBytesForCommit(hash, path);
+							int a=2;
+						}
+					}
+
+				}
+			}
+			else{
+				if(!f.getName().endsWith(".txt")){
+					System.out.println(f);
+				}
+			}
+
 		}
 
 //		String wikiPath = "/Users/mkrug/temp/konap_test/konap_huge-wiki";

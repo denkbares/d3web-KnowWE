@@ -25,8 +25,17 @@ public interface PageIdentifier {
 			return false;
 		}
 		try {
+			String canonicalPath = pageFile.getCanonicalPath();
+			String absolutePath = pageFile.getAbsolutePath();
+			if(canonicalPath.startsWith("/private/")){
+				canonicalPath = canonicalPath.replace("/private","");
+			}
+			if(absolutePath.startsWith("/private/")){
+				absolutePath = absolutePath.replace("/private","");
+			}
 
-			return pageFile.exists() && pageFile.getCanonicalPath().equals(pageFile.getAbsolutePath());
+
+			return pageFile.exists() && canonicalPath.equals(absolutePath);
 		}
 		catch (IOException e) {
 			LOGGER.warn("Could not evaluate canonical path", e);

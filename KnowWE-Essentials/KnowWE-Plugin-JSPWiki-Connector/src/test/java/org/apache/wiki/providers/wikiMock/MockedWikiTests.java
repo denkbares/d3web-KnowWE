@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.wiki.api.core.Attachment;
 import org.apache.wiki.api.core.Page;
+import org.apache.wiki.api.exceptions.ProviderException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -25,6 +26,60 @@ public class MockedWikiTests {
 		int numPages = 100;
 		wiki.createPages(numPages);
 		assertEquals(numPages, wiki.numPages());
+	}
+
+	@Test
+	public void testGetAttachmentsSincePage() {
+		MockedWiki wiki = MockedWiki.defaultWiki(gitPath);
+
+		int numPages = 5;
+		wiki.createPages(numPages);
+
+		Random random = new Random(13374211);
+		//create attachments (and versions thereof)
+		//store number of random revisions
+		Map<String, Integer> versionsMap = new HashMap<>();
+		Map<String, List<String>> versionContentMap = new HashMap<>();
+
+		long time = -1;
+		int pageCnt = 0;
+		int expectednumAtts = 0;
+		for (Page page : wiki.getAllPages()) {
+			if (pageCnt == 2 && time == -1) {
+				//we use this timestamp
+
+				try {
+					Thread.sleep(1000);
+					time = System.currentTimeMillis();
+					Thread.sleep(1000);
+				}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			List<Attachment> attachments = wiki.createAttachments(page.getName(), 4);
+			if(time!=-1){
+				expectednumAtts+=attachments.size();
+			}
+			for (Attachment att : attachments) {
+				int numVersions = random.nextInt(3);
+				List<String> versionContent = wiki.createVersionsForAttachment(att, numVersions);
+
+				versionsMap.put(att.getName(), numVersions);
+				versionContentMap.put(att.getName(), versionContent);
+			}
+
+			pageCnt++;
+		}
+
+		try {
+			List<Attachment> attachmentsSince = wiki.getAttachmentsSince(time);
+
+			assertEquals(expectednumAtts, attachmentsSince.size());
+		}
+		catch (ProviderException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Test
@@ -66,11 +121,10 @@ public class MockedWikiTests {
 			assertEquals((int) numEdits + 1, versionHistory.size());
 
 			//and assert any single version number
-			for(int i=1;i<=numEdits+1;i++){
+			for (int i = 1; i <= numEdits + 1; i++) {
 				Page page1 = versionHistory.get(versionHistory.size() - i);
-				assertEquals(i,page1.getVersion());
+				assertEquals(i, page1.getVersion());
 			}
-
 
 			//assert text of latest version
 			assertEquals("Edit: " + (numEdits - 1), wiki.getTextForPage(page.getName()));
