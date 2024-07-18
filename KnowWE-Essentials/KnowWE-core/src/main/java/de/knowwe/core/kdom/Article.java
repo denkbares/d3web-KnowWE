@@ -61,15 +61,17 @@ public final class Article {
 
 	private Article lastVersion;
 
+	private final RootType rootType;
+
 	private final boolean fullParse;
 
 	/**
 	 * Create a new article by parsing the given text into a section tree (KDOM). Use this method if you want to add the
 	 * article to an article manager.
 	 *
-	 * @param text  the text of the article
-	 * @param title the title or name of the article, displayed at the top (and in the URL usually)
-	 * @param manager   the article manager the article belongs to
+	 * @param text    the text of the article
+	 * @param title   the title or name of the article, displayed at the top (and in the URL usually)
+	 * @param manager the article manager the article belongs to
 	 */
 	public static Article createArticle(@NotNull String text, @NotNull String title, @NotNull ArticleManager manager) {
 		return createArticle(text, title, manager, false);
@@ -101,6 +103,15 @@ public final class Article {
 		return createArticle(text, title, web, null, true);
 	}
 
+	public static Article createTemporaryArticle(String text, String title, String web, RootType root) {
+		return createArticle(text, title, web, null, true);
+	}
+
+
+	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
+		return createArticle(text, title, web, manager, fullParse, Environment.getInstance().getRootType());
+	}
+
 	/**
 	 * Create a new article by parsing the given text into a section tree (KDOM)
 	 *
@@ -110,11 +121,12 @@ public final class Article {
 	 * @param manager   the article manager the article belongs to
 	 * @param fullParse whether we should perform a full parse of the text or reuse section from previous article
 	 *                  versions if possible
+	 * @param root		RootType to be used
 	 */
-	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse) {
+	private static Article createArticle(String text, String title, String web, @Nullable ArticleManager manager, boolean fullParse, RootType root) {
 		Article article = null;
 		try {
-			article = new Article(text, title, web, manager, fullParse);
+			article = new Article(text, title, web, manager, fullParse, root);
 		}
 		catch (Exception e) {
 			LOGGER.error("Exception while creating article", e);
@@ -123,7 +135,16 @@ public final class Article {
 	}
 
 	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse) {
+		this(text, title, web, manager, fullParse, null);
+	}
 
+	private Article(@NotNull String text, @NotNull String title, @NotNull String web, @Nullable ArticleManager manager, boolean fullParse, @Nullable RootType root) {
+		if (root == null) {
+			rootType = RootType.getInstance();
+		}
+		else {
+			rootType = root;
+		}
 		long start = System.currentTimeMillis();
 		this.title = title;
 		this.web = web;
@@ -246,7 +267,7 @@ public final class Article {
 	}
 
 	public RootType getRootType() {
-		return RootType.getInstance();
+		return this.rootType;
 	}
 
 	@Override
