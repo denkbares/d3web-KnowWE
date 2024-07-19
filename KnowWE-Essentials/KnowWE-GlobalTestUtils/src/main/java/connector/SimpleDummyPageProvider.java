@@ -323,6 +323,7 @@ public class SimpleDummyPageProvider implements DummyPageProvider{
 
 	@Override
 	public String getChangeNote(String title, int version) {
-		throw new NotImplementedException("Does not support change notes");
+		LOGGER.warn("The used WikiConnector does not support change notes");
+		return "";
 	}
 }
