@@ -225,7 +225,15 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 
 		String commitHash = this.gitConnector.commitHashForFileAndVersion(pageIdentifier.fileName(), pageIdentifier.version());
-		return createWikiPageFromCommitHash(pageIdentifier, commitHash, pageIdentifier.version());
+		if(commitHash == null) {
+			//we have to obtain from filesystem TODO?
+			return null;
+		}
+		int realVersion = pageIdentifier.version();
+		if(pageIdentifier.version()==LATEST_VERSION){
+			realVersion=this.gitConnector.numberOfCommitsForFile(pageIdentifier.fileName());
+		}
+		return createWikiPageFromCommitHash(pageIdentifier, commitHash, realVersion);
 	}
 
 	@Override
@@ -375,7 +383,7 @@ public class GitVersioningFileProviderDelegate extends AbstractFileProvider {
 		}
 
 		String comment = gitCommentStrategy.getComment(page, "removed page");
-		String commitHash = this.gitConnector.deletePath(file.getName(), getUserData(page.getAuthor(), comment));
+		String commitHash = this.gitConnector.deletePath(file.getName(), getUserData(page.getAuthor(), comment),false);
 
 		String author = page.getAuthor();
 		if (this.openCommits.containsKey(author)) {

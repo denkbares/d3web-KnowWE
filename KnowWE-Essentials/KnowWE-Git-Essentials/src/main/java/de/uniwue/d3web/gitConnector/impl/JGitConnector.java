@@ -24,6 +24,7 @@ import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
+import org.eclipse.jgit.api.RmCommand;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -140,6 +141,17 @@ public class JGitConnector implements GitConnector {
 	public boolean isIgnored(String path) {
 		Boolean b = ignoreNode.checkIgnored(path, false);
 		return b != null && b;
+	}
+
+	@Override
+	public String commitForUser(UserData userData) {
+		throw new NotImplementedException("TODO");
+	}
+
+	@Override
+	public boolean isRemoteRepository() {
+		final Set<String> remoteNames = this.repository.getRemoteNames();
+		return !remoteNames.isEmpty();
 	}
 
 	@Override
@@ -531,14 +543,18 @@ public class JGitConnector implements GitConnector {
 	}
 
 	@Override
-	public String deletePath(String path, UserData userData) {
+	public String deletePath(String path, UserData userData, boolean cached) {
 
 		String commitHash = null;
 		try {
 			final Git git = new Git(this.repository);
 
 			retryGitOperation(() -> {
-				git.rm().addFilepattern(path).call();
+				RmCommand rmCommand = git.rm().addFilepattern(path);
+				if (cached) {
+					rmCommand.setCached(true);
+				}
+				rmCommand.call();
 				return null;
 			}, LockFailedException.class, "Retry removing from repo, because of lock failed exception");
 
@@ -564,6 +580,11 @@ public class JGitConnector implements GitConnector {
 			throw new ProviderException("Can't delete page " + path + ": " + e.getMessage());
 		}
 		return commitHash;
+	}
+
+	@Override
+	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
+		throw new NotImplementedException("TODO");
 	}
 
 	@Override
@@ -612,6 +633,11 @@ public class JGitConnector implements GitConnector {
 			LOGGER.error("Could not add file to git" + e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public void addPaths(List<String> path) {
+		throw new NotImplementedException("TODO");
 	}
 
 	private void setUserData(String author, String email, CommitCommand commitCommand) {

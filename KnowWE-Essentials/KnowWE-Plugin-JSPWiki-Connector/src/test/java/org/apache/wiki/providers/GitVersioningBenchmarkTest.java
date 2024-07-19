@@ -64,7 +64,6 @@ public class GitVersioningBenchmarkTest {
 	public void setUp() throws Exception {
 		System.setProperty("logback.configurationFile", "/resources/logback.xml");
 
-
 //		TestEngine
 		engine = Mockito.mock(WikiEngine.class);
 		TMP_NEW_REPO = System.getProperty("java.io.tmpdir") + "/newRepo";
@@ -72,7 +71,7 @@ public class GitVersioningBenchmarkTest {
 		Properties properties = new Properties();
 		properties.put(AbstractFileProvider.PROP_PAGEDIR, TMP_NEW_REPO);
 		properties.put(GitVersioningAttachmentProvider.PROP_STORAGEDIR, TMP_NEW_REPO);
-		properties.setProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH,"maintenance");
+		properties.setProperty(GitProviderProperties.JSPWIKI_GIT_DEFAULT_BRANCH, "maintenance");
 //		properties.setProperty(PROPERTIES_KEY_GIT_VERSION_CACHE,"sync");
 		engine = Mockito.mock(WikiEngine.class);
 		when(engine.getWikiProperties()).thenReturn(properties);
@@ -202,7 +201,7 @@ public class GitVersioningBenchmarkTest {
 		System.out.println("which is " + getTime(mark, maxpages) + " pages/second");
 	}
 
-	private Collection<Page> getAllPages() throws ProviderException {
+	private Collection<Page> getAllPages() {
 		return fileProvider.getAllPages();
 	}
 

@@ -3,7 +3,6 @@ package org.apache.wiki.providers.commentStrategy;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.wiki.api.core.Page;
-import org.apache.wiki.providers.GitVersioningFileProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -18,13 +18,9 @@ import org.apache.commons.lang.time.StopWatch;
 import org.apache.wiki.WikiPage;
 import org.apache.wiki.api.core.Engine;
 import org.apache.wiki.api.core.Page;
-import org.apache.wiki.auth.NoSuchPrincipalException;
-import org.apache.wiki.auth.UserManager;
-import org.apache.wiki.auth.user.UserProfile;
 import org.apache.wiki.providers.GitProviderProperties;
 import org.apache.wiki.providers.GitVersioningUtils;
 import org.apache.wiki.util.TextUtil;
-import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.GarbageCollectCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -137,26 +133,6 @@ public class JspGitBridge {
 			return initFromFilesystem(gitDir, true);
 		}
 	}
-
-	public void addUserInfo(Engine engine, String author, CommitCommand commit) {
-		if (null != author && !"".equals(author)) {
-			try {
-				UserProfile userProfile = engine.getManager(UserManager.class)
-						.getUserDatabase()
-						.findByFullName(author);
-				commit.setCommitter(userProfile.getFullname(), userProfile.getEmail());
-			}
-			catch (NoSuchPrincipalException e) {
-				// is sometime necessary, e.g. CI-process is not a Wiki account
-				commit.setCommitter(author, "");
-			}
-		}
-		if (author == null) {
-			//we try to obtain the author
-		}
-	}
-
-
 
 
 
@@ -405,41 +381,6 @@ public class JspGitBridge {
 		}
 	}
 
-
-
-
-	private static final int RETRY = 2;
-	private static final int DELAY = 100;
-
-	public static <V> V retryGitOperation(Callable<V> callable, Class<? extends Throwable> t, String message) throws Exception {
-		int counter = 0;
-
-		JGitInternalException internalException = null;
-		while (counter < RETRY) {
-			try {
-				return callable.call();
-			}
-			catch (JGitInternalException e) {
-				internalException = e;
-				if (t.isAssignableFrom(e.getClass()) ||
-						(e.getCause() != null && t.isAssignableFrom(e.getCause().getClass()))) {
-					counter++;
-					LOGGER.warn(String.format("retry %s/%s, %s", counter, RETRY, message));
-
-					try {
-						Thread.sleep(DELAY);
-					}
-					catch (InterruptedException e1) {
-						// ignore
-					}
-				}
-				else {
-					throw e;
-				}
-			}
-		}
-		throw internalException;
-	}
 
 
 	public void periodicalGitGC() {

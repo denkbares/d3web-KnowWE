@@ -136,6 +136,9 @@ public class CachingGitConnector implements GitConnector {
 		this.updateCacheForPath(file);
 
 		List<String> strings = getCurrentCache().get(file);
+		if(strings == null) {
+			return null;
+		}
 
 		int versionIndex = version - 1;
 
@@ -247,8 +250,13 @@ public class CachingGitConnector implements GitConnector {
 	}
 
 	@Override
-	public String deletePath(String pathToDelete, UserData userData) {
-		return this.delegate.deletePath(pathToDelete, userData);
+	public String deletePath(String pathToDelete, UserData userData, boolean cached) {
+		return this.delegate.deletePath(pathToDelete, userData,cached);
+	}
+
+	@Override
+	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
+		return this.delegate.deletePaths(pathsToDelete, userData, cached);
 	}
 
 	@Override
@@ -259,6 +267,11 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public void addPath(String path) {
 		this.delegate.addPath(path);
+	}
+
+	@Override
+	public void addPaths(List<String> path) {
+		this.delegate.addPaths(path);
 	}
 
 	@Override
@@ -314,5 +327,15 @@ public class CachingGitConnector implements GitConnector {
 	@Override
 	public boolean isIgnored(String path) {
 		return this.delegate.isIgnored(path);
+	}
+
+	@Override
+	public String commitForUser(UserData userData) {
+		return this.delegate.commitForUser(userData);
+	}
+
+	@Override
+	public boolean isRemoteRepository() {
+		return this.delegate.isRemoteRepository();
 	}
 }

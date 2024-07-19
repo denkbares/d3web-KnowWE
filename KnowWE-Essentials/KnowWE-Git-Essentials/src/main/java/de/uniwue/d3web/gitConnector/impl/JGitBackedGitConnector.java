@@ -83,6 +83,19 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
+	public String commitForUser(UserData userData) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.commitForUser(userData);
+		}
+		return this.jgitConnector.commitForUser(userData);
+	}
+
+	@Override
+	public boolean isRemoteRepository() {
+		return this.jgitConnector.isRemoteRepository();
+	}
+
+	@Override
 	public List<String> commitHashesForFile(String file) {
 		if (bareGitConnector.isGitInstalled) {
 			return this.bareGitConnector.commitHashesForFile(file);
@@ -214,8 +227,16 @@ public class JGitBackedGitConnector implements GitConnector {
 	}
 
 	@Override
-	public String deletePath(String pathToDelete, UserData userData) {
-		return this.jgitConnector.deletePath(pathToDelete, userData);
+	public String deletePath(String pathToDelete, UserData userData, boolean cached) {
+		return this.jgitConnector.deletePath(pathToDelete, userData,cached);
+	}
+
+	@Override
+	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
+		if(this.bareGitConnector.isGitInstalled) {
+			return this.bareGitConnector.deletePaths(pathsToDelete, userData, cached);
+		}
+		return this.jgitConnector.deletePaths(pathsToDelete, userData, cached);
 	}
 
 	@Override
@@ -226,6 +247,15 @@ public class JGitBackedGitConnector implements GitConnector {
 	@Override
 	public void addPath(String path) {
 		this.jgitConnector.addPath(path);
+	}
+
+	@Override
+	public void addPaths(List<String> path) {
+		if(this.bareGitConnector.isGitInstalled) {
+			this.bareGitConnector.addPaths(path);
+			return;
+		}
+		this.jgitConnector.addPaths(path);
 	}
 
 	// ===== FACTORY====

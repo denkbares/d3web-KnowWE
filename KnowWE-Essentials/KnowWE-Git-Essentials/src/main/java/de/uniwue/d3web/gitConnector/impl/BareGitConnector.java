@@ -371,8 +371,19 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
-	public String deletePath(String pathToDelete, UserData userData) {
+	public String deletePath(String pathToDelete, UserData userData, boolean cached) {
 		throw new NotImplementedException("So far not implemented - use the JGit version");
+	}
+
+	@Override
+	public String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached) {
+		String joinedPaths = String.join(" ", pathsToDelete);
+		String prefix = cached? "git rm --cached " : "git rm ";
+		String rmResult = RawGitExecutor.executeGitCommand(prefix + joinedPaths, this.repositoryPath);
+		if (!Arrays.stream(rmResult.split("\n")).allMatch(line -> line.startsWith("rm"))) {
+			LOGGER.error("Could not delete paths: " + pathsToDelete);
+		}
+		return null;
 	}
 
 	@Override
@@ -404,9 +415,34 @@ public class BareGitConnector implements GitConnector {
 	}
 
 	@Override
+	public void addPaths(List<String> paths) {
+		String joinedPaths = String.join(" ", paths);
+		String addResult = RawGitExecutor.executeGitCommand("git add " + joinedPaths, this.repositoryPath);
+		if (!addResult.isEmpty()) {
+			LOGGER.error("Could not add paths: " + paths);
+		}
+	}
+
+	@Override
 	public boolean isIgnored(String path) {
 		String ignoreResult = RawGitExecutor.executeGitCommand("git check-ignore " + path, this.repositoryPath);
 		return !ignoreResult.trim().isEmpty();
+	}
+
+	@Override
+	public String commitForUser(UserData userData) {
+		String[] gitCommand = {"git","commit","--author="+userData.user+" <"+userData.email+">","-m",userData.message};
+		String commitResult = RawGitExecutor.executeGitCommand(gitCommand, this.repositoryPath);
+		if(!commitResult.contains(userData.message)){
+			throw new IllegalStateException("Commit failed! for command: " + Arrays.toString(gitCommand));
+		}
+
+		return currentHEAD();
+	}
+
+	@Override
+	public boolean isRemoteRepository() {
+		throw new NotImplementedException("TODO");
 	}
 
 	public static BareGitConnector fromPath(String repositoryPath) throws IllegalArgumentException {

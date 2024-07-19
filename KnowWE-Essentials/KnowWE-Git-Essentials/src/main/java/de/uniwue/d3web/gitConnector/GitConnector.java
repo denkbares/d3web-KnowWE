@@ -60,6 +60,14 @@ public interface GitConnector {
 	byte[] getBytesForCommit(String commitHash,String path);
 
 	/**
+	 * Obtains the size of the file in the provided hash in bytes or -1 if the file was not found in the respective commit
+	 * @param commitHash
+	 * @param path
+	 * @return
+	 */
+	long getFilesizeForCommit(String commitHash,String path);
+
+	/**
 	 * Checks whether there is a file (provided by the path) in the given version
 	 * @param path
 	 * @param version
@@ -74,19 +82,31 @@ public interface GitConnector {
 	 */
 	UserData userDataFor(String commitHash);
 
+	/**
+	 * In Seconds since 1970
+	 * @param commitHash
+	 * @return
+	 */
 	long commitTimeFor(String commitHash);
 
 
 
-	void commitPathsForUser(String message, String author, String email, Set<String> paths);
+	String commitPathsForUser(String message, String author, String email, Set<String> paths);
 
 	/**
 	 * This essentially handles the git operation AFTER a file was moved, that is "from" does no longer exist and "to" is the new location of the file
-
+	 * Returns the commithash of the underlying commit
 	 */
-	void moveFile(Path from, Path to, String user, String email, String message);
+	String moveFile(Path from, Path to, String user, String email, String message);
 
-	void deletePath(Path pathToDelete, UserData userData);
+	/**
+	 * Deletes the path by creating a commit based on the provided userdata! Returns the according commithash
+	 * @param pathToDelete
+	 * @param userData
+	 */
+	String deletePath(String pathToDelete, UserData userData, boolean cached);
+
+	String deletePaths(List<String> pathsToDelete, UserData userData, boolean cached);
 
 	/**
 	 * Use this method to add a given path to a commit and commit it. Does not push! The path will be relativized onto the repository.
@@ -102,6 +122,8 @@ public interface GitConnector {
 	 * @return
 	 */
 	void addPath(String path);
+
+	void addPaths(List<String> path);
 
 	void rollbackPaths(Set<String> pathsToRollback);
 
@@ -120,6 +142,11 @@ public interface GitConnector {
 
 	void cherryPick(String branch, List<String> commitHashesToCherryPick);
 
+	/**
+	 * For a provided commithash, this lists all files that are touched in this commit
+	 * @param commitHash
+	 * @return
+	 */
 	List<String> listChangedFilesForHash(String commitHash);
 
 
@@ -130,4 +157,61 @@ public interface GitConnector {
 
 		return new String(getBytesForPath(pathToTxt, version));
 	}
+
+	/**
+	 * Obtain the directory in which the .git folder is located
+	 * @return
+	 */
+	String getGitDirectory();
+
+	/**
+	 * Returnt he current active branch. Throws Illegalstate if this command fails
+	 * @return
+	 */
+	String currentBranch();
+
+	/**
+	 * Return the current head of the current branch
+	 * @return
+	 */
+	String currentHEAD();
+
+	/**
+	 * Obtain all commithashes between the provided commitHashFrom and commitHashTo. The list is sorted in the way git stores these commits.
+	 * The returned list does not contain the from hash, but it does contain commitHashTo (its the last element so drop that one if you do not need it)
+	 * @param commitHashFrom
+	 * @param commitHashTo
+	 * @return
+	 */
+
+	List<String> commitsBetween(String commitHashFrom, String commitHashTo);
+
+	/**
+	 * Same as commitsBetween, but the returnes commitHashes are only those that changed the file specified by "path"
+	 * @param commitHashFrom
+	 * @param commitHashTo
+	 * @param path
+	 * @return
+	 */
+	List<String> commitsBetweenForFile(String commitHashFrom, String commitHashTo, String path);
+
+	/**
+	 * Checks whether a given path is ignored!
+	 * @param path
+	 * @return
+	 */
+	boolean isIgnored(String path);
+
+	/**
+	 * Performs a commit operation on the underlying git using the provided userData - returns the commit hash
+	 * @param userData
+	 * @return
+	 */
+	String commitForUser(UserData userData);
+
+	/**
+	 * Returns whether this repository has any remote origins assigned!
+	 * @return
+	 */
+	boolean isRemoteRepository();
 }

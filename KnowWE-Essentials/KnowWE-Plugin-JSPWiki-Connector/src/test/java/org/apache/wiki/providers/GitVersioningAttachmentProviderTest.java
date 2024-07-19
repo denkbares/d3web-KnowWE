@@ -62,6 +62,7 @@ public class GitVersioningAttachmentProviderTest {
 
 	private String TMP_NEW_REPO = "/tmp/newRepo";
 	public static final String AUTHOR = "author";
+	public static final String UNKNOWN_AUTHOR = "UnknownAuthor";
 
 	private Properties properties;
 	private Engine engine;
@@ -85,10 +86,16 @@ public class GitVersioningAttachmentProviderTest {
 		when(engine.getManager(UserManager.class)).thenReturn(um);
 		UserDatabase udb = mock(UserDatabase.class);
 		when(um.getUserDatabase()).thenReturn(udb);
+
 		UserProfile up = mock(UserProfile.class);
 		when(udb.findByFullName(AUTHOR)).thenReturn(up);
 		when(up.getFullname()).thenReturn(AUTHOR);
 		when(up.getEmail()).thenReturn("author@nowhere.com");
+
+		UserProfile up2 = mock(UserProfile.class);
+		when(udb.findByFullName(UNKNOWN_AUTHOR)).thenReturn(up2);
+		when(up2.getFullname()).thenReturn(UNKNOWN_AUTHOR);
+		when(up2.getEmail()).thenReturn("unknownauthor@nowhere.com");
 	}
 
 	@After

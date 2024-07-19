@@ -45,17 +45,9 @@ import org.apache.wiki.api.exceptions.ProviderException;
 import org.apache.wiki.event.GitVersioningWikiEvent;
 import org.apache.wiki.event.WikiEventManager;
 import org.apache.wiki.gitBridge.JSPUtils;
-import org.apache.wiki.gitBridge.JspGitBridge;
 import org.apache.wiki.providers.commentStrategy.GitCommentStrategy;
 import org.apache.wiki.util.FileUtil;
 import org.apache.wiki.util.TextUtil;
-import org.eclipse.jgit.api.AddCommand;
-import org.eclipse.jgit.api.CommitCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.RmCommand;
-import org.eclipse.jgit.errors.LockFailedException;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,8 +67,6 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GitVersioningAttachmentProviderDelegate.class);
 
-	//TODO has to go
-	private final Repository repository;
 	private Engine engine;
 	//TODO idk if really required
 	private String storageDir;
@@ -90,7 +80,6 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 	//prevent initilization from outside this package!
 	GitVersioningAttachmentProviderDelegate(GitVersioningFileProvider fileProvider) {
 		this.gitVersioningFileProvider = fileProvider;
-		repository = this.gitVersioningFileProvider.getRepository();
 		gitCommentStrategy = this.gitVersioningFileProvider.getGitCommentStrategy();
 		this.gitConnector = gitVersioningFileProvider.getGitConnector();
 	}
@@ -161,23 +150,16 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		}
 
 		boolean isIgnored = this.gitConnector.isIgnored(getPath(att));
-		boolean add = !newFile.exists() && !isIgnored;
+		//TODO adding by default should never hurt
+//		boolean add = !newFile.exists() && !isIgnored;
 
 		copyOnFilesystem(att, data, newFile);
 
-		if (add) {
-			gitConnector.addPath(getPath(att));
-		}
+		gitConnector.addPath(getPath(att));
 
 		att.setSize(newFile.length());
-		//TODO from here needs replacement!
-		Git git = new Git(repository);
-		try {
-			commitAttachment(att, git, GitVersioningWikiEvent.UPDATE, getPath(att));
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+
+		commitAttachment(att, GitVersioningWikiEvent.UPDATE, getPath(att));
 	}
 
 	private void copyOnFilesystem(Attachment att, InputStream data, File newFile) throws ProviderException {
@@ -216,10 +198,6 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		return comment;
 	}
 
-	private void setMessage(Attachment att, CommitCommand commitCommand) {
-		String message = getMessage(att);
-		commitCommand.setMessage(message);
-	}
 
 	@Override
 	public InputStream getAttachmentData(Attachment att) throws IOException, ProviderException {
@@ -289,7 +267,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			List<String> commitHashes = this.gitConnector.commitHashesForFileSince(getPath(att), timestamp);
 			if (!commitHashes.isEmpty()) {
 				String lastCommit = commitHashes.get(commitHashes.size() - 1);
-				setAttachmentDataFromCommit(att,lastCommit);
+				setAttachmentDataFromCommit(att, lastCommit);
 				attachments.add(att);
 			}
 		}
@@ -403,7 +381,7 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		// Can't delete version from git
 	}
 
-	private void commitAttachment(Attachment att, Git git, int type, String filePath) throws Exception {
+	private void commitAttachment(Attachment att, int type, String filePath) {
 		if (this.gitConnector.isIgnored(getPath(att))) {
 			return;
 		}
@@ -412,40 +390,32 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			gitVersioningFileProvider.openCommits.get(att.getAuthor()).add(getPath(att));
 		}
 		else {
-			commitAttachmentGit(att, git, type, filePath);
+			commitAttachmentGit(att, type, filePath);
 		}
 	}
 
-	private void commitAttachmentGit(Attachment att, Git git, int type, String filePath) throws Exception {
+	private void commitAttachmentGit(Attachment att, int type, String filePath) {
 		//TODO no idea why we might need it, im leaving this here since i dont know!
 //		if (att.getAuthor() == null) {
 //			this.gitBridge.assignAuthor(att);
 //		}
 
-		//TODO needs replacement!
-		CommitCommand commitCommand = git.commit().setAllowEmpty(true).setOnly(filePath);
-		setMessage(att, commitCommand);
-		this.gitVersioningFileProvider.gitBridge().addUserInfo(engine, att.getAuthor(), commitCommand);
 		try {
+			//TODO this filelock is pretty bad to be used in here!
 			gitVersioningFileProvider.commitLock();
 
-			commitAttachmentSafe(att, type, commitCommand);
+			UserData userData = this.gitVersioningFileProvider.getDelegate()
+					.getUserData(att.getAuthor(), getMessage(att));
+			//TODO commit only filepath?
+			String commitHash = this.gitConnector.commitForUser(userData);
+			WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
+					att.getAuthor(),
+					att.getParentName() + "/" + att.getFileName(),
+					commitHash));
 		}
 		finally {
 			gitVersioningFileProvider.commitUnlock();
 		}
-	}
-
-	//TODO needs replacement!
-	private void commitAttachmentSafe(Attachment att, int type, CommitCommand commitCommand) throws Exception {
-		JspGitBridge.retryGitOperation(() -> {
-			RevCommit revCommit = commitCommand.call();
-			WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, type,
-					att.getAuthor(),
-					att.getParentName() + "/" + att.getFileName(),
-					revCommit.getId().getName()));
-			return null;
-		}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
 	}
 
 	@Override
@@ -483,61 +453,58 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 		}
 	}
 
-	//TODO has to be refactored
 	private void moveFilesGit(Page oldParent, String newParent, File[] files) throws Exception {
 		//we assume that the files are moved already
 		List<String> filesForEvent = new ArrayList<>();
+		String comment = gitCommentStrategy.getComment(oldParent, "move attachments from " + oldParent.getName() + " to " + newParent);
 
+		//if tracked by openCommits we only have to update this list
+		if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
+			moveFilesOpenCommits(oldParent, newParent, files);
+			//done already
+			return;
+		}
 
-		Git git = new Git(repository);
-		RmCommand rm = git.rm().setCached(true);
-		AddCommand add = git.add();
-		CommitCommand commit = git.commit();
+		//here we do the move via the git connector
+
+		//get all old and new paths
+		List<String> oldPaths = new ArrayList<>();
+		List<String> newPaths = new ArrayList<>();
 		for (File file : files) {
 			String oldPath = getAttachmentDir(oldParent.getName()) + "/" + file.getName();
 			String newPath = getAttachmentDir(newParent) + "/" + file.getName();
-			rm.addFilepattern(oldPath);
-			add.addFilepattern(newPath);
-			if (gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
-				gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(oldPath);
-				gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(newPath);
-			}
-			else {
-				commit.setOnly(oldPath);
-				commit.setOnly(newPath);
-				filesForEvent.add(oldParent.getName() + "/" + file.getName());
-				filesForEvent.add(newParent + "/" + file.getName());
-			}
+			oldPaths.add(oldPath);
+			newPaths.add(newPath);
+			filesForEvent.add(oldParent.getName() + "/" + file.getName());
+			filesForEvent.add(newParent + "/" + file.getName());
 		}
-		add.addFilepattern(getAttachmentDir(oldParent.getName()));
-		add.addFilepattern(getAttachmentDir(newParent));
 
-		JspGitBridge.retryGitOperation(() -> {
-			add.call();
-			return null;
-		}, LockFailedException.class, "Retry adding to repo, because of lock failed exception");
+		//remove old files
+		UserData userData = this.gitVersioningFileProvider.getDelegate().getUserData(oldParent.getAuthor(), comment);
+		this.gitConnector.deletePaths(oldPaths, userData, true);
+		//add new files
+		this.gitConnector.addPaths(newPaths);
+		//and perform the commit TODO only the pages specified?
+		String commitHash = this.gitConnector.commitForUser(userData);
 
-		if (!gitVersioningFileProvider.openCommits.containsKey(oldParent.getAuthor())) {
-			String comment = gitCommentStrategy.getComment(oldParent, "move attachments from " + oldParent.getName() + " to " + newParent);
-			commit.setMessage(comment);
-			try {
-				gitVersioningFileProvider.commitLock();
-				JspGitBridge.retryGitOperation(() -> {
-					RevCommit revCommit = commit.call();
-					WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
-							oldParent.getAuthor(),
-							filesForEvent,
-							revCommit.getId().getName()));
-					return null;
-				}, LockFailedException.class, "Retry commit to repo, because of lock failed exception");
-			}
-			finally {
-				gitVersioningFileProvider.commitUnlock();
-			}
+		//notify wiki
+		WikiEventManager.fireEvent(this, new GitVersioningWikiEvent(this, GitVersioningWikiEvent.MOVED,
+				oldParent.getAuthor(),
+				filesForEvent,
+				commitHash));
+	}
+
+	private void moveFilesOpenCommits(Page oldParent, String newParent, File[] files) {
+		for (File file : files) {
+			String oldPath = getAttachmentDir(oldParent.getName()) + "/" + file.getName();
+			String newPath = getAttachmentDir(newParent) + "/" + file.getName();
+			gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(oldPath);
+			gitVersioningFileProvider.openCommits.get(oldParent.getAuthor()).add(newPath);
 		}
 	}
 
-	private void moveFilesInFilesystem(String newParent, File oldDir, File newDir) throws ProviderException, IOException {
+	private void moveFilesInFilesystem(String newParent, File oldDir, File newDir) throws
+			ProviderException, IOException {
 		if (oldDir.getName().equalsIgnoreCase(newDir.getName())) {
 			File tmpDir = JSPUtils.findPageDir(newParent + "_tmp", storageDir);
 			Files.move(oldDir.toPath(), tmpDir.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -563,6 +530,6 @@ public class GitVersioningAttachmentProviderDelegate extends BasicAttachmentProv
 			return;
 		}
 		this.gitConnector.deletePath(getPath(att), this.gitVersioningFileProvider.getDelegate()
-				.getUserData(att.getAuthor(), getMessage(att)));
+				.getUserData(att.getAuthor(), getMessage(att)), false);
 	}
 }

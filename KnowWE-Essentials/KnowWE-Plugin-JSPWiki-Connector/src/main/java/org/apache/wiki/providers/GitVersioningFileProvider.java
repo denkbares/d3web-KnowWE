@@ -103,7 +103,7 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		this.remoteUsername = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_REMOTE_USERNAME, null);
 		this.remoteToken = TextUtil.getStringProperty(properties, GitProviderProperties.JSPWIKI_GIT_REMOTE_TOKEN, null);
 
-		this.remoteRepo = this.gitBridge().isRemoteRepo();
+		this.remoteRepo = this.getGitConnector().isRemoteRepository();
 
 		if (autoUpdateEnabled && remoteRepo) {
 			scheduler.initialize(engine, this);
@@ -354,9 +354,6 @@ public class GitVersioningFileProvider extends AbstractFileProvider {
 		return this.delegate.getGitCommentStrategy();
 	}
 
-	public JspGitBridge gitBridge() {
-		return this.delegate.gitBridge();
-	}
 
 	public boolean isClean() {
 		return this.delegate.getGitConnector().isClean();
