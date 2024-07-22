@@ -39,6 +39,7 @@ import de.knowwe.core.Environment;
 import de.knowwe.core.action.Action;
 import de.knowwe.core.action.UserActionContext;
 import de.knowwe.core.kdom.Article;
+import de.knowwe.core.kdom.RootType;
 import de.knowwe.core.user.AuthenticationManager;
 import de.knowwe.core.user.UserContext;
 import de.knowwe.jspwiki.KnowWEPlugin;
@@ -82,6 +83,11 @@ public class TestUserContext implements UserContext, UserActionContext {
 
 	public TestUserContext(String articleName, String username) {
 		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB));
+		this.username = username;
+	}
+
+	public TestUserContext(String articleName, String username, RootType rootType) {
+		this(Article.createTemporaryArticle("", articleName, Environment.DEFAULT_WEB, rootType));
 		this.username = username;
 	}
 
