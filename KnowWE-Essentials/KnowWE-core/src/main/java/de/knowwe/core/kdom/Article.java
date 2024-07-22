@@ -104,7 +104,7 @@ public final class Article {
 	}
 
 	public static Article createTemporaryArticle(String text, String title, String web, RootType root) {
-		return createArticle(text, title, web, null, true);
+		return createArticle(text, title, web, null, true, root);
 	}
 
 
