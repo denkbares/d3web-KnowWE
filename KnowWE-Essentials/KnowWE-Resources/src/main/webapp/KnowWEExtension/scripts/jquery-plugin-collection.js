@@ -184,7 +184,7 @@
         cache: false,
         data: data
       }).success(function(data, status, jqXHR) {
-        if (!data || data.trim() === "") {
+        if (!data || (data.trim && data.trim() === "")) {
           if (showGlobalProcessingState()) {
             KNOWWE.core.util.updateProcessingState(-1);
           }
@@ -200,7 +200,7 @@
         if (beforeReplace) {
           beforeReplace.call(this, $element, data);
         }
-        const parsed = JSON.parse(data);
+        const parsed = typeof data === "object" ? data : JSON.parse(data);
         if (jq$.lastRerenderRequests[id] !== parsed.counter) {
           // console.log("Skipping: " + parsed.counter);
           return; // another render request was send already, abort this one.
