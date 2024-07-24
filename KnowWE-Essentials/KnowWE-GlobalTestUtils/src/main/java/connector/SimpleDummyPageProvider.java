@@ -222,7 +222,7 @@ public class SimpleDummyPageProvider implements DummyPageProvider{
 
 	@Override
 	public void setArticleContent(String title, String content, String changeNote) {
-		if(!changeNote.isBlank()) {
+		if(!Strings.isBlank(changeNote)) {
 			LOGGER.warn("Does not support change notes.");
 		}
 		setArticleContent(title, content);
