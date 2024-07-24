@@ -144,7 +144,7 @@
             value="<fmt:message key='info.delete.submit'/>" />
       <input class="btn btn-danger <%=c.hasAdminPermissions() ? "admin" : "noneAdmin"%>" type="submit" name="delete-admin" id="delete-admin"
              data-modal="+ .modal"
-             value="Delete page (including its revision history)" />
+             value="Seite und ihre Versionsgeschichte löschen" />
       <div class="modal"><fmt:message key='info.confirmdelete'/></div>
     </form>
   </wiki:Permission>
