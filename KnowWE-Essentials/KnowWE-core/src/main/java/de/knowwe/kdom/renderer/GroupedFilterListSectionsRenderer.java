@@ -23,6 +23,8 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.denkbares.strings.NumberAwareComparator;
 import com.denkbares.strings.Strings;
 import com.denkbares.utils.Pair;
@@ -398,13 +400,12 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 
 			// other (simple) search phrases
 			if (Strings.nonBlank(rest)) {
-				Predicate<Section<T>> sectionTextFilter = createFilter(s -> s.getText()
-						.replaceAll("[-/\\\\\u00A0\\h\\s\\v]", ""), rest.replaceAll("[-/\\\\\u00A0\\h\\s\\v]", ""));
+				Predicate<Section<T>> simpleFilter = createFilter(GroupedFilterListSectionsRenderer.this::getSearchableText, clean(rest));
 				Predicate<Section<T>> filtersPredicate = Predicates.FALSE(); // an empty predicate
 				for (Function<Section<T>, String> filter : keylessFilterProviders) {
 					filtersPredicate = filtersPredicate.or(createFilter(filter, rest.split("[\u00A0\\h\\s\\v]+")));
 				}
-				filters.add(Predicates.or(sectionTextFilter, filtersPredicate));
+				filters.add(Predicates.or(simpleFilter, filtersPredicate));
 			}
 		}
 
@@ -421,7 +422,8 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 					.filter(entry -> {
 						String plainKeyLC = Strings.htmlToPlain(entry.getKey()).toLowerCase();
 						return plainKeyLC.startsWith(name.toLowerCase())
-							   || plainKeyLC.replaceAll("\\W", "").startsWith(name.toLowerCase().replaceAll("\\W", ""));
+								|| plainKeyLC.replaceAll("\\W", "")
+								.startsWith(name.toLowerCase().replaceAll("\\W", ""));
 					})
 					.map(Entry::getValue)
 					.map(textFun -> createFilter(textFun, operator, value))
@@ -451,7 +453,7 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 			return section -> {
 				String text = textFunction.apply(section);
 				return Strings.nonBlank(text) &&
-					   compare.test(NumberAwareComparator.CASE_INSENSITIVE.compare(text, phrase));
+						compare.test(NumberAwareComparator.CASE_INSENSITIVE.compare(text, phrase));
 			};
 		}
 
@@ -475,5 +477,22 @@ public class GroupedFilterListSectionsRenderer<T extends Type> {
 				return compare.test(comparatorResult);
 			};
 		}
+	}
+
+	@NotNull
+	private String getSearchableText(Section<T> s) {
+		StringBuilder b = new StringBuilder();
+		b.append(clean(s.getText()));
+		for (Pair<String, ListSectionsRenderer<T>> renderer : this.renderers) {
+			for (Function<Section<T>, String> textFunction : renderer.getB().getKeyFilters().values()) {
+				b.append(" ").append(clean(textFunction.apply(s)));
+			}
+		}
+		return b.toString();
+	}
+
+	@NotNull
+	private static String clean(String rest) {
+		return rest == null ? "" : rest.replaceAll("[-/\\\\\u00A0\\h\\s\\v]", "");
 	}
 }
