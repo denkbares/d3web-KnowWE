@@ -24,7 +24,7 @@
 .light-mode {
 	--bg-color-primary: #ffffff;
 	--bg-color-primary-shade: #F9F9F9;
-	--bg-color-secondary: #f6f6f8;
+	--bg-color-secondary: #f6f6f6;
 	--bg-color-secondary-shade: #EEE;
 	--bg-color-primary-transparent: rgba(255, 255, 255, 0.9);
 	--bg-color-secondary-transparent: rgba(0, 0, 0, 0.7);

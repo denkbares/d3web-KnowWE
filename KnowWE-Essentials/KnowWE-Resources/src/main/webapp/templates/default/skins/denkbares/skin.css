@@ -2720,12 +2720,12 @@ button {
 }
 
 .panel-default {
-	border-color: var(--border-color-default);
+	border-color: var(--bg-color-secondary-shade);
 }
 
 .panel-default > .panel-heading {
 	color: var(--text-color-panel-heading);
-	background-color: var(--bg-color-secondary);
+	background-color: var(--bg-color-secondary-shade);
 	border-color: var(--border-color-default);
 }
 
