@@ -271,7 +271,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				if (supportArticle != null
 						&& supportArticle.getRootSection().getText().equals(
 						content)) {
-					RenderResult renderResult = new RenderResult(userContext.getRequest());
+					RenderResult renderResult = new RenderResult(userContext);
 					render(userContext, supportArticle, renderResult);
 					return renderResult.toStringRaw();
 				}
@@ -317,7 +317,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 				article = Article.createTemporaryArticle(content, title, Environment.DEFAULT_WEB);
 			}
 
-			RenderResult renderResult = new RenderResult(userContext.getRequest());
+			RenderResult renderResult = new RenderResult(userContext);
 
 			if (article != null) {
 				long start = System.currentTimeMillis();
@@ -435,7 +435,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 		userContext.setAsychronousRenderingAllowed(false);
 		userContext.getRequest().setAttribute(RENDER_MODE, PREVIEW);
 		includeDOMResources(wikiContext);
-		RenderResult renderResult = new RenderResult(userContext.getRequest());
+		RenderResult renderResult = new RenderResult(userContext);
 		String title = wikiContext.getRealPage().getName();
 		Article article = Article.createTemporaryArticle(content, title, Environment.DEFAULT_WEB);
 
@@ -450,7 +450,7 @@ public class KnowWEPlugin extends BasePageFilter implements Plugin,
 	}
 
 	private String getExceptionRendering(UserContext context, Throwable e) {
-		RenderResult renderResult = new RenderResult(context.getRequest());
+		RenderResult renderResult = new RenderResult(context);
 		String message;
 		if (e instanceof UpdateNotAllowedException) {
 			message = "Your request tries to change the content of the current article. "

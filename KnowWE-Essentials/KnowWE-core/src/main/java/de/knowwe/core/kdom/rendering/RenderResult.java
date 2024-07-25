@@ -40,7 +40,7 @@ public class RenderResult {
 		this(context.getRequest());
 	}
 
-	public RenderResult(HttpServletRequest request) {
+	private RenderResult(HttpServletRequest request) {
 		this.maskKey = createMaskKey(request);
 		this.maskedHtml = createMaskHtml(maskKey);
 	}
@@ -66,17 +66,21 @@ public class RenderResult {
 		customRenderers = newList;
 	}
 
-	private static String createMaskKey(HttpServletRequest request) {
-		Object storedMaskKey = request.getAttribute(storeKey);
-		if (storedMaskKey != null) return (String) storedMaskKey;
+	private String createMaskKey(HttpServletRequest request) {
+		if (request != null) {
+			Object storedMaskKey = request.getAttribute(storeKey);
+			if (storedMaskKey != null) return (String) storedMaskKey;
+		}
 
 		int rnd = Math.abs(new Random().nextInt());
 		String maskKey = Integer.toString(rnd, Character.MAX_RADIX);
-		request.setAttribute(storeKey, maskKey);
+		if (request != null) {
+			request.setAttribute(storeKey, maskKey);
+		}
 		return maskKey;
 	}
 
-	private static String[] createMaskHtml(String maskKey) {
+	private String[] createMaskHtml(String maskKey) {
 		String[] maskedHtml = new String[HTML.length];
 		for (int i = 0; i < HTML.length; i++) {
 			maskedHtml[i] = "@@" + maskKey + "_" + i + "@@";
@@ -465,8 +469,8 @@ public class RenderResult {
 
 	private static String getAttribute(boolean encode, String attributeName, String attribute) {
 		return " " + attributeName + "=\""
-			   + (encode ? Strings.encodeHtml(attribute) : attribute)
-			   + "\"";
+				+ (encode ? Strings.encodeHtml(attribute) : attribute)
+				+ "\"";
 	}
 
 	/**

@@ -18,6 +18,9 @@
  */
 package de.knowwe.core.user;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
@@ -30,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
-import de.knowwe.core.utils.KnowWEUtils;
 
 /**
  * UserContext which represents the users interaction with the server.
@@ -65,7 +67,24 @@ public interface UserContext {
 	 * Returns the preferred locale to render contents for.
 	 */
 	default Locale getLocale() {
-		return KnowWEUtils.getBrowserLocales(getRequest())[0];
+		return getBrowserLocales()[0];
+	}
+
+	/**
+	 * Get the locales/languages as configured in the user's browser (most important to fallbacks)
+	 *
+	 * @return the locales of the user's browser
+	 */
+	default Locale[] getBrowserLocales() {
+		final Enumeration<Locale> localesEnum = getRequest().getLocales();
+		if (localesEnum == null) {
+			return new Locale[] { Locale.ROOT }; // can be null in test environment
+		}
+		final ArrayList<Locale> localList = Collections.list(localesEnum);
+		if (localList.isEmpty()) {
+			return new Locale[] { Locale.ROOT };
+		}
+		return localList.toArray(new Locale[0]);
 	}
 
 	/**

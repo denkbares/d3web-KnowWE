@@ -21,6 +21,11 @@ package de.knowwe.core.action;
  */
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,14 +35,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionContext;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import de.knowwe.core.Attributes;
 import de.knowwe.core.Environment;
 import de.knowwe.core.kdom.parsing.Section;
@@ -133,8 +142,9 @@ public class ReRenderContentPartAction extends AbstractAction {
 	 */
 	private static String renderAndCancelOngoingRenders(UserActionContext context, Section<?> section) throws IOException {
 		String key = generateKey(context, section);
+		UserActionContext contextCopy = new AsyncActionContext(context);
 		try {
-			Future<String> renderFuture = EXECUTOR.submit(() -> render(context, section));
+			Future<String> renderFuture = EXECUTOR.submit(() -> render(contextCopy, section));
 			Future<String> previous = RENDER_FUTURES.put(key, renderFuture);
 			if (previous != null) {
 				// previous render thread will move to CancellationException catch block and finishes
@@ -170,6 +180,133 @@ public class ReRenderContentPartAction extends AbstractAction {
 		section.get().getRenderer().render(section, context, result);
 		String rawResult = Environment.getInstance().getWikiConnector()
 				.renderWikiSyntax(result.toStringRaw());
-		return RenderResult.unmask(rawResult, context);
+		return RenderResult.unmask(rawResult, result);
+	}
+
+	private static class AsyncActionContext extends ActionContext {
+
+		private final Cookie[] cookies;
+		private final Locale[] locales;
+		private final ReadOnlyHttpSession session;
+
+		public AsyncActionContext(UserActionContext context) {
+			super(context.getActionName(), context.getPath(), context.getParameters(), null, null, context.getServletContext(), context.getManager());
+			this.cookies = context.getRequest().getCookies();
+			this.locales = context.getBrowserLocales();
+			this.session = new ReadOnlyHttpSession(context.getSession());
+		}
+
+		@Override
+		public Cookie[] getCookies() {
+			return cookies == null ? new Cookie[0] : cookies;
+		}
+
+		@Override
+		public Locale[] getBrowserLocales() {
+			return locales;
+		}
+
+		@Override
+		public HttpSession getSession() {
+			return session;
+		}
+	}
+
+	private static class ReadOnlyHttpSession implements HttpSession {
+		private final HashMap<String, Object> attributes = new HashMap<>();
+
+		public ReadOnlyHttpSession(HttpSession session) {
+			Iterator<String> iterator = session.getAttributeNames().asIterator();
+			while (iterator.hasNext()) {
+				String attributeName = iterator.next();
+				attributes.put(attributeName, session.getAttribute(attributeName));
+			}
+		}
+
+		@Override
+		public Object getAttribute(String name) {
+			return this.attributes.get(name);
+		}
+
+		@Override
+		public Enumeration<String> getAttributeNames() {
+			return Collections.enumeration(attributes.keySet());
+		}
+
+		@Override
+		public long getCreationTime() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public String getId() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public long getLastAccessedTime() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int getMaxInactiveInterval() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public ServletContext getServletContext() {
+			throw new UnsupportedOperationException();
+		}
+
+		@SuppressWarnings("deprecation")
+		@Override
+		public HttpSessionContext getSessionContext() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Object getValue(String name) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public String[] getValueNames() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void invalidate() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean isNew() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void putValue(String name, Object value) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeAttribute(String name) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeValue(String name) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void setAttribute(String name, Object value) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void setMaxInactiveInterval(int interval) {
+			throw new UnsupportedOperationException();
+		}
 	}
 }

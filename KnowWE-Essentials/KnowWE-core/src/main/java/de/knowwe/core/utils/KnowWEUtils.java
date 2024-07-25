@@ -1343,24 +1343,7 @@ public class KnowWEUtils {
 	 * at least one element.
 	 */
 	public static Locale[] getBrowserLocales(final UserContext context) {
-		return getBrowserLocales(context.getRequest());
-	}
-
-	/**
-	 * Returns and array of locales based on sorted by preferred labels given by the browser. This array always contains
-	 * at least one element.
-	 */
-	@NotNull
-	public static Locale[] getBrowserLocales(final HttpServletRequest request) {
-		final Enumeration<Locale> localesEnum = request.getLocales();
-		if (localesEnum == null) {
-			return new Locale[] { Locale.ROOT }; // can be null in test environment
-		}
-		final ArrayList<Locale> localList = Collections.list(localesEnum);
-		if (localList.isEmpty()) {
-			return new Locale[] { Locale.ROOT };
-		}
-		return localList.toArray(new Locale[0]);
+		return context.getBrowserLocales();
 	}
 
 	/**
