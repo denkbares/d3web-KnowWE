@@ -3098,7 +3098,7 @@ input, select, .form-control {
 
 input:hover, select:hover, .form-control:hover {
 	border-color: var(--hover-border-color-btn-default);
-	background-color: var(--hover-bg-color-btn-default);
+	background-color: var(--hover-bg-color-text-field);
 	color: var(--hover-text-color-btn-default);
 }
 
