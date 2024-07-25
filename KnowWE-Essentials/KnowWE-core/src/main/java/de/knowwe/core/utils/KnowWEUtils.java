@@ -143,9 +143,9 @@ public class KnowWEUtils {
 		while (matcher.find()) {
 			final String link = matcher.group(1);
 			if (articleManager.getArticle(link.replaceAll("#.*$", "")) == null
-				&& !link.startsWith("http")
-				&& !link.startsWith("file")
-				&& !link.startsWith("attach")) {
+					&& !link.startsWith("http")
+					&& !link.startsWith("file")
+					&& !link.startsWith("attach")) {
 				escapeIndices.add(new Pair<>(matcher.start(), matcher.end()));
 			}
 		}
@@ -292,8 +292,8 @@ public class KnowWEUtils {
 				.getAttachments();
 		for (final WikiAttachment attachment : attachments) {
 			if ((attachment.getFileName().equals(fileName)
-				 && attachment.getParentName().equals(title))
-				|| attachment.getPath().equals(fileName)) {
+					&& attachment.getParentName().equals(title))
+					|| attachment.getPath().equals(fileName)) {
 				actualAttachment = attachment;
 				break;
 			}
@@ -733,7 +733,7 @@ public class KnowWEUtils {
 	public static String getURLLink(String title, final int version) {
 		title = fixAttachmentArticleLinks(title);
 		return "Wiki.jsp?page=" + Strings.encodeURL(title)
-			   + (version == -1 ? "" : "&version=" + version);
+				+ (version == -1 ? "" : "&version=" + version);
 	}
 
 	private static String fixAttachmentArticleLinks(ArticleManager manager, String title) {
@@ -865,16 +865,10 @@ public class KnowWEUtils {
 	 * @created 11.02.2013
 	 */
 	public static String getCookie(final String name, final UserContext context) {
-		final HttpServletRequest request = context.getRequest();
-		if (request == null) {
-			return null;
-		}
-		final Cookie[] cookies = request.getCookies();
-		if (cookies != null) {
-			for (final Cookie cookie : cookies) {
-				if (cookie.getName().equals(name)) {
-					return cookie.getValue();
-				}
+		final Cookie[] cookies = context.getCookies();
+		for (final Cookie cookie : cookies) {
+			if (cookie.getName().equals(name)) {
+				return cookie.getValue();
 			}
 		}
 		return null;

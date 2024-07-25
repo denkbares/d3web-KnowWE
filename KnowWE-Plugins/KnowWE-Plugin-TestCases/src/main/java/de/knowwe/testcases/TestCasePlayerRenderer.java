@@ -328,13 +328,11 @@ public class TestCasePlayerRenderer implements Renderer {
 	private String getAdditionalQuestionsCookie(Section<?> section, UserContext user) {
 		String additionalQuestions = null;
 		String cookiename = "additionalQuestions" + section.getTitle();
-		Cookie[] cookies = user.getRequest().getCookies();
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (Strings.decodeURL(cookie.getName(), Encoding.ISO_8859_1).equals(cookiename)) {
-					additionalQuestions = Strings.decodeURL(cookie.getValue(), Encoding.ISO_8859_1);
-					break;
-				}
+		Cookie[] cookies = user.getCookies();
+		for (Cookie cookie : cookies) {
+			if (Strings.decodeURL(cookie.getName(), Encoding.ISO_8859_1).equals(cookiename)) {
+				additionalQuestions = Strings.decodeURL(cookie.getValue(), Encoding.ISO_8859_1);
+				break;
 			}
 		}
 		return additionalQuestions;

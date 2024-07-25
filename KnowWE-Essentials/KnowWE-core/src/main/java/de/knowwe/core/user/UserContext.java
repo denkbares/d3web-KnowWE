@@ -22,8 +22,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.jetbrains.annotations.NotNull;
 
 import de.knowwe.core.ArticleManager;
 import de.knowwe.core.kdom.Article;
@@ -153,5 +156,16 @@ public interface UserContext {
 	 */
 	default boolean isReRendering() {
 		return "ReRenderContentPartAction".equalsIgnoreCase(getParameter("action"));
+	}
+
+	/**
+	 * Get the cookies of the users
+	 *
+	 * @return the cookies of this user context
+	 */
+	@NotNull
+	default Cookie[] getCookies() {
+		HttpServletRequest request = getRequest();
+		return request == null ? new Cookie[0] : request.getCookies();
 	}
 }
