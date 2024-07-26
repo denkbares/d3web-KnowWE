@@ -185,6 +185,7 @@ public interface UserContext {
 	@NotNull
 	default Cookie[] getCookies() {
 		HttpServletRequest request = getRequest();
-		return request == null ? new Cookie[0] : request.getCookies();
+		Cookie[] cookies = request == null ? null : request.getCookies();
+		return cookies == null ? new Cookie[0] : cookies;
 	}
 }
