@@ -479,6 +479,15 @@
 		<parameter id="scope" value="OffMarkup" />
 	</extension>
 
+	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="MarkupDocumentationMarkup">
+		<parameter id="class" value="de.knowwe.core.doc.MarkupDocumentationMarkup" />
+		<parameter id="name" value="MarkupDocumentationMarkup" />
+		<parameter id="description" value="Markup to show documentation for other markups" />
+		<parameter id="version" value="1.0" />
+		<parameter id="priority" value="5" />
+		<parameter id="scope" value="root" />
+	</extension>
+
 	<extension plugin-id="KnowWEExtensionPoints" point-id="Type" id="OffMarkup">
 		<parameter id="class" value="de.knowwe.core.tools.OffMarkup" />
 		<parameter id="name" value="OffMarkup" />
