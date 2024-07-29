@@ -96,6 +96,8 @@ public class PackageManager {// implements EventListener {
 		markup.addAnnotation(PackageManager.PACKAGE_ATTRIBUTE_NAME, false);
 		markup.addAnnotationNameType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageAnnotationNameType());
 		markup.addAnnotationContentType(PackageManager.PACKAGE_ATTRIBUTE_NAME, new PackageRule(warnForNotCompiledPackage));
+		markup.getAnnotation(PACKAGE_ATTRIBUTE_NAME)
+				.setDocumentation("Configure the package or package rule to which the content of the markup belongs.");
 	}
 
 	public static void addExcludePackageAnnotation(DefaultMarkup markup) {
