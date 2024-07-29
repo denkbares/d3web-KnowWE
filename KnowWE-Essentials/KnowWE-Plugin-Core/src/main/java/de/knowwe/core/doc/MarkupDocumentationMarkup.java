@@ -124,12 +124,25 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 		private HtmlElement toTableRow(DefaultMarkupType markupType) {
 			HtmlElement tr = new HtmlElement("tr");
 			DefaultMarkup markup = markupType.getMarkup();
+			HtmlProvider[] brs = getDescriptionContent(markup);
 			tr = tr.children(
 					new HtmlElement("td").content(markup.getName()),
-					new HtmlElement("td").content(markup.getDocumentation()),
+					new HtmlElement("td").children(brs),
 					new HtmlElement("td").children(getAnnotationDescription(markup))
 			);
 			return tr;
+		}
+
+		@NotNull
+		private static HtmlProvider[] getDescriptionContent(DefaultMarkup markup) {
+			ArrayList<HtmlProvider> children = new ArrayList<>();
+			children.add(new Span(markup.getDocumentation()).clazz("markup-description"));
+			if (Strings.isNotBlank(markup.getTemplate())) {
+				children.add(new HtmlElement("br"));
+				children.add(new Span("Template:"));
+				children.add(new Span("%%prettify\n{{{\n" + markup.getTemplate() + "}}}\n").clazz("markup-template"));
+			}
+			return children.toArray(HtmlProvider[]::new);
 		}
 
 		private HtmlElement getAnnotationDescription(DefaultMarkup markup) {
