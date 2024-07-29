@@ -57,6 +57,8 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 
 	static {
 		MARKUP = new DefaultMarkup("MarkupDocumentation");
+		MARKUP.setDocumentation("Markup to show documentation for one or all markups.");
+		MARKUP.setTemplate("%%MarkupDocumentation «MarkupName» %");
 		MARKUP.addAnnotation(ANNOTATION_MARKUP, false);
 	}
 
@@ -71,6 +73,12 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 
 			String markupName = DefaultMarkupType.getAnnotation(section, ANNOTATION_MARKUP);
+			if (Strings.isBlank(markupName)) {
+				markupName = DefaultMarkupType.getContent(section);
+				if (markupName.matches("\\H+\\h+%\\s+")) {
+					markupName = Strings.trimRight(Strings.trimRight(markupName).replaceAll("%$", ""));
+				}
+			}
 
 			List<DefaultMarkupType> markupTypes = Types.getAllChildrenTypesRecursive(RootType.getInstance())
 					.stream()
@@ -84,9 +92,10 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 
 			// document all markups, just a big long table...
 			if (Strings.isNotBlank(markupName)) {
+				String finalMarkupName = markupName;
 				Optional<DefaultMarkupType> markupType = markupTypes
 						.stream()
-						.filter(d -> d.getMarkup().getName().equals(markupName))
+						.filter(d -> d.getMarkup().getName().equals(finalMarkupName))
 						.findFirst();
 				if (markupType.isEmpty()) {
 					result.append("Markup ").append(markupName).append(" not found!");
