@@ -197,6 +197,10 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			if (Strings.isBlank(documentation)) {
 				documentation = "No general documentation available yet.";
 			}
+			if (Strings.isNotBlank(markup.getTemplate())) {
+				if (Strings.isNotBlank(documentation)) documentation += "\n\n";
+				documentation += "Template:\n\n%%prettify\n{{{\n" + markup.getTemplate() + "\n}}}\n";
+			}
 			return documentation;
 		}
 
