@@ -736,7 +736,7 @@ KNOWWE.helper.ajax = function(options) {
 
 KNOWWE.helper.ajax.appendXSRFToken = function(url) {
   let separator = url.indexOf('?') === -1 ? "?" : "&";
-  let token = document.getElementById("X-XSRF-TOKEN");
+  let token = document.getElementById("knowWEInfoXSRF");
   if (!token) return url;
   return url + separator + "X-XSRF-TOKEN=" + token.value;
 }
