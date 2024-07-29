@@ -53,13 +53,10 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 
 	private static final DefaultMarkup MARKUP;
 
-	private static final String ANNOTATION_MARKUP = "markup";
-
 	static {
 		MARKUP = new DefaultMarkup("MarkupDocumentation");
 		MARKUP.setDocumentation("Markup to show documentation for one or all markups.");
-		MARKUP.setTemplate("%%MarkupDocumentation «MarkupName» %");
-		MARKUP.addAnnotation(ANNOTATION_MARKUP, false);
+		MARKUP.setTemplate("%%MarkupDocumentation\n«MarkupName»\n%");
 	}
 
 	public MarkupDocumentationMarkup() {
@@ -72,23 +69,12 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 		@Override
 		public void render(Section<?> section, UserContext user, RenderResult result) {
 
-			String markupName = DefaultMarkupType.getAnnotation(section, ANNOTATION_MARKUP);
-			if (Strings.isBlank(markupName)) {
-				markupName = DefaultMarkupType.getContent(section);
-				if (markupName.matches("\\H+\\h+%\\s+")) {
-					markupName = Strings.trimRight(Strings.trimRight(markupName).replaceAll("%$", ""));
-				}
+			String markupName = Strings.trim(DefaultMarkupType.getContent(section));
+			if (markupName.matches("\\H+\\h+%\\s*")) {
+				markupName = Strings.trimRight(Strings.trimRight(markupName).replaceAll("%$", ""));
 			}
 
-			List<DefaultMarkupType> markupTypes = Types.getAllChildrenTypesRecursive(RootType.getInstance())
-					.stream()
-					.filter(t -> t instanceof DefaultMarkupType)
-					.map(t -> (DefaultMarkupType) t)
-					.collect(Collectors.groupingBy(DefaultMarkupType::getName))
-					.values().stream()
-					.map(c -> c.iterator().next())
-					.sorted(Comparator.comparing(t -> t.getMarkup().getName()))
-					.toList();
+			List<DefaultMarkupType> markupTypes = getDefaultMarkupTypes();
 
 			// document all markups, just a big long table...
 			if (Strings.isNotBlank(markupName)) {
@@ -232,5 +218,18 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			}
 			return modifier;
 		}
+	}
+
+	@NotNull
+	public static List<DefaultMarkupType> getDefaultMarkupTypes() {
+		return Types.getAllChildrenTypesRecursive(RootType.getInstance())
+				.stream()
+				.filter(t -> t instanceof DefaultMarkupType)
+				.map(t -> (DefaultMarkupType) t)
+				.collect(Collectors.groupingBy(DefaultMarkupType::getName))
+				.values().stream()
+				.map(c -> c.iterator().next())
+				.sorted(Comparator.comparing(t -> t.getMarkup().getName()))
+				.toList();
 	}
 }
