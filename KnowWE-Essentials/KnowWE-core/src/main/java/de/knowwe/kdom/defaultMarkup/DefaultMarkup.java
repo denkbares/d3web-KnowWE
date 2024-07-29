@@ -23,8 +23,8 @@ package de.knowwe.kdom.defaultMarkup;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -45,8 +45,8 @@ public class DefaultMarkup implements Cloneable {
 
 	private String name;
 	private Collection<Type> types = new ArrayList<>();
-	private Map<String, Annotation> annotations = new HashMap<>();
-	private final Set<String> ignoredAnnotations = new HashSet<>();
+	private Map<String, Annotation> annotations = new LinkedHashMap<>();
+	private final Set<String> ignoredAnnotations = new LinkedHashSet<>();
 
 	private String deprecatedAlternative = null;
 	private boolean isInline = false;
@@ -61,7 +61,7 @@ public class DefaultMarkup implements Cloneable {
 	public DefaultMarkup copy() {
 		DefaultMarkup clone = new DefaultMarkup(this.name);
 		clone.types = new ArrayList<>(this.types);
-		clone.annotations = new HashMap<>(this.annotations);
+		clone.annotations = new LinkedHashMap<>(this.annotations);
 		clone.deprecatedAlternative = this.deprecatedAlternative;
 		clone.isInline = this.isInline;
 		clone.documentation = this.documentation;
@@ -263,7 +263,7 @@ public class DefaultMarkup implements Cloneable {
 		String key = name.toLowerCase();
 		if (annotations.containsKey(key)) {
 			throw new IllegalArgumentException("annotation " + name
-					+ " already added");
+											   + " already added");
 		}
 		// add new parameter
 		Annotation annotation = new Annotation(name, mandatory, isRegex, pattern);
