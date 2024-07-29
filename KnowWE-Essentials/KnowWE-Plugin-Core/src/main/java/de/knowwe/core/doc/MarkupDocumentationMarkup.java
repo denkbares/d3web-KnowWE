@@ -141,7 +141,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 		private static HtmlElement toListItem(DefaultMarkup.Annotation annotation) {
 			String documentation = annotation.getDocumentation();
 			if (Strings.isBlank(documentation)) {
-				return new Li().children(new Span(annotation.getName() + getModifier(annotation)));
+				return new Li().children(new Span("@" + annotation.getName() + getModifier(annotation)));
 			}
 			else {
 				return new Li().children(new Span(annotation.getName() + getModifier(annotation) + ": "),
@@ -160,7 +160,7 @@ public class MarkupDocumentationMarkup extends DefaultMarkupType {
 			result.append("! Annotations\n\n");
 
 			for (DefaultMarkup.Annotation annotation : markup.getAnnotations()) {
-				result.append("* ")
+				result.append("* @")
 						.append(annotation.getName())
 						.append(getModifier(annotation))
 						.append(": ")
